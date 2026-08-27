@@ -17,6 +17,7 @@ import pytest
 
 from cyo_adventure.storybook.models import Effect, EffectOp, Node, Storybook
 from cyo_adventure.validator.continuity import (
+    dominating_nodes,
     is_stateless,
     optional_history,
 )
@@ -250,3 +251,53 @@ def test_a_declared_variable_makes_a_story_stateful() -> None:
     )
 
     assert is_stateless(story) is False
+
+
+@pytest.mark.unit
+def test_dominance_is_strict_and_the_fork_dominates_the_join() -> None:
+    """The dominator half on its own, which PN-1 consumes without the ancestors.
+
+    Exposed as public API for `validator/naming.py`, so it needs its own
+    contract rather than only the one `optional_history` implies. On the
+    bottleneck shape: the fork is on every route to the join and neither
+    branch is. Dominance is strict, so no node appears in its own set and the
+    start node maps to the empty set; PN-1 depends on that, because it asks
+    separately whether the node itself introduces the name.
+    """
+    story = _story(
+        [
+            _node("n1", ["n2", "n3"]),
+            _node("n2", ["n4"]),
+            _node("n3", ["n4"]),
+            _node("n4", ["e1"]),
+            _node("e1", [], ending=True),
+        ]
+    )
+
+    dominators = dominating_nodes(story)
+
+    assert dominators["n1"] == frozenset()
+    assert dominators["n4"] == frozenset({"n1"})
+    assert dominators["n2"] == frozenset({"n1"})
+    assert dominators["e1"] == frozenset({"n1", "n4"})
+
+
+@pytest.mark.unit
+def test_an_unreachable_node_is_absent_from_the_dominator_map() -> None:
+    """Matching `optional_history`: an unreachable node is L1's finding, not ours.
+
+    PN-1 relies on this to decide membership with `node_id in dominators`, so
+    an unreachable node must be absent rather than present with an empty set.
+    """
+    story = _story(
+        [
+            _node("n1", ["e1"]),
+            _node("orphan", ["e1"]),
+            _node("e1", [], ending=True),
+        ]
+    )
+
+    dominators = dominating_nodes(story)
+
+    assert "orphan" not in dominators
+    assert set(dominators) == {"n1", "e1"}
