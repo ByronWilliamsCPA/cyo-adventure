@@ -354,6 +354,7 @@ class RemoderateResult:
     duration_seconds: float
     prior_reviewer_independent: bool | None
     repaired: bool
+    coverage_complete: bool
 
 
 class RemoderateResultView(BaseModel):
@@ -378,6 +379,14 @@ class RemoderateResultView(BaseModel):
     # ::test_repaired_is_false_when_the_pipeline_adopted_no_repair proves the
     # flag discriminates rather than reporting True for every run.
     repaired: bool
+    # #CRITICAL: security: False means at least one node reached no judgment,
+    # so this book's ``overall_verdict`` of "block" is fail-closed rather than
+    # a statement about its content. Without this field on the wire the sweep
+    # cannot tell the two apart and tells an operator to act on prose that may
+    # be perfectly fine, while the actual remedy is to re-run the reviewer.
+    # #VERIFY: tests/unit/test_remoderate_unit.py::
+    # test_coverage_complete_is_false_on_a_gap_and_true_otherwise.
+    coverage_complete: bool
 
 
 def _view(result: RemoderateResult) -> RemoderateResultView:
@@ -392,6 +401,7 @@ def _view(result: RemoderateResult) -> RemoderateResultView:
         duration_seconds=result.duration_seconds,
         prior_reviewer_independent=result.prior_reviewer_independent,
         repaired=result.repaired,
+        coverage_complete=result.coverage_complete,
     )
 
 
@@ -494,8 +504,8 @@ def _prior_reviewer_independent(report: dict[str, object] | None) -> bool | None
 
 def _summarize_report(
     report: dict[str, object] | None,
-) -> tuple[str, dict[str, int], int]:
-    """Derive (overall_verdict, verdict_counts, structural_count) from a persisted report.
+) -> tuple[str, dict[str, int], int, bool]:
+    """Derive (verdict, counts, structural_count, coverage_complete) from a report.
 
     Reads the FRESH (post-call) persisted report's own ``summary.hard_block``/
     ``summary.soft_flag`` flags for the overall verdict, the same gating
@@ -530,10 +540,17 @@ def _summarize_report(
     # #VERIFY: tests/unit/test_remoderate_unit.py::
     # test_summarize_report_tolerates_malformed_shapes, params
     # ``coverage-gap-outranks-soft-flag`` and ``never-moderated``.
+    #
+    # ``coverage_complete`` is returned ALONGSIDE the verdict rather than folded
+    # into it, because the two answer different operator questions. The verdict
+    # says whether the book may move; coverage says whether anyone judged its
+    # prose. Collapsing them makes an unreviewed book indistinguishable from an
+    # unsafe one, and the two need opposite remedies: re-run the reviewer, or
+    # rewrite the story.
     if moderation_coverage_incomplete(report):
-        return "block", _finding_counts(report), _structural_count(report)
+        return "block", _finding_counts(report), _structural_count(report), False
     if report is None:
-        return "pass", {}, 0
+        return "pass", {}, 0, True
     raw_summary = report.get("summary")
     summary: dict[str, object] = raw_summary if isinstance(raw_summary, dict) else {}
     if summary.get("hard_block"):
@@ -542,7 +559,7 @@ def _summarize_report(
         overall = "flag"
     else:
         overall = "pass"
-    return overall, _finding_counts(report), _structural_count(report)
+    return overall, _finding_counts(report), _structural_count(report), True
 
 
 def _persisted_findings(report: dict[str, object] | None) -> list[object]:
@@ -905,8 +922,8 @@ async def remoderate_storybook_version(
             await run_sync(run_fill_gate, version_row.blob, limiter=gate_limiter())
         )
 
-    overall_verdict, verdict_counts, structural_count = _summarize_report(
-        version_row.moderation_report
+    overall_verdict, verdict_counts, structural_count, coverage_complete = (
+        _summarize_report(version_row.moderation_report)
     )
     repaired = _report_repaired(version_row.moderation_report)
 
@@ -971,6 +988,7 @@ async def remoderate_storybook_version(
             "counts": verdict_counts,
             "prior_reviewer_independent": prior_reviewer_independent,
             "repaired": repaired,
+            "coverage_complete": coverage_complete,
         },
     )
 
@@ -984,6 +1002,7 @@ async def remoderate_storybook_version(
         duration_seconds=duration,
         prior_reviewer_independent=prior_reviewer_independent,
         repaired=repaired,
+        coverage_complete=coverage_complete,
     )
 
 

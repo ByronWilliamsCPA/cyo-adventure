@@ -54,6 +54,8 @@ from cyo_adventure.publishing.state_machine import (
 from cyo_adventure.validator.gate import run_fill_gate
 
 if TYPE_CHECKING:
+    from collections.abc import Callable, Coroutine
+
     from sqlalchemy import Select
 
 pytestmark = [pytest.mark.unit, pytest.mark.asyncio]
@@ -455,7 +457,90 @@ async def test_happy_path_returns_fresh_summary(
     assert view.verdict_counts == {"block": 1}
     assert view.structural_count == 1
     assert view.prior_reviewer_independent is True
+    assert view.coverage_complete is True
     assert story.status == "published"
+
+
+def _persisting_pipeline(
+    version_row: StorybookVersion, findings: list[dict[str, object]]
+) -> Callable[..., Coroutine[object, object, None]]:
+    """Build a run_moderation_pipeline double that persists ``findings``.
+
+    Takes ``version_row`` as a parameter rather than closing over a loop
+    variable, so a multi-arm test cannot accidentally have every arm write
+    through the last iteration's row (Ruff B023).
+
+    Args:
+        version_row: The row the fake pipeline writes its fresh report onto.
+        findings: The findings that report carries.
+
+    Returns:
+        Callable[..., Coroutine[object, object, None]]: The pipeline double. It
+        raises StateTransitionError from its terminal transition, which is what
+        a real run does on a published book and what the endpoint swallows.
+    """
+
+    async def _fake_pipeline(**_kwargs: object) -> None:
+        version_row.moderation_report = {
+            "findings": findings,
+            "summary": {
+                "hard_block": any(f.get("verdict") == "block" for f in findings),
+                "soft_flag": True,
+                "count": 1,
+                "repaired": False,
+                "reviewer_independent": True,
+            },
+            "aggregate": {"nodes_reviewed": 3, "pass_counts": {}},
+        }
+        raise StateTransitionError(
+            "cannot 'auto_reject' a storybook in its current state",
+            rule="invalid_state_transition",
+            context={"from": "published", "action": "auto_reject"},
+        )
+
+    return _fake_pipeline
+
+
+async def test_coverage_complete_is_false_on_a_gap_and_true_otherwise(
+    mock_async_session: AsyncMock, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """A fail-closed block and a content block must be tellable apart on the wire.
+
+    Both arms return ``overall_verdict == "block"``, which is the whole
+    problem: the verdict alone cannot say whether a reviewer judged the prose
+    and refused it, or never judged it at all. Only ``coverage_complete``
+    separates them, and an operator's remedy differs completely between the
+    two (re-run the reviewer versus rewrite the story), so an assertion on the
+    verdict alone would pass on an implementation that reported the same thing
+    for both.
+    """
+    arms = {
+        # A genuine content block: a reviewer read it and said no.
+        True: [{"verdict": "block", "structural": False, "concern": "violence"}],
+        # A coverage gap: nothing read it, and the block is the fail-safe.
+        False: [
+            {
+                "verdict": "flag",
+                "structural": True,
+                "concern": "reviewer_unavailable",
+            }
+        ],
+    }
+    for expected_complete, findings in arms.items():
+        version_row = _version_row(moderation_report=_PASSING_REPORT)
+        story = _story()
+        _wire_session(mock_async_session, story, version_row)
+
+        monkeypatch.setattr(
+            remoderate_api,
+            "run_moderation_pipeline",
+            AsyncMock(side_effect=_persisting_pipeline(version_row, findings)),
+        )
+        view = await remoderate_api.trigger_remoderate(
+            "s1", 1, _ctx(_ADMIN, mock_async_session)
+        )
+        assert view.overall_verdict == "block", expected_complete
+        assert view.coverage_complete is expected_complete
 
 
 _PASSING_REPORT: dict[str, object] = {
@@ -972,17 +1057,21 @@ async def test_published_blob_unchanged_when_repair_disallowed(
         # function runs AFTER the pipeline has persisted its fresh report, so
         # these shapes mean the run left nothing legible behind; calling that
         # a pass is the same fail-open the coverage predicate exists to close.
-        pytest.param(None, ("block", {}, 0), id="never-moderated"),
-        pytest.param({"summary": None}, ("block", {}, 0), id="null-summary"),
-        pytest.param({"summary": "corrupt"}, ("block", {}, 0), id="non-dict-summary"),
+        # The trailing bool is ``coverage_complete``: False whenever the verdict
+        # above it is fail-closed rather than a judgment about the prose.
+        pytest.param(None, ("block", {}, 0, False), id="never-moderated"),
+        pytest.param({"summary": None}, ("block", {}, 0, False), id="null-summary"),
+        pytest.param(
+            {"summary": "corrupt"}, ("block", {}, 0, False), id="non-dict-summary"
+        ),
         pytest.param(
             {"summary": {"hard_block": True}, "findings": "corrupt"},
-            ("block", {}, 0),
+            ("block", {}, 0, False),
             id="non-list-findings",
         ),
         pytest.param(
             {"summary": {}, "findings": ["not-a-dict", None, 7]},
-            ("pass", {}, 0),
+            ("pass", {}, 0, True),
             id="non-dict-finding-elements",
         ),
         pytest.param(
@@ -993,7 +1082,7 @@ async def test_published_blob_unchanged_when_repair_disallowed(
                     {"verdict": "flag", "concern": "reviewer_unavailable"},
                 ],
             },
-            ("block", {"flag": 2}, 0),
+            ("block", {"flag": 2}, 0, False),
             id="coverage-gap-outranks-soft-flag",
         ),
         pytest.param(
@@ -1001,23 +1090,24 @@ async def test_published_blob_unchanged_when_repair_disallowed(
                 "summary": {"soft_flag": True},
                 "findings": [{"verdict": "flag", "concern": "mock_reviewer_active"}],
             },
-            ("block", {"flag": 1}, 0),
+            ("block", {"flag": 1}, 0, False),
             id="mock-reviewer-outranks-soft-flag",
         ),
         pytest.param(
             {"summary": {"soft_flag": True}, "findings": [{"structural": True}]},
-            ("flag", {"unknown": 1}, 1),
+            ("flag", {"unknown": 1}, 1, True),
             id="finding-without-verdict",
         ),
         pytest.param(
             {"summary": {}, "findings": [{"verdict": 42}]},
-            ("pass", {"unknown": 1}, 0),
+            ("pass", {"unknown": 1}, 0, True),
             id="non-string-verdict",
         ),
     ],
 )
 async def test_summarize_report_tolerates_malformed_shapes(
-    report: dict[str, object] | None, expected: tuple[str, dict[str, int], int]
+    report: dict[str, object] | None,
+    expected: tuple[str, dict[str, int], int, bool],
 ) -> None:
     """A stored report is JSONB, so its runtime shape is not the annotation.
 

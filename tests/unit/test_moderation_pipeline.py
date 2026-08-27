@@ -24,6 +24,7 @@ from __future__ import annotations
 import copy
 import json
 import math
+import re
 import uuid
 from datetime import UTC, datetime
 from typing import TYPE_CHECKING, cast
@@ -2661,10 +2662,24 @@ def _one_bad_batch_review_provider(*, bad_batch_index: int = 0) -> MockProvider:
     that exact multiple is what identified the cause as batch-granular rather
     than node-granular flakiness.
 
+    Since the per-node fallback landed, an unusable batch response alone no
+    longer costs anybody their coverage: the stage retries each of that batch's
+    nodes one at a time. So this double also refuses the retries for the bad
+    batch's nodes specifically, which is the only shape that still reaches the
+    pipeline as a real gap. Other batches' nodes keep answering normally, so a
+    fallback that mistakenly widened its refusal to the whole story would show
+    up as a different report rather than the same one.
+
     Args:
         bad_batch_index: Which Stage-1 batch call returns garbage, 0-based.
     """
     state = {"batches": 0}
+    refused_prose: set[str] = set()
+
+    def _passages(prompt: str) -> list[str]:
+        return re.findall(
+            r"<untrusted_passage>\n(.*?)\n</untrusted_passage>", prompt, re.DOTALL
+        )
 
     def _respond(prompt: str) -> str:
         if prompt.startswith("Age band:") and "Nodes:" in prompt:
@@ -2675,6 +2690,7 @@ def _one_bad_batch_review_provider(*, bad_batch_index: int = 0) -> MockProvider:
                 # batch parser cannot attribute. The provider raises on an
                 # EMPTY truncation only, so a partial one arrives here as bad
                 # JSON rather than as an error.
+                refused_prose.update(_passages(prompt))
                 return "sorry, I cannot review these passages"
             return json.dumps(
                 [
@@ -2683,6 +2699,10 @@ def _one_bad_batch_review_provider(*, bad_batch_index: int = 0) -> MockProvider:
                 ]
             )
         if prompt.startswith("Age band:"):
+            if any(text in refused_prose for text in _passages(prompt)):
+                # The per-node retry for a node in the bad batch. Parses, and
+                # carries no verdict, so the node stays unjudged.
+                return "{}"
             return '{"verdict": "safe", "reason": "ok"}'
         return '{"verdict": "pass", "reason": "ok"}'
 

@@ -22,8 +22,9 @@ from __future__ import annotations
 
 import json
 import re
-from typing import TYPE_CHECKING, cast
+from typing import TYPE_CHECKING, NamedTuple, cast
 
+from cyo_adventure.core.exceptions import ProviderError
 from cyo_adventure.moderation.report import (
     PARSE_FAILED_FAIL_SAFE_MESSAGE,
     UNKNOWN_VERDICT_FAIL_SAFE_MESSAGE,
@@ -592,6 +593,317 @@ def _safety_finding(
     )
 
 
+async def _review_one_node(
+    *,
+    provider: ReviewProvider,
+    node_id: str,
+    prose: str,
+    age_band: str,
+    max_tokens: int,
+) -> Finding | None:
+    """Review a single node with the single-node prompt and parser.
+
+    The one implementation of the size-1 path, shared by the primary
+    ``batch_size == 1`` branch and the per-node fallback, so the two cannot
+    drift apart: a fallback that built its own prompt would silently stop being
+    equivalent to the unbatched behavior the stage pins itself against.
+
+    Args:
+        provider: The PII-guarded review provider.
+        node_id: The node being reviewed.
+        prose: That node's body text.
+        age_band: The story's target band, for example ``"6-9"``.
+        max_tokens: Token budget for this one call.
+
+    Returns:
+        Finding | None: The node's genuine safety finding, or ``None`` when the
+        response was unparseable or carried no usable verdict, which the caller
+        must treat as a coverage gap rather than a pass.
+    """
+    prompt = (
+        f"Age band: {age_band}\n<untrusted_passage>\n"
+        f"{_sanitize_delimited(prose)}\n</untrusted_passage>"
+    )
+    returned: object = await provider.complete(
+        system=_SAFETY_SYSTEM, prompt=prompt, max_tokens=max_tokens
+    )
+    verdict, concern, severity, reason, is_fail_safe = _parse_structured_verdict(
+        completion_text(returned), fail_safe=Verdict.FLAG
+    )
+    if is_fail_safe:
+        return None
+    return _safety_finding(
+        node_id=node_id,
+        verdict=verdict,
+        concern=concern,
+        severity=severity,
+        reason=reason,
+    )
+
+
+async def _review_one_node_or_none(
+    *,
+    provider: ReviewProvider,
+    node_id: str,
+    prose: str,
+    age_band: str,
+    max_tokens: int,
+) -> Finding | None:
+    """:func:`_review_one_node`, but a provider error is a gap, not a raise.
+
+    Used only by the per-node fallback, and the difference from the primary
+    path is deliberate. The batch call that led here did NOT raise; it returned
+    something unparseable. If a fallback call were allowed to propagate a
+    ``ProviderError``, adding this recovery attempt would convert a run that
+    used to fail safe on eight nodes into a run that aborts the whole
+    moderation stage, which is a strictly worse outcome than the bug being
+    fixed. The primary path keeps raising, because there a provider error is
+    the run's real result rather than a second opinion that did not arrive.
+
+    Args:
+        provider: The PII-guarded review provider.
+        node_id: The node being reviewed.
+        prose: That node's body text.
+        age_band: The story's target band.
+        max_tokens: Token budget for this one call.
+
+    Returns:
+        Finding | None: The node's finding, or ``None`` for both an unusable
+        response and a failed call.
+    """
+    try:
+        return await _review_one_node(
+            provider=provider,
+            node_id=node_id,
+            prose=prose,
+            age_band=age_band,
+            max_tokens=max_tokens,
+        )
+    except ProviderError as exc:
+        # Narrow on purpose (Ruff BLE): the provider contract raises
+        # ProviderError for a failed call, and anything else escaping here is a
+        # defect in this module that must not be swallowed.
+        _logger.warning(
+            "per_node_fallback_call_failed", node_id=node_id, error=str(exc)
+        )
+        return None
+
+
+async def _recover_batch_per_node(
+    *,
+    provider: ReviewProvider,
+    batch: Sequence[tuple[str, str]],
+    age_band: str,
+    max_tokens: int,
+) -> tuple[list[Finding], list[str]]:
+    """Re-review a failed batch's nodes one at a time.
+
+    Args:
+        provider: The PII-guarded review provider.
+        batch: The ``(node_id, prose)`` pairs whose batch response was unusable.
+        age_band: The story's target band.
+        max_tokens: Per-node token budget.
+
+    Returns:
+        tuple[list[Finding], list[str]]: The findings recovered, and the ids of
+        the nodes that failed individually too and so still have no judgment.
+        An empty findings list is the caller's signal that the reviewer, not the
+        batch format, is what failed.
+    """
+    recovered: list[Finding] = []
+    gap_node_ids: list[str] = []
+    for node_id, prose in batch:
+        finding = await _review_one_node_or_none(
+            provider=provider,
+            node_id=node_id,
+            prose=prose,
+            age_band=age_band,
+            max_tokens=max_tokens,
+        )
+        if finding is None:
+            gap_node_ids.append(node_id)
+            continue
+        recovered.append(finding)
+    _logger.info(
+        "batch_verdict_per_node_fallback",
+        nodes=len(batch),
+        recovered=len(recovered),
+    )
+    return recovered, gap_node_ids
+
+
+class _BatchOutcome(NamedTuple):
+    """One batch's contribution to :func:`run_safety_stage`'s accumulators.
+
+    Attributes:
+        findings: Genuine per-node findings this batch produced.
+        gap_node_ids: Nodes left with no judgment, batched or individually.
+        truncated_node_ids: The subset whose batch response was truncated,
+            carried only so the collapsed finding can name the cause.
+        per_node_fallback_enabled: Whether the caller should keep offering the
+            per-node fallback to LATER batches. Threaded through rather than
+            held in this function because the latch is a property of the story's
+            run, not of one batch.
+    """
+
+    findings: list[Finding]
+    gap_node_ids: list[str]
+    truncated_node_ids: list[str]
+    per_node_fallback_enabled: bool
+
+
+async def _review_one_batch(
+    *,
+    provider: ReviewProvider,
+    batch: Sequence[tuple[str, str]],
+    age_band: str,
+    max_tokens: int,
+    per_node_fallback_enabled: bool,
+) -> _BatchOutcome:
+    """Review one multi-node batch, recovering per-node if its response is unusable.
+
+    Args:
+        provider: The PII-guarded review provider.
+        batch: The ``(node_id, prose)`` pairs in this batch, always 2 or more
+            (the size-1 case takes the single-node path in the caller).
+        age_band: The story's target band.
+        max_tokens: Per-node token budget, scaled and clamped for the batch call.
+        per_node_fallback_enabled: False once a previous batch's per-node retries
+            all failed, which is evidence the reviewer is down.
+
+    Returns:
+        _BatchOutcome: This batch's findings, coverage gaps, truncation record,
+        and whether the fallback remains worth offering.
+    """
+    findings: list[Finding] = []
+    gap_node_ids_out: list[str] = []
+    truncated_node_ids: list[str] = []
+    node_lines = "\n".join(
+        f"[{_sanitize_label(nid)}] <untrusted_passage>\n"
+        f"{_sanitize_delimited(prose)}"
+        f"\n</untrusted_passage>"
+        for nid, prose in batch
+    )
+    prompt = f"Age band: {age_band}\nNodes:\n{node_lines}"
+    batch_returned: object = await provider.complete(
+        system=_SAFETY_SYSTEM_BATCH,
+        prompt=prompt,
+        # #ASSUME: external-resources: the per-node budget scales with batch
+        # size but must stay inside what a review model will actually accept.
+        # At the configured ceiling (review_batch_size=50) an unbounded
+        # product asks for 50 * 1024 = 51,200 output tokens, past the output
+        # limit of most review models, so the provider rejects the call
+        # outright instead of returning something the parser can fail safe
+        # on. Clamping keeps an oversized batch on the fail-safe path.
+        # #VERIFY: test_batch_max_tokens_is_clamped_for_large_batches.
+        max_tokens=min(
+            _REVIEW_REASONING_ALLOWANCE + max_tokens * len(batch),
+            _MAX_BATCH_REVIEW_TOKENS,
+        ),
+    )
+    raw = completion_text(batch_returned)
+    by_node_id = _parse_batch_verdicts(raw, [nid for nid, _ in batch])
+    if by_node_id is None:
+        # Name the cause. Without this the log says only "unparseable",
+        # which sends the next reader hunting a model formatting quirk
+        # when the fix is to buy more output budget.
+        #
+        # #CRITICAL: external-resources: finish_reason is logged on EVERY
+        # parse failure, not only on the truncation branch, because
+        # completion_truncated can answer only yes or no. If a provider
+        # omits the field, or spells truncation some other way, the
+        # discriminator under-reports and a starved call is logged as
+        # ordinary bad JSON with nothing in the record to reveal it. The
+        # value itself is the only thing that can distinguish "the backend
+        # said stop" from "the backend said nothing at all", and one of
+        # those is a defect in this discriminator rather than in the model.
+        # #VERIFY: test_finish_reason_is_logged_even_when_it_is_not_a_truncation.
+        truncated = completion_truncated(batch_returned)
+        if truncated:
+            truncated_node_ids.extend(nid for nid, _ in batch)
+        _logger.warning(
+            "batch_verdict_truncated" if truncated else "batch_verdict_unparseable",
+            nodes=len(batch),
+            truncated=truncated,
+            finish_reason=completion_finish_reason(batch_returned),
+            max_tokens=min(
+                _REVIEW_REASONING_ALLOWANCE + max_tokens * len(batch),
+                _MAX_BATCH_REVIEW_TOKENS,
+            ),
+        )
+        # #CRITICAL: security: retry the batch's nodes ONE AT A TIME
+        # before conceding their coverage. `review_batch_size` defaults to
+        # 8, so without this a single unusable response cost eight nodes
+        # their review at once, and the whole batch is the blast radius of
+        # one bad reply. Five reports in the live catalog admitted exactly
+        # 8 or 16 unreviewed nodes, which is what identified the failure as
+        # batch-granular rather than per-node flakiness.
+        #
+        # The single-node prompt is a genuinely different, smaller request,
+        # not a bare retry of the same one: it asks for one verdict instead
+        # of an attributed array, and its output budget is per-node rather
+        # than the clamped product, so it is exactly the shape a truncated
+        # or format-confused batch response tends to succeed at.
+        #
+        # #VERIFY: tests/unit/test_moderation_stages.py::
+        # test_a_bad_batch_recovers_per_node_instead_of_losing_the_batch.
+        if per_node_fallback_enabled:
+            recovered_findings, gap_node_ids = await _recover_batch_per_node(
+                provider=provider,
+                batch=batch,
+                age_band=age_band,
+                max_tokens=max_tokens,
+            )
+            findings.extend(recovered_findings)
+            gap_node_ids_out.extend(gap_node_ids)
+            recovered = len(recovered_findings)
+            # #ASSUME: external-resources: a batch whose every node ALSO
+            # failed individually is evidence the reviewer itself is down,
+            # not that the batch format tripped it. Continuing to spend one
+            # call per node for every remaining batch would multiply an
+            # outage's cost by the batch size while recovering nothing, so
+            # the fallback (never the fail-safe) latches off for the rest
+            # of this story. Deliberately unlike the Stage-0 classifier,
+            # where a transient 5xx must NOT latch anything off (AL-647):
+            # there the latch would suppress the only safety signal, here
+            # it only declines a retry whose fail-safe still applies.
+            # #VERIFY: ::test_a_dead_reviewer_stops_retrying_per_node.
+            if recovered == 0:
+                per_node_fallback_enabled = False
+                _logger.warning("batch_verdict_per_node_fallback_disabled")
+            return _BatchOutcome(
+                findings,
+                gap_node_ids_out,
+                truncated_node_ids,
+                per_node_fallback_enabled,
+            )
+        gap_node_ids_out.extend(nid for nid, _ in batch)
+        return _BatchOutcome(
+            findings, gap_node_ids_out, truncated_node_ids, per_node_fallback_enabled
+        )
+    for node_id, _prose in batch:
+        verdict, concern, severity, reason, is_fail_safe = (
+            _structured_verdict_from_payload(
+                by_node_id[node_id], fail_safe=Verdict.FLAG
+            )
+        )
+        if is_fail_safe:
+            gap_node_ids_out.append(node_id)
+            continue
+        findings.append(
+            _safety_finding(
+                node_id=node_id,
+                verdict=verdict,
+                concern=concern,
+                severity=severity,
+                reason=reason,
+            )
+        )
+    return _BatchOutcome(
+        findings, gap_node_ids_out, truncated_node_ids, per_node_fallback_enabled
+    )
+
+
 async def run_safety_stage(
     *,
     provider: ReviewProvider,
@@ -639,107 +951,35 @@ async def run_safety_stage(
     findings: list[Finding] = []
     fail_safe_node_ids: list[str] = []
     truncated_node_ids: list[str] = []
+    per_node_fallback_enabled = True
     for batch in _chunks(nodes, max(1, batch_size)):
         if len(batch) == 1:
             node_id, prose = batch[0]
-            prompt = (
-                f"Age band: {age_band}\n<untrusted_passage>\n"
-                f"{_sanitize_delimited(prose)}\n</untrusted_passage>"
+            finding = await _review_one_node(
+                provider=provider,
+                node_id=node_id,
+                prose=prose,
+                age_band=age_band,
+                max_tokens=max_tokens,
             )
-            returned: object = await provider.complete(
-                system=_SAFETY_SYSTEM, prompt=prompt, max_tokens=max_tokens
-            )
-            raw = completion_text(returned)
-            verdict, concern, severity, reason, is_fail_safe = (
-                _parse_structured_verdict(raw, fail_safe=Verdict.FLAG)
-            )
-            if is_fail_safe:
+            if finding is None:
                 fail_safe_node_ids.append(node_id)
                 continue
-            findings.append(
-                _safety_finding(
-                    node_id=node_id,
-                    verdict=verdict,
-                    concern=concern,
-                    severity=severity,
-                    reason=reason,
-                )
-            )
+            findings.append(finding)
             continue
 
-        node_lines = "\n".join(
-            f"[{_sanitize_label(nid)}] <untrusted_passage>\n"
-            f"{_sanitize_delimited(prose)}"
-            f"\n</untrusted_passage>"
-            for nid, prose in batch
+        outcome = await _review_one_batch(
+            provider=provider,
+            batch=batch,
+            age_band=age_band,
+            max_tokens=max_tokens,
+            per_node_fallback_enabled=per_node_fallback_enabled,
         )
-        prompt = f"Age band: {age_band}\nNodes:\n{node_lines}"
-        batch_returned: object = await provider.complete(
-            system=_SAFETY_SYSTEM_BATCH,
-            prompt=prompt,
-            # #ASSUME: external-resources: the per-node budget scales with batch
-            # size but must stay inside what a review model will actually accept.
-            # At the configured ceiling (review_batch_size=50) an unbounded
-            # product asks for 50 * 1024 = 51,200 output tokens, past the output
-            # limit of most review models, so the provider rejects the call
-            # outright instead of returning something the parser can fail safe
-            # on. Clamping keeps an oversized batch on the fail-safe path.
-            # #VERIFY: test_batch_max_tokens_is_clamped_for_large_batches.
-            max_tokens=min(
-                _REVIEW_REASONING_ALLOWANCE + max_tokens * len(batch),
-                _MAX_BATCH_REVIEW_TOKENS,
-            ),
-        )
-        raw = completion_text(batch_returned)
-        by_node_id = _parse_batch_verdicts(raw, [nid for nid, _ in batch])
-        if by_node_id is None:
-            # Name the cause. Without this the log says only "unparseable",
-            # which sends the next reader hunting a model formatting quirk
-            # when the fix is to buy more output budget.
-            #
-            # #CRITICAL: external-resources: finish_reason is logged on EVERY
-            # parse failure, not only on the truncation branch, because
-            # completion_truncated can answer only yes or no. If a provider
-            # omits the field, or spells truncation some other way, the
-            # discriminator under-reports and a starved call is logged as
-            # ordinary bad JSON with nothing in the record to reveal it. The
-            # value itself is the only thing that can distinguish "the backend
-            # said stop" from "the backend said nothing at all", and one of
-            # those is a defect in this discriminator rather than in the model.
-            # #VERIFY: test_finish_reason_is_logged_even_when_it_is_not_a_truncation.
-            truncated = completion_truncated(batch_returned)
-            if truncated:
-                truncated_node_ids.extend(nid for nid, _ in batch)
-            _logger.warning(
-                "batch_verdict_truncated" if truncated else "batch_verdict_unparseable",
-                nodes=len(batch),
-                truncated=truncated,
-                finish_reason=completion_finish_reason(batch_returned),
-                max_tokens=min(
-                    _REVIEW_REASONING_ALLOWANCE + max_tokens * len(batch),
-                    _MAX_BATCH_REVIEW_TOKENS,
-                ),
-            )
-            fail_safe_node_ids.extend(nid for nid, _ in batch)
-            continue
-        for node_id, _prose in batch:
-            verdict, concern, severity, reason, is_fail_safe = (
-                _structured_verdict_from_payload(
-                    by_node_id[node_id], fail_safe=Verdict.FLAG
-                )
-            )
-            if is_fail_safe:
-                fail_safe_node_ids.append(node_id)
-                continue
-            findings.append(
-                _safety_finding(
-                    node_id=node_id,
-                    verdict=verdict,
-                    concern=concern,
-                    severity=severity,
-                    reason=reason,
-                )
-            )
+        findings.extend(outcome.findings)
+        fail_safe_node_ids.extend(outcome.gap_node_ids)
+        truncated_node_ids.extend(outcome.truncated_node_ids)
+        per_node_fallback_enabled = outcome.per_node_fallback_enabled
+
     if fail_safe_node_ids:
         findings.append(
             Finding(

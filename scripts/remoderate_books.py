@@ -547,6 +547,18 @@ class SweepResult:
     # ::test_main_exits_nonzero_when_a_book_is_blocked.
     blocked: list[tuple[str, int]] = field(default_factory=list)
     flagged: list[tuple[str, int]] = field(default_factory=list)
+    # #CRITICAL: security: a book whose report admits at least one unjudged
+    # node. Kept OUT of `blocked` even though the endpoint's verdict for it is
+    # "block", because the two need opposite remedies and the `blocked` message
+    # prescribes the wrong one: it tells an operator to act on the prose, when
+    # nothing has read the prose yet. Conflating them is how the original
+    # fail-open stayed invisible; a sweep that reported "1 blocked" for an
+    # unreviewed book would send a reviewer hunting content that may be fine
+    # while the actual defect is in the reviewer.
+    # #VERIFY: tests/unit/test_remoderate_books.py::
+    # test_sweep_separates_an_unreviewed_book_from_a_blocked_one and
+    # ::test_main_exits_retryable_when_a_book_was_reviewed_incompletely.
+    incomplete: list[tuple[str, int]] = field(default_factory=list)
     repaired: list[tuple[str, int]] = field(default_factory=list)
     # #CRITICAL: data-integrity: a book the listing dropped is neither
     # `failed` nor `blocked`, so before this field it produced NO exit-code
@@ -668,6 +680,7 @@ async def sweep(
         failed: list[tuple[str, int]] = []
         blocked: list[tuple[str, int]] = []
         flagged: list[tuple[str, int]] = []
+        incomplete: list[tuple[str, int]] = []
         repaired: list[tuple[str, int]] = []
         timed_out: list[tuple[str, int]] = []
         not_attempted: list[tuple[str, int]] = []
@@ -739,7 +752,26 @@ async def sweep(
             else:
                 await session.commit()
                 succeeded.append((storybook_id, version))
-                if result.overall_verdict == "block":
+                if not result.coverage_complete:
+                    # #CRITICAL: security: classified from `coverage_complete`,
+                    # NOT from the verdict. `_summarize_report` forces "block"
+                    # on a gap so nothing downstream can treat an unreviewed
+                    # book as clean, which means the verdict alone can no
+                    # longer say WHY a book blocked. Reading the dedicated flag
+                    # keeps the two answers separable here.
+                    # #VERIFY: tests/unit/test_remoderate_books.py::
+                    # test_sweep_separates_an_unreviewed_book_from_a_blocked_one.
+                    _logger.warning(
+                        "remoderate_books.book_reviewed_incompletely",
+                        storybook_id=storybook_id,
+                        version=version,
+                    )
+                    incomplete.append((storybook_id, version))
+                if result.verdict_counts.get("block", 0) > 0:
+                    # A genuine content block is a `block`-verdict FINDING, the
+                    # same thing `summary.hard_block` is computed from, so this
+                    # reads the evidence rather than the fail-closed rollup and
+                    # a gap can never masquerade as one.
                     _logger.warning(
                         "remoderate_books.book_blocked",
                         storybook_id=storybook_id,
@@ -765,6 +797,7 @@ async def sweep(
             failed=failed,
             blocked=blocked,
             flagged=flagged,
+            incomplete=incomplete,
             repaired=repaired,
             excluded=excluded,
             timed_out=timed_out,
@@ -1028,7 +1061,8 @@ def main() -> None:
 
     print(
         f"remoderate_books: {len(result.succeeded)} succeeded "
-        f"({len(result.blocked)} blocked, {len(result.flagged)} flagged), "
+        f"({len(result.blocked)} blocked, {len(result.flagged)} flagged, "
+        f"{len(result.incomplete)} reviewed incompletely), "
         f"{len(result.failed)} failed."
     )
     if result.flagged:
@@ -1043,6 +1077,20 @@ def main() -> None:
             "rewritten by the repair pass and differs from what was last "
             "reviewed; re-read before approving: "
             + ", ".join(f"{sid} v{v}" for sid, v in result.repaired)
+        )
+    if result.incomplete:
+        # Printed BEFORE `blocked`, and worded to send the operator at the
+        # reviewer rather than at the prose. These books' verdicts are
+        # fail-closed: at least one node reached no judgment, so "block" here
+        # says nothing about what the story contains.
+        print(
+            "remoderate_books: REVIEWED INCOMPLETELY, at least one node in "
+            "each of these books reached NO safety judgment, so its verdict "
+            "is fail-closed rather than a statement about its content. Status "
+            "unchanged by this sweep. Re-run to fill the gap; a book that "
+            "comes back incomplete twice means the reviewer itself is down or "
+            "misconfigured, not that the story is unsafe: "
+            + ", ".join(f"{sid} v{v}" for sid, v in result.incomplete)
         )
     if result.blocked:
         # A hard block is the one outcome that needs a human today, and this
@@ -1087,10 +1135,16 @@ def _exit_on_outcome(result: SweepResult) -> None:
 
     Splits the five non-clean outcomes into two classes:
 
-    - Retryable (``_EXIT_RETRYABLE``): ``failed``, ``timed_out`` and
-      ``not_attempted``. Each rolled back cleanly and left no durable state, so
-      the same invocation may well succeed next time. A dropped pooler
-      connection or a statement timeout lands here.
+    - Retryable (``_EXIT_RETRYABLE``): ``failed``, ``timed_out``,
+      ``not_attempted`` and ``incomplete``. The first three rolled back cleanly
+      and left no durable state, so the same invocation may well succeed next
+      time; a dropped pooler connection or a statement timeout lands here.
+      ``incomplete`` joins them because a coverage gap is usually one flaky
+      reviewer response, and the retry is a genuinely different, smaller
+      request that often succeeds. It is deliberately NOT filed under
+      needs-a-human even though its verdict is "block": a human cannot fix an
+      unjudged node, only a reviewer can, and the wrapper's bounded retries
+      cost less than sending someone to read prose nothing has judged.
     - Needs a human (``_EXIT_NEEDS_HUMAN``): ``blocked`` and ``excluded``. The
       call SUCCEEDED and the answer was "no". A hard block moves only when a
       person edits prose or changes status, and an excluded book has no version
@@ -1108,7 +1162,9 @@ def _exit_on_outcome(result: SweepResult) -> None:
     Args:
         result: The sweep outcome to inspect.
     """
-    retryable = result.failed or result.timed_out or result.not_attempted
+    retryable = (
+        result.failed or result.timed_out or result.not_attempted or result.incomplete
+    )
     needs_human = result.blocked or result.excluded
     if not retryable and not needs_human:
         return
@@ -1116,6 +1172,7 @@ def _exit_on_outcome(result: SweepResult) -> None:
     print(
         f"remoderate_books: {len(result.failed)} book(s) failed "
         f"re-moderation, {len(result.blocked)} book(s) hard-blocked, "
+        f"{len(result.incomplete)} book(s) reviewed incompletely, "
         f"{len(result.excluded)} book(s) excluded, "
         f"{len(result.timed_out)} book(s) timed out, "
         f"{len(result.not_attempted)} book(s) not attempted.",

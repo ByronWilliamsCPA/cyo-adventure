@@ -379,10 +379,37 @@ def _execute_session(book_ids: list[str]) -> tuple[AsyncMock, list[str]]:
     return session, log
 
 
-def _verdict(overall: str) -> MagicMock:
-    """A stand-in for the RemoderateResult the entry point returns."""
+def _verdict(
+    overall: str,
+    *,
+    coverage_complete: bool = True,
+    block_findings: int | None = None,
+) -> MagicMock:
+    """A stand-in for the RemoderateResult the entry point returns.
+
+    Every attribute the sweep reads is set explicitly. A bare MagicMock answers
+    truthy for anything, so ``coverage_complete`` would read complete on a mock
+    that never modelled it, and the classification this double exists to
+    exercise would be untestable in the direction that matters.
+
+    Args:
+        overall: The rolled-up verdict, as ``_summarize_report`` returns it.
+        coverage_complete: False for a report admitting an unjudged node. Such a
+            report's ``overall`` is "block" by construction, so pass both.
+        block_findings: How many findings carry a ``block`` verdict. Defaults to
+            1 for a complete "block" report and 0 otherwise, which is the real
+            relationship: ``summary.hard_block`` is ``any(verdict is BLOCK)``,
+            and a fail-closed gap block has no such finding behind it.
+
+    Returns:
+        MagicMock: The stand-in result.
+    """
+    if block_findings is None:
+        block_findings = 1 if overall == "block" and coverage_complete else 0
     result = MagicMock()
     result.overall_verdict = overall
+    result.coverage_complete = coverage_complete
+    result.verdict_counts = {"block": block_findings} if block_findings else {}
     return result
 
 
@@ -498,6 +525,53 @@ async def test_sweep_records_blocked_and_flagged_verdicts() -> None:
     assert result.failed == []
     assert result.blocked == [("s_block", 1)]
     assert result.flagged == [("s_flag", 1)]
+    assert result.incomplete == []
+
+
+@pytest.mark.asyncio
+async def test_sweep_separates_an_unreviewed_book_from_a_blocked_one() -> None:
+    """An unjudged book and a refused book must land in different buckets.
+
+    Both come back with ``overall_verdict == "block"``, because a coverage gap
+    is fail-closed on purpose, so the verdict alone cannot separate them. The
+    remedies are opposite: one needs the reviewer re-run, the other needs the
+    prose rewritten. A sweep that filed both under ``blocked`` would print "act
+    on these" over a story nothing has read, which is how the original
+    fail-open stayed invisible.
+
+    The third arm is the case that makes this more than a relabelling: a book
+    with BOTH a real block finding and a gap belongs in both lists, because
+    dropping either one loses a real signal.
+    """
+    ids = ["s_gap", "s_block", "s_both"]
+    session, _log = _execute_session(ids)
+    results = {
+        "s_gap": _verdict("block", coverage_complete=False),
+        "s_block": _verdict("block"),
+        "s_both": _verdict("block", coverage_complete=False, block_findings=2),
+    }
+
+    async def _fake_remoderate(
+        _session: object, storybook_id: str, _version: int, _ctx: object
+    ) -> MagicMock:
+        return results[storybook_id]
+
+    with patch.object(
+        remoderate_books,
+        "remoderate_storybook_version",
+        AsyncMock(side_effect=_fake_remoderate),
+    ):
+        result = await remoderate_books.sweep(
+            engine=_mock_engine(),
+            session_factory=_mock_session_factory(session),
+            book_ids=ids,
+            execute=True,
+        )
+
+    assert result.incomplete == [("s_gap", 1), ("s_both", 1)]
+    assert result.blocked == [("s_block", 1), ("s_both", 1)]
+    assert result.flagged == []
+    assert result.failed == []
 
 
 # ---------------------------------------------------------------------------
@@ -581,6 +655,43 @@ def _run_main(result: Any) -> None:
         patch.object(remoderate_books, "sweep", AsyncMock(return_value=result)),
     ):
         remoderate_books.main()
+
+
+def test_main_exits_retryable_when_a_book_was_reviewed_incompletely(
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    """An unjudged book exits RETRYABLE and must not read as a content block.
+
+    Two claims, and both matter. The exit code is retryable because the gap is
+    usually one flaky reviewer response and the retry is a genuinely different,
+    smaller request; a human cannot fill in a judgment nobody made. And the
+    stdout must NOT carry the hard-block wording, because that text tells an
+    operator to act on the prose, which is precisely the wrong instruction for
+    a story nothing has read yet. Asserting the exit code alone would pass on
+    an implementation that printed "HARD BLOCK" over it.
+    """
+    result = remoderate_books.SweepResult(
+        targets=[("s1", 1)],
+        executed=True,
+        succeeded=[("s1", 1)],
+        incomplete=[("s1", 1)],
+    )
+
+    with pytest.raises(SystemExit) as excinfo:
+        _run_main(result)
+
+    assert excinfo.value.code == remoderate_books._EXIT_RETRYABLE
+    captured = capsys.readouterr()
+    assert "1 book(s) reviewed incompletely" in captured.err
+    assert "RETRYABLE" in captured.err
+    assert "NEEDS A HUMAN" not in captured.err
+    out = captured.out
+    assert "REVIEWED INCOMPLETELY" in out
+    assert "reached NO safety judgment" in out
+    assert "s1 v1" in out
+    # The block wording prescribes the wrong remedy for this outcome.
+    assert "HARD BLOCK" not in out
+    assert "STILL readable by a child" not in out
 
 
 def test_main_exits_nonzero_when_a_book_is_blocked(
@@ -716,7 +827,9 @@ def test_main_exits_zero_when_every_book_comes_back_clean(
     _run_main(result)
 
     out = capsys.readouterr().out
-    assert "1 succeeded (0 blocked, 0 flagged), 0 failed." in out
+    assert (
+        "1 succeeded (0 blocked, 0 flagged, 0 reviewed incompletely), 0 failed." in out
+    )
     assert "HARD BLOCK" not in out
 
 
@@ -1068,6 +1181,8 @@ async def test_sweep_records_repaired_books() -> None:
     # are real class attributes and spec actually sees them.
     outcome = MagicMock(spec=RemoderateResult)
     outcome.overall_verdict = "pass"
+    outcome.coverage_complete = True
+    outcome.verdict_counts = {}
     outcome.repaired = True
     with patch.object(
         remoderate_books,
@@ -1094,6 +1209,8 @@ async def test_sweep_leaves_repaired_empty_when_nothing_was_rewritten() -> None:
     # are real class attributes and spec actually sees them.
     outcome = MagicMock(spec=RemoderateResult)
     outcome.overall_verdict = "pass"
+    outcome.coverage_complete = True
+    outcome.verdict_counts = {}
     outcome.repaired = False
     with patch.object(
         remoderate_books,

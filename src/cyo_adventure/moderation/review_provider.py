@@ -23,14 +23,22 @@ if TYPE_CHECKING:
     from cyo_adventure.core.config import Settings
 
 # The mock review backend (the dev/test default) must outlast a full pipeline run.
-# The pipeline issues ceil(N / review_batch_size) + 2 review calls (safety,
-# chunked per review_batch_size, plus coherence and engagement once each; the
-# ceiling matters because a trailing partial chunk still costs a full call, so
-# plain division under-counts by one whenever N is not a multiple of the batch
-# size; the two coincide only at the default batch size of 1). MockProvider
-# raises BusinessLogicError on over-call, so a fixed budget that is too small
-# turns a large clean story into a spurious job failure. This bound covers well
-# beyond any realistic node count; mock is never a live backend.
+# A clean run issues ceil(N / review_batch_size) + 2 review calls: safety,
+# chunked per review_batch_size (default 8), plus coherence and engagement once
+# each. The ceiling matters because a trailing partial chunk still costs a full
+# call, so plain division under-counts by one whenever N is not a multiple of
+# the batch size; the two coincide only at review_batch_size=1.
+#
+# The worst case is higher than that, and deliberately so: an unusable batch
+# response is retried one node at a time, which adds up to len(batch) calls for
+# that batch. A story whose every batch response is unusable therefore costs at
+# most ceil(N / review_batch_size) + N + 2, and the retries stop entirely once
+# one batch recovers nothing (the reviewer, not the format, is then the problem).
+#
+# MockProvider raises BusinessLogicError on over-call, so a fixed budget that is
+# too small turns a large clean story into a spurious job failure. This bound
+# covers that worst case well beyond any realistic node count; mock is never a
+# live backend.
 _MOCK_RESPONSE_BUDGET = 4096
 
 
