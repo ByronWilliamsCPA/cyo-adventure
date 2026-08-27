@@ -109,6 +109,27 @@ concurrency:
 permissions:
   contents: read
 
+# python-semantic-release is version-pinned below, but `uvx` resolves its
+# DEPENDENCY closure fresh on every invocation and ignores this repo's
+# uv.lock. GitPython 3.1.60 removed `Actor.name_email_regex`, which PSR
+# 10.6.1 calls, so both scheduled runs after 2026-08-25 failed at "Compute
+# next version" with no change to this repository (runs 32919419702 and
+# 33034022397). PSR 10.6.1 is the latest release, so there is nothing to
+# upgrade into; the dependency has to be constrained here instead.
+#
+# #CRITICAL external-resource: a pinned tool with a floating dependency
+# closure is an UNPINNED build. These live at workflow scope rather than
+# inline so the two `uvx --from` call sites below cannot drift apart;
+# constraining one and not the other would break a release halfway through,
+# after the version has already been computed.
+# #VERIFY before relaxing the upper bound, confirm a PSR release supports
+# GitPython >= 3.1.60: `semantic-release version --print` must print a bare
+# version instead of raising AttributeError. Bisected 2026-08-27: 3.1.59
+# works, 3.1.60 does not.
+env:
+  PSR_SPEC: "python-semantic-release==10.6.1"
+  PSR_CONSTRAINTS: "gitpython<3.1.60"
+
 jobs:
   propose:
     name: Propose Release PR
@@ -209,7 +230,7 @@ jobs:
             FORCE_FLAG="--${FORCE_LEVEL}"
           fi
           # shellcheck disable=SC2086  # FORCE_FLAG is intentionally unquoted
-          NEXT="$(uvx --from 'python-semantic-release==10.6.1' \
+          NEXT="$(uvx --from "${PSR_SPEC}" --with "${PSR_CONSTRAINTS}" \
             semantic-release version --print ${FORCE_FLAG})"
           # #ASSUME external: semantic-release prints a bare X.Y.Z(-pre)?
           # #VERIFY reject non-semver before it reaches git refs/tags/titles.
@@ -251,7 +272,7 @@ jobs:
             FORCE_FLAG="--${FORCE_LEVEL}"
           fi
           # shellcheck disable=SC2086  # FORCE_FLAG is intentionally unquoted
-          uvx --from 'python-semantic-release==10.6.1' \
+          uvx --from "${PSR_SPEC}" --with "${PSR_CONSTRAINTS}" \
             semantic-release version \
               --no-commit --no-tag --no-push --no-vcs-release --skip-build \
               ${FORCE_FLAG}
