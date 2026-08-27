@@ -111,12 +111,11 @@ jobs:
         # Schedule-only workflows fail invisibly: no pull request turns red, so this
         # issue IS the notification. The shared action keeps exactly one open issue
         # per workflow and ASSIGNS it: a comment on an unassigned bot-filed issue
-        # notifies nobody, which is how a live outage went unread for twelve days.
+        # notifies nobody, which is how #667 sat unread for seventeen days.
         if: failure() && github.event_name == 'schedule'
         uses: ./.github/actions/ci-failure-issue
         with:
           marker: '[fuzzing]'
-          legacy-title: Weekly fuzzing run is failing
           summary: weekly fuzzing run is failing
           body: |
             The scheduled Continuous Fuzzing workflow failed (sanitizer:
@@ -128,14 +127,29 @@ jobs:
 
             Filed automatically because schedule-only workflows never surface a failure
             on a pull request. It closes itself once a weekly run succeeds.
+          # Recurrence comments must still name what failed (testing-improvement-plan
+          # row A7): the pre-PR version of this step reused the same sanitizer-naming
+          # body on every comment, and a bare "This failed again." default regressed
+          # that. Restore the sanitizer detail here rather than dropping it.
+          comment-body: |
+            The scheduled Continuous Fuzzing workflow failed again (sanitizer:
+            ${{ matrix.sanitizer }}).
+
+            A failing fuzz run either found a crash (see the SARIF upload in the Security
+            tab and the fuzzing-crashes artifact) or the harness build broke.
 
       - name: Resolve the tracking issue on a green scheduled run
         # The close condition every one of these issue bodies stated in prose and
         # asked a human to honour. Nobody ever did, so the label only grew and a new
         # alert became indistinguishable from standing backlog.
-        if: success() && github.event_name == 'schedule'
+        #
+        # `steps.check-fuzz.outputs.has-targets == 'true'` on top of that: when
+        # fuzz/ is missing or empty the Build/Run Fuzzers steps SKIP, `success()`
+        # is still true, and nothing was actually fuzzed. A green run that skipped
+        # the work is not evidence the work succeeded, so it must not resolve the
+        # `[fuzzing]` tracking issue.
+        if: success() && github.event_name == 'schedule' && steps.check-fuzz.outputs.has-targets == 'true'
         uses: ./.github/actions/ci-failure-issue
         with:
           marker: '[fuzzing]'
-          legacy-title: Weekly fuzzing run is failing
           mode: resolve

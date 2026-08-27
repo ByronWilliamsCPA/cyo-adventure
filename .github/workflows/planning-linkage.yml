@@ -245,7 +245,7 @@ jobs:
               'failure on a pull request. It closes itself once a scheduled run succeeds.',
             ].join('\n');
             // The issue plumbing lives in .github/actions/ci-failure-issue so all
-            // eleven scheduled workflows share one implementation. Compose only.
+            // fourteen scheduled workflows share one implementation. Compose only.
             core.setOutput('summary', title);
             return body;
 
@@ -255,7 +255,13 @@ jobs:
           marker: '[planning-linkage]'
           summary: ${{ steps.compose.outputs.summary }}
           body: ${{ steps.compose.outputs.result }}
-          comment-body: The scheduled planning-linkage checks failed again.
+          # Same composed body as `body:` above (testing-improvement-plan row A7):
+          # the FAILED_CHECKS detail (which of work-linkage/lessons-log/known-vulns
+          # failed, and how to reproduce it) must survive on every recurrence, not
+          # just the first filing; a bare "failed again" tells a responder nothing
+          # a generic comment couldn't have said about ANY of this workflow's three
+          # independent checkers.
+          comment-body: ${{ steps.compose.outputs.result }}
 
   resolve-tracking-issue:
     name: Resolve the tracking issue

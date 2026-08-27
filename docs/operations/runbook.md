@@ -798,17 +798,55 @@ its own gap, distinct from `UW-D27`).
 
 ## 7. How you find out something broke
 
-Every alerting scheduled job follows the same pattern: on failure, find-or-open a GitHub issue whose
-title starts with a workflow-specific marker, and comment on it with the failing run's URL and date,
-rather than leaving a red run nobody checks the Actions tab for. The issue stays open and accumulates
-one comment per failing run until someone resolves the underlying problem and closes it (a fresh
-issue opens after the next failure). There is no other outbound channel: no Slack, email, or pager
-integration is wired up, so **watch (or filter Issues by) both labels** below to be notified through
-GitHub's native issue notifications.
+Every alerting scheduled job now routes through ONE implementation,
+[`.github/actions/ci-failure-issue`](https://github.com/ByronWilliamsCPA/cyo-adventure/tree/main/.github/actions/ci-failure-issue).
+On failure it finds-or-opens a GitHub issue whose title starts with a workflow-specific marker and
+comments on it; on a green scheduled run it CLOSES that issue. There is no other outbound channel:
+no Slack, email, or pager integration is wired up.
+
+Three things about that are worth knowing before you read either label:
+
+- **Assignment is the notification, not the comment.** A comment on an issue notifies subscribers and
+  participants only, and these issues are opened by a bot with no human participant. Every issue is
+  therefore assigned (`williaby` by default). GitHub silently ignores an assignee who lacks push
+  access and still returns success, so the action re-reads the assignees off its own response and
+  FAILS THE STEP when the login was dropped. A red alerting step means "nobody was told", and it is
+  the more urgent of the two failures.
+- **An open issue means a CURRENTLY failing workflow.** Since 2026-08-27 a green scheduled run closes
+  the issue automatically (`mode: resolve`). Before that, closing was a sentence in the issue body
+  asking a human to do it, nobody ever did, and the labels accumulated stale issues until a new alert
+  was indistinguishable from backlog. Reading either label as a live list is only valid because of
+  that change.
+- **A resolve leg is gated on `github.event_name == 'schedule'`.** A green manual run proves a human
+  can make the job pass, not that the cron is alive: a scheduled run cancelled at a
+  `cancel-in-progress: false` concurrency gate dispatches zero jobs and reports nothing at all. That
+  is not hypothetical, see [section 6](#6-backup-and-restore) and issue #667.
 
 The label splits by what kind of job it is, which is deliberate rather than historical accident:
-`e2e-alert` for the E2E tiers, `ci-failure` for ops and quality jobs. `grep -rn "labels: '" .github/workflows/`
-lists the current producers of each; the two E2E tiers are:
+`e2e-alert` for the browser-facing scans, `ci-failure` for ops and quality jobs. **Watch (or filter
+Issues by) both.**
+
+To list the current producers:
+
+```bash
+# Every workflow that files or resolves a tracking issue (14 as of 2026-08-27).
+# Match on `uses:`, not on the path alone: ci.yml names the same directory to run
+# the action's test harness and is not a producer.
+grep -rln 'uses: ./.github/actions/ci-failure-issue' .github/workflows/
+
+# Which label and marker each one uses. A call site with no `label:` line uses
+# the action's default, `ci-failure`.
+grep -rn -A6 'uses: ./.github/actions/ci-failure-issue' .github/workflows/ \
+  | grep -E 'marker:|label:|mode:'
+```
+
+Do NOT grep for `labels: '` here, which is what this section used to say. The label is now an input
+to the composite action and eleven of the fourteen workflows do not pass it at all, so that grep
+returns a near-empty list that reads exactly like "almost nothing alerts". `tests/unit/test_ci_failure_action_contract.py`
+enforces the invariants the commands above only report on: markers stay unique and mutually
+non-prefixing, both labels stay in use, and no workflow re-inlines the lookup.
+
+Three workflows use `e2e-alert`. The two E2E tiers are:
 
 - **`.github/workflows/e2e-prod.yml`** ("E2E (production)"): runs the Playwright `e2e-prod` tier
   daily (`30 13 * * *` UTC) against the live production URL (`https://cyo.williamshome.family` by
@@ -821,7 +859,13 @@ lists the current producers of each; the two E2E tiers are:
   devices racing a genuine 409 through the offline conflict dialog) that the mocked test suite
   cannot. Its alert marker is `[e2e-real-nightly]`.
 
-`e2e-staging.yml` ("E2E (staging)", daily at 13:00 UTC) is a third tier but is **not** on this list,
+The third `e2e-alert` producer is **`.github/workflows/accessibility-compliance-weekly.yml`**
+("Accessibility compliance (weekly)"): a weekly, non-blocking axe scan against `main` covering WCAG
+2.2 and best-practice rules, per [ADR-029](../planning/adr/adr-029-web-accessibility-conformance.md).
+The per-PR WCAG 2.1 AA gate is a required `ci.yml` job instead, so a failure here is a compliance
+finding to triage, never a merge blocker. Its alert marker is `[a11y-weekly]`.
+
+`e2e-staging.yml` ("E2E (staging)", daily at 13:00 UTC) is a third E2E tier but is **not** on this list,
 because it has no alerting step of any kind: a staging failure leaves a red run and a Playwright
 trace artifact, and nothing opens an issue. Nobody is notified unless they look. For the wider test
 strategy see [`docs/testing/`](../testing/README.md); for a manual, checklist-driven live

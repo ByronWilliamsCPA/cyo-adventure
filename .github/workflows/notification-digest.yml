@@ -158,7 +158,11 @@ jobs:
     # Gated on the needed job's explicit result rather than `success()`, because a
     # SKIPPED dependency does not fail `success()` and would close the issue on a run
     # that proved nothing.
-    if: needs.digest.result == 'success'
+    #
+    # `&& github.event_name == 'schedule'`, because a manual `workflow_dispatch` proves
+    # only that a human-triggered run went green, not that the SCHEDULE is alive; without
+    # this a dead cron can still have its tracking issue closed by a one-off dispatch.
+    if: needs.digest.result == 'success' && github.event_name == 'schedule'
     runs-on: ubuntu-latest
     timeout-minutes: 10
     permissions:

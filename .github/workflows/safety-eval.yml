@@ -234,7 +234,10 @@ jobs:
           result-encoding: string
           script: |
             const fs = require('fs');
-            const title = 'Weekly adversarial safety evaluation is failing';
+            // Lowercase, short phrase: house style for every other scheduled
+            // workflow's summary (e.g. cifuzzy's "weekly fuzzing run is failing"),
+            // not the capitalized legacy issue-title sentence this used to reuse.
+            const summaryText = 'weekly adversarial safety evaluation is failing';
             let summary = 'No failure summary was produced; read the run log.';
             try {
               summary = fs
@@ -268,8 +271,8 @@ jobs:
               'failure on a pull request. It closes itself once a weekly run succeeds.',
             ].join('\n');
             // The issue plumbing lives in .github/actions/ci-failure-issue so all
-            // eleven scheduled workflows share one implementation. Compose only.
-            core.setOutput('summary', title);
+            // fourteen scheduled workflows share one implementation. Compose only.
+            core.setOutput('summary', summaryText);
             return body;
 
       - name: File or comment on the pinned issue
@@ -280,10 +283,13 @@ jobs:
         uses: ./.github/actions/ci-failure-issue
         with:
           marker: '[safety-eval]'
-          legacy-title: Weekly adversarial safety evaluation is failing
           summary: ${{ steps.compose.outputs.summary }}
           body: ${{ steps.compose.outputs.result }}
-          comment-body: The weekly adversarial safety evaluation failed again.
+          # Same composed body as `body:` above (testing-improvement-plan row A7):
+          # a recurrence comment must still name which assertion failed, not just
+          # say "failed again", or the second and every later Monday's alert loses
+          # the one thing a responder needs to triage without opening the run.
+          comment-body: ${{ steps.compose.outputs.result }}
 
       - name: Resolve the tracking issue on a green scheduled run
         # The close condition this issue body used to state in prose and ask a human
@@ -293,5 +299,4 @@ jobs:
         uses: ./.github/actions/ci-failure-issue
         with:
           marker: '[safety-eval]'
-          legacy-title: Weekly adversarial safety evaluation is failing
           mode: resolve

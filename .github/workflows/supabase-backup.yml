@@ -288,7 +288,19 @@ jobs:
     # Gated on the needed job's explicit result rather than `success()`, because a
     # SKIPPED dependency does not fail `success()` and would close the issue on a run
     # that proved nothing.
-    if: needs.backup.result == 'success'
+    #
+    # `&& github.event_name == 'schedule'` on top of that, because `needs.backup.result
+    # == 'success'` alone is satisfiable with the SCHEDULE dead: a scheduled run
+    # cancelled at the `cancel-in-progress: false` concurrency gate above dispatches
+    # ZERO jobs, so `backup` never runs and never reports failure, but a subsequent
+    # green `workflow_dispatch` would still close the issue while nothing had proven
+    # the schedule itself works. Issue #667 is why that matters here rather than in
+    # the abstract: this workflow really did sit cancelled at that gate for sixteen
+    # consecutive nights (2026-08-11 to 2026-08-26) with no job dispatched and no
+    # failure reported. Auto-close did not exist during the outage, so nothing was
+    # wrongly closed; this guard is what keeps the fix from introducing that failure
+    # alongside the alerting it adds.
+    if: needs.backup.result == 'success' && github.event_name == 'schedule'
     runs-on: ubuntu-latest
     timeout-minutes: 10
     permissions:

@@ -101,7 +101,7 @@ jobs:
         # Schedule-only workflows fail invisibly: no pull request turns red, so this
         # issue IS the notification. The shared action keeps exactly one open issue
         # per workflow and ASSIGNS it: a comment on an unassigned bot-filed issue
-        # notifies nobody, which is how a live outage went unread for twelve days.
+        # notifies nobody, which is how #667 sat unread for seventeen days.
         if: failure() && github.event_name == 'schedule'
         uses: ./.github/actions/ci-failure-issue
         with:
