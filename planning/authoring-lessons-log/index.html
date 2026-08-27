@@ -9796,6 +9796,36 @@ written, which is the error the row exists to correct.</p>
 <td>open</td>
 <td><code>UW-C386</code></td>
 </tr>
+<tr>
+<td>AL-634</td>
+<td>2026-08-26</td>
+<td>Moderation backlog investigation (12 in-review books, 2,916 fail-safe nodes)</td>
+<td>tooling</td>
+<td><strong>Two guards that read the same input and share the same predicate are one guard wearing two coats: the failure that disables one disables the other at the same instant.</strong> <code>core/config.py::_require_real_reviewer_outside_local</code> and <code>moderation/pipeline.py</code>'s gap-G1 mock stamp were both gated on <code>environment != "local"</code>, and both read <code>review_provider</code> and <code>environment</code> from the process environment through the same <code>Settings</code> object, which declares no <code>env_file</code> and reads nothing but exported variables. A process started without them exported takes <code>review_provider="mock"</code> (the config default) and <code>environment="local"</code> from one absence, so the config guard does not raise AND the stamp does not apply, and the pipeline writes <code>reviewer_independent: true</code> over nodes no reviewer judged. Reproduced on a workstation whose <code>.env</code> named a real provider and a remote database: resolved settings were <code>environment=local</code>, <code>db host=localhost</code>, <code>review_provider=mock</code>, <code>openai key set=False</code>. The <code>.env</code> file was a red herring; the app never reads it, so naming the keys there changed nothing and only exporting them does. This is the mechanism behind the 12 books; a <code>defense in depth</code> reading of the two guards was false from the day the second one shipped.</td>
+<td>Make the stamp unconditional (a mock review is not independent in <code>local</code> either, and the stamp is verdict-neutral so it never gates), so its liveness no longer depends on the same input the guard it backs depends on. More generally, when adding a second guard for a failure the first already covers, check whether it keys on the same input; if it does, it is not a second guard.</td>
+<td>open</td>
+<td><code>UW-C387</code></td>
+</tr>
+<tr>
+<td>AL-635</td>
+<td>2026-08-26</td>
+<td>Moderation backlog investigation (the five <code>genuinely moderated</code> books)</td>
+<td>validator</td>
+<td><strong>A stage's choice of fail-safe verdict decides whether its own outage is visible, and the safe-looking choice is the invisible one.</strong> Stage 1 safety fails safe to <code>FLAG</code>, so a parse failure gates and renders as a flagged passage a human reads. The soft stages fail safe to <code>PASS</code>, so a parse failure is persisted as <code>verdict: "pass"</code> and then dropped by every consumer that filters PASS, including <code>api/review_surface.py</code>. <code>sk_clocktower_cipher</code> carries real <code>llm_safety</code> verdicts on all 25 nodes and a fail-safe <code>llm_readability</code> result on 22 of them, and renders as a clean, fully-reviewed surface. <code>moderation_report_unusable()</code> does not catch it either: it answers a whole-report question and returns <code>False</code> at the first genuine finding, so a report can be <code>usable</code> and 88% unjudged at once. Four of the five books called <code>genuinely moderated</code> in the first census are in this state.</td>
+<td>Count the hidden remainder explicitly (<code>moderation/report.py::hidden_fail_safe_node_counts</code>) and render it as one story-level structural finding, excluding gating fail-safes so one outage is not described twice. More generally: a fail-safe value that collides with the <code>everything is fine</code> value is not fail-safe, it is fail-silent; pick a distinguishable one, or carry the fail-safe fact in a field the consumer cannot filter away.</td>
+<td>open</td>
+<td><code>UW-C388</code></td>
+</tr>
+<tr>
+<td>AL-636</td>
+<td>2026-08-26</td>
+<td>Moderation backlog investigation (test fallout from the unconditional stamp)</td>
+<td>tooling</td>
+<td><strong>A test that declares one dependency in settings while injecting a different one through a seam passes until some guard reads the settings, and then fails for a reason that has nothing to do with what it measures.</strong> Three tests declared <code>review_provider="mock"</code> (to satisfy config's own validation) while injecting a real responder through the review seam or a real provider object. Making the mock stamp unconditional made those declarations load-bearing, and the tests began failing on <code>reviewer_independent</code> and on a <code>pipeline</code>-category finding they never intended to assert about. Nothing was wrong with the fix or with what the tests measure; the declarations were simply fiction that nothing had yet read. The same shape recurs whenever config is treated as boilerplate to get past rather than as an input under test.</td>
+<td>Make a test's declared settings agree with what it actually injects (<code>review_provider="openrouter"</code> where an openrouter provider is injected), or, where the declaration must stay a stand-in, exclude the resulting artifact by its stable contract (<code>concern == "mock_reviewer_active"</code>) with a comment saying why, rather than by a message string. Both patterns are now in <code>tests/unit/test_moderation_pipeline.py</code> and <code>tests/unit/test_remoderate_books.py</code>.</td>
+<td>open</td>
+<td><code>UW-C389</code></td>
+</tr>
 </tbody>
 </table>
 <hr />
@@ -9835,7 +9865,7 @@ written, which is the error the row exists to correct.</p>
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="August 26, 2026 02:22:48 UTC">August 26, 2026</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="August 27, 2026 23:02:08 UTC">August 27, 2026</span>
   </span>
 
     

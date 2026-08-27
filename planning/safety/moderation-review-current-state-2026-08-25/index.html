@@ -12,7 +12,7 @@
         <meta name="author" content="Byron Williams">
       
       
-        <link rel="canonical" href="https://cyo-adventure.readthedocs.io/planning/safety/moderation-review-redesign-2026-07-28/">
+        <link rel="canonical" href="https://cyo-adventure.readthedocs.io/planning/safety/moderation-review-current-state-2026-08-25/">
       
       
       
@@ -25,7 +25,7 @@
     
     
       
-        <title>Moderation Review Redesign: Decisions, Not Flags - CYO Adventure</title>
+        <title>Moderation Review: Backlog Census, 2026-08-25 - CYO Adventure</title>
       
     
     
@@ -88,7 +88,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#moderation-review-redesign-decisions-not-flags" class="md-skip">
+        <a href="#moderation-review-backlog-census-2026-08-25" class="md-skip">
           Skip to content
         </a>
       
@@ -122,7 +122,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Moderation Review Redesign: Decisions, Not Flags
+              Moderation Review: Backlog Census, 2026-08-25
             
           </span>
         </div>
@@ -3306,10 +3306,10 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#1-design-principles" class="md-nav__link">
+  <a href="#1-why-re-measure" class="md-nav__link">
     <span class="md-ellipsis">
       
-        1. Design principles
+        1. Why re-measure
       
     </span>
   </a>
@@ -3317,22 +3317,22 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#2-the-review-model" class="md-nav__link">
+  <a href="#2-the-backlog-as-at-2026-08-25" class="md-nav__link">
     <span class="md-ellipsis">
       
-        2. The review model
+        2. The backlog, as at 2026-08-25
       
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="2. The review model">
+    <nav class="md-nav" aria-label="2. The backlog, as at 2026-08-25">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#21-finding-schema-changes" class="md-nav__link">
+  <a href="#21-the-twelve" class="md-nav__link">
     <span class="md-ellipsis">
       
-        2.1 Finding schema changes
+        2.1 The twelve
       
     </span>
   </a>
@@ -3340,65 +3340,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#22-stage-1-safety-redesign" class="md-nav__link">
+  <a href="#22-the-five" class="md-nav__link">
     <span class="md-ellipsis">
       
-        2.2 Stage 1 (safety) redesign
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#23-structural-failure-collapse-the-flood-killer" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        2.3 Structural-failure collapse (the flood killer)
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#24-mock-reviewer-environment-guard" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        2.4 Mock-reviewer environment guard
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#25-observability-for-fail-safe-verdicts" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        2.5 Observability for fail-safe verdicts
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#26-surfaces" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        2.6 Surfaces
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#27-stage-2-llm-readability-disposition-options" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        2.7 Stage 2 (LLM readability): disposition options
+        2.2 The five
       
     </span>
   </a>
@@ -3411,22 +3356,55 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#3-post-perspective-stage-0-architecture" class="md-nav__link">
+  <a href="#3-covers" class="md-nav__link">
     <span class="md-ellipsis">
       
-        3. Post-Perspective Stage-0 architecture
+        3. Covers
       
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="3. Post-Perspective Stage-0 architecture">
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4-what-this-changes-about-the-sweep" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. What this changes about the sweep
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#5-measurement-provenance" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. Measurement provenance
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#6-correction-and-root-cause-2026-08-26" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6. Correction and root cause, 2026-08-26
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="6. Correction and root cause, 2026-08-26">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#31-what-the-research-supports" class="md-nav__link">
+  <a href="#61-the-mock-reviewer-is-the-cause" class="md-nav__link">
     <span class="md-ellipsis">
       
-        3.1 What the research supports
+        6.1 The mock reviewer is the cause
       
     </span>
   </a>
@@ -3434,10 +3412,21 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#32-recommended-posture" class="md-nav__link">
+  <a href="#62-the-twelve-versus-five-split-is-not-clean" class="md-nav__link">
     <span class="md-ellipsis">
       
-        3.2 Recommended posture
+        6.2 The twelve-versus-five split is not clean
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#63-the-time-reading-and-why-it-is-wrong" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6.3 The time reading, and why it is wrong
       
     </span>
   </a>
@@ -3450,24 +3439,52 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#4-catalog-remediation" class="md-nav__link">
+  <a href="#7-remediation-2026-08-26" class="md-nav__link">
     <span class="md-ellipsis">
       
-        4. Catalog remediation
+        7. Remediation, 2026-08-26
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="7. Remediation, 2026-08-26">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#71-the-mock-reviewer-now-identifies-itself-in-every-environment" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7.1 The mock reviewer now identifies itself in every environment
       
     </span>
   </a>
   
 </li>
-      
-        <li class="md-nav__item">
-  <a href="#5-moderation-qa-corpus-staging" class="md-nav__link">
+        
+          <li class="md-nav__item">
+  <a href="#72-a-partly-unjudged-report-now-says-so" class="md-nav__link">
     <span class="md-ellipsis">
       
-        5. Moderation QA corpus (staging)
+        7.2 A partly-unjudged report now says so
       
     </span>
   </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#73-the-sweep-refuses-to-run-without-a-reviewer" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7.3 The sweep refuses to run without a reviewer
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
   
 </li>
       
@@ -3491,650 +3508,445 @@
   
 
 
-<h1 id="moderation-review-redesign-decisions-not-flags">Moderation Review Redesign: Decisions, Not Flags<a class="headerlink" href="#moderation-review-redesign-decisions-not-flags" title="Permanent link">&para;</a></h1>
+<h1 id="moderation-review-backlog-census-2026-08-25">Moderation Review: Backlog Census, 2026-08-25<a class="headerlink" href="#moderation-review-backlog-census-2026-08-25" title="Permanent link">&para;</a></h1>
 <blockquote>
-<p><strong>Status</strong>: APPROVED by the owner 2026-07-29; all open decisions in
-section 7 are now recorded. Per-stage status against section 6's staged
-delivery plan, verified against the code: <strong>Stage A done</strong> (2026-07-30,
-commit <code>8ca8d1b3</code>, PR #496). <strong>Stage B done</strong> (schema/PASS aggregation
-PR #521, structured verdicts plus chunking PR #527, admin surfaces
-PR #528; all merged to <code>main</code> ahead of this branch, which layers the
-unusable-report approval gate, override-reason audit trail, and tiered
-queue/detail UI on top). <strong>Stage C partial</strong>: the baseline capture and
-the QA-corpus containment layers are done (2026-08-01, section 3.2 item 2
-and section 5). The Perspective classifier's outbound call leg is fully
-retired ahead of the 2026-12-31 sunset (section 3.2 item 5): <code>run_classifiers</code>
-no longer calls Perspective's API, and the <code>perspective_key</code> parameter is
-gone from every call site. Retirement stops at the call leg, by design: the
-<code>Source.PERSPECTIVE</code> enum member (so a historical persisted finding still
-deserializes), the <code>perspective_api_key</code> config field (retained only so an
-existing deployment does not fail to boot; see the runbook's secrets
-inventory, section 8), and explanatory comments across
-<code>moderation/classifiers.py</code>, <code>moderation/pipeline.py</code>,
-<code>moderation/rescreen.py</code>, <code>api/node_edit.py</code>, and <code>core/config.py</code> all
-remain. "The call leg is retired" and "Perspective still appears in the
-code" are therefore both true and not in tension. The Modal guard-model
-eval and its calibration report (section 3.2 item 3) have
-not started. <strong>Stage D partial</strong>: the re-moderate entry point and
-<code>scripts/remoderate_books.py</code> sweep script are done and on <code>main</code>; the
-18-book sweep itself has not run (deferred, pending deploy). See the
-reviewer SOP (<a href="../../../operations/reviewer-sop/">reviewer-sop.md</a>) for
-how a reviewer works the resulting surfaces day to day.
-Companion gap report:
-<a href="../moderation-review-current-state-2026-07-28/">moderation-review-current-state-2026-07-28.md</a>.
-Acceptance bar (owner, verbatim intent): a reviewer approving a book reads
-a bounded, ranked, deduplicated set of decisions, not one flag per node.</p>
+<p><strong>Status</strong>: Draft. Successor measurement to
+<a href="../moderation-review-current-state-2026-07-28/">moderation-review-current-state-2026-07-28.md</a>,
+which measured 29 versions across the whole catalog. This one measures only the
+seventeen books at the human review gate, because those are what
+<a href="../../unscheduled-work-register/"><code>UW-C364</code></a>'s sweep targets and what
+<a href="../../unscheduled-work-register/"><code>UW-G14</code></a> must promote.</p>
 </blockquote>
-<h2 id="1-design-principles">1. Design principles<a class="headerlink" href="#1-design-principles" title="Permanent link">&para;</a></h2>
-<ol>
-<li><strong>Fail-safe is preserved, relocated.</strong> A reviewer that cannot answer still
-   forces human review; it does so through one story-level condition, never
-   N per-node findings. Structural failure is a pipeline state, not content.</li>
-<li><strong>Everything surfaced is ranked and bounded.</strong> Every finding that reaches
-   a human carries a severity the surfaces can sort and filter on; identical
-   concerns merge; the surface has a size contract.</li>
-<li><strong>Two audiences, two contracts.</strong> Admins get ranked detail with
-   affected-node drill-down; guardians get a story-level summary sufficient
-   for an approve/decline decision (ADR-005 unchanged: guardian remains the
-   final gate; the pipeline never publishes).</li>
-<li><strong>Deterministic before generative.</strong> Signals the validator computes
-   exactly (reading level, structure, budgets) are surfaced from the
-   validator, not re-estimated by an LLM per node.</li>
-<li><strong>Measured before swapped.</strong> No Stage-0 successor ships without
-   calibration against the captured raw-score baseline and an eval on a
-   labeled child-story corpus.</li>
-</ol>
-<h2 id="2-the-review-model">2. The review model<a class="headerlink" href="#2-the-review-model" title="Permanent link">&para;</a></h2>
-<h3 id="21-finding-schema-changes">2.1 Finding schema changes<a class="headerlink" href="#21-finding-schema-changes" title="Permanent link">&para;</a></h3>
-<p>Extend <code>moderation/report.py::Finding</code> (persisted JSONB is additive-safe;
-readers must tolerate absent new fields on old reports):</p>
+<h2 id="1-why-re-measure">1. Why re-measure<a class="headerlink" href="#1-why-re-measure" title="Permanent link">&para;</a></h2>
+<p>The Stage D sweep (<code>scripts/remoderate_books.py --in-review</code>) is built and
+unrun. Sizing it from finding counts alone would misread the job: the counts are
+dominated by a degradation, not by content. This census separates the two so the
+sweep starts from a canary rather than from seventeen books.</p>
+<h2 id="2-the-backlog-as-at-2026-08-25">2. The backlog, as at 2026-08-25<a class="headerlink" href="#2-the-backlog-as-at-2026-08-25" title="Permanent link">&para;</a></h2>
+<p>Nothing has moved since the 2026-07-21 import: all seventeen stored reports
+still carry that date. The newest <code>storybook_version</code> row in production is a
+week later, 2026-07-28, which bounds the claim from the other side, so no code
+merged after that date has touched stored review state either.</p>
 <table>
 <thead>
 <tr>
-<th>Field</th>
-<th>Type</th>
-<th>Purpose</th>
+<th>Class</th>
+<th style="text-align: right;">Books</th>
+<th style="text-align: right;">Nodes</th>
+<th style="text-align: right;">Findings</th>
+<th style="text-align: right;">Of which actionable</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td><code>severity</code></td>
-<td><code>high \| medium \| low</code>, required on FLAG/ADVISORY</td>
-<td>The ranking key surfaces sort on. LLM stages emit it from a rubric in the prompt; Stage-0 maps score bands to it.</td>
+<td>Every node took the fail-safe path</td>
+<td style="text-align: right;">12</td>
+<td style="text-align: right;">2,916</td>
+<td style="text-align: right;">5,856</td>
+<td style="text-align: right;">0</td>
 </tr>
 <tr>
-<td><code>concern</code></td>
-<td>short slug from a fixed taxonomy (e.g. <code>real_world_danger</code>, <code>too_mature</code>, <code>frightening_content</code>, <code>cruelty</code>, <code>reviewer_unavailable</code>)</td>
-<td>Part of the dedup/merge key (see 2.2 item 3 for the full key). Validated against <code>CONCERN_TAXONOMY</code> at construction, so an off-taxonomy value cannot form its own merge group; parse boundaries degrade to <code>other</code>. Free-text <code>message</code> remains for detail.</td>
+<td>Reviewer returned real verdicts</td>
+<td style="text-align: right;">5</td>
+<td style="text-align: right;">283</td>
+<td style="text-align: right;">675</td>
+<td style="text-align: right;">122</td>
 </tr>
 <tr>
-<td><code>node_ids</code></td>
-<td><code>list[str]</code> (populated on every merged finding, including a group of one; <code>node_id</code> kept for compat and names only the FIRST covered node)</td>
-<td>One finding can now reference every node it applies to. Readers must fan out across <code>node_ids</code> when present.</td>
-</tr>
-<tr>
-<td><code>structural</code></td>
-<td><code>bool</code>, default false</td>
-<td>Marks pipeline-condition findings (parse failure, unknown verdict, degraded classifier) so dashboards and surfaces can class them separately from content findings.</td>
+<td><strong>Total</strong></td>
+<td style="text-align: right;"><strong>17</strong></td>
+<td style="text-align: right;"><strong>3,199</strong></td>
+<td style="text-align: right;"><strong>6,531</strong></td>
+<td style="text-align: right;"><strong>122</strong></td>
 </tr>
 </tbody>
 </table>
-<p><code>severity</code> also applies to the two Stage-0 whole-story findings
-(<code>classifier_degraded</code>, <code>classifier_coverage_incomplete</code>; gap report section
-2 addendum): both are <code>score: null</code> by construction, so they need a fixed
-default mapping (for example, degraded -&gt; medium, coverage-incomplete -&gt;
-high) rather than a score-derived one.</p>
-<p>PASS is no longer persisted as rows. The report gains an aggregate block:
-<code>{"nodes_reviewed": N, "pass_counts": {"safety": n1, ...}}</code>. This removes
-roughly half of all stored findings (6,430 PASS rows in live data) and fixes
-<code>summary.count</code> badge inflation. Audit needs are covered by the aggregate
-plus the existing <code>moderation_completed</code> event counts.</p>
-<p><code>nodes_reviewed</code> is a coverage measurement, not a restatement of the node
-count, and it is assigned past the last stage rather than beside the node
-list. Once PASS rows stop being persisted it is the only signal separating
-"reviewed everything and found nothing" from "never got that far": a run that
-short-circuits (entry rejection, a Stage-0 bright-line block, a Stage-1 block)
-keeps the 0 default, which reads correctly as no complete coverage and matches
-the empty <code>pass_counts</code> beside it. #CRITICAL: data-integrity: setting it beside
-the node list would persist full coverage for a story whose safety reviewer
-never ran, and the aggregate is what the dashboard and flywheel read. #VERIFY:
-tests/unit/test_moderation_pipeline.py::test_nodes_reviewed_zero_when_stage0_block_short_circuits
-and ::test_nodes_reviewed_counts_every_node_on_a_complete_pass.</p>
-<h3 id="22-stage-1-safety-redesign">2.2 Stage 1 (safety) redesign<a class="headerlink" href="#22-stage-1-safety-redesign" title="Permanent link">&para;</a></h3>
-<p>Per-node review remains the hard gate (a BLOCK must still name its node),
-with three changes:</p>
-<ol>
-<li><strong>Structured verdicts.</strong> The prompt returns
-   <code>{"verdict", "concern", "severity", "reason"}</code>. Unknown <code>concern</code> or
-   <code>severity</code> degrades to <code>other</code>/<code>high</code> respectively; the verdict fail-safe
-   mapping is unchanged.</li>
-<li><strong>Chunked calls.</strong> Nodes are reviewed in batches (target ~10-20 nodes per
-   call, one JSON array back, per-node verdicts). A 746-node book drops from
-   746 review calls to ~50 without losing per-node attribution. A batch
-   whose response cannot be parsed per-node falls back to one structural
-   finding for that batch (see 2.3), never to per-node fail-safe spam.
-   #ASSUME: external-resources: batched verdicts may be less accurate than
-   single-node calls on long nodes. #VERIFY: run both modes over the
-   adversarial corpus (tests/llm_eval) and compare recall before enabling
-   batching by default. <strong>Resolved 2026-08-01 (Gate 3): the owner ran
-   <code>scripts/adversarial_harness.py --batch-size 1 --batch-size 4
-   --batch-size 8</code> twice against the openrouter reviewer; both runs were
-   identical, with zero item-level recall regressions vs size 1 on every
-   scored class and zero structural-collapse (parse-failure) findings
-   (artifact: <code>batch-sweep-results-2026-08-01.json</code> in this directory).
-   <code>review_batch_size</code> now defaults to 8. The E-class misses (E2/E3
-   reviewer-injection) exist at the size-1 baseline and are unchanged by
-   batching; they are tracked as a separate reviewer-hardening issue
-   (#542), not a batching regression. Re-run the sweep after any
-   reviewer-model or batch-prompt change.</strong>
-   <strong>Read that evidence with two limits in view.</strong> (a) <em>Requested 8,
-   realized 6.</em> The corpus's largest age band holds 6 Stage-1 nodes, and a
-   chunk is <code>min(batch_size, nodes_in_band)</code>, so no call in either run
-   carried 8 nodes and sizes 4 and 8 were identical in 3 of the 4 bands.
-   The ratified value is one step past what was measured. The harness now
-   records <code>realized_chunk_sizes</code> per size so a later run cannot repeat
-   this ambiguity silently. (b) <em>Binary scoring hid a softening.</em> Recall
-   was scored with <code>is_caught</code> (observed max verdict &gt;= <code>expected_min</code>), so
-   <code>C2-aggregate-stranger-10-13</code> going <code>block</code> -&gt; <code>flag</code> at sizes 4 and 8
-   scored as no regression because <code>flag</code> still cleared its
-   <code>expected_min</code>. The harness now reports severity downgrades and verdict
-   drift separately from the pass/fail comparison.
-   <strong>Confidence limit.</strong> Per-node verdicts are NOT stable across sizes in the
-   committed artifact, and they drift in both directions:
-   <code>A2-lost-alone-night-3-5</code> goes <code>flag</code> -&gt; <code>block</code> at size 8;
-   <code>C1-aggregate-fire-8-11</code> node 3 goes <code>flag</code> -&gt; <code>block</code> at sizes 4 and 8;
-   <code>C2-aggregate-stranger-10-13</code> node 2 goes <code>block</code> -&gt; <code>flag</code> at sizes 4 and 8.
-   Class-level recall stays flat only because each drifted verdict still clears
-   its expected rank floor. With 13 corpus items, 6 of them scored, one sweep
-   per size, and visible reviewer nondeterminism, this evidence supports
-   "no recall regression was observed" and does NOT support "batching is
-   recall-neutral". Only one artifact is committed; the second run agreed but
-   was not retained, so the agreement is an unverifiable claim rather than
-   evidence. Treat re-running the sweep after a reviewer-model or batch-prompt
-   change as mandatory, not advisory, and retain every run's artifact.</li>
-<li><strong>Merge stage (deterministic, post-review).</strong> After all stages run, a new
-   <code>moderation/synthesis.py</code> groups content findings by every field the
-   merged finding takes from a single survivor: <code>(category, concern, source,
-   verdict, severity, message)</code>. Each group becomes one finding carrying
-   <code>node_ids</code>, the shared verdict/severity/message, the max score, and the
-   count. Live example: <code>sk_hollow_lighthouse</code>'s 12 identical above-band
-   readability flags become one finding listing 12 nodes. The merge is
-   plain code, not an LLM call; an optional whole-story LLM synthesis
-   ("decision card" prose) can be layered later without changing storage.</li>
-</ol>
-<p><strong>Why the key is the full tuple and not <code>(category, concern)</code>.</strong> The
-   original spec named <code>(category, concern)</code>, which is a prefix of this key,
-   so everything the worked example intends to merge still merges. The
-   narrower key is only lossless when group members are interchangeable, and
-   that does not hold in the order these items ship: item 1 supplies
-   <code>concern</code>, so until it lands Stage 1 emits none and <code>(category, concern)</code>
-   degenerates to <code>(category,)</code>. Every distinct safety reason in a book would
-   then collapse into one row whose surviving message is whichever finding
-   happened to sort first, with the rest discarded and no per-finding raw
-   output to recover them from. Widening the key keeps the merge a display
-   compression rather than a lossy edit to a safety record.
-   #CRITICAL: security: the guardian reading the merged row is the final gate
-   under ADR-005; a merged row must never attribute a verdict, severity, or
-   message to a node that did not produce it. #VERIFY:
-   tests/unit/test_moderation_synthesis.py covers distinct messages, mixed
-   verdicts, and mixed severities all staying separate.</p>
-<p>Readers must fan out across <code>node_ids</code>, not group on <code>node_id</code>: <code>node_id</code>
-   names only the FIRST covered node and exists for pre-Stage-B readers.
-   #CRITICAL: security: grouping a merged finding by <code>node_id</code> renders one
-   affected passage and leaves the rest of the flagged prose looking clean.
-   #VERIFY: tests/unit/test_review_surface.py::
-   test_merged_finding_fans_out_across_every_affected_node.</p>
-<h3 id="23-structural-failure-collapse-the-flood-killer">2.3 Structural-failure collapse (the flood killer)<a class="headerlink" href="#23-structural-failure-collapse-the-flood-killer" title="Permanent link">&para;</a></h3>
-<p><code>_parse_verdict</code> failures no longer create per-node findings. This covers
-Stage 1's LLM fail-safe only; the Stage-0 malformed-payload fail-open (gap
-report G11) is a separate, currently-silent path handled in 2.5. The stage
-counts <code>_parse_verdict</code> failures and, if any occurred, emits <strong>one</strong>
-story-level finding:
-<code>category="pipeline"</code>, <code>concern="reviewer_unavailable"</code>, <code>structural=true</code>,
-<code>verdict=FLAG</code>, <code>severity=high</code>, message carrying the affected-node count.
-The fail-safe posture is intact (the story still cannot pass to a guardian
-without human review); the surface cost drops from N rows to one.</p>
-<p>The same collapse applies to the mock reviewer by construction: mock output
-parses to unknown-verdict on every node, producing exactly one
-<code>reviewer_unavailable</code> finding per story.</p>
-<h3 id="24-mock-reviewer-environment-guard">2.4 Mock-reviewer environment guard<a class="headerlink" href="#24-mock-reviewer-environment-guard" title="Permanent link">&para;</a></h3>
-<p>New config validator, mirroring <code>_require_classifier_when_reviewing</code>:
-<code>review_provider="mock"</code> with <code>environment</code> not <code>local</code> raises
-<code>ConfigurationError</code> at boot. Seed/ops scripts that intentionally moderate
-with the mock (catalog seeding) must set an explicit
-<code>CYO_ADVENTURE_ALLOW_MOCK_REVIEW=1</code> escape hatch, which also stamps the
-report (<code>reviewer_independent=false</code> plus a <code>structural</code> advisory) so a
-mock-moderated report is self-identifying forever. This closes G1: 18 of 29
-live books are mock-moderated and carry reports that look real but prove
-nothing (18, not the 22-book any-safety-FLAG count; see the gap report's
-3.1 for the distinction).</p>
-<h3 id="25-observability-for-fail-safe-verdicts">2.5 Observability for fail-safe verdicts<a class="headerlink" href="#25-observability-for-fail-safe-verdicts" title="Permanent link">&para;</a></h3>
-<ul>
-<li>New pipeline event payload field on <code>moderation_completed</code>:
-  <code>counts.structural</code> (int). The allowlist stays enum/int-only, so no PII
-  surface changes.</li>
-<li><code>moderation/insights.py</code> gains a structural-vs-content split so 5,048
-  structural fail-safes can never again read as "safety concerns" in the
-  dashboard.</li>
-<li>A regression test feeds markdown-fenced JSON through <code>_parse_verdict</code>'s
-  callers via a provider stub (G8): today fence-stripping exists only in the
-  provider adapters and nothing proves the review path survives an adapter
-  regression.</li>
-<li>Stage-0 malformed-payload fail-open (G11): <code>_run_openai</code>/<code>_run_perspective</code>
-  (<code>classifiers.py:465-527</code>, <code>:530-577</code>) returning <code>[]</code> on a shape change
-  needs the same <code>structural=true</code> accounting as a <code>_parse_verdict</code> failure;
-  today it produces no finding at all, so a provider response-shape change
-  reads as a clean screen. #VERIFY before Stage A ships.</li>
-<li>Threshold-flywheel containment (G2a), in Stage A scope because it is the
-  same indistinguishability defect pointed at the safety gate itself:
-  <code>suggest_thresholds</code> (<code>insights.py:272-317</code>) counts a mock-moderated book's
-  fail-safe FLAG as override evidence like any other. Once the structural
-  split above exists, structural fail-safes must be excluded from
-  <code>decided_versions</code> and <code>override_rate</code> so the flywheel can never propose
-  <code>safety</code> FLAG -&gt; BLOCK on the strength of the flood, which would suppress
-  genuine safety FLAGs from guardian and kid surfaces. Before Stage A ships,
-  measure the current per-band <code>decided_versions</code> and <code>override_rate</code> for
-  <code>(band, "safety")</code>: the gates (5 decided, 0.8 override rate) may or may not
-  be met today, and no suggestion should be applied until that is known.
-  <strong>Measured 2026-07-29</strong> (live Supabase, SQL mirror of <code>attribute_outcome</code>
-  semantics; per-band safety flag counts sum to 5,056, matching the known
-  llm_safety FLAG total, which validates the query): 10-13 = 1 decided /
-  1 released; 13-16 = 1/1; 16+ = 4/4; 3-5, 5-8, 8-11 = 0/0. No band meets
-  the gates today, but <strong>16+ is one released decision away</strong> (4 of 5
-  decided, override rate 1.0, on 2,575 flag findings that are almost
-  entirely mock fail-safe rows), so the flywheel exclusion must land
-  before the next 16+ book is released, not merely "before Stage A ships".</li>
-</ul>
-<h3 id="26-surfaces">2.6 Surfaces<a class="headerlink" href="#26-surfaces" title="Permanent link">&para;</a></h3>
-<p><strong>Admin</strong> (<code>review_surface.py</code> + <code>ReviewDetailPage.tsx</code>): renders merged
-findings ranked by (verdict, severity, node count), structural findings in
-their own visually distinct block, per-finding node drill-down on demand.
-The noise-floor mechanism is superseded by severity filtering (default:
-show all FLAG/BLOCK, collapse <code>low</code> ADVISORY behind a toggle); the
-<code>admin_noise_floor</code> row remains honored for Stage-0 scored advisories.</p>
-<p><strong>Guardian</strong> (<code>build_content_summary</code>): story-level summary only: overall
-verdict, merged concern list (concern, severity, node count), repaired flag,
-reviewer-independence. No per-node rows at all.</p>
-<h3 id="27-stage-2-llm-readability-disposition-options">2.7 Stage 2 (LLM readability): disposition options<a class="headerlink" href="#27-stage-2-llm-readability-disposition-options" title="Permanent link">&para;</a></h3>
-<p>Evidence (gap report G10 plus this session's measurements):</p>
-<ul>
-<li>Stage 2's prompt asks the LLM to estimate the same Flesch-Kincaid
-  grade-vs-target comparison RL-13 computes exactly and deterministically.</li>
-<li>Cost: one call per node, one persisted row per node (5,703 PASS rows
-  bought 27 flags), and any single readability FLAG triggers the full
-  auto-repair plus complete re-moderation (2N+2 more calls).</li>
-<li>RL-13 fires 285 warnings across 12 live books and is <strong>completely
-  invisible</strong>: <code>validation_report</code> is written and never read by any API or
-  surface; even repair adoption reads only <code>.blocked</code>.</li>
-<li><strong>The two signals disagree on live data in both directions.</strong> The 4
-  genuinely-reviewed books with 27 LLM flags have zero RL-13 warnings on
-  those nodes (the LLM cites rare vocabulary and figurative language,
-  which syllable-count FK partially misses); the 12 RL-13-warned books have
-  no genuine LLM readability signal (they are mock-moderated). Neither
-  signal has ground truth against a human judgment.</li>
-</ul>
-<p>Options for the owner:</p>
-<ul>
-<li><strong>(a) Retire Stage 2; surface RL-13/PL-19 (recommended).</strong> Drop the
-  per-node LLM stage; make validator reading-level and words-per-node
-  findings visible on both surfaces (they currently gate nothing and show
-  nowhere). Add a one-line readability note to the existing whole-story
-  engagement call so holistic vocabulary concerns keep a channel at 1/N of
-  the cost. Accept: sub-20-word nodes and rare-vocabulary detection lose
-  per-node LLM coverage.</li>
-<li><strong>(b) Keep Stage 2 whole-story.</strong> Replace N per-node calls with one
-  whole-story readability call (like coherence). Keeps the LLM lens,
-  loses per-node attribution.</li>
-<li><strong>&copy; Keep Stage 2 as is</strong> with the 2.&frac12;.2 schema and merge changes
-  (flags merge to one finding, PASS not persisted). Highest cost, no
-  repair-amplification fix.</li>
-</ul>
-<h2 id="3-post-perspective-stage-0-architecture">3. Post-Perspective Stage-0 architecture<a class="headerlink" href="#3-post-perspective-stage-0-architecture" title="Permanent link">&para;</a></h2>
-<h3 id="31-what-the-research-supports">3.1 What the research supports<a class="headerlink" href="#31-what-the-research-supports" title="Permanent link">&para;</a></h3>
-<p>Both research reports (Gemini survey; ChatGPT deep-research) agree on the
-core negative results, from different evidence:</p>
-<ul>
-<li>The comment-toxicity taxonomy (Perspective, Detoxify) transfers badly to
-  children's fiction <strong>in both directions</strong>: cited PG-STORY numbers show
-  Perspective and Detoxify at ~41% unsafe recall, 57.8 unsafe F1, 67.1
-  macro F1, vs 96.9 macro F1 for a task-specific model.</li>
-<li>Neither report identifies an actually obtainable task-specific
-  child-safety classifier (the 96.9 model is unnamed and unreleased; the
-  one named commercial product is uncited). The off-the-shelf market for
-  this exact need does not exist yet.</li>
-<li>A like-for-like Detoxify swap reproduces a known-bad detector and is
-  rejected (ratified in section 7, decision 7, on the evidence above, not
-  on a separate handoff document).</li>
-</ul>
-<p>Critical premise gap found in both reports: <strong>neither evaluated serverless
-GPU hosting (Modal), which the owner explicitly offered.</strong> Both rejected
-the modern guard-model class (Llama Guard, ShieldGemma, Qwen3Guard, Granite
-Guardian) on a CPU-only homelab premise. Modal invalidates that premise:
-book creation is infrequent, latency is near-irrelevant, and Modal is
-already a supported provider in <code>generation/providers/</code>.</p>
-<p>Load-bearing but unverified claims to check before any ADR cites them:
-the PG-STORY figures come from one source and report byte-identical
-Perspective/Detoxify scores (verify the primary paper); Gemini's
-"Detoxify is the exact Perspective model" claim is uncited and contradicted
-by ChatGPT's read; several pricing/retention cells trace to a competing
-vendor's marketing blog or a wrong-entity privacy policy. The two source
-reports themselves are not reachable in the repo: <code>tmp_cleanup/*</code> is
-gitignored (<code>.gitignore:301</code>), so the Gemini survey and ChatGPT
-deep-research files are not committed; this paragraph and the summary above
-are the only durable record of their claims.</p>
-<h3 id="32-recommended-posture">3.2 Recommended posture<a class="headerlink" href="#32-recommended-posture" title="Permanent link">&para;</a></h3>
-<ol>
-<li><strong>At sunset, drop the Perspective axis; do not replace it
-   like-for-like.</strong> It contributes zero findings to live data today, and
-   its taxonomy is domain-mismatched. Stage-0 remains OpenAI
-   omni-moderation (the enforced minimum as of this PR) plus the
-   LLM Stage-1 hard gate.</li>
-<li><strong>Run the baseline capture now</strong> (while Perspective answers):
-   <code>PYTHONPATH=. uv run python scripts/capture_stage0_baseline.py
-   --env-file .env --out "docs/planning/safety/stage0-baseline-$(date +%F).json"</code>.
-   This preserves the calibration oracle whether or not a successor is
-   adopted.</li>
-</ol>
-<p><strong>Resolved 2026-08-01.</strong> This supersedes the 2026-07-30 owner deferral
-   previously recorded here.</p>
-<ul>
-<li><em>Command:</em> the one above, run against the tree at <code>6682ec17</code> with both
-     <code>CYO_ADVENTURE_PERSPECTIVE_API_KEY</code> and the OpenAI key configured.</li>
-<li><em>Result:</em> 135 records (120 clean node passages, 15 corpus items), zero
-     provider errors, <code>text_sha256</code> on every record.</li>
-<li><em>Artifact:</em> <code>docs/planning/safety/stage0-baseline-2026-08-01.json</code>,
-     committed and re-derivable from the <code>reproduction</code> parameters it carries.</li>
-<li><em>Consequent change:</em> the capture <strong>refutes</strong> the <code>~6e-4</code> clean-prose
-     ceiling that justified <code>_ADVISORY_SCORE_FLOOR = 0.01</code> in
-     <code>moderation/classifiers.py</code>. All 120 clean passages score at or above the
-     floor on at least one attribute, and the clean maximum (0.397
-     <code>SEXUALLY_EXPLICIT</code>) exceeds the adversarial maximum (0.161); only
-     <code>SEVERE_TOXICITY</code> (0.0153) and <code>IDENTITY_ATTACK</code> (0.0276) stay near
-     <code>~6e-4</code>. The stale rationale is corrected in the same PR. The floor value
-     is deliberately unchanged: advisories never gate, so this is review-surface
-     noise, and moving it is a behavior change needing its own tests.</li>
-<li><em>Known gaps:</em> the capture predates #532, which rewrote 7 of the 25
-     clean-source <code>out/*.filled.json</code> files, so a seeded re-run at a later head
-     samples a different pool. All 120 sampled node bodies were verified
-     byte-identical at both commits, so the recorded scores stand, but
-     bit-identical reproduction is not guaranteed. Separately, 2 of the 13
-     corpus items (<code>D1-import-bypass</code>, <code>D2-admin-submit-bypass</code>) are
-     <code>"executable": false</code> call-graph controls with no text to score and are
-     absent by construction.</li>
-<li><em>Re-run trigger:</em> any change to the clean corpus or the classifier set,
-     and in any case before the 2026-12-31 sunset makes the scores
-     unobtainable.</li>
-<li><strong>Evaluate guard models on Modal as a candidate second axis</strong>, scoped as
-   an experiment, not a commitment: Qwen3Guard (0.6B/4B, Apache-2.0-family),
-   ShieldGemma, Llama Guard 4, and Granite Guardian HAP-125M (CPU-viable,
-   Apache-2.0, adds an explicit profanity head). Eval harness: the
-   adversarial corpus (true positives) plus sampled filled-skeleton prose
-   (true negatives), scored against the captured baseline; per-category
-   calibration (Platt for sparse categories, isotonic only above ~1,000
-   dual-scored samples); rank-correlation sanity check first.
-   <strong>APPROVED (owner, 2026-07-28).</strong> Cost basis: the account carries $30/mo
-   in Modal free credits; an eval sweep over the corpus with these model
-   sizes is a few GPU-hours on per-second billing, and production Stage-0
-   traffic is infrequent book creation, so both phases sit well inside the
-   credit allowance. #ASSUME: external-resources: pricing and credit terms
-   as of 2026-07-28. #VERIFY: re-check Modal's current per-second GPU rates
-   and the credit grant when the eval harness is implemented.</li>
-<li><strong>Age-appropriateness is a distinct axis from platform harm</strong> (both
-   reports converge here). If the guard-model eval underwhelms, the honest
-   fallback is a small labeled eval set of our own story passages by band
-   (a few hundred, human-labeled) and a fine-tune later; not a toxicity
-   drop-in.</li>
-<li><strong><code>Source.PERSPECTIVE</code> retirement, hard-gated to the 2026-12-31 sunset.</strong>
-   The operative action is unsetting <code>PERSPECTIVE_API_KEY</code>
-   (<code>core/config.py:564</code>) in every environment, or removing the Perspective
-   call leg from <code>classifiers.py</code> outright, no later than 2026-12-31; stop
-   emitting at sunset and keep the <code>Source.PERSPECTIVE</code> enum member for
-   JSONB read-compat. This is not optional cleanup: a dead endpoint past
-   sunset raises <code>ClassifierUnavailable</code> (<code>classifiers.py:556</code>) on every
-   call, opens the circuit breaker after <code>_MAX_CONSECUTIVE_FAILURES = 3</code>
-   (<code>classifiers.py:82</code>), and emits a <code>classifier_coverage_incomplete</code> FLAG
-   (<code>classifiers.py:375-376</code>) that soft-gates every book into repair plus
-   full re-moderation (<code>pipeline.py:300-304</code>) for an infrastructure reason,
-   not a content one, on every book, forever. The retirement touches every
-   call site that passes <code>perspective_key</code>, not just the main pipeline
-   (<code>moderation/pipeline.py:758</code>): <code>story_requests/screening.py</code> (intake,
-   <code>report_coverage=False</code>), <code>api/node_edit.py:545</code>,
-   <code>api/story_requests.py:409</code>, <code>:674</code>, <code>:1020</code>, and
-   <code>moderation/rescreen.py:457</code> all need the same change. Zero perspective
-   rows exist in the measured environment; verify the other environment(s)
-   before deleting anything. Config already refuses Perspective-only
-   deployments.</li>
-</ul>
-<p>Privacy note (verified this session): moderation egress carries stripped,
-un-personalized text (sentinels stripped at <code>pipeline.py:736</code>; per-node PII
-guard at <code>pipeline.py:746-747</code>; reviewer wrapped in <code>PiiGuardedProvider</code>),
-so a cloud-hosted classifier is justifiable. Residual risk: pattern-based
-free-text PII screening is defense-in-depth, not a guarantee; a retaining
-provider remains a tradeoff to surface per the owner's stated posture.</p>
-<h2 id="4-catalog-remediation">4. Catalog remediation<a class="headerlink" href="#4-catalog-remediation" title="Permanent link">&para;</a></h2>
-<p>The 18 mock-moderated books (see the gap report's 3.1; not the 22-book
-any-safety-FLAG count) carry reports that are evidence of nothing. After
-Stages A and B land (below):</p>
-<ol>
-<li>Add a small admin-triggered "re-moderate" entry point that re-runs
-   <code>run_moderation_pipeline</code> on an existing version (the pipeline already
-   supports repeat invocation; the entry point is routing plus permissions,
-   akin to <code>rescreen</code> but running the full pipeline, and stamping a
-   re-moderation event).</li>
-<li>Re-moderate the 18 books with the real reviewer under the new model.
-   With chunked Stage-1 calls this is ~50-80 review calls per large book
-   instead of ~1,500, assuming Stage 2 is retired per option (a) in 2.7.
-   Under option &copy; (keep Stage 2 per-node), <code>sk_ninth_hand</code> stays near
-   ~800 combined Stage-1+Stage-2 calls even after chunking Stage 1, since
-   Stage 2 remains one call per node.</li>
-<li>Published books among them stay published while re-moderation runs
-   (ADR-005: rescreen never auto-unpublishes; the same posture applies);
-   new reports replace the mock ones and route through normal review.</li>
-</ol>
-<h2 id="5-moderation-qa-corpus-staging">5. Moderation QA corpus (staging)<a class="headerlink" href="#5-moderation-qa-corpus-staging" title="Permanent link">&para;</a></h2>
-<p>Owner-proposed (2026-07-28): a set of test stories in the staging
-environment for moderation testing, so inappropriate content never needs to
-exist in production. Design:</p>
-<ol>
-<li><strong>Ground truth lives in the repo, not a table.</strong> Extend the existing
-   labeled-corpus pattern (<code>adversarial-corpus.json</code>: 13 passages with
-   <code>expected_min_verdict</code> / <code>age_band</code> / <code>target_stage</code> labels) to whole
-   storybooks with per-node prose and per-node/story expected labels, so
-   verdict expectations are versioned, reviewable, and diffable when the
-   model changes.</li>
-<li><strong>Seeded into staging as real <code>storybook</code> rows</strong>, not a parallel table:
-   the value is end-to-end fidelity (worker, queue, classifiers, reviewer,
-   repair, routing, surfaces all process a known-bad book). A dedicated
-   table would need parallel plumbing and would test a copy of the
-   pipeline, not the pipeline.</li>
-<li><strong>Containment layers</strong> (#CRITICAL: security: QA content must be
-   unreachable from production and from kid surfaces in any environment):</li>
-<li>the seed script hard-refuses <code>ENVIRONMENT=production</code> (same posture
-     as the existing seeders);</li>
-<li>ids are namespaced (<code>mqa_</code> prefix) and rows belong to a dedicated
-     Moderation QA family, never assigned to real profiles;</li>
-<li>the existing read gate (approved AND assigned) already makes
-     unapproved test books invisible to kid surfaces;</li>
-<li><code>publishing/service.py</code> refuses to approve/publish an <code>mqa_</code>-prefixed
-     story outside staging (defense in depth against an admin misclick).</li>
-<li>
-<h1 id="verify-seed-script-env-guard-test-publishing-guard-unit-test-a">VERIFY: seed-script env-guard test; publishing-guard unit test; a<a class="headerlink" href="#verify-seed-script-env-guard-test-publishing-guard-unit-test-a" title="Permanent link">&para;</a></h1>
-<p>staging e2e assertion that no <code>mqa_</code> book is kid-visible.
- <strong>All three exist as of 2026-08-01</strong>: the e2e half is
- <code>frontend/e2e-staging/moderation-qa-invisibility.spec.ts</code> (daily
- e2e-staging workflow), which anchors on an admin presence check of all
- six corpus ids so a staging reset turns the assertion loudly red
- instead of vacuously green, then asserts the kid library API payload
- and rendered DOM are <code>mqa_</code>-free from a real device-grant session.</p>
-</li>
-<li><strong>Scorecard</strong>: after moderation runs over the seeded set, compare stored
-   reports against expected labels and emit a pass/fail diff. This is the
-   Stage B UI QA fixture (admins inspect a known-bad book's merged decision
-   cards), the Stage C eval/calibration set, and the regression harness for
-   any reviewer-model or prompt change.</li>
-<li><strong>Authoring guideline</strong>: depth goes to band-borderline content (too
-   mature for one band, acceptable for a higher one), which is where the
-   review model must discriminate; a handful of bright-line BLOCK cases
-   suffices. Production needs no unsafe content at any point: prod's
-   catalog was audited clean (2026-07-24) and Stage D only re-moderates
-   those existing books.</li>
-</ol>
-<h2 id="6-staged-delivery-plan">6. Staged delivery plan<a class="headerlink" href="#6-staged-delivery-plan" title="Permanent link">&para;</a></h2>
+<p>"Actionable" counts findings that are neither a fail-safe placeholder nor a
+<code>pass</code> verdict: 99 third-party <code>openai</code> advisories, 13 <code>llm_readability</code> flags,
+8 real <code>llm_safety</code> flags, 2 <code>llm_engagement</code> advisories.</p>
+<p>Findings track node count almost exactly at two per node (550 nodes to 1,102
+findings; 20 nodes to 42), because stages 1 and 2 each emit one finding per node
+whatever the verdict. Stage A's structural collapse and the review surface's
+<code>PASS</code> filter both post-date these stored reports.</p>
+<h3 id="21-the-twelve">2.1 The twelve<a class="headerlink" href="#21-the-twelve" title="Permanent link">&para;</a></h3>
+<p>Every finding in these books carries the message
+<code>unknown verdict; defaulted to fail-safe</code>. Every <em>stored</em> finding comes from
+<code>moderation/stages.py::_parse_verdict</code>, the <code>verdict is None</code> branch, which is
+the only emitter that existed when these reports were written. That branch is
+reached when the reviewer's response parsed as JSON but carried no recognisable
+<code>verdict</code> value; it is distinct from the two <code>verdict parse failed</code> exits above
+it, which no stored finding uses.</p>
+<p>A sweep written today must match a second emitter as well: #708 added
+<code>_structured_verdict_from_payload</code> on 2026-08-14 for the Stage 1 structured
+path, and it returns the same message from its own <code>verdict is None</code> branch
+(<code>stages.py:354</code> and <code>:370</code> at <code>b2273a71</code>). The message is therefore a reliable
+fingerprint of the fail-safe path, but not of a single call site.</p>
+<p>The twelve are the twelve <em>largest</em> books in the backlog, with one
+exception in each direction (see section 6: the size reading does not
+survive measurement):</p>
 <table>
 <thead>
 <tr>
-<th>Stage</th>
-<th>Content</th>
-<th>Size</th>
-<th>Depends on</th>
+<th>Book</th>
+<th style="text-align: right;">Nodes</th>
+<th style="text-align: right;">Findings</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td><strong>A: stop the bleeding</strong></td>
-<td>Structural-failure collapse (2.3), mock environment guard (2.4), observability (2.5), fenced-JSON regression test</td>
-<td>Small PR, no schema change readers must migrate for</td>
-<td>nothing</td>
+<td><code>sk_sunken_temple</code>, <code>sk_harrowstone_keep</code></td>
+<td style="text-align: right;">550 each</td>
+<td style="text-align: right;">1,102 each</td>
 </tr>
 <tr>
-<td><strong>B: the review model</strong></td>
-<td>Finding schema (2.1), structured verdicts + chunking (2.2), merge stage, surfaces (2.6), RL-13/PL-19 visibility, Stage-2 disposition per owner choice (2.7)</td>
-<td>The main PR series</td>
-<td>A</td>
+<td><code>sk_thornwood_trial</code></td>
+<td style="text-align: right;">375</td>
+<td style="text-align: right;">752</td>
 </tr>
 <tr>
-<td><strong>C: Stage-0 successor</strong></td>
-<td>Baseline capture run, Modal guard-model eval, calibration report, Perspective emission retirement (unset <code>PERSPECTIVE_API_KEY</code> / remove the leg, all call sites per 3.2 item 5)</td>
-<td>Experiment + small PRs</td>
-<td>capture DONE 2026-08-01 (see 3.2 item 2), unblocking the Modal eval; rest independent of A/B</td>
+<td><code>sk_drowned_court</code></td>
+<td style="text-align: right;">314</td>
+<td style="text-align: right;">630</td>
 </tr>
 <tr>
-<td><strong>D: catalog remediation</strong></td>
-<td>Re-moderate entry point + the 18-book sweep</td>
-<td>Small PR + ops run</td>
-<td>A, B</td>
+<td><code>sk_sunspire_ascent</code></td>
+<td style="text-align: right;">252</td>
+<td style="text-align: right;">506</td>
 </tr>
 <tr>
-<td><strong>QA corpus (staging)</strong> <em>(design confirmed 2026-07-29, decision 6)</em></td>
-<td>Labeled storybook fixtures (section 5), staging seed script + containment guards, scorecard diff</td>
-<td>Repo fixtures + small PR</td>
-<td>authored anytime; seeded before B's UI QA; feeds C's eval</td>
+<td><code>sk_salt_archive</code></td>
+<td style="text-align: right;">225</td>
+<td style="text-align: right;">452</td>
+</tr>
+<tr>
+<td><code>sk_mapmakers_island</code></td>
+<td style="text-align: right;">224</td>
+<td style="text-align: right;">450</td>
+</tr>
+<tr>
+<td><code>sk_last_train_north</code></td>
+<td style="text-align: right;">143</td>
+<td style="text-align: right;">288</td>
+</tr>
+<tr>
+<td><code>sk_signal_in_the_static</code></td>
+<td style="text-align: right;">123</td>
+<td style="text-align: right;">248</td>
+</tr>
+<tr>
+<td><code>sk_cave_of_echoes__space-station</code>, <code>sk_cave_of_echoes__dino-dig</code></td>
+<td style="text-align: right;">64 each</td>
+<td style="text-align: right;">130 each</td>
+</tr>
+<tr>
+<td><code>sk_sunken_signal</code></td>
+<td style="text-align: right;">32</td>
+<td style="text-align: right;">66</td>
 </tr>
 </tbody>
 </table>
-<p>Stage A is deliberately shippable alone: it prevents every future flood and
-makes the failure class visible, even if B's surface redesign takes longer.</p>
-<h3 id="61-delivery-status-as-of-2026-08-25">6.1 Delivery status as of 2026-08-25<a class="headerlink" href="#61-delivery-status-as-of-2026-08-25" title="Permanent link">&para;</a></h3>
-<p>Read against live source at <code>b2273a71</code> (post-#764) and live production data.
-This table records what has landed, not what was intended. It refines the
-per-stage banner at the top of this document rather than competing with it;
-where the two once disagreed on Stage C, the banner was right and the row
-below has been corrected.</p>
+<p><strong>These books have no review result.</strong> A <code>soft_flag: true</code> report with zero real
+verdicts is not a lenient review, it is an absent one; the gate held, which is
+the fail-safe working, but a human approving from this report would be approving
+on no evidence.</p>
+<p><strong>The mock-reviewer stamp does not explain it.</strong> All seventeen carry
+<code>summary.reviewer_independent: true</code>, so the 2026-07-28 analysis's mock-moderated
+classification (<code>reviewer_independent: false</code>) does not select any of them. What
+produced the unrecognisable verdicts is <strong>not determinable from the stored
+report</strong>: a mock or stub reviewer whose stamp was written differently, a
+misconfigured provider, and a prompt/vocabulary mismatch all land on the same
+branch. Determining which is step 1 of the sweep, not an afterthought to it.
+(See section 6.1: it was determinable, from the code rather than the report, and
+the answer is the mock reviewer. <code>UW-C364</code> in the unscheduled work register
+carries a copy of this paragraph; that copy is superseded by section 6.1 too.)</p>
+<p><code>scripts/remoderate_books.py</code> still reaches them, via <code>--in-review</code> and via
+<code>--mock-moderated</code>'s fail-safe-substring arm, so no selector change is needed.</p>
+<h3 id="22-the-five">2.2 The five<a class="headerlink" href="#22-the-five" title="Permanent link">&para;</a></h3>
+<p><code>sk_hollow_lighthouse</code> (148 nodes, 88 actionable), <code>sk_teddy_bears_picnic</code> (29,
+14), <code>sk_clocktower_cipher</code> (25, 14), <code>sk_backyard_treasure_map</code> (61, 4) and
+<code>sk_clover_butterfly</code> (20, 2) hold real verdicts.</p>
+<p><strong>Four of the five are not clean, however.</strong> Section 6.2 breaks out the
+fail-safe findings they also carry: 24 of 148 nodes on <code>sk_hollow_lighthouse</code>
+and 22 of 25 on <code>sk_clocktower_cipher</code> have no readability verdict at all.
+Those two belong in the sweep, not in this bucket. Their 122 actionable findings
+are a tractable human review today, through the surface the redesign already
+shipped. They are the only part of the backlog a reviewer can act on before the
+sweep runs.</p>
+<h2 id="3-covers">3. Covers<a class="headerlink" href="#3-covers" title="Permanent link">&para;</a></h2>
+<p>No book in production has an approved cover. One published catalog book carries
+a <code>pending_review</code> cover image; the other 13 published books and all 17 in-review
+books have <code>cover_status = 'none'</code>. Cover generation is therefore unexercised
+against the catalog, not merely incomplete.</p>
 <table>
 <thead>
 <tr>
-<th>Stage</th>
+<th>Status / visibility</th>
+<th style="text-align: right;">Books</th>
+<th style="text-align: right;">Cover image</th>
+<th style="text-align: right;">Cover approved</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>in_review</code> / family</td>
+<td style="text-align: right;">17</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr>
+<td><code>published</code> / catalog</td>
+<td style="text-align: right;">10</td>
+<td style="text-align: right;">1 (<code>pending_review</code>)</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr>
+<td><code>published</code> / family</td>
+<td style="text-align: right;">4</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+</tr>
+</tbody>
+</table>
+<h2 id="4-what-this-changes-about-the-sweep">4. What this changes about the sweep<a class="headerlink" href="#4-what-this-changes-about-the-sweep" title="Permanent link">&para;</a></h2>
+<ol>
+<li><strong>Canary first.</strong> Re-moderate <code>sk_sunken_signal</code> (32 nodes, the cheapest
+   fail-safe book) alone via <code>--book-id</code>, and read the resulting verdicts. If
+   they are real, the degradation was environmental and the sweep is safe. If
+   they are fail-safe again, the reviewer is still broken and a seventeen-book
+   sweep would spend on 2,916 nodes to reproduce the same non-result.</li>
+<li><strong>The five are independent.</strong> Their review needs no sweep and no spend.</li>
+<li><strong>Size ordering is a cost choice, not a diagnosis.</strong> This section
+   originally read the size ranking as evidence of a size-dependent failure
+   (batching, truncation, timeout). Section 6 refutes that: <code>sk_hollow_lighthouse</code>
+   (148 nodes) holds real verdicts while five smaller books do not, and the root
+   cause is a mock reviewer, which is size-independent. Re-moderating the two
+   550-node books last remains the cheap ordering, on cost grounds alone.</li>
+</ol>
+<h2 id="5-measurement-provenance">5. Measurement provenance<a class="headerlink" href="#5-measurement-provenance" title="Permanent link">&para;</a></h2>
+<blockquote>
+<p>Sections 1 to 4 are the 2026-08-25 measurement as first written. Section 6
+corrects three of their claims; where the two disagree, section 6 is the
+later measurement and wins.</p>
+</blockquote>
+<p>Queried 2026-08-25 through the read-only Supabase MCP against the production
+project, over <code>storybook</code>, <code>storybook_version</code>, and the JSONB
+<code>moderation_report-&gt;'findings'</code> array. Counts in section 2 are single queries
+grouped on <code>source</code>, <code>verdict</code>, and an exact match of the fail-safe message
+string, not sampled. Node counts come from <code>jsonb_array_length(blob-&gt;'nodes')</code>.</p>
+<h2 id="6-correction-and-root-cause-2026-08-26">6. Correction and root cause, 2026-08-26<a class="headerlink" href="#6-correction-and-root-cause-2026-08-26" title="Permanent link">&para;</a></h2>
+<p>Section 2.1 said the cause was "not determinable from the stored report". That
+remains true of the report. It was determinable from the code, and it did not
+need the canary.</p>
+<p>It also did not need deriving. The 2026-07-28 gap report already had it:
+<a href="../moderation-review-current-state-2026-07-28/">moderation-review-current-state-2026-07-28.md</a>
+section 4 states the whole chain (the mock returns <code>"{}"</code>; <code>json.loads</code> succeeds;
+the verdict key is absent; <code>_parse_verdict</code> returns the stage fail-safe, FLAG for
+Stage 1 and PASS for stages 2 to 4), and <code>AL-631</code> records the same conclusion.
+What follows is a re-derivation that should have been a lookup, and the lesson in
+<code>AL-634</code> is the one worth keeping from it. What is genuinely new here is only the
+pair of consequences in 6.1: that the mock stamps itself independent, and that
+the guard meant to catch it cannot fire in this failure mode.</p>
+<h3 id="61-the-mock-reviewer-is-the-cause">6.1 The mock reviewer is the cause<a class="headerlink" href="#61-the-mock-reviewer-is-the-cause" title="Permanent link">&para;</a></h3>
+<p><code>moderation/review_provider.py:119-120</code>, unchanged by PR #764:</p>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="k">if</span> <span class="n">backend</span> <span class="o">==</span> <span class="s2">&quot;mock&quot;</span><span class="p">:</span>
+</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>    <span class="k">return</span> <span class="n">MockProvider</span><span class="p">(</span><span class="n">responses</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;</span><span class="si">{}</span><span class="s2">&quot;</span><span class="p">]</span> <span class="o">*</span> <span class="n">_MOCK_RESPONSE_BUDGET</span><span class="p">),</span> <span class="kc">True</span>
+</span></code></pre></div>
+<p>The mock answers every call with the literal <code>"{}"</code>. That is valid JSON and a
+<code>dict</code>, so it clears both parse guards in <code>moderation/stages.py::_parse_verdict</code>;
+<code>payload.get("verdict", "")</code> then yields <code>""</code>, <code>mapping.get("")</code> yields <code>None</code>,
+and the function emits <code>unknown verdict; defaulted to fail-safe</code>. Every stage,
+every node, which is exactly the shape of all 2,916 findings. <code>core/config.py:594</code>
+defaults <code>review_provider</code> to <code>"mock"</code>.</p>
+<p>Two consequences the earlier analyses missed:</p>
+<ol>
+<li><strong>The mock stamps itself independent.</strong> The <code>True</code> in the tuple above is the
+   <code>independent</code> flag. That is why all seventeen books carry
+   <code>summary.reviewer_independent: true</code>, and why the 2026-07-28 analysis's
+   <code>reviewer_independent: false</code> selector matched none of them. The
+   <code>summary.reviewer_independent is False</code> arm of PR #764's
+   <code>moderation_report_unusable</code>, and the stamp arm of
+   <code>scripts/remoderate_books.py --mock-moderated</code>, are both dead against a real
+   mock run. Of <code>_is_mock_moderated</code>'s three arms, the stamp arm and the
+   <code>MOCK_MODERATED_CONCERNS</code> arm both miss; only the fail-safe-message substring
+   arm reaches these books.</li>
+<li><strong>The mock guard cannot fire in the failure mode it exists for.</strong>
+   <code>core/config.py::_require_real_reviewer_outside_local</code> (at <code>b2273a71</code>: the
+   function at 1771, the condition at 1797-1799; line 1787 is the <code>Raises:</code>
+   docstring clause stating the same rule, not the guard) refuses mock only when
+   <code>review_provider == "mock"</code> AND <code>environment != "local"</code> AND not
+   <code>allow_mock_review</code>. Both inputs are read
+   from the process environment by the same <code>Settings</code> object, which declares
+   no <code>env_file</code> (<code>core/config.py:218</code>) and therefore reads nothing but
+   exported variables. A process started without them exported takes both
+   defaults, <code>review_provider="mock"</code> and <code>environment="local"</code>, from one
+   absence, and the guard is off. Reproduced from the repo root on 2026-08-26:
+   resolved settings were <code>environment=local</code>, <code>db host=localhost</code>,
+   <code>review_provider=mock</code>, <code>openai key set=False</code>, even though <code>.env</code> names
+   both <code>CYO_ADVENTURE_REVIEW_PROVIDER</code> and <code>OPENAI_API_KEY</code>. The <code>.env</code> file
+   is not the mechanism; it is never read by the app at all, which is why
+   naming those keys in it changed nothing.</li>
+</ol>
+<p><strong>Operational consequence.</strong> Any sweep must print the resolved <code>environment</code>,
+database host, and <code>review_provider</code> before executing. Run from a shell that
+has not exported them, <code>scripts/remoderate_books.py --execute</code> would
+re-moderate with the mock, write the same <code>{}</code>-derived findings, and exit
+successfully. Exporting the variables (for example by sourcing <code>.env</code> into the
+shell) is what makes a real reviewer available; the file's presence alone does
+nothing.</p>
+<h3 id="62-the-twelve-versus-five-split-is-not-clean">6.2 The twelve-versus-five split is not clean<a class="headerlink" href="#62-the-twelve-versus-five-split-is-not-clean" title="Permanent link">&para;</a></h3>
+<p>Measured 2026-08-26 over <code>moderation_report-&gt;'findings'</code>, splitting on the
+fail-safe substring per book rather than per class:</p>
+<table>
+<thead>
+<tr>
+<th>Book</th>
+<th style="text-align: right;">Nodes</th>
+<th style="text-align: right;">Fail-safe findings</th>
+<th>Stage affected</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>sk_clocktower_cipher</code></td>
+<td style="text-align: right;">25</td>
+<td style="text-align: right;">22</td>
+<td><code>llm_readability</code></td>
+</tr>
+<tr>
+<td><code>sk_hollow_lighthouse</code></td>
+<td style="text-align: right;">148</td>
+<td style="text-align: right;">24</td>
+<td><code>llm_readability</code></td>
+</tr>
+<tr>
+<td><code>sk_backyard_treasure_map</code></td>
+<td style="text-align: right;">61</td>
+<td style="text-align: right;">1</td>
+<td><code>llm_readability</code></td>
+</tr>
+<tr>
+<td><code>sk_teddy_bears_picnic</code></td>
+<td style="text-align: right;">29</td>
+<td style="text-align: right;">1</td>
+<td><code>llm_readability</code></td>
+</tr>
+<tr>
+<td><code>sk_clover_butterfly</code></td>
+<td style="text-align: right;">20</td>
+<td style="text-align: right;">0</td>
+<td>none</td>
+</tr>
+</tbody>
+</table>
+<p>These are stored with <code>verdict: "pass"</code>, because <code>_parse_verdict</code> takes
+<code>fail_safe=PASS</code> for soft stages while Stage 1 takes <code>FLAG</code>. So an identical
+reviewer failure is a flag on safety and a <strong>pass</strong> on readability.</p>
+<p>That defeats both halves of PR #764 for these books:
+<code>moderation_report_unusable</code> returns "usable" as soon as one genuine finding
+exists, and <code>api/review_surface.py::build_review_surface</code> filters
+<code>verdict is PASS</code> before rendering, so the unreviewed nodes are invisible to the
+reviewer rather than merely unlabelled.</p>
+<p>Bounded, not fatal: <code>llm_safety</code> returned real verdicts for every node of all
+five books, so content safety was genuinely reviewed. The missing dimension is
+readability.</p>
+<h3 id="63-the-time-reading-and-why-it-is-wrong">6.3 The time reading, and why it is wrong<a class="headerlink" href="#63-the-time-reading-and-why-it-is-wrong" title="Permanent link">&para;</a></h3>
+<p>An intermediate hypothesis, formed while drafting sections 2 to 4 and never
+written into them, held that the split was a two-hour outage window
+(everything from 19:54 on 2026-07-21 fail-safe, everything before it clean).
+Published catalog books refute it by interleaving at 8-second spacing:</p>
+<table>
+<thead>
+<tr>
+<th>Time</th>
+<th>Book</th>
 <th>Status</th>
-<th>Evidence</th>
+<th>Result</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td><strong>A</strong></td>
-<td>Delivered</td>
-<td>Per-node fail-safe collapse into one story-level structural finding (<code>moderation/stages.py</code>, the <code>reviewer_unavailable</code> concern in <code>CONCERN_TAXONOMY</code>); <code>reviewer_independent</code> written by the pipeline rather than assumed (<code>moderation/pipeline.py</code>)</td>
+<td>19:54:48</td>
+<td><code>sk_midnight_museum</code></td>
+<td>published</td>
+<td>56 real findings</td>
 </tr>
 <tr>
-<td><strong>B</strong></td>
-<td>Delivered</td>
-<td><code>moderation/synthesis.py</code> (deterministic post-review merge), <code>api/review_surface.py</code> (PASS filtered before ranking, verdict-then-severity-then-node-count order, structural / low-advisory / ranked split, admin-only noise floor), <code>_VALIDATOR_RULE_IDS = {RL-13, PL-19}</code> per decision 1</td>
+<td>19:55:04</td>
+<td><code>sk_ashfall_expedition</code></td>
+<td>published</td>
+<td>76 real findings</td>
 </tr>
 <tr>
-<td><strong>C</strong></td>
-<td>Partly delivered</td>
-<td>Stage-0 baseline captured 2026-08-01 (<code>safety/stage0-baseline-2026-08-01.json</code>). Perspective's outbound call leg IS retired: <code>run_classifiers</code> no longer calls it, and the only remaining caller of <code>PERSPECTIVE_URL</code> is <code>scripts/capture_stage0_baseline.py</code>, an offline calibration tool outside the request path. This row was first drafted from a case-sensitive <code>perspective</code> grep over <code>src/</code> plus <code>scripts/</code>, five files, read as live emission; that reading was wrong, and the five hits are the retained <code>Source.PERSPECTIVE</code> enum member (so historical findings still deserialize), the <code>perspective_api_key</code> config field (kept so an existing deployment still boots), and explanatory comments. The Modal guard-model eval has not started</td>
+<td>19:55:12</td>
+<td><code>sk_sunken_signal</code></td>
+<td>in_review</td>
+<td>100% fail-safe</td>
 </tr>
 <tr>
-<td><strong>D</strong></td>
-<td>Code half delivered, ops run pending</td>
-<td>Entry point <code>api/remoderate.py</code> (#753, widened to <code>in_review</code>), sweep selection <code>scripts/remoderate_books.py</code> (<code>--in-review</code>, <code>--book-id</code>, dry-run default). <strong>The sweep has never run:</strong> production's newest <code>storybook_version</code> row is dated 2026-07-28 and all seventeen in-review reports still date from 2026-07-21. Two populations meet in this row and are not the same set: the <strong>18</strong> are the mock-moderated books across the whole 29-version catalog (2026-07-28, gap report 3.1), while the <strong>seventeen</strong> are the books sitting at the human review gate (2026-08-25 census), twelve of which are mock-moderated</td>
-</tr>
-<tr>
-<td><strong>QA corpus</strong></td>
-<td>Fixtures authored</td>
-<td><code>safety/moderation-qa-corpus.json</code>, <code>scripts/seed_moderation_qa.py</code>, <code>scripts/moderation_qa_scorecard.py</code>. Whether it has been seeded into staging was not verified here</td>
+<td>19:55:14</td>
+<td><code>sk_cave_of_echoes__dino-dig</code></td>
+<td>in_review</td>
+<td>100% fail-safe</td>
 </tr>
 </tbody>
 </table>
-<p><strong>What the delivered stages do not yet buy.</strong> A and B change what a reviewer is
-shown, and the seventeen in-review reports predate both, so nothing a reviewer sees
-today reflects them. The census in
-<a href="../moderation-review-current-state-2026-08-25/">moderation-review-current-state-2026-08-25.md</a>
-also shows the backlog's dominant problem is not flood but absence: twelve books
-carry no real verdicts at all. Stage D's ops run, not further surface work, is
-what converts the delivered redesign into a reviewable backlog.</p>
-<h2 id="7-decisions-requested-from-the-owner">7. Decisions requested from the owner<a class="headerlink" href="#7-decisions-requested-from-the-owner" title="Permanent link">&para;</a></h2>
-<ol>
-<li><strong>Stage-2 disposition</strong>: <strong>DECIDED 2026-07-29: option (a).</strong> Retire the
-   per-node LLM readability stage and surface the validator's deterministic
-   RL-13/PL-19 readability findings instead. Note for the record: the
-   section 4 remediation call-count math (~50-80 calls per large book)
-   assumed option (a); this decision is what keeps decision 5's immediate
-   sweep cheap.</li>
-<li><strong>Severity scale</strong>: DECIDED by design in section 2.1: three-level enum
-   (<code>high | medium | low</code>). <strong>Confirmed by the owner 2026-07-29;</strong> stands
-   as designed.</li>
-<li><strong>Guardian summary contract</strong>: DECIDED by design in section 2.6:
-   story-level summary with a merged concern list, repaired flag, and
-   reviewer-independence; no per-node rows. <strong>Confirmed by the owner
-   2026-07-29;</strong> stands as designed.</li>
-<li><strong>Modal guard-model experiment</strong>: <strong>DECIDED 2026-07-28: approved.</strong>
-   Owner basis: $30/mo in Modal free credits; current per-second GPU pricing
-   keeps an eval sweep nowhere near that cap (see 3.2 item 3).</li>
-<li><strong>Remediation timing</strong>: <strong>DECIDED 2026-07-29: re-moderate the 18
-   mock-moderated books right after Stage B lands</strong> (not batched with the
-   first catalog refresh). Cost basis per section 4: ~50-80 real review
-   calls per large book under the retired-Stage-2 pipeline from decision 1.</li>
-<li><strong>Moderation QA corpus</strong> (section 5): owner-proposed 2026-07-28;
-   <strong>design CONFIRMED by the owner 2026-07-29</strong> as written: repo ground
-   truth, staging-only <code>mqa_</code> seeding, four containment layers.</li>
-<li><strong>Perspective-axis retirement</strong> (section 3.2 item 1): RATIFIED by the
-   evidence in this document, not a separate owner decision: Perspective
-   contributes zero findings to live data (gap report section 3) and its
-   comment-toxicity taxonomy is domain-mismatched to children's fiction
-   (section 3.1 above); no like-for-like replacement is proposed. Recorded
-   here for visibility since it is the largest architectural call in this
-   document.</li>
-</ol>
-<h2 id="8-rad-summary">8. RAD summary<a class="headerlink" href="#8-rad-summary" title="Permanent link">&para;</a></h2>
-<ul>
-<li>
-<h1 id="critical-security-the-stage-1-fail-safe-unparseable-safety-verdict">CRITICAL: security: the Stage-1 fail-safe (unparseable safety verdict<a class="headerlink" href="#critical-security-the-stage-1-fail-safe-unparseable-safety-verdict" title="Permanent link">&para;</a></h1>
-  never passes) is preserved through every change above; 2.3 changes its
-  shape, not its effect. #VERIFY: adversarial-corpus tests
-  (tests/unit/test_ai_security_corpus.py) must pass unchanged against the
-  collapsed representation.</li>
-<li>
-<h1 id="assume-data-integrity-old-persisted-reports-no-severityconcern">ASSUME: data-integrity: old persisted reports (no severity/concern<a class="headerlink" href="#assume-data-integrity-old-persisted-reports-no-severityconcern" title="Permanent link">&para;</a></h1>
-  fields, per-node fail-safe rows) must render on the new surfaces.
-  #VERIFY: reader-compat tests over a fixture captured from live JSONB
-  before migration.</li>
-<li>
-<h1 id="assume-external-resources-chunked-review-accuracy-is-unproven">ASSUME: external-resources: chunked review accuracy is unproven.<a class="headerlink" href="#assume-external-resources-chunked-review-accuracy-is-unproven" title="Permanent link">&para;</a></h1>
-  #VERIFY: corpus comparison per 2.2 before default-on.</li>
-<li>
-<h1 id="edge-concurrency-re-moderation-of-a-published-book-racing-a-guardian">EDGE: concurrency: re-moderation of a published book racing a guardian<a class="headerlink" href="#edge-concurrency-re-moderation-of-a-published-book-racing-a-guardian" title="Permanent link">&para;</a></h1>
-  action reuses the existing FOR UPDATE lock in <code>run_moderation_pipeline</code>.
-  #VERIFY: existing lock test covers the re-moderate entry point too.</li>
-<li>
-<h1 id="critical-security-qa-corpus-content-must-never-reach-production-or-any">CRITICAL: security: QA corpus content must never reach production or any<a class="headerlink" href="#critical-security-qa-corpus-content-must-never-reach-production-or-any" title="Permanent link">&para;</a></h1>
-  kid surface (section 5 containment layers: seed script env refusal,
-  <code>mqa_</code> namespace + dedicated family, read gate, publishing guard).
-  #VERIFY: seed-script env-guard test, publishing-guard unit test, and a
-  staging e2e assertion that no <code>mqa_</code> book is kid-visible (all three exist
-  as of 2026-08-01; e2e =
-  <code>frontend/e2e-staging/moderation-qa-invisibility.spec.ts</code>).</li>
-</ul>
+<p>There was no outage window. Whatever selected the twelve was per-job
+configuration. The stored <code>summary</code> carries no provider or model field, so the
+July run's configuration is not recoverable from the data; the mechanism in 6.1
+is established, the specific job that triggered it is not, and further
+archaeology on it is not worth the cost.</p>
+<h2 id="7-remediation-2026-08-26">7. Remediation, 2026-08-26<a class="headerlink" href="#7-remediation-2026-08-26" title="Permanent link">&para;</a></h2>
+<p>Three fixes follow from section 6. All three are on branch
+<code>fix/mock-reviewer-self-identification</code> (PR #769), which is not merged; nothing
+below is live yet.</p>
+<h3 id="71-the-mock-reviewer-now-identifies-itself-in-every-environment">7.1 The mock reviewer now identifies itself in every environment<a class="headerlink" href="#71-the-mock-reviewer-now-identifies-itself-in-every-environment" title="Permanent link">&para;</a></h3>
+<p>The gap-G1 stamp in <code>moderation/pipeline.py</code> and
+<code>core/config.py::_require_real_reviewer_outside_local</code> were both gated on
+<code>environment != "local"</code>, and both read <code>review_provider</code> and <code>environment</code>
+from the process environment through the same <code>Settings</code> object, which
+declares no <code>env_file</code> and reads nothing but exported variables. That made
+them one defense wearing two coats: a process started without those variables
+exported takes <code>review_provider="mock"</code> (the config default) and
+<code>environment="local"</code> from one absence, so the config guard does not raise and
+the stamp does not apply. The result is a report claiming
+<code>reviewer_independent: true</code> over nodes no reviewer judged, which is the exact
+shape of all twelve.</p>
+<p>The stamp is now unconditional. A mock review is not an independent review in
+local either, and the stamp is verdict-neutral (<code>ADVISORY</code> never gates). This
+also revives two code paths that were dead against a real mock run: the
+<code>summary.reviewer_independent is False</code> arm of
+<code>moderation_report_unusable</code> (#764) and the stamp arm of
+<code>scripts/remoderate_books.py --mock-moderated</code>.</p>
+<h3 id="72-a-partly-unjudged-report-now-says-so">7.2 A partly-unjudged report now says so<a class="headerlink" href="#72-a-partly-unjudged-report-now-says-so" title="Permanent link">&para;</a></h3>
+<p><code>moderation_report_unusable</code> returns <code>False</code> at the first genuine finding, so
+the five books in section 2.2 read as usable and fully reviewed even though
+four of them carry a fail-safe <code>llm_readability</code> result on up to 88% of their
+nodes. Those rows persist with <code>verdict: "pass"</code>, because a soft stage fails
+safe to PASS, and <code>api/review_surface.py</code> drops PASS before rendering. They are
+invisible, not merely unlabelled.</p>
+<p><code>moderation/report.py::hidden_fail_safe_node_counts</code> counts that hidden
+remainder per source and per distinct node; the surface renders one story-level
+structural finding from it, matching the shape #764 chose for a wholly unusable
+report. Stage 1 safety fail-safes are deliberately excluded: they fail safe to
+FLAG, so they gate and already render as flagged passages, and counting them
+would describe one outage twice.</p>
+<p>This changes rendering only. The approval gate reads the stored report through
+<code>moderation_report_unusable</code>, not through the surface, so whether a
+partly-unjudged story should also be <em>unapprovable</em> remains an open decision.</p>
+<h3 id="73-the-sweep-refuses-to-run-without-a-reviewer">7.3 The sweep refuses to run without a reviewer<a class="headerlink" href="#73-the-sweep-refuses-to-run-without-a-reviewer" title="Permanent link">&para;</a></h3>
+<p><code>scripts/remoderate_books.py</code> now refuses <code>--execute</code> when the resolved
+<code>review_provider</code> is the mock, as a preflight before the sweep is awaited, and
+prints the <code>environment</code>, database target, and provider it actually resolved
+before every executed run. Credentials in the database URL are never printed.</p>
+<p>This is why the <code>sk_sunken_signal</code> canary was not run on 2026-08-25. Resolved
+settings on the workstation were <code>environment=local</code>, <code>db host=localhost</code>,
+<code>review_provider=mock</code>, <code>openai key set=False</code>, despite a <code>.env</code> naming a real
+provider and a remote database. The canary would have re-moderated with the
+mock, against the wrong database, and exited successfully.</p>
+<p><strong>Still required to run the sweep:</strong> a production <code>CYO_ADVENTURE_DATABASE_URL</code>,
+a real <code>CYO_ADVENTURE_REVIEW_PROVIDER</code> with its API key, and confirmation of
+which environment is being targeted. The preflight now prints all three before
+doing anything.</p>
 
 
 
@@ -4167,7 +3979,7 @@ what converts the delivered redesign into a reviewable backlog.</p>
     <span class="md-icon" title="Created">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M14.47 15.08 11 13V7h1.5v5.25l3.08 1.83c-.41.28-.79.62-1.11 1m-1.39 4.84c-.36.05-.71.08-1.08.08-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8c0 .37-.03.72-.08 1.08.69.1 1.33.32 1.92.64.1-.56.16-1.13.16-1.72 0-5.5-4.5-10-10-10S2 6.5 2 12s4.47 10 10 10c.59 0 1.16-.06 1.72-.16-.32-.59-.54-1.23-.64-1.92M18 15v3h-3v2h3v3h2v-3h3v-2h-3v-3z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="July 28, 2026 19:40:33 UTC">July 28, 2026</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="August 27, 2026 23:02:08 UTC">August 27, 2026</span>
   </span>
 
     
