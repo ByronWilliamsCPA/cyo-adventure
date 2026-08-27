@@ -94,93 +94,102 @@ jobs:
           path: frontend/test-results/
           retention-days: 14
 
-      - name: Alert on failure (pinned issue)
+      - name: Compose the issue body
         # Reusable alerting pattern for scheduled E2E tiers, same as
-        # e2e-prod.yml: find an OPEN issue labeled e2e-alert whose title
-        # starts with this workflow's marker and comment on it, or open one
-        # if none exists yet, so repo watchers get GitHub's native
-        # email/push notification instead of a red run nobody checks the
-        # Actions tab for. Findings this scan surfaces get their own UW-*
+        # e2e-prod.yml, routed through the shared
+        # .github/actions/ci-failure-issue composite (label: e2e-alert)
+        # instead of a bare github-script block: the prior inline
+        # issue-listing call paged at GitHub's default 30-per-page with no
+        # `!issue.pull_request` filter, so an open PR titled with this marker,
+        # or a 31st-oldest open issue, could hide the real tracking issue and
+        # file a duplicate. Findings this scan surfaces get their own UW-*
         # register row (see UW-F27); this step is about noticing a NEW
         # regression promptly, not about the known, already-tracked ones.
         if: ${{ failure() }}
+        id: compose
         uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9.0.0
         with:
+          result-encoding: string
           script: |
-            const marker = '[a11y-weekly]'
             const runUrl = `${context.serverUrl}/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`
             const today = new Date().toISOString().slice(0, 10)
 
-            const { data: issues } = await github.rest.issues.listForRepo({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              state: 'open',
-              labels: 'e2e-alert',
-            })
-            const existing = issues.find((issue) => issue.title.startsWith(marker))
+            return [
+              'The scheduled `Accessibility Compliance Weekly` workflow',
+              '(`.github/workflows/accessibility-compliance-weekly.yml`) failed.',
+              '',
+              'This tier runs the WCAG 2.2 + axe best-practice extended scan',
+              '(A11Y_EXTENDED=1) against the mocked-tier build, weekly.',
+              '',
+              'This alert fires on `failure()`, so it covers BOTH of:',
+              '',
+              '1. A WCAG CONFORMANCE regression. Since 2026-08-16 the scan',
+              '   fails only on `wcag*`-tagged findings, so a scan-reported',
+              '   failure is a real conformance break.',
+              '2. A failure to RUN the scan at all: npm ci, the Playwright',
+              '   browser install, the app build, a navigation timeout, or a',
+              '   route mock returning the wrong shape. These are not',
+              '   accessibility findings and must not be read as one.',
+              '',
+              'Check which before acting. The run log distinguishes them: a',
+              'conformance failure prints an axe violation array, an',
+              'infrastructure failure fails in a setup step or on a locator',
+              'before the scan runs. Case 2 is not hypothetical -- the',
+              '/guardian/devices route failed this way for weeks because a',
+              'shared mock answered an array-returning endpoint with an object,',
+              'so the page rendered its error boundary and was never actually',
+              'scanned.',
+              '',
+              "axe's non-normative best-practice findings are REPORTED per route",
+              'in the run log and as a test annotation, and do not fail the job.',
+              'They remain tracked as UW-F27.',
+              '',
+              'Know what that covers before you skim past it. Against axe-core',
+              '4.12.1 it is 30 rules, not just the landmark and heading ones, and',
+              'several are real assistive-technology failures: aria-dialog-name,',
+              'aria-treeitem-name, empty-heading, skip-link, tabindex and',
+              'focus-order-semantics. A report-only finding in that group is worth',
+              'acting on even though it did not fail the run. The full list is in',
+              "the comment above `isConformance` in frontend/e2e/a11y.spec.ts.",
+              '',
+              'That split exists because this tier failed on that known structural',
+              'debt on every route every week from its first run, and two real',
+              'WCAG 1.4.3 contrast failures sat undetected inside the noise. So',
+              'treat this alert as naming something new, not as the standing debt.',
+              '',
+              `First failing run: ${runUrl}`,
+              `Date: ${today}`,
+              '',
+              'This issue accumulates one comment per failing run and closes itself',
+              'once a scheduled run succeeds; the next failure opens a fresh issue.',
+            ].join('\n')
 
-            if (existing) {
-              await github.rest.issues.createComment({
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                issue_number: existing.number,
-                body: `Scheduled accessibility compliance scan failed again on ${today}. Run: ${runUrl}`,
-              })
-            } else {
-              await github.rest.issues.create({
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                title: `${marker} scheduled accessibility compliance scan failing`,
-                labels: ['e2e-alert'],
-                body: [
-                  'The scheduled `Accessibility Compliance Weekly` workflow',
-                  '(`.github/workflows/accessibility-compliance-weekly.yml`) failed.',
-                  '',
-                  'This tier runs the WCAG 2.2 + axe best-practice extended scan',
-                  '(A11Y_EXTENDED=1) against the mocked-tier build, weekly.',
-                  '',
-                  'This alert fires on `failure()`, so it covers BOTH of:',
-                  '',
-                  '1. A WCAG CONFORMANCE regression. Since 2026-08-16 the scan',
-                  '   fails only on `wcag*`-tagged findings, so a scan-reported',
-                  '   failure is a real conformance break.',
-                  '2. A failure to RUN the scan at all: npm ci, the Playwright',
-                  '   browser install, the app build, a navigation timeout, or a',
-                  '   route mock returning the wrong shape. These are not',
-                  '   accessibility findings and must not be read as one.',
-                  '',
-                  'Check which before acting. The run log distinguishes them: a',
-                  'conformance failure prints an axe violation array, an',
-                  'infrastructure failure fails in a setup step or on a locator',
-                  'before the scan runs. Case 2 is not hypothetical -- the',
-                  '/guardian/devices route failed this way for weeks because a',
-                  'shared mock answered an array-returning endpoint with an object,',
-                  'so the page rendered its error boundary and was never actually',
-                  'scanned.',
-                  '',
-                  "axe's non-normative best-practice findings are REPORTED per route",
-                  'in the run log and as a test annotation, and do not fail the job.',
-                  'They remain tracked as UW-F27.',
-                  '',
-                  'Know what that covers before you skim past it. Against axe-core',
-                  '4.12.1 it is 30 rules, not just the landmark and heading ones, and',
-                  'several are real assistive-technology failures: aria-dialog-name,',
-                  'aria-treeitem-name, empty-heading, skip-link, tabindex and',
-                  'focus-order-semantics. A report-only finding in that group is worth',
-                  'acting on even though it did not fail the run. The full list is in',
-                  "the comment above `isConformance` in frontend/e2e/a11y.spec.ts.",
-                  '',
-                  'That split exists because this tier failed on that known structural',
-                  'debt on every route every week from its first run, and two real',
-                  'WCAG 1.4.3 contrast failures sat undetected inside the noise. So',
-                  'treat this alert as naming something new, not as the standing debt.',
-                  '',
-                  `First failing run: ${runUrl}`,
-                  `Date: ${today}`,
-                  '',
-                  'This issue stays open and accumulates one comment per failing run until',
-                  'someone resolves the underlying problem and closes it; the next failure',
-                  'after that opens a fresh issue.',
-                ].join('\n'),
-              })
-            }
+      - name: File or comment on the pinned issue
+        if: ${{ failure() }}
+        uses: ./.github/actions/ci-failure-issue
+        with:
+          marker: '[a11y-weekly]'
+          label: e2e-alert
+          summary: scheduled accessibility compliance scan failing
+          body: ${{ steps.compose.outputs.result }}
+          comment-body: Scheduled accessibility compliance scan failed again.
+
+      - name: Resolve the tracking issue on a green scheduled run
+        # Every one of these issue bodies used to end by asking a human to
+        # close the issue once a run went green; nobody ever did for the other
+        # scheduled workflows either, so closing is the workflow's job now
+        # that the shared action makes it a one-line step. A green run here
+        # genuinely proves both halves of the alert condition above: no WCAG
+        # conformance regression AND the scan itself ran to completion, so
+        # `success()` is a sound signal to close on.
+        #
+        # `&& github.event_name == 'schedule'`: a manual `workflow_dispatch`
+        # proves only that a human-triggered run went green, not that the
+        # SCHEDULE is alive; without this a dead cron could still have its
+        # tracking issue closed by a one-off dispatch.
+        if: success() && github.event_name == 'schedule'
+        uses: ./.github/actions/ci-failure-issue
+        with:
+          marker: '[a11y-weekly]'
+          label: e2e-alert
+          mode: resolve

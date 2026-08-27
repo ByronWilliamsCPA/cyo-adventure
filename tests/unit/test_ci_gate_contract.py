@@ -619,13 +619,18 @@ class TestGateDecisions:
         # The disclosure has to carve out EVERY job that did run, or it
         # overstates the gap in the other direction. It named only
         # `ER Diagram Drift` while three jobs really ran, so the sentence was
-        # wrong by two; `docstrings` later made it four and wrong by three.
+        # wrong by two; `docstrings` later made it four and wrong by three, and
+        # `alert-action` made it five.
         # The prose is spot-checked here and enforced generically by
         # TestEveryUnconditionalJobIsReleaseChecked, which derives the job set
-        # from the workflow rather than transcribing it.
+        # from the workflow rather than transcribing it. That generic test is
+        # why this transcription is a spot-check and not the guard: it names
+        # the joining word and the ordering, which the derived test cannot see.
         assert "every quality job except `ER Diagram Drift`," in run.summary
-        assert "`Format (tree-wide)`, `RAD Citation Gate` and" in run.summary
+        assert "`Format (tree-wide)`, `RAD Citation Gate`," in run.summary
         assert "`Docstring coverage (interrogate)`" in run.summary
+        assert "and `Scheduled-alert action harness` was intentionally" in run.summary
+        assert "Those five carry no job-level condition" in run.summary
         assert "::warning::" in run.stdout
 
     def test_a_release_commit_with_a_failing_er_diagram_check_fails_the_gate(

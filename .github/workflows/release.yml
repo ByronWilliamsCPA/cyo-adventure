@@ -678,7 +678,16 @@ jobs:
         with:
           egress-policy: audit
 
-      - name: File or comment on the pinned issue
+      - name: Check out the shared alerting action
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          # Only the composite action is needed. A local `uses: ./...` requires a
+          # checkout, and this job previously had none.
+          sparse-checkout: .github/actions/ci-failure-issue
+          sparse-checkout-cone-mode: false
+          persist-credentials: false
+
+      - name: Compose the issue body
         # Same alerting pattern as supabase-backup.yml's `alert` job: find an OPEN issue
         # labelled `ci-failure` whose title starts with this workflow's marker and comment
         # on it, or open one if none exists, so repo watchers get GitHub's native
@@ -689,36 +698,15 @@ jobs:
         # secret), because there is no run to report. That gap is covered inside the
         # pipeline instead, by scripts/check_release_tag_sync.py, which fails the next
         # `propose` that does happen when the version and tag have desynced.
+        id: compose
         uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9.0.0
         with:
+          result-encoding: string
           script: |
-            const marker = '[release]'
             const runUrl = `${context.serverUrl}/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`
             const today = new Date().toISOString().slice(0, 10)
 
-            const issues = await github.paginate(github.rest.issues.listForRepo, {
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              state: 'open',
-              labels: 'ci-failure',
-              per_page: 100,
-            })
-            const existing = issues.find((issue) => issue.title.startsWith(marker))
-
-            if (existing) {
-              await github.rest.issues.createComment({
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                issue_number: existing.number,
-                body: `Release workflow did not complete on ${today} (event: ${context.eventName}). Run: ${runUrl}`,
-              })
-            } else {
-              await github.rest.issues.create({
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                title: `${marker} release workflow failing`,
-                labels: ['ci-failure'],
-                body: [
+            return [
                   'The `Release` workflow (`.github/workflows/release.yml`) did not complete: ' +
                     'it either failed or was cancelled.',
                   '',
@@ -730,12 +718,60 @@ jobs:
                     'A failure here leaves `pyproject.toml` bumped with no matching tag, which DEADLOCKS ' +
                     'the pipeline: every later `propose` recomputes the same version forever.',
                   '',
-                  'The `publish` case is the 2026-08-17 incident. Do not close this issue on the ' +
-                    'strength of a later green run: a green `propose` does not prove the tag exists.',
+                  'The `publish` case is the 2026-08-17 incident. This issue is NOT closed on the ' +
+                    'strength of any green run: a green `propose` does not prove the tag exists, so only ' +
+                    'a successful `publish` closes it automatically.',
                   '',
                   'Diagnosis and recovery: `docs/operations/runbook.md` section 7.2.',
                   '',
                   `Run: ${runUrl}`,
-                ].join('\n'),
-              })
-            }
+                ].join('\n')
+
+      - name: File or comment on the pinned issue
+        uses: ./.github/actions/ci-failure-issue
+        with:
+          marker: '[release]'
+          summary: release workflow failing
+          body: ${{ steps.compose.outputs.result }}
+          comment-body: The release workflow did not complete again.
+
+  resolve:
+    name: Resolve the tracking issue
+    needs: [propose, publish]
+    # Every one of these issue bodies used to end by asking a human to close the issue
+    # once a run went green. Nobody ever did, so five stale issues accumulated on one
+    # shared `ci-failure` label and a NEW alert became indistinguishable from standing
+    # backlog. Closing is now the workflow's job.
+    #
+    # `publish` ONLY, deliberately. The issue body warns that a green `propose` does
+    # not prove the tag exists, and that warning is the 2026-08-17 deadlock: `publish`
+    # failed after the version bump, leaving no tag. Only a `publish` that created the
+    # tag and the GitHub Release proves the cycle completed, so that is the one result
+    # allowed to close the issue.
+    #
+    # Gated on the explicit result rather than `success()`, because `propose` and
+    # `publish` never run on the same event and a SKIPPED job does not fail
+    # `success()`, which would close the issue on a run that proved nothing.
+    if: needs.publish.result == 'success'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      issues: write
+    steps:
+      - name: Harden the runner
+        uses: step-security/harden-runner@bf7454d06d71f1098171f2acdf0cd4708d7b5920 # v2.20.0
+        with:
+          egress-policy: audit
+
+      - name: Check out the shared alerting action
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          sparse-checkout: .github/actions/ci-failure-issue
+          sparse-checkout-cone-mode: false
+          persist-credentials: false
+
+      - name: Close the pinned issue
+        uses: ./.github/actions/ci-failure-issue
+        with:
+          marker: '[release]'
+          mode: resolve

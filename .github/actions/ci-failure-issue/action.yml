@@ -1,0 +1,273 @@
+# Shared open/update/resolve logic for the pinned `ci-failure` tracking issue that every
+# schedule-only workflow keeps. Schedule-only workflows fail invisibly: no pull request
+# turns red, so the issue IS the notification channel.
+#
+# This exists because the same ~40 lines of github-script were copy-pasted into fourteen
+# workflows and then drifted apart: eleven on the `ci-failure` label and three on
+# `e2e-alert`. As of 2026-08-27 the copies disagreed on three things that each produce
+# duplicate issues or missed alerts:
+#
+#   1. Matching. Eight copies matched `title.startsWith(marker)`; six matched `title ===`
+#      exactly, so editing a title (in the workflow OR on the issue) orphaned the issue
+#      and the next failure filed a second one.
+#   2. Pagination. Seven copies called `listForRepo` bare, seeing only the default first
+#      30 issues. Past 30 open issues on the label the lookup silently misses and files a
+#      duplicate, which is self-amplifying: the backlog breaks the dedup that bounds it.
+#   3. Pull requests. `listForRepo` returns PRs too. Only one copy filtered them, so a PR
+#      sharing the title could absorb every comment while the real issue was never found.
+#
+# Fixing those in one place is the point. Do not re-inline this logic into a workflow.
+#
+# #EDGE concurrency: the find-then-create sequence is not atomic, so two callers racing
+# on the SAME marker could both miss the issue and file two. Markers do not collide across
+# workflows, so a cross-workflow race cannot produce a duplicate; that leaves two ways in,
+# and a `concurrency:` group only closes the first:
+#
+#   a. Two RUNS of the same workflow overlapping. Every call site is in a workflow with a
+#      `concurrency:` group, which is what bounds this.
+#   b. Two MATRIX LEGS of the same run. A `concurrency:` group does NOT serialize legs
+#      within one run, so it bounds nothing here. `cifuzzy.yml` calls this action from
+#      inside a matrix job; it is latent only because `sanitizer: [address]` has one leg.
+#      A second sanitizer plus `fail-fast: false` makes it live.
+#
+# #VERIFY both conditions are asserted in `tests/unit/test_ci_failure_action_contract.py`
+# rather than left to this comment: every call site's workflow must carry a `concurrency:`
+# group, and no call site may sit in a matrix job with more than one leg. To add a leg,
+# first route the alerting through a single downstream job the way `kws-delivery-health.yml`
+# does with its `probe` matrix and separate `alert` job.
+#
+# #CRITICAL security: `body` and `title` carry interpolated run data. They are passed to
+# the script through `env`, never spliced into the script source, because a `${{ }}`
+# expansion inside a `script:` block is executed as code (GitHub's own script-injection
+# guidance). Keep every new input on the `env` path.
+# #VERIFY a body containing a backtick, `${`, or a quote must appear verbatim in the
+# filed issue rather than changing the script's behaviour.
+#
+# #CRITICAL external resources: GitHub SILENTLY IGNORES assignees for a login without
+# push access and still returns 201 (documented on both "Create an issue" and "Add
+# assignees to an issue"). Since assignment is the only delivery channel here, an
+# undetected drop reproduces the exact outage this action was written to end, with the
+# job reporting green.
+# #VERIFY every assigning call re-reads the assignees off its own response and fails the
+# step when the requested login is absent. Do not replace that with a log line: a log
+# line is what made the original drop invisible.
+name: CI failure issue
+description: Open, update, or resolve the pinned ci-failure tracking issue for a scheduled workflow.
+
+inputs:
+  marker:
+    description: >-
+      Stable title prefix identifying the filing workflow, e.g. "[release]". Matching is
+      by prefix so the rest of the title stays editable without orphaning the issue.
+    required: true
+  label:
+    description: >-
+      Label that pins the tracking issue and scopes the lookup. Defaults to `ci-failure`,
+      the label the scheduled quality workflows share. The e2e and accessibility workflows
+      pass `e2e-alert` instead: they had their own copies of this logic carrying the same
+      pagination and pull-request defects, and a hardcoded label is what kept them
+      uncoverable. One label per call site, and the lookup only ever sees that label.
+    required: false
+    default: ci-failure
+  mode:
+    description: '"open" to file or update on failure; "resolve" to close on a green scheduled run.'
+    required: false
+    default: open
+  summary:
+    description: Title text after the marker. Required for mode=open; ignored for resolve.
+    required: false
+    default: ''
+  body:
+    description: >-
+      Body of the issue when it is FIRST filed. The action always appends a footer with the
+      run URL and date, so a call site never has to build one to be complete. Several call
+      sites still reference the run inline because their prose points at it ("the failing
+      URLs are in that run's job summary"); that is deliberate, and it means the link can
+      appear twice. Required for mode=open; ignored for resolve.
+    required: false
+    default: ''
+  comment-body:
+    description: >-
+      Body of the comment added when the issue is ALREADY open. Defaults to a one-line
+      recurrence note plus the run link, which is what a repeat failure needs: the full
+      explanation is already at the top of the issue.
+    required: false
+    default: ''
+  assignee:
+    description: >-
+      GitHub login to assign. Assignment is the delivery mechanism, not decoration: a
+      COMMENT on an issue notifies only subscribers and participants, and these issues are
+      opened by a bot with no human participant. Before this was added, every alert landed
+      in a repository nobody was subscribed to and the owner learned about outages by
+      asking a person. Empty string disables assignment.
+    required: false
+    default: williaby
+  legacy-title:
+    description: >-
+      Exact pre-marker title of an issue already open when a workflow adopted a marker.
+      Matched in addition to the marker prefix so the migration does not orphan a live
+      issue and file a duplicate beside it. Delete the input once that issue is closed.
+    required: false
+    default: ''
+  github-token:
+    description: 'Token with `issues: write` scope. Composite actions do not inherit secrets.'
+    required: false
+    default: ${{ github.token }}
+
+runs:
+  using: composite
+  steps:
+    - name: Reconcile the pinned ci-failure issue
+      uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9.0.0
+      env:
+        CFI_MARKER: ${{ inputs.marker }}
+        CFI_LABEL: ${{ inputs.label }}
+        CFI_MODE: ${{ inputs.mode }}
+        CFI_SUMMARY: ${{ inputs.summary }}
+        CFI_BODY: ${{ inputs.body }}
+        CFI_COMMENT_BODY: ${{ inputs.comment-body }}
+        CFI_ASSIGNEE: ${{ inputs.assignee }}
+        CFI_LEGACY_TITLE: ${{ inputs.legacy-title }}
+      with:
+        github-token: ${{ inputs.github-token }}
+        script: |
+          const marker = process.env.CFI_MARKER
+          const label = process.env.CFI_LABEL
+          const mode = process.env.CFI_MODE
+          const summary = process.env.CFI_SUMMARY
+          const body = process.env.CFI_BODY
+          const commentBody = process.env.CFI_COMMENT_BODY
+          const assignee = process.env.CFI_ASSIGNEE
+          const legacyTitle = process.env.CFI_LEGACY_TITLE
+
+          if (!marker) {
+            core.setFailed('marker is required')
+            return
+          }
+          if (!label) {
+            core.setFailed('label must not be empty')
+            return
+          }
+          if (mode !== 'open' && mode !== 'resolve') {
+            core.setFailed(`mode must be "open" or "resolve", got "${mode}"`)
+            return
+          }
+
+          const owner = context.repo.owner
+          const repo = context.repo.repo
+          const runUrl = `${context.serverUrl}/${owner}/${repo}/actions/runs/${context.runId}`
+          const today = new Date().toISOString().slice(0, 10)
+
+          // GitHub silently ignores assignees for a login without push access and still
+          // returns 201, so the response is the only evidence that assignment landed.
+          // Assignment is the notification channel here, so a drop is an outage, not a
+          // cosmetic miss: fail the step rather than logging a success that cannot be
+          // distinguished from a silent failure. See the #CRITICAL note in this file's
+          // header. `assignees` is absent (not empty) on some response shapes, hence the
+          // `?? []` rather than a truthiness check.
+          const assertAssigned = (assignees, where) => {
+            if (assignee === '') {
+              return
+            }
+            const got = (assignees ?? []).map((a) => a.login)
+            if (!got.includes(assignee)) {
+              core.setFailed(
+                `${where}: GitHub dropped assignee "${assignee}", so this issue ` +
+                  `notifies nobody. Confirm the login still has push access. ` +
+                  `Assigned instead: [${got.join(', ')}]`,
+              )
+            }
+          }
+
+          // paginate, not a bare list call: the default page is 30 and the whole point of
+          // this action is that the label accumulates.
+          const issues = await github.paginate(github.rest.issues.listForRepo, {
+            owner,
+            repo,
+            state: 'open',
+            labels: label,
+            per_page: 100,
+          })
+          const existing = issues.find(
+            (issue) =>
+              !issue.pull_request &&
+              (issue.title.startsWith(marker) ||
+                (legacyTitle !== '' && issue.title === legacyTitle)),
+          )
+
+          if (mode === 'resolve') {
+            // A green scheduled run is the close condition every one of these issue bodies
+            // already stated in prose and asked a human to honour. Nobody ever did, so the
+            // label only ever grew and a new alert became indistinguishable from backlog.
+            if (!existing) {
+              core.info(`No open ${label} issue for ${marker}; nothing to resolve.`)
+              return
+            }
+            // Close BEFORE commenting. The two calls are not atomic, and if the close
+            // failed after the comment landed the issue would sit open carrying a comment
+            // that says it was closed automatically. This order cannot lie: a comment can
+            // still be added to a closed issue, so the worst case is a closed issue with
+            // no explanatory comment plus a red job.
+            await github.rest.issues.update({
+              owner,
+              repo,
+              issue_number: existing.number,
+              state: 'closed',
+              state_reason: 'completed',
+            })
+            await github.rest.issues.createComment({
+              owner,
+              repo,
+              issue_number: existing.number,
+              body: `A scheduled run succeeded on ${today}. Closed automatically. Run: ${runUrl}`,
+            })
+            core.info(`Resolved #${existing.number} for ${marker}.`)
+            return
+          }
+
+          if (!summary || !body) {
+            core.setFailed('summary and body are required when mode=open')
+            return
+          }
+
+          // Footer, not call-site interpolation. Every copy of this logic used to build
+          // its own run link and half of them formatted it differently.
+          const footer = `\n\n---\nRun: ${runUrl}\nDate: ${today} (event: ${context.eventName})`
+
+          if (existing) {
+            await github.rest.issues.createComment({
+              owner,
+              repo,
+              issue_number: existing.number,
+              body: (commentBody || 'This failed again.') + footer,
+            })
+            // Self-heal the issues that predate assignment. An unassigned tracking issue
+            // notifies nobody on a comment, which is how a live outage sat unread.
+            // #EDGE: this re-assigns on every recurrence, so a human who deliberately
+            // unassigns themselves mid-triage gets re-assigned on the next failure.
+            // #VERIFY that is the intended trade: silent non-delivery is the worse
+            // failure, and an unassigned tracking issue is indistinguishable from one
+            // filed before assignment existed.
+            if (assignee !== '' && (existing.assignees ?? []).length === 0) {
+              const healed = await github.rest.issues.addAssignees({
+                owner,
+                repo,
+                issue_number: existing.number,
+                assignees: [assignee],
+              })
+              assertAssigned(healed.data.assignees, `self-heal on #${existing.number}`)
+            }
+            core.info(`Updated #${existing.number} for ${marker}.`)
+            return
+          }
+
+          const created = await github.rest.issues.create({
+            owner,
+            repo,
+            title: `${marker} ${summary}`,
+            body: body + footer,
+            labels: [label],
+            ...(assignee !== '' ? { assignees: [assignee] } : {}),
+          })
+          assertAssigned(created.data.assignees, `filing #${created.data.number}`)
+          core.info(`Filed #${created.data.number} for ${marker}.`)

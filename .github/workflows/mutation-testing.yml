@@ -98,42 +98,30 @@ jobs:
           if-no-files-found: warn
 
       - name: File tracking issue on scheduled failure
-        # Schedule-only workflows fail invisibly: no PR turns red and nobody
-        # is notified. Keep exactly one open tracking issue up to date.
+        # Schedule-only workflows fail invisibly: no pull request turns red, so this
+        # issue IS the notification. The shared action keeps exactly one open issue
+        # per workflow and ASSIGNS it: a comment on an unassigned bot-filed issue
+        # notifies nobody, which is how #667 sat unread for seventeen days.
         if: failure() && github.event_name == 'schedule'
-        uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9.0.0
+        uses: ./.github/actions/ci-failure-issue
         with:
-          script: |
-            const title = 'Weekly mutation-testing run is failing';
-            const body = [
-              `The scheduled Mutation Testing workflow failed.`,
-              '',
-              `Run: ${context.serverUrl}/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`,
-              '',
-              'This issue is filed automatically because schedule-only workflows',
-              'never surface failures on a pull request. Close it once a weekly',
-              'run succeeds again.',
-            ].join('\n');
-            const { data: issues } = await github.rest.issues.listForRepo({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              state: 'open',
-              labels: 'ci-failure',
-            });
-            const existing = issues.find((issue) => issue.title === title);
-            if (existing) {
-              await github.rest.issues.createComment({
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                issue_number: existing.number,
-                body,
-              });
-            } else {
-              await github.rest.issues.create({
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                title,
-                body,
-                labels: ['ci-failure'],
-              });
-            }
+          marker: '[mutation-testing]'
+          legacy-title: Weekly mutation-testing run is failing
+          summary: weekly mutation-testing run is failing
+          body: |
+            The scheduled Mutation Testing workflow failed.
+
+
+            Filed automatically because schedule-only workflows never surface a failure
+            on a pull request. It closes itself once a weekly run succeeds.
+
+      - name: Resolve the tracking issue on a green scheduled run
+        # The close condition every one of these issue bodies stated in prose and
+        # asked a human to honour. Nobody ever did, so the label only grew and a new
+        # alert became indistinguishable from standing backlog.
+        if: success() && github.event_name == 'schedule'
+        uses: ./.github/actions/ci-failure-issue
+        with:
+          marker: '[mutation-testing]'
+          legacy-title: Weekly mutation-testing run is failing
+          mode: resolve

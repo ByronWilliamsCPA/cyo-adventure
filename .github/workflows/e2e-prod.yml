@@ -153,61 +153,68 @@ jobs:
           path: frontend/test-results/
           retention-days: 7
 
-      - name: Alert on failure (pinned issue)
+      - name: Compose the issue body
         # Reusable alerting pattern for scheduled E2E tiers (test-
-        # traceability-matrix.md, "Actions to reach the bar" #2): find an
-        # OPEN issue labeled e2e-alert whose title starts with this
-        # workflow's marker and comment on it, or open one if none exists
-        # yet, so repo watchers get GitHub's native email/push notification
-        # instead of a red run nobody checks the Actions tab for.
+        # traceability-matrix.md, "Actions to reach the bar" #2), routed
+        # through the shared .github/actions/ci-failure-issue composite (label:
+        # e2e-alert) instead of a bare github-script block: the prior inline
+        # issue-listing call paged at GitHub's default 30-per-page with no
+        # `!issue.pull_request` filter, so an open PR titled with this marker,
+        # or a 31st-oldest open issue, could hide the real tracking issue and
+        # file a duplicate.
         #
-        # e2e-staging.yml should adopt this exact step once PR #268 merges;
-        # today it only has the passive trace-artifact-on-failure signal
-        # (marker "[e2e-staging]" instead of "[e2e-prod]", everything else
-        # the same).
+        # e2e-staging.yml should adopt this same composite-action pattern once
+        # PR #268 merges; today it only has the passive
+        # trace-artifact-on-failure signal (marker "[e2e-staging]" instead of
+        # "[e2e-prod]", everything else the same).
         if: ${{ failure() }}
+        id: compose
         uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9.0.0
         with:
+          result-encoding: string
           script: |
-            const marker = '[e2e-prod]'
             const runUrl = `${context.serverUrl}/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`
             const today = new Date().toISOString().slice(0, 10)
 
-            const { data: issues } = await github.rest.issues.listForRepo({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              state: 'open',
-              labels: 'e2e-alert',
-            })
-            const existing = issues.find((issue) => issue.title.startsWith(marker))
+            return [
+              'The scheduled `E2E (production)` workflow (`.github/workflows/e2e-prod.yml`) failed.',
+              '',
+              'This tier signs in through the real login form against live production',
+              '(frontend/e2e-prod/) and runs daily; a failure here means either a real',
+              'regression, a production outage, or the dedicated test account or its',
+              'credentials need attention.',
+              '',
+              `First failing run: ${runUrl}`,
+              `Date: ${today}`,
+              '',
+              'This issue accumulates one comment per failing run and closes itself',
+              'once a scheduled run succeeds; the next failure opens a fresh issue.',
+            ].join('\n')
 
-            if (existing) {
-              await github.rest.issues.createComment({
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                issue_number: existing.number,
-                body: `Scheduled production E2E failed again on ${today}. Run: ${runUrl}`,
-              })
-            } else {
-              await github.rest.issues.create({
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                title: `${marker} scheduled production E2E failing`,
-                labels: ['e2e-alert'],
-                body: [
-                  'The scheduled `E2E (production)` workflow (`.github/workflows/e2e-prod.yml`) failed.',
-                  '',
-                  'This tier signs in through the real login form against live production',
-                  '(frontend/e2e-prod/) and runs daily; a failure here means either a real',
-                  'regression, a production outage, or the dedicated test account or its',
-                  'credentials need attention.',
-                  '',
-                  `First failing run: ${runUrl}`,
-                  `Date: ${today}`,
-                  '',
-                  'This issue stays open and accumulates one comment per failing run until',
-                  'someone resolves the underlying problem and closes it; the next failure',
-                  'after that opens a fresh issue.',
-                ].join('\n'),
-              })
-            }
+      - name: File or comment on the pinned issue
+        if: ${{ failure() }}
+        uses: ./.github/actions/ci-failure-issue
+        with:
+          marker: '[e2e-prod]'
+          label: e2e-alert
+          summary: scheduled production E2E failing
+          body: ${{ steps.compose.outputs.result }}
+          comment-body: Scheduled production E2E failed again.
+
+      - name: Resolve the tracking issue on a green scheduled run
+        # Every one of these issue bodies used to end by asking a human to
+        # close the issue once a run went green; nobody ever did for the other
+        # scheduled workflows either, so closing is the workflow's job now
+        # that the shared action makes it a one-line step.
+        #
+        # `&& github.event_name == 'schedule'`: a manual `workflow_dispatch`
+        # proves only that a human-triggered run went green, not that the
+        # SCHEDULE is alive; without this a dead cron could still have its
+        # tracking issue closed by a one-off dispatch (see supabase-backup.yml
+        # for the confirmed real-world shape of that failure, issue #667).
+        if: success() && github.event_name == 'schedule'
+        uses: ./.github/actions/ci-failure-issue
+        with:
+          marker: '[e2e-prod]'
+          label: e2e-alert
+          mode: resolve

@@ -286,12 +286,22 @@ jobs:
           path: outcomes
           merge-multiple: true
 
-      - name: File or comment on the pinned issue
+      - name: Check out the shared alerting action
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          # Only the composite action is needed. A local `uses: ./...` requires a
+          # checkout, and this job previously had none.
+          sparse-checkout: .github/actions/ci-failure-issue
+          sparse-checkout-cone-mode: false
+          persist-credentials: false
+
+      - name: Compose the issue body
+        id: compose
         uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9.0.0
         with:
+          result-encoding: string
           script: |
             const fs = require('node:fs')
-            const marker = '[kws-delivery-health]'
             const runUrl = `${context.serverUrl}/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`
             const today = new Date().toISOString().slice(0, 10)
 
@@ -321,35 +331,7 @@ jobs:
               core.warning(`could not read tier outcomes: ${err.message}`)
             }
 
-            const issues = await github.paginate(github.rest.issues.listForRepo, {
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              state: 'open',
-              labels: 'ci-failure',
-              per_page: 100,
-            })
-            const existing = issues.find((issue) => issue.title.startsWith(marker))
-
-            if (existing) {
-              await github.rest.issues.createComment({
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                issue_number: existing.number,
-                body: [
-                  `KWS delivery-health probe failed again on ${today}.`,
-                  '',
-                  summary,
-                  '',
-                  `Run: ${runUrl}`,
-                ].join('\n'),
-              })
-            } else {
-              await github.rest.issues.create({
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                title: `${marker} KWS parent-verification deliveries may have stopped`,
-                labels: ['ci-failure'],
-                body: [
+            return [
                   'The scheduled `KWS delivery health` workflow',
                   '(`.github/workflows/kws-delivery-health.yml`) failed.',
                   '',
@@ -385,9 +367,119 @@ jobs:
                   `First failing run: ${runUrl}`,
                   `Date: ${today}`,
                   '',
-                  'This issue stays open and accumulates one comment per failing run until',
-                  'someone resolves the underlying problem and closes it; the next failure',
-                  'after that opens a fresh issue.',
-                ].join('\n'),
-              })
-            }
+                  'This issue accumulates one comment per failing run and closes itself',
+                  'once a scheduled run succeeds; the next failure opens a fresh issue.',
+                ].join('\n')
+
+      - name: File or comment on the pinned issue
+        uses: ./.github/actions/ci-failure-issue
+        with:
+          marker: '[kws-delivery-health]'
+          summary: KWS parent-verification deliveries may have stopped
+          body: ${{ steps.compose.outputs.result }}
+          # Same composed body as `body:` above (testing-improvement-plan row A7):
+          # the pre-PR version posted this per-tier state table on every recurrence
+          # comment too. Losing it here means the fourth alert of a persistent
+          # outage (this workflow can comment up to four times a day) says only
+          # "failed again" instead of which tier, which state, and the diverging
+          # triage steps that follow from it.
+          comment-body: ${{ steps.compose.outputs.result }}
+
+  resolve:
+    name: Resolve the tracking issue
+    needs: probe
+    # Every one of these issue bodies used to end by asking a human to close the issue
+    # once a run went green. Nobody ever did, so five stale issues accumulated on one
+    # shared `ci-failure` label and a NEW alert became indistinguishable from standing
+    # backlog. Closing is now the workflow's job.
+    #
+    # Gated on the needed job's explicit result rather than `success()`, because a
+    # SKIPPED dependency does not fail `success()` and would close the issue on a run
+    # that proved nothing.
+    #
+    # `&& github.event_name == 'schedule'`, because a manual `workflow_dispatch` proves
+    # only that a human-triggered run went green, not that the SCHEDULE is alive; without
+    # this a dead cron can still have its tracking issue closed by a one-off dispatch.
+    if: needs.probe.result == 'success' && github.event_name == 'schedule'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      # No `actions: read`: the download below reads artifacts from THIS run, which
+      # goes through the runtime token. Same reasoning as the `alert` job above.
+      issues: write
+    steps:
+      - name: Harden the runner
+        uses: step-security/harden-runner@bf7454d06d71f1098171f2acdf0cd4708d7b5920 # v2.20.0
+        with:
+          egress-policy: audit
+
+      - name: Collect each tier's outcome
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+        with:
+          pattern: kws-health-*
+          path: outcomes
+          merge-multiple: true
+
+      # #CRITICAL data integrity: `probe` exiting 0 does NOT mean a tier was measured.
+      # Two of its branches record an outcome and `exit 0` having probed nothing: an
+      # absent base URL (`no-base-url`) and, inside the dated production grace, an
+      # absent readiness check (`missing`). Before this workflow could close its own
+      # issue that was harmless, because nothing closed anything. Now a green schedule
+      # in either state would close a LIVE KWS outage without re-checking it, which is
+      # the same laundering the `unknown` state was carefully worded to avoid.
+      # #VERIFY the gate below is a WHITELIST of states that prove a measurement
+      # happened, not a blacklist of bad ones: a soft-pass state added to the probe
+      # later must default to NOT closing the issue. Do not invert it.
+      - name: Confirm every tier was actually measured
+        id: measured
+        env:
+          # One per `probe` matrix leg. A missing artifact means a tier never
+          # reported, which is exactly the case that must not close the issue, so
+          # the count is checked rather than assumed. Kept honest by
+          # `tests/unit/test_ci_failure_action_contract.py`, which fails if this
+          # stops matching the matrix.
+          EXPECTED_TIERS: '2'
+        run: |
+          set -euo pipefail
+          measured_states='ok unconfigured'
+          found=0
+          verdict=true
+          for f in outcomes/*.tsv; do
+            [ -e "${f}" ] || continue
+            found=$((found + 1))
+            tier=$(cut -f1 "${f}")
+            state=$(cut -f2 "${f}")
+            case " ${measured_states} " in
+              *" ${state} "*)
+                echo "::notice::${tier}: state '${state}' is a real measurement."
+                ;;
+              *)
+                echo "::warning::${tier}: state '${state}' means nothing was measured" \
+                     "on this tier, so a green run here is not evidence the KWS leg" \
+                     "recovered. Leaving the tracking issue open."
+                verdict=false
+                ;;
+            esac
+          done
+          if [ "${found}" -ne "${EXPECTED_TIERS}" ]; then
+            echo "::warning::${found} of ${EXPECTED_TIERS} tiers reported an outcome;" \
+                 "a tier that never reported cannot have recovered. Leaving the" \
+                 "tracking issue open."
+            verdict=false
+          fi
+          echo "measured=${verdict}" >> "$GITHUB_OUTPUT"
+
+      - name: Check out the shared alerting action
+        if: steps.measured.outputs.measured == 'true'
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          sparse-checkout: .github/actions/ci-failure-issue
+          sparse-checkout-cone-mode: false
+          persist-credentials: false
+
+      - name: Close the pinned issue
+        if: steps.measured.outputs.measured == 'true'
+        uses: ./.github/actions/ci-failure-issue
+        with:
+          marker: '[kws-delivery-health]'
+          mode: resolve
