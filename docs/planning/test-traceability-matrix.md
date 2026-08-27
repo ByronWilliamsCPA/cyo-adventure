@@ -134,11 +134,11 @@ else needs mocked + one real-environment tier minimum.
 1. **Merge PR #268 and set the three `staging` environment secrets**
    (`E2E_STAGING_BASE_URL`, `E2E_STAGING_GUARDIAN_PASSWORD`, `E2E_STAGING_ADMIN_PASSWORD`);
    without them the staging tier is dead code.
-2. **Add active alerting to every scheduled run**: a shared on-failure step in
-   `e2e-staging.yml` (and the new prod workflow below) that opens or appends to a pinned
-   GitHub issue labeled `e2e-alert` with the run link. Repo watchers then get email/push
-   from GitHub natively. This is the cheapest "quickly alerted" mechanism; a messaging
-   webhook can layer on later.
+2. **Done**: active alerting on every scheduled run. `e2e-staging.yml` and the prod
+   workflow (item 3 below) each run a shared on-failure step, routed through the
+   `.github/actions/ci-failure-issue` composite action, that opens or appends to a
+   pinned GitHub issue labeled `e2e-alert` with the run link and resolves it on the
+   next green scheduled run. Repo watchers get email/push from GitHub natively.
 3. **Done** (`.github/workflows/e2e-prod.yml`): daily cron `30 13 * * *` (offset from
    staging) + manual dispatch, running the existing `e2e-prod` specs against the live URL
    with a dedicated test family, plus the pinned-issue `e2e-alert` step. The device-grant

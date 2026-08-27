@@ -364,7 +364,7 @@ jobs:
                   '**If the endpoint was unreachable**, this is not a KWS finding at all: either',
                   'readiness 503d on the database check or the ingress is down. Triage that first.',
                   '',
-                  `First failing run: ${runUrl}`,
+                  `This run: ${runUrl}`,
                   `Date: ${today}`,
                   '',
                   'This issue accumulates one comment per failing run and closes itself',

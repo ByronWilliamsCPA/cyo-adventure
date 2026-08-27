@@ -261,8 +261,8 @@ jobs:
             // exits 0 (no ledger file exists yet) and grant_sweep fails (it
             // runs `npm run test:e2e:staging:sweep` through the same npm
             // toolchain with no node_modules). Without surfacing `skipped`
-            // separately from `failure`, that infra failure reads as a
-            // confirmed live device grant below.
+            // separately from `failure`, that infra failure reads as a live
+            // device grant below.
             const playwrightSkipped = playwrightOutcome === 'skipped'
 
             const lines = [
@@ -315,8 +315,9 @@ jobs:
                 'The `leak_check` step failed. That usually means it recorded an unconfirmed',
                 'teardown revoke to the ledger (a diagnostic only; see its log for which spec',
                 'and grant id), but the step can also fail before ever reading the ledger, for',
-                'example if an earlier failure removed the checkout it `cd`s into. Whether a',
-                'grant is actually still live is what `grant_sweep` above determines either way.',
+                'example if an earlier failure left the checkout it `cd`s into never created.',
+                'Whether a grant is actually still live is what `grant_sweep` above determines',
+                'either way.',
                 '',
               )
             }
@@ -338,7 +339,7 @@ jobs:
             }
 
             lines.push(
-              `First failing run: ${runUrl}`,
+              `This run: ${runUrl}`,
               `Date: ${today}`,
               '',
               'This issue accumulates one comment per failing run and closes itself',
