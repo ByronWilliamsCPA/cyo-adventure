@@ -1166,6 +1166,37 @@ def test_main_rejects_an_account_id_that_is_not_a_hostname_label(
     runner.assert_not_called()
 
 
+def test_main_reports_every_bad_value_in_one_run(
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    """One dispatch must surface all six verdicts, not just the first failure.
+
+    These secrets are exercised nowhere but a real run, so failing on the first
+    defect turns a misconfiguration into a serial hunt: one scheduled window or manual
+    dispatch per bad value, each blind to everything after it.
+    """
+    env = _clean_env()
+    env["R2_ACCOUNT_ID"] = "not an account id"
+    env["R2_BACKUP_BUCKET"] = "   "
+    env["BACKUP_ENCRYPTION_KEY"] = "not-base64!"
+    del env["SUPABASE_DB_URL"]
+    runner = MagicMock()
+    with (
+        patch.object(backup_database.sys, "argv", ["backup_database.py"]),
+        patch.dict(backup_database.os.environ, env, clear=True),
+        patch.object(backup_database, "run_backup", runner),
+        pytest.raises(SystemExit) as exit_info,
+    ):
+        backup_database.main()
+    assert exit_info.value.code == 1
+    out = capsys.readouterr().out
+    assert "SUPABASE_DB_URL is not set" in out
+    assert "R2_ACCOUNT_ID is not a valid hostname label" in out
+    assert "R2_BACKUP_BUCKET is set but empty" in out
+    assert "BACKUP_ENCRYPTION_KEY is not valid base64" in out
+    runner.assert_not_called()
+
+
 def test_main_accepts_a_real_shaped_account_id() -> None:
     """32 lowercase hex characters, which is what Cloudflare actually issues."""
     env = _clean_env()

@@ -412,6 +412,18 @@ def _build_client(
     )
 
 
+# Every value main() needs from the environment. Kept as a tuple so the read loop can
+# report all six, rather than failing on the first and hiding the rest.
+_REQUIRED_ENV_VARS = (
+    "SUPABASE_DB_URL",
+    "R2_ACCOUNT_ID",
+    "R2_BACKUP_ACCESS_KEY_ID",
+    "R2_BACKUP_SECRET_ACCESS_KEY",
+    "R2_BACKUP_BUCKET",
+    "BACKUP_ENCRYPTION_KEY",
+)
+
+
 def _require_env(name: str) -> str:
     """Read a required configuration value from the environment, whitespace-trimmed.
 
@@ -495,8 +507,8 @@ def _describe_bad_characters(value: str) -> str:
     return f"{len(value)} characters, including {', '.join(offenders)}"
 
 
-def _require_account_id() -> str:
-    """Read ``R2_ACCOUNT_ID`` and reject a value that cannot be a hostname label.
+def _assert_account_id_shape(account_id: str) -> None:
+    """Reject an ``R2_ACCOUNT_ID`` value that cannot be a hostname label.
 
     # #CRITICAL: external resources: without this, a malformed id reaches boto3 and
     # comes back as `Invalid endpoint: https://***.r2.cloudflarestorage.com`, where
@@ -507,15 +519,14 @@ def _require_account_id() -> str:
     # #VERIFY: reject here and describe the shape;
     # tests/unit/test_backup_database.py::test_main_rejects_an_account_id_that_is_not_a_hostname_label
 
-    Returns:
-        The validated, trimmed account id.
+    Args:
+        account_id: The already-trimmed value read from the environment.
 
     Raises:
-        ValueError: If the value is unset, blank, or not a single DNS label.
+        ValueError: If the value is not a single DNS label.
     """
-    account_id = _require_env("R2_ACCOUNT_ID")
     if _ACCOUNT_ID_RE.match(account_id):
-        return account_id
+        return
     msg = (
         "R2_ACCOUNT_ID is not a valid hostname label, so no R2 endpoint can be built "
         f"from it. It holds {_describe_bad_characters(account_id)}. A Cloudflare "
@@ -1488,16 +1499,47 @@ def main() -> None:
         print(f"[DRY RUN] would back up: {result}")
         return
 
-    try:
-        db_url = _require_env("SUPABASE_DB_URL")
-        r2_account_id = _require_account_id()
-        r2_access_key_id = _require_env("R2_BACKUP_ACCESS_KEY_ID")
-        r2_secret_access_key = _require_env("R2_BACKUP_SECRET_ACCESS_KEY")
-        r2_bucket = _require_env("R2_BACKUP_BUCKET")
-        encryption_key = load_encryption_key(_require_env("BACKUP_ENCRYPTION_KEY"))
-    except ValueError as exc:
-        print(f"[ERROR] {exc}")
+    # #CRITICAL: external resources: report EVERY misconfigured value in one run, not
+    # the first. These six secrets are only ever exercised here, so a run is the only
+    # feedback an operator gets, and each one costs a scheduled window or a manual
+    # dispatch. Failing on the first defect turns "the backup configuration is wrong"
+    # into a serial hunt: on 2026-08-27 two defects in this very block (a leading
+    # space in R2_ACCOUNT_ID, then a value that was not an account id at all) took one
+    # dispatch each to surface, and neither told us anything about the four values
+    # after it.
+    # #VERIFY: accumulate into `errors` and print them all;
+    # tests/unit/test_backup_database.py::test_main_reports_every_bad_value_in_one_run
+    values: dict[str, str] = {}
+    errors: list[str] = []
+    for name in _REQUIRED_ENV_VARS:
+        try:
+            values[name] = _require_env(name)
+        except ValueError as exc:
+            errors.append(str(exc))
+
+    if "R2_ACCOUNT_ID" in values:
+        try:
+            _assert_account_id_shape(values["R2_ACCOUNT_ID"])
+        except ValueError as exc:
+            errors.append(str(exc))
+
+    encryption_key = b""
+    if "BACKUP_ENCRYPTION_KEY" in values:
+        try:
+            encryption_key = load_encryption_key(values["BACKUP_ENCRYPTION_KEY"])
+        except ValueError as exc:
+            errors.append(str(exc))
+
+    if errors:
+        for error in errors:
+            print(f"[ERROR] {error}")
         sys.exit(1)
+
+    db_url = values["SUPABASE_DB_URL"]
+    r2_account_id = values["R2_ACCOUNT_ID"]
+    r2_access_key_id = values["R2_BACKUP_ACCESS_KEY_ID"]
+    r2_secret_access_key = values["R2_BACKUP_SECRET_ACCESS_KEY"]
+    r2_bucket = values["R2_BACKUP_BUCKET"]
 
     try:
         result = run_backup(
