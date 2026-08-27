@@ -122,18 +122,25 @@ async function deleteProfile(profileId: string): Promise<void> {
 
 // #EDGE: timing-dependencies: matches by URL+method+status only, the same
 // shape #290 traced kid-go-back-real.spec.ts's flaky failure to (queue
-// position, not the response's own identity). Safe here for a narrower
-// reason than that fix required: every call site below awaits its own
-// waitForSavedPut()/waitForConflictPut() promise before the next one is
-// registered, so at most one 200 and one 409 candidate is ever pending at
-// once, and no assertion in this file reads a field off the captured
+// position, not the response's own identity). The "at most one 200 ... ever
+// pending at once" bound below is already false at MOUNT, not just at a
+// queued replay: these profiles are age_band '10-13' (a FLOWED_BANDS entry),
+// so a mount (mountSave/mountA/mountB below) does not stop at n_open, it
+// auto-flows through n_open's single unconditional choice and issues a PUT
+// for both n_open and n_start before the reader shows a choice to click. A
+// live probe confirms it: instrumenting page.on('request')/page.on('response')
+// at the moment a mount's own reader-visible assertion resolves shows both
+// PUTs issued but only n_open's response delivered by then, so a second
+// 200 candidate is genuinely still pending. This file is safe anyway for a
+// narrower reason: no assertion in this file reads a field off the captured
 // response body (the actual data checks all go through a fresh
 // fetchServerRow() GET, or a Playwright `.poll`/toast wait). The queued
 // three-choice replay on reconnect does still fire multiple sequential
 // PUTs, but this wait's only job is "some save landed", not "which one".
 // #VERIFY: if a future edit here starts asserting on this promise's own
-// `.json()`, that call site needs kid-go-back-real.spec.ts's node-matching
-// predicate instead, not this URL/status-only form.
+// `.json()`, that would make this predicate unsafe; that call site needs
+// kid-go-back-real.spec.ts's node-matching predicate instead, not this
+// URL/status-only form.
 function waitForSavedPut(page: Page) {
   return page.waitForResponse(
     (res) =>
