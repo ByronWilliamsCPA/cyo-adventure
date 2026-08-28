@@ -2911,6 +2911,17 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#amendment-2026-08-28-an-absent-judgment-is-not-an-overridable-one" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Amendment (2026-08-28): an absent judgment is not an overridable one
+      
+    </span>
+  </a>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -3952,6 +3963,17 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#amendment-2026-08-28-an-absent-judgment-is-not-an-overridable-one" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Amendment (2026-08-28): an absent judgment is not an overridable one
+      
+    </span>
+  </a>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -3974,7 +3996,7 @@
 
 <h1 id="adr-005-mandatory-human-approval-before-any-story-reaches-a-child">ADR-005: Mandatory human approval before any story reaches a child<a class="headerlink" href="#adr-005-mandatory-human-approval-before-any-story-reaches-a-child" title="Permanent link">&para;</a></h1>
 <blockquote>
-<p><strong>Status</strong>: Accepted (2026-07-03; amended 2026-06-30 and 2026-08-25, see Amendments below)
+<p><strong>Status</strong>: Accepted (2026-07-03; amended 2026-06-30, 2026-08-25, and 2026-08-28, see Amendments below)
 <strong>Date</strong>: 2026-06-20</p>
 </blockquote>
 <h2 id="amendment-2026-06-30-the-approver-is-a-global-admin-not-the-childs-parent">Amendment (2026-06-30): the approver is a global admin, not the child's parent<a class="headerlink" href="#amendment-2026-06-30-the-approver-is-a-global-admin-not-the-childs-parent" title="Permanent link">&para;</a></h2>
@@ -4131,6 +4153,36 @@ judgment (fail-safe or mock-reviewer artifacts only) is not approvable at all
 (<code>approve_with_unusable_moderation</code>); re-running moderation is the only path
 forward. This preserves the human as the final authority while making every
 exercise of that authority auditable.</p>
+<h2 id="amendment-2026-08-28-an-absent-judgment-is-not-an-overridable-one">Amendment (2026-08-28): an absent judgment is not an overridable one<a class="headerlink" href="#amendment-2026-08-28-an-absent-judgment-is-not-an-overridable-one" title="Permanent link">&para;</a></h2>
+<p>The 2026-08-25 amendment above split stored moderation reports into two kinds: a
+report that judged the content and found something bad, which a human MAY approve
+over with a recorded reason, and a report carrying no genuine content judgment at
+all, which is not approvable on any terms. It did not address the case in between,
+a report carrying a genuine judgment on only PART of a story.</p>
+<p>Ruling: incomplete reviewer coverage is a third refusal
+(<code>approve_with_incomplete_coverage</code>), and an override reason does NOT unlock it.
+The reasoning is that the D2 override concedes something specific to the human:
+the authority to disagree with an automated judgment. An unreviewed node carries
+no judgment to disagree with, so a reason supplied against it would be justifying
+a decision nobody made. Re-running moderation is the only path forward, the same
+remedy the unusable-report refusal prescribes.</p>
+<p>This gap was not theoretical. The unusable-report predicate is all-or-nothing, so
+a single genuine finding beside a coverage gap made the whole report read as
+usable, and a report naming eight nodes the reviewer never saw approved with HTTP
+200 under any non-empty reason. Four books in the live catalog held that shape.</p>
+<p>Two consequences follow for the pipeline, not just the approval gate:</p>
+<ul>
+<li>A coverage gap now gates release in flight (<code>ModerationReport.blocks_release</code>
+  is <code>has_hard_block or has_coverage_gap</code>), so a report with unscreened nodes
+  auto-rejects instead of routing to human review looking like a clean one.</li>
+<li>Coverage is therefore a first-class property of a report rather than something
+  inferred from the absence of findings. A report that says nothing about a node
+  is now distinguishable from a report that judged the node and found it clean,
+  which is the distinction the original decision assumed existed all along.</li>
+</ul>
+<p>The core invariant is unchanged and again strengthened: no story reaches a child
+without a recorded human approval, and that approval may no longer rest on a
+review that silently skipped part of the story.</p>
 
 
 
@@ -4153,7 +4205,7 @@ exercise of that authority auditable.</p>
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="August 26, 2026 02:22:48 UTC">August 26, 2026</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="August 28, 2026 17:01:21 UTC">August 28, 2026</span>
   </span>
 
     

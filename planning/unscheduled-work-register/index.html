@@ -6767,6 +6767,120 @@ substantially the same work under different headings. Do not triple-book.</p>
 <td>4b</td>
 <td>unscheduled</td>
 </tr>
+<tr>
+<td>UW-C398</td>
+<td><code>AL-655</code>: <strong>A stored <code>moderation_report</code> has no single agreed way to answer "was every node screened", and the obvious formula manufactures phantom gaps.</strong> A <code>Finding</code> carries <code>node_id</code> (one representative node, for display anchoring) and <code>node_ids</code> (every node a batch-wide finding covers); reconciling <code>pass_counts.safety</code> against <code>node_id</code> alone under-counts by up to <code>review_batch_size - 1</code> per batch finding. During the 2026-08-26 re-moderation coverage audit this read three books (<code>sk_sunken_signal</code>, <code>sk_sunspire_ascent</code>, <code>sk_thornwood_trial</code>) as silently missing 8 screened nodes each, when the pipeline had in fact reported every one of them through a HIGH-severity <code>structural=True</code> flag carrying <code>concern="reviewer_unavailable"</code>. Ship <code>scripts/moderation_coverage.py</code> as the one reconciliation of record (stage-1 sources, <code>node_ids or [node_id]</code>, asserted equal to <code>aggregate.nodes_reviewed</code>) so a genuine coverage hole and an auditor's misread stop being indistinguishable.</td>
+<td>4b</td>
+<td>unscheduled</td>
+</tr>
+<tr>
+<td>UW-C399</td>
+<td><code>AL-656</code>: <strong>A safety-review batch is discarded whole when the reviewer omits a single node, costing 8 nodes of coverage per omission.</strong> Observed live on <code>sk_ashfall_expedition</code> 2026-08-26: the reviewer returned 7 well-formed, unambiguously attributable verdicts for an 8-node batch, dropping <code>n_b28_2_2</code>. <code>_parse_batch_verdicts</code> refuses partial attribution by design (<code>stages.py</code> docstring, design doc 2.3) and the whole batch fail-safes, which is the correct safety posture and must be preserved. Narrow the remedy to the id-set mismatch branch only: re-review the missing ids on the single-node path, which is documented byte-identical to unbatched behavior, and merge; fall back to whole-batch fail-safe if the retry also fails. Truncation and decode failures keep the existing all-or-nothing handling, since no verdict in those responses is trustworthy.</td>
+<td>4b</td>
+<td>unscheduled</td>
+</tr>
+<tr>
+<td>UW-C400</td>
+<td><code>AL-657</code>: <strong>Determine whether a fail-safed safety batch is reproducible on its content before spending any re-run budget on closing coverage holes.</strong> <code>sk_thornwood_trial</code> re-moderated twice produced a rewritten report whose reviewer judgments moved, while the <code>reviewer_unavailable</code> finding named the same 8 node ids both times; <code>_chunks</code> partitions consecutively so batch boundaries are stable run to run. Test with <code>sk_sunken_signal</code> (32 nodes, cheapest affected book) and compare the fail-safed id set. If deterministic, re-running never closes these holes and the remedy is <code>UW-C399</code>'s per-node retry or a reduced batch size for the offending chunk; if not, re-running is sound. Blocks the re-run plan for <code>sk_sunken_signal</code>, <code>sk_sunspire_ascent</code>, and <code>sk_ashfall_expedition</code>.</td>
+<td>4b</td>
+<td>unscheduled</td>
+</tr>
+<tr>
+<td>UW-C401</td>
+<td><code>AL-658</code>: <strong><code>aggregate.nodes_reviewed</code> reads 0 on every hard-blocked moderation report, including books whose safety stage screened every node.</strong> Verified across the full 31-book catalog on 2026-08-26: 8 of 8 hard-blocked reports report 0, all 23 others are correct. <code>pipeline.py</code> assigns the field past the last stage so early returns keep the default, which correctly prevents claiming coverage a short-circuited run never had, but overloads one field with two meanings. <code>sk_sunken_temple</code> (blocked after 550 of 550 screened, <code>pass_counts.safety=520</code> beside it) is indistinguishable from <code>sk_cave_of_echoes</code> (blocked before review, genuinely 0). Split the concerns: persist the nodes actually screened at each stage exit, plus an explicit <code>review_complete</code> boolean for stage completion. Consumers reading the aggregate as a denominator (<code>api/node_edit.py</code>, moderation dashboard) currently get a false zero.</td>
+<td>4b</td>
+<td>unscheduled</td>
+</tr>
+<tr>
+<td>UW-C402</td>
+<td><code>AL-659</code>: <strong>a moderation <code>unknown_slot</code> hard block does not say which side of the contract/blob pair is wrong, so the intuitive remedy is backwards half the time.</strong> <code>sk_vanishing_orchard</code> blocked on 216 <code>&lt;global&gt;</code> violations; annotating the apparently-missing <code>HERO</code> in all 10 under-declaring contracts was rejected by <code>ThemeContract</code> on 6 of them and fixed no live defect on the other 4. The discriminator is a catalog-wide declared-vs-observed join: 12 of 13 sentinel-bearing books are consistent and exactly 1 is not, which identifies over-stamping rather than under-declaration. Emit both sets in the failure message (<code>declared={} observed={HERO}</code>), and add an at-rest catalog consistency check to the sweep tooling so divergence is found without needing a hard block. Scans must use <code>SENTINEL_RE</code> (<code>{~SLOT:value~}</code>); a <code>{{SLOT}}</code> probe silently returns zero.</td>
+<td>4b</td>
+<td>unscheduled</td>
+</tr>
+<tr>
+<td>UW-C403</td>
+<td><code>AL-660</code>: <strong>generation can mark a version <code>personalization_eligible</code> and stamp sentinels for a slot its own theme contract refuses to declare personalizable.</strong> <code>the-vanishing-orchard</code> is the only contract of 47 with <code>_FULL</code> slots, and its opening line is <code>The last bus left {~HERO:Rowan~} Ashby</code>: the surname sits outside the sentinel, so a personalized copy would read "Kate Ashby". <code>PERSONALIZATION_FIELDS</code> has no <code>protagonist_full_name</code>, so no annotation can fix it. The blob nonetheless carries 216 HERO sentinels and <code>personalization_eligible=True</code>. No reader is affected (<code>slot_bindings</code> derives from the contract, so the slot is unbound and resolves to <code>Rowan</code>), but blob and contract disagree at rest. Gate the stamping path on the same invariant the model enforces, and lint the catalog for a <code>_FULL</code> companion beside a personalizable first-name slot. De-stamping the published blob is blocked by ADR-005 immutability and is an owner decision.</td>
+<td>4b</td>
+<td>unscheduled</td>
+</tr>
+<tr>
+<td>UW-C404</td>
+<td><code>AL-661</code>: <strong><code>edit_node</code> re-gates the whole blob, so a pre-existing unrelated gate error blocks every targeted repair and the rejection blames the edit.</strong> Repairing <code>sk_sunken_temple</code>'s single blocked node failed with <code>edited passage failed the validation gate</code>; <code>run_fill_gate</code> on the unmodified blob returned the identical single PL-25 error, proving the edit innocent and the book already failing. Without gating the pre-edit artifact first, the obvious response is to rewrite correct prose until something passes, which cannot converge. Split the post-edit findings against a pre-edit baseline and return only edit-introduced findings as the rejection reason, reporting pre-existing ones separately as a book-level blocker.</td>
+<td>4b</td>
+<td>unscheduled</td>
+</tr>
+<tr>
+<td>UW-C405</td>
+<td><code>AL-662</code>: <strong>PL-25 is structural but <code>edit_node</code> is prose-only, so the word-equivalence relaxation is the only reachable fix for a book in review, and it forces the opening node past its own advisory ceiling.</strong> <code>sk_sunken_temple</code>'s <code>n_start</code> is itself the first decision (depth 1 against a floor of 2); inserting a choiceless establishing node is the fix the rule wants and <code>edit_node</code> forbids it. The relaxation needs <code>most_words &gt;= 2 * 65 = 130</code> in a node whose advisory ceiling is 90 and hard maximum is 145, a 15-word-wide target that trades a PL-25 error for a words-per-node warning. Report the band's word-equivalence threshold and per-node maximum in the PL-25 message, and allow a review-stage structural insert.</td>
+<td>4b</td>
+<td>unscheduled</td>
+</tr>
+<tr>
+<td>UW-C406</td>
+<td><code>AL-663</code>: <strong><code>scripts/remoderate_books.py</code> collapses <code>failed</code>, <code>blocked</code>, <code>excluded</code>, <code>timed_out</code> and <code>not_attempted</code> into one <code>sys.exit(&lt;str&gt;)</code>, always exit 1, so a retry loop cannot distinguish a permanent hard block from a retryable rollback.</strong> <code>sweep.sh</code> retried <code>sk_vanishing_orchard</code> three times in 15 seconds against a verdict that cannot change without a prose edit, re-spending an LLM review pass each time. The exit code was designed as a human attention signal and reused as a machine retry signal. Give <code>blocked</code> and <code>excluded</code> a distinct exit code, break the sweep loop on it, and add a <code>--json</code> summary. Same shape recurs in <code>moderation/classifiers.py::_run_openai</code>, which catches base <code>httpx.HTTPError</code> so a permanent 401 retries like a transient 429; fix with the <code>_TRANSIENT_STATUS</code> split the three generation providers already use. <strong>DONE 2026-08-27</strong>: both halves landed on <code>fix/published-slot-contract-false-block</code>. <code>db03e57d</code> splits the exit codes (1 = retryable: <code>failed</code>/<code>timed_out</code>/<code>not_attempted</code>; 3 = needs a human: <code>blocked</code>/<code>excluded</code>; 3 rather than 2 because argparse owns 2 for usage errors) and breaks the sweep loop on 3. <code>0a2a05b3</code> fixes the <code>classifiers.py</code> recurrence by moving the retry decision onto the exception (<code>ClassifierUnavailable(retryable=, disables_classifier=)</code>) with an <code>httpx.HTTPStatusError</code> arm ordered ahead of the <code>(httpx.HTTPError, ValueError)</code> arm it subclasses; a credential rejection now latches the circuit on the first node instead of re-proving itself on every remaining one. Both keyword defaults are the safe answer, so raise sites that predate the change keep retrying. Verified by mutation: flipping <code>retryable</code> in either direction, replacing the <code>disabled</code> latch with <code>pass</code>, and latching on every status each kill at least one test; the 5xx test asserts WHICH nodes were attempted, since a call count cannot separate three retries of one node from one attempt at each of three.</td>
+<td>now</td>
+<td>done</td>
+</tr>
+<tr>
+<td>UW-C407</td>
+<td><code>AL-664</code>: <strong>one failed review batch removes 8 nodes from safety coverage and downgrades the book's hard block to a soft flag, so an incompletely-reviewed book reports as a successful pass.</strong> <code>stages.py:752</code> raises the shortfall as a <code>structural=True</code>/<code>HIGH</code>/<code>reviewer_unavailable</code> finding whose verdict is <code>Verdict.FLAG</code>; <code>report.py::has_hard_block</code> is <code>any(verdict is BLOCK)</code>, so the flag clears the hard block, <code>has_soft_flag</code> becomes true, <code>remoderate_books</code> exits 0 and the sweep prints <em>soft-flagged, review when convenient</em>. Established on <code>sk_sunken_temple</code> with prose identity proven from <code>pipeline_event</code> (only two <code>node_edited</code> rows exist in the whole table, both at 12:20:47): the 12:21 and 01:52 passes had full coverage and BOTH hard-blocked on disjoint nodes, while the 13:55 pass with 8 unreviewed nodes cleared the block. 5 of 31 current reports admit unreviewed nodes and all 5 read <code>hard_block=False</code>: <code>sk_ashfall_expedition</code> 16, <code>sk_harrowstone_keep</code> 8, <code>sk_sunken_temple</code> 8, <code>sk_sunspire_ascent</code> 8, <code>sk_thornwood_trial</code> 8; the exact recurring 8 is <code>review_batch_size</code> (<code>config.py:650</code>), so this is batch-granular, not node-granular. Add <code>coverage_complete</code> to <code>ModerationReport</code> and make the gating predicate false-safe on incomplete review; fall back to per-node review when a batch response is unusable so one bad response costs 1 node rather than 8; give <code>remoderate_books</code> a distinct exit class for <em>reviewed incompletely</em>. Same family as the soft-stage fail-safe shape already tracked, one layer up: node-level fail-safe composing into book-level fail-open.</td>
+<td>now</td>
+<td>done</td>
+</tr>
+<tr>
+<td>UW-C408</td>
+<td><code>AL-665</code>: <strong>the moderation reviewer pins no sampling parameters and the stored report records no model provenance, so a safety verdict is a sample rather than a measurement and cannot be attributed after the fact.</strong> <code>openrouter.py:317</code> sends only <code>model</code>/<code>messages</code>/<code>max_tokens</code>: no <code>temperature</code>, <code>seed</code> or <code>top_p</code>. The review model <code>deepseek/deepseek-v4-flash</code> (<code>config.py:606</code>) has no <code>ENDPOINT_PINS</code> entry, so <code>endpoint_pin_for</code> returns <code>()</code>, the body omits <code>provider</code>, and successive passes may be served by different backends at different quantizations. <code>build_openrouter_leg</code>'s own <code>#ASSUME</code> already states that consequence, but only for cost. A persisted <code>moderation_report</code> carries no model, provider or endpoint field, which is why the 2026-07-21 mock-reviewer run left no detectable signature and had to be inferred from finding counts. Pin <code>temperature=0</code> (plus a <code>seed</code> where honoured), add the review model to <code>ENDPOINT_PINS</code>, and persist model/provider/endpoint/sampling into the report beside <code>reviewer_independent</code>. Pinning will move verdicts catalog-wide: the first pinned sweep is a new baseline, not a comparison against the unpinned history.</td>
+<td>4b</td>
+<td>done</td>
+</tr>
+<tr>
+<td>UW-C409</td>
+<td><code>AL-666</code>: <strong>editing a shell script while an instance of it is running corrupts that run and misreports the faulting line.</strong> Bash reads a script from a byte offset, so an edit that changes the file's length makes the running shell resume mid-token; a 14:16 edit to <code>sweep.sh</code> made a run started at ~13:56 execute the fragment <code>nswer</code> out of a comment on line 67 and report it against line 72, and silently dropped the sweep's final report block. <code>bash -n</code> afterwards is clean and proves nothing; the mtime-versus-start-time comparison is the only diagnostic. Have the sweep runner <code>cp</code> the script to a run-scoped path under its log directory and execute the copy, which immunises the run and records what was actually executed beside its output.</td>
+<td>CI hygiene</td>
+<td>unscheduled</td>
+</tr>
+<tr>
+<td>UW-C410</td>
+<td><code>AL-668</code>: <strong><code>coverage_complete</code> is the absence of gap findings, so a run that reviews nothing reports complete coverage.</strong> <code>report.py:346</code> sets <code>coverage_complete = not has_coverage_gap</code>, and <code>has_coverage_gap</code> (<code>report.py:271</code>) scans findings for a concern in <code>COVERAGE_GAP_CONCERNS</code>, which only exists when a batch response was unusable. When the pipeline aborts BEFORE the safety pass there is no such finding: <code>sk_ninth_hand</code> hard-blocked on <code>entry_contract_unrecoverable</code> + <code>version_contract_band_missing</code> in 7s and persisted <code>coverage_complete=true</code> with <code>aggregate.nodes_reviewed=0</code>, having read 0 of 746 nodes. The hard block is what stopped this being a live fail-open, so the verdict was right and only the coverage claim is false; but it defeats every consumer that reads <code>coverage_complete</code> as evidence, and it defeated the re-moderation sweep's completion oracle, which would have skipped the book permanently on resume. Make coverage a POSITIVE assertion: require <code>nodes_reviewed &gt; 0</code>, ideally equal to the version's node count, or replace the bool with a tri-state so <code>not_attempted</code> and <code>complete</code> cannot collapse. <strong>Amended 2026-08-27: <code>nodes_reviewed &gt; 0</code> is NOT a sound substitute on its own, per the already-open <code>AL-658</code> / <code>UW-C401</code>.</strong> That counter encodes STAGE completion, not a node count, so it reads <code>0</code> for every hard-blocked book however much was screened; requiring it would trade this fail-open for a false alarm on every legitimate block. Confirmed again on 2026-08-27 by the 21-book sweep, where the only two zero-counter rows were opposite cases: <code>sk_ninth_hand</code> (<code>pass_counts</code> <code>{}</code>, 1 finding, source <code>pipeline</code>, 7s, nothing read) and <code>sk_harrowstone_keep</code> (<code>pass_counts</code> <code>{safety: 535}</code>, 26 findings from <code>llm_safety</code> and <code>openai</code> across 22 <code>node_id</code>s, 5837s, fully screened then blocked on content). Fix <code>UW-C401</code> first, or gate on <code>pass_counts</code> rather than on <code>nodes_reviewed</code>. Same family as <code>UW-C407</code> one layer out: book-level fail-safe composing into a catalog-level false all-clear.</td>
+<td>4b</td>
+<td>unscheduled</td>
+</tr>
+<tr>
+<td>UW-C411</td>
+<td><code>AL-671</code>: <strong>a gate that reads an optional field cannot see a construction site that omits it.</strong> The narrow concern set is now derived from the broader one, closing the specific hole, but nothing prevents the next fail-safe <code>Finding</code> from being built without a <code>concern=</code>. Add a suite-wide test asserting that every <code>Finding</code> construction with <code>structural=True</code> and severity <code>HIGH</code> carries a concern in <code>MOCK_MODERATED_CONCERNS</code> or <code>COVERAGE_GAP_CONCERNS</code>, and consider making <code>concern</code> required on that shape rather than optional.</td>
+<td>4b</td>
+<td>unscheduled</td>
+</tr>
+<tr>
+<td>UW-C412</td>
+<td><code>AL-672</code>: <strong><code>gh api .../contents</code> truncates at 1MB and returns 200, so a <code>tail</code> over it reports a wrong maximum id.</strong> Both ledgers are past or near the limit. Add a <code>--max-id</code> mode to <code>scripts/check_lessons_log.py</code> and <code>scripts/check_work_linkage.py</code> so the highest id in use comes from the parser that already reads every row, and record the <code>git show origin/main:&lt;path&gt;</code> rule where the renumber procedure is documented.</td>
+<td>CI hygiene</td>
+<td>unscheduled</td>
+</tr>
+<tr>
+<td>UW-C413</td>
+<td><code>AL-673</code>: <strong>the register's declared header has five columns and 408 of 410 cluster-C rows have four, so column 3 holds Phase under an "ADR" heading.</strong> Markdown pads short rows so the table renders, and the linkage checker parses by id rather than by arity. Normalise the rows to the header or change the header to the dominant shape, and have <code>check_work_linkage.py</code> assert column arity per cluster.</td>
+<td>4b</td>
+<td>unscheduled</td>
+</tr>
+<tr>
+<td>UW-C414</td>
+<td><code>AL-674</code>: <strong>the RAD gate grandfathers citations, including on <code>#CRITICAL</code> markers, and treats a multi-test citation as satisfied piecemeal.</strong> A safety-gating marker cited a test that existed nowhere and passed for weeks on a baseline row. Make <code>check_rad_citations.py</code> refuse a baseline row for any citation attached to a <code>#CRITICAL</code> marker, and require every test named by one marker to resolve.</td>
+<td>CI hygiene</td>
+<td>unscheduled</td>
+</tr>
+<tr>
+<td>UW-C415</td>
+<td><code>AL-675</code>: <strong><code>moderation_report_unusable()</code>'s legacy discriminator rests on deployment history rather than on the schema.</strong> It infers report vintage from the presence of <code>summary.coverage_complete</code>, which holds only because no intermediate revision of this branch ever persisted a report; a cherry-pick or a replay invalidates it. Add an explicit schema-version key to the persisted report and read that instead, retiring the inference and its <code>#EDGE</code>.</td>
+<td>4b</td>
+<td>unscheduled</td>
+</tr>
+<tr>
+<td>UW-C416</td>
+<td><code>AL-678</code>: <strong>a per-agent control cannot classify a finding as pre-existing while a concurrent agent's edit stands in the same tree.</strong> Two <code>basedpyright</code> errors were reported as pre-existing on a file-scoped revert; both named a symbol absent at the merge base. Record the merge-base evidence rule (<code>git show origin/main:&lt;path&gt;</code>) in the concurrent-session guidance, and require a dispatched agent to cite it when it calls a finding pre-existing.</td>
+<td>CI hygiene</td>
+<td>unscheduled</td>
+</tr>
 </tbody>
 </table>
 <h2 id="cluster-d-untracked-github-issues">Cluster D: untracked GitHub issues<a class="headerlink" href="#cluster-d-untracked-github-issues" title="Permanent link">&para;</a></h2>
@@ -8539,7 +8653,7 @@ have to re-derive them.</p>
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="August 28, 2026 15:26:47 UTC">August 28, 2026</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="August 28, 2026 17:01:21 UTC">August 28, 2026</span>
   </span>
 
     
