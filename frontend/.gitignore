@@ -36,6 +36,12 @@ test-results/
 blob-report/
 /playwright/.cache/
 
+# Playwright JSON reporter output (task A7-i). Deliberately its own directory,
+# never frontend/test-results/: that directory is uploaded wholesale as a
+# public artifact on Playwright failure in e2e-prod.yml/e2e-staging.yml/
+# e2e-real-nightly.yml, and this repository is public.
+playwright-json-report/
+
 # Environment files (use .env.example as template)
 .env
 .env.local

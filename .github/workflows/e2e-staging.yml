@@ -205,6 +205,42 @@ jobs:
           path: frontend/test-results/
           retention-days: 7
 
+      # #CRITICAL: security: reads ONLY frontend/playwright-json-report/e2e-staging.json
+      # (this workflow's own `json` reporter output, see the reporter array in
+      # playwright.e2e-staging.config.ts), never frontend/test-results/, which
+      # is uploaded wholesale as a public artifact above because THIS
+      # REPOSITORY IS PUBLIC. scripts/extract-failing-specs.mjs reads only
+      # `spec.file` and `test.title` off the report, never an error message, a
+      # stack trace, or any attachment, and it always exits 0 (a missing or
+      # unparseable report degrades to an explanatory line), so this step
+      # cannot itself fail the job.
+      # #VERIFY: a future edit to that script that reads any other field must
+      # be rejected in review; see its own header comment.
+      - name: Extract failing specs from the Playwright report
+        if: ${{ failure() }}
+        id: extract_specs
+        run: |
+          {
+            echo 'result<<EXTRACT_SPECS_EOF'
+            node scripts/extract-failing-specs.mjs playwright-json-report/e2e-staging.json
+            echo 'EXTRACT_SPECS_EOF'
+          } >> "$GITHUB_OUTPUT"
+
+      # Same extraction, against the separate sweep tier's own report (see
+      # playwright.e2e-staging-sweep.config.ts). That project has exactly one
+      # test, so this mostly confirms the sweep's own name; it is still routed
+      # through the same script rather than hardcoded, so a future second
+      # sweep spec is covered without a second change here.
+      - name: Extract failing specs from the device-grant sweep report
+        if: ${{ failure() }}
+        id: extract_sweep_specs
+        run: |
+          {
+            echo 'result<<EXTRACT_SWEEP_SPECS_EOF'
+            node scripts/extract-failing-specs.mjs playwright-json-report/e2e-staging-sweep.json
+            echo 'EXTRACT_SWEEP_SPECS_EOF'
+          } >> "$GITHUB_OUTPUT"
+
       - name: Compose the issue body
         # Same composite-action pattern as e2e-prod.yml (see that workflow's
         # own compose step for why: the prior inline issue-listing call paged
@@ -233,7 +269,10 @@ jobs:
         # device-grant token, or raw Playwright output.
         # #VERIFY: any future edit to this script still sources its content
         # only from step outcomes (an enum: success/failure/cancelled/
-        # skipped) and static run metadata (context.serverUrl, context.repo,
+        # skipped), the two `extract_specs`/`extract_sweep_specs` step outputs
+        # (which themselves only ever carry a spec file path, a test title, or
+        # an explanatory fallback line; see scripts/extract-failing-specs.mjs),
+        # and static run metadata (context.serverUrl, context.repo,
         # context.runId, the current date), never from
         # `frontend/test-results/` or a secret.
         if: ${{ failure() }}
@@ -243,6 +282,8 @@ jobs:
           PLAYWRIGHT_OUTCOME: ${{ steps.playwright.outcome }}
           LEAK_CHECK_OUTCOME: ${{ steps.leak_check.outcome }}
           SWEEP_OUTCOME: ${{ steps.grant_sweep.outcome }}
+          FAILING_SPECS: ${{ steps.extract_specs.outputs.result }}
+          SWEEP_FAILING_SPECS: ${{ steps.extract_sweep_specs.outputs.result }}
         with:
           result-encoding: string
           script: |
@@ -252,6 +293,9 @@ jobs:
             const playwrightOutcome = process.env.PLAYWRIGHT_OUTCOME
             const leakCheckOutcome = process.env.LEAK_CHECK_OUTCOME
             const sweepOutcome = process.env.SWEEP_OUTCOME
+            const failingSpecs = process.env.FAILING_SPECS || 'No failing-spec detail is available for this run.'
+            const sweepFailingSpecs =
+              process.env.SWEEP_FAILING_SPECS || 'No failing-spec detail is available for this run.'
 
             const sweepFailed = sweepOutcome === 'failure'
             const leakCheckFailed = leakCheckOutcome === 'failure'
@@ -299,6 +343,8 @@ jobs:
                 'revoke any surviving grant by hand. See that step\'s log for which grant, and',
                 'frontend/e2e-staging-sweep/device-grant-sweep.spec.ts for how it checks.',
                 '',
+                sweepFailingSpecs,
+                '',
               )
             } else if (playwrightSkipped) {
               lines.push(
@@ -324,8 +370,9 @@ jobs:
 
             if (playwrightFailed) {
               lines.push(
-                'The `playwright` step itself failed. See the uploaded `e2e-staging-traces`',
-                'artifact, if present, and the run log for which spec.',
+                'The `playwright` step itself failed.',
+                '',
+                failingSpecs,
                 '',
               )
             }

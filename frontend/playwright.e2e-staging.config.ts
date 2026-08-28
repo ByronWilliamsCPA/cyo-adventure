@@ -12,7 +12,18 @@ import { requireStagingBaseUrl } from './e2e-staging/support/staging-env'
  * manual dispatch, see .github/workflows/e2e-staging.yml): the staging
  * project holds only the disposable fixtures scripts/seed_staging.py
  * creates, never real family data.
+ *
+ * The `json` reporter writes outside `frontend/test-results/` on purpose:
+ * that directory is uploaded wholesale as a public artifact on Playwright
+ * failure (see e2e-staging.yml's "Upload Playwright trace on Playwright
+ * failure" step, gated on THIS repository being public) and this same
+ * workflow's own alert-composing step reads the JSON report, so nothing it
+ * reads may live in the uploaded directory. `list` stays first so
+ * human-readable CI console output is unchanged.
  */
+const JSON_REPORT_PATH =
+  process.env.PLAYWRIGHT_JSON_REPORT_PATH ?? 'playwright-json-report/e2e-staging.json'
+
 export default defineConfig({
   testDir: './e2e-staging',
   // Left at 30s, unlike the prod tier's deliberately-sized 45s. The arithmetic
@@ -61,7 +72,7 @@ export default defineConfig({
   // aggregate rate could still exceed the 60 rpm/IP ceiling.
   // #VERIFY: raising this requires moving the pacing floor to shared state.
   workers: 1,
-  reporter: 'list',
+  reporter: [['list'], ['json', { outputFile: JSON_REPORT_PATH }]],
   use: {
     baseURL: requireStagingBaseUrl(),
     trace: 'retain-on-failure',

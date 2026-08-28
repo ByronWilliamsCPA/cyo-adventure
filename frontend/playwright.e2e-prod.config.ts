@@ -14,7 +14,17 @@ import { PROD_BASE_URL } from './e2e-prod/support/prod-env'
  * e2e-prod/support/prod-env.ts, not an accident: that workflow clears CI to an
  * empty string for its test-run step. Every run still authenticates a real
  * account against a live system, so treat any change here as production-facing.
+ *
+ * The `json` reporter writes outside `frontend/test-results/` on purpose:
+ * that directory is uploaded wholesale as a public artifact on Playwright
+ * failure (see e2e-prod.yml's "Upload Playwright trace on failure" step) and
+ * this repository is public, so nothing this workflow's own alert-composing
+ * step reads may live there. `list` stays first so human-readable CI console
+ * output is unchanged.
  */
+const JSON_REPORT_PATH =
+  process.env.PLAYWRIGHT_JSON_REPORT_PATH ?? 'playwright-json-report/e2e-prod.json'
+
 export default defineConfig({
   testDir: './e2e-prod',
   // Sized against the job budget, not just the happy path. The scheduled
@@ -44,7 +54,7 @@ export default defineConfig({
   // aggregate rate could still exceed the 60 rpm/IP ceiling.
   // #VERIFY: raising this requires moving the pacing floor to shared state.
   workers: 1,
-  reporter: 'list',
+  reporter: [['list'], ['json', { outputFile: JSON_REPORT_PATH }]],
   use: {
     baseURL: PROD_BASE_URL,
     trace: 'retain-on-failure',

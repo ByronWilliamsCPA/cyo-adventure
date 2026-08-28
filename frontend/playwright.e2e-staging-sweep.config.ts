@@ -39,7 +39,17 @@ import { requireStagingBaseUrl } from './e2e-staging/support/staging-env'
  * `signInAsStagingTestUser`; if it ever needs a role this file's
  * `storageState` does not cover, add a role-specific setup test rather than
  * signing in from inside the sweep again.
+ *
+ * The `json` reporter writes outside `frontend/test-results/`, matching
+ * playwright.e2e-staging.config.ts: this project's own config already keeps
+ * traces/screenshots/video off below (nothing under test-results/ for this
+ * project to begin with), and the JSON report must stay off that path
+ * regardless, since e2e-staging.yml's alert-composing step reads it. `list`
+ * stays first so human-readable CI console output is unchanged.
  */
+const JSON_REPORT_PATH =
+  process.env.PLAYWRIGHT_JSON_REPORT_PATH ?? 'playwright-json-report/e2e-staging-sweep.json'
+
 export default defineConfig({
   testDir: './e2e-staging-sweep',
   // One test, no sign-in of its own (see above). Kept at 60s rather than
@@ -57,7 +67,7 @@ export default defineConfig({
   // #VERIFY: keep this at 0 in CI as well as locally.
   retries: 0,
   workers: 1,
-  reporter: 'list',
+  reporter: [['list'], ['json', { outputFile: JSON_REPORT_PATH }]],
   use: {
     baseURL: requireStagingBaseUrl(),
     // #CRITICAL: security: the guardian bearer this project authenticates

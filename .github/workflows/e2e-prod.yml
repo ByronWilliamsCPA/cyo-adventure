@@ -153,6 +153,27 @@ jobs:
           path: frontend/test-results/
           retention-days: 7
 
+      # #CRITICAL: security: reads ONLY frontend/playwright-json-report/e2e-prod.json
+      # (this workflow's own `json` reporter output, see the reporter array in
+      # playwright.e2e-prod.config.ts), never frontend/test-results/, which is
+      # uploaded wholesale as a public artifact above because THIS REPOSITORY
+      # IS PUBLIC. scripts/extract-failing-specs.mjs reads only `spec.file` and
+      # `test.title` off the report; it never touches an error message, a
+      # stack trace, or any attachment, and it always exits 0 (a missing or
+      # unparseable report degrades to an explanatory line), so this step
+      # cannot itself fail the job.
+      # #VERIFY: a future edit to that script that reads any other field must
+      # be rejected in review; see its own header comment.
+      - name: Extract failing specs from the Playwright report
+        if: ${{ failure() }}
+        id: extract_specs
+        run: |
+          {
+            echo 'result<<EXTRACT_SPECS_EOF'
+            node scripts/extract-failing-specs.mjs playwright-json-report/e2e-prod.json
+            echo 'EXTRACT_SPECS_EOF'
+          } >> "$GITHUB_OUTPUT"
+
       - name: Compose the issue body
         # Reusable alerting pattern for scheduled E2E tiers (test-
         # traceability-matrix.md, "Actions to reach the bar" #2), routed
@@ -173,14 +194,25 @@ jobs:
         # distinct failure source (the Playwright step) worth naming in the
         # body, where e2e-staging tracks three, so this compose step can stay
         # one fixed message.
+        #
+        # `FAILING_SPECS` (task A7-i) is the prior step's output: which spec
+        # file(s) and test title(s) failed, or an explanatory line if the
+        # report was absent/unparseable. It is composed into the return value
+        # here and passed to BOTH `body` and `comment-body` below, matching
+        # e2e-staging.yml: on this branch the composite action uses `body`
+        # only at issue creation, so anything that goes only into `body`
+        # would be visible exactly once.
         if: ${{ failure() }}
         id: compose
         uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9.0.0
+        env:
+          FAILING_SPECS: ${{ steps.extract_specs.outputs.result }}
         with:
           result-encoding: string
           script: |
             const runUrl = `${context.serverUrl}/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`
             const today = new Date().toISOString().slice(0, 10)
+            const failingSpecs = process.env.FAILING_SPECS || 'No failing-spec detail is available for this run.'
 
             return [
               'The scheduled `E2E (production)` workflow (`.github/workflows/e2e-prod.yml`) failed.',
@@ -190,7 +222,9 @@ jobs:
               'regression, a production outage, or the dedicated test account or its',
               'credentials need attention.',
               '',
-              `First failing run: ${runUrl}`,
+              failingSpecs,
+              '',
+              `This run: ${runUrl}`,
               `Date: ${today}`,
               '',
               'This issue accumulates one comment per failing run and closes itself',
@@ -205,7 +239,7 @@ jobs:
           label: e2e-alert
           summary: scheduled production E2E failing
           body: ${{ steps.compose.outputs.result }}
-          comment-body: Scheduled production E2E failed again.
+          comment-body: ${{ steps.compose.outputs.result }}
 
       - name: Resolve the tracking issue on a green scheduled run
         # Every one of these issue bodies used to end by asking a human to
