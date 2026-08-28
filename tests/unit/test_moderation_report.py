@@ -626,6 +626,125 @@ class TestLegacyHiddenFailSafeNodeCounts:
             "llm_readability": FailSafeScope(nodes=2, whole_story=False)
         }
 
+    def test_a_non_dict_finding_row_is_counted_and_logged(self) -> None:
+        """At-rest corruption must leave a trace, not read as a judged node.
+
+        The scan skips a row it cannot index into, and for as long as that
+        skip was silent, a report whose findings list had been corrupted
+        rendered as a clean, fully judged book. Nothing above catches it:
+        ``moderation_report_unusable`` stops at the first genuine finding, so
+        the FLAG row here rescues the whole report from that predicate.
+        """
+        report = {
+            "findings": [
+                "not a finding at all",
+                {
+                    "source": "llm_safety",
+                    "node_id": "n1",
+                    "verdict": "flag",
+                    "message": "too scary",
+                },
+            ]
+        }
+
+        with patch.object(report_module, "_logger") as logger:
+            counts = legacy_hidden_fail_safe_node_counts(report)
+
+        assert counts == {}
+        assert logger.warning.call_args_list == [
+            call(
+                "hidden_fail_safe_scan_skipped_rows",
+                malformed_rows=1,
+                reason=ANY,
+            )
+        ]
+
+    def test_a_pass_row_with_a_non_string_message_is_counted_and_logged(
+        self,
+    ) -> None:
+        """A PASS row whose message is not a string is corrupt, not clean.
+
+        Every real ``Finding`` carries a ``str`` message, so this shape can
+        only come from corruption at rest. Before the counter it fell through
+        the same silent path as a genuine clean judgment.
+        """
+        report = {
+            "findings": [
+                {
+                    "source": "llm_readability",
+                    "node_id": "n1",
+                    "verdict": "pass",
+                    "message": {"unknown verdict": "defaulted to fail-safe"},
+                }
+            ]
+        }
+
+        with patch.object(report_module, "_logger") as logger:
+            counts = legacy_hidden_fail_safe_node_counts(report)
+
+        assert counts == {}
+        assert logger.warning.call_args_list == [
+            call(
+                "hidden_fail_safe_scan_skipped_rows",
+                malformed_rows=1,
+                reason=ANY,
+            )
+        ]
+
+    def test_ordinary_pass_rows_do_not_trip_the_skipped_row_log(self) -> None:
+        """The witness must stay quiet on the shape it will see most often.
+
+        A legacy report is full of genuine PASS rows whose messages are
+        ordinary judgments. Warning on those would fire on nearly every
+        report the scan reads, and a warning that always fires is one nobody
+        reads: the counter would stop being evidence of anything.
+        """
+        report = {
+            "findings": [
+                {
+                    "source": "llm_readability",
+                    "node_id": "n1",
+                    "verdict": "pass",
+                    "message": "reads cleanly for the band",
+                },
+                {
+                    "source": "llm_safety",
+                    "node_id": "n2",
+                    "verdict": "pass",
+                    "message": "nothing unsafe here",
+                },
+            ]
+        }
+
+        with patch.object(report_module, "_logger") as logger:
+            counts = legacy_hidden_fail_safe_node_counts(report)
+
+        assert counts == {}
+        logger.warning.assert_not_called()
+
+    def test_a_corrupt_non_string_source_falls_back_to_the_category(self) -> None:
+        """`source or category` short-circuited on any truthy source.
+
+        A corrupt non-string source consumed the slot, so the category
+        fallback never ran and the row was bucketed under "unknown" with the
+        usable label sitting right beside it.
+        """
+        report = {
+            "findings": [
+                {
+                    "source": ["llm_readability"],
+                    "category": "llm_readability",
+                    "node_id": "n1",
+                    "verdict": "pass",
+                    "message": FAIL_SAFE_MESSAGE_SUBSTRING,
+                }
+            ]
+        }
+
+        assert legacy_hidden_fail_safe_node_counts(report) == {
+            "llm_readability": FailSafeScope(nodes=1, whole_story=False)
+        }
+
     def test_pass_verdict_does_not_hide_a_fail_safe_row(self) -> None:
         # The production shape: the stored verdict is "pass", which the
         # review surface filters out before rendering. If this predicate

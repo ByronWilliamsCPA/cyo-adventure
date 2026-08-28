@@ -464,11 +464,18 @@ def legacy_hidden_fail_safe_node_counts(
         invisible fail-safe coverage: the count of distinct NAMED nodes, and
         separately whether any matching finding named no node at all and so
         covered the whole story. The two are reported apart rather than summed
-        because a whole-story scope is not one more node. An empty dict means
-        nothing fell back invisibly, including for a malformed or absent
-        report: failing closed on corruption is
-        ``moderation_report_unusable``'s job, and duplicating it here would
-        report a corrupt row as an unjudged-node problem it is not.
+        because a whole-story scope is not one more node. An empty dict does
+        NOT mean "nothing fell back": it means nothing fell back that this
+        scan could see. A malformed or absent report returns empty here on
+        purpose, since failing closed on report-level corruption is
+        ``moderation_report_unusable``'s job and duplicating it would report a
+        corrupt row as an unjudged-node problem it is not. Per-finding
+        corruption is the case that predicate does NOT cover, because one
+        surviving genuine finding rescues the whole report from it, so the
+        rows that are too malformed to classify are counted and logged
+        (``hidden_fail_safe_scan_skipped_rows``) rather than passed over in
+        silence. The log is the only witness; the return value cannot carry
+        the distinction.
     """
     # #CRITICAL: data-integrity: the empty dict this returns is ambiguous by
     # construction. It means "nothing fell back invisibly" on a legacy report
@@ -486,21 +493,7 @@ def legacy_hidden_fail_safe_node_counts(
     findings = report.get("findings")
     if not isinstance(findings, list):
         return {}
-    scopes: dict[str, set[str | None]] = {}
-    for finding in cast("list[object]", findings):
-        if not isinstance(finding, dict):
-            continue
-        entry = cast("dict[str, object]", finding)
-        if entry.get("structural") is True:
-            continue
-        if entry.get("verdict") != Verdict.PASS.value:
-            continue
-        message = entry.get("message")
-        if not (isinstance(message, str) and FAIL_SAFE_MESSAGE_SUBSTRING in message):
-            continue
-        source = entry.get("source") or entry.get("category")
-        key = source if isinstance(source, str) and source else "unknown"
-        scopes.setdefault(key, set()).update(_covered_scopes(entry))
+    scopes, malformed_rows = _scan_legacy_fail_safe_rows(cast("list[object]", findings))
     counts = {
         key: FailSafeScope(
             nodes=len({node for node in nodes if node is not None}),
@@ -508,6 +501,16 @@ def legacy_hidden_fail_safe_node_counts(
         )
         for key, nodes in scopes.items()
     }
+    if malformed_rows:
+        _logger.warning(
+            "hidden_fail_safe_scan_skipped_rows",
+            malformed_rows=malformed_rows,
+            reason=(
+                "finding rows that are not well-formed enough to classify "
+                "(not a mapping, or a PASS row with a non-string message); "
+                "counted here rather than silently treated as absent"
+            ),
+        )
     if not counts and report_drops_pass_findings(report):
         _logger.info(
             "hidden_fail_safe_scan_blind_on_modern_report",
@@ -519,6 +522,89 @@ def legacy_hidden_fail_safe_node_counts(
             follow_up="UW-C390",
         )
     return counts
+
+
+def _scan_legacy_fail_safe_rows(
+    findings: list[object],
+) -> tuple[dict[str, set[str | None]], int]:
+    """Bucket invisible fail-safe rows by source, counting what it could not read.
+
+    # #CRITICAL: data-integrity: every `continue` below is a row this scan
+    # DECLINED to classify, and until the counter existed each one was
+    # indistinguishable from "no such row". A stored report whose fail-safe
+    # rows were corrupted at rest therefore rendered as a clean, fully judged
+    # book. Report-level corruption is covered elsewhere
+    # (`moderation_report_unusable` fails closed on it), but per-finding
+    # corruption is not: one surviving genuine finding rescues the whole
+    # report from that predicate. Counting the declines is the witness that
+    # closes the silent half. It is deliberately NOT a gate: this notice is
+    # display-only and never reaches `severe_finding_counts`, so there is
+    # nothing here to fail closed.
+    #
+    # Only the DECIDABLE declines are counted. A non-structural PASS row whose
+    # message is a string that simply does not match is far more often a
+    # genuine clean judgment than a drifted fail-safe row, and counting those
+    # would fire on almost every legacy report, which is how a witness becomes
+    # noise and stops being read. A structural fail-safe row is likewise
+    # excluded on purpose rather than counted: the pipeline collapses a
+    # stage-wide outage into exactly one structural finding that carries a
+    # gating verdict and surfaces on its own, so it is reported, not hidden.
+    # #VERIFY: tests/unit/test_moderation_report.py::
+    # TestLegacyHiddenFailSafeNodeCounts::
+    # test_a_non_dict_finding_row_is_counted_and_logged,
+    # ::test_a_pass_row_with_a_non_string_message_is_counted_and_logged,
+    # ::test_ordinary_pass_rows_do_not_trip_the_skipped_row_log.
+
+    Args:
+        findings: The raw ``findings`` list from a stored report.
+
+    Returns:
+        tuple[dict[str, set[str | None]], int]: Per-source covered scopes
+        (``None`` standing for whole-story), and the number of rows too
+        malformed to classify either way.
+    """
+    scopes: dict[str, set[str | None]] = {}
+    malformed_rows = 0
+    for finding in findings:
+        if not isinstance(finding, dict):
+            malformed_rows += 1
+            continue
+        entry = cast("dict[str, object]", finding)
+        if entry.get("structural") is True:
+            continue
+        if entry.get("verdict") != Verdict.PASS.value:
+            continue
+        message = entry.get("message")
+        if not isinstance(message, str):
+            # A real Finding always carries a str message, so a PASS row
+            # whose message is not one is corrupt at rest rather than clean.
+            # Left uncounted, it read as an ordinary judged node.
+            malformed_rows += 1
+            continue
+        if FAIL_SAFE_MESSAGE_SUBSTRING not in message:
+            continue
+        # Not `entry.get("source") or entry.get("category")`: that form
+        # short-circuits on ANY truthy source, so a corrupt non-string one
+        # (a list, a number) consumed the slot and the category fallback
+        # never ran, silently bucketing the row under "unknown".
+        key = _first_usable_label(entry.get("source"), entry.get("category"))
+        scopes.setdefault(key, set()).update(_covered_scopes(entry))
+    return scopes, malformed_rows
+
+
+def _first_usable_label(*candidates: object) -> str:
+    """Return the first candidate that is a non-empty string.
+
+    Args:
+        candidates: Values to try in order, most specific first.
+
+    Returns:
+        str: The first usable label, or ``"unknown"`` when none qualifies.
+    """
+    for candidate in candidates:
+        if isinstance(candidate, str) and candidate:
+            return candidate
+    return "unknown"
 
 
 def _covered_scopes(entry: dict[str, object]) -> set[str | None]:
