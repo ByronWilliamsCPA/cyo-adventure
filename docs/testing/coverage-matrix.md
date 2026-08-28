@@ -869,6 +869,7 @@ read's starting variables; the client never derives a seed of its own.
 - E2E-mocked: `frontend/e2e/device-authorization.spec.ts`, `frontend/e2e/landing.spec.ts`, `frontend/e2e/naive-user/naive-kid-misuse.spec.ts`, `frontend/e2e/guardian-devices.spec.ts` (the guardian's authorized-device list in the routed app: revoking is gated behind the confirm dialog and fires `DELETE /v1/device-grants/{id}` for that device only, cancelling sends nothing, and an unauthenticated visit redirects to guardian login)
 - E2E-real: `frontend/e2e-real/kid-reads.spec.ts`, `frontend/e2e-real/naive-kid-misuse-real.spec.ts`, `frontend/e2e-real/series-continue-real.spec.ts`, `frontend/e2e-real/real-stack.ts` (helper)
 - E2E-staging: `frontend/e2e-staging/kid-library-smoke.spec.ts` (one of two grant-writing staging specs, with `afterAll` cleanup, mirroring the prod pattern; `moderation-qa-invisibility.spec.ts` runs the same reversible mint/revoke pattern)
+- E2E-staging-sweep: `frontend/e2e-staging-sweep/device-grant-sweep.spec.ts`, the authoritative end-of-job backstop for the two E2E-staging specs above (see `docs/testing/README.md`, "Concurrent runs must not race the same fixtures"). Runs after the main staging tier and asks staging itself whether the test family still holds an active device grant, independent of whether either spec's own `afterAll` teardown ran; fail-closed on anything other than a confirmed-empty list (a 429, a non-2xx, a network error, or an unparseable body all fail the spec rather than being read as "no leaks"). Reports without auto-revoking.
 - E2E-prod: `frontend/e2e-prod/kid-device-grant.spec.ts` (the one prod spec that writes, with `afterAll` cleanup)
 - Component: `frontend/src/auth/DeviceAuthorizedRoute.test.tsx`, `frontend/src/auth/deviceGrant.test.ts`, `frontend/src/auth/deviceGrantApi.test.ts`, `frontend/src/landing/LandingPage.test.tsx`, `frontend/src/guardian/ConsolePage.test.tsx` (mint/re-authorize/revoke), `frontend/src/guardian/LoginPage.test.tsx` (authorize-device intent), `frontend/src/offline/db.test.ts` (device-grant mirror + migration), `frontend/src/hooks/useApi.test.ts` (device-grant bearer selection/clearing), `frontend/src/guardian/DevicesPage.test.tsx` (the guardian's authorized-device list: empty state, a granted device rendered with its label and grant date, the "Unnamed device" fallback for a null label, and the "This device" marker driven by matching the browser's own stored `device_grant` id so only the matching row is marked. Revoking is gated behind a confirm dialog, the `DELETE /v1/device-grants/{id}` fires only on confirm and the row then disappears, cancelling leaves the list untouched with no request sent, and a failed revoke shows a row-level error while keeping the device listed and its button re-enabled. Also pins the revocation copy against real backend behavior: `api/deps.py::_child_principal` does no database round-trip, so an already-minted child session survives revocation for the rest of its 12-hour TTL, and the page must not claim the cut-off happens on the next reconnect. The same suite also covers the page's G15 downloads section: grouped-by-device rendering, the empty/loading/error states fetched independently of the device-grant list, and each row's profile name/book title/last-confirmed display), `frontend/src/guardian/deviceDownloadsApi.test.ts` (the `GET /v1/device-downloads` adapter backing that section: payload pass-through and null on any HTTP or transport failure)
 - Integration: `frontend/src/test/App.test.tsx`
@@ -879,6 +880,37 @@ read's starting variables; the client never derives a seed of its own.
 - E2E-real: `frontend/e2e-real/ratings-real.spec.ts` (tap a star against the real backend, reload, confirm the rating persisted server-side rather than only in client state)
 - Component: `frontend/src/library/StarRating.test.tsx`, `frontend/src/library/LibraryPage.test.tsx` (rate POST + optimistic/revert), `frontend/src/library/libraryApi.test.ts` (`rate()`)
 - **Remaining gap**: still no `e2e-staging` or `e2e-prod` coverage; low priority given the real-backend and component coverage now in place.
+
+## Cross-cutting: user-simulation walk (usersim tier)
+
+Not tied to a single journey by design: a seeded random walk over the live,
+built app (`frontend/e2e-usersim/`, `usersim` Playwright project in the
+shared default `frontend/playwright.config.ts`), one walk per persona (kid,
+guardian, admin), asserting six invariants at every state it reaches rather
+than exercising one predetermined path. See
+`docs/testing/user-side-testing-module-proposal-2026-08-27.md` for why a
+random walk over the real click graph earns its keep alongside the
+predetermined journeys above. Route via `npm run test:e2e:usersim`.
+
+- E2E-usersim: `frontend/e2e-usersim/walk.spec.ts` runs the walk itself
+  (`support/personas.ts`, `support/prng.ts`, `support/invariants.ts`,
+  `support/findings.ts`, `support/console-allowlist.ts`, and
+  `support/route-manifest.ts` are the non-spec substrate behind it, excluded
+  from this guard's discovery by the `*.spec.ts` glob). Six invariants, per
+  the walk's own docstring: I1 (no buffered console error/pageerror/
+  unhandled-rejection since the last drain), I2 (the state offers an enabled
+  interactive element, or is a recognised terminal for that persona), I3 (any
+  loading indicator resolves within budget, no fixed sleep), I4 (zero
+  page-level horizontal overflow), I5 (role and family isolation: a kid
+  session never renders guardian-only or cross-family content, and a
+  guardian session never renders another family's data, per the ADR-016
+  three-ring boundary), and I6 (a random back/forward step still lands in a
+  state satisfying I1-I4). I2 and I5 are deliberately not re-checked after a
+  back/forward step; see the walk's own comment on I6 for why.
+- Component: `frontend/src/router.usersim-manifest.test.ts` (see
+  "Cross-cutting component and utility tests" below; kept there rather than
+  duplicated here since it is a Vitest suite, not part of this Playwright
+  tier).
 
 ---
 
@@ -1002,12 +1034,13 @@ in their journey sections instead.
   hook every routed page calls: the app-name suffix, the `bare` opt-out the
   landing page uses so its title is not doubled, and re-firing when the title
   prop changes. Not tied to one journey because all 29 routed pages share it)
-- Usersim walk substrate (`frontend/e2e-usersim/`, not yet wired into any
-  Playwright project): `frontend/src/router.usersim-manifest.test.ts` (sync test
-  asserting the checked-in `route-manifest.ts` walkable-route list matches the
-  real route tree in both directions, with a positive control proving the
-  leaf-path derivation is non-vacuous and correctly descends nested pathless
-  layouts)
+- Usersim walk substrate (`frontend/e2e-usersim/`; the walk itself is now a
+  wired Playwright project, documented under "Cross-cutting: user-simulation
+  walk (usersim tier)" above): `frontend/src/router.usersim-manifest.test.ts`
+  (sync test asserting the checked-in `route-manifest.ts` walkable-route list
+  matches the real route tree in both directions, with a positive control
+  proving the leaf-path derivation is non-vacuous and correctly descends
+  nested pathless layouts)
 - Theme system (light/dark/system, mounted app-wide at the root via
   ThemeProvider; every surface's chrome renders a ThemeToggle):
   `frontend/src/theme/theme.test.ts` (mode validation, stored-preference
