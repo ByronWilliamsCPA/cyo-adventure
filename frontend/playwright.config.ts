@@ -412,5 +412,36 @@ export default defineConfig({
       retries: process.env.CI ? 1 : 0,
       use: { ...devices['Desktop Chrome'] },
     },
+    {
+      // I7 (task B3b): the same seeded walk as `usersim` above, plus an axe
+      // scan of each newly-reached state signature (route + main heading),
+      // widening the "one fixed mock state per surface" gap
+      // docs/testing/coverage-matrix.md records for e2e/a11y.spec.ts.
+      // Separate project/testDir/testMatch (never a tag or grep filter, per
+      // this tier's own tier-separation rule), and separate from `usersim`
+      // itself so I1-I6-only nightly runs (usersim.yml,
+      // e2e-real-nightly.yml) never pick up the axe dependency or its extra
+      // scan time.
+      //
+      // Run ONLY from .github/workflows/accessibility-compliance-weekly.yml
+      // behind A11Y_EXTENDED=1 (owner decision, see walk-a11y.spec.ts's own
+      // header comment); walk-a11y.spec.ts's own `test.skip` enforces that
+      // flag requirement even if this project is ever invoked elsewhere.
+      // Never wired into ci.yml's required frontend-e2e job (ADR-029).
+      //
+      // Reuses the mocked-tier fixtures (support/mocked-api.ts, shared with
+      // `usersim`), not a real backend: matches the weekly workflow's
+      // existing a11y.spec.ts step, which also scans the mocked-tier build.
+      //
+      // Shares this file's single JSON_REPORT_PATH default with every other
+      // project here (see the header comment on PLAYWRIGHT_JSON_REPORT_PATH);
+      // accessibility-compliance-weekly.yml sets a distinct path for this
+      // step, the same way e2e-real-nightly.yml already does for its three
+      // Playwright invocations.
+      name: 'usersim-a11y',
+      testDir: './e2e-usersim',
+      testMatch: /walk-a11y\.spec\.ts/,
+      use: { ...devices['Desktop Chrome'] },
+    },
   ],
 })

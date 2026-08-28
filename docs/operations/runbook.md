@@ -882,6 +882,24 @@ The third `e2e-alert` producer is **`.github/workflows/accessibility-compliance-
 The per-PR WCAG 2.1 AA gate is a required `ci.yml` job instead, so a failure here is a compliance
 finding to triage, never a merge blocker. Its alert marker is `[a11y-weekly]`.
 
+This one job runs two independent Playwright scans (task B3b), and its single filed/commented issue
+labels their findings distinctly so triage does not have to guess which scan produced what:
+
+- **Stream 1, fixed-state**: `frontend/e2e/a11y.spec.ts`, the same hand-picked list of pages/dialogs
+  the per-PR gate checks, re-run with the wider WCAG 2.2 + best-practice tag scope.
+- **Stream 2, newly-reached-state (I7)**: `frontend/e2e-usersim/walk-a11y.spec.ts`, an axe scan of
+  each distinct route+heading state the usersim seeded random walk (Section 7's usersim tier is
+  covered under the E2E workflows above; see `docs/testing/coverage-matrix.md`'s "Cross-cutting:
+  user-simulation walk" section) reaches for the first time. Its findings carry
+  `workflow: 'usersim-a11y-weekly'` in the shared usersim JSONL findings sink
+  (`frontend/e2e-usersim/support/findings.ts`), which is what tells them apart from the SAME sink's
+  nightly-walk findings (`workflow: 'usersim-walk'`/`'usersim-walk-real'`, produced by
+  `usersim.yml`/`e2e-real-nightly.yml`'s I1-I6 checks, not accessibility findings at all). Checking
+  only one of these two streams, or only one workflow's findings in the shared sink, is not checking
+  the whole system: a clean nightly usersim run says nothing about whether this week's newly-reached
+  states are accessible, and a clean weekly a11y run says nothing about I1-I6 (console errors,
+  dead-end states, overflow, role isolation).
+
 `e2e-staging.yml` ("E2E (staging)", daily at 13:00 UTC) is a third E2E tier but is **not** on this list,
 because it has no alerting step of any kind: a staging failure leaves a red run and a Playwright
 trace artifact, and nothing opens an issue. Nobody is notified unless they look. For the wider test

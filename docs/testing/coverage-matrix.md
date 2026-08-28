@@ -59,7 +59,21 @@ relate to the Supabase project constraints.
   `landing.css`). The dialog pass found no new violations. Remaining gap:
   outside the populated and error-alert scans added above, each remaining
   page/dialog is still checked in one fixed mock state, not every
-  loading/error variant.
+  loading/error variant. Narrowed (I7, task B3b, weekly extended tier
+  only): `frontend/e2e-usersim/walk-a11y.spec.ts` now runs an axe scan at
+  every DISTINCT route+heading state the seeded usersim walk reaches for the
+  first time, across all three personas, which axe-scans several states the
+  hand-picked fixed-mock-state list above never visited (e.g. the reader
+  route mid-story, and whatever the walk's random link choice happens to
+  land on that run). What is still NOT covered even after I7: loading/error
+  variants of a route are not distinguished from its normal state unless the
+  walk's random path happens to land on one (I7's state signature is
+  route+first-heading, not route+data-state, so a loading and a loaded
+  variant of the same route usually collapse to one scan; see
+  `deriveStateSignature`'s doc comment in
+  `frontend/e2e-usersim/support/invariants.ts` for the full collapse
+  rationale), and I7 only runs weekly (`A11Y_EXTENDED=1`,
+  `accessibility-compliance-weekly.yml`), never per-PR.
 - **Accessibility, extended (weekly, non-blocking, ADR-029)**: the same
   `a11y.spec.ts` suite re-run with `A11Y_EXTENDED=1` by
   `.github/workflows/accessibility-compliance-weekly.yml`, widening the axe
@@ -907,6 +921,38 @@ predetermined journeys above. Route via `npm run test:e2e:usersim`.
   three-ring boundary), and I6 (a random back/forward step still lands in a
   state satisfying I1-I4). I2 and I5 are deliberately not re-checked after a
   back/forward step; see the walk's own comment on I6 for why.
+- E2E-usersim, I7 (task B3b): `frontend/e2e-usersim/walk-a11y.spec.ts` runs
+  the SAME seeded walk (via the shared `support/walk-runner.ts` substrate,
+  reusing `support/mocked-api.ts`'s route mocks) as a separate spec, testDir
+  entry, and Playwright project (`usersim-a11y`), never a tag or grep filter
+  on `walk.spec.ts` itself, so I1-I6 keep running unaffected on every nightly
+  usersim run while I7 runs only where `.github/workflows/
+  accessibility-compliance-weekly.yml` puts it (`A11Y_EXTENDED=1`, weekly,
+  never per-PR; this is an explicit owner decision, not an oversight). I7
+  adds a seventh invariant: an axe accessibility scan
+  (`assertNoNewStateAxeViolations` in `support/invariants.ts`) run once per
+  DISTINCT state signature (route pathname + first heading in DOM order,
+  `deriveStateSignature`), the first time the walk reaches it; a state
+  already scanned is a Set lookup, not a rescan. This deliberately collapses
+  two states sharing a route and heading into one scan; concretely, the
+  reader route's many story nodes (`/read/:profileId/:storybookId/:version`)
+  render no heading at all in their normal state, so every such node the
+  walk visits collapses to a single signature and gets scanned once, not
+  once per node. The walk emits `distinct_states_scanned` (a running Set
+  size) in its console log at both a per-scan (`[usersim-a11y-new-state]`)
+  and a per-walk-end (`[usersim-a11y]`) granularity, so a healthy run (a
+  positive count) is distinguishable from one whose scanning silently broke
+  (nothing logged at all). Findings are recorded through the same
+  `support/findings.ts` sink as I1-I5, tagged `workflow:
+  'usersim-a11y-weekly'` (distinct from the nightly walks' own
+  `usersim-walk`/`usersim-walk-real` tags), so the two kinds of usersim
+  finding are distinguishable downstream without a second emitter; see
+  `docs/operations/runbook.md` for the resulting two-stream triage note.
+  Only WCAG-tagged (conformance) violations fail the run, matching
+  `a11y.spec.ts`'s own conformance/best-practice split (shared rule set via
+  `frontend/e2e/support/axeTags.ts`); non-WCAG best-practice findings are
+  logged and tracked as `UW-F27`, not failed, for the same reason
+  `a11y.spec.ts` does not fail on them either.
 - Component: `frontend/src/router.usersim-manifest.test.ts` (see
   "Cross-cutting component and utility tests" below; kept there rather than
   duplicated here since it is a Vitest suite, not part of this Playwright

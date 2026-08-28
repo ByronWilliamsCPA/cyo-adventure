@@ -1,5 +1,5 @@
 /**
- * Composable invariant assertions (I1-I6) for the usersim walk tier.
+ * Composable invariant assertions (I1-I7) for the usersim walk tier.
  *
  * Every assertion here takes a `StepContext` (the page, the persona, the
  * seed in effect, and a findings sink) and either resolves silently or
@@ -8,9 +8,19 @@
  * A finding that cannot be replayed is a rumour (see prng.ts); the seed is
  * therefore embedded in the THROWN error text, not only logged, because a CI
  * reader sees the assertion failure, not the console.
+ *
+ * I7 (task B3b) is the one exception to "runs at every step": it is gated on
+ * `StepContext.axeTracker` being present, which only walk-a11y.spec.ts sets.
+ * The mocked (walk.spec.ts) and real-backend (walk-real.spec.ts) nightly
+ * walks never set it, so I7 is a true no-op there, exactly as it must be per
+ * ADR-029/CLAUDE.md: this tier's own required-gate project (`usersim`, wired
+ * nowhere near `ci.yml`'s per-PR `frontend-e2e` job) and its nightly
+ * counterparts must not grow new accessibility scope on their own.
  */
+import AxeBuilder from '@axe-core/playwright'
 import { expect, type Page } from '@playwright/test'
 
+import { AXE_TAGS, isConformance } from '../../e2e/support/axeTags'
 import { isAllowlistedConsoleMessage } from './console-allowlist'
 import type { FindingsSink } from './findings'
 import { getPersona, type PersonaId } from './personas'
@@ -87,6 +97,28 @@ export const INTERACTIVE_SELECTOR = [
   '[role="link"]:not([aria-disabled="true"]):visible',
 ].join(', ')
 
+/**
+ * I7 substrate: which state signatures this walk has already axe-scanned.
+ * One tracker per persona's walk (created by the caller, walk-a11y.spec.ts,
+ * and threaded through `WalkOptions.axeTracker` in walk-runner.ts), not a
+ * module-level singleton: Playwright can run persona tests concurrently in
+ * separate workers, and a shared mutable Set across workers would race.
+ *
+ * `scanned.size` after the walk finishes IS the "distinct signatures
+ * scanned" count the task brief requires: a tracker that reaches the end of
+ * a walk with `scanned.size === 0` (nothing was ever new) is distinguishable
+ * from I7 having silently stopped running at all, because walk-runner.ts
+ * logs `scanned.size` unconditionally whenever a tracker is present, not
+ * only when it is nonzero.
+ */
+export interface AxeStateTracker {
+  scanned: Set<string>
+}
+
+export function createAxeStateTracker(): AxeStateTracker {
+  return { scanned: new Set() }
+}
+
 export interface StepContext {
   page: Page
   persona: PersonaId
@@ -102,6 +134,13 @@ export interface StepContext {
    * The real-tier walk sets this to real seeded-row values (task B3a).
    */
   canaries?: RoleFamilyCanaries
+  /**
+   * I7 (task B3b) substrate. Omitted on every existing caller (walk.spec.ts,
+   * walk-real.spec.ts): I7 is opt-in, only present on the weekly
+   * accessibility walk (walk-a11y.spec.ts), so those two nightly tiers never
+   * run an axe scan at all.
+   */
+  axeTracker?: AxeStateTracker
 }
 
 function replayHint(ctx: StepContext): string {
@@ -283,7 +322,126 @@ export async function assertRoleFamilyIsolation(ctx: StepContext): Promise<void>
 }
 
 /**
- * Run I1-I5 at a normal walk step (a fresh navigation or an in-page click).
+ * STATE SIGNATURE for I7: route pathname plus the page's first heading's
+ * text, exactly the definition the task brief and
+ * docs/testing/user-side-testing-module-proposal-2026-08-27.md both give
+ * ("route + main heading"). "First heading" (`getByRole('heading').first()`
+ * in DOM order), not specifically an `<h1>`: this app does not render an
+ * `<h1>` on every route (e.g. the reader route's normal mid-story state has
+ * no heading at all, only body text and choices), so an h1-only rule would
+ * make every such state collapse to the SAME empty-heading signature anyway,
+ * while silently mis-describing pages whose real heading is an `<h2>` (the
+ * reader's own error/ending states) as headingless. Falls back to the empty
+ * string when the route currently renders no heading at all.
+ *
+ * STATED TRADEOFF (do not rediscover this later): this signature is coarser
+ * than "every distinct DOM state". Two genuinely different states that
+ * happen to share both the same route and the same (or absent) main heading
+ * are scanned ONCE, at whichever is reached first in that persona's walk,
+ * not once each. The reader route is the concrete case this matters for:
+ * every node of a story renders under the same
+ * `/read/:profileId/:storybookId/:version` URL with no on-page heading, so
+ * every reader state a given persona's walk visits collapses to one
+ * signature and gets exactly one axe scan, however many distinct passages
+ * the walk actually clicked through. That is an accepted scope limit for I7
+ * (scanning every DOM permutation would multiply run time for questionable
+ * marginal signal, since a passage's accessibility properties come from the
+ * shared Reader chrome around it, not from the passage text itself), not an
+ * oversight; a future task that wants passage-level a11y coverage needs a
+ * finer signature (e.g. including the current node id), not a fix to this one.
+ */
+async function deriveStateSignature(page: Page): Promise<string> {
+  const pathname = new URL(page.url()).pathname
+  const heading = page.getByRole('heading').first()
+  const headingText =
+    (await heading.count()) > 0 ? ((await heading.textContent()) ?? '').trim() : ''
+  return `${pathname}::${headingText}`
+}
+
+/**
+ * I7 (task B3b): an axe accessibility scan of each state the first time
+ * this walk reaches it (state signature above), instead of the "one fixed
+ * mock state per surface" gap `docs/testing/coverage-matrix.md` records for
+ * `e2e/a11y.spec.ts`. A true no-op when `ctx.axeTracker` is absent (see the
+ * module doc comment and `StepContext.axeTracker`), so this function is safe
+ * to call unconditionally from `assertStepInvariants`/
+ * `assertHistoryStepInvariants` below without changing the mocked/real
+ * nightly walks' behaviour at all.
+ *
+ * Rule scope is `AXE_TAGS` from `e2e/support/axeTags.ts`, the SAME constant
+ * `e2e/a11y.spec.ts` scans with (task brief: "match the rule set the weekly
+ * job already scans with"), so this only ever produces the WCAG 2.1 AA
+ * baseline set unless `A11Y_EXTENDED=1` is set in the environment, exactly
+ * like that file. walk-a11y.spec.ts (the only caller that ever sets
+ * `axeTracker`) requires that flag before running at all; see its own
+ * header comment.
+ *
+ * A WCAG-tagged ("conformance") violation records one finding per rule id
+ * and throws, same failure shape as every other invariant here: a reader
+ * gets the state signature, every violated rule id, and the replay hint in
+ * one message. A non-WCAG ("best-practice", `structural` below) finding is
+ * reported (console.warn, matching a11y.spec.ts's own precedent) but does
+ * NOT fail the walk, for the identical reason a11y.spec.ts's own comment
+ * gives: axe's ~30 best-practice-only rules include real hygiene debt this
+ * repo has not cleared yet (see coverage-matrix.md's `UW-F27`), and failing
+ * on all of them here would make I7 permanently red rather than able to
+ * report a genuine regression.
+ */
+export async function assertNoNewStateAxeViolations(ctx: StepContext): Promise<void> {
+  if (!ctx.axeTracker) return
+
+  const signature = await deriveStateSignature(ctx.page)
+  if (ctx.axeTracker.scanned.has(signature)) return
+  ctx.axeTracker.scanned.add(signature)
+
+  const results = await new AxeBuilder({ page: ctx.page }).withTags(AXE_TAGS).analyze()
+  const conformance = results.violations.filter(isConformance)
+  const structural = results.violations.filter((violation) => !isConformance(violation))
+
+  // Emitted for EVERY new-state scan, pass or fail: this is the "count of
+  // distinct signatures scanned" signal the task brief requires, so a run
+  // that reached and scanned N states is distinguishable in the log from one
+  // whose scanning silently stopped running (which would emit nothing at
+  // all, not a count of zero).
+  console.log(
+    `[usersim-a11y-new-state] persona=${ctx.persona} signature=${JSON.stringify(signature)} ` +
+      `distinct_states_scanned=${ctx.axeTracker.scanned.size} conformance=${conformance.length} structural=${structural.length}`
+  )
+
+  if (structural.length > 0) {
+    const summary = structural
+      .map((violation) => `${violation.id} (${violation.nodes.length})`)
+      .join(', ')
+    console.warn(
+      `[usersim-a11y-new-state][best-practice] ${signature}: ${structural.length} non-WCAG finding(s): ${summary}. ` +
+        `Tracked as UW-F27; not failing I7. Full detail: ${JSON.stringify(structural, null, 2)}`
+    )
+  }
+
+  if (conformance.length > 0) {
+    for (const violation of conformance) {
+      ctx.sink.record({
+        leg: 'A',
+        persona: ctx.persona,
+        scenario_or_seed: ctx.seed,
+        url: ctx.page.url(),
+        invariant_or_verdict: `I7:${violation.id}`,
+        severity: 'high',
+        evidence_path: '',
+        workflow: ctx.workflow,
+      })
+    }
+    const ids = conformance.map((violation) => violation.id)
+    throw new Error(
+      `I7: ${ids.length} WCAG conformance violation(s) at signature ${JSON.stringify(signature)}: ` +
+        `${ids.join(', ')} [${replayHint(ctx)}]`
+    )
+  }
+}
+
+/**
+ * Run I1-I5 (plus I7, a no-op unless `ctx.axeTracker` is set) at a normal
+ * walk step (a fresh navigation or an in-page click).
  */
 export async function assertStepInvariants(
   ctx: StepContext,
@@ -295,6 +453,7 @@ export async function assertStepInvariants(
   await assertNotDeadEnd(ctx)
   await assertNoOverflow(ctx, assertNoHorizontalOverflow)
   await assertRoleFamilyIsolation(ctx)
+  await assertNoNewStateAxeViolations(ctx)
 }
 
 /**
@@ -303,7 +462,11 @@ export async function assertStepInvariants(
  * deliberately excluded: a back/forward step can legitimately land on a page
  * this walk has already judged (or will judge) on its own forward visit, and
  * re-asserting dead-end/isolation there adds no new coverage over what the
- * forward pass already checks.
+ * forward pass already checks. I7 (a no-op unless `ctx.axeTracker` is set)
+ * is included: it is naturally cheap here too, since a back/forward step
+ * lands on an already-visited URL whose signature is (almost always)
+ * already in `axeTracker.scanned`, so this is a Set lookup, not a second
+ * scan, in the common case.
  */
 export async function assertHistoryStepInvariants(
   ctx: StepContext,
@@ -313,4 +476,5 @@ export async function assertHistoryStepInvariants(
   await assertLoadingResolves(ctx)
   assertCleanConsole(watcher, ctx)
   await assertNoOverflow(ctx, assertNoHorizontalOverflow)
+  await assertNoNewStateAxeViolations(ctx)
 }

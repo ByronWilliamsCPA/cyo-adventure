@@ -24,6 +24,7 @@ import {
   createConsoleWatcher,
   LOADING_RESOLUTION_BUDGET_MS,
   LOADING_SELECTOR,
+  type AxeStateTracker,
   type RoleFamilyCanaries,
   type StepContext,
 } from './invariants'
@@ -118,20 +119,31 @@ export interface WalkOptions {
   canaries?: RoleFamilyCanaries
   /** Which usersim workflow produced this run (findings.ts's UsersimFinding.workflow). */
   workflow: string
+  /**
+   * I7 (task B3b) substrate: a per-persona tracker of which state signatures
+   * this walk has already axe-scanned. Omitted by every caller except
+   * walk-a11y.spec.ts, which makes I7 a no-op for the mocked (walk.spec.ts)
+   * and real-backend (walk-real.spec.ts) nightly walks, by construction, not
+   * by convention: invariants.ts's assertNoNewStateAxeViolations returns
+   * immediately whenever a StepContext carries no axeTracker.
+   */
+  axeTracker?: AxeStateTracker
 }
 
 /**
  * Run one persona's seeded random walk: seed its session, optionally
  * install mocks, then repeatedly pick a visible in-app link at random (via
- * the seeded PRNG, prng.ts) and click it, asserting I1-I5 at every state and
- * I6 after an occasional random back/forward step.
+ * the seeded PRNG, prng.ts) and click it, asserting I1-I5 at every state,
+ * I6 after an occasional random back/forward step, and I7 (task B3b, a
+ * no-op unless `options.axeTracker` is supplied) at each NEWLY reached
+ * state signature.
  */
 export async function runWalk(
   options: WalkOptions,
   page: Page,
   context: BrowserContext
 ): Promise<VisitedStep[]> {
-  const { persona, setupSession, installMocks, canaries, workflow } = options
+  const { persona, setupSession, installMocks, canaries, workflow, axeTracker } = options
   const rng = createRng(RESOLVED_SEED)
   const visited: VisitedStep[] = []
   const findingsLines: string[] = []
@@ -159,6 +171,7 @@ export async function runWalk(
       sink,
       workflow,
       canaries,
+      axeTracker,
     }
 
     if (visited.length > 1 && rng.next() < HISTORY_STEP_PROBABILITY) {
@@ -218,6 +231,16 @@ export async function runWalk(
   console.log(
     `[usersim] persona=${persona.id} seed=${RESOLVED_SEED} visited=${JSON.stringify(visited.map((v) => v.url))}`
   )
+  // I7 (task B3b) walk-level summary: emitted whenever a tracker is present,
+  // REGARDLESS of whether it ever grew past zero, so a run that genuinely
+  // found no new state to scan is distinguishable in the log from a run
+  // whose scanning silently stopped executing at all (which would print
+  // nothing here, not a zero).
+  if (axeTracker) {
+    console.log(
+      `[usersim-a11y] persona=${persona.id} distinct_states_scanned=${axeTracker.scanned.size}`
+    )
+  }
   for (const line of findingsLines) {
     console.log(`[usersim-finding] ${line}`)
   }
