@@ -624,15 +624,20 @@ async def test_mock_review_stamps_report_as_not_independent_in_local(
 
     The stamp and ``config._require_real_reviewer_outside_local`` were BOTH
     gated on ``environment != "local"``, and both read ``environment`` and
-    ``review_provider`` from the same env file. A process that fails to load
-    that file falls back to ``review_provider="mock"`` (config.py's default)
-    AND ``environment="local"``, which disables both defenses at once: the
-    guard does not raise, the stamp does not apply, and the persisted report
-    claims an independent reviewer while every node carries
-    "unknown verdict; defaulted to fail-safe" from the mock's fixed "{}" body.
+    ``review_provider`` off the same ``Settings`` object. That object declares
+    no ``env_file`` at all, so it sees exported process environment variables
+    and nothing else: a process started without them exported gets
+    ``review_provider="mock"`` (config.py's default) AND
+    ``environment="local"`` in the same instant, from one absence, and both
+    defenses go quiet together. The guard does not raise, the stamp does not
+    apply, and the persisted report claims an independent reviewer while
+    every node carries "unknown verdict; defaulted to fail-safe" from the
+    mock's fixed "{}" body.
 
-    A mock review is not an independent review in local either, and the stamp
-    is verdict-neutral (ADVISORY never gates), so it applies unconditionally.
+    A mock review is not an independent review in local either, so the stamp
+    applies unconditionally. Its ADVISORY finding never gates, but its other
+    half, ``reviewer_independent = False``, does: a story moderated with the
+    mock is unapprovable afterwards, deliberately.
     """
     story, version = _story(), _version()
     _load(mock_session, story, version)

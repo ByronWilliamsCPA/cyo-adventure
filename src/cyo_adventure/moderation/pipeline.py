@@ -271,9 +271,14 @@ async def run_moderation_pipeline(
                 message="reviewer is the same backend+model as the generator",
             )
         )
-    # #CRITICAL: security: a report produced by the mock reviewer (the
-    # CYO_ADVENTURE_ALLOW_MOCK_REVIEW=1 escape hatch, config._require_real_
-    # reviewer_outside_local) ran no real safety review at all. Overriding
+    # #CRITICAL: security: a report produced by the mock reviewer ran no
+    # real safety review at all, in EVERY environment. The escape hatch
+    # (CYO_ADVENTURE_ALLOW_MOCK_REVIEW=1,
+    # config._require_real_reviewer_outside_local) is what lets such a run
+    # BOOT outside local; it has never been what triggers this stamp, and
+    # reading it as the trigger is precisely the mistake that left the stamp
+    # gated on `environment != "local"` (third block below). The trigger is
+    # `review_provider == "mock"` and nothing else. Overriding
     # `reviewer_independent` here (build_review_provider always reports the
     # mock backend as independent) plus a structural advisory finding is what
     # makes such a report self-identifying forever (gap G1, design doc
@@ -303,8 +308,19 @@ async def run_moderation_pipeline(
     # twelve books at the review gate on 2026-07-21 with 2,916 fail-safe nodes
     # and `reviewer_independent: true` (docs/planning/safety/
     # moderation-review-current-state-2026-08-25.md section 6).
-    # A mock review is not an independent review in local either, and the stamp
-    # is verdict-neutral (ADVISORY never gates), so it applies unconditionally.
+    # A mock review is not an independent review in local either, so the
+    # stamp applies unconditionally. That is not a free change, and calling
+    # the stamp "verdict-neutral" would only be half true: the ADVISORY
+    # finding never gates, but the stamp's other half,
+    # `reviewer_independent = False`, is a hard gate.
+    # `moderation_report_unusable` returns True on that arm alone and
+    # `publishing/service.py` then refuses the approval outright, with no
+    # `override_reason` path (that argument gates only the later
+    # severe-finding check). A story moderated locally with the mock is
+    # therefore permanently unapprovable, which is the intended posture: it
+    # was never reviewed. The surfaces that hit it are the local cyo-author
+    # authoring loop and scripts/series_e2e_local.py's import-then-approve
+    # path, both of which must now run a real reviewer to reach published.
     # #VERIFY: tests/unit/test_moderation_pipeline.py::
     # test_mock_review_stamps_report_as_not_independent_in_local and
     # ::test_mock_review_escape_hatch_stamps_report_as_not_independent.
@@ -612,7 +628,7 @@ def _stamp_mock_reviewer(report: ModerationReport) -> None:
             source=Source.PIPELINE,
             category="pipeline",
             verdict=Verdict.ADVISORY,
-            message=("moderated with the mock reviewer; no real safety review ran"),
+            message="moderated with the mock reviewer; no real safety review ran",
             structural=True,
             concern="mock_reviewer_active",
         )

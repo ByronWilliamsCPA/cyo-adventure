@@ -9,6 +9,7 @@ import pytest
 
 from cyo_adventure.core.exceptions import BusinessLogicError
 from cyo_adventure.moderation import report as report_module
+from cyo_adventure.moderation.pipeline import _stamp_mock_reviewer
 from cyo_adventure.moderation.report import (
     CONCERN_TAXONOMY,
     FAIL_SAFE_MESSAGE_SUBSTRING,
@@ -924,3 +925,85 @@ class TestReportDropsPassFindings:
         # an empty mapping is a modern report that happened to have no PASS
         # rows, not a legacy one.
         assert report_drops_pass_findings({"aggregate": {"pass_counts": {}}}) is True
+
+
+class TestMockStampMakesAReportUnapprovable:
+    """The stamp's second half is a hard gate, and nothing tested that.
+
+    ``_stamp_mock_reviewer`` does two things: it adds an ADVISORY finding,
+    which never gates, and it sets ``reviewer_independent = False``, which
+    ``moderation_report_unusable`` treats as decisive on its own. Since this
+    PR made the stamp unconditional, every story moderated locally with the
+    mock reviewer is permanently unapprovable, including the local
+    cyo-author authoring loop and ``scripts/series_e2e_local.py``'s
+    import-then-approve path.
+
+    That is the intended posture (a mock run was never a review), but it was
+    an undocumented and untested consequence of widening the predicate. These
+    tests pin it, so the behavior is a decision on record rather than a side
+    effect nobody wrote down.
+    """
+
+    @staticmethod
+    def _report_with_one_genuine_finding() -> ModerationReport:
+        """A report that ``moderation_report_unusable`` accepts on its own.
+
+        A genuine, non-structural finding carrying a real verdict is what
+        makes this report the right control: it rules out the "every finding
+        is a pipeline artifact" arm, so any unusable verdict below can only
+        come from the ``reviewer_independent`` arm.
+
+        Returns:
+            ModerationReport: An unstamped report with one ADVISORY finding.
+        """
+        report = ModerationReport()
+        report.add(
+            Finding(
+                stage=0,
+                source=Source.PIPELINE,
+                category="prose_craft_sameness",
+                verdict=Verdict.ADVISORY,
+                message="self-repetition: 3 nodes repeat another node's body",
+                node_id=None,
+            )
+        )
+        return report
+
+    def test_the_control_report_is_approvable_before_stamping(self) -> None:
+        """Without this, the stamped assertion below proves nothing.
+
+        A report that was already unusable would satisfy the next test no
+        matter what the stamp did.
+        """
+        report = self._report_with_one_genuine_finding()
+
+        assert moderation_report_unusable(report.to_dict()) is False
+
+    def test_stamping_alone_flips_it_to_unusable(self) -> None:
+        """Same report, same findings, one stamp: no longer approvable.
+
+        ``publishing/service.py::approve`` raises ``BusinessLogicError``
+        (rule ``approve_with_unusable_moderation``) on exactly this
+        predicate, which is what makes the flip an approval-gate decision
+        rather than a cosmetic label.
+        """
+        report = self._report_with_one_genuine_finding()
+
+        _stamp_mock_reviewer(report)
+
+        assert moderation_report_unusable(report.to_dict()) is True
+
+    def test_the_advisory_half_is_not_what_gates(self) -> None:
+        """Attribute the flip to the right half of the stamp.
+
+        Adding the stamp's ADVISORY finding without its
+        ``reviewer_independent`` half leaves the report approvable. Without
+        this, a future change that dropped the flag and kept the finding
+        would still pass the test above via the other arm, and the gate would
+        be gone with every test still green.
+        """
+        report = self._report_with_one_genuine_finding()
+        _stamp_mock_reviewer(report)
+        report.reviewer_independent = True
+
+        assert moderation_report_unusable(report.to_dict()) is False

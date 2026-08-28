@@ -1228,9 +1228,11 @@ def test_main_prints_the_resolved_target_before_executing(
 ) -> None:
     """Print what this run actually resolved, not what the operator intended.
 
-    A process that fails to load its env file silently falls back to
-    environment="local" and a localhost database, and every guard keyed on
-    environment != "local" goes quiet at the same moment. Printing the
+    ``Settings`` declares no ``env_file``: it reads exported process
+    environment variables and nothing else. A shell that never exported them
+    therefore resolves environment="local", a localhost database and
+    review_provider="mock" together, from one absence, and every guard keyed
+    on environment != "local" goes quiet at the same moment. Printing the
     resolved values is what makes that visible before the run, rather than
     after an apparently successful sweep that touched nothing.
     """
