@@ -245,12 +245,14 @@ jobs:
       # before either is read, so the alert would end up naming only the
       # last-run project's failures on a run where an earlier step is what
       # actually failed, and would look correct while doing it (task A7-i).
-      # `PLAYWRIGHT_JSON_REPORT_PATH` below gives this run its own file rather
-      # than relying on the default `if:`-less step ordering (real-backend
-      # failing today skips the later steps entirely, which happens to avoid
-      # the collision, but that is step-scheduling behavior, not a property
-      # of the reporter, and would silently break the moment any of these
-      # steps gained an `if: always()` or `continue-on-error:`).
+      # `PLAYWRIGHT_JSON_REPORT_PATH` below gives each of the three its own
+      # file rather than relying on step-scheduling to keep runs from
+      # colliding. That matters concretely today: real-backend failing skips
+      # full-pipeline entirely (the default `if:`-less step gate), but
+      # usersim-real below carries an explicit `if: ${{ !cancelled() }}` and
+      # so still runs in that case, meaning its report is written in the same
+      # job as a real-backend failure. Distinct paths are what make that
+      # safe; a shared path would not be.
       # #VERIFY: `real-backend.json`, `real-backend-pipeline.json`, and
       # `usersim-real.json` below must stay distinct paths.
       - name: E2E (Playwright, real-backend tier)
@@ -319,15 +321,36 @@ jobs:
       # (frontend/e2e-usersim/walk.spec.ts), run here against this job's real
       # stack instead (walk-real.spec.ts), so I1-I6 are checked against
       # genuine backend responses rather than route-mocked fixtures. Needs no
-      # generation worker (unlike the full-pipeline step above), so it runs
-      # independently right after that step rather than depending on it.
+      # generation worker (unlike the full-pipeline step above): walk-real.spec.ts
+      # never awaits a generation job, so it is unaffected either way by
+      # whether "Start generation worker (background)" above ran or was
+      # itself skipped.
+      # #CRITICAL: timing: a GitHub Actions step with no explicit `if:` gets
+      # the implicit `if: success()`, meaning it runs only when every prior
+      # step in the job succeeded. Left ungated, this step would be skipped
+      # on every night `real-backend` or `full-pipeline` fails, exactly like
+      # `full-pipeline` is already skipped today when `real-backend` fails
+      # (see that step's own comment below). By the time this step would
+      # start, the stack is already fully up: migrations, seeding, and the
+      # backend readiness probe all completed before the first Playwright
+      # step ran, so an earlier suite's failure says nothing about whether
+      # this walk can run. `if: ${{ !cancelled() }}` makes the step run
+      # regardless of the siblings' outcome while still correctly skipping on
+      # a genuine job cancellation or timeout; `success()`/`failure()` alone
+      # would not escape the implicit gate, and `always()` would additionally
+      # run on cancellation, which `!cancelled()` avoids.
+      # #VERIFY: if a future edit removes this `if:`, this step goes back to
+      # being silently skipped every time an earlier Playwright step fails.
       # `usersim-real`'s `dependencies: ['real-backend-setup']`
       # (playwright.config.ts) means this step's own CLI invocation re-runs
       # the DB reset before it starts, same as the two steps above, so the
       # review story is back at a known `in_review` state (I5's
       # guardian-only canary lives on its moderation report; see
       # frontend/e2e-usersim/support/real-canaries.ts) before the walk's
-      # `test.beforeAll` proves both I5 canary rows exist.
+      # `test.beforeAll` proves both I5 canary rows exist. This DB reset runs
+      # regardless of whether `real-backend` or `full-pipeline` left the
+      # database in a torn-down or partially-mutated state, since the reset
+      # is unconditional on `dependencies`, not on the sibling steps' status.
       # #CRITICAL: security: this tier's walk reads across the guardian/admin
       # role and family boundary (I5) but must never write across it; see
       # real-canaries.ts and walk-real.spec.ts's own header comments. An I5
@@ -337,6 +360,7 @@ jobs:
       # see the #CRITICAL comment on the real-backend tier step for why a
       # shared path would let one run's report silently overwrite another's.
       - name: E2E (Playwright, usersim-real tier)
+        if: ${{ !cancelled() }}
         working-directory: ./frontend
         id: playwright_usersim_real
         env:
@@ -416,9 +440,13 @@ jobs:
           } >> "$GITHUB_OUTPUT"
 
       # Same extraction, against the usersim-real step's own report (task
-      # B3a). That step still runs even when full-pipeline fails (it has no
-      # `if:` gating it on the earlier steps' outcome), but its own report
-      # will not exist if an even earlier setup step failed the job first;
+      # B3a). Unlike full-pipeline above, the usersim-real step itself carries
+      # `if: ${{ !cancelled() }}` (see that step's own #CRITICAL comment), so
+      # it still runs (and writes this report) even when real-backend or
+      # full-pipeline fails. This extraction step only runs on `failure()`,
+      # so it never fires on a cancelled job in the first place; short of
+      # that, its report will not exist only if an even earlier setup step
+      # failed before any Playwright step could start.
       # scripts/extract-failing-specs.mjs's missing-report branch covers that.
       - name: Extract failing specs from the usersim-real report
         if: ${{ failure() }}
