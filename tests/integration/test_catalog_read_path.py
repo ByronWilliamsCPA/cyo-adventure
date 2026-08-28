@@ -185,7 +185,7 @@ async def test_admin_guardian_child_read_path_for_a_promoted_catalog_story(
         headers=auth(seed.child_token),
     )
     assert got.status_code == 200, got.text
-    assert got.json()["current_node"] == "n_cave_fork"
+    assert got.json()["state"]["current_node"] == "n_cave_fork"
 
     done = await client.post(
         "/api/v1/completions",

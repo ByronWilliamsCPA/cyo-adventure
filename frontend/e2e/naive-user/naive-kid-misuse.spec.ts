@@ -310,7 +310,7 @@ test.describe('hardware back button', () => {
     await page.route('**/api/v1/storybooks/**', (route) => route.fulfill({ json: lantern }))
     await page.route('**/api/v1/reading-state/**', (route) => {
       if (route.request().method() === 'GET') {
-        return route.fulfill({ status: 404, json: { error: 'not found' } })
+        return route.fulfill({ status: 200, json: { state: null } })
       }
       return route.fulfill({
         status: 200,
@@ -372,18 +372,20 @@ test.describe('refresh mid-reader', () => {
     await page.route('**/api/v1/reading-state/**', (route) => {
       if (route.request().method() === 'GET') {
         if (currentNode === 'n_entrance') {
-          return route.fulfill({ status: 404, json: { error: 'not found' } })
+          return route.fulfill({ status: 200, json: { state: null } })
         }
         return route.fulfill({
           status: 200,
           json: {
-            current_node: currentNode,
-            var_state: { has_lantern: true },
-            path: ['n_entrance', currentNode],
-            visit_set: ['n_entrance', currentNode],
-            version: 1,
-            state_revision: 2,
-            save_slots: {},
+            state: {
+              current_node: currentNode,
+              var_state: { has_lantern: true },
+              path: ['n_entrance', currentNode],
+              visit_set: ['n_entrance', currentNode],
+              version: 1,
+              state_revision: 2,
+              save_slots: {},
+            },
           },
         })
       }

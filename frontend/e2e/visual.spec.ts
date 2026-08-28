@@ -157,7 +157,7 @@ test('the reader page matches its visual baseline', async ({ page, context }) =>
   await page.route('**/api/v1/me/progress', (route) => route.fulfill({ json: KID_PROGRESS }))
   await page.route('**/api/v1/reading-state/**', (route) => {
     if (route.request().method() === 'GET') {
-      return route.fulfill({ status: 404, json: { error: 'not found' } })
+      return route.fulfill({ status: 200, json: { state: null } })
     }
     return route.fulfill({ status: 200, json: { current_node: 'n_entrance', state_revision: 1 } })
   })

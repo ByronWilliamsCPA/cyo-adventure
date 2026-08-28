@@ -111,7 +111,7 @@ test.beforeEach(async ({ page, context }) => {
   await page.route('**/api/v1/series-next/**', (route) => route.fulfill({ json: SERIES_NEXT }))
   await page.route('**/api/v1/reading-state/**', (route) => {
     if (route.request().method() === 'GET') {
-      return route.fulfill({ status: 404, json: { error: 'not found' } })
+      return route.fulfill({ status: 200, json: { state: null } })
     }
     const body = route.request().postDataJSON() as Record<string, unknown>
     return route.fulfill({

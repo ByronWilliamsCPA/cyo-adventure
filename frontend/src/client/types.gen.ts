@@ -3793,6 +3793,22 @@ export type ReadingStateBody = {
 };
 
 /**
+ * ReadingStateResultView
+ *
+ * GET /reading-state response; ``state`` is null for a first-time reader.
+ *
+ * A profile with no saved progress for a story is a normal condition, not
+ * an error (matching ``SeriesNextView``'s convention below); errors are
+ * reserved for the story or the profile's access to it being invalid. Do
+ * not weaken ``ReadingStateView`` itself to make its fields nullable: it
+ * is reused unchanged as ``ConflictView.current_row`` above, where the row
+ * is always real.
+ */
+export type ReadingStateResultView = {
+    state?: ReadingStateView | null;
+};
+
+/**
  * ReadingStateView
  *
  * A reading-state row returned to the client.
@@ -5390,7 +5406,7 @@ export type GetReadingStateApiV1ReadingStateProfileIdStorybookIdGetResponses = {
     /**
      * Successful Response
      */
-    200: ReadingStateView;
+    200: ReadingStateResultView;
 };
 
 export type GetReadingStateApiV1ReadingStateProfileIdStorybookIdGetResponse = GetReadingStateApiV1ReadingStateProfileIdStorybookIdGetResponses[keyof GetReadingStateApiV1ReadingStateProfileIdStorybookIdGetResponses];

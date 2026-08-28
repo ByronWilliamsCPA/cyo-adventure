@@ -48,7 +48,7 @@ test.beforeEach(async ({ page, context }) => {
   await page.route('**/api/v1/storybooks/**', (route) => route.fulfill({ json: lantern }))
   await page.route('**/api/v1/reading-state/**', (route) => {
     if (route.request().method() === 'GET') {
-      return route.fulfill({ status: 404, json: { error: 'not found' } })
+      return route.fulfill({ status: 200, json: { state: null } })
     }
     if (route.request().method() === 'PUT') {
       // Guarded: an unparseable body must still reach route.fulfill below.

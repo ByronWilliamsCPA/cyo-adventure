@@ -95,8 +95,8 @@ async def test_reading_state_round_trip(client: AsyncClient, seed: Seed) -> None
         headers=auth(seed.child_token),
     )
     assert got.status_code == 200
-    assert got.json()["current_node"] == "n_cave_fork"
-    assert got.json()["state_revision"] == 1
+    assert got.json()["state"]["current_node"] == "n_cave_fork"
+    assert got.json()["state"]["state_revision"] == 1
 
 
 @pytest.mark.integration
@@ -156,13 +156,21 @@ async def test_idempotent_event_replay(client: AsyncClient, seed: Seed) -> None:
 
 @pytest.mark.integration
 @pytest.mark.asyncio
-async def test_reading_state_not_found_404(client: AsyncClient, seed: Seed) -> None:
-    """Reading state that was never saved returns 404."""
+async def test_reading_state_null_when_never_saved(
+    client: AsyncClient, seed: Seed
+) -> None:
+    """Reading state that was never saved returns 200 with state: null.
+
+    A first-time reader is a normal condition, not an error; a 404 here
+    would surface as an uncatchable browser console error before
+    application code can handle it.
+    """
     resp = await client.get(
         f"/api/v1/reading-state/{seed.child_profile_id}/{seed.storybook_id}",
         headers=auth(seed.child_token),
     )
-    assert resp.status_code == 404
+    assert resp.status_code == 200, resp.text
+    assert resp.json() == {"state": None}
 
 
 @pytest.mark.integration
@@ -512,7 +520,7 @@ async def test_child_saves_progress_on_assigned_catalog_book(
         headers=auth(seed.child_token),
     )
     assert got.status_code == 200, got.text
-    assert got.json()["current_node"] == "n_cave_fork"
+    assert got.json()["state"]["current_node"] == "n_cave_fork"
     done = await client.post(
         "/api/v1/completions",
         json={
@@ -1025,8 +1033,8 @@ async def test_concurrent_divergent_saves_have_exactly_one_winner(
 
     final = await client.get(url, headers=auth(seed.child_token))
     assert final.status_code == 200
-    assert final.json()["state_revision"] == 2
-    assert final.json()["current_node"] == winner.json()["current_node"]
+    assert final.json()["state"]["state_revision"] == 2
+    assert final.json()["state"]["current_node"] == winner.json()["current_node"]
 
 
 @pytest.mark.integration
@@ -1060,5 +1068,5 @@ async def test_concurrent_duplicate_event_applies_exactly_once(
     assert second.json()["state_revision"] == 2
 
     final = await client.get(url, headers=auth(seed.child_token))
-    assert final.json()["state_revision"] == 2
-    assert final.json()["current_node"] == "n_treasure"
+    assert final.json()["state"]["state_revision"] == 2
+    assert final.json()["state"]["current_node"] == "n_treasure"

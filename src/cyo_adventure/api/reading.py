@@ -30,6 +30,7 @@ from cyo_adventure.api.schemas import (
     CompletionView,
     ConflictView,
     ReadingStateBody,
+    ReadingStateResultView,
     ReadingStateView,
     SeriesNextBook,
     SeriesNextView,
@@ -472,8 +473,14 @@ async def get_reading_state(
     profile_id: str,
     storybook_id: str,
     ctx: Context,
-) -> ReadingStateView:
-    """Return a child's reading state for a story.
+) -> ReadingStateResultView:
+    """Return a child's reading state for a story, or an explicit absence.
+
+    A profile with no saved progress for the story is a normal condition,
+    not an error: this answers 200 with ``state: null``, matching the
+    convention ``get_series_next`` documents below for the other
+    kid-scoped reading routes. Errors are reserved for the story or the
+    profile's access to it being invalid.
 
     Args:
         profile_id: The child profile.
@@ -481,10 +488,15 @@ async def get_reading_state(
         ctx: The request context (principal and session).
 
     Returns:
-        ReadingStateView: The stored reading state.
+        ReadingStateResultView: The stored reading state, or ``state: null``
+            if the profile has not started this book.
 
     Raises:
-        ResourceNotFoundError: If the story or reading state does not exist.
+        ResourceNotFoundError: If the story does not exist, or the profile
+            has no assignment for a cross-family catalog story (see
+            ``_require_assignment``).
+        AuthorizationError: If the story is a cross-family family-visibility
+            book not readable by this profile.
     """
     # #CRITICAL: security: profile access is authorized before any row read so a
     # child cannot read another profile's state (IDOR); the path profile is
@@ -506,9 +518,8 @@ async def get_reading_state(
         await _require_assignment(ctx, storybook_id, parsed)
     row = await ctx.session.get(ReadingState, (parsed, storybook_id))
     if row is None:
-        msg = f"no reading state for profile '{profile_id}' on '{storybook_id}'"
-        raise ResourceNotFoundError(msg)
-    return await _view(ctx.session, row)
+        return ReadingStateResultView(state=None)
+    return ReadingStateResultView(state=await _view(ctx.session, row))
 
 
 @router.get("/series-next/{profile_id}/{storybook_id}")
