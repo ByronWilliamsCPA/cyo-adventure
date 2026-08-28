@@ -10104,7 +10104,7 @@ written, which is the error the row exists to correct.</p>
 <td><strong>One failed review call silently removes <code>review_batch_size</code> (default 8) nodes from safety coverage AND converts the book's hard block into a soft flag, because the fail-safe verdict is <code>FLAG</code> while <code>has_hard_block</code> is <code>any(verdict is BLOCK)</code>.</strong> <code>stages.py:752</code> records the shortfall honestly as one <code>structural=True</code>, <code>severity=HIGH</code>, <code>concern="reviewer_unavailable"</code> finding naming every unscreened node, but that finding's verdict is <code>Verdict.FLAG</code>, so <code>report.py::has_hard_block</code> returns <code>False</code> and <code>has_soft_flag</code> returns <code>True</code>. The book then routes to <code>remoderate_books</code>' <em>soft-flagged (status unchanged by this sweep, review when convenient)</em> branch, the script exits 0, and the sweep counts it a success. Measured on <code>sk_sunken_temple</code> against the authoritative <code>pipeline_event</code> log, which holds only two <code>node_edited</code> rows in the entire table so prose identity across the three passes is a matter of record rather than assumption: the two passes with FULL coverage (0 unreviewed) BOTH hard-blocked, on disjoint node sets (<code>e_w0_vengeance</code>; then <code>e_g3_h_fire</code> + <code>e_g4_f_grip</code>), and the ONLY pass that cleared the hard block is the one where 8 nodes had no reviewer. Fleet-wide, 5 of the 31 books' CURRENT reports admit unreviewed nodes and ALL FIVE report <code>hard_block=False</code>: <code>sk_ashfall_expedition</code> 16 (exactly two failed batches), <code>sk_harrowstone_keep</code> 8, <code>sk_sunken_temple</code> 8, <code>sk_sunspire_ascent</code> 8, <code>sk_thornwood_trial</code> 8. The recurring exact 8 is the batch size, not node-level flakiness. Fail-safe at the NODE level composes into fail-OPEN at the BOOK level.</td>
 <td>Make coverage a gating input rather than a finding verdict: add <code>coverage_complete</code> to <code>ModerationReport</code> and make <code>has_hard_block</code> (or the publish predicate) false-safe on an incomplete review, so no book can leave the hard-block path with unscreened nodes. Independently, shrink the blast radius by falling back to per-node review when a batch response is unusable, so one bad response costs 1 node of coverage instead of <code>review_batch_size</code>. Give <code>remoderate_books</code> a distinct outcome class and exit code for <em>reviewed incompletely</em> so a sweep cannot report it as a pass. Note <code>review_provider.py</code>'s module docstring says the batch-size default is 1; <code>config.py:650</code> says 8, so the docstring's arithmetic is stale too.</td>
 <td>applied</td>
-<td>commits <code>3c6afc42</code> (fail-closed gating: <code>coverage_complete</code>, terminal routing, the four hard gates) and <code>aa8502fe</code> (per-node fallback on an unusable batch), both on <code>fix/published-slot-contract-false-block</code>; <code>UW-C407</code></td>
+<td>PR #776, squash-merged to <code>3eaeb88b</code> on <code>main</code> (fail-closed gating: <code>coverage_complete</code>, terminal routing, the four hard gates; plus per-node fallback on an unusable batch). The branch SHAs this cell once carried were orphaned twice, first by a rebase onto <code>main</code> and then by the squash-merge, which is why it now cites the PR and the commit that is actually on <code>main</code>; see <code>AL-685</code>; <code>UW-C407</code></td>
 </tr>
 <tr>
 <td>AL-665</td>
@@ -10114,7 +10114,7 @@ written, which is the error the row exists to correct.</p>
 <td><strong>The moderation reviewer pins nothing that makes a pass reproducible, and the stored report records nothing about which model produced it.</strong> <code>openrouter.py:317</code>'s request body carries only <code>model</code>, <code>messages</code> and <code>max_tokens</code>: no <code>temperature</code>, no <code>seed</code>, no <code>top_p</code>, so every review samples at the vendor default. The review model <code>deepseek/deepseek-v4-flash</code> (<code>config.py:606</code>) has NO entry in <code>ENDPOINT_PINS</code> (only <code>deepseek-v4-pro</code> does), so <code>endpoint_pin_for</code> returns <code>()</code>, the body omits <code>provider</code> entirely, and OpenRouter may route successive passes to different backends at different quantizations. The code already states the consequence: the <code>#ASSUME</code> in <code>provider.py::build_openrouter_leg</code> says an unpinned slug "can be served by several backends at different quantizations, so two runs of 'the same model' are not the same measurement", but that reasoning was applied to COST and never to the safety verdict. Compounding it, a persisted <code>moderation_report</code> carries <code>aggregate={pass_counts, nodes_reviewed}</code> and <code>summary={count, hard_block, repaired, reviewer_independent, soft_flag}</code> and NO model, provider, or endpoint field, which is precisely why the 2026-07-21 mock-reviewer run was undetectable from the data it left behind and had to be inferred from finding counts (1102 findings on a 59-node book).</td>
 <td>Pin the reviewer's sampling explicitly (<code>temperature=0</code>, and a <code>seed</code> where the endpoint honours one) so a safety verdict is a measurement rather than a sample, and add the review model to <code>ENDPOINT_PINS</code> so the endpoint cannot drift under it. Persist the review model, provider, resolved endpoint and sampling parameters into the report alongside <code>reviewer_independent</code>, so a stored verdict says what produced it and a mock-provider run is visible at rest instead of requiring forensic inference. Expect pinning to move verdicts across the catalog: treat the first pinned sweep as a new baseline, not as a comparison against the unpinned history.</td>
 <td>applied</td>
-<td>commit <code>e5243695</code> (<code>temperature=0</code> on the review leg only, <code>ModerationReport.reviewer</code> provenance from resolved settings, one shared model resolver) on <code>fix/published-slot-contract-false-block</code>; <code>UW-C408</code></td>
+<td>PR #776, squash-merged to <code>3eaeb88b</code> on <code>main</code> (<code>temperature=0</code> on the review leg only, <code>ModerationReport.reviewer</code> provenance from resolved settings, one shared model resolver); the branch SHA this cell once carried did not survive the squash, see <code>AL-685</code>. Covers the two asks that landed; the sampling and endpoint-routing asks are now <code>UW-C417</code>; <code>UW-C408</code></td>
 </tr>
 <tr>
 <td>AL-666</td>
@@ -10266,6 +10266,76 @@ written, which is the error the row exists to correct.</p>
 <td>applied</td>
 <td>the stored-summary assertion in <code>tests/integration/test_remoderate_in_review_http.py</code>, PR #776</td>
 </tr>
+<tr>
+<td>AL-681</td>
+<td>2026-08-28</td>
+<td>PR #776 CodeRabbit fix round</td>
+<td>tooling</td>
+<td><strong>The resolved and unresolved review settings travel side by side through the moderation pipeline and nothing in the types tells them apart, so the second stamp site took the wrong one.</strong> <code>run_moderation_pipeline</code> holds <code>settings</code> (classifier credentials, correctly left unresolved) and <code>review_settings</code> (<code>resolve_review_settings(settings, review_model_override)</code>). Provenance must come from the resolved one. <code>_attempt_and_adopt_repair</code> was passed only <code>settings</code> and stamped the adopted repair from it, so on any report a repair replaced, an admin per-stage model override was recorded as the process-wide default: the row attributed the verdict to a model that never saw the prose, and nothing else in the row records what the admin chose, so the error is undetectable after the fact. Both objects are <code>Settings</code>, so BasedPyright strict, Ruff and the existing provenance test (which exercises the primary stamp site only) all passed.</td>
+<td>Give the resolved value a distinct type (a <code>NewType</code> or a thin wrapper) so a function that stamps provenance cannot accept the unresolved object. Cover each stamp site, not each pipeline: the new test drives the repair path specifically and asserts <code>repaired is True</code> alongside the model, because without that the caller's own always-correct stamp satisfies it.</td>
+<td>open</td>
+<td><code>UW-C418</code></td>
+</tr>
+<tr>
+<td>AL-682</td>
+<td>2026-08-28</td>
+<td>PR #776 CodeRabbit fix round</td>
+<td>tooling</td>
+<td><strong>A schema-era discriminator that reads field PRESENCE turns every partial dict rebuild into a silent era change.</strong> <code>moderation_report_unusable()</code> decides whether a missing top-level <code>reviewer</code> is a genuine attribution gap or a pre-field legacy shape from whether <code>summary.coverage_complete</code> exists. <code>api/node_edit.py::_merge_moderation_report</code> rebuilds the report from the stored one and emitted neither key, so a single node edit dropped a post-field report into the legacy era: the attribution was discarded permanently AND the reviewer-required approval check stopped applying to that row from then on, with no refusal to show for it. The inverse is equally bad, and is why both keys have to move together: emitting <code>coverage_complete</code> alone would hand the discriminator a row it reads as a genuine gap, making the pre-field catalog retroactively unapprovable after one edit.</td>
+<td>The applied fix carries both keys together and recomputes <code>coverage_complete</code> from the merged findings (an edit can withdraw the gap finding that made coverage incomplete). That closes one call site; the class stays open until the explicit schema-version key <code>UW-C415</code> asks for exists, so a future writer that forgets a field cannot change a report's vintage.</td>
+<td>open</td>
+<td><code>UW-C415</code></td>
+</tr>
+<tr>
+<td>AL-683</td>
+<td>2026-08-28</td>
+<td>PR #776 CodeRabbit fix round</td>
+<td>tooling</td>
+<td><strong>A diagnosis wired into the batch path only goes silent at <code>batch_size=1</code>, the shape most likely to need it.</strong> <code>run_safety_stage</code> appends to <code>truncated_node_ids</code> on the batch branch but did not on the single-node branch, so a starved one-node call reported as ordinary unparseable output and sent a reader looking for a bad model instead of a small budget. A one-node call still pays the full per-call reasoning cost, so it is the likeliest shape to run out of room, and <code>review_batch_size=1</code> is a supported configuration several test files pin deliberately.</td>
+<td>Parametrise the degraded-response arms (truncated, malformed, absent <code>finish_reason</code>) over every supported batch size rather than writing them once at a size of 2, so a branch that exists twice cannot be covered once.</td>
+<td>open</td>
+<td><code>UW-C419</code></td>
+</tr>
+<tr>
+<td>AL-684</td>
+<td>2026-08-28</td>
+<td>PR #776 CodeRabbit fix round</td>
+<td>tooling</td>
+<td><strong><code>del</code>-ing a parameter to satisfy an unused-argument lint discards exactly what the error message needed.</strong> <code>publishing/service.py::approve</code> took <code>storybook_id</code> and <code>version</code> and dropped both with <code>del</code>, under a docstring claiming they were kept "for message parity with approve()'s errors", while all four of its refusal messages named no artifact at all. A 400 from a bulk approve therefore could not say which version it refused. The lint was satisfied, the docstring asserted the opposite of the code, and no test read the message text, so nothing in the toolchain had an opinion.</td>
+<td>Interpolate rather than <code>del</code>: when a lint wants a parameter used, the error message is usually where it belongs. All four refusals now name the version and storybook id through one <code>subject</code> binding. Consider a test asserting every publishing refusal identifies the refused artifact.</td>
+<td>applied</td>
+<td>PR #778, <code>publishing/service.py</code>'s <code>subject</code> interpolation across all four refusals; #776 merged before this fix round landed, so citing it would have claimed as proven something not on <code>main</code></td>
+</tr>
+<tr>
+<td>AL-685</td>
+<td>2026-08-28</td>
+<td>PR #776 CodeRabbit fix round</td>
+<td>process</td>
+<td><strong>A ledger <code>Ref</code> that cites a branch commit SHA stops resolving once the branch is rebased or squash-merged, and the ledger keeps reporting the claim as proven.</strong> Rebasing this branch onto <code>main</code> orphaned the three SHAs <code>AL-664</code> and <code>AL-665</code> cited. A sweep of every SHA-shaped Ref in this log found 12 already dangling outright and 40 more unreachable from any current branch, which is what squash-merge does to a cited branch commit. <code>check_lessons_log.py</code> validates that an <code>applied</code> row's Ref is NON-EMPTY, never that it resolves, so a dangling citation is indistinguishable from a good one and the <code>applied</code> status it guards is unfalsifiable.</td>
+<td>Add a <code>--check-refs</code> mode to <code>scripts/check_lessons_log.py</code> that resolves each SHA-shaped Ref with <code>git cat-file -e</code> and reports the unresolvable ones. Prefer a PR number, which survives both rebase and squash-merge, over a branch SHA when recording evidence.</td>
+<td>open</td>
+<td><code>UW-C420</code></td>
+</tr>
+<tr>
+<td>AL-686</td>
+<td>2026-08-28</td>
+<td>PR #776 CodeRabbit fix round</td>
+<td>tooling</td>
+<td><strong>An assertion with a weaker <code>or</code> arm passes vacuously as soon as the weaker arm is reachable.</strong> <code>test_credential_failure_opens_the_circuit_on_first_node</code> asserted, per node, <code>node_id in message or "more" in message</code>. The coverage message elides past <code>_COVERAGE_SAMPLE_SIZE</code> with <code>... (+N more)</code>, so once the elision fires the second arm is satisfied by the literal word alone and the loop checks no node id whatsoever. The test read as per-node coverage and proved nothing about any node past the sample.</td>
+<td>Assert the invariant an elision cannot satisfy: the message's <code>{N} node(s) were never bright-line screened</code> count. More generally, treat an <code>or</code> inside an assertion as a smell and sweep the suite for assertions whose second arm is weaker than their first.</td>
+<td>open</td>
+<td><code>UW-C421</code></td>
+</tr>
+<tr>
+<td>AL-687</td>
+<td>2026-08-28</td>
+<td>PR #776 CodeRabbit fix round</td>
+<td>process</td>
+<td><strong>A PR can merge in the middle of a fix round, stranding every fix and falsifying every ledger <code>Ref</code> that cites it.</strong> #776 squash-merged at 17:12 UTC while an eleven-finding fix round was still in progress; the fix commit was made at 17:28 UTC, and <code>delete_branch_on_merge</code> had already removed the branch it targeted. Nothing errored. Because a squash rewrites history, <code>git merge-base --is-ancestor</code> reported <code>NO</code> for the thirteen commits that <em>did</em> land, so ancestry could not distinguish stranded work from landed work; only a content probe on the specific line each fix changes could. <code>AL-684</code> had meanwhile been written <code>applied</code> citing #776, which by then was a claim that the fix was on <code>main</code> when it was not.</td>
+<td>Re-read PR state (<code>state</code>, <code>headRefOid</code>, <code>mergeCommit</code>) immediately before committing or pushing a fix round, not only when planning it; when it has moved, classify each fix as landed or stranded by content probe rather than by ancestry, and open a follow-up PR off current <code>main</code> instead of pushing to a branch that may be deleted. A <code>Ref</code> naming a PR should be written only once the change is actually in that PR.</td>
+<td>open</td>
+<td><code>UW-C422</code></td>
+</tr>
 </tbody>
 </table>
 <hr />
@@ -10305,7 +10375,7 @@ written, which is the error the row exists to correct.</p>
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="August 28, 2026 17:01:21 UTC">August 28, 2026</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="August 28, 2026 18:59:47 UTC">August 28, 2026</span>
   </span>
 
     

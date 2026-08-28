@@ -6781,7 +6781,7 @@ substantially the same work under different headings. Do not triple-book.</p>
 </tr>
 <tr>
 <td>UW-C400</td>
-<td><code>AL-657</code>: <strong>Determine whether a fail-safed safety batch is reproducible on its content before spending any re-run budget on closing coverage holes.</strong> <code>sk_thornwood_trial</code> re-moderated twice produced a rewritten report whose reviewer judgments moved, while the <code>reviewer_unavailable</code> finding named the same 8 node ids both times; <code>_chunks</code> partitions consecutively so batch boundaries are stable run to run. Test with <code>sk_sunken_signal</code> (32 nodes, cheapest affected book) and compare the fail-safed id set. If deterministic, re-running never closes these holes and the remedy is <code>UW-C399</code>'s per-node retry or a reduced batch size for the offending chunk; if not, re-running is sound. Blocks the re-run plan for <code>sk_sunken_signal</code>, <code>sk_sunspire_ascent</code>, and <code>sk_ashfall_expedition</code>.</td>
+<td><code>AL-657</code>: <strong>Re-moderate the three books still holding a stable <code>reviewer_unavailable</code> set, now that the per-node retry that closes such a hole exists.</strong> The probe this row originally asked for was executed on 2026-08-26 and settled the question: <code>sk_thornwood_trial</code> named the identical 8 node ids across two runs while its reviewer judgments moved, and <code>sk_sunken_signal</code> cleared its batch entirely, so determinism is falsified as a general law and neither a blanket re-run nor a blanket refusal is safe. What the probe left directed is the remedy it named: <code>UW-C399</code>'s per-node retry landed in PR #776 (<code>stages.py::_recover_batch_per_node</code>), so a content-bound hole no longer needs a coin flip. Re-moderate <code>sk_sunken_signal</code>, <code>sk_sunspire_ascent</code> and <code>sk_ashfall_expedition</code> under it and confirm each reconciles at full node count.</td>
 <td>4b</td>
 <td>unscheduled</td>
 </tr>
@@ -6829,7 +6829,7 @@ substantially the same work under different headings. Do not triple-book.</p>
 </tr>
 <tr>
 <td>UW-C408</td>
-<td><code>AL-665</code>: <strong>the moderation reviewer pins no sampling parameters and the stored report records no model provenance, so a safety verdict is a sample rather than a measurement and cannot be attributed after the fact.</strong> <code>openrouter.py:317</code> sends only <code>model</code>/<code>messages</code>/<code>max_tokens</code>: no <code>temperature</code>, <code>seed</code> or <code>top_p</code>. The review model <code>deepseek/deepseek-v4-flash</code> (<code>config.py:606</code>) has no <code>ENDPOINT_PINS</code> entry, so <code>endpoint_pin_for</code> returns <code>()</code>, the body omits <code>provider</code>, and successive passes may be served by different backends at different quantizations. <code>build_openrouter_leg</code>'s own <code>#ASSUME</code> already states that consequence, but only for cost. A persisted <code>moderation_report</code> carries no model, provider or endpoint field, which is why the 2026-07-21 mock-reviewer run left no detectable signature and had to be inferred from finding counts. Pin <code>temperature=0</code> (plus a <code>seed</code> where honoured), add the review model to <code>ENDPOINT_PINS</code>, and persist model/provider/endpoint/sampling into the report beside <code>reviewer_independent</code>. Pinning will move verdicts catalog-wide: the first pinned sweep is a new baseline, not a comparison against the unpinned history.</td>
+<td><code>AL-665</code>: <strong>the moderation reviewer pinned no sampling parameters and the stored report recorded no model provenance, so a safety verdict was a sample rather than a measurement and could not be attributed after the fact.</strong> This is why the 2026-07-21 mock-reviewer run left no detectable signature and had to be inferred from finding counts. Closed for the two halves that landed: <code>build_openrouter_leg</code> now sends <code>temperature=0</code> on the review leg, and <code>ModerationReport.reviewer</code> persists provider, model, endpoint pin, temperature and batch size, read from the RESOLVED review settings so an admin per-stage override is recorded as what actually ran. Pinning moved verdicts catalog-wide, so the first pinned sweep is a new baseline, not a comparison against the unpinned history. The sampling and endpoint-routing half is NOT closed and is now <code>UW-C417</code>; this row was marked <code>done</code> while three of its five asks were still open, which is the failure the split repairs.</td>
 <td>4b</td>
 <td>done</td>
 </tr>
@@ -6871,7 +6871,7 @@ substantially the same work under different headings. Do not triple-book.</p>
 </tr>
 <tr>
 <td>UW-C415</td>
-<td><code>AL-675</code>: <strong><code>moderation_report_unusable()</code>'s legacy discriminator rests on deployment history rather than on the schema.</strong> It infers report vintage from the presence of <code>summary.coverage_complete</code>, which holds only because no intermediate revision of this branch ever persisted a report; a cherry-pick or a replay invalidates it. Add an explicit schema-version key to the persisted report and read that instead, retiring the inference and its <code>#EDGE</code>.</td>
+<td><code>AL-675</code>: <strong><code>moderation_report_unusable()</code>'s legacy discriminator rests on deployment history rather than on the schema.</strong> It infers report vintage from the presence of <code>summary.coverage_complete</code>, which holds only because no intermediate revision of this branch ever persisted a report; a cherry-pick or a replay invalidates it. Add an explicit schema-version key to the persisted report and read that instead, retiring the inference and its <code>#EDGE</code>. <code>AL-682</code> is a second, concrete witness to the same gap: because the discriminator reads field PRESENCE, <code>api/node_edit.py</code>'s report rebuild silently moved a post-field report into the legacy era and the reviewer-required check stopped applying to that row. The carry-both-keys fix in PR #776 closes that one call site; an explicit version key is what closes the class.</td>
 <td>4b</td>
 <td>unscheduled</td>
 </tr>
@@ -6879,6 +6879,42 @@ substantially the same work under different headings. Do not triple-book.</p>
 <td>UW-C416</td>
 <td><code>AL-678</code>: <strong>a per-agent control cannot classify a finding as pre-existing while a concurrent agent's edit stands in the same tree.</strong> Two <code>basedpyright</code> errors were reported as pre-existing on a file-scoped revert; both named a symbol absent at the merge base. Record the merge-base evidence rule (<code>git show origin/main:&lt;path&gt;</code>) in the concurrent-session guidance, and require a dispatched agent to cite it when it calls a finding pre-existing.</td>
 <td>CI hygiene</td>
+<td>unscheduled</td>
+</tr>
+<tr>
+<td>UW-C417</td>
+<td>Split from <code>UW-C408</code> (<code>AL-665</code>), whose remaining three asks were closed on paper by a <code>done</code> status the landed work did not cover: <strong>the review call still pins no sampling seed and no <code>top_p</code>, and the review model still has no <code>ENDPOINT_PINS</code> entry.</strong> <code>deepseek/deepseek-v4-flash</code> (<code>config.py</code>) returns <code>()</code> from <code>endpoint_pin_for</code>, so the request body omits <code>provider</code> and successive passes may be served by different backends at different quantizations; <code>temperature=0</code> bounds sampling but does not bound routing. Add the review model to <code>ENDPOINT_PINS</code>, send a <code>seed</code> where the backend honours one, and decide whether <code>top_p</code> is worth pinning beside a zero temperature.</td>
+<td>4b</td>
+<td>unscheduled</td>
+</tr>
+<tr>
+<td>UW-C418</td>
+<td><code>AL-681</code>: <strong>the resolved and unresolved review settings travel side by side through the moderation pipeline and nothing in the types tells them apart.</strong> Both are <code>Settings</code>, so a stamp site that took the wrong one passed the type checker, the linter and the existing provenance test. Give the resolved value a distinct type (a <code>NewType</code> or a thin wrapper) so a function that stamps provenance cannot accept the unresolved object, and cover each stamp site rather than each pipeline.</td>
+<td>4b</td>
+<td>unscheduled</td>
+</tr>
+<tr>
+<td>UW-C419</td>
+<td><code>AL-683</code>: <strong>the degraded-response arms of the safety stage are written once at a batch size of 2, so the <code>batch_size=1</code> branch of the same logic is covered by accident.</strong> The truncation diagnosis was wired into the batch branch only and went silent on the single-node branch, which is the shape most likely to truncate. Parametrise the truncated / malformed / absent-<code>finish_reason</code> arms over every supported batch size.</td>
+<td>4b</td>
+<td>unscheduled</td>
+</tr>
+<tr>
+<td>UW-C420</td>
+<td><code>AL-685</code>: <strong>a ledger <code>Ref</code> citing a branch commit SHA stops resolving once the branch is rebased or squash-merged, and the checker cannot tell.</strong> <code>scripts/check_lessons_log.py</code> validates that an <code>applied</code> row's Ref is non-empty, never that it resolves; 12 SHA-shaped Refs in the log already dangle and 40 more are unreachable from any current branch. Add a <code>--check-refs</code> mode that resolves each SHA-shaped Ref with <code>git cat-file -e</code>, and prefer a PR number over a branch SHA when recording evidence.</td>
+<td>CI hygiene</td>
+<td>unscheduled</td>
+</tr>
+<tr>
+<td>UW-C421</td>
+<td><code>AL-686</code>: <strong>an assertion with a weaker <code>or</code> arm passes vacuously as soon as the weaker arm is reachable.</strong> A per-node coverage assertion read <code>node_id in message or "more" in message</code>; the message elides past a sample with <code>... (+N more)</code>, so the second arm was satisfied by the literal word and the loop checked no node id at all. Sweep the suite for assertions whose second arm is weaker than their first, and prefer the invariant an elision cannot satisfy.</td>
+<td>CI hygiene</td>
+<td>unscheduled</td>
+</tr>
+<tr>
+<td>UW-C422</td>
+<td><code>AL-687</code>: <strong>a PR merging mid-fix-round strands the fixes and falsifies any <code>Ref</code> that cites it.</strong> #776 merged sixteen minutes before its own review-fix commit existed, and the squash made ancestry useless for telling landed work from stranded work. Add a pre-commit PR-state re-read to the fix workflow, and make the landed-work check a content probe (<code>git grep -F</code> on the changed line, per-file counts shown) rather than <code>merge-base --is-ancestor</code>.</td>
+<td>4b</td>
 <td>unscheduled</td>
 </tr>
 </tbody>
@@ -8653,7 +8689,7 @@ have to re-derive them.</p>
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="August 28, 2026 17:01:21 UTC">August 28, 2026</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="August 28, 2026 18:59:47 UTC">August 28, 2026</span>
   </span>
 
     
