@@ -23,6 +23,7 @@
   },
   "include": [
     "e2e",
+    "e2e-usersim",
     "e2e-real",
     "e2e-staging",
     "e2e-staging-sweep",

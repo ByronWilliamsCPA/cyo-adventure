@@ -261,5 +261,49 @@ export default defineConfig({
       testMatch: /cross-device\.spec\.ts/,
       use: { ...devices['Desktop Firefox'] },
     },
+    {
+      // Leg A of the usersim tier (docs/testing/user-side-testing-module-
+      // proposal-2026-08-27.md): a seeded random walk over the live app, one
+      // walk per persona, asserting I1-I6 at every state. A separate project
+      // + testDir, not a tag or grep filter, per this tier's own tier-
+      // separation rule. Run via npm run test:e2e:usersim.
+      //
+      // Reuses this file's shared `webServer` and the top-level `use`
+      // block, including `serviceWorkers: 'block'` (see the file header
+      // comment): a live service worker would answer this tier's navigations
+      // itself and bypass every page.route mock the walk installs, the same
+      // SW-navigation-fallback defect class documented for the `chromium`
+      // project above, so this tier must not opt back into service workers.
+      //
+      // This project shares the file's single JSON_REPORT_PATH default with
+      // every other project here (see the header comment on
+      // PLAYWRIGHT_JSON_REPORT_PATH); a scheduled usersim workflow that also
+      // runs another project in the same invocation must set
+      // PLAYWRIGHT_JSON_REPORT_PATH itself to avoid one run overwriting the
+      // other's report, the same way e2e-real-nightly.yml already does for
+      // the two real-backend projects. Not this task's concern to wire (a
+      // later task owns the scheduled workflow); noted here so the next
+      // reader does not have to rediscover the collision.
+      // No per-project timeout override: this file's global 30s (see
+      // `timeout: 30_000` above) is enough. An earlier draft of this walk
+      // set timeout to 60_000 here, on the claim that the guardian persona
+      // (the slowest of the three, since GuardianShell/AdminShell wrap an
+      // Outlet and keep the sidebar's own links mounted across a route
+      // change instead of detaching) hit the global 30s ceiling "well after
+      // its own walk had already finished". That claim does not hold up: a
+      // Playwright test does not keep its clock running after the test body
+      // returns, so a timeout could only fire while the walk was genuinely
+      // still awaiting something. The real mechanism was the networkidle
+      // hang documented on settleAfterNavigation in walk.spec.ts (the
+      // guardian/admin persistent SSE connection never lets 'networkidle'
+      // resolve); once that was replaced with the DOM-observed
+      // detach/loading-indicator settle used today, repeated measured runs
+      // of the guardian and admin walks (the two slowest personas) complete
+      // in 8-10s each, comfortably inside the shared 30s, so the override
+      // was stale head-room left over from the fixed bug, not a real need.
+      name: 'usersim',
+      testDir: './e2e-usersim',
+      use: { ...devices['Desktop Chrome'] },
+    },
   ],
 })

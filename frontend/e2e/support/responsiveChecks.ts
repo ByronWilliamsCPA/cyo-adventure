@@ -16,18 +16,25 @@ import { loadLanternStory } from './fixtures'
  * pass (i.e. call this directly inside a describe/file body, never inside
  * an async callback).
  */
-export function defineResponsiveChecks(): void {
-  async function assertNoHorizontalOverflow(page: Page, label: string) {
-    const { scrollWidth, clientWidth } = await page.evaluate(() => ({
-      scrollWidth: document.documentElement.scrollWidth,
-      clientWidth: document.documentElement.clientWidth,
-    }))
-    expect(
-      scrollWidth - clientWidth,
-      `${label}: page should not scroll horizontally`
-    ).toBeLessThanOrEqual(1)
-  }
+/**
+ * Zero page-level horizontal overflow, for a given breakpoint/label. Hoisted
+ * to module scope (out of defineResponsiveChecks) and exported so the usersim
+ * walk tier's I4 invariant (frontend/e2e-usersim/support/invariants.ts) can
+ * reuse this exact check instead of duplicating the overflow logic; every
+ * caller inside this file goes through defineResponsiveChecks() unchanged.
+ */
+export async function assertNoHorizontalOverflow(page: Page, label: string): Promise<void> {
+  const { scrollWidth, clientWidth } = await page.evaluate(() => ({
+    scrollWidth: document.documentElement.scrollWidth,
+    clientWidth: document.documentElement.clientWidth,
+  }))
+  expect(
+    scrollWidth - clientWidth,
+    `${label}: page should not scroll horizontally`
+  ).toBeLessThanOrEqual(1)
+}
 
+export function defineResponsiveChecks(): void {
   test('landing page has no horizontal overflow', async ({ page }) => {
     await page.goto('/')
     await expect(page.getByRole('link', { name: /Grown-ups/ })).toBeVisible()

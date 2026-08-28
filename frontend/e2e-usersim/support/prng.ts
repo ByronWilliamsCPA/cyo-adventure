@@ -89,7 +89,9 @@ export function createRng(seed: number = RESOLVED_SEED): SeededRng {
       throw new RangeError('pick requires a non-empty array')
     }
     // nextInt(items.length) is always a valid index: 0 <= result < length.
-    return items[nextInt(items.length)] as T
+    // No `as T` here: this project has no noUncheckedIndexedAccess, so the
+    // indexed access already types as T without an assertion.
+    return items[nextInt(items.length)]
   }
 
   return { seed, next, nextInt, pick }
