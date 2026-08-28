@@ -6737,6 +6737,36 @@ substantially the same work under different headings. Do not triple-book.</p>
 <td>CI hygiene</td>
 <td>unscheduled</td>
 </tr>
+<tr>
+<td>UW-C393</td>
+<td><code>AL-640</code>: <strong>A theme binding carrying a descriptor does not put that descriptor in the prose.</strong> <code>skeletons/8-11/the-cave-of-echoes.contract.json</code> binds <code>{COMPANION}</code> to "her dog Biscuit" (its <code>default_binding</code>), and the skeleton's <code>.json</code> names the <code>{COMPANION}</code> slot in the opening FILL beat; the deployed fill still wrote the bare name in all 64 nodes and "dog" in zero of them, so a reader's first encounter with Biscuit conveys only that Biscuit exists. The skeleton needs no change; the compression happened at fill time and nothing checked it. Delivered in commit <code>83ff95da</code>: PN-1 (<code>validator/naming.py</code>), wired into <code>validator/gate.py</code> for <code>fill_result</code> only, WARNING severity, never blocking, calibrated at 2.97 findings per 100 nodes over the committed corpus. <strong>Residual this row carries:</strong> PN-1 reports after the fill, so the generation prompt can still compress a bound descriptor away and each occurrence costs a review cycle. Proposed: require the first mention of a descriptor-carrying binding to keep its descriptor at generation time, then measure whether PN-1's finding rate on new fills drops, which is the only evidence that the prompt change did anything. Scope note: PN-1 itself is done and needs no further work under this row.</td>
+<td>4b</td>
+<td>unscheduled</td>
+</tr>
+<tr>
+<td>UW-C394</td>
+<td><code>AL-643</code>: <strong>A book's systematic apostrophe-transcription fault was absorbed into a new rule's measured noise floor, and it is not the only book with the fault.</strong> <code>out/the-sunken-temple.filled.json</code> contains zero apostrophe characters of any kind ("Heddas seal") while sibling artifacts carry hundreds, so its possessives parse as plurals; that single missing punctuation mark inflates the book to <strong>33</strong> of PN-1's 135 corpus findings, eleven of which are duplicate rows from a name reported twice, once bare and once suffixed (<code>Hedda</code> and <code>Heddas</code>, and ten more like it), so 22 of the 33 findings cover just 11 entities. <code>out/the-teddy-bears-picnic.filled.json</code> (29 nodes) is also apostrophe-free across every node body, contributing 1 finding and no doubling, so the defect spans at least two artifacts even though its magnitude is concentrated in one. The findings were deliberately left un-unified, because inferring an absent apostrophe would merge genuine plurals into possessives and hide real cases. Proposed: an artifact-level fill sanity check that reports a filled book with zero apostrophes across dozens of nodes as ONE fill defect, so a transcription fault is attributed to the artifact rather than spread across whichever rule reads that text next; then re-derive PN-1's noise floor from a corpus without the affected artifacts, since the published 2.97-per-100 figure is an upper bound. Second, smaller caveat on the same figure, recorded in <code>validator/naming.py</code>'s docstring: the <code>out/</code> corpus predates ADR-023 and carries no sentinels, so the HERO-sentinel hero exemption fires on no book there and every book reports its own protagonist.</td>
+<td>4b</td>
+<td>unscheduled</td>
+</tr>
+<tr>
+<td>UW-C395</td>
+<td><code>AL-644</code>: <strong>A prose defect in a published book has no in-place remedy, and the only exit from <code>published</code> removes the book from the reader.</strong> <code>api/node_edit.py</code> permits an edit only while a storybook is <code>in_review</code> or <code>needs_revision</code>, never <code>published</code> or <code>archived</code>; <code>publishing/state_machine.py</code>'s <code>LEGAL_TRANSITIONS</code> offers exactly one transition out of <code>PUBLISHED</code> (<code>ARCHIVE</code> to <code>ARCHIVED</code>) and <code>ARCHIVED</code> is absorbing. Concrete instance: <code>sk_cave_of_echoes</code> v1, 64 nodes, one reader mid-book and two assignments, needs a three-word gloss on <code>Biscuit</code> (named in 64 of 64 nodes, "dog" in none) and a consistency pass over 23 nodes that write <code>Maya</code> as a literal while 41 nodes carry a <code>{~HERO:Maya~}</code> sentinel, so a personalized reader currently meets both her own name and Maya's in the same book. The immutability guarantee is correct and must not be weakened: a book a child is reading must not change under her. <strong>Owner decision this row carries:</strong> how a published book's prose defect is remediated at all. Candidate shapes are a <code>REVISE</code> transition from <code>PUBLISHED</code> to <code>NEEDS_REVISION</code> that keeps the published version readable until a successor is approved, or a documented supersede-and-reassign procedure that never leaves a reader with nothing. Explicitly out of scope: widening <code>node_edit</code>'s status guard to mutate a published blob in place.</td>
+<td>4b</td>
+<td>decision</td>
+</tr>
+<tr>
+<td>UW-C396</td>
+<td><code>AL-645</code>: <strong><code>retrofit_personalization.py</code> cannot see a hero-name occurrence the fill invented beyond the skeleton's slot references, and reports success anyway.</strong> Dry run against production for <code>sk_cave_of_echoes</code> v1: <code>41/42 tokens reinserted, eligible=True</code>, the one miss naming <code>n_open</code>, a node absent from the deployed blob. The same blob carried 41 literal "Maya" occurrences across 23 other nodes with no slot behind them, so a personalizing family would have met their child's name in 41 nodes and "Maya" in 23. Repaired for this book on 2026-08-27 by wrapping the residual occurrences outside existing sentinels (round-trip verified via <code>strip_model_sentinels</code>, manifest re-derived: 41 nodes / 78 occurrences to 64 / 119). <strong>Residual this row carries:</strong> the sweep itself is unchanged. Proposed: after the skeleton-anchored pass, wrap residual bare occurrences of the pinned <code>default_binding</code> value under the same round-trip invariant, or emit their count as a coverage finding so a half-personalized book stops reading as a finished one. Also worth a sweep: how many of the other 14 books the retrofit touched are in the same partial state, since the sweep's own output cannot distinguish them from complete ones.</td>
+<td>4b</td>
+<td>unscheduled</td>
+</tr>
+<tr>
+<td>UW-C397</td>
+<td><code>AL-646</code>: <strong><code>import_filled_story</code> is unusable as a repair path for any book that predates a gate tightening, because it tests <code>blocked</code> absolutely rather than comparing against the stored version.</strong> The published <code>sk_cave_of_echoes</code> v1 fails today's gate on one ERROR, <code>PL-25 opening: first decision is 1 node(s) in, under the band '8-11' floor 2</code>; PL-25's floor escalation merged in v0.67.0, after the book was imported. So re-importing a corrected copy requires either authoring a new opening node (changing a story a child is mid-way through, and needing fresh moderation) or bypassing the deterministic gate on child-facing content. Both were refused on 2026-08-27 and the repair was done in place instead (<code>AL-647</code>). Proposed: a repair mode that admits a blob whose gate finding multiset is no worse than the stored version's, the same comparison <code>retrofit_personalization.py</code>'s invariant 5 already makes; for this repair that comparison was exactly <code>PN-1: -1</code> and nothing else. Until it exists, document in-place repair as the only route for a pre-tightening book. Related but distinct from <code>UW-C395</code>, which asks for a sanctioned state-machine exit from <code>published</code>; this row is about the import gate, and either one alone leaves the other gap open.</td>
+<td>4b</td>
+<td>unscheduled</td>
+</tr>
 </tbody>
 </table>
 <h2 id="cluster-d-untracked-github-issues">Cluster D: untracked GitHub issues<a class="headerlink" href="#cluster-d-untracked-github-issues" title="Permanent link">&para;</a></h2>
@@ -8509,7 +8539,7 @@ have to re-derive them.</p>
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="August 28, 2026 03:08:44 UTC">August 28, 2026</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="August 28, 2026 15:26:47 UTC">August 28, 2026</span>
   </span>
 
     

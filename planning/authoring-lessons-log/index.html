@@ -9856,6 +9856,106 @@ written, which is the error the row exists to correct.</p>
 <td>open</td>
 <td><code>UW-C392</code></td>
 </tr>
+<tr>
+<td>AL-640</td>
+<td>2026-08-27</td>
+<td>Reader-reported defect in published <code>sk_cave_of_echoes</code> v1 ("who is Biscuit?"), traced through the skeleton, the binding, and the fill</td>
+<td>authoring-craft</td>
+<td><strong>A theme binding that carries a descriptor is an instruction to the fill, not a guarantee the descriptor reaches prose; compression to the shortest referring expression is the default, and nothing checked it.</strong> <code>skeletons/8-11/the-cave-of-echoes.contract.json</code> binds <code>{COMPANION}</code> to "her dog Biscuit" (its <code>default_binding</code>), and the skeleton's <code>.json</code> names <code>{COMPANION}</code> in the opening beat's FILL directive, so the skeleton is correct and needs no change. The deployed fill nevertheless writes the bare name in all 64 nodes and the word "dog" in <strong>zero</strong> of them, so the first thing a reader ever learns about Biscuit is that Biscuit exists. Verified against the published blob, not the repo artifact: <code>out/the-cave-of-echoes.filled.json</code> is a different build (65 nodes, start <code>n_open</code> against the deployed <code>n_start</code>), so no repo-side edit reaches what a child actually read. The defect was found by an eight-year-old asking her father a question, which was the only detector in the system.</td>
+<td>Delivered: PN-1 (<code>src/cyo_adventure/validator/naming.py</code>, commit <code>83ff95da</code>) makes this class visible at fill time as a WARNING over the whole corpus. Still open and carried by <code>UW-C393</code>: PN-1 detects after the fact, and the fill prompt still lets a bound descriptor be compressed away, so a first mention of a bound entity should be required to carry its descriptor at generation time rather than merely reported afterward.</td>
+<td>open</td>
+<td><code>UW-C393</code></td>
+</tr>
+<tr>
+<td>AL-641</td>
+<td>2026-08-27</td>
+<td>PN-1 implementation, latent defect surfaced while clearing a RUF001 lint finding</td>
+<td>validator</td>
+<td><strong><code>str.rstrip("'s")</code> strips a character SET, not a suffix, and in a discovery-then-lookup rule that defect SUBTRACTS findings silently rather than misreporting them.</strong> The possessive-stripping helper computed <code>_base("Jess") == "Je"</code> and <code>_base("Thomas") == "Thoma"</code>. Because the mention-matching regex is then built from the truncated form, it matched nothing, the mention set came back empty, and the rule's own <code>if not mentions: continue</code> skipped the name entirely: every proper noun ending in "s" was invisible to the checker, and the checker reported clean. Nothing in the calibration figures hinted at it, because a rule that under-reports looks exactly like a corpus that is fine. Fixing it to strip longest-suffix-first surfaced 18 real findings that had been hidden.</td>
+<td>Applied in <code>83ff95da</code>: suffix-aware stripping plus <code>test_a_name_ending_in_s_survives_possessive_stripping</code>, whose docstring records that the failure hid the name rather than misreporting it. Generalisable: any rule that derives a lookup key by string surgery needs a regression test naming a member of the awkward class, because its failure mode is a smaller finding count, which no aggregate can distinguish from success.</td>
+<td>applied</td>
+<td><code>83ff95da</code></td>
+</tr>
+<tr>
+<td>AL-642</td>
+<td>2026-08-27</td>
+<td>PN-1 exemption design, measured before adoption against the known-positive book</td>
+<td>validator</td>
+<td><strong>An exemption heuristic must be measured against the defect case before adoption, because an exemption's failure mode is a finding that never appears.</strong> The protagonist plainly needs no gloss, and the tempting cheap test was frequency: exempt a name that appears in the start node and in a high share of nodes. Measured against the one book the rule exists for, <code>Biscuit</code> is in the start node and in <strong>every node of the book</strong> (65 of 65 in the repo artifact, 64 of 64 in the published blob; the two builds differ, see <code>AL-640</code>), so it scores exactly like a protagonist on both axes and any such threshold would have exempted the precise defect being hunted. The exemption instead keys on the <code>{~HERO:...~}</code> sentinel, a declaration the contract makes rather than a statistic the prose happens to exhibit.</td>
+<td>Applied in <code>83ff95da</code>: the hero exemption reads the sentinel manifest, and the module docstring records the rejected frequency rule with the measurement that killed it, so it is not re-proposed as an obvious simplification. Generalisable: calibrate an exemption on the known positive, never on the aggregate; an over-broad exemption is indistinguishable from a clean corpus.</td>
+<td>applied</td>
+<td><code>83ff95da</code></td>
+</tr>
+<tr>
+<td>AL-643</td>
+<td>2026-08-27</td>
+<td>PN-1 corpus calibration over the 31 committed filled books</td>
+<td>validator</td>
+<td><strong>A whole-book fill defect distributes itself across a new rule's measured noise floor, where it is read as the rule's imprecision rather than as one book's fault.</strong> PN-1 measures 135 findings over 4,542 nodes (2.97 per 100 nodes, median 2 per book, max 34, 3 books clean). <code>out/the-sunken-temple.filled.json</code> alone contributes <strong>33</strong> of those 135, second only to the 551-node <code>the-harrowstone-keep</code> at 34, because it contains <strong>zero apostrophe characters in any node body</strong> ("Heddas seal") while sibling artifacts carry a median of 31, so its possessives read as plurals and every possessive-only mention of a name looks like a first bare mention. Eleven of its 33 findings are surplus rows this artifact created rather than authoring, and the unit matters: eleven <strong>names</strong> report twice each, once bare and once with the lost-apostrophe <code>s</code> suffix (<code>Hedda</code> and <code>Heddas</code>, <code>Bram</code> and <code>Brams</code>, nine more), so <strong>22 findings cover 11 entities</strong> and the 11 duplicate rows inflate the book's count by a third and makes it look like the corpus's worst offender when by node count it is tied for the largest book. The transcription fault is not unique to this one artifact either: <code>out/the-teddy-bears-picnic.filled.json</code> (29 nodes) is also apostrophe-free across every node body, though it contributes only a single PN-1 finding and no doubling at all, because 29 nodes give it no possessive to lose. So "one artifact" understates the defect's reach while "eleven findings" understates its cost on the book where it does land. The findings were deliberately left un-unified: inferring an absent apostrophe would merge genuine plurals into possessives and hide real cases.</td>
+<td>Add an artifact-level fill sanity check (a filled book with zero apostrophes across dozens of nodes is a fill defect, reportable as ONE finding) so a systematic transcription fault is attributed to the artifact instead of being spread across whatever rule happens to read that text next. Carried by <code>UW-C394</code>, which also covers re-deriving PN-1's noise floor once the affected artifact is refilled.</td>
+<td>open</td>
+<td><code>UW-C394</code></td>
+</tr>
+<tr>
+<td>AL-644</td>
+<td>2026-08-27</td>
+<td>Attempting to remediate the reader-reported defect in a published book</td>
+<td>product</td>
+<td><strong>A defect a real reader finds in a published book has no in-place remedy: every editing path refuses a published storybook, and the only exit from <code>published</code> is absorbing.</strong> <code>api/node_edit.py</code> allows an edit only while a storybook is <code>in_review</code> or <code>needs_revision</code>, explicitly never <code>draft</code>, <code>published</code>, or <code>archived</code>. <code>publishing/state_machine.py</code>'s <code>LEGAL_TRANSITIONS</code> offers exactly one transition out of <code>PUBLISHED</code>, <code>ARCHIVE</code> to <code>ARCHIVED</code>, and <code>ARCHIVED</code> has no outbound transition at all, so the only way to reach an editable state is a one-way move that removes the book from the reader's library. For <code>sk_cave_of_echoes</code> v1 that means one reader mid-book and two assignments would lose access to fix a missing three-word gloss. This is a correct and deliberate immutability guarantee (a published book a child is reading must not change under her), so the gap is not the guarantee but the absence of any sanctioned path beside it.</td>
+<td>Owner decision, carried by <code>UW-C395</code>: define how a published book's prose defect is remediated. Candidate shapes include a <code>REVISE</code> transition from <code>PUBLISHED</code> to <code>NEEDS_REVISION</code> that keeps the published version readable until a successor is approved, or a documented supersede-and-reassign procedure that never leaves a reader with nothing. Do not widen <code>node_edit</code>'s status guard: mutating a published blob in place is what the current design correctly forbids.</td>
+<td>open</td>
+<td><code>UW-C395</code></td>
+</tr>
+<tr>
+<td>AL-645</td>
+<td>2026-08-27</td>
+<td>Repairing published <code>sk_cave_of_echoes</code> v1; dry run of <code>retrofit_personalization.py --book-id</code> against production</td>
+<td>validator</td>
+<td><strong>The personalization retrofit is structurally blind to hero-name occurrences the fill invented beyond the skeleton's slot references, so a book can sit permanently half-personalized and the sweep reports success.</strong> The retrofit reconstructs the bound skeleton and reinserts against it, so its expectation set is the skeleton's <code>{HERO}</code> references: for this book, 42 node-slots, of which it found 41 (the 42<sup>nd</sup> names <code>n_open</code>, a node id present in the repo skeleton but absent from the deployed 64-node blob, which starts at <code>n_start</code>; the fill predates a skeleton revision). The deployed blob nevertheless carried <strong>41 literal occurrences of "Maya" across 23 further nodes</strong>, prose where the fill named the hero on its own initiative with no slot behind it. Those 23 nodes are invisible to the sweep by construction, and re-running it would never have fixed them: it reports <code>41/42 tokens reinserted, eligible=True</code> and looks clean. The consequence for a reader is concrete: a family that personalizes the hero's name would have met their own child's name in 41 nodes and "Maya" in 23 of the same book.</td>
+<td>Repaired for this book by wrapping every remaining bare occurrence of the pinned <code>default_binding</code> value outside existing sentinels, round-trip verified with <code>strip_model_sentinels</code> and re-derived through <code>build_manifest</code>/<code>verify_manifest</code> (manifest went from 41 nodes / 78 occurrences to 64 / 119). Proposed for the sweep itself, carried by <code>UW-C396</code>: after the skeleton-anchored pass, either wrap the residual bare occurrences the same way or report their count as a coverage finding, so a partially-personalized book stops reading as a completed one.</td>
+<td>open</td>
+<td><code>UW-C396</code></td>
+</tr>
+<tr>
+<td>AL-646</td>
+<td>2026-08-27</td>
+<td>Attempting the archive-and-reimport repair path on a book that predates a gate tightening</td>
+<td>tooling</td>
+<td><strong>A published book can be blocked by today's validation gate, which makes <code>import_filled_story</code> unusable as a repair path for any book older than the rule that now blocks it.</strong> Running <code>run_fill_gate</code> over the deployed blob returns <code>blocked=True</code> on a single ERROR: <code>PL-25 opening: first decision is 1 node(s) in, under the band '8-11' floor 2</code>. PL-25's floor escalation merged in v0.67.0, after this book was imported, so the book was published under a laxer gate and cannot pass the current one. <code>import_filled_story</code> raises <code>ValidationError</code> whenever <code>result.blocked</code>, with no allowance for a blocking finding it did not introduce, so re-importing a corrected copy of this book is impossible without either authoring a new opening node (changing the story a child is mid-way through, and requiring its own moderation) or bypassing the deterministic gate on child-facing content. Both were refused. The measurement that matters is the comparison, not the verdict: the corrected blob's finding multiset differs from the original's by exactly one entry, <code>PN-1: -1</code>, so the correction demonstrably introduced nothing.</td>
+<td>Repaired in place instead (see <code>AL-647</code>). Proposed, carried by <code>UW-C397</code>: give the import path a repair mode that admits a blob whose finding multiset is no worse than the stored version's, which is the comparison <code>retrofit_personalization.py</code>'s invariant 5 already performs, rather than an absolute <code>blocked</code> test that permanently locks out every pre-tightening book. Until that exists, document in-place repair as the only available route for a book that predates a gate change, so the next person does not rediscover this by building a reimport that cannot land.</td>
+<td>open</td>
+<td><code>UW-C397</code></td>
+</tr>
+<tr>
+<td>AL-647</td>
+<td>2026-08-27</td>
+<td>Executing the in-place repair of published <code>sk_cave_of_echoes</code> v1</td>
+<td>validator</td>
+<td><strong>An in-place rewrite of a nominally immutable row is only safe when some served signal changes with it; without one, every client that already cached the row is permanently stale and nothing reports it.</strong> <code>StorybookVersion</code> is documented as immutable, and <code>frontend/src/offline/db.ts</code> was built on that promise: it keys cached blobs by <code>id@version</code> and never re-fetches on a hit. <code>scripts/retrofit_personalization.py</code> rewrote 15 published rows under an unchanged <code>version</code>, which was invisible to every device holding a download. <code>api/library.py::storybook_content_hash</code> is the answer that was built for it: a digest over the exact bytes <code>get_storybook_version</code> emits, mirroring Starlette's serialization settings verbatim so the two cannot drift, letting the client distinguish "same version, different content" from "same version, same content". That is what made this repair safe to perform on a published book with two live offline copies: old hash <code>sha256:1eda14d8...</code>, new <code>sha256:826d03be...</code>, so both cached copies evict and re-download rather than serving the defective text forever.</td>
+<td>Applied. The repair mirrored <code>retrofit_personalization.py::_persist</code> exactly: blob, <code>sentinel_manifest</code>, and <code>validation_report</code> written together, <code>personalization_eligible</code> recomputed through the same two-clause predicate <code>import_story.py</code> uses, and one <code>REPAIR_APPLIED</code> pipeline event recorded in the same transaction so the mutation is visible to <code>api/audit.py</code>. An optimistic-concurrency precondition compared the stored blob against the extracted snapshot and would have aborted on any drift. Generalisable: before rewriting a row some client caches, find the invalidation signal; if there is not one, building it is part of the repair, not a follow-up.</td>
+<td>applied</td>
+<td><code>api/library.py::storybook_content_hash</code></td>
+</tr>
+<tr>
+<td>AL-648</td>
+<td>2026-08-27</td>
+<td>Full local test run after wiring PN-1 into the gate; two <code>test_retrofit_personalization.py</code> tests went red</td>
+<td>validator</td>
+<td><strong>A rule whose verdict reads the sentinel manifest rather than the prose alone is not invariant under a sentinel-installing transform, so a guard asserting that transform is gate-NEUTRAL asks for something the transform cannot deliver.</strong> <code>scripts/retrofit_personalization.py</code>'s invariant 5 required an identical finding multiset before and after, and PN-1 is the first rule to falsify it: the protagonist exemption keys on the <code>{~HERO~}</code> sentinel, chosen over any frequency heuristic because a share-based rule would have exempted the very defect PN-1 exists to catch (<code>AL-642</code>), and installing that sentinel is the retrofit's whole purpose. Measured on <code>the-backyard-treasure-map</code>, PN-1 reports <code>Nina</code>, <code>Pepper</code> and <code>Theo</code> against the stored blob and <code>Pepper</code> and <code>Theo</code> afterwards, <code>Nina</code> being the contract's pinned <code>HERO</code> binding, so the sweep aborted the book with <code>findings delta ['PN-1']</code> for having IMPROVED it. The guard's own stated intent, "a retrofit can never be the reason a book starts failing validation", was already directional; equality was strictly stronger than the intent and the gap sat unnoticed because no rule had ever exercised it.</td>
+<td>Applied: the guard is now <code>_assert_gate_no_worse</code>, refusing an introduced finding or a newly blocked verdict and permitting a retired one. What makes the permission safe is invariant 3, not this guard: <code>_assert_only_wrappers_added</code> has already proven every surface byte-identical once sentinels are stripped, so a retired finding cannot be prose loss in disguise. Both directions are pinned by paired tests fed the same rule ids in opposite orders, and each was confirmed by mutation to fail when its arm of the condition is removed. Generalisable: when adding a rule that reads generation metadata, grep the tools that assert gate equality across a transform, because the new rule's correctness and their invariant can both be right while contradicting each other.</td>
+<td>applied</td>
+<td><code>scripts/retrofit_personalization.py::_assert_gate_no_worse</code></td>
+</tr>
+<tr>
+<td>AL-649</td>
+<td>2026-08-28</td>
+<td>CodeRabbit review of PR #773, after PN-1 had passed local review, 44 tests and 100% branch coverage</td>
+<td>validator</td>
+<td><strong>100% branch coverage over a membership predicate proves every branch was taken, not that the predicate means what it says.</strong> PN-1's hero exemption read <code>any(word in hero_tokens for word in words)</code>, so a phrase sharing one token with the protagonist was suppressed whole: under hero <code>Maya</code> a peak named <code>Maya Mountain</code> was silently exempt, while the identical book under hero <code>Tam</code> reported it. Every branch of that line was covered and the module sat at 183 statements / 0 missed / 84 branches / 0 partial, because the existing tests only ever asked whether the hero herself was exempt, which the defective predicate also answers correctly. The missing test was not a missing branch but a missing <strong>contrast</strong>: no case paired a hero-token-sharing phrase with a control that changed only the declared hero. The over-match was also load-bearing, which is what made the naive repair wrong: <code>any()</code> is what collapses <code>Marshal Hedda</code> onto hero <code>Hedda</code>, so narrowing to an exact name match trades a false negative for a false positive, and only a test pinning the titled form catches that second error. The corpus could not have surfaced any of this: all 31 committed artifacts predate ADR-023 and carry no sentinels, so <code>hero_tokens</code> is empty on every book and the entire exemption is dead code against the measured corpus.</td>
+<td>When a predicate decides membership by scanning a collection, require at least one test pair that holds the text fixed and varies only the collection, so the assertion fails if the predicate degenerates to always-true; and when narrowing an over-broad predicate, first write the test for the behaviour the breadth was protecting. Applied in <code>cb372266</code>, which adds both tests and mutation-checks the pair.</td>
+<td>applied</td>
+<td><code>cb372266</code></td>
+</tr>
 </tbody>
 </table>
 <hr />
@@ -9895,7 +9995,7 @@ written, which is the error the row exists to correct.</p>
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="August 28, 2026 03:08:44 UTC">August 28, 2026</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="August 28, 2026 15:26:47 UTC">August 28, 2026</span>
   </span>
 
     

@@ -3372,6 +3372,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#naming-advisory-fill-result-only-all-stories" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Naming (Advisory, Fill-Result Only, All Stories)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#safety-always-human-routed-all-stories" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -3470,9 +3481,14 @@
 
 <h1 id="validation-rule-catalog">Validation Rule Catalog<a class="headerlink" href="#validation-rule-catalog" title="Permanent link">&para;</a></h1>
 <blockquote>
-<p><strong>Status</strong>: Accepted | <strong>Version</strong>: 1.3 | <strong>Updated</strong>: 2026-07-26
+<p><strong>Status</strong>: Accepted | <strong>Version</strong>: 1.4 | <strong>Updated</strong>: 2026-08-27
 <strong>Scope</strong>: All stories (Layer 1, Policy); Tier-2 stories only (Layer 2); all stories
-advisory (RL); all stories always-human (SAFE); series chains at publish only (SR)</p>
+advisory (RL); fill-result stories only, advisory (PN); all stories always-human (SAFE);
+series chains at publish only (SR)</p>
+<p><strong>v1.4</strong> adds one genuinely new rule rather than closing a registry gap: PN-1
+(advisory proper-noun introduction check) shipped in commit <code>83ff95da</code> and is
+documented here for the first time, per this document's own Purpose clause that
+adding a rule ID requires a revision. See the Naming section below.</p>
 <p><strong>v1.3</strong> closes a registry gap rather than adding rules: L2-13, L2-14 and the entire
 SR family (SR-1..SR-7, SR-9) were enforced in code while documented nowhere here, so
 the catalog was not the reference it claims to be. SR-8 is recorded as reserved.</p>
@@ -3518,6 +3534,11 @@ to this document.</p>
 <td>Choice Grammar (CG)</td>
 <td>Advisory, and opt-in</td>
 <td>No (warns only, and emits nothing at all by default)</td>
+</tr>
+<tr>
+<td>Naming (PN)</td>
+<td>Advisory, fill-result only</td>
+<td>No (warns only, and never runs under the <code>"skeleton"</code> context)</td>
 </tr>
 <tr>
 <td>Series (SR)</td>
@@ -3768,6 +3789,35 @@ damage: the flip would turn on four rules nobody had written down.</p>
 <td>Advisory (opt-in)</td>
 <td><strong>Outbound staging</strong> (added 2026-08-21, <code>UW-C312</code>, the outbound companion to CG-4): flags a decision node offering a choice whose label shares no content word (post-stopword) with the node's OWN body, i.e. the prose never stages what the choice promises; CG-4 is strictly inbound (does the arriving node acknowledge the choice just taken), so nothing asked this question before. Calibration (2026-08-21, over 39 committed known-good fills and the live one-shot books): known-good books dangle a median 3.7 percent of their labels (max 33 percent, terse gamebook labels), the under-delivered live books 65 to 85 percent, and one book that over-delivered its commission still dangled 73 percent, so the defect is model behavior rather than only a fill-rate symptom. Same lossiness caveat as CG-4 (token overlap is a weak proxy in both directions; a human makes the real call), hence WARNING and advisory. Skips a node whose body still carries a <code>&lt;&lt;FILL</code> directive, and any comparison where either side tokenizes to zero content words. Runs behind <code>is_fill_result</code> beside CG-4, not behind <code>enforce_grammar</code>.</td>
 <td><code>CG-6 grammar: node '{node_id}' offers choice '{choice_id}' labeled {label!r} but its own body shares no content word with the label in story '{story_id}': the prose never stages what the choice promises (advisory heuristic; may be a false positive, see module docstring)</code></td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="naming-advisory-fill-result-only-all-stories">Naming (Advisory, Fill-Result Only, All Stories)<a class="headerlink" href="#naming-advisory-fill-result-only-all-stories" title="Permanent link">&para;</a></h2>
+<p>Implemented in <code>validator/naming.py</code>; wired into <code>validator/gate.py::run_gate</code>
+immediately after the CG family and before SAFE-14. That position is step 9 in
+<code>run_gate</code>'s own docstring, which numbers the two validator layers separately, and
+step 7 in the Rule Application Order below, which groups them; the position is the
+durable statement and the two numbers describe the same slot in different lists. Unlike the CG family, PN-1 is not
+gated behind <code>enforce_grammar</code>: it runs whenever <code>run_gate</code> is called with
+<code>context="fill_result"</code>, and does not run at all under the default <code>"skeleton"</code> context,
+because a catalog skeleton's node bodies are <code>&lt;&lt;FILL ...&gt;&gt;</code> directives by construction and
+there is no prose yet for the rule to read.</p>
+<table>
+<thead>
+<tr>
+<th>Rule ID</th>
+<th>Layer</th>
+<th>Description</th>
+<th>Failure Message Template</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>PN-1</td>
+<td>Advisory (fill-result only)</td>
+<td><strong>Proper-noun introduction</strong>: a proper noun (name of a companion, sibling, secondary character, town, etc.) must be introduced, on every path a reader can take to it, before or at the node where it is first named. "Introduced" means one of four contiguous patterns: a determiner-anchored pre-modifier ("her dog Biscuit"), an appositive ("Tock, her tiny wind-up mouse"), a copular gloss ("Biscuit is her dog"), or an address-term title ("Marshal Hedda"). Path-sensitivity is via <code>validator/continuity.py::dominating_nodes</code>: a gloss on one optional branch does not cover a reader who took another. Exempts the protagonist (read from the <code>HERO</code> sentinel, not inferred from frequency, because the known defect this rule was built for is 100% frequency across the book: see the module docstring), a self-glossing head noun the book writes in lowercase at least twice (one incidental use does not exempt, because a single miscased occurrence of the name itself would otherwise disable the rule for that name), an address term standing alone, calendar terms and interjections, and ALL-CAPS tokens. <strong>This is a WARNING and never blocks</strong>, on the same terms as CG-4 and CG-6: token-level naming is a heuristic and a human makes the real call. Two scope boundaries are deliberate and pinned by tests: the rule reads node bodies only and never choice labels; and a story whose surviving-names by prose-volume product exceeds the scan budget is skipped with an explicit <code>NOT CHECKED</code> WARNING rather than reported clean. Built to close the definite-noun-phrase check <code>validator/continuity.py</code> documents as unbuildable at 3.48 findings per node; proper nouns are a decidable subset (capitalization-marked, enumerable per book) where the general form is entailment.</td>
+<td><code>PN-1 naming: '{name}' is named at node '{node_id}' but the story never introduces it, so a reader meets the name with no idea who or what it is ({n} node(s) affected in story '{story_id}'; advisory heuristic, see module docstring)</code>, or <code>PN-1 naming: '{name}' is named at node '{node_id}' but it is introduced only on a branch a reader can skip ({branches}), so a reader meets the name with no idea who or what it is ({n} node(s) affected in story '{story_id}'; advisory heuristic, see module docstring)</code></td>
 </tr>
 </tbody>
 </table>
@@ -4096,6 +4146,10 @@ cross-artifact handoff rather than a within-story property. All are ERROR severi
    when <code>run_gate</code> is called with <code>enforce_grammar=True</code></strong>, which no production
    caller does today; CG-4 and CG-6 run when the gate marks the story a fill
    result (<code>is_fill_result</code>). Log warnings; continue.</li>
+<li>PN-1 (advisory; fill-result only): runs only when <code>run_gate</code> is called with
+   <code>context="fill_result"</code>, and not at all under the default <code>"skeleton"</code> context.
+   Flags a proper noun a reader can reach before the prose introduces it. Log
+   warnings; continue.</li>
 <li>SAFE-14 (moderation; all stories). Flag nodes; block auto-publish if flagged.
    <strong>NOT IMPLEMENTED IN THE GATE.</strong> <code>validator/safety.py::check_safety</code> is a Phase-2 stub
    that returns an empty report for every story, so this step cannot produce a finding and
@@ -4156,7 +4210,7 @@ to address only the flagged node ids and rule violations, changing nothing else.
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="August 23, 2026 19:08:05 UTC">August 23, 2026</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="August 28, 2026 15:26:47 UTC">August 28, 2026</span>
   </span>
 
     
