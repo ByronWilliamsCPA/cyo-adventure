@@ -103,6 +103,33 @@ function requireStringArray(
   })
 }
 
+/** The only keys a persona object may declare; anything else is a typo or drift. */
+const PERSONA_FIELDS = ['id', 'band', 'reader_type', 'persona_text', 'constraints'] as const
+
+/**
+ * Rejects any key on `record` that is not in `allowed`, naming `label` and
+ * the offending key. TypeScript's structural typing lets a typo'd key
+ * (e.g. `"bnad"` beside a correct `band`) type-check fine, since a dropped,
+ * unread field is invisible to this consumer. But this fixture has a
+ * second, prospective consumer (a Python or Node runner under
+ * tools/usersim-agent/, task D2) that will read the raw JSON directly and
+ * WILL see the typo this consumer silently swallowed. Rejecting unknown
+ * keys here keeps both readers' picture of a persona in agreement.
+ */
+function rejectUnknownKeys(
+  record: Record<string, unknown>,
+  label: string,
+  allowed: readonly string[]
+): void {
+  for (const key of Object.keys(record)) {
+    if (!allowed.includes(key)) {
+      fixtureError(
+        `persona "${label}": unexpected key "${key}" (allowed keys: ${allowed.join(', ')})`
+      )
+    }
+  }
+}
+
 function validatePersona(candidate: unknown, index: number): ReaderPersona {
   if (!isPlainRecord(candidate)) {
     fixtureError(`personas[${index}] is not an object`)
@@ -112,6 +139,7 @@ function validatePersona(candidate: unknown, index: number): ReaderPersona {
   // offending entry by index rather than producing "undefined".
   const idField = candidate.id
   const label = isNonEmptyString(idField) ? idField : `personas[${index}]`
+  rejectUnknownKeys(candidate, label, PERSONA_FIELDS)
   const id = requireString(candidate, 'id', label)
   const band = requireString(candidate, 'band', label)
   const readerType = requireString(candidate, 'reader_type', label)
@@ -148,7 +176,14 @@ function loadReaderPersonas(): ReaderPersona[] {
   return personas
 }
 
-/** The full fixed reader-persona set, validated at module load. */
+/**
+ * The full fixed reader-persona set, validated at module load. Because this
+ * runs at import time, a malformed or drifted fixture throws before
+ * Playwright ever collects a test, so `npx playwright test --project=usersim`
+ * reports `Error: No tests found.` with a nonzero exit rather than one red
+ * test beside passing ones. That is fail-loud working as intended, not a
+ * bug in the check.
+ */
 export const READER_PERSONAS: readonly ReaderPersona[] = loadReaderPersonas()
 
 /**
@@ -173,4 +208,32 @@ export const KNOWN_AGE_BAND_LIST: readonly string[] = Object.keys(KNOWN_AGE_BAND
 /** True if `value` is one of the backend's actual age bands. */
 export function isKnownAgeBand(value: string): value is AgeBand {
   return Object.hasOwn(KNOWN_AGE_BANDS, value)
+}
+
+/**
+ * The four reader types this fixture's own stated purpose names (see the
+ * module docstring above: "emerging/average/strong/reluctant readers").
+ * Unlike `band`, these are not defined by the backend, so there is no
+ * generated type to pin them to; declaring the union here, beside the one
+ * paragraph that states the fixture's purpose, is the closest available
+ * substitute for that generated-type guarantee. Constraining the
+ * vocabulary and asserting coverage gives `reader_type` the same treatment
+ * KNOWN_AGE_BANDS above already gives `band`: an out-of-vocabulary value,
+ * or the fixture silently losing every persona of one type, both fail
+ * loudly instead of passing unnoticed.
+ */
+export type ReaderType = 'emerging' | 'average' | 'strong' | 'reluctant'
+
+const KNOWN_READER_TYPES: Record<ReaderType, true> = {
+  emerging: true,
+  average: true,
+  strong: true,
+  reluctant: true,
+}
+
+export const KNOWN_READER_TYPE_LIST: readonly string[] = Object.keys(KNOWN_READER_TYPES)
+
+/** True if `value` is one of this fixture's defined reader types. */
+export function isKnownReaderType(value: string): value is ReaderType {
+  return Object.hasOwn(KNOWN_READER_TYPES, value)
 }
