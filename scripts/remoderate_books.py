@@ -947,8 +947,14 @@ def _preflight(settings: Settings, *, execute: bool) -> None:
 def main() -> None:
     """Entry point for the re-moderation sweep script.
 
-    Prints the target list always, preceded by an exclusion warning whenever
-    the sweep covered fewer books than the review queue holds. In dry-run
+    An ``--execute`` run passes through ``_preflight`` first, which prints the
+    resolved environment, database, and reviewer to stderr and refuses the run
+    outright when that reviewer is the mock. That refusal is the earliest exit
+    in the script: it happens before any database work, so a mock-provider
+    ``--execute`` produces the banner, the refusal, and no target list at all.
+
+    Otherwise, prints the target list always, preceded by an exclusion warning
+    whenever the sweep covered fewer books than the review queue holds. In dry-run
     (default), that is the only output. When ``--execute`` is given, also
     prints the succeeded/failed counts, the fresh verdicts, which books the
     repair pass rewrote, and exits nonzero if anything failed OR if any book

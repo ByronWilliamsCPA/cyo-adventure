@@ -615,8 +615,15 @@ def _stamp_mock_reviewer(report: ModerationReport) -> None:
     came from the first moderation pass or from an adopted repair's fresh
     report. Both halves matter: ``reviewer_independent = False`` is what the
     dashboard and threshold flywheel read, and the structural ADVISORY finding
-    is what a human reading the stored report sees. ADVISORY never gates, so
-    stamping is verdict-neutral and safe to apply before the stages run.
+    is what a human reading the stored report sees.
+
+    Stamping is NOT verdict-neutral, despite the ADVISORY. That finding never
+    gates, but ``reviewer_independent = False`` does. On that arm by itself,
+    ``moderation_report_unusable`` returns True and ``publishing/service.py``
+    refuses the approval outright, with no ``override_reason`` path. A story
+    moderated with the mock is permanently unapprovable, which is the intended
+    posture. Applying the stamp before the stages run is still safe, since the
+    stamp only ever adds to the report and never reads a verdict.
 
     Args:
         report: The report to stamp, mutated in place.

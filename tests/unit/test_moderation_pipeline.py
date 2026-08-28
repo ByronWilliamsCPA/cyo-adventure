@@ -677,6 +677,79 @@ async def test_mock_review_stamps_report_as_not_independent_in_local(
 
 
 @pytest.mark.unit
+async def test_a_real_reviewer_in_local_is_not_stamped(
+    mock_session: AsyncMock,
+    monkeypatch: pytest.MonkeyPatch,
+    review_seam: Callable[[MockProvider], dict[str, object]],
+) -> None:
+    """The negative control for the two stamp tests above.
+
+    Those two prove the stamp fires in staging and in local. Neither can tell
+    a correctly targeted stamp from one that fires on every run: a
+    ``_stamp_mock_reviewer`` call with its ``review_provider == "mock"``
+    condition deleted would pass both. This runs the identical pipeline with
+    the ONLY difference being a real provider, and requires the stamp's two
+    halves to be absent.
+
+    ``environment`` is held at ``"local"`` deliberately, so this differs from
+    ``test_mock_review_stamps_report_as_not_independent_in_local`` in exactly
+    one field. The seam still injects the same real-verdict responder, so the
+    verdicts are identical too and only the declared provider moves.
+    """
+    story, version = _story(), _version()
+    _load(mock_session, story, version)
+    review_seam(_verdict_review_provider())
+    submit = AsyncMock()
+    monkeypatch.setattr("cyo_adventure.publishing.service.submit", submit)
+
+    def _clean_handler(_request: httpx.Request) -> httpx.Response:
+        return httpx.Response(
+            200,
+            json={
+                "results": [{"flagged": False, "categories": {}, "category_scores": {}}]
+            },
+        )
+
+    # Configuring `openai_api_key` below is what makes Stage 0 actually call
+    # out, unlike the mock-provider tests above which configure no classifier
+    # key at all. Without this canned transport the run reaches
+    # api.openai.com, which unit tests must never do.
+    _install_canned_classifier_http(monkeypatch, _clean_handler)
+
+    local_real_settings = Settings(
+        review_provider="openrouter",
+        environment="local",
+        # Required by `_require_classifier_when_reviewing`: any non-mock
+        # reviewer must have a Stage-0 classifier configured in front of it,
+        # so Settings refuses to construct without this.
+        openai_api_key="sk-test-classifier",
+        openrouter_api_key="sk-or-test",
+        review_batch_size=1,
+        database_url="postgresql+asyncpg://user:pw@localhost:5432/cyo_adventure",
+        oidc_issuer="https://issuer.example.com",
+        oidc_jwks_url="https://issuer.example.com/jwks.json",
+        child_session_secret="a" * 32,
+        device_grant_secret="b" * 32,
+    )
+
+    await pipeline_mod.run_moderation_pipeline(
+        session=mock_session,
+        story_id="s1",
+        version=1,
+        settings=local_real_settings,
+        generation_provider=MockProvider(responses=[]),
+        pii=_pii(),
+    )
+
+    moderation_report = version.moderation_report
+    assert moderation_report is not None
+    summary = cast("dict[str, object]", moderation_report["summary"])
+    assert summary["reviewer_independent"] is True
+    findings = cast("list[dict[str, object]]", moderation_report["findings"])
+    assert not [f for f in findings if f.get("concern") == "mock_reviewer_active"]
+
+
+@pytest.mark.unit
 async def test_soft_flag_triggers_repair_then_submits(
     mock_session: AsyncMock,
     monkeypatch: pytest.MonkeyPatch,
@@ -2592,11 +2665,18 @@ async def test_review_batch_size_from_settings_drives_chunked_safety_calls(
     # pipeline finding. The gap-G1 mock stamp is a separate, expected advisory:
     # these settings declare review_provider="mock" (to satisfy config) while
     # `review_seam` injects a real-verdict responder, so the stamp fires on the
-    # declared provider. Excluding it by concern keeps this test measuring the
-    # batch path rather than the stamp.
-    assert not any(
-        f.get("category") == "pipeline" and f.get("concern") != "mock_reviewer_active"
-        for f in findings
+    # declared provider.
+    #
+    # Assert the WHOLE set rather than filtering the stamp out by concern. A
+    # negative filter passes for two different reasons, "the batch path was
+    # clean" and "a new fail-safe arrived wearing the stamp's concern", and it
+    # also passes if the stamp stops firing entirely. Equality against an
+    # explicit expected set fails on all three.
+    pipeline_concerns = {
+        f.get("concern") for f in findings if f.get("category") == "pipeline"
+    }
+    assert pipeline_concerns == {"mock_reviewer_active"}, (
+        f"unexpected pipeline findings: {pipeline_concerns}"
     )
     assert _aggregate(version)["nodes_reviewed"] == _NODE_COUNT
 

@@ -1164,9 +1164,7 @@ def _run_main_with_settings(
     return sweep_mock
 
 
-def test_main_refuses_to_execute_with_the_mock_reviewer(
-    capsys: pytest.CaptureFixture[str],
-) -> None:
+def test_main_refuses_to_execute_with_the_mock_reviewer() -> None:
     """--execute with the mock backend must abort before touching anything.
 
     The mock answers every review call with the literal "{}", which parses
@@ -1183,9 +1181,7 @@ def test_main_refuses_to_execute_with_the_mock_reviewer(
     assert "mock" in str(excinfo.value.code)
 
 
-def test_main_refusal_happens_before_the_sweep_runs(
-    capsys: pytest.CaptureFixture[str],
-) -> None:
+def test_main_refusal_happens_before_the_sweep_runs() -> None:
     """The refusal is a preflight, not a post-hoc complaint."""
     settings = _settings_stub(provider="mock")
     args = MagicMock(
@@ -1207,9 +1203,7 @@ def test_main_refusal_happens_before_the_sweep_runs(
     sweep_mock.assert_not_awaited()
 
 
-def test_main_allows_a_dry_run_with_the_mock_reviewer(
-    capsys: pytest.CaptureFixture[str],
-) -> None:
+def test_main_allows_a_dry_run_with_the_mock_reviewer() -> None:
     """A dry run makes no review calls, so the mock is irrelevant to it.
 
     Refusing here would remove the one safe way to see what a sweep would
@@ -1219,6 +1213,22 @@ def test_main_allows_a_dry_run_with_the_mock_reviewer(
         _settings_stub(provider="mock"),
         execute=False,
         result=remoderate_books.SweepResult(targets=[("s1", 1)], executed=False),
+    )
+    sweep_mock.assert_awaited_once()
+
+
+def test_main_executes_normally_with_a_real_reviewer() -> None:
+    """The positive control for the refusal tests above.
+
+    Those prove the preflight stops a mock ``--execute``. On their own they
+    cannot distinguish a correctly conditioned guard from one that refuses
+    every ``--execute``, since neither ever runs one that should succeed.
+    Change only the provider and the sweep must be awaited.
+    """
+    sweep_mock = _run_main_with_settings(
+        _settings_stub(provider="openrouter"),
+        execute=True,
+        result=remoderate_books.SweepResult(targets=[("s1", 1)], executed=True),
     )
     sweep_mock.assert_awaited_once()
 
