@@ -803,7 +803,18 @@ async def test_published_state_unchanged_after_real_remoderation(
         mock_async_session,
         "s1",
         1,
-        _remod_ctx(settings=Settings(), actor=Actor.from_principal(_ADMIN)),
+        _remod_ctx(
+            # A REAL review backend, not the "mock" default. `_build` below
+            # injects an independent clean provider, and the pipeline now
+            # stamps any run whose settings select the mock reviewer, in every
+            # environment. Declaring mock here while injecting a real provider
+            # would make the settings disagree with the provider under test and
+            # the stamp would fire on a run this test says is independent.
+            settings=Settings(
+                review_provider="openrouter", openai_api_key="sk-test-key"
+            ),
+            actor=Actor.from_principal(_ADMIN),
+        ),
     )
 
     assert story.status == "published"

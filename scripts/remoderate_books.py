@@ -53,23 +53,54 @@ Run against staging or production, dry-run (default, lists only)::
 Actually execute the sweep::
 
     ENVIRONMENT=staging CYO_ADVENTURE_DATABASE_URL=... \\
+        CYO_ADVENTURE_REVIEW_PROVIDER=openrouter OPENROUTER_API_KEY=... \\
+        OPENAI_API_KEY=... \\
         uv run python scripts/remoderate_books.py --mock-moderated --execute
 
 Sweep the books waiting at the review gate::
 
     ENVIRONMENT=staging CYO_ADVENTURE_DATABASE_URL=... \\
+        CYO_ADVENTURE_REVIEW_PROVIDER=openrouter OPENROUTER_API_KEY=... \\
+        OPENAI_API_KEY=... \\
         uv run python scripts/remoderate_books.py --in-review --execute
 
 Re-moderate specific books::
 
-    uv run python scripts/remoderate_books.py --book-id sk_ninth_hand --execute
+    CYO_ADVENTURE_REVIEW_PROVIDER=openrouter OPENROUTER_API_KEY=... \\
+        OPENAI_API_KEY=... \\
+        uv run python scripts/remoderate_books.py --book-id sk_ninth_hand \\
+        --execute
 
 Unlike ``scripts/seed_moderation_qa.py``, this script carries no environment
 guard: it targets whatever ``DATABASE_URL`` its caller points it at,
-deliberately, per plan decision 8 ("the script must hard-refuse nothing...
-BUT dry-run must be the default"). The safety rail is dry-run-by-default plus
-the explicit ``--execute`` flag, not an environment allowlist: production is
-this script's intended eventual target once B2/B3 are merged and deployed.
+deliberately. That is this script's own design choice, stated here rather
+than cited: an earlier version of this docstring attributed it to a "plan
+decision 8" that does not exist (section 7 of
+``docs/planning/safety/moderation-review-redesign-2026-07-28.md`` contains
+exactly seven numbered decisions, none of them this one), and a citation that
+resolves to nothing reads as authority it never had.
+
+The basis it does have: the redesign plan's decision 5 schedules the
+eighteen mock-moderated books for re-moderation right after Stage B lands,
+and section 4 item 3 has published books stay published while that runs.
+Production is therefore this script's intended eventual target, not an
+accident to be guarded against, which is the opposite of
+``seed_moderation_qa.py``'s situation (it writes new adversarial content, so
+it hard-refuses anything but staging). The safety rail here is
+dry-run-by-default plus the explicit ``--execute`` flag.
+
+It DOES carry a reviewer guard, which is a different axis entirely. The
+absence of an environment guard is about which database a caller may point
+at; this one is about whether a real reviewer exists to point at it.
+``--execute`` with ``review_provider="mock"`` cannot produce a review at all:
+the mock answers every call with the literal ``"{}"``, which parses cleanly
+and carries no verdict, so every node lands on its stage's fail-safe default.
+Such a run rewrites the exact fail-safe reports the sweep exists to clear and
+then exits 0 reporting success. ``main`` refuses it, and prints the resolved
+environment, database target, and provider before every executed run. ``Settings``
+declares no ``env_file`` (``core/config.py``), so it reads nothing but exported
+variables: a process started without them falls back to ``environment="local"``,
+a localhost database, and the mock provider all at once, from one absence.
 
 Audit provenance: every re-moderation this script drives stamps
 ``Actor.system()`` (no human request principal exists in this context),
@@ -83,9 +114,11 @@ from __future__ import annotations
 
 import argparse
 import asyncio
+import re
 import sys
 from dataclasses import dataclass, field
 from typing import TYPE_CHECKING, Final, cast
+from urllib.parse import urlsplit
 
 from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import async_sessionmaker
@@ -789,11 +822,139 @@ def _exit_on_excluded(result: SweepResult) -> None:
         )
 
 
+# A database name and nothing else: one path segment, no separator that could
+# only be there because the authority split went wrong.
+_SAFE_DATABASE_PATH: Final = re.compile(r"\A(?:/[^/@:?#]*)?\Z")
+
+
+# #CRITICAL: security: this renders a DSN for a banner that goes to a terminal
+# and is scraped into CI logs, so it must be IMPOSSIBLE for a password to
+# reach the output, not merely unlikely on a well-formed URL. Nothing upstream
+# validates the DSN: `database_url` is a bare `str` on Settings. The previous
+# form fell back to `parts.path` whenever there was no authority, so a URL
+# missing `//` (or a scheme) put the ENTIRE credential-bearing remainder into
+# the banner verbatim, and an unescaped `/` inside a password ended the netloc
+# early and did the same on a URL that looked well-formed. The rule now is
+# whitelist-then-refuse: emit only fields that a real authority positively
+# yielded, and return "unparseable" the moment any part of the split looks
+# like it landed somewhere it should not have. Refusing to describe the target
+# is always safe here; the operator can still read the environment and
+# provider from the same banner.
+# #VERIFY: tests/unit/test_remoderate_books.py::
+# TestDatabaseTarget::test_no_credential_survives_any_malformed_url and
+# ::test_preflight_banner_never_prints_credentials_end_to_end.
+def _database_target(database_url: str) -> str:
+    """Render a connection URL as ``host:port/name``, dropping credentials.
+
+    Args:
+        database_url: The resolved async SQLAlchemy connection URL.
+
+    Returns:
+        str: A credential-free description of what this run will write to, or
+        ``"unparseable"``. Never the password: this string is printed to a
+        terminal and scraped into CI logs. ``"unparseable"`` covers three
+        distinct refusals, deliberately collapsed into one opaque answer
+        because telling them apart would itself describe the malformed URL:
+        the URL does not split at all, it splits but yields no authority to
+        read a host from, or it splits in a way that proves the authority
+        boundary was misplaced (a truncated netloc, or a path that is not a
+        bare database name).
+    """
+    try:
+        parts = urlsplit(database_url)
+        host = parts.hostname
+        # #CRITICAL: data-integrity: `.port` is a lazy property that CASTS on
+        # access, so it raises for a non-numeric or out-of-range port. Reading
+        # it outside this `try` (as the previous form did) left the documented
+        # "unparseable" contract unreachable for the likeliest malformed URLs,
+        # since `urlsplit` itself does not validate the port at all.
+        port = parts.port
+    except ValueError:
+        return "unparseable"
+    if not host or not _SAFE_DATABASE_PATH.match(parts.path):
+        return "unparseable"
+    # If the URL carried userinfo, the netloc must still carry it. When it does
+    # not, urlsplit ended the authority early (a `?`, `#`, or `/` inside the
+    # password) and whatever "host" it produced is really a credential
+    # fragment.
+    if "@" in database_url and "@" not in parts.netloc:
+        return "unparseable"
+    # `hostname` strips the brackets an IPv6 literal needs; put them back
+    # rather than emitting `::1:5432`, which reads as a different address.
+    rendered_host = f"[{host}]" if ":" in host else host
+    return f"{rendered_host}{f':{port}' if port else ''}{parts.path}"
+
+
+# #CRITICAL: security: this preflight is the reason a canary run is worth
+# anything. config.py's _require_real_reviewer_outside_local and the
+# pipeline's mock-reviewer stamp were both once gated on
+# environment != "local", and both read review_provider and environment from
+# the process environment via a Settings object that declares no env_file, so
+# a process started without those variables exported got
+# review_provider="mock" and environment="local" together, from one absence,
+# and disabled both at once. Printing what THIS run resolved, rather than
+# trusting what the operator meant to set, is what makes that failure visible
+# before a sweep rather than after one that appeared to succeed.
+# #VERIFY: tests/unit/test_remoderate_books.py::
+# test_main_refuses_to_execute_with_the_mock_reviewer,
+# ::test_main_refusal_happens_before_the_sweep_runs,
+# ::test_main_prints_the_resolved_target_before_executing,
+# ::test_main_preflight_never_prints_database_credentials.
+def _preflight(settings: Settings, *, execute: bool) -> None:
+    """Print the resolved run target and refuse an execute with no reviewer.
+
+    Scoped to ``main`` rather than ``sweep`` on purpose: a programmatic
+    caller passing explicit settings has already declared its provider, and
+    the pipeline stamps any mock-produced report as non-independent in every
+    environment regardless. This guards the human at a terminal, who is the
+    one who cannot see which variables the shell actually exported.
+
+    Args:
+        settings: The settings this run resolved, which are the same ones
+            ``sweep`` will use when ``main`` does not pass its own.
+        execute: Whether the run will write. A dry run makes no review calls,
+            so the provider is irrelevant to it and nothing is printed.
+
+    Raises:
+        SystemExit: When ``execute`` is set and the resolved provider is the
+            mock, which cannot produce a review.
+    """
+    if not execute:
+        return
+    # stderr, not stdout: the refusal below exits through `sys.exit(str)`,
+    # which writes to stderr, and the banner is the context that refusal
+    # refers to ("the resolved environment above"). Splitting the pair across
+    # two streams meant a CI step or an operator redirecting either one kept
+    # only half the safety story. Results stay on stdout; safety diagnostics
+    # travel together on stderr.
+    print(
+        f"remoderate_books: environment={settings.environment} "
+        f"database={_database_target(settings.database_url)} "
+        f"review_provider={settings.review_provider}",
+        file=sys.stderr,
+    )
+    if settings.review_provider == "mock":
+        sys.exit(
+            "remoderate_books: REFUSING --execute, the resolved "
+            'review_provider is "mock", which returns no verdict and would '
+            "rewrite every targeted node as a fail-safe default. Set "
+            "CYO_ADVENTURE_REVIEW_PROVIDER to a real backend (and check the "
+            f"resolved environment above, {settings.environment}, is the one "
+            "you meant) before re-running."
+        )
+
+
 def main() -> None:
     """Entry point for the re-moderation sweep script.
 
-    Prints the target list always, preceded by an exclusion warning whenever
-    the sweep covered fewer books than the review queue holds. In dry-run
+    An ``--execute`` run passes through ``_preflight`` first, which prints the
+    resolved environment, database, and reviewer to stderr and refuses the run
+    outright when that reviewer is the mock. That refusal is the earliest exit
+    in the script: it happens before any database work, so a mock-provider
+    ``--execute`` produces the banner, the refusal, and no target list at all.
+
+    Otherwise, prints the target list always, preceded by an exclusion warning
+    whenever the sweep covered fewer books than the review queue holds. In dry-run
     (default), that is the only output. When ``--execute`` is given, also
     prints the succeeded/failed counts, the fresh verdicts, which books the
     repair pass rewrote, and exits nonzero if anything failed OR if any book
@@ -802,6 +963,7 @@ def main() -> None:
     success.
     """
     args = _parse_args()
+    _preflight(_default_settings, execute=args.execute)
     result = asyncio.run(
         sweep(
             book_ids=args.book_id,

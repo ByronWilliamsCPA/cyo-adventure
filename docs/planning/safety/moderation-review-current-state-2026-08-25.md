@@ -308,7 +308,7 @@ nodes. Those rows persist with `verdict: "pass"`, because a soft stage fails
 safe to PASS, and `api/review_surface.py` drops PASS before rendering. They are
 invisible, not merely unlabelled.
 
-`moderation/report.py::hidden_fail_safe_node_counts` counts that hidden
+`moderation/report.py::legacy_hidden_fail_safe_node_counts` counts that hidden
 remainder per source and per distinct node; the surface renders one story-level
 structural finding from it, matching the shape #764 chose for a wholly unusable
 report. Stage 1 safety fail-safes are deliberately excluded: they fail safe to

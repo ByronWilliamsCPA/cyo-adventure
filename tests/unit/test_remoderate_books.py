@@ -18,6 +18,7 @@ from unittest.mock import AsyncMock, MagicMock, patch
 import pytest
 
 from cyo_adventure.api.remoderate import RemoderateResult
+from cyo_adventure.core.config import Settings
 from cyo_adventure.core.exceptions import (
     BusinessLogicError,
     ResourceNotFoundError,
@@ -538,11 +539,45 @@ def test_parse_args_requires_a_selector(capsys: pytest.CaptureFixture[str]) -> N
 # ---------------------------------------------------------------------------
 
 
+def _settings_stub(*, provider: str, environment: str = "production") -> MagicMock:
+    """A settings double carrying only what the preflight reads.
+
+    Specced against ``Settings``' real field names, not left open: an
+    unspecced MagicMock answers ANY attribute, so renaming a field on
+    ``Settings`` would leave every test here passing while the script read a
+    fresh Mock in place of the value. ``spec`` takes the name list rather
+    than a ``Settings`` instance on purpose (see tests/CLAUDE.md, "Mock spec
+    traps": a pydantic instance as ``spec`` trips ``__fields__`` on 3.12 and
+    older).
+    """
+    return MagicMock(
+        spec=list(Settings.model_fields),
+        review_provider=provider,
+        environment=environment,
+        database_url=(
+            f"postgresql+asyncpg://cyo_user:{_LEAK_CANARY}@db.example.net:5432/cyo"
+        ),
+    )
+
+
 def _run_main(result: Any) -> None:
-    """Drive main() with a canned SweepResult, bypassing argv and the DB."""
+    """Drive main() with a canned SweepResult, bypassing argv and the DB.
+
+    Declares a real review provider because these tests drive ``--execute``
+    and measure what main REPORTS. Under the shared app settings the resolved
+    provider is the mock, which main's preflight now refuses outright, so
+    without this every one of them would exit on the preflight and assert
+    nothing about the reporting they exist to pin. The preflight has its own
+    tests below.
+    """
     args = MagicMock(book_id=["s1"], mock_moderated=False, execute=True)
     with (
         patch.object(remoderate_books, "_parse_args", MagicMock(return_value=args)),
+        patch.object(
+            remoderate_books,
+            "_default_settings",
+            _settings_stub(provider="openrouter"),
+        ),
         patch.object(remoderate_books, "sweep", AsyncMock(return_value=result)),
     ):
         remoderate_books.main()
@@ -1098,3 +1133,358 @@ def test_parse_args_defaults_the_per_book_timeout() -> None:
 
     assert args.per_book_timeout == remoderate_books._PER_BOOK_TIMEOUT_SECONDS
     assert remoderate_books._PER_BOOK_TIMEOUT_SECONDS > 0
+
+
+# ---------------------------------------------------------------------------
+# main(): the reviewer preflight
+# ---------------------------------------------------------------------------
+
+
+def _run_main_with_settings(
+    settings: MagicMock, *, execute: bool, result: Any = None
+) -> MagicMock:
+    """Drive main() with a settings double; return the patched sweep mock."""
+    args = MagicMock(
+        book_id=["s1"],
+        mock_moderated=False,
+        in_review=False,
+        execute=execute,
+        per_book_timeout=900,
+    )
+    canned = result or remoderate_books.SweepResult(
+        targets=[("s1", 1)], executed=execute, succeeded=[("s1", 1)]
+    )
+    sweep_mock = AsyncMock(return_value=canned)
+    with (
+        patch.object(remoderate_books, "_parse_args", MagicMock(return_value=args)),
+        patch.object(remoderate_books, "_default_settings", settings),
+        patch.object(remoderate_books, "sweep", sweep_mock),
+    ):
+        remoderate_books.main()
+    return sweep_mock
+
+
+def test_main_refuses_to_execute_with_the_mock_reviewer() -> None:
+    """--execute with the mock backend must abort before touching anything.
+
+    The mock answers every review call with the literal "{}", which parses
+    cleanly and carries no verdict, so every node lands on the fail-safe
+    default. Running this sweep with it would rewrite the exact reports the
+    sweep exists to clear, and exit 0 reporting success. Twelve production
+    books, 2,916 nodes, are in that state now.
+    """
+    settings = _settings_stub(provider="mock")
+
+    with pytest.raises(SystemExit) as excinfo:
+        _run_main_with_settings(settings, execute=True)
+
+    assert "mock" in str(excinfo.value.code)
+
+
+def test_main_refusal_happens_before_the_sweep_runs() -> None:
+    """The refusal is a preflight, not a post-hoc complaint."""
+    settings = _settings_stub(provider="mock")
+    args = MagicMock(
+        book_id=["s1"],
+        mock_moderated=False,
+        in_review=False,
+        execute=True,
+        per_book_timeout=900,
+    )
+    sweep_mock = AsyncMock()
+    with (
+        patch.object(remoderate_books, "_parse_args", MagicMock(return_value=args)),
+        patch.object(remoderate_books, "_default_settings", settings),
+        patch.object(remoderate_books, "sweep", sweep_mock),
+        pytest.raises(SystemExit),
+    ):
+        remoderate_books.main()
+
+    sweep_mock.assert_not_awaited()
+
+
+def test_main_allows_a_dry_run_with_the_mock_reviewer() -> None:
+    """A dry run makes no review calls, so the mock is irrelevant to it.
+
+    Refusing here would remove the one safe way to see what a sweep would
+    target from a workstation.
+    """
+    sweep_mock = _run_main_with_settings(
+        _settings_stub(provider="mock"),
+        execute=False,
+        result=remoderate_books.SweepResult(targets=[("s1", 1)], executed=False),
+    )
+    sweep_mock.assert_awaited_once()
+
+
+def test_main_executes_normally_with_a_real_reviewer() -> None:
+    """The positive control for the refusal tests above.
+
+    Those prove the preflight stops a mock ``--execute``. On their own they
+    cannot distinguish a correctly conditioned guard from one that refuses
+    every ``--execute``, since neither ever runs one that should succeed.
+    Change only the provider and the sweep must be awaited.
+    """
+    sweep_mock = _run_main_with_settings(
+        _settings_stub(provider="openrouter"),
+        execute=True,
+        result=remoderate_books.SweepResult(targets=[("s1", 1)], executed=True),
+    )
+    sweep_mock.assert_awaited_once()
+
+
+def test_main_prints_the_resolved_target_before_executing(
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    """Print what this run actually resolved, not what the operator intended.
+
+    ``Settings`` declares no ``env_file``: it reads exported process
+    environment variables and nothing else. A shell that never exported them
+    therefore resolves environment="local", a localhost database and
+    review_provider="mock" together, from one absence, and every guard keyed
+    on environment != "local" goes quiet at the same moment. Printing the
+    resolved values is what makes that visible before the run, rather than
+    after an apparently successful sweep that touched nothing.
+    """
+    _run_main_with_settings(
+        _settings_stub(provider="openrouter", environment="production"),
+        execute=True,
+    )
+    # stderr, not stdout: the banner shares a stream with the refusal it
+    # gives context to, so an operator redirecting one keeps both halves.
+    err = capsys.readouterr().err
+    assert "openrouter" in err
+    assert "production" in err
+    assert "db.example.net" in err
+
+
+def test_main_preflight_never_prints_database_credentials(
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    """The banner names the target, never the password reaching it."""
+    _run_main_with_settings(
+        _settings_stub(provider="openrouter"),
+        execute=True,
+    )
+    captured = capsys.readouterr()
+    assert _LEAK_CANARY_PREFIX not in captured.out
+    assert _LEAK_CANARY_PREFIX not in captured.err
+
+
+# ---------------------------------------------------------------------------
+# _database_target(): the banner must not be a credential-disclosure channel
+# ---------------------------------------------------------------------------
+
+# One sentinel value, embedded in every shape below and in `_settings_stub`,
+# so a single containment assertion covers the whole table. Every shape that a
+# leak would split the value across (a `/`, `?`, `#` or space inside it) keeps
+# `_LEAK_CANARY_PREFIX` as its leading fragment, so asserting on the fragment
+# catches a partial disclosure that asserting on the whole value would miss.
+#
+# It is deliberately named and worded as a canary rather than as a password.
+# A high-entropy literal bound to a password-like name is the exact shape
+# secret scanners are built to flag; a scanner finding on a fixture is
+# indistinguishable from a real leak until a human reads the diff, which
+# spends the alert on nothing. The value states its own purpose instead, so
+# neither a scanner nor a reader can mistake it for a credential. Keep it that
+# way when editing: the sentinel needs to be distinctive, not password-shaped.
+_LEAK_CANARY = "must-not-print-this-value"
+_LEAK_CANARY_PREFIX = "must-not-print"
+
+# label -> (url, exactly what _database_target must render).
+#
+# Expectations are exact, not "does not contain the password". A function that
+# returned "" for everything would satisfy a containment-only check while
+# telling the operator nothing, and "unparseable" everywhere would hide a
+# regression that broke the happy path. Pinning the rendered value on the
+# shapes that DO resolve is what keeps the refusals meaningful.
+_DATABASE_URL_SHAPES: dict[str, tuple[str, str]] = {
+    # Resolves. The positive control for the whole table.
+    "well_formed": (
+        f"postgresql+asyncpg://cyo_user:{_LEAK_CANARY}@db.example.net:5432/cyo",
+        "db.example.net:5432/cyo",
+    ),
+    # No scheme, but a real authority: urlsplit yields a host, so there is
+    # nothing suspect to refuse and the target is nameable.
+    "scheme_relative": (
+        f"//cyo_user:{_LEAK_CANARY}@db.example.net/cyo",
+        "db.example.net/cyo",
+    ),
+    # `hostname` strips the brackets an IPv6 literal needs; without them
+    # "2001:db8::1:5432" reads as a different address entirely.
+    "ipv6_literal": (
+        f"postgresql+asyncpg://cyo_user:{_LEAK_CANARY}@[2001:db8::1]:5432/cyo",
+        "[2001:db8::1]:5432/cyo",
+    ),
+    # A space is legal inside a netloc as far as urlsplit is concerned and
+    # does not move the authority boundary, so this still resolves.
+    "space_in_password": (
+        "postgresql+asyncpg://cyo_user:must-not-print this-value@db.example.net:5432/cyo",
+        "db.example.net:5432/cyo",
+    ),
+    # No "//" means no authority at all: the entire credential-bearing
+    # remainder is the path. This is the shape the previous form printed
+    # verbatim.
+    "no_double_slash": (
+        f"postgresql+asyncpg:cyo_user:{_LEAK_CANARY}@db.example.net/cyo",
+        "unparseable",
+    ),
+    # "cyo_user" is not a valid scheme (underscore), so nothing splits and
+    # the whole DSN lands in the path.
+    "no_scheme": (
+        f"cyo_user:{_LEAK_CANARY}@db.example.net:5432/cyo",
+        "unparseable",
+    ),
+    # Each of these ends the netloc early, inside the password: the "host"
+    # urlsplit reports is a credential fragment wearing a hostname's name.
+    "slash_in_password": (
+        "postgresql+asyncpg://cyo_user:must-not-print/this-value@db.example.net:5432/cyo",
+        "unparseable",
+    ),
+    "question_in_password": (
+        "postgresql+asyncpg://cyo_user:must-not-print?this-value@db.example.net:5432/cyo",
+        "unparseable",
+    ),
+    "hash_in_password": (
+        "postgresql+asyncpg://cyo_user:must-not-print#this-value@db.example.net:5432/cyo",
+        "unparseable",
+    ),
+    # `.port` casts on access, so all three of these raise ValueError rather
+    # than returning None. Reading it outside the try (as the previous form
+    # did) turned a malformed port into an uncaught crash mid-preflight.
+    "non_numeric_port": (
+        f"postgresql+asyncpg://cyo_user:{_LEAK_CANARY}@db.example.net:notaport/cyo",
+        "unparseable",
+    ),
+    "port_out_of_range": (
+        f"postgresql+asyncpg://cyo_user:{_LEAK_CANARY}@db.example.net:99999/cyo",
+        "unparseable",
+    ),
+    "negative_port": (
+        f"postgresql+asyncpg://cyo_user:{_LEAK_CANARY}@db.example.net:-1/cyo",
+        "unparseable",
+    ),
+    # Userinfo with nothing after the "@": there is no host to name.
+    "userinfo_no_host": (
+        f"postgresql+asyncpg://cyo_user:{_LEAK_CANARY}@",
+        "unparseable",
+    ),
+    # A database name is one path segment. More than one means the authority
+    # boundary landed somewhere unexpected.
+    "two_path_segments": (
+        f"postgresql+asyncpg://cyo_user:{_LEAK_CANARY}@db.example.net:5432/cyo/extra",
+        "unparseable",
+    ),
+    # No structure at all: a value that is only a secret.
+    "bare_secret": (_LEAK_CANARY, "unparseable"),
+    # The empty string is what an unset DATABASE_URL looks like after
+    # defaulting, and it must not crash the preflight it precedes.
+    "empty": ("", "unparseable"),
+}
+
+
+class TestDatabaseTarget:
+    """The preflight banner names the target and never the way in.
+
+    This string is printed to a terminal and scraped into CI logs, so the
+    requirement is that a password CANNOT reach it, not that it usually does
+    not. Nothing upstream constrains the value: ``database_url`` is a bare
+    ``str`` on ``Settings``, so every shape an operator can typo into a shell
+    reaches this function.
+    """
+
+    @pytest.mark.parametrize("label", sorted(_DATABASE_URL_SHAPES))
+    def test_no_credential_survives_any_malformed_url(self, label: str) -> None:
+        """Every shape renders exactly its expectation, and never the secret.
+
+        Parametrised per shape rather than looped so a regression names the
+        one URL that broke; a loop reports only the first failure and hides
+        how many of the sixteen went with it.
+        """
+        url, expected = _DATABASE_URL_SHAPES[label]
+
+        rendered = remoderate_books._database_target(url)
+
+        assert rendered == expected
+        assert _LEAK_CANARY_PREFIX not in rendered
+
+    def test_every_shape_carries_the_sentinel_it_is_scanned_for(self) -> None:
+        """The table cannot go quiet by losing the secret it tests for.
+
+        Without this, editing a URL above and dropping the password would
+        leave its leak assertion trivially true, and the shape would keep
+        reporting a pass while testing nothing. ``empty`` is the one
+        deliberate exception: an unset DSN has no credential by definition.
+        """
+        carrying = {
+            label
+            for label, (url, _) in _DATABASE_URL_SHAPES.items()
+            if _LEAK_CANARY_PREFIX in url
+        }
+
+        assert carrying == set(_DATABASE_URL_SHAPES) - {"empty"}
+
+    def test_a_resolvable_url_is_still_named(self) -> None:
+        """Refusing everything would satisfy the leak check and help nobody.
+
+        The banner exists so an operator can see that a run resolved the
+        database they meant. A ``_database_target`` that answered
+        "unparseable" unconditionally would pass every assertion above.
+        """
+        resolved = {
+            label
+            for label, (_, expected) in _DATABASE_URL_SHAPES.items()
+            if expected != "unparseable"
+        }
+
+        assert resolved == {
+            "well_formed",
+            "scheme_relative",
+            "ipv6_literal",
+            "space_in_password",
+        }
+
+
+def test_preflight_banner_never_prints_credentials_end_to_end(
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    """Drive the real Settings and the real _preflight, not a mock of either.
+
+    Every other preflight test here passes a ``MagicMock`` standing in for
+    ``Settings``, which proves what ``_preflight`` does with a value but not
+    that a real ``Settings`` carries one it can survive. This closes that
+    gap on both shapes an operator can produce without noticing: a DSN whose
+    "//" is missing, and one with no scheme at all. Both put the whole
+    credential-bearing string into ``parts.path``, which is exactly what the
+    banner used to print.
+
+    Two other shapes cannot be covered here, and that is a finding rather
+    than an omission: a "/" inside the password and an out-of-range port
+    both make ``Settings`` itself raise, because ``core/config.py``'s
+    ``_check_pooler_port`` reads ``urlsplit(url).port`` unguarded during
+    validation. The "/" case is the worse of the two, since pydantic's error
+    text then quotes the password fragment it failed to cast. That is
+    tracked separately; this test pins the half that reaches the banner.
+    """
+    for label in ("no_double_slash", "no_scheme"):
+        url, _ = _DATABASE_URL_SHAPES[label]
+        settings = Settings(
+            database_url=url,
+            environment="local",
+            review_provider="openrouter",
+            openrouter_api_key="sk-or-test",
+            # Required alongside the openrouter provider: omni-moderation is
+            # an OpenAI call regardless of which model writes the review.
+            openai_api_key="sk-test-key",
+        )
+
+        remoderate_books._preflight(settings, execute=True)
+
+        captured = capsys.readouterr()
+        assert _LEAK_CANARY_PREFIX not in captured.out, label
+        assert _LEAK_CANARY_PREFIX not in captured.err, label
+        # The banner still ran: an exception swallowed upstream, or a
+        # preflight that printed nothing, would satisfy the two assertions
+        # above while removing the safety signal entirely.
+        assert "unparseable" in captured.err, label
+        assert "review_provider=openrouter" in captured.err, label
