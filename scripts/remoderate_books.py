@@ -54,30 +54,44 @@ Actually execute the sweep::
 
     ENVIRONMENT=staging CYO_ADVENTURE_DATABASE_URL=... \\
         CYO_ADVENTURE_REVIEW_PROVIDER=openrouter OPENROUTER_API_KEY=... \\
+        OPENAI_API_KEY=... \\
         uv run python scripts/remoderate_books.py --mock-moderated --execute
 
 Sweep the books waiting at the review gate::
 
     ENVIRONMENT=staging CYO_ADVENTURE_DATABASE_URL=... \\
         CYO_ADVENTURE_REVIEW_PROVIDER=openrouter OPENROUTER_API_KEY=... \\
+        OPENAI_API_KEY=... \\
         uv run python scripts/remoderate_books.py --in-review --execute
 
 Re-moderate specific books::
 
     CYO_ADVENTURE_REVIEW_PROVIDER=openrouter OPENROUTER_API_KEY=... \\
+        OPENAI_API_KEY=... \\
         uv run python scripts/remoderate_books.py --book-id sk_ninth_hand \\
         --execute
 
 Unlike ``scripts/seed_moderation_qa.py``, this script carries no environment
 guard: it targets whatever ``DATABASE_URL`` its caller points it at,
-deliberately, per plan decision 8 ("the script must hard-refuse nothing...
-BUT dry-run must be the default"). The safety rail is dry-run-by-default plus
-the explicit ``--execute`` flag, not an environment allowlist: production is
-this script's intended eventual target once B2/B3 are merged and deployed.
+deliberately. That is this script's own design choice, stated here rather
+than cited: an earlier version of this docstring attributed it to a "plan
+decision 8" that does not exist (section 7 of
+``docs/planning/safety/moderation-review-redesign-2026-07-28.md`` contains
+exactly seven numbered decisions, none of them this one), and a citation that
+resolves to nothing reads as authority it never had.
 
-It DOES carry a reviewer guard, which is a different axis and not a
-walk-back of decision 8. That decision is about which database a caller may
-point at; this one is about whether a real reviewer exists to point at it.
+The basis it does have: the redesign plan's decision 5 schedules the
+eighteen mock-moderated books for re-moderation right after Stage B lands,
+and section 4 item 3 has published books stay published while that runs.
+Production is therefore this script's intended eventual target, not an
+accident to be guarded against, which is the opposite of
+``seed_moderation_qa.py``'s situation (it writes new adversarial content, so
+it hard-refuses anything but staging). The safety rail here is
+dry-run-by-default plus the explicit ``--execute`` flag.
+
+It DOES carry a reviewer guard, which is a different axis entirely. The
+absence of an environment guard is about which database a caller may point
+at; this one is about whether a real reviewer exists to point at it.
 ``--execute`` with ``review_provider="mock"`` cannot produce a review at all:
 the mock answers every call with the literal ``"{}"``, which parses cleanly
 and carries no verdict, so every node lands on its stage's fail-safe default.
