@@ -968,6 +968,19 @@ predetermined journeys above. Route via `npm run test:e2e:usersim`.
   `frontend/e2e/support/axeTags.ts`); non-WCAG best-practice findings are
   logged and tracked as `UW-F27`, not failed, for the same reason
   `a11y.spec.ts` does not fail on them either.
+- E2E-usersim, reader-persona fixture (task C2):
+  `frontend/e2e-usersim/reader-personas.spec.ts` is a non-browser check
+  against the ten fixed, age-banded reader personas in
+  `schema/personas/reader_personas.json` (loaded and validated at runtime by
+  `support/reader-personas.ts`, no `resolveJsonModule`, no unchecked casts
+  over the parsed JSON). It asserts every persona's `band` is one of the
+  six age bands `src/cyo_adventure/validator/band_profile.py` defines (via
+  the OpenAPI-generated `AgeBand` type, so a backend band rename fails this
+  file's typecheck too) and that every band has at least one persona. This
+  fixture is the canonical reader-persona set the leg B agentic runner under
+  `tools/usersim-agent/` (task D2) is expected to read directly rather than
+  copy; it is unrelated to `support/personas.ts`'s three ROLE personas
+  (kid/guardian/admin) used by the walk specs above.
 - Component: `frontend/src/router.usersim-manifest.test.ts` (see
   "Cross-cutting component and utility tests" below; kept there rather than
   duplicated here since it is a Vitest suite, not part of this Playwright

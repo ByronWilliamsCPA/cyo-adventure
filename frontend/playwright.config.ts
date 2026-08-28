@@ -415,14 +415,19 @@ export default defineConfig({
       // shared 30s, so the override was stale head-room left over from the
       // fixed bug, not a real need.
       //
-      // testMatch narrows this project to the mocked spec only (task B3a
-      // added a second, real-backend spec to the same testDir; see
-      // `usersim-real` below), matching the filename-alternation convention
-      // `real-backend-pipeline`/`webkit-kid` already use above rather than a
-      // tag or grep filter.
+      // testMatch narrows this project to the mocked walk spec plus the
+      // reader-persona fixture check (task C2's `reader-personas.spec.ts`:
+      // a non-browser referential-integrity check against the backend's
+      // age bands, cheap enough to ride alongside the walk rather than earn
+      // a fourth project). task B3a added a second, real-backend spec to
+      // the same testDir; see `usersim-real` below, which stays scoped to
+      // `walk-real.spec.ts` only since the reader-persona check needs no
+      // real backend and would be pure duplication there. Matches the
+      // filename-alternation convention `real-backend-pipeline`/
+      // `webkit-kid` already use above rather than a tag or grep filter.
       name: 'usersim',
       testDir: './e2e-usersim',
-      testMatch: /walk\.spec\.ts/,
+      testMatch: /(walk|reader-personas)\.spec\.ts/,
       use: { ...devices['Desktop Chrome'] },
     },
     {
