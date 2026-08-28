@@ -23,6 +23,8 @@ from __future__ import annotations
 
 import asyncio
 import copy
+import json
+import re
 import uuid
 from typing import TYPE_CHECKING, cast
 from unittest.mock import AsyncMock, MagicMock
@@ -44,6 +46,7 @@ from cyo_adventure.events import Actor
 from cyo_adventure.generation.import_story import IMPORT_PROVIDER
 from cyo_adventure.generation.provider import _CANNED_STORY, MockProvider
 from cyo_adventure.moderation import pipeline as pipeline_mod
+from cyo_adventure.moderation.report import COVERAGE_GAP_CONCERNS
 from cyo_adventure.publishing.state_machine import (
     LEGAL_TRANSITIONS,
     Action,
@@ -52,6 +55,8 @@ from cyo_adventure.publishing.state_machine import (
 from cyo_adventure.validator.gate import run_fill_gate
 
 if TYPE_CHECKING:
+    from collections.abc import Callable, Coroutine
+
     from sqlalchemy import Select
 
 pytestmark = [pytest.mark.unit, pytest.mark.asyncio]
@@ -156,21 +161,34 @@ def _wire_session(
     version_row: StorybookVersion | None,
     *,
     child_names: list[str] | None = None,
+    generation_job: object | None = None,
 ) -> None:
     """Wire a mock session for the load-lock-check pattern this module uses.
 
-    ``session.execute`` dispatches on the queried entity type (mirrors
+    ``session.execute`` dispatches on the queried entity (mirrors
     tests/unit/test_moderation_pipeline.py::_load): this module's own
     Storybook lock-load runs first, and a REAL ``run_moderation_pipeline``
     call (the real-pipeline test) re-executes its own Storybook select PLUS
     a GenerationJob select (the personalizable-slot resolution); returning
     the Storybook for both would make the pipeline treat a Storybook as a
     GenerationJob and crash on a missing attribute.
+
+    ``generation_job`` defaults to ``None``, which is the production shape:
+    no book in the catalog has a ``GenerationJob`` row (2026-08-26). Pass a
+    stand-in row to exercise the job-backed arm, which the endpoint keeps
+    resolving through the pipeline rather than from the version.
+
+    The dispatch reads ``entity`` rather than ``type`` because the endpoint's
+    existence probe selects ``GenerationJob.id``, not the whole row: on a
+    column select ``type`` is the COLUMN's type (``CHAR(32)``) and only
+    ``entity`` still names the model. Matching on ``type`` silently sent that
+    probe down the Storybook arm, which answers with a truthy row and makes
+    every book look job-backed.
     """
 
     def _execute_side_effect(stmt: Select[tuple[object]]) -> MagicMock:
-        if stmt.column_descriptions[0]["type"] is GenerationJob:
-            return _execute_result(None)
+        if stmt.column_descriptions[0]["entity"] is GenerationJob:
+            return _execute_result(generation_job)
         return _execute_result(story)
 
     session.execute = AsyncMock(side_effect=_execute_side_effect)
@@ -355,7 +373,19 @@ async def test_locks_storybook_row_for_update(
         mock_async_session, "s1", 1, _remod_ctx()
     )
 
-    stmt = cast("Select[tuple[object]]", mock_async_session.execute.await_args.args[0])
+    # The Storybook statement is selected BY ENTITY, not by taking whichever
+    # execute happened to be last. This assertion read `await_args` until
+    # 2026-08-26, which was the storybook lock-load only because nothing else
+    # in the mocked path issued a query; the moment the endpoint gained a
+    # GenerationJob existence probe, `await_args` became that probe and this
+    # test failed while the lock it exists to pin was entirely intact.
+    storybook_stmts = [
+        cast("Select[tuple[object]]", call.args[0])
+        for call in mock_async_session.execute.await_args_list
+        if call.args[0].column_descriptions[0]["entity"] is Storybook
+    ]
+    assert len(storybook_stmts) == 1, "expected exactly one Storybook load to lock"
+    stmt = storybook_stmts[0]
     where = str(stmt.whereclause)
     assert "storybook" in where.lower()
 
@@ -428,7 +458,154 @@ async def test_happy_path_returns_fresh_summary(
     assert view.verdict_counts == {"block": 1}
     assert view.structural_count == 1
     assert view.prior_reviewer_independent is True
+    assert view.coverage_complete is True
     assert story.status == "published"
+
+
+def _persisting_pipeline(
+    version_row: StorybookVersion, findings: list[dict[str, object]]
+) -> Callable[..., Coroutine[object, object, None]]:
+    """Build a run_moderation_pipeline double that persists ``findings``.
+
+    Takes ``version_row`` as a parameter rather than closing over a loop
+    variable, so a multi-arm test cannot accidentally have every arm write
+    through the last iteration's row (Ruff B023).
+
+    Args:
+        version_row: The row the fake pipeline writes its fresh report onto.
+        findings: The findings that report carries.
+
+    Returns:
+        Callable[..., Coroutine[object, object, None]]: The pipeline double. It
+        raises StateTransitionError from its terminal transition, which is what
+        a real run does on a published book and what the endpoint swallows.
+    """
+
+    async def _fake_pipeline(**_kwargs: object) -> None:
+        version_row.moderation_report = {
+            "findings": findings,
+            "summary": {
+                "hard_block": any(f.get("verdict") == "block" for f in findings),
+                "soft_flag": True,
+                "count": 1,
+                "repaired": False,
+                "reviewer_independent": True,
+                # Derived exactly as ModerationReport.to_dict derives it, from
+                # the narrow COVERAGE_GAP_CONCERNS scan. Hard-coding it would
+                # leave this double unable to model the one property the
+                # endpoint's coverage field has to agree with.
+                "coverage_complete": not any(
+                    f.get("concern") in COVERAGE_GAP_CONCERNS for f in findings
+                ),
+            },
+            "aggregate": {"nodes_reviewed": 3, "pass_counts": {}},
+        }
+        raise StateTransitionError(
+            "cannot 'auto_reject' a storybook in its current state",
+            rule="invalid_state_transition",
+            context={"from": "published", "action": "auto_reject"},
+        )
+
+    return _fake_pipeline
+
+
+async def test_coverage_complete_is_false_on_a_gap_and_true_otherwise(
+    mock_async_session: AsyncMock, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """A fail-closed block and a content block must be tellable apart on the wire.
+
+    Both arms return ``overall_verdict == "block"``, which is the whole
+    problem: the verdict alone cannot say whether a reviewer judged the prose
+    and refused it, or never judged it at all. Only ``coverage_complete``
+    separates them, and an operator's remedy differs completely between the
+    two (re-run the reviewer versus rewrite the story), so an assertion on the
+    verdict alone would pass on an implementation that reported the same thing
+    for both.
+    """
+    arms = {
+        # A genuine content block: a reviewer read it and said no.
+        True: [{"verdict": "block", "structural": False, "concern": "violence"}],
+        # A coverage gap: nothing read it, and the block is the fail-safe.
+        False: [
+            {
+                "verdict": "flag",
+                "structural": True,
+                "concern": "reviewer_unavailable",
+            }
+        ],
+    }
+    for expected_complete, findings in arms.items():
+        version_row = _version_row(moderation_report=_PASSING_REPORT)
+        story = _story()
+        _wire_session(mock_async_session, story, version_row)
+
+        monkeypatch.setattr(
+            remoderate_api,
+            "run_moderation_pipeline",
+            AsyncMock(side_effect=_persisting_pipeline(version_row, findings)),
+        )
+        view = await remoderate_api.trigger_remoderate(
+            "s1", 1, _ctx(_ADMIN, mock_async_session)
+        )
+        assert view.overall_verdict == "block", expected_complete
+        assert view.coverage_complete is expected_complete
+
+
+async def test_a_mock_stamped_report_blocks_but_reports_complete_coverage(
+    mock_async_session: AsyncMock, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """A mock run blocks on provenance while reporting its coverage honestly.
+
+    The two returned fields read different predicates, and this is the one
+    input where their answers must diverge. The regression was a
+    self-contradiction rather than a policy disagreement: the pipeline persists
+    ``summary.coverage_complete: true`` for a mock run (COVERAGE_GAP_CONCERNS
+    omits the stamp by design, so ``has_coverage_gap`` is false), while the
+    endpoint answered the wire field from the mock-INCLUSIVE approval
+    predicate, so one run reported the same fact both ways at once.
+
+    The coverage assertion is made against the STORED summary rather than a
+    hard-coded ``True``, so it fails if either side of that agreement moves.
+    The verdict assertion is the other half: narrowing the coverage field must
+    not weaken the verdict, or a substituted reviewer reports success again
+    (the 2026-07-21 sweep).
+    """
+    version_row = _version_row(moderation_report=_PASSING_REPORT)
+    story = _story()
+    _wire_session(mock_async_session, story, version_row)
+
+    monkeypatch.setattr(
+        remoderate_api,
+        "run_moderation_pipeline",
+        AsyncMock(
+            side_effect=_persisting_pipeline(
+                version_row,
+                [
+                    {
+                        "verdict": "advisory",
+                        "structural": True,
+                        "category": "pipeline",
+                        "concern": "mock_reviewer_active",
+                        "message": (
+                            "moderated with the mock reviewer; "
+                            "no real safety review ran"
+                        ),
+                    }
+                ],
+            )
+        ),
+    )
+    view = await remoderate_api.trigger_remoderate(
+        "s1", 1, _ctx(_ADMIN, mock_async_session)
+    )
+
+    stored = _report_summary(version_row)
+    assert stored["coverage_complete"] is True, (
+        "precondition: the pipeline itself calls a mock run fully covered, "
+        "which is what the wire field has to agree with"
+    )
+    assert view.coverage_complete is stored["coverage_complete"]
+    assert view.overall_verdict == "block"
 
 
 _PASSING_REPORT: dict[str, object] = {
@@ -705,17 +882,28 @@ async def test_report_repaired_tolerates_a_malformed_stored_report() -> None:
 async def test_mock_reviewer_stamp_is_not_stripped_or_overridden(
     mock_async_session: AsyncMock, monkeypatch: pytest.MonkeyPatch
 ) -> None:
-    """A fresh mock-reviewer-stamped report is surfaced verbatim, not bypassed.
+    """A fresh mock-reviewer-stamped report surfaces as ``block``, never ``pass``.
 
     Simulates the exact persisted shape run_moderation_pipeline's own
-    _stamp_mock_reviewer leaves behind (design doc 2.4, pipeline.py lines
-    ~166-189: reviewer_independent overridden to False plus a structural
-    advisory finding carrying concern="mock_reviewer_active") when the
-    CYO_ADVENTURE_ALLOW_MOCK_REVIEW escape hatch is active outside local.
-    This module adds no logic that reads or special-cases that stamp: it
-    only reads summary.hard_block/soft_flag and the findings list, so the
-    stamp rides through into the response and the audit event exactly as
-    the pipeline produced it, with no override of its own.
+    _stamp_mock_reviewer leaves behind (design doc 2.4: reviewer_independent
+    overridden to False plus a structural advisory finding carrying
+    concern="mock_reviewer_active") when the CYO_ADVENTURE_ALLOW_MOCK_REVIEW
+    escape hatch is active outside local.
+
+    This test previously asserted ``overall_verdict == "pass"``, on the
+    premise that this module is a pure pass-through reading only
+    summary.hard_block/soft_flag. That premise was the defect: on 2026-07-21 a
+    mock-reviewer run over the catalog reported success on every book, and the
+    reports it left behind carried no reviewer provenance at all, so the
+    substitution was undetectable for weeks. The stamp still rides through
+    verbatim into the response and the audit event, which is what the last two
+    assertions cover; what changed is that the derived VERDICT now refuses to
+    call an unreviewed story a pass.
+
+    Note the stamp's finding carries verdict "advisory", not "flag" or
+    "block". Coverage is matched on ``concern``, so it gates regardless of the
+    verdict the stamp happens to use; a stamp is not a judgment to be weighed
+    against other findings.
     """
     version_row = _version_row()
     _wire_session(mock_async_session, _story(), version_row)
@@ -750,7 +938,7 @@ async def test_mock_reviewer_stamp_is_not_stripped_or_overridden(
         mock_async_session, "s1", 1, _remod_ctx()
     )
 
-    assert result.overall_verdict == "pass"
+    assert result.overall_verdict == "block"
     assert result.verdict_counts == {"advisory": 1}
     assert result.structural_count == 1
     assert _report_summary(version_row)["reviewer_independent"] is False
@@ -830,22 +1018,51 @@ async def test_published_state_unchanged_after_real_remoderation(
 
 
 def _flagging_review_provider() -> MockProvider:
-    """A review backend double whose safety verdict is a soft FLAG.
+    """A review backend double whose safety verdict is a GENUINE soft FLAG.
 
-    Same shape as ``_clean_review_provider``, but every safety prompt (single
-    or batched, both start with "Age band:", moderation/stages.py) returns a
-    structured ``flag`` verdict, so the resulting report satisfies exactly
-    the repair branch's precondition (``has_soft_flag and not
-    has_hard_block``, moderation/pipeline.py).
+    Answers a batched safety prompt in the batch format: a JSON ARRAY with one
+    entry per requested ``node_id``. Until 2026-08-27 this returned a single
+    object for every prompt, which the batch parser rejects
+    (``batch_verdict_not_array``, moderation/stages.py), so the whole batch
+    fail-safed and the ``frightening_content`` flag this fixture documents was
+    never actually produced. Tests built on it were exercising a DEGRADED
+    reviewer while claiming to exercise a real soft flag, and the two looked
+    identical because both set ``has_soft_flag``. Splitting the coverage
+    predicate out of ``has_hard_block`` is what made them distinguishable.
+
+    Node ids are read back out of the prompt (each batch line is
+    ``[node_id] <untrusted_passage>``) rather than hardcoded, because the
+    parser requires set equality with the ids it asked about, so a fixed list
+    would silently fail-safe again the moment the fixture blob changed.
     """
 
+    def _verdict_for(node_id: str) -> dict[str, object]:
+        return {
+            "node_id": node_id,
+            "verdict": "flag",
+            "concern": "frightening_content",
+            "severity": "low",
+            "reason": "test flag",
+        }
+
     def _respond(prompt: str) -> str:
-        if prompt.startswith("Age band:"):
-            return (
-                '{"verdict": "flag", "concern": "frightening_content", '
-                '"severity": "low", "reason": "test flag"}'
+        if not prompt.startswith("Age band:"):
+            return '{"verdict": "pass", "reason": "ok"}'
+        node_ids = re.findall(
+            r"^\[([^\]]+)\] <untrusted_passage>", prompt, re.MULTILINE
+        )
+        if not node_ids:
+            # A size-1 batch takes the single-node prompt shape, which carries
+            # no id line and expects a bare object.
+            return json.dumps(
+                {
+                    "verdict": "flag",
+                    "concern": "frightening_content",
+                    "severity": "low",
+                    "reason": "test flag",
+                }
             )
-        return '{"verdict": "pass", "reason": "ok"}'
+        return json.dumps([_verdict_for(nid) for nid in node_ids])
 
     return MockProvider(responses=[_respond] * _REVIEW_BUDGET)
 
@@ -901,33 +1118,69 @@ async def test_published_blob_unchanged_when_repair_disallowed(
 @pytest.mark.parametrize(
     ("report", "expected"),
     [
-        pytest.param(None, ("pass", {}, 0), id="never-moderated"),
-        pytest.param({"summary": None}, ("pass", {}, 0), id="null-summary"),
-        pytest.param({"summary": "corrupt"}, ("pass", {}, 0), id="non-dict-summary"),
+        # An absent or unreadable report is now "block", not "pass". This
+        # function runs AFTER the pipeline has persisted its fresh report, so
+        # these shapes mean the run left nothing legible behind; calling that
+        # a pass is the same fail-open the coverage predicate exists to close.
+        # The trailing bool is ``coverage_complete``: False whenever the verdict
+        # above it is fail-closed rather than a judgment about the prose.
+        pytest.param(None, ("block", {}, 0, False), id="never-moderated"),
+        pytest.param({"summary": None}, ("block", {}, 0, False), id="null-summary"),
+        pytest.param(
+            {"summary": "corrupt"}, ("block", {}, 0, False), id="non-dict-summary"
+        ),
         pytest.param(
             {"summary": {"hard_block": True}, "findings": "corrupt"},
-            ("block", {}, 0),
+            ("block", {}, 0, False),
             id="non-list-findings",
         ),
         pytest.param(
             {"summary": {}, "findings": ["not-a-dict", None, 7]},
-            ("pass", {}, 0),
+            ("pass", {}, 0, True),
             id="non-dict-finding-elements",
         ),
         pytest.param(
+            {
+                "summary": {"soft_flag": True},
+                "findings": [
+                    {"verdict": "flag", "concern": "frightening_content"},
+                    {"verdict": "flag", "concern": "reviewer_unavailable"},
+                ],
+            },
+            ("block", {"flag": 2}, 0, False),
+            id="coverage-gap-outranks-soft-flag",
+        ),
+        # The mock stamp blocks, but is NOT a coverage gap. A mock reviewer
+        # screened every node, so the pipeline's own summary says
+        # coverage_complete; only the reviewer was untrustworthy. The verdict
+        # still refuses it (2026-07-21: a substituted reviewer reported a clean
+        # sweep for weeks), while the coverage field agrees with the row the
+        # same run wrote. Answering both from the approval predicate made the
+        # response contradict that row and put every mock run in the sweep's
+        # ``incomplete`` bucket, which means "nothing read the prose".
+        pytest.param(
+            {
+                "summary": {"soft_flag": True},
+                "findings": [{"verdict": "flag", "concern": "mock_reviewer_active"}],
+            },
+            ("block", {"flag": 1}, 0, True),
+            id="mock-reviewer-blocks-without-a-coverage-gap",
+        ),
+        pytest.param(
             {"summary": {"soft_flag": True}, "findings": [{"structural": True}]},
-            ("flag", {"unknown": 1}, 1),
+            ("flag", {"unknown": 1}, 1, True),
             id="finding-without-verdict",
         ),
         pytest.param(
             {"summary": {}, "findings": [{"verdict": 42}]},
-            ("pass", {"unknown": 1}, 0),
+            ("pass", {"unknown": 1}, 0, True),
             id="non-string-verdict",
         ),
     ],
 )
 async def test_summarize_report_tolerates_malformed_shapes(
-    report: dict[str, object] | None, expected: tuple[str, dict[str, int], int]
+    report: dict[str, object] | None,
+    expected: tuple[str, dict[str, int], int, bool],
 ) -> None:
     """A stored report is JSONB, so its runtime shape is not the annotation.
 
@@ -1382,21 +1635,33 @@ async def test_slot_contract_resolved_from_the_version_not_a_job(
     assert pipeline.await_args.kwargs["allow_repair"] is True
 
 
-async def test_published_arm_leaves_the_slot_contract_to_the_pipeline(
+async def test_job_backed_published_book_leaves_the_slot_contract_to_the_pipeline(
     mock_async_session: AsyncMock, monkeypatch: pytest.MonkeyPatch
 ) -> None:
-    """A published book still resolves its slots the way it always has.
+    """A published book WITH a job row still resolves its slots as it always has.
 
     Passing an explicit value suppresses the pipeline's generation_job lookup
     entirely. A published, generated, job-backed book whose version predates
     the skeleton_slug column (never backfilled) resolves a real contract from
     its job today; resolving from the version instead would hand the pipeline
-    an empty set and manufacture the exact block the override exists to avoid,
-    on the arm this endpoint's widening is meant to leave untouched.
+    an empty set and manufacture the exact block the override exists to avoid.
+
+    This is the half of the published arm the 2026-08-26 widening deliberately
+    leaves untouched, which is why the widening keys on the ABSENCE of a job
+    row rather than on status. Its partner is
+    ::test_published_book_without_a_job_row_resolves_from_the_version, and the
+    two together are what pin the predicate to provenance: drop either and
+    "published" could be resolved wholesale one way or the other without a
+    test noticing.
     """
     version_row = _version_row()
     version_row.skeleton_slug = None
-    _wire_session(mock_async_session, _story(status="published"), version_row)
+    _wire_session(
+        mock_async_session,
+        _story(status="published"),
+        version_row,
+        generation_job=object(),
+    )
     monkeypatch.setattr(
         remoderate_api,
         "personalizable_slot_ids_for_version",
@@ -1418,6 +1683,61 @@ async def test_published_arm_leaves_the_slot_contract_to_the_pipeline(
         pipeline.await_args.kwargs["personalizable_slots"]
         is remoderate_api.PERSONALIZABLE_SLOTS_UNSET
     )
+    assert pipeline.await_args.kwargs["allow_repair"] is False
+
+
+async def test_published_book_without_a_job_row_resolves_from_the_version(
+    mock_async_session: AsyncMock, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """A published book with NO job row resolves its contract from the version.
+
+    The regression this exists for was live, not hypothetical. Until
+    2026-08-26 this endpoint keyed the version fallback on ``status ==
+    in_review``, so a published book fell through to the pipeline's own
+    ``personalizable_slot_ids_for_story``, which answers an EMPTY frozenset
+    for a story with no job row. An empty declared set makes
+    ``check_sentinel_integrity_at_rest`` report every well-formed sentinel in
+    the blob as ``unknown_slot``: the full-catalog re-moderation sweep
+    hard-blocked sk_cave_of_echoes in six seconds on 78 such violations and no
+    other violation kind, overwriting a live book's accurate report with a
+    block that described absent provenance rather than its prose.
+
+    The assertion is deliberately the resolved slot set and not merely "the
+    resolver was called". A test that only counted calls would pass against
+    the old code the moment anything else consulted the version, and the value
+    is the thing the sentinel check actually reads.
+    """
+    version_row = _version_row()
+    version_row.skeleton_slug = "any-slug"
+    _wire_session(
+        mock_async_session,
+        _story(status="published"),
+        version_row,
+        generation_job=None,
+    )
+    monkeypatch.setattr(
+        remoderate_api,
+        "personalizable_slot_ids_for_version",
+        lambda _row: frozenset({"companion"}),
+    )
+
+    async def _fake_pipeline(**_kwargs: object) -> None:
+        version_row.moderation_report = _PASSING_REPORT
+
+    pipeline = AsyncMock(side_effect=_fake_pipeline)
+    monkeypatch.setattr(remoderate_api, "run_moderation_pipeline", pipeline)
+
+    await remoderate_api.remoderate_storybook_version(
+        mock_async_session, "s1", 1, _remod_ctx()
+    )
+
+    assert pipeline.await_args is not None
+    assert pipeline.await_args.kwargs["personalizable_slots"] == frozenset(
+        {"companion"}
+    )
+    # Publication status still governs repair; only the contract's provenance
+    # changed. Asserted here so the widening cannot quietly hand a published
+    # book the repair fork as well.
     assert pipeline.await_args.kwargs["allow_repair"] is False
 
 

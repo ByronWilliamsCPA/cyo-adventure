@@ -409,11 +409,21 @@ async def test_passing_run_creates_storybook_version(
         assert job.prompt_version is not None
 
         # Verify Storybook row exists.
-        # After the Phase 3 slice-2 moderation pipeline, a clean story advances
-        # from draft to in_review (ready for guardian/admin review).
+        #
+        # needs_revision, not in_review, and the distinction is the point. This
+        # run uses the default "mock" review backend, whose fixed unparseable
+        # "{}" body fail-safes every Stage-1 node: nothing in this story was
+        # ever actually judged. Until 2026-08-27 that landed in in_review,
+        # because a fail-safe records FLAG and FLAG meant "soft-flagged, a human
+        # will look" -- so a story no reviewer had read entered the approval
+        # queue looking ordinary. Coverage now routes separately from content
+        # verdicts, so an unjudged run auto-rejects and has to be re-run rather
+        # than reviewed. A genuinely clean review still advances to in_review;
+        # that path is covered by the pipeline's own tests, which drive a real
+        # verdict provider instead of the mock backend.
         story = await session.get(Storybook, job.storybook_id)
         assert story is not None
-        assert story.status == "in_review"
+        assert story.status == "needs_revision"
 
         # Verify StorybookVersion row exists with blob and report.
         sv = await session.get(StorybookVersion, (job.storybook_id, 1))
@@ -592,12 +602,15 @@ async def test_worker_runs_fill_skeleton_for_authoring_metadata_jobs(
     batches for this 65-node skeleton -- before Stage D gives up (none of the
     reused fill-shaped replies parse as a ``{node_id: body}`` revision map, so
     the pass accepts nothing and Stage D does not spend a second pass). One
-    more call covers the moderation pipeline's guaranteed bounded auto-repair
-    (the default "mock" review backend always returns an unparseable "{}"
-    verdict, which soft-flags Stage 1 safety and triggers exactly one
-    attempt_repair call against this same provider -- see
-    test_passing_run_creates_storybook_version, which budgets for the same
-    thing with headroom to spare). The response list below is sized with
+    more call USED to cover the moderation pipeline's bounded auto-repair: the
+    default "mock" review backend always returns an unparseable "{}" verdict,
+    which fail-safes Stage 1 safety to FLAG and, before 2026-08-27, satisfied
+    the repair branch. It no longer does. A fail-safe is a coverage gap, and a
+    gap does not route into repair (repairing prose no reviewer read rewrites
+    text nobody judged, and an adopted revision would discard the record that
+    anything went unreviewed), so that provider call is no longer spent. The
+    budget below is unchanged because it was never pinned to the floor. The
+    response list below is sized with
     headroom above that 8-call floor (1 fill + 6 Stage D batches + 1
     moderation repair) rather than pinned to it exactly, so a small future
     change to this skeleton's node count does not reopen this test.

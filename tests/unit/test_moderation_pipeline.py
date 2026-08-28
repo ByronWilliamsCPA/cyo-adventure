@@ -24,6 +24,7 @@ from __future__ import annotations
 import copy
 import json
 import math
+import re
 import uuid
 from datetime import UTC, datetime
 from typing import TYPE_CHECKING, cast
@@ -867,15 +868,28 @@ async def test_structural_only_soft_flag_skips_repair_and_submits(
     monkeypatch: pytest.MonkeyPatch,
     review_seam: Callable[[MockProvider], dict[str, object]],
 ) -> None:
-    """A report soft-flagged only by a STRUCTURAL finding makes no repair call.
+    """A structural-only soft flag makes no repair call and auto-rejects.
 
     The degraded-reviewer case: every Stage-1 safety call fails to parse, the
     stage collapses them into one structural FLAG, and nothing in the prose was
-    actually judged. Re-prompting the generator with "- node None (pipeline):
+    actually judged.
+
+    Two separate things must hold, and until 2026-08-27 only the first did.
+
+    No repair: re-prompting the generator with "- node None (pipeline):
     reviewer unavailable ..." spends a full generation budget on a meaningless
     instruction and risks replacing the persisted blob with its output. The
     generation provider here has no queued responses, so ``MockProvider``
     raises loudly if the repair path is ever entered.
+
+    No submit: this test previously asserted ``submit``, on the reasoning that
+    "routing is unchanged, the story still soft-flags to a human". That is the
+    fail-open. A story nobody judged is not a soft flag; it arrives in the
+    review queue looking like an ordinary "review when convenient" item, and
+    the re-moderation sweep exits 0 on it. Four books in the live catalog sat
+    in exactly that state with eight unscreened nodes each. It must
+    auto-reject, which is the outcome that names the run as needing to be
+    redone rather than reviewed.
     """
     story, version = _story(), _version()
     _load(mock_session, story, version)
@@ -891,7 +905,9 @@ async def test_structural_only_soft_flag_skips_repair_and_submits(
 
     review_seam(MockProvider(responses=[_respond] * _REVIEW_BUDGET))
     submit = AsyncMock()
+    auto_reject = AsyncMock()
     monkeypatch.setattr("cyo_adventure.publishing.service.submit", submit)
+    monkeypatch.setattr("cyo_adventure.publishing.service.auto_reject", auto_reject)
 
     original_blob = copy.deepcopy(version.blob)
 
@@ -904,15 +920,22 @@ async def test_structural_only_soft_flag_skips_repair_and_submits(
         pii=_pii(),
     )
 
-    submit.assert_awaited_once()
+    auto_reject.assert_awaited_once()
+    submit.assert_not_awaited()
     moderation_report = version.moderation_report
     assert moderation_report is not None
     summary = cast("dict[str, object]", moderation_report["summary"])
-    # Routing is unchanged by the exclusion: the story still soft-flags to a
-    # human, it just never burned a repair call, and the blob is untouched.
+    # The persisted flags still describe the findings truthfully: the only
+    # gating finding IS a soft flag, and no BLOCK was invented. What changed is
+    # that coverage now routes, so the truthful summary and the auto-reject can
+    # coexist. coverage_complete is the field that distinguishes them.
     assert summary["soft_flag"] is True
+    assert summary["hard_block"] is False
+    assert summary["coverage_complete"] is False
     assert summary["repaired"] is False
-    assert version.blob == original_blob
+    assert version.blob == original_blob, (
+        "the repair path must not have rewritten prose no reviewer read"
+    )
     findings = cast("list[dict[str, object]]", moderation_report["findings"])
     soft = [f for f in findings if f["verdict"] == "flag"]
     assert soft
@@ -2205,6 +2228,15 @@ async def test_review_model_override_reaches_build_review_provider(
         review_provider="openrouter",
         openai_api_key="k",
         openrouter_api_key="key",
+        # Same pin _settings() carries, and for the reason
+        # _verdict_review_provider's docstring spells out: that responder
+        # answers with a single verdict OBJECT, which the batched parser
+        # rejects, so at the Settings default of 8 every node fail-safes. This
+        # test builds its own Settings and so missed the pin, which went
+        # unnoticed while a fail-safe FLAG and a genuine one were
+        # indistinguishable to routing. They no longer are: a fail-safe now
+        # auto-rejects, so the missing pin surfaces as this test failing.
+        review_batch_size=1,
     )
 
     await pipeline_mod.run_moderation_pipeline(
@@ -2219,6 +2251,82 @@ async def test_review_model_override_reaches_build_review_provider(
 
     assert captured["review_openrouter_model"] == "anthropic/claude-opus-4.8"
     submit.assert_awaited_once()
+
+
+@pytest.mark.unit
+async def test_the_pipeline_persists_the_reviewer_that_ran(
+    mock_session: AsyncMock, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """The stored report must name its own reviewer, resolved override included.
+
+    The 2026-07-21 sweep persisted no reviewer provenance, so 31 books' reports
+    were indistinguishable from genuinely reviewed ones and the population had
+    to be re-derived from a stamp that existed for an unrelated reason
+    (UW-C408). Provenance is read from the RESOLVED settings, which is why this
+    test drives the same admin override as the test above it: recording the
+    process-wide default would attribute the verdict to a model that never saw
+    the prose, a quieter version of the same defect.
+
+    The seam is the same spy: with ``review_provider="openrouter"`` the real
+    builder would construct a live network-backed leg, which a unit test must
+    never call.
+    """
+    provider = _verdict_review_provider()
+
+    def _spy(_settings: Settings, **_kwargs: object) -> tuple[MockProvider, bool]:
+        return provider, True
+
+    monkeypatch.setattr("cyo_adventure.moderation.pipeline.build_review_provider", _spy)
+
+    story, version = _story(), _version()
+    _load(mock_session, story, version)
+
+    def _clean_handler(_request: httpx.Request) -> httpx.Response:
+        return httpx.Response(
+            200,
+            json={
+                "results": [
+                    {
+                        "flagged": False,
+                        "categories": {"violence": False},
+                        "category_scores": {"violence": 0.01},
+                    }
+                ]
+            },
+        )
+
+    _install_canned_classifier_http(monkeypatch, _clean_handler)
+    monkeypatch.setattr("cyo_adventure.publishing.service.submit", AsyncMock())
+
+    await pipeline_mod.run_moderation_pipeline(
+        session=mock_session,
+        story_id="s1",
+        version=1,
+        settings=Settings(
+            review_provider="openrouter",
+            openai_api_key="k",
+            openrouter_api_key="key",
+            # Same size-1 pin, same reason as the test above: the fixture
+            # answers with a single verdict OBJECT, which the batched parser
+            # rejects.
+            review_batch_size=1,
+        ),
+        generation_provider=MockProvider(responses=[]),
+        pii=_pii(),
+        review_model_override="anthropic/claude-opus-4.8",
+    )
+
+    assert version.moderation_report is not None
+    assert version.moderation_report["reviewer"] == {
+        "provider": "openrouter",
+        "model": "anthropic/claude-opus-4.8",
+        # Empty because that slug carries no `ENDPOINT_PINS` entry. Asserted
+        # rather than skipped: an unpinned reviewer is a real reproducibility
+        # gap, and the stored report is where it stays visible.
+        "endpoint": [],
+        "temperature": 0.0,
+        "batch_size": 1,
+    }
 
 
 # ---------------------------------------------------------------------------
@@ -2599,6 +2707,181 @@ def _extract_batch_node_ids(prompt: str) -> list[str]:
         for line in prompt.splitlines()
         if line.startswith("[") and "]" in line
     ]
+
+
+def _capture_events(monkeypatch: pytest.MonkeyPatch) -> list[MagicMock]:
+    """Record every ``record_event`` call the pipeline makes, in order.
+
+    Patched at the pipeline's own import site, not in ``events``, so the real
+    writer stays intact for anything else and the mock_session (which has no
+    working insert) is never asked to persist a row.
+    """
+    calls: list[MagicMock] = []
+
+    async def _record(*args: object, **kwargs: object) -> None:
+        call = MagicMock()
+        call.args = args
+        call.kwargs = kwargs
+        calls.append(call)
+
+    monkeypatch.setattr(pipeline_mod, "record_event", _record)
+    return calls
+
+
+def _one_bad_batch_review_provider(*, bad_batch_index: int = 0) -> MockProvider:
+    """Answer every Stage-1 batch genuinely except ONE, which is unparseable.
+
+    This is the production failure shape behind UW-C407. ``review_batch_size``
+    defaults to 8, so a single unusable batch response costs all eight of its
+    nodes their coverage while the rest of the story reviews normally. Five
+    reports in the live catalog admitted exactly 8 or 16 unreviewed nodes, and
+    that exact multiple is what identified the cause as batch-granular rather
+    than node-granular flakiness.
+
+    Since the per-node fallback landed, an unusable batch response alone no
+    longer costs anybody their coverage: the stage retries each of that batch's
+    nodes one at a time. So this double also refuses the retries for the bad
+    batch's nodes specifically, which is the only shape that still reaches the
+    pipeline as a real gap. Other batches' nodes keep answering normally, so a
+    fallback that mistakenly widened its refusal to the whole story would show
+    up as a different report rather than the same one.
+
+    Args:
+        bad_batch_index: Which Stage-1 batch call returns garbage, 0-based.
+    """
+    state = {"batches": 0}
+    refused_prose: set[str] = set()
+
+    def _passages(prompt: str) -> list[str]:
+        return re.findall(
+            r"<untrusted_passage>\n(.*?)\n</untrusted_passage>", prompt, re.DOTALL
+        )
+
+    def _respond(prompt: str) -> str:
+        if prompt.startswith("Age band:") and "Nodes:" in prompt:
+            index = state["batches"]
+            state["batches"] += 1
+            if index == bad_batch_index:
+                # Not a 5xx and not empty: a syntactically fine response the
+                # batch parser cannot attribute. The provider raises on an
+                # EMPTY truncation only, so a partial one arrives here as bad
+                # JSON rather than as an error.
+                refused_prose.update(_passages(prompt))
+                return "sorry, I cannot review these passages"
+            return json.dumps(
+                [
+                    {"verdict": "safe", "reason": "ok", "node_id": nid}
+                    for nid in _extract_batch_node_ids(prompt)
+                ]
+            )
+        if prompt.startswith("Age band:"):
+            if any(text in refused_prose for text in _passages(prompt)):
+                # The per-node retry for a node in the bad batch. Parses, and
+                # carries no verdict, so the node stays unjudged.
+                return "{}"
+            return '{"verdict": "safe", "reason": "ok"}'
+        return '{"verdict": "pass", "reason": "ok"}'
+
+    return MockProvider(responses=[_respond] * _REVIEW_BUDGET)
+
+
+@pytest.mark.unit
+async def test_a_coverage_gap_auto_rejects_instead_of_submitting(
+    mock_session: AsyncMock,
+    monkeypatch: pytest.MonkeyPatch,
+    review_seam: Callable[[MockProvider], dict[str, object]],
+) -> None:
+    """One unusable batch response must not submit the story for approval.
+
+    Every other batch reviews clean, so the report carries genuine judgments
+    beside the gap. That combination is what made the bug survive: the
+    fail-safe records FLAG (never BLOCK, since ``has_hard_block`` is
+    ``any(verdict is BLOCK)``), so the run looked like an ordinary soft flag
+    and went to the review queue as "review when convenient".
+    """
+    story, version = _story(), _version()
+    _load(mock_session, story, version)
+    # Batches of two, so one bad batch leaves most of the story genuinely
+    # reviewed and the gap cannot be mistaken for a total reviewer outage.
+    review_seam(_one_bad_batch_review_provider())
+    settings = Settings(review_provider="mock", review_batch_size=2)
+    submit = AsyncMock()
+    auto_reject = AsyncMock()
+    monkeypatch.setattr("cyo_adventure.publishing.service.submit", submit)
+    monkeypatch.setattr("cyo_adventure.publishing.service.auto_reject", auto_reject)
+    events = _capture_events(monkeypatch)
+
+    await pipeline_mod.run_moderation_pipeline(
+        session=mock_session,
+        story_id="s1",
+        version=1,
+        settings=settings,
+        generation_provider=MockProvider(responses=[]),
+        pii=_pii(),
+    )
+
+    auto_reject.assert_awaited_once()
+    submit.assert_not_awaited()
+    report = version.moderation_report
+    assert report is not None
+    summary = cast("dict[str, object]", report["summary"])
+    assert summary["coverage_complete"] is False
+    assert summary["hard_block"] is False, (
+        "the gap must gate WITHOUT inventing a content block that no reviewer "
+        "actually returned; that distinction is why coverage is its own field"
+    )
+    findings = cast("list[dict[str, object]]", report["findings"])
+    gaps = [f for f in findings if f.get("concern") == "reviewer_unavailable"]
+    assert len(gaps) == 1
+    node_ids = cast("list[str]", gaps[0]["node_ids"])
+    assert len(node_ids) == 2, (
+        "the whole batch loses coverage, not one node: the batch size is the "
+        f"blast radius, but {node_ids} were named"
+    )
+    # The durable audit record must agree with the status transition. Without
+    # this, _overall_verdict could keep reporting "flag" (the fail-safe finding
+    # IS a flag) while the story auto-rejected, leaving the append-only log
+    # describing an outcome that did not happen.
+    payload = cast("dict[str, object]", events[-1].kwargs["payload"])
+    assert payload["overall_verdict"] == "block"
+
+
+@pytest.mark.unit
+async def test_a_coverage_gap_does_not_route_into_the_auto_repair(
+    mock_session: AsyncMock,
+    monkeypatch: pytest.MonkeyPatch,
+    review_seam: Callable[[MockProvider], dict[str, object]],
+) -> None:
+    """A gap must not be handed to the repairer, which would erase the evidence.
+
+    The fail-safe FLAG satisfies ``has_soft_flag``, so under the old predicate
+    a coverage gap ROUTED INTO the bounded auto-repair. Two things go wrong
+    there: the repairer rewrites prose no reviewer has read, and an adopted
+    revision replaces the report wholesale, so the record that anything went
+    unreviewed disappears along with the text it described.
+    """
+    story, version = _story(), _version()
+    _load(mock_session, story, version)
+    review_seam(_one_bad_batch_review_provider())
+    settings = Settings(review_provider="mock", review_batch_size=2)
+    monkeypatch.setattr("cyo_adventure.publishing.service.submit", AsyncMock())
+    monkeypatch.setattr("cyo_adventure.publishing.service.auto_reject", AsyncMock())
+    repair = AsyncMock(side_effect=lambda **kw: kw["report"])
+    monkeypatch.setattr(pipeline_mod, "_attempt_and_adopt_repair", repair)
+
+    original_blob = copy.deepcopy(version.blob)
+
+    await pipeline_mod.run_moderation_pipeline(
+        session=mock_session,
+        story_id="s1",
+        version=1,
+        settings=settings,
+        generation_provider=MockProvider(responses=[]),
+        pii=_pii(),
+    )
+
+    repair.assert_not_awaited()
+    assert version.blob == original_blob
 
 
 def _batched_verdict_review_provider() -> MockProvider:
@@ -3039,3 +3322,64 @@ async def test_prose_craft_measures_the_repaired_blob(
 
     assert version.blob["title"] == "The Forest Path (revised)"
     assert titles_measured == ["The Forest Path (revised)"]
+
+
+# Whole-story review budget (_MAX_WHOLE_STORY_REVIEW_TOKENS). The coherence and
+# engagement stages send EVERY node in one call, so sizing them with the
+# per-node _MAX_REVIEW_TOKENS starved a reasoning-native review model: the
+# model spent the whole 1024-token allowance on reasoning and the call returned
+# finish_reason=length with empty content, raising ProviderError and aborting
+# the book. The safety stage never showed the bug because it multiplies its
+# per-node budget by batch size and clamps at _MAX_BATCH_REVIEW_TOKENS.
+
+
+@pytest.mark.unit
+async def test_whole_story_stages_get_the_whole_story_token_budget(
+    mock_session: AsyncMock,
+    monkeypatch: pytest.MonkeyPatch,
+    review_seam: Callable[[MockProvider], dict[str, object]],
+) -> None:
+    """Coherence and engagement must not be sized with the PER-NODE budget.
+
+    Asserts the wiring rather than provider behaviour on purpose: the defect
+    was which constant the pipeline handed these two stages, so recording the
+    argument at the call site is what discriminates fixed from regressed. A
+    provider-level assertion would also pass if someone reverted the constant
+    but happened to test a book whose reasoning fit in 1024 tokens.
+    """
+    story, version = _story(), _version()
+    _load(mock_session, story, version)
+    review_seam(_verdict_review_provider())
+    monkeypatch.setattr("cyo_adventure.publishing.service.submit", AsyncMock())
+
+    budgets: dict[str, int] = {}
+
+    def _recording_stage(name: str) -> Callable[..., object]:
+        async def _stage(
+            *, provider: object, nodes: object, max_tokens: int
+        ) -> list[object]:
+            _ = provider, nodes
+            budgets[name] = max_tokens
+            return []
+
+        return _stage
+
+    monkeypatch.setattr(
+        pipeline_mod, "run_coherence_stage", _recording_stage("coherence")
+    )
+    monkeypatch.setattr(
+        pipeline_mod, "run_engagement_stage", _recording_stage("engagement")
+    )
+
+    await pipeline_mod.run_moderation_pipeline(
+        session=mock_session,
+        story_id="s1",
+        version=1,
+        settings=_settings(),
+        generation_provider=MockProvider(responses=[]),
+        pii=_pii(),
+    )
+
+    assert budgets == {"coherence": 16000, "engagement": 16000}
+    # The regression this pins: both were previously handed the per-node budget.
+    assert all(b > pipeline_mod._MAX_REVIEW_TOKENS for b in budgets.values())

@@ -12,7 +12,7 @@ tags:
 
 # ADR-005: Mandatory human approval before any story reaches a child
 
-> **Status**: Accepted (2026-07-03; amended 2026-06-30 and 2026-08-25, see Amendments below)
+> **Status**: Accepted (2026-07-03; amended 2026-06-30, 2026-08-25, and 2026-08-28, see Amendments below)
 > **Date**: 2026-06-20
 
 ## Amendment (2026-06-30): the approver is a global admin, not the child's parent
@@ -192,3 +192,38 @@ judgment (fail-safe or mock-reviewer artifacts only) is not approvable at all
 (`approve_with_unusable_moderation`); re-running moderation is the only path
 forward. This preserves the human as the final authority while making every
 exercise of that authority auditable.
+
+## Amendment (2026-08-28): an absent judgment is not an overridable one
+
+The 2026-08-25 amendment above split stored moderation reports into two kinds: a
+report that judged the content and found something bad, which a human MAY approve
+over with a recorded reason, and a report carrying no genuine content judgment at
+all, which is not approvable on any terms. It did not address the case in between,
+a report carrying a genuine judgment on only PART of a story.
+
+Ruling: incomplete reviewer coverage is a third refusal
+(`approve_with_incomplete_coverage`), and an override reason does NOT unlock it.
+The reasoning is that the D2 override concedes something specific to the human:
+the authority to disagree with an automated judgment. An unreviewed node carries
+no judgment to disagree with, so a reason supplied against it would be justifying
+a decision nobody made. Re-running moderation is the only path forward, the same
+remedy the unusable-report refusal prescribes.
+
+This gap was not theoretical. The unusable-report predicate is all-or-nothing, so
+a single genuine finding beside a coverage gap made the whole report read as
+usable, and a report naming eight nodes the reviewer never saw approved with HTTP
+200 under any non-empty reason. Four books in the live catalog held that shape.
+
+Two consequences follow for the pipeline, not just the approval gate:
+
+- A coverage gap now gates release in flight (`ModerationReport.blocks_release`
+  is `has_hard_block or has_coverage_gap`), so a report with unscreened nodes
+  auto-rejects instead of routing to human review looking like a clean one.
+- Coverage is therefore a first-class property of a report rather than something
+  inferred from the absence of findings. A report that says nothing about a node
+  is now distinguishable from a report that judged the node and found it clean,
+  which is the distinction the original decision assumed existed all along.
+
+The core invariant is unchanged and again strengthened: no story reaches a child
+without a recorded human approval, and that approval may no longer rest on a
+review that silently skipped part of the story.

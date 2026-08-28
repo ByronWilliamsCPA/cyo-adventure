@@ -13,7 +13,13 @@ if TYPE_CHECKING:
 
 from cyo_adventure.moderation import classifiers
 from cyo_adventure.moderation.classifiers import run_classifiers
-from cyo_adventure.moderation.report import FindingSeverity, Source, Verdict
+from cyo_adventure.moderation.report import (
+    FindingSeverity,
+    ModerationReport,
+    Source,
+    Verdict,
+    moderation_coverage_incomplete,
+)
 
 pytestmark = pytest.mark.asyncio
 
@@ -584,6 +590,62 @@ async def test_persistent_failure_flags_incomplete_coverage_as_a_soft_gate() -> 
 
 @pytest.mark.unit
 @pytest.mark.usefixtures("_no_backoff")
+async def test_partial_failure_flags_incomplete_coverage() -> None:
+    """Some nodes screen cleanly, one is abandoned: the shortfall must still gate.
+
+    Distinct from ``test_persistent_failure_flags_incomplete_coverage_as_a_soft_gate``
+    above, which fails every node: this is a genuinely PARTIAL failure, most
+    of the book screens clean and exactly one node is abandoned, which is
+    the shape a real classifier outage on a large book actually takes. The
+    finding must still gate: ``concern="classifier_unavailable"`` is what
+    ``ModerationReport.has_coverage_gap`` and the stored
+    ``moderation_coverage_incomplete()`` read, not the bare ``FLAG`` verdict.
+    """
+
+    def handler(request: httpx.Request) -> httpx.Response:
+        body = request.content.decode()
+        if "bad-node" in body:
+            return httpx.Response(500)
+        return httpx.Response(
+            200,
+            json={
+                "results": [
+                    {
+                        "flagged": False,
+                        "categories": {"violence": False},
+                        "category_scores": {"violence": 0.01},
+                    }
+                ]
+            },
+        )
+
+    nodes = [
+        ("n1", "good text one"),
+        ("n2", "bad-node text"),
+        ("n3", "good text two"),
+    ]
+    findings = await run_classifiers(
+        nodes=nodes,
+        openai_key="okey",
+        client=_client(handler),
+    )
+
+    coverage = [f for f in findings if f.category == "classifier_coverage_incomplete"]
+    assert len(coverage) == 1
+    assert "n2" in coverage[0].message
+    assert "n1" not in coverage[0].message
+    assert "n3" not in coverage[0].message
+    assert coverage[0].concern == "classifier_unavailable"
+
+    report = ModerationReport()
+    for finding in findings:
+        report.add(finding)
+    assert report.has_coverage_gap is True
+    assert report.blocks_release is True
+
+
+@pytest.mark.unit
+@pytest.mark.usefixtures("_no_backoff")
 async def test_unscreened_nodes_are_named_and_counted() -> None:
     """The finding names the shortfall so a reviewer knows what was not checked."""
 
@@ -642,6 +704,200 @@ async def test_a_later_node_still_gets_screened_after_one_node_fails() -> None:
         f for f in findings if f.category == "classifier_coverage_incomplete"
     )
     assert "1 node(s) were never bright-line screened" in coverage.message
+
+
+# ---------------------------------------------------------------------------
+# Retry discrimination (AL-663)
+#
+# _run_openai used to catch base httpx.HTTPError, which raise_for_status()
+# raises as HTTPStatusError, so a permanent 401 was retried exactly like a
+# transient 429: once per node, for the whole book. The oracle here is the
+# CALL COUNT, not the findings, because the findings are identical either way.
+# That is precisely why the defect survived: every coverage assertion in this
+# file still passes with the discrimination removed.
+# ---------------------------------------------------------------------------
+
+
+def _counting_handler(
+    status: int, calls: dict[str, int]
+) -> Callable[[httpx.Request], httpx.Response]:
+    """Always answer with `status`, tallying how many calls were made."""
+
+    def handler(_request: httpx.Request) -> httpx.Response:
+        calls["n"] += 1
+        return httpx.Response(status)
+
+    return handler
+
+
+@pytest.mark.unit
+@pytest.mark.usefixtures("_no_backoff")
+async def test_permanent_status_is_not_retried() -> None:
+    """A 400 cannot succeed on re-issue, so it must be attempted exactly once.
+
+    _no_backoff is applied deliberately: it keeps the retry BUDGET while zeroing
+    the sleeps, so a call count of 1 proves the retries were skipped rather than
+    merely being fast.
+    """
+    calls = {"n": 0}
+
+    findings = await run_classifiers(
+        nodes=[("n1", "text")],
+        openai_key="okey",
+        client=_client(_counting_handler(400, calls)),
+    )
+
+    assert calls["n"] == 1, (
+        "a permanent rejection must not be retried; retrying only delays the "
+        "coverage FLAG that is coming regardless"
+    )
+    # The safety property is unchanged: failing fast still gates.
+    coverage = [f for f in findings if f.category == "classifier_coverage_incomplete"]
+    assert len(coverage) == 1, "the abandoned node must still produce a coverage FLAG"
+    assert coverage[0].verdict is Verdict.FLAG
+    assert coverage[0].severity is FindingSeverity.HIGH
+
+
+@pytest.mark.unit
+@pytest.mark.usefixtures("_no_backoff")
+async def test_transient_status_is_still_retried() -> None:
+    """The contrast case: 429 must keep its full retry budget.
+
+    Without this, "stop retrying permanent failures" could be satisfied by
+    never retrying anything, which would trade wasted calls for lost coverage.
+    """
+    calls = {"n": 0}
+
+    await run_classifiers(
+        nodes=[("n1", "text")],
+        openai_key="okey",
+        client=_client(_counting_handler(429, calls)),
+    )
+
+    expected = len(classifiers._RETRY_BACKOFF_SECONDS) + 1
+    assert calls["n"] == expected, (
+        f"a rate limit is transient and must still get {expected} attempts"
+    )
+
+
+@pytest.mark.unit
+@pytest.mark.usefixtures("_no_backoff")
+async def test_credential_failure_opens_the_circuit_on_first_node() -> None:
+    """An expired key rejects every node identically, so prove it once.
+
+    A single node cannot show this: the saving is that nodes 2..N are never
+    called at all, so the test needs a book whose remaining nodes would
+    otherwise each be attempted.
+    """
+    calls = {"n": 0}
+    nodes = [(f"n{i}", "text") for i in range(1, 6)]
+
+    findings = await run_classifiers(
+        nodes=nodes,
+        openai_key="expired",
+        client=_client(_counting_handler(401, calls)),
+    )
+
+    assert calls["n"] == 1, (
+        "a rejected credential condemns the whole run; one call must be enough "
+        "to establish that, instead of re-proving it once per node"
+    )
+    coverage = [f for f in findings if f.category == "classifier_coverage_incomplete"]
+    assert len(coverage) == 1
+    for node_id, _ in nodes:
+        assert node_id in coverage[0].message or "more" in coverage[0].message, (
+            "every node the circuit skipped must still be counted as unscreened"
+        )
+
+
+@pytest.mark.unit
+@pytest.mark.usefixtures("_no_backoff")
+async def test_incomplete_coverage_finding_carries_classifier_unavailable_concern() -> (
+    None
+):
+    """The FLAG alone is not enough to gate; ``concern`` is what the report reads.
+
+    ``ModerationReport.has_coverage_gap`` and the stored
+    ``moderation_coverage_incomplete()`` gate both key off ``Finding.concern``,
+    not verdict text. A ``Finding`` built with no ``concern=`` argument
+    defaults to ``None``, which matches neither ``COVERAGE_GAP_CONCERNS`` nor
+    ``MOCK_MODERATED_CONCERNS``, so a book Stage 0 mostly failed to screen
+    would route to ``submit()`` and become eligible for auto-repair instead
+    of being blocked. This pins the concern on the finding classifiers.py
+    actually emits.
+    """
+    findings = await run_classifiers(
+        nodes=[(f"n{i}", "text") for i in range(1, 6)],
+        openai_key="expired",
+        client=_client(lambda _r: httpx.Response(401)),
+    )
+    coverage = next(
+        f for f in findings if f.category == "classifier_coverage_incomplete"
+    )
+    assert coverage.concern == "classifier_unavailable"
+
+
+@pytest.mark.unit
+@pytest.mark.usefixtures("_no_backoff")
+async def test_credential_circuit_breaker_report_blocks_release() -> None:
+    """The end-to-end proof: a Stage-0 credential failure must gate the book.
+
+    This is the exact defect the concern fix closes: a Stage-0 shortfall
+    used to reach ``ModerationReport`` as a bare FLAG with ``concern=None``,
+    which ``has_coverage_gap`` and ``moderation_coverage_incomplete()`` both
+    silently ignored, so ``blocks_release`` stayed False and a book whose
+    Stage-0 classifier never screened most of its nodes routed to
+    ``submit()`` and became eligible for auto-repair.
+    """
+    findings = await run_classifiers(
+        nodes=[(f"n{i}", "text") for i in range(1, 6)],
+        openai_key="expired",
+        client=_client(lambda _r: httpx.Response(401)),
+    )
+
+    report = ModerationReport()
+    for finding in findings:
+        report.add(finding)
+
+    assert report.has_coverage_gap is True
+    assert report.blocks_release is True
+    assert moderation_coverage_incomplete(report.to_dict()) is True
+
+
+@pytest.mark.unit
+@pytest.mark.usefixtures("_no_backoff")
+async def test_server_error_does_not_disable_the_classifier() -> None:
+    """A 500 is transient, so it must NOT latch the classifier off.
+
+    `disabled` is never reset within a run, so latching it on the wrong status
+    would silently drop coverage for the rest of a book over one blip.
+
+    The oracle is WHICH nodes were attempted, not how many calls were made. A
+    total count is not enough: three retries of node 1 and one attempt each at
+    nodes 1..3 both give three calls, so a count-based assertion passes even
+    when the classifier latched off after the first node. Each node therefore
+    carries distinct prose and the handler records what it actually saw.
+    """
+    seen: set[str] = set()
+    nodes = [(f"n{i}", f"prose-{i}") for i in range(1, 4)]
+
+    def handler(request: httpx.Request) -> httpx.Response:
+        body = request.content.decode()
+        for _, prose in nodes:
+            if prose in body:
+                seen.add(prose)
+        return httpx.Response(500)
+
+    await run_classifiers(
+        nodes=nodes,
+        openai_key="okey",
+        client=_client(handler),
+    )
+
+    assert seen == {prose for _, prose in nodes}, (
+        "a 5xx must not latch the classifier off after the first node; every "
+        f"node should still be attempted, but only {sorted(seen)} were"
+    )
 
 
 @pytest.mark.unit

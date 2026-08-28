@@ -178,9 +178,22 @@ async def test_in_review_book_remoderates_without_a_manufactured_sentinel_block(
     # pipeline attempts from IN_REVIEW are illegal, so the swallow must leave
     # the book exactly where the reviewer left it.
     assert body["status"] == "in_review"
-    # A block would surface here whatever produced it, so this catches a
-    # manufactured sentinel finding and any other hard block alike.
-    assert body["overall_verdict"] == "pass"
+    # No manufactured coverage gap: this field is derived from the findings'
+    # fail-safe concerns, so a sentinel-driven run that fell back to
+    # "reviewer_unavailable" would show up here. It is asserted at the wire
+    # rather than the row because the endpoint derives it independently, and an
+    # earlier revision derived it from the APPROVAL predicate, which reported
+    # incomplete coverage for the mock reviewer this suite runs under while the
+    # row it had just written said the opposite.
+    assert body["coverage_complete"] is True
+    # ``overall_verdict`` is deliberately NOT asserted here. Under test
+    # settings the review backend is the mock, so run_moderation_pipeline
+    # stamps the report ``reviewer_independent: False`` and the endpoint
+    # derives "block" from that stamp alone: correct behavior (a substituted
+    # reviewer must never report success, the 2026-07-21 incident) and
+    # orthogonal to the slot contract under test. The hard-block question this
+    # assertion used to stand in for is asked precisely against the stored
+    # summary below, where the stamp cannot confound it.
     # The review stages ran at all. A hard block recorded at moderation ENTRY
     # short-circuits ``_run_all_stages`` right after the classifiers, so this
     # fails on the entry sentinel block independently of the report contents.
@@ -203,6 +216,12 @@ async def test_in_review_book_remoderates_without_a_manufactured_sentinel_block(
         moderation_report = version_row.moderation_report
         assert moderation_report is not None
         assert _STALE not in json.dumps(moderation_report)
+        # The precise form of the old wire-verdict assertion: a manufactured
+        # sentinel finding is a hard block, and so is any other block this run
+        # could have produced, but the mock-reviewer stamp is not.
+        summary = moderation_report["summary"]
+        assert isinstance(summary, dict)
+        assert summary["hard_block"] is False
         findings = moderation_report["findings"]
         assert isinstance(findings, list)
         categories = [f["category"] for f in findings if isinstance(f, dict)]

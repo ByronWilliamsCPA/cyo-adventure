@@ -420,7 +420,11 @@ class MockProvider:
 
 
 def build_openrouter_leg(
-    settings: Settings, model: str, *, provider_order: tuple[str, ...] | None = None
+    settings: Settings,
+    model: str,
+    *,
+    provider_order: tuple[str, ...] | None = None,
+    temperature: float | None = None,
 ) -> GenerationProvider:
     """Construct a single OpenRouter leg for ``model`` from settings.
 
@@ -437,6 +441,11 @@ def build_openrouter_leg(
             as ``scripts/compare_vendors.py`` pass each vendor fixture's own
             order, and a fixture that deliberately carries none must keep
             measuring the unpinned route.
+        temperature: Optional sampling temperature, passed straight through.
+            ``None`` (the default, and what every generation caller passes)
+            sends no ``temperature`` field and leaves the model default intact.
+            The moderation reviewer passes 0.0; see
+            :data:`~cyo_adventure.moderation.review_provider.REVIEW_TEMPERATURE`.
 
     Returns:
         An OpenRouter ``GenerationProvider`` adapter.
@@ -477,6 +486,7 @@ def build_openrouter_leg(
         timeout_seconds=settings.llm_timeout_seconds,
         effort=settings.llm_effort,
         provider_order=resolved_order,
+        temperature=temperature,
     )
 
 

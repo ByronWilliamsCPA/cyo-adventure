@@ -172,7 +172,12 @@ from cyo_adventure.core.exceptions import (
     ResourceNotFoundError,
     StateTransitionError,
 )
-from cyo_adventure.db.models import ChildProfile, Storybook, StorybookVersion
+from cyo_adventure.db.models import (
+    ChildProfile,
+    GenerationJob,
+    Storybook,
+    StorybookVersion,
+)
 from cyo_adventure.events import ADMIN_ACTOR_ROLE, Actor, EventType, record_event
 from cyo_adventure.generation.import_story import IMPORT_PROVIDER
 from cyo_adventure.generation.pii import PiiContext
@@ -183,6 +188,10 @@ from cyo_adventure.moderation.personalizable_slots import (
     personalizable_slot_ids_for_version,
 )
 from cyo_adventure.moderation.pipeline import run_moderation_pipeline
+from cyo_adventure.moderation.report import (
+    moderation_coverage_gap,
+    moderation_coverage_incomplete,
+)
 from cyo_adventure.publishing.state_machine import Status
 from cyo_adventure.utils.logging import get_logger
 from cyo_adventure.validator.gate import run_fill_gate
@@ -348,6 +357,7 @@ class RemoderateResult:
     duration_seconds: float
     prior_reviewer_independent: bool | None
     repaired: bool
+    coverage_complete: bool
 
 
 class RemoderateResultView(BaseModel):
@@ -372,6 +382,14 @@ class RemoderateResultView(BaseModel):
     # ::test_repaired_is_false_when_the_pipeline_adopted_no_repair proves the
     # flag discriminates rather than reporting True for every run.
     repaired: bool
+    # #CRITICAL: security: False means at least one node reached no judgment,
+    # so this book's ``overall_verdict`` of "block" is fail-closed rather than
+    # a statement about its content. Without this field on the wire the sweep
+    # cannot tell the two apart and tells an operator to act on prose that may
+    # be perfectly fine, while the actual remedy is to re-run the reviewer.
+    # #VERIFY: tests/unit/test_remoderate_unit.py::
+    # test_coverage_complete_is_false_on_a_gap_and_true_otherwise.
+    coverage_complete: bool
 
 
 def _view(result: RemoderateResult) -> RemoderateResultView:
@@ -386,6 +404,7 @@ def _view(result: RemoderateResult) -> RemoderateResultView:
         duration_seconds=result.duration_seconds,
         prior_reviewer_independent=result.prior_reviewer_independent,
         repaired=result.repaired,
+        coverage_complete=result.coverage_complete,
     )
 
 
@@ -488,8 +507,8 @@ def _prior_reviewer_independent(report: dict[str, object] | None) -> bool | None
 
 def _summarize_report(
     report: dict[str, object] | None,
-) -> tuple[str, dict[str, int], int]:
-    """Derive (overall_verdict, verdict_counts, structural_count) from a persisted report.
+) -> tuple[str, dict[str, int], int, bool]:
+    """Derive (verdict, counts, structural_count, coverage_complete) from a report.
 
     Reads the FRESH (post-call) persisted report's own ``summary.hard_block``/
     ``summary.soft_flag`` flags for the overall verdict, the same gating
@@ -510,8 +529,60 @@ def _summarize_report(
     # #VERIFY: tests/unit/test_remoderate_unit.py::
     # test_summarize_report_tolerates_malformed_shapes covers null summary,
     # non-dict findings, and a non-list findings value.
-    if report is None:
-        return "pass", {}, 0
+    # #CRITICAL: security: coverage is checked FIRST and reads the findings,
+    # not ``summary``. Two reasons. (1) ``summary.coverage_complete`` is new,
+    # so every report stored before it existed omits the key, and a
+    # summary-flag read cannot tell "complete" from "written by an older
+    # build"; the ``reviewer_unavailable`` findings themselves are present in
+    # both eras. (2) It fails closed on a report that is absent or unreadable,
+    # which reaching this function means the pipeline persisted nothing
+    # legible; "pass" was the wrong answer for that, in the same direction as
+    # the bug this predicate closes. This verdict is what
+    # scripts/remoderate_books.py classifies as ``blocked``, which is what
+    # makes the sweep exit needs-human instead of "review when convenient".
+    # #VERIFY: tests/unit/test_remoderate_unit.py::
+    # test_summarize_report_tolerates_malformed_shapes, params
+    # ``coverage-gap-outranks-soft-flag`` and ``never-moderated``.
+    #
+    # #CRITICAL: security: the two returned values read DIFFERENT predicates,
+    # and the asymmetry is the point. The verdict reads the mock-inclusive
+    # moderation_coverage_incomplete(), so a mock-reviewer run cannot report
+    # success; that is the 2026-07-21 incident, where a substituted reviewer
+    # reported a clean sweep over the whole catalog for weeks. The coverage
+    # field reads the narrow moderation_coverage_gap(), because a mock run
+    # screened every node and the pipeline itself persists
+    # summary.coverage_complete: true for it. Answering BOTH from the
+    # approval predicate made one response contradict the row the same run
+    # had just written, and put every mock run in the sweep's ``incomplete``
+    # bucket, whose stated purpose is to mean "nothing read the prose" and
+    # whose remedy differs. Collapsing the two back into one predicate
+    # reintroduces whichever defect the survivor does not cover.
+    # #VERIFY: tests/unit/test_remoderate_unit.py::
+    # test_a_mock_stamped_report_blocks_but_reports_complete_coverage,
+    # ::test_mock_reviewer_stamp_is_not_stripped_or_overridden, and
+    # tests/unit/test_moderation_report.py::TestModerationCoverageGap::
+    # test_the_approval_predicate_still_refuses_that_same_report.
+    #
+    # ``coverage_complete`` is returned ALONGSIDE the verdict rather than folded
+    # into it, because the two answer different operator questions. The verdict
+    # says whether the book may move; coverage says whether anyone judged its
+    # prose. Collapsing them makes an unreviewed book indistinguishable from an
+    # unsafe one, and the two need opposite remedies: re-run the reviewer, or
+    # rewrite the story.
+    coverage_complete = not moderation_coverage_gap(report)
+    # ``report is None`` is stated explicitly even though the predicate beside
+    # it already answers True for None. It carries the type narrowing for the
+    # ``report.get`` reads below, and stating it is what keeps a reader from
+    # "simplifying" the arm away; the previous revision expressed the same case
+    # as a separate, unreachable ``return "pass"``, one reorder from a
+    # fail-open.
+    if report is None or moderation_coverage_incomplete(report):
+        return (
+            "block",
+            _finding_counts(report),
+            _structural_count(report),
+            coverage_complete,
+        )
     raw_summary = report.get("summary")
     summary: dict[str, object] = raw_summary if isinstance(raw_summary, dict) else {}
     if summary.get("hard_block"):
@@ -520,20 +591,74 @@ def _summarize_report(
         overall = "flag"
     else:
         overall = "pass"
+    return (
+        overall,
+        _finding_counts(report),
+        _structural_count(report),
+        coverage_complete,
+    )
+
+
+def _persisted_findings(report: dict[str, object] | None) -> list[object]:
+    """Return the report's finding list, or empty for any shape that is not one."""
+    if report is None:
+        return []
     raw_findings = report.get("findings")
-    findings: list[object] = raw_findings if isinstance(raw_findings, list) else []
+    if not isinstance(raw_findings, list):
+        return []
+    return cast("list[object]", raw_findings)
+
+
+def _finding_counts(report: dict[str, object] | None) -> dict[str, int]:
+    """Tally persisted findings by verdict, bucketing unreadable ones as unknown."""
     counts: dict[str, int] = {}
-    structural = 0
-    for finding in findings:
+    for finding in _persisted_findings(report):
         if not isinstance(finding, dict):
             continue
-        entry = cast("dict[str, object]", finding)
-        raw_verdict = entry.get("verdict")
+        raw_verdict = cast("dict[str, object]", finding).get("verdict")
         verdict = raw_verdict if isinstance(raw_verdict, str) else "unknown"
         counts[verdict] = counts.get(verdict, 0) + 1
-        if entry.get("structural"):
-            structural += 1
-    return overall, counts, structural
+    return counts
+
+
+def _structural_count(report: dict[str, object] | None) -> int:
+    """Count persisted findings carrying the ``structural`` flag."""
+    return sum(
+        1
+        for finding in _persisted_findings(report)
+        if isinstance(finding, dict)
+        and cast("dict[str, object]", finding).get("structural")
+    )
+
+
+async def _has_generation_job(session: AsyncSession, story_id: str) -> bool:
+    """Report whether a story has a ``GenerationJob`` row to resolve from.
+
+    Mirrors the lookup
+    :func:`~cyo_adventure.moderation.personalizable_slots.personalizable_slot_ids_for_story`
+    performs, so this predicate and the pipeline's own resolution can never
+    disagree about which provenance a book has. It selects the id alone rather
+    than the row: the answer needed here is existence, and the pipeline
+    re-reads the full row itself when this returns ``True``.
+
+    ``GenerationJob.storybook_id`` is not a foreign key (see that model's
+    docstring), so "no row" is an ordinary, expected answer for every imported
+    or seeded book, not an integrity fault.
+
+    Args:
+        session: The endpoint's open async session.
+        story_id: The storybook id being re-moderated.
+
+    Returns:
+        bool: ``True`` when at least one generation job references the story.
+    """
+    return (
+        await session.execute(
+            select(GenerationJob.id)
+            .where(GenerationJob.storybook_id == story_id)
+            .limit(1)
+        )
+    ).scalar_one_or_none() is not None
 
 
 async def remoderate_storybook_version(
@@ -684,8 +809,12 @@ async def remoderate_storybook_version(
 
     allow_repair = _allow_repair_for(storybook.status)
 
-    # #CRITICAL: data-integrity: resolved from the VERSION, and only for the
-    # in_review arm this endpoint newly admits.
+    # #CRITICAL: data-integrity: resolved from the VERSION whenever no
+    # GenerationJob row can carry the provenance instead. This is the same
+    # job-first, version-second resolution
+    # moderation/rescreen.py::_resolve_one_slot_contract already applies to the
+    # same books; this endpoint used to gate on STATUS instead of provenance,
+    # which is what made the two disagree.
     #
     # Why the version at all: an in_review book here is an offline import with
     # no GenerationJob row (17 of 17 in production, 2026-08-24). The pipeline's
@@ -698,18 +827,40 @@ async def remoderate_storybook_version(
     # today; it stops being defensive the first time a sentinel-bearing book
     # reaches the review gate.
     #
-    # Why NOT for published: passing an explicit value suppresses the job-row
-    # lookup entirely. A published, generated, job-backed book whose version
-    # predates the skeleton_slug column (the column is never backfilled)
-    # resolves a real contract from its job today and would resolve an empty
-    # set here, manufacturing exactly the block this argument exists to avoid,
-    # on the arm this change is meant to leave alone. Leaving published UNSET
-    # keeps its behaviour bit-identical to before this endpoint was widened.
-    # #VERIFY: tests/unit/test_remoderate_unit.py::
-    # test_slot_contract_resolved_from_the_version_not_a_job and
-    # ::test_published_arm_leaves_the_slot_contract_to_the_pipeline.
+    # Why NOT unconditionally for published: passing an explicit value
+    # suppresses the job-row lookup entirely. A published, generated,
+    # job-backed book whose version predates the skeleton_slug column (the
+    # column is never backfilled) resolves a real contract from its job today
+    # and would resolve an empty set here, manufacturing exactly the block this
+    # argument exists to avoid. So the published arm is widened by the ABSENCE
+    # of a job row, never by status: a job-backed published book still reaches
+    # the pipeline UNSET and behaves bit-identically to before.
+    #
+    # #CRITICAL: data-integrity: the published arm was left UNSET entirely
+    # until 2026-08-26, on personalizable_slot_ids_for_story's stated
+    # assumption that "no job row means no reachable skeleton and therefore no
+    # theme contract". Production falsified it: a version's skeleton_slug
+    # reaches the skeleton and its contract with no job row at all, which is
+    # the whole reason personalizable_slot_ids_for_version exists. The
+    # consequence was not theoretical. The full-catalog re-moderation sweep hit
+    # it on the first sentinel-bearing PUBLISHED book: sk_cave_of_echoes
+    # hard-blocked in 6 seconds on 78 <global> unknown_slot violations and no
+    # other violation kind, before any LLM stage ran, so a live book's report
+    # was overwritten with a block describing absent provenance rather than its
+    # prose. Five published books carry sentinels with no job row; zero books
+    # in the catalog have a job row at all, so the job-backed population this
+    # exception was protecting is currently empty.
+    # #VERIFY: the two published arms are pinned as a PAIR, because either one
+    # alone would let "published" be resolved wholesale the wrong way:
+    # tests/unit/test_remoderate_unit.py::
+    # test_published_book_without_a_job_row_resolves_from_the_version and
+    # ::test_job_backed_published_book_leaves_the_slot_contract_to_the_pipeline.
+    # The in_review arm keeps its own:
+    # ::test_slot_contract_resolved_from_the_version_not_a_job.
     slot_contract: PersonalizableSlotsArg = PERSONALIZABLE_SLOTS_UNSET
-    if storybook.status == Status.IN_REVIEW.value:
+    if storybook.status == Status.IN_REVIEW.value or not await _has_generation_job(
+        session, storybook_id
+    ):
         # #ASSUME: timing: offloaded because this walks the skeleton catalog
         # directory and reads two JSON files; inline it would block the event
         # loop on a cold cache or a network-backed catalog volume. No gate
@@ -808,8 +959,8 @@ async def remoderate_storybook_version(
             await run_sync(run_fill_gate, version_row.blob, limiter=gate_limiter())
         )
 
-    overall_verdict, verdict_counts, structural_count = _summarize_report(
-        version_row.moderation_report
+    overall_verdict, verdict_counts, structural_count, coverage_complete = (
+        _summarize_report(version_row.moderation_report)
     )
     repaired = _report_repaired(version_row.moderation_report)
 
@@ -874,6 +1025,7 @@ async def remoderate_storybook_version(
             "counts": verdict_counts,
             "prior_reviewer_independent": prior_reviewer_independent,
             "repaired": repaired,
+            "coverage_complete": coverage_complete,
         },
     )
 
@@ -887,6 +1039,7 @@ async def remoderate_storybook_version(
         duration_seconds=duration,
         prior_reviewer_independent=prior_reviewer_independent,
         repaired=repaired,
+        coverage_complete=coverage_complete,
     )
 
 

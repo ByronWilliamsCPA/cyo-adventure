@@ -40,6 +40,7 @@ from cyo_adventure.moderation.review_provider import (
     ReviewProvider,
     build_review_provider,
     resolve_review_settings,
+    review_provenance,
 )
 from cyo_adventure.moderation.stages import (
     run_coherence_stage,
@@ -67,6 +68,47 @@ if TYPE_CHECKING:
 
 _logger = get_logger(__name__)
 _MAX_REVIEW_TOKENS = 1024
+
+# Output-token ceiling for the two WHOLE-STORY review stages (coherence and
+# engagement), which send every node's prose in a single call.
+#
+# #CRITICAL: external-resources: _MAX_REVIEW_TOKENS is a PER-NODE budget. The
+# safety stage scales it by batch size, adds a fixed per-call reasoning
+# allowance, and clamps the result at stages.py's _MAX_BATCH_REVIEW_TOKENS
+# (16000; it was 8192 when this comment was first written, before the
+# reasoning allowance was added alongside it, see stages.py for both). The
+# whole-story stages instead pass _MAX_REVIEW_TOKENS through flat, which gave
+# 1024 for a call whose input scales with the entire book. That figure was
+# sized for anthropic/claude-sonnet-4.6, which emits no reasoning tokens. #747
+# repointed review at deepseek/deepseek-v4-flash, which is reasoning-native,
+# and the OpenRouter ceiling counts reasoning against the SAME budget, so the
+# model spent the whole allowance thinking and the call came back
+# finish_reason=length with empty content, raising ProviderError and aborting
+# the book. settings.llm_effort="off" does not help: it only stops the adapter
+# SENDING a reasoning parameter, it does not stop a reasoning-native model from
+# reasoning.
+#
+# 16000 is measured, not guessed. sk_clocktower_cipher (25 nodes) is the book
+# that exposed this; run at a 32000 ceiling its coherence call completed
+# (finish_reason=stop) reporting 4443 reasoning tokens plus 4252 output
+# tokens, for a true requirement of ~8700. _MAX_WHOLE_STORY_REVIEW_TOKENS and
+# stages.py's _MAX_BATCH_REVIEW_TOKENS both currently land on 16000, but that
+# is coincidence, not a shared derivation the code should collapse into one
+# constant: they bound different call SHAPES. The batch clamp scales with
+# caller-supplied node count plus the reasoning allowance and exists to keep
+# an arbitrarily large batch's product inside a workable ceiling; this
+# constant is a flat per-call budget for a single call whose input is never
+# scaled by a caller-supplied count (it always sends the whole book). Each was
+# measured independently against this provider, and keeping them as separate
+# names lets either move on its own if a future measurement (a longer book, a
+# different reviewed model) diverges from the other call shape's requirement;
+# merging them into one constant would silently couple two budgets that have
+# no structural reason to move together.
+# Reasoning need tracks CONTENT, not length: 550-node books pass at 1024 while
+# this 25-node book does not, so the headroom is deliberate.
+# #VERIFY: test_whole_story_stages_get_the_whole_story_token_budget.
+_MAX_WHOLE_STORY_REVIEW_TOKENS = 16000
+
 _MAX_REPAIR_TOKENS = 32000
 
 # The personalizable-slot tri-state contract (the ``PERSONALIZABLE_SLOTS_UNSET``
@@ -261,6 +303,10 @@ async def run_moderation_pipeline(
         generation_provider=generation_provider,
     )
     report.reviewer_independent = independent
+    # Recorded from the RESOLVED settings, so an admin's per-stage model
+    # override is what the report attributes the verdict to rather than the
+    # process-wide default.
+    report.reviewer = review_provenance(review_settings)
     if not independent:
         report.add(
             Finding(
@@ -502,10 +548,20 @@ async def run_moderation_pipeline(
     # #VERIFY: tests/unit/test_remoderate_unit.py::
     # test_published_blob_unchanged_when_repair_disallowed asserts the blob is
     # byte-identical after a soft-FLAG re-moderation through api/remoderate.py.
+    # #CRITICAL: security: the third clause is `blocks_release`, not
+    # `has_hard_block`. The Stage-1 batch fail-safe records FLAG for every node
+    # in an unusable batch, which satisfies `has_soft_flag`, so under the
+    # narrower predicate a coverage gap ROUTED INTO the auto-repair: the
+    # repairer would rewrite prose no reviewer had read, and the adopted
+    # revision would replace the report wholesale, erasing the evidence that
+    # anything went unreviewed. A gap is not a finding to repair; it is a run
+    # to redo.
+    # #VERIFY: tests/unit/test_moderation_pipeline.py::
+    # test_a_coverage_gap_does_not_route_into_the_auto_repair.
     if (
         allow_repair
         and report.has_soft_flag
-        and not report.has_hard_block
+        and not report.blocks_release
         and not isinstance(personalizable_slots, PersonalizableSlotsUnrecoverable)
     ):
         report = await _attempt_and_adopt_repair(
@@ -547,7 +603,13 @@ async def run_moderation_pipeline(
     # calls ONLY submit (clean/repaired) or auto_reject (hard block). It MUST NEVER
     # call approve or publish directly.
     # #VERIFY: no code path in this module sets status="published".
-    if report.has_hard_block:
+    # #CRITICAL: security: `blocks_release`, so a run whose reviewer never saw
+    # part of the story auto-rejects rather than submitting for approval. A
+    # `submit` here is what put four books in the review queue looking
+    # ordinarily soft-flagged while carrying eight unscreened nodes each.
+    # #VERIFY: tests/unit/test_moderation_pipeline.py::
+    # test_a_coverage_gap_auto_rejects_instead_of_submitting.
+    if report.blocks_release:
         await service.auto_reject(session, storybook)
     else:
         await service.submit(session, storybook, actor=Actor.system())
@@ -603,6 +665,12 @@ def _persist_report(version_row: StorybookVersion, report: ModerationReport) -> 
         repaired=report.repaired,
         reviewer_independent=report.reviewer_independent,
         nodes_reviewed=report.nodes_reviewed,
+        # Carried explicitly: this is a fresh ModerationReport rather than a
+        # mutation of the accumulated one, so every field the persisted payload
+        # needs has to be named here. Omitting it would drop the provenance at
+        # the one step that writes it to the database, which is the only step
+        # where losing it matters.
+        reviewer=report.reviewer,
     )
     version_row.moderation_report = persisted_report.to_dict()
 
@@ -711,7 +779,9 @@ async def _attempt_and_adopt_repair(
     # revised blob) if the repair is schema-valid AND passes the deterministic
     # validation gate. A malformed or gate-failing repair is discarded so the
     # original soft-flagged report drives routing.
-    repaired_report = ModerationReport(reviewer_independent=independent)
+    repaired_report = ModerationReport(
+        reviewer_independent=independent, reviewer=review_provenance(settings)
+    )
     if mock_reviewer:
         _stamp_mock_reviewer(repaired_report)
     try:
@@ -963,18 +1033,23 @@ def _repair_is_adoptable(
 def _overall_verdict(report: ModerationReport) -> str:
     """Return the report's single gating verdict for the event payload.
 
-    Derived from the report's own gating properties (``has_hard_block`` /
+    Derived from the report's own gating properties (``blocks_release`` /
     ``has_soft_flag``), not a stored field: ``ModerationReport`` has no
     ``overall_verdict`` attribute of its own, only per-finding verdicts.
+
+    ``blocks_release`` rather than ``has_hard_block``, matching the routing
+    decision immediately above it, so the durable event log and the status
+    transition can never disagree about the outcome of the same run.
 
     Args:
         report: The final report driving the submit/auto_reject routing.
 
     Returns:
-        ``"block"`` when any finding hard-blocks, ``"flag"`` when any finding
-        soft-flags (and none blocks), otherwise ``"pass"``.
+        ``"block"`` when any finding hard-blocks OR the reviewer did not see
+        every node, ``"flag"`` when any finding soft-flags (and neither of
+        those holds), otherwise ``"pass"``.
     """
-    if report.has_hard_block:
+    if report.blocks_release:
         return Verdict.BLOCK.value
     if report.has_soft_flag:
         return Verdict.FLAG.value
@@ -1141,13 +1216,13 @@ async def _run_all_stages(
     for finding in await run_coherence_stage(
         provider=review_provider,
         nodes=nodes,
-        max_tokens=_MAX_REVIEW_TOKENS,
+        max_tokens=_MAX_WHOLE_STORY_REVIEW_TOKENS,
     ):
         report.add(finding)
     for finding in await run_engagement_stage(
         provider=review_provider,
         nodes=nodes,
-        max_tokens=_MAX_REVIEW_TOKENS,
+        max_tokens=_MAX_WHOLE_STORY_REVIEW_TOKENS,
     ):
         report.add(finding)
 
