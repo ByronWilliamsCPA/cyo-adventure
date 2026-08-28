@@ -4003,6 +4003,10 @@ export type RemoderateResultView = {
      * Repaired
      */
     repaired: boolean;
+    /**
+     * Coverage Complete
+     */
+    coverage_complete: boolean;
 };
 
 /**

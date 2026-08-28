@@ -7,6 +7,59 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 <!-- version list -->
 
+## [0.84.0] - 2026-08-28
+
+### Bug Fixes
+
+- **auth**: Stop the Google sign-in loop, and stop sign-out killing every device
+  ([#763](https://github.com/ByronWilliamsCPA/cyo-adventure/pull/763),
+  [`45a00db`](https://github.com/ByronWilliamsCPA/cyo-adventure/commit/45a00dbee2f91c20242261b05dc03de4253440a5))
+
+- **backup**: Trim configuration secrets and reject blank ones
+  ([#772](https://github.com/ByronWilliamsCPA/cyo-adventure/pull/772),
+  [`36fa27c`](https://github.com/ByronWilliamsCPA/cyo-adventure/commit/36fa27c08e9221383fb5cfb1eee0800003475abd))
+
+- **ci**: Make scheduled-failure alerts reach a human and close themselves
+  ([#771](https://github.com/ByronWilliamsCPA/cyo-adventure/pull/771),
+  [`4e8c814`](https://github.com/ByronWilliamsCPA/cyo-adventure/commit/4e8c8148e8dcca30a5c7e97dc683fbbaec4aa463))
+
+- **moderation**: Close the slot-contract defects three reviews found on #760
+  ([#762](https://github.com/ByronWilliamsCPA/cyo-adventure/pull/762),
+  [`bfd47f5`](https://github.com/ByronWilliamsCPA/cyo-adventure/commit/bfd47f54b47f0edaaa94714db7943d996219f2ab))
+
+- **moderation**: Stop a mock reviewer from passing as an independent one
+  ([#769](https://github.com/ByronWilliamsCPA/cyo-adventure/pull/769),
+  [`b68eeaf`](https://github.com/ByronWilliamsCPA/cyo-adventure/commit/b68eeaf779a0c1760b341dafa2e239793e0e7ffe))
+
+- **reader**: Close the two save-concurrency defects that kept e2e-real-nightly red
+  ([#761](https://github.com/ByronWilliamsCPA/cyo-adventure/pull/761),
+  [`c071c3d`](https://github.com/ByronWilliamsCPA/cyo-adventure/commit/c071c3dcd0c8b63ab014e1a1665ef0daed811309))
+
+- **release**: Constrain semantic-release's floating dependency closure
+  ([#767](https://github.com/ByronWilliamsCPA/cyo-adventure/pull/767),
+  [`87337f2`](https://github.com/ByronWilliamsCPA/cyo-adventure/commit/87337f24fcb9ad2e0b742a58c84a7e38f564441a))
+
+### Features
+
+- **api**: Re-moderate books waiting at the review gate
+  ([#753](https://github.com/ByronWilliamsCPA/cyo-adventure/pull/753),
+  [`8bcabbd`](https://github.com/ByronWilliamsCPA/cyo-adventure/commit/8bcabbdb6fbec483362a7aaa60ef8ebfba0d9c49))
+
+- **catalog**: Make stored books personalizable and retrofit the catalog
+  ([#759](https://github.com/ByronWilliamsCPA/cyo-adventure/pull/759),
+  [`d06c68d`](https://github.com/ByronWilliamsCPA/cyo-adventure/commit/d06c68d515bd2771f11a20e952190ed0aadd782b))
+
+- **moderation**: Make unusable reports unapprovable and severe-finding overrides auditable
+  ([#764](https://github.com/ByronWilliamsCPA/cyo-adventure/pull/764),
+  [`b2273a7`](https://github.com/ByronWilliamsCPA/cyo-adventure/commit/b2273a7145ad2c1a8253079e520f5d80910d1d2d))
+
+### Refactoring
+
+- **moderation**: Give the fail-closed slot contract its own marker type
+  ([#760](https://github.com/ByronWilliamsCPA/cyo-adventure/pull/760),
+  [`f3673d3`](https://github.com/ByronWilliamsCPA/cyo-adventure/commit/f3673d3bb3f5c24c5197979c6369eb2e9983c671))
+
+
 ## [0.83.0] - 2026-08-25
 
 ### Bug Fixes
@@ -3579,6 +3632,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Safety dependency vulnerability scanning
 - Pre-commit hooks for security validation
 
+[0.84.0]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.83.0...v0.84.0
 [0.83.0]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.82.0...v0.83.0
 [0.82.0]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.81.1...v0.82.0
 [0.81.1]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.81.0...v0.81.1

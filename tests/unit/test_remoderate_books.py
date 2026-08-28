@@ -12,12 +12,13 @@ import asyncio
 import importlib.util
 import sys
 from pathlib import Path
-from typing import Any
+from typing import Any, cast
 from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
 
 from cyo_adventure.api.remoderate import RemoderateResult
+from cyo_adventure.core.config import Settings
 from cyo_adventure.core.exceptions import (
     BusinessLogicError,
     ResourceNotFoundError,
@@ -378,10 +379,37 @@ def _execute_session(book_ids: list[str]) -> tuple[AsyncMock, list[str]]:
     return session, log
 
 
-def _verdict(overall: str) -> MagicMock:
-    """A stand-in for the RemoderateResult the entry point returns."""
+def _verdict(
+    overall: str,
+    *,
+    coverage_complete: bool = True,
+    block_findings: int | None = None,
+) -> MagicMock:
+    """A stand-in for the RemoderateResult the entry point returns.
+
+    Every attribute the sweep reads is set explicitly. A bare MagicMock answers
+    truthy for anything, so ``coverage_complete`` would read complete on a mock
+    that never modelled it, and the classification this double exists to
+    exercise would be untestable in the direction that matters.
+
+    Args:
+        overall: The rolled-up verdict, as ``_summarize_report`` returns it.
+        coverage_complete: False for a report admitting an unjudged node. Such a
+            report's ``overall`` is "block" by construction, so pass both.
+        block_findings: How many findings carry a ``block`` verdict. Defaults to
+            1 for a complete "block" report and 0 otherwise, which is the real
+            relationship: ``summary.hard_block`` is ``any(verdict is BLOCK)``,
+            and a fail-closed gap block has no such finding behind it.
+
+    Returns:
+        MagicMock: The stand-in result.
+    """
+    if block_findings is None:
+        block_findings = 1 if overall == "block" and coverage_complete else 0
     result = MagicMock()
     result.overall_verdict = overall
+    result.coverage_complete = coverage_complete
+    result.verdict_counts = {"block": block_findings} if block_findings else {}
     return result
 
 
@@ -497,6 +525,53 @@ async def test_sweep_records_blocked_and_flagged_verdicts() -> None:
     assert result.failed == []
     assert result.blocked == [("s_block", 1)]
     assert result.flagged == [("s_flag", 1)]
+    assert result.incomplete == []
+
+
+@pytest.mark.asyncio
+async def test_sweep_separates_an_unreviewed_book_from_a_blocked_one() -> None:
+    """An unjudged book and a refused book must land in different buckets.
+
+    Both come back with ``overall_verdict == "block"``, because a coverage gap
+    is fail-closed on purpose, so the verdict alone cannot separate them. The
+    remedies are opposite: one needs the reviewer re-run, the other needs the
+    prose rewritten. A sweep that filed both under ``blocked`` would print "act
+    on these" over a story nothing has read, which is how the original
+    fail-open stayed invisible.
+
+    The third arm is the case that makes this more than a relabelling: a book
+    with BOTH a real block finding and a gap belongs in both lists, because
+    dropping either one loses a real signal.
+    """
+    ids = ["s_gap", "s_block", "s_both"]
+    session, _log = _execute_session(ids)
+    results = {
+        "s_gap": _verdict("block", coverage_complete=False),
+        "s_block": _verdict("block"),
+        "s_both": _verdict("block", coverage_complete=False, block_findings=2),
+    }
+
+    async def _fake_remoderate(
+        _session: object, storybook_id: str, _version: int, _ctx: object
+    ) -> MagicMock:
+        return results[storybook_id]
+
+    with patch.object(
+        remoderate_books,
+        "remoderate_storybook_version",
+        AsyncMock(side_effect=_fake_remoderate),
+    ):
+        result = await remoderate_books.sweep(
+            engine=_mock_engine(),
+            session_factory=_mock_session_factory(session),
+            book_ids=ids,
+            execute=True,
+        )
+
+    assert result.incomplete == [("s_gap", 1), ("s_both", 1)]
+    assert result.blocked == [("s_block", 1), ("s_both", 1)]
+    assert result.flagged == []
+    assert result.failed == []
 
 
 # ---------------------------------------------------------------------------
@@ -538,14 +613,85 @@ def test_parse_args_requires_a_selector(capsys: pytest.CaptureFixture[str]) -> N
 # ---------------------------------------------------------------------------
 
 
+def _settings_stub(*, provider: str, environment: str = "production") -> MagicMock:
+    """A settings double carrying only what the preflight reads.
+
+    Specced against ``Settings``' real field names, not left open: an
+    unspecced MagicMock answers ANY attribute, so renaming a field on
+    ``Settings`` would leave every test here passing while the script read a
+    fresh Mock in place of the value. ``spec`` takes the name list rather
+    than a ``Settings`` instance on purpose (see tests/CLAUDE.md, "Mock spec
+    traps": a pydantic instance as ``spec`` trips ``__fields__`` on 3.12 and
+    older).
+    """
+    return MagicMock(
+        spec=list(Settings.model_fields),
+        review_provider=provider,
+        environment=environment,
+        database_url=(
+            f"postgresql+asyncpg://cyo_user:{_LEAK_CANARY}@db.example.net:5432/cyo"
+        ),
+    )
+
+
 def _run_main(result: Any) -> None:
-    """Drive main() with a canned SweepResult, bypassing argv and the DB."""
+    """Drive main() with a canned SweepResult, bypassing argv and the DB.
+
+    Declares a real review provider because these tests drive ``--execute``
+    and measure what main REPORTS. Under the shared app settings the resolved
+    provider is the mock, which main's preflight now refuses outright, so
+    without this every one of them would exit on the preflight and assert
+    nothing about the reporting they exist to pin. The preflight has its own
+    tests below.
+    """
     args = MagicMock(book_id=["s1"], mock_moderated=False, execute=True)
     with (
         patch.object(remoderate_books, "_parse_args", MagicMock(return_value=args)),
+        patch.object(
+            remoderate_books,
+            "_default_settings",
+            _settings_stub(provider="openrouter"),
+        ),
         patch.object(remoderate_books, "sweep", AsyncMock(return_value=result)),
     ):
         remoderate_books.main()
+
+
+def test_main_exits_retryable_when_a_book_was_reviewed_incompletely(
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    """An unjudged book exits RETRYABLE and must not read as a content block.
+
+    Two claims, and both matter. The exit code is retryable because the gap is
+    usually one flaky reviewer response and the retry is a genuinely different,
+    smaller request; a human cannot fill in a judgment nobody made. And the
+    stdout must NOT carry the hard-block wording, because that text tells an
+    operator to act on the prose, which is precisely the wrong instruction for
+    a story nothing has read yet. Asserting the exit code alone would pass on
+    an implementation that printed "HARD BLOCK" over it.
+    """
+    result = remoderate_books.SweepResult(
+        targets=[("s1", 1)],
+        executed=True,
+        succeeded=[("s1", 1)],
+        incomplete=[("s1", 1)],
+    )
+
+    with pytest.raises(SystemExit) as excinfo:
+        _run_main(result)
+
+    assert excinfo.value.code == remoderate_books._EXIT_RETRYABLE
+    captured = capsys.readouterr()
+    assert "1 book(s) reviewed incompletely" in captured.err
+    assert "RETRYABLE" in captured.err
+    assert "NEEDS A HUMAN" not in captured.err
+    out = captured.out
+    assert "REVIEWED INCOMPLETELY" in out
+    assert "reached NO safety judgment" in out
+    assert "s1 v1" in out
+    # The block wording prescribes the wrong remedy for this outcome.
+    assert "HARD BLOCK" not in out
+    assert "STILL readable by a child" not in out
 
 
 def test_main_exits_nonzero_when_a_book_is_blocked(
@@ -568,9 +714,11 @@ def test_main_exits_nonzero_when_a_book_is_blocked(
     with pytest.raises(SystemExit) as excinfo:
         _run_main(result)
 
-    assert excinfo.value.code is not None
-    assert "1 book(s) hard-blocked" in str(excinfo.value.code)
-    out = capsys.readouterr().out
+    assert excinfo.value.code == remoderate_books._EXIT_NEEDS_HUMAN
+    captured = capsys.readouterr()
+    assert "1 book(s) hard-blocked" in captured.err
+    assert "NEEDS A HUMAN" in captured.err
+    out = captured.out
     assert "HARD BLOCK, status unchanged by this sweep" in out
     # The published consequence must survive verbatim: it is the half that
     # means a child can read a blocked book right now.
@@ -597,9 +745,11 @@ def test_main_exits_nonzero_when_a_book_was_excluded(
     with pytest.raises(SystemExit) as excinfo:
         _run_main(result)
 
-    assert excinfo.value.code is not None
-    assert "1 book(s) excluded" in str(excinfo.value.code)
-    out = capsys.readouterr().out
+    assert excinfo.value.code == remoderate_books._EXIT_NEEDS_HUMAN
+    captured = capsys.readouterr()
+    assert "1 book(s) excluded" in captured.err
+    assert "NEEDS A HUMAN" in captured.err
+    out = captured.out
     assert "EXCLUDED from the target list" in out
     # The id has to be in the SUMMARY, not only in a structured log an
     # operator would have to be tailing separately to see.
@@ -622,9 +772,10 @@ def test_main_exits_nonzero_when_every_book_was_excluded(
     with pytest.raises(SystemExit) as excinfo:
         _run_main(result)
 
-    assert excinfo.value.code is not None
-    assert "2 in_review book(s)" in str(excinfo.value.code)
-    assert "s_a, s_b" in capsys.readouterr().out
+    assert excinfo.value.code == remoderate_books._EXIT_NEEDS_HUMAN
+    captured = capsys.readouterr()
+    assert "2 in_review book(s)" in captured.err
+    assert "s_a, s_b" in captured.out
 
 
 def test_main_reports_exclusions_on_the_dry_run_path(
@@ -676,7 +827,9 @@ def test_main_exits_zero_when_every_book_comes_back_clean(
     _run_main(result)
 
     out = capsys.readouterr().out
-    assert "1 succeeded (0 blocked, 0 flagged), 0 failed." in out
+    assert (
+        "1 succeeded (0 blocked, 0 flagged, 0 reviewed incompletely), 0 failed." in out
+    )
     assert "HARD BLOCK" not in out
 
 
@@ -713,8 +866,113 @@ def test_main_exits_nonzero_when_a_book_fails(
     with pytest.raises(SystemExit) as excinfo:
         _run_main(result)
 
-    assert "1 book(s) failed" in str(excinfo.value.code)
-    assert "failed (rolled back, retry by re-running)" in capsys.readouterr().out
+    assert excinfo.value.code == remoderate_books._EXIT_RETRYABLE
+    captured = capsys.readouterr()
+    assert "1 book(s) failed" in captured.err
+    assert "RETRYABLE" in captured.err
+    assert "failed (rolled back, retry by re-running)" in captured.out
+
+
+# ---------------------------------------------------------------------------
+# Exit-code discrimination
+#
+# The point of these is that a retry loop can act on the code alone. Before the
+# split every non-clean outcome exited 1, so `sweep.sh` retried a hard-blocked
+# book three times in fifteen seconds (2026-08-27), spending an LLM review pass
+# each time on a verdict that cannot move without a prose edit. Asserting the
+# codes are merely "nonzero" is what let that through, so each test below pins
+# the exact value and the pair test pins them as DIFFERENT.
+# ---------------------------------------------------------------------------
+
+
+def _exit_code_for(**outcome: object) -> int:
+    """Run main() with one canned outcome and return its exit code."""
+    result = remoderate_books.SweepResult(
+        targets=[("s1", 1)], executed=True, **cast("Any", outcome)
+    )
+    with pytest.raises(SystemExit) as excinfo:
+        _run_main(result)
+    assert isinstance(excinfo.value.code, int)
+    return excinfo.value.code
+
+
+def test_blocked_and_failed_exit_codes_differ() -> None:
+    """The two classes must not collide, or no caller can tell them apart.
+
+    This is the regression test for the defect itself. Every other assertion
+    here would still pass if both constants were 1; only comparing them catches
+    that, which is exactly the state the script shipped in.
+    """
+    assert _exit_code_for(succeeded=[("s1", 1)], blocked=[("s1", 1)]) != _exit_code_for(
+        failed=[("s1", 1)]
+    )
+
+
+def test_hard_block_exits_needs_human_not_retryable() -> None:
+    """A blocked book is a SUCCESSFUL call whose answer was "no"."""
+    code = _exit_code_for(succeeded=[("s1", 1)], blocked=[("s1", 1)])
+    assert code == remoderate_books._EXIT_NEEDS_HUMAN
+    assert code != remoderate_books._EXIT_RETRYABLE
+
+
+def test_timeout_and_not_attempted_exit_retryable() -> None:
+    """A timeout rolled back and left no durable state, so a retry is valid."""
+    assert (
+        _exit_code_for(timed_out=[("s1", 1)], not_attempted=[("s2", 1)])
+        == remoderate_books._EXIT_RETRYABLE
+    )
+
+
+def test_retryable_wins_when_a_sweep_produced_both() -> None:
+    """A mixed sweep exits retryable: there IS something a retry can fix.
+
+    The blocked book still needs a human, but it is named on stdout and comes
+    back in the next run's report, so nothing is lost by retrying first. The
+    reverse precedence would strand a genuinely transient failure.
+    """
+    result = remoderate_books.SweepResult(
+        targets=[("s1", 1), ("s2", 1)],
+        executed=True,
+        succeeded=[("s1", 1)],
+        blocked=[("s1", 1)],
+        failed=[("s2", 1)],
+    )
+    with pytest.raises(SystemExit) as excinfo:
+        _run_main(result)
+    assert excinfo.value.code == remoderate_books._EXIT_RETRYABLE
+
+
+def test_soft_flag_alone_exits_clean(capsys: pytest.CaptureFixture[str]) -> None:
+    """`flagged` is informational and must stay OUT of both nonzero classes.
+
+    It is the one outcome where the status did not change AND no action is
+    required, so a retry loop should treat the sweep as done.
+    """
+    result = remoderate_books.SweepResult(
+        targets=[("s1", 1)],
+        executed=True,
+        succeeded=[("s1", 1)],
+        flagged=[("s1", 1)],
+    )
+
+    _run_main(result)
+
+    assert "soft-flagged" in capsys.readouterr().out
+
+
+def test_needs_human_code_does_not_collide_with_argparse_usage_error() -> None:
+    """argparse exits 2 on a usage error; reusing it would hide a mistyped flag.
+
+    A caller that treated 2 as "hard block" would silently swallow every typo in
+    an ops invocation, which is the failure this whole split exists to prevent.
+    """
+    argparse_usage_exit = 2
+    assert argparse_usage_exit != remoderate_books._EXIT_NEEDS_HUMAN
+    assert argparse_usage_exit != remoderate_books._EXIT_RETRYABLE
+
+    with pytest.raises(SystemExit) as excinfo:
+        remoderate_books._parse_args(["--not-a-real-flag"])
+    assert excinfo.value.code == argparse_usage_exit
 
 
 # ---------------------------------------------------------------------------
@@ -923,6 +1181,8 @@ async def test_sweep_records_repaired_books() -> None:
     # are real class attributes and spec actually sees them.
     outcome = MagicMock(spec=RemoderateResult)
     outcome.overall_verdict = "pass"
+    outcome.coverage_complete = True
+    outcome.verdict_counts = {}
     outcome.repaired = True
     with patch.object(
         remoderate_books,
@@ -949,6 +1209,8 @@ async def test_sweep_leaves_repaired_empty_when_nothing_was_rewritten() -> None:
     # are real class attributes and spec actually sees them.
     outcome = MagicMock(spec=RemoderateResult)
     outcome.overall_verdict = "pass"
+    outcome.coverage_complete = True
+    outcome.verdict_counts = {}
     outcome.repaired = False
     with patch.object(
         remoderate_books,
@@ -1082,10 +1344,13 @@ def test_main_exits_nonzero_when_a_book_timed_out(
     with pytest.raises(SystemExit) as excinfo:
         _run_main(result)
 
-    assert excinfo.value.code is not None
-    assert "1 book(s) timed out" in str(excinfo.value.code)
-    assert "1 book(s) not attempted" in str(excinfo.value.code)
-    out = capsys.readouterr().out
+    assert excinfo.value.code == remoderate_books._EXIT_RETRYABLE
+    captured = capsys.readouterr()
+    err = captured.err
+    assert "1 book(s) timed out" in err
+    assert "1 book(s) not attempted" in err
+    assert "RETRYABLE" in err
+    out = captured.out
     assert "TIMED OUT" in out
     # Both ids in the SUMMARY, not only in a structured log.
     assert "s_a" in out
@@ -1098,3 +1363,358 @@ def test_parse_args_defaults_the_per_book_timeout() -> None:
 
     assert args.per_book_timeout == remoderate_books._PER_BOOK_TIMEOUT_SECONDS
     assert remoderate_books._PER_BOOK_TIMEOUT_SECONDS > 0
+
+
+# ---------------------------------------------------------------------------
+# main(): the reviewer preflight
+# ---------------------------------------------------------------------------
+
+
+def _run_main_with_settings(
+    settings: MagicMock, *, execute: bool, result: Any = None
+) -> MagicMock:
+    """Drive main() with a settings double; return the patched sweep mock."""
+    args = MagicMock(
+        book_id=["s1"],
+        mock_moderated=False,
+        in_review=False,
+        execute=execute,
+        per_book_timeout=900,
+    )
+    canned = result or remoderate_books.SweepResult(
+        targets=[("s1", 1)], executed=execute, succeeded=[("s1", 1)]
+    )
+    sweep_mock = AsyncMock(return_value=canned)
+    with (
+        patch.object(remoderate_books, "_parse_args", MagicMock(return_value=args)),
+        patch.object(remoderate_books, "_default_settings", settings),
+        patch.object(remoderate_books, "sweep", sweep_mock),
+    ):
+        remoderate_books.main()
+    return sweep_mock
+
+
+def test_main_refuses_to_execute_with_the_mock_reviewer() -> None:
+    """--execute with the mock backend must abort before touching anything.
+
+    The mock answers every review call with the literal "{}", which parses
+    cleanly and carries no verdict, so every node lands on the fail-safe
+    default. Running this sweep with it would rewrite the exact reports the
+    sweep exists to clear, and exit 0 reporting success. Twelve production
+    books, 2,916 nodes, are in that state now.
+    """
+    settings = _settings_stub(provider="mock")
+
+    with pytest.raises(SystemExit) as excinfo:
+        _run_main_with_settings(settings, execute=True)
+
+    assert "mock" in str(excinfo.value.code)
+
+
+def test_main_refusal_happens_before_the_sweep_runs() -> None:
+    """The refusal is a preflight, not a post-hoc complaint."""
+    settings = _settings_stub(provider="mock")
+    args = MagicMock(
+        book_id=["s1"],
+        mock_moderated=False,
+        in_review=False,
+        execute=True,
+        per_book_timeout=900,
+    )
+    sweep_mock = AsyncMock()
+    with (
+        patch.object(remoderate_books, "_parse_args", MagicMock(return_value=args)),
+        patch.object(remoderate_books, "_default_settings", settings),
+        patch.object(remoderate_books, "sweep", sweep_mock),
+        pytest.raises(SystemExit),
+    ):
+        remoderate_books.main()
+
+    sweep_mock.assert_not_awaited()
+
+
+def test_main_allows_a_dry_run_with_the_mock_reviewer() -> None:
+    """A dry run makes no review calls, so the mock is irrelevant to it.
+
+    Refusing here would remove the one safe way to see what a sweep would
+    target from a workstation.
+    """
+    sweep_mock = _run_main_with_settings(
+        _settings_stub(provider="mock"),
+        execute=False,
+        result=remoderate_books.SweepResult(targets=[("s1", 1)], executed=False),
+    )
+    sweep_mock.assert_awaited_once()
+
+
+def test_main_executes_normally_with_a_real_reviewer() -> None:
+    """The positive control for the refusal tests above.
+
+    Those prove the preflight stops a mock ``--execute``. On their own they
+    cannot distinguish a correctly conditioned guard from one that refuses
+    every ``--execute``, since neither ever runs one that should succeed.
+    Change only the provider and the sweep must be awaited.
+    """
+    sweep_mock = _run_main_with_settings(
+        _settings_stub(provider="openrouter"),
+        execute=True,
+        result=remoderate_books.SweepResult(targets=[("s1", 1)], executed=True),
+    )
+    sweep_mock.assert_awaited_once()
+
+
+def test_main_prints_the_resolved_target_before_executing(
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    """Print what this run actually resolved, not what the operator intended.
+
+    ``Settings`` declares no ``env_file``: it reads exported process
+    environment variables and nothing else. A shell that never exported them
+    therefore resolves environment="local", a localhost database and
+    review_provider="mock" together, from one absence, and every guard keyed
+    on environment != "local" goes quiet at the same moment. Printing the
+    resolved values is what makes that visible before the run, rather than
+    after an apparently successful sweep that touched nothing.
+    """
+    _run_main_with_settings(
+        _settings_stub(provider="openrouter", environment="production"),
+        execute=True,
+    )
+    # stderr, not stdout: the banner shares a stream with the refusal it
+    # gives context to, so an operator redirecting one keeps both halves.
+    err = capsys.readouterr().err
+    assert "openrouter" in err
+    assert "production" in err
+    assert "db.example.net" in err
+
+
+def test_main_preflight_never_prints_database_credentials(
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    """The banner names the target, never the password reaching it."""
+    _run_main_with_settings(
+        _settings_stub(provider="openrouter"),
+        execute=True,
+    )
+    captured = capsys.readouterr()
+    assert _LEAK_CANARY_PREFIX not in captured.out
+    assert _LEAK_CANARY_PREFIX not in captured.err
+
+
+# ---------------------------------------------------------------------------
+# _database_target(): the banner must not be a credential-disclosure channel
+# ---------------------------------------------------------------------------
+
+# One sentinel value, embedded in every shape below and in `_settings_stub`,
+# so a single containment assertion covers the whole table. Every shape that a
+# leak would split the value across (a `/`, `?`, `#` or space inside it) keeps
+# `_LEAK_CANARY_PREFIX` as its leading fragment, so asserting on the fragment
+# catches a partial disclosure that asserting on the whole value would miss.
+#
+# It is deliberately named and worded as a canary rather than as a password.
+# A high-entropy literal bound to a password-like name is the exact shape
+# secret scanners are built to flag; a scanner finding on a fixture is
+# indistinguishable from a real leak until a human reads the diff, which
+# spends the alert on nothing. The value states its own purpose instead, so
+# neither a scanner nor a reader can mistake it for a credential. Keep it that
+# way when editing: the sentinel needs to be distinctive, not password-shaped.
+_LEAK_CANARY = "must-not-print-this-value"
+_LEAK_CANARY_PREFIX = "must-not-print"
+
+# label -> (url, exactly what _database_target must render).
+#
+# Expectations are exact, not "does not contain the password". A function that
+# returned "" for everything would satisfy a containment-only check while
+# telling the operator nothing, and "unparseable" everywhere would hide a
+# regression that broke the happy path. Pinning the rendered value on the
+# shapes that DO resolve is what keeps the refusals meaningful.
+_DATABASE_URL_SHAPES: dict[str, tuple[str, str]] = {
+    # Resolves. The positive control for the whole table.
+    "well_formed": (
+        f"postgresql+asyncpg://cyo_user:{_LEAK_CANARY}@db.example.net:5432/cyo",
+        "db.example.net:5432/cyo",
+    ),
+    # No scheme, but a real authority: urlsplit yields a host, so there is
+    # nothing suspect to refuse and the target is nameable.
+    "scheme_relative": (
+        f"//cyo_user:{_LEAK_CANARY}@db.example.net/cyo",
+        "db.example.net/cyo",
+    ),
+    # `hostname` strips the brackets an IPv6 literal needs; without them
+    # "2001:db8::1:5432" reads as a different address entirely.
+    "ipv6_literal": (
+        f"postgresql+asyncpg://cyo_user:{_LEAK_CANARY}@[2001:db8::1]:5432/cyo",
+        "[2001:db8::1]:5432/cyo",
+    ),
+    # A space is legal inside a netloc as far as urlsplit is concerned and
+    # does not move the authority boundary, so this still resolves.
+    "space_in_password": (
+        "postgresql+asyncpg://cyo_user:must-not-print this-value@db.example.net:5432/cyo",
+        "db.example.net:5432/cyo",
+    ),
+    # No "//" means no authority at all: the entire credential-bearing
+    # remainder is the path. This is the shape the previous form printed
+    # verbatim.
+    "no_double_slash": (
+        f"postgresql+asyncpg:cyo_user:{_LEAK_CANARY}@db.example.net/cyo",
+        "unparseable",
+    ),
+    # "cyo_user" is not a valid scheme (underscore), so nothing splits and
+    # the whole DSN lands in the path.
+    "no_scheme": (
+        f"cyo_user:{_LEAK_CANARY}@db.example.net:5432/cyo",
+        "unparseable",
+    ),
+    # Each of these ends the netloc early, inside the password: the "host"
+    # urlsplit reports is a credential fragment wearing a hostname's name.
+    "slash_in_password": (
+        "postgresql+asyncpg://cyo_user:must-not-print/this-value@db.example.net:5432/cyo",
+        "unparseable",
+    ),
+    "question_in_password": (
+        "postgresql+asyncpg://cyo_user:must-not-print?this-value@db.example.net:5432/cyo",
+        "unparseable",
+    ),
+    "hash_in_password": (
+        "postgresql+asyncpg://cyo_user:must-not-print#this-value@db.example.net:5432/cyo",
+        "unparseable",
+    ),
+    # `.port` casts on access, so all three of these raise ValueError rather
+    # than returning None. Reading it outside the try (as the previous form
+    # did) turned a malformed port into an uncaught crash mid-preflight.
+    "non_numeric_port": (
+        f"postgresql+asyncpg://cyo_user:{_LEAK_CANARY}@db.example.net:notaport/cyo",
+        "unparseable",
+    ),
+    "port_out_of_range": (
+        f"postgresql+asyncpg://cyo_user:{_LEAK_CANARY}@db.example.net:99999/cyo",
+        "unparseable",
+    ),
+    "negative_port": (
+        f"postgresql+asyncpg://cyo_user:{_LEAK_CANARY}@db.example.net:-1/cyo",
+        "unparseable",
+    ),
+    # Userinfo with nothing after the "@": there is no host to name.
+    "userinfo_no_host": (
+        f"postgresql+asyncpg://cyo_user:{_LEAK_CANARY}@",
+        "unparseable",
+    ),
+    # A database name is one path segment. More than one means the authority
+    # boundary landed somewhere unexpected.
+    "two_path_segments": (
+        f"postgresql+asyncpg://cyo_user:{_LEAK_CANARY}@db.example.net:5432/cyo/extra",
+        "unparseable",
+    ),
+    # No structure at all: a value that is only a secret.
+    "bare_secret": (_LEAK_CANARY, "unparseable"),
+    # The empty string is what an unset DATABASE_URL looks like after
+    # defaulting, and it must not crash the preflight it precedes.
+    "empty": ("", "unparseable"),
+}
+
+
+class TestDatabaseTarget:
+    """The preflight banner names the target and never the way in.
+
+    This string is printed to a terminal and scraped into CI logs, so the
+    requirement is that a password CANNOT reach it, not that it usually does
+    not. Nothing upstream constrains the value: ``database_url`` is a bare
+    ``str`` on ``Settings``, so every shape an operator can typo into a shell
+    reaches this function.
+    """
+
+    @pytest.mark.parametrize("label", sorted(_DATABASE_URL_SHAPES))
+    def test_no_credential_survives_any_malformed_url(self, label: str) -> None:
+        """Every shape renders exactly its expectation, and never the secret.
+
+        Parametrised per shape rather than looped so a regression names the
+        one URL that broke; a loop reports only the first failure and hides
+        how many of the sixteen went with it.
+        """
+        url, expected = _DATABASE_URL_SHAPES[label]
+
+        rendered = remoderate_books._database_target(url)
+
+        assert rendered == expected
+        assert _LEAK_CANARY_PREFIX not in rendered
+
+    def test_every_shape_carries_the_sentinel_it_is_scanned_for(self) -> None:
+        """The table cannot go quiet by losing the secret it tests for.
+
+        Without this, editing a URL above and dropping the password would
+        leave its leak assertion trivially true, and the shape would keep
+        reporting a pass while testing nothing. ``empty`` is the one
+        deliberate exception: an unset DSN has no credential by definition.
+        """
+        carrying = {
+            label
+            for label, (url, _) in _DATABASE_URL_SHAPES.items()
+            if _LEAK_CANARY_PREFIX in url
+        }
+
+        assert carrying == set(_DATABASE_URL_SHAPES) - {"empty"}
+
+    def test_a_resolvable_url_is_still_named(self) -> None:
+        """Refusing everything would satisfy the leak check and help nobody.
+
+        The banner exists so an operator can see that a run resolved the
+        database they meant. A ``_database_target`` that answered
+        "unparseable" unconditionally would pass every assertion above.
+        """
+        resolved = {
+            label
+            for label, (_, expected) in _DATABASE_URL_SHAPES.items()
+            if expected != "unparseable"
+        }
+
+        assert resolved == {
+            "well_formed",
+            "scheme_relative",
+            "ipv6_literal",
+            "space_in_password",
+        }
+
+
+def test_preflight_banner_never_prints_credentials_end_to_end(
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    """Drive the real Settings and the real _preflight, not a mock of either.
+
+    Every other preflight test here passes a ``MagicMock`` standing in for
+    ``Settings``, which proves what ``_preflight`` does with a value but not
+    that a real ``Settings`` carries one it can survive. This closes that
+    gap on both shapes an operator can produce without noticing: a DSN whose
+    "//" is missing, and one with no scheme at all. Both put the whole
+    credential-bearing string into ``parts.path``, which is exactly what the
+    banner used to print.
+
+    Two other shapes cannot be covered here, and that is a finding rather
+    than an omission: a "/" inside the password and an out-of-range port
+    both make ``Settings`` itself raise, because ``core/config.py``'s
+    ``_check_pooler_port`` reads ``urlsplit(url).port`` unguarded during
+    validation. The "/" case is the worse of the two, since pydantic's error
+    text then quotes the password fragment it failed to cast. That is
+    tracked separately; this test pins the half that reaches the banner.
+    """
+    for label in ("no_double_slash", "no_scheme"):
+        url, _ = _DATABASE_URL_SHAPES[label]
+        settings = Settings(
+            database_url=url,
+            environment="local",
+            review_provider="openrouter",
+            openrouter_api_key="sk-or-test",
+            # Required alongside the openrouter provider: omni-moderation is
+            # an OpenAI call regardless of which model writes the review.
+            openai_api_key="sk-test-key",
+        )
+
+        remoderate_books._preflight(settings, execute=True)
+
+        captured = capsys.readouterr()
+        assert _LEAK_CANARY_PREFIX not in captured.out, label
+        assert _LEAK_CANARY_PREFIX not in captured.err, label
+        # The banner still ran: an exception swallowed upstream, or a
+        # preflight that printed nothing, would satisfy the two assertions
+        # above while removing the safety signal entirely.
+        assert "unparseable" in captured.err, label
+        assert "review_provider=openrouter" in captured.err, label

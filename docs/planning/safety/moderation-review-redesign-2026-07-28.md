@@ -512,6 +512,30 @@ exist in production. Design:
 Stage A is deliberately shippable alone: it prevents every future flood and
 makes the failure class visible, even if B's surface redesign takes longer.
 
+### 6.1 Delivery status as of 2026-08-25
+
+Read against live source at `b2273a71` (post-#764) and live production data.
+This table records what has landed, not what was intended. It refines the
+per-stage banner at the top of this document rather than competing with it;
+where the two once disagreed on Stage C, the banner was right and the row
+below has been corrected.
+
+| Stage | Status | Evidence |
+| --- | --- | --- |
+| **A** | Delivered | Per-node fail-safe collapse into one story-level structural finding (`moderation/stages.py`, the `reviewer_unavailable` concern in `CONCERN_TAXONOMY`); `reviewer_independent` written by the pipeline rather than assumed (`moderation/pipeline.py`) |
+| **B** | Delivered | `moderation/synthesis.py` (deterministic post-review merge), `api/review_surface.py` (PASS filtered before ranking, verdict-then-severity-then-node-count order, structural / low-advisory / ranked split, admin-only noise floor), `_VALIDATOR_RULE_IDS = {RL-13, PL-19}` per decision 1 |
+| **C** | Partly delivered | Stage-0 baseline captured 2026-08-01 (`safety/stage0-baseline-2026-08-01.json`). Perspective's outbound call leg IS retired: `run_classifiers` no longer calls it, and the only remaining caller of `PERSPECTIVE_URL` is `scripts/capture_stage0_baseline.py`, an offline calibration tool outside the request path. This row was first drafted from a case-sensitive `perspective` grep over `src/` plus `scripts/`, five files, read as live emission; that reading was wrong, and the five hits are the retained `Source.PERSPECTIVE` enum member (so historical findings still deserialize), the `perspective_api_key` config field (kept so an existing deployment still boots), and explanatory comments. The Modal guard-model eval has not started |
+| **D** | Code half delivered, ops run pending | Entry point `api/remoderate.py` (#753, widened to `in_review`), sweep selection `scripts/remoderate_books.py` (`--in-review`, `--book-id`, dry-run default). **The sweep has never run:** production's newest `storybook_version` row is dated 2026-07-28 and all seventeen in-review reports still date from 2026-07-21. Two populations meet in this row and are not the same set: the **18** are the mock-moderated books across the whole 29-version catalog (2026-07-28, gap report 3.1), while the **seventeen** are the books sitting at the human review gate (2026-08-25 census), twelve of which are mock-moderated |
+| **QA corpus** | Fixtures authored | `safety/moderation-qa-corpus.json`, `scripts/seed_moderation_qa.py`, `scripts/moderation_qa_scorecard.py`. Whether it has been seeded into staging was not verified here |
+
+**What the delivered stages do not yet buy.** A and B change what a reviewer is
+shown, and the seventeen in-review reports predate both, so nothing a reviewer sees
+today reflects them. The census in
+[moderation-review-current-state-2026-08-25.md](./moderation-review-current-state-2026-08-25.md)
+also shows the backlog's dominant problem is not flood but absence: twelve books
+carry no real verdicts at all. Stage D's ops run, not further surface work, is
+what converts the delivered redesign into a reviewable backlog.
+
 ## 7. Decisions requested from the owner
 
 1. **Stage-2 disposition**: **DECIDED 2026-07-29: option (a).** Retire the

@@ -10,9 +10,10 @@ its own output without that being recorded.
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Protocol, cast
+from typing import TYPE_CHECKING, Final, Protocol, cast
 
 from cyo_adventure.core.exceptions import ConfigurationError
+from cyo_adventure.core.pricing import endpoint_pin_for
 from cyo_adventure.generation.provider import (
     MockProvider,
     build_openrouter_leg,
@@ -21,16 +22,25 @@ from cyo_adventure.generation.usage import Completion
 
 if TYPE_CHECKING:
     from cyo_adventure.core.config import Settings
+    from cyo_adventure.moderation.report import ReviewProvenance
 
 # The mock review backend (the dev/test default) must outlast a full pipeline run.
-# The pipeline issues ceil(N / review_batch_size) + 2 review calls (safety,
-# chunked per review_batch_size, plus coherence and engagement once each; the
-# ceiling matters because a trailing partial chunk still costs a full call, so
-# plain division under-counts by one whenever N is not a multiple of the batch
-# size; the two coincide only at the default batch size of 1). MockProvider
-# raises BusinessLogicError on over-call, so a fixed budget that is too small
-# turns a large clean story into a spurious job failure. This bound covers well
-# beyond any realistic node count; mock is never a live backend.
+# A clean run issues ceil(N / review_batch_size) + 2 review calls: safety,
+# chunked per review_batch_size (default 8), plus coherence and engagement once
+# each. The ceiling matters because a trailing partial chunk still costs a full
+# call, so plain division under-counts by one whenever N is not a multiple of
+# the batch size; the two coincide only at review_batch_size=1.
+#
+# The worst case is higher than that, and deliberately so: an unusable batch
+# response is retried one node at a time, which adds up to len(batch) calls for
+# that batch. A story whose every batch response is unusable therefore costs at
+# most ceil(N / review_batch_size) + N + 2, and the retries stop entirely once
+# one batch recovers nothing (the reviewer, not the format, is then the problem).
+#
+# MockProvider raises BusinessLogicError on over-call, so a fixed budget that is
+# too small turns a large clean story into a spurious job failure. This bound
+# covers that worst case well beyond any realistic node count; mock is never a
+# live backend.
 _MOCK_RESPONSE_BUDGET = 4096
 
 
@@ -78,6 +88,144 @@ def completion_text(returned: object) -> str | None:
     return text if isinstance(text, str) else None
 
 
+def completion_truncated(returned: object) -> bool:
+    """Return ``True`` when the provider reported a budget truncation.
+
+    Args:
+        returned: Whatever the provider's ``complete`` actually returned.
+
+    Returns:
+        ``True`` only when the backend reported ``finish_reason="length"``.
+
+    # #CRITICAL: external-resources: the OpenRouter adapter raises only when a
+    # truncated completion comes back EMPTY. A truncation that produced some
+    # bytes first returns normally, so a starved review call reaches the stage
+    # parsers as a JSON prefix and fails safe as "unparseable". That reads like
+    # a model formatting quirk and hides the real cause, which is that we did
+    # not buy enough output budget. ``finish_reason`` is the only thing that
+    # separates the two, and nothing in moderation read it before this.
+    # #VERIFY: test_truncated_batch_is_reported_as_truncation_not_bad_json.
+    """
+    return completion_finish_reason(returned) == "length"
+
+
+def completion_finish_reason(returned: object) -> str:
+    """Return the provider's reported finish reason, always as a string.
+
+    The observable half of :func:`completion_truncated`. That predicate can
+    only answer yes or no, so a provider that omits ``finish_reason``, or
+    spells truncation some other way, makes a genuinely starved call
+    indistinguishable from a model that merely emitted bad JSON, and the log
+    cannot show which one happened because the predicate discarded the value.
+    This returns the value itself so a parse failure records what the backend
+    actually said. Both observed OpenRouter runs (2026-08-26, at ceilings of
+    400 and 16000) populated the field, so this closes a confidence gap rather
+    than a known failure.
+
+    Args:
+        returned: Whatever the provider's ``complete`` actually returned.
+
+    Returns:
+        str: The reported reason. ``"<absent>"`` when the field is missing or
+            ``None``, and ``"<not-a-completion>"`` when the provider returned
+            a bare string, so an empty log field can never be mistaken for a
+            backend that reported nothing.
+
+    # #ASSUME: external-resources: a non-string finish_reason is coerced with
+    # repr rather than dropped. The field is free-form across backends and
+    # this value is diagnostic only, never a control-flow input beyond the
+    # equality test in completion_truncated.
+    # #VERIFY: test_finish_reason_is_logged_even_when_it_is_not_a_truncation.
+    """
+    if not isinstance(returned, Completion):
+        return "<not-a-completion>"
+    reason = cast("object", getattr(returned, "finish_reason", None))
+    if reason is None:
+        return "<absent>"
+    return reason if isinstance(reason, str) else repr(reason)
+
+
+# #CRITICAL: data-integrity: a safety verdict is a judgment, and a judgment that
+# moves between two reads of the same passage is not one. Left at the vendor
+# default (typically 1.0) a re-moderation returns a different answer to
+# unchanged prose, which is indistinguishable from the prose having changed and
+# makes every before/after comparison in this subsystem unfalsifiable: the
+# 2026-07-21 mock-reviewer sweep was only detectable because its reports carried
+# a stamp, and sampling noise carries none. Generation deliberately keeps the
+# default (see generation/variation.py: variation is bought with an explicit
+# axis, not with noise), so this is set on the review leg only.
+#
+# No `seed` is sent alongside it. OpenRouter forwards `seed` only to backends
+# that implement it and this reviewer slug runs UNPINNED (its PRICES row is the
+# slug's default route, so `ENDPOINT_PINS` carries no entry, see
+# core/config.py::review_openrouter_model), which means the answering backend
+# is not known in advance and neither is whether it honours the field. Sending
+# one would buy an appearance of reproducibility without the property. Pinning
+# the endpoint first is the prerequisite, and it needs a reachability probe this
+# account has not run for this slug.
+# #VERIFY: tests/unit/test_review_provenance.py::
+# test_the_review_leg_is_built_at_temperature_zero.
+REVIEW_TEMPERATURE: Final = 0.0
+
+
+def _review_model_for(settings: Settings) -> str | None:
+    """Return the model the configured review backend will actually run.
+
+    The ONE resolver both :func:`build_review_provider` and
+    :func:`review_provenance` read, so a persisted report can never name a
+    model other than the one that was built. Two functions each reaching for
+    ``settings.review_openrouter_model`` would agree today and drift the moment
+    a second live backend lands, and the drift would surface as a report
+    attributing a verdict to a model that never saw the prose.
+
+    Args:
+        settings: Application settings.
+
+    Returns:
+        str | None: The model id, or ``None`` for a backend that runs no model
+        (the mock reviewer).
+    """
+    if settings.review_provider == "mock":
+        return None
+    return settings.review_openrouter_model
+
+
+def review_provenance(settings: Settings) -> ReviewProvenance:
+    """Describe the reviewer a run used, for persistence on the report.
+
+    The 2026-07-21 mock-reviewer run persisted no reviewer provenance at all,
+    which is why 31 books' reports could not be told apart from genuinely
+    reviewed ones without re-deriving the whole population from a stamp that
+    happened to exist. A report that records its own reviewer is auditable
+    after the fact by construction.
+
+    Args:
+        settings: The settings the review provider was (or will be) built from,
+            AFTER any :func:`resolve_review_settings` override, so an
+            admin-chosen stage model is what gets recorded.
+
+    Returns:
+        ReviewProvenance: A JSON-serializable provenance block. ``endpoint`` is
+        the OpenRouter backend pin, an empty list meaning the slug ran on
+        whichever backend won the routing auction; that is a real gap in
+        reproducibility and recording it as empty is how it stays visible.
+    """
+    model = _review_model_for(settings)
+    return {
+        "provider": settings.review_provider,
+        "model": model,
+        "endpoint": (
+            list(endpoint_pin_for("openrouter", model))
+            if settings.review_provider == "openrouter" and model is not None
+            else []
+        ),
+        "temperature": (
+            REVIEW_TEMPERATURE if settings.review_provider != "mock" else None
+        ),
+        "batch_size": settings.review_batch_size,
+    }
+
+
 def build_review_provider(
     settings: Settings,
     *,
@@ -123,8 +271,15 @@ def build_review_provider(
         msg = "review_provider 'modal' is deferred to slice 2b; use openrouter"
         raise ConfigurationError(msg)
 
-    provider = build_openrouter_leg(settings, settings.review_openrouter_model)
-    review_model: str | None = settings.review_openrouter_model
+    review_model = _review_model_for(settings)
+    # A non-mock, non-modal backend always resolves a model, so this narrowing
+    # cannot be reached; asserting it beats an ignore comment on the call below.
+    if review_model is None:  # pragma: no cover - unreachable for openrouter
+        msg = f"review_provider '{backend}' resolved no model"
+        raise ConfigurationError(msg)
+    provider = build_openrouter_leg(
+        settings, review_model, temperature=REVIEW_TEMPERATURE
+    )
 
     independent = backend != generator_provider or review_model != generator_model
     return provider, independent

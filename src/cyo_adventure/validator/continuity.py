@@ -77,6 +77,7 @@ if TYPE_CHECKING:
 
 __all__ = [
     "OptionalHistory",
+    "dominating_nodes",
     "is_stateless",
     "optional_history",
 ]
@@ -167,6 +168,53 @@ def optional_history(story: Storybook) -> list[OptionalHistory]:
     ]
     results.sort(key=lambda item: (-len(item.optional), item.node_id))
     return results
+
+
+def dominating_nodes(story: Storybook) -> dict[str, frozenset[str]]:
+    """Return, for each reachable node, the nodes on EVERY route into it.
+
+    The public face of the same exact fixed-point computation
+    :func:`optional_history` uses. Exposed because a second rule needs the
+    dominator half on its own: PN-1 (`validator/naming.py`) asks whether a
+    node introducing a proper noun lies on every route to a node that names
+    it, which is exactly a dominator question and not an optional-history one.
+
+    Dominance here is **strict**: a node is not on a route *into* itself, so
+    it never appears in its own set and the start node maps to the empty set.
+    PN-1 relies on that, testing whether the node itself introduces the name
+    as a separate question from whether an ancestor did.
+
+    Args:
+        story: The story whose node graph to measure.
+
+    Returns:
+        dict[str, frozenset[str]]: Reachable node id to the nodes strictly
+            dominating it.
+            Unreachable nodes are omitted, matching
+            :func:`optional_history`; an unreachable node is L1's finding.
+    """
+    order = [node.id for node in story.nodes]
+    successors: dict[str, set[str]] = {node.id: set() for node in story.nodes}
+    predecessors: dict[str, set[str]] = {node.id: set() for node in story.nodes}
+    for node in story.nodes:
+        for choice in node.choices:
+            # #ASSUME: data integrity: a choice may target an id no node
+            # declares. That is L1-2's finding, not this module's, so it must
+            # be skipped rather than indexed: predecessors only has keys for
+            # declared node ids, and indexing it by a dangling target raises
+            # KeyError, turning a reportable finding into a crash of the gate
+            # itself.
+            # #VERIFY: covered by
+            # test_a_dangling_choice_target_does_not_crash_dominating_nodes
+            # in tests/unit/test_continuity.py, which proves this by mutation.
+            if choice.target not in successors:
+                continue  # a dangling target is L1-2's finding, not ours
+            successors[node.id].add(choice.target)
+            predecessors[choice.target].add(node.id)
+
+    reachable = _reachable(story.start_node, successors)
+    dominators = _dominators(story.start_node, order, predecessors, reachable)
+    return {node_id: frozenset(dominators[node_id]) for node_id in reachable}
 
 
 def _reachable(start: str, successors: dict[str, set[str]]) -> set[str]:

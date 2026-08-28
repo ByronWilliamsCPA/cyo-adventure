@@ -65,6 +65,34 @@ def _moderation_settings() -> Settings:
     return Settings(review_provider="mock")
 
 
+def _with_mock_stamp(**counts: int) -> dict[str, int]:
+    """Return ``counts`` plus the mock reviewer's own row, as one exact expectation.
+
+    Every moderation test in this module runs ``_moderation_settings()``, i.e.
+    ``review_provider="mock"``, and ``pipeline._stamp_mock_reviewer`` adds one
+    ADVISORY, ``structural=True`` finding to every such report in every
+    environment (the gap-G1 stamp). It therefore contributes exactly one
+    ``advisory`` and one ``structural`` to each ``moderation_completed``
+    ``counts`` payload, on top of whatever the test's own findings produce.
+
+    Folding it in here rather than relaxing the assertions keeps every call
+    site an exact-equality check that ASSERTS the stamp: deleting the stamp,
+    or gating it back on ``environment``, fails these tests instead of
+    silently passing them.
+
+    Args:
+        counts: The verdict-name counts the test's own findings produce,
+            excluding the stamp.
+
+    Returns:
+        The full expected ``counts`` payload, stamp included.
+    """
+    stamped = {"advisory": 1, "structural": 1}
+    for name, value in counts.items():
+        stamped[name] = stamped.get(name, 0) + value
+    return stamped
+
+
 def _pii() -> PiiContext:
     """Return an empty PiiContext with no real-child identifiers to guard against."""
     return PiiContext(child_names=frozenset())
@@ -1173,7 +1201,10 @@ async def test_clean_moderation_writes_moderation_completed(
     )
     assert event.payload["overall_verdict"] == "pass"
     assert event.payload["repaired"] is False
-    assert event.payload["counts"] == {}
+    # "Clean" means the stages contributed nothing, so the mock reviewer's own
+    # stamp is the ONLY row: the run's counts are exactly the stamp and no
+    # more. The overall verdict stays "pass" because ADVISORY never gates.
+    assert event.payload["counts"] == _with_mock_stamp()
 
     assert await fetch_events(sessions, "repair_applied") == []
 
@@ -1300,7 +1331,10 @@ async def test_structural_finding_adds_structural_key_to_moderation_completed_co
         to_state="in_review",
         actor_is_system=True,
     )
-    assert event.payload["counts"] == {"advisory": 1, "structural": 1}
+    # The test's own synthetic finding is ADVISORY + structural, and so is the
+    # mock reviewer's stamp, so both keys land on 2. Expressing it as the
+    # test's contribution PLUS the stamp keeps the two sources distinguishable.
+    assert event.payload["counts"] == _with_mock_stamp(advisory=1, structural=1)
 
 
 async def test_hard_block_moderation_writes_moderation_completed_needs_revision(
@@ -1362,7 +1396,7 @@ async def test_hard_block_moderation_writes_moderation_completed_needs_revision(
     assert event.payload == {
         "overall_verdict": "block",
         "repaired": False,
-        "counts": {"block": 1},
+        "counts": _with_mock_stamp(block=1),
     }
 
 

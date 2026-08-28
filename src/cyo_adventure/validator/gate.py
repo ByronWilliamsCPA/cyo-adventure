@@ -30,13 +30,16 @@ Rule application order (per ``docs/planning/validator-rules.md``
 8. CG-1..CG-4: advisory choice-grammar checks (WARNING, never blocks),
    gated behind ``enforce_grammar`` (default False; D3/D11 grandfathering,
    see ``validator/choice_grammar.py``).
-9. SAFE-14: safety content check (Phase-2 stub, always empty).
+9. PN-1: advisory proper-noun introduction check (WARNING, never blocks),
+   fill-result only. Flags a name a reader can reach before the prose says
+   who or what it is; see ``validator/naming.py``.
+10. SAFE-14: safety content check (Phase-2 stub, always empty).
 
 Blocking semantics
 ------------------
 ``blocked`` is ``True`` when any ERROR-severity finding whose ``rule_id``
 starts with ``"CH"``, ``"L1"``, ``"L2"``, or ``"PL"`` is present in the merged
-report. RL-13 findings are WARNING and must not set ``blocked``. SAFE-14
+report. RL-13 and PN-1 findings are WARNING and must not set ``blocked``. SAFE-14
 findings route to human review and are tracked separately via
 ``safety_flagged``.
 
@@ -58,6 +61,7 @@ from cyo_adventure.validator.character import validate_character
 from cyo_adventure.validator.choice_grammar import check_choice_grammar
 from cyo_adventure.validator.layer1 import Scale, validate_layer1
 from cyo_adventure.validator.layer2 import validate_layer2
+from cyo_adventure.validator.naming import check_proper_noun_introduction
 from cyo_adventure.validator.policy import (
     check_fill_residue,
     check_mvp_firewall,
@@ -253,6 +257,13 @@ def run_gate(
             is_fill_result=context == "fill_result",
         )
     )
+
+    # --- PN-1: advisory proper-noun introduction check (WARNING, never
+    # blocks). Fill-result only: the rule reads prose, and a catalog
+    # skeleton's bodies are `<<FILL ...>>` directives by construction, so the
+    # answer at catalog time is always empty (AL-325's distinction). ---
+    if context == "fill_result":
+        merged.extend(check_proper_noun_introduction(story))
 
     # --- SAFE-14: safety check (Phase-2 stub, always empty) ---
     merged.extend(check_safety(story))

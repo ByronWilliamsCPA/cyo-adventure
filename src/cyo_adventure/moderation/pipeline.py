@@ -40,6 +40,7 @@ from cyo_adventure.moderation.review_provider import (
     ReviewProvider,
     build_review_provider,
     resolve_review_settings,
+    review_provenance,
 )
 from cyo_adventure.moderation.stages import (
     run_coherence_stage,
@@ -67,6 +68,47 @@ if TYPE_CHECKING:
 
 _logger = get_logger(__name__)
 _MAX_REVIEW_TOKENS = 1024
+
+# Output-token ceiling for the two WHOLE-STORY review stages (coherence and
+# engagement), which send every node's prose in a single call.
+#
+# #CRITICAL: external-resources: _MAX_REVIEW_TOKENS is a PER-NODE budget. The
+# safety stage scales it by batch size, adds a fixed per-call reasoning
+# allowance, and clamps the result at stages.py's _MAX_BATCH_REVIEW_TOKENS
+# (16000; it was 8192 when this comment was first written, before the
+# reasoning allowance was added alongside it, see stages.py for both). The
+# whole-story stages instead pass _MAX_REVIEW_TOKENS through flat, which gave
+# 1024 for a call whose input scales with the entire book. That figure was
+# sized for anthropic/claude-sonnet-4.6, which emits no reasoning tokens. #747
+# repointed review at deepseek/deepseek-v4-flash, which is reasoning-native,
+# and the OpenRouter ceiling counts reasoning against the SAME budget, so the
+# model spent the whole allowance thinking and the call came back
+# finish_reason=length with empty content, raising ProviderError and aborting
+# the book. settings.llm_effort="off" does not help: it only stops the adapter
+# SENDING a reasoning parameter, it does not stop a reasoning-native model from
+# reasoning.
+#
+# 16000 is measured, not guessed. sk_clocktower_cipher (25 nodes) is the book
+# that exposed this; run at a 32000 ceiling its coherence call completed
+# (finish_reason=stop) reporting 4443 reasoning tokens plus 4252 output
+# tokens, for a true requirement of ~8700. _MAX_WHOLE_STORY_REVIEW_TOKENS and
+# stages.py's _MAX_BATCH_REVIEW_TOKENS both currently land on 16000, but that
+# is coincidence, not a shared derivation the code should collapse into one
+# constant: they bound different call SHAPES. The batch clamp scales with
+# caller-supplied node count plus the reasoning allowance and exists to keep
+# an arbitrarily large batch's product inside a workable ceiling; this
+# constant is a flat per-call budget for a single call whose input is never
+# scaled by a caller-supplied count (it always sends the whole book). Each was
+# measured independently against this provider, and keeping them as separate
+# names lets either move on its own if a future measurement (a longer book, a
+# different reviewed model) diverges from the other call shape's requirement;
+# merging them into one constant would silently couple two budgets that have
+# no structural reason to move together.
+# Reasoning need tracks CONTENT, not length: 550-node books pass at 1024 while
+# this 25-node book does not, so the headroom is deliberate.
+# #VERIFY: test_whole_story_stages_get_the_whole_story_token_budget.
+_MAX_WHOLE_STORY_REVIEW_TOKENS = 16000
+
 _MAX_REPAIR_TOKENS = 32000
 
 # The personalizable-slot tri-state contract (the ``PERSONALIZABLE_SLOTS_UNSET``
@@ -261,6 +303,10 @@ async def run_moderation_pipeline(
         generation_provider=generation_provider,
     )
     report.reviewer_independent = independent
+    # Recorded from the RESOLVED settings, so an admin's per-stage model
+    # override is what the report attributes the verdict to rather than the
+    # process-wide default.
+    report.reviewer = review_provenance(review_settings)
     if not independent:
         report.add(
             Finding(
@@ -271,9 +317,14 @@ async def run_moderation_pipeline(
                 message="reviewer is the same backend+model as the generator",
             )
         )
-    # #CRITICAL: security: a report produced by the mock reviewer (the
-    # CYO_ADVENTURE_ALLOW_MOCK_REVIEW=1 escape hatch, config._require_real_
-    # reviewer_outside_local) ran no real safety review at all. Overriding
+    # #CRITICAL: security: a report produced by the mock reviewer ran no
+    # real safety review at all, in EVERY environment. The escape hatch
+    # (CYO_ADVENTURE_ALLOW_MOCK_REVIEW=1,
+    # config._require_real_reviewer_outside_local) is what lets such a run
+    # BOOT outside local; it has never been what triggers this stamp, and
+    # reading it as the trigger is precisely the mistake that left the stamp
+    # gated on `environment != "local"` (third block below). The trigger is
+    # `review_provider == "mock"` and nothing else. Overriding
     # `reviewer_independent` here (build_review_provider always reports the
     # mock backend as independent) plus a structural advisory finding is what
     # makes such a report self-identifying forever (gap G1, design doc
@@ -283,17 +334,44 @@ async def run_moderation_pipeline(
     # adopted repair replaces `report` wholesale with the fresh report built
     # in `_attempt_and_adopt_repair`, so stamping only this pre-repair report
     # would persist an unstamped report on every mock-moderated story that
-    # repaired. `mock_reviewer_outside_local` is therefore threaded into that
+    # repaired. `mock_reviewer` is therefore threaded into that
     # function, which re-applies the identical stamp via `_stamp_mock_reviewer`.
     # #VERIFY: tests/unit/test_moderation_pipeline.py::
     # test_mock_review_escape_hatch_stamps_report_as_not_independent (no
     # repair) and ::test_mock_review_stamp_survives_adopted_repair (adopted
     # repair; asserts the PERSISTED report keeps both halves of the stamp).
-    mock_reviewer_outside_local = (
-        review_settings.review_provider == "mock"
-        and review_settings.environment != "local"
-    )
-    if mock_reviewer_outside_local:
+    # #CRITICAL: security: this must NOT be gated on `environment != "local"`.
+    # It was, and `config._require_real_reviewer_outside_local` is gated on the
+    # same predicate, so the two defenses shared one point of failure: both
+    # `review_provider` and `environment` are read from the process
+    # environment by the same Settings object, which declares no `env_file`
+    # (config.py:218) and therefore reads nothing but exported variables. A
+    # process started without them exported falls back to
+    # `review_provider="mock"` (config.py's default) AND `environment="local"`
+    # in the same instant, from the same absence. The guard then does not
+    # raise, this stamp does not apply, and the persisted report claims an
+    # independent reviewer over nodes the mock never judged. That is what put
+    # twelve books at the review gate on 2026-07-21 with 2,916 fail-safe nodes
+    # and `reviewer_independent: true` (docs/planning/safety/
+    # moderation-review-current-state-2026-08-25.md section 6).
+    # A mock review is not an independent review in local either, so the
+    # stamp applies unconditionally. That is not a free change, and calling
+    # the stamp "verdict-neutral" would only be half true: the ADVISORY
+    # finding never gates, but the stamp's other half,
+    # `reviewer_independent = False`, is a hard gate.
+    # `moderation_report_unusable` returns True on that arm alone and
+    # `publishing/service.py` then refuses the approval outright, with no
+    # `override_reason` path (that argument gates only the later
+    # severe-finding check). A story moderated locally with the mock is
+    # therefore permanently unapprovable, which is the intended posture: it
+    # was never reviewed. The surfaces that hit it are the local cyo-author
+    # authoring loop and scripts/series_e2e_local.py's import-then-approve
+    # path, both of which must now run a real reviewer to reach published.
+    # #VERIFY: tests/unit/test_moderation_pipeline.py::
+    # test_mock_review_stamps_report_as_not_independent_in_local and
+    # ::test_mock_review_escape_hatch_stamps_report_as_not_independent.
+    mock_reviewer = review_settings.review_provider == "mock"
+    if mock_reviewer:
         _stamp_mock_reviewer(report)
 
     # #CRITICAL: security: universal at-rest sentinel-integrity backstop
@@ -470,10 +548,20 @@ async def run_moderation_pipeline(
     # #VERIFY: tests/unit/test_remoderate_unit.py::
     # test_published_blob_unchanged_when_repair_disallowed asserts the blob is
     # byte-identical after a soft-FLAG re-moderation through api/remoderate.py.
+    # #CRITICAL: security: the third clause is `blocks_release`, not
+    # `has_hard_block`. The Stage-1 batch fail-safe records FLAG for every node
+    # in an unusable batch, which satisfies `has_soft_flag`, so under the
+    # narrower predicate a coverage gap ROUTED INTO the auto-repair: the
+    # repairer would rewrite prose no reviewer had read, and the adopted
+    # revision would replace the report wholesale, erasing the evidence that
+    # anything went unreviewed. A gap is not a finding to repair; it is a run
+    # to redo.
+    # #VERIFY: tests/unit/test_moderation_pipeline.py::
+    # test_a_coverage_gap_does_not_route_into_the_auto_repair.
     if (
         allow_repair
         and report.has_soft_flag
-        and not report.has_hard_block
+        and not report.blocks_release
         and not isinstance(personalizable_slots, PersonalizableSlotsUnrecoverable)
     ):
         report = await _attempt_and_adopt_repair(
@@ -484,10 +572,11 @@ async def run_moderation_pipeline(
             report=report,
             generation_provider=generation_provider,
             settings=settings,
+            review_settings=review_settings,
             guarded_review=guarded_review,
             pii=pii,
             independent=independent,
-            mock_reviewer_outside_local=mock_reviewer_outside_local,
+            mock_reviewer=mock_reviewer,
             personalizable_slots=personalizable_slots,
         )
 
@@ -500,7 +589,7 @@ async def run_moderation_pipeline(
     # `report` wholesale and rewrites `version_row.blob`, so measuring earlier
     # would both DISCARD every advisory on exactly the books that repaired and
     # describe prose that is no longer stored. The same wholesale-replacement
-    # hazard is what `mock_reviewer_outside_local` is threaded into
+    # hazard is what `mock_reviewer` is threaded into
     # `_attempt_and_adopt_repair` to survive. `_apply_prose_craft_findings`
     # early-returns on a hard block, which still holds here: after an adopted
     # repair the flag reflects the repaired report's own verdict.
@@ -515,7 +604,13 @@ async def run_moderation_pipeline(
     # calls ONLY submit (clean/repaired) or auto_reject (hard block). It MUST NEVER
     # call approve or publish directly.
     # #VERIFY: no code path in this module sets status="published".
-    if report.has_hard_block:
+    # #CRITICAL: security: `blocks_release`, so a run whose reviewer never saw
+    # part of the story auto-rejects rather than submitting for approval. A
+    # `submit` here is what put four books in the review queue looking
+    # ordinarily soft-flagged while carrying eight unscreened nodes each.
+    # #VERIFY: tests/unit/test_moderation_pipeline.py::
+    # test_a_coverage_gap_auto_rejects_instead_of_submitting.
+    if report.blocks_release:
         await service.auto_reject(session, storybook)
     else:
         await service.submit(session, storybook, actor=Actor.system())
@@ -571,20 +666,33 @@ def _persist_report(version_row: StorybookVersion, report: ModerationReport) -> 
         repaired=report.repaired,
         reviewer_independent=report.reviewer_independent,
         nodes_reviewed=report.nodes_reviewed,
+        # Carried explicitly: this is a fresh ModerationReport rather than a
+        # mutation of the accumulated one, so every field the persisted payload
+        # needs has to be named here. Omitting it would drop the provenance at
+        # the one step that writes it to the database, which is the only step
+        # where losing it matters.
+        reviewer=report.reviewer,
     )
     version_row.moderation_report = persisted_report.to_dict()
 
 
 def _stamp_mock_reviewer(report: ModerationReport) -> None:
-    """Mark ``report`` as produced by the mock reviewer outside local.
+    """Mark ``report`` as produced by the mock reviewer, in any environment.
 
     The single definition of the gap-G1 stamp (design doc section 2.4), so
     every report the pipeline can persist carries an identical mark whether it
     came from the first moderation pass or from an adopted repair's fresh
     report. Both halves matter: ``reviewer_independent = False`` is what the
     dashboard and threshold flywheel read, and the structural ADVISORY finding
-    is what a human reading the stored report sees. ADVISORY never gates, so
-    stamping is verdict-neutral and safe to apply before the stages run.
+    is what a human reading the stored report sees.
+
+    Stamping is NOT verdict-neutral, despite the ADVISORY. That finding never
+    gates, but ``reviewer_independent = False`` does. On that arm by itself,
+    ``moderation_report_unusable`` returns True and ``publishing/service.py``
+    refuses the approval outright, with no ``override_reason`` path. A story
+    moderated with the mock is permanently unapprovable, which is the intended
+    posture. Applying the stamp before the stages run is still safe, since the
+    stamp only ever adds to the report and never reads a verdict.
 
     Args:
         report: The report to stamp, mutated in place.
@@ -596,11 +704,7 @@ def _stamp_mock_reviewer(report: ModerationReport) -> None:
             source=Source.PIPELINE,
             category="pipeline",
             verdict=Verdict.ADVISORY,
-            message=(
-                "moderated with the mock reviewer outside a local "
-                "environment via the CYO_ADVENTURE_ALLOW_MOCK_REVIEW "
-                "escape hatch; no real safety review ran"
-            ),
+            message="moderated with the mock reviewer; no real safety review ran",
             structural=True,
             concern="mock_reviewer_active",
         )
@@ -616,10 +720,11 @@ async def _attempt_and_adopt_repair(
     report: ModerationReport,
     generation_provider: GenerationProvider,
     settings: Settings,
+    review_settings: Settings,
     guarded_review: ReviewProvider,
     pii: PiiContext,
     independent: bool,
-    mock_reviewer_outside_local: bool,
+    mock_reviewer: bool,
     personalizable_slots: frozenset[str],
 ) -> ModerationReport:
     """Attempt one bounded auto-repair and adopt it if it re-passes moderation.
@@ -635,16 +740,23 @@ async def _attempt_and_adopt_repair(
         version_row: The version row; ``blob`` is updated in place on adoption.
         report: The original (soft-flagged) report.
         generation_provider: Provider used for the bounded auto-repair re-prompt.
-        settings: Application settings (review provider and classifier keys).
+        settings: Application settings (classifier keys). Passed to
+            :func:`_run_all_stages` unresolved, matching the primary path,
+            because the stages read classifier credentials from it and never
+            the review model.
+        review_settings: The RESOLVED review settings, used only to stamp the
+            repaired report's provenance. Separate from ``settings`` because
+            an admin's per-stage model override lives only here, and
+            ``guarded_review`` below was already built from it.
         guarded_review: The PII-guarded review provider for re-moderation.
         pii: PII context for the egress guard on repair and review prompts.
         independent: Whether the review backend is independent of the generator.
-        mock_reviewer_outside_local: Whether the resolved review settings put
-            the mock reviewer outside ``environment="local"``. When True the
-            repaired report is stamped with the same gap-G1 mark the caller
-            applied to the pre-repair report, so an ADOPTED repair (which
-            replaces the caller's report wholesale) cannot launder a
-            mock-moderated story into a report that reads as reviewed.
+        mock_reviewer: Whether the resolved review settings select the mock
+            reviewer, in ANY environment. When True the repaired report is
+            stamped with the same gap-G1 mark the caller applied to the
+            pre-repair report, so an ADOPTED repair (which replaces the
+            caller's report wholesale) cannot launder a mock-moderated story
+            into a report that reads as reviewed.
         personalizable_slots: The story's declared personalizable slot ids,
             already resolved ONCE by the caller (:func:`run_moderation_pipeline`,
             Task 6a) via :func:`personalizable_slot_ids_for_story` for the
@@ -676,8 +788,21 @@ async def _attempt_and_adopt_repair(
     # revised blob) if the repair is schema-valid AND passes the deterministic
     # validation gate. A malformed or gate-failing repair is discarded so the
     # original soft-flagged report drives routing.
-    repaired_report = ModerationReport(reviewer_independent=independent)
-    if mock_reviewer_outside_local:
+    # #CRITICAL: data-integrity: provenance comes from the RESOLVED review
+    # settings, never from ``settings``. An adopted repair replaces the
+    # caller's report wholesale, so stamping the process-wide default here
+    # would make the persisted report attribute the verdict to a model that
+    # did not produce it whenever an authoring plan supplies a stage model
+    # override. ``guarded_review`` below is built from the resolved settings,
+    # so the override is what actually reviews; only the stamp was wrong, and
+    # a wrong stamp is undetectable after the fact without re-deriving the
+    # override. This mirrors the caller's own stamp on the pre-repair report.
+    # #VERIFY: tests/unit/test_moderation_pipeline.py::
+    # test_an_adopted_repair_records_the_overridden_model_not_the_default.
+    repaired_report = ModerationReport(
+        reviewer_independent=independent, reviewer=review_provenance(review_settings)
+    )
+    if mock_reviewer:
         _stamp_mock_reviewer(repaired_report)
     try:
         await _run_all_stages(
@@ -928,18 +1053,23 @@ def _repair_is_adoptable(
 def _overall_verdict(report: ModerationReport) -> str:
     """Return the report's single gating verdict for the event payload.
 
-    Derived from the report's own gating properties (``has_hard_block`` /
+    Derived from the report's own gating properties (``blocks_release`` /
     ``has_soft_flag``), not a stored field: ``ModerationReport`` has no
     ``overall_verdict`` attribute of its own, only per-finding verdicts.
+
+    ``blocks_release`` rather than ``has_hard_block``, matching the routing
+    decision immediately above it, so the durable event log and the status
+    transition can never disagree about the outcome of the same run.
 
     Args:
         report: The final report driving the submit/auto_reject routing.
 
     Returns:
-        ``"block"`` when any finding hard-blocks, ``"flag"`` when any finding
-        soft-flags (and none blocks), otherwise ``"pass"``.
+        ``"block"`` when any finding hard-blocks OR the reviewer did not see
+        every node, ``"flag"`` when any finding soft-flags (and neither of
+        those holds), otherwise ``"pass"``.
     """
-    if report.has_hard_block:
+    if report.blocks_release:
         return Verdict.BLOCK.value
     if report.has_soft_flag:
         return Verdict.FLAG.value
@@ -1106,13 +1236,13 @@ async def _run_all_stages(
     for finding in await run_coherence_stage(
         provider=review_provider,
         nodes=nodes,
-        max_tokens=_MAX_REVIEW_TOKENS,
+        max_tokens=_MAX_WHOLE_STORY_REVIEW_TOKENS,
     ):
         report.add(finding)
     for finding in await run_engagement_stage(
         provider=review_provider,
         nodes=nodes,
-        max_tokens=_MAX_REVIEW_TOKENS,
+        max_tokens=_MAX_WHOLE_STORY_REVIEW_TOKENS,
     ):
         report.add(finding)
 

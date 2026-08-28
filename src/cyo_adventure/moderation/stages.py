@@ -22,8 +22,9 @@ from __future__ import annotations
 
 import json
 import re
-from typing import TYPE_CHECKING, cast
+from typing import TYPE_CHECKING, NamedTuple, cast
 
+from cyo_adventure.core.exceptions import ProviderError
 from cyo_adventure.moderation.report import (
     PARSE_FAILED_FAIL_SAFE_MESSAGE,
     UNKNOWN_VERDICT_FAIL_SAFE_MESSAGE,
@@ -32,7 +33,11 @@ from cyo_adventure.moderation.report import (
     Source,
     Verdict,
 )
-from cyo_adventure.moderation.review_provider import completion_text
+from cyo_adventure.moderation.review_provider import (
+    completion_finish_reason,
+    completion_text,
+    completion_truncated,
+)
 from cyo_adventure.utils.logging import get_logger
 
 if TYPE_CHECKING:
@@ -126,9 +131,63 @@ _SAFETY_SYSTEM_BATCH = (
 
 # Output-token ceiling for a single batched safety call. The batch budget scales
 # with node count, but the product must stay inside what review models actually
-# accept; 8192 leaves room for a full per-node verdict object across a realistic
-# batch while staying under the common output cap.
-_MAX_BATCH_REVIEW_TOKENS = 8192
+# accept.
+#
+# #CRITICAL: external-resources: 8192 was sized for a review model that emits no
+# reasoning tokens. #747 repointed review at deepseek/deepseek-v4-flash, and the
+# OpenRouter ceiling counts reasoning against the SAME budget, so a batch can
+# spend its whole allowance thinking and return a JSON prefix. Note what the old
+# figure actually did at the configured default: review_batch_size is 8, so
+# min(1024 * 8, 8192) is EXACTLY the product and the clamp never bound at all.
+# Raising the clamp alone would therefore have changed nothing; the per-node
+# 1024 is what starved the call. 16000 matches the ceiling the whole-story
+# stages already run at against this provider, measured rather than guessed.
+# #VERIFY: test_batch_budget_carries_a_reasoning_allowance.
+_MAX_BATCH_REVIEW_TOKENS = 16000
+
+# Per-CALL output-token allowance for hidden reasoning, added on top of the
+# per-node product. Reasoning is largely a fixed cost of answering at all rather
+# than a per-node cost: a measured 8-node safety batch spent 193 reasoning
+# tokens on one sample and blew past 8192 on another, and the whole-story
+# coherence call on the same book spent 4443. A per-node budget alone cannot
+# absorb that variance, so the allowance is separate from it.
+#
+# #CRITICAL: external-resources: this allowance also applies to a SINGLE-node
+# call (batch length 1), via :func:`_scaled_review_budget`. Reasoning cost is
+# fixed per call, not per item, so a call answering exactly one node still has
+# to pay it in full; a bare per-node budget with no allowance starves a
+# single-node call exactly as it would starve an unclamped batch. This matters
+# most for `_recover_batch_per_node`'s retries: measured reasoning spends on
+# this provider/task family range 4443-8192 tokens, so `_MAX_REVIEW_TOKENS`
+# (1024, in pipeline.py) alone truncates a retry almost every time, and a
+# truncated retry is what reports `recovered == 0` and used to disable the
+# whole fallback (see the latch in `_review_one_batch`).
+# #VERIFY: test_batch_budget_carries_a_reasoning_allowance and
+# test_single_node_call_gets_the_reasoning_allowance_too.
+_REVIEW_REASONING_ALLOWANCE = 8000
+
+
+def _scaled_review_budget(max_tokens: int, batch_len: int) -> int:
+    """Compute the output-token budget for a review call of ``batch_len`` nodes.
+
+    Shared by the batch call and every single-node call (the primary
+    ``batch_size == 1`` path and the per-node recovery fallback, both via
+    :func:`_review_one_node`), so the reasoning allowance cannot be added to
+    one call shape and forgotten on the other.
+
+    Args:
+        max_tokens: The caller's per-node budget.
+        batch_len: How many nodes this one call is answering; 1 for a
+            single-node call.
+
+    Returns:
+        ``max_tokens * batch_len`` plus :data:`_REVIEW_REASONING_ALLOWANCE`,
+        clamped at :data:`_MAX_BATCH_REVIEW_TOKENS`.
+    """
+    return min(
+        _REVIEW_REASONING_ALLOWANCE + max_tokens * batch_len, _MAX_BATCH_REVIEW_TOKENS
+    )
+
 
 _COHERENCE_SYSTEM = (
     "You are a story-consistency reviewer for a children's choose-your-own-adventure "
@@ -570,6 +629,442 @@ def _safety_finding(
     )
 
 
+class _ReviewOutcome(NamedTuple):
+    """One single-node review call's result.
+
+    Attributes:
+        finding: The node's genuine safety finding, or ``None`` when the
+            response was unparseable or carried no usable verdict, which the
+            caller must treat as a coverage gap rather than a pass.
+        truncated: Whether the completion reported truncation (an
+            output-token budget hit). Only meaningful when ``finding`` is
+            ``None``; a completion that produced a genuine finding plainly was
+            not cut off before saying anything usable. Carried so
+            ``_review_one_node_or_none`` can tell a per-node retry that hit
+            ITS OWN budget (reviewer-health evidence) apart from one that
+            simply returned malformed or off-taxonomy content (content
+            evidence, which says nothing about the reviewer).
+    """
+
+    finding: Finding | None
+    truncated: bool
+
+
+async def _review_one_node(
+    *,
+    provider: ReviewProvider,
+    node_id: str,
+    prose: str,
+    age_band: str,
+    max_tokens: int,
+) -> _ReviewOutcome:
+    """Review a single node with the single-node prompt and parser.
+
+    The one implementation of the size-1 path, shared by the primary
+    ``batch_size == 1`` branch and the per-node fallback, so the two cannot
+    drift apart: a fallback that built its own prompt would silently stop being
+    equivalent to the unbatched behavior the stage pins itself against.
+
+    # #CRITICAL: external-resources: the call itself requests
+    # ``_scaled_review_budget(max_tokens, 1)``, not a bare ``max_tokens``, so
+    # this single-node call carries the SAME reasoning allowance the batch
+    # call gets. Reasoning is a per-CALL cost, not a per-item one: before
+    # this, both the primary batch-of-one path and every per-node recovery
+    # retry requested the bare per-node budget (1024 by default) with no
+    # allowance at all, well under the 4443-8192 reasoning spends measured on
+    # this provider/task family, so a recovery retry was more likely to
+    # truncate than the batch call it was meant to rescue. A truncated retry
+    # reports as a coverage gap, and every retry in a batch failing that way
+    # is exactly what used to latch off the whole fallback.
+    # #VERIFY: test_single_node_call_gets_the_reasoning_allowance_too.
+
+    Args:
+        provider: The PII-guarded review provider.
+        node_id: The node being reviewed.
+        prose: That node's body text.
+        age_band: The story's target band, for example ``"6-9"``.
+        max_tokens: The caller's per-node budget; the actual request is this
+            plus the reasoning allowance, clamped (see above).
+
+    Returns:
+        _ReviewOutcome: The node's finding (or ``None`` on a coverage gap)
+        plus whether the completion was truncated.
+    """
+    prompt = (
+        f"Age band: {age_band}\n<untrusted_passage>\n"
+        f"{_sanitize_delimited(prose)}\n</untrusted_passage>"
+    )
+    returned: object = await provider.complete(
+        system=_SAFETY_SYSTEM,
+        prompt=prompt,
+        max_tokens=_scaled_review_budget(max_tokens, 1),
+    )
+    verdict, concern, severity, reason, is_fail_safe = _parse_structured_verdict(
+        completion_text(returned), fail_safe=Verdict.FLAG
+    )
+    if is_fail_safe:
+        return _ReviewOutcome(finding=None, truncated=completion_truncated(returned))
+    return _ReviewOutcome(
+        finding=_safety_finding(
+            node_id=node_id,
+            verdict=verdict,
+            concern=concern,
+            severity=severity,
+            reason=reason,
+        ),
+        truncated=False,
+    )
+
+
+class _RecoveryAttemptOutcome(NamedTuple):
+    """One per-node recovery retry's result, classified for the run-wide latch.
+
+    Attributes:
+        finding: The node's genuine finding, or ``None`` on a coverage gap.
+        reviewer_health_evidence: True when this retry's failure is evidence
+            the REVIEWER is unavailable, not just that its content confused
+            the parser: a raised :class:`ProviderError`, or a completion that
+            reported its own truncation. False for an ordinary parse failure
+            (malformed or off-taxonomy JSON on a completed response), which
+            says nothing about reviewer health. Only meaningful when
+            ``finding`` is ``None``.
+    """
+
+    finding: Finding | None
+    reviewer_health_evidence: bool
+
+
+async def _review_one_node_or_none(
+    *,
+    provider: ReviewProvider,
+    node_id: str,
+    prose: str,
+    age_band: str,
+    max_tokens: int,
+) -> _RecoveryAttemptOutcome:
+    """:func:`_review_one_node`, but a provider error is a gap, not a raise.
+
+    Used only by the per-node fallback, and the difference from the primary
+    path is deliberate. The batch call that led here did NOT raise; it returned
+    something unparseable. If a fallback call were allowed to propagate a
+    ``ProviderError``, adding this recovery attempt would convert a run that
+    used to fail safe on eight nodes into a run that aborts the whole
+    moderation stage, which is a strictly worse outcome than the bug being
+    fixed. The primary path keeps raising, because there a provider error is
+    the run's real result rather than a second opinion that did not arrive.
+
+    Args:
+        provider: The PII-guarded review provider.
+        node_id: The node being reviewed.
+        prose: That node's body text.
+        age_band: The story's target band.
+        max_tokens: Token budget for this one call.
+
+    Returns:
+        _RecoveryAttemptOutcome: The node's finding, or ``None`` for both an
+        unusable response and a failed call, plus whether the failure is
+        evidence the reviewer itself (not just this node's content) is
+        unavailable.
+    """
+    # #CRITICAL: external-resources: this makes one live review call per node
+    # and deliberately converts a ProviderError into a recorded gap instead of
+    # a raise. That is the right trade here (see the docstring), but it means a
+    # total reviewer outage during recovery is INVISIBLE in this function's
+    # return type: every node comes back finding=None, exactly as it would for
+    # per-node content failures. ``reviewer_health_evidence`` is the only
+    # channel that separates the two, and the caller's latch depends on it, so
+    # it must be set on every failure arm and never defaulted to False.
+    # #VERIFY: tests/unit/test_moderation_stages.py::
+    # test_a_failing_per_node_retry_is_a_gap_not_a_stage_abort pins the
+    # gap-not-raise contract, and ::test_a_dead_reviewer_stops_retrying_per_node
+    # pins that the health channel actually reaches the caller's latch.
+    try:
+        outcome = await _review_one_node(
+            provider=provider,
+            node_id=node_id,
+            prose=prose,
+            age_band=age_band,
+            max_tokens=max_tokens,
+        )
+    except ProviderError as exc:
+        # Narrow on purpose (Ruff BLE): the provider contract raises
+        # ProviderError for a failed call, and anything else escaping here is a
+        # defect in this module that must not be swallowed.
+        _logger.warning(
+            "per_node_fallback_call_failed", node_id=node_id, error=str(exc)
+        )
+        return _RecoveryAttemptOutcome(finding=None, reviewer_health_evidence=True)
+    return _RecoveryAttemptOutcome(
+        finding=outcome.finding, reviewer_health_evidence=outcome.truncated
+    )
+
+
+async def _recover_batch_per_node(
+    *,
+    provider: ReviewProvider,
+    batch: Sequence[tuple[str, str]],
+    age_band: str,
+    max_tokens: int,
+) -> tuple[list[Finding], list[str], bool]:
+    """Re-review a failed batch's nodes one at a time.
+
+    Args:
+        provider: The PII-guarded review provider.
+        batch: The ``(node_id, prose)`` pairs whose batch response was unusable.
+        age_band: The story's target band.
+        max_tokens: Per-node token budget.
+
+    Returns:
+        tuple[list[Finding], list[str], bool]: The findings recovered, the ids
+        of the nodes that failed individually too and so still have no
+        judgment, and whether ANY of those failures carried
+        reviewer-health evidence (a provider error, or a retry that hit its
+        own output budget) rather than being an ordinary content parse
+        failure. An empty findings list alone is not proof the reviewer is
+        down: it can also mean every node in this one batch happened to
+        return content the parser could not use, which says nothing about
+        unrelated later batches.
+    """
+    # #CRITICAL: external-resources: this fans one failed batch out into
+    # ``len(batch)`` sequential live review calls, so a batch of 8 costs 8
+    # round trips against a provider that has just demonstrated it can return
+    # unusable output. Sequential is deliberate rather than gathered: the
+    # caller's latch exists to stop paying for recovery once the reviewer looks
+    # unhealthy, and a gather would commit the whole batch's spend before the
+    # first failure could inform that decision.
+    # #ASSUME: data-integrity: ``reviewer_health_evidence`` is an OR across
+    # nodes, never a count, so ONE unhealthy signal in a batch disables the
+    # fallback for later batches. That is the fail-safe direction: the cost of
+    # a false latch is fail-safe FLAGs a human already has to read, while the
+    # cost of not latching is unbounded spend against a dead reviewer.
+    # #VERIFY: tests/unit/test_moderation_stages.py::
+    # test_a_dead_reviewer_stops_retrying_per_node asserts 4 provider calls and
+    # not 6, which is what pins BOTH the sequential fan-out and the latch, and
+    # ::test_a_content_specific_parse_failure_does_not_disable_recovery_for_later_batches
+    # pins that an ordinary content failure does NOT trip it.
+    recovered: list[Finding] = []
+    gap_node_ids: list[str] = []
+    reviewer_health_evidence = False
+    for node_id, prose in batch:
+        outcome = await _review_one_node_or_none(
+            provider=provider,
+            node_id=node_id,
+            prose=prose,
+            age_band=age_band,
+            max_tokens=max_tokens,
+        )
+        if outcome.finding is None:
+            gap_node_ids.append(node_id)
+            reviewer_health_evidence = (
+                reviewer_health_evidence or outcome.reviewer_health_evidence
+            )
+            continue
+        recovered.append(outcome.finding)
+    _logger.info(
+        "batch_verdict_per_node_fallback",
+        nodes=len(batch),
+        recovered=len(recovered),
+        reviewer_health_evidence=reviewer_health_evidence,
+    )
+    return recovered, gap_node_ids, reviewer_health_evidence
+
+
+class _BatchOutcome(NamedTuple):
+    """One batch's contribution to :func:`run_safety_stage`'s accumulators.
+
+    Attributes:
+        findings: Genuine per-node findings this batch produced.
+        gap_node_ids: Nodes left with no judgment, batched or individually.
+        truncated_node_ids: The subset whose batch response was truncated,
+            carried only so the collapsed finding can name the cause.
+        per_node_fallback_enabled: Whether the caller should keep offering the
+            per-node fallback to LATER batches. Threaded through rather than
+            held in this function because the latch is a property of the story's
+            run, not of one batch.
+    """
+
+    findings: list[Finding]
+    gap_node_ids: list[str]
+    truncated_node_ids: list[str]
+    per_node_fallback_enabled: bool
+
+
+async def _review_one_batch(
+    *,
+    provider: ReviewProvider,
+    batch: Sequence[tuple[str, str]],
+    age_band: str,
+    max_tokens: int,
+    per_node_fallback_enabled: bool,
+) -> _BatchOutcome:
+    """Review one multi-node batch, recovering per-node if its response is unusable.
+
+    Args:
+        provider: The PII-guarded review provider.
+        batch: The ``(node_id, prose)`` pairs in this batch, always 2 or more
+            (the size-1 case takes the single-node path in the caller).
+        age_band: The story's target band.
+        max_tokens: Per-node token budget, scaled and clamped for the batch call.
+        per_node_fallback_enabled: False once a previous batch's per-node retries
+            all failed, which is evidence the reviewer is down.
+
+    Returns:
+        _BatchOutcome: This batch's findings, coverage gaps, truncation record,
+        and whether the fallback remains worth offering.
+    """
+    findings: list[Finding] = []
+    gap_node_ids_out: list[str] = []
+    truncated_node_ids: list[str] = []
+    node_lines = "\n".join(
+        f"[{_sanitize_label(nid)}] <untrusted_passage>\n"
+        f"{_sanitize_delimited(prose)}"
+        f"\n</untrusted_passage>"
+        for nid, prose in batch
+    )
+    prompt = f"Age band: {age_band}\nNodes:\n{node_lines}"
+    batch_returned: object = await provider.complete(
+        system=_SAFETY_SYSTEM_BATCH,
+        prompt=prompt,
+        # #ASSUME: external-resources: the per-node budget scales with batch
+        # size but must stay inside what a review model will actually accept.
+        # At the configured ceiling (review_batch_size=50) an unbounded
+        # product asks for 50 * 1024 = 51,200 output tokens, past the output
+        # limit of most review models, so the provider rejects the call
+        # outright instead of returning something the parser can fail safe
+        # on. Clamping keeps an oversized batch on the fail-safe path.
+        # #VERIFY: test_batch_max_tokens_is_clamped_for_large_batches.
+        max_tokens=_scaled_review_budget(max_tokens, len(batch)),
+    )
+    raw = completion_text(batch_returned)
+    by_node_id = _parse_batch_verdicts(raw, [nid for nid, _ in batch])
+    if by_node_id is None:
+        # Name the cause. Without this the log says only "unparseable",
+        # which sends the next reader hunting a model formatting quirk
+        # when the fix is to buy more output budget.
+        #
+        # #CRITICAL: external-resources: finish_reason is logged on EVERY
+        # parse failure, not only on the truncation branch, because
+        # completion_truncated can answer only yes or no. If a provider
+        # omits the field, or spells truncation some other way, the
+        # discriminator under-reports and a starved call is logged as
+        # ordinary bad JSON with nothing in the record to reveal it. The
+        # value itself is the only thing that can distinguish "the backend
+        # said stop" from "the backend said nothing at all", and one of
+        # those is a defect in this discriminator rather than in the model.
+        # #VERIFY: test_finish_reason_is_logged_even_when_it_is_not_a_truncation.
+        truncated = completion_truncated(batch_returned)
+        if truncated:
+            truncated_node_ids.extend(nid for nid, _ in batch)
+        _logger.warning(
+            "batch_verdict_truncated" if truncated else "batch_verdict_unparseable",
+            nodes=len(batch),
+            truncated=truncated,
+            finish_reason=completion_finish_reason(batch_returned),
+            max_tokens=_scaled_review_budget(max_tokens, len(batch)),
+        )
+        # #CRITICAL: security: retry the batch's nodes ONE AT A TIME
+        # before conceding their coverage. `review_batch_size` defaults to
+        # 8, so without this a single unusable response cost eight nodes
+        # their review at once, and the whole batch is the blast radius of
+        # one bad reply. Five reports in the live catalog admitted exactly
+        # 8 or 16 unreviewed nodes, which is what identified the failure as
+        # batch-granular rather than per-node flakiness.
+        #
+        # The single-node prompt is a genuinely different, smaller request,
+        # not a bare retry of the same one: it asks for one verdict instead
+        # of an attributed array, and its output budget is per-node rather
+        # than the clamped product, so it is exactly the shape a truncated
+        # or format-confused batch response tends to succeed at.
+        #
+        # #VERIFY: tests/unit/test_moderation_stages.py::
+        # test_a_bad_batch_recovers_per_node_instead_of_losing_the_batch.
+        if per_node_fallback_enabled:
+            (
+                recovered_findings,
+                gap_node_ids,
+                reviewer_health_evidence,
+            ) = await _recover_batch_per_node(
+                provider=provider,
+                batch=batch,
+                age_band=age_band,
+                max_tokens=max_tokens,
+            )
+            findings.extend(recovered_findings)
+            gap_node_ids_out.extend(gap_node_ids)
+            # #CRITICAL: data-integrity: narrow truncated_node_ids to the
+            # nodes that STILL have no judgment after recovery. Every node in
+            # the batch was marked truncated above, at the BATCH call's own
+            # truncation, before recovery had a chance to save any of them.
+            # `gap_node_ids` already narrows the coverage gap itself to just
+            # the nodes recovery could not save; without this, a partial
+            # recovery left truncated_node_ids describing the whole original
+            # batch, so the reviewer-facing message in run_safety_stage could
+            # read "... on 2 node(s) ... (8 of them ...)" for an 8-node batch
+            # that recovered 6, an impossible count for a message describing
+            # only 2 nodes. truncated_node_ids must stay a SUBSET of the
+            # nodes actually reported as gaps.
+            # #VERIFY: test_truncated_count_narrows_to_the_unrecovered_gap.
+            gap_set = set(gap_node_ids)
+            truncated_node_ids = [nid for nid in truncated_node_ids if nid in gap_set]
+            recovered = len(recovered_findings)
+            # #ASSUME: external-resources: the latch fires only on EVIDENCE
+            # THE REVIEWER ITSELF IS DOWN: recovery saved nothing from this
+            # batch AND at least one of its retries carried
+            # reviewer_health_evidence (a raised ProviderError, or a retry
+            # that hit its own output-token budget). Recovering nothing is
+            # not enough on its own: this batch's specific content could
+            # simply be what confused the parser (malformed or off-taxonomy
+            # JSON on a completed response), which says nothing about
+            # whether an unrelated LATER batch's reviewer call will succeed.
+            # Before this distinction, ANY zero-recovery batch, including one
+            # that failed purely on content, permanently disabled the
+            # fallback for the rest of the story. Continuing to spend one
+            # call per node for every remaining batch during a REAL outage
+            # would still multiply its cost by the batch size while
+            # recovering nothing, so the latch (never the fail-safe itself)
+            # still fires on genuine reviewer-health evidence. Deliberately
+            # unlike the Stage-0 classifier, where a transient 5xx must NOT
+            # latch anything off (AL-663): there the latch would suppress the
+            # only safety signal, here it only declines a retry whose
+            # fail-safe still applies.
+            # #VERIFY: ::test_a_dead_reviewer_stops_retrying_per_node and
+            # ::test_a_content_specific_parse_failure_does_not_disable_recovery_for_later_batches.
+            if recovered == 0 and reviewer_health_evidence:
+                per_node_fallback_enabled = False
+                _logger.warning("batch_verdict_per_node_fallback_disabled")
+            return _BatchOutcome(
+                findings,
+                gap_node_ids_out,
+                truncated_node_ids,
+                per_node_fallback_enabled,
+            )
+        gap_node_ids_out.extend(nid for nid, _ in batch)
+        return _BatchOutcome(
+            findings, gap_node_ids_out, truncated_node_ids, per_node_fallback_enabled
+        )
+    for node_id, _prose in batch:
+        verdict, concern, severity, reason, is_fail_safe = (
+            _structured_verdict_from_payload(
+                by_node_id[node_id], fail_safe=Verdict.FLAG
+            )
+        )
+        if is_fail_safe:
+            gap_node_ids_out.append(node_id)
+            continue
+        findings.append(
+            _safety_finding(
+                node_id=node_id,
+                verdict=verdict,
+                concern=concern,
+                severity=severity,
+                reason=reason,
+            )
+        )
+    return _BatchOutcome(
+        findings, gap_node_ids_out, truncated_node_ids, per_node_fallback_enabled
+    )
+
+
 async def run_safety_stage(
     *,
     provider: ReviewProvider,
@@ -590,8 +1085,9 @@ async def run_safety_stage(
             parser unchanged, so ``batch_size=1`` is byte-identical to the
             pre-chunking behavior; larger chunks use the batch prompt and
             array parser. The equivalence is pinned against the batch
-            variants it must not become (system prompt, prompt text, and
-            unscaled token budget) by
+            variants it must not become (system prompt, prompt text, and a
+            token budget scaled only by the fixed reasoning allowance, never
+            by node count the way a real multi-node batch's is) by
             ``tests/unit/test_moderation_stages.py::
             test_safety_stage_batch_size_one_matches_unbatched_behavior``.
 
@@ -616,77 +1112,49 @@ async def run_safety_stage(
     # batching tests added alongside review_batch_size.
     findings: list[Finding] = []
     fail_safe_node_ids: list[str] = []
+    truncated_node_ids: list[str] = []
+    per_node_fallback_enabled = True
     for batch in _chunks(nodes, max(1, batch_size)):
         if len(batch) == 1:
             node_id, prose = batch[0]
-            prompt = (
-                f"Age band: {age_band}\n<untrusted_passage>\n"
-                f"{_sanitize_delimited(prose)}\n</untrusted_passage>"
+            outcome = await _review_one_node(
+                provider=provider,
+                node_id=node_id,
+                prose=prose,
+                age_band=age_band,
+                max_tokens=max_tokens,
             )
-            returned: object = await provider.complete(
-                system=_SAFETY_SYSTEM, prompt=prompt, max_tokens=max_tokens
-            )
-            raw = completion_text(returned)
-            verdict, concern, severity, reason, is_fail_safe = (
-                _parse_structured_verdict(raw, fail_safe=Verdict.FLAG)
-            )
-            if is_fail_safe:
+            if outcome.finding is None:
                 fail_safe_node_ids.append(node_id)
+                # #CRITICAL: data-integrity: the single-node path must record
+                # truncation too. Distinguishing "the reviewer ran out of room"
+                # from "the reviewer returned garbage" is the whole point of
+                # the truncation clause, and review_batch_size=1 is where it
+                # matters MOST: a one-node call still pays the full per-call
+                # reasoning cost, so it is the likeliest shape to truncate.
+                # Dropping it here made a starved single-node run read as
+                # ordinary unparseable output, sending a reader looking for a
+                # bad model instead of a small budget.
+                # #VERIFY: tests/unit/test_moderation_stages.py::
+                # test_a_truncated_single_node_call_is_reported_as_truncated.
+                if outcome.truncated:
+                    truncated_node_ids.append(node_id)
                 continue
-            findings.append(
-                _safety_finding(
-                    node_id=node_id,
-                    verdict=verdict,
-                    concern=concern,
-                    severity=severity,
-                    reason=reason,
-                )
-            )
+            findings.append(outcome.finding)
             continue
 
-        node_lines = "\n".join(
-            f"[{_sanitize_label(nid)}] <untrusted_passage>\n"
-            f"{_sanitize_delimited(prose)}"
-            f"\n</untrusted_passage>"
-            for nid, prose in batch
+        outcome = await _review_one_batch(
+            provider=provider,
+            batch=batch,
+            age_band=age_band,
+            max_tokens=max_tokens,
+            per_node_fallback_enabled=per_node_fallback_enabled,
         )
-        prompt = f"Age band: {age_band}\nNodes:\n{node_lines}"
-        batch_returned: object = await provider.complete(
-            system=_SAFETY_SYSTEM_BATCH,
-            prompt=prompt,
-            # #ASSUME: external-resources: the per-node budget scales with batch
-            # size but must stay inside what a review model will actually accept.
-            # At the configured ceiling (review_batch_size=50) an unbounded
-            # product asks for 50 * 1024 = 51,200 output tokens, past the output
-            # limit of most review models, so the provider rejects the call
-            # outright instead of returning something the parser can fail safe
-            # on. Clamping keeps an oversized batch on the fail-safe path.
-            # #VERIFY: test_batch_max_tokens_is_clamped_for_large_batches.
-            max_tokens=min(max_tokens * len(batch), _MAX_BATCH_REVIEW_TOKENS),
-        )
-        raw = completion_text(batch_returned)
-        by_node_id = _parse_batch_verdicts(raw, [nid for nid, _ in batch])
-        if by_node_id is None:
-            fail_safe_node_ids.extend(nid for nid, _ in batch)
-            continue
-        for node_id, _prose in batch:
-            verdict, concern, severity, reason, is_fail_safe = (
-                _structured_verdict_from_payload(
-                    by_node_id[node_id], fail_safe=Verdict.FLAG
-                )
-            )
-            if is_fail_safe:
-                fail_safe_node_ids.append(node_id)
-                continue
-            findings.append(
-                _safety_finding(
-                    node_id=node_id,
-                    verdict=verdict,
-                    concern=concern,
-                    severity=severity,
-                    reason=reason,
-                )
-            )
+        findings.extend(outcome.findings)
+        fail_safe_node_ids.extend(outcome.gap_node_ids)
+        truncated_node_ids.extend(outcome.truncated_node_ids)
+        per_node_fallback_enabled = outcome.per_node_fallback_enabled
+
     if fail_safe_node_ids:
         findings.append(
             Finding(
@@ -698,6 +1166,12 @@ async def run_safety_stage(
                 message=(
                     f"reviewer unavailable or unparseable on "
                     f"{len(fail_safe_node_ids)} node(s); defaulted to fail-safe"
+                    + (
+                        f" ({len(truncated_node_ids)} of them because the "
+                        f"reviewer hit its output-token budget mid-response)"
+                        if truncated_node_ids
+                        else ""
+                    )
                 ),
                 structural=True,
                 concern="reviewer_unavailable",

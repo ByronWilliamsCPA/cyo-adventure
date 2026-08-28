@@ -141,8 +141,18 @@ _PAYLOAD_ALLOWLIST: dict[EventType, frozenset[str]] = {
     # bool by construction, so it cannot carry prose even by accident, and it
     # is the one thing in this payload that says the stored text CHANGED,
     # which an audit reader otherwise could not tell from a verdict alone.
+    # "coverage_complete" is a bare bool too, and it is what separates a verdict
+    # that judged the prose from one that fails closed because nobody did. An
+    # audit reader cannot recover that from "overall_verdict": "block" alone,
+    # and the two states call for opposite remedies.
     EventType.STORYBOOK_REMODERATED: frozenset(
-        {"overall_verdict", "counts", "prior_reviewer_independent", "repaired"}
+        {
+            "overall_verdict",
+            "counts",
+            "prior_reviewer_independent",
+            "repaired",
+            "coverage_complete",
+        }
     ),
     # S9 digest job: a bare count of pending info-severity notifications this
     # family had waiting; never which notifications, never any child- or

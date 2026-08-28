@@ -53,23 +53,54 @@ Run against staging or production, dry-run (default, lists only)::
 Actually execute the sweep::
 
     ENVIRONMENT=staging CYO_ADVENTURE_DATABASE_URL=... \\
+        CYO_ADVENTURE_REVIEW_PROVIDER=openrouter OPENROUTER_API_KEY=... \\
+        OPENAI_API_KEY=... \\
         uv run python scripts/remoderate_books.py --mock-moderated --execute
 
 Sweep the books waiting at the review gate::
 
     ENVIRONMENT=staging CYO_ADVENTURE_DATABASE_URL=... \\
+        CYO_ADVENTURE_REVIEW_PROVIDER=openrouter OPENROUTER_API_KEY=... \\
+        OPENAI_API_KEY=... \\
         uv run python scripts/remoderate_books.py --in-review --execute
 
 Re-moderate specific books::
 
-    uv run python scripts/remoderate_books.py --book-id sk_ninth_hand --execute
+    CYO_ADVENTURE_REVIEW_PROVIDER=openrouter OPENROUTER_API_KEY=... \\
+        OPENAI_API_KEY=... \\
+        uv run python scripts/remoderate_books.py --book-id sk_ninth_hand \\
+        --execute
 
 Unlike ``scripts/seed_moderation_qa.py``, this script carries no environment
 guard: it targets whatever ``DATABASE_URL`` its caller points it at,
-deliberately, per plan decision 8 ("the script must hard-refuse nothing...
-BUT dry-run must be the default"). The safety rail is dry-run-by-default plus
-the explicit ``--execute`` flag, not an environment allowlist: production is
-this script's intended eventual target once B2/B3 are merged and deployed.
+deliberately. That is this script's own design choice, stated here rather
+than cited: an earlier version of this docstring attributed it to a "plan
+decision 8" that does not exist (section 7 of
+``docs/planning/safety/moderation-review-redesign-2026-07-28.md`` contains
+exactly seven numbered decisions, none of them this one), and a citation that
+resolves to nothing reads as authority it never had.
+
+The basis it does have: the redesign plan's decision 5 schedules the
+eighteen mock-moderated books for re-moderation right after Stage B lands,
+and section 4 item 3 has published books stay published while that runs.
+Production is therefore this script's intended eventual target, not an
+accident to be guarded against, which is the opposite of
+``seed_moderation_qa.py``'s situation (it writes new adversarial content, so
+it hard-refuses anything but staging). The safety rail here is
+dry-run-by-default plus the explicit ``--execute`` flag.
+
+It DOES carry a reviewer guard, which is a different axis entirely. The
+absence of an environment guard is about which database a caller may point
+at; this one is about whether a real reviewer exists to point at it.
+``--execute`` with ``review_provider="mock"`` cannot produce a review at all:
+the mock answers every call with the literal ``"{}"``, which parses cleanly
+and carries no verdict, so every node lands on its stage's fail-safe default.
+Such a run rewrites the exact fail-safe reports the sweep exists to clear and
+then exits 0 reporting success. ``main`` refuses it, and prints the resolved
+environment, database target, and provider before every executed run. ``Settings``
+declares no ``env_file`` (``core/config.py``), so it reads nothing but exported
+variables: a process started without them falls back to ``environment="local"``,
+a localhost database, and the mock provider all at once, from one absence.
 
 Audit provenance: every re-moderation this script drives stamps
 ``Actor.system()`` (no human request principal exists in this context),
@@ -83,9 +114,11 @@ from __future__ import annotations
 
 import argparse
 import asyncio
+import re
 import sys
 from dataclasses import dataclass, field
 from typing import TYPE_CHECKING, Final, cast
+from urllib.parse import urlsplit
 
 from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import async_sessionmaker
@@ -474,6 +507,24 @@ async def _resolve_book_id_targets(
 # ::test_sweep_abandons_remaining_targets_after_a_timeout.
 _PER_BOOK_TIMEOUT_SECONDS: Final = 900.0
 
+# Exit codes. A retry loop (`sweep.sh`, or any operator's `until` wrapper) reads
+# these to decide whether re-running can change the outcome, so the split is
+# part of this script's contract and not an implementation detail.
+#
+# The distinction that matters is NOT success versus failure, it is retryable
+# versus not. Before this split every non-clean outcome exited 1, because
+# `sys.exit(<str>)` prints its argument to stderr and exits 1 whatever the
+# string says. A caller could therefore see that a sweep was unhappy but never
+# why, and the only discriminator was prose on stdout. Measured cost, 2026-08-27:
+# `sweep.sh` retried a hard-blocked book three times in fifteen seconds, spending
+# an LLM review pass each time to re-derive a verdict that cannot move without a
+# prose edit.
+#
+# `NEEDS_HUMAN` is 3, not 2, because argparse already exits 2 on a usage error.
+# Reusing 2 would make a mistyped flag indistinguishable from a hard block.
+_EXIT_RETRYABLE: Final = 1
+_EXIT_NEEDS_HUMAN: Final = 3
+
 
 @dataclass(frozen=True, slots=True)
 class SweepResult:
@@ -496,6 +547,18 @@ class SweepResult:
     # ::test_main_exits_nonzero_when_a_book_is_blocked.
     blocked: list[tuple[str, int]] = field(default_factory=list)
     flagged: list[tuple[str, int]] = field(default_factory=list)
+    # #CRITICAL: security: a book whose report admits at least one unjudged
+    # node. Kept OUT of `blocked` even though the endpoint's verdict for it is
+    # "block", because the two need opposite remedies and the `blocked` message
+    # prescribes the wrong one: it tells an operator to act on the prose, when
+    # nothing has read the prose yet. Conflating them is how the original
+    # fail-open stayed invisible; a sweep that reported "1 blocked" for an
+    # unreviewed book would send a reviewer hunting content that may be fine
+    # while the actual defect is in the reviewer.
+    # #VERIFY: tests/unit/test_remoderate_books.py::
+    # test_sweep_separates_an_unreviewed_book_from_a_blocked_one and
+    # ::test_main_exits_retryable_when_a_book_was_reviewed_incompletely.
+    incomplete: list[tuple[str, int]] = field(default_factory=list)
     repaired: list[tuple[str, int]] = field(default_factory=list)
     # #CRITICAL: data-integrity: a book the listing dropped is neither
     # `failed` nor `blocked`, so before this field it produced NO exit-code
@@ -617,6 +680,7 @@ async def sweep(
         failed: list[tuple[str, int]] = []
         blocked: list[tuple[str, int]] = []
         flagged: list[tuple[str, int]] = []
+        incomplete: list[tuple[str, int]] = []
         repaired: list[tuple[str, int]] = []
         timed_out: list[tuple[str, int]] = []
         not_attempted: list[tuple[str, int]] = []
@@ -688,7 +752,26 @@ async def sweep(
             else:
                 await session.commit()
                 succeeded.append((storybook_id, version))
-                if result.overall_verdict == "block":
+                if not result.coverage_complete:
+                    # #CRITICAL: security: classified from `coverage_complete`,
+                    # NOT from the verdict. `_summarize_report` forces "block"
+                    # on a gap so nothing downstream can treat an unreviewed
+                    # book as clean, which means the verdict alone can no
+                    # longer say WHY a book blocked. Reading the dedicated flag
+                    # keeps the two answers separable here.
+                    # #VERIFY: tests/unit/test_remoderate_books.py::
+                    # test_sweep_separates_an_unreviewed_book_from_a_blocked_one.
+                    _logger.warning(
+                        "remoderate_books.book_reviewed_incompletely",
+                        storybook_id=storybook_id,
+                        version=version,
+                    )
+                    incomplete.append((storybook_id, version))
+                if result.verdict_counts.get("block", 0) > 0:
+                    # A genuine content block is a `block`-verdict FINDING, the
+                    # same thing `summary.hard_block` is computed from, so this
+                    # reads the evidence rather than the fail-closed rollup and
+                    # a gap can never masquerade as one.
                     _logger.warning(
                         "remoderate_books.book_blocked",
                         storybook_id=storybook_id,
@@ -714,6 +797,7 @@ async def sweep(
             failed=failed,
             blocked=blocked,
             flagged=flagged,
+            incomplete=incomplete,
             repaired=repaired,
             excluded=excluded,
             timed_out=timed_out,
@@ -779,29 +863,168 @@ def _parse_args(argv: list[str] | None = None) -> argparse.Namespace:
 def _exit_on_excluded(result: SweepResult) -> None:
     """Exit nonzero when the sweep could not see every eligible book.
 
+    Exits ``_EXIT_NEEDS_HUMAN``: an excluded book has no version row, and it
+    will not grow one because a caller asked a second time. Retrying is pure
+    waste, so the code says so.
+
     Args:
         result: The sweep outcome to inspect.
     """
     if result.excluded:
-        sys.exit(
+        print(
             f"remoderate_books: {len(result.excluded)} in_review book(s) "
-            "were excluded from this sweep and remain un-re-moderated."
+            "were excluded from this sweep and remain un-re-moderated.",
+            file=sys.stderr,
+        )
+        sys.exit(_EXIT_NEEDS_HUMAN)
+
+
+# A database name and nothing else: one path segment, no separator that could
+# only be there because the authority split went wrong.
+_SAFE_DATABASE_PATH: Final = re.compile(r"\A(?:/[^/@:?#]*)?\Z")
+
+
+# #CRITICAL: security: this renders a DSN for a banner that goes to a terminal
+# and is scraped into CI logs, so it must be IMPOSSIBLE for a password to
+# reach the output, not merely unlikely on a well-formed URL. Nothing upstream
+# validates the DSN: `database_url` is a bare `str` on Settings. The previous
+# form fell back to `parts.path` whenever there was no authority, so a URL
+# missing `//` (or a scheme) put the ENTIRE credential-bearing remainder into
+# the banner verbatim, and an unescaped `/` inside a password ended the netloc
+# early and did the same on a URL that looked well-formed. The rule now is
+# whitelist-then-refuse: emit only fields that a real authority positively
+# yielded, and return "unparseable" the moment any part of the split looks
+# like it landed somewhere it should not have. Refusing to describe the target
+# is always safe here; the operator can still read the environment and
+# provider from the same banner.
+# #VERIFY: tests/unit/test_remoderate_books.py::
+# TestDatabaseTarget::test_no_credential_survives_any_malformed_url and
+# ::test_preflight_banner_never_prints_credentials_end_to_end.
+def _database_target(database_url: str) -> str:
+    """Render a connection URL as ``host:port/name``, dropping credentials.
+
+    Args:
+        database_url: The resolved async SQLAlchemy connection URL.
+
+    Returns:
+        str: A credential-free description of what this run will write to, or
+        ``"unparseable"``. Never the password: this string is printed to a
+        terminal and scraped into CI logs. ``"unparseable"`` covers three
+        distinct refusals, deliberately collapsed into one opaque answer
+        because telling them apart would itself describe the malformed URL:
+        the URL does not split at all, it splits but yields no authority to
+        read a host from, or it splits in a way that proves the authority
+        boundary was misplaced (a truncated netloc, or a path that is not a
+        bare database name).
+    """
+    try:
+        parts = urlsplit(database_url)
+        host = parts.hostname
+        # #CRITICAL: data-integrity: `.port` is a lazy property that CASTS on
+        # access, so it raises for a non-numeric or out-of-range port. Reading
+        # it outside this `try` (as the previous form did) left the documented
+        # "unparseable" contract unreachable for the likeliest malformed URLs,
+        # since `urlsplit` itself does not validate the port at all.
+        port = parts.port
+    except ValueError:
+        return "unparseable"
+    if not host or not _SAFE_DATABASE_PATH.match(parts.path):
+        return "unparseable"
+    # If the URL carried userinfo, the netloc must still carry it. When it does
+    # not, urlsplit ended the authority early (a `?`, `#`, or `/` inside the
+    # password) and whatever "host" it produced is really a credential
+    # fragment.
+    if "@" in database_url and "@" not in parts.netloc:
+        return "unparseable"
+    # `hostname` strips the brackets an IPv6 literal needs; put them back
+    # rather than emitting `::1:5432`, which reads as a different address.
+    rendered_host = f"[{host}]" if ":" in host else host
+    return f"{rendered_host}{f':{port}' if port else ''}{parts.path}"
+
+
+# #CRITICAL: security: this preflight is the reason a canary run is worth
+# anything. config.py's _require_real_reviewer_outside_local and the
+# pipeline's mock-reviewer stamp were both once gated on
+# environment != "local", and both read review_provider and environment from
+# the process environment via a Settings object that declares no env_file, so
+# a process started without those variables exported got
+# review_provider="mock" and environment="local" together, from one absence,
+# and disabled both at once. Printing what THIS run resolved, rather than
+# trusting what the operator meant to set, is what makes that failure visible
+# before a sweep rather than after one that appeared to succeed.
+# #VERIFY: tests/unit/test_remoderate_books.py::
+# test_main_refuses_to_execute_with_the_mock_reviewer,
+# ::test_main_refusal_happens_before_the_sweep_runs,
+# ::test_main_prints_the_resolved_target_before_executing,
+# ::test_main_preflight_never_prints_database_credentials.
+def _preflight(settings: Settings, *, execute: bool) -> None:
+    """Print the resolved run target and refuse an execute with no reviewer.
+
+    Scoped to ``main`` rather than ``sweep`` on purpose: a programmatic
+    caller passing explicit settings has already declared its provider, and
+    the pipeline stamps any mock-produced report as non-independent in every
+    environment regardless. This guards the human at a terminal, who is the
+    one who cannot see which variables the shell actually exported.
+
+    Args:
+        settings: The settings this run resolved, which are the same ones
+            ``sweep`` will use when ``main`` does not pass its own.
+        execute: Whether the run will write. A dry run makes no review calls,
+            so the provider is irrelevant to it and nothing is printed.
+
+    Raises:
+        SystemExit: When ``execute`` is set and the resolved provider is the
+            mock, which cannot produce a review.
+    """
+    if not execute:
+        return
+    # stderr, not stdout: the refusal below exits through `sys.exit(str)`,
+    # which writes to stderr, and the banner is the context that refusal
+    # refers to ("the resolved environment above"). Splitting the pair across
+    # two streams meant a CI step or an operator redirecting either one kept
+    # only half the safety story. Results stay on stdout; safety diagnostics
+    # travel together on stderr.
+    print(
+        f"remoderate_books: environment={settings.environment} "
+        f"database={_database_target(settings.database_url)} "
+        f"review_provider={settings.review_provider}",
+        file=sys.stderr,
+    )
+    if settings.review_provider == "mock":
+        sys.exit(
+            "remoderate_books: REFUSING --execute, the resolved "
+            'review_provider is "mock", which returns no verdict and would '
+            "rewrite every targeted node as a fail-safe default. Set "
+            "CYO_ADVENTURE_REVIEW_PROVIDER to a real backend (and check the "
+            f"resolved environment above, {settings.environment}, is the one "
+            "you meant) before re-running."
         )
 
 
 def main() -> None:
     """Entry point for the re-moderation sweep script.
 
-    Prints the target list always, preceded by an exclusion warning whenever
-    the sweep covered fewer books than the review queue holds. In dry-run
+    An ``--execute`` run passes through ``_preflight`` first, which prints the
+    resolved environment, database, and reviewer to stderr and refuses the run
+    outright when that reviewer is the mock. That refusal is the earliest exit
+    in the script: it happens before any database work, so a mock-provider
+    ``--execute`` produces the banner, the refusal, and no target list at all.
+
+    Otherwise, prints the target list always, preceded by an exclusion warning
+    whenever the sweep covered fewer books than the review queue holds. In dry-run
     (default), that is the only output. When ``--execute`` is given, also
     prints the succeeded/failed counts, the fresh verdicts, which books the
     repair pass rewrote, and exits nonzero if anything failed OR if any book
     came back hard-blocked OR if any book was excluded, so neither a partial
     sweep nor a book that just failed re-moderation is ever read as a clean
     success.
+
+    The nonzero code distinguishes the two cases a retry loop must tell apart:
+    ``1`` for a retryable failure and ``3`` for an outcome that needs a person.
+    See :func:`_exit_on_outcome`.
     """
     args = _parse_args()
+    _preflight(_default_settings, execute=args.execute)
     result = asyncio.run(
         sweep(
             book_ids=args.book_id,
@@ -838,7 +1061,8 @@ def main() -> None:
 
     print(
         f"remoderate_books: {len(result.succeeded)} succeeded "
-        f"({len(result.blocked)} blocked, {len(result.flagged)} flagged), "
+        f"({len(result.blocked)} blocked, {len(result.flagged)} flagged, "
+        f"{len(result.incomplete)} reviewed incompletely), "
         f"{len(result.failed)} failed."
     )
     if result.flagged:
@@ -853,6 +1077,20 @@ def main() -> None:
             "rewritten by the repair pass and differs from what was last "
             "reviewed; re-read before approving: "
             + ", ".join(f"{sid} v{v}" for sid, v in result.repaired)
+        )
+    if result.incomplete:
+        # Printed BEFORE `blocked`, and worded to send the operator at the
+        # reviewer rather than at the prose. These books' verdicts are
+        # fail-closed: at least one node reached no judgment, so "block" here
+        # says nothing about what the story contains.
+        print(
+            "remoderate_books: REVIEWED INCOMPLETELY, at least one node in "
+            "each of these books reached NO safety judgment, so its verdict "
+            "is fail-closed rather than a statement about its content. Status "
+            "unchanged by this sweep. Re-run to fill the gap; a book that "
+            "comes back incomplete twice means the reviewer itself is down or "
+            "misconfigured, not that the story is unsafe: "
+            + ", ".join(f"{sid} v{v}" for sid, v in result.incomplete)
         )
     if result.blocked:
         # A hard block is the one outcome that needs a human today, and this
@@ -889,20 +1127,70 @@ def main() -> None:
             "remoderate_books: not attempted after the timeout: "
             + ", ".join(f"{sid} v{v}" for sid, v in result.not_attempted)
         )
-    if (
-        result.failed
-        or result.blocked
-        or result.excluded
-        or result.timed_out
-        or result.not_attempted
-    ):
-        sys.exit(
-            f"remoderate_books: {len(result.failed)} book(s) failed "
-            f"re-moderation, {len(result.blocked)} book(s) hard-blocked, "
-            f"{len(result.excluded)} book(s) excluded, "
-            f"{len(result.timed_out)} book(s) timed out, "
-            f"{len(result.not_attempted)} book(s) not attempted."
+    _exit_on_outcome(result)
+
+
+def _exit_on_outcome(result: SweepResult) -> None:
+    """Exit with a code that says whether re-running could change the outcome.
+
+    Splits the five non-clean outcomes into two classes:
+
+    - Retryable (``_EXIT_RETRYABLE``): ``failed``, ``timed_out``,
+      ``not_attempted`` and ``incomplete``. The first three rolled back cleanly
+      and left no durable state, so the same invocation may well succeed next
+      time; a dropped pooler connection or a statement timeout lands here.
+      ``incomplete`` joins them because a coverage gap is usually one flaky
+      reviewer response, and the retry is a genuinely different, smaller
+      request that often succeeds. It is deliberately NOT filed under
+      needs-a-human even though its verdict is "block": a human cannot fix an
+      unjudged node, only a reviewer can, and the wrapper's bounded retries
+      cost less than sending someone to read prose nothing has judged.
+    - Needs a human (``_EXIT_NEEDS_HUMAN``): ``blocked`` and ``excluded``. The
+      call SUCCEEDED and the answer was "no". A hard block moves only when a
+      person edits prose or changes status, and an excluded book has no version
+      row to re-moderate. Re-running re-derives the identical answer at full
+      LLM cost.
+
+    Retryable wins when a sweep produced both, because then there really is
+    something a retry can fix; the blocked books are still named on stdout and
+    survive into the next run's report.
+
+    Note that soft ``flagged`` is deliberately absent from both classes and
+    exits clean. It is informational: the status did not change and no action
+    is required before the book can be read.
+
+    Args:
+        result: The sweep outcome to inspect.
+    """
+    retryable = (
+        result.failed or result.timed_out or result.not_attempted or result.incomplete
+    )
+    needs_human = result.blocked or result.excluded
+    if not retryable and not needs_human:
+        return
+
+    print(
+        f"remoderate_books: {len(result.failed)} book(s) failed "
+        f"re-moderation, {len(result.blocked)} book(s) hard-blocked, "
+        f"{len(result.incomplete)} book(s) reviewed incompletely, "
+        f"{len(result.excluded)} book(s) excluded, "
+        f"{len(result.timed_out)} book(s) timed out, "
+        f"{len(result.not_attempted)} book(s) not attempted.",
+        file=sys.stderr,
+    )
+    if retryable:
+        print(
+            "remoderate_books: exit 1, RETRYABLE. Re-running may change this.",
+            file=sys.stderr,
         )
+        sys.exit(_EXIT_RETRYABLE)
+    # Three short lines rather than one wrapped string: ruff's ISC003 requires
+    # implicit concatenation and basedpyright's reportImplicitStringConcatenation
+    # forbids it, so any two-part message here trips one tool or the other.
+    print("remoderate_books: exit 3, NEEDS A HUMAN.", file=sys.stderr)
+    print("  Retrying re-derives the same answer at full LLM cost.", file=sys.stderr)
+    print("  Act on the books named above instead.", file=sys.stderr)
+    sys.exit(_EXIT_NEEDS_HUMAN)
 
 
 if __name__ == "__main__":

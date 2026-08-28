@@ -653,10 +653,15 @@ class Settings(BaseSettings):
     # runs no real safety review; a non-local process quietly booting with it
     # would persist unreviewed moderation reports as if they were reviewed
     # (gap G1). `_require_real_reviewer_outside_local` below refuses to boot
-    # in that combination unless this is explicitly set, which is also the
-    # signal the moderation pipeline uses to stamp `reviewer_independent=false`
-    # plus a structural advisory finding on every report it produces, so a
-    # mock-moderated report stays self-identifying forever.
+    # in that combination unless this is explicitly set. Note what this flag
+    # does NOT do: it does not drive the moderation pipeline's stamp. That
+    # stamp keys on `review_provider == "mock"` alone and fires in every
+    # environment, hatch or no hatch, so a mock-moderated report is
+    # self-identifying forever whether or not it needed permission to boot.
+    # The two were once described as one mechanism, and the pipeline's stamp
+    # was gated on `environment != "local"` to match; that shared gate is
+    # what let twelve books through (gap G1, and the #CRITICAL block at
+    # moderation/pipeline.py's `mock_reviewer` assignment).
     allow_mock_review: bool = False
 
     # Stage-0 deterministic classifier credentials. OpenAI is optional; a missing
@@ -1823,9 +1828,12 @@ class Settings(BaseSettings):
         reviewed but never were (gap G1, design doc section 2.4). Set
         ``CYO_ADVENTURE_ALLOW_MOCK_REVIEW=1`` for the narrow legitimate case
         (catalog seeding, local-parity smoke runs against a non-local
-        database) and expect ``moderation/pipeline.py`` to stamp every
-        report produced under it as non-independent plus a structural
-        advisory finding, so it is never mistaken for real review.
+        database). Setting it changes what may boot, not how the resulting
+        report is labelled: ``moderation/pipeline.py`` stamps every report
+        the mock produces as non-independent plus a structural advisory
+        finding whenever ``review_provider == "mock"``, in local too and
+        with or without this flag, so such a report is never mistaken for
+        real review.
 
         Raises:
             ConfigurationError: when ``review_provider == "mock"``,
@@ -1848,8 +1856,10 @@ class Settings(BaseSettings):
                 f"'{self.environment}', not 'local'. The mock reviewer runs no "
                 "real safety review; set CYO_ADVENTURE_ALLOW_MOCK_REVIEW=1 if "
                 "this is an intentional non-evidence run (for example catalog "
-                "seeding), which also stamps every report it produces as "
-                "reviewer_independent=false with a structural advisory finding."
+                "seeding). Note that the flag only permits the boot: every "
+                "report the mock produces is stamped "
+                "reviewer_independent=false with a structural advisory "
+                "finding regardless of it, in local too."
             )
             raise ConfigurationError(msg)
         return self

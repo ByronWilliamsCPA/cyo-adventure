@@ -24,6 +24,13 @@ from cyo_adventure.core.exceptions import (
 )
 from cyo_adventure.db.models import Storybook, StorybookVersion, StoryRequest
 from cyo_adventure.events import Actor
+from cyo_adventure.moderation.pipeline import _stamp_mock_reviewer
+from cyo_adventure.moderation.report import (
+    Finding,
+    ModerationReport,
+    Source,
+    Verdict,
+)
 from cyo_adventure.publishing import service
 from tests.conftest import make_clean_moderation_report
 
@@ -516,4 +523,80 @@ async def test_auto_reject_illegal_state_raises_and_does_not_flush() -> None:
     with pytest.raises(StateTransitionError):
         await service.auto_reject(session, story)
 
+    session.flush.assert_not_awaited()
+
+
+def _mock_stamped_moderation_report() -> dict[str, object]:
+    """A report the mock reviewer produced, in its real persisted shape.
+
+    Built through the real ``_stamp_mock_reviewer`` and the real ``to_dict``
+    rather than hand-written, so a change to either half of the stamp reaches
+    this test instead of drifting away from it. The ADVISORY finding is the
+    control: it is a genuine, non-artifact judgment, so the refusal below
+    cannot be attributed to "the report had nothing in it".
+
+    Returns:
+        The persisted report body for a mock-moderated version.
+    """
+    report = ModerationReport()
+    report.add(
+        Finding(
+            stage=0,
+            source=Source.PIPELINE,
+            category="prose_craft_sameness",
+            verdict=Verdict.ADVISORY,
+            message="self-repetition: 3 nodes repeat another node's body",
+            node_id=None,
+        )
+    )
+    _stamp_mock_reviewer(report)
+    return report.to_dict()
+
+
+@pytest.mark.unit
+async def test_approve_refuses_a_mock_stamped_report_even_with_an_override() -> None:
+    """A mock-moderated story is unapprovable, and no reason text rescues it.
+
+    Since the gap-G1 stamp became unconditional, every story moderated with
+    the mock reviewer carries ``reviewer_independent = False``, which
+    ``moderation_report_unusable`` treats as decisive on its own. That check
+    sits ABOVE the ``severe_finding_counts`` gate in ``approve``, and
+    ``override_reason`` gates only the lower one, so an admin has no path
+    through: the answer is to re-moderate with a real reviewer, not to
+    justify the approval.
+
+    Passing an override here is the whole point of the test. Omitting it
+    would leave the refusal ambiguous between "unusable report" and "no
+    reason supplied", which is the reading that would let a future change
+    quietly wire an override into this gate with the test still green.
+    """
+    story = _story("in_review")
+    version_row = StorybookVersion(
+        storybook_id="s1",
+        version=1,
+        blob={},
+        moderation_report=_mock_stamped_moderation_report(),
+    )
+    session = AsyncMock(spec=AsyncSession)
+    session.get = AsyncMock(return_value=version_row)
+    # Built outside the raises block: S5778 allows exactly one call in the
+    # body, so a second one here would make the assertion ambiguous about
+    # which call raised.
+    principal = _principal("admin")
+
+    with pytest.raises(BusinessLogicError) as excinfo:
+        await service.approve(
+            session,
+            principal,
+            story,
+            1,
+            override_reason="reviewed the whole book by hand",
+        )
+
+    # The rule name, not the message text: the message is prose that may be
+    # reworded, while the rule is the machine-readable identity of the gate
+    # that fired. Asserting it is what distinguishes this refusal from the
+    # never-screened and illegal-transition ones above it.
+    assert excinfo.value.details["rule"] == "approve_with_unusable_moderation"
+    assert story.status == "in_review"
     session.flush.assert_not_awaited()

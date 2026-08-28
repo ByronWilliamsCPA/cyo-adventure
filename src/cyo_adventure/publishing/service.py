@@ -41,6 +41,8 @@ from cyo_adventure.db.models import (
 )
 from cyo_adventure.events import Actor, EventType, record_event
 from cyo_adventure.moderation.report import (
+    SevereFindingCounts,
+    moderation_coverage_incomplete,
     moderation_report_unusable,
     severe_finding_counts,
 )
@@ -351,6 +353,128 @@ async def _stamp_resulting_storybook_id(
     request_row.resulting_storybook_id = storybook.id
 
 
+def _assert_report_permits_approval(
+    *,
+    storybook_id: str,
+    version: int,
+    version_row: StorybookVersion,
+    override_reason: str | None,
+) -> SevereFindingCounts:
+    """Raise unless the stored moderation report permits approving this version.
+
+    Four independent refusals, asked before any state changes, in increasing
+    order of what they concede to the human reviewer: no report at all, a
+    report with no genuine judgment in it, a report whose reviewer did not see
+    every node, and finally a report carrying a severe finding, which a human
+    MAY approve over but only with a recorded reason.
+
+    Extracted from :func:`approve` rather than inlined: the four checks are one
+    cohesive question about one artifact, and keeping them together is what
+    makes "no unmoderated path reaches published" reviewable in a single place
+    instead of spread through the transition logic.
+
+    Args:
+        storybook_id: The storybook being approved; named in all four
+            refusal messages so a 400 identifies the refused artifact.
+        version: The version being approved; likewise named in the messages.
+        version_row: The loaded version row carrying ``moderation_report``.
+        override_reason: The caller's justification, if any.
+
+    Returns:
+        SevereFindingCounts: The tallied severe findings, returned rather than
+        recomputed by the caller so the audit log can only ever report the
+        counts this gate actually judged.
+
+    Raises:
+        BusinessLogicError: On any of the four refusals, each with its own
+            ``rule`` so callers can distinguish them.
+    """
+    # Interpolated into all four refusals below rather than deleted. The
+    # parameters were previously dropped with a `del`, which satisfied Ruff's
+    # unused-argument rule while leaving a docstring that claimed they were
+    # "for the message only" and four messages that named no artifact. A 400
+    # from a bulk approve is far more useful when it says WHICH version it
+    # refused.
+    subject = f"version {version} of storybook '{storybook_id}'"
+    # #CRITICAL: security: closes C3-SAFETY Finding 2 (adversarial-safety-
+    # evaluation.md): the admin submit endpoint (api/approval.py::submit_storybook)
+    # can still move a draft straight to in_review without ever running
+    # moderation (Finding 1 closed the import path's own unmoderated route; this
+    # endpoint is untouched by that fix). This guard is the single choke point
+    # (the sole publish path) that makes "no unmoderated path reaches published"
+    # hold structurally, regardless of how many routes can reach in_review.
+    # #VERIFY: test_approve_without_moderation_report_raises.
+    if version_row.moderation_report is None:
+        msg = f"cannot approve {subject}: it has never been screened by moderation"
+        raise BusinessLogicError(msg, rule="approve_without_moderation")
+    # #CRITICAL: security: a stored report can exist yet carry no genuine
+    # content judgment: a mock-reviewer run (reviewer_independent=False) or a
+    # legacy report whose findings are all fail-safe/structural artifacts.
+    # moderation_report_unusable() (moderation/report.py, Task 1) is the
+    # shared predicate for that check; approve() is its first consumer.
+    # #VERIFY: test_approve_fail_safe_report_returns_400.
+    if moderation_report_unusable(version_row.moderation_report):
+        msg = (
+            f"cannot approve {subject}: the stored moderation report contains "
+            "no genuine content judgment (fail-safe or mock-reviewer artifacts "
+            "only); re-run moderation for this version first"
+        )
+        raise BusinessLogicError(msg, rule="approve_with_unusable_moderation")
+    # #CRITICAL: security: a coverage gap is not a verdict, so it is checked
+    # here and NOT left to the D2 override gate below. D2 lets a human approve
+    # OVER an automated block or high-severity flag with a recorded reason,
+    # which is right when a judgment exists and the human disagrees with it.
+    # An unreviewed node carries no judgment to disagree with, so an override
+    # reason would be justifying a decision nobody made. Before this gate, a
+    # report naming eight nodes the reviewer never saw approved with HTTP 200
+    # under any non-empty reason, because the unusable-report predicate above
+    # is all-or-nothing: one genuine finding beside the gap made the whole
+    # report read as usable. Four books in the live catalog held that shape.
+    # #VERIFY: the test named
+    # test_approve_with_unreviewed_nodes_returns_400_even_with_a_reason, in
+    # tests/integration/test_approval_api.py, supplies a valid override_reason
+    # precisely to prove D2 is not what stops the request.
+    if moderation_coverage_incomplete(version_row.moderation_report):
+        msg = (
+            f"cannot approve {subject}: the stored moderation report admits "
+            "the reviewer never saw part of this story (incomplete coverage). "
+            "An override reason cannot substitute for a judgment that was "
+            "never made; re-run moderation for this version first"
+        )
+        raise BusinessLogicError(msg, rule="approve_with_incomplete_coverage")
+    # #CRITICAL: security: ADR-005 amendment (2026-08-25, gate D2): a human
+    # remains free to approve over an automated block or high-severity flag,
+    # but only with a recorded justification, so silent overrides end while
+    # the human stays the final authority. severe_finding_counts()
+    # (moderation/report.py, Task 1) never counts advisories, matching the
+    # SOP contract that advisories never gate.
+    # #VERIFY: test_approve_over_block_without_reason_returns_400 and
+    # test_approve_over_block_with_reason_publishes_and_audits in
+    # tests/integration/test_approval_api.py.
+    severe_counts = severe_finding_counts(version_row.moderation_report)
+    # #ASSUME: data-integrity: a whitespace-only override_reason ("   ") must
+    # not satisfy this gate. Truthiness alone accepts any non-empty string,
+    # including one that carries no actual justification once stripped;
+    # requiring a non-empty stripped value keeps the audit log's free-text
+    # reason meaningful rather than a rubber stamp.
+    # For API callers this is now a backstop: ApproveBody strips before its
+    # own min_length check, so a whitespace-only reason fails validation with
+    # 422 before reaching here. It is still the ONLY such guard for callers
+    # that never build an ApproveBody, which now includes
+    # publishing/catalog_publish.py's CLI; do not remove it as redundant.
+    # #VERIFY: tests/integration/test_approval_api.py::
+    # test_approve_over_block_with_whitespace_only_reason_returns_422.
+    if (severe_counts.block_count or severe_counts.high_severity_flag_count) and not (
+        override_reason and override_reason.strip()
+    ):
+        msg = (
+            f"approving {subject} over a block or high-severity finding "
+            "requires an override reason; it is recorded in the audit log"
+        )
+        raise BusinessLogicError(msg, rule="approve_requires_override_reason")
+    return severe_counts
+
+
 async def approve(
     session: AsyncSession,
     principal: Principal,
@@ -447,60 +571,12 @@ async def approve(
     if version_row is None:
         msg = f"version {version} of storybook '{storybook.id}' not found"
         raise ResourceNotFoundError(msg)
-    # #CRITICAL: security: closes C3-SAFETY Finding 2 (adversarial-safety-
-    # evaluation.md): the admin submit endpoint (api/approval.py::submit_storybook)
-    # can still move a draft straight to in_review without ever running
-    # moderation (Finding 1 closed the import path's own unmoderated route; this
-    # endpoint is untouched by that fix). This guard is the single choke point
-    # (the sole publish path) that makes "no unmoderated path reaches published"
-    # hold structurally, regardless of how many routes can reach in_review.
-    # #VERIFY: test_approve_without_moderation_report_raises.
-    if version_row.moderation_report is None:
-        msg = "cannot approve a version that has never been screened by moderation"
-        raise BusinessLogicError(msg, rule="approve_without_moderation")
-    # #CRITICAL: security: a stored report can exist yet carry no genuine
-    # content judgment: a mock-reviewer run (reviewer_independent=False) or a
-    # legacy report whose findings are all fail-safe/structural artifacts.
-    # moderation_report_unusable() (moderation/report.py, Task 1) is the
-    # shared predicate for that check; approve() is its first consumer.
-    # #VERIFY: test_approve_fail_safe_report_returns_400.
-    if moderation_report_unusable(version_row.moderation_report):
-        msg = (
-            "cannot approve: the stored moderation report contains no genuine "
-            "content judgment (fail-safe or mock-reviewer artifacts only); "
-            "re-run moderation for this version first"
-        )
-        raise BusinessLogicError(msg, rule="approve_with_unusable_moderation")
-    # #CRITICAL: security: ADR-005 amendment (2026-08-25, gate D2): a human
-    # remains free to approve over an automated block or high-severity flag,
-    # but only with a recorded justification, so silent overrides end while
-    # the human stays the final authority. severe_finding_counts()
-    # (moderation/report.py, Task 1) never counts advisories, matching the
-    # SOP contract that advisories never gate.
-    # #VERIFY: test_approve_over_block_without_reason_returns_400 and
-    # test_approve_over_block_with_reason_publishes_and_audits in
-    # tests/integration/test_approval_api.py.
-    severe_counts = severe_finding_counts(version_row.moderation_report)
-    # #ASSUME: data-integrity: a whitespace-only override_reason ("   ") must
-    # not satisfy this gate. Truthiness alone accepts any non-empty string,
-    # including one that carries no actual justification once stripped;
-    # requiring a non-empty stripped value keeps the audit log's free-text
-    # reason meaningful rather than a rubber stamp.
-    # For API callers this is now a backstop: ApproveBody strips before its
-    # own min_length check, so a whitespace-only reason fails validation with
-    # 422 before reaching here. It is still the ONLY such guard for callers
-    # that never build an ApproveBody, which now includes
-    # publishing/catalog_publish.py's CLI; do not remove it as redundant.
-    # #VERIFY: tests/integration/test_approval_api.py::
-    # test_approve_over_block_with_whitespace_only_reason_returns_422.
-    if (severe_counts.block_count or severe_counts.high_severity_flag_count) and not (
-        override_reason and override_reason.strip()
-    ):
-        msg = (
-            "approving over a block or high-severity finding requires an "
-            "override reason; it is recorded in the audit log"
-        )
-        raise BusinessLogicError(msg, rule="approve_requires_override_reason")
+    severe_counts = _assert_report_permits_approval(
+        storybook_id=storybook.id,
+        version=version,
+        version_row=version_row,
+        override_reason=override_reason,
+    )
     # #ASSUME: data-integrity: the chain read and the approval write share the
     # session's transaction; siblings are selected by a non-null
     # current_published_version, so a chain member mid-approval in another
