@@ -737,7 +737,7 @@ jobs:
 
   resolve:
     name: Resolve the tracking issue
-    needs: [propose, publish]
+    needs: [publish]
     # Every one of these issue bodies used to end by asking a human to close the issue
     # once a run went green. Nobody ever did, so five stale issues accumulated on one
     # shared `ci-failure` label and a NEW alert became indistinguishable from standing
@@ -749,9 +749,23 @@ jobs:
     # tag and the GitHub Release proves the cycle completed, so that is the one result
     # allowed to close the issue.
     #
-    # Gated on the explicit result rather than `success()`, because `propose` and
-    # `publish` never run on the same event and a SKIPPED job does not fail
-    # `success()`, which would close the issue on a run that proved nothing.
+    # `needs` used to be [propose, publish], on the theory that the explicit
+    # `needs.publish.result == 'success'` check below was gate enough on its own. It
+    # was not: GitHub Actions checks that every job listed in `needs` completed
+    # successfully (a skipped job does not count as success) BEFORE it evaluates this
+    # job's `if:` at all, unless that `if:` itself calls always(), success(),
+    # failure(), or cancelled(). This job's `if:` calls none of those, so the implicit
+    # check silently required `propose` to succeed too. `propose` runs only on
+    # schedule/workflow_dispatch and `publish` runs only on push, so the two never run
+    # on the same event: `propose` was always skipped on the push that runs `publish`,
+    # which made `resolve` unreachable on every real release. Observed directly on run
+    # 33140125879, a fully successful v0.84.0 release that still reported `resolve` as
+    # skipped. Listing only `publish` in `needs` fixes this: the implicit success
+    # check now looks at `publish` alone, so it is satisfied exactly when `publish`
+    # actually ran and succeeded, and the explicit `if:` below still refuses to close
+    # the issue on anything else (a skipped or failed `publish`).
+    # #VERIFY a release that reaches `publish` also reaches `resolve` and closes the
+    # tracking issue, rather than reporting `resolve` as skipped again.
     if: needs.publish.result == 'success'
     runs-on: ubuntu-latest
     timeout-minutes: 10
