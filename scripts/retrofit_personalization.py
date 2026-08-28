@@ -29,16 +29,38 @@ book without touching the rest of the sweep:
    in the stored blob. This is the check that catches a re-themed book (see
    the ``#CRITICAL`` note on :func:`plan_retrofit`).
 3. Stripping the sentinels back out must reproduce the stored text exactly,
-   surface by surface. The transform is only allowed to add wrappers. Both
-   sides of that comparison are normalized through
-   ``strip_model_sentinels``, so a book this sweep already retrofitted
-   compares equal to itself and the sweep stays re-runnable.
+   surface by surface, AND every field outside those text surfaces must be
+   unchanged. The transform is only allowed to add wrappers. Both sides of
+   the text comparison are normalized through ``strip_model_sentinels``, so
+   a book this sweep already retrofitted compares equal to itself and the
+   sweep stays re-runnable. The non-text half carries no exemption: the
+   reinsertion transform writes exactly four keys (``title``,
+   ``node.body``, ``node.ending.title``, ``choice.label``) into a deep copy
+   of the stored blob, so ``metadata``, the choice targets, ``variables``,
+   ``start_node`` and everything else must come through byte-identical, and
+   any difference there is a defect rather than an expected rewrite. The
+   refreshed ``validation_report`` a run persists is a sibling COLUMN, not
+   part of the blob, so it is outside this comparison by construction.
 4. The produced manifest must actually describe the produced document
    (``verify_manifest``), since the two are persisted together and
    ``personalization_eligible`` is derived from the manifest alone.
-5. The deterministic validation gate must return the same finding multiset
-   AND the same blocked verdict before and after, so a retrofit can never be
-   the reason a book starts failing validation.
+5. The deterministic validation gate must not report a finding the stored
+   blob did not already carry, and must not newly block, so a retrofit can
+   never be the reason a book starts failing validation. That comparison is
+   directional rather than an equality, deliberately: PN-1
+   (``validator/naming.py``) exempts the protagonist by reading the ``HERO``
+   sentinel, so installing that sentinel is precisely what retires PN-1's
+   finding on the hero's own name, and installing it is this transform's
+   entire purpose. Measured on ``the-backyard-treasure-map``, PN-1 reports
+   ``Nina``, ``Pepper`` and ``Theo`` against the stored blob and ``Pepper``
+   and ``Theo`` afterwards, where ``Nina`` is the contract's pinned ``HERO``
+   binding. An equality check read that improvement as a failure and stopped
+   the book. A removal cannot be prose loss wearing a weaker check, because
+   invariant 3 has already proven the document identical modulo wrappers,
+   surfaces and non-text fields alike. The permission stops at severity:
+   retiring an ERROR-severity finding is refused outright, because nothing
+   about installing a sentinel motivates one and PL-28, the ADR-011
+   prototype-seed firewall, is an ERROR.
 
 Dry run is the default and writes nothing.
 """
@@ -47,6 +69,7 @@ from __future__ import annotations
 
 import argparse
 import asyncio
+import copy
 import json
 import sys
 from collections import Counter
@@ -76,6 +99,7 @@ from cyo_adventure.storybook.reinsertion import (
 )
 from cyo_adventure.utils.logging import get_logger, setup_logging
 from cyo_adventure.validator.gate import run_gate
+from cyo_adventure.validator.report import Severity
 
 if TYPE_CHECKING:
     from collections.abc import Callable, Iterator, Mapping
@@ -130,7 +154,7 @@ class RetrofitPlan:
             wrapped in its canonical sentinel.
         manifest: The at-rest sentinel manifest derived from ``document``.
         validation_report: The refreshed deterministic gate report for
-            ``document``, computed by :func:`_assert_gate_neutral` and
+            ``document``, computed by :func:`_assert_gate_no_worse` and
             persisted alongside the blob rather than discarded.
         personalizable_slots: The contract's declared personalizable slot
             ids. Carried so the write path can ask the import path's exact
@@ -244,6 +268,62 @@ def load_skeleton(skeleton_path: Path) -> dict[str, object]:
     return cast("dict[str, object]", decoded)
 
 
+# Written into every text surface by :func:`_non_surface_skeleton` before
+# two documents are compared field by field. Any value would serve: it is
+# written to both sides at the same positions, so it can never be the reason
+# they differ. A NUL-delimited string is chosen only so a value that somehow
+# escaped into a message reads as machinery rather than as prose.
+_BLANKED_SURFACE = "\x00text-surface\x00"
+
+
+def _text_surface_slots(
+    document: dict[str, object],
+) -> Iterator[tuple[str, dict[str, object], str]]:
+    """Yield ``(path, container, key)`` for every text surface of a document.
+
+    The single enumeration of what counts as a text surface. Both readers of
+    that definition go through here, :func:`document_surfaces` to read the
+    text and :func:`_non_surface_skeleton` to blank it, so the two can never
+    drift into disagreeing about which four keys the transform is allowed to
+    write.
+
+    Args:
+        document: A storybook blob.
+
+    Yields:
+        tuple[str, dict[str, object], str]: A stable path label, the dict
+        holding the text, and the key it sits under. The value at
+        ``container[key]`` is always a ``str``.
+    """
+    if isinstance(document.get("title"), str):
+        yield "title", document, "title"
+    nodes = document.get("nodes")
+    if not isinstance(nodes, list):
+        return
+    for index, node in enumerate(cast("list[object]", nodes)):
+        if not isinstance(node, dict):
+            continue
+        node_map = cast("dict[str, object]", node)
+        node_id = node_map.get("id")
+        label = node_id if isinstance(node_id, str) else f"#{index}"
+        if isinstance(node_map.get("body"), str):
+            yield f"{label}.body", node_map, "body"
+        ending = node_map.get("ending")
+        if isinstance(ending, dict):
+            ending_map = cast("dict[str, object]", ending)
+            if isinstance(ending_map.get("title"), str):
+                yield f"{label}.ending.title", ending_map, "title"
+        choices = node_map.get("choices")
+        if not isinstance(choices, list):
+            continue
+        for position, choice in enumerate(cast("list[object]", choices)):
+            if not isinstance(choice, dict):
+                continue
+            choice_map = cast("dict[str, object]", choice)
+            if isinstance(choice_map.get("label"), str):
+                yield f"{label}.choices[{position}].label", choice_map, "label"
+
+
 def document_surfaces(document: Mapping[str, object]) -> Iterator[tuple[str, str]]:
     """Yield every text surface of a storybook document as ``(path, text)``.
 
@@ -257,35 +337,30 @@ def document_surfaces(document: Mapping[str, object]) -> Iterator[tuple[str, str
     Yields:
         tuple[str, str]: A stable path label and the text at it.
     """
-    title = document.get("title")
-    if isinstance(title, str):
-        yield "title", title
-    nodes = document.get("nodes")
-    if not isinstance(nodes, list):
-        return
-    for index, node in enumerate(cast("list[object]", nodes)):
-        if not isinstance(node, dict):
-            continue
-        node_map = cast("dict[str, object]", node)
-        node_id = node_map.get("id")
-        label = node_id if isinstance(node_id, str) else f"#{index}"
-        body = node_map.get("body")
-        if isinstance(body, str):
-            yield f"{label}.body", body
-        ending = node_map.get("ending")
-        if isinstance(ending, dict):
-            ending_title = cast("dict[str, object]", ending).get("title")
-            if isinstance(ending_title, str):
-                yield f"{label}.ending.title", ending_title
-        choices = node_map.get("choices")
-        if not isinstance(choices, list):
-            continue
-        for position, choice in enumerate(cast("list[object]", choices)):
-            if not isinstance(choice, dict):
-                continue
-            choice_label = cast("dict[str, object]", choice).get("label")
-            if isinstance(choice_label, str):
-                yield f"{label}.choices[{position}].label", choice_label
+    for path, container, key in _text_surface_slots(dict(document)):
+        yield path, cast("str", container[key])
+
+
+def _non_surface_skeleton(document: Mapping[str, object]) -> dict[str, object]:
+    """Return a copy of ``document`` with every text surface blanked out.
+
+    What is left is exactly the part of the blob the reinsertion transform
+    has no business writing, in a form two documents can be compared on with
+    a single ``==``. Blanking rather than deleting keeps the structure
+    intact, so a node that lost its ``body`` key still reads as a
+    difference.
+
+    Args:
+        document: A storybook blob.
+
+    Returns:
+        dict[str, object]: A deep copy whose four text surfaces all hold
+        :data:`_BLANKED_SURFACE`.
+    """
+    frame = copy.deepcopy(dict(document))
+    for _path, container, key in _text_surface_slots(frame):
+        container[key] = _BLANKED_SURFACE
+    return frame
 
 
 def _assert_only_wrappers_added(
@@ -303,13 +378,30 @@ def _assert_only_wrappers_added(
     #VERIFY: tests/unit/test_retrofit_personalization.py::
     #   test_a_second_retrofit_over_a_retrofitted_blob_plans_cleanly
 
+    #CRITICAL: data-integrity: the text surfaces are 4 of the ~37 distinct
+    field paths a stored blob carries, and the ones this guard does NOT
+    compare are read by the validation gate: all of ``metadata`` (``tier``,
+    ``age_band``, ``topology``, ``production_eligible``, ``content_flags``,
+    ``reading_level``), the choice targets, ``variables``, ``start_node``.
+    :func:`_assert_gate_no_worse` cites this guard as its reason for
+    permitting a retired finding, so a guard that stopped at the prose would
+    let a metadata drift retire a finding under a claim of byte-identity it
+    had never checked. Every non-text field is therefore compared too, with
+    no exemption: the transform deep-copies the blob and writes four keys,
+    so a difference anywhere else is a defect, not an expected rewrite. The
+    ``validation_report`` a run persists is a sibling column rather than a
+    blob field, so it is out of scope here by construction.
+    #VERIFY: tests/unit/test_retrofit_personalization.py::
+    #   test_a_metadata_change_outside_the_text_surfaces_is_rejected
+
     Args:
         before: The stored blob.
         after: The retrofitted document.
 
     Raises:
         ValidationError: On any surface whose text changed by more than the
-            addition of sentinel wrappers, or if the surface sets differ.
+            addition of sentinel wrappers, if the surface sets differ, or if
+            any field outside the text surfaces changed at all.
     """
     original = dict(document_surfaces(before))
     retrofitted = dict(document_surfaces(after))
@@ -321,12 +413,63 @@ def _assert_only_wrappers_added(
         if strip_model_sentinels(retrofitted[path]) != strip_model_sentinels(text):
             msg = f"retrofit altered text at {path} beyond adding sentinels"
             raise ValidationError(msg)
+    stored_frame = _non_surface_skeleton(before)
+    retrofitted_frame = _non_surface_skeleton(after)
+    if stored_frame != retrofitted_frame:
+        changed = sorted(
+            key
+            for key in stored_frame.keys() | retrofitted_frame.keys()
+            if stored_frame.get(key) != retrofitted_frame.get(key)
+        )
+        msg = f"retrofit changed fields outside the text surfaces: {changed[:5]}"
+        raise ValidationError(msg)
 
 
-def _assert_gate_neutral(
+def _assert_gate_no_worse(
     before: Mapping[str, object], after: Mapping[str, object]
 ) -> dict[str, object]:
-    """Fail closed unless the validation gate is indifferent to the retrofit.
+    """Fail closed unless the retrofit leaves the gate no worse than it found it.
+
+    #CRITICAL: data integrity: this comparison is DIRECTIONAL, and an
+    equality here would be wrong rather than merely strict. A rule whose
+    verdict reads the sentinel manifest instead of the prose alone is not
+    invariant under a sentinel-installing transform, and PN-1
+    (``validator/naming.py``) is the first such rule: its protagonist
+    exemption keys on the ``HERO`` sentinel, chosen over any frequency
+    heuristic because a share-based rule would have exempted the very defect
+    PN-1 exists to catch (`AL-639`). Installing that sentinel is what this
+    whole script does, so the retrofit RETIRES PN-1's finding on the hero's
+    own name on every book whose prose named the hero flatly. Under an
+    equality check that improvement stopped the book. Retaining the
+    guarantee that matters, "a retrofit can never be the reason a book
+    starts failing validation", means refusing an INTRODUCED finding and a
+    newly blocked verdict while permitting a retired one. What makes the
+    permission safe is not this function: ``_assert_only_wrappers_added``
+    has already proven the whole document identical once sentinels are
+    stripped, text surfaces and non-text fields alike, so a retired finding
+    cannot be prose loss, or a metadata drift, in disguise.
+    #VERIFY: tests/unit/test_retrofit_personalization.py::
+    #   test_a_finding_the_retrofit_retires_is_permitted proves the
+    #   direction, and ::test_gate_guard_fails_closed_on_an_introduced_finding
+    #   proves the refusal still fires.
+
+    #CRITICAL: security: the permission stops at severity. Every finding
+    this transform is known to retire is a WARNING (PN-1), and nothing
+    about installing a sentinel motivates retiring an ERROR, so an ERROR
+    that disappears is a signal the inputs differed rather than a signal
+    the book improved. PL-28 makes the cost concrete: it is the ADR-011
+    firewall that stops a prototype MVP/Test seed reaching a child's
+    library, it is ERROR severity, and retiring it flips ``blocked`` True
+    to False on a real catalog book (``the-lost-mitten``) while this
+    function hands back a ``validation_report`` describing the unblocked
+    state for the write path to persist. A rule id counts as an ERROR
+    retirement when ANY of its stored findings was ERROR, because the
+    multiset comparison cannot say which of a rule's findings went away;
+    an ambiguous case is refused rather than permitted. The severity test
+    is written against WARNING rather than for ERROR so that a severity
+    this script has never seen fails closed.
+    #VERIFY: tests/unit/test_retrofit_personalization.py::
+    #   test_an_error_severity_finding_the_retrofit_retires_is_rejected
 
     Args:
         before: The stored blob.
@@ -335,23 +478,40 @@ def _assert_gate_neutral(
     Returns:
         dict[str, object]: The refreshed report for ``after``. Returned
         rather than discarded so the write path can persist a
-        ``validation_report`` that describes the blob actually stored; the
-        two verdicts are proven identical above, so this is the same
-        verdict, freshly serialized against the new document.
+        ``validation_report`` that describes the blob actually stored, which
+        matters more now that the two reports may legitimately differ: the
+        stored report must name the findings the STORED document carries,
+        not the retired ones.
 
     Raises:
-        ValidationError: If the finding multiset or the blocked verdict
-            changed.
+        ValidationError: If the gate reports a finding the stored blob did
+            not carry, blocks a document that previously passed, or retires
+            an ERROR-severity finding the stored blob carried.
     """
     old = run_gate(before, context="fill_result")
     new = run_gate(after, context="fill_result")
     old_rules = Counter(finding.rule_id for finding in old.report.findings)
     new_rules = Counter(finding.rule_id for finding in new.report.findings)
-    if old_rules != new_rules or old.blocked != new.blocked:
-        delta = sorted((new_rules - old_rules) + (old_rules - new_rules))
+    introduced = new_rules - old_rules
+    if introduced or (new.blocked and not old.blocked):
         msg = (
-            f"retrofit changed the validation gate: blocked "
-            f"{old.blocked} -> {new.blocked}, findings delta {delta}"
+            f"retrofit worsened the validation gate: blocked "
+            f"{old.blocked} -> {new.blocked}, findings introduced "
+            f"{sorted(introduced.elements())}"
+        )
+        raise ValidationError(msg)
+    retired = old_rules - new_rules
+    retired_errors = sorted(
+        {
+            finding.rule_id
+            for finding in old.report.findings
+            if retired[finding.rule_id] and finding.severity != Severity.WARNING
+        }
+    )
+    if retired_errors:
+        msg = (
+            f"retrofit retired error-severity findings {retired_errors}; a "
+            f"retrofit may retire an advisory finding but never an error"
         )
         raise ValidationError(msg)
     return new.report.to_dict()
@@ -432,7 +592,7 @@ def plan_retrofit(
             "account for; refusing to persist the pair"
         )
         raise ValidationError(msg)
-    validation_report = _assert_gate_neutral(blob, outcome.document)
+    validation_report = _assert_gate_no_worse(blob, outcome.document)
 
     statuses = Counter(token.status for token in outcome.token_outcomes)
     return RetrofitPlan(

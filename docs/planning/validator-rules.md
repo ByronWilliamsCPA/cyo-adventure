@@ -14,9 +14,15 @@ source: "tech-spec.md section 'Validation gate (deterministic, no LLM)'"
 
 # Validation Rule Catalog
 
-> **Status**: Accepted | **Version**: 1.3 | **Updated**: 2026-07-26
+> **Status**: Accepted | **Version**: 1.4 | **Updated**: 2026-08-27
 > **Scope**: All stories (Layer 1, Policy); Tier-2 stories only (Layer 2); all stories
-> advisory (RL); all stories always-human (SAFE); series chains at publish only (SR)
+> advisory (RL); fill-result stories only, advisory (PN); all stories always-human (SAFE);
+> series chains at publish only (SR)
+>
+> **v1.4** adds one genuinely new rule rather than closing a registry gap: PN-1
+> (advisory proper-noun introduction check) shipped in commit `83ff95da` and is
+> documented here for the first time, per this document's own Purpose clause that
+> adding a rule ID requires a revision. See the Naming section below.
 >
 > **v1.3** closes a registry gap rather than adding rules: L2-13, L2-14 and the entire
 > SR family (SR-1..SR-7, SR-9) were enforced in code while documented nowhere here, so
@@ -42,6 +48,7 @@ to this document.
 | Layer 2 (L2) | Pass/fail | Yes (Tier-2 only) |
 | Reading Level (RL) | Advisory | No (warns only) |
 | Choice Grammar (CG) | Advisory, and opt-in | No (warns only, and emits nothing at all by default) |
+| Naming (PN) | Advisory, fill-result only | No (warns only, and never runs under the `"skeleton"` context) |
 | Series (SR) | Pass/fail | Yes (blocks publish of a chain) |
 | Safety (SAFE) | Always human-routed | Yes (routes to human review, not auto-rejected) |
 | Series (SR) | Pass/fail | Yes, at publish only (cross-book; not part of `run_gate`) |
@@ -143,6 +150,24 @@ damage: the flip would turn on four rules nobody had written down.
 | CG-4 | Advisory (opt-in) | **Choice acknowledgment**: a heuristic proxy for section 10's "every choice is acknowledged in the immediately following prose" rule. Flags a decision-child whose opening sentence shares no content word (post-stopword) with the label of the choice that reaches it. Explicitly lossy: paraphrase and pronoun reference both trip it, which is why it can never be more than advisory. Skips an unfilled `<<FILL` body and any comparison where either side tokenizes to zero content words. | `CG-4 grammar: node '{target_id}' (reached via choice '{choice_id}' labeled {label!r} from node '{node_id}') has no content-word overlap between its opening sentence and the choice label in story '{story_id}' (advisory heuristic; may be a false positive, see module docstring)` |
 | CG-5 | Advisory (opt-in) | **Visible-run cap** (added 2026-08-18, `UW-C297`, owner-approved): the longest chain of consecutive configurations offering the reader exactly ONE option must not exceed the band's choiceless-run cap, the same `run_cap_for_band` value CG-1 applies. Measured over the configuration graph, so it counts what the reader sees rather than what the node declares. CG-1 reads `len(node.choices)` and never reads `choice.condition`, so a corridor held open by conditions is invisible to it: `the-cinder-bazaar` walks a reader through **ten** consecutive one-option stops that CG-1 scores as a longest run of 3, because three nodes inside the chain declare 4, 4 and 2 choices. Runs only for a story that conditions something, since an unconditioned story's visible graph is its declared graph; skips a capped walk, since a corridor found in a fragment of the state space is not proof of one in the story. **Defers to CG-1 whenever CG-1 already fires** (declared run over the cap): what this rule adds is a corridor CG-1 cannot see at all, and a second finding under a second id would be noise. Deliberately NOT a repair of CG-1 or CG-2: 40 catalog nodes show one option in some configuration and nearly all are an ordinary closed gate, which is what conditions are for, so grading those would fire on the feature; and CG-1's choiceless *share* has no well-defined reading in configuration space, where one node appears once per reachable state of it. WARNING only, and ADVISORY rather than blocking because all four skeletons authored to the strict bar declare zero conditions and so cannot test the bound. **Flip condition**: becomes blocking once one conditioned book is authored to the strict bar and passes it deliberately. Fires on 2 of 68 committed skeletons. | `CG-5 grammar: a reader can walk {visible} consecutive stops offering one option, above band '{band}'s run cap {cap}, in story '{story_id}'. CG-1 sees a longest run of {declared} because it counts declared choices and this corridor is held open by conditions: {node_chain} (advisory only; the nodes in the middle of the chain may declare several choices each)` |
 | CG-6 | Advisory (opt-in) | **Outbound staging** (added 2026-08-21, `UW-C312`, the outbound companion to CG-4): flags a decision node offering a choice whose label shares no content word (post-stopword) with the node's OWN body, i.e. the prose never stages what the choice promises; CG-4 is strictly inbound (does the arriving node acknowledge the choice just taken), so nothing asked this question before. Calibration (2026-08-21, over 39 committed known-good fills and the live one-shot books): known-good books dangle a median 3.7 percent of their labels (max 33 percent, terse gamebook labels), the under-delivered live books 65 to 85 percent, and one book that over-delivered its commission still dangled 73 percent, so the defect is model behavior rather than only a fill-rate symptom. Same lossiness caveat as CG-4 (token overlap is a weak proxy in both directions; a human makes the real call), hence WARNING and advisory. Skips a node whose body still carries a `<<FILL` directive, and any comparison where either side tokenizes to zero content words. Runs behind `is_fill_result` beside CG-4, not behind `enforce_grammar`. | `CG-6 grammar: node '{node_id}' offers choice '{choice_id}' labeled {label!r} but its own body shares no content word with the label in story '{story_id}': the prose never stages what the choice promises (advisory heuristic; may be a false positive, see module docstring)` |
+
+---
+
+## Naming (Advisory, Fill-Result Only, All Stories)
+
+Implemented in `validator/naming.py`; wired into `validator/gate.py::run_gate`
+immediately after the CG family and before SAFE-14. That position is step 9 in
+`run_gate`'s own docstring, which numbers the two validator layers separately, and
+step 7 in the Rule Application Order below, which groups them; the position is the
+durable statement and the two numbers describe the same slot in different lists. Unlike the CG family, PN-1 is not
+gated behind `enforce_grammar`: it runs whenever `run_gate` is called with
+`context="fill_result"`, and does not run at all under the default `"skeleton"` context,
+because a catalog skeleton's node bodies are `<<FILL ...>>` directives by construction and
+there is no prose yet for the rule to read.
+
+| Rule ID | Layer | Description | Failure Message Template |
+|---------|-------|-------------|--------------------------|
+| PN-1 | Advisory (fill-result only) | **Proper-noun introduction**: a proper noun (name of a companion, sibling, secondary character, town, etc.) must be introduced, on every path a reader can take to it, before or at the node where it is first named. "Introduced" means one of four contiguous patterns: a determiner-anchored pre-modifier ("her dog Biscuit"), an appositive ("Tock, her tiny wind-up mouse"), a copular gloss ("Biscuit is her dog"), or an address-term title ("Marshal Hedda"). Path-sensitivity is via `validator/continuity.py::dominating_nodes`: a gloss on one optional branch does not cover a reader who took another. Exempts the protagonist (read from the `HERO` sentinel, not inferred from frequency, because the known defect this rule was built for is 100% frequency across the book: see the module docstring), a self-glossing head noun the book writes in lowercase at least twice (one incidental use does not exempt, because a single miscased occurrence of the name itself would otherwise disable the rule for that name), an address term standing alone, calendar terms and interjections, and ALL-CAPS tokens. **This is a WARNING and never blocks**, on the same terms as CG-4 and CG-6: token-level naming is a heuristic and a human makes the real call. Two scope boundaries are deliberate and pinned by tests: the rule reads node bodies only and never choice labels; and a story whose surviving-names by prose-volume product exceeds the scan budget is skipped with an explicit `NOT CHECKED` WARNING rather than reported clean. Built to close the definite-noun-phrase check `validator/continuity.py` documents as unbuildable at 3.48 findings per node; proper nouns are a decidable subset (capitalization-marked, enumerable per book) where the general form is entailment. | `PN-1 naming: '{name}' is named at node '{node_id}' but the story never introduces it, so a reader meets the name with no idea who or what it is ({n} node(s) affected in story '{story_id}'; advisory heuristic, see module docstring)`, or `PN-1 naming: '{name}' is named at node '{node_id}' but it is introduced only on a branch a reader can skip ({branches}), so a reader meets the name with no idea who or what it is ({n} node(s) affected in story '{story_id}'; advisory heuristic, see module docstring)` |
 
 ---
 
@@ -289,7 +314,11 @@ The validator applies rules in this order:
    when `run_gate` is called with `enforce_grammar=True`**, which no production
    caller does today; CG-4 and CG-6 run when the gate marks the story a fill
    result (`is_fill_result`). Log warnings; continue.
-7. SAFE-14 (moderation; all stories). Flag nodes; block auto-publish if flagged.
+7. PN-1 (advisory; fill-result only): runs only when `run_gate` is called with
+   `context="fill_result"`, and not at all under the default `"skeleton"` context.
+   Flags a proper noun a reader can reach before the prose introduces it. Log
+   warnings; continue.
+8. SAFE-14 (moderation; all stories). Flag nodes; block auto-publish if flagged.
    **NOT IMPLEMENTED IN THE GATE.** `validator/safety.py::check_safety` is a Phase-2 stub
    that returns an empty report for every story, so this step cannot produce a finding and
    listing it here as a live step read as coverage the gate does not have (`UW-C292`). The
@@ -297,7 +326,7 @@ The validator applies rules in this order:
    which screens every node body and routes a story to `needs_review`. Keep this entry so
    the intended order survives, but do not count it when reasoning about what the gate
    enforces today.
-8. SR-1 through SR-9 (series chain; series stories only) run **later and elsewhere**, at
+9. SR-1 through SR-9 (series chain; series stories only) run **later and elsewhere**, at
    publish time over the whole chain rather than inside `run_gate` over one story. A book
    can clear steps 1-7 at generation time and still be refused at publish by an SR error.
 

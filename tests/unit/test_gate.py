@@ -829,3 +829,54 @@ def test_run_fill_gate_reproduces_the_fill_result_posture() -> None:
     )
     assert run_fill_gate(story).context == "fill_result"
     assert run_fill_gate(story).blocked
+
+
+# ---------------------------------------------------------------------------
+# 8. PN-1: proper-noun introduction (WARNING, fill_result only)
+# ---------------------------------------------------------------------------
+
+
+@pytest.mark.unit
+def test_pn1_reports_an_unintroduced_name_without_blocking() -> None:
+    """A filled book naming someone it never introduces gets a PN-1 WARNING.
+
+    The fixture is mutated rather than chosen so the rule definitely fires:
+    a test that asserts "if PN-1 fired then it was a warning" passes just as
+    well when the rule is wired to nothing at all.
+    """
+    from cyo_adventure.validator.report import Severity
+
+    data = _load(_VALID / "03_tier2_lantern.json")
+    nodes = data["nodes"]
+    assert isinstance(nodes, list)
+    nodes[0]["body"] = (
+        "You stop here for a while, and Biscuit waits beside you in the dark."
+    )
+
+    result = run_fill_gate(data)
+
+    pn1 = [f for f in result.report.findings if f.rule_id == "PN-1"]
+    assert [f.message.split("'")[1] for f in pn1] == ["Biscuit"]
+    assert [f.severity for f in pn1] == [Severity.WARNING]
+    assert result.blocked is False
+
+
+@pytest.mark.unit
+def test_pn1_does_not_run_at_catalog_time() -> None:
+    """A skeleton's bodies are directives, so the rule has nothing to say.
+
+    PN-1 skips a node holding a ``<<FILL`` directive on its own, so this is
+    belt and braces rather than the only guard; the point is that the default
+    ``"skeleton"`` posture never pays for a dominator computation whose answer
+    is always empty (AL-325's distinction, applied to one more rule).
+    """
+    data = _load(_VALID / "03_tier2_lantern.json")
+    nodes = data["nodes"]
+    assert isinstance(nodes, list)
+    nodes[0]["body"] = (
+        "You stop here for a while, and Biscuit waits beside you in the dark."
+    )
+
+    result = run_gate(data)
+
+    assert [f.rule_id for f in result.report.findings if f.rule_id == "PN-1"] == []
