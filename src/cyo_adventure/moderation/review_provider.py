@@ -22,6 +22,7 @@ from cyo_adventure.generation.usage import Completion
 
 if TYPE_CHECKING:
     from cyo_adventure.core.config import Settings
+    from cyo_adventure.moderation.report import ReviewProvenance
 
 # The mock review backend (the dev/test default) must outlast a full pipeline run.
 # A clean run issues ceil(N / review_batch_size) + 2 review calls: safety,
@@ -189,7 +190,7 @@ def _review_model_for(settings: Settings) -> str | None:
     return settings.review_openrouter_model
 
 
-def review_provenance(settings: Settings) -> dict[str, object]:
+def review_provenance(settings: Settings) -> ReviewProvenance:
     """Describe the reviewer a run used, for persistence on the report.
 
     The 2026-07-21 mock-reviewer run persisted no reviewer provenance at all,
@@ -204,7 +205,7 @@ def review_provenance(settings: Settings) -> dict[str, object]:
             admin-chosen stage model is what gets recorded.
 
     Returns:
-        dict[str, object]: A JSON-serializable provenance block. ``endpoint`` is
+        ReviewProvenance: A JSON-serializable provenance block. ``endpoint`` is
         the OpenRouter backend pin, an empty list meaning the slug ran on
         whichever backend won the routing auction; that is a real gap in
         reproducibility and recording it as empty is how it stays visible.

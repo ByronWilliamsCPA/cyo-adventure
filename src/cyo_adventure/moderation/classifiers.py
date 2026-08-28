@@ -209,6 +209,15 @@ def _incomplete_coverage_finding(
     Stage 0 exists to catch (sexual/minors, self-harm instructions,
     illicit/violent) are precisely the ones that must not be sampled.
 
+    Carries ``concern="classifier_unavailable"`` for the same reason: a bare
+    ``FLAG`` with no concern is invisible to ``ModerationReport.has_coverage_gap``
+    and to the stored ``moderation_coverage_incomplete()`` gate, both of which
+    key off ``concern`` rather than verdict text. Without it this finding read
+    as an ordinary soft flag, so a book whose Stage-0 classifier abandoned most
+    of its nodes (the credential circuit breaker above disables the classifier
+    on the first 401/403 and abandons every remaining node) still routed to
+    ``submit()`` and became eligible for auto-repair instead of being blocked.
+
     Args:
         source: The classifier whose coverage fell short.
         unscreened: Node ids that classifier never screened.
@@ -233,6 +242,7 @@ def _incomplete_coverage_finding(
             f"report cannot be read as clean for them: {sample}"
         ),
         structural=True,
+        concern="classifier_unavailable",
         severity=FindingSeverity.HIGH,
     )
 
@@ -431,9 +441,15 @@ async def run_classifiers(  # noqa: PLR0913
     # annotate. Before this, the first failure disabled the classifier for every
     # remaining node and the only trace was one ADVISORY, so a report with 93% of
     # a 746-node book unscreened was indistinguishable from a clean one and both
-    # submit() and approve() passed it.
-    # #VERIFY: test_partial_failure_flags_incomplete_coverage and
-    # test_unscreened_nodes_are_named_and_counted.
+    # submit() and approve() passed it. Gating requires the finding to carry
+    # ``concern="classifier_unavailable"``, not just ``verdict=FLAG``:
+    # ``ModerationReport.has_coverage_gap`` and the stored
+    # ``moderation_coverage_incomplete()`` gate both key off ``concern``, and a
+    # ``Finding`` built with no ``concern=`` argument defaults to ``None``,
+    # which matches neither set and blocks_release stays False.
+    # #VERIFY: test_partial_failure_flags_incomplete_coverage,
+    # test_unscreened_nodes_are_named_and_counted, and
+    # test_incomplete_coverage_finding_carries_classifier_unavailable_concern.
     findings, openai = await _screen_all_nodes(
         nodes,
         openai_key=openai_key,

@@ -362,7 +362,7 @@ def _assert_report_permits_approval(
 ) -> SevereFindingCounts:
     """Raise unless the stored moderation report permits approving this version.
 
-    Three independent refusals, asked before any state changes, in increasing
+    Four independent refusals, asked before any state changes, in increasing
     order of what they concede to the human reviewer: no report at all, a
     report with no genuine judgment in it, a report whose reviewer did not see
     every node, and finally a report carrying a severe finding, which a human

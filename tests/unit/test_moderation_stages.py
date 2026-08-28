@@ -414,9 +414,10 @@ async def test_safety_stage_batch_size_one_matches_unbatched_behavior() -> None:
     Comparing a default-argument run against an explicit ``batch_size=1`` run
     only proves the default is 1: both drive the same branch, so that pairing
     alone cannot fail. The substantive claim is that a chunk of one still uses
-    the single-node system prompt, the single-node prompt format, and the
-    unscaled token budget, so the assertions below pin each of those against
-    the batch variants they must not become.
+    the single-node system prompt and the single-node prompt format, and that
+    its token budget is scaled only by the fixed reasoning allowance, never by
+    node count the way a real batch's is, so the assertions below pin each of
+    those against the batch variants they must not become.
     """
     payload = json.dumps(
         {"verdict": "flag", "reason": "too scary", "concern": "cruelty"}
@@ -436,8 +437,10 @@ async def test_safety_stage_batch_size_one_matches_unbatched_behavior() -> None:
     # The single-node prompt carries no batch scaffolding: no "Nodes:" header
     # and no "[id]" label outside the delimiters.
     assert prompt == ("Age band: 6-9\n<untrusted_passage>\ntext\n</untrusted_passage>")
-    # ...and the budget is NOT scaled by batch length.
-    assert requested == 512
+    # ...and the budget carries the reasoning allowance (like the batch call
+    # does) but is NOT scaled by batch length (unlike the batch call).
+    assert requested == min(_REVIEW_REASONING_ALLOWANCE + 512, _MAX_BATCH_REVIEW_TOKENS)
+    assert requested != 512
     assert len(findings) == 1
     assert findings[0].node_id == "n1"
     assert findings[0].verdict is Verdict.FLAG
@@ -452,6 +455,43 @@ async def test_safety_stage_batch_size_one_matches_unbatched_behavior() -> None:
     )
     assert default_provider.calls == provider.calls
     assert default_findings == findings
+
+
+@pytest.mark.unit
+@pytest.mark.asyncio
+async def test_single_node_call_gets_the_reasoning_allowance_too() -> None:
+    """FIX A: a per-node RECOVERY retry's budget must also carry the
+    reasoning allowance, not just the primary batch_size=1 path.
+
+    ``_review_one_node`` is the one implementation shared by both the
+    primary single-node path (pinned separately by
+    ``test_safety_stage_batch_size_one_matches_unbatched_behavior``) and the
+    per-node fallback that ``_recover_batch_per_node`` drives after an
+    unusable batch response. Without this test, a change that special-cased
+    the reasoning allowance onto only one of those two callers, instead of
+    into the shared helper, would go unnoticed: every recovery retry would
+    silently run on an unscaled budget again.
+    """
+    provider = _RecordingProvider(
+        responses=[
+            "not a json array at all",  # batch call fails to parse
+            json.dumps({"verdict": "safe", "reason": "fine"}),  # n1 retry
+            json.dumps({"verdict": "safe", "reason": "fine"}),  # n2 retry
+        ]
+    )
+    findings = await run_safety_stage(
+        provider=provider,
+        nodes=[("n1", "a"), ("n2", "b")],
+        age_band="6-9",
+        max_tokens=1024,
+        batch_size=2,
+    )
+    assert len(provider.calls) == 3
+    assert len(findings) == 2
+    expected = min(_REVIEW_REASONING_ALLOWANCE + 1024, _MAX_BATCH_REVIEW_TOKENS)
+    for _system, _prompt, requested in provider.calls[1:]:
+        assert requested == expected
+        assert requested != 1024
 
 
 @pytest.mark.unit
@@ -594,8 +634,16 @@ async def test_safety_stage_batch_response_extra_node_id_falls_back() -> None:
 async def test_safety_stage_mock_reviewer_batched_collapses_to_one_finding() -> None:
     """The mock reviewer's fixed "{}" response is not a JSON array, so every
     batch falls back; across every batch in one story, the collapse (design
-    doc section 2.3) still produces exactly one structural finding."""
-    provider = MockProvider(responses=["{}"] * 7)
+    doc section 2.3) still produces exactly one structural finding.
+
+    "{}" is an ORDINARY content parse failure (it parses; it just carries no
+    verdict), not evidence the reviewer itself is unavailable (a raised
+    ProviderError, or a response that hit its own output budget). Since
+    FIX C, that distinction is what the per-node fallback latch keys on, so
+    recovering nothing from batch 1's content does not disable the fallback
+    for batch 2: both batches pay for the full per-node retry sweep.
+    """
+    provider = MockProvider(responses=["{}"] * 12)
     findings = await run_safety_stage(
         provider=provider,
         nodes=[(f"n{i}", "text") for i in range(10)],
@@ -603,11 +651,11 @@ async def test_safety_stage_mock_reviewer_batched_collapses_to_one_finding() -> 
         max_tokens=512,
         batch_size=5,
     )
-    # 7 calls, not 2: batch 1, then a per-node retry for each of its 5 nodes,
-    # then batch 2 with NO retries. Recovering nothing from batch 1 tells the
-    # stage the reviewer is dead, so it stops paying for single-node retries
-    # rather than spending 5 more on a provider that answers nothing.
-    assert len(provider.calls) == 7
+    # 12 calls, not 7: batch 1 plus a per-node retry for each of its 5 nodes,
+    # THEN batch 2 plus a per-node retry for each of ITS 5 nodes too. A
+    # content-shaped failure in batch 1 is not reviewer-health evidence, so
+    # the fallback stays enabled for batch 2.
+    assert len(provider.calls) == 12
     assert len(findings) == 1
     assert findings[0].structural is True
     assert findings[0].concern == "reviewer_unavailable"
@@ -704,20 +752,127 @@ async def test_a_partly_recovered_batch_gaps_only_the_nodes_still_unjudged() -> 
 
 @pytest.mark.unit
 @pytest.mark.asyncio
+async def test_truncated_count_narrows_to_the_unrecovered_gap() -> None:
+    """truncated_node_ids must shrink to the nodes recovery still could not save.
+
+    A batch response cut off mid-stream marks every node in that batch as
+    truncated before recovery gets a chance to run; if recovery then saves
+    some of those nodes but the truncation count is never narrowed, the
+    collapsed finding reads self-contradictory, e.g. "on 1 node(s) ... (3 of
+    them because the reviewer hit its output-token budget)" for a batch where
+    only one node is actually still unrecovered. FIX B narrows
+    truncated_node_ids to stay a subset of the reported gap.
+    """
+    prefix = '[n1] {"node_id": "n1"'
+    provider = _RecordingProvider(
+        responses=[
+            Completion(text=prefix, usage=_STUB_USAGE, finish_reason="length"),
+            json.dumps({"verdict": "safe", "reason": "fine"}),  # n1 retry succeeds
+            json.dumps({"verdict": "safe", "reason": "fine"}),  # n2 retry succeeds
+            "{}",  # n3 retry fails: parses, carries no verdict, stays a gap
+        ]
+    )
+    findings = await run_safety_stage(
+        provider=provider,
+        nodes=[("n1", "a"), ("n2", "b"), ("n3", "c")],
+        age_band="6-9",
+        max_tokens=512,
+        batch_size=3,
+    )
+    genuine = [f for f in findings if not f.structural]
+    structural = [f for f in findings if f.structural]
+    assert {f.node_id for f in genuine} == {"n1", "n2"}
+    assert len(structural) == 1
+    assert structural[0].node_ids == ("n3",)
+    assert "on 1 node(s)" in structural[0].message
+    assert "(1 of them" in structural[0].message
+    assert "(3 of them" not in structural[0].message
+
+
+@pytest.mark.unit
+@pytest.mark.asyncio
+async def test_a_content_specific_parse_failure_does_not_disable_recovery_for_later_batches() -> (
+    None
+):
+    """An ordinary "{}" parse failure is not reviewer-health evidence.
+
+    FIX C: the per-node fallback latch must fire only on evidence the
+    REVIEWER is unavailable (a raised ProviderError, or a completion the
+    provider itself marked truncated), never on an ordinary content-shaped
+    parse failure. A batch of two stubborn nodes that both come back "{}"
+    (a value that parses but carries no verdict) says nothing about whether
+    the reviewer would answer a later, unrelated batch; that later batch
+    must still get its own full per-node retry sweep.
+    """
+
+    def _respond(prompt: str) -> str:
+        if "Nodes:" in prompt:
+            return "not a json array at all"
+        if "stubborn" in prompt:
+            return "{}"
+        return json.dumps({"verdict": "safe", "reason": "fine"})
+
+    provider = MockProvider(responses=[_respond] * 6)
+    findings = await run_safety_stage(
+        provider=provider,
+        nodes=[
+            ("n1", "the stubborn node"),
+            ("n2", "another stubborn node"),
+            ("n3", "a plain scene"),
+            ("n4", "another plain scene"),
+        ],
+        age_band="6-9",
+        max_tokens=512,
+        batch_size=2,
+    )
+    genuine = [f for f in findings if not f.structural]
+    structural = [f for f in findings if f.structural]
+    # 6 calls, not 4: batch 1 plus its 2 retries, AND batch 2 plus its 2
+    # retries. If batch 1's content failure had wrongly latched off the
+    # fallback, batch 2 would get no retries and this would be 4.
+    assert len(provider.calls) == 6
+    assert {f.node_id for f in genuine} == {"n3", "n4"}
+    assert len(structural) == 1
+    assert structural[0].node_ids == ("n1", "n2")
+
+
+@pytest.mark.unit
+@pytest.mark.asyncio
 async def test_a_dead_reviewer_stops_retrying_per_node() -> None:
     """A reviewer answering nothing must not be retried once per node forever.
 
-    When every single-node retry in a batch also fails, the batch format was
-    not the problem: the reviewer is. Continuing to offer the fallback would
-    multiply an outage's cost by the batch size while recovering nothing, so
-    the fallback latches off for the rest of the story.
+    When every single-node retry in a batch also raises ProviderError, the
+    batch format was not the problem: the reviewer is unreachable. That is
+    reviewer-health evidence (unlike an ordinary content parse failure, see
+    FIX C / ``test_a_content_specific_parse_failure_does_not_disable_recovery_for_later_batches``),
+    so continuing to offer the fallback would multiply an outage's cost by
+    the batch size while recovering nothing; the fallback latches off for the
+    rest of the story.
 
     What latches off is the RETRY, never the fail-safe. Batch 2's nodes are
     still collapsed into the coverage gap, which is what keeps this different
     from AL-663's classifier latch: there, latching would have suppressed the
     only safety signal; here the safety signal is exactly what remains.
     """
-    provider = MockProvider(responses=["{}"] * 4)
+
+    class _DeadReviewer:
+        """Returns an unusable batch reply, then raises on every retry."""
+
+        def __init__(self) -> None:
+            self.calls: list[str] = []
+
+        async def complete(
+            self, *, system: str, prompt: str, max_tokens: int
+        ) -> Completion:
+            """Return an unusable batch reply, or raise on a single-node call."""
+            _ = (system, max_tokens)
+            self.calls.append(prompt)
+            if "Nodes:" in prompt:
+                return Completion(text="not a json array", usage=_STUB_USAGE)
+            msg = "review backend refused the call"
+            raise ProviderError(msg, provider="stub", status_code=503)
+
+    provider = _DeadReviewer()
     findings = await run_safety_stage(
         provider=provider,
         nodes=[("n1", "a"), ("n2", "b"), ("n3", "c"), ("n4", "d")],
@@ -725,7 +880,8 @@ async def test_a_dead_reviewer_stops_retrying_per_node() -> None:
         max_tokens=512,
         batch_size=2,
     )
-    # 4 calls, not 6: batch 1, its two retries, then batch 2 with NO retries.
+    # 4 calls, not 6: batch 1, its two retries (both raising ProviderError,
+    # which is reviewer-health evidence), then batch 2 with NO retries.
     assert len(provider.calls) == 4
     assert len(findings) == 1
     assert findings[0].structural is True

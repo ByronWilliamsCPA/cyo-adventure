@@ -109,7 +109,12 @@ def test_the_review_leg_is_built_at_temperature_zero() -> None:
     leg = _built_review_leg(_openrouter_settings())
 
     assert leg.temperature == 0.0
-    assert REVIEW_TEMPERATURE == 0.0
+    # Tie the built leg back to the named constant, not just to a literal:
+    # this catches a wiring regression where the leg starts hardcoding 0.0
+    # independently of REVIEW_TEMPERATURE, which a bare
+    # ``REVIEW_TEMPERATURE == 0.0`` (reading the constant back against
+    # itself) could never detect.
+    assert leg.temperature == REVIEW_TEMPERATURE
 
 
 def test_a_generation_leg_keeps_the_model_default() -> None:

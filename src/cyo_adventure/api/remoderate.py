@@ -188,7 +188,10 @@ from cyo_adventure.moderation.personalizable_slots import (
     personalizable_slot_ids_for_version,
 )
 from cyo_adventure.moderation.pipeline import run_moderation_pipeline
-from cyo_adventure.moderation.report import moderation_coverage_incomplete
+from cyo_adventure.moderation.report import (
+    moderation_coverage_gap,
+    moderation_coverage_incomplete,
+)
 from cyo_adventure.publishing.state_machine import Status
 from cyo_adventure.utils.logging import get_logger
 from cyo_adventure.validator.gate import run_fill_gate
@@ -541,16 +544,45 @@ def _summarize_report(
     # test_summarize_report_tolerates_malformed_shapes, params
     # ``coverage-gap-outranks-soft-flag`` and ``never-moderated``.
     #
+    # #CRITICAL: security: the two returned values read DIFFERENT predicates,
+    # and the asymmetry is the point. The verdict reads the mock-inclusive
+    # moderation_coverage_incomplete(), so a mock-reviewer run cannot report
+    # success; that is the 2026-07-21 incident, where a substituted reviewer
+    # reported a clean sweep over the whole catalog for weeks. The coverage
+    # field reads the narrow moderation_coverage_gap(), because a mock run
+    # screened every node and the pipeline itself persists
+    # summary.coverage_complete: true for it. Answering BOTH from the
+    # approval predicate made one response contradict the row the same run
+    # had just written, and put every mock run in the sweep's ``incomplete``
+    # bucket, whose stated purpose is to mean "nothing read the prose" and
+    # whose remedy differs. Collapsing the two back into one predicate
+    # reintroduces whichever defect the survivor does not cover.
+    # #VERIFY: tests/unit/test_remoderate_unit.py::
+    # test_a_mock_stamped_report_blocks_but_reports_complete_coverage,
+    # ::test_mock_reviewer_stamp_is_not_stripped_or_overridden, and
+    # tests/unit/test_moderation_report.py::TestModerationCoverageGap::
+    # test_the_approval_predicate_still_refuses_that_same_report.
+    #
     # ``coverage_complete`` is returned ALONGSIDE the verdict rather than folded
     # into it, because the two answer different operator questions. The verdict
     # says whether the book may move; coverage says whether anyone judged its
     # prose. Collapsing them makes an unreviewed book indistinguishable from an
     # unsafe one, and the two need opposite remedies: re-run the reviewer, or
     # rewrite the story.
-    if moderation_coverage_incomplete(report):
-        return "block", _finding_counts(report), _structural_count(report), False
-    if report is None:
-        return "pass", {}, 0, True
+    coverage_complete = not moderation_coverage_gap(report)
+    # ``report is None`` is stated explicitly even though the predicate beside
+    # it already answers True for None. It carries the type narrowing for the
+    # ``report.get`` reads below, and stating it is what keeps a reader from
+    # "simplifying" the arm away; the previous revision expressed the same case
+    # as a separate, unreachable ``return "pass"``, one reorder from a
+    # fail-open.
+    if report is None or moderation_coverage_incomplete(report):
+        return (
+            "block",
+            _finding_counts(report),
+            _structural_count(report),
+            coverage_complete,
+        )
     raw_summary = report.get("summary")
     summary: dict[str, object] = raw_summary if isinstance(raw_summary, dict) else {}
     if summary.get("hard_block"):
@@ -559,7 +591,12 @@ def _summarize_report(
         overall = "flag"
     else:
         overall = "pass"
-    return overall, _finding_counts(report), _structural_count(report), True
+    return (
+        overall,
+        _finding_counts(report),
+        _structural_count(report),
+        coverage_complete,
+    )
 
 
 def _persisted_findings(report: dict[str, object] | None) -> list[object]:

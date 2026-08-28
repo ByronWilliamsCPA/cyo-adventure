@@ -46,6 +46,7 @@ from cyo_adventure.events import Actor
 from cyo_adventure.generation.import_story import IMPORT_PROVIDER
 from cyo_adventure.generation.provider import _CANNED_STORY, MockProvider
 from cyo_adventure.moderation import pipeline as pipeline_mod
+from cyo_adventure.moderation.report import COVERAGE_GAP_CONCERNS
 from cyo_adventure.publishing.state_machine import (
     LEGAL_TRANSITIONS,
     Action,
@@ -489,6 +490,13 @@ def _persisting_pipeline(
                 "count": 1,
                 "repaired": False,
                 "reviewer_independent": True,
+                # Derived exactly as ModerationReport.to_dict derives it, from
+                # the narrow COVERAGE_GAP_CONCERNS scan. Hard-coding it would
+                # leave this double unable to model the one property the
+                # endpoint's coverage field has to agree with.
+                "coverage_complete": not any(
+                    f.get("concern") in COVERAGE_GAP_CONCERNS for f in findings
+                ),
             },
             "aggregate": {"nodes_reviewed": 3, "pass_counts": {}},
         }
@@ -541,6 +549,63 @@ async def test_coverage_complete_is_false_on_a_gap_and_true_otherwise(
         )
         assert view.overall_verdict == "block", expected_complete
         assert view.coverage_complete is expected_complete
+
+
+async def test_a_mock_stamped_report_blocks_but_reports_complete_coverage(
+    mock_async_session: AsyncMock, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """A mock run blocks on provenance while reporting its coverage honestly.
+
+    The two returned fields read different predicates, and this is the one
+    input where their answers must diverge. The regression was a
+    self-contradiction rather than a policy disagreement: the pipeline persists
+    ``summary.coverage_complete: true`` for a mock run (COVERAGE_GAP_CONCERNS
+    omits the stamp by design, so ``has_coverage_gap`` is false), while the
+    endpoint answered the wire field from the mock-INCLUSIVE approval
+    predicate, so one run reported the same fact both ways at once.
+
+    The coverage assertion is made against the STORED summary rather than a
+    hard-coded ``True``, so it fails if either side of that agreement moves.
+    The verdict assertion is the other half: narrowing the coverage field must
+    not weaken the verdict, or a substituted reviewer reports success again
+    (the 2026-07-21 sweep).
+    """
+    version_row = _version_row(moderation_report=_PASSING_REPORT)
+    story = _story()
+    _wire_session(mock_async_session, story, version_row)
+
+    monkeypatch.setattr(
+        remoderate_api,
+        "run_moderation_pipeline",
+        AsyncMock(
+            side_effect=_persisting_pipeline(
+                version_row,
+                [
+                    {
+                        "verdict": "advisory",
+                        "structural": True,
+                        "category": "pipeline",
+                        "concern": "mock_reviewer_active",
+                        "message": (
+                            "moderated with the mock reviewer; "
+                            "no real safety review ran"
+                        ),
+                    }
+                ],
+            )
+        ),
+    )
+    view = await remoderate_api.trigger_remoderate(
+        "s1", 1, _ctx(_ADMIN, mock_async_session)
+    )
+
+    stored = _report_summary(version_row)
+    assert stored["coverage_complete"] is True, (
+        "precondition: the pipeline itself calls a mock run fully covered, "
+        "which is what the wire field has to agree with"
+    )
+    assert view.coverage_complete is stored["coverage_complete"]
+    assert view.overall_verdict == "block"
 
 
 _PASSING_REPORT: dict[str, object] = {
@@ -1085,13 +1150,21 @@ async def test_published_blob_unchanged_when_repair_disallowed(
             ("block", {"flag": 2}, 0, False),
             id="coverage-gap-outranks-soft-flag",
         ),
+        # The mock stamp blocks, but is NOT a coverage gap. A mock reviewer
+        # screened every node, so the pipeline's own summary says
+        # coverage_complete; only the reviewer was untrustworthy. The verdict
+        # still refuses it (2026-07-21: a substituted reviewer reported a clean
+        # sweep for weeks), while the coverage field agrees with the row the
+        # same run wrote. Answering both from the approval predicate made the
+        # response contradict that row and put every mock run in the sweep's
+        # ``incomplete`` bucket, which means "nothing read the prose".
         pytest.param(
             {
                 "summary": {"soft_flag": True},
                 "findings": [{"verdict": "flag", "concern": "mock_reviewer_active"}],
             },
-            ("block", {"flag": 1}, 0, False),
-            id="mock-reviewer-outranks-soft-flag",
+            ("block", {"flag": 1}, 0, True),
+            id="mock-reviewer-blocks-without-a-coverage-gap",
         ),
         pytest.param(
             {"summary": {"soft_flag": True}, "findings": [{"structural": True}]},

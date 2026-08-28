@@ -13,7 +13,13 @@ if TYPE_CHECKING:
 
 from cyo_adventure.moderation import classifiers
 from cyo_adventure.moderation.classifiers import run_classifiers
-from cyo_adventure.moderation.report import FindingSeverity, Source, Verdict
+from cyo_adventure.moderation.report import (
+    FindingSeverity,
+    ModerationReport,
+    Source,
+    Verdict,
+    moderation_coverage_incomplete,
+)
 
 pytestmark = pytest.mark.asyncio
 
@@ -584,6 +590,62 @@ async def test_persistent_failure_flags_incomplete_coverage_as_a_soft_gate() -> 
 
 @pytest.mark.unit
 @pytest.mark.usefixtures("_no_backoff")
+async def test_partial_failure_flags_incomplete_coverage() -> None:
+    """Some nodes screen cleanly, one is abandoned: the shortfall must still gate.
+
+    Distinct from ``test_persistent_failure_flags_incomplete_coverage_as_a_soft_gate``
+    above, which fails every node: this is a genuinely PARTIAL failure, most
+    of the book screens clean and exactly one node is abandoned, which is
+    the shape a real classifier outage on a large book actually takes. The
+    finding must still gate: ``concern="classifier_unavailable"`` is what
+    ``ModerationReport.has_coverage_gap`` and the stored
+    ``moderation_coverage_incomplete()`` read, not the bare ``FLAG`` verdict.
+    """
+
+    def handler(request: httpx.Request) -> httpx.Response:
+        body = request.content.decode()
+        if "bad-node" in body:
+            return httpx.Response(500)
+        return httpx.Response(
+            200,
+            json={
+                "results": [
+                    {
+                        "flagged": False,
+                        "categories": {"violence": False},
+                        "category_scores": {"violence": 0.01},
+                    }
+                ]
+            },
+        )
+
+    nodes = [
+        ("n1", "good text one"),
+        ("n2", "bad-node text"),
+        ("n3", "good text two"),
+    ]
+    findings = await run_classifiers(
+        nodes=nodes,
+        openai_key="okey",
+        client=_client(handler),
+    )
+
+    coverage = [f for f in findings if f.category == "classifier_coverage_incomplete"]
+    assert len(coverage) == 1
+    assert "n2" in coverage[0].message
+    assert "n1" not in coverage[0].message
+    assert "n3" not in coverage[0].message
+    assert coverage[0].concern == "classifier_unavailable"
+
+    report = ModerationReport()
+    for finding in findings:
+        report.add(finding)
+    assert report.has_coverage_gap is True
+    assert report.blocks_release is True
+
+
+@pytest.mark.unit
+@pytest.mark.usefixtures("_no_backoff")
 async def test_unscreened_nodes_are_named_and_counted() -> None:
     """The finding names the shortfall so a reviewer knows what was not checked."""
 
@@ -746,6 +808,60 @@ async def test_credential_failure_opens_the_circuit_on_first_node() -> None:
         assert node_id in coverage[0].message or "more" in coverage[0].message, (
             "every node the circuit skipped must still be counted as unscreened"
         )
+
+
+@pytest.mark.unit
+@pytest.mark.usefixtures("_no_backoff")
+async def test_incomplete_coverage_finding_carries_classifier_unavailable_concern() -> (
+    None
+):
+    """The FLAG alone is not enough to gate; ``concern`` is what the report reads.
+
+    ``ModerationReport.has_coverage_gap`` and the stored
+    ``moderation_coverage_incomplete()`` gate both key off ``Finding.concern``,
+    not verdict text. A ``Finding`` built with no ``concern=`` argument
+    defaults to ``None``, which matches neither ``COVERAGE_GAP_CONCERNS`` nor
+    ``MOCK_MODERATED_CONCERNS``, so a book Stage 0 mostly failed to screen
+    would route to ``submit()`` and become eligible for auto-repair instead
+    of being blocked. This pins the concern on the finding classifiers.py
+    actually emits.
+    """
+    findings = await run_classifiers(
+        nodes=[(f"n{i}", "text") for i in range(1, 6)],
+        openai_key="expired",
+        client=_client(lambda _r: httpx.Response(401)),
+    )
+    coverage = next(
+        f for f in findings if f.category == "classifier_coverage_incomplete"
+    )
+    assert coverage.concern == "classifier_unavailable"
+
+
+@pytest.mark.unit
+@pytest.mark.usefixtures("_no_backoff")
+async def test_credential_circuit_breaker_report_blocks_release() -> None:
+    """The end-to-end proof: a Stage-0 credential failure must gate the book.
+
+    This is the exact defect the concern fix closes: a Stage-0 shortfall
+    used to reach ``ModerationReport`` as a bare FLAG with ``concern=None``,
+    which ``has_coverage_gap`` and ``moderation_coverage_incomplete()`` both
+    silently ignored, so ``blocks_release`` stayed False and a book whose
+    Stage-0 classifier never screened most of its nodes routed to
+    ``submit()`` and became eligible for auto-repair.
+    """
+    findings = await run_classifiers(
+        nodes=[(f"n{i}", "text") for i in range(1, 6)],
+        openai_key="expired",
+        client=_client(lambda _r: httpx.Response(401)),
+    )
+
+    report = ModerationReport()
+    for finding in findings:
+        report.add(finding)
+
+    assert report.has_coverage_gap is True
+    assert report.blocks_release is True
+    assert moderation_coverage_incomplete(report.to_dict()) is True
 
 
 @pytest.mark.unit

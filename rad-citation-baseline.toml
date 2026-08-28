@@ -252,7 +252,6 @@
 "src/cyo_adventure/moderation/classifiers.py" = [
     "test_classifiers",
     "test_classifiers",
-    "test_partial_failure_flags_incomplete_coverage",
 ]
 "src/cyo_adventure/moderation/leaf_diversity.py" = [
     "test_atg_partner_blob_missing_is_noop",
