@@ -301,3 +301,56 @@ def test_an_unreachable_node_is_absent_from_the_dominator_map() -> None:
 
     assert "orphan" not in dominators
     assert set(dominators) == {"n1", "e1"}
+
+
+@pytest.mark.unit
+def test_a_dangling_choice_target_does_not_crash_dominating_nodes() -> None:
+    """The dominator half needs its own crash-survival pin, not just the pair's.
+
+    `optional_history` and `dominating_nodes` build independent copies of the
+    same successor/predecessor scan, each with its own dangling-target guard.
+    A dangling target is L1-2's finding, so this must survive it rather than
+    raise `KeyError` while indexing `predecessors` by an id nothing declared.
+    """
+    story = _story(
+        [
+            _node("n1", ["nowhere", "e1"]),
+            _node("e1", [], ending=True),
+        ]
+    )
+
+    dominators = dominating_nodes(story)
+
+    assert dominators["n1"] == frozenset()
+    assert dominators["e1"] == frozenset({"n1"})
+
+
+@pytest.mark.unit
+def test_dominance_over_a_re_enterable_hub_is_the_fixed_point() -> None:
+    """The dominator half over the same cyclic shape, unpinned until now.
+
+    A dominator fixed-point over a cyclic graph is exactly where an iteration
+    bug hides, and `loop_and_grow` hubs are cyclic by design. Every route to
+    `hub`, `side_a`, `side_b`, and `e1` passes through `n1`; every route to
+    `side_a`, `side_b`, and `e1` additionally passes through `hub`, since it
+    is their only predecessor. Neither side branch dominates anything: a
+    reader can reach `hub` again, and `e1`, having taken either one or
+    neither on the first pass.
+    """
+    story = _story(
+        [
+            _node("n1", ["hub"]),
+            _node("hub", ["side_a", "side_b", "e1"]),
+            _node("side_a", ["hub"]),
+            _node("side_b", ["hub"]),
+            _node("e1", [], ending=True),
+        ]
+    )
+
+    dominators = dominating_nodes(story)
+
+    assert dominators["n1"] == frozenset()
+    assert dominators["hub"] == frozenset({"n1"})
+    assert dominators["side_a"] == frozenset({"n1", "hub"})
+    assert dominators["side_b"] == frozenset({"n1", "hub"})
+    assert dominators["e1"] == frozenset({"n1", "hub"})

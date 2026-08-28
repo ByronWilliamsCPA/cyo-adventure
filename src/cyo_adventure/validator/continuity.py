@@ -198,6 +198,15 @@ def dominating_nodes(story: Storybook) -> dict[str, frozenset[str]]:
     predecessors: dict[str, set[str]] = {node.id: set() for node in story.nodes}
     for node in story.nodes:
         for choice in node.choices:
+            # #ASSUME: data integrity: a choice may target an id no node
+            # declares. That is L1-2's finding, not this module's, so it must
+            # be skipped rather than indexed: predecessors only has keys for
+            # declared node ids, and indexing it by a dangling target raises
+            # KeyError, turning a reportable finding into a crash of the gate
+            # itself.
+            # #VERIFY: covered by
+            # test_a_dangling_choice_target_does_not_crash_dominating_nodes
+            # in tests/unit/test_continuity.py, which proves this by mutation.
             if choice.target not in successors:
                 continue  # a dangling target is L1-2's finding, not ours
             successors[node.id].add(choice.target)
