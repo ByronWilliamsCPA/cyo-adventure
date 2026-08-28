@@ -250,7 +250,13 @@ test('going back after two real choices reverts the current node and the persist
     signal: AbortSignal.timeout(5000),
   })
   expect(serverRes.ok, `GET /reading-state failed (HTTP ${serverRes.status})`).toBe(true)
-  const serverRow = (await serverRes.json()) as ReadingStateRow
+  // The endpoint answers 200 with { state: ReadingStateRow | null }
+  // (ReadingStateResultView); the go-back click above already saved a row,
+  // so a null state here means that save did not land, not a legitimate
+  // first-time-reader absence.
+  const serverBody = (await serverRes.json()) as { state: ReadingStateRow | null }
+  expect(serverBody.state, 'GET /reading-state returned null state after a save').not.toBeNull()
+  const serverRow = serverBody.state as ReadingStateRow
   expect(serverRow.current_node).toBe('n_pools')
   // Same n_open prelude as the assertion above; see its comment.
   expect(serverRow.path).toEqual(['n_open', 'n_start', 'n_pools'])

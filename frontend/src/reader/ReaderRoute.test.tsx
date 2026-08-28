@@ -152,7 +152,13 @@ describe('ReaderRoute wiring (T5)', () => {
         return Promise.resolve({ data: lantern })
       }
       if (url.startsWith('/v1/reading-state/')) {
-        return Promise.reject(mockAxiosError({ isAxiosError: true, response: { status: 404 } }))
+        // The real backend never answers absence with a 404: it answers 200
+        // with the ReadingStateResultView envelope { state: null } (see
+        // readerApi.ts's makeFetchServerState). Resolving with that exact
+        // shape here, instead of rejecting with a mocked 404, is what makes
+        // this mock exercise the production unwrap path rather than only
+        // the legacy-404 fallback branch.
+        return Promise.resolve({ data: { state: null } })
       }
       return Promise.reject(new Error(`unexpected GET ${url}`))
     })
@@ -176,7 +182,13 @@ describe('ReaderRoute wiring (T5)', () => {
         return Promise.resolve({ data: lantern })
       }
       if (url.startsWith('/v1/reading-state/')) {
-        return Promise.reject(mockAxiosError({ isAxiosError: true, response: { status: 404 } }))
+        // The real backend never answers absence with a 404: it answers 200
+        // with the ReadingStateResultView envelope { state: null } (see
+        // readerApi.ts's makeFetchServerState). Resolving with that exact
+        // shape here, instead of rejecting with a mocked 404, is what makes
+        // this mock exercise the production unwrap path rather than only
+        // the legacy-404 fallback branch.
+        return Promise.resolve({ data: { state: null } })
       }
       return Promise.reject(new Error(`unexpected GET ${url}`))
     })
@@ -248,7 +260,13 @@ describe('ReaderRoute replay reconciliation (B2)', () => {
         return Promise.resolve({ data: lantern })
       }
       if (url.startsWith('/v1/reading-state/')) {
-        return Promise.reject(mockAxiosError({ isAxiosError: true, response: { status: 404 } }))
+        // The real backend never answers absence with a 404: it answers 200
+        // with the ReadingStateResultView envelope { state: null } (see
+        // readerApi.ts's makeFetchServerState). Resolving with that exact
+        // shape here, instead of rejecting with a mocked 404, is what makes
+        // this mock exercise the production unwrap path rather than only
+        // the legacy-404 fallback branch.
+        return Promise.resolve({ data: { state: null } })
       }
       return Promise.reject(new Error(`unexpected GET ${url}`))
     })
@@ -318,7 +336,13 @@ describe('ReaderRoute replay reconciliation (B2)', () => {
     mockGet.mockImplementation((url: string) => {
       if (url.startsWith('/v1/storybooks/')) return Promise.resolve({ data: lantern })
       if (url.startsWith('/v1/reading-state/')) {
-        return Promise.reject(mockAxiosError({ isAxiosError: true, response: { status: 404 } }))
+        // The real backend never answers absence with a 404: it answers 200
+        // with the ReadingStateResultView envelope { state: null } (see
+        // readerApi.ts's makeFetchServerState). Resolving with that exact
+        // shape here, instead of rejecting with a mocked 404, is what makes
+        // this mock exercise the production unwrap path rather than only
+        // the legacy-404 fallback branch.
+        return Promise.resolve({ data: { state: null } })
       }
       return Promise.reject(new Error(`unexpected GET ${url}`))
     })
@@ -375,7 +399,13 @@ describe('ReaderRoute personalization wiring (C3c)', () => {
         return Promise.resolve({ data: lantern })
       }
       if (url.startsWith('/v1/reading-state/')) {
-        return Promise.reject(mockAxiosError({ isAxiosError: true, response: { status: 404 } }))
+        // The real backend never answers absence with a 404: it answers 200
+        // with the ReadingStateResultView envelope { state: null } (see
+        // readerApi.ts's makeFetchServerState). Resolving with that exact
+        // shape here, instead of rejecting with a mocked 404, is what makes
+        // this mock exercise the production unwrap path rather than only
+        // the legacy-404 fallback branch.
+        return Promise.resolve({ data: { state: null } })
       }
       return Promise.reject(new Error(`unexpected GET ${url}`))
     })
@@ -437,7 +467,13 @@ describe('ReaderRoute personalization eligibility route state (D8)', () => {
         return Promise.resolve({ data: lantern })
       }
       if (url.startsWith('/v1/reading-state/')) {
-        return Promise.reject(mockAxiosError({ isAxiosError: true, response: { status: 404 } }))
+        // The real backend never answers absence with a 404: it answers 200
+        // with the ReadingStateResultView envelope { state: null } (see
+        // readerApi.ts's makeFetchServerState). Resolving with that exact
+        // shape here, instead of rejecting with a mocked 404, is what makes
+        // this mock exercise the production unwrap path rather than only
+        // the legacy-404 fallback branch.
+        return Promise.resolve({ data: { state: null } })
       }
       return Promise.reject(new Error(`unexpected GET ${url}`))
     })
@@ -576,7 +612,13 @@ describe('ReaderRoute personalization fetcher behavior (C3c)', () => {
         return Promise.resolve({ data: sentinelStory })
       }
       if (url.startsWith('/v1/reading-state/')) {
-        return Promise.reject(mockAxiosError({ isAxiosError: true, response: { status: 404 } }))
+        // The real backend never answers absence with a 404: it answers 200
+        // with the ReadingStateResultView envelope { state: null } (see
+        // readerApi.ts's makeFetchServerState). Resolving with that exact
+        // shape here, instead of rejecting with a mocked 404, is what makes
+        // this mock exercise the production unwrap path rather than only
+        // the legacy-404 fallback branch.
+        return Promise.resolve({ data: { state: null } })
       }
       return Promise.reject(new Error(`unexpected GET ${url}`))
     })
@@ -642,7 +684,13 @@ describe('ReaderRoute flag-off residue purge', () => {
         return Promise.resolve({ data: lantern })
       }
       if (url.startsWith('/v1/reading-state/')) {
-        return Promise.reject(mockAxiosError({ isAxiosError: true, response: { status: 404 } }))
+        // The real backend never answers absence with a 404: it answers 200
+        // with the ReadingStateResultView envelope { state: null } (see
+        // readerApi.ts's makeFetchServerState). Resolving with that exact
+        // shape here, instead of rejecting with a mocked 404, is what makes
+        // this mock exercise the production unwrap path rather than only
+        // the legacy-404 fallback branch.
+        return Promise.resolve({ data: { state: null } })
       }
       return Promise.reject(new Error(`unexpected GET ${url}`))
     })
@@ -697,7 +745,13 @@ describe('ReaderRoute age-band wiring (ADR-026 decision 6)', () => {
     mockGet.mockImplementation((url: string) => {
       if (url.startsWith('/v1/storybooks/')) return Promise.resolve({ data: lantern })
       if (url.startsWith('/v1/reading-state/')) {
-        return Promise.reject(mockAxiosError({ isAxiosError: true, response: { status: 404 } }))
+        // The real backend never answers absence with a 404: it answers 200
+        // with the ReadingStateResultView envelope { state: null } (see
+        // readerApi.ts's makeFetchServerState). Resolving with that exact
+        // shape here, instead of rejecting with a mocked 404, is what makes
+        // this mock exercise the production unwrap path rather than only
+        // the legacy-404 fallback branch.
+        return Promise.resolve({ data: { state: null } })
       }
       if (url === '/v1/profiles') {
         return Promise.resolve({
@@ -772,7 +826,13 @@ describe('ReaderRoute replay success toast', () => {
     mockGet.mockImplementation((url: string) => {
       if (url.startsWith('/v1/storybooks/')) return Promise.resolve({ data: lantern })
       if (url.startsWith('/v1/reading-state/')) {
-        return Promise.reject(mockAxiosError({ isAxiosError: true, response: { status: 404 } }))
+        // The real backend never answers absence with a 404: it answers 200
+        // with the ReadingStateResultView envelope { state: null } (see
+        // readerApi.ts's makeFetchServerState). Resolving with that exact
+        // shape here, instead of rejecting with a mocked 404, is what makes
+        // this mock exercise the production unwrap path rather than only
+        // the legacy-404 fallback branch.
+        return Promise.resolve({ data: { state: null } })
       }
       return Promise.reject(new Error(`unexpected GET ${url}`))
     })
@@ -826,7 +886,13 @@ describe('ReaderRoute device-download reporting', () => {
     mockGet.mockImplementation((url: string) => {
       if (url.startsWith('/v1/storybooks/')) return Promise.resolve({ data: lantern })
       if (url.startsWith('/v1/reading-state/')) {
-        return Promise.reject(mockAxiosError({ isAxiosError: true, response: { status: 404 } }))
+        // The real backend never answers absence with a 404: it answers 200
+        // with the ReadingStateResultView envelope { state: null } (see
+        // readerApi.ts's makeFetchServerState). Resolving with that exact
+        // shape here, instead of rejecting with a mocked 404, is what makes
+        // this mock exercise the production unwrap path rather than only
+        // the legacy-404 fallback branch.
+        return Promise.resolve({ data: { state: null } })
       }
       return Promise.reject(new Error(`unexpected GET ${url}`))
     })

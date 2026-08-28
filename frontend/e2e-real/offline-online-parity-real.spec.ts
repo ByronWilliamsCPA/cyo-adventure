@@ -219,7 +219,13 @@ async function fetchServerRow(profileId: string): Promise<ReadingStateRow> {
     headers: { Authorization: `Bearer ${DEV_GUARDIAN_BEARER}` },
   })
   expect(res.ok, `GET /reading-state failed (HTTP ${res.status})`).toBe(true)
-  return (await res.json()) as ReadingStateRow
+  // The endpoint answers 200 with { state: ReadingStateRow | null }
+  // (ReadingStateResultView); every call site in this file fetches after a
+  // save has already happened, so a null state here means the save the test
+  // just made did not land, not a legitimate first-time-reader absence.
+  const body = (await res.json()) as { state: ReadingStateRow | null }
+  expect(body.state, 'GET /reading-state returned null state after a save').not.toBeNull()
+  return body.state as ReadingStateRow
 }
 
 /**

@@ -193,12 +193,20 @@ export function makeFetchServerState(
       return res.data.state ?? null
     } catch (error) {
       if (isAxiosError(error)) {
-        // #EDGE: external-resources: the endpoint no longer answers "no
-        // saved progress" with 404 (see the #CRITICAL note above), but a 404
-        // is tolerated here as a legacy fallback (e.g. a stale cached
-        // response, or a future 404 for a reason this adapter cannot
-        // distinguish from absence without inspecting the body) so it still
-        // degrades to "start fresh" instead of throwing.
+        // #EDGE: security: a 404 on this route is now always a genuine
+        // error, never "no saved progress" (see the #CRITICAL note above):
+        // either _load_readable_storybook found the story missing or
+        // unreadable, or _require_assignment is existence-hiding an
+        // unassigned/cross-family profile-story pair
+        // (src/cyo_adventure/api/reading.py). This branch deliberately
+        // degrades that error to "start fresh" instead of rethrowing, which
+        // silently converts an authorization denial into a fresh read. That
+        // is safe only because the sole production caller, ReaderPage.tsx,
+        // already catches every throw from this function and sets
+        // `saved = undefined` regardless of the reason, so the two paths are
+        // observationally identical there today. If a future caller needs to
+        // tell "no progress" apart from "denied", it must not reuse this
+        // function; it should call the endpoint directly and read the body.
         if (error.response?.status === 404) {
           return null
         }
