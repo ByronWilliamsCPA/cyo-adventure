@@ -21,7 +21,7 @@ and that one was not.
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
+import pytest
 
 from cyo_adventure.storybook.models import Node, Storybook
 from cyo_adventure.validator import naming
@@ -30,9 +30,6 @@ from cyo_adventure.validator.naming import (
     introduces,
     proper_noun_phrases,
 )
-
-if TYPE_CHECKING:
-    import pytest
 
 # Named rather than inlined for the same reason `validator/naming.py` names it:
 # a bare typographic apostrophe in a literal is an ambiguous unicode character,
@@ -148,16 +145,19 @@ def _rule_ids(story: Storybook) -> list[str]:
 # --- discovery -------------------------------------------------------------
 
 
+@pytest.mark.unit
 def test_a_sentence_initial_capital_is_not_a_name() -> None:
     """ "The" leading a sentence names nothing and must not be discovered."""
     assert proper_noun_phrases("The tide went out. Ahead lay a cave.") == ()
 
 
+@pytest.mark.unit
 def test_a_mid_sentence_capital_is_a_name() -> None:
     """A capitalised token inside a sentence is a proper-noun candidate."""
     assert proper_noun_phrases("She whistled for Biscuit.") == ("Biscuit",)
 
 
+@pytest.mark.unit
 def test_consecutive_capitals_form_one_phrase() -> None:
     """A multi-word name is one entity, not one candidate per token."""
     assert proper_noun_phrases("They reached the Windvale Museum at last.") == (
@@ -165,6 +165,7 @@ def test_consecutive_capitals_form_one_phrase() -> None:
     )
 
 
+@pytest.mark.unit
 def test_a_name_ending_in_s_survives_possessive_stripping() -> None:
     """ "Jess" must not be truncated to "Je" on the way to a comparison.
 
@@ -180,11 +181,13 @@ def test_a_name_ending_in_s_survives_possessive_stripping() -> None:
     )
 
 
+@pytest.mark.unit
 def test_an_all_caps_token_is_not_a_name() -> None:
     """Signage and shouting are typography, not naming."""
     assert proper_noun_phrases("The sign read KEEP OUT in red paint.") == ()
 
 
+@pytest.mark.unit
 def test_a_capitalised_pronoun_or_connective_names_nothing() -> None:
     """Capitalisation inside a sentence is not on its own evidence of naming.
 
@@ -198,6 +201,7 @@ def test_a_capitalised_pronoun_or_connective_names_nothing() -> None:
     assert proper_noun_phrases("She read The Book Of Names aloud.") == ("Book Names",)
 
 
+@pytest.mark.unit
 def test_an_abbreviated_title_does_not_end_a_sentence() -> None:
     """The period in "Mr." is orthography, not a sentence boundary.
 
@@ -212,6 +216,7 @@ def test_an_abbreviated_title_does_not_end_a_sentence() -> None:
     )
 
 
+@pytest.mark.unit
 def test_a_typographic_possessive_is_the_same_name() -> None:
     """A curly apostrophe must strip exactly as the ASCII one does.
 
@@ -228,11 +233,13 @@ def test_a_typographic_possessive_is_the_same_name() -> None:
 # --- gloss detection -------------------------------------------------------
 
 
+@pytest.mark.unit
 def test_a_determiner_anchored_noun_phrase_is_a_gloss() -> None:
     """ "her dog Biscuit" introduces Biscuit."""
     assert introduces("She went in with her dog Biscuit close behind.", "Biscuit")
 
 
+@pytest.mark.unit
 def test_a_verb_before_a_name_is_not_a_gloss() -> None:
     """ "calls Biscuit" must not read as a descriptor.
 
@@ -243,6 +250,7 @@ def test_a_verb_before_a_name_is_not_a_gloss() -> None:
     assert not introduces("She calls Biscuit back gently from the edge.", "Biscuit")
 
 
+@pytest.mark.unit
 def test_an_appositive_is_a_gloss() -> None:
     """ "Tock, her tiny mouse" introduces Tock.
 
@@ -256,11 +264,13 @@ def test_an_appositive_is_a_gloss() -> None:
     assert introduces("Then Tock, her tiny mouse, went in.", "Tock")
 
 
+@pytest.mark.unit
 def test_a_bare_name_is_not_a_gloss() -> None:
     """A name with nothing attached introduces nothing."""
     assert not introduces("Biscuit's tail thumped on the sand.", "Biscuit")
 
 
+@pytest.mark.unit
 def test_a_copula_before_a_determiner_is_a_gloss() -> None:
     """ "Biscuit is her dog" introduces Biscuit.
 
@@ -271,11 +281,13 @@ def test_a_copula_before_a_determiner_is_a_gloss() -> None:
     assert introduces("Biscuit is her dog.", "Biscuit")
 
 
+@pytest.mark.unit
 def test_a_copula_without_a_determiner_is_not_a_gloss() -> None:
     """A copula followed by an adjective describes, it does not introduce."""
     assert not introduces("Biscuit was quick and clever.", "Biscuit")
 
 
+@pytest.mark.unit
 def test_a_title_inside_the_phrase_introduces_it() -> None:
     """ "Captain Reed" carries its title inside the phrase, not before it.
 
@@ -287,6 +299,7 @@ def test_a_title_inside_the_phrase_introduces_it() -> None:
     assert introduces("Then Captain Reed opened the hatch.", "Captain Reed")
 
 
+@pytest.mark.unit
 def test_a_title_introduces_the_name_it_precedes() -> None:
     """ "Mister Vole" carries its own descriptor."""
     assert introduces("Then Mister Vole opened the door.", "Vole")
@@ -295,6 +308,7 @@ def test_a_title_introduces_the_name_it_precedes() -> None:
 # --- the rule --------------------------------------------------------------
 
 
+@pytest.mark.unit
 def test_a_name_never_glossed_anywhere_is_reported() -> None:
     """The Cave of Echoes defect, reduced to two nodes."""
     story = _story(
@@ -308,6 +322,7 @@ def test_a_name_never_glossed_anywhere_is_reported() -> None:
     assert _rule_ids(story) == ["Biscuit"]
 
 
+@pytest.mark.unit
 def test_a_name_glossed_on_arrival_is_not_reported() -> None:
     """A gloss anywhere every reader passes clears the name."""
     story = _story(
@@ -319,6 +334,7 @@ def test_a_name_glossed_on_arrival_is_not_reported() -> None:
     assert _rule_ids(story) == []
 
 
+@pytest.mark.unit
 def test_a_gloss_on_an_optional_branch_does_not_cover_a_later_node() -> None:
     """Path-sensitivity: the reader who skipped the gloss still meets the name.
 
@@ -337,6 +353,7 @@ def test_a_gloss_on_an_optional_branch_does_not_cover_a_later_node() -> None:
     assert _rule_ids(story) == ["Pip"]
 
 
+@pytest.mark.unit
 def test_a_gloss_every_reader_passes_covers_a_later_node() -> None:
     """The same graph, with the gloss moved onto the dominating node."""
     story = _story(
@@ -350,6 +367,7 @@ def test_a_gloss_every_reader_passes_covers_a_later_node() -> None:
     assert _rule_ids(story) == []
 
 
+@pytest.mark.unit
 def test_one_entity_named_two_ways_is_reported_once() -> None:
     """ "Doctor Nadia" and "Nadia" are one name and one fix.
 
@@ -369,6 +387,7 @@ def test_one_entity_named_two_ways_is_reported_once() -> None:
     assert _rule_ids(story) == ["Nadia"]
 
 
+@pytest.mark.unit
 def test_the_protagonist_is_exempt() -> None:
     """A HERO sentinel names the point-of-view character, who needs no gloss.
 
@@ -386,6 +405,7 @@ def test_the_protagonist_is_exempt() -> None:
     assert _rule_ids(story) == []
 
 
+@pytest.mark.unit
 def test_a_protagonist_sentinel_names_the_hero() -> None:
     """PROTAGONIST is the catalog's other slot id for the same character."""
     story = _story(
@@ -397,6 +417,7 @@ def test_a_protagonist_sentinel_names_the_hero() -> None:
     assert _rule_ids(story) == []
 
 
+@pytest.mark.unit
 def test_an_undeclared_protagonist_is_reported() -> None:
     """With no sentinel the exemption has nothing to read and stays silent.
 
@@ -416,6 +437,7 @@ def test_an_undeclared_protagonist_is_reported() -> None:
     assert _rule_ids(story) == ["Maya"]
 
 
+@pytest.mark.unit
 def test_a_name_in_every_node_is_still_reported() -> None:
     """Frequency is the worst available proxy for "needs no introduction".
 
@@ -441,6 +463,7 @@ def test_a_name_in_every_node_is_still_reported() -> None:
     assert _rule_ids(story) == ["Biscuit"]
 
 
+@pytest.mark.unit
 def test_a_head_noun_used_lowercase_elsewhere_is_self_glossing() -> None:
     """ "the Windvale Museum" is introduced by the book's own word "museum"."""
     story = _story(
@@ -456,6 +479,7 @@ def test_a_head_noun_used_lowercase_elsewhere_is_self_glossing() -> None:
     assert _rule_ids(story) == []
 
 
+@pytest.mark.unit
 def test_a_single_word_name_the_book_also_writes_lowercase_is_self_glossing() -> None:
     """ "the Keep" needs no gloss when the book also writes "the keep".
 
@@ -479,6 +503,7 @@ def test_a_single_word_name_the_book_also_writes_lowercase_is_self_glossing() ->
     assert _rule_ids(story) == []
 
 
+@pytest.mark.unit
 def test_one_incidental_lowercase_use_does_not_exempt_a_name() -> None:
     """One lowercase use is as likely to be a miscasing as a common noun.
 
@@ -498,6 +523,7 @@ def test_one_incidental_lowercase_use_does_not_exempt_a_name() -> None:
     assert _rule_ids(story) == ["Rusty"]
 
 
+@pytest.mark.unit
 def test_two_lowercase_uses_of_a_head_noun_exempt_a_name() -> None:
     """The same story, with the word used as a common noun rather than once.
 
@@ -518,6 +544,7 @@ def test_two_lowercase_uses_of_a_head_noun_exempt_a_name() -> None:
     assert _rule_ids(story) == []
 
 
+@pytest.mark.unit
 def test_an_address_term_alone_is_its_own_descriptor() -> None:
     """ "Grandma" used as a name carries its own meaning.
 
@@ -534,6 +561,7 @@ def test_an_address_term_alone_is_its_own_descriptor() -> None:
     assert _rule_ids(story) == []
 
 
+@pytest.mark.unit
 def test_a_node_still_holding_a_fill_directive_is_skipped() -> None:
     """The rule reads prose, so an unfilled skeleton has nothing to say."""
     story = _story(
@@ -552,6 +580,7 @@ def test_a_node_still_holding_a_fill_directive_is_skipped() -> None:
     assert _rule_ids(story) == []
 
 
+@pytest.mark.unit
 def test_a_finding_is_a_warning_and_never_blocks() -> None:
     """PN-1 is advisory, on the same terms as every prose-reading rule here."""
     story = _story(
@@ -567,6 +596,7 @@ def test_a_finding_is_a_warning_and_never_blocks() -> None:
     assert [f.rule_id for f in findings] == ["PN-1"]
 
 
+@pytest.mark.unit
 def test_an_abbreviated_title_introduces_the_name_it_precedes() -> None:
     """ "Mr. Vole" introduces Vole exactly as "Mister Vole" does.
 
@@ -593,6 +623,7 @@ def test_an_abbreviated_title_introduces_the_name_it_precedes() -> None:
     assert _rule_ids(control) == []
 
 
+@pytest.mark.unit
 def test_a_bare_name_collapses_into_its_titled_form() -> None:
     """ "Marshal Hedda" and a later bare "Hedda" are one entity and one edit.
 
@@ -612,6 +643,7 @@ def test_a_bare_name_collapses_into_its_titled_form() -> None:
     assert _rule_ids(story) == ["Hedda"]
 
 
+@pytest.mark.unit
 def test_distinct_names_sharing_a_head_noun_stay_distinct() -> None:
     """The other direction: two places are not one place.
 
@@ -630,6 +662,7 @@ def test_distinct_names_sharing_a_head_noun_stay_distinct() -> None:
     assert _rule_ids(story) == ["Green Hollow"]
 
 
+@pytest.mark.unit
 def test_a_contraction_is_not_a_name() -> None:
     """ "I'm" is a capitalised pronoun with a suffix, and names nothing.
 
@@ -652,6 +685,7 @@ def test_a_contraction_is_not_a_name() -> None:
         assert _rule_ids(story) == []
 
 
+@pytest.mark.unit
 def test_a_calendar_term_or_interjection_is_not_a_name() -> None:
     """ "Monday" and "Hooray" are capitalised without naming anything."""
     story = _story(
@@ -668,6 +702,7 @@ def test_a_calendar_term_or_interjection_is_not_a_name() -> None:
     assert _rule_ids(story) == []
 
 
+@pytest.mark.unit
 def test_a_typographic_possessive_still_names_the_bare_form() -> None:
     """A book written with U+2019 reports the name, not the possessive.
 
@@ -684,6 +719,7 @@ def test_a_typographic_possessive_still_names_the_bare_form() -> None:
     assert _rule_ids(story) == ["Nell"]
 
 
+@pytest.mark.unit
 def test_a_name_met_first_in_a_choice_label_is_out_of_scope() -> None:
     """A KNOWN BOUNDARY, asserted so that it changes deliberately or not at all.
 
@@ -734,6 +770,7 @@ def _budget_story() -> Storybook:
     )
 
 
+@pytest.mark.unit
 def test_a_story_inside_the_scan_budget_is_scanned(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
@@ -744,6 +781,7 @@ def test_a_story_inside_the_scan_budget_is_scanned(
     assert _rule_ids(story) == ["Biscuit"]
 
 
+@pytest.mark.unit
 def test_a_story_past_the_scan_budget_is_skipped_out_loud(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
@@ -766,6 +804,7 @@ def test_a_story_past_the_scan_budget_is_skipped_out_loud(
     assert "Biscuit" not in findings[0].message
 
 
+@pytest.mark.unit
 def test_an_appositive_without_a_determiner_is_not_a_gloss() -> None:
     """ "Tock, waving wildly" is a participle, not a descriptor.
 
@@ -776,6 +815,7 @@ def test_an_appositive_without_a_determiner_is_not_a_gloss() -> None:
     assert not introduces("Then Tock, waving wildly, went in.", "Tock")
 
 
+@pytest.mark.unit
 def test_a_titled_form_met_after_the_bare_name_is_still_one_entity() -> None:
     """The collapse holds whichever order the two forms are discovered in.
 
@@ -797,6 +837,7 @@ def test_a_titled_form_met_after_the_bare_name_is_still_one_entity() -> None:
     assert _rule_ids(story) == ["Hedda"]
 
 
+@pytest.mark.unit
 def test_a_non_hero_sentinel_grants_no_exemption() -> None:
     """Only a hero slot exempts; a companion slot is an ordinary name.
 
