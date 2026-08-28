@@ -1002,6 +1002,12 @@ in their journey sections instead.
   hook every routed page calls: the app-name suffix, the `bare` opt-out the
   landing page uses so its title is not doubled, and re-firing when the title
   prop changes. Not tied to one journey because all 29 routed pages share it)
+- Usersim walk substrate (`frontend/e2e-usersim/`, not yet wired into any
+  Playwright project): `frontend/src/router.usersim-manifest.test.ts` (sync test
+  asserting the checked-in `route-manifest.ts` walkable-route list matches the
+  real route tree in both directions, with a positive control proving the
+  leaf-path derivation is non-vacuous and correctly descends nested pathless
+  layouts)
 - Theme system (light/dark/system, mounted app-wide at the root via
   ThemeProvider; every surface's chrome renders a ThemeToggle):
   `frontend/src/theme/theme.test.ts` (mode validation, stored-preference
