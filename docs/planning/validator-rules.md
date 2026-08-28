@@ -155,8 +155,11 @@ damage: the flip would turn on four rules nobody had written down.
 
 ## Naming (Advisory, Fill-Result Only, All Stories)
 
-Implemented in `validator/naming.py`; wired into `validator/gate.py::run_gate` as step 9,
-immediately after the CG family and before SAFE-14. Unlike the CG family, PN-1 is not
+Implemented in `validator/naming.py`; wired into `validator/gate.py::run_gate`
+immediately after the CG family and before SAFE-14. That position is step 9 in
+`run_gate`'s own docstring, which numbers the two validator layers separately, and
+step 7 in the Rule Application Order below, which groups them; the position is the
+durable statement and the two numbers describe the same slot in different lists. Unlike the CG family, PN-1 is not
 gated behind `enforce_grammar`: it runs whenever `run_gate` is called with
 `context="fill_result"`, and does not run at all under the default `"skeleton"` context,
 because a catalog skeleton's node bodies are `<<FILL ...>>` directives by construction and

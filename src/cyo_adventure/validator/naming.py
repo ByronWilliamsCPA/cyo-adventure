@@ -826,6 +826,12 @@ def _is_exempt(
     ``the-cave-of-echoes`` and ``Biscuit`` (0 lowercase occurrences in 65
     nodes), still reports.
 
+    The hero test spans the whole phrase rather than any word in it. A title
+    may precede the name, so ``Marshal Hedda`` collapses onto hero ``Hedda``,
+    but a phrase carrying a word that is neither the hero nor a title is a
+    different entity that merely shares a token, and ``Maya Mountain`` under
+    hero ``Maya`` is judged on its head noun like any other place name.
+
     Args:
         phrase: The proper-noun phrase.
         hero_tokens: Lowercased words naming the protagonist.
@@ -842,8 +848,10 @@ def _is_exempt(
         return True
     if all(word in _TITLES for word in words):
         return True  # an address term is a common noun doing a name's job
-    if any(word in hero_tokens for word in words):
-        return True
+    if any(word in hero_tokens for word in words) and all(
+        word in hero_tokens or word in _TITLES for word in words
+    ):
+        return True  # the hero, bare or under a title, but never a namesake
     return vocabulary.get(words[-1], 0) >= _LEXICAL_EXEMPTION_FLOOR
 
 

@@ -438,6 +438,55 @@ def test_an_undeclared_protagonist_is_reported() -> None:
 
 
 @pytest.mark.unit
+def test_a_place_sharing_a_hero_token_is_still_reported() -> None:
+    """The exemption covers the protagonist, not everything named after her.
+
+    Testing each word of a phrase against the hero tokens erased a distinct
+    entity that merely shared one. Under hero ``Maya`` a peak called ``Maya
+    Mountain`` vanished from the report while the identical book under an
+    unrelated hero reported it, so the control below is the whole point of
+    the test: without it, an exemption that swallowed every phrase would
+    still pass the first assertion.
+    """
+
+    def peak(hero: str) -> list[str]:
+        return _rule_ids(
+            _story(
+                [
+                    _node("n1", f"Then {{~HERO:{hero}~}} woke early.", ["n2"]),
+                    _node(
+                        "n2",
+                        "Far off stood Maya Mountain, sharp against the sky.",
+                        [],
+                        ending=True,
+                    ),
+                ]
+            )
+        )
+
+    assert peak("Maya") == ["Maya Mountain"]
+    assert peak("Tam") == ["Maya Mountain"]
+
+
+@pytest.mark.unit
+def test_a_titled_hero_is_exempt() -> None:
+    """A title in front of the hero's name is still the hero.
+
+    This is what the whole-phrase hero test has to keep working. Narrowing
+    the exemption to an exact name match would fix the namesake defect above
+    by reporting ``Marshal Hedda`` in a book that declares Hedda its
+    protagonist, trading a false negative for a false positive.
+    """
+    story = _story(
+        [
+            _node("n1", "Then {~HERO:Hedda~} woke early.", ["n2"]),
+            _node("n2", "The others waited on Marshal Hedda.", [], ending=True),
+        ]
+    )
+    assert _rule_ids(story) == []
+
+
+@pytest.mark.unit
 def test_a_name_in_every_node_is_still_reported() -> None:
     """Frequency is the worst available proxy for "needs no introduction".
 
