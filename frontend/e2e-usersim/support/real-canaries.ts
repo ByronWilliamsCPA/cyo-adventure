@@ -34,6 +34,7 @@
  */
 import { expect } from '@playwright/test'
 
+import type { FamilyListView, ReviewSurfaceView } from '../../src/client/types.gen'
 import { BACKEND } from '../../e2e-real/real-stack'
 import type { RoleFamilyCanaries } from './invariants'
 
@@ -89,7 +90,14 @@ export async function proveRealCanariesExist(): Promise<void> {
     `GET /admin/families as ${ADMIN_BEARER} failed (HTTP ${familiesRes.status}); cannot prove ` +
       'the I5 cross-family canary exists before the walk starts.'
   ).toBe(true)
-  const families = (await familiesRes.json()) as { families: { name: string }[] }
+  // Cast to the OpenAPI-generated response type (frontend/src/client/types.gen.ts,
+  // regenerated from FamilyListView in src/cyo_adventure/api/schemas.py) rather
+  // than a hand-written shape: `.json()` still returns `unknown` at runtime, so
+  // this remains an assertion, but it is now an assertion against a
+  // compiler-checked, CI-drift-gated shape. A future rename of `FamilyView.name`
+  // fails `npm run typecheck` here, instead of quietly making `hasFamilyB`
+  // always false the way the hand-rolled shape did for `passage.message` below.
+  const families = (await familiesRes.json()) as FamilyListView
   const hasFamilyB = families.families.some((family) => family.name === REAL_FAMILY_B_CANARY)
   expect(
     hasFamilyB,
@@ -107,9 +115,15 @@ export async function proveRealCanariesExist(): Promise<void> {
       'before the walk starts. scripts/reset_e2e_real_state.py should have reverted ' +
       `${REVIEW_STORY_ID} to in_review; re-run it if this persists.`
   ).toBe(true)
-  const review = (await reviewRes.json()) as { flagged_passages: { message: string }[] }
-  const hasGuardianOnly = review.flagged_passages.some(
-    (passage) => passage.message === REAL_GUARDIAN_ONLY_CANARY
+  // Same reasoning as the families cast above: type from the generated
+  // ReviewSurfaceView (src/cyo_adventure/api/schemas.py's ReviewSurfaceView,
+  // via FlaggedPassage/FindingView) rather than a hand-written shape. The
+  // message lives on each finding (FlaggedPassage.findings[].message), not on
+  // the passage itself; typing this from the generated shape is what makes
+  // `passage.message` a compile error instead of a silently-undefined read.
+  const review = (await reviewRes.json()) as ReviewSurfaceView
+  const hasGuardianOnly = review.flagged_passages.some((passage) =>
+    passage.findings.some((finding) => finding.message === REAL_GUARDIAN_ONLY_CANARY)
   )
   expect(
     hasGuardianOnly,
