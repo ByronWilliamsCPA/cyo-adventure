@@ -52,32 +52,37 @@ export interface Persona {
 
 const KID_PERSONA: Persona = {
   id: 'kid',
-  async setupSession(context: BrowserContext, _page: Page): Promise<void> {
+  async setupSession(context: BrowserContext): Promise<void> {
     await seedDeviceGrant(context)
   },
   entryPath: KID_PICKER_PATH,
   terminals: [
     {
       path: GUARDIAN_LOGIN_PATH,
-      // Verified: frontend/src/kid/KidNav.tsx renders a persistent "Ask a
-      // grown-up" link to GUARDIAN_LOGIN_PATH on every kid-surface page
-      // (pinned by KidNav.test.tsx: "always offers a persistent Ask a
-      // grown-up link to guardian login"). The kid persona's session here is
-      // a device grant only, with no guardian auth token, so it cannot pass
+      // Verified: frontend/src/kid/KidShell.tsx only mounts KidNav (which
+      // carries the persistent "Ask a grown-up" link to GUARDIAN_LOGIN_PATH)
+      // on the /library/:profileId route, per its own routing docstring
+      // (KidShell.tsx:16-19) and the conditional render itself
+      // (KidShell.tsx:81: `{navProfileId ? <KidNav profileId={navProfileId} /> : null}`).
+      // It does NOT render on /kids (the picker) or on /read/* (the reader),
+      // so this escape hatch is reachable only from the library route, not
+      // from every kid-surface page. The kid persona's session here is a
+      // device grant only, with no guardian auth token, so it cannot pass
       // GuardianAuthLayout/AdultGate from there. This is the product's own
       // intended escape hatch for a child, not a defect the dead-end
       // invariant should flag.
       reason:
-        "KidNav's persistent 'Ask a grown-up' link leads here, and the kid " +
-        'persona holds no guardian session, so it cannot proceed past this ' +
-        'page under its own session. Intentional, per KidNav.tsx/KidNav.test.tsx.',
+        "KidNav's persistent 'Ask a grown-up' link leads here from the " +
+        'library route, and the kid persona holds no guardian session, so ' +
+        'it cannot proceed past this page under its own session. ' +
+        'Intentional, per KidShell.tsx (KidNav mount) and KidNav.test.tsx.',
     },
   ],
 }
 
 const GUARDIAN_PERSONA: Persona = {
   id: 'guardian',
-  async setupSession(context: BrowserContext, _page: Page): Promise<void> {
+  async setupSession(context: BrowserContext): Promise<void> {
     await seedGuardianSession(context)
   },
   entryPath: GUARDIAN_CONSOLE_PATH,
