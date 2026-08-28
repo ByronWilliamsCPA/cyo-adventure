@@ -1,0 +1,240 @@
+# Scheduled WebKit engine-coverage workflow for kid reading journeys.
+#
+# Runs the `webkit-kid` Playwright project (frontend/playwright.config.ts):
+# the existing reader, library, offline, and read-aloud mocked-tier specs
+# against the WebKit engine (devices['iPad (gen 7)']), the engine iPads
+# actually run. Built for task B2; rationale recorded in
+# docs/testing/user-side-testing-module-proposal-2026-08-27.md, "Engine
+# expansion: webkit-kid (nightly, informational)".
+#
+# Informational only, never PR-blocking. This workflow is schedule +
+# workflow_dispatch only, carries no pull_request trigger, and must never be
+# added to branch protection as a required check. That scoping is
+# deliberate: it keeps the merge gate untouched, which keeps ADR-029's
+# per-PR accessibility-scope constraint out of scope for this task entirely.
+#
+# Runs against the MOCKED tier only, the same shared default
+# `frontend/playwright.config.ts` the per-PR `frontend-e2e` job builds from
+# (route-intercepted API, no backend). It therefore needs no secrets and
+# touches no shared environment: it does not authenticate against the
+# staging Supabase project the way e2e-staging.yml and its
+# `e2e-staging`-labelled workflows do, so it does not join that
+# `concurrency:` group (see docs/testing/README.md, "Concurrent runs must
+# not race the same fixtures"); joining it would serialize this workflow
+# against unrelated staging-project workflows for no reason. It has its own
+# group instead, matching usersim.yml's precedent for a same-shaped,
+# same-config, no-secrets scheduled tier.
+#
+# #EDGE timing: like every other scheduled alert in this fleet, the failure
+# gating below is `if: ${{ failure() }}` alone, which is false for a
+# cancelled run (for example, a job-level `timeout-minutes` timeout produces
+# `cancelled`, not `failure`). A hung run of this job currently alerts
+# nothing. That gap is fleet-wide and tracked separately; this workflow
+# follows existing precedent rather than inventing a different alerting
+# contract for itself alone.
+# #VERIFY: the fleet-wide cancelled-run alerting gap, if and when it is
+# fixed, should be fixed once for every scheduled alert in this directory,
+# this workflow included, not patched here in isolation.
+name: WebKit kid-journey check
+
+on:
+  schedule:
+    # Daily, 15:00 UTC. Distinct from every other daily cron in this
+    # directory (release 01:00, kws-delivery-health 05/11/17/23:00,
+    # supabase-backup 08:00, notification-digest 09:00, security-analysis
+    # 09:07, e2e-real-nightly 09:30, e2e-staging 13:00, e2e-prod 13:30,
+    # usersim 14:00), so this run never starts alongside another scheduled
+    # job.
+    - cron: "0 15 * * *"
+  workflow_dispatch: {}
+
+# Least-privilege at workflow level; the job below declares the extra
+# issues: write it needs for the failure-alerting step.
+permissions:
+  contents: read
+
+concurrency:
+  # Own group, not e2e-staging: this workflow authenticates against nothing
+  # and mutates no shared state, so there is nothing for it to race. See the
+  # header comment.
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  webkit-kid:
+    name: Playwright (webkit-kid tier)
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: read
+      issues: write
+    defaults:
+      run:
+        working-directory: ./frontend
+    steps:
+      - name: Harden the runner
+        uses: step-security/harden-runner@bf7454d06d71f1098171f2acdf0cd4708d7b5920 # v2.20.0
+        with:
+          egress-policy: audit
+
+      - name: Checkout repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Setup Node.js
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: '22'
+          cache: 'npm'
+          cache-dependency-path: frontend/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Cache Playwright browsers
+        id: playwright-cache
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-webkit-${{ runner.os }}-${{ hashFiles('frontend/package-lock.json') }}
+
+      - name: Install Playwright browsers
+        if: steps.playwright-cache.outputs.cache-hit != 'true'
+        run: npx playwright install --with-deps webkit
+
+      - name: Install Playwright OS dependencies (browser cache hit)
+        if: steps.playwright-cache.outputs.cache-hit == 'true'
+        run: npx playwright install-deps webkit
+
+      - name: WebKit kid-journey check (Playwright, mocked tier)
+        env:
+          # The webkit-kid project lives in the SHARED default
+          # frontend/playwright.config.ts, whose json reporter defaults to
+          # playwright-json-report/report.json. This job runs only that one
+          # project, but an explicit per-invocation filename is what stops a
+          # silent overwrite if this job is ever changed to also run another
+          # default-config project in the same invocation (see the config
+          # file's own header comment, usersim.yml, and e2e-real-nightly.yml
+          # for the confirmed real-world shape of that collision).
+          PLAYWRIGHT_JSON_REPORT_PATH: playwright-json-report/webkit-kid.json
+        run: npm run test:e2e:webkit-kid
+
+      - name: Upload Playwright trace on failure
+        if: ${{ failure() }}
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: webkit-kid-traces
+          path: frontend/test-results/
+          retention-days: 7
+
+      # #CRITICAL: security: reads ONLY
+      # frontend/playwright-json-report/webkit-kid.json (this job's own
+      # PLAYWRIGHT_JSON_REPORT_PATH override on the check step above), never
+      # frontend/test-results/, which is uploaded wholesale as a public
+      # artifact by the step above because THIS REPOSITORY IS PUBLIC.
+      # scripts/extract-failing-specs.mjs reads only `spec.file` and
+      # `test.title` off the report; it never touches an error message, a
+      # stack trace, or any attachment, and it always exits 0 (a missing or
+      # unparseable report degrades to an explanatory line), so this step
+      # cannot itself fail the job. This project runs the mocked tier only
+      # (route-intercepted API, no backend, no storageState), so there is no
+      # token or credential the report or the trace artifact could carry.
+      # #VERIFY: a future edit to that script that reads any other field must
+      # be rejected in review; see its own header comment.
+      - name: Extract failing specs from the Playwright report
+        if: ${{ failure() }}
+        id: extract_specs
+        run: |
+          {
+            echo 'result<<EXTRACT_SPECS_EOF'
+            node scripts/extract-failing-specs.mjs playwright-json-report/webkit-kid.json
+            echo 'EXTRACT_SPECS_EOF'
+          } >> "$GITHUB_OUTPUT"
+
+      - name: Compose the issue body
+        # Reusable alerting pattern for scheduled E2E tiers, routed through
+        # the shared .github/actions/ci-failure-issue composite (label:
+        # e2e-alert) instead of a bare github-script block, matching
+        # usersim.yml, e2e-prod.yml, and accessibility-compliance-weekly.yml.
+        #
+        # This composite action's own contract (see its header comment) uses
+        # `body` only at issue creation and `comment-body` only at issue
+        # comment time, so a single composed string cannot serve both without
+        # going stale: a "First failing run" line would read false on every
+        # recurrence. This step therefore composes two distinct bodies
+        # (createBody, the long standing-context one used once at creation;
+        # commentBody, a short one repeated on every recurrence) and returns
+        # them JSON-encoded, read back below via `fromJSON(...)`.
+        #
+        # `FAILING_SPECS` is the prior step's output: which spec file(s) and
+        # test title(s) failed, or an explanatory line if the report was
+        # absent/unparseable.
+        if: ${{ failure() }}
+        id: compose
+        uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9.0.0
+        env:
+          FAILING_SPECS: ${{ steps.extract_specs.outputs.result }}
+        with:
+          result-encoding: string
+          script: |
+            const runUrl = `${context.serverUrl}/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`
+            const today = new Date().toISOString().slice(0, 10)
+            const failingSpecs = process.env.FAILING_SPECS || 'No failing-spec detail is available for this run.'
+
+            const createBody = [
+              'The scheduled `WebKit kid-journey check` workflow (`.github/workflows/webkit-kid.yml`) failed.',
+              '',
+              'This tier runs the existing reader, library, offline, and',
+              'read-aloud mocked-tier specs against the WebKit engine',
+              '(devices[\'iPad (gen 7)\']), the engine iPads actually run.',
+              'It runs daily against the mocked tier only, no secrets and no',
+              'shared environment.',
+              '',
+              'A failure here is a genuine signal: either a real WebKit-only',
+              'regression in the app, or a change to one of the selected',
+              'specs that needs review. See',
+              'docs/testing/user-side-testing-module-proposal-2026-08-27.md,',
+              '"Engine expansion: webkit-kid (nightly, informational)" for',
+              'why this project exists and what it deliberately excludes.',
+              '',
+              failingSpecs,
+              '',
+              `First failing run: ${runUrl}`,
+              `Date: ${today}`,
+              '',
+              'This issue accumulates one comment per failing run and closes itself',
+              'once a scheduled run succeeds; the next failure opens a fresh issue.',
+            ].join('\n')
+
+            const commentBody = [
+              `Scheduled webkit-kid check failed again on ${today}.`,
+              '',
+              failingSpecs,
+              '',
+              `This run: ${runUrl}`,
+            ].join('\n')
+
+            return JSON.stringify({ createBody, commentBody })
+
+      - name: File or comment on the pinned issue
+        if: ${{ failure() }}
+        uses: ./.github/actions/ci-failure-issue
+        with:
+          marker: '[webkit-kid]'
+          label: e2e-alert
+          summary: scheduled webkit-kid check failing
+          body: ${{ fromJSON(steps.compose.outputs.result).createBody }}
+          comment-body: ${{ fromJSON(steps.compose.outputs.result).commentBody }}
+
+      - name: Resolve the tracking issue on a green scheduled run
+        # `&& github.event_name == 'schedule'`: a manual `workflow_dispatch`
+        # proves only that a human-triggered run went green, not that the
+        # SCHEDULE is alive; without this a dead cron could still have its
+        # tracking issue closed by a one-off dispatch (see usersim.yml and
+        # supabase-backup.yml for the confirmed real-world shape of that
+        # failure, issue #667).
+        if: success() && github.event_name == 'schedule'
+        uses: ./.github/actions/ci-failure-issue
+        with:
+          marker: '[webkit-kid]'
+          label: e2e-alert
+          mode: resolve

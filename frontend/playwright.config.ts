@@ -262,6 +262,60 @@ export default defineConfig({
       use: { ...devices['Desktop Firefox'] },
     },
     {
+      // Engine-expansion tier (task B2, docs/testing/user-side-testing-module-
+      // proposal-2026-08-27.md, "Engine expansion: `webkit-kid`"): the
+      // reader/library/offline/read-aloud mocked specs on real WebKit at an
+      // iPad viewport, the engine and form factor kids actually read on.
+      // `cross-device-e2e.yml` already runs a WebKit profile, but only
+      // against cross-device.spec.ts's structural checks; this is the first
+      // project to run an actual kid reading journey on that engine.
+      //
+      // Nightly-only, informational (see webkit-kid.yml): this project is
+      // deliberately NOT wired into any per-PR job and must never become a
+      // required check. Scope decided by the task owner, not by this
+      // project's own reasoning, and it is what keeps this addition out of
+      // ADR-029's per-PR accessibility-scope constraint entirely.
+      //
+      // Spec selection is by explicit filename alternation, matching
+      // `real-backend-pipeline`'s style above, not a directory or tag:
+      //   - reader.spec.ts, reader-conflict.spec.ts, reader-flag.spec.ts,
+      //     reader-go-back.spec.ts, reader-reload-resume.spec.ts,
+      //     series-continue.spec.ts: every spec that drives the `/read/...`
+      //     reader page (series-continue.spec.ts does too, for a
+      //     series-continuation read). Offline behavior (IndexedDB-backed
+      //     resume, the live-save 409 path, the queued-offline-choice
+      //     replay) lives inside reader.spec.ts, reader-conflict.spec.ts,
+      //     and reader-reload-resume.spec.ts already, so it needs no
+      //     separate entry here.
+      //   - library.spec.ts: the kid library page, including its offline
+      //     shelf fallback (F-6b).
+      //   - kid-read-aloud.spec.ts: the K7 read-aloud toggle.
+      // Deliberately excluded: visual.spec.ts (pixel-exact baselines are
+      // captured on the Linux CI runner and are engine-specific; a second
+      // WebKit baseline set is out of scope for this task) and a11y.spec.ts
+      // plus keyboard-nav.spec.ts (accessibility scope is ADR-029's to
+      // widen, not this project's). cross-device.spec.ts and
+      // mobile-viewport.spec.ts already run on WebKit elsewhere in this
+      // file and are not kid reading journeys themselves.
+      //
+      // devices['iPad (gen 7)'], not a plain WebKit desktop profile: the
+      // rationale is specifically iPads, matching cross-device-tablet's
+      // profile above.
+      //
+      // Inherits this file's global `use.serviceWorkers: 'block'` like
+      // every other mocked-tier project (see the file header comment): this
+      // tier does not exercise the app's real service worker lifecycle, the
+      // same way `chromium` and `mobile-safari` do not. It exercises
+      // IndexedDB-backed offline persistence, reader replay, and speech
+      // synthesis stubbing under WebKit, which is real coverage the fleet
+      // did not have before this task.
+      name: 'webkit-kid',
+      testDir: './e2e',
+      testMatch:
+        /(reader|reader-conflict|reader-flag|reader-go-back|reader-reload-resume|series-continue|library|kid-read-aloud)\.spec\.ts/,
+      use: { ...devices['iPad (gen 7)'] },
+    },
+    {
       // Leg A of the usersim tier (docs/testing/user-side-testing-module-
       // proposal-2026-08-27.md): a seeded random walk over the live app, one
       // walk per persona, asserting I1-I6 at every state. A separate project
