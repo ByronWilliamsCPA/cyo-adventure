@@ -348,15 +348,68 @@ export default defineConfig({
       // Playwright test does not keep its clock running after the test body
       // returns, so a timeout could only fire while the walk was genuinely
       // still awaiting something. The real mechanism was the networkidle
-      // hang documented on settleAfterNavigation in walk.spec.ts (the
-      // guardian/admin persistent SSE connection never lets 'networkidle'
-      // resolve); once that was replaced with the DOM-observed
-      // detach/loading-indicator settle used today, repeated measured runs
-      // of the guardian and admin walks (the two slowest personas) complete
-      // in 8-10s each, comfortably inside the shared 30s, so the override
-      // was stale head-room left over from the fixed bug, not a real need.
+      // hang documented on settleAfterNavigation (support/walk-runner.ts;
+      // originally inline in this file's walk.spec.ts before task B3a
+      // extracted the shared walk loop) (the guardian/admin persistent SSE
+      // connection never lets 'networkidle' resolve); once that was
+      // replaced with the DOM-observed detach/loading-indicator settle used
+      // today, repeated measured runs of the guardian and admin walks (the
+      // two slowest personas) complete in 8-10s each, comfortably inside the
+      // shared 30s, so the override was stale head-room left over from the
+      // fixed bug, not a real need.
+      //
+      // testMatch narrows this project to the mocked spec only (task B3a
+      // added a second, real-backend spec to the same testDir; see
+      // `usersim-real` below), matching the filename-alternation convention
+      // `real-backend-pipeline`/`webkit-kid` already use above rather than a
+      // tag or grep filter.
       name: 'usersim',
       testDir: './e2e-usersim',
+      testMatch: /walk\.spec\.ts/,
+      use: { ...devices['Desktop Chrome'] },
+    },
+    {
+      // Real-backend leg of the usersim tier (task B3a, docs/testing/
+      // testing-implementation-plan-2026-08-27.md): the SAME seeded walk as
+      // `usersim` above, run against a real backend instead of route-mocked
+      // fixtures, so the walk exercises genuine state transitions rather
+      // than fixture responses. Shares walk-real.spec.ts's walk loop with
+      // `usersim` via support/walk-runner.ts (parameterized, not forked);
+      // only session setup (real device grant / real seeded bearers,
+      // support/real-session-setup.ts's REAL_SESSION_SETUP) and the I5 canary values
+      // (support/real-canaries.ts, real seeded rows) differ. Run via
+      // npm run test:e2e:usersim:real.
+      //
+      // `dependencies: ['real-backend-setup']` matches `real-backend` and
+      // `real-backend-pipeline` above: this walk needs the review story
+      // back at a known `in_review` state (real-canaries.ts's I5
+      // guardian-only canary lives on its moderation report) before it
+      // starts, the same deterministic baseline every other real-backend
+      // project depends on.
+      //
+      // Zero route mocks (unlike `usersim`): every `/api/v1/**` call this
+      // walk makes reaches the real uvicorn `real-backend`/
+      // `real-backend-pipeline` already require, matching
+      // frontend/e2e-real/'s own convention. This project therefore must
+      // run inside a job that has already brought up that real stack (see
+      // .github/workflows/e2e-real-nightly.yml); it is meaningless run
+      // alone against this file's own mocked-tier `webServer`, since that
+      // server proxies `/api` to whatever `E2E_BACKEND_URL` points at (real
+      // uvicorn, not a mock), and walk-real.spec.ts's own
+      // `requireBackend()` call fails fast and legibly if nothing real is
+      // listening there.
+      //
+      // Shares this project group's `PLAYWRIGHT_JSON_REPORT_PATH` collision
+      // risk with every other project in this file (see the header comment
+      // on JSON_REPORT_PATH): the nightly job sets a distinct path for this
+      // step, the same way it already does for `real-backend` and
+      // `real-backend-pipeline`.
+      name: 'usersim-real',
+      testDir: './e2e-usersim',
+      testMatch: /walk-real\.spec\.ts/,
+      dependencies: ['real-backend-setup'],
+      fullyParallel: false,
+      retries: process.env.CI ? 1 : 0,
       use: { ...devices['Desktop Chrome'] },
     },
   ],

@@ -35,6 +35,24 @@ import { getPersona, type PersonaId } from './personas'
 export const GUARDIAN_ONLY_CANARY = 'usersim-canary-guardian-only-4f7c'
 export const FAMILY_B_CANARY = 'usersim-canary-family-b-9d21'
 
+/**
+ * The two literal values I5 checks for at each step. Parameterized (task
+ * B3a), not hardcoded, so the real-tier walk (walk-real.spec.ts) can supply
+ * real seeded-row values instead of the mocked-fixture literals above,
+ * without forking this assertion. `DEFAULT_CANARIES` preserves the mocked
+ * tier's existing behavior exactly: a `StepContext` with no `canaries` field
+ * checks against the same two constants it always has.
+ */
+export interface RoleFamilyCanaries {
+  guardianOnly: string
+  familyB: string
+}
+
+export const DEFAULT_CANARIES: RoleFamilyCanaries = {
+  guardianOnly: GUARDIAN_ONLY_CANARY,
+  familyB: FAMILY_B_CANARY,
+}
+
 /** Bounded wait for a loading indicator to resolve (I3). Not a fixed sleep: the assertion polls and returns as soon as the condition holds. */
 export const LOADING_RESOLUTION_BUDGET_MS = 8_000
 
@@ -78,6 +96,12 @@ export interface StepContext {
   sink: FindingsSink
   /** Which usersim workflow produced this run (see findings.ts's UsersimFinding.workflow). */
   workflow: string
+  /**
+   * I5 canary values in effect for this run. Optional: omitted (mocked tier)
+   * falls back to DEFAULT_CANARIES, so every existing caller is unaffected.
+   * The real-tier walk sets this to real seeded-row values (task B3a).
+   */
+  canaries?: RoleFamilyCanaries
 }
 
 function replayHint(ctx: StepContext): string {
@@ -223,13 +247,18 @@ export async function assertNoOverflow(
  * render guardian-only content; neither the kid nor a plain guardian may
  * ever render cross-family (admin-only) content. See the canary doc comment
  * above for which ring each canary belongs to.
+ *
+ * `ctx.canaries` (falling back to `DEFAULT_CANARIES`) is what makes this
+ * assertion reusable against real seeded rows on the real tier: the CHECK
+ * itself never changes, only which literal it looks for.
  */
 export async function assertRoleFamilyIsolation(ctx: StepContext): Promise<void> {
   const html = await ctx.page.content()
+  const canaries = ctx.canaries ?? DEFAULT_CANARIES
 
   if (
     ctx.persona === 'kid' &&
-    (html.includes(GUARDIAN_ONLY_CANARY) || html.includes(FAMILY_B_CANARY))
+    (html.includes(canaries.guardianOnly) || html.includes(canaries.familyB))
   ) {
     recordAndThrow(
       ctx,
@@ -239,7 +268,7 @@ export async function assertRoleFamilyIsolation(ctx: StepContext): Promise<void>
     )
   }
 
-  if (ctx.persona === 'guardian' && html.includes(FAMILY_B_CANARY)) {
+  if (ctx.persona === 'guardian' && html.includes(canaries.familyB)) {
     recordAndThrow(
       ctx,
       'I5',

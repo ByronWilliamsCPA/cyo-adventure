@@ -20,94 +20,23 @@
  * seed in its thrown message (invariants.ts's replayHint), not only in a
  * log line, so a CI reader can replay a failure from the assertion text
  * alone.
+ *
+ * The walk loop itself (movement, I1-I6 assertion order, the detach-wait
+ * navigation fix) lives in support/walk-runner.ts, not here: task B3a
+ * extracted it so the real-backend walk (walk-real.spec.ts) could reuse it
+ * unchanged instead of forking a second copy. This file supplies only what
+ * is genuinely mocked-tier-specific: the route-mocked API surface below.
  */
-import { expect, test } from '@playwright/test'
+import { test, type BrowserContext, type Page } from '@playwright/test'
 
 import { mockMe } from '../e2e/support/auth'
 import { loadLanternStory } from '../e2e/support/fixtures'
-import { assertNoHorizontalOverflow } from '../e2e/support/responsiveChecks'
-import {
-  assertHistoryStepInvariants,
-  assertStepInvariants,
-  createConsoleWatcher,
-  FAMILY_B_CANARY,
-  GUARDIAN_ONLY_CANARY,
-  LOADING_RESOLUTION_BUDGET_MS,
-  LOADING_SELECTOR,
-  type StepContext,
-} from './support/invariants'
-import { createFindingsSink } from './support/findings'
-import { PERSONAS, type Persona, type PersonaId } from './support/personas'
-import { createRng, RESOLVED_SEED } from './support/prng'
+import { FAMILY_B_CANARY, GUARDIAN_ONLY_CANARY } from './support/invariants'
+import { PERSONAS, type PersonaId } from './support/personas'
+import { runWalk } from './support/walk-runner'
 
 /** Which usersim workflow produced these findings (findings.ts's UsersimFinding.workflow). */
 const WORKFLOW = 'usersim-walk'
-
-/** How many steps each persona's walk takes. Bounded for CI speed; large enough to reach several distinct states. */
-const STEP_BUDGET = 10
-
-/** Chance, per step, of taking a random back/forward step (I6) instead of clicking forward. */
-const HISTORY_STEP_PROBABILITY = 0.2
-
-/**
- * Movement selector: an in-app, same-origin link. Deliberately narrower than
- * invariants.ts's INTERACTIVE_SELECTOR (I2): only a real anchor with a
- * relative href is safe to click blindly, since every such link is a
- * React Router route the walk can assert against, never an external site, a
- * mailto:, or a sign-out control (those are buttons, not `a[href]`, in every
- * shell this app renders -- see GuardianShell/AdminShell/KidNav).
- */
-const NAV_LINK_SELECTOR = 'a[href^="/"]:visible'
-
-/**
- * #ASSUME: timing-dependencies: every route transition in this app is a
- * client-side React Router navigation, not a real browser navigation, so
- * `page.waitForLoadState('domcontentloaded')` resolves immediately and does
- * NOT wait for the destination page to finish rendering. Two settling
- * strategies were tried and rejected before the one below:
- *
- * 1. `page.waitForLoadState('domcontentloaded')` -- a no-op for a client-side
- *    transition, so it does not wait at all (see above).
- * 2. `page.waitForLoadState('networkidle')` -- waits for the mocked API calls
- *    a new route fires to settle, which sounds right, but this app keeps a
- *    persistent SSE connection open on every guardian/admin page
- *    (notifications/stream, mocked here as a fulfilled, never-closing
- *    text/event-stream body). Playwright's own docs call this out:
- *    'networkidle' never resolves against a page with an open streaming
- *    connection. A guardian-persona run of this walk hit exactly that: the
- *    call hung for the full 30s test timeout on the very first post-click
- *    wait, every single run, on a page the kid persona (no SSE consumer)
- *    never visited.
- *
- * The fix below needs no network signal at all. `target.waitFor({state:
- * 'detached'})` at the click site (see below) is the one thing that
- * observably distinguishes "the click navigated" from "the click's target
- * is still on screen": a React Router v7 `<Link>` navigation is wrapped in
- * startTransition, so `page.url()` can already report the destination while
- * the SOURCE page's DOM is still fully mounted and interactive; an early run
- * of this walk read hrefs from that stale, still-mounted page and re-clicked
- * a link whose destination had no matching outgoing link once the deferred
- * transition finally committed underneath it, hanging on a target that could
- * never reattach. Waiting for the clicked element itself to detach is a
- * direct DOM-observed signal of that commit, not a proxy for it.
- * settleAfterNavigation below then covers the remaining case (the new
- * page's own initial data has not yet rendered) by reusing I3's own
- * loading-indicator poll: a DOM-state wait, not a network-state one, so it
- * is immune to the same open-connection problem.
- * #VERIFY: the seed-replay verification (this task's requirement 4)
- * demonstrates both fixes together: the same seed reproduces an identical
- * visited-URL sequence for every persona, kid included, across repeated
- * runs.
- */
-async function settleAfterNavigation(page: Parameters<Persona['setupSession']>[1]): Promise<void> {
-  // Best-effort only: this is not itself an invariant check (a loading
-  // indicator that is still present after the budget is I3's job to catch,
-  // on the very next assertStepInvariants call), just a settle point before
-  // this step's own hrefs are read.
-  await expect(page.locator(LOADING_SELECTOR))
-    .toHaveCount(0, { timeout: LOADING_RESOLUTION_BUDGET_MS })
-    .catch(() => undefined)
-}
 
 // Mirrors route-manifest.ts's own PROFILE_ID/STORYBOOK_ID/STORYBOOK_VERSION
 // (not exported from that module, so restated here) so mocked fixtures line
@@ -176,8 +105,8 @@ function genericEnvelope(): Record<string, unknown> {
  * that would trip I1 through logApiError (src/hooks/logApiError.ts).
  */
 async function installWalkMocks(
-  context: Parameters<Persona['setupSession']>[0],
-  page: Parameters<Persona['setupSession']>[1],
+  context: BrowserContext,
+  page: Page,
   personaId: PersonaId
 ): Promise<void> {
   await context.route('**/api/v1/**', (route) => route.fulfill({ json: genericEnvelope() }))
@@ -352,128 +281,6 @@ async function installWalkMocks(
   }
 }
 
-/** One entry in a visited-sequence, for the seed-replay verification. */
-interface VisitedStep {
-  step: number
-  url: string
-}
-
-async function walkPersona(
-  persona: Persona,
-  page: Parameters<Persona['setupSession']>[1],
-  context: Parameters<Persona['setupSession']>[0]
-): Promise<VisitedStep[]> {
-  const rng = createRng(RESOLVED_SEED)
-  const visited: VisitedStep[] = []
-  const findingsLines: string[] = []
-  const sink = createFindingsSink((line) => findingsLines.push(line))
-
-  // Attach BEFORE the first navigation (I1's requirement), so console
-  // activity from the initial load is not missed.
-  const watcher = createConsoleWatcher(page)
-
-  await persona.setupSession(context, page)
-  await installWalkMocks(context, page, persona.id)
-
-  await page.goto(persona.entryPath)
-  await settleAfterNavigation(page)
-  visited.push({ step: 0, url: page.url() })
-
-  for (let step = 1; step <= STEP_BUDGET; step++) {
-    const ctx: StepContext = {
-      page,
-      persona: persona.id,
-      seed: RESOLVED_SEED,
-      step,
-      sink,
-      workflow: WORKFLOW,
-    }
-
-    if (visited.length > 1 && rng.next() < HISTORY_STEP_PROBABILITY) {
-      // I6: a random back or forward step must still land in a state
-      // satisfying I1-I4.
-      if (rng.next() < 0.5) {
-        await page.goBack()
-      } else {
-        await page.goForward()
-      }
-      await settleAfterNavigation(page)
-      visited.push({ step, url: page.url() })
-      await assertHistoryStepInvariants(ctx, watcher, assertNoHorizontalOverflow)
-      continue
-    }
-
-    await assertStepInvariants(ctx, watcher, assertNoHorizontalOverflow)
-
-    // Read every candidate link's href in one round trip, then pick and
-    // click by that href value rather than by positional index. An early
-    // run of this walk hit a real race with index-based selection: a
-    // background fetch settling between the count() and the click() calls
-    // (KidNav's progress fetch, on the kid persona) could shift what sat at
-    // a given index between the two round trips, leaving `nth(idx)`
-    // pointing at a stale/detached node and the click hanging until
-    // Playwright's timeout. Re-resolving by href at click time always finds
-    // whatever currently represents that destination, so a same-href
-    // re-render in between is harmless.
-    const hrefs = await page
-      .locator(NAV_LINK_SELECTOR)
-      .evaluateAll((elements) => elements.map((element) => element.getAttribute('href')))
-    const validHrefs = hrefs.filter((href): href is string => Boolean(href))
-    if (validHrefs.length === 0) {
-      // assertStepInvariants already confirmed this is a recognised
-      // terminal (I2), not a dead end; nothing left to click.
-      break
-    }
-    const chosenHref = rng.pick(validHrefs)
-    const target = page.locator(`a[href="${chosenHref}"]:visible`).first()
-    await target.click()
-    // #ASSUME: timing-dependencies: React Router v7 wraps a <Link> navigation
-    // in startTransition, so `location.pathname`/`page.url()` can update
-    // BEFORE the outgoing page's own DOM actually unmounts: a run of this
-    // walk caught step N+1 reading hrefs from step N's stale, still-mounted
-    // page (page.url() already showed the destination) and re-clicking a
-    // link whose destination page has no matching outgoing link once the
-    // deferred transition finally committed underneath it, which then hung
-    // Playwright's actionability wait on a permanently-detached element
-    // until timeout. Waiting for the CLICKED element itself to detach is a
-    // direct, app-DOM-observed signal that the transition has actually
-    // committed, unlike relying on the URL or on network activity alone.
-    // Bounded and non-fatal: a click into a shared shell nav (guardian/admin's
-    // GuardianShell/AdminShell wrap an Outlet, so the sidebar's own links are
-    // outside it and persist across a route change) never detaches at all,
-    // and a link to the page already on screen (a same-route link) likewise
-    // never detaches, so this must not fail the step; settleAfterNavigation
-    // below still runs either way and is what actually gates the next
-    // iteration's read. 1s (not the 8s LOADING_RESOLUTION_BUDGET_MS used
-    // elsewhere) keeps a non-detaching step cheap: this fires on most of a
-    // guardian/admin walk's steps (a shared nav is most of what there is to
-    // click there), and even a doubled per-project timeout (playwright.
-    // config.ts's `usersim` project) could not absorb every step paying an
-    // 8s toll that never resolves to anything.
-    // #VERIFY: the seed-replay verification (this task's requirement 4)
-    // demonstrates this closes the race: the same seed now reproduces an
-    // identical visited-URL sequence across repeated runs.
-    await target.waitFor({ state: 'detached', timeout: 1_000 }).catch(() => undefined)
-    await settleAfterNavigation(page)
-    visited.push({ step, url: page.url() })
-  }
-
-  watcher.dispose()
-
-  // The seed must reach the failure OUTPUT, not just a log line (task
-  // brief); this console.log is the seed-replay verification's evidence for
-  // a PASSING run; a failing run's evidence is invariants.ts's thrown
-  // message, which already embeds the same seed.
-  console.log(
-    `[usersim] persona=${persona.id} seed=${RESOLVED_SEED} visited=${JSON.stringify(visited.map((v) => v.url))}`
-  )
-  for (const line of findingsLines) {
-    console.log(`[usersim-finding] ${line}`)
-  }
-
-  return visited
-}
-
 test.afterEach(async ({ page }, testInfo) => {
   // Load-bearing for invariants.ts's recordAndThrow comment: a failure's
   // JSONL row (seed, step, url) and this screenshot are joinable by seed +
@@ -487,6 +294,22 @@ test.afterEach(async ({ page }, testInfo) => {
 
 for (const persona of PERSONAS) {
   test(persona.id, async ({ page, context }) => {
-    await walkPersona(persona, page, context)
+    await runWalk(
+      {
+        persona,
+        // Wrapped rather than passed by reference (`persona.setupSession`):
+        // Persona declares setupSession with method syntax, and eslint's
+        // unbound-method rule flags detaching a method reference from its
+        // object (no `this` is used here, but the rule cannot see that
+        // without a `this: void` annotation on the interface itself).
+        setupSession: (context, page) => persona.setupSession(context, page),
+        installMocks: installWalkMocks,
+        workflow: WORKFLOW,
+        // canaries omitted: defaults to invariants.ts's DEFAULT_CANARIES,
+        // the same GUARDIAN_ONLY_CANARY/FAMILY_B_CANARY this file's mocks embed.
+      },
+      page,
+      context
+    )
   })
 }

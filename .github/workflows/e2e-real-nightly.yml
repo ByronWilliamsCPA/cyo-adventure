@@ -237,21 +237,22 @@ jobs:
       # `npm run test:e2e:real`) avoids tripping the backend's per-IP rate
       # limiter, which two parallel workers sharing the loopback IP would do.
       # #CRITICAL: timing: this job runs Playwright against playwright.config.ts
-      # TWICE (this step, then "E2E (Playwright, full-pipeline tier)" below),
-      # and that config's `json` reporter writes to a single path unless
-      # overridden (see playwright.config.ts). A shared fixed path would let
-      # the second run's report silently overwrite this one's before either is
-      # read, so the alert would end up naming only the pipeline project's
-      # failures on a run where THIS step is what actually failed, and would
-      # look correct while doing it (task A7-i). `PLAYWRIGHT_JSON_REPORT_PATH`
-      # below gives this run its own file rather than relying on the default
-      # `if:`-less step ordering (real-backend failing today skips the
-      # pipeline step entirely, which happens to avoid the collision, but that
-      # is step-scheduling behavior, not a property of the reporter, and would
-      # silently break the moment either step gained an `if: always()` or
-      # `continue-on-error:`).
-      # #VERIFY: `real-backend.json` and `real-backend-pipeline.json` below
-      # must stay distinct paths.
+      # THREE TIMES (this step, then "E2E (Playwright, full-pipeline tier)",
+      # then "E2E (Playwright, usersim-real tier)" below; task B3a added the
+      # third), and that config's `json` reporter writes to a single path
+      # unless overridden (see playwright.config.ts). A shared fixed path
+      # would let a later run's report silently overwrite an earlier one's
+      # before either is read, so the alert would end up naming only the
+      # last-run project's failures on a run where an earlier step is what
+      # actually failed, and would look correct while doing it (task A7-i).
+      # `PLAYWRIGHT_JSON_REPORT_PATH` below gives this run its own file rather
+      # than relying on the default `if:`-less step ordering (real-backend
+      # failing today skips the later steps entirely, which happens to avoid
+      # the collision, but that is step-scheduling behavior, not a property
+      # of the reporter, and would silently break the moment any of these
+      # steps gained an `if: always()` or `continue-on-error:`).
+      # #VERIFY: `real-backend.json`, `real-backend-pipeline.json`, and
+      # `usersim-real.json` below must stay distinct paths.
       - name: E2E (Playwright, real-backend tier)
         working-directory: ./frontend
         id: playwright_real
@@ -312,6 +313,40 @@ jobs:
           CYO_ADVENTURE_DATABASE_URL: postgresql+asyncpg://cyo_adventure:password@localhost:5432/cyo_adventure
           PLAYWRIGHT_JSON_REPORT_PATH: playwright-json-report/real-backend-pipeline.json
         run: npm run test:e2e:real:pipeline
+
+      # usersim-real tier (task B3a): the same seeded random walk as the
+      # usersim.yml scheduled workflow's mocked `usersim` project
+      # (frontend/e2e-usersim/walk.spec.ts), run here against this job's real
+      # stack instead (walk-real.spec.ts), so I1-I6 are checked against
+      # genuine backend responses rather than route-mocked fixtures. Needs no
+      # generation worker (unlike the full-pipeline step above), so it runs
+      # independently right after that step rather than depending on it.
+      # `usersim-real`'s `dependencies: ['real-backend-setup']`
+      # (playwright.config.ts) means this step's own CLI invocation re-runs
+      # the DB reset before it starts, same as the two steps above, so the
+      # review story is back at a known `in_review` state (I5's
+      # guardian-only canary lives on its moderation report; see
+      # frontend/e2e-usersim/support/real-canaries.ts) before the walk's
+      # `test.beforeAll` proves both I5 canary rows exist.
+      # #CRITICAL: security: this tier's walk reads across the guardian/admin
+      # role and family boundary (I5) but must never write across it; see
+      # real-canaries.ts and walk-real.spec.ts's own header comments. An I5
+      # failure discovered here is a security finding, not something to
+      # patch by weakening the invariant.
+      # Own `PLAYWRIGHT_JSON_REPORT_PATH`, distinct from both steps above:
+      # see the #CRITICAL comment on the real-backend tier step for why a
+      # shared path would let one run's report silently overwrite another's.
+      - name: E2E (Playwright, usersim-real tier)
+        working-directory: ./frontend
+        id: playwright_usersim_real
+        env:
+          E2E_BACKEND_URL: http://localhost:8000
+          # usersim-real also depends on real-backend-setup, so its reset
+          # shell-out needs the DSN in this step's own env too (see the note
+          # on the real-backend tier step above).
+          CYO_ADVENTURE_DATABASE_URL: postgresql+asyncpg://cyo_adventure:password@localhost:5432/cyo_adventure
+          PLAYWRIGHT_JSON_REPORT_PATH: playwright-json-report/usersim-real.json
+        run: npm run test:e2e:usersim:real
 
       - name: Upload worker log
         if: ${{ !cancelled() }}
@@ -380,6 +415,22 @@ jobs:
             echo 'EXTRACT_PIPELINE_SPECS_EOF'
           } >> "$GITHUB_OUTPUT"
 
+      # Same extraction, against the usersim-real step's own report (task
+      # B3a). That step still runs even when full-pipeline fails (it has no
+      # `if:` gating it on the earlier steps' outcome), but its own report
+      # will not exist if an even earlier setup step failed the job first;
+      # scripts/extract-failing-specs.mjs's missing-report branch covers that.
+      - name: Extract failing specs from the usersim-real report
+        if: ${{ failure() }}
+        id: extract_usersim_real_specs
+        working-directory: ./frontend
+        run: |
+          {
+            echo 'result<<EXTRACT_USERSIM_REAL_SPECS_EOF'
+            node scripts/extract-failing-specs.mjs playwright-json-report/usersim-real.json
+            echo 'EXTRACT_USERSIM_REAL_SPECS_EOF'
+          } >> "$GITHUB_OUTPUT"
+
       - name: Compose the issue body
         # Reusable alerting pattern for scheduled E2E tiers
         # (test-traceability-matrix.md, "Actions to reach the bar" #2), copied
@@ -405,8 +456,10 @@ jobs:
         env:
           PLAYWRIGHT_REAL_OUTCOME: ${{ steps.playwright_real.outcome }}
           PLAYWRIGHT_PIPELINE_OUTCOME: ${{ steps.playwright_pipeline.outcome }}
+          PLAYWRIGHT_USERSIM_REAL_OUTCOME: ${{ steps.playwright_usersim_real.outcome }}
           FAILING_SPECS: ${{ steps.extract_specs.outputs.result }}
           PIPELINE_FAILING_SPECS: ${{ steps.extract_pipeline_specs.outputs.result }}
+          USERSIM_REAL_FAILING_SPECS: ${{ steps.extract_usersim_real_specs.outputs.result }}
         with:
           result-encoding: string
           script: |
@@ -426,25 +479,33 @@ jobs:
             // failure" case correctly regardless.
             const realOutcome = process.env.PLAYWRIGHT_REAL_OUTCOME || 'did not run'
             const pipelineOutcome = process.env.PLAYWRIGHT_PIPELINE_OUTCOME || 'did not run'
+            const usersimRealOutcome = process.env.PLAYWRIGHT_USERSIM_REAL_OUTCOME || 'did not run'
             const realFailed = realOutcome === 'failure'
             const pipelineFailed = pipelineOutcome === 'failure'
+            const usersimRealFailed = usersimRealOutcome === 'failure'
             const failingSpecs = process.env.FAILING_SPECS || 'No failing-spec detail is available for this run.'
             const pipelineFailingSpecs =
               process.env.PIPELINE_FAILING_SPECS || 'No failing-spec detail is available for this run.'
+            const usersimRealFailingSpecs =
+              process.env.USERSIM_REAL_FAILING_SPECS || 'No failing-spec detail is available for this run.'
 
             const lines = [
               'The scheduled `E2E (real backend, nightly)` workflow',
               '(`.github/workflows/e2e-real-nightly.yml`) failed.',
               '',
-              'This tier runs the `real-backend` Playwright project',
-              '(frontend/e2e-real/, zero route mocks) against a throwaway',
-              'Postgres-backed uvicorn built fresh each run; a failure here',
-              'means either a real regression in the reader/guardian/admin',
-              'flows, a real-backend spec (including the S2 conflict-race',
-              'spec, offline-conflict-real.spec.ts) needs attention, or the',
-              'migration/seed setup broke.',
+              'This tier runs the `real-backend` and `full-pipeline` Playwright',
+              'projects (frontend/e2e-real/, zero route mocks), plus the',
+              '`usersim-real` seeded random walk (frontend/e2e-usersim/,',
+              'walk-real.spec.ts), against a throwaway Postgres-backed uvicorn',
+              'built fresh each run; a failure here means either a real',
+              'regression in the reader/guardian/admin flows, a real-backend',
+              'spec (including the S2 conflict-race spec,',
+              'offline-conflict-real.spec.ts) needs attention, a usersim-real',
+              'walk step (I1-I6; see that failure for which invariant),',
+              'or the migration/seed setup broke.',
               '',
-              `Step outcomes: real-backend: ${realOutcome} / full-pipeline: ${pipelineOutcome}`,
+              `Step outcomes: real-backend: ${realOutcome} / full-pipeline: ${pipelineOutcome} / ` +
+                `usersim-real: ${usersimRealOutcome}`,
               '',
             ]
 
@@ -456,11 +517,22 @@ jobs:
               lines.push('The `full-pipeline` Playwright run failed.', '', pipelineFailingSpecs, '')
             }
 
-            if (!realFailed && !pipelineFailed) {
+            if (usersimRealFailed) {
               lines.push(
-                'Neither tracked Playwright step (real-backend, full-pipeline) reported',
-                'failure; check the run log for a setup step outside those two (migrations,',
-                'seeding, backend/worker startup).',
+                'The `usersim-real` Playwright run failed. If the failure is an I5',
+                '(role/family isolation) assertion, treat it as a security finding, not',
+                'a flake to retry.',
+                '',
+                usersimRealFailingSpecs,
+                '',
+              )
+            }
+
+            if (!realFailed && !pipelineFailed && !usersimRealFailed) {
+              lines.push(
+                'None of the tracked Playwright steps (real-backend, full-pipeline,',
+                'usersim-real) reported failure; check the run log for a setup step',
+                'outside those three (migrations, seeding, backend/worker startup).',
                 '',
               )
             }
