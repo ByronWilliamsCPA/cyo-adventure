@@ -299,8 +299,6 @@ class TestPlaywrightOutputDirIsolation:
                 for j in range(i + 1, len(ordered)):
                     step_a, project_a = ordered[i]
                     step_b, project_b = ordered[j]
-                    if project_a == project_b:
-                        continue
                     dir_a = projects.get(project_a)
                     dir_b = projects.get(project_b)
                     assert dir_a is not None, (

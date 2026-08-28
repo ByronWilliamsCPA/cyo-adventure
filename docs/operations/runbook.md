@@ -848,7 +848,7 @@ To list the current producers:
 ```bash
 # Every workflow that files or resolves a tracking issue (18 as of 2026-08-28;
 # this count moves as workflows are added, run the grep yourself rather than
-# trusting a number that was already stale once, see F1 below).
+# trusting a number that was already stale once).
 # Match on `uses:`, not on the path alone: ci.yml names the same directory to run
 # the action's test harness and is not a producer.
 grep -rln 'uses: ./.github/actions/ci-failure-issue' .github/workflows/
@@ -860,8 +860,16 @@ grep -rn -A6 'uses: ./.github/actions/ci-failure-issue' .github/workflows/ \
 ```
 
 Do NOT grep for `labels: '` here, which is what this section used to say. The label is now an input
-to the composite action and ten of the eighteen workflows do not pass it at all, so that grep
-returns a near-empty list that reads exactly like "almost nothing alerts". `tests/unit/test_ci_failure_action_contract.py`
+to the composite action and twelve of the eighteen workflows do not pass it at all, so that grep
+returns a near-empty list that reads exactly like "almost nothing alerts". This count has been wrong
+twice now: first from the retired `labels: '` grep, and again from a naive per-file
+`grep -c 'label:'`, which also matches `label:` inside JavaScript object literals in `github-script`
+steps (`planning-linkage.yml`, `scheduled-health-rollup.yml`) that are action-unrelated dictionary
+keys, not `with:` inputs. The number above instead comes from parsing all 18 producers as YAML and
+checking which `uses: ./.github/actions/ci-failure-issue` steps pass `label:` in their `with:` block:
+exactly 6 do (accessibility-compliance-weekly, e2e-prod, e2e-real-nightly, e2e-staging, usersim,
+webkit-kid, consistent with "Six workflows use `e2e-alert`" below), so 18 minus 6 is twelve.
+`tests/unit/test_ci_failure_action_contract.py`
 enforces the invariants the commands above only report on: markers stay unique and mutually
 non-prefixing, both labels stay in use, and no workflow re-inlines the lookup.
 
@@ -908,7 +916,7 @@ kid reading/library/offline mocked specs on real WebKit at an iPad viewport (tas
 and never wired into any per-PR job. Its alert marker is `[webkit-kid]`.
 
 The sixth `e2e-alert` producer is **`.github/workflows/accessibility-compliance-weekly.yml`**
-("Accessibility compliance (weekly)"): a weekly, non-blocking axe scan against `main` covering WCAG
+("Accessibility Compliance Weekly"): a weekly, non-blocking axe scan against `main` covering WCAG
 2.2 and best-practice rules, per [ADR-029](../planning/adr/adr-029-web-accessibility-conformance.md).
 The per-PR WCAG 2.1 AA gate is a required `ci.yml` job instead, so a failure here is a compliance
 finding to triage, never a merge blocker. Its alert marker is `[a11y-weekly]`.

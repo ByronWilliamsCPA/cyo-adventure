@@ -164,9 +164,10 @@ jobs:
         run: npx playwright test --project=usersim-a11y
 
       # Uploads BOTH streams' evidence in one wholesale artifact: since
-      # playwright.config.ts gives `usersim-a11y` its own `outputDir` (see the
-      # #CRITICAL comment on the step above), `frontend/test-results/` now
-      # holds stream 1's evidence at its root and stream 2's evidence under
+      # playwright.config.ts gives `chromium` and `usersim-a11y` each their
+      # own `outputDir` (see the #CRITICAL comment on the step above),
+      # `frontend/test-results/` now holds stream 1's evidence under
+      # `test-results/chromium/` and stream 2's evidence under
       # `test-results/usersim-a11y/`, and neither invocation's own outputDir
       # clear touches the other's subtree.
       - name: Upload Playwright report on failure
