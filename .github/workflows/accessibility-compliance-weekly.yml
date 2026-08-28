@@ -84,6 +84,14 @@ jobs:
       - name: Accessibility scan (axe, WCAG 2.2 + best-practice)
         env:
           A11Y_EXTENDED: '1'
+          # This job runs against the DEFAULT frontend/playwright.config.ts,
+          # the same config the PR-blocking frontend-e2e job uses, and a
+          # later task adds a third project to that same config. Each of the
+          # other three scheduled tiers has its own dedicated config and so
+          # its own default report filename; this tier does not, so an
+          # explicit per-invocation path is what makes a collision
+          # impossible here rather than merely unlikely today.
+          PLAYWRIGHT_JSON_REPORT_PATH: playwright-json-report/a11y-weekly.json
         run: npx playwright test --project=chromium e2e/a11y.spec.ts
 
       - name: Upload Playwright report on failure
@@ -93,6 +101,27 @@ jobs:
           name: accessibility-compliance-report
           path: frontend/test-results/
           retention-days: 14
+
+      # #CRITICAL: security: reads ONLY frontend/playwright-json-report/a11y-weekly.json
+      # (this workflow's own PLAYWRIGHT_JSON_REPORT_PATH override on the scan
+      # step above), never frontend/test-results/, which is uploaded wholesale
+      # as a public artifact by the step above because THIS REPOSITORY IS
+      # PUBLIC. scripts/extract-failing-specs.mjs reads only `spec.file` and
+      # `test.title` off the report; it never touches an error message, a
+      # stack trace, or any attachment, and it always exits 0 (a missing or
+      # unparseable report degrades to an explanatory line), so this step
+      # cannot itself fail the job.
+      # #VERIFY: a future edit to that script that reads any other field must
+      # be rejected in review; see its own header comment.
+      - name: Extract failing specs from the Playwright report
+        if: ${{ failure() }}
+        id: extract_specs
+        run: |
+          {
+            echo 'result<<EXTRACT_SPECS_EOF'
+            node scripts/extract-failing-specs.mjs playwright-json-report/a11y-weekly.json
+            echo 'EXTRACT_SPECS_EOF'
+          } >> "$GITHUB_OUTPUT"
 
       - name: Compose the issue body
         # Reusable alerting pattern for scheduled E2E tiers, same as
@@ -105,18 +134,40 @@ jobs:
         # file a duplicate. Findings this scan surfaces get their own UW-*
         # register row (see UW-F27); this step is about noticing a NEW
         # regression promptly, not about the known, already-tracked ones.
+        #
+        # `FAILING_SPECS` (task A7-i) is the prior step's output: which spec
+        # file(s) and test title(s) failed, or an explanatory line if the
+        # report was absent/unparseable.
+        #
+        # This composite action's own contract (see its header comment) uses
+        # `body` only at issue creation and `comment-body` only at issue
+        # comment time, so a single composed string cannot serve both without
+        # going stale: `body`'s "First failing run" line would read false on
+        # every recurrence, exactly the defect a reviewer caught on an
+        # earlier task in this plan when that string was reused verbatim as
+        # `comment-body`. This step therefore composes two distinct bodies
+        # (createBody, the long standing-context one used once at creation;
+        # commentBody, a short one repeated on every recurrence) in the one
+        # script and returns them JSON-encoded, read back below via
+        # `fromJSON(...)`. That keeps runUrl/today/failingSpecs computed once
+        # rather than duplicated across a second `id`'d script step.
         if: ${{ failure() }}
         id: compose
         uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9.0.0
+        env:
+          FAILING_SPECS: ${{ steps.extract_specs.outputs.result }}
         with:
           result-encoding: string
           script: |
             const runUrl = `${context.serverUrl}/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`
             const today = new Date().toISOString().slice(0, 10)
+            const failingSpecs = process.env.FAILING_SPECS ?? ''
 
-            return [
+            const createBody = [
               'The scheduled `Accessibility Compliance Weekly` workflow',
               '(`.github/workflows/accessibility-compliance-weekly.yml`) failed.',
+              '',
+              failingSpecs,
               '',
               'This tier runs the WCAG 2.2 + axe best-practice extended scan',
               '(A11Y_EXTENDED=1) against the mocked-tier build, weekly.',
@@ -164,6 +215,16 @@ jobs:
               'once a scheduled run succeeds; the next failure opens a fresh issue.',
             ].join('\n')
 
+            const commentBody = [
+              `Scheduled accessibility compliance scan failed again on ${today}.`,
+              '',
+              failingSpecs,
+              '',
+              `This run: ${runUrl}`,
+            ].join('\n')
+
+            return JSON.stringify({ createBody, commentBody })
+
       - name: File or comment on the pinned issue
         if: ${{ failure() }}
         uses: ./.github/actions/ci-failure-issue
@@ -171,8 +232,8 @@ jobs:
           marker: '[a11y-weekly]'
           label: e2e-alert
           summary: scheduled accessibility compliance scan failing
-          body: ${{ steps.compose.outputs.result }}
-          comment-body: Scheduled accessibility compliance scan failed again.
+          body: ${{ fromJSON(steps.compose.outputs.result).createBody }}
+          comment-body: ${{ fromJSON(steps.compose.outputs.result).commentBody }}
 
       - name: Resolve the tracking issue on a green scheduled run
         # Every one of these issue bodies used to end by asking a human to
