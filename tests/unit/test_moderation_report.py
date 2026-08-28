@@ -3,21 +3,25 @@
 from __future__ import annotations
 
 from typing import cast
+from unittest.mock import ANY, call, patch
 
 import pytest
 
 from cyo_adventure.core.exceptions import BusinessLogicError
+from cyo_adventure.moderation import report as report_module
 from cyo_adventure.moderation.report import (
     CONCERN_TAXONOMY,
     FAIL_SAFE_MESSAGE_SUBSTRING,
+    FailSafeScope,
     Finding,
     FindingSeverity,
     ModerationReport,
     SevereFindingCounts,
     Source,
     Verdict,
-    hidden_fail_safe_node_counts,
+    legacy_hidden_fail_safe_node_counts,
     moderation_report_unusable,
+    report_drops_pass_findings,
     severe_finding_counts,
 )
 
@@ -560,17 +564,25 @@ class TestSevereFindingCounts:
         assert severe_finding_counts(report) == (0, 0)
 
 
-class TestHiddenFailSafeNodeCounts:
-    """Per-source coverage for reports that are only PARTIALLY fail-safe.
+class TestLegacyHiddenFailSafeNodeCounts:
+    """Per-source coverage for LEGACY reports that are only PARTIALLY fail-safe.
 
     ``moderation_report_unusable`` answers a whole-report question and stops
     at the first genuine finding, so a report where one stage judged every
     node and another stage defaulted to fail-safe on most of them reads as
-    fully usable. Production carries exactly that shape: five books whose
-    ``llm_safety`` stage returned real verdicts throughout while
-    ``llm_readability`` fell back to ``unknown verdict; defaulted to
-    fail-safe`` on up to 88% of their nodes. These counts are what makes the
-    unreviewed remainder countable rather than invisible.
+    fully usable. Production carries exactly that shape: of the five books the
+    first census called "genuinely moderated", four have it (the fifth,
+    ``sk_clover_butterfly``, has zero fail-safe nodes). Their ``llm_safety``
+    stage returned real verdicts throughout while ``llm_readability`` fell
+    back to ``unknown verdict; defaulted to fail-safe`` on up to 88% of their
+    nodes. These counts are what makes that unreviewed remainder countable
+    rather than invisible.
+
+    Every report in this class is hand-built in the PRE-``0396507b`` shape,
+    where PASS findings were persisted as rows. That is the only shape this
+    predicate can read, and
+    ``test_round_trip_through_to_dict_finds_nothing_and_logs_the_blind_spot``
+    is the control that says so out loud.
     """
 
     def test_fully_reviewed_report_counts_nothing(self) -> None:
@@ -584,7 +596,7 @@ class TestHiddenFailSafeNodeCounts:
                 }
             ]
         }
-        assert hidden_fail_safe_node_counts(report) == {}
+        assert legacy_hidden_fail_safe_node_counts(report) == {}
 
     def test_fail_safe_nodes_are_counted_per_source(self) -> None:
         report = {
@@ -609,7 +621,9 @@ class TestHiddenFailSafeNodeCounts:
                 },
             ]
         }
-        assert hidden_fail_safe_node_counts(report) == {"llm_readability": 2}
+        assert legacy_hidden_fail_safe_node_counts(report) == {
+            "llm_readability": FailSafeScope(nodes=2, whole_story=False)
+        }
 
     def test_pass_verdict_does_not_hide_a_fail_safe_row(self) -> None:
         # The production shape: the stored verdict is "pass", which the
@@ -626,7 +640,9 @@ class TestHiddenFailSafeNodeCounts:
                 }
             ]
         }
-        assert hidden_fail_safe_node_counts(report) == {"llm_readability": 1}
+        assert legacy_hidden_fail_safe_node_counts(report) == {
+            "llm_readability": FailSafeScope(nodes=1, whole_story=False)
+        }
 
     def test_same_node_twice_counts_once(self) -> None:
         report = {
@@ -645,7 +661,9 @@ class TestHiddenFailSafeNodeCounts:
                 },
             ]
         }
-        assert hidden_fail_safe_node_counts(report) == {"llm_readability": 1}
+        assert legacy_hidden_fail_safe_node_counts(report) == {
+            "llm_readability": FailSafeScope(nodes=1, whole_story=False)
+        }
 
     def test_merged_finding_counts_every_node_it_covers(self) -> None:
         # node_id names only the FIRST covered node; counting it alone would
@@ -661,7 +679,9 @@ class TestHiddenFailSafeNodeCounts:
                 }
             ]
         }
-        assert hidden_fail_safe_node_counts(report) == {"llm_readability": 3}
+        assert legacy_hidden_fail_safe_node_counts(report) == {
+            "llm_readability": FailSafeScope(nodes=3, whole_story=False)
+        }
 
     def test_structural_finding_is_not_counted_again(self) -> None:
         # A collapsed structural fail-safe finding already survives the
@@ -680,9 +700,13 @@ class TestHiddenFailSafeNodeCounts:
                 }
             ]
         }
-        assert hidden_fail_safe_node_counts(report) == {}
+        assert legacy_hidden_fail_safe_node_counts(report) == {}
 
-    def test_fail_safe_finding_with_no_node_counts_as_one_scope(self) -> None:
+    def test_fail_safe_finding_with_no_node_is_whole_story_not_one_node(self) -> None:
+        # A nodeless finding is how the two whole-story soft stages (coherence,
+        # engagement) fail safe: they judge the story as a unit, so the outage
+        # covers everything. Reporting it as nodes=1 understated a total stage
+        # outage as "left 1 node unjudged" on the approver's surface.
         report = {
             "findings": [
                 {
@@ -693,7 +717,9 @@ class TestHiddenFailSafeNodeCounts:
                 }
             ]
         }
-        assert hidden_fail_safe_node_counts(report) == {"llm_safety": 1}
+        assert legacy_hidden_fail_safe_node_counts(report) == {
+            "llm_safety": FailSafeScope(nodes=0, whole_story=True)
+        }
 
     def test_source_falls_back_to_category_then_unknown(self) -> None:
         report = {
@@ -711,9 +737,9 @@ class TestHiddenFailSafeNodeCounts:
                 },
             ]
         }
-        assert hidden_fail_safe_node_counts(report) == {
-            "llm_readability": 1,
-            "unknown": 1,
+        assert legacy_hidden_fail_safe_node_counts(report) == {
+            "llm_readability": FailSafeScope(nodes=1, whole_story=False),
+            "unknown": FailSafeScope(nodes=1, whole_story=False),
         }
 
     @pytest.mark.parametrize(
@@ -726,12 +752,17 @@ class TestHiddenFailSafeNodeCounts:
         # on; this predicate answers the narrower "which nodes did a stage
         # skip" question and must not double as a second corruption gate.
         assert (
-            hidden_fail_safe_node_counts(cast("dict[str, object] | None", report)) == {}
+            legacy_hidden_fail_safe_node_counts(
+                cast("dict[str, object] | None", report)
+            )
+            == {}
         )
 
     def test_non_mapping_finding_entry_is_skipped(self) -> None:
         report = {"findings": ["nope", 7, None]}
-        assert hidden_fail_safe_node_counts(cast("dict[str, object]", report)) == {}
+        assert (
+            legacy_hidden_fail_safe_node_counts(cast("dict[str, object]", report)) == {}
+        )
 
     @pytest.mark.parametrize("verdict", ["flag", "block"], ids=["flag", "block"])
     def test_gating_fail_safe_row_is_not_counted(self, verdict: str) -> None:
@@ -749,12 +780,16 @@ class TestHiddenFailSafeNodeCounts:
                 }
             ]
         }
-        assert hidden_fail_safe_node_counts(report) == {}
+        assert legacy_hidden_fail_safe_node_counts(report) == {}
 
     def test_row_with_no_verdict_is_not_counted(self) -> None:
-        # Absent is not PASS. A row with no verdict at all fails
-        # moderation_report_unusable's genuine-judgment shape check, so an
-        # all-artifact report of these is already caught as wholly unusable.
+        # Absent is not PASS. A row with no verdict at all never reaches this
+        # predicate from the API in the first place: `_as_verdict` raises a 422
+        # while parsing the stored report, so a missing verdict is rejected at
+        # the boundary rather than counted here. (This is NOT
+        # moderation_report_unusable's doing: that predicate answers a
+        # whole-report question and a single genuine finding elsewhere makes it
+        # return False.)
         report = {
             "findings": [
                 {
@@ -764,4 +799,128 @@ class TestHiddenFailSafeNodeCounts:
                 }
             ]
         }
-        assert hidden_fail_safe_node_counts(report) == {}
+        assert legacy_hidden_fail_safe_node_counts(report) == {}
+
+    def test_round_trip_through_to_dict_finds_nothing_and_logs_the_blind_spot(
+        self,
+    ) -> None:
+        """A report the CURRENT pipeline writes carries no readable evidence.
+
+        Every other test in this class hand-builds the persisted dict with
+        ``"verdict": "pass"`` rows, which is the pre-``0396507b`` shape. This
+        one is the round trip: build a real ``ModerationReport`` in which both
+        whole-story soft stages fail-safed exactly as ``stages.py`` emits them
+        (``fail_safe=Verdict.PASS``, ``node_id=None``), persist it through the
+        real ``to_dict()``, and read it back.
+
+        The answer is ``{}``, the same value as "nothing fell back", because
+        ``to_dict`` strips PASS rows. That is the whole reason this predicate
+        is named ``legacy_``. Asserting it here means the limit is a pinned,
+        visible property of the code rather than something a future reader
+        rediscovers from a book that rendered clean. The log is what makes the
+        empty answer distinguishable from a real all-clear at runtime.
+        """
+        report = ModerationReport()
+        report.add(
+            Finding(
+                stage=1,
+                source=Source.LLM_SAFETY,
+                category="violence",
+                node_id="n1",
+                verdict=Verdict.FLAG,
+                score=0.9,
+                message="a genuine judgment, so the report is USABLE",
+            )
+        )
+        for source in (Source.LLM_COHERENCE, Source.LLM_ENGAGEMENT):
+            report.add(
+                Finding(
+                    stage=3,
+                    source=source,
+                    category=source.value,
+                    node_id=None,
+                    verdict=Verdict.PASS,
+                    message=f"unknown verdict; {FAIL_SAFE_MESSAGE_SUBSTRING}",
+                )
+            )
+
+        persisted = report.to_dict()
+
+        # Precondition: the two fail-safe rows really were dropped, and the
+        # report really does read as usable. Without this the assertion below
+        # could pass for the wrong reason.
+        assert persisted["findings"] == [
+            f.to_dict() for f in report.findings if f.verdict is not Verdict.PASS
+        ]
+        assert moderation_report_unusable(persisted) is False
+        assert report_drops_pass_findings(persisted) is True
+
+        with patch.object(report_module, "_logger") as logger:
+            counts = legacy_hidden_fail_safe_node_counts(persisted)
+
+        assert counts == {}
+        assert logger.info.call_args_list == [
+            call(
+                "hidden_fail_safe_scan_blind_on_modern_report",
+                reason=ANY,
+                follow_up="UW-C390",
+            )
+        ]
+
+    def test_legacy_shaped_report_does_not_log_the_blind_spot(self) -> None:
+        # The negative control for the test above: a report with no
+        # aggregate.pass_counts is a legacy report, its empty result is a
+        # genuine all-clear, and logging there would cry wolf on every
+        # fully-reviewed book.
+        report = {"findings": [], "aggregate": {"nodes_reviewed": 3}}
+        with patch.object(report_module, "_logger") as logger:
+            assert legacy_hidden_fail_safe_node_counts(report) == {}
+        logger.info.assert_not_called()
+
+
+class TestReportDropsPassFindings:
+    """The discriminator between the two persisted report shapes."""
+
+    def test_current_to_dict_output_is_recognized(self) -> None:
+        assert report_drops_pass_findings(ModerationReport().to_dict()) is True
+
+    @pytest.mark.parametrize(
+        "report",
+        [
+            None,
+            {},
+            {"aggregate": None},
+            {"aggregate": "nope"},
+            {"aggregate": {}},
+            {"aggregate": {"nodes_reviewed": 3}},
+            {"aggregate": {"pass_counts": None}},
+            {"aggregate": {"pass_counts": []}},
+        ],
+        ids=[
+            "none",
+            "empty",
+            "null-aggregate",
+            "non-mapping-aggregate",
+            "empty-aggregate",
+            "legacy-aggregate",
+            "null-pass-counts",
+            "non-mapping-pass-counts",
+        ],
+    )
+    def test_absent_or_malformed_pass_counts_is_not_the_modern_shape(
+        self, report: object
+    ) -> None:
+        # Presence of a well-formed mapping is the only positive signal. Every
+        # other shape is treated as legacy, which is the conservative
+        # direction: it suppresses the blind-spot log rather than claiming a
+        # report is modern on evidence that is not there.
+        assert (
+            report_drops_pass_findings(cast("dict[str, object] | None", report))
+            is False
+        )
+
+    def test_an_empty_pass_counts_mapping_still_counts_as_modern(self) -> None:
+        # to_dict always writes the key, even when no stage returned PASS, so
+        # an empty mapping is a modern report that happened to have no PASS
+        # rows, not a legacy one.
+        assert report_drops_pass_findings({"aggregate": {"pass_counts": {}}}) is True
