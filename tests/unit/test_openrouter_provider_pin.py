@@ -373,7 +373,7 @@ def test_every_pinned_price_row_names_its_endpoint_in_the_note() -> None:
 
 
 # ---------------------------------------------------------------------------
-# The sampling temperature on the REQUEST path (UW-C397)
+# The sampling temperature on the REQUEST path (UW-C408)
 # ---------------------------------------------------------------------------
 # The moderation reviewer sampled at the vendor default because nothing in
 # `src/` sent a `temperature` at all, so two reads of the same passage could

@@ -2262,7 +2262,7 @@ async def test_the_pipeline_persists_the_reviewer_that_ran(
     The 2026-07-21 sweep persisted no reviewer provenance, so 31 books' reports
     were indistinguishable from genuinely reviewed ones and the population had
     to be re-derived from a stamp that existed for an unrelated reason
-    (UW-C397). Provenance is read from the RESOLVED settings, which is why this
+    (UW-C408). Provenance is read from the RESOLVED settings, which is why this
     test drives the same admin override as the test above it: recording the
     process-wide default would attribute the verdict to a model that never saw
     the prose, a quieter version of the same defect.
@@ -2731,7 +2731,7 @@ def _capture_events(monkeypatch: pytest.MonkeyPatch) -> list[MagicMock]:
 def _one_bad_batch_review_provider(*, bad_batch_index: int = 0) -> MockProvider:
     """Answer every Stage-1 batch genuinely except ONE, which is unparseable.
 
-    This is the production failure shape behind UW-C396. ``review_batch_size``
+    This is the production failure shape behind UW-C407. ``review_batch_size``
     defaults to 8, so a single unusable batch response costs all eight of its
     nodes their coverage while the rest of the story reviews normally. Five
     reports in the live catalog admitted exactly 8 or 16 unreviewed nodes, and

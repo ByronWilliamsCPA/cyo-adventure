@@ -714,7 +714,7 @@ async def test_a_dead_reviewer_stops_retrying_per_node() -> None:
 
     What latches off is the RETRY, never the fail-safe. Batch 2's nodes are
     still collapsed into the coverage gap, which is what keeps this different
-    from AL-647's classifier latch: there, latching would have suppressed the
+    from AL-663's classifier latch: there, latching would have suppressed the
     only safety signal; here the safety signal is exactly what remains.
     """
     provider = MockProvider(responses=["{}"] * 4)

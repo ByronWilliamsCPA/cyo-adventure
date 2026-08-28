@@ -864,7 +864,7 @@ async def _review_one_batch(
             # outage's cost by the batch size while recovering nothing, so
             # the fallback (never the fail-safe) latches off for the rest
             # of this story. Deliberately unlike the Stage-0 classifier,
-            # where a transient 5xx must NOT latch anything off (AL-647):
+            # where a transient 5xx must NOT latch anything off (AL-663):
             # there the latch would suppress the only safety signal, here
             # it only declines a retry whose fail-safe still applies.
             # #VERIFY: ::test_a_dead_reviewer_stops_retrying_per_node.

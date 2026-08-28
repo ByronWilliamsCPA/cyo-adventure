@@ -1,7 +1,7 @@
 """Unit tests for reviewer determinism and the provenance a report records.
 
 Two defects motivate this file, both surfaced by the 2026-07-21 mock-reviewer
-sweep (AL-649, UW-C397):
+sweep (AL-665, UW-C408):
 
 1. **Nothing in ``src/`` sent a ``temperature``.** The safety reviewer therefore
    sampled at the vendor default, so two reads of the same passage could return
@@ -202,7 +202,7 @@ def test_the_provenance_records_the_batch_size_the_reviewer_used() -> None:
     """Batch size is part of what produced the verdicts, so it is recorded.
 
     One unparseable batch response fail-safed all eight of its nodes
-    (UW-C396), so the size in force is load-bearing context for reading any
+    (UW-C407), so the size in force is load-bearing context for reading any
     report written before the per-node fallback landed.
     """
     provenance = review_provenance(_openrouter_settings(review_batch_size=3))

@@ -645,7 +645,7 @@ async def test_a_later_node_still_gets_screened_after_one_node_fails() -> None:
 
 
 # ---------------------------------------------------------------------------
-# Retry discrimination (AL-647)
+# Retry discrimination (AL-663)
 #
 # _run_openai used to catch base httpx.HTTPError, which raise_for_status()
 # raises as HTTPStatusError, so a permanent 401 was retried exactly like a
