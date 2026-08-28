@@ -3,12 +3,13 @@
 The defect this closes
 ----------------------
 
-``the-cave-of-echoes`` names the companion "Biscuit" in **all 64 of its 64
-nodes** and never once says he is a dog. Its theme contract binds
+``the-cave-of-echoes`` names the companion "Biscuit" in **all 65 of its 65
+nodes**, 70 times in total, and never once says he is a dog: the word "dog"
+does not appear in the book in any case. Its theme contract binds
 ``COMPANION`` to ``"her dog Biscuit"``, so the descriptor existed at fill
 time; the fill used the name and dropped the gloss. A child reader met a
-proper noun with no antecedent 64 times and asked who that was, which is the
-correct reading of the text. The same catalog shows the right shape:
+proper noun with no antecedent in every node and asked who that was, which is
+the correct reading of the text. The same catalog shows the right shape:
 ``the-clockwork-menagerie`` opens "On her shoulder rode Tock, her tiny
 wind-up mouse", and reports nothing here.
 
@@ -28,20 +29,30 @@ entailment.
 
 Proper nouns are a different population, and the difference is decidable
 rather than a matter of degree. They are marked by capitalization, they are
-enumerable per book (median **6** distinct names across the 31 committed
+enumerable per book (median **5** distinct names across the 31 committed
 filled books), and most are declared up front in the contract's
 ``default_binding``. Calibrated over the same corpus this rule measures
-**2.86 findings per 100 nodes** (130 over 4,542), a hundredfold below the wall
-the general form hit, at a median of 2 per book, a max of 33 in a 551-node
-teen gamebook with a large named cast, and 3 of 31 books clean.
+**2.97 findings per 100 nodes** (135 over 4,542), a hundredfold below the wall
+the general form hit, at a median of 2 per book, a max of 34 in
+``the-harrowstone-keep`` (551 nodes, a teen gamebook with a large named
+cast), and 3 of 31 books clean.
 
-Twelve of those 130 are one book's defect rather than this rule's noise, and
-they are worth knowing about because they look like duplicates. Eleven come
-from ``the-sunken-temple``, whose fill emitted **zero apostrophes of any
-kind** ("Heddas seal", not the possessive it means) where its siblings carry hundreds,
-so every possessive reads as a separate name and both ``Hedda`` and
-``Heddas`` report. Nothing here tries to reunite them: guessing at an absent
-apostrophe would merge genuine plurals, and the book is what is wrong.
+Twelve of those 135 are a name reported twice rather than twelve separate
+names, and they are worth knowing about because they look like noise. Eleven
+come from ``the-sunken-temple``, whose fill emitted **zero apostrophes of any
+kind** ("Heddas seal", not the possessive it means), so every possessive
+reads as a separate name and both ``Hedda`` and ``Heddas`` report. The
+twelfth is ``the-harrowstone-keep``'s ``Redcloak``/``Redcloaks``, which is a
+real plural rather than a lost apostrophe. Nothing here tries to reunite
+either pair: guessing at an absent apostrophe would merge genuine plurals,
+and in the first case the book is what is wrong.
+
+Zero apostrophes is not unique to that book, only consequential there.
+``the-teddy-bears-picnic`` is apostrophe-free too, and reports once
+(``Owl``) with no doubling at all, because 29 nodes give it no possessive to
+lose. Across the 29 artifacts that do write apostrophes the count is small
+and varies widely: a median of **31** per book, seven at 100 or more, and
+exactly one past 200 (``the-harrowstone-keep``, 345).
 
 That figure is an upper bound, and knowing why matters before anyone reads it
 as a defect rate. The measured corpus is the ``out/*.filled.json`` artifacts,
@@ -93,14 +104,32 @@ Exemptions, and why each is principled rather than a noise filter
   hero's name is read from the ``HERO`` sentinel rather than guessed.
 * **A self-glossing head noun.** "Windvale Museum", or a bare "the Keep",
   needs no separate gloss when the book also writes that word in lowercase
-  somewhere. Derived from the book's own vocabulary, so it needs no hardcoded
-  place-name list.
+  **at least twice**. One lowercase use is not evidence: "a rusty gate"
+  somewhere in a book does not gloss a dog named Rusty, and the floor of two
+  is what separates a book's working vocabulary from an incidental
+  collision. It is derived from the book's own prose either way, so it needs
+  no hardcoded place-name list.
 * **An address term standing alone.** "Grandma" is a common noun doing a
   name's job, so a reader who meets it knows exactly who that is. Same
   reasoning as the title pattern, applied to a name that is only the title.
 * **Calendar terms, number words and interjections.** "Monday" and "Hooray"
   are capitalized without naming anything.
 * **ALL-CAPS tokens.** Signage and shouting are typography, not naming.
+
+Known boundaries
+----------------
+
+* **Choice labels are out of scope.** The scan reads node bodies only, so a
+  reader who meets a name for the first time in a choice label ("Follow
+  Biscuit into the woods") gets no finding. That is a real gap rather than a
+  claim the gap does not matter, and widening the scan to labels would
+  re-calibrate every figure above, so it is a separate decision.
+  ``test_a_name_met_first_in_a_choice_label_is_out_of_scope`` asserts the
+  boundary from both sides so that it moves deliberately or not at all.
+* **A story past the scan budget is not checked.** See ``_SCAN_BUDGET``
+  below. The skip emits its own finding rather than an empty report, because
+  a story nobody checked and a story with nothing to report are otherwise
+  the same answer.
 
 **This is a WARNING and never blocks**, on the same terms as CG-4 and CG-6.
 Token-level naming is a heuristic and a human makes the real call.
@@ -109,7 +138,8 @@ Token-level naming is a heuristic and a human makes the real call.
 from __future__ import annotations
 
 import re
-from typing import TYPE_CHECKING, cast
+from collections import Counter
+from typing import TYPE_CHECKING
 
 from cyo_adventure.storybook.sentinels import find_sentinels, strip_sentinels
 from cyo_adventure.validator.continuity import dominating_nodes
@@ -138,8 +168,11 @@ _RIGHT_SINGLE = "\u2019"
 _APOSTROPHES = ("'", _RIGHT_SINGLE)
 # The possessive suffixes to strip, longest first so "'s" wins over "'".
 _POSSESSIVES = ("'s", f"{_RIGHT_SINGLE}s", "'", _RIGHT_SINGLE)
+# The last characters any entry of `_POSSESSIVES` can end with, as a
+# single cheap pre-test for `_base`. A token ending in a bare "s" passes
+# this guard and then matches no suffix, which is the intended answer.
+_POSSESSIVE_TAILS = ("s", "'", _RIGHT_SINGLE)
 
-_SENTENCE_SPLIT = re.compile(r"(?<=[.!?])[\s”\"']+")
 _TOKEN = re.compile(rf"[A-Za-z][A-Za-z'{_RIGHT_SINGLE}-]*|[,.;:!?]")
 _LOWERCASE_WORD = re.compile(rf"[a-z][a-z'{_RIGHT_SINGLE}-]*")
 
@@ -278,6 +311,51 @@ _TITLES: frozenset[str] = frozenset(
         "big",
     }
 )
+
+# The address terms filled prose abbreviates with a trailing period, held as
+# an intersection with `_TITLES` rather than as a parallel list so the two
+# can never disagree about what an address term is. Three of the 31 committed
+# books write them ("Mr. Fez", "Ms. Flores", "Mrs. Okafor", "Mr. Pell");
+# "dr" rides along because it is the same orthography.
+_ABBREVIATED_TITLES: frozenset[str] = _TITLES & frozenset({"mr", "mrs", "ms", "dr"})
+
+# A period closing an abbreviated address term is not a sentence boundary.
+# Splitting there turned "Her cat Mr. Whiskers purred loudly." into two
+# sentences, which dropped "Whiskers" as a sentence-initial capital. The
+# costly half was the false positive rather than that miss: a book that
+# introduced "Mr. Vole" and later wrote a bare "Vole" reported the name as
+# never introduced, where the unabbreviated "Mister Vole" control reported
+# nothing. Python requires a fixed-width lookbehind, so the guard is one
+# lookbehind per abbreviation rather than one alternation.
+_ABBREVIATION_GUARD = "".join(
+    rf"(?<!\b{title}\.)" for title in sorted(_ABBREVIATED_TITLES)
+)
+_SENTENCE_SPLIT = re.compile(
+    rf"(?<=[.!?]){_ABBREVIATION_GUARD}[\s”\"']+", re.IGNORECASE
+)
+
+# How many lowercase uses it takes for a book's own vocabulary to exempt a
+# name as self-glossing. One is not evidence: `the-salt-archive` writes
+# "Verrin" capitalized 38 times and lowercase exactly once, in "...what elias
+# verrin could set down...", which is the same proper name miscased by the
+# fill rather than the common noun the name was built from. Requiring two
+# recovers that name while keeping the place names the rule must not report
+# ("Astronomy Hall", "Map Room", "Windvale Museum").
+_LEXICAL_EXEMPTION_FLOOR = 2
+
+# The upper bound on (surviving names x characters of prose) PN-1 will scan.
+# The cost is one full-body search per (name, node) pair, so that product is
+# what grows, and it grows without limit on a request path: `api/node_edit.py`
+# runs the gate per edit, synchronously, holding an AnyIO worker thread and a
+# checked-out AsyncSession for the duration (`api/gate_limits.py`).
+#
+# Measured 2026-08-28. A synthetic story sized exactly at this budget (50
+# names over 20 nodes whose bodies sit at `api/schemas.py`'s 20,000-character
+# cap) takes 0.25s, so the budget is a wall-clock ceiling of roughly a quarter
+# of a second. It is a ceiling and not a target: the heaviest committed book,
+# `the-harrowstone-keep`, pairs 36 surviving names with 217,210 characters
+# for a product of 7,819,560, 39% of the budget, and runs in 42.8ms.
+_SCAN_BUDGET = 20_000_000
 
 # Tokens that break a contiguous noun phrase walking backwards from a name.
 _PHRASE_BREAKS: frozenset[str] = frozenset(
@@ -437,6 +515,12 @@ def _base(token: str) -> str:
             the short form then matched nothing, the name was skipped rather
             than misreported.
     """
+    # The tuple test is one call that clears the overwhelming majority of
+    # tokens; without it this ran four `endswith` probes per token and, at
+    # roughly 71,000 tokens per pass over `the-harrowstone-keep`, was a third
+    # of the whole rule's cost.
+    if not token.endswith(_POSSESSIVE_TAILS):
+        return token
     for suffix in _POSSESSIVES:
         if token.endswith(suffix):
             return token[: -len(suffix)]
@@ -458,24 +542,38 @@ def _names_something(token: str) -> bool:
     return stem.lower() not in _NON_NAMING | _PRONOUNS
 
 
-def proper_noun_phrases(text: str) -> tuple[str, ...]:
-    """Return the proper-noun phrases *text* names, deduplicated, in order.
+def _sentence_tokens(text: str) -> list[list[str]]:
+    """Return *text* split into sentences and tokenized, once.
 
-    A phrase is a maximal run of consecutive capitalized naming tokens, so a
-    multi-word name is one entity rather than one candidate per token. The
-    first token of a sentence is dropped from its run: English capitalizes it
-    regardless of whether it names anything, so it carries no evidence.
+    Every consumer here wants the same two derived forms of a node body, and
+    each used to recompute both per phrase it was asked about. Computing them
+    once per node is what makes the cost of the rule linear in prose rather
+    than in prose times names.
 
     Args:
-        text: Prose to scan. Sentinels are resolved to their generic values
-            first, so a personalized name is read as the name it renders as.
+        text: Prose with sentinels already resolved.
+
+    Returns:
+        list[list[str]]: One token list per sentence, in order.
+    """
+    sentences: list[list[str]] = []
+    for sentence in _SENTENCE_SPLIT.split(text):
+        tokens: list[str] = _TOKEN.findall(sentence)
+        sentences.append(tokens)
+    return sentences
+
+
+def _phrases_from_sentences(sentences: list[list[str]]) -> tuple[str, ...]:
+    """Return the proper-noun phrases a tokenized body names, in order.
+
+    Args:
+        sentences: One token list per sentence, as `_sentence_tokens` returns.
 
     Returns:
         tuple[str, ...]: The distinct phrases, in first-appearance order.
     """
     found: dict[str, None] = {}
-    for sentence in _SENTENCE_SPLIT.split(strip_sentinels(text)):
-        tokens: list[str] = _TOKEN.findall(sentence)
+    for tokens in sentences:
         index = 0
         while index < len(tokens):
             token = tokens[index]
@@ -499,6 +597,24 @@ def proper_noun_phrases(text: str) -> tuple[str, ...]:
     return tuple(found)
 
 
+def proper_noun_phrases(text: str) -> tuple[str, ...]:
+    """Return the proper-noun phrases *text* names, deduplicated, in order.
+
+    A phrase is a maximal run of consecutive capitalized naming tokens, so a
+    multi-word name is one entity rather than one candidate per token. The
+    first token of a sentence is dropped from its run: English capitalizes it
+    regardless of whether it names anything, so it carries no evidence.
+
+    Args:
+        text: Prose to scan. Sentinels are resolved to their generic values
+            first, so a personalized name is read as the name it renders as.
+
+    Returns:
+        tuple[str, ...]: The distinct phrases, in first-appearance order.
+    """
+    return _phrases_from_sentences(_sentence_tokens(strip_sentinels(text)))
+
+
 def _is_title_introduction(tokens: list[str], index: int, phrase: str) -> bool:
     """Return whether an address term precedes the phrase at *index*.
 
@@ -520,6 +636,16 @@ def _is_title_introduction(tokens: list[str], index: int, phrase: str) -> bool:
     ):
         if _base(tokens[cursor]).lower() in _TITLES:
             return True
+        cursor -= 1
+    # `_TOKEN` emits the period of "Mr." as its own token, so the address term
+    # sits one further back than the walk above leaves the cursor. Stepping
+    # over it is gated on the preceding word actually being an abbreviated
+    # title, so a sentence-final period can never be walked through.
+    if (
+        cursor >= 1
+        and tokens[cursor] == "."
+        and _base(tokens[cursor - 1]).lower() in _ABBREVIATED_TITLES
+    ):
         cursor -= 1
     return cursor >= 0 and _base(tokens[cursor]).lower().rstrip(".") in _TITLES
 
@@ -601,19 +727,18 @@ def _has_copular_gloss(tokens: list[str], index: int) -> bool:
     )
 
 
-def introduces(body: str, phrase: str) -> bool:
-    """Return whether *body* introduces *phrase* rather than merely naming it.
+def _introduces_in(sentences: list[list[str]], phrase: str) -> bool:
+    """Return whether a tokenized body glosses *phrase* rather than naming it.
 
     Args:
-        body: One node's prose.
+        sentences: One token list per sentence, as `_sentence_tokens` returns.
         phrase: The proper-noun phrase to look for.
 
     Returns:
         bool: ``True`` when any occurrence of the phrase carries a gloss.
     """
     head = phrase.rsplit(" ", 1)[-1]
-    for sentence in _SENTENCE_SPLIT.split(strip_sentinels(body)):
-        tokens: list[str] = _TOKEN.findall(sentence)
+    for tokens in sentences:
         for index, token in enumerate(tokens):
             if _base(token) != head:
                 continue
@@ -625,6 +750,19 @@ def introduces(body: str, phrase: str) -> bool:
             ):
                 return True
     return False
+
+
+def introduces(body: str, phrase: str) -> bool:
+    """Return whether *body* introduces *phrase* rather than merely naming it.
+
+    Args:
+        body: One node's prose.
+        phrase: The proper-noun phrase to look for.
+
+    Returns:
+        bool: ``True`` when any occurrence of the phrase carries a gloss.
+    """
+    return _introduces_in(_sentence_tokens(strip_sentinels(body)), phrase)
 
 
 def _hero_tokens(story: Storybook) -> frozenset[str]:
@@ -639,6 +777,15 @@ def _hero_tokens(story: Storybook) -> frozenset[str]:
     Returns:
         frozenset[str]: Lowercased hero name tokens, empty when undeclared.
     """
+    # #ASSUME: data integrity: a book that declares no HERO/PROTAGONIST
+    # sentinel gets an empty exemption, so the rule reports the protagonist
+    # like any other name. That is not hypothetical: all 31 committed
+    # ``out/*.filled.json`` artifacts predate ADR-023 and carry no sentinels
+    # at all, so every corpus figure in the module docstring includes one
+    # hero finding per book that a sentinelized fill would not produce.
+    # #VERIFY: tests/unit/test_naming.py::test_the_protagonist_is_exempt and
+    # ::test_a_protagonist_sentinel_names_the_hero pin the declared case;
+    # ::test_an_undeclared_protagonist_is_reported pins the undeclared one.
     tokens: set[str] = set()
     for node in story.nodes:
         for slot_id, value in find_sentinels(node.body):
@@ -647,33 +794,33 @@ def _hero_tokens(story: Storybook) -> frozenset[str]:
     return frozenset(tokens)
 
 
-def _lowercase_vocabulary(bodies: dict[str, str]) -> frozenset[str]:
-    """Return every word the book also writes in lowercase.
+def _lowercase_counts(stripped: dict[str, str]) -> dict[str, int]:
+    """Return how often the book writes each word entirely in lowercase.
+
+    Counts rather than membership, because a single lowercase use is as
+    likely to be the fill miscasing a proper name as it is to be the common
+    noun the name was built from. See `_LEXICAL_EXEMPTION_FLOOR`.
 
     Args:
-        bodies: Node id to prose.
+        stripped: Node id to prose with sentinels already resolved.
 
     Returns:
-        frozenset[str]: Lowercased common-noun vocabulary.
+        dict[str, int]: Lowercased word to the number of times it appears.
     """
-    words: set[str] = set()
-    for body in bodies.values():
-        words.update(
-            _base(word)
-            for word in cast(
-                "list[str]", _LOWERCASE_WORD.findall(strip_sentinels(body))
-            )
-        )
-    return frozenset(words)
+    counts: Counter[str] = Counter()
+    for text in stripped.values():
+        words: list[str] = _LOWERCASE_WORD.findall(text)
+        counts.update(_base(word) for word in words)
+    return counts
 
 
 def _is_exempt(
-    phrase: str, hero_tokens: frozenset[str], vocabulary: frozenset[str]
+    phrase: str, hero_tokens: frozenset[str], vocabulary: dict[str, int]
 ) -> bool:
     """Return whether a phrase is outside what PN-1 can meaningfully judge.
 
     The head-noun test is deliberately not restricted to multi-word phrases.
-    Restricting it cost 31 spurious findings over the committed corpus, and
+    Restricting it cost 24 spurious findings over the committed corpus, and
     relaxing it is safe on the case that matters: a fill that names a
     character and never writes the common noun in lowercase, which is exactly
     ``the-cave-of-echoes`` and ``Biscuit`` (0 lowercase occurrences in 65
@@ -682,7 +829,7 @@ def _is_exempt(
     Args:
         phrase: The proper-noun phrase.
         hero_tokens: Lowercased words naming the protagonist.
-        vocabulary: Words the book also writes in lowercase.
+        vocabulary: Lowercased word to how often the book writes it that way.
 
     Returns:
         bool: ``True`` when the phrase needs no gloss.
@@ -697,7 +844,62 @@ def _is_exempt(
         return True  # an address term is a common noun doing a name's job
     if any(word in hero_tokens for word in words):
         return True
-    return words[-1] in vocabulary
+    return vocabulary.get(words[-1], 0) >= _LEXICAL_EXEMPTION_FLOOR
+
+
+def _is_tail_of(inner: str, outer: str) -> bool:
+    """Return whether *inner*'s words are a word-aligned suffix of *outer*.
+
+    Word-aligned so that "Hollow" is not a tail of "Green Hollow"'s *word*
+    "Hollow" by accident of spelling: "Marsh Hollow" and "Green Hollow" share
+    a head and neither ends the other, which is the case the caller needs.
+    No explicit length guard: when *inner* is the longer phrase the slice is
+    shorter than it and the comparison is false on length alone, so a guard
+    would be a second spelling of the same answer.
+
+    Args:
+        inner: The candidate tail phrase.
+        outer: The phrase it may end.
+
+    Returns:
+        bool: ``True`` when inner ends outer, an equal pair included.
+    """
+    inner_words = inner.split()
+    outer_words = outer.split()
+    return outer_words[max(len(outer_words) - len(inner_words), 0) :] == inner_words
+
+
+def _collapse_by_head(sentences: dict[str, list[list[str]]]) -> list[str]:
+    """Return one phrase per entity the book names, in first-appearance order.
+
+    "Marshal Hedda" and a later bare "Hedda" are one entity and one edit, so
+    they collapse to the bare form: that is what a reader meets with nothing
+    attached. Sharing a head noun is not on its own enough to make two phrases
+    one entity, and treating it that way lost real findings. "Old Hollow" and
+    "Green Hollow" are two places; collapsing them kept whichever the
+    discovery order reached first, so a book that introduced one and not the
+    other reported nothing, while the same book written with distinct heads
+    ("Hollow" and "Marsh") reported correctly. The test is therefore a suffix
+    test: a phrase folds into another only when its words end the other's.
+
+    Args:
+        sentences: Node id to that node's tokenized sentences.
+
+    Returns:
+        list[str]: One phrase per entity.
+    """
+    groups: dict[str, list[str]] = {}
+    for tokens in sentences.values():
+        for phrase in _phrases_from_sentences(tokens):
+            held = groups.setdefault(phrase.rsplit(" ", 1)[-1], [])
+            for position, other in enumerate(held):
+                if _is_tail_of(phrase, other) or _is_tail_of(other, phrase):
+                    if len(phrase.split()) < len(other.split()):
+                        held[position] = phrase
+                    break
+            else:
+                held.append(phrase)
+    return [phrase for held in groups.values() for phrase in held]
 
 
 def check_proper_noun_introduction(story: Storybook) -> ValidationReport:
@@ -708,51 +910,89 @@ def check_proper_noun_introduction(story: Storybook) -> ValidationReport:
     carrying a ``<<FILL`` directive is skipped: this rule reads prose, so an
     unfilled skeleton has nothing to say to it.
 
+    The work is one full-body regex search per (surviving name, node) pair, so
+    its cost is the product of names and prose volume, and `_SCAN_BUDGET`
+    bounds that product. A story past the bound is not scanned and says so in
+    a finding of its own; it is never dropped quietly.
+
     Args:
         story: The parsed Storybook to check.
 
     Returns:
-        ValidationReport: WARNING findings, one per un-introduced name.
+        ValidationReport: WARNING findings, one per un-introduced name, or a
+            single WARNING recording that the story was too large to scan.
     """
+    # #CRITICAL: timing dependencies: this is synchronous CPU on a request
+    # path. `api/node_edit.py` calls the gate per edit, and
+    # `api/gate_limits.py` records that such a call holds both an AnyIO
+    # worker thread and a checked-out AsyncSession for its whole duration, so
+    # an unbounded scan here consumes two pooled resources, not one.
+    # `_SCAN_BUDGET` is the bound, and exceeding it reports rather than runs.
+    # #VERIFY: tests/unit/test_naming.py::test_a_story_past_the_scan_budget_
+    # is_skipped_out_loud asserts the bounded-input path reports and does not
+    # scan; ::test_a_story_inside_the_scan_budget_is_scanned pins the
+    # boundary from the other side.
     report = ValidationReport()
     bodies = {
-        node.id: node.body
-        for node in story.nodes
-        if _FILL_MARKER not in node.body and node.body.strip()
+        node.id: node.body for node in story.nodes if _FILL_MARKER not in node.body
     }
     if not bodies:
         return report
 
-    dominators = dominating_nodes(story)
+    # Resolve sentinels and tokenize ONCE per node. Both used to be redone
+    # inside `introduces` for every (phrase, node) pair it was asked about:
+    # over `the-cave-of-echoes` that was 1,295 tokenizations of 65 bodies to
+    # answer 130 questions about 2 surviving names.
+    stripped = {node_id: strip_sentinels(body) for node_id, body in bodies.items()}
+    sentences = {node_id: _sentence_tokens(text) for node_id, text in stripped.items()}
+
     hero_tokens = _hero_tokens(story)
-    vocabulary = _lowercase_vocabulary(bodies)
+    vocabulary = _lowercase_counts(stripped)
+    # Exempt first, then bound: a large cast of self-glossing place names
+    # costs nothing to discard and must not push a book over the budget.
+    candidates = [
+        phrase
+        for phrase in _collapse_by_head(sentences)
+        if not _is_exempt(phrase, hero_tokens, vocabulary)
+    ]
 
-    # Collapse phrases sharing a head noun to the bare form. "Marshal Hedda"
-    # and "Hedda" select the same mentions and run the same coverage analysis,
-    # so reporting both hands an author two rows for one edit; the bare form is
-    # kept because that is what a reader meets with nothing attached.
-    phrases: dict[str, str] = {}
-    for body in bodies.values():
-        for phrase in proper_noun_phrases(body):
-            head = phrase.rsplit(" ", 1)[-1]
-            held = phrases.get(head)
-            if held is None or len(phrase.split()) < len(held.split()):
-                phrases[head] = phrase
+    volume = sum(len(text) for text in stripped.values())
+    if len(candidates) * volume > _SCAN_BUDGET:
+        report.add(
+            ValidationFinding(
+                rule_id="PN-1",
+                severity=Severity.WARNING,
+                story_id=story.id,
+                message=(
+                    f"PN-1 naming: NOT CHECKED. Story {story.id} pairs "
+                    f"{len(candidates)} candidate name(s) with {volume} "
+                    f"characters of prose, a product of {len(candidates) * volume} "
+                    f"over the {_SCAN_BUDGET} scan budget, so PN-1 was skipped "
+                    "and this story has not been checked for un-introduced "
+                    "names (advisory heuristic, see module docstring)"
+                ),
+            )
+        )
+        return report
 
-    for phrase in phrases.values():
-        if _is_exempt(phrase, hero_tokens, vocabulary):
-            continue
-        bare = re.escape(phrase.rsplit(" ", 1)[-1])
-        head = re.compile(rf"(?<![A-Za-z]){bare}(?![A-Za-z])")
+    dominators = dominating_nodes(story)
+    for phrase in candidates:
+        bare = phrase.rsplit(" ", 1)[-1]
+        head = re.compile(rf"(?<![A-Za-z]){re.escape(bare)}(?![A-Za-z])")
+        # A plain substring test first. It cannot change the answer, because
+        # the pattern can only match where the bare head occurs literally,
+        # and it is what keeps the dominant term cheap: the search below runs
+        # once per (name, node) pair, 19,836 of them on
+        # `the-harrowstone-keep`, and almost none of those nodes hold the name.
         mentions = {
             node_id
-            for node_id, body in bodies.items()
-            if node_id in dominators and head.search(strip_sentinels(body))
+            for node_id, text in stripped.items()
+            if node_id in dominators and bare in text and head.search(text)
         }
-        if not mentions:
-            continue
         introducing = {
-            node_id for node_id in mentions if introduces(bodies[node_id], phrase)
+            node_id
+            for node_id in mentions
+            if _introduces_in(sentences[node_id], phrase)
         }
         uncovered = sorted(
             node_id

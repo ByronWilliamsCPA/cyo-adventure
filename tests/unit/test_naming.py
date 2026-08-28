@@ -8,23 +8,36 @@ for. Anchoring the gloss on a determiner is what separates a noun phrase from a
 transitive verb without a part-of-speech tagger, so that test is the one that
 must never be relaxed.
 
-Calibration (2026-08-27, over the 31 committed filled books): 130 findings over
-4,542 nodes, 2.86 per 100, median 2 per book, 3 books clean; 12 of the 130 are
-one book's missing apostrophes rather than this rule's noise. The formulation
-this replaces, a per-reference check over definite noun phrases, measured 3.48
-findings per NODE and was abandoned (see `validator/continuity.py`). Proper
-nouns are a decidable population where definite noun phrases are not, which is
-the whole reason this rule is buildable and that one was not.
+Calibration (2026-08-28, over the 31 committed filled books): 135 findings over
+4,542 nodes, 2.97 per 100, median 2 per book, max 34, 3 books clean; 12 of the
+135 are a name reported twice (eleven from one book that emitted no
+apostrophes, one genuine plural) rather than this rule's noise. The
+formulation this replaces, a per-reference check over definite noun phrases,
+measured 3.48 findings per NODE and was abandoned (see
+`validator/continuity.py`). Proper nouns are a decidable population where
+definite noun phrases are not, which is the whole reason this rule is buildable
+and that one was not.
 """
 
 from __future__ import annotations
 
+from typing import TYPE_CHECKING
+
 from cyo_adventure.storybook.models import Node, Storybook
+from cyo_adventure.validator import naming
 from cyo_adventure.validator.naming import (
     check_proper_noun_introduction,
     introduces,
     proper_noun_phrases,
 )
+
+if TYPE_CHECKING:
+    import pytest
+
+# Named rather than inlined for the same reason `validator/naming.py` names it:
+# a bare typographic apostrophe in a literal is an ambiguous unicode character,
+# and filled prose carries whichever apostrophe the provider emitted.
+_RIGHT_SINGLE = "\u2019"
 
 
 def _story(nodes: list[Node], *, start: str = "n1") -> Storybook:
@@ -70,7 +83,14 @@ def _story(nodes: list[Node], *, start: str = "n1") -> Storybook:
     )
 
 
-def _node(node_id: str, body: str, targets: list[str], *, ending: bool = False) -> Node:
+def _node(
+    node_id: str,
+    body: str,
+    targets: list[str],
+    *,
+    ending: bool = False,
+    labels: list[str] | None = None,
+) -> Node:
     """Build one node with prose and outbound choices.
 
     Args:
@@ -78,6 +98,9 @@ def _node(node_id: str, body: str, targets: list[str], *, ending: bool = False) 
         body: The node's prose.
         targets: Ids this node offers a choice to.
         ending: Whether the node terminates a reading.
+        labels: Choice labels, positionally matched to *targets*. Defaults to
+            filler text, and matters only to the test that pins choice labels
+            as out of scope.
 
     Returns:
         Node: The assembled node.
@@ -96,7 +119,11 @@ def _node(node_id: str, body: str, targets: list[str], *, ending: bool = False) 
             if ending
             else None,
             "choices": [
-                {"id": f"c_{node_id}_{i}", "label": f"Go {i}", "target": target}
+                {
+                    "id": f"c_{node_id}_{i}",
+                    "label": labels[i] if labels else f"Go {i}",
+                    "target": target,
+                }
                 for i, target in enumerate(targets)
             ],
         }
@@ -158,6 +185,46 @@ def test_an_all_caps_token_is_not_a_name() -> None:
     assert proper_noun_phrases("The sign read KEEP OUT in red paint.") == ()
 
 
+def test_a_capitalised_pronoun_or_connective_names_nothing() -> None:
+    """Capitalisation inside a sentence is not on its own evidence of naming.
+
+    Two shapes reach this: a pronoun opening reported speech, and the
+    connectives inside a title-cased name. Both are capitalised mid-sentence,
+    where the sentence-initial rule cannot reach them, and neither names an
+    entity, so the naming filter is the only thing standing between them and
+    a finding an author cannot act on.
+    """
+    assert proper_noun_phrases("Then It rolled away downhill.") == ()
+    assert proper_noun_phrases("She read The Book Of Names aloud.") == ("Book Names",)
+
+
+def test_an_abbreviated_title_does_not_end_a_sentence() -> None:
+    """The period in "Mr." is orthography, not a sentence boundary.
+
+    Splitting there made "Whiskers" the first token of a new sentence, and a
+    sentence-initial capital carries no evidence, so the cat vanished from
+    discovery entirely. Three of the 31 committed books write abbreviated
+    address terms ("Mr. Fez", "Ms. Flores", "Mrs. Okafor", "Mr. Pell").
+    """
+    assert proper_noun_phrases("Her cat Mr. Whiskers purred loudly.") == (
+        "Mr",
+        "Whiskers",
+    )
+
+
+def test_a_typographic_possessive_is_the_same_name() -> None:
+    """A curly apostrophe must strip exactly as the ASCII one does.
+
+    Filled prose carries whichever apostrophe the provider emitted, so a book
+    written with U+2019 would otherwise read every possessive as a separate
+    name and match none of them back to the name itself.
+    """
+    assert proper_noun_phrases(f"She tugged at Nell{_RIGHT_SINGLE}s sleeve.") == (
+        "Nell",
+    )
+    assert introduces(f"She patted her dog Biscuit{_RIGHT_SINGLE}s head.", "Biscuit")
+
+
 # --- gloss detection -------------------------------------------------------
 
 
@@ -177,13 +244,47 @@ def test_a_verb_before_a_name_is_not_a_gloss() -> None:
 
 
 def test_an_appositive_is_a_gloss() -> None:
-    """ "Tock, her tiny wind-up mouse" introduces Tock."""
-    assert introduces("On her shoulder rode Tock, her tiny mouse.", "Tock")
+    """ "Tock, her tiny mouse" introduces Tock.
+
+    The obvious fixture, "On her shoulder rode Tock, her tiny mouse.", never
+    reaches the appositive test at all: the pre-modifier walk goes back over
+    "rode" and "shoulder" onto the determiner "her" and short-circuits the
+    `or` chain, so the appositive arm could be deleted with the suite green.
+    This shape closes the pre-modifier route with a phrase break and leaves
+    the appositive as the only arm that can answer.
+    """
+    assert introduces("Then Tock, her tiny mouse, went in.", "Tock")
 
 
 def test_a_bare_name_is_not_a_gloss() -> None:
     """A name with nothing attached introduces nothing."""
     assert not introduces("Biscuit's tail thumped on the sand.", "Biscuit")
+
+
+def test_a_copula_before_a_determiner_is_a_gloss() -> None:
+    """ "Biscuit is her dog" introduces Biscuit.
+
+    The copular arm had no test of its own and could be deleted with the
+    whole suite green. Nothing else can answer this shape: there is no
+    pre-modifier to walk back over and no comma to open an appositive.
+    """
+    assert introduces("Biscuit is her dog.", "Biscuit")
+
+
+def test_a_copula_without_a_determiner_is_not_a_gloss() -> None:
+    """A copula followed by an adjective describes, it does not introduce."""
+    assert not introduces("Biscuit was quick and clever.", "Biscuit")
+
+
+def test_a_title_inside_the_phrase_introduces_it() -> None:
+    """ "Captain Reed" carries its title inside the phrase, not before it.
+
+    The walk back over the phrase's own capitalised tokens has to test each
+    one as it passes, because for this phrase the address term IS one of the
+    tokens; testing only the word before the phrase reaches "Then" and
+    answers no.
+    """
+    assert introduces("Then Captain Reed opened the hatch.", "Captain Reed")
 
 
 def test_a_title_introduces_the_name_it_precedes() -> None:
@@ -269,21 +370,86 @@ def test_one_entity_named_two_ways_is_reported_once() -> None:
 
 
 def test_the_protagonist_is_exempt() -> None:
-    """A HERO sentinel names the point-of-view character, who needs no gloss."""
+    """A HERO sentinel names the point-of-view character, who needs no gloss.
+
+    The hero mention has to sit mid-sentence. The first version of this test
+    opened both bodies with her name, so Maya was sentence-initial in both and
+    discovery never proposed her at all; the assertion held with the whole
+    exemption deleted and pinned nothing.
+    """
     story = _story(
         [
-            _node("n1", "{~HERO:Maya~} ducked under the rocks.", ["n2"]),
+            _node("n1", "Then {~HERO:Maya~} ducked under the rocks.", ["n2"]),
             _node("n2", "Maya climbed back into the light.", [], ending=True),
         ]
     )
     assert _rule_ids(story) == []
 
 
+def test_a_protagonist_sentinel_names_the_hero() -> None:
+    """PROTAGONIST is the catalog's other slot id for the same character."""
+    story = _story(
+        [
+            _node("n1", "Then {~PROTAGONIST:Maya~} ducked under the rocks.", ["n2"]),
+            _node("n2", "Maya climbed back into the light.", [], ending=True),
+        ]
+    )
+    assert _rule_ids(story) == []
+
+
+def test_an_undeclared_protagonist_is_reported() -> None:
+    """With no sentinel the exemption has nothing to read and stays silent.
+
+    This is the ordinary case for every committed artifact: all 31 predate
+    ADR-023 and carry no sentinels, so each reports its own hero and each
+    corpus figure in the module docstring includes one finding a sentinelized
+    fill would not produce. The rule is not entitled to guess the hero from
+    the prose, so this reports, and that is the intended answer rather than a
+    gap to close by inference.
+    """
+    story = _story(
+        [
+            _node("n1", "Then Maya ducked under the rocks.", ["n2"]),
+            _node("n2", "Maya climbed back into the light.", [], ending=True),
+        ]
+    )
+    assert _rule_ids(story) == ["Maya"]
+
+
+def test_a_name_in_every_node_is_still_reported() -> None:
+    """Frequency is the worst available proxy for "needs no introduction".
+
+    ``the-cave-of-echoes`` names Biscuit in all 65 of its 65 nodes and never
+    once says he is a dog, so any share-based hero rule erases precisely the
+    defect this rule exists for. Two nodes cannot show that, because a
+    plausible share rule would carry a minimum book size and go vacuous on
+    them; six can. The exemption must come from the declared sentinel and
+    never from a count.
+    """
+    ids = [f"n{i}" for i in range(1, 7)]
+    story = _story(
+        [
+            _node(
+                node_id,
+                f"Ahead, Biscuit waited by the water at stop {index}.",
+                [] if node_id == ids[-1] else [ids[index]],
+                ending=node_id == ids[-1],
+            )
+            for index, node_id in enumerate(ids, start=1)
+        ]
+    )
+    assert _rule_ids(story) == ["Biscuit"]
+
+
 def test_a_head_noun_used_lowercase_elsewhere_is_self_glossing() -> None:
     """ "the Windvale Museum" is introduced by the book's own word "museum"."""
     story = _story(
         [
-            _node("n1", "She was locked inside the museum overnight.", ["n2"]),
+            _node(
+                "n1",
+                "She was locked inside the museum overnight, and the museum was dark.",
+                ["n2"],
+            ),
             _node("n2", "The Windvale Museum was silent.", [], ending=True),
         ]
     )
@@ -301,8 +467,52 @@ def test_a_single_word_name_the_book_also_writes_lowercase_is_self_glossing() ->
     """
     story = _story(
         [
-            _node("n1", "She had slept in the keep since the frost came.", ["n2"]),
+            _node(
+                "n1",
+                "She had slept in the keep since the frost came, and the keep "
+                "had held.",
+                ["n2"],
+            ),
             _node("n2", "The Keep held its breath.", [], ending=True),
+        ]
+    )
+    assert _rule_ids(story) == []
+
+
+def test_one_incidental_lowercase_use_does_not_exempt_a_name() -> None:
+    """One lowercase use is as likely to be a miscasing as a common noun.
+
+    ``the-salt-archive`` writes "Verrin" capitalised 38 times and lowercase
+    exactly once, in "...what elias verrin could set down...", which is the
+    same proper name the fill failed to capitalise rather than the word the
+    name was built from. Taking that as self-glossing killed 51 of 181
+    findings across the corpus, so the evidence has to be more than
+    incidental: one mention of a rusty gate does not introduce a dog.
+    """
+    story = _story(
+        [
+            _node("n1", "She pushed past a rusty gate and went on.", ["n2"]),
+            _node("n2", "Then Rusty barked twice.", [], ending=True),
+        ]
+    )
+    assert _rule_ids(story) == ["Rusty"]
+
+
+def test_two_lowercase_uses_of_a_head_noun_exempt_a_name() -> None:
+    """The same story, with the word used as a common noun rather than once.
+
+    Two is the floor, and it is what keeps the correct exemptions the rule
+    depends on: "Astronomy Hall", "Map Room" and "Windvale Museum" all clear
+    it comfortably.
+    """
+    story = _story(
+        [
+            _node(
+                "n1",
+                "She pushed past a rusty gate and then a rusty hinge.",
+                ["n2"],
+            ),
+            _node("n2", "Then Rusty barked twice.", [], ending=True),
         ]
     )
     assert _rule_ids(story) == []
@@ -355,3 +565,250 @@ def test_a_finding_is_a_warning_and_never_blocks() -> None:
     findings = check_proper_noun_introduction(story).findings
     assert [f.severity.value for f in findings] == ["warning"]
     assert [f.rule_id for f in findings] == ["PN-1"]
+
+
+def test_an_abbreviated_title_introduces_the_name_it_precedes() -> None:
+    """ "Mr. Vole" introduces Vole exactly as "Mister Vole" does.
+
+    The costly half of the sentence-splitter defect. Splitting on the period
+    of "Mr." left the bare "Vole" of the second node with no introducing node
+    anywhere, so this book reported a name it had introduced in its first
+    sentence, while the unabbreviated control below reported nothing. Two
+    spellings of the same address term must not give two answers.
+    """
+    story = _story(
+        [
+            _node("n1", "Then Mr. Vole opened the door.", ["n2"]),
+            _node("n2", "Then Vole shuffled off down the hall.", [], ending=True),
+        ]
+    )
+    assert _rule_ids(story) == []
+
+    control = _story(
+        [
+            _node("n1", "Then Mister Vole opened the door.", ["n2"]),
+            _node("n2", "Then Vole shuffled off down the hall.", [], ending=True),
+        ]
+    )
+    assert _rule_ids(control) == []
+
+
+def test_a_bare_name_collapses_into_its_titled_form() -> None:
+    """ "Marshal Hedda" and a later bare "Hedda" are one entity and one edit.
+
+    One direction of the collapse rule: the bare form is a suffix of the
+    titled one, so they fold together and the author gets one row. Without
+    the fold both phrases select the same mentions, run the same coverage
+    analysis, and report the same defect twice.
+    """
+    story = _story(
+        [
+            _node("n1", "The snow had drifted against the door.", ["n2", "n3"]),
+            _node("n2", "The map was spread out for Marshal Hedda.", ["n4"]),
+            _node("n3", "The wind picked up outside.", ["n4"]),
+            _node("n4", "Then Hedda frowned at the ice.", [], ending=True),
+        ]
+    )
+    assert _rule_ids(story) == ["Hedda"]
+
+
+def test_distinct_names_sharing_a_head_noun_stay_distinct() -> None:
+    """The other direction: two places are not one place.
+
+    "Stone Hollow" and "Green Hollow" share a head noun and neither is a
+    suffix of the other. Folding them on the head alone kept whichever the
+    discovery order reached first, so the introduced one silently answered
+    for the un-introduced one and the finding was lost; the same book written
+    with distinct heads reported it.
+    """
+    story = _story(
+        [
+            _node("n1", "The road ran past the ruined mill Stone Hollow.", ["n2"]),
+            _node("n2", "They turned north toward Green Hollow.", [], ending=True),
+        ]
+    )
+    assert _rule_ids(story) == ["Green Hollow"]
+
+
+def test_a_contraction_is_not_a_name() -> None:
+    """ "I'm" is a capitalised pronoun with a suffix, and names nothing.
+
+    Both apostrophes reach this: filled prose carries whichever one the
+    provider emitted, so the ASCII and typographic spellings have to answer
+    alike.
+    """
+    for mark in ("'", _RIGHT_SINGLE):
+        story = _story(
+            [
+                _node("n1", "The door creaked open at last.", ["n2"]),
+                _node(
+                    "n2",
+                    f'Nell called out, "I{mark}m ready now," and stepped through.',
+                    [],
+                    ending=True,
+                ),
+            ]
+        )
+        assert _rule_ids(story) == []
+
+
+def test_a_calendar_term_or_interjection_is_not_a_name() -> None:
+    """ "Monday" and "Hooray" are capitalised without naming anything."""
+    story = _story(
+        [
+            _node("n1", "The kitchen was warm and quiet.", ["n2"]),
+            _node(
+                "n2",
+                "Then Monday came at last, and she shouted Hooray.",
+                [],
+                ending=True,
+            ),
+        ]
+    )
+    assert _rule_ids(story) == []
+
+
+def test_a_typographic_possessive_still_names_the_bare_form() -> None:
+    """A book written with U+2019 reports the name, not the possessive.
+
+    Only the ASCII apostrophe was asserted anywhere, though the possessive
+    suffixes and the token pattern both carry explicit handling for the
+    typographic one.
+    """
+    story = _story(
+        [
+            _node("n1", f"She tugged at Nell{_RIGHT_SINGLE}s sleeve.", ["n2"]),
+            _node("n2", "The door swung wide.", [], ending=True),
+        ]
+    )
+    assert _rule_ids(story) == ["Nell"]
+
+
+def test_a_name_met_first_in_a_choice_label_is_out_of_scope() -> None:
+    """A KNOWN BOUNDARY, asserted so that it changes deliberately or not at all.
+
+    The rule reads node bodies only, so a reader who meets a name first in a
+    choice label gets no finding. That is a real gap and not a claim the gap
+    does not matter; widening the scan to labels would re-calibrate every
+    published corpus figure, which is a separate decision from this one. The
+    second story is the same sentence moved into a body, and it reports.
+    """
+    labelled = _story(
+        [
+            _node(
+                "n1",
+                "The path forked at the old fence.",
+                ["n2"],
+                labels=["Follow Biscuit into the woods"],
+            ),
+            _node("n2", "The woods were quiet.", [], ending=True),
+        ]
+    )
+    assert _rule_ids(labelled) == []
+
+    in_body = _story(
+        [
+            _node("n1", "She would follow Biscuit into the woods.", ["n2"]),
+            _node("n2", "The woods were quiet.", [], ending=True),
+        ]
+    )
+    assert _rule_ids(in_body) == ["Biscuit"]
+
+
+def _budget_story() -> Storybook:
+    """Return a story whose scan cost is exactly its character count.
+
+    Exactly one name survives exemption, so the product the scan budget
+    bounds is the prose volume itself and the boundary needs no arithmetic.
+
+    Returns:
+        Storybook: The two-node story.
+    """
+    return _story(
+        [
+            _node(
+                "n1", "Maya ducked under the rocks with Biscuit at her heels.", ["n2"]
+            ),
+            _node("n2", "Biscuit's tail thumped once.", [], ending=True),
+        ]
+    )
+
+
+def test_a_story_inside_the_scan_budget_is_scanned(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """A story sitting exactly on the budget is checked, not waved through."""
+    story = _budget_story()
+    volume = sum(len(node.body) for node in story.nodes)
+    monkeypatch.setattr(naming, "_SCAN_BUDGET", volume)
+    assert _rule_ids(story) == ["Biscuit"]
+
+
+def test_a_story_past_the_scan_budget_is_skipped_out_loud(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """One character past the budget the rule declines, and says it declined.
+
+    The cost is names times prose and the caller pays it synchronously on the
+    per-edit gate path, holding a worker thread and a database session for
+    the duration, so the scan needs a ceiling. What it must not do is drop
+    the story quietly: a story nobody checked and a story with nothing to
+    report are the same empty answer, and only this finding tells them apart.
+    """
+    story = _budget_story()
+    volume = sum(len(node.body) for node in story.nodes)
+    monkeypatch.setattr(naming, "_SCAN_BUDGET", volume - 1)
+    findings = check_proper_noun_introduction(story).findings
+    assert len(findings) == 1
+    assert findings[0].rule_id == "PN-1"
+    assert findings[0].severity.value == "warning"
+    assert "NOT CHECKED" in findings[0].message
+    assert "Biscuit" not in findings[0].message
+
+
+def test_an_appositive_without_a_determiner_is_not_a_gloss() -> None:
+    """ "Tock, waving wildly" is a participle, not a descriptor.
+
+    The mirror of the copular pair: the appositive arm is anchored on a
+    determiner for the same reason the pre-modifier arm is, and without that
+    anchor any comma after a name would read as a gloss.
+    """
+    assert not introduces("Then Tock, waving wildly, went in.", "Tock")
+
+
+def test_a_titled_form_met_after_the_bare_name_is_still_one_entity() -> None:
+    """The collapse holds whichever order the two forms are discovered in.
+
+    ``test_a_bare_name_collapses_into_its_titled_form`` meets "Marshal Hedda"
+    first; this book meets the bare "Hedda" first and must still produce one
+    row rather than two.
+    """
+    story = _story(
+        [
+            _node("n1", "Then Hedda frowned at the ice.", ["n2"]),
+            _node(
+                "n2",
+                "The map was spread out for Marshal Hedda.",
+                [],
+                ending=True,
+            ),
+        ]
+    )
+    assert _rule_ids(story) == ["Hedda"]
+
+
+def test_a_non_hero_sentinel_grants_no_exemption() -> None:
+    """Only a hero slot exempts; a companion slot is an ordinary name.
+
+    The sentinel scan reads every slot in the body and keeps only the hero
+    ones. Widening it to any sentinel would exempt exactly the companion this
+    rule was built for, since `the-cave-of-echoes` binds "Biscuit" through
+    `COMPANION`.
+    """
+    story = _story(
+        [
+            _node("n1", "Then {~COMPANION:Biscuit~} barked at the gate.", ["n2"]),
+            _node("n2", "The gate swung open.", [], ending=True),
+        ]
+    )
+    assert _rule_ids(story) == ["Biscuit"]
