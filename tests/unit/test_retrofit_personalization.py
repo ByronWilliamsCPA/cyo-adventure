@@ -8,11 +8,14 @@ from a binding the catalog contract no longer records. Both are tracked
 under ``out/``, so these are real fills rather than hand-built fixtures that
 could agree with the code by construction.
 
-Four tests here are named by ``#VERIFY`` tags in the script and are
-load-bearing: ``test_a_rethemed_book_is_skipped_not_silently_zero_covered``,
+Most tests here are named by a ``#VERIFY`` tag in the script and are
+load-bearing; renaming one breaks the tag it answers. Among them:
+``test_a_rethemed_book_is_skipped_not_silently_zero_covered``,
 ``test_a_second_retrofit_over_a_retrofitted_blob_plans_cleanly``,
-``test_resolve_skeleton_path_rejects_a_traversing_slug``, and
-``test_a_failed_book_does_not_abort_the_rest_of_the_sweep``.
+``test_resolve_skeleton_path_rejects_a_traversing_slug``,
+``test_a_failed_book_does_not_abort_the_rest_of_the_sweep``,
+``test_a_metadata_change_outside_the_text_surfaces_is_rejected``, and
+``test_an_error_severity_finding_the_retrofit_retires_is_rejected``.
 """
 
 from __future__ import annotations
@@ -27,12 +30,16 @@ import pytest
 from cyo_adventure.core.exceptions import ValidationError
 from cyo_adventure.generation.binding import load_contract_for
 from cyo_adventure.storybook.sentinels import SENTINEL_RE
+from cyo_adventure.validator.gate import run_gate
+from cyo_adventure.validator.report import Severity
 from scripts.retrofit_personalization import (
+    _BLANKED_SURFACE,
     RetrofitPlan,
     RetrofitSkippedError,
     SkeletonNotFoundError,
     _assert_gate_no_worse,
     _assert_only_wrappers_added,
+    _non_surface_skeleton,
     document_surfaces,
     load_skeleton,
     personalizable_slot_ids,
@@ -49,6 +56,34 @@ _FILLS = _REPO_ROOT / "out"
 
 _NAMED_HERO_BOOK = "the-backyard-treasure-map"
 _RETHEMED_BOOK = "the-snow-day-expedition"
+# An ADR-011 MVP/Test seed: PL-28 fires against its stored blob at ERROR
+# severity and blocks it, which is what makes it the right book to prove an
+# ERROR retirement is refused.
+_SEED_BOOK = "the-lost-mitten"
+# Its stored blob carries RL-13 findings, which a widened reading-level
+# tolerance retires at WARNING severity, so the severity floor cannot be
+# what catches a metadata drift.
+_ADVISORY_BOOK = "the-cave-of-echoes"
+
+
+def _stored_blob(slug: str) -> dict[str, object]:
+    """Return one book's stored fill without its catalog inputs.
+
+    ``_load`` is the wrong tool for a book this module never plans: it
+    insists on a theme contract, and two of the books used here are chosen
+    precisely for what their VALIDATION report says, not for what their
+    contract declares.
+
+    Args:
+        slug: The fill's filename stem.
+
+    Returns:
+        dict[str, object]: The stored document.
+    """
+    return cast(
+        "dict[str, object]",
+        json.loads((_FILLS / f"{slug}.filled.json").read_text(encoding="utf-8")),
+    )
 
 
 def _load(slug: str) -> tuple[dict[str, object], ThemeContract, dict[str, object]]:
@@ -170,6 +205,95 @@ def test_altered_prose_is_rejected_even_when_it_looks_like_a_wrapper() -> None:
         _assert_only_wrappers_added(before, dropped)
 
 
+def test_a_metadata_change_outside_the_text_surfaces_is_rejected() -> None:
+    """A drift in a field no text surface covers is caught by invariant 3.
+
+    #VERIFY for the ``#CRITICAL`` data-integrity tag on
+    ``_assert_only_wrappers_added``. ``document_surfaces`` yields four of
+    the roughly thirty-seven field paths a stored blob carries, so a guard
+    built only on it is silent about ``metadata``, and ``metadata`` is read
+    by the validation gate: widening ``reading_level.tolerance`` retires
+    every RL-13 finding the book had.
+
+    The two assertions that make this test discriminating rather than
+    decorative are the ones about the OTHER guards. The text half sees
+    identical surfaces, and ``_assert_gate_no_worse`` permits the change
+    because RL-13 is advisory, so neither the prose comparison nor the
+    severity floor is standing between this mutation and a persisted write.
+    Only the non-text comparison is.
+    """
+    blob = _stored_blob(_ADVISORY_BOOK)
+    drifted = cast("dict[str, object]", json.loads(json.dumps(blob)))
+    reading_level = cast(
+        "dict[str, object]",
+        cast("dict[str, object]", drifted["metadata"])["reading_level"],
+    )
+    reading_level["tolerance"] = 12.0
+
+    stored_findings = run_gate(blob, context="fill_result").report.findings
+    drifted_findings = run_gate(drifted, context="fill_result").report.findings
+    stored_rl13 = sum(f.rule_id == "RL-13" for f in stored_findings)
+    assert stored_rl13 > 0, "the fixture book no longer carries RL-13"
+    assert sum(f.rule_id == "RL-13" for f in drifted_findings) < stored_rl13
+
+    assert dict(document_surfaces(blob)) == dict(document_surfaces(drifted))
+    _assert_gate_no_worse(blob, drifted)
+
+    with pytest.raises(ValidationError, match="outside the text surfaces"):
+        _assert_only_wrappers_added(blob, drifted)
+
+
+def test_the_non_text_comparison_reaches_past_metadata() -> None:
+    """Every non-text field is compared, not a hand-listed subset of them.
+
+    A retargeted choice reroutes a reader mid-story and a moved
+    ``start_node`` reroutes every reader from the first page, and neither
+    changes one character of prose. The comparison is written as a whole
+    document equality with the four text surfaces blanked, so a field
+    nobody thought to enumerate is covered by construction.
+    """
+    before: dict[str, object] = {
+        "title": "A Map",
+        "start_node": "n1",
+        "nodes": [
+            {
+                "id": "n1",
+                "body": "Nina ran.",
+                "choices": [{"label": "go", "target": "n2"}],
+            },
+            {"id": "n2", "body": "The end.", "is_ending": True},
+        ],
+    }
+
+    retargeted = cast("dict[str, object]", json.loads(json.dumps(before)))
+    node = cast("dict[str, object]", cast("list[object]", retargeted["nodes"])[0])
+    cast("dict[str, object]", cast("list[object]", node["choices"])[0])["target"] = "n1"
+    with pytest.raises(ValidationError, match="outside the text surfaces"):
+        _assert_only_wrappers_added(before, retargeted)
+
+    restarted = cast("dict[str, object]", json.loads(json.dumps(before)))
+    restarted["start_node"] = "n2"
+    with pytest.raises(ValidationError, match="outside the text surfaces"):
+        _assert_only_wrappers_added(before, restarted)
+
+
+def test_the_blanked_frame_hides_exactly_the_text_surfaces() -> None:
+    """The two readers of the surface definition agree, by construction.
+
+    ``document_surfaces`` reads the text and ``_non_surface_skeleton``
+    blanks it; if those two enumerations ever disagreed, a surface the
+    blanker missed would be compared as prose AND as a non-text field, and
+    a legitimate wrapper insertion would be rejected as a field change.
+    Both go through ``_text_surface_slots``, and this is what says so.
+    """
+    blob = _stored_blob(_NAMED_HERO_BOOK)
+    frame = _non_surface_skeleton(blob)
+
+    assert dict(document_surfaces(blob)).keys() == dict(document_surfaces(frame)).keys()
+    assert {text for _, text in document_surfaces(frame)} == {_BLANKED_SURFACE}
+    assert dict(document_surfaces(blob)) != dict(document_surfaces(frame))
+
+
 def test_gate_guard_fails_closed_on_an_introduced_finding(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
@@ -191,6 +315,7 @@ def test_gate_guard_fails_closed_on_an_introduced_finding(
     class _Finding:
         def __init__(self, rule_id: str) -> None:
             self.rule_id = rule_id
+            self.severity = Severity.WARNING
 
     class _Report:
         def __init__(self, rule_ids: list[str]) -> None:
@@ -272,6 +397,10 @@ def test_a_finding_the_retrofit_retires_is_permitted(
     class _Finding:
         def __init__(self, rule_id: str) -> None:
             self.rule_id = rule_id
+            # PN-1, the finding this direction exists to permit, is a
+            # WARNING. The guard reads severity, so a stub that omitted it
+            # would prove the permission for a severity no real finding has.
+            self.severity = Severity.WARNING
 
     class _Report:
         def __init__(self, rule_ids: list[str]) -> None:
@@ -335,6 +464,68 @@ def test_a_retrofit_that_newly_blocks_is_rejected(
     monkeypatch.setattr(module, "run_gate", _newly_blocking_gate)
     with pytest.raises(ValidationError, match="worsened the validation gate"):
         _assert_gate_no_worse({}, {})
+
+
+def test_an_error_severity_finding_the_retrofit_retires_is_rejected() -> None:
+    """Retiring an ERROR-severity finding is refused, even in the good direction.
+
+    #VERIFY for the ``#CRITICAL`` security tag on
+    ``_assert_gate_no_worse``. ``the-lost-mitten`` is a real ADR-011
+    MVP/Test seed, so PL-28 fires against its stored blob at ERROR severity
+    and blocks it. Flipping ``metadata.production_eligible`` retires that
+    one finding and nothing else, which under a purely directional guard
+    reads as an improvement: the book goes from blocked to publishable and
+    the retrofit persists a ``validation_report`` describing the unblocked
+    state. PL-28 is the firewall that keeps a prototyping shell out of a
+    child's library, so this direction is refused whatever the arithmetic
+    says.
+
+    Uses the real gate rather than a stub: the severity that matters here
+    is a property of a real rule against a real book, and a stub could
+    assert it into existence.
+    """
+    blob = _stored_blob(_SEED_BOOK)
+    unblocked = cast("dict[str, object]", json.loads(json.dumps(blob)))
+    cast("dict[str, object]", unblocked["metadata"])["production_eligible"] = True
+
+    stored = run_gate(blob, context="fill_result")
+    mutated = run_gate(unblocked, context="fill_result")
+    assert stored.blocked, "the fixture book is no longer blocked as stored"
+    assert not mutated.blocked, "the mutation no longer unblocks the fixture book"
+    assert [f.severity for f in stored.report.findings if f.rule_id == "PL-28"] == [
+        Severity.ERROR
+    ]
+    assert not any(f.rule_id == "PL-28" for f in mutated.report.findings)
+
+    with pytest.raises(ValidationError, match="never an error"):
+        _assert_gate_no_worse(blob, unblocked)
+
+
+def test_the_severity_floor_still_lets_the_real_hero_exemption_through() -> None:
+    """The PR's motivating case survives the floor: a real book retires PN-1.
+
+    The floor added by ``test_an_error_severity_finding_the_retrofit_
+    retires_is_rejected`` must not close the direction the relaxation
+    exists to open. ``the-backyard-treasure-map`` names its hero in the
+    prose, so installing the ``HERO`` sentinel retires PN-1's finding on
+    that name, and PN-1 is a WARNING. Nothing here is stubbed: if the floor
+    were written against retirement rather than against severity, the whole
+    plan would raise.
+    """
+    skeleton, contract, blob = _load(_NAMED_HERO_BOOK)
+    stored_pn1 = sum(
+        f.rule_id == "PN-1"
+        for f in run_gate(blob, context="fill_result").report.findings
+    )
+    assert stored_pn1 > 0, "the fixture book no longer names its hero flatly"
+
+    plan = plan_retrofit(skeleton, contract, blob)
+
+    retrofitted_pn1 = sum(
+        f.rule_id == "PN-1"
+        for f in run_gate(plan.document, context="fill_result").report.findings
+    )
+    assert retrofitted_pn1 < stored_pn1, "no PN-1 finding was retired at all"
 
 
 def test_a_manifest_that_does_not_describe_the_document_is_rejected(
