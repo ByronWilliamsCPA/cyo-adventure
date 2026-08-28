@@ -2329,6 +2329,90 @@ async def test_the_pipeline_persists_the_reviewer_that_ran(
     }
 
 
+@pytest.mark.unit
+async def test_an_adopted_repair_records_the_overridden_model_not_the_default(
+    mock_session: AsyncMock, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """An adopted repair must stamp the RESOLVED reviewer, not the default.
+
+    The test above pins provenance on the primary path. This one pins the
+    second place a report gets stamped, and the one that was wrong: an adopted
+    repair REPLACES the caller's report wholesale, so a stamp taken from the
+    process-wide ``settings`` there discards the override the caller had
+    already resolved. The two paths cannot be tested as one, because the
+    repaired report is a different object built at a different call site.
+
+    Discrimination is in the two assertions together: ``repaired is True``
+    proves this is the repaired report rather than the pre-repair one (without
+    it the test would pass on the caller's own, always-correct stamp), and the
+    model assertion is what the defect got wrong. A wrong stamp here is
+    undetectable after the fact, since nothing else in the row records which
+    model the admin chose.
+
+    Wiring mirrors ``test_repair_passing_gate_is_adopted`` (a first-pass
+    safety FLAG triggers the bounded repair, and the revised blob
+    re-moderates clean so the repair is adopted) crossed with the openrouter
+    settings the override needs to be anything but a no-op:
+    ``resolve_review_settings`` only rewrites a model for that backend.
+    """
+    story, version = _story(), _version()
+    _load(mock_session, story, version)
+
+    provider = _verdict_review_provider(safety_flags_first_pass=True)
+
+    def _spy(_settings: Settings, **_kwargs: object) -> tuple[MockProvider, bool]:
+        return provider, True
+
+    monkeypatch.setattr("cyo_adventure.moderation.pipeline.build_review_provider", _spy)
+
+    def _clean_handler(_request: httpx.Request) -> httpx.Response:
+        return httpx.Response(
+            200,
+            json={
+                "results": [
+                    {
+                        "flagged": False,
+                        "categories": {"violence": False},
+                        "category_scores": {"violence": 0.01},
+                    }
+                ]
+            },
+        )
+
+    _install_canned_classifier_http(monkeypatch, _clean_handler)
+
+    revised_blob: dict[str, object] = {**_BLOB, "title": "The Forest Path (revised)"}
+    submit = AsyncMock()
+    auto_reject = AsyncMock()
+    monkeypatch.setattr("cyo_adventure.publishing.service.submit", submit)
+    monkeypatch.setattr("cyo_adventure.publishing.service.auto_reject", auto_reject)
+
+    await pipeline_mod.run_moderation_pipeline(
+        session=mock_session,
+        story_id="s1",
+        version=1,
+        settings=Settings(
+            review_provider="openrouter",
+            openai_api_key="k",
+            openrouter_api_key="key",
+            # Same size-1 pin, same reason as the tests above: the fixture
+            # answers with a single verdict OBJECT, which the batched parser
+            # rejects.
+            review_batch_size=1,
+        ),
+        generation_provider=MockProvider(responses=[json.dumps(revised_blob)]),
+        pii=_pii(),
+        review_model_override="anthropic/claude-opus-4.8",
+    )
+
+    submit.assert_awaited_once()
+    auto_reject.assert_not_awaited()
+    assert version.moderation_report is not None
+    assert version.moderation_report["summary"]["repaired"] is True
+    reviewer = cast("dict[str, object]", version.moderation_report["reviewer"])
+    assert reviewer["model"] == "anthropic/claude-opus-4.8"
+
+
 # ---------------------------------------------------------------------------
 # WS-1 D1: the advisory leaf-diversity (anti-template) guard wiring.
 #

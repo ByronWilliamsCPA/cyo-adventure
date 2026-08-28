@@ -97,7 +97,12 @@ from cyo_adventure.moderation.personalizable_slots import (
     PersonalizableSlotsUnrecoverable,
     personalizable_slot_ids_for_story,
 )
-from cyo_adventure.moderation.report import Finding, Source, Verdict
+from cyo_adventure.moderation.report import (
+    Finding,
+    Source,
+    Verdict,
+    moderation_coverage_gap,
+)
 from cyo_adventure.moderation.review_provider import (
     build_review_provider,
     resolve_review_settings,
@@ -452,6 +457,31 @@ def _merge_moderation_report(
     # ::test_aggregate_omitted_when_absent.
     if isinstance(stored, dict) and "aggregate" in stored:
         result["aggregate"] = stored["aggregate"]
+    # #CRITICAL: security: carry the stored report's SCHEMA ERA forward, never
+    # rebuild it into a different one. moderation_report_unusable() has no
+    # schema-version key to read, so it uses the PRESENCE of
+    # summary.coverage_complete to decide whether a missing top-level
+    # `reviewer` is a genuine gap or a pre-field legacy shape. Rebuilding this
+    # dict without both keys dropped a post-field report into the legacy era:
+    # attribution was discarded permanently AND the reviewer-required check
+    # stopped applying to that row from then on, with no refusal to show for
+    # it. Emitting only one of the two is the other failure: a legacy report
+    # given a coverage_complete key it cannot back with a reviewer becomes
+    # retroactively unapprovable, which is the harm that predicate's own
+    # comment exists to avoid. So both keys move together or neither does.
+    # #VERIFY: tests/unit/test_node_edit.py::
+    # test_node_edit_preserves_reviewer_provenance,
+    # ::test_node_edit_keeps_a_legacy_report_legacy.
+    if isinstance(stored, dict) and "reviewer" in stored:
+        result["reviewer"] = stored["reviewer"]
+    if "coverage_complete" in old_summary_dict:
+        # Recomputed from the MERGED findings rather than carried verbatim: an
+        # edit can withdraw the very gap finding that made coverage
+        # incomplete, and a stale `false` would then understate a story that
+        # is now fully screened. moderation_coverage_gap() is the reporting
+        # predicate (mock-tolerant), matching what the field means elsewhere.
+        summary_out = cast("dict[str, object]", result["summary"])
+        summary_out["coverage_complete"] = not moderation_coverage_gap(result)
     return result
 
 

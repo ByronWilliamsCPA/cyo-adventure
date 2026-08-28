@@ -1527,7 +1527,61 @@ async def test_truncated_batch_is_reported_as_truncation_not_bad_json() -> None:
 
 @pytest.mark.unit
 @pytest.mark.asyncio
-async def test_finish_reason_is_logged_even_when_it_is_not_a_truncation() -> None:
+async def test_a_truncated_single_node_call_is_reported_as_truncated() -> None:
+    """The ``batch_size=1`` path must name the budget too, not just the batch.
+
+    The truncation clause was wired into the batch path only, so a starved
+    single-node call reported as ordinary unparseable output and sent a reader
+    looking for a bad model instead of a small budget. This is the shape where
+    it matters most: a one-node call still pays the full per-call reasoning
+    cost, so it is the likeliest one to run out of room.
+
+    Same discrimination as the batch test above, at a batch size of 1: both
+    arms hand the parser the SAME unparseable prefix, so ``finish_reason`` is
+    the only difference between them and an implementation that drops it
+    produces identical messages and fails here.
+    """
+    prefix = '{"node_id": "n1", "verdict": "safe", "concern": "other"'
+    nodes = [("n1", "a")]
+
+    starved = _RecordingProvider(
+        responses=[Completion(text=prefix, usage=_STUB_USAGE, finish_reason="length")]
+    )
+    starved_findings = await run_safety_stage(
+        provider=starved,
+        nodes=nodes,
+        age_band="6-9",
+        max_tokens=512,
+        batch_size=1,
+    )
+
+    malformed = _RecordingProvider(
+        responses=[Completion(text=prefix, usage=_STUB_USAGE, finish_reason="stop")]
+    )
+    malformed_findings = await run_safety_stage(
+        provider=malformed,
+        nodes=nodes,
+        age_band="6-9",
+        max_tokens=512,
+        batch_size=1,
+    )
+
+    # The single node fails safe either way: the truncation changes the
+    # diagnosis, never the verdict.
+    for findings in (starved_findings, malformed_findings):
+        assert len(findings) == 1
+        assert findings[0].verdict is Verdict.FLAG
+        assert findings[0].node_ids == ("n1",)
+
+    assert "output-token budget" in starved_findings[0].message
+    assert "output-token budget" not in malformed_findings[0].message
+
+
+@pytest.mark.unit
+@pytest.mark.asyncio
+async def test_finish_reason_is_logged_even_when_it_is_not_a_truncation(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
     """Every batch parse failure records what the backend actually reported.
 
     ``completion_truncated`` can answer only yes or no, so it cannot tell a
@@ -1552,26 +1606,29 @@ async def test_finish_reason_is_logged_even_when_it_is_not_a_truncation() -> Non
     logged: dict[str, dict[str, object]] = {}
     for expected_reason, completion in arms.items():
         cap = LogCapture()
-        original = stages_mod._logger  # pyright: ignore[reportPrivateUsage]
-        stages_mod._logger = structlog.wrap_logger(  # pyright: ignore[reportPrivateUsage]
-            structlog.testing.ReturnLogger(), processors=[cap]
+        # monkeypatch rather than a hand-rolled save/try/finally: it restores
+        # the module logger even if an assertion below raises, and it does so
+        # without naming the private attribute in a way the type checker has
+        # to be silenced about. Re-set once per arm; the fixture's single undo
+        # at teardown puts the real logger back.
+        monkeypatch.setattr(
+            stages_mod,
+            "_logger",
+            structlog.wrap_logger(structlog.testing.ReturnLogger(), processors=[cap]),
         )
-        try:
-            findings = await run_safety_stage(
-                provider=_RecordingProvider(
-                    responses=[
-                        completion,
-                        _unusable_at_every_size(),
-                        _unusable_at_every_size(),
-                    ]
-                ),
-                nodes=nodes,
-                age_band="6-9",
-                max_tokens=512,
-                batch_size=2,
-            )
-        finally:
-            stages_mod._logger = original  # pyright: ignore[reportPrivateUsage]
+        findings = await run_safety_stage(
+            provider=_RecordingProvider(
+                responses=[
+                    completion,
+                    _unusable_at_every_size(),
+                    _unusable_at_every_size(),
+                ]
+            ),
+            nodes=nodes,
+            age_band="6-9",
+            max_tokens=512,
+            batch_size=2,
+        )
 
         # The verdict is unchanged across all three: only the diagnosis moves.
         assert len(findings) == 1

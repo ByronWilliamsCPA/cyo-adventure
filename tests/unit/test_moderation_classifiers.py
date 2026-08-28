@@ -804,10 +804,16 @@ async def test_credential_failure_opens_the_circuit_on_first_node() -> None:
     )
     coverage = [f for f in findings if f.category == "classifier_coverage_incomplete"]
     assert len(coverage) == 1
-    for node_id, _ in nodes:
-        assert node_id in coverage[0].message or "more" in coverage[0].message, (
-            "every node the circuit skipped must still be counted as unscreened"
-        )
+    # The message elides a long node list behind "... (+N more)", so the
+    # per-node membership check this used to make passes vacuously the moment
+    # the elision kicks in: the "more" arm is satisfied by the literal word
+    # appearing anywhere, whatever the node ids are. Assert the COUNT instead.
+    # It is the one part of the message an elision cannot satisfy, so an
+    # implementation that lost track of the nodes the open circuit skipped
+    # would have to understate it here.
+    assert f"{len(nodes)} node(s) were never bright-line screened" in (
+        coverage[0].message
+    ), coverage[0].message
 
 
 @pytest.mark.unit

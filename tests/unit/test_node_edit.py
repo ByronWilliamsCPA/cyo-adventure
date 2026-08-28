@@ -45,7 +45,12 @@ from cyo_adventure.moderation.personalizable_slots import (
     PERSONALIZABLE_SLOTS_UNRECOVERABLE,
     PersonalizableSlots,
 )
-from cyo_adventure.moderation.report import Finding, Source, Verdict
+from cyo_adventure.moderation.report import (
+    Finding,
+    Source,
+    Verdict,
+    moderation_report_unusable,
+)
 from cyo_adventure.storybook.models import AgeBand
 from cyo_adventure.storybook.sentinels import wrap
 from cyo_adventure.storybook.theme_contract import SlotScope, SlotSpec, ThemeContract
@@ -1120,6 +1125,93 @@ def test_aggregate_omitted_when_absent() -> None:
     }
     result = node_edit._merge_moderation_report(stored, _NODE_ID, [], independent=True)
     assert "aggregate" not in result
+
+
+def test_node_edit_preserves_reviewer_provenance() -> None:
+    """A post-``reviewer``-field report must stay in that schema era.
+
+    ``moderation_report_unusable`` has no schema-version key to read, so it
+    uses the PRESENCE of ``summary.coverage_complete`` to decide whether a
+    missing top-level ``reviewer`` is a genuine gap or a pre-field legacy
+    shape. This merge rebuilt the report dict from scratch, so before the fix
+    it silently moved a post-field row into the legacy era, which cost two
+    things at once: the attribution was discarded permanently, and the
+    reviewer-required check stopped applying to that row from then on, with no
+    refusal to show for it.
+
+    Two scenarios, because era preservation has to hold in both directions and
+    only the second one is a security property:
+
+    1. A recorded reviewer is carried verbatim, so attribution survives an
+       edit.
+    2. A post-field row whose reviewer is genuinely MISSING stays refused
+       after the merge. Dropping ``coverage_complete`` would launder exactly
+       that row into a legacy shape the gate no longer questions, which is a
+       fail-open on the approval path.
+    """
+    reviewer: dict[str, object] = {
+        "provider": "openrouter",
+        "model": "deepseek/deepseek-v4-pro",
+        "endpoint": [],
+        "temperature": 0.0,
+        "batch_size": 8,
+    }
+    stored: dict[str, object] = {
+        "findings": [],
+        "summary": {
+            "count": 0,
+            "hard_block": False,
+            "soft_flag": False,
+            "repaired": False,
+            "reviewer_independent": True,
+            "coverage_complete": True,
+        },
+        "reviewer": reviewer,
+    }
+    result = node_edit._merge_moderation_report(stored, _NODE_ID, [], independent=True)
+    assert result["reviewer"] == reviewer
+    summary = cast("dict[str, object]", result["summary"])
+    assert summary["coverage_complete"] is True
+    assert moderation_report_unusable(result) is False
+
+    # Scenario 2: same era, no reviewer recorded. Unusable going in, and the
+    # merge must not talk it out of that.
+    gapped: dict[str, object] = {**stored}
+    del gapped["reviewer"]
+    assert moderation_report_unusable(gapped) is True
+    merged_gapped = node_edit._merge_moderation_report(
+        gapped, _NODE_ID, [], independent=True
+    )
+    assert "reviewer" not in merged_gapped
+    assert moderation_report_unusable(merged_gapped) is True
+
+
+def test_node_edit_keeps_a_legacy_report_legacy() -> None:
+    """A pre-``reviewer``-field report must not be promoted into the new era.
+
+    The mirror of the test above, and the reason both keys move together or
+    neither does. Emitting ``coverage_complete`` on a report that has no
+    ``reviewer`` to back it would hand the discriminator a row it reads as a
+    genuine attribution gap, making the entire pre-field catalog retroactively
+    unapprovable after a single node edit. That is the harm
+    ``moderation_report_unusable``'s own comment exists to avoid, so an edit is
+    the last place to reintroduce it.
+    """
+    stored: dict[str, object] = {
+        "findings": [],
+        "summary": {
+            "count": 0,
+            "hard_block": False,
+            "soft_flag": False,
+            "repaired": False,
+            "reviewer_independent": True,
+        },
+    }
+    assert moderation_report_unusable(stored) is False
+    result = node_edit._merge_moderation_report(stored, _NODE_ID, [], independent=True)
+    assert "reviewer" not in result
+    assert "coverage_complete" not in cast("dict[str, object]", result["summary"])
+    assert moderation_report_unusable(result) is False
 
 
 def test_fresh_pass_findings_not_persisted() -> None:
