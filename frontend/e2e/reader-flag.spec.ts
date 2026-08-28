@@ -13,6 +13,19 @@ import { loadLanternStory } from './support/fixtures'
  * profile (see FlagButton.tsx); reader.spec.ts's beforeEach only seeds the
  * guardian-style `auth_token`, so this file additionally seeds a real
  * `child_session` blob matching auth/childSession.ts's storage format.
+ *
+ * Because this file is the only reader-tier spec that seeds a real
+ * `child_session`, it is also the only one where an unmocked call reaching a
+ * real backend can matter: `ReaderRoute`/`ReaderPage` fire four calls on
+ * mount this file did not use to mock (`GET /v1/profiles`, `GET
+ * /v1/me/progress`, `PUT /v1/device-downloads`, `GET /v1/characters`); any of
+ * them falling through to a real, live `:8000` would return a genuine `401`
+ * for this file's fabricated bearer, and `useApi`'s response interceptor
+ * reads a 401 on a request tagged as carrying the child token as "the child
+ * session died" and calls `clearChildSession()`, hiding the very button this
+ * file exists to test. Mocking all four here, not just the three the story
+ * itself needs, is what makes the suite's pass/fail track the flag flow
+ * instead of whether something else happens to be listening on `:8000`.
  */
 
 const lantern = loadLanternStory()
@@ -63,6 +76,34 @@ test.beforeEach(async ({ page, context }) => {
       },
     })
   )
+  // The four calls ReaderRoute/ReaderPage fire on mount that this file's
+  // assertions never look at directly, but which must not be left to fall
+  // through to a real backend; see the file header comment for why an
+  // unmocked one of these is load-bearing here specifically.
+  await page.route('**/api/v1/profiles', (route) =>
+    route.fulfill({ json: { profiles: [{ id: 'child-a' }] } })
+  )
+  await page.route('**/api/v1/me/progress', (route) =>
+    route.fulfill({
+      json: {
+        badges: [],
+        books: [],
+        totals: { books_finished: 0, endings_found: 0 },
+        days_read_this_week: 0,
+        lifetime_days_read: 0,
+        settings: {
+          ring_enabled: false,
+          ring_goal_days: 0,
+          badges_enabled: false,
+          time_capture_paused: false,
+        },
+      },
+    })
+  )
+  await page.route('**/api/v1/device-downloads', (route) =>
+    route.fulfill({ status: 200, json: {} })
+  )
+  await page.route('**/api/v1/characters**', (route) => route.fulfill({ json: [] }))
 })
 
 test('submitting a reason posts the structured flag and shows the kid-language confirmation', async ({
