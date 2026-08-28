@@ -47,6 +47,31 @@ import { defineConfig, devices } from '@playwright/test'
 const JSON_REPORT_PATH =
   process.env.PLAYWRIGHT_JSON_REPORT_PATH ?? 'playwright-json-report/report.json'
 
+/**
+ * Playwright deletes its entire configured `outputDir` at the START of every
+ * `playwright test` invocation, unconditionally, including subdirectories a
+ * PRIOR invocation just wrote (traces, screenshots, videos); this is
+ * independent of the `PLAYWRIGHT_JSON_REPORT_PATH` collision handled above,
+ * which only protects the JSON report file, not `test-results/`. A job that
+ * runs this config more than once in sequence (`accessibility-compliance-
+ * weekly.yml`: `chromium` then `usersim-a11y`; `e2e-real-nightly.yml`:
+ * `real-backend`, then `real-backend-pipeline`, then `usersim-real`, the last
+ * of which runs on `!cancelled()` regardless of the earlier two's outcome)
+ * would otherwise have a later invocation silently wipe an earlier failing
+ * invocation's evidence before the job's own "upload on failure" step ever
+ * reads `frontend/test-results/`. Task B3b review, Important 1.
+ *
+ * The fix is per-project `outputDir` below (not a per-workflow-step CLI
+ * `--output` flag): it is a property of the PROJECT, so it protects every
+ * current and future caller of that project automatically, including a
+ * workflow step nobody has written yet, rather than depending on each new
+ * caller remembering to pass a flag the way `PLAYWRIGHT_JSON_REPORT_PATH`
+ * requires each workflow step to do. `chromium` keeps the bare default
+ * (`test-results/`): it is always the FIRST invocation in any job that also
+ * runs a second project from this file, so nothing has written there yet for
+ * it to wipe.
+ */
+
 export default defineConfig({
   timeout: 30_000,
   fullyParallel: true,
@@ -139,6 +164,10 @@ export default defineConfig({
       // (Postgres + seeded uvicorn on :8000). Run via npm run test:e2e:real.
       name: 'real-backend',
       testDir: './e2e-real',
+      // See the JSON_REPORT_PATH header comment above (Important 1): isolates
+      // this project's trace/screenshot output from the other Playwright
+      // invocations e2e-real-nightly.yml runs in the same job.
+      outputDir: 'test-results/real-backend',
       dependencies: ['real-backend-setup'],
       // full-pipeline-real.spec.ts, full-pipeline-negative-real.spec.ts and
       // connections-enforcement-real.spec.ts all drive a real RQ worker
@@ -195,6 +224,10 @@ export default defineConfig({
       testDir: './e2e-real',
       testMatch:
         /(full-pipeline-real|full-pipeline-negative-real|connections-enforcement-real)\.spec\.ts/,
+      // See the JSON_REPORT_PATH header comment above (Important 1): isolates
+      // this project's trace/screenshot output from the other Playwright
+      // invocations e2e-real-nightly.yml runs in the same job.
+      outputDir: 'test-results/real-backend-pipeline',
       dependencies: ['real-backend-setup'],
       fullyParallel: false,
       retries: process.env.CI ? 1 : 0,
@@ -407,6 +440,14 @@ export default defineConfig({
       name: 'usersim-real',
       testDir: './e2e-usersim',
       testMatch: /walk-real\.spec\.ts/,
+      // See the JSON_REPORT_PATH header comment above (Important 1): this
+      // project runs LAST in e2e-real-nightly.yml's job, on `!cancelled()`
+      // regardless of whether `real-backend` or `real-backend-pipeline`
+      // above it failed, so without its own outputDir it would silently wipe
+      // whichever of those two just wrote trace/screenshot evidence for a
+      // failure the job's "Upload Playwright trace on failure" step has not
+      // read yet.
+      outputDir: 'test-results/usersim-real',
       dependencies: ['real-backend-setup'],
       fullyParallel: false,
       retries: process.env.CI ? 1 : 0,
@@ -441,6 +482,13 @@ export default defineConfig({
       name: 'usersim-a11y',
       testDir: './e2e-usersim',
       testMatch: /walk-a11y\.spec\.ts/,
+      // See the JSON_REPORT_PATH header comment above (Important 1): this
+      // project runs SECOND in accessibility-compliance-weekly.yml's job,
+      // right after `chromium` (e2e/a11y.spec.ts). Without its own outputDir
+      // it would silently wipe stream 1's trace/screenshot evidence for a
+      // failure before the job's "Upload Playwright report on failure" step
+      // ever reads it.
+      outputDir: 'test-results/usersim-a11y',
       use: { ...devices['Desktop Chrome'] },
     },
   ],

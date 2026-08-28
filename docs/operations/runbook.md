@@ -863,7 +863,8 @@ returns a near-empty list that reads exactly like "almost nothing alerts". `test
 enforces the invariants the commands above only report on: markers stay unique and mutually
 non-prefixing, both labels stay in use, and no workflow re-inlines the lookup.
 
-Three workflows use `e2e-alert`. The two E2E tiers are:
+Six workflows use `e2e-alert` (verify with `grep -rl 'label: e2e-alert' .github/workflows/`). The
+two E2E tiers exercising a real backend are:
 
 - **`.github/workflows/e2e-prod.yml`** ("E2E (production)"): runs the Playwright `e2e-prod` tier
   daily (`30 13 * * *` UTC) against the live production URL (`https://cyo.williamshome.family` by
@@ -874,9 +875,30 @@ Three workflows use `e2e-alert`. The two E2E tiers are:
   and Redis service containers, Supabase CLI migrations, a seeded dev dataset), rather than against
   live production; this is what exercises real cross-device conflict scenarios (two authorized
   devices racing a genuine 409 through the offline conflict dialog) that the mocked test suite
-  cannot. Its alert marker is `[e2e-real-nightly]`.
+  cannot. Its alert marker is `[e2e-real-nightly]`. This job also runs the `usersim-real` tier
+  (task B3a), the same seeded walk as `usersim.yml` below but against this job's real stack; a
+  failure there surfaces under this same marker, not a separate one.
 
-The third `e2e-alert` producer is **`.github/workflows/accessibility-compliance-weekly.yml`**
+**`.github/workflows/e2e-staging.yml`** ("E2E (staging)") runs daily (`0 13 * * *` UTC) against the
+staging deployment. Its alert marker is `[e2e-staging]`; do not confuse it with the third-E2E-tier
+description an earlier version of this section carried, which claimed this workflow had no alerting
+step at all. That was wrong even when it was written; this workflow has always used
+`ci-failure-issue` the same way the others do, and `tests/unit/test_ci_failure_action_contract.py`
+would fail if it stopped. For the wider test strategy see
+[`docs/testing/`](../testing/README.md); for a manual, checklist-driven live verification (not
+automated alerting), see [`docs/planning/r1-live-e2e-checklist.md`](../planning/r1-live-e2e-checklist.md).
+
+**`.github/workflows/usersim.yml`** ("Usersim walk") runs the mocked-tier `usersim` Playwright
+project daily (`0 14 * * *` UTC): a seeded random walk over the built app, one walk per persona,
+asserting I1-I6 at every state. Its alert marker is `[usersim]`. See
+`docs/testing/coverage-matrix.md`'s "Cross-cutting: user-simulation walk (usersim tier)" section for
+what I1-I6 check.
+
+**`.github/workflows/webkit-kid.yml`** ("WebKit kid-journey check") runs daily (`0 15 * * *` UTC): the
+kid reading/library/offline mocked specs on real WebKit at an iPad viewport (task B2), nightly-only
+and never wired into any per-PR job. Its alert marker is `[webkit-kid]`.
+
+The sixth `e2e-alert` producer is **`.github/workflows/accessibility-compliance-weekly.yml`**
 ("Accessibility compliance (weekly)"): a weekly, non-blocking axe scan against `main` covering WCAG
 2.2 and best-practice rules, per [ADR-029](../planning/adr/adr-029-web-accessibility-conformance.md).
 The per-PR WCAG 2.1 AA gate is a required `ci.yml` job instead, so a failure here is a compliance
@@ -888,24 +910,20 @@ labels their findings distinctly so triage does not have to guess which scan pro
 - **Stream 1, fixed-state**: `frontend/e2e/a11y.spec.ts`, the same hand-picked list of pages/dialogs
   the per-PR gate checks, re-run with the wider WCAG 2.2 + best-practice tag scope.
 - **Stream 2, newly-reached-state (I7)**: `frontend/e2e-usersim/walk-a11y.spec.ts`, an axe scan of
-  each distinct route+heading state the usersim seeded random walk (Section 7's usersim tier is
-  covered under the E2E workflows above; see `docs/testing/coverage-matrix.md`'s "Cross-cutting:
-  user-simulation walk" section) reaches for the first time. Its findings carry
-  `workflow: 'usersim-a11y-weekly'` in the shared usersim JSONL findings sink
-  (`frontend/e2e-usersim/support/findings.ts`), which is what tells them apart from the SAME sink's
-  nightly-walk findings (`workflow: 'usersim-walk'`/`'usersim-walk-real'`, produced by
-  `usersim.yml`/`e2e-real-nightly.yml`'s I1-I6 checks, not accessibility findings at all). Checking
-  only one of these two streams, or only one workflow's findings in the shared sink, is not checking
+  each distinct route+heading state the usersim seeded random walk (`usersim.yml`, described above)
+  reaches for the first time. See `docs/testing/coverage-matrix.md`'s "Cross-cutting:
+  user-simulation walk" section for what a "state" means here and what it collapses. Its findings
+  carry `workflow: 'usersim-a11y-weekly'`, printed as `[usersim-finding]` lines in this step's own
+  job log (`frontend/e2e-usersim/support/findings.ts`'s `record()` prints at the moment a finding is
+  captured; there is no findings file on disk anywhere in this repository, despite what an earlier
+  version of this paragraph and the filed issue's own body used to say -- grep the run's log for
+  that marker), which is what tells them apart from the nightly walks' own I1-I6 findings
+  (`workflow: 'usersim-walk'`/`'usersim-walk-real'`,
+  produced by `usersim.yml`/`e2e-real-nightly.yml`, not accessibility findings at all). Checking
+  only one of these two streams, or only one workflow's `[usersim-finding]` lines, is not checking
   the whole system: a clean nightly usersim run says nothing about whether this week's newly-reached
   states are accessible, and a clean weekly a11y run says nothing about I1-I6 (console errors,
   dead-end states, overflow, role isolation).
-
-`e2e-staging.yml` ("E2E (staging)", daily at 13:00 UTC) is a third E2E tier but is **not** on this list,
-because it has no alerting step of any kind: a staging failure leaves a red run and a Playwright
-trace artifact, and nothing opens an issue. Nobody is notified unless they look. For the wider test
-strategy see [`docs/testing/`](../testing/README.md); for a manual, checklist-driven live
-verification (not automated alerting), see
-[`docs/planning/r1-live-e2e-checklist.md`](../planning/r1-live-e2e-checklist.md).
 
 ### 7.1 KWS parent-verification delivery health
 

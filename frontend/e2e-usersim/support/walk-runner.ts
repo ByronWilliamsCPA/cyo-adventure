@@ -146,8 +146,19 @@ export async function runWalk(
   const { persona, setupSession, installMocks, canaries, workflow, axeTracker } = options
   const rng = createRng(RESOLVED_SEED)
   const visited: VisitedStep[] = []
-  const findingsLines: string[] = []
-  const sink = createFindingsSink((line) => findingsLines.push(line))
+  // Task B3b review, Important 3: emit at RECORD time, not through a
+  // buffer drained after the walk loop returns. Every `sink.record` call in
+  // invariants.ts (recordAndThrow, used by I1-I6, and I7's own conformance
+  // path) is immediately followed by a throw, so a buffer meant to be
+  // printed AFTER the loop below never gets the chance: the throw propagates
+  // out of `runWalk` first. That made `docs/operations/runbook.md`'s and
+  // this workflow family's documented "shared usersim JSONL findings sink"
+  // channel unreachable by construction on every finding this tier has ever
+  // recorded. Printing inside the `write` callback itself means the line
+  // reaches the log unconditionally, on the exact same call stack as the
+  // `sink.record` that produced it, before the throw a few lines later can
+  // prevent anything.
+  const sink = createFindingsSink((line) => console.log(`[usersim-finding] ${line}`))
 
   // Attach BEFORE the first navigation (I1's requirement), so console
   // activity from the initial load is not missed.
@@ -241,9 +252,12 @@ export async function runWalk(
       `[usersim-a11y] persona=${persona.id} distinct_states_scanned=${axeTracker.scanned.size}`
     )
   }
-  for (const line of findingsLines) {
-    console.log(`[usersim-finding] ${line}`)
-  }
+  // No post-loop findings print here: the `sink` constructed above now emits
+  // `[usersim-finding]` lines at record time (see its own comment). A
+  // second, post-loop emitter reading a buffer this function no longer fills
+  // would be dead code on the success path (nothing was ever pushed to it)
+  // and a duplicate emitter on any future success-path recorder, which the
+  // task review explicitly asked not to introduce.
 
   return visited
 }

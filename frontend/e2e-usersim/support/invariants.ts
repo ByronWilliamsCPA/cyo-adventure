@@ -143,8 +143,43 @@ export interface StepContext {
   axeTracker?: AxeStateTracker
 }
 
+/**
+ * Which Playwright project actually reproduces a failure originating from
+ * each `StepContext.workflow` tag (see each spec file's own `WORKFLOW`
+ * constant: walk.spec.ts's `'usersim-walk'`, walk-real.spec.ts's
+ * `'usersim-walk-real'`, walk-a11y.spec.ts's `'usersim-a11y-weekly'`).
+ *
+ * Task B3b review, M1: `replayHint` used to hardcode `--project=usersim`
+ * unconditionally. That is correct for the mocked tier (walk.spec.ts) but
+ * was silently wrong for both other callers: `--project=usersim` runs
+ * walk.spec.ts, which never sets `axeTracker`, so an I7 failure's replay
+ * command could not reproduce it at all (I7 is a documented no-op there),
+ * and it also picks the wrong project for a walk-real.spec.ts failure (that
+ * tier needs a real backend up, which `usersim` never touches). The module
+ * header's own claim -- "a finding that cannot be replayed is a rumour" --
+ * does not hold if the printed command runs the wrong file.
+ */
+const REPLAY_PROJECT_BY_WORKFLOW: Record<string, string> = {
+  'usersim-walk': 'usersim',
+  'usersim-walk-real': 'usersim-real',
+  'usersim-a11y-weekly': 'usersim-a11y',
+}
+
+/**
+ * Extra env var(s) a replay command needs beyond `USERSIM_SEED`, keyed the
+ * same way as `REPLAY_PROJECT_BY_WORKFLOW`. Only `usersim-a11y` needs one:
+ * walk-a11y.spec.ts's own `test.skip` makes the whole project a no-op
+ * without `A11Y_EXTENDED=1` (see that file's header comment), so a replay
+ * command missing it would print "3 skipped" and reproduce nothing.
+ */
+const REPLAY_ENV_BY_WORKFLOW: Partial<Record<string, string>> = {
+  'usersim-a11y-weekly': 'A11Y_EXTENDED=1 ',
+}
+
 function replayHint(ctx: StepContext): string {
-  return `persona=${ctx.persona} seed=${ctx.seed} step=${ctx.step} url=${ctx.page.url()} (replay: USERSIM_SEED=${ctx.seed} npx playwright test --project=usersim -g ${JSON.stringify(ctx.persona)})`
+  const project = REPLAY_PROJECT_BY_WORKFLOW[ctx.workflow] ?? 'usersim'
+  const envPrefix = REPLAY_ENV_BY_WORKFLOW[ctx.workflow] ?? ''
+  return `persona=${ctx.persona} seed=${ctx.seed} step=${ctx.step} url=${ctx.page.url()} (replay: ${envPrefix}USERSIM_SEED=${ctx.seed} npx playwright test --project=${project} -g ${JSON.stringify(ctx.persona)})`
 }
 
 function recordAndThrow(

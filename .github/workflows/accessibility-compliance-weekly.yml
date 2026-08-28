@@ -125,10 +125,26 @@ jobs:
       # would skip this one entirely and the run would report only the first
       # stream's findings, silently dropping I7 coverage for that week. This
       # branch has hit exactly that implicit-`if: success()` class of defect
-      # twice before; `!cancelled()` (runs unless the job was cancelled, same
-      # as an explicit `always()` would, but consistent with this file's
-      # `failure()`-based alerting below never firing on a cancelled run)
-      # closes it here rather than repeating it a third time.
+      # twice before; `!cancelled()` closes it here rather than repeating it a
+      # third time. This is NOT the same as an explicit `always()`: `always()`
+      # runs even when the job was cancelled, `!cancelled()` does not, which is
+      # exactly why `!cancelled()` (not `always()`) was chosen -- it stays
+      # consistent with this file's `failure()`-based alerting below, which
+      # must never fire on a cancelled run.
+      #
+      # #CRITICAL: data-integrity: Playwright deletes its ENTIRE configured
+      # `outputDir` at the start of every invocation, including a sibling
+      # project's trace/screenshot output from earlier in this same job.
+      # Task B3b review, Important 1: with `!cancelled()` above, this step now
+      # always runs after the "Accessibility scan (axe, WCAG 2.2 +
+      # best-practice)" step, so if THAT step fails and this one shared its
+      # default `test-results/` dir, this step would silently wipe stream 1's
+      # evidence before "Upload Playwright report on failure" below ever
+      # uploads it. The fix lives in playwright.config.ts: the `usersim-a11y`
+      # project declares its own `outputDir` (`test-results/usersim-a11y`), so
+      # this invocation only ever clears its own subdirectory.
+      # #VERIFY: `frontend/playwright.config.ts`'s `usersim-a11y` project keeps
+      # a distinct `outputDir` from the default `chromium` project uses above.
       - name: Accessibility scan (usersim I7, axe on newly-reached states)
         if: ${{ !cancelled() }}
         env:
@@ -141,6 +157,12 @@ jobs:
           PLAYWRIGHT_JSON_REPORT_PATH: playwright-json-report/usersim-a11y-weekly.json
         run: npx playwright test --project=usersim-a11y
 
+      # Uploads BOTH streams' evidence in one wholesale artifact: since
+      # playwright.config.ts gives `usersim-a11y` its own `outputDir` (see the
+      # #CRITICAL comment on the step above), `frontend/test-results/` now
+      # holds stream 1's evidence at its root and stream 2's evidence under
+      # `test-results/usersim-a11y/`, and neither invocation's own outputDir
+      # clear touches the other's subtree.
       - name: Upload Playwright report on failure
         if: ${{ !cancelled() && failure() }}
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
@@ -265,9 +287,11 @@ jobs:
               '`docs/testing/coverage-matrix.md`\'s usersim-tier entry for what a',
               '"state" means here and what it collapses. Its run-log lines',
               '(`[usersim-a11y-new-state]`, `[usersim-a11y]`) and findings',
-              '(`workflow=usersim-a11y-weekly` in the JSONL sink) are a separate',
-              'stream from stream 1 above and from the nightly usersim walks\'',
-              'own I1-I6-only findings (`workflow=usersim-walk`/`usersim-walk-real`);',
+              '(printed as `[usersim-finding]` lines tagged',
+              '`workflow=usersim-a11y-weekly`, not a JSONL file on disk) are a',
+              'separate stream from stream 1 above and from the nightly usersim',
+              'walks\' own I1-I6-only `[usersim-finding]` lines',
+              '(`workflow=usersim-walk`/`usersim-walk-real`);',
               'see docs/operations/runbook.md for the two-stream triage note.',
               '',
               'This alert fires on `failure()`, so it covers BOTH of:',

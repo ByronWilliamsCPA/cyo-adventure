@@ -359,6 +359,22 @@ jobs:
       # Own `PLAYWRIGHT_JSON_REPORT_PATH`, distinct from both steps above:
       # see the #CRITICAL comment on the real-backend tier step for why a
       # shared path would let one run's report silently overwrite another's.
+      #
+      # #CRITICAL: data-integrity: this step runs on `!cancelled()`, so it
+      # ALWAYS runs after `real-backend` and `real-backend-pipeline` above,
+      # even when one of them failed and left trace/screenshot evidence
+      # behind. Playwright deletes its entire configured `outputDir` at the
+      # start of every invocation, so without a project-specific `outputDir`
+      # this step would silently wipe that evidence before the single
+      # "Upload Playwright trace on failure" step below (which runs once, for
+      # the whole job) ever reads `frontend/test-results/`. Task B3b review,
+      # Important 1, same defect class as accessibility-compliance-weekly.yml.
+      # The fix lives in playwright.config.ts: `real-backend`,
+      # `real-backend-pipeline`, and `usersim-real` each declare their own
+      # `outputDir` subdirectory, so no invocation in this job can clear
+      # another's evidence.
+      # #VERIFY: all three real-tier projects in `frontend/playwright.config.ts`
+      # keep distinct `outputDir` values.
       - name: E2E (Playwright, usersim-real tier)
         if: ${{ !cancelled() }}
         working-directory: ./frontend

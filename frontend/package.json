@@ -24,7 +24,7 @@
     "test:e2e:real:pr-smoke": "playwright test --project=real-backend-pr-smoke --workers=1",
     "test:e2e:usersim": "playwright test --project=usersim",
     "test:e2e:usersim:real": "playwright test --project=usersim-real --workers=1",
-    "test:e2e:usersim:a11y": "playwright test --project=usersim-a11y",
+    "test:e2e:usersim:a11y": "A11Y_EXTENDED=1 playwright test --project=usersim-a11y",
     "test:e2e:cross-device": "playwright test --project=cross-device-mobile --project=cross-device-tablet --project=cross-browser-mobile-safari --project=cross-browser-firefox",
     "test:e2e:webkit-kid": "playwright test --project=webkit-kid",
     "test:e2e:staging": "playwright test --config=playwright.e2e-staging.config.ts",

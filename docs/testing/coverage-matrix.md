@@ -921,6 +921,21 @@ predetermined journeys above. Route via `npm run test:e2e:usersim`.
   three-ring boundary), and I6 (a random back/forward step still lands in a
   state satisfying I1-I4). I2 and I5 are deliberately not re-checked after a
   back/forward step; see the walk's own comment on I6 for why.
+- E2E-usersim, real-backend leg (task B3a): `frontend/e2e-usersim/walk-real.spec.ts`
+  runs the SAME seeded walk as `walk.spec.ts` above (shared via
+  `support/walk-runner.ts`, not a forked copy) against a real backend instead
+  of route-mocked fixtures, so I1-I6 are checked against genuine backend
+  responses rather than mock responses. Only session setup
+  (`support/real-session-setup.ts`, real device grant / seeded bearer tokens
+  instead of localStorage fixtures) and the I5 canary values
+  (`support/real-canaries.ts`, real seeded rows instead of the mocked-tier's
+  literals) differ from `walk.spec.ts`. Zero route mocks, matching
+  `frontend/e2e-real/`'s own convention. Runs only inside
+  `.github/workflows/e2e-real-nightly.yml` (Playwright project
+  `usersim-real`), which already brings up the real stack the other
+  real-backend projects in that job need; it is meaningless run alone
+  against this file's own mocked-tier `webServer`. Route via
+  `npm run test:e2e:usersim:real`.
 - E2E-usersim, I7 (task B3b): `frontend/e2e-usersim/walk-a11y.spec.ts` runs
   the SAME seeded walk (via the shared `support/walk-runner.ts` substrate,
   reusing `support/mocked-api.ts`'s route mocks) as a separate spec, testDir

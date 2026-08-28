@@ -26,7 +26,7 @@
  * dialog is still checked in one fixed mock state") rather than opening a
  * new, unrelated real-backend surface.
  */
-import { test } from '@playwright/test'
+import { expect, test } from '@playwright/test'
 
 import { createAxeStateTracker } from './support/invariants'
 import { installWalkMocks } from './support/mocked-api'
@@ -54,6 +54,8 @@ for (const persona of PERSONAS) {
         "(accessibility-compliance-weekly.yml, task B3b); see this file's header comment."
     )
 
+    const axeTracker = createAxeStateTracker()
+
     await runWalk(
       {
         persona,
@@ -63,10 +65,29 @@ for (const persona of PERSONAS) {
         // canaries omitted: defaults to invariants.ts's DEFAULT_CANARIES, the
         // same literals support/mocked-api.ts's fixtures embed, matching
         // walk.spec.ts.
-        axeTracker: createAxeStateTracker(),
+        axeTracker,
       },
       page,
       context
     )
+
+    // Task B3b review, Important 2(a): this whole spec exists to run I7, so a
+    // walk that reached the end having scanned NOTHING must fail loudly
+    // rather than pass green. Without this, dropping `axeTracker:` from the
+    // options above (or any future refactor that stops threading it into
+    // every StepContext) would still produce 3 green tests: I1-I6 do not
+    // depend on it, and `assertNoNewStateAxeViolations` is a documented
+    // no-op whenever `ctx.axeTracker` is absent. `axeTracker` (this file's
+    // own local variable, not a value re-read off `runWalk`'s return) is the
+    // ground truth here: it is the exact same object threaded into every
+    // step's `StepContext`, so its `scanned` Set only grows if I7 actually
+    // ran.
+    expect(
+      axeTracker.scanned.size,
+      `I7 never axe-scanned any state for persona=${persona.id}: axeTracker.scanned is empty. ` +
+        "This spec's entire purpose is running I7; either the walk found no " +
+        "reachable state (unlikely; check personas.ts's entryPath) or " +
+        "axeTracker was dropped from runWalk's options."
+    ).toBeGreaterThan(0)
   })
 }
