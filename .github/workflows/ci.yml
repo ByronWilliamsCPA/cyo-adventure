@@ -891,23 +891,27 @@ jobs:
           # Raise in step with the suite. A floor that never moves stops
           # detecting a suite that quietly lost half its cases.
           #
-          # Two files, not a glob: `.github/workflows/test/health-rollup.test.mjs`
-          # was added in this same series to cover
-          # `scheduled-health-rollup.yml`'s findTrackingIssue extraction. A glob
-          # here (e.g. `.github/**/*.test.mjs`) could silently match zero files
-          # after a rename or move and `node --test` would exit 0 having run
-          # nothing, which is the exact anti-oracle this step exists to close.
-          # An explicit missing path fails loudly instead (`node --test` exits
-          # 1 with "Could not find <path>"), so listing both files by name is
-          # the safer choice even though it means updating this line for a
-          # future third harness.
-          MIN_TESTS: '50'
+          # Three files, not a glob: `.github/workflows/test/health-rollup.test.mjs`
+          # covers `scheduled-health-rollup.yml`'s findTrackingIssue extraction, and
+          # `frontend/scripts/test/extract-failing-specs.test.mjs` (task A7-i review,
+          # Important 2) covers `frontend/scripts/extract-failing-specs.mjs`'s
+          # failure-discrimination and security properties, the sole producer of
+          # every scheduled e2e alert's substantive content. A glob here (e.g.
+          # `.github/**/*.test.mjs` or `**/*.test.mjs`) could silently match zero
+          # files after a rename or move and `node --test` would exit 0 having run
+          # nothing, which is the exact anti-oracle this step exists to close. An
+          # explicit missing path fails loudly instead (`node --test` exits 1 with
+          # "Could not find <path>"), so listing all three files by name is the
+          # safer choice even though it means updating this line for a future
+          # fourth harness.
+          MIN_TESTS: '64'
         run: |
           set -euo pipefail
 
           node --test --test-reporter=tap \
             .github/actions/ci-failure-issue/test/reconcile.test.mjs \
-            .github/workflows/test/health-rollup.test.mjs | tee harness.tap
+            .github/workflows/test/health-rollup.test.mjs \
+            frontend/scripts/test/extract-failing-specs.test.mjs | tee harness.tap
 
           passed="$(sed -n 's/^# pass \([0-9]\+\)$/\1/p' harness.tap | tail -1)"
           failed="$(sed -n 's/^# fail \([0-9]\+\)$/\1/p' harness.tap | tail -1)"

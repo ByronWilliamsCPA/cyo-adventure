@@ -51,6 +51,16 @@ HARNESS = ACTION_DIR / "test" / "reconcile.test.mjs"
 # `alert-action` CI job runs this file in the same invocation as HARNESS, so
 # both must be counted together or the floor and the runtime count diverge.
 HEALTH_ROLLUP_HARNESS = WORKFLOWS_DIR / "test" / "health-rollup.test.mjs"
+# Added by the task A7-i review fix pass (Important 2): covers
+# `frontend/scripts/extract-failing-specs.mjs`, the sole producer of every
+# scheduled e2e alert's substantive content. Not extracted from workflow YAML
+# (it is a plain, directly-invokable script), but the `alert-action` CI job
+# runs it in the same `node --test` invocation as HARNESS and
+# HEALTH_ROLLUP_HARNESS, so all three must be counted together or the floor
+# and the runtime count diverge, same reasoning as HEALTH_ROLLUP_HARNESS above.
+EXTRACT_FAILING_SPECS_HARNESS = (
+    REPO_ROOT / "frontend" / "scripts" / "test" / "extract-failing-specs.test.mjs"
+)
 CI_WORKFLOW = WORKFLOWS_DIR / "ci.yml"
 
 ACTION_REF = "./.github/actions/ci-failure-issue"
@@ -257,8 +267,8 @@ def _run_harness_and_count() -> int:
     derived by reading the file is a second implementation of the test runner,
     and it was wrong the first time it was tried here.
 
-    Runs both files the CI step runs, in one ``node --test`` invocation, so
-    the reported count matches what the gate actually measures rather than
+    Runs all three files the CI step runs, in one ``node --test`` invocation,
+    so the reported count matches what the gate actually measures rather than
     just HARNESS's own total.
 
     Returns:
@@ -274,6 +284,7 @@ def _run_harness_and_count() -> int:
             "--test-reporter=tap",
             str(HARNESS),
             str(HEALTH_ROLLUP_HARNESS),
+            str(EXTRACT_FAILING_SPECS_HARNESS),
         ],
         capture_output=True,
         text=True,
@@ -653,6 +664,11 @@ class TestTheHarnessIsWiredIntoARealGate:
             "ci.yml no longer runs health-rollup.test.mjs, so a workflow's "
             "generalised findTrackingIssue extraction is checked in but "
             "never executed"
+        )
+        assert "extract-failing-specs.test.mjs" in run_steps, (
+            "ci.yml no longer runs extract-failing-specs.test.mjs, so the "
+            "sole producer of every scheduled e2e alert's substantive "
+            "content is checked in but never executed"
         )
 
     def test_the_ci_job_asserts_a_test_count_floor(self) -> None:

@@ -20,6 +20,21 @@ import { requireStagingBaseUrl } from './e2e-staging/support/staging-env'
  * workflow's own alert-composing step reads the JSON report, so nothing it
  * reads may live in the uploaded directory. `list` stays first so
  * human-readable CI console output is unchanged.
+ *
+ * `PLAYWRIGHT_JSON_REPORT_PATH` is read by all four Playwright configs in
+ * this repo (this one, playwright.config.ts, playwright.e2e-staging-sweep.config.ts,
+ * playwright.e2e-prod.config.ts), each with its own distinct default when the
+ * variable is unset, which is why e2e-staging.yml sets it NOWHERE today: the
+ * main tier (this config, default `e2e-staging.json`) and the same job's
+ * `grant_sweep` step (playwright.e2e-staging-sweep.config.ts, default
+ * `e2e-staging-sweep.json`) already write to different paths without any env
+ * override. Do not "simplify" that by adding a single `PLAYWRIGHT_JSON_REPORT_PATH`
+ * at JOB level in e2e-staging.yml: a job-level `env:` applies to both steps
+ * identically, so it would collide the main-tier and sweep reports into one
+ * file, silently breaking whichever step's alert-composing read happens
+ * second. e2e-real-nightly.yml needs and correctly uses a STEP-level override
+ * instead (its two Playwright steps target the same config, not two
+ * different ones, so they would otherwise share this file's single default).
  */
 const JSON_REPORT_PATH =
   process.env.PLAYWRIGHT_JSON_REPORT_PATH ?? 'playwright-json-report/e2e-staging.json'

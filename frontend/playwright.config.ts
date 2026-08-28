@@ -18,7 +18,7 @@ import { defineConfig, devices } from '@playwright/test'
  * local state machine (see context.setOffline in reader.spec.ts), not the PWA
  * shell cache, so blocking the service worker does not weaken the coverage.
  *
- * #ASSUME: this is the SAME config file that backs `npm run test:e2e`
+ * #ASSUME: data-integrity: this is the SAME config file that backs `npm run test:e2e`
  * (`--project=chromium`), the mocked tier that `ci.yml`'s PR-blocking
  * `frontend-e2e` job runs on every PR, since that is also the config
  * `e2e-real-nightly.yml` selects (`--project=real-backend`) for the JSON
@@ -40,8 +40,9 @@ import { defineConfig, devices } from '@playwright/test'
  * the second run silently overwrite the first run's report before anything
  * reads it. That workflow sets `PLAYWRIGHT_JSON_REPORT_PATH` to a distinct
  * path for each of the two steps so both reports survive; this default here
- * only matters for `npm run test:e2e` / `test:e2e:real` / `test:e2e:mobile` /
- * `test:e2e:cross-device` invocations (single run each) and local use.
+ * only matters for `npm run test:e2e` / `test:e2e:real` / `test:e2e:real:pr-smoke` /
+ * `test:e2e:mobile` / `test:e2e:cross-device` invocations (single run each)
+ * and local use.
  */
 const JSON_REPORT_PATH =
   process.env.PLAYWRIGHT_JSON_REPORT_PATH ?? 'playwright-json-report/report.json'

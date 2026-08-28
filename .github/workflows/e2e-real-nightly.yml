@@ -413,8 +413,19 @@ jobs:
             const runUrl = `${context.serverUrl}/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`
             const today = new Date().toISOString().slice(0, 10)
 
-            const realOutcome = process.env.PLAYWRIGHT_REAL_OUTCOME
-            const pipelineOutcome = process.env.PLAYWRIGHT_PIPELINE_OUTCOME
+            // Neither Playwright step below has an `if:`, so when `npm ci` or
+            // an earlier setup step fails first, GitHub's default step
+            // gating skips both of them without ever running them (task A7-i
+            // review, Minor 6: `steps.<id>.outcome` was observed rendering as
+            // an empty string in that case, unlike e2e-staging.yml's
+            // analogous `playwright` step). The `|| 'did not run'` fallbacks
+            // below exist only so the "Step outcomes:" line never renders
+            // blank for an unreached step, whatever value GitHub reports for
+            // it; the fallback branch further down (`!realFailed &&
+            // !pipelineFailed`) already handles the "neither step reported
+            // failure" case correctly regardless.
+            const realOutcome = process.env.PLAYWRIGHT_REAL_OUTCOME || 'did not run'
+            const pipelineOutcome = process.env.PLAYWRIGHT_PIPELINE_OUTCOME || 'did not run'
             const realFailed = realOutcome === 'failure'
             const pipelineFailed = pipelineOutcome === 'failure'
             const failingSpecs = process.env.FAILING_SPECS || 'No failing-spec detail is available for this run.'
