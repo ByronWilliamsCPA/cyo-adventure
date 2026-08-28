@@ -572,6 +572,7 @@ async def run_moderation_pipeline(
             report=report,
             generation_provider=generation_provider,
             settings=settings,
+            review_settings=review_settings,
             guarded_review=guarded_review,
             pii=pii,
             independent=independent,
@@ -719,6 +720,7 @@ async def _attempt_and_adopt_repair(
     report: ModerationReport,
     generation_provider: GenerationProvider,
     settings: Settings,
+    review_settings: Settings,
     guarded_review: ReviewProvider,
     pii: PiiContext,
     independent: bool,
@@ -738,7 +740,14 @@ async def _attempt_and_adopt_repair(
         version_row: The version row; ``blob`` is updated in place on adoption.
         report: The original (soft-flagged) report.
         generation_provider: Provider used for the bounded auto-repair re-prompt.
-        settings: Application settings (review provider and classifier keys).
+        settings: Application settings (classifier keys). Passed to
+            :func:`_run_all_stages` unresolved, matching the primary path,
+            because the stages read classifier credentials from it and never
+            the review model.
+        review_settings: The RESOLVED review settings, used only to stamp the
+            repaired report's provenance. Separate from ``settings`` because
+            an admin's per-stage model override lives only here, and
+            ``guarded_review`` below was already built from it.
         guarded_review: The PII-guarded review provider for re-moderation.
         pii: PII context for the egress guard on repair and review prompts.
         independent: Whether the review backend is independent of the generator.
@@ -779,8 +788,19 @@ async def _attempt_and_adopt_repair(
     # revised blob) if the repair is schema-valid AND passes the deterministic
     # validation gate. A malformed or gate-failing repair is discarded so the
     # original soft-flagged report drives routing.
+    # #CRITICAL: data-integrity: provenance comes from the RESOLVED review
+    # settings, never from ``settings``. An adopted repair replaces the
+    # caller's report wholesale, so stamping the process-wide default here
+    # would make the persisted report attribute the verdict to a model that
+    # did not produce it whenever an authoring plan supplies a stage model
+    # override. ``guarded_review`` below is built from the resolved settings,
+    # so the override is what actually reviews; only the stamp was wrong, and
+    # a wrong stamp is undetectable after the fact without re-deriving the
+    # override. This mirrors the caller's own stamp on the pre-repair report.
+    # #VERIFY: tests/unit/test_moderation_pipeline.py::
+    # test_an_adopted_repair_records_the_overridden_model_not_the_default.
     repaired_report = ModerationReport(
-        reviewer_independent=independent, reviewer=review_provenance(settings)
+        reviewer_independent=independent, reviewer=review_provenance(review_settings)
     )
     if mock_reviewer:
         _stamp_mock_reviewer(repaired_report)

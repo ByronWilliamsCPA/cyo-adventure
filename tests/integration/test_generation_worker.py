@@ -611,9 +611,11 @@ async def test_worker_runs_fill_skeleton_for_authoring_metadata_jobs(
     anything went unreviewed), so that provider call is no longer spent. The
     budget below is unchanged because it was never pinned to the floor. The
     response list below is sized with
-    headroom above that 8-call floor (1 fill + 6 Stage D batches + 1
-    moderation repair) rather than pinned to it exactly, so a small future
-    change to this skeleton's node count does not reopen this test.
+    headroom above that 7-call floor (1 fill + 6 Stage D batches) rather than
+    pinned to it exactly, so a small future change to this skeleton's node
+    count does not reopen this test. The floor lost the moderation-repair call
+    the paragraph above retires; it read 8 for a while after that call stopped
+    being spent, which made the docstring argue against itself.
     """
     job_id: uuid.UUID = gen_seed_authoring["job_id"]  # type: ignore[assignment]
 

@@ -766,6 +766,18 @@ async def _review_one_node_or_none(
         evidence the reviewer itself (not just this node's content) is
         unavailable.
     """
+    # #CRITICAL: external-resources: this makes one live review call per node
+    # and deliberately converts a ProviderError into a recorded gap instead of
+    # a raise. That is the right trade here (see the docstring), but it means a
+    # total reviewer outage during recovery is INVISIBLE in this function's
+    # return type: every node comes back finding=None, exactly as it would for
+    # per-node content failures. ``reviewer_health_evidence`` is the only
+    # channel that separates the two, and the caller's latch depends on it, so
+    # it must be set on every failure arm and never defaulted to False.
+    # #VERIFY: tests/unit/test_moderation_stages.py::
+    # test_a_failing_per_node_retry_is_a_gap_not_a_stage_abort pins the
+    # gap-not-raise contract, and ::test_a_dead_reviewer_stops_retrying_per_node
+    # pins that the health channel actually reaches the caller's latch.
     try:
         outcome = await _review_one_node(
             provider=provider,
@@ -813,6 +825,23 @@ async def _recover_batch_per_node(
         return content the parser could not use, which says nothing about
         unrelated later batches.
     """
+    # #CRITICAL: external-resources: this fans one failed batch out into
+    # ``len(batch)`` sequential live review calls, so a batch of 8 costs 8
+    # round trips against a provider that has just demonstrated it can return
+    # unusable output. Sequential is deliberate rather than gathered: the
+    # caller's latch exists to stop paying for recovery once the reviewer looks
+    # unhealthy, and a gather would commit the whole batch's spend before the
+    # first failure could inform that decision.
+    # #ASSUME: data-integrity: ``reviewer_health_evidence`` is an OR across
+    # nodes, never a count, so ONE unhealthy signal in a batch disables the
+    # fallback for later batches. That is the fail-safe direction: the cost of
+    # a false latch is fail-safe FLAGs a human already has to read, while the
+    # cost of not latching is unbounded spend against a dead reviewer.
+    # #VERIFY: tests/unit/test_moderation_stages.py::
+    # test_a_dead_reviewer_stops_retrying_per_node asserts 4 provider calls and
+    # not 6, which is what pins BOTH the sequential fan-out and the latch, and
+    # ::test_a_content_specific_parse_failure_does_not_disable_recovery_for_later_batches
+    # pins that an ordinary content failure does NOT trip it.
     recovered: list[Finding] = []
     gap_node_ids: list[str] = []
     reviewer_health_evidence = False
@@ -1097,6 +1126,19 @@ async def run_safety_stage(
             )
             if outcome.finding is None:
                 fail_safe_node_ids.append(node_id)
+                # #CRITICAL: data-integrity: the single-node path must record
+                # truncation too. Distinguishing "the reviewer ran out of room"
+                # from "the reviewer returned garbage" is the whole point of
+                # the truncation clause, and review_batch_size=1 is where it
+                # matters MOST: a one-node call still pays the full per-call
+                # reasoning cost, so it is the likeliest shape to truncate.
+                # Dropping it here made a starved single-node run read as
+                # ordinary unparseable output, sending a reader looking for a
+                # bad model instead of a small budget.
+                # #VERIFY: tests/unit/test_moderation_stages.py::
+                # test_a_truncated_single_node_call_is_reported_as_truncated.
+                if outcome.truncated:
+                    truncated_node_ids.append(node_id)
                 continue
             findings.append(outcome.finding)
             continue

@@ -652,6 +652,20 @@ async def _has_generation_job(session: AsyncSession, story_id: str) -> bool:
     Returns:
         bool: ``True`` when at least one generation job references the story.
     """
+    # #CRITICAL: security: this database read decides whether the slot contract
+    # is resolved HERE or left to the pipeline, so a wrong answer changes which
+    # code path guards sentinel integrity. It fails in the safe direction by
+    # construction: a missing row returns False, which resolves the contract
+    # eagerly from the version, and over-resolving is harmless where
+    # under-resolving would hand the pipeline an unset contract. The absent
+    # foreign key is what makes False ordinary rather than exceptional, so this
+    # must never be tightened into an integrity assertion.
+    # #ASSUME: timing: the answer is read once per request and the row cannot
+    # appear mid-request for a book being re-moderated, since job creation
+    # belongs to generation, not to this endpoint.
+    # #VERIFY: tests/unit/test_remoderate_unit.py::
+    # test_published_book_without_a_job_row_resolves_from_the_version and
+    # ::test_job_backed_published_book_leaves_the_slot_contract_to_the_pipeline.
     return (
         await session.execute(
             select(GenerationJob.id)
@@ -880,8 +894,12 @@ async def remoderate_storybook_version(
             generation_provider=generation_provider,
             pii=pii,
             allow_repair=allow_repair,
-            # Resolved above, scoped to the in_review arm. See the marker
-            # there for why the version and why not for published books.
+            # Resolved above by PROVENANCE, not by status: every in_review
+            # book, plus any published book with no GenerationJob row to
+            # resolve from. A job-backed published book is left UNSET here so
+            # the pipeline resolves it from its own job provenance. See the
+            # marker at the condition for why the version is the source and
+            # why the two published arms are pinned as a pair.
             personalizable_slots=slot_contract,
         )
     except StateTransitionError:

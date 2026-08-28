@@ -374,8 +374,9 @@ def _assert_report_permits_approval(
     instead of spread through the transition logic.
 
     Args:
-        storybook_id: The storybook being approved, for the message only.
-        version: The version being approved, for the message only.
+        storybook_id: The storybook being approved; named in all four
+            refusal messages so a 400 identifies the refused artifact.
+        version: The version being approved; likewise named in the messages.
         version_row: The loaded version row carrying ``moderation_report``.
         override_reason: The caller's justification, if any.
 
@@ -388,7 +389,13 @@ def _assert_report_permits_approval(
         BusinessLogicError: On any of the four refusals, each with its own
             ``rule`` so callers can distinguish them.
     """
-    del storybook_id, version  # named for message parity with approve()'s errors
+    # Interpolated into all four refusals below rather than deleted. The
+    # parameters were previously dropped with a `del`, which satisfied Ruff's
+    # unused-argument rule while leaving a docstring that claimed they were
+    # "for the message only" and four messages that named no artifact. A 400
+    # from a bulk approve is far more useful when it says WHICH version it
+    # refused.
+    subject = f"version {version} of storybook '{storybook_id}'"
     # #CRITICAL: security: closes C3-SAFETY Finding 2 (adversarial-safety-
     # evaluation.md): the admin submit endpoint (api/approval.py::submit_storybook)
     # can still move a draft straight to in_review without ever running
@@ -398,7 +405,7 @@ def _assert_report_permits_approval(
     # hold structurally, regardless of how many routes can reach in_review.
     # #VERIFY: test_approve_without_moderation_report_raises.
     if version_row.moderation_report is None:
-        msg = "cannot approve a version that has never been screened by moderation"
+        msg = f"cannot approve {subject}: it has never been screened by moderation"
         raise BusinessLogicError(msg, rule="approve_without_moderation")
     # #CRITICAL: security: a stored report can exist yet carry no genuine
     # content judgment: a mock-reviewer run (reviewer_independent=False) or a
@@ -408,9 +415,9 @@ def _assert_report_permits_approval(
     # #VERIFY: test_approve_fail_safe_report_returns_400.
     if moderation_report_unusable(version_row.moderation_report):
         msg = (
-            "cannot approve: the stored moderation report contains no genuine "
-            "content judgment (fail-safe or mock-reviewer artifacts only); "
-            "re-run moderation for this version first"
+            f"cannot approve {subject}: the stored moderation report contains "
+            "no genuine content judgment (fail-safe or mock-reviewer artifacts "
+            "only); re-run moderation for this version first"
         )
         raise BusinessLogicError(msg, rule="approve_with_unusable_moderation")
     # #CRITICAL: security: a coverage gap is not a verdict, so it is checked
@@ -429,10 +436,10 @@ def _assert_report_permits_approval(
     # precisely to prove D2 is not what stops the request.
     if moderation_coverage_incomplete(version_row.moderation_report):
         msg = (
-            "cannot approve: the stored moderation report admits the reviewer "
-            "never saw part of this story (incomplete coverage). An override "
-            "reason cannot substitute for a judgment that was never made; "
-            "re-run moderation for this version first"
+            f"cannot approve {subject}: the stored moderation report admits "
+            "the reviewer never saw part of this story (incomplete coverage). "
+            "An override reason cannot substitute for a judgment that was "
+            "never made; re-run moderation for this version first"
         )
         raise BusinessLogicError(msg, rule="approve_with_incomplete_coverage")
     # #CRITICAL: security: ADR-005 amendment (2026-08-25, gate D2): a human
@@ -461,8 +468,8 @@ def _assert_report_permits_approval(
         override_reason and override_reason.strip()
     ):
         msg = (
-            "approving over a block or high-severity finding requires an "
-            "override reason; it is recorded in the audit log"
+            f"approving {subject} over a block or high-severity finding "
+            "requires an override reason; it is recorded in the audit log"
         )
         raise BusinessLogicError(msg, rule="approve_requires_override_reason")
     return severe_counts
