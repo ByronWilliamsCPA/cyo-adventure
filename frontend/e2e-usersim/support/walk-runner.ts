@@ -27,6 +27,7 @@ import {
   type AxeStateTracker,
   type RoleFamilyCanaries,
   type StepContext,
+  type Workflow,
 } from './invariants'
 import { createFindingsSink } from './findings'
 import type { Persona, PersonaId } from './personas'
@@ -117,8 +118,13 @@ export interface WalkOptions {
   installMocks?: (context: BrowserContext, page: Page, personaId: PersonaId) => Promise<void>
   /** I5 canary values in effect; omitted uses invariants.ts's DEFAULT_CANARIES (the mocked tier's literals). */
   canaries?: RoleFamilyCanaries
-  /** Which usersim workflow produced this run (findings.ts's UsersimFinding.workflow). */
-  workflow: string
+  /**
+   * Which usersim workflow produced this run (findings.ts's
+   * UsersimFinding.workflow). Typed as the closed `Workflow` union (task
+   * B3b second review, F3), not a bare `string`: see invariants.ts's own
+   * doc comment on that type for why.
+   */
+  workflow: Workflow
   /**
    * I7 (task B3b) substrate: a per-persona tracker of which state signatures
    * this walk has already axe-scanned. Omitted by every caller except

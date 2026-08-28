@@ -28,13 +28,14 @@
 import { test } from '@playwright/test'
 
 import { requireBackend } from '../e2e-real/real-stack'
+import type { Workflow } from './support/invariants'
 import { PERSONAS } from './support/personas'
 import { proveRealCanariesExist, REAL_CANARIES } from './support/real-canaries'
 import { REAL_SESSION_SETUP } from './support/real-session-setup'
 import { runWalk } from './support/walk-runner'
 
 /** Which usersim workflow produced these findings (findings.ts's UsersimFinding.workflow). */
-const WORKFLOW = 'usersim-walk-real'
+const WORKFLOW: Workflow = 'usersim-walk-real'
 
 test.beforeAll(async () => {
   await requireBackend()

@@ -137,14 +137,20 @@ jobs:
       # project's trace/screenshot output from earlier in this same job.
       # Task B3b review, Important 1: with `!cancelled()` above, this step now
       # always runs after the "Accessibility scan (axe, WCAG 2.2 +
-      # best-practice)" step, so if THAT step fails and this one shared its
-      # default `test-results/` dir, this step would silently wipe stream 1's
-      # evidence before "Upload Playwright report on failure" below ever
-      # uploads it. The fix lives in playwright.config.ts: the `usersim-a11y`
-      # project declares its own `outputDir` (`test-results/usersim-a11y`), so
-      # this invocation only ever clears its own subdirectory.
-      # #VERIFY: `frontend/playwright.config.ts`'s `usersim-a11y` project keeps
-      # a distinct `outputDir` from the default `chromium` project uses above.
+      # best-practice)" step, so if THAT step fails and this one shared a dir
+      # with it, this step would silently wipe stream 1's evidence before
+      # "Upload Playwright report on failure" below ever uploads it. The fix
+      # lives in playwright.config.ts: `chromium` and `usersim-a11y` each
+      # declare their own `outputDir` (`test-results/chromium`,
+      # `test-results/usersim-a11y`; task B3b second review, F2 gave
+      # `chromium` its own dir too, closing a latent nesting risk the first
+      # fix pass left in a comment rather than in code), so this invocation
+      # only ever clears its own subdirectory.
+      # #VERIFY: `frontend/playwright.config.ts`'s `chromium` and
+      # `usersim-a11y` projects keep distinct, non-nesting `outputDir` values;
+      # `tests/unit/test_playwright_output_dir_isolation.py` asserts this for
+      # every step in this job (and in `e2e-real-nightly.yml`'s `e2e-real`
+      # job) that invokes this shared config.
       - name: Accessibility scan (usersim I7, axe on newly-reached states)
         if: ${{ !cancelled() }}
         env:

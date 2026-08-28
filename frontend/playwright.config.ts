@@ -66,10 +66,29 @@ const JSON_REPORT_PATH =
  * current and future caller of that project automatically, including a
  * workflow step nobody has written yet, rather than depending on each new
  * caller remembering to pass a flag the way `PLAYWRIGHT_JSON_REPORT_PATH`
- * requires each workflow step to do. `chromium` keeps the bare default
- * (`test-results/`): it is always the FIRST invocation in any job that also
- * runs a second project from this file, so nothing has written there yet for
- * it to wipe.
+ * requires each workflow step to do.
+ *
+ * `chromium` also gets its own `outputDir` (not the bare default), even
+ * though today it is always the FIRST invocation in any job that runs a
+ * second project from this file, so nothing has written there yet for it to
+ * wipe. Task B3b second review, F2: the bare default is `test-results/`,
+ * which is a PARENT directory of every isolated project dir below
+ * (`test-results/usersim-a11y`, etc.), so "chromium always runs first" was
+ * an invariant that lived only in this comment, not in anything that could
+ * fail if it stopped being true; a later `chromium` step appended after one
+ * of those projects (e.g. a future `--project=chromium e2e/keyboard-nav.spec.ts`
+ * step added after the I7 step in the weekly job) would silently delete the
+ * earlier project's evidence with nothing to catch it.
+ * `tests/unit/test_playwright_output_dir_isolation.py` now asserts this
+ * structurally instead of by convention: every project actually invoked as a
+ * separate step within the same job must resolve to a distinct, non-nesting
+ * `outputDir`. `real-backend-setup` is the one project left on the bare
+ * default: it is a `dependencies: [...]` target that Playwright always runs
+ * INSIDE its dependent's own invocation (never as its own separate workflow
+ * step), so it never gets the chance to wipe a sibling's evidence the way a
+ * separately-invoked project could; the contract test's project list is
+ * built from the workflows' actual `run:` commands, so a dependency-only
+ * project is correctly never a member of it.
  */
 
 export default defineConfig({
@@ -112,6 +131,11 @@ export default defineConfig({
     {
       name: 'chromium',
       testDir: './e2e',
+      // See the JSON_REPORT_PATH header comment above (Task B3b second
+      // review, F2): an explicit, non-default outputDir so this project is a
+      // SIBLING of every other project's isolated dir under `test-results/`,
+      // never its parent.
+      outputDir: 'test-results/chromium',
       // P4-1: visual.spec.ts asserts pixel-exact screenshot baselines that are
       // captured on the Linux CI runner. A developer host (macOS/Windows/WSL)
       // renders fonts differently, so those baselines drift by sub-pixel anti-

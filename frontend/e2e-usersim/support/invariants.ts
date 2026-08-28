@@ -119,6 +119,24 @@ export function createAxeStateTracker(): AxeStateTracker {
   return { scanned: new Set() }
 }
 
+/**
+ * The closed set of usersim workflow tags a `StepContext` can carry: each
+ * spec file's own `WORKFLOW` constant (walk.spec.ts's `'usersim-walk'`,
+ * walk-real.spec.ts's `'usersim-walk-real'`, walk-a11y.spec.ts's
+ * `'usersim-a11y-weekly'`).
+ *
+ * Task B3b second review, F3: `REPLAY_PROJECT_BY_WORKFLOW` used to be keyed
+ * by bare `string` with a `?? 'usersim'` fallback, so a fourth walk spec
+ * adding a new tag here would silently fall back to `usersim` (the WRONG
+ * project for anything but walk.spec.ts) at replay time instead of failing
+ * anywhere. Threading this union through `StepContext.workflow` (below) and
+ * `WalkOptions.workflow` (walk-runner.ts) makes a new, unregistered tag a
+ * compile error at the spec file that introduces it: `tsc -b` rejects the
+ * `workflow: WORKFLOW` assignment before the code ever ships, rather than
+ * printing a wrong replay command the first time that tag's invariant fires.
+ */
+export type Workflow = 'usersim-walk' | 'usersim-walk-real' | 'usersim-a11y-weekly'
+
 export interface StepContext {
   page: Page
   persona: PersonaId
@@ -127,7 +145,7 @@ export interface StepContext {
   step: number
   sink: FindingsSink
   /** Which usersim workflow produced this run (see findings.ts's UsersimFinding.workflow). */
-  workflow: string
+  workflow: Workflow
   /**
    * I5 canary values in effect for this run. Optional: omitted (mocked tier)
    * falls back to DEFAULT_CANARIES, so every existing caller is unaffected.
@@ -158,8 +176,13 @@ export interface StepContext {
  * tier needs a real backend up, which `usersim` never touches). The module
  * header's own claim -- "a finding that cannot be replayed is a rumour" --
  * does not hold if the printed command runs the wrong file.
+ *
+ * `Record<Workflow, string>` (not `Record<string, string>`): every member of
+ * the `Workflow` union must have an entry, so this object literal itself is
+ * a compile error the moment `Workflow` grows a tag this map does not cover,
+ * and `replayHint` below never needs a silent fallback for a missing key.
  */
-const REPLAY_PROJECT_BY_WORKFLOW: Record<string, string> = {
+const REPLAY_PROJECT_BY_WORKFLOW: Record<Workflow, string> = {
   'usersim-walk': 'usersim',
   'usersim-walk-real': 'usersim-real',
   'usersim-a11y-weekly': 'usersim-a11y',
@@ -170,14 +193,16 @@ const REPLAY_PROJECT_BY_WORKFLOW: Record<string, string> = {
  * same way as `REPLAY_PROJECT_BY_WORKFLOW`. Only `usersim-a11y` needs one:
  * walk-a11y.spec.ts's own `test.skip` makes the whole project a no-op
  * without `A11Y_EXTENDED=1` (see that file's header comment), so a replay
- * command missing it would print "3 skipped" and reproduce nothing.
+ * command missing it would print "3 skipped" and reproduce nothing. `Partial`
+ * here (unlike `REPLAY_PROJECT_BY_WORKFLOW` above) because most workflows
+ * need no extra env at all, not because the key type is unconstrained.
  */
-const REPLAY_ENV_BY_WORKFLOW: Partial<Record<string, string>> = {
+const REPLAY_ENV_BY_WORKFLOW: Partial<Record<Workflow, string>> = {
   'usersim-a11y-weekly': 'A11Y_EXTENDED=1 ',
 }
 
 function replayHint(ctx: StepContext): string {
-  const project = REPLAY_PROJECT_BY_WORKFLOW[ctx.workflow] ?? 'usersim'
+  const project = REPLAY_PROJECT_BY_WORKFLOW[ctx.workflow]
   const envPrefix = REPLAY_ENV_BY_WORKFLOW[ctx.workflow] ?? ''
   return `persona=${ctx.persona} seed=${ctx.seed} step=${ctx.step} url=${ctx.page.url()} (replay: ${envPrefix}USERSIM_SEED=${ctx.seed} npx playwright test --project=${project} -g ${JSON.stringify(ctx.persona)})`
 }

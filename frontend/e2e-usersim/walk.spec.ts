@@ -33,12 +33,13 @@
  */
 import { test } from '@playwright/test'
 
+import type { Workflow } from './support/invariants'
 import { installWalkMocks } from './support/mocked-api'
 import { PERSONAS } from './support/personas'
 import { runWalk } from './support/walk-runner'
 
 /** Which usersim workflow produced these findings (findings.ts's UsersimFinding.workflow). */
-const WORKFLOW = 'usersim-walk'
+const WORKFLOW: Workflow = 'usersim-walk'
 
 test.afterEach(async ({ page }, testInfo) => {
   // Load-bearing for invariants.ts's recordAndThrow comment: a failure's

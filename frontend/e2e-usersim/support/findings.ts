@@ -1,10 +1,19 @@
 /**
- * JSONL findings emitter for the usersim walk tier.
+ * Findings formatter and sink for the usersim walk tier.
  *
- * One finding is one JSON object, one line, with exactly the fields below.
- * `workflow` is REQUIRED (not optional) because leg A findings will
- * originate from two different workflows, and a finding with no workflow
- * field would be unattributable between them.
+ * One finding is one JSON object, formatted (`formatFinding`) as a single
+ * JSON line. Nothing in this repo writes those lines to a file: the one
+ * caller, walk-runner.ts's `runWalk`, wires `write` to `console.log` with a
+ * `[usersim-finding]` prefix, so a finding reaches the job's own log at
+ * `record()` time (task B3b review, Important 3). There is no findings file
+ * on disk anywhere in this repository; see
+ * docs/operations/runbook.md's usersim-a11y-weekly description for the same
+ * correction. `workflow` is REQUIRED (not optional) because findings now
+ * originate from three different workflow tags (walk.spec.ts's
+ * `'usersim-walk'`, walk-real.spec.ts's `'usersim-walk-real'`,
+ * walk-a11y.spec.ts's `'usersim-a11y-weekly'`; see invariants.ts's
+ * `Workflow` type), and a finding with no workflow field would be
+ * unattributable between them.
  */
 
 export interface UsersimFinding {
@@ -43,12 +52,13 @@ export interface FindingsSink {
 /**
  * Build a findings sink around a line-writer callback.
  *
- * Deliberately not wired to a real file here: task 1 only needs the shape
- * and the JSONL formatting to be fixed and testable. Task 2/3 pass a real
- * writer (e.g. one that appends `line + '\n'` to a results file via
- * `node:fs`) once the walk that produces findings exists; passing a plain
- * callback here keeps this module usable from a unit test with no
- * filesystem dependency at all.
+ * `write` decides where a formatted line goes. Every current caller
+ * (walk-runner.ts's `runWalk`) passes `console.log` with a `[usersim-finding]`
+ * prefix, so a finding reaches the job's own log at `record()` time, not a
+ * results file; see the module doc comment above. Kept as a plain callback
+ * rather than a hardcoded `node:fs` writer so this module stays usable from
+ * a unit test with no filesystem dependency, and so a future caller that
+ * does want a real file can supply one without a second, parallel emitter.
  */
 export function createFindingsSink(write: (line: string) => void): FindingsSink {
   return {

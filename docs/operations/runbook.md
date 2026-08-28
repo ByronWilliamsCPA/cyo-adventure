@@ -846,7 +846,9 @@ Issues by) both.**
 To list the current producers:
 
 ```bash
-# Every workflow that files or resolves a tracking issue (14 as of 2026-08-27).
+# Every workflow that files or resolves a tracking issue (18 as of 2026-08-28;
+# this count moves as workflows are added, run the grep yourself rather than
+# trusting a number that was already stale once, see F1 below).
 # Match on `uses:`, not on the path alone: ci.yml names the same directory to run
 # the action's test harness and is not a producer.
 grep -rln 'uses: ./.github/actions/ci-failure-issue' .github/workflows/
@@ -858,7 +860,7 @@ grep -rn -A6 'uses: ./.github/actions/ci-failure-issue' .github/workflows/ \
 ```
 
 Do NOT grep for `labels: '` here, which is what this section used to say. The label is now an input
-to the composite action and eleven of the fourteen workflows do not pass it at all, so that grep
+to the composite action and ten of the eighteen workflows do not pass it at all, so that grep
 returns a near-empty list that reads exactly like "almost nothing alerts". `tests/unit/test_ci_failure_action_contract.py`
 enforces the invariants the commands above only report on: markers stay unique and mutually
 non-prefixing, both labels stay in use, and no workflow re-inlines the lookup.
@@ -880,11 +882,18 @@ two E2E tiers exercising a real backend are:
   failure there surfaces under this same marker, not a separate one.
 
 **`.github/workflows/e2e-staging.yml`** ("E2E (staging)") runs daily (`0 13 * * *` UTC) against the
-staging deployment. Its alert marker is `[e2e-staging]`; do not confuse it with the third-E2E-tier
-description an earlier version of this section carried, which claimed this workflow had no alerting
-step at all. That was wrong even when it was written; this workflow has always used
-`ci-failure-issue` the same way the others do, and `tests/unit/test_ci_failure_action_contract.py`
-would fail if it stopped. For the wider test strategy see
+staging deployment. Its alert marker is `[e2e-staging]`. This alerting is recent and, as of this
+writing, branch-local: commit `8c7dd27a` ("feat(ci): give e2e-staging.yml self-alerting via
+ci-failure-issue", 2026-08-27) added it on `fix/testing-ladder-trust`, and that commit is **not on
+`origin/main`**. An earlier version of this section correctly said the workflow had no alerting step
+at all; that wording was written in commit `15a6d520` (2026-08-11) and was true when written, it only
+went stale once `8c7dd27a` landed on this branch, not before. No test currently enforces that this
+step keeps existing: `tests/unit/test_ci_failure_action_contract.py` asserts invariants (marker
+uniqueness, label usage, no re-inlined lookup) over whichever call sites are CURRENTLY present in the
+workflow files; deleting a call site removes it from that enumeration rather than failing it, and
+that suite still passes 28/28 with both of this workflow's `ci-failure-issue` steps truncated out.
+Do not read this paragraph as a guarantee the tests do not make; if that guarantee is wanted, adding
+it is a separate decision. For the wider test strategy see
 [`docs/testing/`](../testing/README.md); for a manual, checklist-driven live verification (not
 automated alerting), see [`docs/planning/r1-live-e2e-checklist.md`](../planning/r1-live-e2e-checklist.md).
 

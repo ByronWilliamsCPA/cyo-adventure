@@ -28,13 +28,13 @@
  */
 import { expect, test } from '@playwright/test'
 
-import { createAxeStateTracker } from './support/invariants'
+import { createAxeStateTracker, type Workflow } from './support/invariants'
 import { installWalkMocks } from './support/mocked-api'
 import { PERSONAS } from './support/personas'
 import { runWalk } from './support/walk-runner'
 
 /** Which usersim workflow produced these findings (findings.ts's UsersimFinding.workflow). */
-const WORKFLOW = 'usersim-a11y-weekly'
+const WORKFLOW: Workflow = 'usersim-a11y-weekly'
 
 test.afterEach(async ({ page }, testInfo) => {
   // Same evidence-joining rationale as walk.spec.ts's identical hook: a
