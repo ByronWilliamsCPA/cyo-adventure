@@ -100,6 +100,7 @@ from __future__ import annotations
 
 import argparse
 import asyncio
+import re
 import sys
 from dataclasses import dataclass, field
 from typing import TYPE_CHECKING, Final, cast
@@ -807,6 +808,27 @@ def _exit_on_excluded(result: SweepResult) -> None:
         )
 
 
+# A database name and nothing else: one path segment, no separator that could
+# only be there because the authority split went wrong.
+_SAFE_DATABASE_PATH: Final = re.compile(r"\A(?:/[^/@:?#]*)?\Z")
+
+
+# #CRITICAL: security: this renders a DSN for a banner that goes to a terminal
+# and is scraped into CI logs, so it must be IMPOSSIBLE for a password to
+# reach the output, not merely unlikely on a well-formed URL. Nothing upstream
+# validates the DSN: `database_url` is a bare `str` on Settings. The previous
+# form fell back to `parts.path` whenever there was no authority, so a URL
+# missing `//` (or a scheme) put the ENTIRE credential-bearing remainder into
+# the banner verbatim, and an unescaped `/` inside a password ended the netloc
+# early and did the same on a URL that looked well-formed. The rule now is
+# whitelist-then-refuse: emit only fields that a real authority positively
+# yielded, and return "unparseable" the moment any part of the split looks
+# like it landed somewhere it should not have. Refusing to describe the target
+# is always safe here; the operator can still read the environment and
+# provider from the same banner.
+# #VERIFY: tests/unit/test_remoderate_books.py::
+# TestDatabaseTarget::test_no_credential_survives_any_malformed_url and
+# ::test_preflight_banner_never_prints_credentials_end_to_end.
 def _database_target(database_url: str) -> str:
     """Render a connection URL as ``host:port/name``, dropping credentials.
 
@@ -815,16 +837,38 @@ def _database_target(database_url: str) -> str:
 
     Returns:
         str: A credential-free description of what this run will write to, or
-        ``"unparseable"`` when the URL does not parse. Never the password:
-        this string is printed to a terminal and scraped into CI logs.
+        ``"unparseable"``. Never the password: this string is printed to a
+        terminal and scraped into CI logs. ``"unparseable"`` covers three
+        distinct refusals, deliberately collapsed into one opaque answer
+        because telling them apart would itself describe the malformed URL:
+        the URL does not split at all, it splits but yields no authority to
+        read a host from, or it splits in a way that proves the authority
+        boundary was misplaced (a truncated netloc, or a path that is not a
+        bare database name).
     """
     try:
         parts = urlsplit(database_url)
+        host = parts.hostname
+        # #CRITICAL: data-integrity: `.port` is a lazy property that CASTS on
+        # access, so it raises for a non-numeric or out-of-range port. Reading
+        # it outside this `try` (as the previous form did) left the documented
+        # "unparseable" contract unreachable for the likeliest malformed URLs,
+        # since `urlsplit` itself does not validate the port at all.
+        port = parts.port
     except ValueError:
         return "unparseable"
-    host = parts.hostname or "unknown-host"
-    port = f":{parts.port}" if parts.port else ""
-    return f"{host}{port}{parts.path}"
+    if not host or not _SAFE_DATABASE_PATH.match(parts.path):
+        return "unparseable"
+    # If the URL carried userinfo, the netloc must still carry it. When it does
+    # not, urlsplit ended the authority early (a `?`, `#`, or `/` inside the
+    # password) and whatever "host" it produced is really a credential
+    # fragment.
+    if "@" in database_url and "@" not in parts.netloc:
+        return "unparseable"
+    # `hostname` strips the brackets an IPv6 literal needs; put them back
+    # rather than emitting `::1:5432`, which reads as a different address.
+    rendered_host = f"[{host}]" if ":" in host else host
+    return f"{rendered_host}{f':{port}' if port else ''}{parts.path}"
 
 
 # #CRITICAL: security: this preflight is the reason a canary run is worth
@@ -863,10 +907,17 @@ def _preflight(settings: Settings, *, execute: bool) -> None:
     """
     if not execute:
         return
+    # stderr, not stdout: the refusal below exits through `sys.exit(str)`,
+    # which writes to stderr, and the banner is the context that refusal
+    # refers to ("the resolved environment above"). Splitting the pair across
+    # two streams meant a CI step or an operator redirecting either one kept
+    # only half the safety story. Results stay on stdout; safety diagnostics
+    # travel together on stderr.
     print(
         f"remoderate_books: environment={settings.environment} "
         f"database={_database_target(settings.database_url)} "
-        f"review_provider={settings.review_provider}"
+        f"review_provider={settings.review_provider}",
+        file=sys.stderr,
     )
     if settings.review_provider == "mock":
         sys.exit(
