@@ -22,6 +22,10 @@ wrong is worse than no cost figure at all:
 from __future__ import annotations
 
 from dataclasses import dataclass, field
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from decimal import Decimal
 
 __all__ = [
     "EMPTY_TOTALS",
@@ -139,11 +143,22 @@ class Completion:
             and without this field no retry policy could tell them apart. The
             comparison harness retried a budget failure three times at roughly
             eleven minutes and fifty cents an attempt (`AL-329`).
+        vendor_cost_usd: What the vendor itself said this single call cost, or
+            ``None`` when the backend reported no cost. This is an OBSERVED
+            number, distinct in kind from the estimate
+            ``core.pricing.estimate_cost`` derives from a hand-transcribed,
+            dated price table whose own docstring warns that a vendor price
+            change makes every later estimate silently wrong. Only backends
+            that report a per-call cost and are asked to do so populate it, so
+            ``None`` means "not reported", never "free"; the same discipline
+            ``input_tokens`` carries. ``Decimal``, never ``float``, because it
+            is money and it is summed across calls.
     """
 
     text: str
     usage: TokenUsage
     finish_reason: str | None = None
+    vendor_cost_usd: Decimal | None = None
 
 
 @dataclass(frozen=True, slots=True)

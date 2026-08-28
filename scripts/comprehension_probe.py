@@ -79,16 +79,22 @@ if str(_REPO_ROOT) not in sys.path:
     sys.path.insert(0, str(_REPO_ROOT))
 
 from cyo_adventure.core.config import Settings  # noqa: E402
-from cyo_adventure.core.exceptions import ConfigurationError  # noqa: E402
+from cyo_adventure.core.exceptions import (  # noqa: E402
+    BusinessLogicError,
+    ConfigurationError,
+)
 from cyo_adventure.core.pricing import (  # noqa: E402
     CostEstimate,
     estimate_cost,
     price_for,
 )
-from cyo_adventure.generation.provider import build_openrouter_leg  # noqa: E402
+from cyo_adventure.generation.provider import (  # noqa: E402
+    build_openrouter_cost_reporting_leg,
+)
 from cyo_adventure.utils.logging import get_logger  # noqa: E402
 from scripts._paid_output import (  # noqa: E402
     _is_ignored,  # pyright: ignore[reportPrivateUsage]
+    ensure_persistable,
 )
 from scripts.adversarial_harness import (  # noqa: E402
     _load_env_file,  # pyright: ignore[reportPrivateUsage]
@@ -127,12 +133,39 @@ _FILL_PREFIX: Final[str] = "<<FILL"
 
 _QUESTIONS_PER_PASSAGE: Final[int] = 3
 
+# The one provider this script routes through, and the first half of the
+# ``core.pricing.PRICES`` key both models are looked up by.
+_PROVIDER: Final[str] = "openrouter"
+
 # #ASSUME: external-resources: the comprehension probe's two-model split
-# remains available under the current provider allowlist and budget.
-# #VERIFY: confirm both model ids against the provider allowlist before the
-# pilot run, and record the model ids and prompt-set version in every report,
-# so a precision (or, until human labelling exists, unlabelled-rate) figure is
-# attributable to a configuration.
+# remains available and priced under the current budget.
+# #VERIFY: before the pilot run, confirm that both model ids resolve to a
+# complete price row (:func:`_ensure_models_are_priced`, which `main` calls
+# before any spend), that the two ids are genuinely different
+# (:func:`_validate_model_pair`, called at import), and that every report
+# records the model ids and prompt-set version, so a figure is attributable to
+# a configuration: tests/unit/test_comprehension_probe.py::
+# TestConfiguredModels::test_the_two_configured_models_are_not_the_same_model,
+# ::test_both_configured_models_resolve_to_a_complete_price_row and
+# ::test_an_unpriced_model_refuses_to_start.
+#
+# The plan's original wording asked for these ids to be confirmed "against the
+# provider allowlist", and that instruction was wrong rather than merely
+# unperformed. ``generation/allowlist.py`` is an admin-editable DATABASE table
+# (``provider_model_allowlist``), and its only enforcement point in ``src/`` is
+# ``story_requests/authoring_plan.py::is_enabled_allowlist_pair``, which gates
+# which provider/model a guardian or admin may select for FAMILY-LANE story
+# generation. It governs no offline script, reads no script, and this script
+# reads no database. Every other paid offline harness here already runs models
+# absent from ``DEFAULT_ALLOWLIST`` for the same reason
+# (``scripts/judge_books.py`` uses ``openai/gpt-5.6-sol``,
+# ``scripts/w7_battery.py`` uses ``anthropic/claude-sonnet-5``,
+# ``scripts/yield_harness.py`` documents ``google/gemma-4-31b-it:free``), so
+# holding this one script to the family-lane allowlist would be a rule applied
+# to exactly one caller. What the pair genuinely must satisfy is checked above:
+# distinct, and priced. Recorded rather than silently dropped, because
+# "confirm X" left unperformed and "confirm X" found inapplicable are
+# indistinguishable in a diff.
 #
 # Two different labs, both cheap, both routed through the OpenRouter leg per
 # ADR-003 (the direct anthropic leg is excluded from family-lane generation
@@ -142,6 +175,37 @@ _QUESTIONS_PER_PASSAGE: Final[int] = 3
 # not the passage's clarity.
 _QUESTION_MODEL: Final[str] = "google/gemini-2.5-flash"
 _ANSWER_MODEL: Final[str] = "deepseek/deepseek-v4-flash"
+
+
+def _validate_model_pair(question_model: str, answer_model: str) -> None:
+    """Refuse a configuration in which one model both asks and answers.
+
+    The plan is explicit that the two models must genuinely differ: one model
+    doing both measures that model's self-consistency, not the passage's
+    clarity, and every number the run produces would be mislabelled. Checked
+    at import rather than in ``main`` so the property cannot be edited away and
+    left to be caught by a reviewer: a run, a test session, and a bare import
+    all fail immediately and identically.
+
+    Args:
+        question_model: The model id that generates questions.
+        answer_model: The model id that answers them.
+
+    Raises:
+        ConfigurationError: When the two ids are the same.
+    """
+    if question_model == answer_model:
+        msg = (
+            f"comprehension probe misconfigured: the question and answer legs "
+            f"are both {question_model!r}. One model asking and answering its "
+            "own questions measures that model's self-consistency, not the "
+            "passage's clarity, so every rate the run reports would be "
+            "mislabelled. Configure two genuinely different models."
+        )
+        raise ConfigurationError(msg)
+
+
+_validate_model_pair(_QUESTION_MODEL, _ANSWER_MODEL)
 
 # Bumped whenever the question or answer prompt text changes materially, so a
 # report is attributable to the exact wording that produced it, not just the
@@ -212,7 +276,14 @@ class CorpusStats:
             ``<<FILL ...>>`` directive.
         nodes_skipped_empty: Nodes excluded because ``body`` was missing or
             blank.
-        passages_collected: What survived, in the order they will be probed.
+        passages_collected: What survived the cap, in the order they will be
+            probed (round-robin across stories; see
+            :func:`collect_passages`).
+        stories_available: How many distinct stories contributed at least one
+            eligible passage before the cap was applied.
+        stories_sampled: How many of those the collected slice actually drew
+            from. When this is 1 and ``stories_available`` is more, the run's
+            headline is a single-book figure whatever the slice was called.
     """
 
     files_scanned: int
@@ -222,6 +293,8 @@ class CorpusStats:
     nodes_skipped_fill: int
     nodes_skipped_empty: int
     passages_collected: int
+    stories_available: int
+    stories_sampled: int
 
 
 class ProbeParseError(ValueError):
@@ -296,9 +369,100 @@ class NodeResult:
     error_detail: str = ""
 
 
+class UnaccountableSpendError(BusinessLogicError):
+    """A call was made whose cost could not be established.
+
+    Raised by :meth:`BudgetTracker.add` rather than counted, because a cost
+    that cannot be established is the one input a spend cap cannot survive.
+    See that method for why an exception rather than a flag.
+    """
+
+    def __init__(self, message: str) -> None:
+        """Record the unaccountable call.
+
+        Args:
+            message: Human-readable detail naming the call and the reason.
+        """
+        super().__init__(message, rule="probe_unaccountable_spend")
+
+
+def _ensure_models_are_priced() -> None:
+    """Refuse to start unless both configured models carry a complete price.
+
+    This is the first half of the cap's fail-closed behaviour, and it exists
+    because the second half is a diagnosis after the money is gone. An
+    unpriced pair makes :func:`~cyo_adventure.core.pricing.estimate_cost`
+    return ``amount_usd=0, complete=False`` for every call, so a run against
+    one would post zero for every call it made, never reach any cap, and
+    report a spend of ``$0`` for real money. Reachable by a one-line edit to
+    a model constant, a vendor slug rename, or a price refresh that drops a
+    row. Checked once, before anything is spent, and it names which model is
+    at fault so the diagnosis is not a search.
+
+    Raises:
+        ConfigurationError: When either model has no price row, or a row
+            missing either half of its rate. A half-priced row is refused for
+            the same reason a missing one is: it yields ``complete=False``,
+            which is the state the cap cannot bind on.
+    """
+    problems: list[str] = []
+    for role, model in (("question", _QUESTION_MODEL), ("answer", _ANSWER_MODEL)):
+        price = price_for(_PROVIDER, model)
+        if price is None:
+            problems.append(
+                f"{role} model {model!r}: no ({_PROVIDER}, model) row in "
+                "core/pricing.py, so every call would cost 0 and the cap "
+                "would never bind"
+            )
+        elif price.input_usd_per_mtok is None or price.output_usd_per_mtok is None:
+            half = "input" if price.input_usd_per_mtok is None else "output"
+            problems.append(
+                f"{role} model {model!r}: price row is missing its {half} "
+                "rate, so every cost estimate would be incomplete"
+            )
+    if problems:
+        msg = (
+            "refusing to start: the spend cap cannot bind on this model pair. "
+            + "; ".join(problems)
+            + ". Add the missing price row(s) with "
+            "`uv run python scripts/refresh_pricing.py`, or configure models "
+            "that are priced."
+        )
+        raise ConfigurationError(msg)
+
+
 @dataclass
 class BudgetTracker:
     """Tracks spend against a hard dollar cap and stops new calls once hit.
+
+    Two independent spend figures are carried, and the cap binds on the
+    larger. ``observed_usd`` is what the vendor said it charged, call by call
+    (``Completion.vendor_cost_usd``); ``spent_usd`` is what
+    ``core/pricing.py``'s dated, hand-transcribed table implies. They are kept
+    apart rather than reconciled because they are different kinds of fact: the
+    first is a measurement, the second an inference whose own module docstring
+    warns that a vendor price change makes it silently wrong. Reporting only
+    the estimate is how a spend claim ends up self-refuting; reporting only
+    the vendor figure would leave the cap unable to bind on any call the
+    vendor declined to price.
+
+    #CRITICAL: payment/financial: a call whose ESTIMATE is incomplete raises
+    out of :meth:`add` instead of being counted. Until it did, an unpriced
+    pair or a response missing its ``usage`` block posted ``Decimal(0)``,
+    ``exhausted`` stayed ``False`` forever, and 100 passages of 100k-in /
+    100k-out ran to completion against a $0.0000001 cap reporting
+    ``SPENT: 0``: the cap bound on nothing at all and spend was limited only
+    by ``--max-passages``. The old code counted those calls in
+    ``incomplete_cost_calls`` and NOTHING read that counter, which is this
+    repository's documented tri-state trap: "off" and "not yet determined"
+    were both falsy and collapsed into benign. An exception cannot collapse
+    that way, which is why the decision point raises rather than returning a
+    flag a caller may forget to test.
+    #VERIFY: tests/unit/test_comprehension_probe.py::
+    TestBudgetTracker::test_an_unpriced_call_aborts_the_run_rather_than_costing_zero
+    and ::test_an_unreported_usage_block_aborts_the_run
+    and ::test_an_absurdly_low_cap_stops_the_run_after_one_passage
+    and ::test_the_real_cap_does_not_fire_on_a_realistic_slice.
 
     #CRITICAL: concurrency: ``exhausted`` and ``add`` are checked and updated
     from a single sequential loop (:func:`run_probe`), never from concurrent
@@ -315,47 +479,106 @@ class BudgetTracker:
     Attributes:
         cap_usd: The hard spend limit. Never exceeded by the run stopping new
             calls; a call already in flight when the cap is crossed still
-            posts its real cost, so ``spent_usd`` can land at or slightly
+            posts its real cost, so the charged total can land at or slightly
             over ``cap_usd``, never further.
-        spent_usd: Cumulative cost of every call made so far, summed from
-            :func:`~cyo_adventure.core.pricing.estimate_cost`. A lower bound
-            when any call's cost was incomplete (see
-            ``incomplete_cost_calls``).
+        spent_usd: Price-table cost of every call made so far, summed from
+            :func:`~cyo_adventure.core.pricing.estimate_cost`. Always a
+            complete sum, because an incomplete estimate raises instead of
+            being added.
+        observed_usd: Sum of the vendor's own per-call charges, over the calls
+            that reported one. A lower bound whenever
+            ``calls_reporting_vendor_cost`` is below ``calls``.
         calls: How many provider calls were actually made.
-        incomplete_cost_calls: How many of those calls contributed an
-            incomplete cost (unpriced model or unreported token counts). A
-            positive count here means ``spent_usd`` understates true spend by
-            an unknown margin, and the report says so rather than treating
-            spend as exact.
+        calls_reporting_vendor_cost: How many of those calls carried a vendor
+            cost. Reported so ``observed_usd`` is never read as covering more
+            calls than it does.
     """
 
     cap_usd: Decimal
     spent_usd: Decimal = field(default_factory=lambda: Decimal(0))
+    observed_usd: Decimal = field(default_factory=lambda: Decimal(0))
     calls: int = 0
-    incomplete_cost_calls: int = 0
+    calls_reporting_vendor_cost: int = 0
 
-    def add(self, estimate: CostEstimate) -> None:
-        """Post one call's cost against the running total.
+    def add(self, estimate: CostEstimate, *, vendor_cost_usd: Decimal | None) -> None:
+        """Post one call's cost against the running totals.
 
         Args:
-            estimate: The call's cost, from
+            estimate: The call's price-table cost, from
                 :func:`~cyo_adventure.core.pricing.estimate_cost`.
+            vendor_cost_usd: What the vendor said this call cost, or ``None``
+                when it reported nothing. ``None`` is never treated as zero.
+
+        Raises:
+            UnaccountableSpendError: When ``estimate.complete`` is ``False``.
+                The call has already been made and already cost money, so the
+                run is stopped at the first one rather than continuing to buy
+                calls it cannot count.
         """
         self.calls += 1
-        self.spent_usd += estimate.amount_usd
         if not estimate.complete:
-            self.incomplete_cost_calls += 1
+            msg = (
+                f"call {self.calls} produced no usable cost "
+                f"({estimate.reason or 'reason not reported'}), so the "
+                f"${self.cap_usd} cap cannot bind on it. Aborting: a run that "
+                "cannot count what it spends bounds its spend by convention, "
+                "not by a cap. Spend accounted for before this call: "
+                f"${self.spent_usd} (price table), ${self.observed_usd} "
+                "(vendor-reported)."
+            )
+            raise UnaccountableSpendError(msg)
+        self.spent_usd += estimate.amount_usd
+        if vendor_cost_usd is not None:
+            self.observed_usd += vendor_cost_usd
+            self.calls_reporting_vendor_cost += 1
+
+    @property
+    def charged_usd(self) -> Decimal:
+        """The spend figure the cap binds on: the larger of the two totals.
+
+        Returns:
+            ``max(spent_usd, observed_usd)``. Taking the larger is what keeps
+            the cap conservative when the two disagree, which they will
+            whenever the price table has drifted from the vendor's live rate.
+        """
+        return max(self.spent_usd, self.observed_usd)
 
     @property
     def exhausted(self) -> bool:
         """Whether spend has reached or passed the cap.
 
         Returns:
-            ``True`` once ``spent_usd >= cap_usd``. Checked before every
-            provider call in :func:`run_probe`, so once true no further calls
-            are made.
+            ``True`` once :attr:`charged_usd` reaches ``cap_usd``. Checked
+            before every provider call in :func:`run_probe`, so once true no
+            further calls are made.
         """
-        return self.spent_usd >= self.cap_usd
+        return self.charged_usd >= self.cap_usd
+
+
+@dataclass(frozen=True, slots=True)
+class StoryBreakdown:
+    """One story's share of a run, so a headline cannot hide its sources.
+
+    The aggregate rate alone cannot distinguish a band-wide finding from one
+    book's prose style, and the first pilot's headline was a single-book
+    figure that read as an age-band one. Reporting per story is what makes
+    that visible in the artifact rather than reconstructable only by someone
+    who thinks to check.
+
+    Attributes:
+        story_id: The story these counts belong to.
+        passages_probed: Nodes from this story that produced answers.
+        questions_asked: Questions asked across those nodes.
+        questions_unanswerable: How many the answer model declined.
+        unlabelled_unanswerable_rate: The per-story rate, or ``None`` when
+            this story produced no answered questions.
+    """
+
+    story_id: str
+    passages_probed: int
+    questions_asked: int
+    questions_unanswerable: int
+    unlabelled_unanswerable_rate: float | None
 
 
 @dataclass(frozen=True, slots=True)
@@ -363,9 +586,19 @@ class ProbeSummary:
     """The aggregate report for one probe run.
 
     Every field a reader needs in order not to mistake this for a precision
-    figure lives here: the model ids, the prompt version, and an explicit
+    figure lives here: the model ids, the prompt version, an explicit
     ``unlabelled_unanswerable_rate`` name rather than anything calling itself
-    precision.
+    precision, and ``per_story`` so an aggregate rate cannot be read as
+    band-wide when it came from one book.
+
+    The two spend figures are deliberately both present and separately named.
+    ``observed_spend_usd`` is what the vendor charged, summed from
+    ``Completion.vendor_cost_usd`` over the
+    ``calls_reporting_vendor_cost`` calls that reported one; ``spend_usd`` is
+    what ``core/pricing.py``'s dated table implies. Collapsing them into one
+    number is how a spend claim becomes an estimate presented as a
+    measurement. ``charged_usd`` is the larger of the two, and is the figure
+    the cap actually bound on.
     """
 
     generated_at: str
@@ -382,11 +615,14 @@ class ProbeSummary:
     avg_unanswerable_findings_per_node: float | None
     nodes_with_any_unanswerable: int
     error_counts: dict[str, int]
+    per_story: list[StoryBreakdown]
     budget_cap_usd: str
     spend_usd: str
+    observed_spend_usd: str
+    charged_usd: str
     budget_exhausted: bool
     calls_made: int
-    incomplete_cost_calls: int
+    calls_reporting_vendor_cost: int
     uniform_verdict_warning: str | None
     note: str = (
         "unlabelled_unanswerable_rate is NOT precision. Turning it into a "
@@ -655,6 +891,41 @@ def _display_path(path: Path) -> str:
         return str(path)
 
 
+def _round_robin(
+    by_story: dict[str, list[Passage]], *, max_passages: int
+) -> list[Passage]:
+    """Interleave each story's passages so a cap cannot land on one book.
+
+    Takes each story's first passage in file order, then each story's second,
+    and so on until the cap is reached or every story is exhausted. Fully
+    deterministic: the same corpus and cap always yield the same slice, which
+    is the property a *stated* slice needs.
+
+    Args:
+        by_story: Eligible passages per story, in file order, keyed in the
+            order the stories were first seen.
+        max_passages: Stop once this many passages have been taken.
+
+    Returns:
+        The interleaved slice, at most ``max_passages`` long.
+    """
+    collected: list[Passage] = []
+    depth = 0
+    while len(collected) < max_passages:
+        took_any = False
+        for nodes in by_story.values():
+            if depth >= len(nodes):
+                continue
+            collected.append(nodes[depth])
+            took_any = True
+            if len(collected) >= max_passages:
+                break
+        if not took_any:
+            break
+        depth += 1
+    return collected
+
+
 def collect_passages(
     corpus_dir: Path,
     *,
@@ -662,11 +933,22 @@ def collect_passages(
     age_band: str | None = None,
     max_passages: int,
 ) -> tuple[list[Passage], CorpusStats]:
-    """Walk a corpus directory and collect passages up to a cap.
+    """Walk a corpus directory and collect a slice STRATIFIED across stories.
 
-    Files are visited in sorted order and nodes in file order, so the same
-    corpus and cap always yield the same slice: the point of a stated slice
-    is that it is reproducible, not that it is random.
+    Every matching file is opened and every eligible node is grouped by story
+    before the cap is applied, then the cap is spent round-robin across the
+    stories rather than greedily down the first one.
+
+    The greedy version this replaces broke out of the file loop as soon as the
+    cap was reached, so a 60-passage slice of a 31-file corpus came entirely
+    from ``the-backyard-treasure-map`` (62 eligible nodes, sorted first among
+    the six stories in the band) and 27 of the 31 globbed files were never
+    opened at all. The resulting rate was reported and read as an age-band
+    figure while being a single-book figure confounded by one book's
+    characters, setting and author, and the corpus counts said nothing that
+    would reveal it. Scanning everything before capping also makes those
+    counts describe the corpus rather than describing where the walk happened
+    to stop.
 
     Args:
         corpus_dir: Directory to scan (non-recursive).
@@ -680,7 +962,7 @@ def collect_passages(
         and why.
     """
     files = sorted(corpus_dir.glob(pattern))
-    passages: list[Passage] = []
+    by_story: dict[str, list[Passage]] = {}
     skipped_non_storybook = 0
     skipped_age_band = 0
     nodes_seen = 0
@@ -688,8 +970,6 @@ def collect_passages(
     skipped_empty = 0
 
     for path in files:
-        if len(passages) >= max_passages:
-            break
         story_id, band = _story_id_and_band(path)
         if age_band is not None and band != age_band:
             skipped_age_band += 1
@@ -700,8 +980,6 @@ def collect_passages(
             continue
         rel_path = _display_path(path)
         for node in nodes:
-            if len(passages) >= max_passages:
-                break
             if not isinstance(node, dict):
                 continue
             nodes_seen += 1
@@ -713,7 +991,7 @@ def collect_passages(
             if body.strip().startswith(_FILL_PREFIX):
                 skipped_fill += 1
                 continue
-            passages.append(
+            by_story.setdefault(story_id, []).append(
                 Passage(
                     story_id=story_id,
                     story_path=rel_path,
@@ -722,6 +1000,7 @@ def collect_passages(
                 )
             )
 
+    passages = _round_robin(by_story, max_passages=max_passages)
     stats = CorpusStats(
         files_scanned=len(files),
         files_skipped_non_storybook=skipped_non_storybook,
@@ -730,6 +1009,8 @@ def collect_passages(
         nodes_skipped_fill=skipped_fill,
         nodes_skipped_empty=skipped_empty,
         passages_collected=len(passages),
+        stories_available=len(by_story),
+        stories_sampled=len({p.story_id for p in passages}),
     )
     return passages, stats
 
@@ -763,7 +1044,7 @@ async def probe_passage(
         prompt=_question_prompt(passage.body),
         max_tokens=_QUESTION_MAX_TOKENS,
     )
-    budget.add(_cost_of(q_completion))
+    budget.add(_cost_of(q_completion), vendor_cost_usd=q_completion.vendor_cost_usd)
     try:
         questions = _extract_questions(_parse_json_object(q_completion))
     except ProbeParseError as exc:
@@ -794,7 +1075,7 @@ async def probe_passage(
         prompt=_answer_prompt(passage.body, questions),
         max_tokens=_ANSWER_MAX_TOKENS,
     )
-    budget.add(_cost_of(a_completion))
+    budget.add(_cost_of(a_completion), vendor_cost_usd=a_completion.vendor_cost_usd)
     try:
         answers = _extract_answers(
             _parse_json_object(a_completion), questions=questions
@@ -871,6 +1152,41 @@ async def run_probe(
     return results
 
 
+def _story_breakdowns(results: Sequence[NodeResult]) -> list[StoryBreakdown]:
+    """Group answered results by story and count each story's share.
+
+    Args:
+        results: Every node result from :func:`run_probe`.
+
+    Returns:
+        One :class:`StoryBreakdown` per story that produced answers, in the
+        order the stories were first probed.
+    """
+    asked: dict[str, int] = {}
+    unanswerable: dict[str, int] = {}
+    probed: dict[str, int] = {}
+    for result in results:
+        if result.answers is None:
+            continue
+        probed[result.story_id] = probed.get(result.story_id, 0) + 1
+        asked[result.story_id] = asked.get(result.story_id, 0) + len(result.answers)
+        unanswerable[result.story_id] = unanswerable.get(result.story_id, 0) + sum(
+            1 for a in result.answers if not a.can_answer
+        )
+    return [
+        StoryBreakdown(
+            story_id=story_id,
+            passages_probed=count,
+            questions_asked=asked[story_id],
+            questions_unanswerable=unanswerable[story_id],
+            unlabelled_unanswerable_rate=(
+                unanswerable[story_id] / asked[story_id] if asked[story_id] else None
+            ),
+        )
+        for story_id, count in probed.items()
+    ]
+
+
 def summarize(
     results: Sequence[NodeResult],
     *,
@@ -888,7 +1204,9 @@ def summarize(
             report header.
 
     Returns:
-        The aggregate summary. ``uniform_verdict_warning`` is set when every
+        The aggregate summary, including a per-story breakdown so a
+        single-story slice is visible in the artifact rather than only in the
+        corpus counts. ``uniform_verdict_warning`` is set when every
         processed question landed on the same side (all answerable or all
         unanswerable), which is the signature of an environment fault, not a
         finding, per the trap this repository has already paid for once.
@@ -945,11 +1263,14 @@ def summarize(
         avg_unanswerable_findings_per_node=avg_per_node,
         nodes_with_any_unanswerable=nodes_with_any,
         error_counts=error_counts,
+        per_story=_story_breakdowns(results),
         budget_cap_usd=str(budget.cap_usd),
         spend_usd=str(budget.spent_usd),
+        observed_spend_usd=str(budget.observed_usd),
+        charged_usd=str(budget.charged_usd),
         budget_exhausted=budget.exhausted,
         calls_made=budget.calls,
-        incomplete_cost_calls=budget.incomplete_cost_calls,
+        calls_reporting_vendor_cost=budget.calls_reporting_vendor_cost,
         uniform_verdict_warning=warning,
     )
 
@@ -1013,6 +1334,45 @@ def write_report(
     return run_dir
 
 
+def write_tracked_aggregate(aggregate_path: Path, summary: ProbeSummary) -> Path:
+    """Persist the run's AGGREGATE to a tracked path, and nothing else.
+
+    The per-story reports and everything raw stay under the gitignored ``--out``
+    tree: passages are copyrighted prose and model output is unreviewed text,
+    and the plan is explicit that neither may be committed. The aggregate is a
+    different artifact. It is the run's finding, it costs real money to
+    reproduce, and until it was written somewhere tracked the rate, the model
+    ids, the prompt version, the corpus slice and the observed cost existed
+    only in ``tmp/``: clearing that directory would have destroyed the pilot
+    and left the follow-up labelling work with nothing to be performed
+    against.
+
+    :class:`ProbeSummary` is safe to persist by construction: it carries
+    counts, rates, ids and this script's own text, and no passage body,
+    question, answer or model-authored string. The one field that could carry
+    model output, ``NodeResult.error_detail``, is deliberately not part of it.
+
+    Args:
+        aggregate_path: The tracked JSON file to write.
+        summary: The aggregate to persist.
+
+    Returns:
+        The path written.
+
+    Raises:
+        SystemExit: When ``aggregate_path`` is gitignored, via
+            ``scripts/_paid_output.ensure_persistable``. A "durable" record
+            that git is configured to ignore is the defect this call exists to
+            prevent, and it is checked at write time as well as at start.
+    """
+    ensure_persistable(aggregate_path)
+    aggregate_path.parent.mkdir(parents=True, exist_ok=True)
+    aggregate_path.write_text(
+        json.dumps(dataclasses.asdict(summary), indent=2) + "\n", encoding="utf-8"
+    )
+    return aggregate_path
+
+
 def _print_summary(summary: ProbeSummary) -> None:
     """Print the human-readable summary to stdout."""
     print("=" * 64)
@@ -1034,6 +1394,10 @@ def _print_summary(summary: ProbeSummary) -> None:
         f"skipped empty: {stats.nodes_skipped_empty}, "
         f"passages collected: {stats.passages_collected})"
     )
+    print(
+        f"Stories: {stats.stories_sampled} sampled of "
+        f"{stats.stories_available} available in this slice"
+    )
     print(f"Nodes processed: {summary.nodes_processed}")
     print(f"Nodes skipped for budget: {summary.nodes_skipped_budget}")
     print(f"Questions asked: {summary.questions_asked}")
@@ -1047,10 +1411,25 @@ def _print_summary(summary: ProbeSummary) -> None:
         f"Nodes with any unanswerable question: {summary.nodes_with_any_unanswerable}"
     )
     print(f"Error counts: {summary.error_counts}")
+    print("Per story (story_id: probed, asked, unanswerable, rate):")
+    for story in summary.per_story:
+        print(
+            f"  {story.story_id}: {story.passages_probed}, "
+            f"{story.questions_asked}, {story.questions_unanswerable}, "
+            f"{story.unlabelled_unanswerable_rate}"
+        )
     print(
-        f"Spend: ${summary.spend_usd} of ${summary.budget_cap_usd} cap "
-        f"(exhausted={summary.budget_exhausted}, calls={summary.calls_made}, "
-        f"incomplete-cost calls={summary.incomplete_cost_calls})"
+        f"Spend (vendor-reported, OBSERVED): ${summary.observed_spend_usd} "
+        f"over {summary.calls_reporting_vendor_cost} of "
+        f"{summary.calls_made} calls"
+    )
+    print(
+        f"Spend (core/pricing.py table, ESTIMATE): ${summary.spend_usd} "
+        f"over {summary.calls_made} calls"
+    )
+    print(
+        f"Charged against the cap: ${summary.charged_usd} of "
+        f"${summary.budget_cap_usd} (exhausted={summary.budget_exhausted})"
     )
     if summary.uniform_verdict_warning:
         print(f"WARNING: {summary.uniform_verdict_warning}")
@@ -1125,14 +1504,27 @@ def main(argv: Sequence[str] | None = None) -> int:
     parser.add_argument(
         "--out", type=Path, default=Path("tmp/comprehension-probe-reports")
     )
+    parser.add_argument(
+        "--aggregate-out",
+        type=Path,
+        default=Path("out/reports/comprehension-probe/latest-summary.json"),
+        help=(
+            "Tracked JSON path for the run's aggregate (counts, rates, model "
+            "ids, prompt version, per-story breakdown, observed spend). Must "
+            "NOT be gitignored: raw output stays under --out, the finding does "
+            "not."
+        ),
+    )
     parser.add_argument("--env-file", type=Path, default=Path(".env"))
     args = parser.parse_args(argv)
 
     corpus_dir = _resolve_within(args.corpus, label="--corpus")
     out_dir = _resolve_within(args.out, label="--out")
+    aggregate_path = _resolve_within(args.aggregate_out, label="--aggregate-out")
     env_path = _resolve_within(args.env_file, label="--env-file")
 
     _ensure_gitignored_destination(out_dir)
+    ensure_persistable(aggregate_path)
     _load_env_file(env_path)
 
     try:
@@ -1148,9 +1540,14 @@ def main(argv: Sequence[str] | None = None) -> int:
         return 2
 
     try:
+        # Both halves of the cap's fail-closed behaviour, before a cent is
+        # spent: the pair must be distinct (checked at import) and priced.
+        _ensure_models_are_priced()
         settings = Settings()
-        question_provider = build_openrouter_leg(settings, _QUESTION_MODEL)
-        answer_provider = build_openrouter_leg(settings, _ANSWER_MODEL)
+        question_provider = build_openrouter_cost_reporting_leg(
+            settings, _QUESTION_MODEL
+        )
+        answer_provider = build_openrouter_cost_reporting_leg(settings, _ANSWER_MODEL)
     except ConfigurationError as exc:
         print(f"Error: {exc}", file=sys.stderr)
         return 1
@@ -1183,14 +1580,26 @@ def main(argv: Sequence[str] | None = None) -> int:
     )
 
     budget = BudgetTracker(cap_usd=cap)
-    results = asyncio.run(
-        run_probe(
-            passages,
-            question_provider=question_provider,
-            answer_provider=answer_provider,
-            budget=budget,
+    try:
+        results = asyncio.run(
+            run_probe(
+                passages,
+                question_provider=question_provider,
+                answer_provider=answer_provider,
+                budget=budget,
+            )
         )
-    )
+    except UnaccountableSpendError as exc:
+        # No report is written on this path, deliberately. A run whose cost
+        # accounting failed produced numbers whose spend cannot be stated, and
+        # a report that looks like every other report is the wrong artifact to
+        # leave behind for it.
+        print(f"Error: {exc}", file=sys.stderr)
+        print(
+            f"Aborted after {budget.calls} call(s). No report written.",
+            file=sys.stderr,
+        )
+        return 3
     summary = summarize(
         results,
         budget=budget,
@@ -1198,8 +1607,10 @@ def main(argv: Sequence[str] | None = None) -> int:
         corpus_description=corpus_description,
     )
     run_dir = write_report(out_dir, passages=passages, results=results, summary=summary)
+    written = write_tracked_aggregate(aggregate_path, summary)
     _print_summary(summary)
-    print(f"\nReport written to {run_dir} (gitignored; not committed).")
+    print(f"\nRaw report written to {run_dir} (gitignored; not committed).")
+    print(f"Aggregate written to {written} (tracked; commit it).")
     return 0
 
 

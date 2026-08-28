@@ -20,10 +20,14 @@ from typing import TYPE_CHECKING
 
 import pytest
 
+from cyo_adventure.core.exceptions import ConfigurationError
 from cyo_adventure.core.pricing import estimate_cost, price_for
 from cyo_adventure.generation.provider import MockProvider
 from cyo_adventure.generation.usage import Completion, TokenUsage
 from scripts.comprehension_probe import (
+    _ANSWER_MODEL,  # pyright: ignore[reportPrivateUsage]
+    _PROVIDER,  # pyright: ignore[reportPrivateUsage]
+    _QUESTION_MODEL,  # pyright: ignore[reportPrivateUsage]
     _REPO_ROOT,  # pyright: ignore[reportPrivateUsage]
     AnswerRecord,
     BudgetTracker,
@@ -31,10 +35,13 @@ from scripts.comprehension_probe import (
     NodeResult,
     Passage,
     ProbeParseError,
+    UnaccountableSpendError,
     _ensure_gitignored_destination,  # pyright: ignore[reportPrivateUsage]
+    _ensure_models_are_priced,  # pyright: ignore[reportPrivateUsage]
     _extract_answers,  # pyright: ignore[reportPrivateUsage]
     _extract_questions,  # pyright: ignore[reportPrivateUsage]
     _parse_json_object,  # pyright: ignore[reportPrivateUsage]
+    _validate_model_pair,  # pyright: ignore[reportPrivateUsage]
     collect_passages,
     probe_passage,
     run_probe,
@@ -60,6 +67,7 @@ def _completion(
     input_tokens: int | None = 200,
     output_tokens: int | None = 60,
     finish_reason: str | None = "stop",
+    vendor_cost_usd: Decimal | None = None,
 ) -> Completion:
     """Wrap text as a provider would, with a costable usage record by default."""
     return Completion(
@@ -72,6 +80,7 @@ def _completion(
             duration_ms=5,
         ),
         finish_reason=finish_reason,
+        vendor_cost_usd=vendor_cost_usd,
     )
 
 
@@ -284,6 +293,103 @@ class TestFillDirectiveHandling:
         assert stats.passages_collected == 3
 
 
+class TestStratification:
+    """The cap must be spent ACROSS stories, not down the first one.
+
+    The pilot's headline ``0.2034`` was reported as an age-band figure and was
+    in fact a single-book figure: ``collect_passages`` filled greedily from
+    the first file in sorted order and stopped, so all 60 passages came from
+    ``sk_backyard_treasure_map`` and 27 of the 31 globbed files were never
+    opened. Nothing in the old suite could fail on that, because every corpus
+    fixture it used held exactly one story.
+    """
+
+    def _write_story(
+        self, tmp_path: Path, name: str, count: int, *, band: str = "5-8"
+    ) -> None:
+        doc = {
+            "id": name,
+            "metadata": {"age_band": band},
+            "nodes": [
+                {"id": f"{name}-n{i}", "body": f"Prose {i} of {name}."}
+                for i in range(count)
+            ],
+        }
+        (tmp_path / f"{name}.json").write_text(json.dumps(doc), encoding="utf-8")
+
+    def test_the_cap_is_spent_across_stories_not_down_the_first_one(
+        self, tmp_path: Path
+    ) -> None:
+        # story-a alone could satisfy the cap on its own, which is precisely
+        # the corpus shape that produced the single-book pilot.
+        self._write_story(tmp_path, "story-a", 20)
+        self._write_story(tmp_path, "story-b", 20)
+        self._write_story(tmp_path, "story-c", 20)
+        passages, stats = collect_passages(tmp_path, max_passages=6)
+        assert len(passages) == 6
+        assert {p.story_id for p in passages} == {"story-a", "story-b", "story-c"}
+        # Round-robin, so the order is one from each in turn, deterministically.
+        assert [p.story_id for p in passages] == [
+            "story-a",
+            "story-b",
+            "story-c",
+            "story-a",
+            "story-b",
+            "story-c",
+        ]
+        assert stats.stories_available == 3
+        assert stats.stories_sampled == 3
+
+    def test_a_short_story_does_not_starve_the_others(self, tmp_path: Path) -> None:
+        # story-a runs out at depth 1; the remaining budget must go to the
+        # stories that still have passages rather than stopping the walk.
+        self._write_story(tmp_path, "story-a", 1)
+        self._write_story(tmp_path, "story-b", 5)
+        passages, stats = collect_passages(tmp_path, max_passages=4)
+        assert [p.story_id for p in passages] == [
+            "story-a",
+            "story-b",
+            "story-b",
+            "story-b",
+        ]
+        assert stats.stories_available == 2
+        assert stats.stories_sampled == 2
+
+    def test_every_matching_file_is_opened_even_once_the_cap_is_reachable(
+        self, tmp_path: Path
+    ) -> None:
+        """``CorpusStats`` must describe the CORPUS, not where the walk stopped.
+
+        The greedy version broke out of the file loop, so ``nodes_seen`` and
+        ``files_scanned`` counted only the prefix it had reached. That is the
+        same accounting that made the pilot's misdescription invisible.
+        """
+        self._write_story(tmp_path, "story-a", 10)
+        self._write_story(tmp_path, "story-b", 10)
+        self._write_story(tmp_path, "story-c", 10)
+        passages, stats = collect_passages(tmp_path, max_passages=2)
+        assert len(passages) == 2
+        assert stats.files_scanned == 3
+        assert stats.nodes_seen == 30
+        assert stats.passages_collected == 2
+        # Available counts every story with an eligible passage; sampled counts
+        # only the ones the capped slice actually drew from, so a single-book
+        # slice of a six-book corpus is legible in the report itself.
+        assert stats.stories_available == 3
+        assert stats.stories_sampled == 2
+
+    def test_the_age_band_filter_still_bounds_the_stratified_walk(
+        self, tmp_path: Path
+    ) -> None:
+        self._write_story(tmp_path, "story-a", 5)
+        self._write_story(tmp_path, "story-b", 5, band="8-11")
+        passages, stats = collect_passages(tmp_path, age_band="5-8", max_passages=10)
+        assert {p.story_id for p in passages} == {"story-a"}
+        assert stats.files_skipped_age_band == 1
+        assert stats.stories_available == 1
+        assert stats.stories_sampled == 1
+
+
 class TestProbePassage:
     """End-to-end passage probing against a mocked two-model split."""
 
@@ -487,14 +593,182 @@ class TestBudgetTracker:
         # cent per node; five nodes should land far under the dollar cap.
         assert budget.spent_usd < Decimal("0.01")
 
-    def test_cost_estimate_from_an_unpriced_pair_does_not_silently_read_as_free(
+    def test_an_unpriced_call_aborts_the_run_rather_than_costing_zero(self) -> None:
+        """An unpriced pair must stop the run, not post $0 and continue.
+
+        This is the exact shape the reviewer demonstrated: 100 calls of 100k
+        in / 100k out against a $0.0000001 cap previously reported
+        ``SPENT: 0  EXHAUSTED: False``. The assertion is on the RUN stopping,
+        not on a counter being incremented, because a counter nothing reads is
+        what let the defect through.
+        """
+        budget = BudgetTracker(cap_usd=Decimal("0.0000001"))
+        estimate = estimate_cost(
+            price_for(_PROVIDER, "not-a-real-model"), 100_000, 100_000
+        )
+        assert estimate.complete is False
+        assert estimate.amount_usd == Decimal(0)
+        with pytest.raises(UnaccountableSpendError, match="cannot bind on it"):
+            budget.add(estimate, vendor_cost_usd=None)
+
+    def test_an_unreported_usage_block_aborts_the_run(self) -> None:
+        """A vendor that omits ``usage`` is the same hazard by another route.
+
+        ``dig_usage`` yields ``(None, None)`` and ``estimate_cost`` again
+        returns a complete-looking ``Decimal(0)``. Exercised through
+        ``run_probe`` rather than ``add`` directly, so what is pinned is that
+        the RUN dies at the first such call rather than buying 4 more.
+        """
+        passages, _make_q, make_a = self._fixtures(5)
+        question_provider = MockProvider(
+            responses=[_questions_json() for _ in range(5)],
+            token_usage=TokenUsage(
+                provider=_QUESTION_PAIR[0],
+                model=_QUESTION_PAIR[1],
+                input_tokens=None,
+                output_tokens=None,
+                duration_ms=5,
+            ),
+        )
+        answer_provider = make_a()
+        budget = BudgetTracker(cap_usd=Decimal("5.00"))
+        coro = run_probe(
+            passages,
+            question_provider=question_provider,
+            answer_provider=answer_provider,
+            budget=budget,
+        )
+        with pytest.raises(UnaccountableSpendError):
+            asyncio.run(coro)
+        # Died on the first call, not after spending on all five passages.
+        assert budget.calls == 1
+        assert len(question_provider.calls) == 1
+        assert len(answer_provider.calls) == 0
+
+    def test_a_vendor_reported_cost_binds_the_cap_even_when_the_table_is_low(
         self,
     ) -> None:
+        """The cap binds on the LARGER of observed and estimated spend.
+
+        A price table that has drifted below the vendor's live rate would
+        otherwise let a run overspend by exactly the drift, silently, which is
+        the failure mode ``core/pricing.py``'s own docstring warns about.
+        """
+        budget = BudgetTracker(cap_usd=Decimal("1.00"))
+        estimate = estimate_cost(price_for(*_QUESTION_PAIR), 100, 100)
+        assert estimate.complete is True
+        assert estimate.amount_usd < Decimal("1.00")
+        budget.add(estimate, vendor_cost_usd=Decimal("2.50"))
+        assert budget.observed_usd == Decimal("2.50")
+        assert budget.calls_reporting_vendor_cost == 1
+        assert budget.charged_usd == Decimal("2.50")
+        assert budget.exhausted is True
+
+    def test_an_unreported_vendor_cost_is_not_counted_as_a_free_call(self) -> None:
+        """``None`` means "not reported", never "$0.00"."""
         budget = BudgetTracker(cap_usd=Decimal("5.00"))
-        estimate = estimate_cost(price_for("openrouter", "not-a-real-model"), 100, 100)
-        budget.add(estimate)
-        assert estimate.complete is False
-        assert budget.incomplete_cost_calls == 1
+        estimate = estimate_cost(price_for(*_QUESTION_PAIR), 100, 100)
+        budget.add(estimate, vendor_cost_usd=None)
+        assert budget.calls == 1
+        assert budget.calls_reporting_vendor_cost == 0
+        assert budget.observed_usd == Decimal(0)
+        # The cap still binds, on the estimate, rather than on nothing.
+        assert budget.charged_usd == estimate.amount_usd
+
+    def test_the_mid_passage_guard_stops_before_the_answer_call(self) -> None:
+        """A passage whose QUESTION call crosses the cap must not then answer.
+
+        Mutation M5 (``if budget.exhausted:`` -> ``if False:``) previously
+        left 30/30 tests passing: the ``budget_after_questions`` path was dead
+        in the suite despite ``probe_passage`` documenting it as a deliberate
+        guard. The assertion that discriminates is
+        ``len(answer_provider.calls) == 0``: under M5 the answer call is made
+        and the stage is ``None``.
+        """
+        question_provider = MockProvider(
+            responses=[_questions_json()],
+            token_usage=TokenUsage(
+                provider=_QUESTION_PAIR[0],
+                model=_QUESTION_PAIR[1],
+                input_tokens=200,
+                output_tokens=60,
+                duration_ms=5,
+            ),
+        )
+        answer_provider = MockProvider(
+            responses=[_answers_json([True, True, True])],
+            token_usage=TokenUsage(
+                provider=_ANSWER_PAIR[0],
+                model=_ANSWER_PAIR[1],
+                input_tokens=250,
+                output_tokens=80,
+                duration_ms=5,
+            ),
+        )
+        # Not exhausted on entry, so `run_probe`'s outer guard lets the
+        # passage start; the question call's own cost is what crosses it.
+        budget = BudgetTracker(cap_usd=Decimal("0.00000001"))
+        assert budget.exhausted is False
+        result = asyncio.run(
+            probe_passage(
+                Passage(
+                    story_id="s",
+                    story_path="s.json",
+                    node_id="n1",
+                    body="Once there was a fox.",
+                ),
+                question_provider=question_provider,
+                answer_provider=answer_provider,
+                budget=budget,
+            )
+        )
+        assert result.error_stage == "budget_after_questions"
+        assert result.questions is not None
+        assert result.answers is None
+        assert len(question_provider.calls) == 1
+        assert len(answer_provider.calls) == 0
+        assert budget.calls == 1
+
+
+class TestConfiguredModels:
+    """The two module constants, checked as constants rather than as fixtures.
+
+    Every test above builds its own ``MockProvider`` pair, so none of them can
+    fail when the module's real configuration breaks. Mutation M1 (set
+    ``_ANSWER_MODEL = _QUESTION_MODEL``) and M2 (point ``_ANSWER_MODEL`` at a
+    nonexistent slug) both previously left 30/30 tests passing.
+    """
+
+    def test_the_two_configured_models_are_not_the_same_model(self) -> None:
+        assert _QUESTION_MODEL != _ANSWER_MODEL
+
+    def test_one_model_asking_and_answering_is_refused_at_import(self) -> None:
+        with pytest.raises(ConfigurationError, match="both"):
+            _validate_model_pair(_QUESTION_MODEL, _QUESTION_MODEL)
+
+    def test_both_configured_models_resolve_to_a_complete_price_row(self) -> None:
+        for model in (_QUESTION_MODEL, _ANSWER_MODEL):
+            price = price_for(_PROVIDER, model)
+            assert price is not None, f"{model!r} has no ({_PROVIDER}, model) price row"
+            assert price.input_usd_per_mtok is not None
+            assert price.output_usd_per_mtok is not None
+        # And the guard the run actually calls agrees with that inspection.
+        _ensure_models_are_priced()
+
+    def test_an_unpriced_model_refuses_to_start(
+        self, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        """The guard must FIRE, not merely exist, when a slug goes stale.
+
+        A vendor slug rename is a one-character edit away, and its symptom
+        without this guard is a run that reports ``$0`` for real money.
+        """
+        monkeypatch.setattr(
+            "scripts.comprehension_probe._ANSWER_MODEL",
+            "deepseek/deepseek-v9-nonexistent",
+        )
+        with pytest.raises(ConfigurationError, match="cap cannot bind"):
+            _ensure_models_are_priced()
 
 
 class TestSummarize:
@@ -528,6 +802,8 @@ class TestSummarize:
             nodes_skipped_fill=0,
             nodes_skipped_empty=0,
             passages_collected=2,
+            stories_available=1,
+            stories_sampled=1,
         )
 
     def test_mixed_answerability_computes_the_unlabelled_rate(self) -> None:

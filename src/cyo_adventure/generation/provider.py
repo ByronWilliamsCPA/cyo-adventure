@@ -454,6 +454,81 @@ def build_openrouter_leg(
         ConfigurationError: If ``OPENROUTER_API_KEY`` is not configured. The
             message names the key only, never its value.
     """
+    api_key, resolved_order = _openrouter_prerequisites(settings, model, provider_order)
+    return OpenRouterProvider(
+        api_key=api_key,
+        model=model,
+        base_url=settings.openrouter_base_url,
+        timeout_seconds=settings.llm_timeout_seconds,
+        effort=settings.llm_effort,
+        provider_order=resolved_order,
+        temperature=temperature,
+    )
+
+
+def build_openrouter_cost_reporting_leg(
+    settings: Settings, model: str
+) -> GenerationProvider:
+    """Construct an OpenRouter leg that asks the vendor for its own charge.
+
+    A separate builder rather than a fifth parameter on
+    :func:`build_openrouter_leg`, so that function's signature and the request
+    body it produces both stay exactly what they were: every production caller
+    reaches this backend through it, and an always-present ``usage`` field
+    would repoint requests that have nothing to do with spend measurement.
+
+    The leg it returns populates ``Completion.vendor_cost_usd`` with what
+    OpenRouter says the call cost. That is an OBSERVED number, which is a
+    different kind of fact from :func:`cyo_adventure.core.pricing.estimate_cost`
+    computed against a hand-transcribed, dated price table; only an offline
+    spend-measurement harness needs it, and none of them pass a pin or a
+    temperature, so neither is exposed here.
+
+    Args:
+        settings: The application settings instance.
+        model: The OpenRouter model id this leg targets.
+
+    Returns:
+        An OpenRouter ``GenerationProvider`` adapter that reports vendor cost.
+
+    Raises:
+        ConfigurationError: If ``OPENROUTER_API_KEY`` is not configured. The
+            message names the key only, never its value.
+    """
+    api_key, resolved_order = _openrouter_prerequisites(settings, model, None)
+    return OpenRouterProvider(
+        api_key=api_key,
+        model=model,
+        base_url=settings.openrouter_base_url,
+        timeout_seconds=settings.llm_timeout_seconds,
+        effort=settings.llm_effort,
+        provider_order=resolved_order,
+        report_vendor_cost=True,
+    )
+
+
+def _openrouter_prerequisites(
+    settings: Settings, model: str, provider_order: tuple[str, ...] | None
+) -> tuple[str, tuple[str, ...]]:
+    """Validate the OpenRouter credential and resolve this model's endpoint pin.
+
+    Shared by both OpenRouter builders so the credential guard and the pin
+    resolution below have exactly one implementation; a second copy is how
+    one builder would quietly stop applying either.
+
+    Args:
+        settings: The application settings instance.
+        model: The OpenRouter model id the leg targets.
+        provider_order: The caller's backend pin, or ``None`` for
+            "unspecified" (see :func:`build_openrouter_leg`).
+
+    Returns:
+        The API key and the resolved backend order to construct the leg with.
+
+    Raises:
+        ConfigurationError: If ``OPENROUTER_API_KEY`` is not configured. The
+            message names the key only, never its value.
+    """
     # #CRITICAL: security: fail fast (and by name only) when the credential is
     # absent, rather than sending an unauthenticated request that leaks the
     # prompt to a 401 round-trip.
@@ -478,16 +553,7 @@ def build_openrouter_leg(
         if provider_order is None
         else provider_order
     )
-
-    return OpenRouterProvider(
-        api_key=settings.openrouter_api_key,
-        model=model,
-        base_url=settings.openrouter_base_url,
-        timeout_seconds=settings.llm_timeout_seconds,
-        effort=settings.llm_effort,
-        provider_order=resolved_order,
-        temperature=temperature,
-    )
+    return settings.openrouter_api_key, resolved_order
 
 
 def build_anthropic_leg(settings: Settings, model: str) -> GenerationProvider:
