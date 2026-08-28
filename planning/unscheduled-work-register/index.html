@@ -6709,7 +6709,7 @@ substantially the same work under different headings. Do not triple-book.</p>
 </tr>
 <tr>
 <td>UW-C388</td>
-<td><code>AL-635</code>: <strong>A soft stage's <code>PASS</code> fail-safe is invisible to every consumer that filters <code>PASS</code>, and <code>moderation_report_unusable()</code> cannot see it either.</strong> That predicate answers a whole-report question and returns <code>False</code> at the first genuine finding, so <code>sk_clocktower_cipher</code> (real <code>llm_safety</code> verdicts on 25 nodes, fail-safe <code>llm_readability</code> on 22) reads as usable and fully reviewed. Four of the five books the first census called <code>genuinely moderated</code> are in this state. Implemented on branch <code>fix/mock-reviewer-self-identification</code> (unmerged): <code>moderation/report.py::hidden_fail_safe_node_counts</code> plus one story-level structural finding on the review surface, excluding gating fail-safes so one outage is not described twice. <strong>Open decision this row carries:</strong> the change is presentational only, because the approval gate reads the stored report through <code>moderation_report_unusable</code>, not through the surface. Whether a partly-unjudged story should also be UNAPPROVABLE, and at what coverage threshold, is an owner decision not taken here.</td>
+<td><code>AL-635</code>: <strong>A soft stage's <code>PASS</code> fail-safe is invisible to every consumer that filters <code>PASS</code>, and <code>moderation_report_unusable()</code> cannot see it either.</strong> That predicate answers a whole-report question and returns <code>False</code> at the first genuine finding, so <code>sk_clocktower_cipher</code> (real <code>llm_safety</code> verdicts on 25 nodes, fail-safe <code>llm_readability</code> on 22) reads as usable and fully reviewed. Four of the five books the first census called <code>genuinely moderated</code> are in this state. Implemented on branch <code>fix/mock-reviewer-self-identification</code> (unmerged): <code>moderation/report.py::legacy_hidden_fail_safe_node_counts</code> plus one story-level structural finding on the review surface, excluding gating fail-safes so one outage is not described twice. (Shipped in the first pass as <code>hidden_fail_safe_node_counts</code>; renamed on the same branch once the PR #769 review established it can only ever see pre-2026-08-14 reports. The forward half is <code>UW-C390</code>.) <strong>Open decision this row carries:</strong> the change is presentational only, because the approval gate reads the stored report through <code>moderation_report_unusable</code>, not through the surface. Whether a partly-unjudged story should also be UNAPPROVABLE, and at what coverage threshold, is an owner decision not taken here.</td>
 <td>4b</td>
 <td>unscheduled</td>
 </tr>
@@ -6717,6 +6717,24 @@ substantially the same work under different headings. Do not triple-book.</p>
 <td>UW-C389</td>
 <td><code>AL-636</code>: <strong>A test whose declared settings disagree with what it injects through a seam fails on the first guard that reads those settings, for a reason unrelated to what it measures.</strong> Three tests declared <code>review_provider="mock"</code> while injecting a real responder or provider; making the mock stamp unconditional made the declarations load-bearing and broke all three on <code>reviewer_independent</code> and on a <code>pipeline</code>-category finding they never meant to assert about. Fixed in place on branch <code>fix/mock-reviewer-self-identification</code> (unmerged) by making each declaration agree with the injection, or excluding the artifact by its stable <code>concern</code> contract with a comment. Residual for this row: sweep the suite for other tests whose declared settings are fiction nothing has yet read, since each is a latent spurious failure the next guard will trip.</td>
 <td>4b</td>
+<td>unscheduled</td>
+</tr>
+<tr>
+<td>UW-C390</td>
+<td><code>AL-637</code>: <strong>The hidden-fail-safe scan is retro-only by construction and cannot see a report written after 2026-08-14.</strong> <code>ModerationReport.to_dict</code> stopped persisting PASS findings as rows in <code>0396507b</code>, tallying them into <code>aggregate.pass_counts</code> instead, and the scan looks for exactly those rows. PR #769 renamed it <code>legacy_hidden_fail_safe_node_counts</code>, documented the corpus boundary, and made it log <code>hidden_fail_safe_scan_blind_on_modern_report</code> when it finds nothing on a report of the modern shape, so a blind scan is no longer reported as a clean one. <strong>The forward detector is the work this row carries and is NOT done:</strong> record the per-source fail-safe node counts into <code>aggregate.fail_safe_counts</code> at persist time, in <code>to_dict</code> where the verdicts are still in hand, and have the review surface read that field for modern reports while the legacy scan continues to serve the pre-2026-08-14 backlog. Until that lands, a stage that fails safe to PASS on a NEW book is invisible to every consumer again, which is the exact defect <code>UW-C388</code> was opened for. Tracked as issue <a href="https://github.com/ByronWilliamsCPA/cyo-adventure/issues/775">#775</a>.</td>
+<td>4b</td>
+<td>unscheduled</td>
+</tr>
+<tr>
+<td>UW-C391</td>
+<td><code>AL-638</code>: <strong><code>core/config.py:97</code> reads <code>urlsplit(url).port</code> outside any exception handler, inside an always-run <code>model_validator</code>, and pydantic quotes the offending value into the <code>ValidationError</code> text.</strong> Confirmed by reproduction on 2026-08-27: constructing <code>Settings</code> with a <code>/</code> inside the database password raises a <code>ValidationError</code> whose message carries a fragment of that password, so any traceback, log line, or CI transcript that captures a startup failure captures part of the credential. This is the twin of the leak PR #769 fixed in <code>scripts/remoderate_books.py::_database_target</code>, left out of that PR deliberately because it is pre-existing, sits on the boot path rather than a script, and wants its own test. Fix it the same way: put the whole split inside one <code>try</code>, and raise a <code>ConfigurationError</code> naming the field rather than the value.</td>
+<td>4b</td>
+<td>unscheduled</td>
+</tr>
+<tr>
+<td>UW-C392</td>
+<td><code>AL-639</code>: <strong>No gate resolves a prose citation, so a docstring may cite a decision number, a section, or a document that does not exist and stay green forever.</strong> <code>scripts/remoderate_books.py</code> cited a "plan decision 8" that has never existed (section 7 of the moderation-review redesign doc holds exactly seven decisions) and quoted words found nowhere under <code>docs/</code>; PR #769 replaced it with the reasoning that does hold. The class of defect is untracked. <code>scripts/check_rad_citations.py</code> already proves the pattern works for <code>#VERIFY</code> citations into test files, resolving <code>path::test_name</code> and failing on a stale one. Proposed: extend it, or add a sibling, that resolves doc citations of the form <code>decision N</code> and <code>section N</code> appearing in <code>src/</code> and <code>scripts/</code> docstrings against the file each names, so a citation dies at commit time rather than at review time. Scope decision to take first: whether to require citations be written in a resolvable form at all, since a free-prose reference is not mechanically checkable and a checker that silently skips what it cannot parse is the same false all-clear this row is about.</td>
+<td>CI hygiene</td>
 <td>unscheduled</td>
 </tr>
 </tbody>
@@ -8491,7 +8509,7 @@ have to re-derive them.</p>
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="August 27, 2026 23:02:08 UTC">August 27, 2026</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="August 28, 2026 03:08:44 UTC">August 28, 2026</span>
   </span>
 
     
