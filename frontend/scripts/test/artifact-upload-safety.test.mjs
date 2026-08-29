@@ -15,6 +15,7 @@
  */
 
 import assert from 'node:assert/strict'
+import { spawnSync } from 'node:child_process'
 import { mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { dirname, join } from 'node:path'
@@ -30,6 +31,7 @@ import {
 } from '../check-artifact-upload-safety.mjs'
 
 const WORKFLOWS_DIR = new URL('../../../.github/workflows', import.meta.url).pathname
+const CHECKER = new URL('../check-artifact-upload-safety.mjs', import.meta.url).pathname
 
 /** An obviously synthetic stand-in. Never a real or partial credential. */
 const FIXTURE_VALUE = 'ZZ-FIXTURE-NOT-A-REAL-CREDENTIAL-0000'
@@ -160,6 +162,44 @@ test('the upload-path classifier', async (t) => {
 
   await t.test('calls a single named file inside one narrow', () => {
     assert.equal(classifyUploadPath('frontend/test-results/leaked-device-grants.jsonl'), 'narrow')
+  })
+
+  // Defect 1. The hand-rolled reader does not strip a trailing `#` comment, so
+  // the comment survived into the scalar, became the last `/`-segment, and any
+  // `.` inside it (a sentence-ending period, a version number) read as a file
+  // extension. A wholesale Playwright output directory then classified
+  // `narrow` and the hard rule exempted it.
+  await t.test('a trailing YAML comment cannot demote a wholesale path to narrow', () => {
+    assert.equal(
+      classifyUploadPath('frontend/test-results/ # everything the run left behind, see ADR-029.'),
+      'wholesale'
+    )
+    assert.equal(
+      classifyUploadPath('frontend/test-results/ # bumped to v2.1 while triaging'),
+      'wholesale'
+    )
+    // The control: a comment with no `.` in it was already classified
+    // correctly, so this arm alone could never have caught the defect.
+    assert.equal(classifyUploadPath('frontend/test-results/  # keep for triage'), 'wholesale')
+  })
+
+  // Defect 2. The `narrow` arm was unbounded by filename: ANY single file
+  // inside a Playwright output directory passed, including the one file that
+  // actually leaked a password. A single-file artifact carries a live
+  // credential just as easily as a directory does, so the arm as written was
+  // a check that could not fail.
+  await t.test('only an enumerated filename is narrow; any other single file is not', () => {
+    assert.equal(classifyUploadPath('frontend/test-results/error-context.md'), 'wholesale')
+    assert.equal(classifyUploadPath('frontend/test-results/0-trace.trace'), 'wholesale')
+    assert.equal(
+      classifyUploadPath('frontend/test-results/some-future-diagnostic.json'),
+      'wholesale'
+    )
+    assert.equal(
+      classifyUploadPath('frontend/test-results/chromium/leaked-device-grants.jsonl'),
+      'narrow',
+      'the allowlist is keyed on the basename, so a per-project subdirectory is still allowed'
+    )
   })
 
   await t.test('leaves unrelated artifact paths alone', () => {
@@ -327,6 +367,97 @@ test('the hard rule, end to end', async (t) => {
         INHERITING_UPLOADER.replace(
           '          path: frontend/test-results/',
           '          path: summary.md'
+        )
+      ),
+      []
+    )
+  })
+
+  /**
+   * Run the CLI itself, not just the exported function, over a fixture tree.
+   *
+   * The exported-function arms above cannot see a defect that lives between
+   * the function and the process exit code, and CI's real consumer of this
+   * control is the process.
+   *
+   * @param {string} contents Workflow file contents.
+   * @returns {{status: number | null, stderr: string}} The CLI's result.
+   */
+  function cliOver(contents) {
+    const dir = mkdtempSync(join(tmpdir(), 'artifact-safety-cli-'))
+    try {
+      writeFixture(dir, 'tier.yml', contents)
+      const run = spawnSync(process.execPath, [CHECKER, dir], { encoding: 'utf8' })
+      return { status: run.status, stderr: run.stderr }
+    } finally {
+      rmSync(dir, { recursive: true, force: true })
+    }
+  }
+
+  // Defect 1, end to end. A trailing prose comment on the `path:` scalar made
+  // the classifier read the comment's sentence-ending period as a file
+  // extension, so a wholesale Playwright output directory was exempted and
+  // the CLI exited 0 on a secret-bearing workflow publishing it.
+  await t.test('the CLI rejects a wholesale upload carrying a trailing prose comment', () => {
+    const commented = INHERITING_UPLOADER.replace(
+      '          path: frontend/test-results/',
+      '          path: frontend/test-results/ # everything the run left behind, see ADR-029.'
+    )
+    const run = cliOver(commented)
+    assert.notEqual(run.status, 0, 'a commented wholesale path must still be a violation')
+    assert.match(run.stderr, /FORBIDDEN UPLOAD/)
+    assert.match(run.stderr, /tier\.yml/)
+  })
+
+  await t.test('the CLI exits 0 on the same tree with the upload removed', () => {
+    // The discriminating control for the arm above: without it, an arm that
+    // is red for any reason at all would read as a pass.
+    const run = cliOver(
+      INHERITING_UPLOADER.replace(
+        '          path: frontend/test-results/',
+        '          path: summary.md'
+      )
+    )
+    assert.equal(run.status, 0, run.stderr)
+  })
+
+  // Defect 2. The `narrow` exemption was unbounded by filename, so the ONE
+  // file that actually leaked a plaintext password passed the hard rule.
+  await t.test('a secret-bearing workflow uploading error-context.md is a violation', () => {
+    const violations = ruleOver(
+      INHERITING_UPLOADER.replace(
+        '          path: frontend/test-results/',
+        '          path: frontend/test-results/error-context.md'
+      )
+    )
+    assert.equal(violations.length, 1)
+    // Matched with its directory prefix on purpose: the boilerplate half of
+    // the message names `error-context.md` too, so a bare match would pass on
+    // any violation at all.
+    assert.match(violations[0], /frontend\/test-results\/error-context\.md/)
+  })
+
+  await t.test('a filename nobody enumerated is a violation, so the allowlist fails closed', () => {
+    const violations = ruleOver(
+      INHERITING_UPLOADER.replace(
+        '          path: frontend/test-results/',
+        '          path: frontend/test-results/some-future-diagnostic.json'
+      )
+    )
+    assert.equal(violations.length, 1)
+    assert.match(violations[0], /some-future-diagnostic\.json/)
+  })
+
+  await t.test('the one enumerated ledger filename is still accepted', () => {
+    // The control that keeps the allowlist from being vacuously closed. This
+    // is what `e2e-staging.yml` actually uploads: a JSONL ledger the sweep
+    // writes itself, one `{"profileId","confirmed"}` record per row, with no
+    // page snapshot, no trace and no request headers in it.
+    assert.deepEqual(
+      ruleOver(
+        INHERITING_UPLOADER.replace(
+          '          path: frontend/test-results/',
+          '          path: frontend/test-results/leaked-device-grants.jsonl'
         )
       ),
       []

@@ -29,10 +29,18 @@
  * the oracle below is broken and every "clean" result it has ever produced is
  * worthless.
  *
- * The rules are deliberately allowlist-shaped, not denylist-shaped. A denylist
- * of known-bad filenames stops covering the next Playwright release that adds
- * a new diagnostic file, and it does so silently, which is the same class of
- * defect as the one above.
+ * The rules are deliberately allowlist-shaped, not denylist-shaped, and that
+ * claim now holds for BOTH arms. A denylist of known-bad filenames stops
+ * covering the next Playwright release that adds a new diagnostic file, and it
+ * does so silently, which is the same class of defect as the one above. The
+ * single-file exemption is therefore keyed on
+ * :data:`NARROW_UPLOAD_ALLOWLIST`, an enumerated set of basenames, and every
+ * other filename inside a Playwright output directory is refused. Until
+ * 2026-08-29 that arm exempted ANY single file, `error-context.md` included,
+ * which is to say it exempted the exact file that leaked the password. A
+ * single-file artifact carries a live credential just as easily as a directory
+ * does, so an arm bounded only by "names one file" was a check that could not
+ * fail.
  *
  * Usage, from the repository root:
  *   node frontend/scripts/check-artifact-upload-safety.mjs
@@ -100,6 +108,32 @@ function readText(path) {
  * and `playwright-report/` are all covered.
  */
 const PLAYWRIGHT_OUTPUT_SEGMENTS = new Set(['test-results', 'playwright-report'])
+
+/**
+ * Basenames a secret-bearing workflow may publish from a Playwright output
+ * directory. Everything else there is refused.
+ *
+ * Derived from what the repository actually uploads today, not invented: the
+ * only single-file upload out of a Playwright output directory anywhere in
+ * `.github/workflows` is `e2e-staging.yml`'s
+ * `frontend/test-results/leaked-device-grants.jsonl`.
+ *
+ * Why that one file is safe to publish, stated so a future reader can re-judge
+ * it rather than inherit it: the sweep spec writes the ledger itself, one JSON
+ * object per line of the shape `{"profileId", "confirmed"}`. It is not a
+ * Playwright-authored diagnostic, so a Playwright release cannot change what
+ * is in it; it carries no page snapshot, no trace, no request headers and no
+ * form values, which are the four channels every credential in the incident
+ * arrived by. A profile id is already a non-secret identifier the artifact
+ * consumer needs in order to act on a leaked grant.
+ *
+ * #CRITICAL: security: adding a name here publishes that file from a workflow
+ * holding real credentials. #VERIFY: before adding one, confirm the file is
+ * written by our own test code rather than by Playwright, and run
+ * `node frontend/scripts/check-artifact-upload-safety.mjs --scan <dir>` over a
+ * real failing run's output directory.
+ */
+const NARROW_UPLOAD_ALLOWLIST = new Set(['leaked-device-grants.jsonl'])
 
 /**
  * Credential-shaped content patterns.
@@ -212,19 +246,56 @@ function stripQuotes(value) {
 }
 
 /**
+ * Remove a trailing `#` comment from a YAML scalar.
+ *
+ * The reader above is hand-rolled and does not strip comments, so without
+ * this the comment stayed glued to the scalar, became its last `/`-segment,
+ * and any `.` inside it (a sentence-ending period, `ADR-029.`, a version
+ * number) read as a file extension. `frontend/test-results/ # keep, see
+ * ADR-029.` then classified `narrow` and the hard rule exempted a wholesale
+ * Playwright output directory.
+ *
+ * In YAML a `#` opens a comment only at the start of the scalar or after
+ * whitespace, so `a#b.txt` keeps its `#`. #ASSUME: data-integrity: this is not
+ * full YAML fidelity. A `#` inside a QUOTED scalar is not a comment, and this
+ * function cannot see the quotes because `stripQuotes` has already removed
+ * them by the time a path reaches classification. The residual is
+ * fail-CLOSED, which is why it is tolerated: truncating a scalar can only
+ * remove path segments, never add one, so a truncated path can lose its
+ * `test-results` segment (becoming `unrelated`, and only for a path that
+ * names no output directory before the ` #`) or lose its allowlisted
+ * basename (becoming `wholesale`). It can never turn a refusal into an
+ * exemption. #VERIFY: if a legitimately-quoted upload path ever needs a ` #`
+ * in it, parse the quoting here instead of widening the allowlist.
+ *
+ * @param {string} scalar A YAML scalar, already unquoted.
+ * @returns {string} The scalar with any trailing comment removed.
+ */
+function stripTrailingComment(scalar) {
+  const match = /(?:^|\s)#/.exec(scalar)
+  return match === null ? scalar : scalar.slice(0, match.index)
+}
+
+/**
  * Classify one declared artifact path.
  *
- * `wholesale` means "this publishes a Playwright output directory, or an
- * unbounded glob inside one". That is the shape that leaked. `narrow` means a
- * single named file inside such a directory, which is a deliberate,
- * reviewable choice (the test writes the file, so its contents are known).
- * Everything else is `unrelated`.
+ * `wholesale` means "this publishes something out of a Playwright output
+ * directory that is not on the narrow allowlist": the directory itself, a
+ * glob inside it, or a single file whose basename nobody enumerated.
+ * `narrow` is reserved for a single file whose basename is in
+ * :data:`NARROW_UPLOAD_ALLOWLIST`, which is to say a file our own test code
+ * writes and whose contents are therefore known. Everything else is
+ * `unrelated`.
+ *
+ * The allowlist is what makes this arm falsifiable. "Names one file" is not a
+ * safety property: `error-context.md` names one file and carried a plaintext
+ * password out of a tier that had trace, screenshot and video all off.
  *
  * @param {string} declaredPath The `path:` value from an upload step.
  * @returns {'wholesale' | 'narrow' | 'unrelated'} The classification.
  */
 export function classifyUploadPath(declaredPath) {
-  const trimmed = declaredPath.trim()
+  const trimmed = stripTrailingComment(declaredPath).trim()
   const segments = trimmed.replace(/\/+$/, '').split('/')
   const touchesOutputDir = segments.some((segment) => PLAYWRIGHT_OUTPUT_SEGMENTS.has(segment))
   if (!touchesOutputDir) {
@@ -233,8 +304,8 @@ export function classifyUploadPath(declaredPath) {
   const endsWithSlash = trimmed.endsWith('/')
   const hasGlob = trimmed.includes('*')
   const lastSegment = segments[segments.length - 1]
-  const namesAFile = !endsWithSlash && !hasGlob && lastSegment.includes('.')
-  return namesAFile ? 'narrow' : 'wholesale'
+  const namesAnAllowedFile = !endsWithSlash && !hasGlob && NARROW_UPLOAD_ALLOWLIST.has(lastSegment)
+  return namesAnAllowedFile ? 'narrow' : 'wholesale'
 }
 
 /**
@@ -346,9 +417,11 @@ export function findSecretBearingWholesaleUploads(workflowsDir) {
     const text = readText(join(workflowsDir, file))
     if (injectsSecrets(text)) {
       violations.push(
-        `${file} injects a repository secret AND uploads ${paths.join(', ')} wholesale. ` +
-          'A Playwright output directory carries the credential the tier types in, ' +
-          'including in error-context.md, which trace: off does not suppress.'
+        `${file} injects a repository secret AND publishes ${paths.join(', ')}, which is ` +
+          'a Playwright output directory, a glob inside one, or a file inside one that ' +
+          'is not on the narrow allowlist. Such a directory carries the credential the ' +
+          'tier types in, including in error-context.md, which trace: off does not ' +
+          'suppress.'
       )
     }
   }

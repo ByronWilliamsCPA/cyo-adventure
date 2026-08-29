@@ -919,7 +919,16 @@ jobs:
           # report `# pass 121`. Raised 75 -> 81 -> 103 -> 121 in step with
           # those, per the rule at the top of this comment; a floor left behind
           # would have let the new cases be deleted with the gate still green.
-          MIN_TESTS: '121'
+          #
+          # Re-measured 2026-08-29 after the PR #780 review fixes: seven more
+          # cases in artifact-upload-safety.test.mjs covering the two defects
+          # in its own guard (a trailing YAML comment demoted a wholesale
+          # Playwright output directory to the `narrow` exemption, and that
+          # exemption was unbounded by filename so `error-context.md`, the file
+          # that actually leaked a password, passed clean). Two of the seven
+          # spawn the CLI itself rather than the exported function. Measured
+          # with the exact `node --test` line below: 121 -> 128.
+          MIN_TESTS: '128'
         run: |
           set -euo pipefail
 
