@@ -1,5 +1,7 @@
 import { expect, test } from '@playwright/test'
 
+import { gotoResilient } from '../e2e-support/rate-limit'
+
 /**
  * Authoritative end-of-job device-grant sweep for the staging tier.
  *
@@ -52,7 +54,10 @@ import { expect, test } from '@playwright/test'
  * this shared staging family.
  */
 test.describe('staging device-grant sweep', () => {
-  test('the test guardian family holds no active device grant after the tier', async ({ page }) => {
+  test('the test guardian family holds no active device grant after the tier', async ({
+    page,
+    baseURL,
+  }) => {
     // No sign-in here: `page` was created from `playwright.e2e-staging-sweep.config.ts`'s
     // `storageState`, a guardian session `playwright.e2e-staging.config.ts`'s
     // `staging-auth-setup` project authenticated earlier in the same job. If
@@ -61,6 +66,43 @@ test.describe('staging device-grant sweep', () => {
     // test's context creation before reaching this line. That is correct and
     // deliberate: an unlistable family is an unproven family, whether the
     // failure surfaces here or at context creation.
+    //
+    // #CRITICAL: security: this navigation is load-bearing and must stay AHEAD
+    // of the evaluate below. `storageState` seeds an origin's localStorage but
+    // does not visit it, so Playwright's `page` fixture starts on
+    // `about:blank` no matter what `storageState` or `baseURL` say.
+    // `about:blank` in a page with no opener has an OPAQUE origin, and reading
+    // `window.localStorage` from an opaque origin throws
+    // `SecurityError: Failed to read the 'localStorage' property from
+    // 'Window': Access is denied for this document.` Deleting the sign-in that
+    // used to navigate this page, without replacing the navigation, made this
+    // sweep fail on every run for a reason that has nothing to do with a
+    // leaked grant. Reproduced against this repo's own installed Playwright,
+    // with a control that is identical except for one prior `goto` and passes.
+    // On an unattended nightly, a permanently red safety backstop is read the
+    // same way as an absent one.
+    // #VERIFY: the origin assertion below fails loudly if a future refactor
+    // removes this navigation again; do not delete either half. `gotoResilient`
+    // rather than a bare `page.goto` so a transient 429 from the shared
+    // 60 rpm/IP window backs off and retries instead of reporting a false leak
+    // verdict; it still throws once its attempts are exhausted, so an
+    // unreachable staging remains a FAILURE, never a pass.
+    await gotoResilient(page, '/guardian')
+
+    if (baseURL === undefined) {
+      throw new Error(
+        'the sweep config must set baseURL; without it the app-origin check ' +
+          'below is vacuous and the SecurityError regression could return unseen'
+      )
+    }
+    expect(
+      page.url(),
+      'the sweep must be on the app origin before reading localStorage. An ' +
+        'un-navigated page fixture sits on about:blank, whose opaque origin ' +
+        'makes window.localStorage throw SecurityError, which would turn this ' +
+        'backstop into a permanent red that says nothing about leaked grants.'
+    ).toContain(new URL(baseURL).origin)
+
     const result = await page.evaluate(async () => {
       const token = window.localStorage.getItem('auth_token')
       if (token === null) {

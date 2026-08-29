@@ -145,19 +145,43 @@ jobs:
           CI: ""
         run: npm run test:e2e:prod
 
-      - name: Upload Playwright trace on failure
-        if: ${{ failure() }}
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
-        with:
-          name: e2e-prod-traces
-          path: frontend/test-results/
-          retention-days: 7
+      # #CRITICAL: security: there is deliberately NO artifact upload here, and
+      # nothing may be added that publishes `frontend/test-results/` or any
+      # file under it. This workflow signs a REAL production account in through
+      # the real login form, and THIS REPOSITORY IS PUBLIC, so any artifact is
+      # world-readable for its whole retention window by anyone, with no
+      # GitHub account required.
+      #
+      # This step used to be `Upload Playwright trace on failure`
+      # (`path: frontend/test-results/`, `retention-days: 7`). Two independent
+      # reproductions, each extracting a real Playwright trace with Python's
+      # `zipfile` from a deliberately failing run whose password came only from
+      # the environment, found E2E_PROD_TEST_PASSWORD in plain text in the
+      # `Fill "..."` step title (`test.trace`), in the `fill` action's
+      # `params.value` (`0-trace.trace`), and UNMASKED in the accessibility
+      # snapshot as `textbox "Password": <value>`, plus an
+      # `Authorization: Bearer ...` header in `0-trace.network`.
+      #
+      # `trace: 'off'` in playwright.e2e-prod.config.ts is necessary but NOT
+      # sufficient, which is why the step is deleted rather than narrowed: with
+      # traces, screenshots, and video all off, Playwright still writes
+      # `error-context.md` into that directory on failure, and that file is
+      # built from the same accessibility snapshot, so it carries the plaintext
+      # password too (verified: the only two files left in the output directory
+      # were `.last-run.json` and an `error-context.md` containing the
+      # credential). There is no subset of that directory that is safe to
+      # publish.
+      # #VERIFY: the failure alert below already names which spec failed, read
+      # from `frontend/playwright-json-report/e2e-prod.json`, which the config
+      # keeps OUTSIDE `test-results/` for exactly this reason. Debug a prod
+      # failure by reproducing it locally against staging, never by publishing
+      # an artifact from this job.
 
       # #CRITICAL: security: reads ONLY frontend/playwright-json-report/e2e-prod.json
       # (this workflow's own `json` reporter output, see the reporter array in
-      # playwright.e2e-prod.config.ts), never frontend/test-results/, which is
-      # uploaded wholesale as a public artifact above because THIS REPOSITORY
-      # IS PUBLIC. scripts/extract-failing-specs.mjs reads only `spec.file` and
+      # playwright.e2e-prod.config.ts), never frontend/test-results/, whose
+      # per-failure artifacts carry the real production password in plain text
+      # (see the block above). scripts/extract-failing-specs.mjs reads only `spec.file` and
       # `test.title` off the report; it never touches an error message, a
       # stack trace, or any attachment, and it always exits 0 (a missing or
       # unparseable report degrades to an explanatory line), so this step

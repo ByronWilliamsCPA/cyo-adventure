@@ -40,6 +40,16 @@ import { requireStagingBaseUrl } from './e2e-staging/support/staging-env'
  * `storageState` does not cover, add a role-specific setup test rather than
  * signing in from inside the sweep again.
  *
+ * One caveat on the budget claim above, so it is not read as stronger than it
+ * is: the sweep does still make exactly ONE navigation. `storageState` seeds
+ * an origin's localStorage but does not visit it, so the `page` fixture starts
+ * on `about:blank`, whose opaque origin makes `window.localStorage` throw
+ * `SecurityError`; the spec therefore opens `/guardian` through
+ * `gotoResilient` before reading the token. What this config removed is the
+ * SIGN-IN (a login form submit plus its Supabase round trip and post-login
+ * fan-out), not every request. See the spec's own #CRITICAL note on that
+ * navigation.
+ *
  * The `json` reporter writes outside `frontend/test-results/`, matching
  * playwright.e2e-staging.config.ts: this project's own config already keeps
  * traces/screenshots/video off below (nothing under test-results/ for this
