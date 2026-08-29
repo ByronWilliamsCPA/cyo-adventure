@@ -85,9 +85,10 @@ export default defineConfig({
     // pre-authenticated storageState file rather than a fresh sign-in.
     // #VERIFY: this path must stay inside the gitignored
     // `frontend/e2e-staging/.auth/` directory (see `frontend/.gitignore`) and
-    // outside `frontend/test-results/`, which is the only directory the
-    // staging workflow uploads as an artifact. Re-check both if either the
-    // path helper or an `upload-artifact` glob changes.
+    // outside `frontend/test-results/`. The staging workflow's artifact has
+    // since been narrowed from that directory to a single named file, but
+    // treat the directory as publishable until proven otherwise: re-check if
+    // either the path helper or an `upload-artifact` path changes.
     storageState: stagingStorageStatePath('guardian'),
     // #CRITICAL: security: traces off, unlike the tier's 'retain-on-failure'.
     // This repo is PUBLIC, so a workflow artifact is downloadable by anyone
@@ -95,6 +96,18 @@ export default defineConfig({
     // staging guardian bearer this context was restored with, plus the
     // request(s) made using it. The failure message alone (grant ids and
     // labels) is enough to act on.
+    //
+    // #CRITICAL: security: these three settings did NOT close the leak, and
+    // this comment previously read as though they had. Measured against live
+    // GitHub Actions artifacts on 2026-08-29, with all three already 'off':
+    // three published `e2e-staging-traces` artifacts each held exactly one
+    // file, `device-grant-sweep-staging-.../error-context.md`, whose
+    // accessibility snapshot rendered `textbox "Password" ...: <value>` in
+    // plain text. Playwright writes `error-context.md` as part of its error
+    // reporting, governed by the reporter and the output directory, NOT by
+    // these `use` options, so turning them off leaves that channel open. The
+    // control is at the UPLOAD boundary, enforced by
+    // `frontend/scripts/check-artifact-upload-safety.mjs`.
     // #VERIFY: do not turn this on to debug a sweep failure; reproduce it
     // locally against staging instead.
     trace: 'off',

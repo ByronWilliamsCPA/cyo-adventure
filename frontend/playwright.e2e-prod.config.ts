@@ -74,6 +74,21 @@ export default defineConfig({
     // intuition does not hold for traces. This repository is PUBLIC, so any
     // workflow artifact carrying one is world-readable for its whole
     // retention window.
+    //
+    // #CRITICAL: security: these three settings are NECESSARY BUT NOT
+    // SUFFICIENT, and must never be mistaken for the control that closes the
+    // leak. Measured against live GitHub Actions artifacts on 2026-08-29:
+    // `playwright.e2e-staging-sweep.config.ts` has had all three set to 'off'
+    // for some time, and three of its published `e2e-staging-traces`
+    // artifacts still each held exactly one file, an `error-context.md`, whose
+    // accessibility snapshot rendered `textbox "Password" ...: <value>` in
+    // plain text. Playwright writes `error-context.md` as part of its error
+    // reporting, governed by the reporter and the output directory, NOT by
+    // these `use` options. The control that actually closes it is at the
+    // UPLOAD boundary: this tier's workflow publishes no artifact at all, and
+    // `frontend/scripts/check-artifact-upload-safety.mjs` fails CI if any
+    // workflow that injects a repository secret starts publishing a
+    // Playwright output directory again.
     // #VERIFY: do not turn this on to debug a prod failure; reproduce it
     // locally against staging instead. The same #VERIFY as the sweep config,
     // for the same reason.

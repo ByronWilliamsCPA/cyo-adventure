@@ -61,6 +61,17 @@ HEALTH_ROLLUP_HARNESS = WORKFLOWS_DIR / "test" / "health-rollup.test.mjs"
 EXTRACT_FAILING_SPECS_HARNESS = (
     REPO_ROOT / "frontend" / "scripts" / "test" / "extract-failing-specs.test.mjs"
 )
+# Added by the FR-e2e-tiers fix pass (Critical 3): covers
+# `frontend/scripts/check-artifact-upload-safety.mjs`, the control that keeps a
+# Playwright output directory from being published as a world-readable artifact
+# by any workflow that injects a repository secret. That directory carries the
+# credential the tier types into the login form, including inside
+# `error-context.md`, which `trace: 'off'` does NOT suppress. Same counting
+# rule as the two constants above: the `alert-action` job runs it in the same
+# `node --test` invocation, so it must be counted with them.
+ARTIFACT_UPLOAD_SAFETY_HARNESS = (
+    REPO_ROOT / "frontend" / "scripts" / "test" / "artifact-upload-safety.test.mjs"
+)
 CI_WORKFLOW = WORKFLOWS_DIR / "ci.yml"
 
 ACTION_REF = "./.github/actions/ci-failure-issue"
@@ -267,7 +278,7 @@ def _run_harness_and_count() -> int:
     derived by reading the file is a second implementation of the test runner,
     and it was wrong the first time it was tried here.
 
-    Runs all three files the CI step runs, in one ``node --test`` invocation,
+    Runs all four files the CI step runs, in one ``node --test`` invocation,
     so the reported count matches what the gate actually measures rather than
     just HARNESS's own total.
 
@@ -285,6 +296,7 @@ def _run_harness_and_count() -> int:
             str(HARNESS),
             str(HEALTH_ROLLUP_HARNESS),
             str(EXTRACT_FAILING_SPECS_HARNESS),
+            str(ARTIFACT_UPLOAD_SAFETY_HARNESS),
         ],
         capture_output=True,
         text=True,
@@ -669,6 +681,12 @@ class TestTheHarnessIsWiredIntoARealGate:
             "ci.yml no longer runs extract-failing-specs.test.mjs, so the "
             "sole producer of every scheduled e2e alert's substantive "
             "content is checked in but never executed"
+        )
+        assert "artifact-upload-safety.test.mjs" in run_steps, (
+            "ci.yml no longer runs artifact-upload-safety.test.mjs, so the "
+            "control that stops a workflow publishing a Playwright output "
+            "directory (and the credential inside it) as a world-readable "
+            "artifact is checked in but never executed"
         )
 
     def test_the_ci_job_asserts_a_test_count_floor(self) -> None:
