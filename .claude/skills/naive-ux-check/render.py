@@ -10,13 +10,36 @@ schema description are the only things that need to change together.
 The safety property this exists to enforce: operator-only content
 (`operator_notes`: operator setup lines, operator notes, persona context,
 and expected observations) must never reach the block handed to the model,
-because it tells the model what it is supposed to find. `render_paste_block`
-reads exactly three fields off a scenario record, named explicitly in
-`MODEL_FACING_FIELDS` below. This is an allowlist, not a denylist of
-`operator_notes`: a field added to the schema later (including a new
-sub-key under `operator_notes`, or an unrelated top-level field) is
-excluded by construction, because nothing here ever iterates the
-scenario's other keys.
+because it tells the model what it is supposed to find.
+
+The mechanism is `_model_facing_view`: `render_paste_block` never touches a
+scenario record directly. It reads a restricted mapping built by keyed
+lookup against `MODEL_FACING_FIELDS`, so the constant is the sole gate
+through which scenario data enters the composition. The asymmetry that
+buys is deliberate:
+
+* Removing a name from `MODEL_FACING_FIELDS` raises `KeyError` in the
+  composer, so the tuple cannot silently narrow.
+* Adding a name makes that field *available* and nothing more. It still
+  renders nothing until someone also edits the format string, which is a
+  second, visible edit in the place a reviewer actually looks. A future
+  editor who widens the tuple believing they extended an allowlist gets no
+  leak and no effect at all.
+* The view is keyed lookup against a fixed tuple, never iteration over the
+  record's own keys, so a field added to `scenarios.json` later (a new
+  sub-key under `operator_notes`, or an unrelated top-level field) cannot
+  enter the returned mapping under any name.
+
+What this does NOT defend against, stated so nobody reads more into it:
+operator-style text typed directly into one of the three model-facing
+fields reaches the model, as it must, since those fields are model-facing
+by design. The operator/model split is a boundary between *fields*, not a
+classifier of content.
+
+Reverting `_model_facing_view` to three direct `scenario[...]` reads would
+leave behaviour identical, so no test can detect it; that is a code-review
+matter, not a test matter. The tests pin the property (nothing outside the
+three fields is read or emitted), which is the thing that matters.
 
 Usage::
 
@@ -28,13 +51,38 @@ from __future__ import annotations
 import json
 import sys
 from pathlib import Path
-from typing import Any
+from typing import TYPE_CHECKING, Any
+
+if TYPE_CHECKING:
+    from collections.abc import Mapping
 
 SCENARIOS_PATH = Path(__file__).resolve().parent / "scenarios.json"
 
 # The complete set of scenario fields ever read to build the paste block.
 # Allowlist, never denylist: a field not named here never reaches the model.
+# Read by `_model_facing_view` below, which is the only thing that touches a
+# scenario record, so this constant is a real gate rather than documentation.
 MODEL_FACING_FIELDS = ("persona_text", "task_text", "report_back_questions")
+
+
+def _model_facing_view(scenario: Mapping[str, Any]) -> dict[str, Any]:
+    """The only scenario data `render_paste_block` may read.
+
+    Keyed lookup, never iteration over the scenario's own keys: a field in
+    `scenarios.json` that is not named in `MODEL_FACING_FIELDS` cannot
+    enter the returned mapping under any name.
+
+    Args:
+        scenario: one scenario record, as loaded from `scenarios.json`.
+
+    Returns:
+        A mapping holding exactly the `MODEL_FACING_FIELDS` keys.
+
+    Raises:
+        KeyError: the record is missing a field named in
+            `MODEL_FACING_FIELDS`.
+    """
+    return {field: scenario[field] for field in MODEL_FACING_FIELDS}
 
 
 def _load_scenarios(scenarios_path: Path) -> list[dict[str, Any]]:
@@ -55,12 +103,14 @@ def render_paste_block(
 ) -> str:
     """Compose the block a human pastes into the Claude-for-Chrome extension.
 
-    Reads only `MODEL_FACING_FIELDS` off the scenario named by
-    `scenario_id`: `persona_text`, `task_text`, and
+    Reads the scenario named by `scenario_id` only through
+    `_model_facing_view`, so exactly the `MODEL_FACING_FIELDS` keys are
+    reachable here: `persona_text`, `task_text`, and
     `report_back_questions`. `<URL>` placeholders in `persona_text` and
     `task_text` are substituted with `url`. Nothing else on the scenario
     record, including `operator_notes` and anything added to the schema
-    later, is ever read.
+    later, can be read from this function, because the view is built by
+    keyed lookup and the record itself is never indexed below.
 
     Args:
         scenario_id: the scenario's `id` field (e.g. "K0").
@@ -75,12 +125,12 @@ def render_paste_block(
         KeyError: no scenario with that id exists.
     """
     scenarios = _load_scenarios(scenarios_path)
-    scenario = _find_scenario(scenario_id, scenarios)
+    facing = _model_facing_view(_find_scenario(scenario_id, scenarios))
 
-    persona_text = scenario["persona_text"].replace("<URL>", url)
-    task_text = scenario["task_text"].replace("<URL>", url)
+    persona_text = facing["persona_text"].replace("<URL>", url)
+    task_text = facing["task_text"].replace("<URL>", url)
     questions = "\n".join(
-        f"{i}. {q}" for i, q in enumerate(scenario["report_back_questions"], start=1)
+        f"{i}. {q}" for i, q in enumerate(facing["report_back_questions"], start=1)
     )
     return (
         f"Persona: {persona_text}\n\nTask: {task_text}\n\nReport back:\n\n{questions}"

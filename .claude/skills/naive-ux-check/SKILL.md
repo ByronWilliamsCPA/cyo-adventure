@@ -27,13 +27,31 @@ scenarios.
 `render.py` (`.claude/skills/naive-ux-check/render.py`) is the single
 composer of the paste block; it is what step 4 below runs, and the same
 module a D2b automated runner is expected to import rather than writing a
-second composer. It reads an explicit allowlist of exactly three
-model-facing fields (`persona_text`, `task_text`, `report_back_questions`)
-off a scenario record: `operator_notes` (all four of its sub-keys) is never
-read by it, by construction, and neither is any field added to the schema
-later. `tests/unit/test_naive_ux_scenarios.py` imports this module directly
-and asserts its output equals an independently-built reference, so a change
-that made it read anything beyond the allowlist would fail that suite.
+second composer. Scenario data reaches the composition only through a
+restricted view built by keyed lookup against its `MODEL_FACING_FIELDS`
+constant, which names exactly three fields (`persona_text`, `task_text`,
+`report_back_questions`). So `operator_notes` (all four of its sub-keys) is
+never read by it, and neither is any field the schema grows later: both sit
+outside that view by construction, and widening the constant on its own
+makes a field merely reachable, rendering nothing until the format string
+changes too.
+
+`tests/unit/test_naive_ux_scenarios.py` imports this module directly and
+pins three properties: hand-transcribed golden blocks for K0, G4 and A1 fix
+the block's shape; a record stripped to just the three model-facing fields
+renders identically to the real one, so nothing else is read; and every
+string leaf outside those three fields, replaced with a unique sentinel,
+stays out of the rendered output, so nothing else is emitted. A further
+test binds step 4's fenced renderer invocation below to a path that exists,
+so this skill's own instructions cannot quietly stop running `render.py`.
+
+One thing that machinery does not do, so nobody reads more into it: the
+split is between *fields*, not between kinds of content. Operator-style
+text written straight into `persona_text`, `task_text`, or
+`report_back_questions` reaches the model, because those three fields are
+model-facing by design. Keeping "what the operator should notice" out of
+them is an authoring convention, not a control the renderer or the test
+suite can enforce.
 
 ## What to do when invoked
 
