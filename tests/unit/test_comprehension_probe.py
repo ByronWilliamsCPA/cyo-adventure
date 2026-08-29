@@ -1251,7 +1251,22 @@ class TestWriteTrackedAggregate:
         assert "corpus_stats" not in pointer
 
     @pytest.mark.parametrize(
-        "run_id", ["", "../escape", "nested/run", "run id", "run\x00id"]
+        "run_id",
+        [
+            "",
+            "../escape",
+            "nested/run",
+            "run id",
+            "run\x00id",
+            # Built entirely from allowlisted characters, so the character class
+            # alone lets both through: ".." writes the aggregate one directory
+            # ABOVE the destination it was handed, and "." collapses onto the
+            # destination itself. A separator is not the only way out of a
+            # directory.
+            "..",
+            ".",
+            "...",
+        ],
     )
     def test_a_run_id_that_is_not_a_safe_path_component_is_refused(
         self, tmp_path: Path, run_id: str
@@ -1259,6 +1274,15 @@ class TestWriteTrackedAggregate:
         summary = self._summary()
         with pytest.raises(ValueError, match="not a safe path component"):
             write_tracked_aggregate(tmp_path, summary, run_id=run_id)
+
+    @pytest.mark.parametrize("run_id", ["20260101T000000Z", "v1.2", "run_1-a"])
+    def test_a_safe_run_id_is_still_accepted(self, tmp_path: Path, run_id: str) -> None:
+        """The control: the added rejection narrows the class, it does not close it.
+
+        Without this, "reject everything" would pass every case above.
+        """
+        written = write_tracked_aggregate(tmp_path, self._summary(), run_id=run_id)
+        assert written.name == f"summary-{run_id}.json"
 
 
 class TestEnsureGitignoredDestination:

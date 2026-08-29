@@ -143,6 +143,12 @@ _QUESTIONS_PER_PASSAGE: Final[int] = 3
 # A run id becomes a directory name and a filename, so it is constrained to
 # characters that cannot escape the destination it is joined onto.
 _RUN_ID_PATTERN: Final[re.Pattern[str]] = re.compile(r"[A-Za-z0-9._-]+")
+# A character allowlist alone does not make a string a safe path component:
+# "." and ".." are built entirely from allowlisted characters and both escape
+# (or collapse into) the directory they are joined onto, so a dots-only id is
+# refused separately rather than by widening the class above. Dots stay legal
+# inside an id ("v1.2") because they carry no traversal meaning there.
+_DOTS_ONLY_PATTERN: Final[re.Pattern[str]] = re.compile(r"\.+")
 
 # The fixed-name file beside the run-stamped aggregates. It holds a POINTER,
 # never a run's findings: see :func:`write_tracked_aggregate`.
@@ -1483,14 +1489,18 @@ def _validated_run_id(run_id: str) -> str:
         The same string, unchanged.
 
     Raises:
-        ValueError: When it is empty or contains anything outside
-            ``[A-Za-z0-9._-]``.
+        ValueError: When it is empty, is made only of dots (``.``, ``..``), or
+            contains anything outside ``[A-Za-z0-9._-]``.
     """
-    if not run_id or not _RUN_ID_PATTERN.fullmatch(run_id):
+    if (
+        not run_id
+        or not _RUN_ID_PATTERN.fullmatch(run_id)
+        or _DOTS_ONLY_PATTERN.fullmatch(run_id)
+    ):
         msg = (
             f"run id {run_id!r} is not a safe path component: expected a "
             "non-empty string of letters, digits, dots, underscores and "
-            "hyphens"
+            "hyphens, and not a run of dots alone"
         )
         raise ValueError(msg)
     return run_id
