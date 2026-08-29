@@ -179,6 +179,7 @@ jobs:
             const KNOWN_ALERTS = {
               'accessibility-compliance-weekly.yml': { label: 'e2e-alert', titlePrefix: '[a11y-weekly]' },
               'cifuzzy.yml': { label: 'ci-failure', titlePrefix: '[fuzzing]' },
+              'dast-baseline-weekly.yml': { label: 'ci-failure', titlePrefix: '[dast-baseline]' },
               'e2e-prod.yml': { label: 'e2e-alert', titlePrefix: '[e2e-prod]' },
               'e2e-real-nightly.yml': { label: 'e2e-alert', titlePrefix: '[e2e-real-nightly]' },
               'kws-delivery-health.yml': { label: 'ci-failure', titlePrefix: '[kws-delivery-health]' },

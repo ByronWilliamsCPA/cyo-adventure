@@ -24,7 +24,7 @@
 
 import { strict as assert } from 'node:assert'
 import { test, describe } from 'node:test'
-import { mkdtempSync, mkdirSync, writeFileSync, rmSync } from 'node:fs'
+import { mkdtempSync, mkdirSync, writeFileSync, rmSync, readFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { dirname, join } from 'node:path'
 import { fileURLToPath } from 'node:url'
@@ -466,5 +466,118 @@ describe('escalation gating is unaffected by tracking lookups', () => {
     assert.equal(outputs.has_escalations, 'false')
     assert.equal(result, undefined)
     assert.equal(github.countOf('search.issuesAndPullRequests'), 0)
+  })
+})
+
+/**
+ * Pull the `const KNOWN_ALERTS = { ... }` object literal out of the
+ * extracted rollup script and parse it into a plain object.
+ *
+ * KNOWN_ALERTS is a local const inside the script's closure, not something
+ * the script exports, so `runRollupScript` cannot hand it back directly.
+ * Brace-counting (not a regex) finds the matching close brace, because the
+ * literal itself contains nested `{ label: ..., titlePrefix: ... }` objects
+ * a non-greedy regex would truncate at the first one. Reading it via
+ * `extractScript` (not a hand-copied literal) is the same "run the real
+ * thing" contract this file already relies on: a copied fixture would keep
+ * passing after the real map changed.
+ *
+ * Parsed with a per-entry regex, not evaluated as code (no eval/Function):
+ * every KNOWN_ALERTS entry in this repo, as of this writing, is a single
+ * line of the shape `'file.yml': { label: 'x', titlePrefix: '[y]' }`, and
+ * this only reads trusted, repo-owned source either way, but a parser that
+ * cannot execute anything is the safer contract for a test file to hold.
+ */
+function extractKnownAlerts(scriptText) {
+  const marker = 'const KNOWN_ALERTS = '
+  const idx = scriptText.indexOf(marker)
+  assert.notEqual(idx, -1, 'const KNOWN_ALERTS = {...} not found in the extracted rollup script')
+  const braceStart = idx + marker.length
+  assert.equal(scriptText[braceStart], '{', 'KNOWN_ALERTS is not declared as an object literal where expected')
+  let depth = 0
+  let end = braceStart
+  for (; end < scriptText.length; end += 1) {
+    if (scriptText[end] === '{') depth += 1
+    if (scriptText[end] === '}') {
+      depth -= 1
+      if (depth === 0) {
+        end += 1
+        break
+      }
+    }
+  }
+  assert.equal(depth, 0, 'KNOWN_ALERTS object literal never closed (brace count did not return to zero)')
+  const literal = scriptText.slice(braceStart, end)
+
+  const entryPattern = /'([^']+\.ya?ml)':\s*\{\s*label:\s*'([^']*)',\s*titlePrefix:\s*'(\[[^\]]*\])'\s*\}/g
+  const result = {}
+  let match = entryPattern.exec(literal)
+  while (match !== null) {
+    const [, file, label, titlePrefix] = match
+    result[file] = { label, titlePrefix }
+    match = entryPattern.exec(literal)
+  }
+  assert.ok(
+    Object.keys(result).length > 0,
+    'no KNOWN_ALERTS entries parsed; the regex may be out of sync with the map shape'
+  )
+  return result
+}
+
+describe('KNOWN_ALERTS stays in sync with real ci-failure-issue adopters', () => {
+  // This is the enforcing assertion the workflow-level comment above
+  // KNOWN_ALERTS asks a human to keep true by memory ("Keep this map in
+  // sync when a call site's marker or label changes, or when a workflow
+  // adopts or drops the shared action"), with nothing that runs. A workflow
+  // that adopts .github/actions/ci-failure-issue without an accompanying
+  // KNOWN_ALERTS entry is reported by the rollup as `untracked`, which is
+  // false: it DOES file its own tracking issue, the rollup just does not
+  // know the marker to look for. dast-baseline-weekly.yml hit exactly this
+  // (task D5 review, closed here); this test is scoped to that one real
+  // adopter rather than a repo-wide scan, because a repo-wide version of
+  // this assertion would also fail today against pre-existing, unrelated
+  // gaps this task did not create and is not scoped to fix (at least
+  // engagement-correlation.yml, usersim.yml, webkit-kid.yml, and
+  // e2e-staging.yml also call the shared action without a KNOWN_ALERTS
+  // entry as of this writing) -- landing a test that is red on arrival for
+  // reasons outside this change is worse than landing none.
+  //
+  // #VERIFY: delete the 'dast-baseline-weekly.yml' line from KNOWN_ALERTS
+  // and re-run this file; the first assertion below must fail. Restore the
+  // line afterwards. (Verified manually while closing this finding; see the
+  // task report.)
+  test('dast-baseline-weekly.yml is registered with the marker its workflow file actually sets', () => {
+    const script = extractScript(ROLLUP_YML)
+    const knownAlerts = extractKnownAlerts(script)
+
+    const workflowPath = join(HERE, '..', 'dast-baseline-weekly.yml')
+    const workflowText = readFileSync(workflowPath, 'utf8')
+    assert.match(
+      workflowText,
+      /uses:\s*\.\/\.github\/actions\/ci-failure-issue/,
+      'fixture assumption broken: dast-baseline-weekly.yml no longer calls the shared action'
+    )
+    const markerMatch = workflowText.match(/marker:\s*'(\[[^\]]+\])'/)
+    assert.ok(markerMatch, 'dast-baseline-weekly.yml sets no marker on its ci-failure-issue call')
+    const realMarker = markerMatch[1]
+
+    const entry = knownAlerts['dast-baseline-weekly.yml']
+    assert.ok(
+      entry,
+      'dast-baseline-weekly.yml calls the shared ci-failure-issue action but has no ' +
+        'KNOWN_ALERTS entry in scheduled-health-rollup.yml; the rollup will report it as ' +
+        'untracked even though it does file its own tracking issue.'
+    )
+    assert.equal(
+      entry.titlePrefix,
+      realMarker,
+      'KNOWN_ALERTS titlePrefix must match the marker dast-baseline-weekly.yml actually sets'
+    )
+    assert.equal(
+      entry.label,
+      'ci-failure',
+      "dast-baseline-weekly.yml's ci-failure-issue call sets no label override, so it uses " +
+        "the composite action's default label (ci-failure); KNOWN_ALERTS must agree."
+    )
   })
 })
