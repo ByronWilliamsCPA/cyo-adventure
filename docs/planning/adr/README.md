@@ -55,6 +55,7 @@ ADRs document significant architectural decisions along with their context and c
 | [ADR-028](./adr-028-persistent-reader-characters.md) | Persistent reader characters | Accepted | 2026-08-06 |
 | [ADR-029](./adr-029-web-accessibility-conformance.md) | Web accessibility conformance target and testing strategy | Accepted | 2026-08-11 |
 | [ADR-030](./adr-030-engagement-correlation-privacy-review.md) | Children's-privacy review of the engagement-correlation analysis job | Proposed | 2026-08-28 |
+| [ADR-031](./adr-031-first-party-friction-beacon.md) | Children's-privacy review of the first-party client friction beacon | Proposed | 2026-08-28 |
 
 ## Creating ADRs
 

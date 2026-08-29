@@ -363,9 +363,12 @@ joined to anything else the system emits, and the verdict.
   transporting a stack string.
 - **Joined**: the component tree is public, so joining the hash to source recovers the
   component names, which is intended and discloses nothing about a person. The risk is not the
-  hash, it is what a stack string could contain: a `displayName` or a React `key` composed at
-  runtime can interpolate a book title or a child's display name, and an error *message*
-  routinely does.
+  hash, it is what a stack string could contain: a `displayName` composed at runtime can
+  interpolate a book title or a child's display name, and an error *message* routinely does.
+  (An earlier draft named a React `key` here as well. That is wrong on the mechanism: React
+  composes `componentStack` from component names, and a `key` surfaces in DevTools rather than
+  in the stack. The correction narrows the hazard, it does not remove it, because `displayName`
+  is a genuine stack-frame source and carries this paragraph on its own.)
 - **Narrowing, binding on D3b**:
   1. **The stack is reduced to statically-known component names before it is hashed, against a
      build-time allowlist, and every frame not on that list is dropped.** The allowlist is
@@ -392,6 +395,15 @@ joined to anything else the system emits, and the verdict.
      reason: it is the second layer, not the control. This also removes the asymmetry a reader
      would otherwise be right to notice, where a `data-testid` needed a static guarantee of
      literal-ness and a component stack needed none.
+     **When the reduction yields nothing.** A stack composed entirely of unlisted frames, which
+     a minified production build can also produce, reduces to the empty sequence. That case
+     emits a single reserved signature meaning *no listed frame*, or emits nothing at all; both
+     are acceptable because the resulting value carries no information. What is **forbidden** is
+     the instinct that losing all information invites: falling back to hashing the raw stack, or
+     any partial or unreduced form of it, so that the signature stays useful. That fallback
+     reopens everything this narrowing closes, and it is the only path that does. It follows
+     already from "never reaches the hash function" above and from item 2 below, and it is
+     stated here as its own rule so an implementer does not have to derive it under pressure.
   2. **The raw stack never leaves the browser.** Reduction and hashing both happen in the
      browser, so an unexpected value in a stack is neither transmitted nor available to be
      logged server-side by accident. This is why a truncation or a prefix would not do.
