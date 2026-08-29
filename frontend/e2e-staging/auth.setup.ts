@@ -1,7 +1,10 @@
-import { test as setup } from '@playwright/test'
+import { readFileSync } from 'node:fs'
+
+import { expect, type Page, test as setup } from '@playwright/test'
 
 import { signInAsStagingTestUser } from './support/auth'
 import { stagingStorageStatePath } from './support/auth-storage'
+import { TOKEN_STORAGE_KEY } from '../src/auth/tokenStorageKey'
 
 /**
  * Authenticates once per distinct role the staging tier's specs need, and
@@ -52,12 +55,73 @@ import { stagingStorageStatePath } from './support/auth-storage'
  * `consent_accepted_at`, the first run of this setup project performs that
  * write again; nothing downstream depends on it being skippable.
  */
+/**
+ * Captures `storageState` for a signed-in role, and refuses to produce a file
+ * that does not actually hold a credential.
+ *
+ * #CRITICAL: security: this setup project's entire output is two credential
+ * files, and before this helper existed it asserted NOTHING about them.
+ * `signInAsStagingTestUser`'s own guards cover the login form (no error alert,
+ * and a post-login destination under `/guardian` or `/admin`), but nothing
+ * waited for `AuthContext` to write the bearer into `localStorage`, and
+ * `storageState({ path })` captures whatever happens to be present at that
+ * instant. Verified: it resolves with no error on a context that has never
+ * authenticated and never navigated, writing a well-formed
+ * `{"cookies":[],"origins":[]}`.
+ *
+ * A green setup that wrote a useless file is the worst available outcome,
+ * because the failure then surfaces two steps downstream, in a different
+ * process, as `device-grant-sweep.spec.ts`'s "no guardian auth_token in
+ * localStorage". That message points at the sweep, which is fine, and at
+ * staging, which is wrong: the fault is here. Both checks below convert that
+ * into a setup-project failure that names its own cause.
+ * #VERIFY: the poll is not decoration. It is what makes the capture wait for
+ * the token write rather than race it; `TOKEN_STORAGE_KEY` is imported from
+ * `src/auth/tokenStorageKey.ts` rather than repeated as a literal so a rename
+ * on the app side breaks `tsc` here instead of silently checking a key nothing
+ * writes any more.
+ */
+async function captureAuthenticatedState(page: Page, role: 'guardian' | 'admin'): Promise<void> {
+  await expect
+    .poll(async () => page.evaluate((key) => window.localStorage.getItem(key), TOKEN_STORAGE_KEY), {
+      message:
+        `signed in as the staging ${role} but AuthContext never wrote ` +
+        `${TOKEN_STORAGE_KEY} into localStorage, so capturing storageState now ` +
+        'would write a structurally valid, functionally empty credential file',
+      timeout: 10_000,
+    })
+    .toBeTruthy()
+
+  const statePath = stagingStorageStatePath(role)
+  await page.context().storageState({ path: statePath })
+
+  // Read the artifact back rather than trusting the capture. The poll proves
+  // the browser had a token; this proves the FILE has one, which is the thing
+  // every downstream reader actually consumes.
+  // eslint-disable-next-line security/detect-non-literal-fs-filename -- statePath comes from stagingStorageStatePath, a pure helper over this file's own directory, never event input
+  const captured = JSON.parse(readFileSync(statePath, 'utf8')) as {
+    origins?: Array<{ localStorage?: Array<{ name: string; value: string }> }>
+  }
+  const token = (captured.origins ?? [])
+    .flatMap((origin) => origin.localStorage ?? [])
+    .find((entry) => entry.name === TOKEN_STORAGE_KEY)
+
+  expect(
+    token?.value,
+    `the ${role} storageState file was written without a ${TOKEN_STORAGE_KEY} ` +
+      'entry, so every spec and the post-run sweep that restore it would start ' +
+      'unauthenticated. Nothing between this write and those reads inspects the ' +
+      'file, so this assertion is the only thing standing between a racing ' +
+      'capture and a downstream failure that names the wrong subject.'
+  ).toBeTruthy()
+}
+
 setup('authenticate as the seeded staging guardian', async ({ page }) => {
   await signInAsStagingTestUser(page, 'guardian')
-  await page.context().storageState({ path: stagingStorageStatePath('guardian') })
+  await captureAuthenticatedState(page, 'guardian')
 })
 
 setup('authenticate as the seeded staging admin', async ({ page }) => {
   await signInAsStagingTestUser(page, 'admin')
-  await page.context().storageState({ path: stagingStorageStatePath('admin') })
+  await captureAuthenticatedState(page, 'admin')
 })

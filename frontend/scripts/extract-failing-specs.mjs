@@ -69,12 +69,49 @@ function parseArgs(argv) {
  * up the tree) rather than treating `file > title` as a unique key elsewhere.
  */
 function collectFailingSpecs(suite, out) {
+  // #CRITICAL: data-integrity: every entry is shape-checked before anything is
+  // read off it, because the only alternative here is failing OPEN. The prior
+  // version relied on a property read throwing, which is true for `null` but
+  // NOT for a primitive: JavaScript boxes `5` and `'bad'` on property access,
+  // so `(5).specs` is `undefined`, `?? []` yields `[]`, nothing throws, and
+  // `{"suites": [5]}` printed "parsed cleanly and recorded no failing spec".
+  // That is the exact wrongly-exclusive failure this script exists to avoid,
+  // reintroduced one level below the guard added to close it: a corrupted or
+  // truncated report reads as a clean run on a job that failed. Verified:
+  // before this change `{"suites":[5]}`, `{"suites":["bad"]}` and
+  // `{"suites":[5,"bad"]}` all printed the all-clear line.
+  // #VERIFY: `test/extract-failing-specs.test.mjs` pins each element type
+  // separately (`[5]`, `['bad']`, `[null]`), so a regression in the handling
+  // of only one of them still reddens; do not collapse them back into one
+  // mixed fixture, which is what let this through the first time (a `null`
+  // third element made the case pass for the wrong reason).
+  if (suite === null || typeof suite !== 'object') {
+    throw new TypeError(`suite entry is ${suite === null ? 'null' : typeof suite}, not an object`)
+  }
   for (const spec of suite.specs ?? []) {
+    if (spec === null || typeof spec !== 'object') {
+      throw new TypeError(`spec entry is ${spec === null ? 'null' : typeof spec}, not an object`)
+    }
     if (spec.ok === false) {
       out.push({
         file: String(spec.file ?? 'unknown file'),
         title: String(spec.title ?? 'unknown test'),
       })
+    } else if (spec.ok !== true) {
+      // #CRITICAL: data-integrity: a spec entry whose `ok` is absent or not a
+      // boolean is a SHAPE VIOLATION, not a pass. Checked here, after the
+      // failure branch rather than before it, on purpose: that ordering is
+      // what keeps `=== false` observable. With the type check first, `ok`
+      // would be a proven boolean by the time the predicate ran, and widening
+      // the predicate to `!== true` would be an undetectable no-op; with it
+      // here, that widening swallows this branch and reports an unreadable
+      // entry as a failing spec instead of a shape violation, which the test
+      // suite catches.
+      // #VERIFY: `test/extract-failing-specs.test.mjs`, the case feeding
+      // `{"ok": "false"}`, must assert the shape line. Verified against a real
+      // Playwright JSON report that `spec.ok` is always present and always
+      // boolean, including for skipped specs, so this rejects nothing real.
+      throw new TypeError(`spec entry has a non-boolean "ok" (${typeof spec.ok})`)
     }
   }
   for (const child of suite.suites ?? []) {
@@ -165,20 +202,36 @@ function main() {
   // the shape line, not the "parsed cleanly" line, and separately asserts a
   // genuinely empty `{"suites": []}` report still reports clean. Keep both
   // assertions if this guard is ever touched again.
+  //
+  // #CRITICAL: data-integrity: the two shape lines below and in the catch
+  // carry DIFFERENT parentheticals, and that difference is load-bearing, not
+  // cosmetic. When both paths printed the same sentence, no test could tell
+  // this explicit guard apart from the catch-all: deleting
+  // `!Array.isArray(report.suites)` left all 14 tests green, because
+  // iterating a number or reading `.suites` off an array throws a `TypeError`
+  // the catch converts into the identical string. A guard documented as
+  // load-bearing was pinned by nothing. The parenthetical also tells a
+  // responder which half of the report is malformed, which is worth having on
+  // its own.
+  // #VERIFY: the tests assert the specific parenthetical, not just the shared
+  // sentence. Keep the two texts distinct if either is ever reworded.
   if (report === null || typeof report !== 'object' || !Array.isArray(report.suites)) {
     console.log(
-      `The Playwright JSON report at ${reportPath} did not have the expected shape; falling back to generic failure detail.`
+      `The Playwright JSON report at ${reportPath} did not have the expected shape; ` +
+        `falling back to generic failure detail. (No top-level "suites" array.)`
     )
     return
   }
 
   // The outer shape is now confirmed, but an individual suite or spec entry
-  // could still be a non-object (a `suites` array holding non-object
-  // entries, e.g. `{"suites": [5, "bad", null]}`), which throws when
-  // `collectFailingSpecs` reads a property off it. Wrapped so that degrades
-  // to the same shape-violation line rather than an uncaught exception; this
-  // is what makes "always exits 0" literally true rather than true only for
-  // the report shapes seen in testing.
+  // could still be malformed (a `suites` array holding non-object entries,
+  // e.g. `{"suites": [5, "bad", null]}`, or a spec whose `ok` is not a
+  // boolean). `collectFailingSpecs` now REJECTS each of those explicitly
+  // rather than relying on a property read to throw, because a boxed
+  // primitive does not throw; see its own #CRITICAL note. Wrapped so every
+  // such rejection degrades to a shape-violation line rather than an uncaught
+  // exception; this is what makes "always exits 0" literally true rather than
+  // true only for the report shapes seen in testing.
   try {
     const failing = []
     for (const suite of report.suites) {
@@ -188,8 +241,14 @@ function main() {
 
     console.log(formatFailingSpecs(failing, cap, topLevelErrorCount))
   } catch {
+    // Deliberately does NOT quote the thrown message. Those messages name only
+    // a JavaScript `typeof`, never a value, but this script's output is
+    // embedded verbatim into a world-readable issue body on a PUBLIC
+    // repository, so the rule stays "nothing derived from report content is
+    // ever printed" rather than "nothing sensitive, probably".
     console.log(
-      `The Playwright JSON report at ${reportPath} did not have the expected shape; falling back to generic failure detail.`
+      `The Playwright JSON report at ${reportPath} did not have the expected shape; ` +
+        'falling back to generic failure detail. (A malformed entry inside the suite tree.)'
     )
   }
 }

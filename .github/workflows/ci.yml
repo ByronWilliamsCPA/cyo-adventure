@@ -904,7 +904,13 @@ jobs:
           # "Could not find <path>"), so listing all three files by name is the
           # safer choice even though it means updating this line for a future
           # fourth harness.
-          MIN_TESTS: '75'
+          #
+          # Measured 2026-08-29 immediately after adding six cases to
+          # extract-failing-specs.test.mjs (the shape-guard hardening): the
+          # three files report `# pass 81`. Raised from 75 in step with that,
+          # per the rule at the top of this comment; a floor left at 75 would
+          # have let all six new cases be deleted with the gate still green.
+          MIN_TESTS: '81'
         run: |
           set -euo pipefail
 

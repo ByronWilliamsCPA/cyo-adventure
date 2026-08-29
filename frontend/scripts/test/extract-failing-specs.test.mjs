@@ -220,13 +220,60 @@ describe('degraded paths', () => {
       assert.doesNotMatch(stdout, /parsed cleanly/)
     })
 
-    test('a suites array holding non-object entries falls back to the same shape line', () => {
-      const { status, stdout } = run(JSON.stringify({ suites: [5, 'bad', null] }))
+    // One case per element TYPE, deliberately not one mixed fixture. The
+    // previous single case used `{ suites: [5, 'bad', null] }` and passed only
+    // because `null` was in it: `null` throws on property access, but `5` and
+    // `'bad'` are BOXED on property access, so `(5).specs` was `undefined`,
+    // `?? []` yielded `[]`, nothing threw, and the script printed the
+    // all-clear line. Dropping `null` from that fixture turned it red, which
+    // is the proof the mixed fixture was hiding two live fail-open paths.
+    // Split so a regression in the handling of exactly one element type
+    // still reddens.
+    for (const [label, entry] of [
+      ['a number', 5],
+      ['a string', 'bad'],
+      ['null', null],
+    ]) {
+      test(`a suites array holding ${label} is reported as a malformed suite-tree entry`, () => {
+        const { status, stdout } = run(JSON.stringify({ suites: [entry] }))
+        assert.equal(status, 0)
+        assert.match(
+          stdout,
+          /did not have the expected shape; falling back to generic failure detail/
+        )
+        assert.match(stdout, /\(A malformed entry inside the suite tree\.\)/)
+        assert.doesNotMatch(stdout, /parsed cleanly/)
+      })
+    }
+
+    test('a spec entry whose "ok" is not a boolean is a shape violation, not a pass', () => {
+      // Pins `spec.ok === false` in the direction that matters. Every other
+      // fixture sets `ok` to a real boolean, so nothing distinguished
+      // `=== false` from `!== true`; widening the predicate that way makes
+      // this entry get REPORTED as a failing spec instead of rejected, so
+      // this case is what makes that widening visible.
+      const r = {
+        suites: [
+          { title: 's', specs: [{ file: 'e2e/x.spec.ts', title: 't', ok: 'false' }], suites: [] },
+        ],
+        errors: [],
+      }
+      const { status, stdout } = run(JSON.stringify(r))
       assert.equal(status, 0)
-      assert.match(
-        stdout,
-        /did not have the expected shape; falling back to generic failure detail/
-      )
+      assert.match(stdout, /\(A malformed entry inside the suite tree\.\)/)
+      assert.doesNotMatch(stdout, /spec failed/)
+      assert.doesNotMatch(stdout, /parsed cleanly/)
+    })
+
+    test('a spec entry with no "ok" at all is a shape violation, not a pass', () => {
+      const r = {
+        suites: [{ title: 's', specs: [{ file: 'e2e/x.spec.ts', title: 't' }], suites: [] }],
+        errors: [],
+      }
+      const { status, stdout } = run(JSON.stringify(r))
+      assert.equal(status, 0)
+      assert.match(stdout, /\(A malformed entry inside the suite tree\.\)/)
+      assert.doesNotMatch(stdout, /parsed cleanly/)
     })
 
     test('a top-level JSON array is reported as the wrong shape', () => {
@@ -236,6 +283,29 @@ describe('degraded paths', () => {
         stdout,
         /did not have the expected shape; falling back to generic failure detail/
       )
+    })
+
+    // These two are what pin `!Array.isArray(report.suites)` itself, as
+    // opposed to the catch-all one level down. Both paths used to print the
+    // SAME sentence, so removing that clause left every test green: a number
+    // `suites` throws on `for...of` and an array `report` reads `.suites` as
+    // `undefined`, and the catch turned both into the identical string. The
+    // parenthetical is the discriminator; a string `suites` is the sharpest
+    // case, since a string IS iterable, so with the clause gone it would walk
+    // its own characters rather than throwing at all.
+    test('a string "suites" is caught by the top-level guard, not the suite-tree catch', () => {
+      const { status, stdout } = run(JSON.stringify({ suites: 'abc' }))
+      assert.equal(status, 0)
+      assert.match(stdout, /\(No top-level "suites" array\.\)/)
+      assert.doesNotMatch(stdout, /A malformed entry inside the suite tree/)
+      assert.doesNotMatch(stdout, /parsed cleanly/)
+    })
+
+    test('a numeric "suites" is caught by the top-level guard, not the suite-tree catch', () => {
+      const { status, stdout } = run(JSON.stringify({ suites: 5 }))
+      assert.equal(status, 0)
+      assert.match(stdout, /\(No top-level "suites" array\.\)/)
+      assert.doesNotMatch(stdout, /A malformed entry inside the suite tree/)
     })
 
     test('a genuinely empty, validly-shaped report is still reported clean, not a shape violation', () => {
