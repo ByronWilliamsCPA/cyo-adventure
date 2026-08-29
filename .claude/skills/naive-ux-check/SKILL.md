@@ -16,12 +16,24 @@ are no separate prose files to keep in sync. Each entry has: `id`,
 `persona` (`kid` / `guardian` / `admin`), `name` (short scenario name),
 `persona_text`, `task_text`, `report_back_questions[]`,
 `requires_credentials`, `production_safe`, and `operator_notes` (an object
-with `operator_setup[]`, `operator_note[]`, and `expected_observations[]`,
-all human-only, see step 4). The array order is the selection order: kid
-scenarios (K0-K4) first, then guardian (G0-G7), then admin (A0-A3), with
-each persona's auth-gate scenario (K0, G0, A0) first within its group.
-The automated persona runner planned for D2b will read the same file, so a
-manual and an automated run always test the same scenarios.
+with `operator_setup[]`, `operator_note[]`, `persona_context[]`, and
+`expected_observations[]`, all human-only, see step 4). The array order is
+the selection order: kid scenarios (K0-K4) first, then guardian (G0-G7),
+then admin (A0-A3), with each persona's auth-gate scenario (K0, G0, A0)
+first within its group. The automated persona runner planned for D2b will
+read the same file, so a manual and an automated run always test the same
+scenarios.
+
+`render.py` (`.claude/skills/naive-ux-check/render.py`) is the single
+composer of the paste block; it is what step 4 below runs, and the same
+module a D2b automated runner is expected to import rather than writing a
+second composer. It reads an explicit allowlist of exactly three
+model-facing fields (`persona_text`, `task_text`, `report_back_questions`)
+off a scenario record: `operator_notes` (all four of its sub-keys) is never
+read by it, by construction, and neither is any field added to the schema
+later. `tests/unit/test_naive_ux_scenarios.py` imports this module directly
+and asserts its output equals an independently-built reference, so a change
+that made it read anything beyond the allowlist would fail that suite.
 
 ## What to do when invoked
 
@@ -51,10 +63,14 @@ manual and an automated run always test the same scenarios.
    entry yet in the most recent report. If no report exists yet, that is the
    first entry, K0. Always hand off exactly one scenario per invocation
    (step 4); the user re-invokes for the next one (step 7).
-4. Compose the paste block from that scenario's model-facing fields ONLY:
-   `persona_text`, `task_text` (with the `<URL>` placeholder replaced by the
-   target URL from step 1), and `report_back_questions[]` rendered as a
-   numbered list, in the shape:
+4. Get the paste block by running the renderer, never by composing it
+   yourself:
+
+   ```text
+   python3 .claude/skills/naive-ux-check/render.py <scenario id> <target URL from step 1>
+   ```
+
+   Its stdout is the block to paste, verbatim, in the shape:
 
    ```text
    Persona: <persona_text>
@@ -68,14 +84,18 @@ manual and an automated run always test the same scenarios.
    ...
    ```
 
-   Never include `operator_notes` (its `operator_setup`, `operator_note`,
-   or `expected_observations` entries) in this block; they are instructions
-   for the human running the extension, so relay them separately, never
-   inside the paste block. Where the composed task text carries `<EMAIL>` /
-   `<PASSWORD>` placeholders, remind the user to fill them with the seeded
-   credentials before pasting. Where `operator_notes.operator_setup` is
-   non-empty, relay it to the user before they paste (it covers things like
-   starting from a signed-out browser or signing in first).
+   `render.py` reads only `persona_text`, `task_text`, and
+   `report_back_questions[]` off the scenario record; it never reads
+   `operator_notes` (`operator_setup`, `operator_note`, `persona_context`,
+   or `expected_observations`), by construction. Do not append, inline, or
+   otherwise relay any `operator_notes` content into the pasted block
+   itself; where any of it needs to reach the user at all, say it
+   separately, in your own words to the user, outside the pasted text.
+   Where the rendered task text carries `<EMAIL>` / `<PASSWORD>`
+   placeholders, remind the user to fill them with the seeded credentials
+   before pasting. Where `operator_notes.operator_setup` is non-empty,
+   relay it to the user before they paste (it covers things like starting
+   from a signed-out browser or signing in first).
 5. Tell the user: "Paste this into the Claude-for-Chrome extension, then
    paste its response back here."
 6. When the user pastes back a response, first REDACT it, then append one row

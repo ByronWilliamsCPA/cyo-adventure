@@ -1,29 +1,48 @@
-"""Tests for the naive-ux-check scenario data file.
+"""Tests for the naive-ux-check scenario data file and its paste-block renderer.
 
 `scenarios.json` (`.claude/skills/naive-ux-check/scenarios.json`) is the
 single source of truth for the 17 naive-user comprehension scenarios
-(K0-K4, G0-G7, A0-A3; task D2a). Two properties matter enough to be
-enforced by structure rather than by a human reading SKILL.md's
-instructions:
+(K0-K4, G0-G7, A0-A3; task D2a). `render.py`
+(`.claude/skills/naive-ux-check/render.py`) is the single composer of the
+block a human pastes into the Claude-for-Chrome extension: SKILL.md step 4
+runs it rather than composing the block itself, so this test imports and
+exercises the actual module the skill executes, not a test-local stand-in.
+
+Two properties matter enough to be enforced by structure rather than by a
+human reading SKILL.md's instructions:
 
 1. Every scenario round-trips: all required fields are present and
    non-empty, and the id set is exactly the expected 17 with no
    duplicates.
-2. Operator-only content (`operator_notes`: operator setup lines,
-   operator notes, and expected-observations paragraphs) can never reach
-   the block that gets pasted into the model. SKILL.md says twice,
-   emphatically, that a prompt leaking its own expected observations
-   tests transcription, not comprehension, so every verdict downstream of
-   a leak would be worthless.
+2. Operator-only content (`operator_notes`: operator setup lines, operator
+   notes, persona context, and expected-observations paragraphs) can never
+   reach the block that gets pasted into the model. SKILL.md says twice,
+   emphatically, that a prompt leaking its own expected observations tests
+   transcription, not comprehension, so every verdict downstream of a leak
+   would be worthless.
+
+Property 2 is checked by an exact-equality assertion against an
+independently-built reference string (`_expected_paste_block`, defined only
+in this test module), rather than by asserting that specific operator
+strings are absent. Equality discriminates on all 17 scenarios, including
+the nine (G2-G7, A1-A3) whose `operator_notes` are entirely empty, where a
+"forbidden substring is absent" check would pass vacuously. Equality also
+catches a leak through a field that isn't under `operator_notes` at all
+(a new top-level scenario field, for instance), because anything not named
+in `_expected_paste_block`'s three fields changes the comparison.
 """
 
 from __future__ import annotations
 
+import importlib.util
 import json
 from pathlib import Path
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
 import pytest
+
+if TYPE_CHECKING:
+    from types import ModuleType
 
 SCENARIOS_PATH = (
     Path(__file__).resolve().parents[2]
@@ -32,6 +51,12 @@ SCENARIOS_PATH = (
     / "naive-ux-check"
     / "scenarios.json"
 )
+
+RENDER_MODULE_PATH = SCENARIOS_PATH.parent / "render.py"
+
+# Not a real target; only used to exercise the <URL> substitution the
+# renderer performs. Never resolved to a live host.
+_TEST_URL = "https://example.invalid/"
 
 EXPECTED_IDS = (
     [f"K{i}" for i in range(5)]
@@ -60,39 +85,47 @@ def _load_scenarios() -> list[dict[str, Any]]:
     return json.loads(SCENARIOS_PATH.read_text(encoding="utf-8"))
 
 
-def compose_paste_block(scenario: dict[str, Any]) -> str:
-    """Render the block a human pastes into the Claude-for-Chrome extension.
+def _load_render_module() -> ModuleType:
+    """Import the real `render.py` the skill executes, by file path.
 
-    Mirrors SKILL.md step 4: an ALLOWLIST of exactly the three model-facing
-    fields (`persona_text`, `task_text`, `report_back_questions`). Nothing
-    else on the scenario, including `operator_notes` and any field added to
-    the schema later, is ever read here. The allowlist shape (not a
-    blacklist of `operator_notes`) is what makes the separation structural:
-    a new field lands outside the paste block by default, not inside it.
+    `.claude/skills/naive-ux-check/` is not a Python package (it is a
+    Claude Code skill directory, not part of `src/cyo_adventure`), so this
+    loads the module directly from its path rather than via a package
+    import. This is the module under test for the leak property: there is
+    exactly one paste-block composer in the repository, and this is it.
     """
+    spec = importlib.util.spec_from_file_location(
+        "naive_ux_check_render", RENDER_MODULE_PATH
+    )
+    if spec is None or spec.loader is None:
+        raise ImportError(f"could not load render module from {RENDER_MODULE_PATH}")
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return module
+
+
+render_module = _load_render_module()
+
+
+def _expected_paste_block(scenario: dict[str, Any], url: str) -> str:
+    """Build the paste block independently, from named model-facing fields only.
+
+    This is NOT the composer under test; it exists only so the equality
+    assertion below has a reference value that was not produced by
+    `render.py`. It names exactly the three fields SKILL.md documents as
+    model-facing (`persona_text`, `task_text`, `report_back_questions`) and
+    nothing else on `scenario`, so any field `render_paste_block` reads
+    beyond those three (an `operator_notes` leak, or a leak through some
+    other field entirely) changes the render without changing this
+    reference, and the equality assertion catches the divergence.
+    """
+    persona_text = scenario["persona_text"].replace("<URL>", url)
+    task_text = scenario["task_text"].replace("<URL>", url)
     questions = "\n".join(
         f"{i}. {q}" for i, q in enumerate(scenario["report_back_questions"], start=1)
     )
     return (
-        f"Persona: {scenario['persona_text']}\n\n"
-        f"Task: {scenario['task_text']}\n\n"
-        f"Report back:\n\n{questions}"
-    )
-
-
-def _compose_paste_block_leaky(scenario: dict[str, Any]) -> str:
-    """A deliberately wrong composer, used only to prove the leak test bites.
-
-    This is the exact defect class the leak test exists to catch: operator
-    notes reaching the model-facing block. It must never be wired into
-    `compose_paste_block`; it exists so `test_leaky_composer_is_caught_...`
-    below can show the detection logic is not vacuous without requiring a
-    hand mutation on every test run.
-    """
-    return (
-        compose_paste_block(scenario)
-        + "\n\n"
-        + json.dumps(scenario.get("operator_notes", {}))
+        f"Persona: {persona_text}\n\nTask: {task_text}\n\nReport back:\n\n{questions}"
     )
 
 
@@ -100,10 +133,12 @@ def _iter_operator_strings(node: Any):
     """Yield every non-blank string leaf found anywhere under `node`.
 
     Deliberately generic over shape: walks dicts and lists recursively
-    instead of hardcoding today's three `operator_notes` sub-keys
-    (`operator_setup`, `operator_note`, `expected_observations`). A future
-    field added anywhere under `operator_notes` is covered automatically,
-    without editing this test.
+    instead of hardcoding today's `operator_notes` sub-keys
+    (`operator_setup`, `operator_note`, `persona_context`,
+    `expected_observations`). A future field added anywhere under
+    `operator_notes` is covered automatically, without editing this test.
+    Used only by `test_leaky_render_is_caught_by_the_equality_check` below,
+    to prove the fixture scenario it mutates actually carries operator text.
     """
     if isinstance(node, str):
         if node.strip():
@@ -187,32 +222,64 @@ def test_credential_and_production_safety_posture_is_unchanged():
         assert scenarios[sid]["production_safe"] is False
 
 
+def test_a1_persona_context_gives_the_dropped_admin_premise_a_home():
+    """Minor 5: admin.md's premise paragraph must live somewhere, not nowhere.
+
+    D2a's migration dropped admin.md's substantive preamble (admins reuse
+    every /guardian/* route; the distinguishing signals are the muted
+    "Admin" hint, the absent "Books" link, the cross-family picker, and the
+    moderation nav) with no replacement home. It is the stated premise of
+    A1 ("indistinguishable surface"), so it now lives in
+    `A1.operator_notes.persona_context`, an operator-only field alongside
+    `operator_setup`/`operator_note`/`expected_observations`. This pins
+    that it stays populated, not merely present.
+    """
+    scenarios = {s["id"]: s for s in _load_scenarios()}
+    persona_context = scenarios["A1"]["operator_notes"]["persona_context"]
+    assert isinstance(persona_context, list)
+    assert persona_context, "A1 persona_context must not be empty"
+    assert all(isinstance(text, str) and text.strip() for text in persona_context)
+
+
 # ---------------------------------------------------------------------------
 # The leak test: operator-only content must never reach the paste block.
 # ---------------------------------------------------------------------------
 
 
 @pytest.mark.parametrize("scenario", _load_scenarios(), ids=lambda s: s["id"])
-def test_paste_block_never_leaks_operator_only_content(scenario: dict[str, Any]):
-    block = compose_paste_block(scenario)
-    for operator_string in _iter_operator_strings(scenario.get("operator_notes", {})):
-        assert operator_string not in block, (
-            f"{scenario['id']}: operator-only text leaked into the paste block: "
-            f"{operator_string!r}"
-        )
+def test_render_paste_block_matches_the_exact_allowlist_render(
+    scenario: dict[str, Any],
+):
+    """The real renderer's output must equal the independent reference, exactly.
+
+    Exact equality, not substring absence: this fails on ANY divergence
+    from the three-field reference, whether that is an operator-notes leak
+    (any sub-key, including one added after this test was written), a leak
+    through a field outside `operator_notes` entirely, or an unrelated
+    change to the three allowed fields. It runs unconditionally on all 17
+    scenarios, including the nine whose `operator_notes` are entirely
+    empty (G2-G7, A1-A3), where a "forbidden substring is absent" check
+    would have passed vacuously.
+    """
+    rendered = render_module.render_paste_block(scenario["id"], _TEST_URL)
+    expected = _expected_paste_block(scenario, _TEST_URL)
+    assert rendered == expected
 
 
-def test_leaky_composer_is_caught_by_the_operator_content_check():
-    """Proves the leak check above is not vacuous.
+def test_leaky_render_is_caught_by_the_equality_check():
+    """Proves the equality check above is not vacuous.
 
-    Picks a scenario with non-empty `operator_notes`, runs it through the
-    deliberately-wrong `_compose_paste_block_leaky`, and confirms the
-    operator text the real check looks for is actually present in the
-    output. This is the permanent record that the detection logic fires;
-    the D2a task additionally required observing the real
-    `compose_paste_block` mutated the same way and watching
-    `test_paste_block_never_leaks_operator_only_content` go red, which was
-    done by hand (see the D2a report) and reverted immediately after.
+    Picks a scenario with non-empty `operator_notes`, builds a
+    deliberately-leaky block by appending its operator content to the real
+    renderer's output, and confirms that leaky block no longer equals the
+    reference `_expected_paste_block` produces. This is the permanent
+    record that the equality check fires on a leak; the D2a report records
+    the additional live confirmation that mutating `render.py` itself
+    (rather than simulating the leak here) makes
+    `test_render_paste_block_matches_the_exact_allowlist_render` fail, and
+    that editing SKILL.md's prose alone (with `render.py` unchanged) does
+    not resurrect the leak, since SKILL.md's prose is never executed by
+    this test or by the renderer.
     """
     scenarios = _load_scenarios()
     leaky_scenario = next(
@@ -223,9 +290,11 @@ def test_leaky_composer_is_caught_by_the_operator_content_check():
     )
     assert operator_strings, "fixture scenario unexpectedly has no operator_notes text"
 
-    leaky_block = _compose_paste_block_leaky(leaky_scenario)
-    assert any(op in leaky_block for op in operator_strings), (
-        "the leaky composer should reproduce the exact defect class the leak "
-        "test exists to catch; if this fails, the leak test would not have "
-        "caught it either"
+    real_block = render_module.render_paste_block(leaky_scenario["id"], _TEST_URL)
+    leaky_block = real_block + "\n\n" + json.dumps(leaky_scenario["operator_notes"])
+    reference = _expected_paste_block(leaky_scenario, _TEST_URL)
+
+    assert leaky_block != reference, (
+        "the leaky block should diverge from the reference; if this fails, "
+        "the equality check above would not have caught it either"
     )

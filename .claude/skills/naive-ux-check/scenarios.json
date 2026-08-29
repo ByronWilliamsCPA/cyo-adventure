@@ -18,6 +18,7 @@
         "run this in a fresh browser profile (or a new incognito window) where no guardian has ever signed in to this app. Do not sign in first; this is the one kid scenario that must start with no session at all."
       ],
       "operator_note": [],
+      "persona_context": [],
       "expected_observations": [
         "the kid picker at `/kids` should show the differentiated auth gate shipped in PR #198 (source of truth: `frontend/src/kid/ProfilePickerPage.tsx`): the title \"Ask a grown-up to help\", the description \"A grown-up needs to sign in before you can pick who's reading.\", a mascot illustration, and a single \"I am a grown-up\" action link to the guardian sign-in page. No \"Try again\" control and no \"Oops, we hit a snag\" error should appear. A friendly, correctly-working gate like this is a PASS for this scenario; a confusing, mislabeled, or broken gate is still friction-found or dead-end."
       ]
@@ -44,6 +45,7 @@
       "operator_note": [
         "this scenario's zero-profile premise requires an operator-arranged empty family (a signed-in guardian with no child profiles). The default seeded staging family already has a \"Test Reader\" profile (age band 10-13) with two published stories, so an unmodified seeded run lands on the \"Who's reading?\" avatar grid instead of the \"No profiles yet\" empty state and contradicts the task text below."
       ],
+      "persona_context": [],
       "expected_observations": []
     }
   },
@@ -68,6 +70,7 @@
       "operator_note": [
         "against the default seeded staging family, the Test Reader library already holds two published books, so the persona will find a story to read and never reach the \"get one made for you\" branch; that shorter run is still valid to log. To exercise the empty-library request path this scenario was designed for, arrange a profile with no assigned books (an operator-arranged empty family) before the run."
       ],
+      "persona_context": [],
       "expected_observations": []
     }
   },
@@ -90,6 +93,7 @@
         "Before pasting this prompt, sign in as the seeded test guardian (`SEED_GUARDIAN_EMAIL`, default `cyo-test-guardian@example.com`) in this browser tab first."
       ],
       "operator_note": [],
+      "persona_context": [],
       "expected_observations": []
     }
   },
@@ -114,6 +118,7 @@
       "operator_note": [
         "the default seeded staging family has a single child profile (Test Reader); this scenario needs a second profile to switch to. Add one via the guardian console (Profiles) before the run, or arrange a two-profile family."
       ],
+      "persona_context": [],
       "expected_observations": []
     }
   },
@@ -136,6 +141,7 @@
         "run this in a browser tab that is not signed in. Before pasting, replace `<EMAIL>` and `<PASSWORD>` with the seeded test guardian credentials (`SEED_GUARDIAN_EMAIL`, default `cyo-test-guardian@example.com`; password from the operator's shell environment). Never use a real production account for this run."
       ],
       "operator_note": [],
+      "persona_context": [],
       "expected_observations": [
         "from the landing page, the \"Grown-ups / Guardian console\" door leads to `/guardian`, whose route guard redirects a signed-out visitor to the \"Guardian sign-in\" page (`/guardian/login`): a \"Continue with Google\" button, an \"or use your email\" divider, and an email/password form with a \"Sign in\" button. On success the persona lands on the guardian console: a \"Review queue\" heading, navigation links (Console, Request a story, Books, Story requests, Profiles), and a muted \"Guardian\" role hint beside the \"CYO Adventure\" brand title. On bad credentials the form shows \"That email and password didn't match. Please try again.\" A discoverable, correctly-working sign-in with clear feedback is a PASS; a confusing, mislabeled, or broken path is still friction-found or dead-end."
       ]
@@ -160,6 +166,7 @@
       "operator_note": [
         "this scenario's zero-children premise requires an operator-arranged empty family (a guardian account with no child profiles). The default seeded staging family already has a \"Test Reader\" profile with two published stories, so an unmodified seeded run will not show the zero-state nudge this scenario is designed to test."
       ],
+      "persona_context": [],
       "expected_observations": []
     }
   },
@@ -180,6 +187,7 @@
     "operator_notes": {
       "operator_setup": [],
       "operator_note": [],
+      "persona_context": [],
       "expected_observations": []
     }
   },
@@ -200,6 +208,7 @@
     "operator_notes": {
       "operator_setup": [],
       "operator_note": [],
+      "persona_context": [],
       "expected_observations": []
     }
   },
@@ -220,6 +229,7 @@
     "operator_notes": {
       "operator_setup": [],
       "operator_note": [],
+      "persona_context": [],
       "expected_observations": []
     }
   },
@@ -240,6 +250,7 @@
     "operator_notes": {
       "operator_setup": [],
       "operator_note": [],
+      "persona_context": [],
       "expected_observations": []
     }
   },
@@ -260,6 +271,7 @@
     "operator_notes": {
       "operator_setup": [],
       "operator_note": [],
+      "persona_context": [],
       "expected_observations": []
     }
   },
@@ -280,6 +292,7 @@
     "operator_notes": {
       "operator_setup": [],
       "operator_note": [],
+      "persona_context": [],
       "expected_observations": []
     }
   },
@@ -302,6 +315,7 @@
         "run this in a browser tab that is not signed in. Before pasting, replace `<EMAIL>` and `<PASSWORD>` with the seeded test admin credentials (`SEED_ADMIN_EMAIL`, default `cyo-test-admin@example.com`; password from the operator's shell environment)."
       ],
       "operator_note": [],
+      "persona_context": [],
       "expected_observations": [
         "the landing page's \"Grown-ups / Guardian console\" door carries the note \"Admins sign in here too\" (the only pre-sign-in admin signal); the sign-in page is titled \"Guardian sign-in\" with no admin mention; after sign-in, the console header shows a muted \"Admin\" role hint beside the \"CYO Adventure\" brand title (PR #206), the \"Books\" nav link is absent (it is guardian-only), and the Console page shows admin-only content: a story-request form with a cross-family \"Choose a family…\" picker and a \"Moderation admin\" nav block (moderation dashboard and thresholds links). A persona reporting the family picker or moderation links has found decisive admin evidence, stronger than the header hint; credit it accordingly. A discoverable, correctly-working sign-in is a PASS even if the persona only noticed the subtler signals; note in the log which signals it found. A confusing, mislabeled, or broken sign-in path is still friction-found or dead-end."
       ]
@@ -324,6 +338,9 @@
     "operator_notes": {
       "operator_setup": [],
       "operator_note": [],
+      "persona_context": [
+        "Admins reuse every /guardian/* route under role=admin; there is no dedicated admin route tree. The visible differences from a guardian session: the console shell shows a muted \"Admin\" role hint beside the \"CYO Adventure\" brand title and hides the guardian-only \"Books\" nav link (PR #206), and the Console page itself renders admin-only content: the embedded story-request form runs in admin mode with a cross-family \"Choose a family…\" picker (guardians only ever pick among their own children), and a \"Moderation admin\" nav block links to the moderation dashboard and thresholds."
+      ],
       "expected_observations": []
     }
   },
@@ -344,6 +361,7 @@
     "operator_notes": {
       "operator_setup": [],
       "operator_note": [],
+      "persona_context": [],
       "expected_observations": []
     }
   },
@@ -364,6 +382,7 @@
     "operator_notes": {
       "operator_setup": [],
       "operator_note": [],
+      "persona_context": [],
       "expected_observations": []
     }
   }
