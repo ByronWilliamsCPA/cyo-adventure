@@ -910,12 +910,16 @@ jobs:
           # fifth harness.
           #
           # Measured 2026-08-29 after adding six cases to
-          # extract-failing-specs.test.mjs (the shape-guard hardening) and the
-          # 22-case artifact-upload-safety.test.mjs: the four files report
-          # `# pass 103`. Raised 75 -> 81 -> 103 in step with those, per the rule
-          # at the top of this comment; a floor left behind would have let the new
-          # cases be deleted with the gate still green.
-          MIN_TESTS: '103'
+          # extract-failing-specs.test.mjs (the shape-guard hardening), the
+          # 22-case artifact-upload-safety.test.mjs, and the final-wave fixes:
+          # eleven cases in health-rollup.test.mjs (the call-site discovery
+          # defects and the fleet-claim assertions) and seven in
+          # artifact-upload-safety.test.mjs (`secrets: inherit`, which the hard
+          # rule's `${{ secrets.` literal could never see). The four files now
+          # report `# pass 121`. Raised 75 -> 81 -> 103 -> 121 in step with
+          # those, per the rule at the top of this comment; a floor left behind
+          # would have let the new cases be deleted with the gate still green.
+          MIN_TESTS: '121'
         run: |
           set -euo pipefail
 

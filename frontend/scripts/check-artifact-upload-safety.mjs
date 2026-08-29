@@ -300,18 +300,40 @@ export function findWholesaleUploads(workflowsDir) {
   return result
 }
 
+/** A `${{ secrets.NAME }}` expression, the ordinary way a secret enters a job. */
+const SECRET_EXPRESSION = /\$\{\{\s*secrets\./
+
+/**
+ * `secrets: inherit` on a reusable-workflow call. Every secret the caller can
+ * see is handed to the called workflow, and the file contains no
+ * `${{ secrets. }}` expression at all, so the expression test above returns
+ * false for a workflow with FULL access to the credential store.
+ *
+ * Deliberately NOT anchored to end-of-line. An `$`-anchored pattern is
+ * defeated by a legal trailing `# comment`, which is the same defect
+ * `.github/workflows/test/health-rollup.test.mjs`'s call-site regex carried.
+ * Stopping at a word boundary after `inherit` covers the comment, a quoted
+ * value, and trailing whitespace in one, with no nested quantifier for
+ * `security/detect-unsafe-regex` to object to. The `^[ \t]*` anchor is what
+ * keeps a commented-out `# secrets: inherit` from matching.
+ */
+const SECRETS_INHERIT = /^[ \t]*secrets:[ \t]*['"]?inherit\b/m
+
 /**
  * Whether a workflow injects a repository or environment secret.
  *
  * `${{ secrets.X }}` anywhere in the file is the signal that this tier can
  * type a real credential into a real login form, which is what turns a
- * wholesale upload from untidy into a disclosure.
+ * wholesale upload from untidy into a disclosure. `secrets: inherit` is the
+ * same signal by a different route: it grants the called workflow every
+ * secret without naming one, so a rule keyed only on the literal
+ * `${{ secrets.` would wave it straight through.
  *
  * @param {string} yamlText Raw workflow file contents.
  * @returns {boolean} True when the workflow references any secret.
  */
 export function injectsSecrets(yamlText) {
-  return /\$\{\{\s*secrets\./.test(yamlText)
+  return SECRET_EXPRESSION.test(yamlText) || SECRETS_INHERIT.test(yamlText)
 }
 
 /**

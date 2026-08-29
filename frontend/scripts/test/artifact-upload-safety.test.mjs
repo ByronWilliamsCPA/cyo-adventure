@@ -234,6 +234,104 @@ test('the secret detector', async (t) => {
   await t.test('does not see a hardcoded local literal', () => {
     assert.equal(injectsSecrets('  POSTGRES_PASSWORD: password\n'), false)
   })
+
+  // The rule keyed on the literal `${{ secrets.` to decide whether a workflow
+  // could disclose a credential. A reusable-workflow call with
+  // `secrets: inherit` hands over EVERY secret the caller can see and contains
+  // no such expression anywhere, so the hard rule waved it through. That is
+  // the same mistake this whole file exists to remove: a control adopted
+  // because it looks right, never tested against the thing it must stop.
+  await t.test('sees a reusable-workflow call that inherits every secret', () => {
+    assert.equal(
+      injectsSecrets(
+        [
+          'jobs:',
+          '  call:',
+          '    uses: ./.github/workflows/inner.yml',
+          '    secrets: inherit',
+          '',
+        ].join('\n')
+      ),
+      true
+    )
+  })
+
+  await t.test('sees it with a trailing comment, and quoted', () => {
+    assert.equal(injectsSecrets('    secrets: inherit # the whole store\n'), true)
+    assert.equal(injectsSecrets("    secrets: 'inherit'\n"), true)
+  })
+
+  // Controls. Without these the widened rule could pass by calling every
+  // workflow secret-bearing, which would make the hard rule unfalsifiable in
+  // the other direction.
+  await t.test('does not see the word inherit in prose or in a comment', () => {
+    assert.equal(injectsSecrets('    # secrets: inherit\n'), false)
+    assert.equal(injectsSecrets('  # this reusable call inherits nothing\n'), false)
+    assert.equal(injectsSecrets('    with:\n      inherit: true\n'), false)
+  })
+})
+
+test('the hard rule, end to end', async (t) => {
+  // The unit arm above proves the detector; this proves the RULE consumes it.
+  // A detector fixed in isolation while findSecretBearingWholesaleUploads kept
+  // its own copy of the old test would look fixed and stop nothing.
+  const INHERITING_UPLOADER = [
+    'name: Inheriting tier',
+    'jobs:',
+    '  call:',
+    '    uses: ./.github/workflows/inner.yml',
+    '    secrets: inherit',
+    '  publish:',
+    '    steps:',
+    '      - uses: actions/upload-artifact@abc',
+    '        with:',
+    '          name: traces',
+    '          path: frontend/test-results/',
+    '',
+  ].join('\n')
+
+  /**
+   * @param {string} contents Workflow file contents.
+   * @returns {string[]} findSecretBearingWholesaleUploads output.
+   */
+  function ruleOver(contents) {
+    const dir = mkdtempSync(join(tmpdir(), 'artifact-safety-wf-'))
+    try {
+      writeFixture(dir, 'tier.yml', contents)
+      return findSecretBearingWholesaleUploads(dir)
+    } finally {
+      rmSync(dir, { recursive: true, force: true })
+    }
+  }
+
+  await t.test(
+    'a secrets: inherit workflow publishing test-results wholesale is a violation',
+    () => {
+      const violations = ruleOver(INHERITING_UPLOADER)
+      assert.equal(violations.length, 1)
+      assert.match(violations[0], /tier\.yml/)
+      assert.match(violations[0], /frontend\/test-results\//)
+    }
+  )
+
+  await t.test('the same workflow without the inherit line is not a violation', () => {
+    // The discriminating control: one line apart. Without it the arm above
+    // could be passing because the upload alone trips the rule, which would
+    // make the secret half of the rule untested.
+    assert.deepEqual(ruleOver(INHERITING_UPLOADER.replace('    secrets: inherit\n', '')), [])
+  })
+
+  await t.test('a secrets: inherit workflow with no wholesale upload is not a violation', () => {
+    assert.deepEqual(
+      ruleOver(
+        INHERITING_UPLOADER.replace(
+          '          path: frontend/test-results/',
+          '          path: summary.md'
+        )
+      ),
+      []
+    )
+  })
 })
 
 test('the real repository', async (t) => {
