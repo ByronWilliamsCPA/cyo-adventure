@@ -52,10 +52,16 @@ const REPO = { owner: 'ByronWilliamsCPA', repo: 'cyo-adventure' }
  *
  * @param {string} field One cron field.
  * @param {number} lo Lowest legal value for that field.
- * @param {number} hi Highest legal value for that field.
+ * @param {number} hi Highest legal value for that field; a bare value or a
+ *   range may still name this value explicitly.
+ * @param {number} [stepTop=hi] The top a step-from-a-start-value term (e.g.
+ *   `5/2`) counts up to. Distinct from `hi` only for the day-of-week field:
+ *   `expandCronDow` passes 6 here, because 7 is legal as an explicit alias
+ *   for Sunday but is not a value a step should count up through (counting
+ *   to it would invent a phantom Sunday that normalises out of a 0-6 step).
  * @returns {Set<number>} Every value the field matches.
  */
-function expandCronField(field, lo, hi) {
+function expandCronField(field, lo, hi, stepTop = hi) {
   const values = new Set()
   for (const term of field.split(',')) {
     const [rangePart, stepPart] = term.split('/')
@@ -71,8 +77,8 @@ function expandCronField(field, lo, hi) {
       to = Number(endText)
     } else {
       from = Number(rangePart)
-      // `5/2` means "5 to the top of the range, every 2"; a bare `5` is just 5.
-      to = stepPart === undefined ? from : hi
+      // `5/2` means "5 to stepTop, every 2"; a bare `5` is just 5.
+      to = stepPart === undefined ? from : stepTop
     }
     const parsed = [from, to, step]
     if (
@@ -97,14 +103,19 @@ function expandCronField(field, lo, hi) {
  * Expand a day-of-week field, normalising 7 to 0.
  *
  * Cron accepts both 0 and 7 for Sunday, so `0 6 * * 0` and `0 6 * * 7` name
- * the same slot and must be seen as colliding.
+ * the same slot and must be seen as colliding: a bare `7` or a range ending
+ * in `7` (e.g. `5-7`) still means what it says. But a step term with an
+ * implicit end (`5/2`) must stop at Saturday (6), not count up to a literal
+ * 7: 7 is only an alias for a day already reachable as 0, not an eighth day
+ * to step through, and counting up to it invents a Sunday the term never
+ * named.
  *
  * @param {string} field The day-of-week field.
  * @returns {Set<number>} Days matched, with Sunday always as 0.
  */
 function expandCronDow(field) {
   const days = new Set()
-  for (const day of expandCronField(field, 0, 7)) days.add(day === 7 ? 0 : day)
+  for (const day of expandCronField(field, 0, 7, 6)) days.add(day === 7 ? 0 : day)
   return days
 }
 
@@ -1172,6 +1183,22 @@ describe('cronsCollide sees every field syntax GitHub actually accepts', () => {
     test('a combination of list, range and step is a collision', () => {
       // The `1-5,0` shape: Mon-Fri plus Sunday. Saturday is the only day out.
       assert.equal(cronsCollide('0 7 * * 0', '0 7 * * 1-5,0'), true)
+    })
+
+    test('a day-of-week step from a start value does not invent a phantom Sunday', () => {
+      // `5/2` is Friday, stepping by 2 from there; the count must stop at
+      // Saturday (6), the highest real day, not run up to a literal 7. 7 is
+      // only an alias for Sunday (already representable as 0), not an eighth
+      // day to step through. Before the fix this returned {5, 0} because the
+      // step counted up to hi (7) and 7 then normalised to 0, inventing a
+      // Sunday the term "5/2" never named.
+      assert.deepEqual([...expandCronDow('5/2')].sort(), [5])
+    })
+
+    test('a day-of-week step from a start value does not collide with Sunday', () => {
+      // Same defect, seen through the public API: Friday-stepping-by-2 must
+      // not read as sharing Sunday's slot.
+      assert.equal(cronsCollide('0 6 * * 0', '0 6 * * 5/2'), false)
     })
   })
 
