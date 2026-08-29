@@ -24,6 +24,11 @@ tags:
 > kill switch. **It is not a completed human privacy review and must not be cited as one.**
 > It becomes Accepted only when the owner ratifies it; until then the flag stays off and no
 > artifact is produced against real reader data.
+> **Revised 2026-08-29**, before ratification, following a senior review of the first draft. The
+> revision is additive: it binds the threshold to each emitted signal rather than only to the reader
+> cohort, adds the emit allowlist the first draft left open, and states the egress rule generally
+> instead of naming two of its paths. Nothing already decided was reversed, and the status is
+> unchanged. The document the owner ratifies is this one.
 > **Date**: 2026-08-28
 > **Relates to**: [ADR-018](./adr-018-childrens-privacy-compliance.md) (the governing
 > children's-privacy architecture; D6's data inventory obligation is discharged in Decision 8
@@ -45,6 +50,12 @@ adult who could re-identify them sees the whole household's contribution at once
 is derived from first principles for a children's product, not measured: the production
 distribution of readers per storybook is not observable from here, and Decision 10 states
 what measurement would justify revising it and in which direction.
+
+**The same threshold binds every emitted signal, not only the row.** Ratings, completions and flags
+are contributed by subsets of a book's readers, so a book that clears the gate on 5 reading families
+can still carry a cell built from one. Each published figure must reach 5 distinct families in its
+own contributing population, and a signal that does not is suppressed while the rest of the row is
+published.
 
 **The artifact is never committed to this repository.** A public git history is not
 retractable, and an aggregate over five families of real children, once pushed, stays public
@@ -150,6 +161,26 @@ remainder as zero. Siblings also share a home, a shelf, and usually a reading se
 their outcomes are correlated rather than independent observations. `family_id` is reachable
 from every outcome table through `child_profile.family_id`.
 
+**The threshold binds every emitted signal, not only the row.** Clearing the gate at the storybook
+level does not clear every cell in that storybook's row. Each emitted aggregate is computed over its
+own contributing population, that population is counted in distinct `family_id` values, and it must
+itself reach 5:
+
+- completion rate and return-read rate: families with an observed read of the book;
+- the rating aggregate: families that rated it;
+- flag counts by reason: families that flagged it (Decision 5, which restates this floor for the
+  population it governs).
+
+A signal whose own contributing population is below 5 is **suppressed for that storybook**, as the
+marker Decision 3 defines, while the rest of the row is published normally. The book itself passing
+is not a licence for the cell.
+
+This is the "why 5 and not 3" arithmetic below, applied where it actually bites. A book read by 5
+families and rated by 1 satisfies every other rule in this document, and its published rating mean
+is exactly one child's `rating.value`, an integer from 1 to 5 with a `BETWEEN 1 AND 5` check
+constraint on it. A single test of the reader-cohort threshold does not catch that, which is why
+Decision 7 requires the per-signal case as its own fixture.
+
 **Why 5 and not 3.** With a cohort of 3, an adult in one of the three families knows their own
 household's contribution exactly and is left inferring across two unknowns. Every outcome
 signal in scope has a small integer domain: `rating.value` is 1 to 5 with a `BETWEEN 1 AND 5`
@@ -194,7 +225,7 @@ predicate is a column value rather than a computed cardinality.
   the child the book is about. No aggregate over a book that is about one identified child is
   publishable at any cohort size, and no counting argument reaches this case.
 
-### 3. The output grain is the storybook, and the job may not subdivide the cohort
+### 3. The output grain is the storybook, its contents are allowlisted, and the cohort is not subdivided
 
 One row per storybook. Where a signal is version-scoped (the Stage-4 engagement advisory,
 completions), the job reads the currently published version only, via
@@ -207,9 +238,67 @@ produces a cell of one. **Any breakdown dimension the job later grows must re-ap
 5-family threshold at the leaf cell, not at the storybook.** Adding a dimension without doing
 so is a change to this decision and needs an amendment here.
 
-Age band, where the artifact reports it, is a property of the **book** (the band the story
+Age band, which the emit allowlist below admits, is a property of the **book** (the band the story
 targets, taken from the request that produced it or from the Storybook blob's declared band),
 never `child_profile.age_band`. The job reads no attribute of any child.
+
+**No total spans more than one storybook.** The artifact contains no grand total, no corpus-wide
+count, no summary row, no "all books" line, and no count of how many storybooks were considered,
+included, or excluded. This is what makes suppression sufficient on its own: a suppressed book's
+cell is recoverable by subtraction only if some published figure includes it, and no published
+figure spans books. Complementary suppression is therefore not needed, but that conclusion is a
+consequence of this rule and not independent of it, so the rule is stated rather than assumed. The
+same reasoning applies within a row: a per-signal cell suppressed under Decision 1 must not be
+recoverable from any other cell in that row, which is why no exact denominator is published.
+
+**Emit allowlist.** A row may contain these fields and no others. Anything not listed is denied,
+including fields a later change would find natural to add. The read allowlist in Decision 4 closes
+what the job may look at; this closes what it may say, and the two are separate holes.
+
+| Field | Form | Notes |
+|-------|------|-------|
+| `storybook_id` | the `storybook.id` UUID | The book's own identifier, not any person's |
+| `age_band` | the book's declared band | Never `child_profile.age_band` (paragraph above) |
+| `engagement_verdict` | the Stage-4 `Verdict` value, `advisory` or `pass` | A closed enum (`moderation/report.py:32-43`). The free-text `message` is not emitted, see below |
+| `completion_rate` | families that reached any ending over reader families, rounded to the nearest `0.05` | Suppressed under Decision 1 if reader families are below 5 |
+| `return_read_rate` | families with a completion on a later calendar date than their first, over reader families, rounded to the nearest `0.05` | Derived only from the date-truncated `completion.found_at` that Decision 4 admits. Same suppression |
+| `rating_mean` | mean `rating.value` over rater families, rounded to the nearest `0.1` | Suppressed if rater families are below 5 |
+| `flag_counts` | counts keyed by the three `kid_flag.reason` values, or the suppression marker | Governed by Decision 5 |
+| `*_family_band` | the contributing-family count for each signal, as a bucket: `5-9` or `10+` | Never the exact count, never a raw denominator |
+
+**The form of a suppressed cell.** A cell suppressed under Decision 1's per-signal floor or under
+Decision 5 is emitted as one explicit suppression marker: never as a null, never as a zero, never as
+an omitted key, and never as a rate computed over whatever families happened to contribute. Its
+`*_family_band` is suppressed with it, because a band on a suppressed signal restates the population
+the suppression withheld. The consumer treats a marker as **unknown**, and Decision 7 requires a test
+that it is indistinguishable across the whole range it covers.
+
+Denied explicitly, each with the reason, because a denial without a reason gets reversed:
+
+- **The Stage-4 `message`.** It is LLM-authored free text (`moderation/stages.py:1275-1281`), and an
+  allowlist whose entire purpose is that a row's contents can be enumerated is defeated by one
+  unbounded field. It is also the field an agent would most naturally quote into a summary, which
+  Decision 6 forbids. The two arguments that it cannot carry child data are both sound (personalized
+  books are excluded categorically by Decision 2, and ADR-023 stores sentinel slots rather than
+  names), but they are reasons emitting it would be safe, not reasons to emit it. What the job
+  correlates is the verdict.
+- **Exact contributing-family counts, exact cohort size, and any raw numerator or denominator.**
+  A count of 1 beside a mean recovers the value. Bucketing is why the rates carry a stated rounding:
+  a full-precision rate reconstructs the exact denominator that the bucket deliberately withholds.
+  At the floor of 5 the rounding buys little on its own, and there the protection is the per-signal
+  floor plus the absence of any identifier, not the rounding.
+- **Any identifier of a family, child profile, device, guardian, or moderator**, in any form,
+  including hashed, truncated, or positional. This is load-bearing beyond the obvious: because the
+  artifact names no family, a reader cannot tell which households are in a cohort, so even a rate of
+  `0.0` or `1.0` attributes to nobody.
+- **`kid_flag.node_id` in any form.** Decision 5.
+- **Any total spanning more than one storybook.** The paragraph above.
+- **Anything else.** The list is closed. A new field is an amendment to this ADR, and Decision 7
+  requires the test to assert against the allowlist rather than against a list of forbidden names, so
+  that a field added later fails by default rather than passing by omission.
+
+This allowlist is also the concrete referent of "the artifact's schema" in Decision 6.3, which named
+it as a committable thing without saying what it was.
 
 ### 4. Read allowlist
 
@@ -263,14 +352,38 @@ them. Flags are also rare, so a per-node count in a cohort of five is very likel
 count of one, which is a statement about one child's reaction that the child's own guardian,
 and every other guardian in the cohort by elimination, can partly attribute.
 
-Flag data appears in the output only as counts by `reason` at storybook grain, and only when
-the storybook's **flag count is itself at least 5**. The same integer is applied to this second
-population because it is the same disclosure problem. Below that, the field is emitted as an
-explicit suppression marker rather than as a zero, since a zero and a suppression are different
-facts and collapsing them is the tri-state failure this repository has already paid for
-elsewhere.
+Flag data appears in the output only as counts by `reason` at storybook grain, and only when at
+least **5 distinct flagging families** have flagged the storybook. The population is families, not
+flags: five flags from one household are one household's data, and Decision 1 spends two paragraphs
+on why per-family counting is the correct grain precisely because a household's own adult can
+subtract its entire contribution. Counting flags rather than families would have re-admitted at the
+flag cell the exact case the threshold exists to exclude. This is the per-signal floor of Decision 1
+applied to the population this decision governs; it is restated here rather than only referenced,
+because the flag cell is where the wrong population is easiest to reach for.
 
-### 6. The artifact is never committed to this repository, and has no in-repository default path
+**Below that floor the whole cell is one suppression marker spanning 0 to 4 flagging families.** A
+zero is not published. A marker used only for 1 to 4, with zero published as zero, publishes exactly
+the predicate the marker exists to hide: that at least one child flagged this book. In a cohort of
+five that is a real disclosure, coarse but real, about children's negative reactions, and it is
+available to every guardian in the cohort who knows their own child did not flag it. Publishing
+`<5` across the whole range is the standard disclosure-control form and it is what this decision
+takes.
+
+Two things about that choice, stated because both are costs:
+
+- **It makes the flag signal uninformative at homelab scale**, probably for the whole life of the
+  current catalog, since nearly every book will sit in the 0-to-4 range and read `<5` whether it was
+  never flagged or flagged four times. That is accepted on the asymmetry in Significance and on
+  Decision 10's pre-commitment: an uninformative cell is a delay, and a published "some child
+  flagged this" is not retractable. Legibility was the thing given up, and it was given up
+  deliberately rather than overlooked.
+- **It is not the tri-state collapse this repository has paid for elsewhere.** That failure was two
+  falsy arms collapsing into one benign branch at a decision point. `<5` is a third named value,
+  distinct from both a count and an absence, and the consumer must treat it as **unknown** and never
+  as zero. A zero and a suppression remain different facts; what changed is that zero is no longer
+  among the published values, so the consumer is never in a position to mistake one for the other.
+
+### 6. The artifact does not leave the deployment host, and is never committed to this repository
 
 **Decision: the artifact may not be committed to this repository, ever.** Not to `docs/`, not
 to `out/`, not to a report directory, not behind a `.gitignore` entry that a later `git add -f`
@@ -278,6 +391,25 @@ or a reorganisation could defeat. This repository is public. A push is not retra
 blob stays reachable in history after any subsequent deletion, and the disclosure would have to
 be reasoned about as permanent from that moment. The asymmetry in Significance decides this
 outright.
+
+**The general rule, of which committing is one case.** Committing is the egress path this repository
+makes easiest, so it is stated first and hardest, but it is not the rule. The rule is that **the
+artifact, and any excerpt or derivative of it including a single row, does not leave the deployment
+host.** Quoting rows into a GitHub issue or a pull request body, pasting a run into a report
+document, a commit message, or a chat message, attaching it to a ticket, uploading it to a bucket,
+and including it in an LLM prompt are all the same disclosure as committing it, and all are covered
+by this prohibition. Given this project's agent-driven workflow, an agent summarising a run into a
+pull request description is the most likely real leak here, more likely than a stray `git add`, and
+it is named so that it is a violation rather than an omission. Decision 6.3's observation that a
+fixture copied from a real run is a commit by another name is the same argument; it was scoped to
+fixtures and it generalises.
+
+**Who may read it on the host.** The artifact is written by the account the job runs as, mode `0600`,
+into a directory owned by that account with mode `0700`, outside any git working tree and outside any
+directory that is backed up, synced, or served. Its only reader is the flywheel candidate strategy
+running as that same account. No other account on the host has read access and no copy is made
+anywhere. This is stated because the first draft was silent on it, and a file whose readership is
+unstated is a file whose readership grows.
 
 Three consequences the implementer must build to:
 
@@ -301,6 +433,19 @@ switch off deletes the artifacts rather than orphaning them. Two runs is enough 
 against its predecessor, which is the only reason to keep more than one, and a retention rule
 of "however many accumulate" is how D4's three windowless data classes happened.
 
+**The residual that retention creates, and the condition on which it is accepted.** Keeping two runs
+is what makes run-over-run differencing possible, and differencing is a disclosure that the
+single-run thresholds above do not cover: the delta between consecutive runs of a book already well
+above threshold is household-sized, and a delta of one family is a cell of one however large the
+cohort behind it. The residual is accepted **because of the reader model stated above**, and only
+because of it: the sole reader is a process on the deployment host running as an account that
+already holds database credentials, and can therefore compute anything a delta could disclose
+directly from the source tables, more precisely and without the artifact. The marginal disclosure is
+nil against that reader. The acceptance is worded this way so that it visibly expires. If the
+artifact ever gains a reader without database access, or if the egress rule above is relaxed for any
+path, this residual is no longer covered by anything and needs its own answer, which is either
+suppressing deltas or retaining a single run.
+
 ### 7. The kill switch and the construction-time validator
 
 Following the exemplar at `core/config.py:1211-1212` and
@@ -322,12 +467,38 @@ is enforced by code that runs at settings construction, not by operator discipli
   bad output path by copying another tier's environment file stops, rather than quietly
   writing children's reading aggregates into a checkout that something later stages.
 
-**Both properties are asserted by tests, not merely documented**, per the plan's `#VERIFY`:
+Three details of that validator are pinned here rather than left to the implementer, because each
+has a plausible reading that would make it pass where it should refuse:
+
+- **the `.git` check is file-or-directory existence, not directory existence.** This repository's
+  worktrees at `.worktrees/<slug>` mark themselves with a `.git` **file** holding a `gitdir:`
+  pointer, not a directory. A check written as `is_dir()` accepts every worktree, and worktrees are
+  where concurrent sessions in this project actually do their work.
+- **an empty-string output path counts as unset**, taking branch (a) and refusing, rather than
+  counting as a configured path that resolves to the current directory. `${VAR:-}` in a compose file
+  yields an empty string rather than an absent variable, a shape this project has already been bitten
+  by on constrained settings fields; the check is on a non-empty value.
+- **the path is `Path.resolve()`d before its parents are walked.** Walking an unresolved path finds
+  no `.git` above a symlink whose target sits inside a checkout, so a symlinked output directory
+  would pass a check that the real destination fails.
+
+**These properties are asserted by tests, not merely documented**, per the plan's `#VERIFY`:
 
 - a test that a storybook with a 4-family cohort is absent from the output and a 5-family
   cohort is present, which pins the integer and its comparison direction (a threshold test
   that only checks the exclusion passes against an inverted comparison);
+- a test on a fixture of 5 reading families of which only 1 rated the book: the row is present and
+  the rating cell is absent. This pins the per-signal floor separately from the row-level one, and it
+  is a distinct test because an implementation that applies the gate exactly once passes every
+  reader-cohort test there is;
 - a test that each categorical exclusion in Decision 2 fires independently of cohort size;
+- a test that a serialised artifact contains no field outside Decision 3's emit allowlist, asserted
+  against the allowlist itself rather than against a list of forbidden names, so that a field added
+  later fails by default rather than passing by omission;
+- a test that the flag cell holds the same suppression marker at 0 flagging families as at 4, which
+  pins Decision 5's fold and would fail against the more legible zero-plus-marker form;
+- a test that no serialised artifact contains a total, count, or summary spanning more than one
+  storybook;
 - a test that `node_id` appears nowhere in a serialised artifact;
 - a test that settings construction raises when the job is enabled with an output path inside
   a git working tree, **paired with** a test that it constructs cleanly with a path outside
@@ -405,7 +576,8 @@ Three other conditions void the analysis above and require a fresh review rather
 adjustment:
 
 - the output gains any consumer other than the flywheel candidate strategy;
-- the job gains a route, a breakdown dimension (Decision 3), or a new source table;
+- the job gains a route, a breakdown dimension (Decision 3), a field outside Decision 3's emit
+  allowlist, or a new source table;
 - the schema gains a child-linked column that the allowlist would silently admit, which is why
   the allowlist is closed by default rather than a deny-list.
 
@@ -419,6 +591,13 @@ adjustment:
 - Two re-identification vectors that the plan's own `#CRITICAL` marker did not name are closed:
   `personalization_subject_profile_id` (a book about one identified child, which no cohort
   threshold reaches) and cohort subdivision by version or any other breakdown dimension.
+- A third is closed by binding the threshold to each emitted signal rather than only to the reader
+  cohort, so the book read by five families and rated by one publishes no rating. The plan's
+  `#VERIFY` as written would have been satisfied by an implementation with that hole in it, because
+  a threshold test at the row level passes against a gate applied exactly once.
+- Both sides of the job are now closed by default. Decision 4 closes what may be read and Decision 3
+  closes what may be said; a closure argument on one side of a pipeline does not reach the other, and
+  the first draft had it on only one.
 - The public-repository question is answered as a decision with a mechanism behind it, rather
   than left to whoever writes the output path.
 - The reading-time question is closed on a schema fact rather than a preference, so it does not
@@ -438,6 +617,12 @@ adjustment:
 - The validator in Decision 7 is honest about defending the developer-workstation case and
   passing trivially in a container. A stronger deployment-side control is possible and is not
   specified here.
+- **The flag signal carries no information until a book reaches 5 flagging families**, because
+  Decision 5 folds zero into the suppression marker. At the current catalog's scale that is every
+  book, so the field will read `<5` corpus-wide for a long time. Legibility was traded for the last
+  increment of suppression, knowingly, on the grounds in Decision 5.
+- The emit allowlist is closed by default, so every field a future consumer wants is an amendment to
+  this ADR rather than a code change. That friction is the point, and it will be felt as friction.
 
 ### Technical debt
 
@@ -463,3 +648,18 @@ adjustment:
   the flag is first turned on.
 - **`UW-C426`** (Cluster C, new): the authoring-lessons row `AL-695` behind this ADR's Technical
   debt bullet, on plan documents naming persisted inputs that are not persisted.
+- **`UW-C427`** (Cluster C, new): the authoring-lessons row `AL-696`, on a minimum-cell threshold
+  that binds the top-level cohort while the signals aggregated inside it go ungated. Raised by the
+  senior review of this ADR's first draft and fixed in Decision 1; the row carries the general sweep
+  of this repository's other suppression and gating surfaces for the same shape.
+- **`UW-C428`** (Cluster C, new): the authoring-lessons row `AL-697`, on a closure argument made on
+  one side of a data path and assumed to cover the other. Fixed here by Decision 3's emit allowlist;
+  the row carries the general check.
+
+## Note on the documentation nav
+
+This ADR is deliberately **not** added to `mkdocs.yml`'s nav. That nav's ADR list stops at ADR-011
+and does not include ADR-029 or any other ADR after ADR-011, so the directory is navigated through
+[`adr/README.md`](./README.md), which does list this one. Adding a single entry for ADR-030 would
+invent a convention that holds for exactly one document. Recorded here because the reasoning existed
+nowhere in the tree and the omission otherwise reads like an oversight.
