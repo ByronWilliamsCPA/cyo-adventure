@@ -1,0 +1,82 @@
+{
+  "generated_at": "2026-08-29T00:43:59.657171+00:00",
+  "corpus_description": "out (pattern='*.filled.json', age_band='5-8', max_passages=60, sampling=stratified-stride/v1: the cap is divided round-robin across the stories in the slice, and each story's share is taken at even intervals across that story's whole eligible node list, so the slice spans each story rather than sampling its opening passages)",
+  "sampling_strategy": "stratified-stride/v1: the cap is divided round-robin across the stories in the slice, and each story's share is taken at even intervals across that story's whole eligible node list, so the slice spans each story rather than sampling its opening passages",
+  "question_model": "google/gemini-2.5-flash",
+  "answer_model": "deepseek/deepseek-v4-flash",
+  "prompt_set_version": "comprehension-probe-v1",
+  "corpus_stats": {
+    "files_scanned": 31,
+    "files_skipped_non_storybook": 0,
+    "files_skipped_age_band": 25,
+    "nodes_seen": 288,
+    "nodes_skipped_fill": 0,
+    "nodes_skipped_empty": 0,
+    "passages_collected": 60,
+    "stories_available": 6,
+    "stories_sampled": 6
+  },
+  "nodes_processed": 59,
+  "nodes_skipped_budget": 0,
+  "questions_asked": 177,
+  "questions_unanswerable": 24,
+  "unlabelled_unanswerable_rate": 0.13559322033898305,
+  "avg_unanswerable_findings_per_node": 0.4067796610169492,
+  "nodes_with_any_unanswerable": 22,
+  "error_counts": {
+    "question_generation:malformed": 1
+  },
+  "per_story": [
+    {
+      "story_id": "sk_backyard_treasure_map",
+      "passages_probed": 10,
+      "questions_asked": 30,
+      "questions_unanswerable": 6,
+      "unlabelled_unanswerable_rate": 0.2
+    },
+    {
+      "story_id": "sk_lantern_festival",
+      "passages_probed": 10,
+      "questions_asked": 30,
+      "questions_unanswerable": 6,
+      "unlabelled_unanswerable_rate": 0.2
+    },
+    {
+      "story_id": "sk_night_market",
+      "passages_probed": 10,
+      "questions_asked": 30,
+      "questions_unanswerable": 3,
+      "unlabelled_unanswerable_rate": 0.1
+    },
+    {
+      "story_id": "sk_school_garden_mystery",
+      "passages_probed": 10,
+      "questions_asked": 30,
+      "questions_unanswerable": 1,
+      "unlabelled_unanswerable_rate": 0.03333333333333333
+    },
+    {
+      "story_id": "sk_snow_day_expedition",
+      "passages_probed": 9,
+      "questions_asked": 27,
+      "questions_unanswerable": 5,
+      "unlabelled_unanswerable_rate": 0.18518518518518517
+    },
+    {
+      "story_id": "sk_tide_pool_rescue",
+      "passages_probed": 10,
+      "questions_asked": 30,
+      "questions_unanswerable": 3,
+      "unlabelled_unanswerable_rate": 0.1
+    }
+  ],
+  "budget_cap_usd": "5.00",
+  "spend_usd": "0.02234592",
+  "observed_spend_usd": "0.0218014096",
+  "charged_usd": "0.02234592",
+  "budget_exhausted": false,
+  "calls_made": 119,
+  "calls_reporting_vendor_cost": 119,
+  "uniform_verdict_warning": null,
+  "note": "unlabelled_unanswerable_rate is NOT precision. Turning it into a precision figure requires a human to read every finding this run recorded and judge whether the passage was genuinely ambiguous or the answer model missed something stated plainly in the text. No promote-or-reject verdict is recorded from this run."
+}
