@@ -25,6 +25,7 @@ from cyo_adventure.analysis.engagement_correlation import (
     SUPPRESSED,
     SUPPRESSION_MARKER,
     StorybookObservations,
+    _round_to,
     build_artifact,
     build_row,
     is_eligible,
@@ -465,6 +466,44 @@ class TestRoundingAndGrain:
             },
         )
         assert build_row(rated).rating_mean == pytest.approx(4.1)
+
+    def test_a_halfway_rate_rounds_up_and_not_down(self) -> None:
+        """The declared ROUND_HALF_UP must actually reach the halfway case.
+
+        ``_round_to`` built its Decimal straight from the float, so the binary
+        representation, not the decimal value, is what ``quantize`` saw.
+        ``Decimal(0.075)`` is ``0.0749999...``: already below the midpoint
+        before the rounding mode is consulted, so ROUND_HALF_UP was correct and
+        unreachable. Both directions are asserted because the error is not a
+        consistent bias, it is whichever side the binary expansion happens to
+        land on, which is exactly why hand-picked cases miss it.
+        """
+        assert _round_to(3 / 40, "0.05") == pytest.approx(0.1)
+        assert _round_to(7 / 40, "0.05") == pytest.approx(0.2)
+
+    def test_a_non_halfway_rate_is_unchanged_by_the_halfway_fix(self) -> None:
+        """The control: a ratio that already rounded correctly still does.
+
+        ``1/40`` is 0.025, whose binary expansion happens to land ABOVE the
+        midpoint, so it rounded up before the fix as well. Without this arm the
+        pair above could be satisfied by an implementation that simply rounds
+        every value up.
+        """
+        assert _round_to(1 / 40, "0.05") == pytest.approx(0.05)
+        assert _round_to(0.024, "0.05") == pytest.approx(0.0)
+        assert _round_to(0.26, "0.05") == pytest.approx(0.25)
+
+    def test_a_halfway_completion_rate_reaches_the_published_row(self) -> None:
+        """The unit fix has to be the one the artifact actually consumes.
+
+        Three of forty reader families completing is 0.075 exactly. The row is
+        what feeds ``flywheel_input``'s LOW_COMPLETION_CEILING decision, so a
+        fix that stopped at the helper while the row kept its own path would
+        change nothing that matters.
+        """
+        row = build_row(_observations(readers=40, completers=3, returners=7))
+        assert row.completion_rate == pytest.approx(0.1)
+        assert row.return_read_rate == pytest.approx(0.2)
 
     def test_a_rating_mean_weights_households_and_not_children(self) -> None:
         """One household of five children must not outweigh five households."""

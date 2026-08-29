@@ -254,6 +254,22 @@ class StorybookRow:
 def _round_to(value: float, step: str) -> float:
     """Round a value to a decimal step, half away from zero.
 
+    ``Decimal(str(value))`` and not ``Decimal(value)``: the same reason
+    :func:`cyo_adventure.generation.providers._base.dig_vendor_cost` states.
+    Building the Decimal from the float captures its BINARY representation, so
+    a value that is exactly halfway in decimal is not halfway by the time
+    ``quantize`` sees it. ``Decimal(0.075)`` is ``0.07499999...``, already
+    below the midpoint, so ROUND_HALF_UP is consulted about a case that never
+    arrives: ``3/40`` rounded to 0.05 instead of 0.1, and ``7/40`` to 0.15
+    instead of 0.2. #ASSUME: data-integrity: the direction of that error is
+    arbitrary rather than a consistent bias (``1/40`` lands above its midpoint
+    and rounded correctly), which is why a hand-picked case misses it and why
+    the rounding mode looked correct for as long as it did. #VERIFY:
+    ``tests/unit/test_engagement_correlation.py::TestRoundingAndGrain::test_a_halfway_rate_rounds_up_and_not_down``
+    pins both directions, and
+    ``...::test_a_non_halfway_rate_is_unchanged_by_the_halfway_fix`` is the
+    control that keeps the pair from passing against "always round up".
+
     Args:
         value: The unrounded value.
         step: The decimal step as a string, e.g. ``"0.05"``.
@@ -262,7 +278,9 @@ def _round_to(value: float, step: str) -> float:
         float: The rounded value.
     """
     quantum = Decimal(step)
-    scaled = (Decimal(value) / quantum).quantize(Decimal(1), rounding=ROUND_HALF_UP)
+    scaled = (Decimal(str(value)) / quantum).quantize(
+        Decimal(1), rounding=ROUND_HALF_UP
+    )
     return float(scaled * quantum)
 
 
