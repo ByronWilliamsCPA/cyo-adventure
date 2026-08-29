@@ -2438,19 +2438,31 @@ class TestEngagementCorrelationAnalysis:
         assert Settings().analysis_engagement_correlation_enabled is False
 
     @pytest.mark.unit
-    def test_an_empty_output_path_counts_as_unset_and_is_refused(self) -> None:
+    def test_an_empty_output_path_counts_as_unset_and_is_refused(
+        self, monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+    ) -> None:
         """Empty is unset, not "the current directory", which is the repo.
 
-        Without this pin, an operator who enabled the flag and forgot the path
-        would get an artifact written into whatever directory the job was
-        started from.
+        Two things make this test able to fail, and a mutation run proved both
+        are needed. Asserting only that some ConfigurationError was raised
+        passes against a validator with no empty-value branch at all, because
+        an empty path resolves to the process's working directory and this
+        suite runs inside a checkout, so the working-tree walk raises instead.
+        The message is therefore asserted, and the case is repeated from a
+        working directory outside any checkout, where nothing but the
+        empty-value branch can refuse.
         """
         from cyo_adventure.core.exceptions import ConfigurationError
 
-        with pytest.raises(ConfigurationError):
+        for configured in ("", "   "):
+            with pytest.raises(ConfigurationError) as caught:
+                _ = self._settings(enabled=True, output_dir=configured)
+            assert "An empty value counts as unset" in str(caught.value)
+
+        monkeypatch.chdir(tmp_path)
+        with pytest.raises(ConfigurationError) as outside:
             _ = self._settings(enabled=True, output_dir="")
-        with pytest.raises(ConfigurationError):
-            _ = self._settings(enabled=True, output_dir="   ")
+        assert "An empty value counts as unset" in str(outside.value)
 
     @pytest.mark.unit
     def test_an_output_path_inside_a_git_working_tree_is_refused(
@@ -2566,15 +2578,25 @@ class TestEngagementCorrelationAnalysis:
         assert constructed.analysis_engagement_correlation_enabled is False
 
     @pytest.mark.unit
-    def test_the_refusal_message_names_no_path_component_it_did_not_receive(
-        self,
+    def test_the_two_refusal_branches_do_not_share_a_message(
+        self, tmp_path: Path
     ) -> None:
-        """The error is read by an operator and may be pasted into an issue.
+        """Unset and inside-a-checkout are different mistakes with different fixes.
 
-        It may restate what was configured; it must not add anything else.
+        They are also what makes the unset test above able to fail: identical
+        messages would leave no way to tell which branch refused.
         """
         from cyo_adventure.core.exceptions import ConfigurationError
 
-        with pytest.raises(ConfigurationError) as caught:
+        repo = tmp_path / "repo"
+        (repo / ".git").mkdir(parents=True)
+        with pytest.raises(ConfigurationError) as unset:
             _ = self._settings(enabled=True, output_dir="")
-        assert "ANALYSIS_ENGAGEMENT_CORRELATION_OUTPUT_DIR" in str(caught.value)
+        with pytest.raises(ConfigurationError) as inside:
+            _ = self._settings(enabled=True, output_dir=str(repo))
+
+        assert "ANALYSIS_ENGAGEMENT_CORRELATION_OUTPUT_DIR" in str(unset.value)
+        assert "ANALYSIS_ENGAGEMENT_CORRELATION_OUTPUT_DIR" in str(inside.value)
+        assert "An empty value counts as unset" in str(unset.value)
+        assert "An empty value counts as unset" not in str(inside.value)
+        assert "resolves inside" in str(inside.value)

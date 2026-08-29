@@ -274,3 +274,157 @@ class TestSelfCheck:
         not be staged. It does not belong in the tree.
         """
         assert job._gitignore_mentions_artifact(_REPO_ROOT) is False
+
+
+class _StubResult:
+    """A minimal stand-in for a SQLAlchemy result."""
+
+    def __init__(self, rows: list[tuple[object, ...]]) -> None:
+        """Store the rows this result yields.
+
+        Args:
+            rows: The rows, in the statement's own column order.
+        """
+        self._rows = rows
+
+    def all(self) -> list[tuple[object, ...]]:
+        """Return every row.
+
+        Returns:
+            list[tuple[object, ...]]: The rows.
+        """
+        return self._rows
+
+
+class _StubSession:
+    """Answers each of the job's six statements by recognising its SQL.
+
+    Keyed on the compiled SQL rather than on call order, so the fixture cannot
+    quietly answer the wrong statement if the reader is reordered, and so a
+    statement the job stops issuing shows up as an unconsumed fixture.
+    """
+
+    def __init__(self, answers: dict[str, list[tuple[object, ...]]]) -> None:
+        """Store the answers, keyed by a distinguishing SQL fragment.
+
+        Args:
+            answers: Rows keyed by a fragment of the statement's SQL.
+        """
+        self.answers = answers
+        self.consumed: set[str] = set()
+
+    async def execute(self, statement: object) -> _StubResult:
+        """Return the rows for the statement whose SQL matches one key.
+
+        Args:
+            statement: The statement the job issued.
+
+        Returns:
+            _StubResult: The matching rows.
+
+        Raises:
+            AssertionError: when the statement matches no key or several.
+        """
+        sql = str(statement)
+        matched = [key for key in self.answers if key in sql]
+        assert len(matched) == 1, f"{matched} keys matched: {sql}"
+        self.consumed.add(matched[0])
+        return _StubResult(self.answers[matched[0]])
+
+
+class TestLoadObservationsAndReport:
+    """The reducer between the allowlisted reads and the gating core.
+
+    This is where the job turns rows into family-grain observations, and it is
+    the only part of the read path that a fixture can exercise without a
+    database. The test ends by writing a real artifact file, so the whole chain
+    from statement results to a report on disk is covered.
+    """
+
+    @staticmethod
+    def _answers() -> dict[str, list[tuple[object, ...]]]:
+        """Return canned rows for all six statements.
+
+        Returns:
+            dict: Rows keyed by a distinguishing SQL fragment.
+        """
+        readers = [("book-open", 2, f"fam-{i}") for i in range(6)]
+        completions = [
+            ("book-open", 2, "fam-0", "2026-01-01"),
+            ("book-open", 2, "fam-0", "2026-01-08"),
+            ("book-open", 2, "fam-1", "2026-01-02"),
+        ]
+        return {
+            "storybook.personalization_subject_profile_id": [
+                ("book-open", "catalog", "published", 2, None),
+                ("book-family", "family", "published", 1, None),
+                ("book-personal", "catalog", "published", 1, "profile-9"),
+                ("book-quiet", "catalog", "published", 1, None),
+            ],
+            "storybook_version.moderation_report": [
+                (
+                    "book-open",
+                    2,
+                    {"findings": [{"stage": 4, "verdict": "advisory", "message": "x"}]},
+                )
+            ],
+            "FROM reading_state": readers
+            + [("book-family", 1, f"fam-{i}") for i in range(9)]
+            + [("book-personal", 1, f"fam-{i}") for i in range(9)]
+            + [("book-quiet", 1, "fam-0")],
+            "FROM completion": completions,
+            "FROM rating": [("book-open", 5, f"fam-{i}") for i in range(6)],
+            "FROM kid_flag": [("book-open", "scared_me", "fam-0")],
+        }
+
+    @pytest.mark.asyncio
+    async def test_the_job_reduces_rows_to_family_grain_and_writes_a_report(
+        self, tmp_path: Path
+    ) -> None:
+        """End to end from statement results to an artifact on disk.
+
+        Asserts the outcome that matters: the two categorically excluded books
+        and the one below the floor produce no row despite having readers, and
+        the surviving book's figures are the ones the reads imply.
+        """
+        answers = self._answers()
+        session = _StubSession(answers)
+        observations = await job.load_observations(session)  # pyright: ignore[reportArgumentType]
+        assert session.consumed == set(answers)
+
+        path = job.write_artifact(tmp_path / "reports", build_artifact(observations))
+        document = json.loads(path.read_text(encoding="utf-8"))
+        rows = document["rows"]
+        assert [row["storybook_id"] for row in rows] == ["book-open"]
+
+        row = rows[0]
+        assert row["engagement_verdict"] == "advisory"
+        # Two of six reader families completed it; one of those came back on a
+        # later calendar day.
+        assert row["completion_rate"] == pytest.approx(0.35)
+        assert row["return_read_rate"] == pytest.approx(0.15)
+        assert row["reader_family_band"] == "5-9"
+        # Six families rated it 5, so the mean publishes; one family flagged it,
+        # so the flag cell does not.
+        assert row["rating_mean"] == pytest.approx(5.0)
+        assert row["flag_counts"] == "<5"
+
+    @pytest.mark.asyncio
+    async def test_the_reducer_never_carries_a_version_across_a_republish(
+        self, tmp_path: Path
+    ) -> None:
+        """Version-scoped signals must read the current published version only.
+
+        The same book's earlier version has readers and completions; none of
+        them may count toward the published version's figures.
+        """
+        answers = self._answers()
+        answers["FROM reading_state"] = [
+            *answers["FROM reading_state"],
+            *[("book-open", 1, f"stale-{i}") for i in range(40)],
+        ]
+        session = _StubSession(answers)
+        observations = await job.load_observations(session)  # pyright: ignore[reportArgumentType]
+        opened = next(o for o in observations if o.storybook_id == "book-open")
+        assert len(opened.reader_families) == 6
+        assert not any(f.startswith("stale-") for f in opened.reader_families)
