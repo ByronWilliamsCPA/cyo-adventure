@@ -1,8 +1,19 @@
 """Derive a flywheel candidate-strategy input from the ADR-030 artifact.
 
-The flywheel's candidate strategy currently triggers on request-side saturation
-only: nothing it does is a function of whether real readers finish a book. This
-module closes that loop at the seam the strategy already declares for it,
+**Nothing imports this module yet, and that is the current state, not an
+oversight.** Its only importers are its own tests.
+``scripts/flywheel_candidates.py`` still builds ``excluded_parent_slugs`` from
+open promotion PRs alone and calls nothing here, so no executable path today
+turns an engagement figure into a flywheel decision. Read the rest of this docstring as a
+description of the seam this module is SHAPED for, not of a loop it closes:
+closing it is a deliberate later step, gated on ADR-030 moving off ``proposed``
+and on the kill switch being turned on somewhere that produces a real artifact.
+A reader asking "is the engagement signal feeding the flywheel?" must get no
+from this paragraph before reading the design argument below.
+
+The flywheel's candidate strategy triggers on request-side saturation only:
+nothing it does is a function of whether real readers finish a book. The seam
+this module targets is the one the strategy already declares,
 :func:`~cyo_adventure.flywheel.strategy.eligible_parents`'s
 ``excluded_parent_slugs``, whose docstring names it as the design's injection
 point with the caller supplying the real set at run time.
@@ -112,11 +123,12 @@ def excluded_parent_slugs(
 ) -> frozenset[str]:
     """Return the skeleton slugs to withhold from the flywheel's parent pool.
 
-    The returned set is passed straight to
+    The returned set is SHAPED to be passed straight to
     :func:`~cyo_adventure.flywheel.strategy.eligible_parents` (or through
     :func:`~cyo_adventure.flywheel.strategy.plan_attempts`) as
-    ``excluded_parent_slugs``, where it unions with the open-PR exclusions the
-    caller already supplies.
+    ``excluded_parent_slugs``, where it would union with the open-PR exclusions
+    the caller already supplies. No caller does that yet; see this module's
+    docstring, first paragraph.
 
     Args:
         artifact: The parsed artifact document.

@@ -22,6 +22,7 @@ from cyo_adventure.analysis.engagement_correlation import (
     EMIT_ALLOWLIST,
     FLAG_REASONS,
     MIN_FAMILIES,
+    SUPPRESSED,
     SUPPRESSION_MARKER,
     StorybookObservations,
     build_artifact,
@@ -524,6 +525,125 @@ class TestStageFourVerdict:
         """A stage that started gating must not widen this field silently."""
         report = {"findings": [{"stage": 4, "verdict": "block"}]}
         assert stage_four_verdict(report) is None
+
+    def test_an_unrecognised_stage_four_verdict_does_not_fall_through_to_pass(
+        self,
+    ) -> None:
+        """The laundering path, with both halves present at once.
+
+        The pair matters: ``test_a_verdict_outside_the_closed_set_is_not_emitted``
+        above passes against the pre-fix implementation too, because that report
+        carries no ``pass_counts`` for the fall-through to reach. Only a report
+        that has BOTH an unreadable stage-4 finding and an engagement pass count
+        discriminates "the match is exhaustive" from "the loop just continued".
+        """
+        report = {
+            "findings": [{"stage": 4, "verdict": "flag"}],
+            "aggregate": {"pass_counts": {"engagement": 1}},
+        }
+        assert stage_four_verdict(report) is None
+
+    def test_a_mock_reviewed_report_contributes_no_verdict(self) -> None:
+        """A mock-reviewer run produced no judgment to correlate against.
+
+        ``moderation_report_unusable`` already answers this question for the
+        approval path; the correlation reads the same predicate rather than a
+        paraphrase of it, so the two cannot drift.
+        """
+        report = {
+            "summary": {"reviewer_independent": False},
+            "aggregate": {"pass_counts": {"engagement": 1}},
+        }
+        assert stage_four_verdict(report) is None
+
+    def test_an_unusable_report_cannot_contribute_an_advisory_either(self) -> None:
+        """The gate is on the report, not on the value it would have emitted."""
+        report = {
+            "summary": {"reviewer_independent": False},
+            "findings": [{"stage": 4, "verdict": "advisory"}],
+        }
+        assert stage_four_verdict(report) is None
+
+    def test_a_genuine_report_still_yields_its_verdict(self) -> None:
+        """The control. Without it, "return None always" passes every test above.
+
+        Shaped as ``ModerationReport.to_dict`` writes a real independently
+        reviewed report, so the unusable predicate accepts it.
+        """
+        report = {
+            "findings": [{"stage": 4, "verdict": "advisory", "message": "x"}],
+            "summary": {"reviewer_independent": True},
+            "reviewer": {"provider": "anthropic"},
+        }
+        assert stage_four_verdict(report) == "advisory"
+
+    def test_an_engagement_pass_count_of_zero_is_not_a_pass(self) -> None:
+        """The ``>= 1`` boundary, which a surviving mutant proved untested.
+
+        ``pass_counts`` is keyed by category and only carries a key when that
+        category produced at least one PASS finding, but a writer that emits
+        every category with a zero would make ``>= 0`` say "pass" for a book
+        whose engagement stage passed nothing at all.
+        """
+        report = {
+            "findings": [],
+            "summary": {"reviewer_independent": True},
+            "reviewer": {"provider": "anthropic"},
+            "aggregate": {"pass_counts": {"engagement": 0}},
+        }
+        assert stage_four_verdict(report) is None
+
+    def test_an_engagement_pass_count_of_one_is_a_pass(self) -> None:
+        """The other side of the same boundary, so ``> 1`` fails here too."""
+        report = {
+            "findings": [],
+            "summary": {"reviewer_independent": True},
+            "reviewer": {"provider": "anthropic"},
+            "aggregate": {"pass_counts": {"engagement": 1}},
+        }
+        assert stage_four_verdict(report) == "pass"
+
+
+class TestRatingPopulation:
+    """A family that contributed no rating value is not a rating family."""
+
+    def test_five_families_that_rated_nothing_publish_no_rating(self) -> None:
+        """The half-guard: the gate counted keys, the mean counted values.
+
+        Five keys mapped to empty tuples cleared ``len(raters) >= MIN_FAMILIES``
+        and then divided by an empty list inside ``_rating_mean``. Both halves
+        must count the same population.
+        """
+        observations = replace(
+            _observations(readers=8),
+            rating_by_family=dict.fromkeys(sorted(_families(5, "rater")), ()),
+        )
+        row = build_row(observations)
+        assert row.rating_mean is SUPPRESSED
+        assert row.rater_family_band is SUPPRESSED
+
+    def test_a_family_that_rated_nothing_does_not_count_toward_the_floor(
+        self,
+    ) -> None:
+        """Four real raters plus one empty key is four, not five."""
+        contributing = dict.fromkeys(sorted(_families(4, "rater")), (4,))
+        observations = replace(
+            _observations(readers=8),
+            rating_by_family={**contributing, "rater-silent": ()},
+        )
+        row = build_row(observations)
+        assert row.rating_mean is SUPPRESSED
+        assert row.rater_family_band is SUPPRESSED
+
+    def test_five_contributing_families_still_publish(self) -> None:
+        """The control: the guard narrows the population, it does not close it."""
+        observations = replace(
+            _observations(readers=8),
+            rating_by_family=dict.fromkeys(sorted(_families(5, "rater")), (4,)),
+        )
+        row = build_row(observations)
+        assert row.rating_mean == pytest.approx(4.0)
+        assert row.rater_family_band == "5-9"
 
 
 class TestArtifactOnDisk:

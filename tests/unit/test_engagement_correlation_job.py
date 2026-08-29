@@ -8,8 +8,11 @@ job rather than of the aggregation core, so they are pinned here.
 
 from __future__ import annotations
 
+import ast
 import json
+import os
 import re
+import stat
 import subprocess
 import sys
 from functools import partial
@@ -22,6 +25,8 @@ from cyo_adventure.analysis.engagement_correlation import (
     StorybookObservations,
     build_artifact,
 )
+from cyo_adventure.core.database import get_session, get_worker_session
+from cyo_adventure.core.exceptions import DatabaseError
 from scripts import engagement_correlation as job
 
 if TYPE_CHECKING:
@@ -432,6 +437,258 @@ class TestSelfCheckBranches:
                 "because an ignore entry says the artifact belongs in the tree"
             )
         ]
+
+
+class TestTheJobIsNotRlsBlind:
+    """The engine it binds, and its refusal to report a blind read as a result.
+
+    Under ADR-022 Tier 1 the ``family_scoped`` policy fails CLOSED: a session
+    with no ``app.family_id`` GUC matches zero rows rather than erroring. Every
+    child-grain read this job performs joins ``child_profile``, so a run bound
+    to the ``cyo_api`` engine writes ``{"rows": []}`` and exits 0, and that
+    artifact is byte-identical to the genuine "nobody has read five books yet"
+    result the ADR expects. Both halves of the control are pinned here: which
+    engine is bound, and what happens when the reads come back empty anyway.
+    """
+
+    def test_the_job_reads_through_the_worker_engine(self) -> None:
+        """The defect is exactly which engine the session comes from.
+
+        An import-level assertion is the right grain here: there is no
+        behavioural difference to observe without a real Postgres with RLS
+        enabled, and the whole defect is the identity of the bound engine.
+        """
+        assert job.get_worker_session is get_worker_session
+        assert getattr(job, "get_session", None) is None
+
+    def test_the_module_does_not_reach_for_the_api_engine_anywhere(self) -> None:
+        """A source-level backstop for a re-import under a different name.
+
+        AST, not a substring grep: this module's own prose says
+        "``get_worker_session`` and never ``get_session``", and a text-level
+        guard would fire on its own docstring. The scan therefore looks at
+        NAMES and ATTRIBUTES only, which also catches the inline-``__import__``
+        shape an ``ImportFrom``-only scan misses (proven: an
+        ``__import__(...).get_session()`` mutation survived the import-only
+        version of this test).
+        """
+        tree = ast.parse(Path(job.__file__).read_text(encoding="utf-8"))
+        referenced: set[str] = set()
+        for node in ast.walk(tree):
+            if isinstance(node, ast.Name):
+                referenced.add(node.id)
+            elif isinstance(node, ast.Attribute):
+                referenced.add(node.attr)
+            elif isinstance(node, ast.ImportFrom):
+                for alias in node.names:
+                    referenced.add(alias.asname or alias.name)
+        assert "get_worker_session" in referenced
+        assert "get_session" not in referenced, (
+            "scripts/engagement_correlation.py reaches for the API engine's "
+            "session factory; every child_profile join it issues then matches "
+            "zero rows under the Tier 1 family_scoped policy"
+        )
+
+    def test_the_import_binds_the_real_worker_factory_not_an_alias(self) -> None:
+        """``from ... import get_session as get_worker_session`` is the evasion.
+
+        The name test above is satisfied by an alias, so the identity check in
+        ``test_the_job_reads_through_the_worker_engine`` is what closes it; this
+        test states the pairing so neither is deleted as redundant.
+        """
+        assert job.get_worker_session is not get_session
+
+    @staticmethod
+    def _book(storybook_id: str, *, readers: int) -> StorybookObservations:
+        """Build one published book with ``readers`` reader families.
+
+        Args:
+            storybook_id: The book's id.
+            readers: How many families read it.
+
+        Returns:
+            StorybookObservations: The observations.
+        """
+        return StorybookObservations(
+            storybook_id=storybook_id,
+            visibility="catalog",
+            is_personalized=False,
+            status="published",
+            current_published_version=1,
+            engagement_verdict=None,
+            reader_families=frozenset(f"fam-{i}" for i in range(readers)),
+            completed_families=frozenset(),
+            returned_families=frozenset(),
+            rating_by_family={},
+            flag_families_by_reason={},
+        )
+
+    def test_a_catalog_with_no_child_joined_row_refuses_to_write(self) -> None:
+        """The RLS-blind shape: books visible, not one family-grain datum."""
+        blind = [self._book("book-a", readers=0), self._book("book-b", readers=0)]
+        with pytest.raises(DatabaseError, match="cannot tell an empty result"):
+            job._refuse_when_read_blind(blind)
+
+    def test_one_child_joined_row_anywhere_is_enough_to_proceed(self) -> None:
+        """The control. Without it, "always raise" passes the test above."""
+        seeing = [self._book("book-a", readers=0), self._book("book-b", readers=1)]
+        job._refuse_when_read_blind(seeing)
+
+    def test_an_empty_catalog_is_not_treated_as_blindness(self) -> None:
+        """No books at all is a fresh database, not a silenced read."""
+        job._refuse_when_read_blind([])
+
+    def test_run_job_writes_nothing_when_the_read_came_back_blind(
+        self, monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+    ) -> None:
+        """The guard has to sit on the write path, not merely exist.
+
+        A guard defined but never called is this branch's own defect class, so
+        the assertion is on the absence of a file rather than on the raise.
+        """
+        target = tmp_path / "reports"
+        monkeypatch.setattr(
+            job.settings, "analysis_engagement_correlation_output_dir", str(target)
+        )
+        monkeypatch.setattr(
+            job, "_collect", lambda: _noop_coroutine([self._book("b", readers=0)])
+        )
+        with pytest.raises(DatabaseError):
+            _ = job.run_job()
+        assert job.artifact_paths(target) == []
+
+    def test_run_job_writes_when_the_read_saw_something(
+        self, monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+    ) -> None:
+        """The control for the test above, on the same path."""
+        target = tmp_path / "reports"
+        monkeypatch.setattr(
+            job.settings, "analysis_engagement_correlation_output_dir", str(target)
+        )
+        monkeypatch.setattr(
+            job, "_collect", lambda: _noop_coroutine([self._book("b", readers=6)])
+        )
+        written = job.run_job()
+        assert written.exists()
+
+
+class TestArtifactIsBornRestricted:
+    """The file must never exist world-readable, not even briefly."""
+
+    def test_the_artifact_file_is_created_with_mode_0600(
+        self, monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+    ) -> None:
+        """Pins the mode at the open() call, which the end state cannot show.
+
+        Asserting only ``stat.S_IMODE(...) == 0o600`` after the fact passes
+        against write-then-chmod too, which is the defect: for the whole time
+        it takes to serialise the document the file is readable by every
+        account on the host. Recording the mode argument passed to ``os.open``
+        is what distinguishes "born restricted" from "narrowed afterwards".
+        """
+        recorded: list[tuple[str, int, int]] = []
+        real_open = os.open
+
+        def _spy(path: object, flags: int, mode: int = 0o777, **kwargs: object) -> int:
+            recorded.append((str(path), flags, mode))
+            return real_open(path, flags, mode, **kwargs)  # pyright: ignore[reportArgumentType, reportCallIssue]
+
+        monkeypatch.setattr(job.os, "open", _spy)
+        target = tmp_path / "reports"
+        path = job.write_artifact(target, {"schema_version": 1, "rows": []})
+
+        creations = [
+            entry
+            for entry in recorded
+            if entry[0] == str(path) and entry[1] & os.O_CREAT
+        ]
+        assert creations, (
+            "the artifact was not created through os.open with an explicit "
+            "mode; a write_text() then chmod() sequence leaves a window in "
+            "which the file is world-readable"
+        )
+        assert all(mode == 0o600 for _, _, mode in creations)
+        assert stat.S_IMODE(path.stat().st_mode) == 0o600
+
+
+class TestDisabledPurgeReporting:
+    """A message that cannot distinguish an outage from success is not a report."""
+
+    def test_the_four_outcomes_produce_four_distinct_lines(
+        self, monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+    ) -> None:
+        """One string per state, and no two of them equal.
+
+        The pre-fix code printed "retained 0 artifact(s)" for a full purge, for
+        an empty directory, and for a refused path alike, so an operator whose
+        retention control had stopped read the same line as one whose control
+        had worked.
+        """
+        unconfigured = job.purge_when_disabled("")
+
+        refused = tmp_path / "worktree" / "reports"
+        refused.mkdir(parents=True)
+        _ = (tmp_path / "worktree" / ".git").write_text(
+            "gitdir: /elsewhere\n", encoding="utf-8"
+        )
+        stranded = (
+            refused / f"{job.ARTIFACT_PREFIX}20260101T000000Z{job.ARTIFACT_SUFFIX}"
+        )
+        _ = stranded.write_text("{}", encoding="utf-8")
+        refusal = job.purge_when_disabled(str(refused))
+
+        empty_dir = tmp_path / "empty"
+        empty_dir.mkdir()
+        nothing = job.purge_when_disabled(str(empty_dir))
+
+        full = tmp_path / "full"
+        _ = job.write_artifact(full, {"schema_version": 1, "rows": []})
+        purged = job.purge_when_disabled(str(full))
+
+        lines = [unconfigured, refusal, nothing, purged]
+        assert len(set(lines)) == len(lines), lines
+        assert "no output directory is configured" in unconfigured
+        assert "REFUSED" in refusal
+        assert "nothing to purge" in nothing
+        assert "purged 1 artifact(s)" in purged
+
+    def test_a_refused_path_leaves_the_artifacts_where_they_are(
+        self, tmp_path: Path
+    ) -> None:
+        """The refusal has to be a refusal, not a differently-worded delete."""
+        refused = tmp_path / "worktree" / "reports"
+        refused.mkdir(parents=True)
+        _ = (tmp_path / "worktree" / ".git").write_text(
+            "gitdir: /elsewhere\n", encoding="utf-8"
+        )
+        stranded = (
+            refused / f"{job.ARTIFACT_PREFIX}20260101T000000Z{job.ARTIFACT_SUFFIX}"
+        )
+        _ = stranded.write_text("{}", encoding="utf-8")
+        _ = job.purge_when_disabled(str(refused))
+        assert stranded.exists()
+
+    def test_a_vetted_path_really_is_purged(self, tmp_path: Path) -> None:
+        """The control: the reporting change did not disarm the purge."""
+        target = tmp_path / "full"
+        _ = job.write_artifact(target, {"schema_version": 1, "rows": []})
+        assert job.artifact_paths(target)
+        _ = job.purge_when_disabled(str(target))
+        assert job.artifact_paths(target) == []
+
+
+async def _noop_coroutine(
+    value: list[StorybookObservations],
+) -> list[StorybookObservations]:
+    """Return ``value``, so a monkeypatched ``_collect`` stays awaitable.
+
+    Args:
+        value: The observations the fake read produced.
+
+    Returns:
+        list[StorybookObservations]: The same list.
+    """
+    return value
 
 
 class _StubResult:

@@ -4,8 +4,10 @@
 Joins the persisted Stage-4 engagement advisory against aggregated real reading
 outcomes per storybook, so the project can learn over time which synthetic
 quality scores actually predict that a band's readers finish a book and come
-back to it. Its output feeds the flywheel's candidate strategy, which today
-triggers on request-side saturation only.
+back to it. Its output is consumed by nothing today:
+:mod:`cyo_adventure.analysis.flywheel_input` is the reader shaped for it, and
+that module has no importer outside its own tests, so the artifact is written
+and read by a human or by no one.
 
     uv run python scripts/engagement_correlation.py              # run the job
     uv run python scripts/engagement_correlation.py --self-check # arm check only
@@ -45,6 +47,7 @@ from __future__ import annotations
 
 import argparse
 import asyncio
+import os
 import stat
 import sys
 import tempfile
@@ -68,8 +71,8 @@ from cyo_adventure.analysis.queries import (
     storybooks_statement,
 )
 from cyo_adventure.core.config import settings
-from cyo_adventure.core.database import get_session
-from cyo_adventure.core.exceptions import ConfigurationError
+from cyo_adventure.core.database import get_worker_session
+from cyo_adventure.core.exceptions import ConfigurationError, DatabaseError
 
 if TYPE_CHECKING:
     from collections.abc import Iterable
@@ -161,6 +164,23 @@ def prune_artifacts(output_dir: Path, *, keep: int) -> int:
 def write_artifact(output_dir: Path, document: dict[str, object]) -> Path:
     """Write one run's artifact and prune older ones.
 
+    #CRITICAL: security: this writes an aggregate over real children's reading
+    outcomes to a file on a shared host. The file is created THROUGH
+    ``os.open`` with the mode in the open call rather than written and then
+    narrowed by ``chmod``: a create-then-chmod sequence leaves the file
+    readable by every account on the box for the whole time it takes to
+    serialise the document, which on a homelab host with other services on it
+    is a real window and not a theoretical one. The umask cannot widen an
+    ``os.open`` mode, only narrow it, so 0600 is a ceiling here as well as a
+    floor. ``fchmod`` runs before the first byte for the case where a file of
+    that name already exists with a looser mode (the mode argument applies on
+    creation only).
+    #VERIFY: tests/unit/test_engagement_correlation_job.py::
+    TestArtifactIsBornRestricted::test_the_artifact_file_is_created_with_mode_0600
+    pins the mode passed to ``os.open`` itself, not merely the mode the file
+    ends up with, because the end-state mode cannot tell the two sequences
+    apart.
+
     Args:
         output_dir: The configured output directory.
         document: The artifact document.
@@ -170,12 +190,19 @@ def write_artifact(output_dir: Path, document: dict[str, object]) -> Path:
     """
     import json  # noqa: PLC0415 -- local, so importing this module stays cheap
 
-    output_dir.mkdir(parents=True, exist_ok=True)
+    output_dir.mkdir(parents=True, exist_ok=True, mode=_DIR_MODE)
     output_dir.chmod(_DIR_MODE)
     stamp = datetime.now(UTC).strftime("%Y%m%dT%H%M%SZ")
     path = output_dir / f"{ARTIFACT_PREFIX}{stamp}{ARTIFACT_SUFFIX}"
-    _ = path.write_text(json.dumps(document, indent=2, sort_keys=True) + "\n")
-    path.chmod(_FILE_MODE)
+    payload = json.dumps(document, indent=2, sort_keys=True) + "\n"
+    descriptor = os.open(path, os.O_WRONLY | os.O_CREAT | os.O_TRUNC, _FILE_MODE)
+    try:
+        os.fchmod(descriptor, _FILE_MODE)
+        with os.fdopen(descriptor, "w", encoding="utf-8") as handle:
+            _ = handle.write(payload)
+    except BaseException:
+        os.close(descriptor)
+        raise
     _ = prune_artifacts(output_dir, keep=RETAINED_RUNS)
     return path
 
@@ -191,11 +218,29 @@ async def load_observations(session: AsyncSession) -> list[StorybookObservations
     holds a child profile id, a device id, or a passage identifier.
 
     #EDGE: external-resources: read-only. Nothing is added to the session and
-    nothing is committed; ``get_session``'s context manager rolls back on exit,
-    so a run cannot mutate state whatever it finds.
+    nothing is committed; the session's context manager rolls back on exit, so
+    a run cannot mutate state whatever it finds.
     #VERIFY: no session.add or session.commit appears in this module;
     tests/unit/test_engagement_correlation_queries.py::TestReadAllowlist pins
     the statements this function is allowed to issue.
+
+    #CRITICAL: security: five of the six statements join ``child_profile``,
+    which carries the ADR-022 Tier 1 ``family_scoped`` policy. That policy is
+    ``family_id::text = current_setting('app.family_id', true) OR
+    current_setting('app.is_admin', true) = 'true'`` and it FAILS CLOSED: an
+    unset GUC matches zero rows rather than erroring. Read through a session
+    bound to the ``cyo_api`` role with no RLS context applied, every join
+    therefore returns nothing, every book fails the reader-cohort gate, and the
+    job writes an empty artifact and exits 0. That empty artifact is
+    byte-indistinguishable from the genuine "no book has five distinct reader
+    families yet" result ADR-030 expects at homelab scale, so the wrong answer
+    is the answer that was predicted. This job must therefore read through
+    ``get_worker_session`` (the ``cyo_worker`` role, which keeps blanket
+    access), and :func:`_refuse_when_read_blind` is the second half of the
+    control, because a role misconfiguration would otherwise be silent again.
+    #VERIFY: tests/unit/test_engagement_correlation_job.py::
+    TestTheJobIsNotRlsBlind::test_the_job_reads_through_the_worker_engine and
+    ::test_a_catalog_with_no_child_joined_row_refuses_to_write.
 
     Args:
         session: An open async session.
@@ -266,13 +311,65 @@ async def load_observations(session: AsyncSession) -> list[StorybookObservations
 
 
 async def _collect() -> list[StorybookObservations]:
-    """Open a read-only session and return the observations.
+    """Open a read-only worker session and return the observations.
+
+    ``get_worker_session`` and never ``get_session``: see the #CRITICAL marker
+    on :func:`load_observations` for why the API engine's role reads zero rows
+    from every ``child_profile`` join and reports success for it.
 
     Returns:
         list[StorybookObservations]: One entry per candidate storybook.
     """
-    async with get_session() as session:
+    async with get_worker_session() as session:
         return await load_observations(session)
+
+
+def _refuse_when_read_blind(observations: list[StorybookObservations]) -> None:
+    """Raise when the catalog read succeeded but every child-joined read did not.
+
+    The sentinel is the storybook read itself. ``storybooks_statement`` crosses
+    no ``child_profile`` join, so it is not subject to the Tier 1
+    ``family_scoped`` policy that silences the other five; a run that sees
+    books but not one single reader, completion, rating, or flag anywhere in
+    the catalog is reporting the shape of an RLS-blind connection, not the
+    shape of a quiet homelab.
+
+    #EDGE: data-integrity: a genuinely fresh deployment with a published
+    catalog and no reading activity at all trips this too, and is told so
+    explicitly rather than handed an empty artifact. That direction is the
+    deliberate one: this job's whole output is a correlation, an empty
+    correlation is worthless either way, and a loud stop is recoverable where a
+    silent empty artifact indexed as real data is not.
+    #VERIFY: tests/unit/test_engagement_correlation_job.py::
+    TestTheJobIsNotRlsBlind::test_a_catalog_with_no_child_joined_row_refuses_to_write
+    and ::test_one_child_joined_row_anywhere_is_enough_to_proceed.
+
+    Args:
+        observations: What :func:`load_observations` returned.
+
+    Raises:
+        DatabaseError: When the catalog is non-empty and no observation carries
+            a single family-grain datum.
+    """
+    if not observations:
+        return
+    if any(
+        entry.reader_families
+        or entry.completed_families
+        or entry.returned_families
+        or entry.rating_by_family
+        or entry.flag_families_by_reason
+        for entry in observations
+    ):
+        return
+    msg = (
+        "the storybook read returned rows but every child_profile-joined read "
+        "returned none, so this run cannot tell an empty result from a blind "
+        "one and will not write an artifact. Check that the job connects as a "
+        "role with blanket access (WORKER_DATABASE_URL / cyo_worker), or that "
+        "an ADR-022 RLS context is applied to the session."
+    )
+    raise DatabaseError(msg, operation="select", table="child_profile")
 
 
 def run_job() -> Path:
@@ -288,6 +385,7 @@ def run_job() -> Path:
         settings.analysis_engagement_correlation_output_dir.strip()
     ).expanduser()
     observations = asyncio.run(_collect())
+    _refuse_when_read_blind(observations)
     return write_artifact(output_dir, build_artifact(observations))
 
 
@@ -408,6 +506,54 @@ def self_check() -> list[str]:
     return failures
 
 
+def purge_when_disabled(configured: str) -> str:
+    """Purge a disabled run's leftovers and return the line that says what happened.
+
+    Off is off: no read, no computation, no artifact. Any artifact a previous
+    enabled run left is deleted rather than orphaned, but only from a directory
+    that would still pass the boot-time validator, so a disabled job never
+    touches a path nothing has vetted.
+
+    #ASSUME: data-integrity: the three outcomes below are three different
+    facts about the retention control ADR-030 Decision 6 depends on, and they
+    used to share one message ("retained 0 artifact(s)"). A refused path
+    deletes nothing and printed exactly what a successful full purge printed,
+    so an operator who repointed the path under a checkout, or ran ``git init``
+    above the ops tree, was told the purge had succeeded while aggregated
+    children's reading outcomes sat on disk indefinitely. A message that cannot
+    distinguish an outage of a control from that control working is not a
+    report, and this is the one line the disabled path emits.
+    #VERIFY: tests/unit/test_engagement_correlation_job.py::
+    TestDisabledPurgeReporting::test_the_four_outcomes_produce_four_distinct_lines.
+
+    Args:
+        configured: The configured output directory, already stripped.
+
+    Returns:
+        str: One line naming which of the outcomes occurred.
+    """
+    if not configured:
+        return (
+            "engagement-correlation: purge skipped, no output directory is "
+            "configured, so nothing was inspected"
+        )
+    if _refuses(output_dir=configured):
+        return (
+            "engagement-correlation: purge REFUSED, the configured output "
+            "directory would fail the settings validator; anything already "
+            "there was left untouched and must be removed by hand"
+        )
+    output_dir = Path(configured).expanduser()
+    candidates = len(artifact_paths(output_dir))
+    if candidates == 0:
+        return (
+            "engagement-correlation: nothing to purge, the output directory "
+            "holds no artifact from this job"
+        )
+    _ = prune_artifacts(output_dir, keep=0)
+    return f"engagement-correlation: purged {candidates} artifact(s)"
+
+
 def _emit(lines: Iterable[str]) -> None:
     """Write lines to stdout.
 
@@ -443,20 +589,13 @@ def main(argv: list[str] | None = None) -> int:
 
     configured = settings.analysis_engagement_correlation_output_dir.strip()
     if not settings.analysis_engagement_correlation_enabled:
-        # Off is off: no read, no computation, no artifact. Any artifact a
-        # previous enabled run left is deleted rather than orphaned, but only
-        # from a directory that would still pass the boot-time validator, so a
-        # disabled job never touches a path nothing has vetted.
-        retained = 0
-        if configured and not _refuses(output_dir=configured):
-            retained = prune_artifacts(Path(configured).expanduser(), keep=0)
         _emit(
             [
                 (
                     "engagement-correlation: disabled "
                     "(ANALYSIS_ENGAGEMENT_CORRELATION_ENABLED is off)"
                 ),
-                f"engagement-correlation: retained {retained} artifact(s)",
+                purge_when_disabled(configured),
             ]
         )
         return 0

@@ -39,6 +39,8 @@ from dataclasses import dataclass
 from decimal import ROUND_HALF_UP, Decimal
 from typing import TYPE_CHECKING, Final, NoReturn, cast, final
 
+from cyo_adventure.moderation.report import moderation_report_unusable
+
 if TYPE_CHECKING:
     from collections.abc import Iterable, Mapping
 
@@ -212,12 +214,23 @@ class StorybookObservations:
 class StorybookRow:
     """One emitted row, before serialisation.
 
-    Every cell is either a value or :data:`SUPPRESSED`; there is no null and no
-    omitted key, so a consumer never has to distinguish "absent" from "hidden".
+    Every *aggregate* cell is either a value or :data:`SUPPRESSED`; there is no
+    null and no omitted key among them, so a consumer never has to distinguish
+    "absent" from "hidden" for a figure derived from children's reading.
+
+    ``engagement_verdict`` is the one deliberate exception and is nullable: it
+    is not an aggregate over a cohort, it is a property of the stored
+    moderation report, and ``None`` there means "this book carries no Stage-4
+    engagement judgment this job will trust" rather than "a cohort was too
+    small to publish". Conflating the two would be the worse outcome, since a
+    consumer must exclude an unjudged book from a correlation entirely, where a
+    suppressed cohort figure only withholds one column.
 
     Attributes:
         storybook_id: The book's own identifier, not any person's.
-        engagement_verdict: The Stage-4 verdict, or None when unjudged.
+        engagement_verdict: The Stage-4 verdict, or None when unjudged. Never
+            :data:`SUPPRESSED`: see the note above on why this cell alone is
+            nullable.
         completion_rate: Completing families over reader families.
         return_read_rate: Returning families over reader families.
         rating_mean: Mean of each rating family's own mean.
@@ -306,7 +319,11 @@ def _rating_mean(rating_by_family: Mapping[str, tuple[int, ...]]) -> float:
     whole point is cross-family reach.
 
     Args:
-        rating_by_family: Rating values keyed by family.
+        rating_by_family: Rating values keyed by family. Every family must have
+            contributed at least one value; :func:`build_row` filters the empty
+            ones out before calling, and counts the filtered list for the floor,
+            so the denominator below cannot be zero for any input that cleared
+            the gate.
 
     Returns:
         float: The unrounded mean of the per-family means.
@@ -382,8 +399,18 @@ def build_row(observations: StorybookObservations) -> StorybookRow:
         completion = SUPPRESSED
         returning = SUPPRESSED
 
-    raters = observations.rating_by_family
-    if len(raters) >= MIN_FAMILIES:
+    # Counted over families that actually CONTRIBUTED a value, not over keys.
+    # A key mapped to an empty tuple is a family that rated nothing, so counting
+    # it would both clear the floor on a population that does not exist and
+    # divide by zero inside _rating_mean, whose denominator is the same filtered
+    # list. One count, computed once, used for the gate, the mean, and the band.
+    rating_families = [
+        family for family, values in observations.rating_by_family.items() if values
+    ]
+    raters = {
+        family: observations.rating_by_family[family] for family in rating_families
+    }
+    if len(rating_families) >= MIN_FAMILIES:
         rating: float | SuppressedCell = _round_to(_rating_mean(raters), _RATING_STEP)
     else:
         rating = SUPPRESSED
@@ -398,7 +425,7 @@ def build_row(observations: StorybookObservations) -> StorybookRow:
         rating_mean=rating,
         flag_counts=flag_counts,
         reader_family_band=family_band(reader_count),
-        rater_family_band=family_band(len(raters)),
+        rater_family_band=family_band(len(rating_families)),
         flagger_family_band=flagger_band,
     )
 
@@ -485,6 +512,72 @@ def _as_mapping(value: object) -> Mapping[str, object] | None:
     return cast("Mapping[str, object]", value) if isinstance(value, dict) else None
 
 
+_NO_STAGE_FOUR_FINDING: Final = object()
+
+
+def _stage_four_finding_verdict(stored: Mapping[str, object]) -> object:
+    """Return the stage-4 finding's verdict, or the no-finding sentinel.
+
+    Split out of :func:`stage_four_verdict` so that "this report has no stage-4
+    finding" and "this report has one this job cannot read" stay
+    distinguishable. Both would collapse to ``None`` in a plain return type, and
+    only the first may fall through to the pass aggregate. The sentinel is a
+    truthy object, so no caller can confuse it with ``None`` via a bare
+    truthiness test.
+
+    Args:
+        stored: The stored report mapping.
+
+    Returns:
+        object: The verdict string, ``None`` when a stage-4 finding is present
+            but unreadable, or :data:`_NO_STAGE_FOUR_FINDING` when absent.
+    """
+    findings = stored.get("findings")
+    if not isinstance(findings, list):
+        return _NO_STAGE_FOUR_FINDING
+    for entry in cast("list[object]", findings):
+        finding = _as_mapping(entry)
+        if finding is None or finding.get("stage") != _ENGAGEMENT_STAGE:
+            continue
+        verdict = finding.get("verdict")
+        if isinstance(verdict, str) and verdict in ENGAGEMENT_VERDICTS:
+            return verdict
+        # A stage-4 finding this job cannot read is a judgment it cannot read,
+        # not an absence of one. Falling through to the pass aggregate let an
+        # unrelated engagement pass count overwrite a real gating finding:
+        # ``{"stage": 4, "verdict": "flag"}`` beside
+        # ``pass_counts: {"engagement": 1}`` returned "pass". Returning None
+        # here makes the match exhaustive: every stage-4 finding either yields a
+        # recognised verdict or yields no judgment at all.
+        return None
+    return _NO_STAGE_FOUR_FINDING
+
+
+def _engagement_pass_aggregate(stored: Mapping[str, object]) -> str | None:
+    """Return ``"pass"`` when the report aggregates an engagement PASS.
+
+    Split out of :func:`stage_four_verdict` to keep that function's branch count
+    under the project's limit; every early return here means the same thing,
+    that no engagement pass is recorded.
+
+    Args:
+        stored: The stored report mapping.
+
+    Returns:
+        str | None: ``"pass"``, or None when no engagement pass is aggregated.
+    """
+    aggregate = _as_mapping(stored.get("aggregate"))
+    if aggregate is None:
+        return None
+    pass_counts = _as_mapping(aggregate.get("pass_counts"))
+    if pass_counts is None:
+        return None
+    engagement = pass_counts.get("engagement")
+    if isinstance(engagement, bool) or not isinstance(engagement, int):
+        return None
+    return "pass" if engagement >= 1 else None
+
+
 def stage_four_verdict(report: object) -> str | None:
     """Extract the Stage-4 engagement verdict from a stored moderation report.
 
@@ -502,32 +595,38 @@ def stage_four_verdict(report: object) -> str | None:
     emittable value, so the pass aggregate for the ``engagement`` category is
     the only place that value can come from, and it is read for that one key.
 
+    Two ways this returns None that are not "the report has no stage-4 entry".
+    A report :func:`~cyo_adventure.moderation.report.moderation_report_unusable`
+    rejects contributes nothing, because a mock-reviewer run or an
+    unattributable one produced no judgment to correlate against. And a stage-4
+    finding carrying a verdict outside :data:`ENGAGEMENT_VERDICTS` ends the
+    search rather than falling through to the pass aggregate.
+
     Args:
         report: The stored ``moderation_report`` payload, of any shape.
 
     Returns:
         str | None: ``"advisory"``, ``"pass"``, or None when the stored report
-            carries no Stage-4 engagement judgment.
+            carries no Stage-4 engagement judgment this job will trust.
     """
-    stored = _as_mapping(report)
-    if stored is None:
+    if not isinstance(report, dict):
         return None
-    findings = stored.get("findings")
-    if isinstance(findings, list):
-        for entry in cast("list[object]", findings):
-            finding = _as_mapping(entry)
-            if finding is None or finding.get("stage") != _ENGAGEMENT_STAGE:
-                continue
-            verdict = finding.get("verdict")
-            if isinstance(verdict, str) and verdict in ENGAGEMENT_VERDICTS:
-                return verdict
-    aggregate = _as_mapping(stored.get("aggregate"))
-    if aggregate is None:
+    stored = cast("Mapping[str, object]", report)
+    # #CRITICAL: data-integrity: a stored report that carries no genuine content
+    # judgment (mock reviewer, unattributable reviewer, every finding a pipeline
+    # artifact) must not contribute a verdict to a correlation. Stage 4
+    # fail-safes to PASS on a parse failure and ``to_dict`` folds PASS findings
+    # into ``aggregate.pass_counts`` with nothing beside them saying which were
+    # fail-safes, so a provider outage is stored byte-identically to a genuine
+    # engagement pass. Pooling those rows with genuinely-passing books biases
+    # the correlation toward "the advisory predicts nothing", which is the exact
+    # promote-or-reject decision this artifact feeds. This repository has
+    # already shipped this failure shape once (#764).
+    # #VERIFY: tests/unit/test_engagement_correlation.py::TestStageFourVerdict::
+    # test_a_mock_reviewed_report_contributes_no_verdict.
+    if moderation_report_unusable(cast("dict[str, object]", report)):
         return None
-    pass_counts = _as_mapping(aggregate.get("pass_counts"))
-    if pass_counts is None:
-        return None
-    engagement = pass_counts.get("engagement")
-    if isinstance(engagement, bool) or not isinstance(engagement, int):
-        return None
-    return "pass" if engagement >= 1 else None
+    finding_verdict = _stage_four_finding_verdict(stored)
+    if finding_verdict is not _NO_STAGE_FOUR_FINDING:
+        return cast("str | None", finding_verdict)
+    return _engagement_pass_aggregate(stored)
