@@ -230,6 +230,17 @@ test.describe('moderation QA corpus containment on staging', () => {
     let sharedPage: Page
 
     /**
+     * Whether `beforeAll` got as far as opening `sharedPage`. Playwright runs
+     * `afterAll` even when `beforeAll` threw (verified by reproduction), so
+     * without this the presence-anchor guard below would be followed by a
+     * `TypeError: Cannot read properties of undefined` from the teardown,
+     * printed alongside the real diagnostic and burying it. Safe to skip
+     * teardown on that path by construction: no page means no click, so no
+     * grant can have been minted.
+     */
+    let sharedPageOpened = false
+
+    /**
      * Captured at mint time, not re-read at teardown: a device-grant 401 makes
      * useApi.ts clear the localStorage record, so the backstop's only input
      * would be gone in exactly the runs where the backstop is the only cleanup
@@ -258,9 +269,13 @@ test.describe('moderation QA corpus containment on staging', () => {
         )
       }
       sharedPage = await browser.newPage({ storageState: stagingStorageStatePath('guardian') })
+      sharedPageOpened = true
     })
 
     test.afterAll(async () => {
+      if (!sharedPageOpened) {
+        return
+      }
       // Same best-effort DELETE backstop as kid-library-smoke.spec.ts, for the
       // same reason: if the explicit revoke test below never ran, do not leave
       // a live grant on shared staging.
