@@ -518,6 +518,7 @@ class TestLoadObservationsAndReport:
                 ("book-family", "family", "published", 1, None),
                 ("book-personal", "catalog", "published", 1, "profile-9"),
                 ("book-quiet", "catalog", "published", 1, None),
+                ("book-flagged", "catalog", "published", 1, None),
             ],
             "storybook_version.moderation_report": [
                 (
@@ -529,10 +530,18 @@ class TestLoadObservationsAndReport:
             "FROM reading_state": readers
             + [("book-family", 1, f"fam-{i}") for i in range(9)]
             + [("book-personal", 1, f"fam-{i}") for i in range(9)]
-            + [("book-quiet", 1, "fam-0")],
+            + [("book-quiet", 1, "fam-0")]
+            + [("book-flagged", 1, f"fam-{i}") for i in range(5)],
             "FROM completion": completions,
             "FROM rating": [("book-open", 5, f"fam-{i}") for i in range(6)],
-            "FROM kid_flag": [("book-open", "scared_me", "fam-0")],
+            # book-open: one flagging family, below the 5-family floor, so its
+            # cell stays whole-cell suppressed ("<5"). book-flagged: five
+            # distinct families flag the same reason, clearing the floor, so
+            # its cell publishes a real per-reason dict. Both sides of the
+            # floor need a book, or a mutation to the floor or to the reducer
+            # that only ever touches the below-floor side is invisible.
+            "FROM kid_flag": [("book-open", "scared_me", "fam-0")]
+            + [("book-flagged", "scared_me", f"fam-{i}") for i in range(5)],
         }
 
     @pytest.mark.asyncio
@@ -553,7 +562,7 @@ class TestLoadObservationsAndReport:
         path = job.write_artifact(tmp_path / "reports", build_artifact(observations))
         document = json.loads(path.read_text(encoding="utf-8"))
         rows = document["rows"]
-        assert [row["storybook_id"] for row in rows] == ["book-open"]
+        assert [row["storybook_id"] for row in rows] == ["book-open", "book-flagged"]
 
         row = rows[0]
         assert row["engagement_verdict"] == "advisory"
@@ -566,6 +575,21 @@ class TestLoadObservationsAndReport:
         # so the flag cell does not.
         assert row["rating_mean"] == pytest.approx(5.0)
         assert row["flag_counts"] == "<5"
+
+        flagged_row = rows[1]
+        # Five distinct families flag the same reason, clearing Decision 5's
+        # floor, so the cell publishes a real per-reason dict rather than the
+        # whole-cell marker: the discriminating half of the assertion above.
+        # Asserted as the exact dict, not merely "is a dict" or "is not <5",
+        # so a swapped unpack or a dropped reason filter (which drops every
+        # flag regardless of reason) is caught rather than passing by
+        # coincidence.
+        assert flagged_row["flag_counts"] == {
+            "did_not_like": "<5",
+            "scared_me": 5,
+            "confusing": "<5",
+        }
+        assert flagged_row["flagger_family_band"] == "5-9"
 
     @pytest.mark.asyncio
     async def test_the_reducer_never_carries_a_version_across_a_republish(
