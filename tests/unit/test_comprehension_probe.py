@@ -17,6 +17,7 @@ import ast
 import asyncio
 import importlib.machinery
 import importlib.util
+import inspect
 import json
 import sys
 from decimal import Decimal
@@ -1083,7 +1084,18 @@ class TestSummarize:
         The strategy is taken from the module constant rather than from a
         caller-supplied string, so it cannot describe a selection rule other
         than the one ``collect_passages`` implements.
+
+        Calling ``summarize()`` without a ``sampling_strategy`` argument and
+        then checking the returned field proves only that the field defaults
+        to the constant; it says nothing about whether a caller could supply
+        a different one. Proved by reproduction: adding
+        ``sampling_strategy: str = _SAMPLING_STRATEGY`` as a keyword parameter
+        to ``summarize`` and threading it through to the constructed
+        :class:`ProbeSummary` left the whole suite, including the assertions
+        below, green. Guard the interface itself: no such parameter may
+        exist, so no caller can claim a strategy the run did not follow.
         """
+        assert "sampling_strategy" not in inspect.signature(summarize).parameters
         budget = BudgetTracker(cap_usd=Decimal("5.00"))
         summary = summarize(
             [], budget=budget, corpus_stats=self._stats(), corpus_description="test"
@@ -1197,4 +1209,112 @@ class TestEnsureGitignoredDestination:
         # `git check-ignore` to match it, only fall within the tree.
         _ensure_gitignored_destination(
             _REPO_ROOT / "tmp" / "comprehension-probe-guard-test"
+        )
+
+
+class TestMainSharesOneRunIdBetweenBothWriters:
+    """``write_report``'s docstring promises both writers share one stamp.
+
+    Proved false by reproduction: pinning the ``write_tracked_aggregate`` call
+    inside ``main`` to a hardcoded ``run_id="DIVERGENT"`` literal left the
+    whole 55-test suite green, because nothing exercised ``main`` end to end
+    and inspected what each writer actually received. The shared stamp is how
+    ``UW-F53`` reaches the raw per-story reports from the tracked aggregate,
+    so a divergence between the two breaks that labelling path silently.
+
+    Provider construction and the paid probing loop are stubbed out here (no
+    test in this file makes a network call); the two writers are stubbed too,
+    since the point is to observe the identity ``main`` calls each one with,
+    not to exercise their own file-writing logic (``TestWriteTrackedAggregate``
+    already does that).
+    """
+
+    def test_write_report_and_write_tracked_aggregate_receive_the_same_run_id(
+        self, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        passage = Passage(
+            story_id="s", story_path="s.json", node_id="n1", body="Once upon a time."
+        )
+        stats = CorpusStats(
+            files_scanned=1,
+            files_skipped_non_storybook=0,
+            files_skipped_age_band=0,
+            nodes_seen=1,
+            nodes_skipped_fill=0,
+            nodes_skipped_empty=0,
+            passages_collected=1,
+            stories_available=1,
+            stories_sampled=1,
+        )
+        monkeypatch.setattr(
+            comprehension_probe,
+            "collect_passages",
+            lambda *args, **kwargs: ([passage], stats),
+        )
+        monkeypatch.setattr(
+            comprehension_probe,
+            "build_openrouter_cost_reporting_leg",
+            lambda *args, **kwargs: object(),
+        )
+
+        async def _fake_run_probe(
+            *_args: object, **_kwargs: object
+        ) -> list[NodeResult]:
+            return [
+                NodeResult(
+                    story_id="s",
+                    node_id="n1",
+                    questions=None,
+                    answers=None,
+                    error_stage="budget",
+                )
+            ]
+
+        monkeypatch.setattr(comprehension_probe, "run_probe", _fake_run_probe)
+
+        received_run_ids: dict[str, str] = {}
+
+        def _fake_write_report(
+            out_dir: Path, *, run_id: str, **_kwargs: object
+        ) -> Path:
+            received_run_ids["write_report"] = run_id
+            return out_dir / run_id
+
+        def _fake_write_tracked_aggregate(
+            aggregate_dir: Path, summary: ProbeSummary, *, run_id: str
+        ) -> Path:
+            received_run_ids["write_tracked_aggregate"] = run_id
+            return aggregate_dir / f"summary-{run_id}.json"
+
+        monkeypatch.setattr(comprehension_probe, "write_report", _fake_write_report)
+        monkeypatch.setattr(
+            comprehension_probe,
+            "write_tracked_aggregate",
+            _fake_write_tracked_aggregate,
+        )
+
+        exit_code = main(
+            [
+                "--corpus",
+                str(_REPO_ROOT / "tmp" / "comprehension-probe-runid-corpus"),
+                "--out",
+                str(_REPO_ROOT / "tmp" / "comprehension-probe-runid-out"),
+                "--aggregate-dir",
+                str(
+                    _REPO_ROOT
+                    / "out"
+                    / "reports"
+                    / "comprehension-probe-runid-test-double"
+                ),
+                "--env-file",
+                str(_REPO_ROOT / "tmp" / "comprehension-probe-runid.env"),
+            ]
+        )
+
+        assert exit_code == 0
+        assert "write_report" in received_run_ids
+        assert "write_tracked_aggregate" in received_run_ids
+        assert (
+            received_run_ids["write_report"]
+            == received_run_ids["write_tracked_aggregate"]
         )
