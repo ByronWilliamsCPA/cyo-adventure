@@ -70,8 +70,8 @@ and a correlation id, and a stored timestamp joins to everything else the server
 instant. This is ADR-030's own rule transposed (a property proved of one part of a record is
 not a property of the record), and it produces the two most load-bearing controls here: the
 handler resolves a principal for authorization and then **discards it before the insert**, and
-`received_at` is **stored truncated to the calendar date**, matching the day-grain posture
-`ReadingActivityDay` already establishes (`db/models.py:1745-1747`).
+`received_on` is **stored truncated to the calendar date**, matching the day-grain posture
+`ReadingActivityDay` already establishes (`db/models.py:1746-1748`).
 
 **The beacon does not write to `pipeline_event`, and cannot.** That table is enforced
 append-only by trigger `trg_pipeline_event_append_only`
@@ -90,7 +90,8 @@ first-party reimplementation walks under a vendor-named ban without touching it.
 
 Leg C of the testing-improvement plan's workstream D proposes a first-party client telemetry
 beacon: a small module beside `frontend/src/observability.ts` batching a closed enum of events
-via `sendBeacon` on `visibilitychange`, posting to `POST /api/v1/client-events`, retained 30
+via `sendBeacon` on `visibilitychange` (a transport Decision 4 replaces, for the reason given
+there), posting to `POST /api/v1/client-events`, retained 30
 days, and consumed by a weekly digest job in the mould of `moderation-report-health.yml` that
 files or updates one tracking issue. The plan gates the whole thing on this ADR and carries
 this assumption marker:
@@ -237,7 +238,9 @@ takes the reduced visibility.
 and rejects any role other than `guardian` or `admin` with 403. A client that never mounts the
 module on the kid shell is the first layer; it is not the control. A client-side-only surface
 restriction is not a restriction, for the same reason a client-side-only kill switch is not a
-kill switch (Decision 6).
+kill switch (Decision 6). That 403 is only reachable if the batch arrives with a credential the
+handler can resolve, which the plan's proposed transport cannot carry; Decision 4 replaces it
+for that reason.
 
 **Note on the difference from Sentry, so this is not read as a reversal.** `initSentry()` is
 called globally from `main.tsx` and does receive errors thrown on the kid surface today. That
@@ -278,7 +281,7 @@ a four-adult roster a full-precision timestamp attributes. Bindings:
 
 - **`received_on` is a DATE, not a timestamp.** The server stamps the calendar date at insert
   and stores nothing finer. This follows `ReadingActivityDay`'s docstring
-  (`db/models.py:1745-1747`), which records that no timestamp finer than a day ever reaches
+  (`db/models.py:1746-1748`), which records that no timestamp finer than a day ever reaches
   the server for reading activity; the beacon inherits that posture rather than inventing a
   looser one for a lower-value signal.
 - **The client sends no timestamp of its own**, in any form: no event time, no monotonic
@@ -353,23 +356,49 @@ joined to anything else the system emits, and the verdict.
 - **Alone**: which component subtree threw. The honest statement about the hash is that **it is
   not a de-identification measure and nothing in this design depends on it being one.** The
   input space is this repository's own component tree, which is public, so anyone can enumerate
-  every stack from source and build the reverse mapping in minutes. The hash is a **bounded
-  grouping key**: it lets the digest say "a new error-boundary signature appeared" and count
-  recurrences without transporting a stack string.
+  every stack from source and build the reverse mapping in minutes. That sentence is only true
+  because Narrowing 1 below makes it true; a hash over an input space nobody can enumerate
+  would be a pseudonym whatever this document called it. The hash is a **bounded grouping key**:
+  it lets the digest say "a new error-boundary signature appeared" and count recurrences without
+  transporting a stack string.
 - **Joined**: the component tree is public, so joining the hash to source recovers the
   component names, which is intended and discloses nothing about a person. The risk is not the
   hash, it is what a stack string could contain: a `displayName` or a React `key` composed at
   runtime can interpolate a book title or a child's display name, and an error *message*
   routinely does.
 - **Narrowing, binding on D3b**:
-  1. **The raw stack never leaves the browser.** Hashing in the browser rather than on the
-     server is the actual control: an unexpected interpolated value in a stack is never
-     transmitted, so it cannot be stored or logged even by accident. This is why a truncation
-     or a prefix would not do.
-  2. **The hash is SHA-256, truncated to 16 hex characters.** SHA-256 rather than MD5 or SHA-1
+  1. **The stack is reduced to statically-known component names before it is hashed, against a
+     build-time allowlist, and every frame not on that list is dropped.** The allowlist is
+     generated at build time from the component declarations in `frontend/src` and committed the
+     way the generated API client is, so the hash's input space is a list this repository can
+     print. This is the control, and it is what makes the paragraph above true rather than
+     merely hopeful: a frame carrying a runtime-interpolated name is not on the list, so it never
+     reaches the hash function, and a token derived from a child's name cannot exist to be
+     stored, counted, or published. Without it the hash is a **stable per-child pseudonym** for
+     every error thrown under a subtree whose naming interpolates a child's name, which 3.6
+     concedes exists on the guardian console ("Open Ella's shelf"). Such a token would survive
+     both of this document's strongest controls, the per-realm session id and the DATE
+     truncation; it is a derived identifier of exactly the kind Decision 4 forbids; and
+     Allowlist B would publish it into an issue Decision 7 calls permanent by design, on a
+     public repository, where it is neither recoverable nor retractable.
+     **Why this and not the alternative.** Extending 3.6's literal-only static check to
+     `displayName` was the other candidate and is not sufficient on its own. A React component
+     stack is composed by React from every frame in the tree, including components from
+     `node_modules` and any frame a future dependency introduces, so a check scoped to
+     `frontend/src` does not cover the input space it has to close, and a check that has to keep
+     covering a growing surface fails open when it stops. The reduction closes the space by
+     construction and fails closed on anything it has not seen. The `displayName` literal check
+     is still worth having, on the same footing as the testid regex in 3.6 and for the same
+     reason: it is the second layer, not the control. This also removes the asymmetry a reader
+     would otherwise be right to notice, where a `data-testid` needed a static guarantee of
+     literal-ness and a component stack needed none.
+  2. **The raw stack never leaves the browser.** Reduction and hashing both happen in the
+     browser, so an unexpected value in a stack is neither transmitted nor available to be
+     logged server-side by accident. This is why a truncation or a prefix would not do.
+  3. **The hash is SHA-256, truncated to 16 hex characters.** SHA-256 rather than MD5 or SHA-1
      per the project's FIPS posture, even though this use is not security-critical, so the
      codebase carries no weak-digest call site to explain away.
-  3. **The error message, the error name, and every stack frame text are not emitted, in any
+  4. **The error message, the error name, and every stack frame text are not emitted, in any
      form, hashed or otherwise.** Diagnosis is Sentry's job and that channel already exists
      with its own scrubbing; this beacon's job is counting.
 
@@ -420,8 +449,21 @@ joined to anything else the system emits, and the verdict.
      composed from runtime data. Second, server-side validation rejecting any testid not
      matching `^[a-z0-9-]{1,64}$`, as a second layer rather than the primary one. The first
      control is the real one; the regex alone would accept a slugified title.
-  3. **The ARIA role is one of a closed set** taken from the roles this codebase actually uses,
-     not an arbitrary string.
+  3. **The ARIA role is one of a closed set, enumerated here** rather than left to D3b, on the
+     same footing as the route classes in 3.1 and every bucket threshold above. The set is
+     `button`, `link`, `checkbox`, `radio`, `radiogroup`, `combobox`, `textbox`, `option`,
+     `group`, `region`, `list`, `dialog`, `alert`, `status`, `img`, and `other`. It is derived
+     from what this codebase actually uses: the explicit `role` attributes present in
+     `frontend/src` today (`alert`, `status`, `dialog`, `region`, `radiogroup`, `list`, `radio`,
+     `group`, `img`) plus the implicit roles of the interactive tags it clicks on (`button`, `a`,
+     `input` and its types, `select`, `textarea`, `summary`, `label`). **How the value is
+     derived**: the element's explicit `role` attribute where it has one, otherwise the implicit
+     role of its tag, mapped through a table in the beacon module; anything the table does not
+     cover is emitted as `other`, never as the observed string, so a `role` attribute composed at
+     runtime cannot ride out through this field. Server-side validation rejects the batch (422,
+     Decision 8) on any value outside the set, as the second layer. A role this codebase adds
+     later is an amendment to this list, which is the same friction Allowlist B carries and is
+     accepted for the same reason.
 
 #### 3.7 Dead clicks. Verdict: **DROPPED**
 
@@ -465,9 +507,10 @@ parameter, a header, and any other durable location. The id exists in memory and
 
 - **`frontend/src/offline/deviceId.ts::getOrCreateDeviceId()`.** This is the single most likely
   mistake D3b can make. It is a `localStorage`-backed identifier that, by its own docstring,
-  "outlives any one login session"; it already exists for fire-and-forget reporting from a load
-  path; and it sits in the tree the beacon module will be written next to. Using it, or copying
-  its pattern, converts "non-persistent random session id" into a permanent cross-session
+  "outlives any one login session"; it already exists for fire-and-forget *download* reporting
+  from the reader's load path, which is the whole of its stated scope and not a general reporting
+  facility; and it sits in the tree the beacon module will be written next to. Using it, or
+  copying its pattern, converts "non-persistent random session id" into a permanent cross-session
   device identifier, silently, with no schema change to notice.
 - The device-grant `jti` (`core/device_grant.py`, `DeviceGrant.jti`), the Supabase `sub`,
   `User.id`, `family_id`, and any child `profile_id`.
@@ -492,13 +535,31 @@ load, error-boundary signatures, and rage-click targets, all at calendar-date gr
 unordered. It is bounded by the realm and it reaches no second session, no second tab, and no
 second day beyond a session spanning midnight.
 
+**The transport is `fetch` with `keepalive: true`, not `navigator.sendBeacon`.** The plan
+proposes `sendBeacon`, and `sendBeacon` cannot carry the credential this design's strongest
+surface control depends on. It has no header API, so it cannot set `Authorization`, and this API
+has no cookie session: authentication is an `Authorization`-header bearer token resolved by
+`require_principal` (`api/deps.py:554`). Keeping `sendBeacon` would force one of four inventions
+with four different privacy properties, none of them decided by the plan: a token in the body,
+which Allowlist A forbids by closure; a token in the URL, on a path whose entire premise is that
+identifiers are discarded and whose URL is logged at the edge and in the access log; a new
+cookie; or `fetch` with `keepalive`. It is decided here rather than left to whichever is
+convenient at implementation time. The binding form is
+`fetch(url, {method: 'POST', keepalive: true, headers: {Authorization: ...}, body: ...})`. It
+keeps delivery from a `visibilitychange` handler on an unloading document, it carries the header
+so Decision 1's 403 is reachable at all, and it returns a status the client can act on, which
+`sendBeacon`'s boolean return does not. Its 64 KB `keepalive` body limit sits far above the
+50-event batch cap below, so the cap is never the transport's constraint.
+
 **The offline case, and the decision that removes it.** This app has real offline support, so a
 beacon queued offline and flushed later is a case the plan's "non-persistent" claim has to
 survive. It does not survive it, so the queue is removed instead:
 
 - **The beacon never queues and never persists.** A batch that cannot be sent is **discarded**.
-  If `navigator.sendBeacon` returns `false`, or the browser is offline at flush time, the batch
-  is dropped and nothing is written anywhere.
+  On any failure at all, a network error, a rejected or aborted request, any non-2xx status
+  including 429 and 503, or the browser being offline at flush time, the batch is dropped and
+  nothing is written anywhere. There is no retry, no backoff, and no second attempt on the next
+  flush.
 - **The beacon module must not touch `frontend/src/offline/` at all**: not `db.ts`, not the
   IndexedDB stores, and not `sync.ts`'s write queue.
 - **Why.** Persisting a batch gives the session id a durable home on disk, which falsifies
@@ -511,9 +572,29 @@ survive. It does not survive it, so the queue is removed instead:
 - **Therefore: a queued event cannot outlive its session id, because there is no queue.** The
   question the plan raises is answered by removing its premise rather than by managing it.
 
-**Local rate limiting** (the plan's own requirement) is per realm: at most 1 flush per 10
-seconds and at most 50 events per batch, with overflow **dropped rather than buffered**, for
-the same reason a failed batch is dropped rather than queued.
+**Rate limiting, on both legs.** The client's own limit (the plan's requirement) is per realm:
+at most 1 flush per 10 seconds and at most 50 events per batch, with overflow **dropped rather
+than buffered**, for the same reason a failed batch is dropped rather than queued. That is a
+courtesy, not a control, because it runs on the client.
+
+**The server's limit is the existing `RateLimitMiddleware` (`middleware/security.py:366`
+onward), applied to `POST /api/v1/client-events` on exactly the same terms as every other route
+on this API, with no exemption of any kind**: not for an IP, not for a header, not behind an
+environment flag, and not by mounting the route outside the middleware. This answers the plan's
+"rate-limited per the existing middleware", which is otherwise the one server-leg requirement
+this document would leave for D3b to invent a number for. There is no beacon-specific limit and
+no beacon-specific carve-out. That middleware is a control on a children's product against
+credential stuffing and abuse, and a telemetry convenience is not a reason to put a hole in it:
+**if the shared limit binds on the beacon, the beacon yields**, flushing less often or dropping
+the batch, and the limit is not raised, exempted, or bypassed for it. A 429 is treated exactly
+as any other failure, discarded and never retried, and it is observable to the client at all
+only because the transport is `fetch`: under the plan's `sendBeacon` a rate-limited beacon
+would fail silently, which is the failure shape Decision 6 refuses elsewhere. The operator's
+oracle for throttling is the limiter's existing `security_rate_limit_exceeded` security event,
+not Decision 6's startup log line, which names the ingest flag's state and says nothing about
+the limiter. That event is written by middleware that already runs on every request to this API
+and is not a beacon row; Decision 2's discard is a rule about what the beacon's own record
+holds, and it neither weakens that middleware nor is weakened by it.
 
 ### 5. Two allowlists, and the floor that binds published figures
 
@@ -525,11 +606,11 @@ others. Anything not listed is denied, including fields a later change would fin
 
 | Field | Form |
 | --- | --- |
-| `session_id` | one `crypto.randomUUID()` value per realm (Decision 4) |
+| `session_id` | one `crypto.randomUUID()` value per realm (Decision 4); the single stated exception to Decision 8's enumerability sentence |
 | `surface` | `guardian` or `admin` |
 | `route_class` | one value from the closed set in 3.1, never a route path |
 | `vital` entries | `{metric: lcp\|inp\|cls, bucket: good\|needs_improvement\|poor}` |
-| `error_signature` entries | `{hash: 16 hex chars, count: bounded int}` |
+| `error_signature` entries | `{hash: 16 hex chars, count: bounded int}`, the hash taken only over the build-time allowlisted frame sequence of 3.4 |
 | `rage_click` entries | `{testid: ^[a-z0-9-]{1,64}$, role: closed set, count: bounded int}` |
 
 **Allowlist B: server to the weekly digest issue (the publish allowlist).** A digest issue may
@@ -577,13 +658,17 @@ compensate, and they are the reason the weaker unit is accepted rather than an a
 is equivalent: the subjects are adults using an internal console rather than children; no
 published figure names a person, a role, a surface, or a time finer than a week; and no
 published figure spans more than one entity, so nothing is recoverable by subtraction. **The
-compensation voids** if any of those three changes, and Decision 10 says so.
+compensation voids** if any of those three changes, and Decision 10 says so. Stated plainly so
+the floor is not read as carrying more than it does: at the current roster size the 5-session
+floor is a consistency device, holding this document to the same number as ADR-030, and
+**Allowlist B is the control that actually carries the load**, because it admits no person, no
+role, no surface, and no time finer than a week into a published figure in the first place.
 
 ### 6. The kill switch: two flags, the server authoritative, both default off
 
 Following the exemplar this repository already uses for safety properties enforced at settings
-construction rather than by operator discipline (`core/config.py:1211-1212`, and
-`_reject_start_override_against_production_kws` at `core/config.py:2125`).
+construction rather than by operator discipline (`core/config.py:1212-1214`, and
+`_reject_start_override_against_production_kws` at `core/config.py:2181`).
 
 - **Client flag**: `VITE_CLIENT_BEACON_ENABLED`, absent or anything other than `"1"` meaning
   off. **Default off.** When off the module **registers no listeners at all**: no
@@ -634,11 +719,16 @@ construction rather than by operator discipline (`core/config.py:1211-1212`, and
   "append-only pipeline with a 30-day retention window" is not implementable as written. The
   beacon gets its own table, `client_friction_event`, whose append-only property comes from the
   **absence of any update or delete code path in the ORM plus the least-privilege role's
-  grants**, not from a trigger. That is a deliberate and stated weakening of the append-only
-  guarantee relative to `pipeline_event`, taken because for this data class retention is the
-  stronger privacy control and the two cannot both be had. `UW-D28` records the same collision
-  reaching the opposite outcome for `security_event`, where the audit value justifies the
-  trigger; naming both here is what keeps this from looking like an oversight.
+  grants**, not from a trigger. **The sweep is the single exception, and it works because it runs
+  as a different role**: the `pg_cron` job is registered by the migration and executes as the
+  role that scheduled it, not as the application's runtime role, so "the application cannot
+  delete from this table" and "the retention job does delete from it" are both true at once.
+  Granting the application role DELETE on this table to make a sweep work would collapse the only
+  append-only property the table has, and is forbidden here. That is a deliberate and stated
+  weakening of the append-only guarantee relative to `pipeline_event`, taken because for this
+  data class retention is the stronger privacy control and the two cannot both be had. `UW-D28`
+  records the same collision reaching the opposite outcome for `security_event`, where the audit
+  value justifies the trigger; naming both here is what keeps this from looking like an oversight.
 - **The sweep has no exemption set at all.** Every row past the window is deleted
   unconditionally. `UW-C227` records this repository shipping exactly the inversion the plan
   warns about: the `generation_job.report` retention exemption "is evaluated when the nightly
@@ -668,11 +758,20 @@ control with known gaps is not a foundation for a new data path.
 
 The posture instead is that nothing arrives that would need censoring:
 
-- **Every value in Allowlist A is a member of a closed enum, a bounded integer, or a slug
-  matching `^[a-z0-9-]{1,64}$`.** The test that makes this checkable in one sentence:
-  **there is no string field in the beacon payload whose value space is not enumerable from
-  this repository's own source.** Adding a free-text field falsifies that sentence visibly,
-  which is the point of stating it as a property rather than as a list of prohibitions.
+- **Every value in Allowlist A other than `session_id` is a member of a closed enum, a bounded
+  integer, a slug matching `^[a-z0-9-]{1,64}$`, or a hash taken over an allowlisted frame
+  sequence (3.4).** The test that makes this checkable in one sentence: **no string field in the
+  beacon payload other than `session_id` has a value space that is not enumerable from this
+  repository's own source.** The exception is scoped to one named field rather than to a
+  category, so a second exception cannot be argued into it, and it is exempt on narrow terms
+  rather than by fiat: `session_id` is a per-realm `crypto.randomUUID()` whose value space is
+  deliberately not enumerable, it is never persisted client-side (Decision 4), and Allowlist B
+  denies it from publication in any form, including hashed, truncated, or positional.
+  `error_signature.hash` is **not** an exception and sits inside the sentence, because 3.4's
+  build-time frame allowlist makes its input space a list this repository can print. Adding a
+  free-text field falsifies the sentence visibly, which is the point of stating it as a property
+  rather than as a list of prohibitions, and the sentence has to stay falsifiable to be worth
+  testing: a test asserting it must fail on a field this design does not have.
 - **Server-side validation rejects the whole batch, with 422, on any field outside the closed
   shape.** No partial acceptance, no silent field dropping, no truncation. A batch is a unit and
   a malformed one is refused whole, so a client that starts sending something new fails loudly
@@ -735,8 +834,10 @@ adjustment:
   is accepted only in combination with all three.
 - **The digest's publication target changes**, in either direction. A move to a private surface
   relaxes Allowlist B's argument; any move that widens readership tightens it.
-- **Any beacon field gains a value space not enumerable from this repository's source**, which
-  is the single sentence Decision 8 is built on.
+- **Any beacon field other than `session_id` gains a value space not enumerable from this
+  repository's source**, or `session_id`'s stated exemption stops holding, by gaining a durable
+  client-side home or by Allowlist B admitting it in any form. That is the single sentence
+  Decision 8 is built on, in the scoped form stated there.
 - **`frontend/src/offline/` grows a general-purpose client event queue** for unrelated reasons.
   Decision 4's "the beacon does not queue" would then read as a local exception rather than a
   design property, and the pull to reuse the queue would be strong. It would still be forbidden,
@@ -762,8 +863,15 @@ adjustment:
   record) and the join to the server's own timeline (a stored instant in a four-adult roster).
   Both produce controls a naive implementation would omit, because discarding a resolved
   principal and storing a DATE instead of a timestamp are both things you have to decide to do.
-- A plain implementability defect is caught before any code: the plan asks for a retention
-  window on a trigger-enforced append-only table, and those are mutually exclusive.
+- Two plain implementability defects are caught before any code: the plan asks for a retention
+  window on a trigger-enforced append-only table, and those are mutually exclusive; and it
+  specifies `sendBeacon` as the transport for a route whose surface restriction is a server-side
+  403, which `sendBeacon` cannot reach because it has no header API and this API has no cookie
+  session (Decision 4).
+- The one place this design leaned on a hash to de-identify is closed by construction rather
+  than by argument. 3.4 now reduces a component stack to build-time-allowlisted frames before
+  hashing, so an interpolated child's name cannot become a stable pseudonym that outlives the
+  session id reset, survives the DATE truncation, and reaches a permanent public issue.
 - The Session Replay prohibition is promoted from a comment to a decision and generalised from
   a product name to a capability, which is what let it reach the dead-click detector.
 - Both boundaries are closed by default. Allowlist A closes browser to server and Allowlist B
@@ -782,6 +890,15 @@ adjustment:
   poor-share and nothing sharper. The plan's own INP p75 threshold is replaced by a poor-share
   threshold.
 - **Samples are lost whenever a device cannot send**, because there is no queue and no retry.
+  The server-side rate limit is one of the ways a device cannot send, and the beacon yields to it
+  rather than the limit yielding to the beacon.
+- **The plan's `sendBeacon` transport is replaced by `fetch` with `keepalive: true`**, so
+  unload-time delivery now rests on `keepalive` rather than on the browser's beacon queue. Taken
+  because the alternative is a credential in a body or a URL, and because a transport that
+  cannot report a status makes a throttled or disabled beacon fail silently.
+- **The error-boundary signature is narrower than a component stack hash sounds**, because
+  frames outside the build-time allowlist are dropped before hashing. A crash whose informative
+  frames are all in a dependency reduces to a signature that says less than the raw stack would.
 - **A beacon row cannot be traced to its request**, because the correlation id is discarded, so
   malformed batches are diagnosed at the client.
 - **The floor's unit is weaker than ADR-030's**, and is accepted only on three compensations
@@ -801,6 +918,10 @@ adjustment:
 - **The testid-literal lint check in 3.6 does not exist yet** and is a prerequisite of the
   rage-click variant, not a follow-up to it. Shipping the variant without it leaves the payload's
   closure resting on a regex that a slugified title would satisfy.
+- **The build-time component-name allowlist in 3.4 does not exist yet either**, and is a
+  prerequisite of the error-boundary variant on the same terms. Shipping that variant without it
+  leaves the hash's input space unenumerable, which falsifies Decision 8's sentence and puts a
+  possible per-child pseudonym on a path that ends in a permanent public issue.
 - **`security_event` still has no retention mechanism** (`UW-D28`), and this ADR's resolution of
   the same append-only-versus-retention collision for a new table does not close it. The two
   reach opposite answers for defensible reasons; nothing here should be read as having decided
