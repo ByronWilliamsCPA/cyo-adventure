@@ -112,11 +112,12 @@
 # first ZAP run was staged as owner triage rather than proven by the task
 # that wrote the scan.
 #
-# OWNER CHECKLIST (tracked as a register follow-up row; see this task's
-# report for the exact row text, not applied here directly):
-#   1. Run this workflow via workflow_dispatch at least once (twice is
-#      better, to see run-to-run spread on a real runner, matching what the
-#      plan text asks for: "at least three times, and record the spread").
+# OWNER CHECKLIST (tracked as UW-F57 in
+# docs/planning/unscheduled-work-register.md, which carries this same
+# checklist and is the row to close when it is done):
+#   1. Run this workflow via workflow_dispatch at least three times, so the
+#      run-to-run spread on a real runner is visible, which is what the plan
+#      text asks for: "at least three times, and record the spread".
 #   2. Read the job summary's LCP/TBT/CLS numbers for each route.
 #   3. Replace the `# BUDGET: not yet set` placeholders below with real
 #      numbers plus headroom, following the bundle-size budget's comment
