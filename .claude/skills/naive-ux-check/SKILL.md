@@ -6,10 +6,22 @@ description: Surface the next unrun Claude-for-Chrome naive-user comprehension p
 # naive-ux-check
 
 Organizes the naive-user comprehension prompt set
-(`.claude/skills/naive-ux-check/prompts/{kid,guardian,admin}.md`, 17 scenarios
-total: K0-K4, G0-G7, A0-A3) and logs results. This skill does not drive a
-browser itself; there is no Claude-for-Chrome tool available to this session,
-so it hands you a prompt to paste into the extension by hand.
+(`.claude/skills/naive-ux-check/scenarios.json`, 17 scenarios total: K0-K4,
+G0-G7, A0-A3) and logs results. This skill does not drive a browser itself;
+there is no Claude-for-Chrome tool available to this session, so it hands
+you a prompt to paste into the extension by hand.
+
+`scenarios.json` is the single source of truth for these scenarios; there
+are no separate prose files to keep in sync. Each entry has: `id`,
+`persona` (`kid` / `guardian` / `admin`), `name` (short scenario name),
+`persona_text`, `task_text`, `report_back_questions[]`,
+`requires_credentials`, `production_safe`, and `operator_notes` (an object
+with `operator_setup[]`, `operator_note[]`, and `expected_observations[]`,
+all human-only, see step 4). The array order is the selection order: kid
+scenarios (K0-K4) first, then guardian (G0-G7), then admin (A0-A3), with
+each persona's auth-gate scenario (K0, G0, A0) first within its group.
+The automated persona runner planned for D2b will read the same file, so a
+manual and an automated run always test the same scenarios.
 
 ## What to do when invoked
 
@@ -21,31 +33,49 @@ so it hands you a prompt to paste into the extension by hand.
    `SEED_ADMIN_EMAIL`, provisioned by `scripts/seed_staging.py`) live there;
    live production has no account this skill should use. Targeting live
    production is an explicit, occasional, deliberate choice the user must
-   state up front, and it supports only the non-credentialed, non-mutating
-   scenario: K0, which observes the signed-out auth gate without ever
-   signing in. Every other scenario either signs in with the seeded
-   credentials (which exist only on staging) or mutates content, and the
-   standing rule still applies: the mutating personas (G4/G5/G6, A2/A3)
-   submit, approve, or decline real content, so run them only against the
-   seeded staging environment (or another disposable, seeded,
-   non-production environment); never point them at production, where the
-   browsing agent could approve or alter real stories.
+   state up front, and it supports only the scenario whose data record has
+   `production_safe: true`: K0, which observes the signed-out auth gate
+   without ever signing in. Every other scenario has `production_safe:
+   false`: it either signs in with the seeded credentials (which exist
+   only on staging) or mutates content, and the standing rule still
+   applies: the mutating personas (G4/G5/G6, A2/A3) submit, approve, or
+   decline real content, so run them only against the seeded staging
+   environment (or another disposable, seeded, non-production
+   environment); never point them at production, where the browsing agent
+   could approve or alter real stories.
 2. Read `docs/qa/naive-ux-reports/` and find the most recent dated report, if
    any. Collect which of the 17 scenario ids (K0-K4, G0-G7, A0-A3) already
    have an entry in it.
-3. Pick the first scenario id, in the order K0-K4, G0-G7, A0-A3 (the
-   auth-gate scenarios K0, G0, and A0 always run before the rest of their
-   persona's set), that has no entry yet in the most recent report. If no
-   report exists yet, that is the first id, K0. Always hand off exactly one
-   scenario per invocation (step 4); the user re-invokes for the next one
-   (step 7).
-4. Print that scenario's full prompt block from its persona file, with the
-   `<URL>` placeholder replaced by the target URL from step 1. Print only
-   the Persona / Task / Report back block; the "Operator setup" / "Operator
-   note" lines and "Expected observations" paragraphs are instructions for
-   the human, so relay them separately, never inside the paste block. Where
-   a prompt carries `<EMAIL>` / `<PASSWORD>` placeholders, remind the user
-   to fill them with the seeded credentials before pasting.
+3. Pick the first scenario, in `scenarios.json` array order (K0-K4, G0-G7,
+   A0-A3, auth-gate scenarios first within each persona), whose `id` has no
+   entry yet in the most recent report. If no report exists yet, that is the
+   first entry, K0. Always hand off exactly one scenario per invocation
+   (step 4); the user re-invokes for the next one (step 7).
+4. Compose the paste block from that scenario's model-facing fields ONLY:
+   `persona_text`, `task_text` (with the `<URL>` placeholder replaced by the
+   target URL from step 1), and `report_back_questions[]` rendered as a
+   numbered list, in the shape:
+
+   ```text
+   Persona: <persona_text>
+
+   Task: <task_text>
+
+   Report back:
+
+   1. <report_back_questions[0]>
+   2. <report_back_questions[1]>
+   ...
+   ```
+
+   Never include `operator_notes` (its `operator_setup`, `operator_note`,
+   or `expected_observations` entries) in this block; they are instructions
+   for the human running the extension, so relay them separately, never
+   inside the paste block. Where the composed task text carries `<EMAIL>` /
+   `<PASSWORD>` placeholders, remind the user to fill them with the seeded
+   credentials before pasting. Where `operator_notes.operator_setup` is
+   non-empty, relay it to the user before they paste (it covers things like
+   starting from a signed-out browser or signing in first).
 5. Tell the user: "Paste this into the Claude-for-Chrome extension, then
    paste its response back here."
 6. When the user pastes back a response, first REDACT it, then append one row
@@ -61,12 +91,14 @@ so it hands you a prompt to paste into the extension by hand.
    force-add it.)
 
    ```markdown
-   ## <scenario id>: <short scenario name>
+   ## <scenario id>: <scenario name>
 
    **Verdict:** pass | friction-found | dead-end
 
    <redacted summary of the pasted-back response>
    ```
+
+   The scenario name for the heading is that scenario's `name` field.
 
 7. Ask whether to continue with the next unrun scenario or stop here.
 

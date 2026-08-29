@@ -1,0 +1,370 @@
+[
+  {
+    "id": "K0",
+    "persona": "kid",
+    "name": "fresh device, no guardian ever signed in",
+    "persona_text": "You are a 7-year-old who was just handed a brand-new tablet. Nobody in your family has used this app on it before, and no grown-up is nearby right now.",
+    "task_text": "Go to <URL> and try to start reading a story, using only what's on the screen.",
+    "report_back_questions": [
+      "What you clicked, in order, and why at each step.",
+      "What the screen told you when you couldn't go any further, in your own words.",
+      "Whether that screen felt friendly and clear about what to do next, or like something was broken.",
+      "Whether you knew what to do next (even if it was \"go find a grown-up\"), or felt stuck."
+    ],
+    "requires_credentials": false,
+    "production_safe": true,
+    "operator_notes": {
+      "operator_setup": [
+        "run this in a fresh browser profile (or a new incognito window) where no guardian has ever signed in to this app. Do not sign in first; this is the one kid scenario that must start with no session at all."
+      ],
+      "operator_note": [],
+      "expected_observations": [
+        "the kid picker at `/kids` should show the differentiated auth gate shipped in PR #198 (source of truth: `frontend/src/kid/ProfilePickerPage.tsx`): the title \"Ask a grown-up to help\", the description \"A grown-up needs to sign in before you can pick who's reading.\", a mascot illustration, and a single \"I am a grown-up\" action link to the guardian sign-in page. No \"Try again\" control and no \"Oops, we hit a snag\" error should appear. A friendly, correctly-working gate like this is a PASS for this scenario; a confusing, mislabeled, or broken gate is still friction-found or dead-end."
+      ]
+    }
+  },
+  {
+    "id": "K1",
+    "persona": "kid",
+    "name": "cold start, zero profiles",
+    "persona_text": "You are a 7-year-old at a computer someone just set up for you. You have never used this app before.",
+    "task_text": "Go to <URL>. There are no profiles set up yet. Try to find a way to read a story anyway, using only what's on the screen.",
+    "report_back_questions": [
+      "What you clicked, in order, and why at each step.",
+      "Whether you found any usable next step, or hit a dead end.",
+      "If a dead end, exactly what the screen showed you at that point.",
+      "Whether anything on the screen felt like it was meant for a grown-up, not you."
+    ],
+    "requires_credentials": true,
+    "production_safe": false,
+    "operator_notes": {
+      "operator_setup": [
+        "Before pasting this prompt, sign in as the seeded test guardian (`SEED_GUARDIAN_EMAIL`, default `cyo-test-guardian@example.com`) in this browser tab first."
+      ],
+      "operator_note": [
+        "this scenario's zero-profile premise requires an operator-arranged empty family (a signed-in guardian with no child profiles). The default seeded staging family already has a \"Test Reader\" profile (age band 10-13) with two published stories, so an unmodified seeded run lands on the \"Who's reading?\" avatar grid instead of the \"No profiles yet\" empty state and contradicts the task text below."
+      ],
+      "expected_observations": []
+    }
+  },
+  {
+    "id": "K2",
+    "persona": "kid",
+    "name": "empty library, first request",
+    "persona_text": "You are a 7-year-old using this app for the first time, unsupervised, with no instructions. You don't know what \"profile,\" \"story request,\" or \"guardian approval\" mean beyond ordinary vocabulary.",
+    "task_text": "Go to <URL>. Try to find and read a story. If none is available, try to get one made for you, using only what's visible on screen, no guessing at hidden menus or URLs.",
+    "report_back_questions": [
+      "What you clicked, in order, and why at each step.",
+      "Any point you were unsure what to do, or what a label/button meant.",
+      "Any dead end you hit.",
+      "If you succeeded, how many steps it took and whether any felt unnecessary."
+    ],
+    "requires_credentials": true,
+    "production_safe": false,
+    "operator_notes": {
+      "operator_setup": [
+        "Before pasting this prompt, sign in as the seeded test guardian (`SEED_GUARDIAN_EMAIL`, default `cyo-test-guardian@example.com`) in this browser tab first."
+      ],
+      "operator_note": [
+        "against the default seeded staging family, the Test Reader library already holds two published books, so the persona will find a story to read and never reach the \"get one made for you\" branch; that shorter run is still valid to log. To exercise the empty-library request path this scenario was designed for, arrange a profile with no assigned books (an operator-arranged empty family) before the run."
+      ],
+      "expected_observations": []
+    }
+  },
+  {
+    "id": "K3",
+    "persona": "kid",
+    "name": "garbage-input request",
+    "persona_text": "You are a 6-year-old who likes mashing keys and doesn't yet write full sentences.",
+    "task_text": "Go to <URL>, find the \"request a story\" option, and submit it with whatever you'd actually type: a single word, or mashed keys, not a proper sentence. See what happens after you send it.",
+    "report_back_questions": [
+      "What exactly you typed and clicked.",
+      "What the screen showed after sending it, in your own words.",
+      "Whether you could tell if it worked or not.",
+      "Whether the after-state made sense to a kid who can't read well yet."
+    ],
+    "requires_credentials": true,
+    "production_safe": false,
+    "operator_notes": {
+      "operator_setup": [
+        "Before pasting this prompt, sign in as the seeded test guardian (`SEED_GUARDIAN_EMAIL`, default `cyo-test-guardian@example.com`) in this browser tab first."
+      ],
+      "operator_note": [],
+      "expected_observations": []
+    }
+  },
+  {
+    "id": "K4",
+    "persona": "kid",
+    "name": "sibling switches profile mid-session",
+    "persona_text": "You are a kid mid-way through reading a story on a shared tablet. Your sibling grabs it and picks their own profile from the picker.",
+    "task_text": "Go to <URL>, pick a profile, start reading, then go back to the profile picker and pick a different profile.",
+    "report_back_questions": [
+      "Whether the first profile's story/progress was still visible anywhere after switching.",
+      "Whether the switch felt instant and clean, or like something was left over.",
+      "Anything that looked like it belonged to the wrong kid.",
+      "Whether you'd trust this app to keep two kids' stuff separate."
+    ],
+    "requires_credentials": true,
+    "production_safe": false,
+    "operator_notes": {
+      "operator_setup": [
+        "Before pasting this prompt, sign in as the seeded test guardian (`SEED_GUARDIAN_EMAIL`, default `cyo-test-guardian@example.com`) in this browser tab first."
+      ],
+      "operator_note": [
+        "the default seeded staging family has a single child profile (Test Reader); this scenario needs a second profile to switch to. Add one via the guardian console (Profiles) before the run, or arrange a two-profile family."
+      ],
+      "expected_observations": []
+    }
+  },
+  {
+    "id": "G0",
+    "persona": "guardian",
+    "name": "finding sign-in from scratch",
+    "persona_text": "You are a parent. Your co-parent set up a family account on this app and texted you an email and password, nothing else. You have never seen the app before.",
+    "task_text": "Go to <URL>. Find where to sign in, sign in with the email <EMAIL> and the password <PASSWORD>, and stop once you're sure you either are or are not signed in.",
+    "report_back_questions": [
+      "How you found the sign-in page, and whether any step made you hesitate.",
+      "What sign-in options you saw, and which one you used.",
+      "What the screen showed right after you submitted, and whether it clearly told you sign-in worked or failed.",
+      "Where you ended up, and whether you understood what that page was for."
+    ],
+    "requires_credentials": true,
+    "production_safe": false,
+    "operator_notes": {
+      "operator_setup": [
+        "run this in a browser tab that is not signed in. Before pasting, replace `<EMAIL>` and `<PASSWORD>` with the seeded test guardian credentials (`SEED_GUARDIAN_EMAIL`, default `cyo-test-guardian@example.com`; password from the operator's shell environment). Never use a real production account for this run."
+      ],
+      "operator_note": [],
+      "expected_observations": [
+        "from the landing page, the \"Grown-ups / Guardian console\" door leads to `/guardian`, whose route guard redirects a signed-out visitor to the \"Guardian sign-in\" page (`/guardian/login`): a \"Continue with Google\" button, an \"or use your email\" divider, and an email/password form with a \"Sign in\" button. On success the persona lands on the guardian console: a \"Review queue\" heading, navigation links (Console, Request a story, Books, Story requests, Profiles), and a muted \"Guardian\" role hint beside the \"CYO Adventure\" brand title. On bad credentials the form shows \"That email and password didn't match. Please try again.\" A discoverable, correctly-working sign-in with clear feedback is a PASS; a confusing, mislabeled, or broken path is still friction-found or dead-end."
+      ]
+    }
+  },
+  {
+    "id": "G1",
+    "persona": "guardian",
+    "name": "first login, zero children",
+    "persona_text": "You are a parent who just created an account. You have not read any documentation.",
+    "task_text": "Go to <URL>, sign in, and figure out what to do next, given that your child cannot read any stories yet.",
+    "report_back_questions": [
+      "What the screen showed you immediately after signing in.",
+      "Whether it was obvious you needed to create a child profile first.",
+      "How many clicks it took to find that path, if you found it at all.",
+      "Anything that confused you along the way."
+    ],
+    "requires_credentials": true,
+    "production_safe": false,
+    "operator_notes": {
+      "operator_setup": [],
+      "operator_note": [
+        "this scenario's zero-children premise requires an operator-arranged empty family (a guardian account with no child profiles). The default seeded staging family already has a \"Test Reader\" profile with two published stories, so an unmodified seeded run will not show the zero-state nudge this scenario is designed to test."
+      ],
+      "expected_observations": []
+    }
+  },
+  {
+    "id": "G2",
+    "persona": "guardian",
+    "name": "edge-case profile creation",
+    "persona_text": "You are a parent creating your child's profile for the first time.",
+    "task_text": "Go to <URL>, sign in, and create a child profile using an unusual name: a very long one, one with an emoji in it, or one that matches a sibling's name exactly. Try more than one of these if the form lets you.",
+    "report_back_questions": [
+      "What happened when you submitted the unusual name.",
+      "Whether any feedback (error or otherwise) was clear about what was wrong, if anything was wrong.",
+      "Whether you'd know how to fix it if something was rejected.",
+      "Anything that felt inconsistent between attempts."
+    ],
+    "requires_credentials": true,
+    "production_safe": false,
+    "operator_notes": {
+      "operator_setup": [],
+      "operator_note": [],
+      "expected_observations": []
+    }
+  },
+  {
+    "id": "G3",
+    "persona": "guardian",
+    "name": "requests vs. review vs. books",
+    "persona_text": "You are a parent who just created an account. Nobody explained the app to you. You know your child wants to read a story you haven't seen yet.",
+    "task_text": "Go to <URL>, sign in, and do whatever seems necessary so your child can read something new. Stop as soon as you believe you've either succeeded or hit a wall.",
+    "report_back_questions": [
+      "Which pages you visited, in order, and what you expected each one to do before you clicked into it.",
+      "Whether you could tell \"requests,\" \"review,\" and \"books\" apart, or thought any two of them did the same thing.",
+      "Whether you found the thing you were looking for, and how long it took.",
+      "Anything you clicked that turned out to do something you didn't expect."
+    ],
+    "requires_credentials": true,
+    "production_safe": false,
+    "operator_notes": {
+      "operator_setup": [],
+      "operator_note": [],
+      "expected_observations": []
+    }
+  },
+  {
+    "id": "G4",
+    "persona": "guardian",
+    "name": "two-step approval surprise",
+    "persona_text": "You are a parent who just approved your child's story idea.",
+    "task_text": "Go to <URL>, sign in, find your child's pending story request, and approve it. Then figure out whether there's anything else you still need to do before your child can actually read the story.",
+    "report_back_questions": [
+      "What happened right after you approved the request.",
+      "Whether anything told you a second review step exists before the story reaches your child.",
+      "If you had to go looking for that second step, how you found it.",
+      "Whether you'd have assumed you were done after the first approval."
+    ],
+    "requires_credentials": true,
+    "production_safe": false,
+    "operator_notes": {
+      "operator_setup": [],
+      "operator_note": [],
+      "expected_observations": []
+    }
+  },
+  {
+    "id": "G5",
+    "persona": "guardian",
+    "name": "intake mistaken for request-approval",
+    "persona_text": "You are a parent who wants to say yes to your child's story idea.",
+    "task_text": "Go to <URL>, sign in, and use whichever page seems like the way to approve your child's story idea. If you land on a page that asks you to write your own story idea from scratch, decide whether that's the right page or the wrong one, and say why.",
+    "report_back_questions": [
+      "Which page you landed on first, and why you chose it.",
+      "Whether it was clear this page does something different from approving an existing request.",
+      "Whether you ended up on the correct page eventually, and how.",
+      "What would have made the distinction clearer sooner."
+    ],
+    "requires_credentials": true,
+    "production_safe": false,
+    "operator_notes": {
+      "operator_setup": [],
+      "operator_note": [],
+      "expected_observations": []
+    }
+  },
+  {
+    "id": "G6",
+    "persona": "guardian",
+    "name": "lost after decline",
+    "persona_text": "You are a parent who just declined one of your child's story ideas.",
+    "task_text": "Go to <URL>, sign in, find a pending story request, and decline it. Then try to find out what happened to it: is it gone forever, can your child see that it was declined, can you undo it?",
+    "report_back_questions": [
+      "What happened immediately after declining.",
+      "Whether you could find the declined item again anywhere in the app.",
+      "Whether you could tell what your child would see about it, if anything.",
+      "Whether \"declined\" felt reversible or permanent, and whether that was clear."
+    ],
+    "requires_credentials": true,
+    "production_safe": false,
+    "operator_notes": {
+      "operator_setup": [],
+      "operator_note": [],
+      "expected_observations": []
+    }
+  },
+  {
+    "id": "G7",
+    "persona": "guardian",
+    "name": "handing the device to your kid",
+    "persona_text": "You are a parent who just finished setting things up in your own account. You are now handing the device to your child so they can read. Nobody told you the exact steps for this handoff.",
+    "task_text": "Go to <URL>, sign in as the guardian, and find your way from your own console to your child's reading screen, the way you'd actually do it before handing the device over.",
+    "report_back_questions": [
+      "What you clicked to get from your own console to your child's screen.",
+      "Whether it was obvious this was the right way to hand off, or you guessed.",
+      "Whether anything on the way there looked like it still belonged to you, not your child, once you arrived.",
+      "Whether you'd feel comfortable handing the device to your child at the point you stopped, or you'd want to check one more thing first."
+    ],
+    "requires_credentials": true,
+    "production_safe": false,
+    "operator_notes": {
+      "operator_setup": [],
+      "operator_note": [],
+      "expected_observations": []
+    }
+  },
+  {
+    "id": "A0",
+    "persona": "admin",
+    "name": "admin sign-in, no onboarding",
+    "persona_text": "You were just told you're an admin on this app, with no other explanation of what that means. You've been given an email and a password and nothing else.",
+    "task_text": "Go to <URL>. Find where an admin is supposed to sign in, sign in with the email <EMAIL> and the password <PASSWORD>, and stop once you're signed in.",
+    "report_back_questions": [
+      "How you decided where to sign in, and whether anything along the way said \"admin\" or hinted that admins belong there.",
+      "Whether the sign-in page itself gave any admin-distinct signal, or looked purely parent-facing.",
+      "What the first screen after sign-in showed, and whether anything on it told you that you are an admin.",
+      "How confident you are that you signed in \"as an admin\" rather than as a regular parent, on a scale of \"certain\" to \"no idea.\""
+    ],
+    "requires_credentials": true,
+    "production_safe": false,
+    "operator_notes": {
+      "operator_setup": [
+        "run this in a browser tab that is not signed in. Before pasting, replace `<EMAIL>` and `<PASSWORD>` with the seeded test admin credentials (`SEED_ADMIN_EMAIL`, default `cyo-test-admin@example.com`; password from the operator's shell environment)."
+      ],
+      "operator_note": [],
+      "expected_observations": [
+        "the landing page's \"Grown-ups / Guardian console\" door carries the note \"Admins sign in here too\" (the only pre-sign-in admin signal); the sign-in page is titled \"Guardian sign-in\" with no admin mention; after sign-in, the console header shows a muted \"Admin\" role hint beside the \"CYO Adventure\" brand title (PR #206), the \"Books\" nav link is absent (it is guardian-only), and the Console page shows admin-only content: a story-request form with a cross-family \"Choose a family…\" picker and a \"Moderation admin\" nav block (moderation dashboard and thresholds links). A persona reporting the family picker or moderation links has found decisive admin evidence, stronger than the header hint; credit it accordingly. A discoverable, correctly-working sign-in is a PASS even if the persona only noticed the subtler signals; note in the log which signals it found. A confusing, mislabeled, or broken sign-in path is still friction-found or dead-end."
+      ]
+    }
+  },
+  {
+    "id": "A1",
+    "persona": "admin",
+    "name": "indistinguishable surface",
+    "persona_text": "You were just told you're an admin on this app, with no other explanation of what that means.",
+    "task_text": "Go to <URL>, sign in, and try to figure out what, if anything, you can do that a regular parent account couldn't.",
+    "report_back_questions": [
+      "What, if anything, looked different from what you'd expect a parent account to see.",
+      "Whether you found any action that felt admin-specific.",
+      "How confident you are that you have elevated capability at all, on a scale of \"certain\" to \"no idea.\"",
+      "What you would look for next if you still weren't sure."
+    ],
+    "requires_credentials": true,
+    "production_safe": false,
+    "operator_notes": {
+      "operator_setup": [],
+      "operator_note": [],
+      "expected_observations": []
+    }
+  },
+  {
+    "id": "A2",
+    "persona": "admin",
+    "name": "minimum-viable intake",
+    "persona_text": "You are an admin trying to generate a new story as quickly as possible.",
+    "task_text": "Go to <URL>, sign in, and submit a new story request filling in only whatever fields are required, skipping every optional one.",
+    "report_back_questions": [
+      "Which fields you filled and which you skipped.",
+      "Whether the flow still made sense with the minimum filled in.",
+      "What happened after submitting.",
+      "Anything that felt like it needed more input than you gave it, even though it let you proceed."
+    ],
+    "requires_credentials": true,
+    "production_safe": false,
+    "operator_notes": {
+      "operator_setup": [],
+      "operator_note": [],
+      "expected_observations": []
+    }
+  },
+  {
+    "id": "A3",
+    "persona": "admin",
+    "name": "rubber-stamp approval friction",
+    "persona_text": "You are an admin who just generated a story and wants to approve it immediately without reading it closely.",
+    "task_text": "Go to <URL>, sign in, find a story awaiting your review, and try to approve it as fast as possible without opening or reading any flagged passage.",
+    "report_back_questions": [
+      "Whether the interface let you approve without looking at anything flagged.",
+      "Whether anything slowed you down or asked you to confirm you'd reviewed it.",
+      "How many clicks the fastest path to approval took.",
+      "Whether that speed felt appropriate for a safety checkpoint, or too easy."
+    ],
+    "requires_credentials": true,
+    "production_safe": false,
+    "operator_notes": {
+      "operator_setup": [],
+      "operator_note": [],
+      "expected_observations": []
+    }
+  }
+]
