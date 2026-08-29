@@ -21,6 +21,10 @@ from cyo_adventure.analysis.queries import (
     READ_ALLOWLIST,
     completion_families_statement,
     flag_families_statement,
+    moderation_reports_statement,
+    rating_families_statement,
+    reader_families_statement,
+    storybooks_statement,
 )
 
 if TYPE_CHECKING:
@@ -201,3 +205,82 @@ class TestStatementsAreReadOnly:
         assert sql.startswith("SELECT")
         for verb in ("INSERT", "UPDATE ", "DELETE", "FOR UPDATE", "FOR SHARE"):
             assert verb not in sql
+
+
+# Every one of these six statements is unpacked positionally, not by column
+# name, in ``scripts/engagement_correlation.py::load_observations``: a bare
+# ``for a, b, c in rows:`` (or a ``row[0]``/``row[1]``/``row[2]`` indexing, for
+# the moderation-report statement) with no column-name check anywhere on the
+# path from SQL result to Python variable. SQLAlchemy rows are plain tuples, so
+# reordering a SELECT clause, or swapping one selected column for another of
+# the same type, raises nothing: it silently relabels every value the consumer
+# reads out. This mapping pins each statement's compiled column order against
+# the exact order its one caller unpacks, so that reordering shows up here
+# instead of as a live categorical exclusion quietly going dead (ADR-030
+# Decision 2) or a rating mean computed over family UUIDs.
+_EXPECTED_UNPACK_ORDER: Final[
+    dict[Callable[[], Select[tuple[object, ...]]], list[str]]
+] = {
+    # for book_id, visibility, status, published_version, subject_profile_id in books:
+    storybooks_statement: [
+        "id",
+        "visibility",
+        "status",
+        "current_published_version",
+        "personalization_subject_profile_id",
+    ],
+    # verdicts[(row[0], row[1])] = row[2]
+    moderation_reports_statement: ["storybook_id", "version", "moderation_report"],
+    # for storybook_id, version, family_id in readers:
+    reader_families_statement: ["storybook_id", "version", "family_id"],
+    # for storybook_id, version, family_id, found_on in completions:
+    completion_families_statement: [
+        "storybook_id",
+        "version",
+        "family_id",
+        "found_on",
+    ],
+    # for storybook_id, value, family_id in ratings:
+    rating_families_statement: ["storybook_id", "value", "family_id"],
+    # for storybook_id, reason, family_id in flags:
+    flag_families_statement: ["storybook_id", "reason", "family_id"],
+}
+
+
+class TestSelectOrderMatchesConsumerUnpack:
+    """The positional coupling between each SELECT and its one caller.
+
+    ``tests/unit/test_engagement_correlation_job.py``'s ``_StubSession``
+    matches statements by a compiled-SQL fragment and then returns hardcoded
+    tuples, so it agrees with the reducer regardless of what the statement
+    actually selects: a mutation that reorders a SELECT clause is invisible to
+    that fixture. This class is the check that is not fooled by that: it reads
+    each statement's own compiled column order directly and compares it to a
+    literal, independently-written expectation, so a reordering fails here
+    even though the stub-based pipeline test would not notice.
+    """
+
+    def test_every_statement_has_a_pinned_expected_order(self) -> None:
+        """A statement added to ``ALL_STATEMENTS`` with no entry here is a gap.
+
+        Without this, a seventh statement could be added and unpacked
+        positionally with no coverage from the parametrized test below, which
+        only ever sees what is already a dict key.
+        """
+        assert set(_EXPECTED_UNPACK_ORDER) == set(ALL_STATEMENTS)
+
+    @pytest.mark.parametrize("builder", ALL_STATEMENTS)
+    def test_selected_column_order_matches_the_consumers_unpack(
+        self, builder: Callable[[], Select[tuple[object, ...]]]
+    ) -> None:
+        """Column *N* of the SELECT must be column *N* of the unpack, by name.
+
+        ``selected_columns.keys()`` is the compiled statement's own column
+        order, so a mutation that reorders the SELECT clause, or substitutes
+        one column for another (even a same-typed one from the same table),
+        changes this list and fails the comparison; a mutation that leaves the
+        SELECT clause untouched leaves it passing.
+        """
+        assert (
+            list(builder().selected_columns.keys()) == _EXPECTED_UNPACK_ORDER[builder]
+        )

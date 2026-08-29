@@ -275,6 +275,164 @@ class TestSelfCheck:
         """
         assert job._gitignore_mentions_artifact(_REPO_ROOT) is False
 
+    def test_gitignore_mentions_artifact_detects_a_real_mention(
+        self, tmp_path: Path
+    ) -> None:
+        """The discriminating half of the check above.
+
+        A helper that always returns ``False`` passes the negative test on this
+        real repository too; only a planted positive tells them apart.
+        """
+        _ = (tmp_path / ".gitignore").write_text(
+            f"{job.ARTIFACT_PREFIX.rstrip('-')}\n", encoding="utf-8"
+        )
+        assert job._gitignore_mentions_artifact(tmp_path) is True
+
+
+class TestSelfCheckBranches:
+    """Each of ``self_check``'s seven conditions, forced and checked in isolation.
+
+    ``test_the_self_check_passes_on_this_working_tree`` above proves the
+    all-clear case on the real tree, but that alone cannot tell a genuine
+    per-condition implementation apart from one that always returns ``[]``, or
+    one where a single ``if`` has quietly been deleted: both look identical on
+    a tree where every condition already happens to hold. Every test here
+    forces exactly one condition into its failing state while holding the rest
+    at their passing state, and asserts the *exact* resulting list, not merely
+    that it is non-empty, so a check that starts reporting the wrong failure
+    string is also caught.
+    """
+
+    @staticmethod
+    def _hold_repo_checks_clear(monkeypatch: pytest.MonkeyPatch) -> None:
+        """Pin the two repo-walking conditions to their passing state.
+
+        Without this, a branch test that forces one condition could pass for
+        the wrong reason if this working tree (shared with concurrent
+        sessions per this repo's own operating notes) happened to carry a
+        stray artifact or a stray ``.gitignore`` mention at the moment the
+        test runs.
+
+        Args:
+            monkeypatch: pytest's monkeypatch fixture.
+        """
+        monkeypatch.setattr(job, "_committed_artifacts", lambda root: [])
+        monkeypatch.setattr(job, "_gitignore_mentions_artifact", lambda root: False)
+
+    def test_all_clear_only_when_every_condition_genuinely_holds(
+        self, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        """The all-clear case, with the repo-walking half held explicit.
+
+        Complements the plain ``self_check() == []`` test: this one does not
+        rely on the ambient state of the real tree for two of the seven
+        conditions, so it stays meaningful even if this shared working tree is
+        mid-edit by another session.
+        """
+        self._hold_repo_checks_clear(monkeypatch)
+        assert job.self_check() == []
+
+    def test_flags_a_kill_switch_default_that_flips_true(
+        self, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        from cyo_adventure.core.config import Settings
+
+        self._hold_repo_checks_clear(monkeypatch)
+        field = Settings.model_fields["analysis_engagement_correlation_enabled"]
+        monkeypatch.setattr(field, "default", True)
+        assert job.self_check() == ["the kill switch does not default to off"]
+
+    def test_flags_an_empty_output_path_that_is_not_refused(
+        self, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        self._hold_repo_checks_clear(monkeypatch)
+        real_refuses = job._refuses
+
+        def fake_refuses(*, output_dir: str) -> bool:
+            if output_dir == "":
+                return False
+            return real_refuses(output_dir=output_dir)
+
+        monkeypatch.setattr(job, "_refuses", fake_refuses)
+        assert job.self_check() == ["an empty output path is not refused"]
+
+    def test_flags_an_in_repository_output_path_that_is_not_refused(
+        self, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        self._hold_repo_checks_clear(monkeypatch)
+        real_refuses = job._refuses
+        in_repo = str(job._REPO_ROOT / "out")
+
+        def fake_refuses(*, output_dir: str) -> bool:
+            if output_dir == in_repo:
+                return False
+            return real_refuses(output_dir=output_dir)
+
+        monkeypatch.setattr(job, "_refuses", fake_refuses)
+        assert job.self_check() == [
+            "an output path inside this repository is not refused"
+        ]
+
+    def test_flags_a_path_outside_any_worktree_that_is_wrongly_refused(
+        self, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        """The acceptance check: a legitimate path must not be refused.
+
+        ``self_check`` builds its own scratch temp directory internally, so
+        this cannot match on an exact path; it matches on the fixed basename
+        ``self_check`` gives the candidate for this specific condition, which
+        is distinct from the basename used for the worktree condition below.
+        """
+        self._hold_repo_checks_clear(monkeypatch)
+        real_refuses = job._refuses
+
+        def fake_refuses(*, output_dir: str) -> bool:
+            if Path(output_dir).name == "artifacts":
+                return True
+            return real_refuses(output_dir=output_dir)
+
+        monkeypatch.setattr(job, "_refuses", fake_refuses)
+        assert job.self_check() == ["a path outside any working tree is refused"]
+
+    def test_flags_a_dot_git_file_worktree_that_is_not_refused(
+        self, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        self._hold_repo_checks_clear(monkeypatch)
+        real_refuses = job._refuses
+
+        def fake_refuses(*, output_dir: str) -> bool:
+            if Path(output_dir).name == "reports":
+                return False
+            return real_refuses(output_dir=output_dir)
+
+        monkeypatch.setattr(job, "_refuses", fake_refuses)
+        assert job.self_check() == ["a worktree marked by a .git FILE is not refused"]
+
+    def test_flags_committed_artifacts_found_in_the_tree(
+        self, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        self._hold_repo_checks_clear(monkeypatch)
+        planted = [Path("/fake/a.json"), Path("/fake/b.json")]
+        monkeypatch.setattr(job, "_committed_artifacts", lambda root: planted)
+        assert job.self_check() == [
+            (
+                "2 engagement-correlation artifact file(s) are in the repository "
+                "tree and must be removed"
+            )
+        ]
+
+    def test_flags_a_gitignore_entry_naming_the_artifact(
+        self, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        self._hold_repo_checks_clear(monkeypatch)
+        monkeypatch.setattr(job, "_gitignore_mentions_artifact", lambda root: True)
+        assert job.self_check() == [
+            (
+                "a .gitignore entry names this artifact; Decision 6 adds none, "
+                "because an ignore entry says the artifact belongs in the tree"
+            )
+        ]
+
 
 class _StubResult:
     """A minimal stand-in for a SQLAlchemy result."""
