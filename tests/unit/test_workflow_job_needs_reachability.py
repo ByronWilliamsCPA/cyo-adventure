@@ -2,8 +2,10 @@
 
 GitHub Actions checks that every job named in ``needs:`` completed
 successfully BEFORE it evaluates that job's own ``if:`` at all, unless the
-``if:`` expression itself calls ``always()`` or ``!cancelled()``. A skipped
-job does not count as a success for that check. So a job whose ``if:`` reads
+``if:`` expression itself calls one of the four status check functions
+(``success()``, ``failure()``, ``cancelled()``, ``always()``), which
+replaces that implicit gate. A skipped job does not count as a success for
+that check. So a job whose ``if:`` reads
 ``needs.publish.result == 'success'`` while its ``needs:`` also lists
 ``propose``, a job that is skipped whenever ``publish`` runs, never gets far
 enough for GitHub to look at that ``if:`` at all: the job reads as gated on
@@ -40,13 +42,21 @@ defect this file exists to catch:
   conservative choice the task asked for, and it is a known false negative:
   a chain of two or more unconditional jobs behind a conditional root is not
   currently traced.
-* The only two accepted escapes are the literal substrings ``always(`` and
-  ``!cancelled(``, per the task's own specification. A job guarded by a bare
-  ``success()`` or ``failure()`` is NOT treated as escaping the implicit
-  gate: those two functions do not change GitHub's "all needs jobs actually
-  succeeded" requirement (only ``always()`` and ``cancelled()``-based
-  negation do), so a job using them alongside a skippable sibling would
-  still be unreachable and this file is right to keep flagging it.
+* An earlier revision of this file accepted only ``always(`` and
+  ``!cancelled(`` as escapes, and asserted in this docstring that a bare
+  ``success()`` or ``failure()`` does not lift the implicit gate. That was
+  wrong, and the code was wrong the same way. GitHub adds the implicit
+  ``success()`` gate only to an ``if:`` that calls NONE of the four status
+  check functions; ANY of ``success()``, ``failure()``, ``cancelled()`` or
+  ``always()`` replaces it. ``.github/workflows/release.yml``'s own
+  ``resolve`` comment states this correctly, and its ``alert`` job relies
+  on it: ``alert`` declares ``needs: [propose, publish]`` with
+  ``if: failure() || cancelled()`` and runs fine with one of the two
+  skipped. Under the old rule an ``alert`` phrased
+  ``failure() && needs.publish.result == 'failure'`` would have been
+  flagged as unreachable while being perfectly correct, which is a check
+  failing on working code: the precise failure mode this file exists to
+  prevent, pointed the other way.
 
 Run across every workflow in ``.github/workflows/``, not only
 ``release.yml``: the defect is a property of a job's ``needs:`` shape, and
@@ -59,6 +69,7 @@ import re
 from pathlib import Path
 from typing import Any, NamedTuple
 
+import pytest
 from ruamel.yaml import YAML
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
@@ -68,11 +79,43 @@ WORKFLOWS_DIR = REPO_ROOT / ".github" / "workflows"
 # without the `${{ }}` wrapper (GitHub allows a bare `if:` without it).
 NEEDS_RESULT_PATTERN = re.compile(r"needs\.([A-Za-z0-9_-]+)\.result")
 
-# The only two escapes this rule recognises, per the task's specification.
-# Both suppress GitHub's implicit "every job in `needs:` must have
-# succeeded" requirement that is added to any `if:` lacking one of the four
-# status-check functions (`always`, `success`, `failure`, `cancelled`).
-SKIP_IMMUNE_MARKERS = ("always(", "!cancelled(")
+# GitHub adds its implicit "every job in `needs:` must have succeeded" gate
+# to a job-level `if:` ONLY when that expression calls none of the four
+# status check functions. Naming any one of them replaces the implicit gate,
+# so the job's `if:` is evaluated even when a job in `needs:` was skipped.
+# `cancelled(` covers `!cancelled(` as a substring, and `failure(` covers
+# `!failure(`.
+#
+# #ASSUME external-resource: GitHub treats an explicit bare `success()` the
+# same as the other three, that is, as replacing the implicit gate rather
+# than restating it, so a job whose `if:` is `success() && ...` runs with a
+# skipped sibling in `needs:`. This follows GitHub's own definition
+# (`success()` is true when nothing previous failed or was cancelled, and a
+# skipped job is neither) and the rule written into release.yml's `resolve`
+# comment. If it is wrong, this member is a false negative, never a false
+# positive, so the failure mode is a missed finding rather than a red build
+# on correct code.
+# #VERIFY before relying on a bare `success()` as an escape in a real
+# workflow, confirm on one run that the job is not reported as skipped.
+SKIP_IMMUNE_MARKERS = ("always(", "cancelled(", "failure(", "success(")
+
+
+def _parse(source: str) -> dict[str, Any]:
+    """Parse workflow YAML from a string.
+
+    Split out from :func:`_load` so the fixture-based controls below reach
+    the rule through the same parser the fleet scan uses, rather than
+    hand-building the dicts the parser would have produced.
+
+    Args:
+        source: Workflow YAML text.
+
+    Returns:
+        The parsed mapping, or an empty mapping for an unparseable file.
+    """
+    yaml = YAML(typ="safe")
+    loaded: Any = yaml.load(source)
+    return loaded if isinstance(loaded, dict) else {}
 
 
 def _load(path: Path) -> dict[str, Any]:
@@ -84,10 +127,7 @@ def _load(path: Path) -> dict[str, Any]:
     Returns:
         The parsed mapping, or an empty mapping for an unparseable file.
     """
-    yaml = YAML(typ="safe")
-    with path.open(encoding="utf-8") as handle:
-        loaded: Any = yaml.load(handle)
-    return loaded if isinstance(loaded, dict) else {}
+    return _parse(path.read_text(encoding="utf-8"))
 
 
 def _needs_list(job: dict[str, Any]) -> list[str]:
@@ -181,7 +221,7 @@ def _check_job(
        is also named in its own ``needs:``.
     2. Its ``needs:`` names at least one OTHER job (not ``x``) that can be
        skipped, per :func:`_job_can_be_skipped`.
-    3. Its ``if:`` does not contain either of ``SKIP_IMMUNE_MARKERS``.
+    3. Its ``if:`` contains none of ``SKIP_IMMUNE_MARKERS``.
 
     Args:
         workflow_name: File name of the workflow the job lives in.
@@ -221,6 +261,30 @@ def _check_job(
     ]
 
 
+def _scan_workflow(
+    workflow_name: str, workflow: dict[str, Any]
+) -> list[UnreachableJob]:
+    """Apply the detection rule to every job in one parsed workflow.
+
+    Args:
+        workflow_name: File name to attribute findings to.
+        workflow: The parsed workflow mapping.
+
+    Returns:
+        Every job in this workflow matching the rule.
+    """
+    findings: list[UnreachableJob] = []
+    jobs: Any = workflow.get("jobs") or {}
+    if not isinstance(jobs, dict):
+        return findings
+
+    for job_id, job in jobs.items():
+        if isinstance(job, dict):
+            findings.extend(_check_job(workflow_name, str(job_id), job, jobs))
+
+    return findings
+
+
 def _find_unreachable_jobs() -> list[UnreachableJob]:
     """Walk every workflow job and apply the detection rule.
 
@@ -229,16 +293,171 @@ def _find_unreachable_jobs() -> list[UnreachableJob]:
     """
     findings: list[UnreachableJob] = []
     for path in sorted(WORKFLOWS_DIR.glob("*.yml")):
-        workflow = _load(path)
-        jobs: Any = workflow.get("jobs") or {}
-        if not isinstance(jobs, dict):
-            continue
-
-        for job_id, job in jobs.items():
-            if isinstance(job, dict):
-                findings.extend(_check_job(path.name, str(job_id), job, jobs))
-
+        findings.extend(_scan_workflow(path.name, _load(path)))
     return findings
+
+
+# ---------------------------------------------------------------------------
+# Fixture-based positive control for the rule itself.
+#
+# `assert UNREACHABLE_JOBS == []` is the fleet assertion, and its passing
+# state is an empty list. That is exactly what a broken detector produces, so
+# on its own it cannot distinguish "the fleet is clean" from "the rule matches
+# nothing". Inverting `_job_can_be_skipped` to always return False used to
+# leave the whole module green. These fixtures give the rule a workflow it
+# MUST flag and several it must NOT, so the rule is observed working rather
+# than assumed to.
+#
+# The fixture is built here and parsed with the production `_parse`; no broken
+# job is ever added to a real workflow.
+# ---------------------------------------------------------------------------
+
+# Two producer jobs that never run on the same event, plus one consumer, which
+# is the `release.yml` shape the rule was written for.
+_FIXTURE_TEMPLATE = """\
+name: fixture
+on:
+  push:
+    branches: [main]
+jobs:
+  propose:
+{propose_if}    runs-on: ubuntu-latest
+    steps:
+      - run: echo propose
+  publish:
+    if: startsWith(github.event.head_commit.message, 'chore(release):')
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo publish
+  resolve:
+    needs: {resolve_needs}
+    if: {resolve_if}
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo resolve
+"""
+
+
+def _scan_fixture(
+    *, resolve_needs: str, resolve_if: str, propose_conditional: bool = True
+) -> list[UnreachableJob]:
+    """Render a synthetic workflow and run the real rule over it.
+
+    Args:
+        resolve_needs: The consumer job's ``needs:`` value, as YAML.
+        resolve_if: The consumer job's ``if:`` value, as a YAML scalar.
+        propose_conditional: Whether the unchecked sibling declares its own
+            ``if:`` and so counts as skippable.
+
+    Returns:
+        Whatever :func:`_scan_workflow` finds in the rendered workflow.
+    """
+    propose_if = (
+        "    if: github.event_name == 'schedule'\n" if propose_conditional else ""
+    )
+    source = _FIXTURE_TEMPLATE.format(
+        propose_if=propose_if,
+        resolve_needs=resolve_needs,
+        resolve_if=resolve_if,
+    )
+    return _scan_workflow("fixture.yml", _parse(source))
+
+
+class TestTheRuleDetectsTheDefectItClaimsTo:
+    """Positive and negative controls, so the fleet assertion means something.
+
+    Without these, every assertion in this module holds against a rule that
+    can never fire, which is the same class of defect the module exists to
+    catch: a check that reviews well and cannot fail when its subject breaks.
+    """
+
+    def test_a_needs_on_an_unchecked_skippable_sibling_is_detected(self) -> None:
+        """The pre-fix ``release.yml::resolve`` shape must be flagged.
+
+        ``needs: [propose, publish]`` with ``if:`` checking only
+        ``publish``: reverting the real fix reproduces exactly this, and the
+        rule has to emit the finding, naming the right sibling.
+        """
+        findings = _scan_fixture(
+            resolve_needs="[propose, publish]",
+            resolve_if="needs.publish.result == 'success'",
+        )
+        assert [
+            (finding.where, finding.referenced, finding.skippable_sibling)
+            for finding in findings
+        ] == [("fixture.yml::resolve", "publish", "propose")]
+
+    def test_the_same_defect_wrapped_in_expression_syntax_is_detected(self) -> None:
+        """``NEEDS_RESULT_PATTERN``'s "with or without ``${{ }}``" claim.
+
+        The comment on that pattern says the wrapper is optional. No real
+        workflow in this repository exercises the wrapped form against this
+        rule, so the claim was untested.
+        """
+        findings = _scan_fixture(
+            resolve_needs="[propose, publish]",
+            resolve_if="${{ needs.publish.result == 'success' }}",
+        )
+        assert [finding.skippable_sibling for finding in findings] == ["propose"]
+
+    def test_narrowing_needs_to_the_checked_job_clears_the_finding(self) -> None:
+        """The real fix, applied to the fixture, must silence the rule.
+
+        Paired with the test above this is the discrimination proof: the
+        rule responds to the ``needs:`` shape, not to the fixture merely
+        existing.
+        """
+        assert (
+            _scan_fixture(
+                resolve_needs="[publish]",
+                resolve_if="needs.publish.result == 'success'",
+            )
+            == []
+        )
+
+    def test_an_unconditional_sibling_is_not_treated_as_skippable(self) -> None:
+        """A sibling with no ``if:`` of its own cannot skip, so no finding.
+
+        This is the arm that dies if `_job_can_be_skipped` is stubbed to
+        always return True, the mirror of the arm above it.
+        """
+        assert (
+            _scan_fixture(
+                resolve_needs="[propose, publish]",
+                resolve_if="needs.publish.result == 'success'",
+                propose_conditional=False,
+            )
+            == []
+        )
+
+    @pytest.mark.parametrize(
+        "guarded_if",
+        [
+            "always() && needs.publish.result == 'success'",
+            "${{ !cancelled() && needs.publish.result == 'success' }}",
+            "cancelled() && needs.publish.result == 'cancelled'",
+            "failure() && needs.publish.result == 'failure'",
+            "success() && needs.publish.result == 'success'",
+        ],
+        ids=["always", "not-cancelled", "cancelled", "failure", "success"],
+    )
+    def test_any_status_check_function_lifts_the_implicit_gate(
+        self, guarded_if: str
+    ) -> None:
+        """None of the four status check functions may be flagged.
+
+        Regression test for the rule's own false positive. Before this, only
+        ``always(`` and ``!cancelled(`` counted as escapes, so a correct
+        ``if: failure() && needs.publish.result == 'failure'`` alongside a
+        skippable sibling was reported as unreachable. GitHub adds its
+        implicit ``success()`` gate only to an ``if:`` naming none of the
+        four, so all five conditions here are reachable and a finding on any
+        of them is the rule failing on working code.
+        """
+        assert (
+            _scan_fixture(resolve_needs="[propose, publish]", resolve_if=guarded_if)
+            == []
+        )
 
 
 UNREACHABLE_JOBS: list[UnreachableJob] = _find_unreachable_jobs()

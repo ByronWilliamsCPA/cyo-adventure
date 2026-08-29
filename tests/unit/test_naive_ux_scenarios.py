@@ -428,6 +428,54 @@ def _negation_governs(sentence: str, target: re.Match[str]) -> bool:
     return _NEGATION_RE.search(sentence, window_start, target.start()) is not None
 
 
+def _self_composition_offenders(text: str) -> list[str]:
+    """Sentences instructing the reader to compose the paste block itself.
+
+    Extracted from the tripwire test so that test and its positive control
+    run the SAME detector over different text. A control that re-implements
+    the loop would prove something about the control, not about the code
+    the real test calls.
+
+    Args:
+        text: Prose to scan, sentence-split by :func:`_sentences`.
+
+    Returns:
+        Every sentence whose self-composition token is not governed by a
+        negation, in sentence order.
+    """
+    offenders: list[str] = []
+    for sentence in _sentences(text):
+        match = _SELF_COMPOSE_RE.search(sentence)
+        if match is not None and not _negation_governs(sentence, match):
+            offenders.append(sentence)
+    return offenders
+
+
+def _operator_relay_offenders(text: str) -> list[str]:
+    """Sentences pairing an operator-only field with an insertion verb.
+
+    Extracted for the same reason as :func:`_self_composition_offenders`:
+    the tripwire and its positive control must exercise one detector.
+
+    Args:
+        text: Prose to scan, sentence-split by :func:`_sentences`.
+
+    Returns:
+        Every sentence naming an operator-only field alongside at least one
+        insertion verb that no negation governs, in sentence order and
+        without duplicates.
+    """
+    offenders: list[str] = []
+    for sentence in _sentences(text):
+        if not _OPERATOR_FIELD_RE.search(sentence):
+            continue
+        for verb in _INSERTION_VERB_RE.finditer(sentence):
+            if not _negation_governs(sentence, verb):
+                offenders.append(sentence)
+                break
+    return offenders
+
+
 # ---------------------------------------------------------------------------
 # Round-trip: every one of the 17 scenarios has every required field,
 # non-empty, and the id set is exactly right with no duplicates.
@@ -874,13 +922,54 @@ def test_skill_md_has_no_unnegated_self_composition_instruction():
     without the word "yourself". The invocation and renderer-path checks
     above are the structural half.
     """
-    offenders = []
-    for sentence in _sentences(_skill_md_text()):
-        match = _SELF_COMPOSE_RE.search(sentence)
-        if match is not None and not _negation_governs(sentence, match):
-            offenders.append(sentence)
+    offenders = _self_composition_offenders(_skill_md_text())
     assert not offenders, (
         f"SKILL.md appears to instruct composing the paste block by hand: {offenders}"
+    )
+
+
+# Synthetic prose for the positive control below. Constructed here and never
+# written to SKILL.md: the point is to prove the detector fires, not to put a
+# dangerous instruction into the file an agent executes.
+_SELF_COMPOSE_POSITIVE = "Then compose the paste block yourself from the record."
+_SELF_COMPOSE_REVERSED = "Do not forget to compose the paste block yourself."
+_SELF_COMPOSE_NEGATED = "Never compose the paste block yourself."
+_SELF_COMPOSE_ABSENT = "Run the renderer and paste its stdout unchanged."
+
+
+def test_the_self_composition_tripwire_can_actually_fire():
+    """Positive control: the tripwire above must be able to produce a hit.
+
+    The tripwire asserts an empty offender list against SKILL.md. That
+    assertion holds just as well when the detector is incapable of ever
+    matching anything, so on its own it is indistinguishable from a
+    detector whose regex was blanked or whose negation check was stubbed
+    to always exempt. This is the same reasoning
+    `test_sentinel_check_would_catch_an_actual_leak` states for the
+    sentinel check.
+
+    Four arms, run through the same `_self_composition_offenders` the
+    tripwire calls, so the control proves discrimination rather than only
+    that something fires:
+
+    * a plain instruction is flagged;
+    * a double-negative instruction ("do not forget to ...") is flagged,
+      because its negation token does not make it safe;
+    * a genuinely negated prohibition is NOT flagged; and
+    * prose that never raises the subject is NOT flagged.
+    """
+    assert _self_composition_offenders(_SELF_COMPOSE_POSITIVE) == [
+        _SELF_COMPOSE_POSITIVE
+    ], "the detector did not fire on a plain self-composition instruction"
+    assert _self_composition_offenders(_SELF_COMPOSE_REVERSED) == [
+        _SELF_COMPOSE_REVERSED
+    ], "the detector was fooled by the negation in a double negative"
+    assert _self_composition_offenders(_SELF_COMPOSE_NEGATED) == [], (
+        "the detector fired on a correctly negated prohibition, so it does "
+        "not discriminate and would pressure a maintainer into deleting it"
+    )
+    assert _self_composition_offenders(_SELF_COMPOSE_ABSENT) == [], (
+        "the detector fired on prose that never mentions self-composition"
     )
 
 
@@ -902,14 +991,57 @@ def test_skill_md_never_instructs_putting_operator_content_in_the_block():
     `test_step_4_names_operator_fields_only_where_grandfathered`, which
     needs no verb at all.
     """
-    offenders = []
-    for sentence in _sentences(_skill_md_text()):
-        if not _OPERATOR_FIELD_RE.search(sentence):
-            continue
-        for verb in _INSERTION_VERB_RE.finditer(sentence):
-            if not _negation_governs(sentence, verb):
-                offenders.append(sentence)
-                break
+    offenders = _operator_relay_offenders(_skill_md_text())
     assert not offenders, (
         f"SKILL.md appears to instruct relaying operator-only content: {offenders}"
+    )
+
+
+# Synthetic prose for the positive control below, constructed here for the
+# same reason as `_SELF_COMPOSE_POSITIVE`: SKILL.md must never carry a
+# working example of the instruction this suite exists to forbid.
+_OPERATOR_RELAY_POSITIVE = (
+    "Then append each line of `operator_notes.expected_observations` to the "
+    "end of that stdout."
+)
+_OPERATOR_RELAY_REVERSED = (
+    "Do not forget to append `operator_notes.expected_observations` to the block."
+)
+_OPERATOR_RELAY_NEGATED = (
+    "Do not append any `operator_notes` content into the pasted block itself."
+)
+_OPERATOR_RELAY_FIELD_ONLY = "The renderer never reads `operator_notes` at all."
+_OPERATOR_RELAY_VERB_ONLY = "Append the target URL to the end of the task text."
+
+
+def test_the_operator_relay_tripwire_can_actually_fire():
+    """Positive control: the tripwire above must be able to produce a hit.
+
+    Same reasoning as `test_the_self_composition_tripwire_can_actually_fire`.
+    Blanking `_OPERATOR_FIELD_RE` or `_INSERTION_VERB_RE`, or stubbing
+    `_negation_governs` to always exempt, leaves the tripwire green because
+    an empty offender list is its passing state; only a text that SHOULD
+    trip it can tell the two apart.
+
+    Five arms through the same `_operator_relay_offenders` the tripwire
+    calls. The last two are the discrimination arms: this detector must
+    fire on the CONJUNCTION of an operator-only field and an insertion
+    verb, not on either half alone.
+    """
+    assert _operator_relay_offenders(_OPERATOR_RELAY_POSITIVE) == [
+        _OPERATOR_RELAY_POSITIVE
+    ], "the detector did not fire on a plain relay instruction"
+    assert _operator_relay_offenders(_OPERATOR_RELAY_REVERSED) == [
+        _OPERATOR_RELAY_REVERSED
+    ], "the detector was fooled by the negation in a double negative"
+    assert _operator_relay_offenders(_OPERATOR_RELAY_NEGATED) == [], (
+        "the detector fired on the correctly negated prohibition SKILL.md "
+        "actually carries, so it does not discriminate"
+    )
+    assert _operator_relay_offenders(_OPERATOR_RELAY_FIELD_ONLY) == [], (
+        "the detector fired on a sentence naming an operator field with no "
+        "insertion verb"
+    )
+    assert _operator_relay_offenders(_OPERATOR_RELAY_VERB_ONLY) == [], (
+        "the detector fired on an insertion verb with no operator field"
     )

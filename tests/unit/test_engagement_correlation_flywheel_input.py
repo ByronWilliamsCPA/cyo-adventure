@@ -15,8 +15,7 @@ strategy's output is a function of the artifact's content.
 
 from __future__ import annotations
 
-from dataclasses import replace
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, cast
 
 import pytest
 
@@ -268,23 +267,65 @@ class TestThroughPlanAttempts:
         assert entry.slug not in {plan.parent_slug for plan in with_exclusion}
 
 
-class TestObservationsAreUnchangedByTheDerivation:
-    """The derivation reads the artifact and nothing else."""
+def _only_row(artifact: dict[str, object]) -> dict[str, object]:
+    """Return a single-row artifact's one row.
 
-    def test_the_derivation_never_reaches_past_the_artifact_to_the_observations(
+    Args:
+        artifact: A built artifact expected to contain exactly one row.
+
+    Returns:
+        dict[str, object]: The row.
+    """
+    rows = cast("list[dict[str, object]]", artifact["rows"])
+    assert len(rows) == 1, f"expected exactly one row, got {rows}"
+    return rows[0]
+
+
+class TestObservationsAreUnchangedByTheDerivation:
+    """The derivation depends on `completion_rate` alone, not a correlated field.
+
+    An earlier version of the single test below built two artifacts from
+    observations that differed only in family NAMES (`family-00` vs
+    `other-00`), while holding reader and completion COUNTS identical.
+    `build_artifact` never emits a family name anywhere in its output, so
+    those two calls produced byte-identical dicts: the assertion compared
+    `low_completion_storybook_ids(x)` to itself, and would have passed
+    however the derivation was implemented.
+
+    Its docstring's claim, that "if the derivation ever reached back to [the
+    observations], these two would differ," describes something the current
+    code cannot do regardless of what data is fed in:
+    `low_completion_storybook_ids` and `excluded_parent_slugs` both accept
+    only the already-built artifact mapping, never a `StorybookObservations`.
+    There is no call path by which family identity could reach them, so no
+    choice of observation data makes that specific claim falsifiable. Rather
+    than manufacture a difference to force the old assertion to discriminate,
+    this class tests the narrower thing that IS true and IS falsifiable: that
+    the derivation reads `completion_rate` and ignores every other field a
+    real difference in family count also changes.
+    """
+
+    def test_the_derivation_ignores_reader_family_band_when_the_rate_matches(
         self,
     ) -> None:
-        """Two books identical in the artifact derive identically.
+        """Same rounded rate, different reader-family band: same verdict.
 
-        The observations carry family identifiers the artifact does not. If the
-        derivation ever reached back to them, these two would differ.
+        8 readers / 1 completion and 16 readers / 2 completions both reduce to
+        a raw 0.125, which rounds to the same published `completion_rate`
+        (0.15). But `family_band` buckets 8 readers as `"5-9"` and 16 as
+        `"10+"`, so the two built artifacts are genuinely different documents,
+        not the same dict compared to itself. If the derivation were changed
+        to also key off the band (or any other row field), this would fail.
         """
-        base = _observations(readers=8, completers=1)
-        other = replace(
-            base,
-            reader_families=frozenset(f"other-{i:02d}" for i in range(8)),
-            completed_families=frozenset({"other-00"}),
-        )
+        low_band_artifact = build_artifact([_observations(readers=8, completers=1)])
+        high_band_artifact = build_artifact([_observations(readers=16, completers=2)])
+        low_band_row = _only_row(low_band_artifact)
+        high_band_row = _only_row(high_band_artifact)
+
+        assert low_band_row["completion_rate"] == 0.15
+        assert high_band_row["completion_rate"] == 0.15
+        assert low_band_row["reader_family_band"] != high_band_row["reader_family_band"]
+
         assert low_completion_storybook_ids(
-            build_artifact([base])
-        ) == low_completion_storybook_ids(build_artifact([other]))
+            low_band_artifact
+        ) == low_completion_storybook_ids(high_band_artifact)

@@ -29,6 +29,15 @@ jobs is correctly invisible to this check, and a workflow step added later
 that reuses an existing project is correctly picked up without this file
 needing an update.
 
+That dynamism is scoped to the steps INSIDE a job already named below,
+though: which jobs get inspected at all is the hardcoded
+`MULTI_INVOCATION_JOBS` list, not something derived from the workflow tree.
+A third job that started invoking this shared config more than once would be
+invisible to every check above until that list is updated by hand.
+`test_multi_invocation_jobs_list_is_complete` closes that gap: it re-derives
+the full set of multi-invocation jobs from every workflow file under
+`.github/workflows/` and fails the moment the hardcoded list falls behind it.
+
 `real-backend-setup` is deliberately never a member of any job's step list
 here even though `real-backend`/`real-backend-pipeline`/`usersim-real` all
 declare it as a `dependencies: [...]` target: Playwright always runs a
@@ -48,6 +57,7 @@ import re
 from pathlib import Path
 from typing import Any
 
+import pytest
 from ruamel.yaml import YAML
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
@@ -60,7 +70,10 @@ DEFAULT_OUTPUT_DIR = "test-results"
 
 # (workflow file relative to repo root, job id). Both are named directly in
 # playwright.config.ts's own header comment as the jobs that invoke this
-# shared config more than once in sequence within one job.
+# shared config more than once in sequence within one job. This list is
+# hardcoded, not derived: test_multi_invocation_jobs_list_is_complete below
+# is what keeps it honest, by failing if a workflow file gains a third job
+# that qualifies.
 MULTI_INVOCATION_JOBS: list[tuple[str, str]] = [
     (
         ".github/workflows/accessibility-compliance-weekly.yml",
@@ -237,6 +250,38 @@ def _ordered_projects_for_job(
     return ordered
 
 
+def _discover_multi_invocation_jobs(
+    npm_scripts: dict[str, str],
+) -> set[tuple[str, str]]:
+    """Re-derive every job that invokes this shared config more than once.
+
+    Independent of `MULTI_INVOCATION_JOBS`: this walks every workflow file
+    under `.github/workflows/` and every job inside it, so the hardcoded list
+    can be checked against an actual count instead of trusted on its own.
+
+    Args:
+        npm_scripts: `frontend/package.json`'s `scripts` mapping, for
+            resolving `npm run` indirection.
+
+    Returns:
+        set[tuple[str, str]]: `(workflow relative path, job id)` pairs whose
+        step list invokes two or more distinct Playwright project steps.
+    """
+    discovered: set[tuple[str, str]] = set()
+    workflows_dir = REPO_ROOT / ".github" / "workflows"
+    for workflow_path in sorted(workflows_dir.glob("*.yml")):
+        workflow = _load_yaml(workflow_path)
+        jobs: Any = workflow.get("jobs") or {}
+        if not isinstance(jobs, dict):
+            continue
+        for job_id in jobs:
+            ordered = _ordered_projects_for_job(workflow_path, job_id, npm_scripts)
+            if len(ordered) >= 2:
+                rel_path = str(workflow_path.relative_to(REPO_ROOT))
+                discovered.add((rel_path, job_id))
+    return discovered
+
+
 def _dirs_collide(dir_a: str, dir_b: str) -> bool:
     """Whether two `outputDir` values are identical or one nests inside the other.
 
@@ -318,3 +363,69 @@ class TestPlaywrightOutputDirIsolation:
                         "before any 'upload on failure' step reads it. Give "
                         "each project its own outputDir in playwright.config.ts."
                     )
+
+    def test_multi_invocation_jobs_list_is_complete(self) -> None:
+        """`MULTI_INVOCATION_JOBS` is hardcoded; this is what keeps it honest.
+
+        The per-job step parsing above is dynamic (a new step that reuses an
+        existing project inside an already-listed job needs no update here),
+        but WHICH JOBS get inspected at all is this fixed two-entry list. A
+        third job that started invoking `playwright.config.ts` more than once
+        would otherwise be invisible to every check in this file. This
+        re-derives the full set from every workflow file under
+        `.github/workflows/` and fails the moment the hardcoded list falls
+        behind it, rather than describing that as automatic without actually
+        enforcing it.
+        """
+        npm_scripts = _parse_npm_scripts()
+        discovered = _discover_multi_invocation_jobs(npm_scripts)
+        assert discovered == set(MULTI_INVOCATION_JOBS), (
+            "a job that invokes playwright.config.ts more than once was "
+            "added to or removed from the workflow tree without updating "
+            f"MULTI_INVOCATION_JOBS: discovered {discovered}, list declares "
+            f"{set(MULTI_INVOCATION_JOBS)}"
+        )
+
+
+class TestDirsCollide:
+    """Positive control: `_dirs_collide` must detect what it claims to.
+
+    Without this, mutating `_dirs_collide` to always return `False` leaves
+    the whole suite green, since every assertion in
+    `TestPlaywrightOutputDirIsolation` above is `assert not _dirs_collide(...)`
+    and a predicate that never fires satisfies all of them trivially.
+    """
+
+    @pytest.mark.parametrize(
+        ("dir_a", "dir_b"),
+        [
+            ("test-results", "test-results"),
+            ("test-results", "test-results/usersim-a11y"),
+            ("test-results/usersim-a11y", "test-results"),
+            ("a/b/c", "a/b"),
+        ],
+        ids=["identical", "a-nests-in-b", "b-nests-in-a", "deep-nesting"],
+    )
+    def test_detects_a_genuine_collision(self, dir_a: str, dir_b: str) -> None:
+        """Identical dirs and either direction of nesting must collide."""
+        assert _dirs_collide(dir_a, dir_b)
+
+    @pytest.mark.parametrize(
+        ("dir_a", "dir_b"),
+        [
+            ("test-results/usersim-a11y", "test-results/usersim-real"),
+            ("test-results", "test-results-other"),
+            ("test-results-other", "test-results"),
+        ],
+        ids=["siblings", "lexical-prefix-not-a-path-segment", "reversed-prefix"],
+    )
+    def test_returns_false_for_a_genuine_non_collision(
+        self, dir_a: str, dir_b: str
+    ) -> None:
+        """Sibling dirs, and a lexical prefix that isn't a real path segment.
+
+        The last two cases pin the `+ "/"` boundary in `_dirs_collide`: a
+        naive `str.startswith` without it would wrongly flag
+        `test-results-other` as nested inside `test-results`.
+        """
+        assert not _dirs_collide(dir_a, dir_b)
