@@ -119,14 +119,51 @@ function readText(path) {
  * #CRITICAL: security: this set is what makes a path visible to the guard. A
  * segment missing here is not "allowed", it is UNCHECKED, and an unchecked
  * path produces a clean result indistinguishable from a safe one. #VERIFY:
- * when a Playwright config gains a reporter, confirm the directory it writes
- * to is either under an existing segment or added here.
+ * `derives every Playwright output directory name from the configs themselves`
+ * in `frontend/scripts/test/artifact-upload-safety.test.mjs` re-derives this
+ * set from the `outputDir` and `outputFile` literals in
+ * `frontend/playwright*.config.ts` and from every
+ * `PLAYWRIGHT_JSON_REPORT_PATH:` override in `.github/workflows`, and fails
+ * when either moves. That test is the discharge of the #CRITICAL above; the
+ * prose #VERIFY it replaced was discharged by nobody, which is how
+ * `playwright-json-report` stayed off this list while every path under it
+ * classified `unrelated`.
  */
-const PLAYWRIGHT_OUTPUT_SEGMENTS = new Set([
+export const PLAYWRIGHT_OUTPUT_SEGMENTS = new Set([
   'test-results',
   'playwright-report',
   'playwright-json-report',
 ])
+
+/**
+ * Directory prefixes a Playwright output directory can appear under.
+ *
+ * Workflows declare upload paths relative to the repository root, and every
+ * Playwright config in this repository runs with `frontend/` as its root, so
+ * `frontend/test-results` is the spelling on disk. The empty root covers a
+ * workflow whose `working-directory` is already `frontend/`, which declares
+ * the same directory as `test-results`.
+ *
+ * This exists so :func:`classifyUploadPath` can answer a containment question
+ * rather than a spelling question: `path: frontend` is an ANCESTOR of
+ * `frontend/test-results`, publishes every `error-context.md` underneath it,
+ * and named no output directory at all.
+ */
+const PLAYWRIGHT_OUTPUT_ROOTS = ['', 'frontend']
+
+/**
+ * @returns {string[][]} Every known output directory, as a segment array.
+ */
+function knownOutputDirs() {
+  /** @type {string[][]} */
+  const dirs = []
+  for (const root of PLAYWRIGHT_OUTPUT_ROOTS) {
+    for (const segment of PLAYWRIGHT_OUTPUT_SEGMENTS) {
+      dirs.push(root === '' ? [segment] : [root, segment])
+    }
+  }
+  return dirs
+}
 
 /**
  * Basenames a secret-bearing workflow may publish from a Playwright output
@@ -202,7 +239,19 @@ const CREDENTIAL_PATTERNS = [
  * finds nothing is indistinguishable from a repository with no uploads.
  * #CRITICAL: data-integrity: the test suite therefore feeds this function
  * synthetic workflow text with a known upload in it and asserts it is found,
- * so a silently broken parser reddens instead of reporting a clean tree.
+ * and does so once per YAML spelling this function claims to accept, so a
+ * silently broken parser reddens instead of reporting a clean tree.
+ *
+ * Until 2026-08-29 five ordinary spellings produced a step with no paths, or
+ * no step at all, and each one was a silent exemption rather than an error:
+ * a quoted `uses: "actions/upload-artifact@..."` (the whole step invisible,
+ * which ALSO defeated the `e2e-prod.yml uploads no artifact at all` control
+ * that runs through this same function), the block-scalar indicators `|-`,
+ * `|+`, `>`, `>-` and `>+`, a `# comment` after `path: |`, a flow-mapping
+ * step written on one line, and a step whose `uses:` comes after its `with:`.
+ * The last one is why this reads a whole list item into a buffer and resolves
+ * it at the step boundary instead of streaming line by line: streaming cannot
+ * attribute a `path:` to a `uses:` it has not seen yet.
  *
  * @param {string} yamlText Raw workflow file contents.
  * @returns {Array<{name: string, paths: string[]}>} One entry per upload step.
@@ -210,89 +259,163 @@ const CREDENTIAL_PATTERNS = [
 export function parseUploadSteps(yamlText) {
   const lines = yamlText.split('\n')
   const steps = []
-  let current = null
-
-  for (let i = 0; i < lines.length; i += 1) {
-    const line = lines[i]
-    if (/^ *- +[A-Za-z]/.test(line) && current !== null) {
-      // A new list item begins, so the previous upload step is closed. Any
-      // step-starting key resets it, not just `uses:`/`name:`, so a `path:`
-      // belonging to a later step can never be attributed to this one.
-      current = null
-    }
-    if (/uses:\s*actions\/upload-artifact/.test(line)) {
-      current = { name: 'unnamed', paths: [] }
-      steps.push(current)
-      continue
-    }
-    if (current === null) {
-      continue
-    }
-    const nameMatch = /^\s*name:\s*(.+?)\s*$/.exec(line)
-    if (nameMatch !== null && current.name === 'unnamed') {
-      current.name = nameMatch[1]
-    }
-    const inlinePath = /^\s*path:\s*(?!\|)(\S.*?)\s*$/.exec(line)
-    if (inlinePath !== null) {
-      current.paths.push(stripQuotes(inlinePath[1]))
-      continue
-    }
-    if (/^\s*path:\s*\|\s*$/.test(line)) {
-      const indent = (/^(\s*)/.exec(lines[i + 1] ?? '') ?? ['', ''])[1].length
-      for (let j = i + 1; j < lines.length; j += 1) {
-        const blockLine = lines[j]
-        if (blockLine.trim() === '') {
-          continue
-        }
-        const thisIndent = (/^(\s*)/.exec(blockLine) ?? ['', ''])[1].length
-        if (thisIndent < indent) {
-          break
-        }
-        current.paths.push(stripQuotes(blockLine.trim()))
+  /** @type {{indent: number, lines: string[]} | null} */
+  let item = null
+  const flush = () => {
+    if (item !== null) {
+      const step = readUploadStep(item.lines)
+      if (step !== null) {
+        steps.push(step)
       }
+      item = null
     }
   }
+  for (const line of lines) {
+    const bullet = /^([ \t]*)-[ \t]+\S/.exec(line)
+    // A list item at the SAME indent or shallower closes the current one. The
+    // indent comparison is what keeps a `- entry` inside a block scalar (which
+    // is indented deeper than its own step's bullet) from being mistaken for
+    // the next step.
+    if (bullet !== null && (item === null || bullet[1].length <= item.indent)) {
+      flush()
+      item = { indent: bullet[1].length, lines: [line] }
+      continue
+    }
+    if (item !== null) {
+      item.lines.push(line)
+    }
+  }
+  flush()
   return steps
 }
 
 /**
- * @param {string} value A YAML scalar that may be quoted.
- * @returns {string} The scalar with a single layer of quoting removed.
+ * Turn one buffered YAML list item into an upload step, or `null`.
+ *
+ * @param {string[]} lines The list item's lines, bullet line first.
+ * @returns {{name: string, paths: string[]} | null} The step, if it uploads.
  */
-function stripQuotes(value) {
-  const match = /^(['"])(.*)\1$/.exec(value)
-  return match === null ? value : match[2]
+function readUploadStep(lines) {
+  // The optional quote is load-bearing: `uses: "actions/upload-artifact@v4"`
+  // is ordinary YAML, and without it the step is never opened at all.
+  if (!/uses:[ \t]*['"]?actions\/upload-artifact/.test(lines.join('\n'))) {
+    return null
+  }
+  /** @type {string[]} */
+  const paths = []
+  let name = 'unnamed'
+  for (let i = 0; i < lines.length; i += 1) {
+    const line = lines[i]
+    const nameMatch = /^(?:[ \t]|- )*name:[ \t]*(.+?)[ \t]*$/.exec(line)
+    if (nameMatch !== null && name === 'unnamed') {
+      name = nameMatch[1]
+    }
+    // A flow mapping puts the key on a line that already carries other keys:
+    // `- {uses: actions/upload-artifact@v4, with: {path: frontend/test-results/}}`.
+    for (const flow of line.matchAll(/[{,][ \t]*path:[ \t]*([^,}\n]+)/g)) {
+      paths.push(parsePathScalar(flow[1]))
+    }
+    // A `#` comment after the indicator is legal and does not end the block.
+    // Removed with a separate pass rather than an optional group in the regex
+    // below, because the optional group makes `security/detect-unsafe-regex`
+    // (correctly) object to the nested quantifier.
+    const blockOpen = /^([ \t]*)path:[ \t]*[|>][-+]?[ \t]*$/.exec(withoutLineComment(line))
+    if (blockOpen !== null) {
+      i = readBlockScalar(lines, i, blockOpen[1].length, paths)
+      continue
+    }
+    const inline = /^[ \t]*path:[ \t]*(\S.*?)[ \t]*$/.exec(line)
+    if (inline !== null) {
+      paths.push(parsePathScalar(inline[1]))
+    }
+  }
+  return { name, paths }
 }
 
 /**
- * Remove a trailing `#` comment from a YAML scalar.
+ * Read a block scalar's body into `paths`.
  *
- * The reader above is hand-rolled and does not strip comments, so without
- * this the comment stayed glued to the scalar, became its last `/`-segment,
- * and any `.` inside it (a sentence-ending period, `ADR-029.`, a version
- * number) read as a file extension. `frontend/test-results/ # keep, see
- * ADR-029.` then classified `narrow` and the hard rule exempted a wholesale
- * Playwright output directory.
+ * The body extent is decided by the `path:` KEY's indent, not by the first
+ * body line's. Reading it from the first body line made a blank line directly
+ * after `path: |` compute an indent of 0, which never terminated and swallowed
+ * the rest of the file as paths.
  *
- * In YAML a `#` opens a comment only at the start of the scalar or after
- * whitespace, so `a#b.txt` keeps its `#`. #ASSUME: data-integrity: this is not
- * full YAML fidelity. A `#` inside a QUOTED scalar is not a comment, and this
- * function cannot see the quotes because `stripQuotes` has already removed
- * them by the time a path reaches classification. The residual is
- * fail-CLOSED, which is why it is tolerated: truncating a scalar can only
- * remove path segments, never add one, so a truncated path can lose its
- * `test-results` segment (becoming `unrelated`, and only for a path that
- * names no output directory before the ` #`) or lose its allowlisted
- * basename (becoming `wholesale`). It can never turn a refusal into an
- * exemption. #VERIFY: if a legitimately-quoted upload path ever needs a ` #`
- * in it, parse the quoting here instead of widening the allowlist.
+ * A `#` inside a block scalar is literal YAML content, never a comment, and so
+ * is a quote character, so nothing is stripped or unquoted here. Both
+ * directions are fail-closed: a body line `frontend/test-results/ # keep`
+ * keeps a last segment nobody allowlisted, and a body line
+ * `"frontend/test-results/leaked-device-grants.jsonl"` keeps its closing quote
+ * on the basename and so misses the narrow allowlist. Unquoting it, which this
+ * did until 2026-08-29, was the fail-OPEN direction: it granted the narrow
+ * exemption to a path YAML does not read that way.
  *
- * @param {string} scalar A YAML scalar, already unquoted.
- * @returns {string} The scalar with any trailing comment removed.
+ * @param {string[]} lines The step's lines.
+ * @param {number} keyIndex Index of the `path:` line.
+ * @param {number} keyIndent Indent of the `path:` key.
+ * @param {string[]} paths Collector, appended to in place.
+ * @returns {number} Index of the last line consumed.
  */
-function stripTrailingComment(scalar) {
-  const match = /(?:^|\s)#/.exec(scalar)
-  return match === null ? scalar : scalar.slice(0, match.index)
+function readBlockScalar(lines, keyIndex, keyIndent, paths) {
+  let last = keyIndex
+  for (let j = keyIndex + 1; j < lines.length; j += 1) {
+    const blockLine = lines[j]
+    if (blockLine.trim() === '') {
+      last = j
+      continue
+    }
+    const indent = (/^([ \t]*)/.exec(blockLine) ?? ['', ''])[1].length
+    if (indent <= keyIndent) {
+      break
+    }
+    paths.push(blockLine.trim())
+    last = j
+  }
+  return last
+}
+
+/**
+ * @param {string} line A workflow line.
+ * @returns {string} The line with any trailing `#` comment removed.
+ */
+function withoutLineComment(line) {
+  const comment = /(?:^|[ \t])#/.exec(line)
+  return comment === null ? line : line.slice(0, comment.index)
+}
+
+/**
+ * Read an inline `path:` scalar, honouring quoting before comments.
+ *
+ * This replaced a `stripTrailingComment` helper that ran at classification
+ * time, after a separate `stripQuotes` pass had already removed the quoting,
+ * and so could not tell a comment from a `#` inside a quoted scalar. That ordering had exactly one observable effect left once the
+ * narrow allowlist landed, and it ran the wrong way: `path: "reports #
+ * nightly/frontend/test-results"` classified `unrelated`, i.e. fully exempt,
+ * where the unstripped scalar classifies `wholesale`. A helper whose only
+ * remaining behaviour turns a refusal into an exemption is worse than no
+ * helper, and its two regression tests could not fail against it. Deciding the
+ * quoting here, where it is still visible, closes that direction and keeps the
+ * comment stripping the tests actually need.
+ *
+ * #EDGE: data-integrity: a backslash-escaped quote inside a double-quoted
+ * scalar ends the value early here. #VERIFY: the truncation can only shorten a
+ * path, which drops segments rather than adding them, so an output-directory
+ * path stays refused; if a real upload path ever needs an escaped quote, parse
+ * the escape rather than widening the allowlist.
+ *
+ * @param {string} raw The text after `path:`, untrimmed.
+ * @returns {string} The scalar value, unquoted and un-commented.
+ */
+function parsePathScalar(raw) {
+  const value = raw.trim()
+  const quote = value.charAt(0)
+  if (quote === '"' || quote === "'") {
+    const close = value.indexOf(quote, 1)
+    // Anything after the closing quote is a comment, so it is discarded; a `#`
+    // BEFORE it is data, so it is kept.
+    return close === -1 ? value.slice(1) : value.slice(1, close)
+  }
+  const comment = /(?:^|\s)#/.exec(value)
+  return (comment === null ? value : value.slice(0, comment.index)).trim()
 }
 
 /**
@@ -300,31 +423,89 @@ function stripTrailingComment(scalar) {
  *
  * `wholesale` means "this publishes something out of a Playwright output
  * directory that is not on the narrow allowlist": the directory itself, a
- * glob inside it, or a single file whose basename nobody enumerated.
- * `narrow` is reserved for a single file whose basename is in
- * :data:`NARROW_UPLOAD_ALLOWLIST`, which is to say a file our own test code
- * writes and whose contents are therefore known. Everything else is
- * `unrelated`.
+ * glob inside it, a single file whose basename nobody enumerated, or an
+ * ANCESTOR of it. `narrow` is reserved for a single file, inside an output
+ * directory, whose basename is in :data:`NARROW_UPLOAD_ALLOWLIST`, which is to
+ * say a file our own test code writes and whose contents are therefore known.
+ * Everything else is `unrelated`.
  *
- * The allowlist is what makes this arm falsifiable. "Names one file" is not a
- * safety property: `error-context.md` names one file and carried a plaintext
- * password out of a tier that had trace, screenshot and video all off.
+ * The allowlist is what makes the narrow arm falsifiable. "Names one file" is
+ * not a safety property: `error-context.md` names one file and carried a
+ * plaintext password out of a tier that had trace, screenshot and video all
+ * off.
+ *
+ * #CRITICAL: security: containment, not spelling, is what this answers.
+ * `actions/upload-artifact` resolves `path:` as a glob root and walks the
+ * subtree, so `frontend`, `frontend/**`, `.` and `frontend/test-results*` each
+ * publish every `error-context.md` under `frontend/test-results/` while naming
+ * no output directory segment at all. Until 2026-08-29 all four classified
+ * `unrelated`, which is to say fully exempt from the hard rule. #VERIFY: the
+ * `an ancestor of a Playwright output directory is not exempt` arm in
+ * `frontend/scripts/test/artifact-upload-safety.test.mjs` pins each of those
+ * spellings, and `leaves unrelated artifact paths alone` pins the other
+ * direction so the ancestor rule cannot degenerate into "everything is
+ * wholesale".
+ *
+ * An expression-valued path (`${{ env.OUT_DIR }}`) cannot be resolved here:
+ * its value lives in the runner. It is substituted with `*` and classified as
+ * the unknown it is, so `${{ github.workspace }}` and `frontend/${{ matrix.x }}`
+ * come out `wholesale` while `outcome-${{ matrix.tier }}.tsv` (which cannot
+ * name or contain an output directory whatever the expression expands to)
+ * stays `unrelated`. Failing loud instead was the alternative; substitution is
+ * chosen because it is the same fail-closed answer without a third exit code
+ * for callers to mishandle, and because the loud version would fire on
+ * `kws-delivery-health.yml`, which uploads a per-tier TSV and touches no
+ * Playwright output.
  *
  * @param {string} declaredPath The `path:` value from an upload step.
  * @returns {'wholesale' | 'narrow' | 'unrelated'} The classification.
  */
 export function classifyUploadPath(declaredPath) {
-  const trimmed = stripTrailingComment(declaredPath).trim()
-  const segments = trimmed.replace(/\/+$/, '').split('/')
-  const touchesOutputDir = segments.some((segment) => PLAYWRIGHT_OUTPUT_SEGMENTS.has(segment))
-  if (!touchesOutputDir) {
-    return 'unrelated'
+  const trimmed = declaredPath.replace(/\$\{\{[^}]*\}\}/g, '*').trim()
+  const normalized = trimmed.replace(/^(?:\.\/)+/, '').replace(/\/+$/, '')
+  if (normalized === '' || normalized === '.') {
+    // The whole workspace. Every output directory is under it.
+    return 'wholesale'
+  }
+  const segments = normalized.split('/').filter((segment) => segment !== '')
+  const insideOutputDir = segments.some((segment) => PLAYWRIGHT_OUTPUT_SEGMENTS.has(segment))
+  if (!insideOutputDir) {
+    return isAncestorOfOutputDir(segments) ? 'wholesale' : 'unrelated'
   }
   const endsWithSlash = trimmed.endsWith('/')
-  const hasGlob = trimmed.includes('*')
+  const hasGlob = normalized.includes('*')
   const lastSegment = segments[segments.length - 1]
   const namesAnAllowedFile = !endsWithSlash && !hasGlob && NARROW_UPLOAD_ALLOWLIST.has(lastSegment)
   return namesAnAllowedFile ? 'narrow' : 'wholesale'
+}
+
+/**
+ * Whether a declared path, which names no output-directory segment itself,
+ * nonetheless has one underneath it.
+ *
+ * A glob segment matches a known directory name when the literal text before
+ * its first `*` is a prefix of that name, so `test-results*` reaches
+ * `test-results` and a bare `**` reaches everything.
+ *
+ * @param {string[]} segments The declared path's segments.
+ * @returns {boolean} True when a known output directory lives under it.
+ */
+function isAncestorOfOutputDir(segments) {
+  const globIndex = segments.findIndex((segment) => segment.includes('*'))
+  const literal = globIndex === -1 ? segments : segments.slice(0, globIndex)
+  const globPrefix =
+    globIndex === -1 ? null : segments[globIndex].slice(0, segments[globIndex].indexOf('*'))
+  return knownOutputDirs().some((dir) => {
+    if (literal.length >= dir.length) {
+      return false
+    }
+    for (let i = 0; i < literal.length; i += 1) {
+      if (literal[i] !== dir[i]) {
+        return false
+      }
+    }
+    return globPrefix === null || dir[literal.length].startsWith(globPrefix)
+  })
 }
 
 /**
@@ -435,9 +616,26 @@ const VARS_EXPRESSION = /\$\{\{\s*vars\./
  * and a job-level one without needing to know which is which: both are an
  * indented `id-token:` line.
  *
+ * The `[{,]` alternative and the optional quotes around the key are the flow
+ * mapping: `permissions: {id-token: write}` and
+ * `permissions: { contents: read, id-token: write }` are valid YAML, valid
+ * GitHub Actions, and put the key mid-line where the `^[ \t]*` anchor cannot
+ * see it. This is the house idiom rather than an exotic spelling: twelve
+ * `permissions: {` lines exist in `.github/workflows` today. All twelve are
+ * the benign `permissions: {}`, so this is prevention; the next author who
+ * needs an OIDC token and writes it the way the surrounding twelve lines are
+ * written would otherwise get a detector that answers false. `permissions: {}`
+ * stays non-secret-bearing because `write-all` and `id-token` are still
+ * required. #ASSUME: security: a `{` or `,` inside a COMMENT can now reach the
+ * key alternative, so a comment quoting `{id-token: write}` reads as a
+ * credential. #VERIFY: that direction is fail-closed (an extra violation a
+ * human must clear), which is the direction to err in; the `^`-anchored
+ * comment controls in the suite pin that ordinary commented-out lines are
+ * still not matched.
+ *
  * @see SECRETS_INHERIT for why the pattern is not anchored to end-of-line.
  */
-const ID_TOKEN_WRITE = /^[ \t]*id-token:[ \t]*['"]?write\b/m
+const ID_TOKEN_WRITE = /(?:^[ \t]*|[{,][ \t]*)['"]?id-token['"]?:[ \t]*['"]?write\b/m
 
 /**
  * The blanket grant: `permissions: write-all`, which includes `id-token`.
@@ -453,8 +651,10 @@ const ID_TOKEN_WRITE = /^[ \t]*id-token:[ \t]*['"]?write\b/m
  * `read-all` is the sibling value that grants no credential, so the `write-`
  * prefix is load-bearing exactly as `write` is in `ID_TOKEN_WRITE`, and the
  * `^[ \t]*` anchor keeps a commented-out line from matching.
+ *
+ * @see ID_TOKEN_WRITE for why the key also matches after a `{` or `,`.
  */
-const PERMISSIONS_WRITE_ALL = /^[ \t]*permissions:[ \t]*['"]?write-all\b/m
+const PERMISSIONS_WRITE_ALL = /(?:^[ \t]*|[{,][ \t]*)['"]?permissions['"]?:[ \t]*['"]?write-all\b/m
 
 /**
  * Whether a workflow can reach a credential.

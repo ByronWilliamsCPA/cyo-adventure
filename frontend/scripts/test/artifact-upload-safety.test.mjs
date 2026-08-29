@@ -16,12 +16,13 @@
 
 import assert from 'node:assert/strict'
 import { spawnSync } from 'node:child_process'
-import { mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs'
+import { mkdirSync, mkdtempSync, readFileSync, readdirSync, rmSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { dirname, join } from 'node:path'
 import test from 'node:test'
 
 import {
+  PLAYWRIGHT_OUTPUT_SEGMENTS,
   classifyUploadPath,
   findSecretBearingWholesaleUploads,
   findWholesaleUploads,
@@ -32,6 +33,27 @@ import {
 
 const WORKFLOWS_DIR = new URL('../../../.github/workflows', import.meta.url).pathname
 const CHECKER = new URL('../check-artifact-upload-safety.mjs', import.meta.url).pathname
+const FRONTEND_DIR = new URL('../../', import.meta.url).pathname
+
+/**
+ * Wrap one upload path in the smallest workflow that declares it, so an arm
+ * exercises the parser and the classifier together.
+ *
+ * @param {string} pathLine The whole `path:` line, indentation included.
+ * @param {string} [usesLine] The whole `uses:` line, indentation included.
+ * @returns {string} A workflow fragment.
+ */
+function uploadStep(pathLine, usesLine = '        uses: actions/upload-artifact@abc') {
+  return [
+    'jobs:',
+    '  a:',
+    '    steps:',
+    usesLine.replace(/^ {8}/, '      - '),
+    '        with:',
+    pathLine,
+    '',
+  ].join('\n')
+}
 
 /** An obviously synthetic stand-in. Never a real or partial credential. */
 const FIXTURE_VALUE = 'ZZ-FIXTURE-NOT-A-REAL-CREDENTIAL-0000'
@@ -188,25 +210,6 @@ test('the upload-path classifier', async (t) => {
     assert.equal(classifyUploadPath('frontend/test-results/leaked-device-grants.jsonl'), 'narrow')
   })
 
-  // Defect 1. The hand-rolled reader does not strip a trailing `#` comment, so
-  // the comment survived into the scalar, became the last `/`-segment, and any
-  // `.` inside it (a sentence-ending period, a version number) read as a file
-  // extension. A wholesale Playwright output directory then classified
-  // `narrow` and the hard rule exempted it.
-  await t.test('a trailing YAML comment cannot demote a wholesale path to narrow', () => {
-    assert.equal(
-      classifyUploadPath('frontend/test-results/ # everything the run left behind, see ADR-029.'),
-      'wholesale'
-    )
-    assert.equal(
-      classifyUploadPath('frontend/test-results/ # bumped to v2.1 while triaging'),
-      'wholesale'
-    )
-    // The control: a comment with no `.` in it was already classified
-    // correctly, so this arm alone could never have caught the defect.
-    assert.equal(classifyUploadPath('frontend/test-results/  # keep for triage'), 'wholesale')
-  })
-
   // Defect 2. The `narrow` arm was unbounded by filename: ANY single file
   // inside a Playwright output directory passed, including the one file that
   // actually leaked a password. A single-file artifact carries a live
@@ -226,10 +229,134 @@ test('the upload-path classifier', async (t) => {
     )
   })
 
+  // Important 3. `touchesOutputDir` asked whether a path NAMES an output
+  // directory, and `actions/upload-artifact` resolves `path:` as a glob root
+  // and walks the subtree. Every spelling below therefore publishes every
+  // `error-context.md` under `frontend/test-results/` while naming no output
+  // segment, and every one of them classified `unrelated`, which is to say
+  // fully exempt from the hard rule. `frontend/test-results*` is the sharpest:
+  // it reads to a human as NARROWER than `frontend/test-results/**`, and it
+  // was the only one of the two the guard could not see.
+  await t.test('an ancestor of a Playwright output directory is not exempt', () => {
+    for (const declared of [
+      'frontend/',
+      'frontend',
+      'frontend/**',
+      '.',
+      './',
+      '**',
+      'frontend/test-results*',
+      'test-results*',
+    ]) {
+      assert.equal(
+        classifyUploadPath(declared),
+        'wholesale',
+        `${declared} publishes a Playwright output directory, so it cannot be exempt`
+      )
+    }
+  })
+
+  // An expression is resolved on the runner, not here, so the guard cannot
+  // know what it names. Silently calling it `unrelated` made it exempt, which
+  // is the one answer an unresolvable value must never get.
+  await t.test('an expression-valued path is classified as the unknown it is', () => {
+    assert.equal(classifyUploadPath('${{ env.PLAYWRIGHT_OUTPUT }}'), 'wholesale')
+    assert.equal(classifyUploadPath('${{ github.workspace }}'), 'wholesale')
+    assert.equal(classifyUploadPath('frontend/${{ matrix.outdir }}'), 'wholesale')
+    // ...and the other direction, so the rule is not "any expression is a
+    // violation". Whatever `matrix.tier` expands to, this path is one file in
+    // the workspace root and cannot be or contain an output directory. This is
+    // what `kws-delivery-health.yml` really uploads, from a workflow that does
+    // inject a secret.
+    assert.equal(classifyUploadPath('outcome-${{ matrix.tier }}.tsv'), 'unrelated')
+  })
+
+  // The control for the two arms above. An ancestor rule that answered
+  // `wholesale` for every directory would make the hard rule fire on the whole
+  // repository and so justify nothing; these are the real non-Playwright
+  // upload paths in `.github/workflows` today.
+  // The two guards that keep the allowlist a FILE exemption rather than a NAME
+  // exemption. Both were untested until 2026-08-29: removing them left the
+  // whole suite green, which is the same shape as the defect this branch
+  // exists to remove.
+  await t.test('the narrow exemption is a file exemption, not a name exemption', () => {
+    assert.equal(
+      classifyUploadPath('frontend/test-results/leaked-device-grants.jsonl/'),
+      'wholesale',
+      'a trailing slash makes it a DIRECTORY with that name, and nothing bounds its contents'
+    )
+    assert.equal(
+      classifyUploadPath('frontend/test-results/**/leaked-device-grants.jsonl'),
+      'wholesale',
+      'a glob is not one file, and what it resolves to is decided on the runner'
+    )
+  })
+
   await t.test('leaves unrelated artifact paths alone', () => {
     assert.equal(classifyUploadPath('backend.log'), 'unrelated')
     assert.equal(classifyUploadPath('coverage/'), 'unrelated')
     assert.equal(classifyUploadPath('dist/'), 'unrelated')
+    assert.equal(classifyUploadPath('safety-eval-results/**'), 'unrelated')
+    assert.equal(classifyUploadPath('mutants/**/*.meta'), 'unrelated')
+    assert.equal(classifyUploadPath('zap-out/zap-summary.md'), 'unrelated')
+    assert.equal(classifyUploadPath('lighthouse-out/'), 'unrelated')
+  })
+
+  // Important 5. Nothing tied `PLAYWRIGHT_OUTPUT_SEGMENTS` to the configs it
+  // mirrors. The `#CRITICAL` on it was discharged by a prose `#VERIFY` that no
+  // gate executes, which is how `playwright-json-report` stayed off the set
+  // while every path under it classified `unrelated` for the whole time. This
+  // re-derives the directory names from the configs and from the nine
+  // workflow-level `PLAYWRIGHT_JSON_REPORT_PATH` overrides, so a renamed
+  // `outputDir` reddens instead of disarming the guard.
+  await t.test('derives every Playwright output directory name from the configs themselves', () => {
+    // eslint-disable-next-line security/detect-non-literal-fs-filename -- FRONTEND_DIR is derived from import.meta.url, never external input
+    const configs = readdirSync(FRONTEND_DIR).filter(
+      (entry) => entry.startsWith('playwright') && entry.endsWith('.config.ts')
+    )
+    // Loud rather than silently empty: a derivation that finds nothing agrees
+    // with every constant, which is the defect class this arm exists to close.
+    assert.equal(configs.length, 4, 'expected the four Playwright configs')
+
+    /** @type {Map<string, string>} */
+    const declared = new Map()
+    for (const config of configs) {
+      const text = readFrontendFile(config)
+      for (const pattern of [
+        /outputDir:\s*'([^']+)'/g,
+        /outputFile:\s*'([^']+)'/g,
+        /PLAYWRIGHT_JSON_REPORT_PATH\s*\?\?\s*'([^']+)'/g,
+      ]) {
+        for (const match of text.matchAll(pattern)) {
+          declared.set(match[1], config)
+        }
+      }
+    }
+    // eslint-disable-next-line security/detect-non-literal-fs-filename -- WORKFLOWS_DIR is derived from import.meta.url, never external input
+    for (const workflow of readdirSync(WORKFLOWS_DIR)) {
+      if (!workflow.endsWith('.yml') && !workflow.endsWith('.yaml')) {
+        continue
+      }
+      for (const match of readWorkflow(workflow).matchAll(
+        /^\s*PLAYWRIGHT_JSON_REPORT_PATH:\s*(\S+)\s*$/gm
+      )) {
+        declared.set(match[1], workflow)
+      }
+    }
+
+    assert.ok(declared.size >= 9, `derived only ${declared.size} output paths, expected 9 or more`)
+    const roots = new Set([...declared.keys()].map((value) => value.split('/')[0]))
+    assert.ok(
+      roots.has('test-results') && roots.has('playwright-json-report'),
+      `the derivation reached neither shape; it found ${[...roots].join(', ')}`
+    )
+    for (const [value, source] of declared) {
+      assert.ok(
+        PLAYWRIGHT_OUTPUT_SEGMENTS.has(value.split('/')[0]),
+        `${source} writes ${value}, whose directory is not in PLAYWRIGHT_OUTPUT_SEGMENTS, ` +
+          'so every upload of it classifies unrelated and the guard never examines it'
+      )
+    }
   })
 })
 
@@ -287,6 +414,133 @@ test('the workflow parser', async (t) => {
 
   await t.test('finds no upload in a workflow that has none', () => {
     assert.deepEqual(parseUploadSteps('jobs:\n  a:\n    steps:\n      - run: echo hi\n'), [])
+  })
+
+  // Important 4. Every spelling below is ordinary GitHub Actions YAML for the
+  // SAME upload, and each one used to produce either no step or a step with no
+  // paths, which `findWholesaleUploads` filters out. A step the parser cannot
+  // see is a step the guard cannot refuse, and the result is identical to a
+  // clean repository. `path: |-` is the more idiomatic of the two block forms;
+  // a formatting pass that rewrote `e2e-staging.yml`'s `path: |` to it would
+  // have blinded the guard permanently and silently.
+  await t.test('finds the same upload however the step is spelled', () => {
+    const spellings = {
+      'double-quoted uses': uploadStep(
+        '          path: frontend/test-results/',
+        '        uses: "actions/upload-artifact@abc"'
+      ),
+      'single-quoted uses': uploadStep(
+        '          path: frontend/test-results/',
+        "        uses: 'actions/upload-artifact@abc'"
+      ),
+      'block scalar, strip': uploadStep('          path: |-\n            frontend/test-results/'),
+      'block scalar, keep': uploadStep('          path: |+\n            frontend/test-results/'),
+      'folded scalar': uploadStep('          path: >\n            frontend/test-results/'),
+      'folded scalar, strip': uploadStep('          path: >-\n            frontend/test-results/'),
+      'folded scalar, keep': uploadStep('          path: >+\n            frontend/test-results/'),
+      'block scalar with a comment on the key': uploadStep(
+        '          path: | # everything the run left behind\n            frontend/test-results/'
+      ),
+      'uses after with': [
+        'jobs:',
+        '  a:',
+        '    steps:',
+        '      - name: Upload',
+        '        with:',
+        '          path: frontend/test-results/',
+        '        uses: actions/upload-artifact@abc',
+        '',
+      ].join('\n'),
+      'a bulleted block scalar between uses and with': [
+        'jobs:',
+        '  a:',
+        '    steps:',
+        '      - uses: actions/upload-artifact@abc',
+        '        env:',
+        '          SUMMARY: |',
+        '            - one triage note',
+        '        with:',
+        '          path: frontend/test-results/',
+        '',
+      ].join('\n'),
+      'flow mapping': [
+        'jobs:',
+        '  a:',
+        '    steps:',
+        '      - {uses: actions/upload-artifact@abc, with: {path: frontend/test-results/}}',
+        '',
+      ].join('\n'),
+    }
+    for (const [spelling, text] of Object.entries(spellings)) {
+      const steps = parseUploadSteps(text)
+      assert.equal(steps.length, 1, `${spelling}: the upload step must be found at all`)
+      assert.deepEqual(steps[0].paths, ['frontend/test-results/'], spelling)
+      assert.equal(classifyUploadPath(steps[0].paths[0]), 'wholesale', spelling)
+    }
+  })
+
+  // The other half of the block-scalar fix. The body extent used to be read
+  // from the line directly after `path: |`; a blank line there computed an
+  // indent of 0, so the loop never terminated and swallowed the rest of the
+  // file as paths. Over-collection is fail-closed, but it makes the parser's
+  // output unreadable and hides which line the real path came from.
+  await t.test('a block scalar ends at the next key, even after a blank line', () => {
+    const steps = parseUploadSteps(
+      [
+        'jobs:',
+        '  a:',
+        '    steps:',
+        '      - uses: actions/upload-artifact@abc',
+        '        with:',
+        '          path: |',
+        '',
+        '            frontend/test-results/',
+        '          retention-days: 7',
+        '        if: failure()',
+        '',
+      ].join('\n')
+    )
+    assert.deepEqual(steps[0].paths, ['frontend/test-results/'])
+  })
+
+  // A block scalar's body is literal YAML: a quote character in it is part of
+  // the path, not quoting. Unquoting it granted the narrow exemption to a path
+  // that does not resolve to the ledger file at all, which is the one
+  // direction of the parser that can turn a refusal into an exemption.
+  await t.test('a block-scalar entry is literal, so quoting cannot make it narrow', () => {
+    const steps = parseUploadSteps(
+      uploadStep(
+        '          path: |\n            "frontend/test-results/leaked-device-grants.jsonl"'
+      )
+    )
+    assert.deepEqual(steps[0].paths, ['"frontend/test-results/leaked-device-grants.jsonl"'])
+    assert.equal(classifyUploadPath(steps[0].paths[0]), 'wholesale')
+  })
+
+  // Defect 1, re-pointed at something that can fail. Comment stripping now
+  // happens HERE, where the quoting is still visible, instead of after
+  // `stripQuotes` at classification time. The old ordering had exactly one
+  // observable effect left once the narrow allowlist landed, and it ran the
+  // wrong way: it turned a refusal into an exemption. Both directions below
+  // are load-bearing, and neither can be decided anywhere else.
+  await t.test('a comment is stripped from an unquoted path and kept inside a quoted one', () => {
+    // Unquoted: the `#` opens a comment, so the output directory named inside
+    // it is prose. Without the strip this is a false REFUSAL on a clean
+    // workflow.
+    const unquoted = parseUploadSteps(
+      uploadStep('          path: backend.log # see frontend/test-results/ for more')
+    )
+    assert.deepEqual(unquoted[0].paths, ['backend.log'])
+    assert.equal(classifyUploadPath(unquoted[0].paths[0]), 'unrelated')
+
+    // Quoted: the `#` is data, and the path really does end in an output
+    // directory. Stripping here is the direction that EXEMPTS a wholesale
+    // upload, which is why the quoting has to be decided before the comment.
+    const quoted = parseUploadSteps(
+      uploadStep('          path: "reports # nightly/frontend/test-results"')
+    )
+    assert.deepEqual(quoted[0].paths, ['reports # nightly/frontend/test-results'])
+    assert.equal(classifyUploadPath(quoted[0].paths[0]), 'wholesale')
   })
 })
 
@@ -352,6 +606,43 @@ test('the secret detector', async (t) => {
       injectsSecrets(['jobs:', '  publish:', '    permissions: write-all', ''].join('\n')),
       true
     )
+  })
+
+  // Important 2. Both patterns anchored the key to the start of a line, so the
+  // flow-mapping spelling answered false. That is not an exotic style here: it
+  // is the house idiom, with twelve `permissions: {` lines in
+  // `.github/workflows` today. All twelve are the benign `permissions: {}`, so
+  // this is latent rather than live, and the next author who needs an OIDC
+  // token and writes it the way the surrounding twelve lines are written is
+  // exactly who it is for.
+  await t.test('sees an OIDC token request written as a flow mapping or a quoted key', () => {
+    assert.equal(injectsSecrets('permissions: {id-token: write}\n'), true)
+    assert.equal(injectsSecrets('permissions: { contents: read, id-token: write }\n'), true)
+    assert.equal(injectsSecrets('permissions:\n  "id-token": write\n'), true)
+    assert.equal(injectsSecrets("permissions:\n  'id-token': write\n"), true)
+    assert.equal(
+      injectsSecrets(
+        ['jobs:', '  publish:', '    permissions: {contents: read, id-token: write}', ''].join('\n')
+      ),
+      true
+    )
+  })
+
+  await t.test('sees a write-all grant written as a flow mapping', () => {
+    assert.equal(injectsSecrets('jobs: { publish: { permissions: write-all } }\n'), true)
+  })
+
+  // The control that keeps the flow-mapping widening from swallowing the whole
+  // repository. `permissions: {}` is the LEAST privileged spelling there is,
+  // and it is what all twelve real occurrences say; a widening that called it
+  // secret-bearing would make the hard rule fire on twelve clean workflows and
+  // therefore justify nothing.
+  await t.test('does not treat an empty or read-only flow mapping as a credential', () => {
+    assert.equal(injectsSecrets('permissions: {}\n'), false)
+    assert.equal(injectsSecrets('permissions: { contents: read }\n'), false)
+    assert.equal(injectsSecrets('permissions: {id-token: none}\n'), false)
+    assert.equal(injectsSecrets('permissions: { contents: read, id-token: none }\n'), false)
+    assert.equal(injectsSecrets('jobs: { publish: { permissions: read-all } }\n'), false)
   })
 
   // Controls. Without these the widened rule could pass by calling every
@@ -469,10 +760,12 @@ test('the hard rule, end to end', async (t) => {
     }
   }
 
-  // Defect 1, end to end. A trailing prose comment on the `path:` scalar made
-  // the classifier read the comment's sentence-ending period as a file
-  // extension, so a wholesale Playwright output directory was exempted and
-  // the CLI exited 0 on a secret-bearing workflow publishing it.
+  // This arm covers the CLI-to-process plumbing, NOT the trailing-comment
+  // defect its fixture happens to carry: the narrow allowlist refuses this
+  // path by the other route, so it stays red with the comment handling
+  // removed. The comment handling is pinned by `a comment is stripped from an
+  // unquoted path and kept inside a quoted one` instead, which is the only
+  // place either direction of it changes an answer.
   await t.test('the CLI rejects a wholesale upload carrying a trailing prose comment', () => {
     const commented = INHERITING_UPLOADER.replace(
       '          path: frontend/test-results/',
@@ -482,6 +775,35 @@ test('the hard rule, end to end', async (t) => {
     assert.notEqual(run.status, 0, 'a commented wholesale path must still be a violation')
     assert.match(run.stderr, /FORBIDDEN UPLOAD/)
     assert.match(run.stderr, /tier\.yml/)
+  })
+
+  // Important 3, end to end. An ancestor path names no output directory, so
+  // the classifier never looked at it, so the CLI exited 0 while the artifact
+  // carried every `error-context.md` under `frontend/test-results/`. This is
+  // the one-line triage edit the finding describes.
+  await t.test('the CLI rejects an ancestor of a Playwright output directory', () => {
+    const run = cliOver(
+      INHERITING_UPLOADER.replace(
+        '          path: frontend/test-results/',
+        '          path: frontend/'
+      )
+    )
+    assert.notEqual(run.status, 0, 'an ancestor of the output directory publishes it in full')
+    assert.match(run.stderr, /FORBIDDEN UPLOAD/)
+    assert.match(run.stderr, /tier\.yml/)
+  })
+
+  // Important 4, end to end, and the sharpest of them: the step is spelled the
+  // way the parser could not see, so the rule found nothing at all.
+  await t.test('a quoted uses: scalar does not make the upload step invisible', () => {
+    const violations = ruleOver(
+      INHERITING_UPLOADER.replace(
+        '      - uses: actions/upload-artifact@abc',
+        '      - uses: "actions/upload-artifact@abc"'
+      )
+    )
+    assert.equal(violations.length, 1)
+    assert.match(violations[0], /frontend\/test-results\//)
   })
 
   await t.test('the CLI exits 0 on the same tree with the upload removed', () => {
@@ -642,16 +964,49 @@ test('the real repository', async (t) => {
     // The prod tier signs a REAL production account in through the real login
     // form. Nothing it produces may be published from a public repository.
     const text = readWorkflow('e2e-prod.yml')
+    // Raw text FIRST, deliberately not through `parseUploadSteps`. This
+    // control used to run entirely through the same parser as the rule it
+    // backs, so a spelling the parser could not see (a quoted `uses:`, say)
+    // left the rule silent AND this control green, on the one tier that types
+    // a real production credential. A control is not independent of the thing
+    // it guards when they share a failure mode.
+    assert.doesNotMatch(text, /upload-artifact/, 'not even a commented-out upload step')
     assert.deepEqual(parseUploadSteps(text), [])
     assert.equal(injectsSecrets(text), true, 'the premise of the assertion above must still hold')
+    // The positive control that makes the empty result mean something: append
+    // one upload step, in the spelling the parser used to be blind to, and it
+    // must be seen. Without this, "no upload found" and "parser broken" are
+    // the same observation.
+    const withUpload =
+      text +
+      [
+        '      - name: Upload trace on failure',
+        '        uses: "actions/upload-artifact@abc"',
+        '        with:',
+        '          path: frontend/test-results/',
+        '',
+      ].join('\n')
+    assert.deepEqual(
+      parseUploadSteps(withUpload).flatMap((step) => step.paths),
+      ['frontend/test-results/']
+    )
   })
 })
+
+/**
+ * @param {string} name Filename under `frontend/`.
+ * @returns {string} Its contents.
+ */
+function readFrontendFile(name) {
+  // eslint-disable-next-line security/detect-non-literal-fs-filename -- name comes from readdirSync over a literal directory, never external input
+  return readFileSync(join(FRONTEND_DIR, name), 'utf8')
+}
 
 /**
  * @param {string} name Workflow filename.
  * @returns {string} Its contents.
  */
 function readWorkflow(name) {
-  // eslint-disable-next-line security/detect-non-literal-fs-filename -- name is a literal in this file, never external input
+  // eslint-disable-next-line security/detect-non-literal-fs-filename -- name is a literal in this file or a readdirSync entry of a literal directory, never external input
   return readFileSync(join(WORKFLOWS_DIR, name), 'utf8')
 }
