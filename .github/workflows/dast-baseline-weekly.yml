@@ -118,16 +118,21 @@
 # pattern the two named exemplars use satisfies that composite action's
 # actual contract, and is what "copy what is actually in use" means here.
 #
-# The alert fires on `failure()` OR `cancelled()`, not on ZAP's own verdict:
+# The alert fires whenever `job.status != 'success'` (evaluated with
+# `always()`, since a step without `always()` is skipped once any earlier
+# step fails), not on ZAP's own verdict:
 #   1. GitHub injects `if: success()` into any step with no explicit `if:`,
 #      so a step silently does not run once an earlier one fails. Every step
 #      below states its condition explicitly.
-#   2. `failure()` is FALSE for a cancelled run, and this job's
-#      `timeout-minutes` producing a timeout IS a cancellation, not a
-#      failure. A ZAP scan is exactly the kind of job that hangs (browser
-#      launch for the client spider, a stuck passive-scan wait); an alert
-#      gated on `failure()` alone would never fire for that. The compose and
-#      file-issue steps below therefore also check `cancelled()`.
+#   2. `job.status` is `failure`, `cancelled`, or `success` regardless of
+#      which mechanism produced a non-success outcome, so it covers both an
+#      outright step failure and this job's own `timeout-minutes` cutting off
+#      a hung scan (browser launch for the client spider, a stuck
+#      passive-scan wait) without needing to resolve whether a step-level
+#      `cancelled()` reliably evaluates true for a timeout cutoff
+#      specifically (see the "Compose the issue body" step below for the
+#      full reasoning). The compose and file-issue steps below use
+#      `job.status != 'success'` for exactly that reason.
 #
 # So: this alert means "the scan did not run, or could not reach its
 # target" -- an infra failure (docker/npm/curl readiness, ZAP never
@@ -213,8 +218,8 @@ concurrency:
   #
   # cancel-in-progress: false, matching the a11y exemplar
   # (accessibility-compliance-weekly.yml), NOT e2e-real-nightly.yml's true.
-  # This job's alert conditions (`failure() || cancelled()`, see "Alerting:
-  # what the alert is FOR" below) treat a cancelled run as "the scan did not
+  # This job's alert condition (`job.status != 'success'`, see "Alerting:
+  # what the alert is FOR" below) treats a cancelled run as "the scan did not
   # run, or could not reach its target" and file a tracking issue on it. With
   # cancel-in-progress: true, a routine supersession -- a second scheduled
   # trigger landing while the first is still running, or exactly the
@@ -421,6 +426,7 @@ jobs:
       # correctly even if the ZAP step above were ever changed to be
       # fallible, so the "did the scan run" signal survives that.
       - name: Verify the scan actually ran, and summarize findings
+        id: verify_report
         if: ${{ !cancelled() }}
         run: |
           set -euo pipefail
@@ -456,10 +462,27 @@ jobs:
               sys.exit(1)
 
           # Findings summary -- informational only, never gates this step.
+          # Positive proof that the scan crossed the /api proxy hop (rather
+          # than degrading to a scan of the bare static bundle) now lives in
+          # the NEXT step, "Verify the scan actually reached the backend
+          # through the proxy", which reads uvicorn's own access log -- a
+          # static-only crawl cannot fake a backend log entry the way it can
+          # fake alert-instance counts. A prior version of this step tried to
+          # prove the same thing from ZAP's own alert data (an `api_hit` flag
+          # OR'd with a floor on the count of distinct URLs seen across all
+          # alert instances); review found the URL-count arm passes on a
+          # REAL static-only build of this SPA (frontend/dist/'s own
+          # index.html carries 10 distinct same-origin references -- JS/CSS
+          # chunks, icons, the manifest -- before any backend is involved at
+          # all, comfortably clearing any floor low enough not to false-fail
+          # a healthy run). A count of static-asset URLs can never be
+          # evidence of a backend hop; the two are causally unrelated, so the
+          # floor is not kept as a weaker fallback. `api_hit` is kept below,
+          # but only as an informational note in the summary, never as a
+          # pass/fail signal.
           risk_names = {"0": "Informational", "1": "Low", "2": "Medium", "3": "High"}
           counts: dict[str, int] = {name: 0 for name in risk_names.values()}
           alerts: list[str] = []
-          distinct_urls: set[str] = set()
           api_hit = False
           for site in matched_sites:
               for alert in site.get("alerts", []) or []:
@@ -471,48 +494,8 @@ jobs:
                       f"{alert.get('count', '?')} instance(s))"
                   )
                   for instance in alert.get("instances", []) or []:
-                      uri = instance.get("uri", "")
-                      if not uri:
-                          continue
-                      distinct_urls.add(uri)
-                      if "/api/" in uri:
+                      if "/api/" in instance.get("uri", ""):
                           api_hit = True
-
-          # Positive evidence the scan actually crossed the /api proxy hop
-          # and crawled beyond the static shell, not merely evidence "a
-          # report mentioning our host exists". A degraded run -- the client
-          # spider's browser failing to launch, or a broken
-          # `preview.proxy['/api']` -- still produces exactly one matched
-          # site and a handful of passive header alerts, all on the single
-          # `index.html` response; the two checks above are satisfied by
-          # that alone. This is the exact vacuous-static-bundle failure mode
-          # the "Target decision" header comment rejected as a scan target,
-          # reproduced here if this step stopped at "site exists".
-          #
-          # Two independent signals, either is sufficient (deliberately an
-          # OR): an alert instance URI under /api/ directly proves the scan
-          # reached the backend; a MIN_DISTINCT_URLS floor catches the case
-          # where the API answers cleanly enough (correct headers on every
-          # response) that no alert happens to carry an /api/ instance, since
-          # a real crawl of this SPA still touches its own JS/CSS bundle
-          # chunks and at least one client-routed page well past that floor,
-          # while a degraded single-page fetch does not.
-          MIN_DISTINCT_URLS = 3
-          if not api_hit and len(distinct_urls) < MIN_DISTINCT_URLS:
-              print(
-                  "::error::ZAP report shows no evidence the scan crossed the /api "
-                  f"proxy hop or crawled beyond the static shell: {len(distinct_urls)} "
-                  "distinct URL(s) seen in alert instances, none under /api/. The "
-                  f"scan reached {target_host} but degraded to scanning the bare "
-                  "static bundle -- the exact target this workflow's header comment "
-                  "rejected. Likely causes: the client spider's browser failed to "
-                  "launch, or preview.proxy['/api'] is broken (see the 'Verify the "
-                  "/api proxy hop is live' step, which should have caught a fully "
-                  "dead proxy before the scan started; a proxy that is up but not "
-                  "actually reached by ZAP's spider is the remaining gap this check "
-                  "closes)."
-              )
-              sys.exit(1)
 
           lines = [
               "# ZAP baseline scan summary",
@@ -522,6 +505,11 @@ jobs:
               "This is a COUNT AND RULE-NAME summary only. The full report (raw",
               "headers, cookies, URLs, response evidence) is deliberately not",
               "published; see the workflow file's public-repository comment.",
+              "",
+              "An alert instance under /api/ was "
+              + ("seen" if api_hit else "not seen")
+              + " (informational only; see the 'Verify the scan actually reached",
+              "the backend through the proxy' step for the actual pass/fail evidence).",
               "",
               "| Risk | Count |",
               "|------|-------|",
@@ -538,17 +526,70 @@ jobs:
           PY
           cat zap-out/zap-summary.md >> "$GITHUB_STEP_SUMMARY"
 
+      # This step is the ACTUAL positive proof the scan crossed the /api
+      # proxy hop into the backend, replacing the ZAP-alert-derived arm the
+      # step above used to carry (see its comment). uvicorn runs with
+      # default access logging (the Dockerfile CMD passes no
+      # `--no-access-log`), so every request that reached the backend --
+      # through the proxy or otherwise -- is already recorded there,
+      # independent of whether ZAP raised an alert about it. That
+      # independence is what makes this survive the I1 "no migrations, every
+      # DB route answers 500" decision: a 500 is still a logged request, so
+      # this oracle does not weaken when the API answers badly.
+      #
+      # The `/api/v1/health/` exclusion is required: the readiness-wait loop
+      # and the pre-scan "Verify the /api proxy hop is live" step both poll
+      # health endpoints through this same backend, and would otherwise
+      # trivially satisfy a bare "was anything logged" check on their own,
+      # before ZAP ever ran.
+      #
+      # Public-repository constraint: this counts distinct PATHS only and
+      # never prints them. A path can carry a query string from the scan
+      # (ZAP's spider and active checks can append one), and this repo is
+      # public, so only the numeric count is ever echoed into the run log --
+      # never a raw request line.
+      #
+      # `|| true` on the assignment: under `set -e` + `pipefail`, a pipeline
+      # whose `grep -v` stage matches nothing (the exact degraded case this
+      # step exists to catch) exits nonzero, which would abort the script at
+      # the assignment itself -- before the diagnostic `echo` below or the
+      # `::error::` message ever runs, silently losing the one piece of
+      # output a human reading a red run needs. `reached` still gets the
+      # correct `wc -l` count either way (proven by execution: see the task
+      # report); only the pipeline's own exit status is discarded here, and
+      # the explicit `-lt 1` check right after is what actually fails the
+      # step.
+      - name: Verify the scan actually reached the backend through the proxy
+        if: ${{ !cancelled() }}
+        run: |
+          set -euo pipefail
+          reached=$(docker compose logs --no-color app \
+            | grep -oE '"[A-Z]+ [^ "]+ HTTP/[0-9.]+"' \
+            | awk '{print $2}' \
+            | grep -v '^/api/v1/health/' \
+            | sort -u | wc -l) || true
+          echo "Distinct non-health backend paths reached: $reached"
+          if [ "$reached" -lt 1 ]; then
+            echo "::error::No scan traffic crossed the /api proxy into the backend (0 distinct non-health paths logged by uvicorn). The scan reached the frontend but degraded to scanning the bare static bundle -- the exact target this workflow's header comment rejected. Likely causes: the client spider's browser failed to launch, or preview.proxy['/api'] is broken (see the 'Verify the /api proxy hop is live' step, which should have caught a fully dead proxy before the scan started; a proxy that is up but not actually reached by ZAP's spider is the remaining gap this check closes)."
+            exit 1
+          fi
+
       # Only the extracted summary is published (counts + rule names/IDs),
       # never zap-out/'s raw HTML/JSON/XML report -- see the header comment
       # on the public-repository constraint. retention-days set explicitly
       # (matching accessibility-compliance-weekly.yml's 14) rather than
       # inheriting Actions' 90-day default. if-no-files-found: error, not
-      # warn: the verify step above already guarantees zap-summary.md exists
-      # whenever it exits 0, so a missing file here means the upload path
-      # itself is broken (a step reordering, a typo'd path) and should be
-      # self-checking rather than a silent warning nobody reads.
+      # warn: gated on `steps.verify_report.outcome == 'success'` (not just
+      # `!cancelled()`) because that is the ONLY step that writes
+      # zap-summary.md; the step above it (backend-log verification) can
+      # fail without the summary ever being absent, and running the upload
+      # anyway in that case preserves the findings summary for a run that is
+      # still going to be red for an unrelated reason. `if-no-files-found:
+      # error` therefore means what it says: given verify_report succeeded,
+      # a missing file here means the upload path itself is broken (a step
+      # reordering, a typo'd path), not that an earlier step failed.
       - name: Upload findings summary
-        if: ${{ !cancelled() }}
+        if: ${{ !cancelled() && steps.verify_report.outcome == 'success' }}
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
           name: dast-baseline-summary

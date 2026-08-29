@@ -165,13 +165,23 @@ jobs:
             // `e2e-alert`. This map's markers and labels were read directly
             // from each workflow's `uses: ./.github/actions/ci-failure-issue`
             // call site on `origin/main` as of that merge, not from a
-            // generic pattern. A workflow not listed here is reported as
-            // UNTRACKED rather than guessed at; that is the loud-omission
-            // behaviour the design calls for, and it is real: nine of the
-            // twenty-three scheduled workflows in this repo (as of
-            // 2026-08-27) file no tracking issue of any kind on failure:
-            // container-security.yml, dependency-provenance-weekly.yml,
-            // e2e-staging.yml, fips-compatibility.yml,
+            // generic pattern.
+            //
+            // A workflow not listed here is reported as UNTRACKED rather
+            // than guessed at; that is the loud-omission behaviour the
+            // design calls for, but "not listed here" is NOT the same claim
+            // as "files no tracking issue at all" -- as of 2026-08-28, four
+            // scheduled workflows call the shared action without an entry
+            // in this map: e2e-staging.yml, engagement-correlation.yml,
+            // usersim.yml, webkit-kid.yml (a known, ratcheted gap; see the
+            // GRANDFATHERED list in
+            // .github/workflows/test/health-rollup.test.mjs, task D5). Each
+            // of those is reported UNTRACKED despite filing a real issue.
+            // Only the following eight of the twenty-seven scheduled
+            // workflows in this repo (excluding this file, as of
+            // 2026-08-28) genuinely file no tracking issue of any kind on
+            // failure: container-security.yml,
+            // dependency-provenance-weekly.yml, fips-compatibility.yml,
             // python-compatibility.yml, scorecard.yml, security-analysis.yml,
             // sbom.yml, validate-cruft.yml. Keep this map in sync when a
             // call site's marker or label changes, or when a workflow adopts

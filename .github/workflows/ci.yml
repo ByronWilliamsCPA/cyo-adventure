@@ -904,7 +904,7 @@ jobs:
           # "Could not find <path>"), so listing all three files by name is the
           # safer choice even though it means updating this line for a future
           # fourth harness.
-          MIN_TESTS: '64'
+          MIN_TESTS: '70'
         run: |
           set -euo pipefail
 
