@@ -175,8 +175,10 @@ jobs:
         run: npm run test:e2e:staging:sweep
 
       # The ledger only: a DB row id, a spec label, a fixed detail string, and
-      # a timestamp. Uploaded as its own small artifact so a leak never has to
-      # pull the trace bundle along with it.
+      # a timestamp. Uploaded by its own narrow path, never by uploading the
+      # directory it sits in: this is the ONLY artifact this job publishes out
+      # of `frontend/test-results/`, and the whole-directory upload that used
+      # to sit below it has been deleted (see the #CRITICAL block there).
       - name: Upload leaked-grant ledger
         if: ${{ !cancelled() && steps.leak_check.outcome == 'failure' }}
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
@@ -185,31 +187,36 @@ jobs:
           path: frontend/test-results/leaked-device-grants.jsonl
           retention-days: 7
 
-      # #CRITICAL: security: gated on the Playwright step's OWN outcome, never
-      # on job-level failure(). test-results/ holds `retain-on-failure` traces
-      # that carry the real staging guardian Supabase bearer, the minted
-      # device-grant token, and DOM snapshots of the sign-in form, and THIS
-      # REPOSITORY IS PUBLIC, so every workflow artifact is downloadable by
-      # anyone for its whole retention window. A job-level `failure()` here
-      # would mean the leak check and the sweep each publish that bundle on
-      # runs that would previously have uploaded nothing, strictly widening
-      # credential exposure in the name of observability. The ledger upload
-      # above is what a leak needs, and it carries no secrets.
-      # #VERIFY: never change this to `failure()` or `always()`, and never
-      # point another artifact at frontend/test-results/ wholesale.
-      - name: Upload Playwright trace on Playwright failure
-        if: ${{ !cancelled() && steps.playwright.outcome == 'failure' }}
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
-        with:
-          name: e2e-staging-traces
-          path: frontend/test-results/
-          retention-days: 7
+      # #CRITICAL: security: there is deliberately NO step here uploading
+      # `frontend/test-results/` wholesale, and none may be added. That step
+      # existed until this change and was the tier's live credential-exposure
+      # path: playwright.e2e-staging.config.ts used to set
+      # `trace: 'retain-on-failure'` for both its projects, so a red run
+      # published a trace bundle carrying the real staging guardian Supabase
+      # bearer, the minted device-grant token, and DOM snapshots of the
+      # sign-in form, and THIS REPOSITORY IS PUBLIC, so that artifact was
+      # downloadable by anyone for its whole 7-day retention window. A single
+      # flaky assertion was enough to trigger it.
+      #
+      # That config now pins trace/screenshot/video off (see its own
+      # #CRITICAL block), matching the sweep tier, so the directory no longer
+      # holds anything worth uploading: the only file this job writes into it
+      # is the leaked-grant ledger, which has its own narrow artifact above.
+      # An upload step kept pointing at the whole directory would therefore
+      # carry no diagnostic payload while standing ready to republish
+      # credentials the moment someone turns tracing back on to debug a red
+      # run, which is exactly how this would recur.
+      #
+      # What a red run gets instead: the `list` reporter's console output, and
+      # the failing-spec extraction below feeding the alert issue.
+      # #VERIFY: never point an artifact at frontend/test-results/ wholesale,
+      # and never gate the narrow ledger artifact above on job-level
+      # `failure()` or `always()` instead of its own step's outcome.
 
       # #CRITICAL: security: reads ONLY frontend/playwright-json-report/e2e-staging.json
       # (this workflow's own `json` reporter output, see the reporter array in
-      # playwright.e2e-staging.config.ts), never frontend/test-results/, which
-      # is uploaded wholesale as a public artifact above because THIS
-      # REPOSITORY IS PUBLIC. scripts/extract-failing-specs.mjs reads only
+      # playwright.e2e-staging.config.ts), never frontend/test-results/.
+      # scripts/extract-failing-specs.mjs reads only
       # `spec.file` and `test.title` off the report, never an error message, a
       # stack trace, or any attachment, and it always exits 0 (a missing or
       # unparseable report degrades to an explanatory line), so this step
@@ -262,7 +269,8 @@ jobs:
         #
         # #CRITICAL: security: THIS REPOSITORY IS PUBLIC, so this body is
         # world-readable like every other issue and log line (see the
-        # #CRITICAL: security comment above the trace-upload step). It names
+        # #CRITICAL: security comment above the failing-spec extraction step,
+        # where the deleted trace upload is described). It names
         # which step failed and points at the run log and artifacts, the same
         # parity already established by this job's own `::error::` lines
         # (grant ids, spec labels); it never carries a bearer token, a

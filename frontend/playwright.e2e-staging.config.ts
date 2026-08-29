@@ -13,12 +13,16 @@ import { requireStagingBaseUrl } from './e2e-staging/support/staging-env'
  * project holds only the disposable fixtures scripts/seed_staging.py
  * creates, never real family data.
  *
- * The `json` reporter writes outside `frontend/test-results/` on purpose:
- * that directory is uploaded wholesale as a public artifact on Playwright
- * failure (see e2e-staging.yml's "Upload Playwright trace on Playwright
- * failure" step, gated on THIS repository being public) and this same
- * workflow's own alert-composing step reads the JSON report, so nothing it
- * reads may live in the uploaded directory. `list` stays first so
+ * The `json` reporter writes outside `frontend/test-results/` on purpose.
+ * Two reasons, both still live now that the wholesale trace upload of that
+ * directory has been deleted from e2e-staging.yml (see the #CRITICAL block
+ * on `use.trace` below): Playwright CLEARS its output directory at the start
+ * of every invocation, and this workflow runs a second Playwright
+ * invocation (the sweep config) in the same job, so a report written there
+ * would be wiped before the alert-composing step reads it; and
+ * `frontend/test-results/` is the directory the narrow leaked-grant ledger
+ * artifact is still uploaded from, so keeping the report out of it means no
+ * future widening of that path can pick the report up. `list` stays first so
  * human-readable CI console output is unchanged.
  *
  * `PLAYWRIGHT_JSON_REPORT_PATH` is read by all four Playwright configs in
@@ -90,7 +94,37 @@ export default defineConfig({
   reporter: [['list'], ['json', { outputFile: JSON_REPORT_PATH }]],
   use: {
     baseURL: requireStagingBaseUrl(),
-    trace: 'retain-on-failure',
+    // #CRITICAL: security: trace/screenshot/video are OFF for the whole
+    // config, deliberately at the TOP LEVEL rather than on one project.
+    // THIS REPOSITORY IS PUBLIC, so any workflow artifact is downloadable by
+    // anyone for its whole retention window, and both projects below handle
+    // the real staging guardian bearer: `staging-auth-setup` performs the
+    // tier's only two real sign-ins (so its trace would carry the sign-in
+    // POST body, the DOM of the sign-in form, and the resulting Supabase
+    // session), and `e2e-staging` runs every spec against a restored
+    // `storageState` (so every request it makes carries that same bearer in
+    // an `Authorization` header, plus the device-grant token its specs
+    // mint). Scoping this to the setup project only would leave the second,
+    // larger surface exposed, which is why it is not scoped.
+    //
+    // This matches playwright.e2e-staging-sweep.config.ts, the sibling
+    // config for the same staging target, which has pinned the same three
+    // off for the same reason since it was written. `screenshot` and `video`
+    // are Playwright defaults today; they are pinned here so turning either
+    // on later has to be a deliberate edit to a line carrying this comment.
+    //
+    // Debuggability was weighed, not ignored: `list`'s console output plus
+    // the `json` report (read by scripts/extract-failing-specs.mjs into the
+    // alert issue) name the failing spec and its assertion, and a staging
+    // failure is reproducible locally against the same target. That is what
+    // the sweep tier has always run on.
+    // #VERIFY: do not set any of these to a capturing value to debug a red
+    // staging run, and do not add a workflow step that uploads
+    // `frontend/test-results/` wholesale (see .github/workflows/e2e-staging.yml,
+    // where that step was deleted and the prohibition is restated).
+    trace: 'off',
+    screenshot: 'off',
+    video: 'off',
   },
   projects: [
     {
