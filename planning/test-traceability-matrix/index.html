@@ -3436,7 +3436,7 @@ the last two.</p>
 <tr>
 <td>e2e-staging</td>
 <td>Daily cron 13:00 UTC + manual, <code>e2e-staging.yml</code></td>
-<td>🟡 passive only: a red run in the Actions tab, trace artifact, no notification</td>
+<td>✅ pinned-issue alert on failure (names which of playwright/leak_check/grant_sweep fired), plus trace artifact</td>
 </tr>
 <tr>
 <td>e2e-prod</td>
@@ -3446,9 +3446,14 @@ the last two.</p>
 </tbody>
 </table>
 <p><strong>Consequence</strong>: the gap this table was written to describe is closed. Both deployed tiers
-now run unattended, and a production breakage raises a pinned issue rather than waiting for
-a family member to hit it. Staging remains passive-only by choice: it fails on disposable
-seeded fixtures, so a red run in the Actions tab is proportionate.</p>
+now run unattended, and a failure on either one raises a pinned issue rather than waiting
+for a family member to hit it or a human to check the Actions tab. Staging's alert names
+which of three independent failure sources fired (<code>playwright</code>, <code>leak_check</code>, or
+<code>grant_sweep</code>; see <code>.github/workflows/e2e-staging.yml</code>'s compose step) because a leaked
+device grant on the shared live staging Supabase project needs a human to revoke it by
+hand, which a mere "red run" was never enough to convey: the original passive-only
+rationale (disposable seeded fixtures) never actually covered the <code>leak_check</code> and
+<code>grant_sweep</code> paths, since a surviving device grant is not a disposable fixture.</p>
 <p>The tiers' shared exposure is now the backend's 60 rpm/IP rate limiter rather than the
 absence of a schedule. Both tiers walk their consoles from a single runner IP, so both pace
 navigations and back off through <code>frontend/e2e-support/rate-limit.ts</code>; see that module for
@@ -3862,11 +3867,11 @@ else needs mocked + one real-environment tier minimum.</p>
 <li><strong>Merge PR #268 and set the three <code>staging</code> environment secrets</strong>
    (<code>E2E_STAGING_BASE_URL</code>, <code>E2E_STAGING_GUARDIAN_PASSWORD</code>, <code>E2E_STAGING_ADMIN_PASSWORD</code>);
    without them the staging tier is dead code.</li>
-<li><strong>Add active alerting to every scheduled run</strong>: a shared on-failure step in
-   <code>e2e-staging.yml</code> (and the new prod workflow below) that opens or appends to a pinned
-   GitHub issue labeled <code>e2e-alert</code> with the run link. Repo watchers then get email/push
-   from GitHub natively. This is the cheapest "quickly alerted" mechanism; a messaging
-   webhook can layer on later.</li>
+<li><strong>Done</strong>: active alerting on every scheduled run. <code>e2e-staging.yml</code> and the prod
+   workflow (item 3 below) each run a shared on-failure step, routed through the
+   <code>.github/actions/ci-failure-issue</code> composite action, that opens or appends to a
+   pinned GitHub issue labeled <code>e2e-alert</code> with the run link and resolves it on the
+   next green scheduled run. Repo watchers get email/push from GitHub natively.</li>
 <li><strong>Done</strong> (<code>.github/workflows/e2e-prod.yml</code>): daily cron <code>30 13 * * *</code> (offset from
    staging) + manual dispatch, running the existing <code>e2e-prod</code> specs against the live URL
    with a dedicated test family, plus the pinned-issue <code>e2e-alert</code> step. The device-grant
@@ -3928,7 +3933,7 @@ else needs mocked + one real-environment tier minimum.</p>
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="July 28, 2026 18:41:11 UTC">July 28, 2026</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="August 29, 2026 23:43:41 UTC">August 29, 2026</span>
   </span>
 
     

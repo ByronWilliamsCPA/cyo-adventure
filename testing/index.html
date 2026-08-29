@@ -3343,6 +3343,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#failure-alert-label-convention" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Failure-alert label convention
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#maintaining-coverage-documentation" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -3522,6 +3533,46 @@ before being enabled, or it can race e2e-staging's device-grant mint/revoke
 and leave the shared fixtures in a bad state. #VERIFY: check
 .github/workflows/e2e-staging.yml's concurrency: block is included whenever
 a new staging-project-touching workflow is added.</code></p>
+<h2 id="failure-alert-label-convention">Failure-alert label convention<a class="headerlink" href="#failure-alert-label-convention" title="Permanent link">&para;</a></h2>
+<p>Every scheduled workflow that files or updates a tracking issue on failure
+(the "pinned issue" pattern used throughout <code>.github/workflows/</code>) must label
+that issue with exactly one of the following two labels. Apply this without
+asking when adding the pattern to a new workflow:</p>
+<table>
+<thead>
+<tr>
+<th>Label</th>
+<th>For</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>e2e-alert</code></td>
+<td>Browser-journey failures: any Playwright tier that drives a real browser, the seeded usersim walks included. Do not read a fixed list here, derive it: <code>grep -rl 'label: e2e-alert' .github/workflows/</code>. On 2026-08-29 that returns six (<code>accessibility-compliance-weekly</code>, <code>e2e-prod</code>, <code>e2e-real-nightly</code>, <code>e2e-staging</code>, <code>usersim</code>, <code>webkit-kid</code>); an earlier parenthetical here named four and read as exhaustive after two more were added.</td>
+</tr>
+<tr>
+<td><code>ci-failure</code></td>
+<td>Everything else: pytest tiers, fuzzing, mutation testing, link checking, performance regression, database backup, notification digest, KWS delivery health, moderation report health, planning linkage, and the semantic-release pipeline.</td>
+</tr>
+</tbody>
+</table>
+<p>The dividing line is "does this failure mean a real browser journey broke",
+not "does this workflow touch the frontend". <code>security-analysis.yml</code>'s
+<code>semgrep-frontend</code> job lints the React tree but never drives a browser, so
+<em>if</em> that workflow filed a tracking issue the label would be <code>ci-failure</code>.
+Read that as normative and not as a description of the fleet: probing
+<code>security-analysis.yml</code> for <code>issues: write</code>, <code>createIssue</code>, <code>gh issue</code> and
+<code>ci-failure-issue</code> returns nothing, so it files no tracking issue at all
+today and <code>UW-F51</code> counts it among the scheduled workflows with no failure
+signal of any kind. Do not score it as covered when auditing alert coverage.
+<code>e2e-prod.yml</code>, by contrast, really does drive Chromium through a real login
+form and really does label <code>e2e-alert</code>.</p>
+<p><code>.github/workflows/scheduled-health-rollup.yml</code>'s own rollup issue carries
+<code>ci-failure</code>, not <code>e2e-alert</code>: it is a meta-report over the whole scheduled
+test ladder (most of which is not browser-driven), not itself a browser
+journey, so it sorts with "everything else" under this convention even
+though several of the workflows it surveys are <code>e2e-alert</code> workflows in
+their own right.</p>
 <h2 id="maintaining-coverage-documentation">Maintaining coverage documentation<a class="headerlink" href="#maintaining-coverage-documentation" title="Permanent link">&para;</a></h2>
 <p>Add or update the relevant section in <code>coverage-matrix.md</code> in the same PR
 that adds a new page, journey, or test file. Don't let this document become
@@ -3549,7 +3600,7 @@ reach staging or production.</p>
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="August 3, 2026 22:31:24 UTC">August 3, 2026</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="August 29, 2026 23:43:41 UTC">August 29, 2026</span>
   </span>
 
     

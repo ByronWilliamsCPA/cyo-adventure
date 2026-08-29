@@ -3766,6 +3766,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#cross-cutting-user-simulation-walk-usersim-tier" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Cross-cutting: user-simulation walk (usersim tier)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#known-gaps-as-of-this-audit" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -3869,7 +3880,21 @@ relate to the Supabase project constraints.</p>
   <code>landing.css</code>). The dialog pass found no new violations. Remaining gap:
   outside the populated and error-alert scans added above, each remaining
   page/dialog is still checked in one fixed mock state, not every
-  loading/error variant.</li>
+  loading/error variant. Narrowed (I7, task B3b, weekly extended tier
+  only): <code>frontend/e2e-usersim/walk-a11y.spec.ts</code> now runs an axe scan at
+  every DISTINCT route+heading state the seeded usersim walk reaches for the
+  first time, across all three personas, which axe-scans several states the
+  hand-picked fixed-mock-state list above never visited (e.g. the reader
+  route mid-story, and whatever the walk's random link choice happens to
+  land on that run). What is still NOT covered even after I7: loading/error
+  variants of a route are not distinguished from its normal state unless the
+  walk's random path happens to land on one (I7's state signature is
+  route+first-heading, not route+data-state, so a loading and a loaded
+  variant of the same route usually collapse to one scan; see
+  <code>deriveStateSignature</code>'s doc comment in
+  <code>frontend/e2e-usersim/support/invariants.ts</code> for the full collapse
+  rationale), and I7 only runs weekly (<code>A11Y_EXTENDED=1</code>,
+  <code>accessibility-compliance-weekly.yml</code>), never per-PR.</li>
 <li><strong>Accessibility, extended (weekly, non-blocking, ADR-029)</strong>: the same
   <code>a11y.spec.ts</code> suite re-run with <code>A11Y_EXTENDED=1</code> by
   <code>.github/workflows/accessibility-compliance-weekly.yml</code>, widening the axe
@@ -4628,8 +4653,8 @@ read's starting variables; the client never derives a seed of its own.</p>
 </ul>
 <h2 id="kid-go-back-undo-k5">Kid: go back / undo (K5)<a class="headerlink" href="#kid-go-back-undo-k5" title="Permanent link">&para;</a></h2>
 <ul>
-<li>E2E-mocked: <code>frontend/e2e/reader-go-back.spec.ts</code> ("Go back" is absent at the start node, appears after a choice, and undoing past a state-gated choice (<code>c_dark_passage</code>, gated on <code>has_lantern</code>) still offers that choice correctly afterward, proving the engine replays the recorded path rather than corrupting state)</li>
-<li>E2E-real: <code>frontend/e2e-real/kid-go-back-real.spec.ts</code> (after two real choices, "Go back" reverts the reader to the prior node and the real <code>PUT /v1/reading-state/{profile_id}/{storybook_id}</code> this triggers persists the reverted <code>current_node</code>/<code>path</code>, confirmed not just via the PUT's own response but via an independent guardian-authorized <code>GET</code> re-fetch of the same row, proving the server, not only client state, holds the reverted position)</li>
+<li>E2E-mocked: <code>frontend/e2e/reader-go-back.spec.ts</code> ("Go back" is absent at the start node, appears after a choice, and undoing past a state-gated choice (<code>c_dark_passage</code>, gated on <code>has_lantern</code>) still offers that choice correctly afterward, proving the engine replays the recorded path rather than corrupting state; since #290, the mocked PUT route captures every request body it receives and the go-back test asserts its own PUT's <code>current_node</code> is the reverted node, not merely that the UI shows it, pins the persisted-node contract that #290 showed was only asserted at the real tier)</li>
+<li>E2E-real: <code>frontend/e2e-real/kid-go-back-real.spec.ts</code> (after two real choices, "Go back" reverts the reader to the prior node and the real <code>PUT /v1/reading-state/{profile_id}/{storybook_id}</code> this triggers persists the reverted <code>current_node</code>/<code>path</code>, confirmed not just via the PUT's own response but via an independent guardian-authorized <code>GET</code> re-fetch of the same row, proving the server, not only client state, holds the reverted position. <code>f68c4f71</code> (#635) added the <code>n_open</code> prelude that made mount emit a second PUT and thereby exposed the order-blind wait <code>259421fa</code> (#369) introduced; reading-state saves are not concurrent (ReaderPage.tsx chains each save behind the previous one and awaits it before issuing the next), so the two PUTs were never simultaneously in flight on the wire. The real hazard is an off-by-one in response DELIVERY: an earlier save's response can still be undelivered to <code>page.waitForResponse</code>'s listener when the next wait registers, so it resolves on whichever matching response is delivered first, which is queue position at the observer, not the save this test had just triggered, so the assertion against the captured body was order-dependent even though the server's actual persisted state was already correct. Fixed (#290) by having <code>waitForReadingStatePut</code> accept the expected <code>current_node</code> and match the request body instead of the URL alone, so each wait names the specific save it is waiting for.)</li>
 <li>Component: <code>frontend/src/reader/BackToLibrary.test.tsx</code>, <code>frontend/src/player/engine.test.ts</code> (go-back is a bounded replay computation in the player engine)</li>
 <li><strong>Gap</strong>: no <code>e2e-staging</code> or <code>e2e-prod</code> coverage yet.</li>
 <li><strong>Gap (F-6c), registered but deliberately skipped</strong>:
@@ -4667,6 +4692,7 @@ read's starting variables; the client never derives a seed of its own.</p>
 <li>E2E-mocked: <code>frontend/e2e/device-authorization.spec.ts</code>, <code>frontend/e2e/landing.spec.ts</code>, <code>frontend/e2e/naive-user/naive-kid-misuse.spec.ts</code>, <code>frontend/e2e/guardian-devices.spec.ts</code> (the guardian's authorized-device list in the routed app: revoking is gated behind the confirm dialog and fires <code>DELETE /v1/device-grants/{id}</code> for that device only, cancelling sends nothing, and an unauthenticated visit redirects to guardian login)</li>
 <li>E2E-real: <code>frontend/e2e-real/kid-reads.spec.ts</code>, <code>frontend/e2e-real/naive-kid-misuse-real.spec.ts</code>, <code>frontend/e2e-real/series-continue-real.spec.ts</code>, <code>frontend/e2e-real/real-stack.ts</code> (helper)</li>
 <li>E2E-staging: <code>frontend/e2e-staging/kid-library-smoke.spec.ts</code> (one of two grant-writing staging specs, with <code>afterAll</code> cleanup, mirroring the prod pattern; <code>moderation-qa-invisibility.spec.ts</code> runs the same reversible mint/revoke pattern)</li>
+<li>E2E-staging-sweep: <code>frontend/e2e-staging-sweep/device-grant-sweep.spec.ts</code>, the authoritative end-of-job backstop for the two E2E-staging specs above (see <code>docs/testing/README.md</code>, "Concurrent runs must not race the same fixtures"). Runs after the main staging tier and asks staging itself whether the test family still holds an active device grant, independent of whether either spec's own <code>afterAll</code> teardown ran; fail-closed on anything other than a confirmed-empty list (a 429, a non-2xx, a network error, or an unparseable body all fail the spec rather than being read as "no leaks"). Reports without auto-revoking.</li>
 <li>E2E-prod: <code>frontend/e2e-prod/kid-device-grant.spec.ts</code> (the one prod spec that writes, with <code>afterAll</code> cleanup)</li>
 <li>Component: <code>frontend/src/auth/DeviceAuthorizedRoute.test.tsx</code>, <code>frontend/src/auth/deviceGrant.test.ts</code>, <code>frontend/src/auth/deviceGrantApi.test.ts</code>, <code>frontend/src/landing/LandingPage.test.tsx</code>, <code>frontend/src/guardian/ConsolePage.test.tsx</code> (mint/re-authorize/revoke), <code>frontend/src/guardian/LoginPage.test.tsx</code> (authorize-device intent), <code>frontend/src/offline/db.test.ts</code> (device-grant mirror + migration), <code>frontend/src/hooks/useApi.test.ts</code> (device-grant bearer selection/clearing), <code>frontend/src/guardian/DevicesPage.test.tsx</code> (the guardian's authorized-device list: empty state, a granted device rendered with its label and grant date, the "Unnamed device" fallback for a null label, and the "This device" marker driven by matching the browser's own stored <code>device_grant</code> id so only the matching row is marked. Revoking is gated behind a confirm dialog, the <code>DELETE /v1/device-grants/{id}</code> fires only on confirm and the row then disappears, cancelling leaves the list untouched with no request sent, and a failed revoke shows a row-level error while keeping the device listed and its button re-enabled. Also pins the revocation copy against real backend behavior: <code>api/deps.py::_child_principal</code> does no database round-trip, so an already-minted child session survives revocation for the rest of its 12-hour TTL, and the page must not claim the cut-off happens on the next reconnect. The same suite also covers the page's G15 downloads section: grouped-by-device rendering, the empty/loading/error states fetched independently of the device-grant list, and each row's profile name/book title/last-confirmed display), <code>frontend/src/guardian/deviceDownloadsApi.test.ts</code> (the <code>GET /v1/device-downloads</code> adapter backing that section: payload pass-through and null on any HTTP or transport failure)</li>
 <li>Integration: <code>frontend/src/test/App.test.tsx</code></li>
@@ -4677,6 +4703,113 @@ read's starting variables; the client never derives a seed of its own.</p>
 <li>E2E-real: <code>frontend/e2e-real/ratings-real.spec.ts</code> (tap a star against the real backend, reload, confirm the rating persisted server-side rather than only in client state)</li>
 <li>Component: <code>frontend/src/library/StarRating.test.tsx</code>, <code>frontend/src/library/LibraryPage.test.tsx</code> (rate POST + optimistic/revert), <code>frontend/src/library/libraryApi.test.ts</code> (<code>rate()</code>)</li>
 <li><strong>Remaining gap</strong>: still no <code>e2e-staging</code> or <code>e2e-prod</code> coverage; low priority given the real-backend and component coverage now in place.</li>
+</ul>
+<h2 id="cross-cutting-user-simulation-walk-usersim-tier">Cross-cutting: user-simulation walk (usersim tier)<a class="headerlink" href="#cross-cutting-user-simulation-walk-usersim-tier" title="Permanent link">&para;</a></h2>
+<p>Not tied to a single journey by design: a seeded random walk over the live,
+built app (<code>frontend/e2e-usersim/</code>, <code>usersim</code> Playwright project in the
+shared default <code>frontend/playwright.config.ts</code>), one walk per persona (kid,
+guardian, admin), asserting I1-I5 at every state it reaches and I6 after
+an occasional random back/forward step, rather than exercising one
+predetermined path. See
+<code>docs/testing/user-side-testing-module-proposal-2026-08-27.md</code> for why a
+random walk over the real click graph earns its keep alongside the
+predetermined journeys above. Route via <code>npm run test:e2e:usersim</code>.</p>
+<ul>
+<li>E2E-usersim: <code>frontend/e2e-usersim/walk.spec.ts</code> runs the walk itself
+  (everything under <code>frontend/e2e-usersim/support/</code> is the non-spec
+  substrate behind this tier, excluded from this guard's discovery by the
+  <code>*.spec.ts</code> glob: <code>console-allowlist.ts</code>, <code>findings.ts</code>, <code>invariants.ts</code>,
+  <code>mocked-api.ts</code>, <code>personas.ts</code>, <code>prng.ts</code>, <code>reader-personas.ts</code>,
+  <code>real-canaries.ts</code>, <code>real-session-setup.ts</code>, <code>route-manifest.ts</code> and
+  <code>walk-runner.ts</code>, the last of which the real-backend and a11y legs below
+  share). Six invariants exist, but not six at every state: the walk's own
+  header docstring (<code>frontend/e2e-usersim/walk.spec.ts</code>) says it asserts
+  "I1-I5 at every state and I6 after an occasional random back/forward
+  step". Grep that sentence rather than trusting a line number here; this
+  tier's files move. I1
+  (no buffered console error/pageerror/unhandled-rejection since the last
+  drain), I2 (the state offers an enabled
+  interactive element, or is a recognised terminal for that persona), I3 (any
+  loading indicator resolves within budget, no fixed sleep), I4 (zero
+  page-level horizontal overflow), I5 (role and family isolation: a kid
+  session never renders guardian-only or cross-family content, and a
+  guardian session never renders another family's data, per the ADR-016
+  three-ring boundary), and I6 (a random back/forward step still lands in a
+  state satisfying I1-I4). A back/forward state is therefore checked against
+  four invariants, not six: I2 and I5 are deliberately not re-checked there.
+  The reason is documented on the I6 helper itself, in the doc comment above
+  <code>assertHistoryStepInvariants</code> in
+  <code>frontend/e2e-usersim/support/invariants.ts</code>, not in the spec. Cited by
+  symbol on purpose: that block's line number has already moved twice.</li>
+<li>E2E-usersim, real-backend leg (task B3a): <code>frontend/e2e-usersim/walk-real.spec.ts</code>
+  runs the SAME seeded walk as <code>walk.spec.ts</code> above (shared via
+  <code>support/walk-runner.ts</code>, not a forked copy) against a real backend instead
+  of route-mocked fixtures, so I1-I6 are checked against genuine backend
+  responses rather than mock responses. Only session setup
+  (<code>support/real-session-setup.ts</code>, real device grant / seeded bearer tokens
+  instead of localStorage fixtures) and the I5 canary values
+  (<code>support/real-canaries.ts</code>, real seeded rows instead of the mocked-tier's
+  literals) differ from <code>walk.spec.ts</code>. Zero route mocks, matching
+  <code>frontend/e2e-real/</code>'s own convention. Runs only inside
+  <code>.github/workflows/e2e-real-nightly.yml</code> (Playwright project
+  <code>usersim-real</code>), which already brings up the real stack the other
+  real-backend projects in that job need; it is meaningless run alone
+  against this file's own mocked-tier <code>webServer</code>. Route via
+  <code>npm run test:e2e:usersim:real</code>.</li>
+<li>E2E-usersim, I7 (task B3b): <code>frontend/e2e-usersim/walk-a11y.spec.ts</code> runs
+  the SAME seeded walk (via the shared <code>support/walk-runner.ts</code> substrate,
+  reusing <code>support/mocked-api.ts</code>'s route mocks) as a separate spec and a
+  separate Playwright project (<code>usersim-a11y</code>), never a tag or grep filter
+  on <code>walk.spec.ts</code> itself. Separate project, NOT a separate directory: all
+  three usersim projects in <code>frontend/playwright.config.ts</code> (<code>usersim</code>,
+  <code>usersim-real</code>, <code>usersim-a11y</code>) declare the same
+  <code>testDir: './e2e-usersim'</code> and are separated by <code>testMatch</code> instead, which
+  is what lets them share the
+  <code>support/walk-runner.ts</code> substrate. So I1-I6 keep running unaffected on
+  every nightly usersim run while I7 runs only where <code>.github/workflows/
+  accessibility-compliance-weekly.yml</code> puts it (<code>A11Y_EXTENDED=1</code>, weekly,
+  never per-PR; this is an explicit owner decision, not an oversight). I7
+  adds a seventh invariant: an axe accessibility scan
+  (<code>assertNoNewStateAxeViolations</code> in <code>support/invariants.ts</code>) run once per
+  DISTINCT state signature (route pathname + first heading in DOM order,
+  <code>deriveStateSignature</code>), the first time the walk reaches it; a state
+  already scanned is a Set lookup, not a rescan. This deliberately collapses
+  two states sharing a route and heading into one scan; concretely, the
+  reader route's many story nodes (<code>/read/:profileId/:storybookId/:version</code>)
+  render no heading at all in their normal state, so every such node the
+  walk visits collapses to a single signature and gets scanned once, not
+  once per node. The walk emits <code>distinct_states_scanned</code> (a running Set
+  size) in its console log at both a per-scan (<code>[usersim-a11y-new-state]</code>)
+  and a per-walk-end (<code>[usersim-a11y]</code>) granularity, so a healthy run (a
+  positive count) is distinguishable from one whose scanning silently broke
+  (nothing logged at all). Findings are recorded through the same
+  <code>support/findings.ts</code> sink as I1-I5, tagged <code>workflow:
+  'usersim-a11y-weekly'</code> (distinct from the nightly walks' own
+  <code>usersim-walk</code>/<code>usersim-walk-real</code> tags), so the two kinds of usersim
+  finding are distinguishable downstream without a second emitter; see
+  <code>docs/operations/runbook.md</code> for the resulting two-stream triage note.
+  Only WCAG-tagged (conformance) violations fail the run, matching
+  <code>a11y.spec.ts</code>'s own conformance/best-practice split (shared rule set via
+  <code>frontend/e2e/support/axeTags.ts</code>); non-WCAG best-practice findings are
+  logged and tracked as <code>UW-F27</code>, not failed, for the same reason
+  <code>a11y.spec.ts</code> does not fail on them either.</li>
+<li>E2E-usersim, reader-persona fixture (task C2):
+  <code>frontend/e2e-usersim/reader-personas.spec.ts</code> is a non-browser check
+  against the ten fixed, age-banded reader personas in
+  <code>schema/personas/reader_personas.json</code> (loaded and validated at runtime by
+  <code>support/reader-personas.ts</code>, no <code>resolveJsonModule</code>, no unchecked casts
+  over the parsed JSON). It asserts every persona's <code>band</code> is one of the
+  six age bands <code>src/cyo_adventure/validator/band_profile.py</code> defines (via
+  the OpenAPI-generated <code>AgeBand</code> type, so a backend band rename fails this
+  file's typecheck too) and that every band has at least one persona. This
+  fixture is the canonical reader-persona set the leg B agentic runner under
+  <code>tools/usersim-agent/</code> (task D2) is expected to read directly rather than
+  copy; it is unrelated to <code>support/personas.ts</code>'s three ROLE personas
+  (kid/guardian/admin) used by the walk specs above.</li>
+<li>Component: <code>frontend/src/router.usersim-manifest.test.ts</code> (see
+  "Cross-cutting component and utility tests" below; kept there rather than
+  duplicated here since it is a Vitest suite, not part of this Playwright
+  tier).</li>
 </ul>
 <hr />
 <h2 id="known-gaps-as-of-this-audit">Known gaps (as of this audit)<a class="headerlink" href="#known-gaps-as-of-this-audit" title="Permanent link">&para;</a></h2>
@@ -4796,6 +4929,13 @@ in their journey sections instead.</p>
   hook every routed page calls: the app-name suffix, the <code>bare</code> opt-out the
   landing page uses so its title is not doubled, and re-firing when the title
   prop changes. Not tied to one journey because all 29 routed pages share it)</li>
+<li>Usersim walk substrate (<code>frontend/e2e-usersim/</code>; the walk itself is now a
+  wired Playwright project, documented under "Cross-cutting: user-simulation
+  walk (usersim tier)" above): <code>frontend/src/router.usersim-manifest.test.ts</code>
+  (sync test asserting the checked-in <code>route-manifest.ts</code> walkable-route list
+  matches the real route tree in both directions, with a positive control
+  proving the leaf-path derivation is non-vacuous and correctly descends
+  nested pathless layouts)</li>
 <li>Theme system (light/dark/system, mounted app-wide at the root via
   ThemeProvider; every surface's chrome renders a ThemeToggle):
   <code>frontend/src/theme/theme.test.ts</code> (mode validation, stored-preference
@@ -4874,7 +5014,7 @@ closure. A companion action-level verdict for this audit lives at
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="August 25, 2026 06:21:39 UTC">August 25, 2026</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="August 29, 2026 23:43:41 UTC">August 29, 2026</span>
   </span>
 
     

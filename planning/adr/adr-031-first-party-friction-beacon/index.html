@@ -1,0 +1,4490 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="A choose-your-own-adventure reading app for kids">
+      
+      
+        <meta name="author" content="Byron Williams">
+      
+      
+        <link rel="canonical" href="https://cyo-adventure.readthedocs.io/planning/adr/adr-031-first-party-friction-beacon/">
+      
+      
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+    
+    
+      
+        <title>ADR-031: Children's-privacy review of the first-party client friction beacon - CYO Adventure</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../../assets/stylesheets/main.ec1eaa64.min.css">
+      
+        
+        <link rel="stylesheet" href="../../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../../assets/_mkdocstrings.css">
+    
+    <script>__md_scope=new URL("../../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+  
+
+
+  
+  
+
+<script id="__analytics">function __md_analytics(){function e(){dataLayer.push(arguments)}window.dataLayer=window.dataLayer||[],e("js",new Date),e("config",""),document.addEventListener("DOMContentLoaded",(function(){document.forms.search&&document.forms.search.query.addEventListener("blur",(function(){this.value&&e("event","search",{search_term:this.value})}));document$.subscribe((function(){var t=document.forms.feedback;if(void 0!==t)for(var a of t.querySelectorAll("[type=submit]"))a.addEventListener("click",(function(a){a.preventDefault();var n=document.location.pathname,d=this.getAttribute("data-md-value");e("event","feedback",{page:n,data:d}),t.firstElementChild.disabled=!0;var r=t.querySelector(".md-feedback__note [data-md-value='"+d+"']");r&&(r.hidden=!1)})),t.hidden=!1})),location$.subscribe((function(t){e("config","",{page_path:t.pathname})}))}));var t=document.createElement("script");t.async=!0,t.src="https://www.googletagmanager.com/gtag/js?id=",document.getElementById("__analytics").insertAdjacentElement("afterEnd",t)}</script>
+  
+    <script>"undefined"!=typeof __md_analytics&&__md_analytics()</script>
+  
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#adr-031-childrens-privacy-review-of-the-first-party-client-friction-beacon" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../../.." title="CYO Adventure" class="md-header__button md-logo" aria-label="CYO Adventure" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            CYO Adventure
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              ADR-031: Children's-privacy review of the first-party client friction beacon
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/ByronWilliamsCPA/cyo-adventure" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+  </div>
+  <div class="md-source__repository">
+    ByronWilliamsCPA/cyo-adventure
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../.." class="md-tabs__link">
+        
+  
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../guides/overview/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  User Guide
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../api-reference/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  API Reference
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../operations/runbook/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Operations
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../architecture/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Architecture
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../security/assurance-spine/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Security
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../development/architecture/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Development
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../project/roadmap/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Project
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Planning
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../PROJECT_SETUP/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Supplementary Docs
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../ADRs/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Reference
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../../.." title="CYO Adventure" class="md-nav__button md-logo" aria-label="CYO Adventure" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    CYO Adventure
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/ByronWilliamsCPA/cyo-adventure" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+  </div>
+  <div class="md-source__repository">
+    ByronWilliamsCPA/cyo-adventure
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    User Guide
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    User Guide
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../guides/overview/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Overview
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../guides/configuration/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Configuration
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../guides/usage/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Usage
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../guides/supabase-environments/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Supabase environments
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    API Reference
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    API Reference
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../api-reference/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Overview
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Operations
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Operations
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../operations/runbook/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Operator Runbook
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../operations/kws-test-runbook/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    KWS Test-Environment Runbook
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../operations/authoring-guide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Authoring Guide
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../operations/reviewer-sop/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Reviewer SOP
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../operations/security-events/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Security Event Catalog
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_5" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../../architecture/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Architecture
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_5" id="__nav_5_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Architecture
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../architecture/user-journeys/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    User Journeys
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../architecture/system-overview/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    System Overview
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../architecture/generation-pipeline/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Generation Pipeline
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../architecture/validation-and-player/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Validation and Player
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../architecture/data-model/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Data Model
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../architecture/deployment/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Deployment
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_6" >
+        
+          
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Security
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Security
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../security/assurance-spine/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Assurance Spine
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../security/assurance-register/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Assurance Register
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../security/control-inheritance/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Control Inheritance Map
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../security/crypto-inventory/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Cryptographic Inventory
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../security/red-team-design-review-2026-07/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Red Team Design Review
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+          
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_7" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../../api/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Development
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_7" id="__nav_7_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_7_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_7">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Development
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../development/architecture/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Architecture
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../development/testing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Testing
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../development/code-quality/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Code Quality
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../development/contributing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Contributing
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_8" >
+        
+          
+          <label class="md-nav__link" for="__nav_8" id="__nav_8_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Project
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_8_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_8">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Project
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../project/roadmap/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Roadmap
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../project/changelog/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Changelog
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../project/license/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    License
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_9" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Planning
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--active"></span>
+  
+
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_9" id="__nav_9_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_9_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_9">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Planning
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../project-vision/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Project Vision
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--active"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tech-spec/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Tech Specification
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--active"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../PROJECT-PLAN/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Project Plan
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--active"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../roadmap/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Roadmap
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--active"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_9_6" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADRs
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_9_6" id="__nav_9_6_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_9_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_9_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    ADRs
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../adr-001-story-format-json-storybook/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR-001
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--accepted"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../adr-002-client-pwa/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR-002
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--accepted"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../adr-003-frontier-llm-generation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR-003
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--accepted"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../adr-004-homelab-first-deployment/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR-004
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--accepted"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../adr-005-mandatory-human-approval/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR-005
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--accepted"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../adr-006-conditions-inhouse-evaluator/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR-006
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--accepted"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../adr-007-raw-output-retention/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR-007
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--accepted"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../adr-008-public-app-store-launch/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR-008
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--proposed"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../adr-009-supabase-platform/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR-009
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--accepted"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../adr-010-modal-review-and-gated-generation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR-010
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--proposed"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../adr-011-story-scale-framework/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR-011
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--accepted"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+          
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_9_7" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../research/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Story Structure Diversity
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--active"></span>
+  
+
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_9_7" id="__nav_9_7_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_9_7_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_9_7">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Story Structure Diversity
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../story-structure-diversity-critical-analysis/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Critical Analysis
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--active"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../story-structure-improvement-plan/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Improvement Plan
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--active"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../story-structure-implementation-briefs/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Implementation Briefs
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--active"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_10" >
+        
+          
+          <label class="md-nav__link" for="__nav_10" id="__nav_10_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Supplementary Docs
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_10_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_10">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Supplementary Docs
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../PROJECT_SETUP/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Project Setup
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../OPENSSF_COMPLIANCE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    OpenSSF Compliance
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../PYTHON_COMPATIBILITY/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Python Compatibility
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_11" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../../ADRs/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Reference
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_11" id="__nav_11_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_11_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_11">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Reference
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../ADRs/adr-template/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR Template
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--draft"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#tldr" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        TL;DR
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#context" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Context
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Context">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#problem" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Problem
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="adr-031-childrens-privacy-review-of-the-first-party-client-friction-beacon">ADR-031: Children's-privacy review of the first-party client friction beacon<a class="headerlink" href="#adr-031-childrens-privacy-review-of-the-first-party-client-friction-beacon" title="Permanent link">&para;</a></h1>
+<blockquote>
+<p><strong>Status</strong>: Proposed (2026-08-28). <strong>Awaiting owner ratification.</strong> This document was
+drafted by an agent as task D3a of the testing-improvement plan, whose D3 entry states
+"Gated on its own ADR ... No code before the ADR is accepted." <strong>It is not a completed
+human privacy review and must not be cited as one.</strong> It becomes Accepted only when the
+owner ratifies it. Until then no beacon client, no ingest route, no table, and no digest
+job may be built, and task D3b is blocked. The ADR is deliberately willing to return a
+narrower feature than the plan proposed: two of the seven proposed event variants are
+dropped here and the remaining five all ship narrowed.
+<strong>Date</strong>: 2026-08-28
+<strong>Relates to</strong>: <a href="../adr-018-childrens-privacy-compliance/">ADR-018</a> (the governing
+children's-privacy architecture and the authority this review answers to),
+<a href="../adr-030-engagement-correlation-privacy-review/">ADR-030</a> (the adjacent proposal,
+also <code>proposed</code> and also awaiting ratification, which worked the same re-identification
+problem for a server-side signal; its rules are carried forward and its divergences are
+named in Decision 2), <a href="../adr-016-recommendation-sharing-social-boundary/">ADR-016</a>
+(the no-free-text principle this beacon's closed payload extends to a new channel), and
+<a href="../adr-014-device-authorized-kid-access/">ADR-014</a> (the device-grant and child-session
+model that makes a kid-surface request attributable to one child profile).</p>
+</blockquote>
+<h2 id="tldr">TL;DR<a class="headerlink" href="#tldr" title="Permanent link">&para;</a></h2>
+<p>The D3 beacon may be built, in a narrower form than proposed, under constraints that are
+decisions here rather than implementation preferences.</p>
+<p><strong>The kid surface does not emit. At all, in version 1.</strong> Not a reduced variant set, not a
+sampled subset. A kid-surface request authenticates with a child session token whose signed
+claim names exactly one child profile (<code>api/deps.py:738</code>), so the request is attributable to
+one identified child whatever its body says. ADR-030 excluded storybooks carrying
+<code>personalization_subject_profile_id</code> categorically, on the ground that no aggregate over a
+record that is <em>about</em> one identified child is publishable at any cohort size. Kid-surface
+friction telemetry is about one identified child by construction. The same rule gives the
+same answer, and it is a categorical exclusion rather than a threshold.</p>
+<p><strong>The emitting surfaces are the guardian console and the admin console only</strong>, and the server
+enforces that by rejecting any principal that is not <code>guardian</code> or <code>admin</code>. The landing page
+does not emit either, because admitting it would require an unauthenticated write route.</p>
+<p><strong>Two of the seven proposed variants are dropped</strong>: offline-sync failure counts (it needs a
+profile identifier to be actionable, and the plan's own <code>#VERIFY</code> says such a variant is
+dropped rather than the rule bent) and dead clicks (its detector requires document-wide DOM
+observation and a fetch wrapper, which is the capability the Session Replay prohibition
+exists to forbid, at reduced fidelity). The other five ship narrowed. Decision 3 walks each
+one.</p>
+<p><strong>The record is not the payload.</strong> The plan's <code>#ASSUME</code> is about payload contents, and a
+payload proved clean is not a clean record: the envelope carries a bearer token, a client IP,
+and a correlation id, and a stored timestamp joins to everything else the server holds at that
+instant. This is ADR-030's own rule transposed (a property proved of one part of a record is
+not a property of the record), and it produces the two most load-bearing controls here: the
+handler resolves a principal for authorization and then <strong>discards it before the insert</strong>, and
+<code>received_on</code> is <strong>stored truncated to the calendar date</strong>, matching the day-grain posture
+<code>ReadingActivityDay</code> already establishes (<code>db/models.py:1746-1748</code>).</p>
+<p><strong>The beacon does not write to <code>pipeline_event</code>, and cannot.</strong> That table is enforced
+append-only by trigger <code>trg_pipeline_event_append_only</code>
+(<code>supabase/migrations/20260710000000_baseline.sql:524</code>), which raises on any UPDATE or DELETE.
+The plan asks for a 30-day retention window on an append-only table, which is not
+implementable. The beacon gets its own table with a <code>pg_cron</code> sweep, and <strong>that sweep has no
+exemption set at all</strong>, because <code>UW-C227</code> records this repository shipping exactly the
+sweep-time-versus-decision-time inversion the plan warns about.</p>
+<p><strong>Session Replay stays banned, as a capability rather than as a product name</strong>, because a
+first-party reimplementation walks under a vendor-named ban without touching it.</p>
+<h2 id="context">Context<a class="headerlink" href="#context" title="Permanent link">&para;</a></h2>
+<h3 id="problem">Problem<a class="headerlink" href="#problem" title="Permanent link">&para;</a></h3>
+<p>Leg C of the testing-improvement plan's workstream D proposes a first-party client telemetry
+beacon: a small module beside <code>frontend/src/observability.ts</code> batching a closed enum of events
+via <code>sendBeacon</code> on <code>visibilitychange</code> (a transport Decision 4 replaces, for the reason given
+there), posting to <code>POST /api/v1/client-events</code>, retained 30
+days, and consumed by a weekly digest job in the mould of <code>moderation-report-health.yml</code> that
+files or updates one tracking issue. The plan gates the whole thing on this ADR and carries
+this assumption marker:</p>
+<blockquote>
+<p>`#ASSUME: security: the leg C payload enum can be kept free of attributable child data (no
+names, no free text, no stable per-profile identifiers) while remaining useful for triage.</p>
+<h1 id="verify-the-adr-review-must-walk-every-enum-variant-against-the-privacy-model-in">VERIFY: the ADR review must walk every enum variant against the privacy model in<a class="headerlink" href="#verify-the-adr-review-must-walk-every-enum-variant-against-the-privacy-model-in" title="Permanent link">&para;</a></h1>
+<p>docs/planning/ and against observability.ts's existing scrubbing rules before implementation
+starts; if any variant needs an identifier to be actionable, that variant is dropped rather
+than the rule bent.`</p>
+</blockquote>
+<p>The marker is correct about what it names. It is incomplete in one respect that decides most
+of this document: <strong>it is an assumption about the payload, and what gets stored is a record.</strong>
+A payload can satisfy every clause of that marker while the record it lands in is attributable
+to one child, because the attribution arrives in the envelope rather than the body. Three
+structural properties of this system make that concrete.</p>
+<ol>
+<li><strong>A kid-surface request names one child profile in a signed claim.</strong> <code>api/deps.py</code>'s child
+   principal is constructed with <code>profile_ids=frozenset({claims.profile_id})</code> (line 738), the
+   singleton taken from the session token. A <code>device</code> principal carries <code>family_id</code> with
+   <code>profile_ids</code> force-cleared (line 831), and a <code>guardian</code> principal carries a resolved
+   <code>User.id</code>. There is no authenticated request shape on this API that does not identify at
+   least a family. An anonymous body posted over an identified connection is an identified
+   record unless the handler deliberately throws the identity away, and nothing makes a
+   handler do that by default.</li>
+<li><strong>The request path observes the client before the handler sees the body.</strong>
+   <code>CorrelationMiddleware</code> stamps a correlation id on every request and propagates it into
+   every log line, and <code>RateLimitMiddleware</code> keys per client IP
+   (<code>middleware/security.py:366</code> onward). Both are correct and neither is being changed here;
+   the point is that they exist upstream of the beacon and so the beacon's anonymity claim
+   cannot be made by inspecting its schema alone.</li>
+<li><strong>The population is tiny and the timeline is dense.</strong> The production roster is four adult
+   accounts, two of them holding admin. A family may hold one child. A stored timestamp at
+   full precision joins a beacon row to <code>pipeline_event.occurred_at</code>, to <code>completion.found_at</code>,
+   to <code>reading_activity_day</code>, and to the edge access log for the same instant. In this
+   population a timestamp is close to an identifier.</li>
+</ol>
+<p>Two further hazards the plan itself names are real and open in this repository, and are
+answered in Decisions 7 and 8 rather than left to the implementer: retention evaluated at
+sweep time rather than decision time (<code>UW-C227</code>), and the shared redaction censor missing
+several credential shapes.</p>
+<p>There is also a plain implementability defect in the plan's server leg. It says the beacon
+writes "through the existing append-only <code>events/</code> pipeline with a 30-day retention window."
+Those two clauses contradict each other. <code>pipeline_event</code> is enforced append-only by a
+database trigger that raises on any UPDATE or DELETE, so no retention sweep can touch it; its
+<code>event_type</code>, <code>entity_type</code>, and <code>actor_role</code> columns each carry a closed CHECK constraint that
+a new client event type would have to widen by migration; a further constraint,
+<code>(actor_role = 'system') = (actor_id IS NULL)</code>, forces every row to either carry a user id or
+declare itself a system transition, with no third option for an anonymous browser; and
+<code>events/writer.py::record_event</code> requires an <code>Actor</code> and joins the caller's unit of work, which
+a fire-and-forget beacon has no business doing. <code>UW-D28</code> already records the same collision for
+<code>security_event</code>: "the <code>security_event</code> table has no retention or purge mechanism at all,
+which is an ADR-018 gap the append-only trigger makes harder to close, not easier." Decision 7
+resolves it for this data class.</p>
+<h3 id="constraints">Constraints<a class="headerlink" href="#constraints" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>ADR-018 is the authority, and consent does not stretch.</strong> A child cannot consent, and a
+  guardian's consent is scoped to the product functions disclosed to them. Telemetry recording
+  how a child struggles with an interface is behavioural data about a child collected for an
+  engineering purpose, which is a new processing activity rather than an extension of an
+  existing one. The Rule's necessity limit bars conditioning a child's participation on
+  collecting more than is reasonably necessary, and no child's reading experience improves
+  because a beacon fired.</li>
+<li><strong>This repository is public, and the digest publishes into it.</strong> The plan's consumption leg
+  files or updates a tracking issue. An issue on this repository is world-readable and is not
+  retractable. Whatever the digest says is a publication, so the beacon has two boundaries to
+  close and not one: browser to server, and server to issue.</li>
+<li><strong>No measurement is available.</strong> Nothing in this system currently measures client-side
+  friction, so every number below is derived rather than calibrated, and is labelled as such.</li>
+<li><strong>The existing observability posture is deliberate and is being extended, not replaced.</strong>
+  <code>frontend/src/observability.ts</code> adds no <code>BrowserTracing</code> and no <code>Replay</code> integration, sets
+  <code>tracesSampleRate</code>, <code>replaysSessionSampleRate</code>, and <code>replaysOnErrorSampleRate</code> all to 0 and
+  <code>sendDefaultPii: false</code>, and runs a <code>beforeSend</code> scrubber that reduces <code>event.user</code> to a bare
+  anonymous id and strips request bodies, cookies, and headers. Its module docstring states the
+  reasoning: "This is a kids' reading app: Session Replay records DOM mutations and interaction
+  video of whoever is using the page, which is exactly the kind of telemetry a
+  children's-privacy-conscious app must not collect." That reasoning is carried forward into
+  Decision 9 as a stated prohibition, because a posture that lives only in a comment is a
+  posture the next module does not inherit.</li>
+<li><strong>ADR-030 is adjacent, not settled.</strong> It is <code>proposed</code> and awaiting the same owner's
+  ratification (<code>UW-A57</code>). It is treated here as the nearest precedent whose reasoning should
+  not be contradicted, not as policy already in force.</li>
+</ul>
+<h3 id="significance">Significance<a class="headerlink" href="#significance" title="Permanent link">&para;</a></h3>
+<p>The asymmetry runs the same direction ADR-030 found. A beacon that collects less than it could
+costs engineering visibility into an adult console, which the project has done entirely without
+until now. A beacon that collects a child's interaction difficulty, or that stores an
+attributable record, or that publishes an hour-grain hotspot into a public issue, discloses
+something about identifiable children and cannot be undone: the issue is public from the
+moment it is filed and the rows are joined the moment they are stored. When one side of the
+error is reduced visibility and the other is irreversible disclosure about children, the review
+takes the reduced visibility.</p>
+<h2 id="decision">Decision<a class="headerlink" href="#decision" title="Permanent link">&para;</a></h2>
+<h3 id="1-which-surfaces-emit-and-the-kid-surface-does-not">1. Which surfaces emit, and the kid surface does not<a class="headerlink" href="#1-which-surfaces-emit-and-the-kid-surface-does-not" title="Permanent link">&para;</a></h3>
+<p><strong>Emitting surfaces</strong>: the guardian console (<code>/guardian/*</code>) and the admin console
+(<code>/admin/*</code>). Nothing else.</p>
+<p><strong>Non-emitting surfaces, each for its own reason</strong>:</p>
+<ul>
+<li><strong>The kid surface (<code>/kids</code>, <code>/library/:profileId</code>, <code>/read/:profileId/:storybookId/:version</code>)
+  emits nothing.</strong> This is a categorical exclusion, evaluated before any other rule, not a
+  threshold and not a reduced variant set. Four reasons, of which the first is sufficient on
+  its own:</li>
+<li><strong>The request identifies one child.</strong> A kid-surface session authenticates as a <code>child</code>
+     principal whose <code>profile_ids</code> is the singleton from a signed claim (<code>api/deps.py:738</code>).
+     A record created by that request is about one identified child at the moment it arrives,
+     before anything in the payload is considered. ADR-030 reached the identical situation
+     from the other side and excluded it categorically: "No aggregate over a book that is about
+     one identified child is publishable at any cohort size, and no counting argument reaches
+     this case." The subject here is reached by the session rather than by a column, and the
+     rule is the same rule.</li>
+<li><strong>The route itself is the disclosure.</strong> The reader route carries <code>:profileId</code> and
+     <code>:storybookId</code>. Even a route <em>class</em> emitted from the reader says a specific child was
+     reading at a specific time, and a route <em>path</em> would say which book.</li>
+<li><strong>The signal is a frustration observation about a child.</strong> A rage-click hotspot on one
+     control, from one session, in a product where a family may hold one child, is close to an
+     observation about one identified child even with no identifier in the payload. This is
+     the same argument ADR-030 made in refusing to publish <code>kid_flag.node_id</code>: a pointer to
+     the passage at which a child recorded that something upset them is a statement about that
+     child, and coarsening it does not change what it is about.</li>
+<li><strong>Consent does not cover it.</strong> See Constraints.</li>
+</ul>
+<p><strong>What changes if the kid surface ever emits.</strong> It becomes a new processing activity under
+  ADR-018 D6, requiring an entry in <code>records-of-processing-activities.md</code> and a direct-notice
+  review under 312.4(b)/&copy; before any code, plus its own answer to every question in this
+  document re-derived for a subject who cannot consent. It is an amendment to this ADR and a
+  fresh ADR-018 review, not a configuration change. The only condition that could reasonably
+  motivate it is a materially larger user base (Decision 10), and even then the categorical
+  argument in point 1 survives population growth: a child session names a child regardless of
+  how many children there are.</p>
+<ul>
+<li><strong>The landing page (<code>/</code>) does not emit</strong>, because it is pre-login and admitting it would
+  require an unauthenticated write route. An unauthenticated append path on a public origin is
+  an abuse surface and an anti-automation obligation, and the value at stake is the landing
+  page's own Web Vitals, which are recoverable from the D1 Lighthouse job without any beacon.</li>
+</ul>
+<p><strong>The surface restriction is enforced server-side.</strong> The ingest handler resolves the principal
+and rejects any role other than <code>guardian</code> or <code>admin</code> with 403. A client that never mounts the
+module on the kid shell is the first layer; it is not the control. A client-side-only surface
+restriction is not a restriction, for the same reason a client-side-only kill switch is not a
+kill switch (Decision 6). That 403 is only reachable if the batch arrives with a credential the
+handler can resolve, which the plan's proposed transport cannot carry; Decision 4 replaces it
+for that reason.</p>
+<p><strong>Note on the difference from Sentry, so this is not read as a reversal.</strong> <code>initSentry()</code> is
+called globally from <code>main.tsx</code> and does receive errors thrown on the kid surface today. That
+posture is not reopened here and this ADR does not amend it. The two are different: a Sentry
+error event is an exception report to a third party under a scrubbing <code>beforeSend</code> with no
+replay and no tracing, whereas this beacon is a first-party behavioural record stored in our
+own database beside our own identity tables. The beacon module therefore mounts per shell
+(<code>GuardianShell</code>, <code>AdminShell</code>) and <strong>must not</strong> be initialised from <code>main.tsx</code>, where it would
+run on every route including the reader. That is a binding implementation constraint for D3b,
+recorded because <code>main.tsx</code> is the obvious place to put it and is the wrong one.</p>
+<h3 id="2-re-identification-three-vectors-and-what-carries-over-from-adr-030">2. Re-identification: three vectors, and what carries over from ADR-030<a class="headerlink" href="#2-re-identification-three-vectors-and-what-carries-over-from-adr-030" title="Permanent link">&para;</a></h3>
+<p>The plan's <code>#ASSUME</code> names one vector. Two others decide more of this design than it does.</p>
+<p><strong>V1: payload contents.</strong> Named by the plan. Closed by Decision 3's closed enum and by
+Decision 8's server-side rejection of anything outside it.</p>
+<p><strong>V2: the envelope, not the payload.</strong> An authenticated POST carries a bearer token that names
+a user, a family, or a child profile; it arrives with a client IP that <code>RateLimitMiddleware</code>
+already keys on; and <code>CorrelationMiddleware</code> has stamped it with a correlation id that reaches
+the log line the handler writes. None of this is in the payload and all of it is in the record
+unless the handler deliberately discards it. Bindings:</p>
+<ul>
+<li><strong>The handler resolves a principal for authorization and discards it before the insert.</strong> The
+  stored row carries no <code>user_id</code>, no <code>family_id</code>, no <code>profile_id</code>, no <code>created_by</code>, no IP, no
+  User-Agent, and <strong>no correlation id</strong>.</li>
+<li><strong>The handler logs no request body and no principal</strong>, and its structured log line for an
+  accepted batch carries the batch size and nothing else.</li>
+<li>Discarding the correlation id has a real cost: a beacon row cannot be traced back to the
+  request that produced it, so a malformed batch is diagnosed from the 422 at the client and
+  never from the row. That cost is the point and is accepted.</li>
+</ul>
+<p><strong>V3: the join to the server's own timeline.</strong> A perfectly anonymous row still carries the
+instant it arrived, and the server holds <code>pipeline_event.occurred_at</code>, <code>completion.found_at</code>,
+<code>reading_activity_day</code>, <code>security_event</code>, and an edge access log covering the same instant. In
+a four-adult roster a full-precision timestamp attributes. Bindings:</p>
+<ul>
+<li><strong><code>received_on</code> is a DATE, not a timestamp.</strong> The server stamps the calendar date at insert
+  and stores nothing finer. This follows <code>ReadingActivityDay</code>'s docstring
+  (<code>db/models.py:1746-1748</code>), which records that no timestamp finer than a day ever reaches
+  the server for reading activity; the beacon inherits that posture rather than inventing a
+  looser one for a lower-value signal.</li>
+<li><strong>The client sends no timestamp of its own</strong>, in any form: no event time, no monotonic
+  offset, no ordering index, no batch start time. Only the count of events per variant per
+  batch (Decision 3) survives, and within a batch the events are unordered.</li>
+<li>Two consequences, stated so they are not discovered later as bugs. An INP p75 by hour cannot
+  be computed, and the rage-click hotspot "at one hour" the plan's own hazard example uses is
+  not expressible. Both are intended: that example is the disclosure, not the feature.</li>
+<li>A third consequence, from a trap this repository has already paid for: a <code>DATE</code> stamped with
+  a server default is transaction-start-derived, and rows committed together are unorderable.
+  <strong>The beacon table carries no ordering guarantee and the digest must not depend on one.</strong></li>
+</ul>
+<p><strong>What carries over from ADR-030, and where this ADR diverges.</strong> Two ADRs on the same product
+giving different answers to the same question is a defect, so each of its four mechanisms is
+addressed explicitly:</p>
+<table>
+<thead>
+<tr>
+<th>ADR-030 mechanism</th>
+<th>Applies here</th>
+<th>Reasoning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Categorical exclusion of records <em>about</em> one identified subject</td>
+<td><strong>Yes, and it is the strongest control in this document</strong></td>
+<td>Decision 1. ADR-030 reached the subject through <code>personalization_subject_profile_id</code>; this ADR reaches it through the child session claim. Same rule, same verdict</td>
+</tr>
+<tr>
+<td>A minimum floor binding <strong>every emitted signal</strong>, not merely the row</td>
+<td><strong>Yes, adapted, at the publish boundary</strong></td>
+<td>Decision 5. ADR-030's revision found that a row clearing the gate can still carry a cell built from one contributor; the same shape here is a weekly digest clearing a floor overall while one testid's hotspot rests on one session</td>
+</tr>
+<tr>
+<td>Counting the floor over <strong>distinct families</strong></td>
+<td><strong>No. Diverges, deliberately</strong></td>
+<td>The beacon carries no family key by construction, and acquiring one would be exactly the identifier Decision 4 forbids. The strongest unit available is the distinct session id, which is <strong>weaker</strong> than a family: two sessions can be one adult. Decision 5 states the compensating controls and the condition that voids the compensation</td>
+</tr>
+<tr>
+<td>No total spanning more than one entity, so suppression is not defeated by subtraction</td>
+<td><strong>Yes, unchanged</strong></td>
+<td>Decision 5. The digest publishes no total spanning more than one testid or route class, and no exact denominator</td>
+</tr>
+</tbody>
+</table>
+<h3 id="3-every-proposed-variant-walked-with-a-verdict">3. Every proposed variant, walked, with a verdict<a class="headerlink" href="#3-every-proposed-variant-walked-with-a-verdict" title="Permanent link">&para;</a></h3>
+<p>Seven variants were proposed. <strong>Two are dropped and five ship narrowed. None ships as
+proposed.</strong> Each is walked as: what it carries, what it discloses alone, what it discloses
+joined to anything else the system emits, and the verdict.</p>
+<h4 id="31-largest-contentful-paint-bucketed-verdict-ships-narrowed">3.1 Largest Contentful Paint, bucketed. Verdict: <strong>ships narrowed</strong><a class="headerlink" href="#31-largest-contentful-paint-bucketed-verdict-ships-narrowed" title="Permanent link">&para;</a></h4>
+<ul>
+<li><strong>Carries</strong>: one of three bucket labels, plus the route class, per page load.</li>
+<li><strong>Alone</strong>: how slowly the adult console painted. Nothing about a person. At full millisecond
+  precision a timing value is a device and network fingerprinting surface; bucketing removes
+  that, which is why the bucketing is a requirement rather than a convenience.</li>
+<li><strong>Joined</strong>: a bucket plus a route class plus a calendar date, with no session-stable id and
+  no principal on the row, does not narrow to a person on the adult surfaces.</li>
+<li><strong>Narrowing, binding on D3b</strong>: the buckets are the standard Web Vitals thresholds, fixed here
+  so D3b does not re-decide them: <code>good</code> at or below 2500 ms, <code>needs_improvement</code> at or below
+  4000 ms, <code>poor</code> above 4000 ms. <strong>A raw millisecond value never leaves the browser</strong>, is never
+  transmitted alongside the bucket, and is never stored. The route class is one of a closed set
+  (<code>guardian_root</code>, <code>guardian_requests</code>, <code>guardian_books</code>, <code>guardian_profiles</code>, <code>admin_root</code>,
+  <code>admin_review</code>, <code>admin_moderation</code>, <code>admin_users</code>, <code>other</code>), never a route path, so no
+  <code>:profileId</code> or <code>:storybookId</code> can ride along in it.</li>
+</ul>
+<h4 id="32-interaction-to-next-paint-bucketed-verdict-ships-narrowed">3.2 Interaction to Next Paint, bucketed. Verdict: <strong>ships narrowed</strong><a class="headerlink" href="#32-interaction-to-next-paint-bucketed-verdict-ships-narrowed" title="Permanent link">&para;</a></h4>
+<ul>
+<li><strong>Carries</strong>: one of three bucket labels per page load, plus the route class.</li>
+<li><strong>Alone</strong>: how long the app took to respond to a human interaction. INP differs from LCP in
+  that it is triggered by a person's action, so it is worth stating plainly that what is
+  measured is the application's response latency and not any property of the person: the metric
+  is the same whoever clicked.</li>
+<li><strong>Joined</strong>: as 3.1.</li>
+<li><strong>Narrowing, binding on D3b</strong>: buckets are <code>good</code> at or below 200 ms, <code>needs_improvement</code> at
+  or below 500 ms, <code>poor</code> above 500 ms. No raw value, ever. <strong>The digest thresholds on the
+  share of <code>poor</code> observations, not on a p75.</strong> The plan's consumption leg asks for "an INP p75
+  regression"; a p75 cannot be computed from three buckets, and admitting raw values so a p75
+  could be computed would reintroduce the timing surface the bucketing exists to remove. This
+  is a change to the plan's D3 consumption spec, decided here rather than left as a
+  contradiction for D3b to resolve in whichever direction is convenient.</li>
+</ul>
+<h4 id="33-cumulative-layout-shift-bucketed-verdict-ships-narrowed">3.3 Cumulative Layout Shift, bucketed. Verdict: <strong>ships narrowed</strong><a class="headerlink" href="#33-cumulative-layout-shift-bucketed-verdict-ships-narrowed" title="Permanent link">&para;</a></h4>
+<ul>
+<li><strong>Carries</strong>: one of three bucket labels per page load, plus the route class.</li>
+<li><strong>Alone and joined</strong>: as 3.1. CLS is page-derived and carries no interaction at all.</li>
+<li><strong>Narrowing, binding on D3b</strong>: buckets are <code>good</code> at or below 0.1, <code>needs_improvement</code> at or
+  below 0.25, <code>poor</code> above 0.25. No raw score.</li>
+</ul>
+<h4 id="34-error-boundary-hit-as-a-component-stack-hash-verdict-ships-narrowed">3.4 Error-boundary hit as a component-stack hash. Verdict: <strong>ships narrowed</strong><a class="headerlink" href="#34-error-boundary-hit-as-a-component-stack-hash-verdict-ships-narrowed" title="Permanent link">&para;</a></h4>
+<ul>
+<li><strong>Carries</strong>: a truncated hash of the React component stack, plus the route class and a count.</li>
+<li><strong>Alone</strong>: which component subtree threw. The honest statement about the hash is that <strong>it is
+  not a de-identification measure and nothing in this design depends on it being one.</strong> The
+  input space is this repository's own component tree, which is public, so anyone can enumerate
+  every stack from source and build the reverse mapping in minutes. That sentence is only true
+  because Narrowing 1 below makes it true; a hash over an input space nobody can enumerate
+  would be a pseudonym whatever this document called it. The hash is a <strong>bounded grouping key</strong>:
+  it lets the digest say "a new error-boundary signature appeared" and count recurrences without
+  transporting a stack string.</li>
+<li><strong>Joined</strong>: the component tree is public, so joining the hash to source recovers the
+  component names, which is intended and discloses nothing about a person. The risk is not the
+  hash, it is what a stack string could contain: a <code>displayName</code> composed at runtime can
+  interpolate a book title or a child's display name, and an error <em>message</em> routinely does.
+  (An earlier draft named a React <code>key</code> here as well. That is wrong on the mechanism: React
+  composes <code>componentStack</code> from component names, and a <code>key</code> surfaces in DevTools rather than
+  in the stack. The correction narrows the hazard, it does not remove it, because <code>displayName</code>
+  is a genuine stack-frame source and carries this paragraph on its own.)</li>
+<li><strong>Narrowing, binding on D3b</strong>:</li>
+<li><strong>The stack is reduced to statically-known component names before it is hashed, against a
+     build-time allowlist, and every frame not on that list is dropped.</strong> The allowlist is
+     generated at build time from the component declarations in <code>frontend/src</code> and committed the
+     way the generated API client is, so the hash's input space is a list this repository can
+     print. This is the control, and it is what makes the paragraph above true rather than
+     merely hopeful: a frame carrying a runtime-interpolated name is not on the list, so it never
+     reaches the hash function, and a token derived from a child's name cannot exist to be
+     stored, counted, or published. Without it the hash is a <strong>stable per-child pseudonym</strong> for
+     every error thrown under a subtree whose naming interpolates a child's name, which 3.6
+     concedes exists on the guardian console ("Open Ella's shelf"). Such a token would survive
+     both of this document's strongest controls, the per-realm session id and the DATE
+     truncation; it is a derived identifier of exactly the kind Decision 4 forbids; and
+     Allowlist B would publish it into an issue Decision 7 calls permanent by design, on a
+     public repository, where it is neither recoverable nor retractable.
+     <strong>Why this and not the alternative.</strong> Extending 3.6's literal-only static check to
+     <code>displayName</code> was the other candidate and is not sufficient on its own. A React component
+     stack is composed by React from every frame in the tree, including components from
+     <code>node_modules</code> and any frame a future dependency introduces, so a check scoped to
+     <code>frontend/src</code> does not cover the input space it has to close, and a check that has to keep
+     covering a growing surface fails open when it stops. The reduction closes the space by
+     construction and fails closed on anything it has not seen. The <code>displayName</code> literal check
+     is still worth having, on the same footing as the testid regex in 3.6 and for the same
+     reason: it is the second layer, not the control. This also removes the asymmetry a reader
+     would otherwise be right to notice, where a <code>data-testid</code> needed a static guarantee of
+     literal-ness and a component stack needed none.
+     <strong>When the reduction yields nothing.</strong> A stack composed entirely of unlisted frames, which
+     a minified production build can also produce, reduces to the empty sequence. That case
+     emits a single reserved signature meaning <em>no listed frame</em>, or emits nothing at all; both
+     are acceptable because the resulting value carries no information. What is <strong>forbidden</strong> is
+     the instinct that losing all information invites: falling back to hashing the raw stack, or
+     any partial or unreduced form of it, so that the signature stays useful. That fallback
+     reopens everything this narrowing closes, and it is the only path that does. It follows
+     already from "never reaches the hash function" above and from item 2 below, and it is
+     stated here as its own rule so an implementer does not have to derive it under pressure.</li>
+<li><strong>The raw stack never leaves the browser.</strong> Reduction and hashing both happen in the
+     browser, so an unexpected value in a stack is neither transmitted nor available to be
+     logged server-side by accident. This is why a truncation or a prefix would not do.</li>
+<li><strong>The hash is SHA-256, truncated to 16 hex characters.</strong> SHA-256 rather than MD5 or SHA-1
+     per the project's FIPS posture, even though this use is not security-critical, so the
+     codebase carries no weak-digest call site to explain away.</li>
+<li><strong>The error message, the error name, and every stack frame text are not emitted, in any
+     form, hashed or otherwise.</strong> Diagnosis is Sentry's job and that channel already exists
+     with its own scrubbing; this beacon's job is counting.</li>
+</ul>
+<h4 id="35-offline-sync-failure-counts-verdict-dropped">3.5 Offline-sync failure counts. Verdict: <strong>DROPPED</strong><a class="headerlink" href="#35-offline-sync-failure-counts-verdict-dropped" title="Permanent link">&para;</a></h4>
+<ul>
+<li><strong>Carries</strong>: a count of failed reading-state sync writes.</li>
+<li><strong>What it is actually about</strong>: <code>frontend/src/offline/sync.ts</code> is the <em>reading-state</em> sync
+  queue. Its writes are one child's reading progress. A sync-failure count is therefore a count
+  of failed writes of a child's progress, and it fires from the reader, which is the kid
+  surface. Under Decision 1 the kid surface does not emit, so this variant has no emitter left.</li>
+<li><strong>Joined, and why it fails the plan's own test even if an emitter existed</strong>: the server
+  already knows which child's <code>reading_state</code> writes did not arrive, because their absence is
+  observable; a beacon count at day grain joined to the writes that did arrive narrows toward a
+  profile without ever naming one. More decisively, the operational question this signal exists
+  to answer is "whose writes are failing, and against which book", and that question <strong>cannot
+  be answered without a profile identifier</strong>. The plan's own <code>#VERIFY</code> is explicit: "if any
+  variant needs an identifier to be actionable, that variant is dropped rather than the rule
+  bent." It is dropped.</li>
+<li><strong>The alternative, named so this does not return as a proposal.</strong> Sync failure is already
+  observable server-side without any client telemetry: the replay endpoint sees the retry rate
+  and the conflict rate directly, and <code>sync.ts</code> already distinguishes <code>OfflineError</code> (no HTTP
+  response) from a real HTTP failure, the latter reaching Sentry today. If a durable measure is
+  wanted, the instrument is a server-side metric on the replay path, which needs no beacon, no
+  child-device emission, and no new data class. That is a different piece of work with its own
+  review, and this ADR does not authorise it.</li>
+</ul>
+<h4 id="36-rage-clicks-identified-by-role-plus-testid-verdict-ships-narrowed">3.6 Rage clicks, identified by role plus testid. Verdict: <strong>ships narrowed</strong><a class="headerlink" href="#36-rage-clicks-identified-by-role-plus-testid-verdict-ships-narrowed" title="Permanent link">&para;</a></h4>
+<ul>
+<li><strong>Definition, fixed here</strong>: three or more <code>click</code> events on the same element within 1000 ms.</li>
+<li><strong>Carries</strong>: the element's <code>data-testid</code>, its ARIA role, the route class, and a count.</li>
+<li><strong>Alone</strong>: "a control was clicked four times in a second." On the adult surfaces this is a
+  usability observation about a control.</li>
+<li><strong>Joined</strong>: this is where the small population bites, and it bites on adults rather than
+  children. The admin roster is two accounts. A hotspot attributed to the admin console in a
+  given week is an observation about one of two identified adults. The mitigations are
+  Decision 5's publish boundary: the digest carries no role class, no time grain finer than the
+  week, and no figure resting on fewer than 5 distinct sessions.</li>
+<li><strong>Narrowing, binding on D3b</strong>:</li>
+<li><strong>No <code>aria-label</code>, no <code>innerText</code>, no <code>textContent</code>, no coordinates, no element id, no
+     class list.</strong> <code>aria-label</code> is called out specifically because the accessibility work has
+     been adding accessible names across these consoles and those names routinely interpolate
+     data ("Open Ella's shelf"). An accessible name is exactly the field an implementer would
+     reach for as "just an identifier" and it is the one field in the set most likely to carry
+     a child's name.</li>
+<li><strong>The testid value space must be enumerable from public source, and that is enforced in
+     two places.</strong> First, a lint or <code>ast-grep</code> check that every <code>data-testid</code> in <code>frontend/src</code>
+     is a string literal, never a template literal and never an expression, so no testid can be
+     composed from runtime data. Second, server-side validation rejecting any testid not
+     matching <code>^[a-z0-9-]{1,64}$</code>, as a second layer rather than the primary one. The first
+     control is the real one; the regex alone would accept a slugified title.</li>
+<li><strong>The ARIA role is one of a closed set, enumerated here</strong> rather than left to D3b, on the
+     same footing as the route classes in 3.1 and every bucket threshold above. The set is
+     <code>button</code>, <code>link</code>, <code>checkbox</code>, <code>radio</code>, <code>radiogroup</code>, <code>combobox</code>, <code>textbox</code>, <code>option</code>,
+     <code>group</code>, <code>region</code>, <code>list</code>, <code>dialog</code>, <code>alert</code>, <code>status</code>, <code>img</code>, and <code>other</code>. It is derived
+     from what this codebase actually uses: the explicit <code>role</code> attributes present in
+     <code>frontend/src</code> today (<code>alert</code>, <code>status</code>, <code>dialog</code>, <code>region</code>, <code>radiogroup</code>, <code>list</code>, <code>radio</code>,
+     <code>group</code>, <code>img</code>) plus the implicit roles of the interactive tags it clicks on (<code>button</code>, <code>a</code>,
+     <code>input</code> and its types, <code>select</code>, <code>textarea</code>, <code>summary</code>, <code>label</code>). <strong>How the value is
+     derived</strong>: the element's explicit <code>role</code> attribute where it has one, otherwise the implicit
+     role of its tag, mapped through a table in the beacon module; anything the table does not
+     cover is emitted as <code>other</code>, never as the observed string, so a <code>role</code> attribute composed at
+     runtime cannot ride out through this field. Server-side validation rejects the batch (422,
+     Decision 8) on any value outside the set, as the second layer. A role this codebase adds
+     later is an amendment to this list, which is the same friction Allowlist B carries and is
+     accepted for the same reason.</li>
+</ul>
+<h4 id="37-dead-clicks-verdict-dropped">3.7 Dead clicks. Verdict: <strong>DROPPED</strong><a class="headerlink" href="#37-dead-clicks-verdict-dropped" title="Permanent link">&para;</a></h4>
+<ul>
+<li><strong>Definition proposed</strong>: a click with no DOM or network consequence.</li>
+<li><strong>Carries</strong>: the same role plus testid as 3.6. <strong>The payload is not the problem.</strong></li>
+<li><strong>Why it is dropped: the detector, not the data.</strong> Detecting "no DOM consequence" requires a
+  <code>MutationObserver</code> over the document subtree, and detecting "no network consequence" requires
+  wrapping <code>fetch</code> and <code>XMLHttpRequest</code>. Those are the two capabilities Decision 9's Session
+  Replay prohibition exists to forbid, at reduced fidelity: an in-page observer over document
+  content, and an interceptor sitting on every request in the app including its bodies. A
+  prohibition that a first-party reimplementation walks under is not a prohibition, and the
+  first module to test that would be this one. The signal is also the weakest of the seven: a
+  dead click on an adult console is most often a click on a non-interactive label.</li>
+<li><strong>The path back, stated so this is a narrowing and not a dead end.</strong> A detector that observes
+  only the clicked element's own subtree and the router's location, with no document-wide
+  observer and no fetch or XHR wrapper, would not engage the prohibition and could be argued on
+  its merits. That is an amendment to this ADR with the detector specified in it. <strong>D3b does
+  not get to invent one.</strong></li>
+</ul>
+<h4 id="verdict-summary">Verdict summary<a class="headerlink" href="#verdict-summary" title="Permanent link">&para;</a></h4>
+<table>
+<thead>
+<tr>
+<th>Variant</th>
+<th>Verdict</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>LCP, bucketed</td>
+<td>ships narrowed</td>
+</tr>
+<tr>
+<td>INP, bucketed</td>
+<td>ships narrowed</td>
+</tr>
+<tr>
+<td>CLS, bucketed</td>
+<td>ships narrowed</td>
+</tr>
+<tr>
+<td>Error-boundary component-stack hash</td>
+<td>ships narrowed</td>
+</tr>
+<tr>
+<td>Offline-sync failure counts</td>
+<td><strong>dropped</strong></td>
+</tr>
+<tr>
+<td>Rage clicks (role plus testid)</td>
+<td>ships narrowed</td>
+</tr>
+<tr>
+<td>Dead clicks</td>
+<td><strong>dropped</strong></td>
+</tr>
+</tbody>
+</table>
+<h3 id="4-the-session-id-lifetime-resets-reach-and-the-queue-that-does-not-exist">4. The session id: lifetime, resets, reach, and the queue that does not exist<a class="headerlink" href="#4-the-session-id-lifetime-resets-reach-and-the-queue-that-does-not-exist" title="Permanent link">&para;</a></h3>
+<p><strong>Definition.</strong> One <code>crypto.randomUUID()</code> value, minted at module initialisation and held in a
+<strong>module-scope variable only</strong>.</p>
+<p><strong>Explicitly forbidden storage</strong>: <code>localStorage</code>, <code>sessionStorage</code>, IndexedDB, a cookie, a URL
+parameter, a header, and any other durable location. The id exists in memory and nowhere else.</p>
+<p><strong>Explicitly forbidden reuse, each named because each is reachable and plausible</strong>:</p>
+<ul>
+<li><strong><code>frontend/src/offline/deviceId.ts::getOrCreateDeviceId()</code>.</strong> This is the single most likely
+  mistake D3b can make. It is a <code>localStorage</code>-backed identifier that, by its own docstring,
+  "outlives any one login session"; it already exists for fire-and-forget <em>download</em> reporting
+  from the reader's load path, which is the whole of its stated scope and not a general reporting
+  facility; and it sits in the tree the beacon module will be written next to. Using it, or
+  copying its pattern, converts "non-persistent random session id" into a permanent cross-session
+  device identifier, silently, with no schema change to notice.</li>
+<li>The device-grant <code>jti</code> (<code>core/device_grant.py</code>, <code>DeviceGrant.jti</code>), the Supabase <code>sub</code>,
+  <code>User.id</code>, <code>family_id</code>, and any child <code>profile_id</code>.</li>
+<li>Any value derived from any of the above, including hashed, truncated, or positional forms.</li>
+</ul>
+<p><strong>Lifetime, precisely: one JavaScript realm.</strong> The id lives exactly as long as the document's
+script context.</p>
+<ul>
+<li><strong>A reload resets it.</strong> New document, new realm, new module evaluation, new id.</li>
+<li><strong>A tab duplication resets it.</strong> A duplicated tab is a fresh document load with a fresh realm.</li>
+<li><strong>A new tab resets it</strong>, including one opened from a link in an existing tab.</li>
+<li><strong>A back-forward-cache restore does not reset it</strong>, because bfcache preserves the realm. This
+  is stated rather than glossed: within one bfcache-preserved history sequence the id spans
+  more than one navigation. That is inside a single tab's continuous use by one person, which
+  is the intended reach.</li>
+<li><strong><code>visibilitychange</code> does not reset it.</strong> It is the flush trigger, not a boundary. Backgrounding
+  and returning to a tab keeps the same session.</li>
+</ul>
+<p><strong>What an adversary can stitch within one lifetime</strong>: every event from one document load in one
+tab, which is one adult's console session: a set of route-class visits, a Web Vitals bucket per
+load, error-boundary signatures, and rage-click targets, all at calendar-date grain and all
+unordered. It is bounded by the realm and it reaches no second session, no second tab, and no
+second day beyond a session spanning midnight.</p>
+<p><strong>The transport is <code>fetch</code> with <code>keepalive: true</code>, not <code>navigator.sendBeacon</code>.</strong> The plan
+proposes <code>sendBeacon</code>, and <code>sendBeacon</code> cannot carry the credential this design's strongest
+surface control depends on. It has no header API, so it cannot set <code>Authorization</code>, and this API
+has no cookie session: authentication is an <code>Authorization</code>-header bearer token resolved by
+<code>require_principal</code> (<code>api/deps.py:554</code>). Keeping <code>sendBeacon</code> would force one of four inventions
+with four different privacy properties, none of them decided by the plan: a token in the body,
+which Allowlist A forbids by closure; a token in the URL, on a path whose entire premise is that
+identifiers are discarded and whose URL is logged at the edge and in the access log; a new
+cookie; or <code>fetch</code> with <code>keepalive</code>. It is decided here rather than left to whichever is
+convenient at implementation time. The binding form is
+<code>fetch(url, {method: 'POST', keepalive: true, headers: {Authorization: ...}, body: ...})</code>. It
+keeps delivery from a <code>visibilitychange</code> handler on an unloading document, it carries the header
+so Decision 1's 403 is reachable at all, and it returns a status the client can act on, which
+<code>sendBeacon</code>'s boolean return does not. Its 64 KB <code>keepalive</code> body limit sits far above the
+50-event batch cap below, so the cap is never the transport's constraint.</p>
+<p><strong>The offline case, and the decision that removes it.</strong> This app has real offline support, so a
+beacon queued offline and flushed later is a case the plan's "non-persistent" claim has to
+survive. It does not survive it, so the queue is removed instead:</p>
+<ul>
+<li><strong>The beacon never queues and never persists.</strong> A batch that cannot be sent is <strong>discarded</strong>.
+  On any failure at all, a network error, a rejected or aborted request, any non-2xx status
+  including 429 and 503, or the browser being offline at flush time, the batch is dropped and
+  nothing is written anywhere. There is no retry, no backoff, and no second attempt on the next
+  flush.</li>
+<li><strong>The beacon module must not touch <code>frontend/src/offline/</code> at all</strong>: not <code>db.ts</code>, not the
+  IndexedDB stores, and not <code>sync.ts</code>'s write queue.</li>
+<li><strong>Why.</strong> Persisting a batch gives the session id a durable home on disk, which falsifies
+  "non-persistent" by construction; a batch flushed in a later realm carries an id minted in an
+  earlier one, so the lifetime claim above stops being true; and emission time and arrival time
+  diverge, which makes the retention clock in Decision 7 ambiguous exactly when it matters.</li>
+<li><strong>The cost.</strong> Samples from a device that goes offline mid-session are lost. The signal is
+  statistical and the adult consoles are the least offline part of this product, so the cost is
+  some lost samples against a durable client-side identifier. That trade is not close.</li>
+<li><strong>Therefore: a queued event cannot outlive its session id, because there is no queue.</strong> The
+  question the plan raises is answered by removing its premise rather than by managing it.</li>
+</ul>
+<p><strong>Rate limiting, on both legs.</strong> The client's own limit (the plan's requirement) is per realm:
+at most 1 flush per 10 seconds and at most 50 events per batch, with overflow <strong>dropped rather
+than buffered</strong>, for the same reason a failed batch is dropped rather than queued. That is a
+courtesy, not a control, because it runs on the client.</p>
+<p><strong>The server's limit is the existing <code>RateLimitMiddleware</code> (<code>middleware/security.py:366</code>
+onward), applied to <code>POST /api/v1/client-events</code> on exactly the same terms as every other route
+on this API, with no exemption of any kind</strong>: not for an IP, not for a header, not behind an
+environment flag, and not by mounting the route outside the middleware. This answers the plan's
+"rate-limited per the existing middleware", which is otherwise the one server-leg requirement
+this document would leave for D3b to invent a number for. There is no beacon-specific limit and
+no beacon-specific carve-out. That middleware is a control on a children's product against
+credential stuffing and abuse, and a telemetry convenience is not a reason to put a hole in it:
+<strong>if the shared limit binds on the beacon, the beacon yields</strong>, flushing less often or dropping
+the batch, and the limit is not raised, exempted, or bypassed for it. A 429 is treated exactly
+as any other failure, discarded and never retried, and it is observable to the client at all
+only because the transport is <code>fetch</code>: under the plan's <code>sendBeacon</code> a rate-limited beacon
+would fail silently, which is the failure shape Decision 6 refuses elsewhere. The operator's
+oracle for throttling is the limiter's existing <code>security_rate_limit_exceeded</code> security event,
+not Decision 6's startup log line, which names the ingest flag's state and says nothing about
+the limiter. That event is written by middleware that already runs on every request to this API
+and is not a beacon row; Decision 2's discard is a rule about what the beacon's own record
+holds, and it neither weakens that middleware nor is weakened by it.</p>
+<h3 id="5-two-allowlists-and-the-floor-that-binds-published-figures">5. Two allowlists, and the floor that binds published figures<a class="headerlink" href="#5-two-allowlists-and-the-floor-that-binds-published-figures" title="Permanent link">&para;</a></h3>
+<p>ADR-030's revision found that a closure argument made on one side of a data path does not reach
+the other, and closed both. This beacon has two boundaries and needs the same treatment.</p>
+<p><strong>Allowlist A: browser to server (the emit allowlist).</strong> A batch may contain these fields and no
+others. Anything not listed is denied, including fields a later change would find natural.</p>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Form</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>session_id</code></td>
+<td>one <code>crypto.randomUUID()</code> value per realm (Decision 4); the single stated exception to Decision 8's enumerability sentence</td>
+</tr>
+<tr>
+<td><code>surface</code></td>
+<td><code>guardian</code> or <code>admin</code></td>
+</tr>
+<tr>
+<td><code>route_class</code></td>
+<td>one value from the closed set in 3.1, never a route path</td>
+</tr>
+<tr>
+<td><code>vital</code> entries</td>
+<td><code>{metric: lcp\|inp\|cls, bucket: good\|needs_improvement\|poor}</code></td>
+</tr>
+<tr>
+<td><code>error_signature</code> entries</td>
+<td><code>{hash: 16 hex chars, count: bounded int}</code>, the hash taken only over the build-time allowlisted frame sequence of 3.4</td>
+</tr>
+<tr>
+<td><code>rage_click</code> entries</td>
+<td><code>{testid: ^[a-z0-9-]{1,64}$, role: closed set, count: bounded int}</code></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Allowlist B: server to the weekly digest issue (the publish allowlist).</strong> A digest issue may
+contain these and no others.</p>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Form</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>ISO week</td>
+<td>the week the digest covers, never a finer grain</td>
+</tr>
+<tr>
+<td><code>route_class</code></td>
+<td>as above</td>
+</tr>
+<tr>
+<td><code>error_signature</code> hash</td>
+<td>the 16-hex grouping key, with a count</td>
+</tr>
+<tr>
+<td><code>testid</code></td>
+<td>with a count, for a rage-click hotspot</td>
+</tr>
+<tr>
+<td><code>vital</code> poor-share</td>
+<td>per metric per route class, rounded to the nearest 0.05</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Denied from Allowlist B specifically, each with its reason:</strong></p>
+<ul>
+<li><strong>The <code>surface</code> value.</strong> A published figure never says whether it came from the guardian
+  console or the admin console. With two admin accounts, naming the admin surface on a
+  published figure identifies a population of two. The distinction stays queryable on the
+  deployment host and is not published.</li>
+<li><strong>The <code>session_id</code>, in any form</strong>, including hashed, truncated, or as a positional index.</li>
+<li><strong>Any exact denominator or raw count of sessions.</strong> A count of 1 beside a share recovers the
+  observation. The poor-share carries a stated rounding for the same reason ADR-030 rounds its
+  rates: full precision reconstructs the denominator the suppression withheld.</li>
+<li><strong>Any total spanning more than one testid or route class</strong>, and any corpus-wide summary line
+  or count of how many signatures were considered, included, or suppressed. This is what makes
+  suppression sufficient on its own: a suppressed figure is recoverable by subtraction only if
+  some published figure includes it, and none does.</li>
+<li><strong>Anything else. The list is closed.</strong> A new published field is an amendment to this ADR.</li>
+</ul>
+<p><strong>The floor: 5 distinct session ids per published figure.</strong> No figure appears in a digest issue
+unless its own contributing population reaches 5 distinct session ids. Below that it is
+suppressed as a single explicit marker covering the whole 0-to-4 range, never as a zero, never
+as a null, and never as an omitted line, so a marker and an absence of the problem remain
+indistinguishable in the published artifact. The floor binds <strong>each figure separately</strong>: a
+digest week clearing 5 sessions overall can still carry a testid hotspot resting on one, which
+is the exact defect ADR-030's revision found at the row-versus-cell level and is the reason the
+floor is stated per figure rather than per digest.</p>
+<p><strong>Why 5, and why the unit is weaker than ADR-030's.</strong> The number is 5 to match ADR-030, so the
+two documents do not give different answers to the same question. The unit is different and
+weaker, and pretending otherwise would be the defect: ADR-030 counts distinct families because
+its records reach a family key; this beacon deliberately carries none, so the strongest unit
+available is the distinct session, and two sessions can be one adult on two days. Three things
+compensate, and they are the reason the weaker unit is accepted rather than an argument that it
+is equivalent: the subjects are adults using an internal console rather than children; no
+published figure names a person, a role, a surface, or a time finer than a week; and no
+published figure spans more than one entity, so nothing is recoverable by subtraction. <strong>The
+compensation voids</strong> if any of those three changes, and Decision 10 says so. Stated plainly so
+the floor is not read as carrying more than it does: at the current roster size the 5-session
+floor is a consistency device, holding this document to the same number as ADR-030, and
+<strong>Allowlist B is the control that actually carries the load</strong>, because it admits no person, no
+role, no surface, and no time finer than a week into a published figure in the first place.</p>
+<h3 id="6-the-kill-switch-two-flags-the-server-authoritative-both-default-off">6. The kill switch: two flags, the server authoritative, both default off<a class="headerlink" href="#6-the-kill-switch-two-flags-the-server-authoritative-both-default-off" title="Permanent link">&para;</a></h3>
+<p>Following the exemplar this repository already uses for safety properties enforced at settings
+construction rather than by operator discipline (<code>core/config.py:1212-1214</code>, and
+<code>_reject_start_override_against_production_kws</code> at <code>core/config.py:2181</code>).</p>
+<ul>
+<li><strong>Client flag</strong>: <code>VITE_CLIENT_BEACON_ENABLED</code>, absent or anything other than <code>"1"</code> meaning
+  off. <strong>Default off.</strong> When off the module <strong>registers no listeners at all</strong>: no
+  <code>visibilitychange</code> handler, no click listener, no Web Vitals observer, no error-boundary
+  hook. It is not a mode that collects and withholds, because a withholding path that only runs
+  when the flag is off is a path nobody exercises.</li>
+<li><strong>Server flag</strong>: <code>client_events_ingest_enabled: bool = Field(default=False,
+  validation_alias="CLIENT_EVENTS_INGEST_ENABLED")</code>. <strong>Default off.</strong></li>
+<li><strong>The server is authoritative and gates ingest, not merely emission.</strong> With the server flag
+  off, <code>POST /api/v1/client-events</code> rejects with <strong>503</strong> and writes nothing, whatever any client
+  believes. This is the answer to "a client-side-only kill switch is not a kill switch": a
+  browser with a stale bundle, a modified build, or a hand-crafted request reaches the same
+  refusal as a correctly configured one.</li>
+<li><strong>503 rather than 404, and rather than a silent 200.</strong> Not a silent 200, because a fake
+  success makes an enabled client indistinguishable from a disabled server, which is the shape
+  of failure this project has already paid for where a fail-safe verdict laundered an outage.
+  Not 404, because in this deployment a 404 is ambiguous with an unrouted host, a service-worker
+  navigation fallback, and a tier mid-redeploy, all of which have produced false diagnoses here
+  before. The <strong>router is mounted unconditionally</strong> so the OpenAPI contract is identical across
+  tiers and the committed generated client cannot drift by tier; the flag gates the handler, not
+  the mount.</li>
+<li><strong>The operator's oracle is the startup log line</strong>, which names the effective ingest state, not
+  a probe of the route.</li>
+<li><strong>Turning the flag off does not delete existing rows</strong>, and, critically, <strong>the retention sweep
+  in Decision 7 is not gated by the flag.</strong> A sweep conditional on the feature being enabled
+  would stop deleting the moment someone turned the feature off, which is the exact inverse of
+  what turning it off means, and this repository has already shipped a conditional guard that
+  exited successfully having done nothing.</li>
+</ul>
+<h3 id="7-retention-where-the-clock-starts-what-enforces-it-and-why-there-is-no-exemption-set">7. Retention: where the clock starts, what enforces it, and why there is no exemption set<a class="headerlink" href="#7-retention-where-the-clock-starts-what-enforces-it-and-why-there-is-no-exemption-set" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>The window is 30 days</strong>, as the plan specifies.</li>
+<li><strong>The clock starts at server ingest</strong>, on the <code>received_on</code> DATE the server stamps at insert.
+  Not the client's clock, which is drift- and caller-controlled, and not an event time, because
+  Decision 4 removed the queue so ingest and occurrence are within seconds of each other and
+  Decision 2 removed sub-day precision from the record entirely.</li>
+<li><strong>Because the stamp is a date, "30 days" is precisely: the sweep deletes every row whose
+  <code>received_on</code> is earlier than <code>current_date - 30</code>.</strong> That is 30 to 31 calendar days of
+  retention depending on the hour of arrival, and it is stated so nobody reports the extra day
+  as a defect.</li>
+<li><strong>What enforces it</strong>: a <code>pg_cron</code> job following the established pattern of
+  <code>20260718000000_add_report_retention_purge.sql</code>, including the idempotent unschedule-then-
+  schedule form and the graceful <code>RAISE NOTICE</code> degradation on any Postgres without the
+  extension, so local, test, and CI environments are unaffected. The sweep runs unconditionally,
+  independent of the kill switch (Decision 6).</li>
+<li><strong>The rows do not live in <code>pipeline_event</code>, and cannot.</strong> See Problem. <code>pipeline_event</code> is
+  trigger-enforced append-only; retention and that trigger are mutually exclusive, so the plan's
+  "append-only pipeline with a 30-day retention window" is not implementable as written. The
+  beacon gets its own table, <code>client_friction_event</code>, whose append-only property comes from the
+  <strong>absence of any update or delete code path in the ORM plus the least-privilege role's
+  grants</strong>, not from a trigger. <strong>The sweep is the single exception, and it works because it runs
+  as a different role</strong>: the <code>pg_cron</code> job is registered by the migration and executes as the
+  role that scheduled it, not as the application's runtime role, so "the application cannot
+  delete from this table" and "the retention job does delete from it" are both true at once.
+  Granting the application role DELETE on this table to make a sweep work would collapse the only
+  append-only property the table has, and is forbidden here. That is a deliberate and stated
+  weakening of the append-only guarantee relative to <code>pipeline_event</code>, taken because for this
+  data class retention is the stronger privacy control and the two cannot both be had. <code>UW-D28</code>
+  records the same collision reaching the opposite outcome for <code>security_event</code>, where the audit
+  value justifies the trigger; naming both here is what keeps this from looking like an oversight.</li>
+<li><strong>The sweep has no exemption set at all.</strong> Every row past the window is deleted
+  unconditionally. <code>UW-C227</code> records this repository shipping exactly the inversion the plan
+  warns about: the <code>generation_job.report</code> retention exemption "is evaluated when the nightly
+  sweep runs, not when a human decides, so it does not protect a slow review." The cheapest
+  immunity to that entire class of defect is to have nothing to evaluate, and no beacon row is
+  ever evidence in a review, a moderation decision, or an audit, so no legitimate exemption
+  exists to give up.</li>
+<li><strong>The form any future exemption must take, bound here so the inversion cannot recur.</strong> If an
+  exemption is ever proposed, the exempt determination must be <strong>materialised onto the row at
+  the moment the decision is taken</strong>, as a nullable <code>retention_hold_set_at</code> column written by
+  that decision, and the sweep must read only that column. A predicate joined at sweep time
+  against a mutable status elsewhere is forbidden, because that is precisely <code>UW-C227</code>. Adding
+  an exemption is an amendment to this ADR.</li>
+<li><strong>The digest issue is a permanent derived holding and is not covered by the 30 days.</strong> A
+  weekly digest issue on a public repository outlives the rows it summarises, forever. Saying
+  "we keep beacon data for 30 days" while a permanent public issue restates it would be false,
+  so it is stated the other way: <strong>the published digest is permanent by design</strong>, and that is
+  acceptable only because Allowlist B plus the 5-session floor make its contents an aggregate
+  over adult console operators with no person, role, surface, or sub-week time in it. If either
+  of those weakens, the permanence of the artifact is the reason it matters.</li>
+</ul>
+<h3 id="8-redaction-the-payload-is-closed-and-the-shared-censor-is-not-relied-on">8. Redaction: the payload is closed, and the shared censor is not relied on<a class="headerlink" href="#8-redaction-the-payload-is-closed-and-the-shared-censor-is-not-relied-on" title="Permanent link">&para;</a></h3>
+<p><strong>Decision: the beacon path relies on the shared redaction censor for nothing, and must never be
+described as protected by it.</strong> That censor is known to miss several credential shapes, and a
+control with known gaps is not a foundation for a new data path.</p>
+<p>The posture instead is that nothing arrives that would need censoring:</p>
+<ul>
+<li><strong>Every value in Allowlist A other than <code>session_id</code> is a member of a closed enum, a bounded
+  integer, a slug matching <code>^[a-z0-9-]{1,64}$</code>, or a hash taken over an allowlisted frame
+  sequence (3.4).</strong> The test that makes this checkable in one sentence: <strong>no string field in the
+  beacon payload other than <code>session_id</code> has a value space that is not enumerable from this
+  repository's own source.</strong> The exception is scoped to one named field rather than to a
+  category, so a second exception cannot be argued into it, and it is exempt on narrow terms
+  rather than by fiat: <code>session_id</code> is a per-realm <code>crypto.randomUUID()</code> whose value space is
+  deliberately not enumerable, it is never persisted client-side (Decision 4), and Allowlist B
+  denies it from publication in any form, including hashed, truncated, or positional.
+  <code>error_signature.hash</code> is <strong>not</strong> an exception and sits inside the sentence, because 3.4's
+  build-time frame allowlist makes its input space a list this repository can print. Adding a
+  free-text field falsifies the sentence visibly, which is the point of stating it as a property
+  rather than as a list of prohibitions, and the sentence has to stay falsifiable to be worth
+  testing: a test asserting it must fail on a field this design does not have.</li>
+<li><strong>Server-side validation rejects the whole batch, with 422, on any field outside the closed
+  shape.</strong> No partial acceptance, no silent field dropping, no truncation. A batch is a unit and
+  a malformed one is refused whole, so a client that starts sending something new fails loudly
+  on its first attempt rather than having the new field quietly discarded for a release.</li>
+<li><strong>The server never logs the request body</strong>, in whole or in part, at any level, and never on
+  the rejection path either. A 422 log line carries the failing field name and nothing else.</li>
+<li><strong>The test asserts against the allowlist, not against a list of forbidden names</strong>, so a field
+  added later fails by default rather than passing by omission. This is ADR-030's own discipline
+  and the reason for it is the same: a deny-list is a list of the mistakes already made.</li>
+</ul>
+<h3 id="9-session-replay-is-prohibited-as-a-capability-rather-than-as-a-product-name">9. Session Replay is prohibited, as a capability rather than as a product name<a class="headerlink" href="#9-session-replay-is-prohibited-as-a-capability-rather-than-as-a-product-name" title="Permanent link">&para;</a></h3>
+<p><code>observability.ts</code> today carries this posture as a code comment. A comment does not bind a new
+module, so it is stated here as a standing decision.</p>
+<p><strong>No code in <code>frontend/src</code> may record, buffer, or transmit any of the following, whether via a
+vendor SDK or a first-party implementation:</strong> DOM content or DOM mutation records; input values
+or keystrokes; pointer, scroll, or gesture traces; canvas, video, or screen captures; or any
+time-ordered reconstruction of a page's visual state.</p>
+<ul>
+<li><strong>The prohibition is on the capability, not on a vendor.</strong> Naming products would be trivially
+  routed around by a first-party reimplementation, and this very ADR found one: the dead-click
+  detector in 3.7 is a partial replay at reduced fidelity, and it is dropped for that reason. A
+  ban expressed as "no <code>@sentry/replay</code>" would not have reached it.</li>
+<li><strong>Named packages, non-exhaustively, so the check is mechanical</strong>: <code>@sentry/replay</code>, <code>rrweb</code>
+  and its forks, LogRocket, FullStory, Hotjar, Microsoft Clarity, and any equivalent. Their
+  absence from <code>frontend/package.json</code> and the lockfile is checkable and should be checked.</li>
+<li><strong><code>BrowserTracing</code> and non-zero <code>tracesSampleRate</code> fall under the same prohibition, for a
+  different reason</strong>: a performance trace carries request URLs, and this app's routes contain
+  <code>:profileId</code> and <code>:storybookId</code>. The beacon must not become the thing that reintroduces
+  per-request tracing under a different name.</li>
+<li><strong>The reasoning, carried forward from <code>observability.ts</code> verbatim in substance</strong>: this is a
+  kids' reading app, Session Replay records DOM mutations and interaction video of whoever is
+  using the page, and on the kid surface that person is a child. It stays off unconditionally
+  rather than gated behind a sample rate, because a sample rate is a number someone can raise.</li>
+<li><strong>The existing configuration is the code expression of this decision, not an independent
+  choice</strong>: no <code>Replay</code> or <code>BrowserTracing</code> integration added, <code>tracesSampleRate: 0</code>,
+  <code>replaysSessionSampleRate: 0</code>, <code>replaysOnErrorSampleRate: 0</code>, <code>sendDefaultPii: false</code>, and
+  <code>beforeSend: scrubEvent</code>. <code>observability.test.ts</code> already pins part of that and should pin the
+  sample rates and the empty integration set explicitly.</li>
+</ul>
+<h3 id="10-what-would-make-this-adr-wrong">10. What would make this ADR wrong<a class="headerlink" href="#10-what-would-make-this-adr-wrong" title="Permanent link">&para;</a></h3>
+<p>Each of these voids part of the analysis above and requires a fresh review rather than an
+adjustment:</p>
+<ul>
+<li><strong>The user base grows materially</strong> (the ADR-008 public App Store launch being the concrete
+  case). This cuts both ways and the direction matters: aggregates over adults become genuinely
+  non-attributable and the Decision 5 floor may be doing no work, while the categorical
+  kid-surface exclusion in Decision 1 <strong>survives growth unchanged</strong>, because a child session
+  names a child regardless of how many children exist. Growth is the only condition that could
+  reasonably motivate revisiting the kid surface, and even then it is an ADR-018 review and an
+  amendment here, never a configuration change.</li>
+<li><strong>ADR-030 is ratified with amendments, or rejected.</strong> This ADR borrows its floor of 5, its
+  categorical-exclusion rule, and its two-allowlist discipline. If the owner rules differently
+  there, the two documents must be reconciled rather than left to diverge.</li>
+<li><strong>Any of Decision 5's three compensations for the weaker session unit changes</strong>: the subjects
+  stop being adults on an internal console, a published figure gains a person, role, surface, or
+  sub-week time, or a published figure starts spanning more than one entity. The 5-session floor
+  is accepted only in combination with all three.</li>
+<li><strong>The digest's publication target changes</strong>, in either direction. A move to a private surface
+  relaxes Allowlist B's argument; any move that widens readership tightens it.</li>
+<li><strong>Any beacon field other than <code>session_id</code> gains a value space not enumerable from this
+  repository's source</strong>, or <code>session_id</code>'s stated exemption stops holding, by gaining a durable
+  client-side home or by Allowlist B admitting it in any form. That is the single sentence
+  Decision 8 is built on, in the scoped form stated there.</li>
+<li><strong><code>frontend/src/offline/</code> grows a general-purpose client event queue</strong> for unrelated reasons.
+  Decision 4's "the beacon does not queue" would then read as a local exception rather than a
+  design property, and the pull to reuse the queue would be strong. It would still be forbidden,
+  and the reason would need restating at that time.</li>
+<li><strong>The admin roster grows</strong> past a size where 5 distinct sessions is meaningfully more than one
+  person, which would let Allowlist B publish the surface class it currently withholds.</li>
+<li><strong>The signal proves uninformative.</strong> Pre-committed here, mirroring ADR-030's Decision 10: if
+  after a full quarter of adult-surface emission the digest has filed nothing actionable, the
+  correct response is to <strong>retire the beacon</strong>, not to widen it to the kid surface. An empty
+  digest is evidence about the value of the signal, not evidence that the constraints are too
+  tight.</li>
+</ul>
+<h2 id="consequences">Consequences<a class="headerlink" href="#consequences" title="Permanent link">&para;</a></h2>
+<h3 id="positive">Positive<a class="headerlink" href="#positive" title="Permanent link">&para;</a></h3>
+<ul>
+<li>The plan's <code>#VERIFY</code> is discharged in writing, variant by variant, with two drops and five
+  narrowings rather than a blanket approval. Neither drop is a matter of taste: the sync-failure
+  count is dropped by the plan's own stated rule about identifiers, and the dead click is
+  dropped by the Session Replay prohibition reaching its own detector.</li>
+<li>Two re-identification vectors the plan's <code>#ASSUME</code> did not name are closed: the request
+  envelope (a token, an IP, and a correlation id that make an anonymous body an identified
+  record) and the join to the server's own timeline (a stored instant in a four-adult roster).
+  Both produce controls a naive implementation would omit, because discarding a resolved
+  principal and storing a DATE instead of a timestamp are both things you have to decide to do.</li>
+<li>Two plain implementability defects are caught before any code: the plan asks for a retention
+  window on a trigger-enforced append-only table, and those are mutually exclusive; and it
+  specifies <code>sendBeacon</code> as the transport for a route whose surface restriction is a server-side
+  403, which <code>sendBeacon</code> cannot reach because it has no header API and this API has no cookie
+  session (Decision 4).</li>
+<li>The one place this design leaned on a hash to de-identify is closed by construction rather
+  than by argument. 3.4 now reduces a component stack to build-time-allowlisted frames before
+  hashing, so an interpolated child's name cannot become a stable pseudonym that outlives the
+  session id reset, survives the DATE truncation, and reaches a permanent public issue.</li>
+<li>The Session Replay prohibition is promoted from a comment to a decision and generalised from
+  a product name to a capability, which is what let it reach the dead-click detector.</li>
+<li>Both boundaries are closed by default. Allowlist A closes browser to server and Allowlist B
+  closes server to a public issue; ADR-030's revision established that a closure argument on one
+  side of a path does not reach the other, and this design has two sides for the same reason.</li>
+<li>The retention hazard is closed by removing its precondition rather than by implementing the
+  exemption correctly, which is a stronger position than <code>UW-C227</code>'s subject is in.</li>
+</ul>
+<h3 id="trade-offs">Trade-offs<a class="headerlink" href="#trade-offs" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>The kid surface, where a reading app's real friction lives, is unobservable by this
+  instrument.</strong> That is the largest cost in this document and it is deliberate. Kid-surface
+  quality signal has to come from the e2e suites, the accessibility gates, and the usersim
+  personas, none of which observe a real child.</li>
+<li><strong>No p75, no percentile of any kind, no hour-grain analysis.</strong> Buckets plus day grain give
+  poor-share and nothing sharper. The plan's own INP p75 threshold is replaced by a poor-share
+  threshold.</li>
+<li><strong>Samples are lost whenever a device cannot send</strong>, because there is no queue and no retry.
+  The server-side rate limit is one of the ways a device cannot send, and the beacon yields to it
+  rather than the limit yielding to the beacon.</li>
+<li><strong>The plan's <code>sendBeacon</code> transport is replaced by <code>fetch</code> with <code>keepalive: true</code></strong>, so
+  unload-time delivery now rests on <code>keepalive</code> rather than on the browser's beacon queue. Taken
+  because the alternative is a credential in a body or a URL, and because a transport that
+  cannot report a status makes a throttled or disabled beacon fail silently.</li>
+<li><strong>The error-boundary signature is narrower than a component stack hash sounds</strong>, because
+  frames outside the build-time allowlist are dropped before hashing. A crash whose informative
+  frames are all in a dependency reduces to a signature that says less than the raw stack would.</li>
+<li><strong>A beacon row cannot be traced to its request</strong>, because the correlation id is discarded, so
+  malformed batches are diagnosed at the client.</li>
+<li><strong>The floor's unit is weaker than ADR-030's</strong>, and is accepted only on three compensations
+  that can each individually stop being true.</li>
+<li><strong>The <code>client_friction_event</code> table's append-only property is weaker than
+  <code>pipeline_event</code>'s</strong>, resting on code discipline and grants rather than on a trigger, because
+  retention required it.</li>
+<li><strong>Allowlist B is closed by default</strong>, so every field a future digest wants is an amendment to
+  this ADR rather than a code change. That friction is the point and it will be felt as
+  friction.</li>
+</ul>
+<h3 id="technical-debt">Technical debt<a class="headerlink" href="#technical-debt" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>The digest issue is a permanent public artifact summarising data that is otherwise deleted
+  in 30 days.</strong> It is accepted on Allowlist B plus the floor, and it is the part of this design
+  with no expiry.</li>
+<li><strong>The testid-literal lint check in 3.6 does not exist yet</strong> and is a prerequisite of the
+  rage-click variant, not a follow-up to it. Shipping the variant without it leaves the payload's
+  closure resting on a regex that a slugified title would satisfy.</li>
+<li><strong>The build-time component-name allowlist in 3.4 does not exist yet either</strong>, and is a
+  prerequisite of the error-boundary variant on the same terms. Shipping that variant without it
+  leaves the hash's input space unenumerable, which falsifies Decision 8's sentence and puts a
+  possible per-child pseudonym on a path that ends in a permanent public issue.</li>
+<li><strong><code>security_event</code> still has no retention mechanism</strong> (<code>UW-D28</code>), and this ADR's resolution of
+  the same append-only-versus-retention collision for a new table does not close it. The two
+  reach opposite answers for defensible reasons; nothing here should be read as having decided
+  the <code>security_event</code> case.</li>
+<li><strong>This ADR is <code>proposed</code> and D3b is blocked on ratification.</strong> Building any part of the beacon
+  before then is exactly what the plan's "No code before the ADR is accepted" forbids.</li>
+</ul>
+<h2 id="follow-on-work">Follow-on work<a class="headerlink" href="#follow-on-work" title="Permanent link">&para;</a></h2>
+<ul>
+<li><strong><code>UW-A58</code></strong> (Cluster A, <code>decision</code>): owner ratification of this ADR, and with it the four
+  rulings that are the owner's rather than an agent's: the kid surface emitting nothing in
+  version 1, the two dropped variants, the 5-distinct-session publish floor on a weaker unit
+  than ADR-030's, and the standing Session Replay capability prohibition. Until ratified, task
+  D3b is blocked and no beacon client, ingest route, table, or digest job may be built.</li>
+<li><strong><code>UW-C431</code></strong> (Cluster C, new): a plan document specified a retention window on a table
+  enforced append-only by a database trigger. Append-only-by-trigger and retention are mutually
+  exclusive, and nothing in the review chain flags a plan that asks for both. The general sweep
+  is the other durable tables in this schema against their stated retention obligations,
+  <code>security_event</code> (<code>UW-D28</code>) included.</li>
+<li><strong><code>UW-C432</code></strong> (Cluster C, new): a privacy assumption stated about a payload was read as a
+  property of the record. The envelope (a bearer token that names a subject, a client IP, a
+  correlation id) and the stored timestamp both carry attribution that no payload allowlist
+  reaches. This is ADR-030's row-versus-cell finding generalised to payload-versus-record; the
+  row carries the sweep of this repository's other "the payload contains no PII" claims against
+  what their records actually store.</li>
+<li><strong><code>UW-A50</code></strong> (Cluster A, existing, ADR-018 D6): unchanged in scope by this ADR while the kid
+  surface does not emit, since the beacon collects nothing about a child. It gains one dependent
+  obligation: a new processing-activity entry in <code>records-of-processing-activities.md</code> covering
+  adult-console friction telemetry, which must land <strong>before the ingest flag is first turned
+  on</strong>, not after.</li>
+</ul>
+<h2 id="note-on-the-documentation-nav">Note on the documentation nav<a class="headerlink" href="#note-on-the-documentation-nav" title="Permanent link">&para;</a></h2>
+<p>This ADR is deliberately <strong>not</strong> added to <code>mkdocs.yml</code>'s nav, for the reason
+<a href="../adr-030-engagement-correlation-privacy-review/">ADR-030</a> records: that nav's ADR list stops
+at ADR-011 and includes no later ADR, so the directory is navigated through
+<a href="../"><code>adr/README.md</code></a> instead. A single nav entry for ADR-031 would invent a convention
+holding for one document. The <code>README.md</code> index table is the surface that does need a row for
+this ADR.</p>
+
+
+
+
+
+
+
+  
+    
+  
+  
+    
+  
+
+
+  <aside class="md-source-file">
+    
+      
+  <span class="md-source-file__fact">
+    <span class="md-icon" title="Last update">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
+    </span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="August 29, 2026 23:43:41 UTC">August 29, 2026</span>
+  </span>
+
+    
+    
+      
+  <span class="md-source-file__fact">
+    <span class="md-icon" title="Created">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M14.47 15.08 11 13V7h1.5v5.25l3.08 1.83c-.41.28-.79.62-1.11 1m-1.39 4.84c-.36.05-.71.08-1.08.08-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8c0 .37-.03.72-.08 1.08.69.1 1.33.32 1.92.64.1-.56.16-1.13.16-1.72 0-5.5-4.5-10-10-10S2 6.5 2 12s4.47 10 10 10c.59 0 1.16-.06 1.72-.16-.32-.59-.54-1.23-.64-1.92M18 15v3h-3v2h3v3h2v-3h3v-2h-3v-3z"/></svg>
+    </span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="August 29, 2026 23:43:41 UTC">August 29, 2026</span>
+  </span>
+
+    
+    
+    
+  </aside>
+
+
+  
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+    <div class="md-copyright__highlight">
+      Copyright &copy; 2025 Byron Williams
+    </div>
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+        
+<div class="md-social">
+  
+    
+    
+    
+    
+      
+      
+    
+    <a href="https://github.com/williaby" target="_blank" rel="noopener" title="github.com" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../../..", "features": ["navigation.instant", "navigation.tracking", "navigation.tabs", "navigation.sections", "navigation.expand", "navigation.indexes", "navigation.top", "search.suggest", "search.highlight", "content.code.copy", "content.code.annotate"], "search": "../../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../../assets/javascripts/bundle.d7400e89.min.js"></script>
+      
+    
+  </body>
+</html>

@@ -10336,6 +10336,246 @@ written, which is the error the row exists to correct.</p>
 <td>open</td>
 <td><code>UW-C422</code></td>
 </tr>
+<tr>
+<td>AL-688</td>
+<td>2026-08-28</td>
+<td>Task C1 comprehension-probe pilot</td>
+<td>tooling</td>
+<td><strong>A paid pilot script launched as a detached background process from a subagent turn is reaped silently when that turn ends, and any spend already incurred becomes unobservable.</strong> The first C1 pilot attempt launched <code>comprehension_probe.py</code> as a background Bash task from within a subagent turn; the turn ended before the run finished, the process was killed, and neither its output directory nor any log line was ever written, so whatever had already been spent was unrecoverable and unrecorded. The second attempt ran the identical command in the foreground within a single turn, sized to finish before that turn's response was returned, and produced a complete report ($0.02208012 spent across 120 calls, 59 of 60 collected passages processed).</td>
+<td>Add a standing rule that any script making paid provider calls must either run to completion in the foreground within one turn, sized accordingly, or persist its budget-tracker state to disk after every call so a kill mid-run leaves an observable spend total instead of a silent zero.</td>
+<td>open</td>
+<td><code>UW-C423</code></td>
+</tr>
+<tr>
+<td>AL-689</td>
+<td>2026-08-28</td>
+<td>Task C1 review-fix round</td>
+<td>tooling</td>
+<td><strong>A corpus walk that fills greedily and stops turns a multi-story slice into a single-book figure, and the corpus counts cannot reveal it.</strong> <code>comprehension_probe.collect_passages</code> broke out of its file loop once <code>--max-passages</code> was reached, so a 60-passage slice of a 31-file, 6-story age band came entirely from <code>sk_backyard_treasure_map</code> (sorted first) and 27 files were never opened. The run's headline <code>0.2034</code> was reported and read as an age-band comprehension rate while being one book's rate, confounded by that book's characters, setting and author. <code>CorpusStats</code> could not expose it because it counted only what the walk had reached: it reported <code>files_scanned=31, files_skipped_age_band=3, nodes_seen=60</code> where a full scan reports <code>files_skipped_age_band=25, nodes_seen=288</code>. Applied: every matching file is now scanned before the cap is applied, eligible passages are grouped per story, and the cap is spent round-robin; <code>stories_available</code>/<code>stories_sampled</code> and a per-story breakdown are reported so a one-book slice is visible in the summary itself.</td>
+<td>Applied here. Generalise it: any sampling helper that takes the first N of a sorted corpus should report how many sources the N actually came from, next to the figure derived from them.</td>
+<td>applied</td>
+<td><code>ccf749d7</code> on <code>fix/testing-ladder-trust</code></td>
+</tr>
+<tr>
+<td>AL-690</td>
+<td>2026-08-28</td>
+<td>Task C1 review-fix round</td>
+<td>tooling</td>
+<td><strong>A spend cap whose cost input can be "not determined" binds on nothing, because the undetermined case posts zero.</strong> <code>core.pricing.estimate_cost</code> returns <code>amount_usd=Decimal(0), complete=False</code> for an unpriced <code>(provider, model)</code> pair or a response with no <code>usage</code> block. <code>BudgetTracker.add</code> added that zero and incremented an <code>incomplete_cost_calls</code> counter that nothing read, so <code>exhausted</code> stayed <code>False</code> for the life of the run: 100 calls of 100k-in/100k-out against a $0.0000001 cap completed reporting <code>SPENT: 0</code>. This is the repository's documented tri-state trap in a new place: "cost was zero" and "cost is unknown" were both falsy at the decision point and collapsed into benign. Reachable by a one-line model-constant edit, a vendor slug rename, or a price refresh that drops a row. Applied: the run refuses to start when either configured model lacks a complete price row, and <code>add</code> raises <code>UnaccountableSpendError</code> on the first incomplete estimate instead of counting it. An exception cannot collapse into a falsy benign state the way a flag can.</td>
+<td>Applied here. Generalise it: a counter is not a control. Any budget, quota or rate guard whose input can be "unknown" must make the unknown case raise or block at the decision point, never increment a field a caller may forget to read.</td>
+<td>applied</td>
+<td><code>ccf749d7</code> on <code>fix/testing-ladder-trust</code></td>
+</tr>
+<tr>
+<td>AL-691</td>
+<td>2026-08-28</td>
+<td>Task C1 review-fix round</td>
+<td>tooling</td>
+<td><strong>A price-table figure and an observed charge are different kinds of fact, and reporting the first as the second makes a spend claim self-refuting.</strong> The C1 pilot recorded <code>$0.02208012</code> from <code>core/pricing.py</code>, a hand-transcribed table stamped <code>as_of=2026-08-14</code> whose own docstring warns that a vendor price change makes every later estimate silently wrong, and the run report asserted it "is not an estimate, it is what the two runs actually spent". OpenRouter will return a per-call <code>usage.cost</code> when the request opts in with <code>usage: {"include": true}</code>; nothing here asked for it, so no observed number existed anywhere. Applied: an opt-in <code>report_vendor_cost</code> flag on the OpenRouter adapter (default off, so no existing caller's request bytes change), <code>dig_vendor_cost</code> narrowing the untrusted value to <code>Decimal \| None</code> with <code>None</code> meaning "not reported" rather than "free", and a probe summary that prints observed and estimated spend as two separately labelled lines. The cap binds on the larger of the two, so a table that has drifted below the live rate cannot let a run overspend by exactly the drift.</td>
+<td>Applied here. Generalise it: where a vendor reports its own per-call charge, capture it and label the two figures apart in every artifact; never let an inference inherit a measurement's wording.</td>
+<td>applied</td>
+<td><code>ccf749d7</code> on <code>fix/testing-ladder-trust</code></td>
+</tr>
+<tr>
+<td>AL-692</td>
+<td>2026-08-29</td>
+<td>Task C1 second review-fix round</td>
+<td>tooling</td>
+<td><strong>Fixing a sampling bias at one level can reintroduce the identical bias one level down, and the corrected artifact still reads broader than its slice.</strong> <code>AL-689</code> fixed a greedy corpus walk that made a six-story slice into a one-book figure. The replacement interleaved by DEPTH: it spread the 60-passage cap evenly across the six stories and then took node positions 0 to 9 of every one of them. The published <code>0.1954</code> was therefore the band's OPENING-PREFIX rate presented as the band's rate, and it was not merely narrower but biased in a known direction, because story openings introduce their referents and carry the least prior context, which is the worst case for an "answerable from this passage alone" probe. Neither <code>corpus_description</code> (<code>"out (pattern='*.filled.json', age_band='5-8', max_passages=60)"</code>) nor the summary note said which 60. Applied: <code>_stratified_stride_sample</code> keeps the round-robin division across stories and takes each story's share at even intervals across its whole node list, <code>_SAMPLING_STRATEGY</code> is recorded verbatim in the aggregate and in <code>corpus_description</code> from the module constant rather than from a caller-supplied string, and a test asserts the selected positions span each story rather than clustering in its first tenth.</td>
+<td>Generalise the disclosure, not just the sampler: any published figure derived from a capped walk should carry the SELECTION RULE in the same artifact as the number, taken from the code that selected rather than from a description a caller passes in. Sweep <code>judge_books.py</code>, <code>w7_battery.py</code> and <code>yield_harness.py</code> for capped selections whose artifacts state a count but not a rule.</td>
+<td>applied</td>
+<td><code>191847a9</code> on <code>fix/testing-ladder-trust</code></td>
+</tr>
+<tr>
+<td>AL-693</td>
+<td>2026-08-29</td>
+<td>Task C1 second review-fix round</td>
+<td>tooling</td>
+<td><strong>A test named for WIRING that calls the guard directly pins the guard and not the wiring, and the name is what makes the gap invisible.</strong> Two of them, same shape, in the same file. <code>test_one_model_asking_and_answering_is_refused_at_import</code> called <code>_validate_model_pair(...)</code> directly; deleting the module-level <code>_validate_model_pair(_QUESTION_MODEL, _ANSWER_MODEL)</code> call left 42 of 42 tests passing. <code>test_an_unpriced_model_refuses_to_start</code> called <code>_ensure_models_are_priced()</code> directly; replacing that call in <code>main</code> with <code>pass</code> left 42 of 42 passing. Both names assert a property of the CALLER while both bodies exercise only the CALLEE, so a reviewer reading the suite sees the property covered. Applied: the import-time call is pinned by re-running the import machinery over the module's own source with only the <code>_ANSWER_MODEL</code> assignment rewritten (a <code>SourceFileLoader</code> subclass overriding <code>get_code</code>, so no <code>__pycache__</code> entry can quietly import the unmodified module), and the start gate is pinned by driving <code>main</code> itself with a stub <code>collect_passages</code> that fails the test if the walk is ever reached. Both tests were confirmed to flip from pass to fail under their mutation.</td>
+<td>Add to the review checklist: when a test's name names a call SITE (at import, at startup, on request), the test must drive that site. Sweep this repository's test names for <code>_at_import</code>, <code>_refuses_to_start</code>, <code>_on_startup</code> and <code>_at_request_time</code> and check each body reaches the caller rather than the callee.</td>
+<td>applied</td>
+<td><code>191847a9</code> on <code>fix/testing-ladder-trust</code></td>
+</tr>
+<tr>
+<td>AL-694</td>
+<td>2026-08-29</td>
+<td>Task C1 second review-fix round</td>
+<td>tooling</td>
+<td><strong>A durable record written to a FIXED filename is destroyed by the next run of the thing that produced it, which is barely more durable than never writing it.</strong> <code>write_tracked_aggregate</code> was added to close <code>UW-F53</code> by persisting the paid pilot's aggregate somewhere tracked, and it wrote <code>out/reports/comprehension-probe/latest-summary.json</code> unconditionally. The re-run required by <code>AL-692</code> overwrote it, so the fix for "the finding exists only in <code>tmp/</code>" still lost a finding on its second use. The writer also had no test of any kind, so a no-op mutation left the suite green. Applied: the aggregate is written as <code>summary-&lt;run_id&gt;.json</code> with <code>latest-summary.json</code> beside it as a pointer carrying no counts or rates of its own; the run id is stamped once in <code>main</code> and passed to both writers so neither reads a wall clock a test would have to freeze, and it is validated as a safe path component; four tests now cover the writer, including one that fails if a second run destroys the first run's file.</td>
+<td>Generalise: any "durable record" guard of the <code>_paid_output.ensure_persistable</code> family should check that the destination is run-scoped as well as tracked. A tracked path that the next invocation overwrites satisfies <code>ensure_persistable</code> today and still loses the record.</td>
+<td>applied</td>
+<td><code>191847a9</code> on <code>fix/testing-ladder-trust</code></td>
+</tr>
+<tr>
+<td>AL-695</td>
+<td>2026-08-28</td>
+<td>ADR-030 children's-privacy review (task C3 precondition)</td>
+<td>validator</td>
+<td><strong>A plan can name a validator statistic as a per-storybook input when nothing persists it, and the plan reads as buildable because the statistic genuinely exists in code.</strong> The C3 implementation plan made an analysis job correlating "consequence distance, reconvergence, diversity scores" against real reading outcomes a hard precondition item. All three exist as functions and none is persisted per storybook: <code>validator/consequence.py:267</code> has zero callers anywhere in <code>src/</code> and is exercised only by an offline CLI and its tests, reconvergence exists only as an unenforced <code>BandProfile.reconvergence_ceiling</code> (<code>validator/band_profile.py:35</code>), and structural distance (<code>diversity/structure.py:299,397</code>) is computed on demand from skeleton and story JSON. No <code>diversity_score</code> column exists in <code>db/models.py</code>. A reader who greps for the names finds them and concludes the join is writable; the correlation is not buildable end to end from any query.</td>
+<td>When a plan names a metric as a per-entity input to a join, verify it is persisted at that entity's grain before the plan depends on it, and record "computed on demand, not stored" next to the name where it is not. Sweep the in-flight plan documents for the same shape: a metric named as a column-like input whose only implementation is an offline callable.</td>
+<td>open</td>
+<td><code>UW-C426</code></td>
+</tr>
+<tr>
+<td>AL-696</td>
+<td>2026-08-29</td>
+<td>ADR-030 senior review (task C3a)</td>
+<td>process</td>
+<td><strong>A minimum-cell threshold applied to the top-level cohort does not bind the signals aggregated inside it, and the rule reads complete because the arithmetic justifying it is stated in full.</strong> ADR-030's first draft gated a storybook's inclusion on reading outcomes from at least 5 distinct <code>family_id</code> values, defined the cohort by observed reads, and argued at length why 5 rather than 3 (every outcome signal has a small integer domain, so a mean over 3 with one value known usually determines the other two). Ratings, completions and flags are contributed by SUBSETS of those readers. A book read by 5 families and rated by 1 satisfied every stated rule while publishing a rating mean that was exactly one child's <code>rating.value</code>, a 1-to-5 integer (<code>db/models.py:1687,1705</code>). The draft's own <code>#VERIFY</code> test requirement pinned only the reader cohort, so an implementation with the hole in it would have passed the obligation. The same shape appeared twice more in one document: the flag gate counted flags rather than flagging families, readmitting the single-household case the family grain existed to exclude. Fixed in Decision 1: every emitted aggregate must reach 5 distinct contributing families FOR THAT SIGNAL, and a signal below its own floor is suppressed while the rest of the row publishes.</td>
+<td>Generalise past this ADR: wherever a threshold, quorum or minimum-cell rule guards an aggregate, state the population for EACH published figure rather than for the container, and require a test fixture where the container passes and one inner signal does not, because a container-level test passes against a gate applied exactly once. Sweep this repository's other suppression and gating surfaces (moderation thresholds, diversity floors, the flywheel's cadence gates) for a rule whose population is named once at the top.</td>
+<td>open</td>
+<td><code>UW-C427</code></td>
+</tr>
+<tr>
+<td>AL-697</td>
+<td>2026-08-29</td>
+<td>ADR-030 senior review (task C3a)</td>
+<td>process</td>
+<td><strong>A closure argument made on one side of a data path is read as covering the whole path, and the missing side is invisible precisely because the present side is argued well.</strong> ADR-030's first draft carried an explicit, closed-by-default read allowlist (which columns the job may touch, with a stated reason for every denial) and fixed the output GRAIN, but no decision said what a row CONTAINS. Decision 6 then referred to "the artifact's schema" as a committable thing without defining it. An implementer could have shipped per-signal denominators (a <code>rating_count: 1</code> beside a mean recovers the value exactly), the raw cohort size, the LLM-authored free-text Stage-4 <code>message</code>, or cross-book totals, violating no stated rule. The same asymmetry ran through the egress decision: it banned committing to the repository and banned a route, the two paths the author had in mind, and left quoting a row into a PR body, a doc, or an LLM prompt uncovered, which in an agent-driven workflow is the likeliest real leak. Fixed by an emit allowlist in Decision 3, a no-spanning-totals rule, and a general "does not leave the deployment host" rule of which committing is one case.</td>
+<td>Add to the review checklist for any document that allowlists or prohibits: name the paths, then ask which side of the boundary each rule sits on and whether the opposite side has its own rule. A read allowlist and an emit allowlist are separate artifacts; a named-path prohibition and a general rule are separate claims. Where a document enumerates two instances of a category, require the category to be stated.</td>
+<td>open</td>
+<td><code>UW-C428</code></td>
+</tr>
+<tr>
+<td>AL-698</td>
+<td>2026-08-28</td>
+<td>ADR-030 engagement-correlation job (task C3b)</td>
+<td>tooling</td>
+<td><strong>A mutation run reported 31 of 31 mutants killed while no test had executed, because the harness passed a pytest flag this repository's <code>addopts</code> forbids.</strong> The harness ran <code>pytest -p no:xdist</code> to make failures readable; <code>pyproject.toml</code>'s <code>addopts</code> carries <code>-n=auto</code>, so pytest exited with <code>unrecognized arguments: -n=auto</code> before collecting anything. A non-zero exit is exactly the signal the harness reads as "the test suite caught the mutant", so every mutant, including ones that delete a privacy control outright, reported KILLED. The run looked like the strongest possible evidence and was worth nothing. Caught only by adding no-op CONTROL mutants (a comment-only edit per file) that MUST survive: they reported KILLED too, which is impossible for a comment edit and is what exposed the runner. Applied in this run: the harness switches to <code>-n 0</code>, treats a pytest usage error as BROKEN rather than as a kill, requires a <code>FAILED</code>/<code>ERROR</code> line before claiming a kill, and carries one control per mutated file. Re-run: 31 real mutants killed, 5 controls survived.</td>
+<td>Generalise past this harness: any tool that infers a verdict from a subprocess exit code needs a positive control in the same run, and a repository whose <code>addopts</code> are non-trivial should be treated as part of the test command's contract. Where a mutation or fault-injection run is used as evidence in a review, require the control results to be reported alongside the kills; a kill count with no control line is not evidence.</td>
+<td>open</td>
+<td><code>UW-C429</code></td>
+</tr>
+<tr>
+<td>AL-699</td>
+<td>2026-08-28</td>
+<td>ADR-030 engagement-correlation job (task C3b)</td>
+<td>process</td>
+<td><strong>A refusal test passed against the deleted branch it was written to pin, because the test environment supplied the same refusal for a different reason.</strong> ADR-030 Decision 7 requires an empty output path to count as unset. The test asserted only that constructing <code>Settings</code> raised <code>ConfigurationError</code>. Mutating <code>if not configured:</code> to a condition that can never fire left the test green: an empty path resolves to the process's working directory, the suite runs inside this checkout, and the working-tree walk raised the same exception type from the next branch down. The test therefore measured the ambient environment rather than the control, and read as complete because the exception type matched. Fixed by asserting the empty-value branch's own message, by repeating the case from a working directory outside any checkout where only that branch can refuse, and by a test that pins the two branches to distinguishable messages so the first assertion cannot rot.</td>
+<td>Add to the review checklist: when a guard has more than one branch raising the same exception type, a <code>pytest.raises(...)</code> with no message assertion pins none of them. Require either a message assertion or an environment in which only the branch under test can fire, and sweep this repository's other multi-branch validators (the KWS validators in <code>core/config.py</code>, the dev-DSN and pooler-cache validators) for <code>pytest.raises</code> blocks that assert type alone.</td>
+<td>open</td>
+<td><code>UW-C430</code></td>
+</tr>
+<tr>
+<td>AL-700</td>
+<td>2026-08-29</td>
+<td>Final whole-branch review of <code>.claude/skills/naive-ux-check</code>, round 3 fix</td>
+<td>tooling</td>
+<td>A negation token anywhere in a sentence is not evidence the sentence is negated. A <code>never\|not\|avoid\|without</code> alternation used as a whole-sentence exemption is inverted for imperatives: "Do not forget to append X" and "compose it yourself if the renderer is not available" both carry a negation token while being plain orders to do the thing. A prose guard needs the negation to precede the target within a bounded window AND the sentence to carry no double-negative reversal word (forget, fail, omit, neglect, skip, hesitate).</td>
+<td>Applied on <code>fix/testing-ladder-trust</code>: <code>_negation_governs()</code> in <code>tests/unit/test_naive_ux_scenarios.py</code> implements both conditions, and both prose-guard docstrings now state they are tripwires rather than proofs. Reuse the helper's shape for any future doc-text guard.</td>
+<td>applied</td>
+<td>commit <code>214b1737</code></td>
+</tr>
+<tr>
+<td>AL-701</td>
+<td>2026-08-29</td>
+<td>Final whole-branch review of <code>.claude/skills/naive-ux-check</code>, round 3 fix</td>
+<td>tooling</td>
+<td>A verb-list heuristic over prose can never be complete, and that is fine; documenting it as if it were a proof is not. Where a check is a tripwire, its docstring must say which phrasings it catches and which it cannot, and must point at the structural check that actually holds the property, so a green suite is not misread as a guarantee.</td>
+<td>Applied: both prose-guard docstrings, the test module docstring, and SKILL.md now split the SKILL.md checks into "structural, complete for what they claim" and "tripwires, incomplete by construction". Apply the same split to any future doc-text guard.</td>
+<td>applied</td>
+<td>commit <code>214b1737</code></td>
+</tr>
+<tr>
+<td>AL-702</td>
+<td>2026-08-29</td>
+<td>Final whole-branch review of <code>fix/testing-ladder-trust</code>, e2e-tiers fix round</td>
+<td>tooling</td>
+<td>A tier that types a real credential has no publishable subset of its Playwright output directory. The accessibility snapshot that Playwright writes on failure renders a password field's VALUE, not just its label, so narrowing the upload to "just the diagnostics" still publishes the secret.</td>
+<td>Applied: the <code>e2e-prod.yml</code> upload was removed outright rather than narrowed, and both prod and staging Playwright configs carry a <code>#CRITICAL: security:</code> block saying so. Treat "no <code>upload-artifact</code> step may point at a Playwright output directory in a tier that authenticates a real account" as a reviewable rule, now enforced mechanically by <code>frontend/scripts/check-artifact-upload-safety.mjs</code>.</td>
+<td>applied</td>
+<td>commits <code>247018d3</code>, <code>b5037418</code></td>
+</tr>
+<tr>
+<td>AL-703</td>
+<td>2026-08-29</td>
+<td>Final whole-branch review of <code>fix/testing-ladder-trust</code>, e2e-tiers fix round</td>
+<td>tooling</td>
+<td>A <code>storageState</code> refactor that removes a sign-in also removes the only navigation, and <code>page.evaluate</code> on an un-navigated page throws <code>SecurityError</code> rather than returning null, so the spec's own null-guard is unreachable and the check silently stops checking.</td>
+<td>Applied: <code>device-grant-sweep.spec.ts</code> now navigates via <code>gotoResilient</code> before reading <code>localStorage</code>, and asserts the page origin matches <code>baseURL</code> first. Any spec reading <code>localStorage</code> must assert it is on the app origin before the read.</td>
+<td>applied</td>
+<td>commit <code>247018d3</code></td>
+</tr>
+<tr>
+<td>AL-704</td>
+<td>2026-08-29</td>
+<td>Final whole-branch review of <code>fix/testing-ladder-trust</code>, e2e-tiers fix round</td>
+<td>tooling</td>
+<td>Two sibling describes cannot anchor each other. An anchor that can be skipped while the thing it anchors still runs is not an anchor, and it reads as one in review.</td>
+<td>Applied: the moderation-QA presence anchor now pairs <code>test.describe.configure({ mode: 'serial' })</code> on a shared parent with a module-scope confirmation flag thrown on by the dependent group's <code>beforeAll</code>. Serial mode covers "ran and failed"; only the flag covers "never selected", e.g. under <code>--grep</code>. Use both, not either.</td>
+<td>applied</td>
+<td>commit <code>3f0045cb</code></td>
+</tr>
+<tr>
+<td>AL-705</td>
+<td>2026-08-29</td>
+<td>Final whole-branch review of <code>fix/testing-ladder-trust</code>, e2e-tiers fix round</td>
+<td>tooling</td>
+<td>When two code paths emit an identical string, no test can pin either one, and a surviving mutant on a guard documented as load-bearing is the symptom. Adding another assertion cannot fix it; the outputs have to become distinguishable.</td>
+<td>Applied: the extractor's guard and its fallback now emit distinct parentheticals, which killed the mutant the reviewer's suggested test would not have. When a mutant survives a load-bearing guard, first check whether the guard's output differs from its fallback's at all.</td>
+<td>applied</td>
+<td>commit <code>45d33950</code></td>
+</tr>
+<tr>
+<td>AL-706</td>
+<td>2026-08-29</td>
+<td>Final whole-branch review of <code>fix/testing-ladder-trust</code>, e2e-tiers fix round</td>
+<td>tooling</td>
+<td>Playwright's <code>error-context.md</code> is governed by the reporter and the output directory, NOT by the <code>trace</code>, <code>screenshot</code>, or <code>video</code> use-options, and its accessibility snapshot renders a password field's value in plain text. A config with all three set to 'off' published a plaintext credential from a public repository three times before anyone noticed.</td>
+<td>The control belongs at the upload boundary, never at the trace flag. Enforced for the two secret-injecting tiers by <code>frontend/scripts/check-artifact-upload-safety.mjs</code>. Still OPEN for the six remaining wholesale <code>frontend/test-results/</code> uploads, tracked as <code>UW-C433</code>: treat any Playwright output directory as credential-bearing regardless of config.</td>
+<td>open</td>
+<td></td>
+</tr>
+<tr>
+<td>AL-707</td>
+<td>2026-08-29</td>
+<td>Final whole-branch review of <code>fix/testing-ladder-trust</code>, e2e-tiers fix round</td>
+<td>tooling</td>
+<td>A hand-rolled parser feeding a security gate is itself an anti-oracle: a parser that matches nothing is indistinguishable from a clean repository, and both report success.</td>
+<td>Applied: <code>check-artifact-upload-safety.mjs</code> carries a positive self-test with a known-bad fixture plus mutation arms proving the self-test fires, and its workflow parser was cross-checked against an independent <code>grep</code> oracle. Every parser feeding a gate needs both.</td>
+<td>applied</td>
+<td>commit <code>b5037418</code></td>
+</tr>
+<tr>
+<td>AL-708</td>
+<td>2026-08-29</td>
+<td>Final whole-branch fix wave on <code>fix/testing-ladder-trust</code></td>
+<td>tooling</td>
+<td>A source-level guard written over <code>ast.ImportFrom</code> alone is defeated by an inline <code>__import__(...).attr()</code> call. The mutation ran GREEN and the guard looked correct, so the guard shipped decorative and was caught only because the battery included a dynamic-import mutant.</td>
+<td>Applied: the guard now walks <code>ast.Name</code> and <code>ast.Attribute</code> as well as <code>ast.ImportFrom</code>. AST rather than substring is required because the module's own docstring names the forbidden symbol. Prefer a Name/Attribute scan for any "this module must not reach for X" guard, and add the dynamic-import mutation to the standard battery. Stated ceiling: a <code>getattr(db, "get_" + "session")</code> form still evades, tracked as <code>UW-C436</code>.</td>
+<td>applied</td>
+<td>commit <code>ef7e888f</code></td>
+</tr>
+<tr>
+<td>AL-709</td>
+<td>2026-08-29</td>
+<td>Final whole-branch fix wave on <code>fix/testing-ladder-trust</code></td>
+<td>tooling</td>
+<td>Playwright's <code>boundingBox()</code> waits for attachment, so DELETING an element makes it time out rather than return null. A mutation that removes the locator therefore reddens a broken guard and a correct one alike, and proves nothing about either.</td>
+<td>Applied: the shape that actually yields null is an element present but not rendered. Inject <code>display: none</code> via <code>addStyleTag</code>, never a bad selector, and always run the OLD guard against the same injection to show it SURVIVES. Without that second arm the proof is one-sided.</td>
+<td>applied</td>
+<td>commit <code>4a717f76</code></td>
+</tr>
+<tr>
+<td>AL-710</td>
+<td>2026-08-29</td>
+<td>Final whole-branch fix wave on <code>fix/testing-ladder-trust</code></td>
+<td>tooling</td>
+<td>A workflow-scanning security rule keyed on the literal <code>${{ secrets.</code> is blind to <code>secrets: inherit</code>, which grants a called workflow every secret without ever writing that literal. The rule reported clean on a fixture that would publish an entire Playwright output directory from a secret-bearing tier.</td>
+<td>Applied: any "does this workflow hold a credential" predicate must test BOTH the expression form and <code>secrets: inherit</code>, and must be exercised end to end through the rule rather than only through the predicate. Confirmed by the coordinator against a probe workflow containing zero occurrences of the literal.</td>
+<td>applied</td>
+<td>commit <code>ef7e888f</code></td>
+</tr>
+<tr>
+<td>AL-711</td>
+<td>2026-08-29</td>
+<td>Final whole-branch fix wave on <code>fix/testing-ladder-trust</code></td>
+<td>tooling</td>
+<td>A regex anchored with <code>$</code> on a YAML <code>uses:</code> path is defeated by a legal trailing comment, and the caller's continue-on-empty turned that miss into a silent pass. The identical <code>$</code>-anchoring mistake was then made a second time while widening the same file's secret predicate, and was caught only by re-reading rather than by a test.</td>
+<td>Applied: treat <code>$</code>-anchored YAML line patterns as a known defect SHAPE. Allow an optional trailing comment or stop at a word boundary, and add a commented-line case to every test covering such a pattern. That a competent author repeated the mistake within one change is the argument for a shape-level rule rather than a one-off fix.</td>
+<td>applied</td>
+<td>commit <code>0d047e2f</code></td>
+</tr>
 </tbody>
 </table>
 <hr />
@@ -10375,7 +10615,7 @@ written, which is the error the row exists to correct.</p>
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="August 28, 2026 18:59:47 UTC">August 28, 2026</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="August 29, 2026 23:43:41 UTC">August 29, 2026</span>
   </span>
 
     

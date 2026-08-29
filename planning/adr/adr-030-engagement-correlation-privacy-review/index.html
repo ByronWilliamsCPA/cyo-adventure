@@ -1,0 +1,4374 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="A choose-your-own-adventure reading app for kids">
+      
+      
+        <meta name="author" content="Byron Williams">
+      
+      
+        <link rel="canonical" href="https://cyo-adventure.readthedocs.io/planning/adr/adr-030-engagement-correlation-privacy-review/">
+      
+      
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+    
+    
+      
+        <title>ADR-030: Children's-privacy review of the engagement-correlation analysis job - CYO Adventure</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../../assets/stylesheets/main.ec1eaa64.min.css">
+      
+        
+        <link rel="stylesheet" href="../../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../../assets/_mkdocstrings.css">
+    
+    <script>__md_scope=new URL("../../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+  
+
+
+  
+  
+
+<script id="__analytics">function __md_analytics(){function e(){dataLayer.push(arguments)}window.dataLayer=window.dataLayer||[],e("js",new Date),e("config",""),document.addEventListener("DOMContentLoaded",(function(){document.forms.search&&document.forms.search.query.addEventListener("blur",(function(){this.value&&e("event","search",{search_term:this.value})}));document$.subscribe((function(){var t=document.forms.feedback;if(void 0!==t)for(var a of t.querySelectorAll("[type=submit]"))a.addEventListener("click",(function(a){a.preventDefault();var n=document.location.pathname,d=this.getAttribute("data-md-value");e("event","feedback",{page:n,data:d}),t.firstElementChild.disabled=!0;var r=t.querySelector(".md-feedback__note [data-md-value='"+d+"']");r&&(r.hidden=!1)})),t.hidden=!1})),location$.subscribe((function(t){e("config","",{page_path:t.pathname})}))}));var t=document.createElement("script");t.async=!0,t.src="https://www.googletagmanager.com/gtag/js?id=",document.getElementById("__analytics").insertAdjacentElement("afterEnd",t)}</script>
+  
+    <script>"undefined"!=typeof __md_analytics&&__md_analytics()</script>
+  
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#adr-030-childrens-privacy-review-of-the-engagement-correlation-analysis-job" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../../.." title="CYO Adventure" class="md-header__button md-logo" aria-label="CYO Adventure" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            CYO Adventure
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              ADR-030: Children's-privacy review of the engagement-correlation analysis job
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/ByronWilliamsCPA/cyo-adventure" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+  </div>
+  <div class="md-source__repository">
+    ByronWilliamsCPA/cyo-adventure
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../.." class="md-tabs__link">
+        
+  
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../guides/overview/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  User Guide
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../api-reference/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  API Reference
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../operations/runbook/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Operations
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../architecture/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Architecture
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../security/assurance-spine/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Security
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../development/architecture/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Development
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../project/roadmap/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Project
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Planning
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../PROJECT_SETUP/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Supplementary Docs
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../ADRs/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Reference
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../../.." title="CYO Adventure" class="md-nav__button md-logo" aria-label="CYO Adventure" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    CYO Adventure
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/ByronWilliamsCPA/cyo-adventure" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+  </div>
+  <div class="md-source__repository">
+    ByronWilliamsCPA/cyo-adventure
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    User Guide
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    User Guide
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../guides/overview/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Overview
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../guides/configuration/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Configuration
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../guides/usage/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Usage
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../guides/supabase-environments/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Supabase environments
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    API Reference
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    API Reference
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../api-reference/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Overview
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Operations
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Operations
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../operations/runbook/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Operator Runbook
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../operations/kws-test-runbook/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    KWS Test-Environment Runbook
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../operations/authoring-guide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Authoring Guide
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../operations/reviewer-sop/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Reviewer SOP
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../operations/security-events/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Security Event Catalog
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_5" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../../architecture/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Architecture
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_5" id="__nav_5_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Architecture
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../architecture/user-journeys/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    User Journeys
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../architecture/system-overview/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    System Overview
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../architecture/generation-pipeline/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Generation Pipeline
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../architecture/validation-and-player/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Validation and Player
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../architecture/data-model/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Data Model
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../architecture/deployment/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Deployment
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_6" >
+        
+          
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Security
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Security
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../security/assurance-spine/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Assurance Spine
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../security/assurance-register/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Assurance Register
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../security/control-inheritance/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Control Inheritance Map
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../security/crypto-inventory/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Cryptographic Inventory
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../security/red-team-design-review-2026-07/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Red Team Design Review
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+          
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_7" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../../api/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Development
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_7" id="__nav_7_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_7_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_7">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Development
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../development/architecture/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Architecture
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../development/testing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Testing
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../development/code-quality/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Code Quality
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../development/contributing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Contributing
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_8" >
+        
+          
+          <label class="md-nav__link" for="__nav_8" id="__nav_8_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Project
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_8_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_8">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Project
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../project/roadmap/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Roadmap
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../project/changelog/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Changelog
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../project/license/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    License
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_9" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Planning
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--active"></span>
+  
+
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_9" id="__nav_9_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_9_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_9">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Planning
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../project-vision/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Project Vision
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--active"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tech-spec/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Tech Specification
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--active"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../PROJECT-PLAN/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Project Plan
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--active"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../roadmap/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Roadmap
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--active"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_9_6" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADRs
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_9_6" id="__nav_9_6_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_9_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_9_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    ADRs
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../adr-001-story-format-json-storybook/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR-001
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--accepted"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../adr-002-client-pwa/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR-002
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--accepted"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../adr-003-frontier-llm-generation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR-003
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--accepted"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../adr-004-homelab-first-deployment/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR-004
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--accepted"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../adr-005-mandatory-human-approval/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR-005
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--accepted"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../adr-006-conditions-inhouse-evaluator/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR-006
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--accepted"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../adr-007-raw-output-retention/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR-007
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--accepted"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../adr-008-public-app-store-launch/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR-008
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--proposed"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../adr-009-supabase-platform/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR-009
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--accepted"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../adr-010-modal-review-and-gated-generation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR-010
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--proposed"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../adr-011-story-scale-framework/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR-011
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--accepted"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+          
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_9_7" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../research/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Story Structure Diversity
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--active"></span>
+  
+
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_9_7" id="__nav_9_7_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_9_7_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_9_7">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Story Structure Diversity
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../story-structure-diversity-critical-analysis/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Critical Analysis
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--active"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../story-structure-improvement-plan/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Improvement Plan
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--active"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../story-structure-implementation-briefs/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Implementation Briefs
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--active"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_10" >
+        
+          
+          <label class="md-nav__link" for="__nav_10" id="__nav_10_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Supplementary Docs
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_10_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_10">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Supplementary Docs
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../PROJECT_SETUP/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Project Setup
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../OPENSSF_COMPLIANCE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    OpenSSF Compliance
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../PYTHON_COMPATIBILITY/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Python Compatibility
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_11" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../../ADRs/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Reference
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_11" id="__nav_11_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_11_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_11">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Reference
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../ADRs/adr-template/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR Template
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--draft"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#tldr" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        TL;DR
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#context" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Context
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Context">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#problem" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Problem
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#constraints" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Constraints
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#significance" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Significance
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#decision" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Decision
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Decision">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-the-minimum-cohort-threshold-is-5-distinct-families" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. The minimum-cohort threshold is 5 distinct families
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-two-categorical-exclusions-that-do-not-depend-on-a-count" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Two categorical exclusions that do not depend on a count
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3-the-output-grain-is-the-storybook-its-contents-are-allowlisted-and-the-cohort-is-not-subdivided" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. The output grain is the storybook, its contents are allowlisted, and the cohort is not subdivided
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#4-read-allowlist" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. Read allowlist
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#5-kid_flagnode_id-may-not-appear-in-the-output-in-any-form" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. kid_flag.node_id may not appear in the output, in any form
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#6-the-artifact-does-not-leave-the-deployment-host-and-is-never-committed-to-this-repository" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6. The artifact does not leave the deployment host, and is never committed to this repository
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#7-the-kill-switch-and-the-construction-time-validator" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7. The kill switch and the construction-time validator
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#8-no-route-and-it-is-a-decision-rather-than-an-implementation-note" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8. No route, and it is a decision rather than an implementation note
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#9-the-adr-018-d6-obligation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        9. The ADR-018 D6 obligation
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#10-what-would-change-this-decision" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        10. What would change this decision
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#consequences" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Consequences
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Consequences">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#positive" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Positive
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#trade-offs" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Trade-offs
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#technical-debt" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Technical debt
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#follow-on-work" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Follow-on work
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#note-on-the-documentation-nav" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Note on the documentation nav
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="adr-030-childrens-privacy-review-of-the-engagement-correlation-analysis-job">ADR-030: Children's-privacy review of the engagement-correlation analysis job<a class="headerlink" href="#adr-030-childrens-privacy-review-of-the-engagement-correlation-analysis-job" title="Permanent link">&para;</a></h1>
+<blockquote>
+<p><strong>Status</strong>: Proposed (2026-08-28). <strong>Awaiting owner ratification.</strong> This document was
+drafted by an agent under the owner's standing "proceed under assumed approval" ruling for
+this blocked item, with the mitigation that the job it authorises ships flag-OFF behind a
+kill switch. <strong>It is not a completed human privacy review and must not be cited as one.</strong>
+It becomes Accepted only when the owner ratifies it; until then the flag stays off and no
+artifact is produced against real reader data.
+<strong>Revised 2026-08-29</strong>, before ratification, following a senior review of the first draft. The
+revision is additive: it binds the threshold to each emitted signal rather than only to the reader
+cohort, adds the emit allowlist the first draft left open, and states the egress rule generally
+instead of naming two of its paths. Nothing already decided was reversed, and the status is
+unchanged. The document the owner ratifies is this one.
+<strong>Date</strong>: 2026-08-28
+<strong>Relates to</strong>: <a href="../adr-018-childrens-privacy-compliance/">ADR-018</a> (the governing
+children's-privacy architecture; D6's data inventory obligation is discharged in Decision 8
+below), <a href="../adr-016-recommendation-sharing-social-boundary/">ADR-016</a> (the no-free-text
+principle that makes <code>kid_flag</code> a closed vocabulary), and
+<a href="../adr-005-mandatory-human-approval/">ADR-005</a> (the human gate this job never touches,
+because it is read-only and downstream of publication).</p>
+</blockquote>
+<h2 id="tldr">TL;DR<a class="headerlink" href="#tldr" title="Permanent link">&para;</a></h2>
+<p>The C3 analysis job may be built, under a set of constraints that are decisions here rather
+than implementation preferences.</p>
+<p><strong>The minimum-cohort threshold is 5 distinct families.</strong> A storybook whose reading outcomes
+come from fewer than 5 distinct <code>family_id</code> values is excluded from the output entirely, with
+no row, no partial row, and no null-filled placeholder. The count is over families and not
+over child profiles, because siblings in one household are not independent observers and the
+adult who could re-identify them sees the whole household's contribution at once. The number
+is derived from first principles for a children's product, not measured: the production
+distribution of readers per storybook is not observable from here, and Decision 10 states
+what measurement would justify revising it and in which direction.</p>
+<p><strong>The same threshold binds every emitted signal, not only the row.</strong> Ratings, completions and flags
+are contributed by subsets of a book's readers, so a book that clears the gate on 5 reading families
+can still carry a cell built from one. Each published figure must reach 5 distinct families in its
+own contributing population, and a signal that does not is suppressed while the rest of the row is
+published.</p>
+<p><strong>The artifact is never committed to this repository.</strong> A public git history is not
+retractable, and an aggregate over five families of real children, once pushed, stays public
+even if this threshold is later found insufficient. There is no in-repository default output
+path, and a construction-time settings validator refuses to boot the job when its configured
+output path resolves inside a git working tree.</p>
+<p><strong>The job acquires no route</strong>, because a route is a data-egress path and this is precisely the
+data set that should not gain one.</p>
+<h2 id="context">Context<a class="headerlink" href="#context" title="Permanent link">&para;</a></h2>
+<h3 id="problem">Problem<a class="headerlink" href="#problem" title="Permanent link">&para;</a></h3>
+<p>Task C3 of the testing-improvement plan proposes a read-only analysis job joining Stage-4
+engagement advisories and validator statistics against aggregated real reading outcomes per
+storybook, so that over time the project can tell which synthetic quality scores actually
+predict that a band's readers finish a book and come back to it. The plan's own text makes an
+ADR-018 children's-privacy review a hard precondition before any code, and carries this
+assumption marker:</p>
+<blockquote>
+<p><code>#CRITICAL: security: a per-storybook aggregate can re-identify a child when a storybook has
+very few readers, which is the normal case for a homelab-scale catalog. #VERIFY: the privacy
+review must set and the job must enforce a minimum-cohort threshold below which a storybook
+is excluded from the output entirely, and the threshold must be asserted by a test, not
+merely documented.</code></p>
+</blockquote>
+<p>That marker is correct, and it understates the problem in one respect: the re-identification
+risk here is not only about small counts. Three structural properties of this schema make
+per-storybook aggregation sharper than the general case.</p>
+<ol>
+<li><strong><code>storybook.visibility</code> is bimodal and defaults to the narrow state.</strong>
+   <code>_STORYBOOK_VISIBILITY_VALUES</code> is <code>'family', 'catalog'</code> (<code>db/models.py:101</code>) and the column
+   defaults to <code>family</code> (<code>db/models.py:1432</code>). A <code>family</code>-visibility book has a ceiling of one
+   household's children by construction, so every aggregate over one is an aggregate over one
+   family, whatever its reader count.</li>
+<li><strong>A storybook can be <em>about</em> a named child.</strong> <code>Storybook.personalization_subject_profile_id</code>
+   (<code>db/models.py:1458</code>, ADR-023) is a nullable FK to <code>child_profile</code>. For a book with that
+   column set, a published row is attributable to a specific child by the book's own identity,
+   with no counting argument needed. This is not addressed by any cohort threshold.</li>
+<li><strong><code>kid_flag</code> is finer-grained than the aggregate the plan authorises.</strong> <code>kid_flag.node_id</code>
+   is a passage identifier (<code>db/models.py:2899</code>), so a per-node flag breakdown is a statement
+   about which passage of a book upset a reader. ADR-016's no-free-text principle already
+   removed the child's words from this table; it did not make the passage pointer safe to
+   publish.</li>
+</ol>
+<p>The plan also names inputs that partly do not exist in the shape it assumes, which bears on
+what the job can be scoped to read. Stage-4 engagement advisories are real and are persisted
+as a <code>stage: 4</code> entry inside <code>storybook_version.moderation_report</code> (<code>db/models.py:1484-1486</code>,
+written by <code>moderation/pipeline.py::_persist_report</code>), per storybook version and never per
+child. The validator statistics are not persisted per storybook at all: consequence distance
+(<code>validator/consequence.py:267</code>) has no caller in <code>src/</code> and is exercised only by an offline
+CLI, reconvergence exists only as an unenforced <code>BandProfile.reconvergence_ceiling</code>
+(<code>validator/band_profile.py:35</code>), and structural distance (<code>diversity/structure.py:299,397</code>)
+is computed on demand from skeleton and story JSON. No <code>diversity_score</code> column exists. This
+review does not resolve that gap; it records it, because a reviewer who assumes those columns
+exist will mis-scope the allowlist below.</p>
+<h3 id="constraints">Constraints<a class="headerlink" href="#constraints" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>No measurement is available.</strong> No existing code counts distinct readers per storybook;
+  this job would be the first. The local development database is seed data (5 storybooks,
+  3 child profiles, 0 <code>reading_state</code> rows) and is not evidence about production, and
+  connecting to production to characterise the distribution is out of scope for writing a
+  review that exists to constrain what may be looked at. The threshold below is therefore
+  derived, and is labelled as derived.</li>
+<li><strong>Homelab scale is the operating assumption.</strong> ADR-004 puts this project on a homelab-first
+  deployment with a small real user base; the production roster is four adult accounts. A
+  threshold calibrated for a consumer-scale catalog would be the wrong instrument, and one
+  calibrated to publish something under current conditions would be no instrument at all. The
+  threshold below resolves that tension by accepting that the job may legitimately publish
+  nothing for a long time.</li>
+<li><strong>This repository is public.</strong> Anything committed here is world-readable at push time and
+  stays readable in history after deletion. That is a hard constraint on the artifact and is
+  decided in Decision 6 rather than left to the implementer.</li>
+<li><strong>Day grain is an established posture, not a new idea.</strong> <code>ReadingActivityDay</code>'s docstring
+  (<code>db/models.py:1746-1748</code>) records that no session rows and no timestamp finer than a day
+  ever reach the server. Any timestamp this job touches inherits that posture.</li>
+</ul>
+<h3 id="significance">Significance<a class="headerlink" href="#significance" title="Permanent link">&para;</a></h3>
+<p>The cost of getting this wrong is asymmetric and one-directional. A threshold set too high
+delays a calibration signal that the flywheel currently does without entirely, since its
+candidate strategy triggers on request-side saturation only. A threshold set too low, in an
+artifact that reached a public history, discloses reading behaviour of identifiable children
+and cannot be undone by any subsequent fix. When one side of an error is a delay and the other
+is irreversible, the review picks the delay.</p>
+<h2 id="decision">Decision<a class="headerlink" href="#decision" title="Permanent link">&para;</a></h2>
+<h3 id="1-the-minimum-cohort-threshold-is-5-distinct-families">1. The minimum-cohort threshold is 5 distinct families<a class="headerlink" href="#1-the-minimum-cohort-threshold-is-5-distinct-families" title="Permanent link">&para;</a></h3>
+<p>A storybook is included in the output only if its reading outcomes come from <strong>at least 5
+distinct <code>family_id</code> values</strong>. Below that it is excluded entirely: no row, no partially
+populated row, no null placeholder, and no appearance in any list of storybook identifiers the
+artifact contains.</p>
+<p><strong>The cohort is counted over families, not over child profiles.</strong> The two differ, and the
+difference is not conservative in the direction one might guess. A single family with five
+children satisfies any profile-based threshold of 5 while the aggregate remains one
+household's data, and that household's own adult can subtract every contribution and read the
+remainder as zero. Siblings also share a home, a shelf, and usually a reading session, so
+their outcomes are correlated rather than independent observations. <code>family_id</code> is reachable
+from every outcome table through <code>child_profile.family_id</code>.</p>
+<p><strong>The threshold binds every emitted signal, not only the row.</strong> Clearing the gate at the storybook
+level does not clear every cell in that storybook's row. Each emitted aggregate is computed over its
+own contributing population, that population is counted in distinct <code>family_id</code> values, and it must
+itself reach 5:</p>
+<ul>
+<li>completion rate and return-read rate: families with an observed read of the book;</li>
+<li>the rating aggregate: families that rated it;</li>
+<li>flag counts by reason: families that flagged it (Decision 5, which restates this floor for the
+  population it governs).</li>
+</ul>
+<p>A signal whose own contributing population is below 5 is <strong>suppressed for that storybook</strong>, as the
+marker Decision 3 defines, while the rest of the row is published normally. The book itself passing
+is not a licence for the cell.</p>
+<p>This is the "why 5 and not 3" arithmetic below, applied where it actually bites. A book read by 5
+families and rated by 1 satisfies every other rule in this document, and its published rating mean
+is exactly one child's <code>rating.value</code>, an integer from 1 to 5 with a <code>BETWEEN 1 AND 5</code> check
+constraint on it. A single test of the reader-cohort threshold does not catch that, which is why
+Decision 7 requires the per-signal case as its own fixture.</p>
+<p><strong>Why 5 and not 3.</strong> With a cohort of 3, an adult in one of the three families knows their own
+household's contribution exactly and is left inferring across two unknowns. Every outcome
+signal in scope has a small integer domain: <code>rating.value</code> is 1 to 5 with a <code>BETWEEN 1 AND 5</code>
+check constraint, completion is a boolean per ending, and flag counts are small. A mean over
+three values from a five-value domain, with one value known, frequently determines the
+remaining two uniquely and almost always narrows them to two or three possibilities. That is a
+disclosure, not a hypothetical one.</p>
+<p><strong>Why 5 and not 10 or 11.</strong> Health-sector conventions in the 10 to 11 range exist because
+those data sets combine sensitivity with large denominators. Here the denominator is a homelab
+catalog. A threshold of 11 would suppress every storybook indefinitely, which sounds safe and
+is in fact the least safe outcome available, because a control that never permits any output
+is a control that gets argued down by whoever needs the output later, and it gets argued down
+under deadline rather than in a review. Five is defensible on the arithmetic above, is the
+common minimum cell size in general-purpose statistical disclosure control, and leaves the job
+capable of producing something once a book has genuine cross-family reach.</p>
+<p><strong>Why not 2.</strong> One against one. Not worth the sentence, recorded so the reasoning is closed at
+the bottom end as well as the top.</p>
+<p><strong>Derived, not measured.</strong> This is a first-principles threshold for a children's product. It
+is not the output of any measurement of this system, and nothing in this document should be
+read as evidence about the production distribution. Decision 10 states what would justify
+changing it.</p>
+<p><strong>Not operator-configurable.</strong> The threshold is a module-level constant in the job's own code
+with no environment variable and no settings field. An operator must not be able to lower it,
+and there is no legitimate reason to want to at runtime. Lowering it is a code change, a
+review, and an amendment to this ADR, in that order.</p>
+<h3 id="2-two-categorical-exclusions-that-do-not-depend-on-a-count">2. Two categorical exclusions that do not depend on a count<a class="headerlink" href="#2-two-categorical-exclusions-that-do-not-depend-on-a-count" title="Permanent link">&para;</a></h3>
+<p>Both are evaluated before any aggregation, and both are stronger than a threshold because the
+predicate is a column value rather than a computed cardinality.</p>
+<ul>
+<li><strong><code>storybook.visibility = 'family'</code> books are excluded categorically.</strong> Their reader ceiling
+  is one household. They could never reach 5 families and the threshold would exclude them
+  anyway, which is exactly why the exclusion is worth stating separately: the threshold's
+  correctness depends on the cohort count being computed correctly, and this one does not.</li>
+<li><strong>Any storybook with a non-null <code>personalization_subject_profile_id</code> is excluded
+  categorically</strong>, regardless of visibility, cohort size, or anything else. That column names
+  the child the book is about. No aggregate over a book that is about one identified child is
+  publishable at any cohort size, and no counting argument reaches this case.</li>
+</ul>
+<h3 id="3-the-output-grain-is-the-storybook-its-contents-are-allowlisted-and-the-cohort-is-not-subdivided">3. The output grain is the storybook, its contents are allowlisted, and the cohort is not subdivided<a class="headerlink" href="#3-the-output-grain-is-the-storybook-its-contents-are-allowlisted-and-the-cohort-is-not-subdivided" title="Permanent link">&para;</a></h3>
+<p>One row per storybook. Where a signal is version-scoped (the Stage-4 engagement advisory,
+completions), the job reads the currently published version only, via
+<code>storybook.current_published_version</code>.</p>
+<p>Splitting a row by version, by age band within a book, by ending, by month, or by any other
+dimension subdivides the cohort, and a subdivided cell is the classic failure of a
+threshold applied only at the top level: five families pass the gate, then a per-version split
+produces a cell of one. <strong>Any breakdown dimension the job later grows must re-apply the
+5-family threshold at the leaf cell, not at the storybook.</strong> Adding a dimension without doing
+so is a change to this decision and needs an amendment here.</p>
+<p>Age band, which the emit allowlist below admits, is a property of the <strong>book</strong> (the band the story
+targets, taken from the request that produced it or from the Storybook blob's declared band),
+never <code>child_profile.age_band</code>. The job reads no attribute of any child.</p>
+<p><strong>No total spans more than one storybook.</strong> The artifact contains no grand total, no corpus-wide
+count, no summary row, no "all books" line, and no count of how many storybooks were considered,
+included, or excluded. This is what makes suppression sufficient on its own: a suppressed book's
+cell is recoverable by subtraction only if some published figure includes it, and no published
+figure spans books. Complementary suppression is therefore not needed, but that conclusion is a
+consequence of this rule and not independent of it, so the rule is stated rather than assumed. The
+same reasoning applies within a row: a per-signal cell suppressed under Decision 1 must not be
+recoverable from any other cell in that row, which is why no exact denominator is published.</p>
+<p><strong>Emit allowlist.</strong> A row may contain these fields and no others. Anything not listed is denied,
+including fields a later change would find natural to add. The read allowlist in Decision 4 closes
+what the job may look at; this closes what it may say, and the two are separate holes.</p>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Form</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>storybook_id</code></td>
+<td>the <code>storybook.id</code> UUID</td>
+<td>The book's own identifier, not any person's</td>
+</tr>
+<tr>
+<td><code>age_band</code></td>
+<td>the book's declared band</td>
+<td>Never <code>child_profile.age_band</code> (paragraph above)</td>
+</tr>
+<tr>
+<td><code>engagement_verdict</code></td>
+<td>the Stage-4 <code>Verdict</code> value, <code>advisory</code> or <code>pass</code></td>
+<td>A closed enum (<code>moderation/report.py:32-47</code>). The free-text <code>message</code> is not emitted, see below</td>
+</tr>
+<tr>
+<td><code>completion_rate</code></td>
+<td>families that reached any ending over reader families, rounded to the nearest <code>0.05</code></td>
+<td>Suppressed under Decision 1 if reader families are below 5</td>
+</tr>
+<tr>
+<td><code>return_read_rate</code></td>
+<td>families with a completion on a later calendar date than their first, over reader families, rounded to the nearest <code>0.05</code></td>
+<td>Derived only from the date-truncated <code>completion.found_at</code> that Decision 4 admits. Same suppression</td>
+</tr>
+<tr>
+<td><code>rating_mean</code></td>
+<td>mean <code>rating.value</code> over rater families, rounded to the nearest <code>0.1</code></td>
+<td>Suppressed if rater families are below 5</td>
+</tr>
+<tr>
+<td><code>flag_counts</code></td>
+<td>counts keyed by the three <code>kid_flag.reason</code> values, or the suppression marker</td>
+<td>Governed by Decision 5</td>
+</tr>
+<tr>
+<td><code>*_family_band</code></td>
+<td>the contributing-family count for each signal, as a bucket: <code>5-9</code> or <code>10+</code></td>
+<td>Never the exact count, never a raw denominator</td>
+</tr>
+</tbody>
+</table>
+<p><strong>The form of a suppressed cell.</strong> A cell suppressed under Decision 1's per-signal floor or under
+Decision 5 is emitted as one explicit suppression marker: never as a null, never as a zero, never as
+an omitted key, and never as a rate computed over whatever families happened to contribute. Its
+<code>*_family_band</code> is suppressed with it, because a band on a suppressed signal restates the population
+the suppression withheld. The consumer treats a marker as <strong>unknown</strong>, and Decision 7 requires a test
+that it is indistinguishable across the whole range it covers.</p>
+<p>Denied explicitly, each with the reason, because a denial without a reason gets reversed:</p>
+<ul>
+<li><strong>The Stage-4 <code>message</code>.</strong> It is LLM-authored free text (<code>moderation/stages.py:1274-1281</code>), and an
+  allowlist whose entire purpose is that a row's contents can be enumerated is defeated by one
+  unbounded field. It is also the field an agent would most naturally quote into a summary, which
+  Decision 6 forbids. The two arguments that it cannot carry child data are both sound (personalized
+  books are excluded categorically by Decision 2, and ADR-023 stores sentinel slots rather than
+  names), but they are reasons emitting it would be safe, not reasons to emit it. What the job
+  correlates is the verdict.</li>
+<li><strong>Exact contributing-family counts, exact cohort size, and any raw numerator or denominator.</strong>
+  A count of 1 beside a mean recovers the value. Bucketing is why the rates carry a stated rounding:
+  a full-precision rate reconstructs the exact denominator that the bucket deliberately withholds.
+  At the floor of 5 the rounding buys little on its own, and there the protection is the per-signal
+  floor plus the absence of any identifier, not the rounding.</li>
+<li><strong>Any identifier of a family, child profile, device, guardian, or moderator</strong>, in any form,
+  including hashed, truncated, or positional. This is load-bearing beyond the obvious: because the
+  artifact names no family, a reader cannot tell which households are in a cohort, so even a rate of
+  <code>0.0</code> or <code>1.0</code> attributes to nobody.</li>
+<li><strong><code>kid_flag.node_id</code> in any form.</strong> Decision 5.</li>
+<li><strong>Any total spanning more than one storybook.</strong> The paragraph above.</li>
+<li><strong>Anything else.</strong> The list is closed. A new field is an amendment to this ADR, and Decision 7
+  requires the test to assert against the allowlist rather than against a list of forbidden names, so
+  that a field added later fails by default rather than passing by omission.</li>
+</ul>
+<p>This allowlist is also the concrete referent of "the artifact's schema" in Decision 6.3, which named
+it as a committable thing without saying what it was.</p>
+<h3 id="4-read-allowlist">4. Read allowlist<a class="headerlink" href="#4-read-allowlist" title="Permanent link">&para;</a></h3>
+<p>The job may read these columns and no others. Anything not listed is denied, including columns
+added to these tables in future.</p>
+<table>
+<thead>
+<tr>
+<th>Table</th>
+<th>Columns the job may read</th>
+<th>Used for</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>storybook</code></td>
+<td><code>id</code>, <code>visibility</code>, <code>status</code>, <code>current_published_version</code>, <code>personalization_subject_profile_id</code></td>
+<td>Eligibility and the categorical exclusions in Decision 2</td>
+</tr>
+<tr>
+<td><code>storybook_version</code></td>
+<td><code>storybook_id</code>, <code>version</code>, <code>moderation_report</code> (the <code>stage: 4</code> entry only)</td>
+<td>The synthetic engagement advisory being correlated</td>
+</tr>
+<tr>
+<td><code>child_profile</code></td>
+<td><code>id</code>, <code>family_id</code></td>
+<td>Mapping outcomes to families for the cohort count. Nothing else on this table is readable</td>
+</tr>
+<tr>
+<td><code>reading_state</code></td>
+<td><code>child_profile_id</code>, <code>storybook_id</code>, <code>version</code></td>
+<td>Distinct-reader identification only</td>
+</tr>
+<tr>
+<td><code>completion</code></td>
+<td><code>child_profile_id</code>, <code>storybook_id</code>, <code>version</code>, <code>ending_id</code>, <code>found_at</code> truncated to calendar date</td>
+<td>Completion and the return-read derivation</td>
+</tr>
+<tr>
+<td><code>rating</code></td>
+<td><code>child_profile_id</code>, <code>storybook_id</code>, <code>value</code></td>
+<td>The rating aggregate</td>
+</tr>
+<tr>
+<td><code>kid_flag</code></td>
+<td><code>storybook_id</code>, <code>version</code>, <code>profile_id</code>, <code>reason</code></td>
+<td>Flag aggregation, subject to Decision 5</td>
+</tr>
+</tbody>
+</table>
+<p>Explicitly denied, with the reason, because a denial without a reason gets reversed by the
+next person who wants the column:</p>
+<ul>
+<li><strong><code>reading_state.path</code>, <code>visit_set</code>, <code>current_node</code>, <code>var_state</code>, <code>seed_var_state</code>,
+  <code>save_slots</code>, <code>character_id</code>, <code>state_revision</code>, <code>last_event_id</code>, <code>last_synced_at</code>.</strong> These
+  are one child's traversal of a story graph. <code>path</code> and <code>current_node</code> are passage-level, and
+  a traversal is close to a behavioural fingerprint. Completion is available from the
+  <code>completion</code> table without touching any of them.</li>
+<li><strong><code>reading_state.updated_by_device_id</code></strong> and <strong>the whole <code>device_download</code> table</strong>. Device
+  identifiers, and a download is not a reading outcome.</li>
+<li><strong><code>kid_flag.node_id</code>.</strong> See Decision 5.</li>
+<li><strong><code>rating.rated_at</code> and <code>rating.updated_at</code>, <code>kid_flag.created_at</code>, <code>resolved_at</code>,
+  <code>resolved_by</code>, <code>resolution</code>.</strong> Fine-grained timestamps and moderator identities, neither
+  needed for correlation.</li>
+<li><strong><code>child_profile</code> everything except <code>id</code> and <code>family_id</code></strong>, in particular <code>display_name</code>,
+  <code>age_band</code>, <code>avatar</code>, <code>pin_hash</code>, and the whole personalization and accessibility settings
+  block.</li>
+<li><strong><code>storybook_assignment</code>.</strong> It is the read gate, and it would give the job a denominator of
+  "assigned but never opened". That is guardian behaviour, not child reading outcome, and it
+  would let the job distinguish which families were assigned a book and ignored it. The cohort
+  is defined by observed reads instead.</li>
+<li><strong><code>reading_activity_day</code>.</strong> <strong>This table has no storybook column at all</strong> (<code>db/models.py:1743-1801</code>);
+  it is child-and-day grain only. It therefore cannot be joined per storybook by any query, and
+  <strong>reading time is out of scope for this job</strong>. This is a schema fact, not a policy choice, and
+  it is recorded here so nobody re-litigates it by proposing a join that cannot be written.</li>
+<li><strong>Any free text from a child.</strong> There is none to deny (ADR-016), recorded so the absence
+  stays a designed property rather than an accident.</li>
+</ul>
+<h3 id="5-kid_flagnode_id-may-not-appear-in-the-output-in-any-form">5. <code>kid_flag.node_id</code> may not appear in the output, in any form<a class="headerlink" href="#5-kid_flagnode_id-may-not-appear-in-the-output-in-any-form" title="Permanent link">&para;</a></h3>
+<p>Not raw, not hashed, not as a position index, not as a count keyed by node. The plan
+authorises a per-storybook aggregate; a passage pointer is a level finer than that, and it is
+a pointer to the specific passage at which a child recorded that something scared or confused
+them. Flags are also rare, so a per-node count in a cohort of five is very likely to be a
+count of one, which is a statement about one child's reaction that the child's own guardian,
+and every other guardian in the cohort by elimination, can partly attribute.</p>
+<p>Flag data appears in the output only as counts by <code>reason</code> at storybook grain, and only when at
+least <strong>5 distinct flagging families</strong> have flagged the storybook. The population is families, not
+flags: five flags from one household are one household's data, and Decision 1 spends two paragraphs
+on why per-family counting is the correct grain precisely because a household's own adult can
+subtract its entire contribution. Counting flags rather than families would have re-admitted at the
+flag cell the exact case the threshold exists to exclude. This is the per-signal floor of Decision 1
+applied to the population this decision governs; it is restated here rather than only referenced,
+because the flag cell is where the wrong population is easiest to reach for.</p>
+<p><strong>Below that floor the whole cell is one suppression marker spanning 0 to 4 flagging families.</strong> A
+zero is not published. A marker used only for 1 to 4, with zero published as zero, publishes exactly
+the predicate the marker exists to hide: that at least one child flagged this book. In a cohort of
+five that is a real disclosure, coarse but real, about children's negative reactions, and it is
+available to every guardian in the cohort who knows their own child did not flag it. Publishing
+<code>&lt;5</code> across the whole range is the standard disclosure-control form and it is what this decision
+takes.</p>
+<p>Two things about that choice, stated because both are costs:</p>
+<ul>
+<li><strong>It makes the flag signal uninformative at homelab scale</strong>, probably for the whole life of the
+  current catalog, since nearly every book will sit in the 0-to-4 range and read <code>&lt;5</code> whether it was
+  never flagged or flagged four times. That is accepted on the asymmetry in Significance and on
+  Decision 10's pre-commitment: an uninformative cell is a delay, and a published "some child
+  flagged this" is not retractable. Legibility was the thing given up, and it was given up
+  deliberately rather than overlooked.</li>
+<li><strong>It is not the tri-state collapse this repository has paid for elsewhere.</strong> That failure was two
+  falsy arms collapsing into one benign branch at a decision point. <code>&lt;5</code> is a third named value,
+  distinct from both a count and an absence, and the consumer must treat it as <strong>unknown</strong> and never
+  as zero. A zero and a suppression remain different facts; what changed is that zero is no longer
+  among the published values, so the consumer is never in a position to mistake one for the other.</li>
+</ul>
+<h3 id="6-the-artifact-does-not-leave-the-deployment-host-and-is-never-committed-to-this-repository">6. The artifact does not leave the deployment host, and is never committed to this repository<a class="headerlink" href="#6-the-artifact-does-not-leave-the-deployment-host-and-is-never-committed-to-this-repository" title="Permanent link">&para;</a></h3>
+<p><strong>Decision: the artifact may not be committed to this repository, ever.</strong> Not to <code>docs/</code>, not
+to <code>out/</code>, not to a report directory, not behind a <code>.gitignore</code> entry that a later <code>git add -f</code>
+or a reorganisation could defeat. This repository is public. A push is not retractable: the
+blob stays reachable in history after any subsequent deletion, and the disclosure would have to
+be reasoned about as permanent from that moment. The asymmetry in Significance decides this
+outright.</p>
+<p><strong>The general rule, of which committing is one case.</strong> Committing is the egress path this repository
+makes easiest, so it is stated first and hardest, but it is not the rule. The rule is that <strong>the
+artifact, and any excerpt or derivative of it including a single row, does not leave the deployment
+host.</strong> Quoting rows into a GitHub issue or a pull request body, pasting a run into a report
+document, a commit message, or a chat message, attaching it to a ticket, uploading it to a bucket,
+and including it in an LLM prompt are all the same disclosure as committing it, and all are covered
+by this prohibition. Given this project's agent-driven workflow, an agent summarising a run into a
+pull request description is the most likely real leak here, more likely than a stray <code>git add</code>, and
+it is named so that it is a violation rather than an omission. Decision 6.3's observation that a
+fixture copied from a real run is a commit by another name is the same argument; it was scoped to
+fixtures and it generalises.</p>
+<p><strong>Who may read it on the host.</strong> The artifact is written by the account the job runs as, mode <code>0600</code>,
+into a directory owned by that account with mode <code>0700</code>, outside any git working tree and outside any
+directory that is backed up, synced, or served. Its only reader is the flywheel candidate strategy
+running as that same account. No other account on the host has read access and no copy is made
+anywhere. This is stated because the first draft was silent on it, and a file whose readership is
+unstated is a file whose readership grows.</p>
+<p>Three consequences the implementer must build to:</p>
+<ol>
+<li><strong>There is no in-repository default output path.</strong> The output directory comes from
+   configuration with no default. A job with no configured destination does not run.
+   Deliberately, <strong>no <code>.gitignore</code> entry is added for this artifact</strong>, because an ignore entry
+   is a statement that the artifact belongs in the tree and merely should not be staged. It
+   does not belong in the tree.</li>
+<li><strong>The settings validator in Decision 7 refuses to boot when the configured path resolves
+   inside a git working tree.</strong> Stated honestly: this defends the developer-workstation case,
+   which is where the mistake actually happens, since a deployed container has no working tree
+   to write into and would pass the check trivially. That is the right place to spend the
+   check.</li>
+<li><strong>What may be committed</strong> is the artifact's schema, the job's code, and synthetic fixtures.
+   A fixture that is a copy of a real run is a commit of the artifact by another name and is
+   covered by the same prohibition.</li>
+</ol>
+<p><strong>Retention.</strong> The job keeps at most the current and the immediately preceding run, each under
+a run-scoped filename, and deletes anything older on each successful run. Turning the kill
+switch off deletes the artifacts rather than orphaning them. Two runs is enough to diff a run
+against its predecessor, which is the only reason to keep more than one, and a retention rule
+of "however many accumulate" is how D4's three windowless data classes happened.</p>
+<p><strong>The residual that retention creates, and the condition on which it is accepted.</strong> Keeping two runs
+is what makes run-over-run differencing possible, and differencing is a disclosure that the
+single-run thresholds above do not cover: the delta between consecutive runs of a book already well
+above threshold is household-sized, and a delta of one family is a cell of one however large the
+cohort behind it. The residual is accepted <strong>because of the reader model stated above</strong>, and only
+because of it: the sole reader is a process on the deployment host running as an account that
+already holds database credentials, and can therefore compute anything a delta could disclose
+directly from the source tables, more precisely and without the artifact. The marginal disclosure is
+nil against that reader. The acceptance is worded this way so that it visibly expires. If the
+artifact ever gains a reader without database access, or if the egress rule above is relaxed for any
+path, this residual is no longer covered by anything and needs its own answer, which is either
+suppressing deltas or retaining a single run.</p>
+<h3 id="7-the-kill-switch-and-the-construction-time-validator">7. The kill switch and the construction-time validator<a class="headerlink" href="#7-the-kill-switch-and-the-construction-time-validator" title="Permanent link">&para;</a></h3>
+<p>Following the exemplar at <code>core/config.py:1212-1214</code> and
+<code>_reject_start_override_against_production_kws</code> at <code>core/config.py:2181</code>, the safety property
+is enforced by code that runs at settings construction, not by operator discipline.</p>
+<ul>
+<li><strong>The flag</strong>: <code>analysis_engagement_correlation_enabled: bool = Field(default=False,
+  validation_alias="ANALYSIS_ENGAGEMENT_CORRELATION_ENABLED")</code>. Default False, so the job
+  ships inert and turning it on is a deliberate per-tier act taken after the owner ratifies
+  this ADR.</li>
+<li><strong>What it disables</strong>: everything. Off, the job does not read the database, does not compute,
+  and does not write. It is not a mode that produces a redacted artifact, because a redaction
+  path that only runs when the flag is off is a path nobody exercises.</li>
+<li><strong>The construction-time validator</strong>:
+  <code>_reject_engagement_analysis_output_inside_repository</code>, a <code>model_validator(mode="after")</code>
+  that raises <code>ConfigurationError</code> when the job is enabled and either (a) the output directory
+  is unset, or (b) the resolved output directory has a <code>.git</code> entry at or above it. <strong>Refusal
+  to boot is the control</strong>, in the same posture as the KWS validators: a tier that acquires a
+  bad output path by copying another tier's environment file stops, rather than quietly
+  writing children's reading aggregates into a checkout that something later stages.</li>
+</ul>
+<p>Three details of that validator are pinned here rather than left to the implementer, because each
+has a plausible reading that would make it pass where it should refuse:</p>
+<ul>
+<li><strong>the <code>.git</code> check is file-or-directory existence, not directory existence.</strong> This repository's
+  worktrees at <code>.worktrees/&lt;slug&gt;</code> mark themselves with a <code>.git</code> <strong>file</strong> holding a <code>gitdir:</code>
+  pointer, not a directory. A check written as <code>is_dir()</code> accepts every worktree, and worktrees are
+  where concurrent sessions in this project actually do their work.</li>
+<li><strong>an empty-string output path counts as unset</strong>, taking branch (a) and refusing, rather than
+  counting as a configured path that resolves to the current directory. <code>${VAR:-}</code> in a compose file
+  yields an empty string rather than an absent variable, a shape this project has already been bitten
+  by on constrained settings fields; the check is on a non-empty value.</li>
+<li><strong>the path is <code>Path.resolve()</code>d before its parents are walked.</strong> Walking an unresolved path finds
+  no <code>.git</code> above a symlink whose target sits inside a checkout, so a symlinked output directory
+  would pass a check that the real destination fails.</li>
+</ul>
+<p><strong>These properties are asserted by tests, not merely documented</strong>, per the plan's <code>#VERIFY</code>:</p>
+<ul>
+<li>a test that a storybook with a 4-family cohort is absent from the output and a 5-family
+  cohort is present, which pins the integer and its comparison direction (a threshold test
+  that only checks the exclusion passes against an inverted comparison);</li>
+<li>a test on a fixture of 5 reading families of which only 1 rated the book: the row is present and
+  the rating cell is absent. This pins the per-signal floor separately from the row-level one, and it
+  is a distinct test because an implementation that applies the gate exactly once passes every
+  reader-cohort test there is;</li>
+<li>a test that each categorical exclusion in Decision 2 fires independently of cohort size;</li>
+<li>a test that a serialised artifact contains no field outside Decision 3's emit allowlist, asserted
+  against the allowlist itself rather than against a list of forbidden names, so that a field added
+  later fails by default rather than passing by omission;</li>
+<li>a test that the flag cell holds the same suppression marker at 0 flagging families as at 4, which
+  pins Decision 5's fold and would fail against the more legible zero-plus-marker form;</li>
+<li>a test that no serialised artifact contains a total, count, or summary spanning more than one
+  storybook;</li>
+<li>a test that <code>node_id</code> appears nowhere in a serialised artifact;</li>
+<li>a test that settings construction raises when the job is enabled with an output path inside
+  a git working tree, <strong>paired with</strong> a test that it constructs cleanly with a path outside
+  one. Cite the pair: the refusal alone passes for a validator that refuses unconditionally.</li>
+</ul>
+<h3 id="8-no-route-and-it-is-a-decision-rather-than-an-implementation-note">8. No route, and it is a decision rather than an implementation note<a class="headerlink" href="#8-no-route-and-it-is-a-decision-rather-than-an-implementation-note" title="Permanent link">&para;</a></h3>
+<p>The job is a scheduled analysis job writing a report artifact. <strong>It acquires no API route,
+now or later.</strong> The reasoning is the plan's own and is recorded here as the decision so it
+survives the plan document: a route is a data-egress path, reachable by anything that can
+reach the service, subject to whatever authorisation bug the service acquires next, and this
+data set is exactly the kind that should not gain one. The 37 routers in <code>app.py</code> are the
+service's egress surface; this job stays off it.</p>
+<p>A consumer that needs this output reads the artifact from the filesystem in the same
+deployment. If a future requirement genuinely needs it over HTTP, that is a new decision that
+amends this ADR, and its threshold analysis starts over, because a threshold derived for a
+file on one host is not a threshold for an endpoint.</p>
+<h3 id="9-the-adr-018-d6-obligation">9. The ADR-018 D6 obligation<a class="headerlink" href="#9-the-adr-018-d6-obligation" title="Permanent link">&para;</a></h3>
+<p>D6 requires "a single authoritative map of every data element the system holds, recording for
+each one: what it is, <strong>from whom it is collected</strong> (the child directly, the guardian about the
+child, staff, or the generation pipeline), <strong>why it is collected</strong> (the specific product
+function that needs it), who it is disclosed to, how long it is kept, and how it is deleted",
+and it decides that "the inventory is <strong>generated from the ORM models</strong>, and a hand-maintained
+inventory is not an acceptable form of this deliverable"
+(<code>adr-018-childrens-privacy-compliance.md:885-931</code>).</p>
+<p>What this job owes it:</p>
+<ul>
+<li><strong>No new data element.</strong> The job collects nothing. It adds no column, no table, and no ORM
+  model, and it reads only elements the reading APIs already store. The generated inventory's
+  element rows are therefore unchanged, and the generation mechanism D6 decided on is
+  unaffected.</li>
+<li><strong>A new processing activity, which is a different thing.</strong> D6's "why it is collected" and
+  "who it is disclosed to" columns change meaning for the elements in Decision 4's allowlist:
+  they acquire a secondary purpose (catalog quality calibration) and a new internal recipient
+  (the flywheel candidate strategy). That belongs in
+  <code>records-of-processing-activities.md</code>, which is already per-activity and already lists
+  recipients, and it must be written <strong>before the flag is first turned on</strong>, not after.</li>
+<li><strong>A derived holding with its own retention answer.</strong> The artifact is not an element in the
+  inventory, but it is a holding derived from children's data, and Decision 6 gives it a
+  stated window (current run plus one) and a stated deletion trigger (each successful run, and
+  flag-off). This is deliberate: D4 already carries three classes with no window, and this
+  review is not adding a fourth.</li>
+<li><strong>A necessity note.</strong> The Rule's necessity limit bars conditioning a child's participation on
+  collecting more than is reasonably necessary. This job conditions nothing: it is read-only,
+  downstream of publication, and no child's experience changes whether it runs or not. That is
+  the whole of the necessity analysis, and it is short because the job's read-only,
+  no-new-collection shape is what makes it short.</li>
+</ul>
+<h3 id="10-what-would-change-this-decision">10. What would change this decision<a class="headerlink" href="#10-what-would-change-this-decision" title="Permanent link">&para;</a></h3>
+<p>The threshold may be <strong>raised</strong> on judgment at any time. <strong>Lowering it requires an owner ruling
+recorded as an amendment here</strong>, and the pressure to lower it is the predictable one: the job
+will publish nothing for a long time, and "5 is too strict, we cannot see anything" will be
+the argument. That argument is not evidence.</p>
+<p>The measurement that would justify revisiting the number, in either direction, is the
+<strong>empirical distribution of distinct <code>family_id</code> per catalog-visibility storybook</strong>, reported
+as a histogram of storybooks per cohort-size bucket. Note what that measurement is: a count of
+<strong>books</strong> per bucket, containing no per-child values and no per-storybook rows, so it can be
+taken without publishing anything this ADR restricts. It is the one number that turns this
+derived threshold into a calibrated one. Concretely:</p>
+<ul>
+<li>If that histogram shows a substantial mass of catalog books at cohort sizes well above 5
+  (say a median above 25), the threshold is costing nothing and should be <strong>raised</strong>, because
+  a threshold below the achievable cohort size is a threshold doing no work.</li>
+<li>If it shows nearly all catalog books below 5, that is evidence the <strong>job is premature</strong>, not
+  evidence the threshold is wrong. The correct response is to leave the flag off, not to lower
+  the number until output appears.</li>
+</ul>
+<p>Three other conditions void the analysis above and require a fresh review rather than an
+adjustment:</p>
+<ul>
+<li>the output gains any consumer other than the flywheel candidate strategy;</li>
+<li>the job gains a route, a breakdown dimension (Decision 3), a field outside Decision 3's emit
+  allowlist, or a new source table;</li>
+<li>the schema gains a child-linked column that the allowlist would silently admit, which is why
+  the allowlist is closed by default rather than a deny-list.</li>
+</ul>
+<h2 id="consequences">Consequences<a class="headerlink" href="#consequences" title="Permanent link">&para;</a></h2>
+<h3 id="positive">Positive<a class="headerlink" href="#positive" title="Permanent link">&para;</a></h3>
+<ul>
+<li>The C3 job's hard precondition is discharged with a number an implementer can encode as a
+  single integer, plus two categorical exclusions that hold without depending on that integer
+  being computed correctly.</li>
+<li>Two re-identification vectors that the plan's own <code>#CRITICAL</code> marker did not name are closed:
+  <code>personalization_subject_profile_id</code> (a book about one identified child, which no cohort
+  threshold reaches) and cohort subdivision by version or any other breakdown dimension.</li>
+<li>A third is closed by binding the threshold to each emitted signal rather than only to the reader
+  cohort, so the book read by five families and rated by one publishes no rating. The plan's
+  <code>#VERIFY</code> as written would have been satisfied by an implementation with that hole in it, because
+  a threshold test at the row level passes against a gate applied exactly once.</li>
+<li>Both sides of the job are now closed by default. Decision 4 closes what may be read and Decision 3
+  closes what may be said; a closure argument on one side of a pipeline does not reach the other, and
+  the first draft had it on only one.</li>
+<li>The public-repository question is answered as a decision with a mechanism behind it, rather
+  than left to whoever writes the output path.</li>
+<li>The reading-time question is closed on a schema fact rather than a preference, so it does not
+  return as a proposal each time someone reads the plan.</li>
+</ul>
+<h3 id="trade-offs">Trade-offs<a class="headerlink" href="#trade-offs" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>The job will very likely publish nothing for a long time</strong>, possibly for the whole of R1
+  and R2. That is accepted, and Decision 10 pre-commits to reading an empty output as evidence
+  about catalog reach rather than as evidence about the threshold.</li>
+<li>Family-grain counting is more conservative than profile-grain and will suppress some books
+  that a profile count would pass. That is the intended direction.</li>
+<li>Excluding <code>storybook_assignment</code> costs the job a real signal (assigned but never opened),
+  which is arguably the most interesting engagement outcome there is. It is excluded anyway,
+  because it is guardian behaviour rather than child reading outcome and it is not needed for
+  the correlation the plan actually asked for.</li>
+<li>The validator in Decision 7 is honest about defending the developer-workstation case and
+  passing trivially in a container. A stronger deployment-side control is possible and is not
+  specified here.</li>
+<li><strong>The flag signal carries no information until a book reaches 5 flagging families</strong>, because
+  Decision 5 folds zero into the suppression marker. At the current catalog's scale that is every
+  book, so the field will read <code>&lt;5</code> corpus-wide for a long time. Legibility was traded for the last
+  increment of suppression, knowingly, on the grounds in Decision 5.</li>
+<li>The emit allowlist is closed by default, so every field a future consumer wants is an amendment to
+  this ADR rather than a code change. That friction is the point, and it will be felt as friction.</li>
+</ul>
+<h3 id="technical-debt">Technical debt<a class="headerlink" href="#technical-debt" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>The plan's named validator inputs do not exist in persisted form.</strong> Consequence distance,
+  reconvergence, and diversity scores are not columns; two of the three have no production
+  caller at all. The correlation the plan describes is therefore not buildable end to end from
+  the allowlist above until those statistics are persisted per storybook version. This review
+  does not authorise persisting them, and doing so is a separate change with its own review,
+  since a new column on <code>storybook_version</code> is a new data element in D6's sense (although not a
+  child-linked one).</li>
+<li>This ADR is <code>proposed</code> and the job it authorises is gated on ratification. If the flag is
+  turned on before ratification, the mitigation the owner's assumed-approval ruling depends on
+  has not been honoured.</li>
+</ul>
+<h2 id="follow-on-work">Follow-on work<a class="headerlink" href="#follow-on-work" title="Permanent link">&para;</a></h2>
+<ul>
+<li><strong><code>UW-A57</code></strong> (Cluster A, <code>decision</code>): owner ratification of this ADR. Until it is ratified,
+  the kill switch stays off and no artifact is produced against real reader data. The owner is
+  also the only person who may lower the threshold in Decision 1.</li>
+<li><strong><code>UW-A50</code></strong> (Cluster A, existing, ADR-018 D6): unchanged in scope by this ADR, which adds no
+  data element to the inventory. It gains one dependent obligation: the new processing-activity
+  entry in <code>records-of-processing-activities.md</code> described in Decision 9, which must land before
+  the flag is first turned on.</li>
+<li><strong><code>UW-C426</code></strong> (Cluster C, new): the authoring-lessons row <code>AL-695</code> behind this ADR's Technical
+  debt bullet, on plan documents naming persisted inputs that are not persisted.</li>
+<li><strong><code>UW-C427</code></strong> (Cluster C, new): the authoring-lessons row <code>AL-696</code>, on a minimum-cell threshold
+  that binds the top-level cohort while the signals aggregated inside it go ungated. Raised by the
+  senior review of this ADR's first draft and fixed in Decision 1; the row carries the general sweep
+  of this repository's other suppression and gating surfaces for the same shape.</li>
+<li><strong><code>UW-C428</code></strong> (Cluster C, new): the authoring-lessons row <code>AL-697</code>, on a closure argument made on
+  one side of a data path and assumed to cover the other. Fixed here by Decision 3's emit allowlist;
+  the row carries the general check.</li>
+</ul>
+<h2 id="note-on-the-documentation-nav">Note on the documentation nav<a class="headerlink" href="#note-on-the-documentation-nav" title="Permanent link">&para;</a></h2>
+<p>This ADR is deliberately <strong>not</strong> added to <code>mkdocs.yml</code>'s nav. That nav's ADR list stops at ADR-011
+and does not include ADR-029 or any other ADR after ADR-011, so the directory is navigated through
+<a href="../"><code>adr/README.md</code></a>, which does list this one. Adding a single entry for ADR-030 would
+invent a convention that holds for exactly one document. Recorded here because the reasoning existed
+nowhere in the tree and the omission otherwise reads like an oversight.</p>
+
+
+
+
+
+
+
+  
+    
+  
+  
+    
+  
+
+
+  <aside class="md-source-file">
+    
+      
+  <span class="md-source-file__fact">
+    <span class="md-icon" title="Last update">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
+    </span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="August 29, 2026 23:43:41 UTC">August 29, 2026</span>
+  </span>
+
+    
+    
+      
+  <span class="md-source-file__fact">
+    <span class="md-icon" title="Created">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M14.47 15.08 11 13V7h1.5v5.25l3.08 1.83c-.41.28-.79.62-1.11 1m-1.39 4.84c-.36.05-.71.08-1.08.08-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8c0 .37-.03.72-.08 1.08.69.1 1.33.32 1.92.64.1-.56.16-1.13.16-1.72 0-5.5-4.5-10-10-10S2 6.5 2 12s4.47 10 10 10c.59 0 1.16-.06 1.72-.16-.32-.59-.54-1.23-.64-1.92M18 15v3h-3v2h3v3h2v-3h3v-2h-3v-3z"/></svg>
+    </span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="August 29, 2026 23:43:41 UTC">August 29, 2026</span>
+  </span>
+
+    
+    
+    
+  </aside>
+
+
+  
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+    <div class="md-copyright__highlight">
+      Copyright &copy; 2025 Byron Williams
+    </div>
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+        
+<div class="md-social">
+  
+    
+    
+    
+    
+      
+      
+    
+    <a href="https://github.com/williaby" target="_blank" rel="noopener" title="github.com" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../../..", "features": ["navigation.instant", "navigation.tracking", "navigation.tabs", "navigation.sections", "navigation.expand", "navigation.indexes", "navigation.top", "search.suggest", "search.highlight", "content.code.copy", "content.code.annotate"], "search": "../../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../../assets/javascripts/bundle.d7400e89.min.js"></script>
+      
+    
+  </body>
+</html>

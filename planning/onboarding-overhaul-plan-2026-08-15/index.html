@@ -3812,9 +3812,9 @@ device, request, and (for the cases 1a does not cover) assign.</p>
 <p><strong>Register: <code>UW-J36</code>. Phase 5.</strong></p>
 <p><code>frontend/e2e/naive-user/</code> covers kid, guardian, and admin misuse but has no first-run journey, which is
 why a twelve-step flow with two blocking gates and a silent required step was found by hand rather than
-by the suite. Add a first-run spec that walks the whole path, and add the missing signed-out first-visit
-scenario to <code>.claude/skills/naive-ux-check/prompts/guardian.md</code> so the comprehension set covers signup
-rather than starting from an existing account.</p>
+by the suite. Add a first-run spec that walks the whole path, and append the missing signed-out
+first-visit scenario object (with all required fields) to <code>.claude/skills/naive-ux-check/scenarios.json</code>'s
+guardian set so the comprehension set covers signup rather than starting from an existing account.</p>
 <h2 id="sequencing-summary">Sequencing summary<a class="headerlink" href="#sequencing-summary" title="Permanent link">&para;</a></h2>
 <table>
 <thead>
@@ -3907,7 +3907,7 @@ shippable set worth calling the overhaul.</p>
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="August 16, 2026 02:17:27 UTC">August 16, 2026</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="August 29, 2026 23:43:41 UTC">August 29, 2026</span>
   </span>
 
     

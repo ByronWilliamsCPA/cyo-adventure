@@ -4864,22 +4864,47 @@ no Slack, email, or pager integration is wired up.</p>
 <code>e2e-alert</code> for the browser-facing scans, <code>ci-failure</code> for ops and quality jobs. <strong>Watch (or filter
 Issues by) both.</strong></p>
 <p>To list the current producers:</p>
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-13-1"><a id="__codelineno-13-1" name="__codelineno-13-1" href="#__codelineno-13-1"></a><span class="c1"># Every workflow that files or resolves a tracking issue (14 as of 2026-08-27).</span>
-</span><span id="__span-13-2"><a id="__codelineno-13-2" name="__codelineno-13-2" href="#__codelineno-13-2"></a><span class="c1"># Match on `uses:`, not on the path alone: ci.yml names the same directory to run</span>
-</span><span id="__span-13-3"><a id="__codelineno-13-3" name="__codelineno-13-3" href="#__codelineno-13-3"></a><span class="c1"># the action&#39;s test harness and is not a producer.</span>
-</span><span id="__span-13-4"><a id="__codelineno-13-4" name="__codelineno-13-4" href="#__codelineno-13-4"></a>grep<span class="w"> </span>-rln<span class="w"> </span><span class="s1">&#39;uses: ./.github/actions/ci-failure-issue&#39;</span><span class="w"> </span>.github/workflows/
-</span><span id="__span-13-5"><a id="__codelineno-13-5" name="__codelineno-13-5" href="#__codelineno-13-5"></a>
-</span><span id="__span-13-6"><a id="__codelineno-13-6" name="__codelineno-13-6" href="#__codelineno-13-6"></a><span class="c1"># Which label and marker each one uses. A call site with no `label:` line uses</span>
-</span><span id="__span-13-7"><a id="__codelineno-13-7" name="__codelineno-13-7" href="#__codelineno-13-7"></a><span class="c1"># the action&#39;s default, `ci-failure`.</span>
-</span><span id="__span-13-8"><a id="__codelineno-13-8" name="__codelineno-13-8" href="#__codelineno-13-8"></a>grep<span class="w"> </span>-rn<span class="w"> </span>-A6<span class="w"> </span><span class="s1">&#39;uses: ./.github/actions/ci-failure-issue&#39;</span><span class="w"> </span>.github/workflows/<span class="w"> </span><span class="se">\</span>
-</span><span id="__span-13-9"><a id="__codelineno-13-9" name="__codelineno-13-9" href="#__codelineno-13-9"></a><span class="w">  </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span>-E<span class="w"> </span><span class="s1">&#39;marker:|label:|mode:&#39;</span>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-13-1"><a id="__codelineno-13-1" name="__codelineno-13-1" href="#__codelineno-13-1"></a><span class="c1"># Every workflow that files or resolves a tracking issue. Do NOT trust a literal</span>
+</span><span id="__span-13-2"><a id="__codelineno-13-2" name="__codelineno-13-2" href="#__codelineno-13-2"></a><span class="c1"># count here: the number in this section has now been wrong three separate times.</span>
+</span><span id="__span-13-3"><a id="__codelineno-13-3" name="__codelineno-13-3" href="#__codelineno-13-3"></a><span class="c1"># The two commands below ARE the count. Run them.</span>
+</span><span id="__span-13-4"><a id="__codelineno-13-4" name="__codelineno-13-4" href="#__codelineno-13-4"></a><span class="c1">#</span>
+</span><span id="__span-13-5"><a id="__codelineno-13-5" name="__codelineno-13-5" href="#__codelineno-13-5"></a><span class="c1"># Match on `uses:`, not on the path alone, and restrict to `*.yml`. Without</span>
+</span><span id="__span-13-6"><a id="__codelineno-13-6" name="__codelineno-13-6" href="#__codelineno-13-6"></a><span class="c1"># --include the pattern also matches .github/workflows/test/health-rollup.test.mjs,</span>
+</span><span id="__span-13-7"><a id="__codelineno-13-7" name="__codelineno-13-7" href="#__codelineno-13-7"></a><span class="c1"># which quotes the same line inside a JavaScript comment and is not a producer;</span>
+</span><span id="__span-13-8"><a id="__codelineno-13-8" name="__codelineno-13-8" href="#__codelineno-13-8"></a><span class="c1"># that one false positive is why the unfiltered grep returns one more line than</span>
+</span><span id="__span-13-9"><a id="__codelineno-13-9" name="__codelineno-13-9" href="#__codelineno-13-9"></a><span class="c1"># there are producers. ci.yml names the same directory too (it runs the action&#39;s</span>
+</span><span id="__span-13-10"><a id="__codelineno-13-10" name="__codelineno-13-10" href="#__codelineno-13-10"></a><span class="c1"># test harness) but never in the `uses:` form, so it does not match either grep.</span>
+</span><span id="__span-13-11"><a id="__codelineno-13-11" name="__codelineno-13-11" href="#__codelineno-13-11"></a>grep<span class="w"> </span>-rln<span class="w"> </span>--include<span class="o">=</span><span class="s1">&#39;*.yml&#39;</span><span class="w"> </span><span class="s1">&#39;uses: ./.github/actions/ci-failure-issue&#39;</span><span class="w"> </span>.github/workflows/<span class="w"> </span><span class="p">|</span><span class="w"> </span>wc<span class="w"> </span>-l
+</span><span id="__span-13-12"><a id="__codelineno-13-12" name="__codelineno-13-12" href="#__codelineno-13-12"></a>grep<span class="w"> </span>-rl<span class="w"> </span><span class="s1">&#39;label: e2e-alert&#39;</span><span class="w"> </span>.github/workflows/<span class="w"> </span><span class="p">|</span><span class="w"> </span>wc<span class="w"> </span>-l
+</span><span id="__span-13-13"><a id="__codelineno-13-13" name="__codelineno-13-13" href="#__codelineno-13-13"></a>
+</span><span id="__span-13-14"><a id="__codelineno-13-14" name="__codelineno-13-14" href="#__codelineno-13-14"></a><span class="c1"># Which label and marker each one uses. A call site with no `label:` line uses</span>
+</span><span id="__span-13-15"><a id="__codelineno-13-15" name="__codelineno-13-15" href="#__codelineno-13-15"></a><span class="c1"># the action&#39;s default, `ci-failure`.</span>
+</span><span id="__span-13-16"><a id="__codelineno-13-16" name="__codelineno-13-16" href="#__codelineno-13-16"></a>grep<span class="w"> </span>-rn<span class="w"> </span>-A6<span class="w"> </span><span class="s1">&#39;uses: ./.github/actions/ci-failure-issue&#39;</span><span class="w"> </span>.github/workflows/<span class="w"> </span><span class="se">\</span>
+</span><span id="__span-13-17"><a id="__codelineno-13-17" name="__codelineno-13-17" href="#__codelineno-13-17"></a><span class="w">  </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span>-E<span class="w"> </span><span class="s1">&#39;marker:|label:|mode:&#39;</span>
 </span></code></pre></div>
+<p>Read the two counts as: <strong>producers minus <code>e2e-alert</code> producers is the <code>ci-failure</code> backlog</strong>, the
+workflows whose failures land under the default label. Derived on 2026-08-29 the first command
+returns <strong>21</strong> and the second <strong>6</strong>, so <strong>15</strong> producers fall through to <code>ci-failure</code>. Those figures
+are a snapshot, not the contract: if your run disagrees with them, your run is right and this
+paragraph is stale.</p>
 <p>Do NOT grep for <code>labels: '</code> here, which is what this section used to say. The label is now an input
-to the composite action and eleven of the fourteen workflows do not pass it at all, so that grep
-returns a near-empty list that reads exactly like "almost nothing alerts". <code>tests/unit/test_ci_failure_action_contract.py</code>
+to the composite action and most producers do not pass it at all, so that grep returns a near-empty
+list that reads exactly like "almost nothing alerts". The count has been wrong three times: first
+from the retired <code>labels: '</code> grep; then from a naive per-file <code>grep -c 'label:'</code>, which also matches
+<code>label:</code> inside JavaScript object literals in <code>github-script</code> steps (<code>planning-linkage.yml</code>,
+<code>scheduled-health-rollup.yml</code>) that are action-unrelated dictionary keys rather than <code>with:</code> inputs;
+and most recently from a hardcoded 18 that later commits on the same branch left behind as producers
+were added, which also made the arithmetic derived from it wrong by three. That is the reason the
+numbers above are now stated as the output of a command rather than as a figure to trust.</p>
+<p>The six that pass <code>label:</code> are accessibility-compliance-weekly, e2e-prod, e2e-real-nightly,
+e2e-staging, usersim and webkit-kid, all of them <code>e2e-alert</code>, consistent with "Six workflows use
+<code>e2e-alert</code>" below. Confirm per call site rather than per file if you need to be exact: a workflow
+may hold several <code>uses: ./.github/actions/ci-failure-issue</code> steps, and the file-level greps above
+count files. <code>tests/unit/test_ci_failure_action_contract.py</code>
 enforces the invariants the commands above only report on: markers stay unique and mutually
 non-prefixing, both labels stay in use, and no workflow re-inlines the lookup.</p>
-<p>Three workflows use <code>e2e-alert</code>. The two E2E tiers are:</p>
+<p>Six workflows use <code>e2e-alert</code> (verify with <code>grep -rl 'label: e2e-alert' .github/workflows/</code>). The
+two E2E tiers exercising a real backend are:</p>
 <ul>
 <li><strong><code>.github/workflows/e2e-prod.yml</code></strong> ("E2E (production)"): runs the Playwright <code>e2e-prod</code> tier
   daily (<code>30 13 * * *</code> UTC) against the live production URL (<code>https://cyo.williamshome.family</code> by
@@ -4890,19 +4915,59 @@ non-prefixing, both labels stay in use, and no workflow re-inlines the lookup.</
   and Redis service containers, Supabase CLI migrations, a seeded dev dataset), rather than against
   live production; this is what exercises real cross-device conflict scenarios (two authorized
   devices racing a genuine 409 through the offline conflict dialog) that the mocked test suite
-  cannot. Its alert marker is <code>[e2e-real-nightly]</code>.</li>
+  cannot. Its alert marker is <code>[e2e-real-nightly]</code>. This job also runs the <code>usersim-real</code> tier
+  (task B3a), the same seeded walk as <code>usersim.yml</code> below but against this job's real stack; a
+  failure there surfaces under this same marker, not a separate one.</li>
 </ul>
-<p>The third <code>e2e-alert</code> producer is <strong><code>.github/workflows/accessibility-compliance-weekly.yml</code></strong>
-("Accessibility compliance (weekly)"): a weekly, non-blocking axe scan against <code>main</code> covering WCAG
+<p><strong><code>.github/workflows/e2e-staging.yml</code></strong> ("E2E (staging)") runs daily (<code>0 13 * * *</code> UTC) against the
+staging deployment. Its alert marker is <code>[e2e-staging]</code>. This alerting is recent and, as of this
+writing, branch-local: commit <code>8c7dd27a</code> ("feat(ci): give e2e-staging.yml self-alerting via
+ci-failure-issue", 2026-08-27) added it on <code>fix/testing-ladder-trust</code>, and that commit is <strong>not on
+<code>origin/main</code></strong>. An earlier version of this section correctly said the workflow had no alerting step
+at all; that wording was written in commit <code>15a6d520</code> (2026-08-11) and was true when written, it only
+went stale once <code>8c7dd27a</code> landed on this branch, not before. No test currently enforces that this
+step keeps existing: <code>tests/unit/test_ci_failure_action_contract.py</code> asserts invariants (marker
+uniqueness, label usage, no re-inlined lookup) over whichever call sites are CURRENTLY present in the
+workflow files; deleting a call site removes it from that enumeration rather than failing it, and
+that suite still passes 28/28 with both of this workflow's <code>ci-failure-issue</code> steps truncated out.
+Do not read this paragraph as a guarantee the tests do not make; if that guarantee is wanted, adding
+it is a separate decision. For the wider test strategy see
+<a href="../../testing/"><code>docs/testing/</code></a>; for a manual, checklist-driven live verification (not
+automated alerting), see <a href="../../planning/r1-live-e2e-checklist/"><code>docs/planning/r1-live-e2e-checklist.md</code></a>.</p>
+<p><strong><code>.github/workflows/usersim.yml</code></strong> ("Usersim walk") runs the mocked-tier <code>usersim</code> Playwright
+project daily (<code>0 14 * * *</code> UTC): a seeded random walk over the built app, one walk per persona,
+asserting I1-I6 at every state. Its alert marker is <code>[usersim]</code>. See
+<code>docs/testing/coverage-matrix.md</code>'s "Cross-cutting: user-simulation walk (usersim tier)" section for
+what I1-I6 check.</p>
+<p><strong><code>.github/workflows/webkit-kid.yml</code></strong> ("WebKit kid-journey check") runs daily (<code>0 15 * * *</code> UTC): the
+kid reading/library/offline mocked specs on real WebKit at an iPad viewport (task B2), nightly-only
+and never wired into any per-PR job. Its alert marker is <code>[webkit-kid]</code>.</p>
+<p>The sixth <code>e2e-alert</code> producer is <strong><code>.github/workflows/accessibility-compliance-weekly.yml</code></strong>
+("Accessibility Compliance Weekly"): a weekly, non-blocking axe scan against <code>main</code> covering WCAG
 2.2 and best-practice rules, per <a href="../../planning/adr/adr-029-web-accessibility-conformance/">ADR-029</a>.
 The per-PR WCAG 2.1 AA gate is a required <code>ci.yml</code> job instead, so a failure here is a compliance
 finding to triage, never a merge blocker. Its alert marker is <code>[a11y-weekly]</code>.</p>
-<p><code>e2e-staging.yml</code> ("E2E (staging)", daily at 13:00 UTC) is a third E2E tier but is <strong>not</strong> on this list,
-because it has no alerting step of any kind: a staging failure leaves a red run and a Playwright
-trace artifact, and nothing opens an issue. Nobody is notified unless they look. For the wider test
-strategy see <a href="../../testing/"><code>docs/testing/</code></a>; for a manual, checklist-driven live
-verification (not automated alerting), see
-<a href="../../planning/r1-live-e2e-checklist/"><code>docs/planning/r1-live-e2e-checklist.md</code></a>.</p>
+<p>This one job runs two independent Playwright scans (task B3b), and its single filed/commented issue
+labels their findings distinctly so triage does not have to guess which scan produced what:</p>
+<ul>
+<li><strong>Stream 1, fixed-state</strong>: <code>frontend/e2e/a11y.spec.ts</code>, the same hand-picked list of pages/dialogs
+  the per-PR gate checks, re-run with the wider WCAG 2.2 + best-practice tag scope.</li>
+<li><strong>Stream 2, newly-reached-state (I7)</strong>: <code>frontend/e2e-usersim/walk-a11y.spec.ts</code>, an axe scan of
+  each distinct route+heading state the usersim seeded random walk (<code>usersim.yml</code>, described above)
+  reaches for the first time. See <code>docs/testing/coverage-matrix.md</code>'s "Cross-cutting:
+  user-simulation walk" section for what a "state" means here and what it collapses. Its findings
+  carry <code>workflow: 'usersim-a11y-weekly'</code>, printed as <code>[usersim-finding]</code> lines in this step's own
+  job log (<code>frontend/e2e-usersim/support/findings.ts</code>'s <code>record()</code> prints at the moment a finding is
+  captured; there is no findings file on disk anywhere in this repository, despite what an earlier
+  version of this paragraph and the filed issue's own body used to say -- grep the run's log for
+  that marker), which is what tells them apart from the nightly walks' own I1-I6 findings
+  (<code>workflow: 'usersim-walk'</code>/<code>'usersim-walk-real'</code>,
+  produced by <code>usersim.yml</code>/<code>e2e-real-nightly.yml</code>, not accessibility findings at all). Checking
+  only one of these two streams, or only one workflow's <code>[usersim-finding]</code> lines, is not checking
+  the whole system: a clean nightly usersim run says nothing about whether this week's newly-reached
+  states are accessible, and a clean weekly a11y run says nothing about I1-I6 (console errors,
+  dead-end states, overflow, role isolation).</li>
+</ul>
 <h3 id="71-kws-parent-verification-delivery-health">7.1 KWS parent-verification delivery health<a class="headerlink" href="#71-kws-parent-verification-delivery-health" title="Permanent link">&para;</a></h3>
 <p><strong><code>.github/workflows/kws-delivery-health.yml</code></strong> ("KWS delivery health", marker <code>[kws-delivery-health]</code>,
 label <code>ci-failure</code>) runs every 6 hours (05:00, 11:00, 17:00, 23:00 UTC) against both staging and
@@ -5454,7 +5519,7 @@ because that test is currently the only thing that would notice.</p>
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="August 27, 2026 22:01:18 UTC">August 27, 2026</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="August 29, 2026 23:43:41 UTC">August 29, 2026</span>
   </span>
 
     
