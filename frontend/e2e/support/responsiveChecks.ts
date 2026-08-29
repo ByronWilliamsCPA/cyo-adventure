@@ -147,16 +147,31 @@ export function defineResponsiveChecks(): void {
       first.boundingBox(),
       last.boundingBox(),
     ])
-    if (shelfBox && firstBox && lastBox) {
-      expect(
-        Math.abs(firstBox.x - shelfBox.x),
-        'the first shelf cell should start at the shelf left edge'
-      ).toBeLessThan(2)
-      expect(
-        lastBox.x + lastBox.width,
-        'the last shelf cell should reach the shelf right edge'
-      ).toBeGreaterThan(shelfBox.x + shelfBox.width * 0.98 - 1)
+    // Not `if (shelfBox && firstBox && lastBox)`. A null bounding box means the
+    // element is absent or not rendered, which is a WORSE outcome than a
+    // mis-sized shelf, and the conditional turned it into a silent pass: the
+    // whole regression guard evaporated exactly when the library failed to
+    // render at all. Failing here names which box was missing.
+    if (shelfBox === null || firstBox === null || lastBox === null) {
+      const missing = [
+        shelfBox === null ? '.library__shelf' : null,
+        firstBox === null ? 'the first shelf cell' : null,
+        lastBox === null ? 'the last shelf cell' : null,
+      ].filter((name) => name !== null)
+      throw new Error(
+        `the library shelf did not render, so the auto-fill regression guard could ` +
+          `not run: no bounding box for ${missing.join(', ')}. An absent shelf is a ` +
+          `harder failure than a mis-sized one, not a reason to skip the check.`
+      )
     }
+    expect(
+      Math.abs(firstBox.x - shelfBox.x),
+      'the first shelf cell should start at the shelf left edge'
+    ).toBeLessThan(2)
+    expect(
+      lastBox.x + lastBox.width,
+      'the last shelf cell should reach the shelf right edge'
+    ).toBeGreaterThan(shelfBox.x + shelfBox.width * 0.98 - 1)
   })
 
   test('reader page has no horizontal overflow', async ({ page, context }) => {

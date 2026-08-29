@@ -306,3 +306,102 @@ def test_tracked_frontend_source_is_covered_by_some_lint_scope() -> None:
         "these tracked frontend source files are linted by neither the "
         f"frontend-eslint pre-commit hook nor npm run lint: {uncovered}"
     )
+
+
+def _resolved_script(name: str, *, depth: int = 0) -> str:
+    """Return an npm script with any `npm run <other> --` delegation inlined.
+
+    Args:
+        name: The script name in `frontend/package.json`.
+        depth: Recursion guard; a script chain deeper than this is a cycle.
+
+    Returns:
+        The command text with each `npm run <other> [-- args]` replaced by
+        that script's own text followed by the forwarded args.
+
+    Raises:
+        AssertionError: If the delegation chain does not terminate.
+    """
+    assert depth < 5, f"npm script {name!r} delegates in a cycle"
+    package = json.loads(PACKAGE_JSON.read_text(encoding="utf-8"))
+    script: str = package["scripts"][name]
+    match = re.match(r"^npm run ([\w:-]+)(?:\s+--\s+(.*))?$", script.strip())
+    if match is None:
+        return script
+    forwarded = match.group(2) or ""
+    return f"{_resolved_script(match.group(1), depth=depth + 1)} {forwarded}".strip()
+
+
+def _npm_scope_of(script_text: str) -> set[str]:
+    """Derive the frontend-relative paths a resolved eslint command globs.
+
+    Args:
+        script_text: A resolved npm script command.
+
+    Returns:
+        Paths relative to `frontend/`, filtered the same way `_npm_scope()`
+        filters: tracked files only, generated client dropped.
+    """
+    tracked = set(_tracked_frontend_paths())
+    scope: set[str] = set()
+    for glob_pattern in re.findall(r'"([^"]+)"', script_text):
+        for expanded in _expand_braces(glob_pattern):
+            for match in FRONTEND_DIR.glob(expanded):
+                if not match.is_file():
+                    continue
+                relative = match.relative_to(FRONTEND_DIR).as_posix()
+                if relative.startswith(GENERATED_CLIENT_PREFIX):
+                    continue
+                if f"frontend/{relative}" not in tracked:
+                    continue
+                scope.add(relative)
+    return scope
+
+
+def test_lint_fix_covers_exactly_what_lint_covers() -> None:
+    """`lint:fix` must not reach a different set of files than `lint`.
+
+    The two scripts held two hand-copied glob lists. Nothing compared them, so
+    a path added to one and not the other would be checked in CI and left
+    unfixable locally (or the reverse), and the divergence would be invisible:
+    both scripts exit 0 over whatever they happen to name.
+
+    This asserts the property rather than the implementation, so delegating
+    (`npm run lint -- --fix`) and re-listing the globs both satisfy it; only
+    a real divergence in the file set fails.
+    """
+    lint_scope = _npm_scope()
+    fix_scope = _npm_scope_of(_resolved_script("lint:fix"))
+    assert len(lint_scope) > 20, (
+        "the lint scope came back empty; the comparison would be vacuous"
+    )
+    assert fix_scope == lint_scope, (
+        "npm run lint:fix reaches a different set of files than npm run lint. "
+        f"Only in lint: {sorted(lint_scope - fix_scope)}. "
+        f"Only in lint:fix: {sorted(fix_scope - lint_scope)}."
+    )
+
+
+def test_lint_fix_passes_fix_exactly_once() -> None:
+    """A duplicated `--fix` is a copy-paste artifact, not a stronger fix.
+
+    The script carried `--fix` twice, once mid-glob-list and once at the end.
+    ESLint tolerates it, so nothing surfaced it, and the mid-list occurrence
+    is what a reader would misread as the glob list ending there.
+    """
+    resolved = _resolved_script("lint:fix")
+    assert resolved.split().count("--fix") == 1, (
+        f"npm run lint:fix resolves to {resolved!r}, which passes --fix "
+        f"{resolved.split().count('--fix')} times"
+    )
+    assert "--fix" in resolved.split(), "npm run lint:fix must actually pass --fix"
+
+
+def test_lint_itself_does_not_pass_fix() -> None:
+    """A control for the arm above: `lint` must stay read-only.
+
+    Without this, `lint:fix` could satisfy its assertion by `lint` having
+    grown a `--fix` of its own, which would silently turn the CI lint gate
+    and the pre-commit hook into code-rewriting steps.
+    """
+    assert "--fix" not in _resolved_script("lint").split()
