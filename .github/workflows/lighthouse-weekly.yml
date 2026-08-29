@@ -1,0 +1,491 @@
+# ============================================================================
+# Weekly Lighthouse performance budgets for CYO Adventure (task D1,
+# docs/testing/testing-implementation-plan-2026-08-27.md).
+# ============================================================================
+#
+# Plan text (verbatim): "Weekly, non-blocking, against the built app first
+# and staging later. Budgets on LCP, INP, CLS and bundle size... Set budgets
+# from a measured baseline rather than from published thresholds."
+#
+# THIS WORKFLOW TARGETS THE LOCALLY BUILT FRONTEND ONLY, never staging.
+# Staging is explicitly "later" in the plan text, and staging carries the
+# `e2e-staging` concurrency #CRITICAL (docs/testing/README.md, "Data
+# isolation on the shared staging project"); this workflow does not
+# authenticate against or touch that project, so it does not join that
+# concurrency group (same reasoning as scheduled-health-rollup.yml's own
+# note on the same point).
+#
+# -----------------------------------------------------------------------
+# Metrics: why TBT stands in for INP, and why bundle size is measured
+# differently than the other three
+# -----------------------------------------------------------------------
+# The plan names LCP, INP, CLS, and bundle size. Lighthouse CANNOT measure
+# INP in a lab run: INP requires a real user interaction (a click, a key
+# press) and a lab run never interacts with the page. Lighthouse's own lab
+# proxy for responsiveness is Total Blocking Time (TBT), which correlates
+# with INP but is not the same metric and can diverge from it, particularly
+# on pages with little main-thread work but a slow real interaction handler.
+# This workflow budgets TBT and reports it labelled as an INP PROXY, not as
+# INP itself, so a reader who searches this file for "INP" finds the
+# discrepancy stated rather than a fabricated number.
+#
+# Bundle size is measured directly from the build output (frontend/dist/),
+# not extracted from Lighthouse's own total-byte-weight audit. Two reasons:
+# (1) it is the number this task's brief specifically asks about (per-route
+# initial JS+CSS payload), and Lighthouse's aggregate byte-weight audit
+# includes every resource the page requests, not just the app's own bundle;
+# (2) it lets the budget be checked from the build artifact directly,
+# without depending on the Lighthouse run succeeding at all.
+#
+# -----------------------------------------------------------------------
+# Routes: what was picked and why
+# -----------------------------------------------------------------------
+# Candidates were narrowed to routes that render REAL content signed out,
+# not a redirect (see router.tsx, routes.ts):
+#   - `/` (LandingPage): the marketing/entry surface. Certainly qualifies
+#     per the task brief; also the highest-traffic route in practice. Makes
+#     no network call on mount (verified: no useApi/axios/fetch import).
+#   - `/privacy`, `/support` (PrivacyPolicyPage, SupportPage): public legal
+#     surfaces, deliberately OUTSIDE every auth/device-grant gate
+#     (router.tsx's own comment: Epic's Kids Web Services holds both URLs,
+#     ADR-018 D1, and a parent follows them from a verification screen with
+#     no session at all). Fully static: neither imports useApi, axios, or
+#     the Supabase client.
+#   - `/kids` was CHECKED and REJECTED: DeviceAuthorizedRoute wraps the
+#     entire kid surface and redirects to guardian login when no valid
+#     device grant exists (DeviceAuthorizedRoute.tsx), which is exactly the
+#     "measures the redirect, not the app" trap the task brief warns about.
+#     A signed-out visitor never sees kid content at this route.
+#   - `/guardian/login` was CHECKED and considered a legitimate signed-out
+#     surface (LoginPage renders a real form, no redirect) but is EXCLUDED
+#     from this first version: AuthContext's mount effect calls
+#     `supabase.auth.getSession()` against whatever VITE_SUPABASE_URL the
+#     build used, which for this workflow is a placeholder domain (see the
+#     build step below). That is a real, non-deterministic network round
+#     trip on every scan of that route, which would inject noise into a
+#     budget-setting run for a page that is not the primary signed-out
+#     surface. Add it in a follow-up once this workflow can stub or mock
+#     that call, rather than accepting noisy numbers now.
+#   - Every other route (kid library/reader, guardian console, admin
+#     console) requires either a device grant or an authenticated,
+#     approved-guardian session and was excluded on that basis alone.
+#
+# -----------------------------------------------------------------------
+# Budgets: measured baseline, and what "measured" means for each metric
+# -----------------------------------------------------------------------
+# BUNDLE SIZE was measured locally: `npm run build` in frontend/, then the
+# gzip size of every asset frontend/dist/index.html references for the `/`
+# route (the entry chunk, its three modulepreload chunks, and the one
+# stylesheet) was summed. See the "Bundle size budget" step below for the
+# exact real numbers (87081 + 3298 + 22773 + 3748 + 7181 + 2438 raw bytes =
+# 126519 bytes gzip transfer weight, measured 2026-08-29, ONE build). One
+# build is sufficient here, unlike the other three metrics: a Vite
+# production bundle's byte size for a given commit is deterministic
+# (content-hashed filenames aside), it does not vary run to run the way
+# paint timing does, so repeating the measurement three times would have
+# produced the same number three times. Headroom: +26% over the measured
+# 126519 bytes, rounded to 160000 bytes, to absorb normal feature growth
+# without the budget tripping on the next unrelated small change while
+# still catching a real regression (e.g., an accidentally-unlazy-loaded
+# route chunk, a heavy dependency added to the landing bundle).
+#
+# LCP, TBT (INP proxy), and CLS are NOT set from a measured baseline in
+# this version, and this is a deliberate, disclosed gap, not a silent
+# omission:
+#
+# The task that authored this workflow was expressly instructed not to run
+# Lighthouse, or start any local static server to serve the build, in its
+# own execution environment: a prior attempt at this exact task hung for
+# over six hours on precisely that pattern (a foregrounded static server
+# plus a foregrounded Lighthouse run) and had to be killed with no file
+# produced. Rather than risk repeating that, or inventing plausible-looking
+# numbers from published Core Web Vitals thresholds (which the plan text
+# explicitly forbids: "Set budgets from a measured baseline rather than
+# from published thresholds... A budget that fails on day one teaches
+# everyone to ignore the workflow"), this workflow ships with the
+# MECHANISM fully built (it runs Lighthouse against each route in CI below,
+# on a real GitHub-hosted runner, and reports LCP/TBT/CLS to the job
+# summary and as an artifact) but does NOT yet gate the job on any
+# threshold for these three metrics. Verifying that the Lighthouse
+# invocation itself works end to end in this repo's CI is first-run
+# triage, staged for the owner, the same way dast-baseline-weekly.yml's
+# first ZAP run was staged as owner triage rather than proven by the task
+# that wrote the scan.
+#
+# OWNER CHECKLIST (tracked as a register follow-up row; see this task's
+# report for the exact row text, not applied here directly):
+#   1. Run this workflow via workflow_dispatch at least once (twice is
+#      better, to see run-to-run spread on a real runner, matching what the
+#      plan text asks for: "at least three times, and record the spread").
+#   2. Read the job summary's LCP/TBT/CLS numbers for each route.
+#   3. Replace the `# BUDGET: not yet set` placeholders below with real
+#      numbers plus headroom, following the bundle-size budget's comment
+#      pattern (measured value, run count, headroom rationale) verbatim.
+#   4. Record the run id that established the baseline in the
+#      "BASELINE RUN ID" comment below (a plan-text requirement that
+#      cannot be satisfied before this workflow exists to produce a run).
+#
+# # BASELINE RUN ID: not yet recorded. See the OWNER CHECKLIST above; fill
+# # this in from the first workflow_dispatch run once its numbers are read
+# # and the LCP/TBT/CLS budgets below are set from them.
+#
+# If CI's numbers, once budgets are set, sit outside what a future local
+# check finds: the CI number governs (this workflow only ever runs in CI),
+# and a local number that disagrees is not a reason to loosen the budget by
+# itself. If CI's own numbers later drift because of a real infrastructure
+# change (a runner class change, a Chrome version bump), loosen the budget
+# ONCE with the new CI run id recorded in this comment block, rather than
+# deleting the budget.
+#
+# -----------------------------------------------------------------------
+# Alerting: single-job pattern, both traps from this repo's history handled
+# -----------------------------------------------------------------------
+# Matches the pattern actually in use in accessibility-compliance-weekly.yml
+# and safety-eval.yml: one job, `issues: write` on that one job (NOT split
+# across a separate alert job -- that split pattern is used elsewhere in
+# this repo only where it is load-bearing: supabase-backup.yml, because
+# that job holds secrets the alert job must not, and kws-delivery-health.yml,
+# for a matrix-leg race the ci-failure-issue action's own header warns
+# about; this job has neither a secret nor a matrix).
+#
+# Both traps named in this task's brief are handled the same way
+# dast-baseline-weekly.yml handles them (see that file's own "Alerting"
+# header comment for the fuller reasoning):
+#   1. GitHub injects `if: success()` into any step with no explicit `if:`,
+#      so a step silently skips once an earlier step in the job fails.
+#      Every conditional step below states its condition explicitly.
+#   2. `failure()` is FALSE for a cancelled run, and this job's own
+#      `timeout-minutes` cutting off a hung Lighthouse/Chrome launch
+#      produces `cancelled`, not `failure`. The alert and resolve steps
+#      below key off `job.status` (`always() && job.status != 'success'`),
+#      which is unambiguously `failure`, `cancelled`, or `success`
+#      regardless of which mechanism produced the non-success outcome, so
+#      a hang alerts exactly the same as an outright step failure.
+# ============================================================================
+name: Lighthouse (Weekly)
+
+on:
+  schedule:
+    # Friday 07:40 UTC. As of 2026-08-29 no other scheduled workflow in this
+    # directory runs on a Friday (see scheduled-health-rollup.yml's own
+    # header comment for the fleet-wide cron inventory this cites), and
+    # 07:40 matches no daily job's minute either, so this run never starts
+    # alongside another scheduled job.
+    - cron: '40 7 * * 5'
+  workflow_dispatch: {}
+
+permissions:
+  contents: read
+
+concurrency:
+  # Own group: this workflow never authenticates against or mutates the
+  # shared staging Supabase project, so nothing here needs the e2e-staging
+  # group.
+  #
+  # cancel-in-progress: false, matching accessibility-compliance-weekly.yml
+  # and dast-baseline-weekly.yml, NOT e2e-real-nightly.yml's true: the alert
+  # condition below treats a cancelled run as a real alert-worthy outcome,
+  # and cancel-in-progress: true would manufacture a false alert every time
+  # a routine supersession (a second scheduled trigger, or the owner
+  # checklist's own workflow_dispatch) cancels an in-flight run that was
+  # never actually unhealthy.
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  lighthouse:
+    name: Lighthouse budgets (local build, static routes)
+    runs-on: ubuntu-latest
+    # Budget: npm ci + build (~1-2 min), preview boot (~10s), three
+    # Lighthouse invocations against a Chromium already installed on the
+    # GitHub-hosted runner image (no browser download needed) at roughly
+    # 20-30s each, plus the bundle-size and summary steps. 15 minutes leaves
+    # real headroom over that estimate.
+    timeout-minutes: 15
+    permissions:
+      contents: read
+      issues: write # alerting steps below file/update/resolve the tracking issue
+    defaults:
+      run:
+        working-directory: ./frontend
+    steps:
+      - name: Harden the runner
+        uses: step-security/harden-runner@bf7454d06d71f1098171f2acdf0cd4708d7b5920 # v2.20.0
+        with:
+          egress-policy: audit
+
+      - name: Checkout repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Setup Node.js
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: '22'
+          cache: 'npm'
+          cache-dependency-path: frontend/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      # VITE_SUPABASE_URL/VITE_SUPABASE_ANON_KEY: the guardian lazy chunk
+      # throws at module load without these (same reason
+      # dast-baseline-weekly.yml's build step sets them); none of the three
+      # scanned routes are in the guardian subtree, but the shared entry
+      # chunk still needs a build-time value for the app to build at all.
+      # Same placeholder values already used by playwright.config.ts and
+      # dast-baseline-weekly.yml; not real credentials.
+      - name: Build frontend (production build)
+        env:
+          VITE_SUPABASE_URL: 'https://example.supabase.co'
+          VITE_SUPABASE_ANON_KEY: 'dummy-anon-key-for-lighthouse-weekly-build'
+        run: npm run build
+
+      # ---- Bundle size budget: measured directly from the build output ----
+      # Runs before the preview server even starts: this check depends only
+      # on frontend/dist/, not on anything being served. Sums the gzip size
+      # of every same-origin script/modulepreload/stylesheet the `/` route's
+      # index.html references (the entry chunk, its three modulepreload
+      # chunks -- jsx-runtime, hooks, db -- and one CSS file), matching
+      # exactly what a browser would transfer on a cold load of `/` before
+      # any lazy route chunk (LandingPage's own chunk) is added on top.
+      #
+      # BUDGET_BYTES = 160000 (see the header comment's "Bundle size budget"
+      # section for the measured value, run count, and headroom rationale).
+      - name: Bundle size budget (measured baseline, see header comment)
+        run: |
+          python3 - <<'PY'
+          import gzip
+          import re
+          import sys
+          from pathlib import Path
+
+          dist = Path("dist")
+          index_html = (dist / "index.html").read_text(encoding="utf-8")
+
+          refs = set(re.findall(r'src="(/assets/[^"]+\.js)"', index_html))
+          refs.update(re.findall(r'href="(/assets/[^"]+\.js)"', index_html))
+          refs.update(re.findall(r'href="(/assets/[^"]+\.css)"', index_html))
+
+          if not refs:
+              print("::error::No asset references found in dist/index.html; the build output shape changed unexpectedly.")
+              sys.exit(1)
+
+          total = 0
+          print("Assets referenced by the `/` route's index.html:")
+          for ref in sorted(refs):
+              asset_path = dist / ref.lstrip("/")
+              if not asset_path.is_file():
+                  print(f"::error::{ref} is referenced by index.html but missing from dist/.")
+                  sys.exit(1)
+              raw = asset_path.read_bytes()
+              gz_size = len(gzip.compress(raw, compresslevel=9))
+              total += gz_size
+              print(f"  {ref}: {gz_size} bytes gzip")
+
+          # BUDGET_BYTES: measured 126519 bytes gzip (one build, 2026-08-29;
+          # deterministic per commit, see header comment for why one
+          # measurement suffices here unlike the timing metrics below).
+          # +26% headroom, rounded to 160000.
+          budget_bytes = 160000
+          print(f"Total initial `/` route payload: {total} bytes gzip (budget {budget_bytes})")
+          with open("../bundle-size-summary.md", "w", encoding="utf-8") as f:
+              f.write("### Bundle size budget (`/` route, initial payload)\n\n")
+              f.write(f"- Measured: {total} bytes gzip\n")
+              f.write(f"- Budget: {budget_bytes} bytes gzip (measured baseline 126519 bytes + 26% headroom)\n")
+              f.write(f"- Result: {'PASS' if total <= budget_bytes else 'FAIL'}\n")
+
+          if total > budget_bytes:
+              print(f"::error::Bundle size {total} bytes gzip exceeds the {budget_bytes} byte budget.")
+              sys.exit(1)
+          PY
+
+      - name: Serve the built frontend
+        run: nohup npm run preview -- --port 4173 --strictPort > ../preview.log 2>&1 &
+
+      - name: Wait for frontend readiness
+        run: |
+          for _ in $(seq 1 30); do
+            if curl -fsS http://localhost:4173/ >/dev/null 2>&1; then
+              echo "Frontend ready"; exit 0
+            fi
+            sleep 2
+          done
+          echo "::error::Frontend preview server did not become ready in time"
+          cat ../preview.log || true
+          exit 1
+
+      # ---- Lighthouse: reports LCP/TBT(INP proxy)/CLS, does not gate on
+      # them yet (see header comment's "Budgets" section) ----
+      # lighthouse is invoked via `npx --yes lighthouse@<pinned version>`
+      # rather than added as a frontend devDependency: it is a one-off CI
+      # tool for this workflow alone, not something frontend code imports.
+      # Pinned to an exact version (not a floating tag) for the same
+      # reproducibility reason every GitHub Action below is pinned by SHA.
+      # `--chrome-flags="--headless=new --no-sandbox"`: GitHub-hosted
+      # ubuntu-latest runners ship Google Chrome pre-installed, so no
+      # browser download is needed; `--no-sandbox` is required because the
+      # runner's container environment cannot use Chrome's setuid sandbox.
+      - name: Run Lighthouse against each signed-out route
+        run: |
+          set -euo pipefail
+          mkdir -p ../lighthouse-out
+          for route in "/:root" "/privacy:privacy" "/support:support"; do
+            path="${route%%:*}"
+            slug="${route##*:}"
+            npx --yes lighthouse@13.4.1 "http://localhost:4173${path}" \
+              --output=json \
+              --output-path="../lighthouse-out/${slug}.json" \
+              --chrome-flags="--headless=new --no-sandbox" \
+              --only-categories=performance \
+              --quiet
+          done
+
+      # Extracts LCP, TBT (INP proxy), and CLS from each report into the job
+      # summary. This step can fail the job if Lighthouse produced no
+      # report or an unreadable one (an infra failure: Chrome failed to
+      # launch, npx failed to fetch the package) -- mirroring
+      # dast-baseline-weekly.yml's "did the scan reach its target" check --
+      # but never on the metric VALUES themselves, since no threshold is
+      # enforced on them yet (see header comment).
+      - name: Summarize Lighthouse metrics (informational; not yet gated)
+        run: |
+          python3 - <<'PY'
+          import json
+          import sys
+          from pathlib import Path
+
+          routes = {"root": "/", "privacy": "/privacy", "support": "/support"}
+          lines = [
+              "### Lighthouse metrics (informational only; not yet gated, see workflow header comment)",
+              "",
+              "| Route | LCP (ms) | TBT (ms, INP proxy) | CLS |",
+              "|-------|----------|----------------------|-----|",
+          ]
+          ok = True
+          for slug, route in routes.items():
+              report_path = Path(f"../lighthouse-out/{slug}.json")
+              if not report_path.is_file():
+                  print(f"::error::No Lighthouse report produced for {route} ({report_path}).")
+                  ok = False
+                  continue
+              try:
+                  data = json.loads(report_path.read_text(encoding="utf-8"))
+              except (json.JSONDecodeError, UnicodeDecodeError) as exc:
+                  print(f"::error::Lighthouse report for {route} is unreadable ({exc}).")
+                  ok = False
+                  continue
+              audits = data.get("audits", {})
+              lcp = audits.get("largest-contentful-paint", {}).get("numericValue")
+              tbt = audits.get("total-blocking-time", {}).get("numericValue")
+              cls = audits.get("cumulative-layout-shift", {}).get("numericValue")
+              lines.append(f"| {route} | {lcp} | {tbt} | {cls} |")
+
+          with open("../lighthouse-summary.md", "w", encoding="utf-8") as f:
+              f.write("\n".join(lines) + "\n")
+
+          if not ok:
+              sys.exit(1)
+          PY
+
+      - name: Write job summary
+        if: ${{ !cancelled() }}
+        run: |
+          cat ../bundle-size-summary.md >> "$GITHUB_STEP_SUMMARY" 2>/dev/null || true
+          echo "" >> "$GITHUB_STEP_SUMMARY"
+          cat ../lighthouse-summary.md >> "$GITHUB_STEP_SUMMARY" 2>/dev/null || true
+
+      # Full Lighthouse JSON reports (no cookies/headers of a real user;
+      # this is an unauthenticated static build) plus the two summary
+      # markdown files. retention-days set explicitly (this repository is
+      # public), matching the 14-day retention accessibility-compliance-
+      # weekly.yml and dast-baseline-weekly.yml already use.
+      - name: Upload Lighthouse reports
+        if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: lighthouse-weekly-reports
+          path: |
+            lighthouse-out/
+            bundle-size-summary.md
+            lighthouse-summary.md
+          retention-days: 14
+          if-no-files-found: warn
+
+      - name: Stop the preview server
+        if: always()
+        run: pkill -f "vite preview" || true
+
+      # ---- Alerting: see header comment for both traps this handles ----
+      - name: Compose the issue body
+        if: ${{ always() && job.status != 'success' }}
+        id: compose
+        uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9.0.0
+        with:
+          result-encoding: string
+          script: |
+            const runUrl = `${context.serverUrl}/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`
+            const today = new Date().toISOString().slice(0, 10)
+
+            const body = [
+              'The scheduled `Lighthouse (Weekly)` workflow',
+              '(`.github/workflows/lighthouse-weekly.yml`) did not complete a',
+              'clean run.',
+              '',
+              'This alert can mean either of two things, and the run conclusion',
+              'tells them apart:',
+              '',
+              '1. A step failed outright (npm ci/build, the bundle-size budget',
+              '   check exceeding its threshold, the preview server never',
+              '   becoming ready, a Lighthouse invocation failing to launch',
+              '   Chrome or produce a report). Read the run log for which step',
+              '   failed.',
+              '2. The run was CANCELLED, most likely this job\'s own',
+              '   `timeout-minutes` cutting off a hung Lighthouse/Chrome launch.',
+              '   A cancelled run shows no failed step in the log; that absence',
+              '   IS the signal here.',
+              '',
+              'Only the bundle-size budget can fail this job on a measured',
+              'threshold today; LCP/TBT/CLS are reported but not yet gated (see',
+              'the workflow file\'s header comment). A failure on those metrics',
+              'specifically would show as the Lighthouse summarize step erroring',
+              'because a report was missing or unreadable, an infra failure, not',
+              'a budget breach.',
+              '',
+              'This target is a locally built, unauthenticated static frontend',
+              '(no staging or production credentials involved), so a red run',
+              'here is never a live-account or shared-state incident.',
+              '',
+              `First failing run: ${runUrl}`,
+              `Date: ${today}`,
+              '',
+              'This issue accumulates one comment per failing run and closes itself',
+              'once a scheduled run succeeds; the next failure opens a fresh issue.',
+            ].join('\n')
+
+            const commentBody = [
+              `Scheduled Lighthouse weekly run failed or was cancelled again on ${today}.`,
+              `This run: ${runUrl}`,
+            ].join('\n')
+
+            return JSON.stringify({ body, commentBody })
+
+      - name: File or comment on the pinned issue
+        if: ${{ always() && job.status != 'success' }}
+        uses: ./.github/actions/ci-failure-issue
+        with:
+          marker: '[lighthouse-weekly]'
+          summary: scheduled Lighthouse weekly run not completing cleanly
+          body: ${{ fromJSON(steps.compose.outputs.result).body }}
+          comment-body: ${{ fromJSON(steps.compose.outputs.result).commentBody }}
+
+      # `github.event_name == 'schedule'`: a one-off workflow_dispatch
+      # success (exactly what the owner checklist above asks for) must not
+      # close an issue about a dead SCHEDULE, matching
+      # accessibility-compliance-weekly.yml's and dast-baseline-weekly.yml's
+      # identical reasoning on their own resolve steps.
+      - name: Resolve the tracking issue on a green scheduled run
+        if: success() && github.event_name == 'schedule'
+        uses: ./.github/actions/ci-failure-issue
+        with:
+          marker: '[lighthouse-weekly]'
+          mode: resolve

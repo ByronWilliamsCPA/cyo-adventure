@@ -193,6 +193,7 @@ jobs:
               'e2e-prod.yml': { label: 'e2e-alert', titlePrefix: '[e2e-prod]' },
               'e2e-real-nightly.yml': { label: 'e2e-alert', titlePrefix: '[e2e-real-nightly]' },
               'kws-delivery-health.yml': { label: 'ci-failure', titlePrefix: '[kws-delivery-health]' },
+              'lighthouse-weekly.yml': { label: 'ci-failure', titlePrefix: '[lighthouse-weekly]' },
               'link-check-full.yml': { label: 'ci-failure', titlePrefix: '[link-check]' },
               'moderation-report-health.yml': { label: 'ci-failure', titlePrefix: '[moderation-report-health]' },
               'mutation-testing.yml': { label: 'ci-failure', titlePrefix: '[mutation-testing]' },
