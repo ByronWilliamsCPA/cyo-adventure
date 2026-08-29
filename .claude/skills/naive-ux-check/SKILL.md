@@ -6,10 +6,67 @@ description: Surface the next unrun Claude-for-Chrome naive-user comprehension p
 # naive-ux-check
 
 Organizes the naive-user comprehension prompt set
-(`.claude/skills/naive-ux-check/prompts/{kid,guardian,admin}.md`, 17 scenarios
-total: K0-K4, G0-G7, A0-A3) and logs results. This skill does not drive a
-browser itself; there is no Claude-for-Chrome tool available to this session,
-so it hands you a prompt to paste into the extension by hand.
+(`.claude/skills/naive-ux-check/scenarios.json`, 17 scenarios total: K0-K4,
+G0-G7, A0-A3) and logs results. This skill does not drive a browser itself;
+there is no Claude-for-Chrome tool available to this session, so it hands
+you a prompt to paste into the extension by hand.
+
+`scenarios.json` is the single source of truth for these scenarios; there
+are no separate prose files to keep in sync. Each entry has: `id`,
+`persona` (`kid` / `guardian` / `admin`), `name` (short scenario name),
+`persona_text`, `task_text`, `report_back_questions[]`,
+`requires_credentials`, `production_safe`, and `operator_notes` (an object
+with `operator_setup[]`, `operator_note[]`, `persona_context[]`, and
+`expected_observations[]`, all human-only, see step 4). The array order is
+the selection order: kid scenarios (K0-K4) first, then guardian (G0-G7),
+then admin (A0-A3), with each persona's auth-gate scenario (K0, G0, A0)
+first within its group. The automated persona runner planned for D2b will
+read the same file, so a manual and an automated run always test the same
+scenarios.
+
+`render.py` (`.claude/skills/naive-ux-check/render.py`) is the single
+composer of the paste block; it is what step 4 below runs, and the same
+module a D2b automated runner is expected to import rather than writing a
+second composer. Scenario data reaches the composition only through a
+restricted view built by keyed lookup against its `MODEL_FACING_FIELDS`
+constant, which names exactly three fields (`persona_text`, `task_text`,
+`report_back_questions`). So `operator_notes` (all four of its sub-keys) is
+never read by it, and neither is any field the schema grows later: both sit
+outside that view by construction, and widening the constant on its own
+makes a field merely reachable, rendering nothing until the format string
+changes too.
+
+`tests/unit/test_naive_ux_scenarios.py` imports this module directly and
+pins four properties: hand-transcribed golden blocks for K0, G4 and A1 fix
+the block's shape; a record stripped to just the three model-facing fields
+renders identically to the real one, so nothing else is read; every string
+leaf outside those three fields, replaced with a unique sentinel, stays out
+of the rendered output, so nothing else is emitted; and the CLI's own
+stdout, for all 17 scenarios, equals the composed block byte for byte,
+which matters because stdout is the artifact a human pastes and the
+composer is only a function underneath it.
+
+Three further tests read this file as the program it is: step 4's fenced
+renderer invocation must resolve to a path that exists, every `python3`
+command anywhere in this file must name a script that exists, and step 4
+may mention an operator-only field name only in the three sentences already
+grandfathered by the test module.
+
+Two more checks are tripwires rather than proofs, and say so in their own
+docstrings: they scan this file's sentences for a finite set of English
+verbs that would relay operator-only content into the block, and for an
+instruction to hand-compose the block. They catch the ordinary phrasings,
+which is worth having, but no verb set is closed. A green suite therefore
+means no common wording of that instruction is present in this file, not
+that such an instruction is impossible to write in prose.
+
+One thing that machinery does not do, so nobody reads more into it: the
+split is between *fields*, not between kinds of content. Operator-style
+text written straight into `persona_text`, `task_text`, or
+`report_back_questions` reaches the model, because those three fields are
+model-facing by design. Keeping "what the operator should notice" out of
+them is an authoring convention, not a control the renderer or the test
+suite can enforce.
 
 ## What to do when invoked
 
@@ -21,31 +78,57 @@ so it hands you a prompt to paste into the extension by hand.
    `SEED_ADMIN_EMAIL`, provisioned by `scripts/seed_staging.py`) live there;
    live production has no account this skill should use. Targeting live
    production is an explicit, occasional, deliberate choice the user must
-   state up front, and it supports only the non-credentialed, non-mutating
-   scenario: K0, which observes the signed-out auth gate without ever
-   signing in. Every other scenario either signs in with the seeded
-   credentials (which exist only on staging) or mutates content, and the
-   standing rule still applies: the mutating personas (G4/G5/G6, A2/A3)
-   submit, approve, or decline real content, so run them only against the
-   seeded staging environment (or another disposable, seeded,
-   non-production environment); never point them at production, where the
-   browsing agent could approve or alter real stories.
+   state up front, and it supports only the scenario whose data record has
+   `production_safe: true`: K0, which observes the signed-out auth gate
+   without ever signing in. Every other scenario has `production_safe:
+   false`: it either signs in with the seeded credentials (which exist
+   only on staging) or mutates content, and the standing rule still
+   applies: the mutating personas (G4/G5/G6, A2/A3) submit, approve, or
+   decline real content, so run them only against the seeded staging
+   environment (or another disposable, seeded, non-production
+   environment); never point them at production, where the browsing agent
+   could approve or alter real stories.
 2. Read `docs/qa/naive-ux-reports/` and find the most recent dated report, if
    any. Collect which of the 17 scenario ids (K0-K4, G0-G7, A0-A3) already
    have an entry in it.
-3. Pick the first scenario id, in the order K0-K4, G0-G7, A0-A3 (the
-   auth-gate scenarios K0, G0, and A0 always run before the rest of their
-   persona's set), that has no entry yet in the most recent report. If no
-   report exists yet, that is the first id, K0. Always hand off exactly one
-   scenario per invocation (step 4); the user re-invokes for the next one
-   (step 7).
-4. Print that scenario's full prompt block from its persona file, with the
-   `<URL>` placeholder replaced by the target URL from step 1. Print only
-   the Persona / Task / Report back block; the "Operator setup" / "Operator
-   note" lines and "Expected observations" paragraphs are instructions for
-   the human, so relay them separately, never inside the paste block. Where
-   a prompt carries `<EMAIL>` / `<PASSWORD>` placeholders, remind the user
-   to fill them with the seeded credentials before pasting.
+3. Pick the first scenario, in `scenarios.json` array order (K0-K4, G0-G7,
+   A0-A3, auth-gate scenarios first within each persona), whose `id` has no
+   entry yet in the most recent report. If no report exists yet, that is the
+   first entry, K0. Always hand off exactly one scenario per invocation
+   (step 4); the user re-invokes for the next one (step 7).
+4. Get the paste block by running the renderer, never by composing it
+   yourself:
+
+   ```text
+   python3 .claude/skills/naive-ux-check/render.py <scenario id> <target URL from step 1>
+   ```
+
+   Its stdout is the block to paste, verbatim, in the shape:
+
+   ```text
+   Persona: <persona_text>
+
+   Task: <task_text>
+
+   Report back:
+
+   1. <report_back_questions[0]>
+   2. <report_back_questions[1]>
+   ...
+   ```
+
+   `render.py` reads only `persona_text`, `task_text`, and
+   `report_back_questions[]` off the scenario record; it never reads
+   `operator_notes` (`operator_setup`, `operator_note`, `persona_context`,
+   or `expected_observations`), by construction. Do not append, inline, or
+   otherwise relay any `operator_notes` content into the pasted block
+   itself; where any of it needs to reach the user at all, say it
+   separately, in your own words to the user, outside the pasted text.
+   Where the rendered task text carries `<EMAIL>` / `<PASSWORD>`
+   placeholders, remind the user to fill them with the seeded credentials
+   before pasting. Where `operator_notes.operator_setup` is non-empty,
+   relay it to the user before they paste (it covers things like starting
+   from a signed-out browser or signing in first).
 5. Tell the user: "Paste this into the Claude-for-Chrome extension, then
    paste its response back here."
 6. When the user pastes back a response, first REDACT it, then append one row
@@ -61,12 +144,14 @@ so it hands you a prompt to paste into the extension by hand.
    force-add it.)
 
    ```markdown
-   ## <scenario id>: <short scenario name>
+   ## <scenario id>: <scenario name>
 
    **Verdict:** pass | friction-found | dead-end
 
    <redacted summary of the pasted-back response>
    ```
+
+   The scenario name for the heading is that scenario's `name` field.
 
 7. Ask whether to continue with the next unrun scenario or stop here.
 

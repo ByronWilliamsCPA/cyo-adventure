@@ -13,6 +13,7 @@ All HTTP is faked with ``httpx.MockTransport``.
 from __future__ import annotations
 
 import json
+from decimal import Decimal
 from typing import Any
 from unittest import mock
 
@@ -431,3 +432,135 @@ async def test_the_temperature_property_reports_what_the_leg_sends() -> None:
 
     assert leg.temperature == bodies[0]["temperature"]
     assert list(leg.endpoint_order) == bodies[0]["provider"]["order"]
+
+
+# ---------------------------------------------------------------------------
+# The vendor's own per-call charge on the RESPONSE path (C1, Important 4)
+# ---------------------------------------------------------------------------
+# Every spend figure this repository produced until now came from
+# `core/pricing.py`, whose own module docstring says the table is transcribed
+# by hand from a dated document and that a vendor price change makes every
+# later estimate silently wrong. OpenRouter will report what it actually
+# charged, but only when asked. Asking is therefore opt-in per leg, exactly
+# like the `provider` pin and the `temperature`: an always-present `usage`
+# field would change requests that have nothing to do with spend measurement.
+
+
+def _cost_capture(
+    usage_block: object,
+) -> tuple[list[dict[str, Any]], httpx.AsyncClient]:
+    """Return a body sink and a client whose response carries ``usage_block``.
+
+    Args:
+        usage_block: The value to place under the response's ``usage`` key, or
+            the sentinel string ``"omit"`` to send no ``usage`` key at all.
+
+    Returns:
+        The list that receives each decoded request body, and the client.
+    """
+    bodies: list[dict[str, Any]] = []
+
+    def handler(request: httpx.Request) -> httpx.Response:
+        """Record the request body and answer with the configured usage block."""
+        bodies.append(json.loads(request.content.decode("utf-8")))
+        payload: dict[str, Any] = {
+            "choices": [{"message": {"content": '{"ok": true}'}}]
+        }
+        if usage_block != "omit":
+            payload["usage"] = usage_block
+        return httpx.Response(200, json=payload)
+
+    return bodies, httpx.AsyncClient(transport=httpx.MockTransport(handler))
+
+
+def _cost_provider(
+    client: httpx.AsyncClient, *, report_vendor_cost: bool
+) -> OpenRouterProvider:
+    """Build an adapter over the capturing client with cost reporting set.
+
+    Args:
+        client: The MockTransport-backed client.
+        report_vendor_cost: Whether the leg asks the vendor for its charge.
+
+    Returns:
+        A configured adapter.
+    """
+    return OpenRouterProvider(
+        api_key="test-key",
+        model="anthropic/claude-sonnet-4.6",
+        base_url="https://openrouter.test/api/v1",
+        timeout_seconds=5,
+        effort="off",
+        backoff_base_seconds=0.0,
+        client=client,
+        report_vendor_cost=report_vendor_cost,
+    )
+
+
+@pytest.mark.asyncio
+async def test_no_usage_accounting_field_is_sent_by_default() -> None:
+    """Absence has to stay absence on every production path.
+
+    The one property that makes this parameter safe to add is that adding it
+    changed no request that existed before it. A `usage` block present but
+    defaulted would repoint every generation and moderation request in the
+    codebase, none of which asked for cost accounting.
+    """
+    bodies, client = _cost_capture("omit")
+    completion = await _cost_provider(client, report_vendor_cost=False).complete(
+        system="s", prompt="p", max_tokens=16
+    )
+
+    assert "usage" not in bodies[0]
+    assert completion.vendor_cost_usd is None
+
+
+@pytest.mark.asyncio
+async def test_vendor_cost_is_requested_and_captured_when_opted_in() -> None:
+    """Opting in must both ask for the charge and carry it back as Decimal.
+
+    Asking without capturing, or capturing without asking, each look like the
+    feature works while producing no observed number at all, so both halves
+    are asserted against the same call.
+    """
+    bodies, client = _cost_capture(
+        {"prompt_tokens": 10, "completion_tokens": 4, "cost": 0.00012345}
+    )
+    completion = await _cost_provider(client, report_vendor_cost=True).complete(
+        system="s", prompt="p", max_tokens=16
+    )
+
+    assert bodies[0]["usage"] == {"include": True}
+    assert completion.vendor_cost_usd == Decimal("0.00012345")
+    # Money never becomes binary floating point on the way in.
+    assert isinstance(completion.vendor_cost_usd, Decimal)
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize(
+    "usage_block",
+    [
+        "omit",
+        {"prompt_tokens": 10, "completion_tokens": 4},
+        {"prompt_tokens": 10, "completion_tokens": 4, "cost": None},
+        {"prompt_tokens": 10, "completion_tokens": 4, "cost": "not-a-number"},
+        {"prompt_tokens": 10, "completion_tokens": 4, "cost": True},
+        {"prompt_tokens": 10, "completion_tokens": 4, "cost": -1},
+    ],
+)
+async def test_an_absent_or_unusable_vendor_cost_reports_none_not_zero(
+    usage_block: object,
+) -> None:
+    """A charge that was not reported must not arrive as a charge of zero.
+
+    This is the failure mode the whole field exists to avoid: a consumer that
+    sums a flattened zero has a spend total that cannot rise, and therefore a
+    budget cap that cannot bind. ``True`` is in the list because ``bool`` is an
+    ``int`` subclass and would otherwise be billed as one dollar.
+    """
+    _, client = _cost_capture(usage_block)
+    completion = await _cost_provider(client, report_vendor_cost=True).complete(
+        system="s", prompt="p", max_tokens=16
+    )
+
+    assert completion.vendor_cost_usd is None

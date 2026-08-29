@@ -53,7 +53,7 @@ test('a 409 on save silently adopts the server position and re-saves it', async 
   const putBodies: Array<Record<string, unknown>> = []
   await page.route('**/api/v1/reading-state/**', (route) => {
     if (route.request().method() === 'GET') {
-      return route.fulfill({ status: 404, json: { error: 'not found' } })
+      return route.fulfill({ status: 200, json: { state: null } })
     }
     putBodies.push(route.request().postDataJSON() as Record<string, unknown>)
     if (putBodies.length === 1) {
@@ -80,7 +80,7 @@ test('a 409 on save moves the reader to the server position, no dialog', async (
   let puts = 0
   await page.route('**/api/v1/reading-state/**', (route) => {
     if (route.request().method() === 'GET') {
-      return route.fulfill({ status: 404, json: { error: 'not found' } })
+      return route.fulfill({ status: 200, json: { state: null } })
     }
     puts += 1
     if (puts === 1) return route.fulfill({ status: 409, json: { current_row: SERVER_ROW } })
@@ -133,7 +133,7 @@ test('an offline choice queued for replay is silently resolved on reconnect', as
   let replayPuts = 0
   await page.route('**/api/v1/reading-state/**', (route) => {
     if (route.request().method() === 'GET') {
-      return route.fulfill({ status: 404, json: { error: 'not found' } })
+      return route.fulfill({ status: 200, json: { state: null } })
     }
     const body = route.request().postDataJSON() as { event_id?: string }
     if (mode === 'offline') {

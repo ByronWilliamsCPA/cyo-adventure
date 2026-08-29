@@ -273,9 +273,9 @@ device, request, and (for the cases 1a does not cover) assign.
 
 `frontend/e2e/naive-user/` covers kid, guardian, and admin misuse but has no first-run journey, which is
 why a twelve-step flow with two blocking gates and a silent required step was found by hand rather than
-by the suite. Add a first-run spec that walks the whole path, and add the missing signed-out first-visit
-scenario to `.claude/skills/naive-ux-check/prompts/guardian.md` so the comprehension set covers signup
-rather than starting from an existing account.
+by the suite. Add a first-run spec that walks the whole path, and append the missing signed-out
+first-visit scenario object (with all required fields) to `.claude/skills/naive-ux-check/scenarios.json`'s
+guardian set so the comprehension set covers signup rather than starting from an existing account.
 
 ## Sequencing summary
 

@@ -11,6 +11,7 @@ handles the parsing and validation.
 
 from __future__ import annotations
 
+from pathlib import Path
 from typing import Annotated, Literal, NamedTuple
 from urllib.parse import urlsplit
 
@@ -1443,6 +1444,61 @@ class Settings(BaseSettings):
     # ::test_gate_max_concurrency_at_the_connection_pool_ceiling_rejected.
     gate_max_concurrency: int = Field(default=4, ge=1, le=39)
 
+    # --- ADR-030: the engagement-correlation analysis job ---
+    #
+    # The kill switch. Off, the job does not read the database, does not
+    # compute, and does not write; it is not a mode that produces a redacted
+    # artifact, because a redaction path that only runs when the flag is off is
+    # a path nobody exercises. ADR-030 is `proposed` and not yet ratified, so
+    # this shipping inert is the mitigation the owner's assumed-approval ruling
+    # depends on: turning it on is a deliberate per-tier act taken after
+    # ratification.
+    # #CRITICAL: security: default False. On, the job aggregates real children's
+    # reading outcomes into a file on disk.
+    # #VERIFY: tests/unit/test_config.py::TestEngagementCorrelationAnalysis::
+    # test_the_engagement_analysis_is_off_by_default.
+    analysis_engagement_correlation_enabled: bool = Field(
+        default=False, validation_alias="ANALYSIS_ENGAGEMENT_CORRELATION_ENABLED"
+    )
+    # Where the artifact is written. No default, deliberately: ADR-030 Decision
+    # 6 gives this artifact no in-repository default path, and a job with no
+    # configured destination does not run.
+    #
+    # Typed as ``str`` and not ``Path`` so that an empty value stays
+    # representable and is treated as unset by the validator below.
+    # ``${VAR:-}`` in a compose file yields an empty string rather than an
+    # absent variable, a shape this project has already been bitten by on
+    # constrained settings fields.
+    # #VERIFY: tests/unit/test_config.py::TestEngagementCorrelationAnalysis::
+    # test_an_empty_output_path_counts_as_unset_and_is_refused.
+    analysis_engagement_correlation_output_dir: str = Field(
+        default="",
+        validation_alias="ANALYSIS_ENGAGEMENT_CORRELATION_OUTPUT_DIR",
+    )
+
+    @field_validator("analysis_engagement_correlation_enabled", mode="before")
+    @classmethod
+    def _empty_engagement_flag_is_off(cls, value: object) -> object:
+        """Read an empty override of the kill switch as "off", not as an error.
+
+        ``${ANALYSIS_ENGAGEMENT_CORRELATION_ENABLED:-}`` in a compose file
+        yields ``""`` rather than an absent variable, and a bare ``bool`` field
+        rejects ``""`` outright, so the container would not boot. The whole
+        service failing to start is not the right answer to an unset flag on an
+        analysis job that is off by default; folding an empty value to the
+        default is, and the default is the safe arm.
+
+        Args:
+            value: The raw environment value.
+
+        Returns:
+            object: ``False`` for an empty or whitespace-only string, otherwise
+                the input unchanged.
+        """
+        if isinstance(value, str) and not value.strip():
+            return False
+        return value
+
     @property
     def worker_database_url_effective(self) -> str:
         """The DSN the worker engine (core/database.py::get_worker_engine) actually uses.
@@ -2201,6 +2257,82 @@ class Settings(BaseSettings):
                 "re-derived later. Use the Test environment's credentials."
             )
             raise ConfigurationError(msg)
+        return self
+
+    @model_validator(mode="after")
+    def _reject_engagement_analysis_output_inside_repository(self) -> Settings:
+        """Refuse to boot the ADR-030 job without a destination outside a checkout.
+
+        ADR-030 Decision 6 decides that the engagement-correlation artifact may
+        never be committed to this repository. It is public, and a push is not
+        retractable: an aggregate over five families of real children, once
+        pushed, stays reachable in history after any deletion. Decision 7 makes
+        refusal to boot the control rather than operator discipline, in the same
+        posture as the KWS validators, so a tier that acquires a bad output path
+        by copying another tier's environment file stops instead of quietly
+        writing children's reading aggregates into a checkout that something
+        later stages.
+
+        Three properties are pinned by ADR-030 Decision 7 because each has a
+        plausible reading that would make this pass where it should refuse:
+
+        - the ``.git`` probe is file-or-directory existence, not directory
+          existence. This repository's worktrees at ``.worktrees/<slug>`` mark
+          themselves with a ``.git`` **file** holding a ``gitdir:`` pointer, and
+          worktrees are where concurrent sessions here actually work, so an
+          ``is_dir()`` check would accept every one of them;
+        - an empty-string path counts as unset and takes the refusal branch,
+          rather than counting as a configured path that resolves to the current
+          working directory;
+        - the path is resolved before its parents are walked, because walking an
+          unresolved path finds no ``.git`` above a symlink whose target sits
+          inside a checkout.
+
+        Honest about its scope: this defends the developer-workstation case,
+        which is where the mistake actually happens. A deployed container has no
+        working tree to write into and passes trivially.
+
+        #CRITICAL: security: refusal to boot is the control.
+        #VERIFY: tests/unit/test_config.py::TestEngagementCorrelationAnalysis::
+        test_an_output_path_inside_a_git_working_tree_is_refused and
+        ::test_an_output_path_outside_a_git_working_tree_is_accepted. Cite the
+        pair: the refusal alone passes for a validator that refuses
+        unconditionally.
+
+        Returns:
+            Settings: This instance, when the configuration is acceptable.
+
+        Raises:
+            ConfigurationError: when the job is enabled and the output directory
+                is unset, empty, or resolves at or below a git working tree.
+        """
+        if not self.analysis_engagement_correlation_enabled:
+            return self
+        configured = self.analysis_engagement_correlation_output_dir.strip()
+        if not configured:
+            msg = (
+                "ANALYSIS_ENGAGEMENT_CORRELATION_ENABLED=true requires "
+                "ANALYSIS_ENGAGEMENT_CORRELATION_OUTPUT_DIR to name a directory "
+                "outside any git working tree (ADR-030 Decision 6). An empty "
+                "value counts as unset: this artifact has no default path."
+            )
+            raise ConfigurationError(msg)
+        resolved = Path(configured).expanduser().resolve()
+        for candidate in (resolved, *resolved.parents):
+            marker = candidate / ".git"
+            # exists() OR is_symlink(): exists() covers both the ordinary
+            # directory and a worktree's .git FILE, and is_symlink() adds the
+            # broken-symlink case exists() answers False for.
+            if marker.exists() or marker.is_symlink():
+                msg = (
+                    "ANALYSIS_ENGAGEMENT_CORRELATION_OUTPUT_DIR resolves inside "
+                    f"a git working tree ({candidate}): the "
+                    "engagement-correlation artifact aggregates real children's "
+                    "reading outcomes and may never reach a repository, whose "
+                    "history is not retractable (ADR-030 Decision 6). Choose a "
+                    "directory outside any checkout."
+                )
+                raise ConfigurationError(msg)
         return self
 
 

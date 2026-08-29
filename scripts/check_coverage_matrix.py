@@ -31,11 +31,20 @@ MATRIX_PATH = REPO_ROOT / "docs" / "testing" / "coverage-matrix.md"
 # E2E tiers: every ``*.spec.ts`` under these dirs must be referenced. Support
 # and helper modules (``support/*.ts``, ``real-stack.ts``) are not specs and
 # are excluded by the ``*.spec.ts`` glob itself.
+#
+# ``frontend/e2e-staging-sweep`` and ``frontend/e2e-usersim`` were added here
+# together (fix/testing-ladder-trust, task B1c): the sweep tier's
+# ``device-grant-sweep.spec.ts`` had existed, unreferenced by this guard,
+# since before this tuple was introduced, which is the exact "invisible
+# hole" the comment above warns about. Omitting either one while adding the
+# other would leave that hole open for the tier that was not added.
 E2E_DIRS = (
     "frontend/e2e",
     "frontend/e2e-real",
     "frontend/e2e-staging",
+    "frontend/e2e-staging-sweep",
     "frontend/e2e-prod",
+    "frontend/e2e-usersim",
 )
 
 # Component/unit tier: every Vitest test colocated under ``frontend/src``.

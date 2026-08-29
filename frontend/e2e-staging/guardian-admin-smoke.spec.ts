@@ -1,7 +1,8 @@
 import type { Page } from '@playwright/test'
 import { expect, test } from '@playwright/test'
 
-import { signInAsStagingTestUser, unlockParentalGateIfPresent } from './support/auth'
+import { stagingStorageStatePath } from './support/auth-storage'
+import { unlockParentalGateIfPresent } from './support/auth'
 import { gotoResilient } from '../e2e-support/rate-limit'
 
 /**
@@ -18,11 +19,15 @@ import { gotoResilient } from '../e2e-support/rate-limit'
  * runner IP can burst past the ceiling. gotoResilient paces them under it and
  * backs off on any residual 429; see e2e-support/rate-limit.ts.
  *
- * One qualifier on "read-only": signInAsStagingTestUser clears the ADR-018
- * consent interstitial when it appears, which records consent for the staging
- * test guardian. That is a single idempotent write, on the test account only,
- * and only until the account has consented once. See
- * acceptGuardianConsentIfPresent in ./support/auth.
+ * Each `beforeAll` below restores a pre-authenticated session from disk
+ * (`stagingStorageStatePath`) rather than signing in through the login form.
+ * The sign-in itself, and the one write this tier performs (clearing the
+ * ADR-018 consent interstitial the first time the seeded guardian signs in;
+ * see `acceptGuardianConsentIfPresent` in `./support/auth`), now happen once
+ * each, up front, in `e2e-staging/auth.setup.ts`. That write's effect is
+ * server-tracked and read fresh from `/v1/me` on every session
+ * (`src/auth/AuthContext.tsx`'s `syncPrincipal`), so a session restored here
+ * still resolves past `ProtectedRoute` without re-consenting.
  */
 test.describe('guardian console renders on staging', () => {
   test.describe.configure({ mode: 'serial' })
@@ -30,8 +35,7 @@ test.describe('guardian console renders on staging', () => {
   let sharedPage: Page
 
   test.beforeAll(async ({ browser }) => {
-    sharedPage = await browser.newPage()
-    await signInAsStagingTestUser(sharedPage, 'guardian')
+    sharedPage = await browser.newPage({ storageState: stagingStorageStatePath('guardian') })
   })
 
   test.afterAll(async () => {
@@ -62,8 +66,7 @@ test.describe('admin console renders on staging', () => {
   let sharedPage: Page
 
   test.beforeAll(async ({ browser }) => {
-    sharedPage = await browser.newPage()
-    await signInAsStagingTestUser(sharedPage, 'admin')
+    sharedPage = await browser.newPage({ storageState: stagingStorageStatePath('admin') })
   })
 
   test.afterAll(async () => {

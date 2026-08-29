@@ -183,6 +183,27 @@ async function deleteProfile(profileId: string): Promise<void> {
   }
 }
 
+// #EDGE: timing-dependencies: matches by URL+method only, the same shape
+// #290 traced kid-go-back-real.spec.ts's flaky failure to (queue position,
+// not the response's own identity). MORE THAN ONE matching PUT genuinely can
+// be pending here, not "at most one": these profiles are age_band '10-13' (a
+// FLOWED_BANDS entry), so mount does not stop at n_open, it auto-flows
+// through n_open's single unconditional choice and issues a PUT for both
+// n_open and n_start before the reader shows a choice to click. A live probe
+// confirms it: instrumenting page.on('request')/page.on('response') at the
+// moment mountSave awaits the reader-visible assertion shows both PUTs
+// issued but only n_open's response delivered by then, so n_start's is still
+// pending. This file is safe anyway for a narrower reason: no assertion
+// below reads a field off this promise's own `.json()` body (the c_climb
+// flowed-stop double-transition is handled with an explicit `.poll` against
+// a fresh fetchServerRow instead), so the weakened wait costs ordering
+// strictness, not correctness -- the real consequence is that a choice can
+// be clicked before the previous save's response is consumed here, which the
+// following DOM auto-waits and the terminal poll against a fresh GET both
+// absorb.
+// #VERIFY: adding an assertion that reads a field off this promise's own
+// `.json()` would make this predicate unsafe; that call site needs the
+// node-matching predicate kid-go-back-real.spec.ts uses instead.
 function waitForReadingStatePut(page: Page) {
   return page.waitForResponse(
     (res) =>
@@ -198,7 +219,13 @@ async function fetchServerRow(profileId: string): Promise<ReadingStateRow> {
     headers: { Authorization: `Bearer ${DEV_GUARDIAN_BEARER}` },
   })
   expect(res.ok, `GET /reading-state failed (HTTP ${res.status})`).toBe(true)
-  return (await res.json()) as ReadingStateRow
+  // The endpoint answers 200 with { state: ReadingStateRow | null }
+  // (ReadingStateResultView); every call site in this file fetches after a
+  // save has already happened, so a null state here means the save the test
+  // just made did not land, not a legitimate first-time-reader absence.
+  const body = (await res.json()) as { state: ReadingStateRow | null }
+  expect(body.state, 'GET /reading-state returned null state after a save').not.toBeNull()
+  return body.state as ReadingStateRow
 }
 
 /**

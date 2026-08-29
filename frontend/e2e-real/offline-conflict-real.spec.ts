@@ -88,7 +88,30 @@ async function openClockworkGarden(page: Page): Promise<void> {
   await expect(page.getByTestId('reader')).toBeVisible()
 }
 
-/** Waits for the next SUCCESSFUL real reading-state save for this story. */
+/**
+ * Waits for the next SUCCESSFUL real reading-state save for this story.
+ *
+ * #EDGE: timing-dependencies: matches by URL+method+status only, the same
+ * shape #290 traced kid-go-back-real.spec.ts's flaky failure to (queue
+ * position, not the response's own identity). MORE THAN ONE matching PUT
+ * genuinely can be pending here, not "at most one": the seeded "Dev Reader"
+ * profile openClockworkGarden() uses is age_band '10-13' (a FLOWED_BANDS
+ * entry), so a mount (e.g. device A's `created` wait, test 1 below) does not
+ * stop at n_open, it auto-flows through n_open's single unconditional choice
+ * and issues a PUT for both n_open and n_start before the reader shows a
+ * choice to click. A live probe confirms it: instrumenting
+ * page.on('request')/page.on('response') at the moment a mount's own
+ * reader-visible assertion resolves shows both PUTs issued but only n_open's
+ * response delivered by then. waitForSavedPut only checks status, so it
+ * settles on whichever 200 the observer sees first (n_open's), leaving
+ * n_start's still pending. This file is safe anyway for a narrower reason:
+ * no assertion below reads a field off the captured response body; the
+ * position/conflict checks all go through DOM assertions or a fresh
+ * fetchServerRow-style GET, so the weakened wait costs ordering strictness,
+ * not correctness. #VERIFY: adding an assertion that reads a field off this
+ * promise's own `.json()` would make this predicate unsafe; that call site
+ * needs the node-matching predicate kid-go-back-real.spec.ts uses instead.
+ */
 function waitForSavedPut(page: Page) {
   return page.waitForResponse(
     (res) =>
@@ -151,8 +174,15 @@ test.describe.serial('S2: two real devices race a save on the same story', () =>
 
   test('device A opens first and creates the real reading-state row', async () => {
     // ReaderPage's mount-time onProgress save (see file header) is the
-    // FIRST-EVER write for this profile+story pair, so it must land at
-    // state_revision 0 and create the row server-side at revision 1.
+    // FIRST-EVER write for this profile+story pair. Because the "Dev Reader"
+    // profile is age_band '10-13' (a FLOWED_BANDS entry), mount is NOT a
+    // single write: it auto-flows through n_open's single unconditional
+    // choice and issues two PUTs (n_open, then n_start) before the reader
+    // ever shows a choice. waitForSavedPut only checks URL+method+status, so
+    // it settles on whichever 200 it observes first, which is n_open's
+    // (state_revision 0 -> 1); the row is actually at revision 2 by the time
+    // mount finishes and the n_start save also lands, before device B ever
+    // reads it below.
     const created = waitForSavedPut(pageA)
     await openClockworkGarden(pageA)
     await created

@@ -1,0 +1,646 @@
+# Scheduled workflow health rollup.
+#
+# Every scheduled workflow in this repo alerts on its own failure (or, for
+# several, does not: see the KNOWN_ALERTS note below), but each one is a
+# separate signal that nobody reads as a whole. A workflow can go red for
+# weeks and never surface anywhere a human is already looking, because
+# per-workflow alerting only ever proves that ONE workflow is unwell, never
+# that the rest of the ladder is healthy too. This workflow is the other
+# half: it surveys every scheduled workflow's own run history and maintains
+# one standing issue naming every workflow currently on an escalating red
+# streak, so "the whole test ladder is green" becomes a claim a single
+# glance can check.
+#
+# Non-blocking by design: schedule + workflow_dispatch only, no pull_request
+# trigger, and it must never be added to branch protection as a required
+# check. It is a reporting job, not a gate.
+#
+# Cron slot: Thursdays at 07:00 UTC, chosen so this run never starts at the
+# same INSTANT as another scheduled workflow. The precision matters: minute 0
+# is not unique here, seventeen other crons in this directory also fire at
+# minute 0 of some hour. The claim is only the narrower one the test below
+# enforces, that nothing else shares this file's minute AND hour AND day.
+#
+# That claim is ASSERTED, not narrated. A hand-typed inventory of the fleet
+# stood here and was false within two days of being written: it said "23
+# scheduled jobs surveyed" when 28 were scheduled, and it said "Thursday
+# carries no weekly job at all" after dast-baseline-weekly.yml took Thursday
+# 08:20. Nothing could have caught either, because nothing read it.
+# .github/workflows/test/health-rollup.test.mjs now re-derives every `cron:`
+# line in this directory on every run and fails when one shares this file's
+# minute-and-hour on this file's day, so the slot is re-proved rather than
+# remembered. Its `cronsCollide` expands each field to the set of values it
+# matches, so ranges (`1-5`), steps (`*/2`) and comma lists are all seen, in
+# the minute field as well as hour and day-of-week; an earlier version read
+# commas only and would have missed a neighbour written as a range.
+#
+# As of 2026-08-29 the nearest neighbours on this file's own day are
+# supabase-backup.yml (`0 8 * * *`, so Thursday 08:00, one hour after this
+# run) and dast-baseline-weekly.yml (Thursday 08:20). container-security.yml
+# also sits at 07:00, but on Wednesday, so it is not a same-day neighbour at
+# all; naming it without naming the daily backup, as this comment previously
+# did, put the further job first.
+#
+# #CRITICAL: correctness: a bounded query window is not a streak. Asking for
+# the last N runs and reporting every-run-failed as "an N-run streak" has
+# already been committed as a real defect in this program's own history (a
+# `--limit 10` query returned ten failures and was reported as a "ten-night
+# streak" when the true streak was 31, see UW-F48 in
+# docs/planning/unscheduled-work-register.md). This workflow pages workflow
+# runs newest-first until it observes a completed run with conclusion
+# `success`, or until HARD_CAP runs have been examined, and never reports a
+# capped count as if it were the true streak: the issue body says
+# ">= HARD_CAP consecutive failures, last green not found within HARD_CAP
+# runs" instead of a bare number in that case.
+# #VERIFY: with HARD_CAP set low (e.g. 3) via workflow_dispatch against a
+# workflow with more than 3 consecutive real failures, the rendered line
+# must read the "last green not found within N runs" form, never a bare
+# streak count; against a workflow whose entire recorded history is red but
+# shorter than HARD_CAP, the line must report the exact count (that IS the
+# true streak, because paging exhausted all history rather than hitting the
+# cap) with "never" as the last-green date.
+#
+# #CRITICAL: concurrency: this workflow only reads the Actions API
+# (`actions.listWorkflowRuns`) and the Issues API. It authenticates against
+# nothing else, mutates no database, and in particular never touches the
+# shared staging Supabase project, so it does not join the `e2e-staging`
+# concurrency group (see docs/testing/README.md's "Data isolation on the
+# shared staging project"). If this workflow is ever changed to read or
+# write anything on that project, it must join that concurrency group
+# before being enabled.
+# #VERIFY: grep this file for `supabase`, `staging`, or a database
+# connection string; there must be none.
+name: Scheduled workflow health rollup
+
+on:
+  schedule:
+    - cron: '0 7 * * 4'
+  workflow_dispatch:
+    inputs:
+      hard_cap:
+        description: 'Max runs to page per workflow before giving up on finding the last green run'
+        required: false
+        default: '50'
+
+concurrency:
+  group: scheduled-health-rollup-${{ github.ref }}
+  # `false`, not `true`. This is a weekly reporting run, and the thing being
+  # reported is whether anyone would notice a scheduled workflow going quiet.
+  # With `true`, a `workflow_dispatch` fired while the Thursday cron run was
+  # surveying killed that run, and the week's survey was simply never
+  # produced: the exact silence this file exists to end, caused by this file.
+  # Serialising instead costs a queued run and loses nothing.
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  rollup:
+    name: Roll up scheduled-workflow health
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: read
+      actions: read
+      issues: write
+
+    steps:
+      - name: Harden the runner
+        uses: step-security/harden-runner@bf7454d06d71f1098171f2acdf0cd4708d7b5920 # v2.20.0
+        with:
+          egress-policy: audit
+
+      - name: Checkout repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      # No untrusted event text is interpolated anywhere in this step: the
+      # only external input is `inputs.hard_cap`, a workflow_dispatch number
+      # field passed through an `env:` var (never inlined into a shell
+      # command), and the github-script body below reads only `context.*`
+      # and API response data inside JavaScript, never inside a shell.
+      - name: Compute the scheduled-workflow health rollup
+        id: rollup
+        uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9.0.0
+        env:
+          HARD_CAP: ${{ inputs.hard_cap || '50' }}
+        with:
+          # #CRITICAL: data integrity: this step RETURNS a value (the markdown
+          # issue body at the end of the script), and github-script defaults to
+          # `result-encoding: json`, which sets the output to
+          # `JSON.stringify(result)`. Without this line the body below is filed
+          # as one double-quoted line full of literal `\n` sequences and the
+          # markdown never renders, so the artifact whose entire purpose is
+          # "the ladder's health is a claim a single glance can check" is
+          # unreadable on its very first escalation. Every other value-returning
+          # github-script step in this repo sets it.
+          # #VERIFY: .github/workflows/test/health-rollup.test.mjs asserts this
+          # on the YAML wiring, not on the returned string; the behavioural
+          # tests in that file read the raw return value and therefore cannot
+          # see this defect at all.
+          result-encoding: string
+          script: |
+            const fs = require('fs');
+            const path = require('path');
+
+            // #ASSUME: data integrity: `hard_cap` is an untyped
+            // workflow_dispatch string, so a mistyped value would make
+            // parseInt return NaN. Every `examined >= HARD_CAP` comparison
+            // against NaN is false, which would SILENTLY defeat the cap and
+            // page until history ran out or the job timed out. Validate
+            // rather than coerce, and fail loudly.
+            // #VERIFY: dispatch with hard_cap set to a non-numeric value and
+            // confirm the job fails with this message instead of running on.
+            const HARD_CAP = parseInt(process.env.HARD_CAP || '50', 10);
+            if (!Number.isInteger(HARD_CAP) || HARD_CAP < 1) {
+              throw new Error(
+                `hard_cap must be a positive integer, got ${JSON.stringify(process.env.HARD_CAP)}`
+              );
+            }
+            const THRESHOLD = 3;
+            // Self-exclusion, kept deliberately rather than by omission. A
+            // workflow that cannot survey itself needs something else to
+            // survey it, and until 2026-08-29 nothing did: this file had one
+            // job, no `if: failure()` step, and no entry in any other
+            // workflow's alerting, so one throw would have made it red every
+            // Thursday forever with nobody notified. That is precisely the
+            // silence this workflow exists to end, reproduced inside it.
+            //
+            // The `alert` job at the bottom of this file is that something
+            // else, and it is STRICTLY STRONGER than self-survey would be:
+            // it fires on the FIRST red run rather than waiting for a
+            // three-run streak, it fires while the outage is live rather
+            // than only on the eventual recovery run, and it covers
+            // `cancelled()`, which a survey of completed runs by a run that
+            // itself got cancelled can never report.
+            //
+            // Self-survey was considered and rejected on concrete
+            // mechanical grounds, not on preference. Including this file would
+            // require a KNOWN_ALERTS entry for it, and that entry could only
+            // name `[health-rollup]`, because
+            // tests/unit/test_ci_failure_action_contract.py::test_each_workflow_uses_one_marker
+            // enforces one marker per workflow repo-wide and both legs of this
+            // file therefore share it. The resulting survey line would read
+            // "tracked by #N" pointing at this workflow's own standing report
+            // issue: circular, and true by construction whether or not the
+            // rollup is healthy. That is an assertion that cannot fail, which
+            // is the precise defect class this branch exists to remove, so
+            // adding it would be a regression dressed as coverage.
+            //
+            // Residual gap, named rather than papered over: neither the
+            // survey nor the `alert` job covers a run that never STARTS (a
+            // schedule GitHub disabled after 60 days of repository
+            // inactivity). No run means no reporter. That limitation is
+            // fleet-wide, not specific to this file, and release.yml's
+            // `alert` job documents the same boundary.
+            const SELF_FILE = 'scheduled-health-rollup.yml';
+            const WORKFLOWS_DIR = '.github/workflows';
+
+            // Discover scheduled workflows rather than hardcoding a list, so a
+            // newly added `schedule:` trigger is covered automatically. Every
+            // workflow in this repo writes its schedule trigger as a
+            // `schedule:` key indented two spaces directly under the
+            // top-level `on:` block, followed by one or more `cron:` lines
+            // (verified against all 23 pre-existing scheduled workflows in
+            // this repo on 2026-08-27). A workflow that used a different
+            // indentation or a YAML anchor would be missed by this regex;
+            // that is a real limitation of a text-based scan rather than a
+            // full YAML parse, and is why this comment exists instead of a
+            // silent assumption.
+            const files = fs
+              .readdirSync(WORKFLOWS_DIR)
+              .filter((f) => /\.ya?ml$/.test(f) && f !== SELF_FILE);
+            const scheduled = [];
+            for (const file of files) {
+              const text = fs.readFileSync(path.join(WORKFLOWS_DIR, file), 'utf8');
+              if (/^ {2}schedule:\s*$/m.test(text) && /cron:\s*['"][^'"]+['"]/.test(text)) {
+                scheduled.push(file);
+              }
+            }
+            core.info(`Discovered ${scheduled.length} scheduled workflow(s): ${scheduled.join(', ')}`);
+
+            // Hardcoded, and deliberately so: unlike workflow discovery above,
+            // "does this workflow already file its own tracking issue on
+            // failure, and under what marker" cannot be derived from a
+            // generic pattern. Twenty scheduled workflows share this
+            // through one composite action, `.github/actions/ci-failure-issue/`
+            // (introduced by PR #771, merged to main 2026-08-27), which
+            // matches by a `marker` title-prefix and defaults to the
+            // `ci-failure` label unless a call site overrides it to
+            // `e2e-alert`. This map's markers and labels were read directly
+            // from each workflow's `uses: ./.github/actions/ci-failure-issue`
+            // call site on `origin/main` as of that merge, not from a
+            // generic pattern.
+            //
+            // A workflow not listed here is reported as UNTRACKED rather
+            // than guessed at; that is the loud-omission behaviour the
+            // design calls for, but "not listed here" is NOT the same claim
+            // as "files no tracking issue at all". Every scheduled workflow
+            // that calls the shared action now has an entry: the four that
+            // did not (e2e-staging.yml, engagement-correlation.yml,
+            // usersim.yml, webkit-kid.yml) were all added by this same
+            // branch, so grandfathering them recorded no inherited debt at
+            // all, only this branch's own omission. The GRANDFATHERED set in
+            // .github/workflows/test/health-rollup.test.mjs is consequently
+            // empty, and that test now FAILS on a non-empty set rather than
+            // passing vacuously on an empty one.
+            // Only the following eight of the twenty-eight scheduled
+            // workflows in this repo (excluding this file, as of
+            // 2026-08-29) genuinely file no tracking issue of any kind on
+            // failure: container-security.yml,
+            // dependency-provenance-weekly.yml, fips-compatibility.yml,
+            // python-compatibility.yml, scorecard.yml, security-analysis.yml,
+            // sbom.yml, validate-cruft.yml. Keep this map in sync when a
+            // call site's marker or label changes, or when a workflow adopts
+            // or drops the shared action.
+            const KNOWN_ALERTS = {
+              'accessibility-compliance-weekly.yml': { label: 'e2e-alert', titlePrefix: '[a11y-weekly]' },
+              'cifuzzy.yml': { label: 'ci-failure', titlePrefix: '[fuzzing]' },
+              'dast-baseline-weekly.yml': { label: 'ci-failure', titlePrefix: '[dast-baseline]' },
+              'e2e-prod.yml': { label: 'e2e-alert', titlePrefix: '[e2e-prod]' },
+              'e2e-real-nightly.yml': { label: 'e2e-alert', titlePrefix: '[e2e-real-nightly]' },
+              'e2e-staging.yml': { label: 'e2e-alert', titlePrefix: '[e2e-staging]' },
+              'engagement-correlation.yml': { label: 'ci-failure', titlePrefix: '[engagement-correlation-controls]' },
+              'kws-delivery-health.yml': { label: 'ci-failure', titlePrefix: '[kws-delivery-health]' },
+              'lighthouse-weekly.yml': { label: 'ci-failure', titlePrefix: '[lighthouse-weekly]' },
+              'link-check-full.yml': { label: 'ci-failure', titlePrefix: '[link-check]' },
+              'moderation-report-health.yml': { label: 'ci-failure', titlePrefix: '[moderation-report-health]' },
+              'mutation-testing.yml': { label: 'ci-failure', titlePrefix: '[mutation-testing]' },
+              'notification-digest.yml': { label: 'ci-failure', titlePrefix: '[notification-digest]' },
+              'perf.yml': { label: 'ci-failure', titlePrefix: '[perf]' },
+              'planning-linkage.yml': { label: 'ci-failure', titlePrefix: '[planning-linkage]' },
+              'release.yml': { label: 'ci-failure', titlePrefix: '[release]' },
+              'safety-eval.yml': { label: 'ci-failure', titlePrefix: '[safety-eval]' },
+              'supabase-backup.yml': { label: 'ci-failure', titlePrefix: '[db-backup]' },
+              'usersim.yml': { label: 'e2e-alert', titlePrefix: '[usersim]' },
+              'webkit-kid.yml': { label: 'e2e-alert', titlePrefix: '[webkit-kid]' },
+            };
+
+            // This is a read-only "does a tracking issue already exist"
+            // survey over OTHER workflows' alerts, not this workflow's own
+            // find-then-create sequence, so it is a different concern from
+            // what .github/actions/ci-failure-issue centralizes. It still
+            // must not be built on the bare "list issues for repo" REST call:
+            // that is the exact pagination-and-PR-filtering-prone call the
+            // action's header and
+            // this file's own contract test (test_no_workflow_re_inlines_the_lookup)
+            // exist to keep out of every workflow, this one included. The
+            // Search API is a genuinely different endpoint, not a re-inlined
+            // copy of that pattern, and `is:issue` excludes pull requests
+            // server-side rather than needing a client-side filter.
+            //
+            // #EDGE: external-resource: the search index lags the primary
+            // issue store, so a tracking issue filed moments before this
+            // lookup runs may not be returned yet. The error direction is
+            // safe: a stale index can only produce a false "no open issue"
+            // (over-reporting self-alerts-but-no-open-issue for an issue that
+            // does in fact exist), never a false "tracked" claim about an
+            // issue that does not exist. Do not "optimise" this into treating
+            // an empty result as proof the workflow filed nothing; it is only
+            // proof the index had not caught up yet.
+            // #VERIFY: file an issue matching a KNOWN_ALERTS marker/label
+            // combination and re-run this workflow immediately; a stale-index
+            // false negative here is an accepted, safe outcome, a false
+            // "tracked" is not and would indicate this reasoning is wrong.
+            async function findTrackingIssue(file) {
+              const known = KNOWN_ALERTS[file];
+              if (!known) {
+                return { status: 'untracked' };
+              }
+              const query = `repo:${context.repo.owner}/${context.repo.repo} is:issue is:open label:"${known.label}"`;
+              // #CRITICAL: external-resource: the Search API's secondary rate
+              // limit (~30 requests/minute) is far tighter than the core
+              // API's, and one run of this workflow surveys ~23 workflows. An
+              // unguarded call here throws on throttling and would abort the
+              // whole script before `has_escalations` is ever set, silently
+              // discarding the correctly-computed escalation report over a
+              // purely cosmetic annotation. A failed lookup must degrade only
+              // THIS workflow's tracking status to an explicit unknown, never
+              // to "untracked" and never to "tracked", and must never stop
+              // the rest of the survey.
+              // #VERIFY: .github/workflows/test/health-rollup.test.mjs makes
+              // this call throw unconditionally and asserts the escalation
+              // report is still produced, with this workflow's line reading
+              // "tracking unknown (lookup failed)".
+              let results;
+              try {
+                results = await github.paginate(github.rest.search.issuesAndPullRequests, {
+                  q: query,
+                  per_page: 100,
+                });
+              } catch (error) {
+                core.warning(`tracking lookup for ${file} failed: ${error.message || error}`);
+                return { status: 'lookup-failed' };
+              }
+              const match = results.find((issue) => issue.title.startsWith(known.titlePrefix));
+              if (match) {
+                return { status: 'tracked', issue: match };
+              }
+              return { status: 'self-alerts-but-no-open-issue' };
+            }
+
+            // #CRITICAL: correctness: see the file-level comment above. This
+            // loop pages newest-run-first and stops the instant it observes
+            // a completed `success`, recording that run's own timestamp as
+            // the last-green date. It only reports a bare streak count when
+            // paging exhausted the workflow's ENTIRE run history without
+            // ever finding a success (a real, exact streak); when it instead
+            // hits HARD_CAP first, `capped` is set and the caller must
+            // render the "not found within HARD_CAP runs" form, never a bare
+            // number.
+            // #VERIFY: force HARD_CAP=3 via workflow_dispatch against a
+            // workflow with a real streak longer than 3; the result for that
+            // workflow must come back with `capped: true`, and the rendered
+            // body must not print `3` as if it were the true streak length.
+            async function computeStreak(file) {
+              let examined = 0;
+              let redStreak = 0;
+              let lastGreenAt = null;
+              let capped = false;
+              let workflowName = file;
+
+              outer: for await (const { data: runs } of github.paginate.iterator(
+                github.rest.actions.listWorkflowRuns,
+                {
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  workflow_id: file,
+                  event: 'schedule',
+                  per_page: 100,
+                }
+              )) {
+                if (runs.length === 0) {
+                  break outer;
+                }
+                for (const run of runs) {
+                  if (run.status !== 'completed') {
+                    // Still in progress or queued: not yet a verdict, does
+                    // not count toward the streak either way.
+                    continue;
+                  }
+                  workflowName = run.name || workflowName;
+                  // #CRITICAL: correctness: `success` is the ONLY conclusion
+                  // that ends a streak. `cancelled`, `timed_out`, `skipped`
+                  // and `failure` all count as red, deliberately, because a
+                  // workflow that stops producing green runs is unhealthy
+                  // whatever the reason. This is the case the per-workflow
+                  // alerts cannot see: their step is gated on `if: failure()`,
+                  // which is FALSE for a cancelled run, so a run that never
+                  // gets to fail never alerts. Verified live on
+                  // `notification-digest.yml`, whose last 18 scheduled runs
+                  // are 17 `cancelled` plus one in flight (its alert step is
+                  // at notification-digest.yml:88, gated on `if: failure()`),
+                  // so this rollup is the only thing that will surface it.
+                  // #VERIFY: do not "fix" this by narrowing the check to
+                  // `conclusion === 'failure'`; that reintroduces the blind
+                  // spot. Confirm with:
+                  // gh run list --workflow=notification-digest.yml --limit 25
+                  if (run.conclusion === 'success') {
+                    lastGreenAt = run.run_started_at || run.created_at;
+                    break outer;
+                  }
+                  examined += 1;
+                  redStreak += 1;
+                  if (examined >= HARD_CAP) {
+                    capped = true;
+                    break outer;
+                  }
+                }
+              }
+
+              // Exhausted every page without a success and without hitting
+              // the cap: this IS the true streak, because there is no older
+              // run left to disprove it.
+              const neverGreenInHistory = !capped && lastGreenAt === null;
+
+              return { file, workflowName, redStreak, lastGreenAt, capped, neverGreenInHistory };
+            }
+
+            const escalations = [];
+            for (const file of scheduled) {
+              const result = await computeStreak(file);
+              if (result.redStreak < THRESHOLD) {
+                continue; // currently green, or red but below the escalation bar
+              }
+              const tracking = await findTrackingIssue(file);
+              escalations.push({ ...result, tracking });
+            }
+
+            function renderStreakLine(r) {
+              if (r.capped) {
+                return `>= ${HARD_CAP} consecutive failures, last green not found within ${HARD_CAP} runs`;
+              }
+              if (r.neverGreenInHistory) {
+                return `${r.redStreak} consecutive failures (this workflow's entire recorded run history; no green run exists)`;
+              }
+              return `${r.redStreak} consecutive failures`;
+            }
+
+            function renderLastGreen(r) {
+              if (r.capped) {
+                return `not found within ${HARD_CAP} runs`;
+              }
+              if (r.neverGreenInHistory) {
+                return 'never (no green run in recorded history)';
+              }
+              return r.lastGreenAt;
+            }
+
+            function renderTracking(file, tracking) {
+              if (tracking.status === 'tracked') {
+                return `tracked by #${tracking.issue.number} (${tracking.issue.html_url})`;
+              }
+              if (tracking.status === 'self-alerts-but-no-open-issue') {
+                return 'this workflow files its own tracking issue on failure, but none is currently open; check whether the marker or title changed';
+              }
+              if (tracking.status === 'lookup-failed') {
+                return 'tracking unknown (lookup failed): the escalation above is still real, only the tracking-issue search could not be confirmed this run';
+              }
+              return `**NOT TRACKED**: no per-workflow failure-alert step is known for \`.github/workflows/${file}\``;
+            }
+
+            const generatedAt = new Date().toISOString();
+            const runUrl = `${context.serverUrl}/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`;
+
+            // Only file or comment when there is something to report, matching
+            // the behaviour this replaced (which created an issue only when
+            // escalations existed). The shared ci-failure-issue action has no
+            // "nothing to say this week" mode, so the caller decides whether to
+            // invoke it at all via the `has_escalations` output below; a green
+            // week now leaves an already-open issue untouched rather than
+            // refreshing its body to say so.
+            core.setOutput('has_escalations', escalations.length > 0 ? 'true' : 'false');
+            if (escalations.length === 0) {
+              core.info('No scheduled workflow currently has a streak at or above the escalation bar.');
+              return;
+            }
+
+            // The action writes this text into the issue BODY only the first
+            // time it is filed; every later week appends it as a COMMENT
+            // instead of rewriting the body (see .github/actions/ci-failure-issue's
+            // header). Carrying the full current state here, rather than a diff
+            // against last week, means whichever one a reader lands on shows
+            // the complete current picture, not a "see above".
+            const bodyLines = [
+              `Weekly survey of all ${scheduled.length} scheduled workflow(s) in this repo, generated ${generatedAt}.`,
+              '',
+              `Run: ${runUrl}`,
+              '',
+              `Escalation bar: ${THRESHOLD} or more consecutive scheduled-run failures.`,
+              '',
+              `${escalations.length} workflow(s) at or above the escalation bar:`,
+              '',
+            ];
+            for (const r of escalations) {
+              bodyLines.push(
+                `### \`${r.file}\` (${r.workflowName})`,
+                '',
+                `- Streak: ${renderStreakLine(r)}`,
+                `- Last green: ${renderLastGreen(r)}`,
+                `- Tracking: ${renderTracking(r.file, r.tracking)}`,
+                ''
+              );
+            }
+            bodyLines.push(
+              'A red workflow with no open tracking issue and no known per-workflow alert',
+              'step is the gap this rollup exists to close: nothing else in this repo will',
+              'ever surface it.',
+              '',
+              'This workflow only reads the GitHub Actions and Issues APIs; it does not',
+              'authenticate against or mutate the shared staging Supabase project.',
+              '',
+              'This issue is maintained by `.github/workflows/scheduled-health-rollup.yml`',
+              'and is never closed automatically.'
+            );
+
+            core.setOutput('summary', 'scheduled workflows are on an escalating red streak');
+            return bodyLines.join('\n');
+
+      - name: File or update the health-rollup tracking issue
+        if: steps.rollup.outputs.has_escalations == 'true'
+        uses: ./.github/actions/ci-failure-issue
+        with:
+          # Never `resolve`: a green week is not a reason to close a
+          # fleet-health issue, and closing is not this workflow's job (see
+          # the "never closed automatically" line in the body above).
+          mode: open
+          marker: '[health-rollup]'
+          summary: ${{ steps.rollup.outputs.summary }}
+          body: ${{ steps.rollup.outputs.result }}
+          comment-body: ${{ steps.rollup.outputs.result }}
+
+  # The watchdog's watchdog. Split into its own job rather than an
+  # `if: failure()` step inside `rollup`, and the choice is mechanical, not
+  # stylistic. The two shapes both exist in this repo for their own reasons:
+  # supabase-backup.yml and kws-delivery-health.yml split for secret isolation
+  # and matrix-leg races, while accessibility-compliance-weekly.yml and
+  # safety-eval.yml alert from steps inside the single job that already holds
+  # `issues: write`. Neither of those split rationales applies here: this
+  # workflow references no secret and declares no `environment:`, and it has no
+  # matrix. Three reasons that DO apply decided it:
+  #
+  #  1. An in-job step cannot report a failure of `Checkout repository`, and
+  #     `uses: ./.github/actions/ci-failure-issue` needs a checkout to exist.
+  #     A separate job does its own sparse checkout and is therefore able to
+  #     report the case where the shared job's checkout is what broke.
+  #  2. A cancelled job does not run its remaining steps, so an in-job step
+  #     cannot report its own cancellation; `if: cancelled()` is only
+  #     dependable at job level. This workflow sets
+  #     `concurrency.cancel-in-progress: false`, so cancellation is no longer
+  #     ROUTINE here, but a manual cancel and a runner eviction both still
+  #     produce it, and those are precisely the cases a survey of completed
+  #     runs cannot report on itself.
+  #  3. `rollup` holds `actions: read` over the whole repository's run history.
+  #     Keeping the reporting path in a job scoped to `issues: write` alone
+  #     means the alert cannot be silenced by whatever broke the survey.
+  #
+  # Known limitation, the same one supabase-backup.yml records: when the whole
+  # workflow RUN is cancelled, GitHub may decline to schedule this job at all,
+  # so this covers a cancelled `rollup` job rather than every cancellation path.
+  #
+  # Marker: `[health-rollup]`, the SAME marker the report leg above uses, and
+  # not a distinct `[health-rollup-watchdog]`. That was the first shape tried
+  # and it is forbidden repo-wide:
+  # tests/unit/test_ci_failure_action_contract.py::test_each_workflow_uses_one_marker
+  # requires one marker per workflow, so a workflow's legs can never address
+  # two different issues. Sharing has a real consequence worth stating rather
+  # than discovering: the shared action writes an issue BODY only when it first
+  # CREATES the issue and appends a comment every time after, so if a rollup
+  # dies before ever filing a report, this job's body becomes the standing
+  # issue's permanent opening text. The body below is therefore written to read
+  # correctly as the top of a standing fleet-health issue, not only as a
+  # one-off failure notice.
+  alert:
+    name: Alert on failure or cancellation
+    needs: rollup
+    # `failure() || cancelled()`, not `failure()` alone: `failure()` is FALSE
+    # for a cancelled run, which is the exact blind spot this file's own
+    # streak logic calls out at the `run.conclusion === 'success'` check.
+    if: failure() || cancelled()
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: read
+      # write, isolated to this job. `rollup` above needs `actions: read`; this
+      # job needs neither that nor anything else.
+      issues: write
+    steps:
+      - name: Harden the runner
+        uses: step-security/harden-runner@bf7454d06d71f1098171f2acdf0cd4708d7b5920 # v2.20.0
+        with:
+          egress-policy: audit
+
+      - name: Check out the shared alerting action
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          # Only the composite action is needed here.
+          sparse-checkout: .github/actions/ci-failure-issue
+          sparse-checkout-cone-mode: false
+          persist-credentials: false
+
+      # No github-script compose step: every value in this body is static
+      # prose, and the shared action already appends the run URL and date. That
+      # keeps this file at exactly one `script:` block, which is what
+      # .github/actions/ci-failure-issue/test/harness.mjs's `extractScript`
+      # resolves without a `stepId`.
+      - name: File or comment on the pinned issue
+        uses: ./.github/actions/ci-failure-issue
+        with:
+          marker: '[health-rollup]'
+          summary: scheduled workflow health rollup did not complete
+          body: |
+            This is the standing tracking issue for
+            `.github/workflows/scheduled-health-rollup.yml`, the weekly survey
+            of every scheduled workflow's run history. It is maintained by that
+            workflow and is never closed automatically.
+
+            It was opened by the workflow's own `alert` job, which means the
+            rollup did not complete: it either failed or was cancelled before it
+            could produce a health report.
+
+            This matters more than one red run usually does. This workflow is
+            the thing that notices when any OTHER scheduled workflow has gone
+            quietly red for weeks. While it is down, that check is not running,
+            and nothing else in this repo performs it. A green Actions tab does
+            not then mean the ladder is green; it means nobody measured.
+
+            Likely causes, in the order worth checking:
+
+            - The github-script step threw. The `hard_cap` validation and
+              `fs.readdirSync('.github/workflows')` both throw outside the
+              per-workflow try/catch, so either aborts the whole survey.
+            - An Actions API error outside `findTrackingIssue`'s guard. Only
+              the tracking-issue Search call degrades gracefully; a failure of
+              `actions.listWorkflowRuns` does not.
+            - A cancellation. `concurrency.cancel-in-progress: false` means a
+              concurrent `workflow_dispatch` no longer cancels the cron run,
+              so this now means a manual cancel or a runner eviction.
+
+            A single green rollup run does not prove the survey is trustworthy
+            again, only that it completed once, so closing this is a human
+            judgement.
+          comment-body: |
+            The scheduled health rollup did not complete: it either failed or
+            was cancelled, so no workflow-health survey ran. Every week this
+            recurs is a week in which nothing checked whether the rest of the
+            scheduled ladder is green.

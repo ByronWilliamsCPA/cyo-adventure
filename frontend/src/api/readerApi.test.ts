@@ -86,12 +86,17 @@ const SERVER_ROW: ReadingState = {
 }
 
 describe('makeFetchServerState', () => {
-  it('returns the row on a 200', async () => {
-    const fetchServerState = makeFetchServerState(axiosGetResolve({ data: SERVER_ROW }))
+  it('returns the row on a 200 with state set', async () => {
+    const fetchServerState = makeFetchServerState(axiosGetResolve({ data: { state: SERVER_ROW } }))
     await expect(fetchServerState('p1', 's1')).resolves.toEqual(SERVER_ROW)
   })
 
-  it('maps a 404 (no server state) to null', async () => {
+  it('maps a 200 with state: null (no saved progress) to null', async () => {
+    const fetchServerState = makeFetchServerState(axiosGetResolve({ data: { state: null } }))
+    await expect(fetchServerState('p1', 's1')).resolves.toBeNull()
+  })
+
+  it('tolerates a legacy 404 (no server state) as null', async () => {
     const fetchServerState = makeFetchServerState(
       axiosGetReject(mockAxiosError({ isAxiosError: true, response: { status: 404 } }))
     )

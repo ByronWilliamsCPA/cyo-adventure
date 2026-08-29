@@ -846,10 +846,18 @@ Issues by) both.**
 To list the current producers:
 
 ```bash
-# Every workflow that files or resolves a tracking issue (14 as of 2026-08-27).
-# Match on `uses:`, not on the path alone: ci.yml names the same directory to run
-# the action's test harness and is not a producer.
-grep -rln 'uses: ./.github/actions/ci-failure-issue' .github/workflows/
+# Every workflow that files or resolves a tracking issue. Do NOT trust a literal
+# count here: the number in this section has now been wrong three separate times.
+# The two commands below ARE the count. Run them.
+#
+# Match on `uses:`, not on the path alone, and restrict to `*.yml`. Without
+# --include the pattern also matches .github/workflows/test/health-rollup.test.mjs,
+# which quotes the same line inside a JavaScript comment and is not a producer;
+# that one false positive is why the unfiltered grep returns one more line than
+# there are producers. ci.yml names the same directory too (it runs the action's
+# test harness) but never in the `uses:` form, so it does not match either grep.
+grep -rln --include='*.yml' 'uses: ./.github/actions/ci-failure-issue' .github/workflows/ | wc -l
+grep -rl 'label: e2e-alert' .github/workflows/ | wc -l
 
 # Which label and marker each one uses. A call site with no `label:` line uses
 # the action's default, `ci-failure`.
@@ -857,13 +865,32 @@ grep -rn -A6 'uses: ./.github/actions/ci-failure-issue' .github/workflows/ \
   | grep -E 'marker:|label:|mode:'
 ```
 
+Read the two counts as: **producers minus `e2e-alert` producers is the `ci-failure` backlog**, the
+workflows whose failures land under the default label. Derived on 2026-08-29 the first command
+returns **21** and the second **6**, so **15** producers fall through to `ci-failure`. Those figures
+are a snapshot, not the contract: if your run disagrees with them, your run is right and this
+paragraph is stale.
+
 Do NOT grep for `labels: '` here, which is what this section used to say. The label is now an input
-to the composite action and eleven of the fourteen workflows do not pass it at all, so that grep
-returns a near-empty list that reads exactly like "almost nothing alerts". `tests/unit/test_ci_failure_action_contract.py`
+to the composite action and most producers do not pass it at all, so that grep returns a near-empty
+list that reads exactly like "almost nothing alerts". The count has been wrong three times: first
+from the retired `labels: '` grep; then from a naive per-file `grep -c 'label:'`, which also matches
+`label:` inside JavaScript object literals in `github-script` steps (`planning-linkage.yml`,
+`scheduled-health-rollup.yml`) that are action-unrelated dictionary keys rather than `with:` inputs;
+and most recently from a hardcoded 18 that later commits on the same branch left behind as producers
+were added, which also made the arithmetic derived from it wrong by three. That is the reason the
+numbers above are now stated as the output of a command rather than as a figure to trust.
+
+The six that pass `label:` are accessibility-compliance-weekly, e2e-prod, e2e-real-nightly,
+e2e-staging, usersim and webkit-kid, all of them `e2e-alert`, consistent with "Six workflows use
+`e2e-alert`" below. Confirm per call site rather than per file if you need to be exact: a workflow
+may hold several `uses: ./.github/actions/ci-failure-issue` steps, and the file-level greps above
+count files. `tests/unit/test_ci_failure_action_contract.py`
 enforces the invariants the commands above only report on: markers stay unique and mutually
 non-prefixing, both labels stay in use, and no workflow re-inlines the lookup.
 
-Three workflows use `e2e-alert`. The two E2E tiers are:
+Six workflows use `e2e-alert` (verify with `grep -rl 'label: e2e-alert' .github/workflows/`). The
+two E2E tiers exercising a real backend are:
 
 - **`.github/workflows/e2e-prod.yml`** ("E2E (production)"): runs the Playwright `e2e-prod` tier
   daily (`30 13 * * *` UTC) against the live production URL (`https://cyo.williamshome.family` by
@@ -874,20 +901,62 @@ Three workflows use `e2e-alert`. The two E2E tiers are:
   and Redis service containers, Supabase CLI migrations, a seeded dev dataset), rather than against
   live production; this is what exercises real cross-device conflict scenarios (two authorized
   devices racing a genuine 409 through the offline conflict dialog) that the mocked test suite
-  cannot. Its alert marker is `[e2e-real-nightly]`.
+  cannot. Its alert marker is `[e2e-real-nightly]`. This job also runs the `usersim-real` tier
+  (task B3a), the same seeded walk as `usersim.yml` below but against this job's real stack; a
+  failure there surfaces under this same marker, not a separate one.
 
-The third `e2e-alert` producer is **`.github/workflows/accessibility-compliance-weekly.yml`**
-("Accessibility compliance (weekly)"): a weekly, non-blocking axe scan against `main` covering WCAG
+**`.github/workflows/e2e-staging.yml`** ("E2E (staging)") runs daily (`0 13 * * *` UTC) against the
+staging deployment. Its alert marker is `[e2e-staging]`. This alerting is recent and, as of this
+writing, branch-local: commit `8c7dd27a` ("feat(ci): give e2e-staging.yml self-alerting via
+ci-failure-issue", 2026-08-27) added it on `fix/testing-ladder-trust`, and that commit is **not on
+`origin/main`**. An earlier version of this section correctly said the workflow had no alerting step
+at all; that wording was written in commit `15a6d520` (2026-08-11) and was true when written, it only
+went stale once `8c7dd27a` landed on this branch, not before. No test currently enforces that this
+step keeps existing: `tests/unit/test_ci_failure_action_contract.py` asserts invariants (marker
+uniqueness, label usage, no re-inlined lookup) over whichever call sites are CURRENTLY present in the
+workflow files; deleting a call site removes it from that enumeration rather than failing it, and
+that suite still passes 28/28 with both of this workflow's `ci-failure-issue` steps truncated out.
+Do not read this paragraph as a guarantee the tests do not make; if that guarantee is wanted, adding
+it is a separate decision. For the wider test strategy see
+[`docs/testing/`](../testing/README.md); for a manual, checklist-driven live verification (not
+automated alerting), see [`docs/planning/r1-live-e2e-checklist.md`](../planning/r1-live-e2e-checklist.md).
+
+**`.github/workflows/usersim.yml`** ("Usersim walk") runs the mocked-tier `usersim` Playwright
+project daily (`0 14 * * *` UTC): a seeded random walk over the built app, one walk per persona,
+asserting I1-I6 at every state. Its alert marker is `[usersim]`. See
+`docs/testing/coverage-matrix.md`'s "Cross-cutting: user-simulation walk (usersim tier)" section for
+what I1-I6 check.
+
+**`.github/workflows/webkit-kid.yml`** ("WebKit kid-journey check") runs daily (`0 15 * * *` UTC): the
+kid reading/library/offline mocked specs on real WebKit at an iPad viewport (task B2), nightly-only
+and never wired into any per-PR job. Its alert marker is `[webkit-kid]`.
+
+The sixth `e2e-alert` producer is **`.github/workflows/accessibility-compliance-weekly.yml`**
+("Accessibility Compliance Weekly"): a weekly, non-blocking axe scan against `main` covering WCAG
 2.2 and best-practice rules, per [ADR-029](../planning/adr/adr-029-web-accessibility-conformance.md).
 The per-PR WCAG 2.1 AA gate is a required `ci.yml` job instead, so a failure here is a compliance
 finding to triage, never a merge blocker. Its alert marker is `[a11y-weekly]`.
 
-`e2e-staging.yml` ("E2E (staging)", daily at 13:00 UTC) is a third E2E tier but is **not** on this list,
-because it has no alerting step of any kind: a staging failure leaves a red run and a Playwright
-trace artifact, and nothing opens an issue. Nobody is notified unless they look. For the wider test
-strategy see [`docs/testing/`](../testing/README.md); for a manual, checklist-driven live
-verification (not automated alerting), see
-[`docs/planning/r1-live-e2e-checklist.md`](../planning/r1-live-e2e-checklist.md).
+This one job runs two independent Playwright scans (task B3b), and its single filed/commented issue
+labels their findings distinctly so triage does not have to guess which scan produced what:
+
+- **Stream 1, fixed-state**: `frontend/e2e/a11y.spec.ts`, the same hand-picked list of pages/dialogs
+  the per-PR gate checks, re-run with the wider WCAG 2.2 + best-practice tag scope.
+- **Stream 2, newly-reached-state (I7)**: `frontend/e2e-usersim/walk-a11y.spec.ts`, an axe scan of
+  each distinct route+heading state the usersim seeded random walk (`usersim.yml`, described above)
+  reaches for the first time. See `docs/testing/coverage-matrix.md`'s "Cross-cutting:
+  user-simulation walk" section for what a "state" means here and what it collapses. Its findings
+  carry `workflow: 'usersim-a11y-weekly'`, printed as `[usersim-finding]` lines in this step's own
+  job log (`frontend/e2e-usersim/support/findings.ts`'s `record()` prints at the moment a finding is
+  captured; there is no findings file on disk anywhere in this repository, despite what an earlier
+  version of this paragraph and the filed issue's own body used to say -- grep the run's log for
+  that marker), which is what tells them apart from the nightly walks' own I1-I6 findings
+  (`workflow: 'usersim-walk'`/`'usersim-walk-real'`,
+  produced by `usersim.yml`/`e2e-real-nightly.yml`, not accessibility findings at all). Checking
+  only one of these two streams, or only one workflow's `[usersim-finding]` lines, is not checking
+  the whole system: a clean nightly usersim run says nothing about whether this week's newly-reached
+  states are accessible, and a clean weekly a11y run says nothing about I1-I6 (console errors,
+  dead-end states, overflow, role isolation).
 
 ### 7.1 KWS parent-verification delivery health
 

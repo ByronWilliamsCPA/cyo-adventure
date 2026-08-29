@@ -35,13 +35,18 @@ the last two.
 |------|---------------|----------------|
 | e2e (mocked) | `ci.yml` frontend job, every PR/push/merge-group | ✅ red PR check blocks merge |
 | e2e-real | Nowhere; deliberately local-only pre-PR | ❌ none |
-| e2e-staging | Daily cron 13:00 UTC + manual, `e2e-staging.yml` | 🟡 passive only: a red run in the Actions tab, trace artifact, no notification |
+| e2e-staging | Daily cron 13:00 UTC + manual, `e2e-staging.yml` | ✅ pinned-issue alert on failure (names which of playwright/leak_check/grant_sweep fired), plus trace artifact |
 | e2e-prod | Daily cron 13:30 UTC + manual, `e2e-prod.yml` (a deliberate override of `requireProdCredentials()`'s CI guard, action #3 below) | ✅ pinned-issue alert on failure, plus trace artifact |
 
 **Consequence**: the gap this table was written to describe is closed. Both deployed tiers
-now run unattended, and a production breakage raises a pinned issue rather than waiting for
-a family member to hit it. Staging remains passive-only by choice: it fails on disposable
-seeded fixtures, so a red run in the Actions tab is proportionate.
+now run unattended, and a failure on either one raises a pinned issue rather than waiting
+for a family member to hit it or a human to check the Actions tab. Staging's alert names
+which of three independent failure sources fired (`playwright`, `leak_check`, or
+`grant_sweep`; see `.github/workflows/e2e-staging.yml`'s compose step) because a leaked
+device grant on the shared live staging Supabase project needs a human to revoke it by
+hand, which a mere "red run" was never enough to convey: the original passive-only
+rationale (disposable seeded fixtures) never actually covered the `leak_check` and
+`grant_sweep` paths, since a surviving device grant is not a disposable fixture.
 
 The tiers' shared exposure is now the backend's 60 rpm/IP rate limiter rather than the
 absence of a schedule. Both tiers walk their consoles from a single runner IP, so both pace
@@ -129,11 +134,11 @@ else needs mocked + one real-environment tier minimum.
 1. **Merge PR #268 and set the three `staging` environment secrets**
    (`E2E_STAGING_BASE_URL`, `E2E_STAGING_GUARDIAN_PASSWORD`, `E2E_STAGING_ADMIN_PASSWORD`);
    without them the staging tier is dead code.
-2. **Add active alerting to every scheduled run**: a shared on-failure step in
-   `e2e-staging.yml` (and the new prod workflow below) that opens or appends to a pinned
-   GitHub issue labeled `e2e-alert` with the run link. Repo watchers then get email/push
-   from GitHub natively. This is the cheapest "quickly alerted" mechanism; a messaging
-   webhook can layer on later.
+2. **Done**: active alerting on every scheduled run. `e2e-staging.yml` and the prod
+   workflow (item 3 below) each run a shared on-failure step, routed through the
+   `.github/actions/ci-failure-issue` composite action, that opens or appends to a
+   pinned GitHub issue labeled `e2e-alert` with the run link and resolves it on the
+   next green scheduled run. Repo watchers get email/push from GitHub natively.
 3. **Done** (`.github/workflows/e2e-prod.yml`): daily cron `30 13 * * *` (offset from
    staging) + manual dispatch, running the existing `e2e-prod` specs against the live URL
    with a dedicated test family, plus the pinned-issue `e2e-alert` step. The device-grant

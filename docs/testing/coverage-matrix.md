@@ -59,7 +59,21 @@ relate to the Supabase project constraints.
   `landing.css`). The dialog pass found no new violations. Remaining gap:
   outside the populated and error-alert scans added above, each remaining
   page/dialog is still checked in one fixed mock state, not every
-  loading/error variant.
+  loading/error variant. Narrowed (I7, task B3b, weekly extended tier
+  only): `frontend/e2e-usersim/walk-a11y.spec.ts` now runs an axe scan at
+  every DISTINCT route+heading state the seeded usersim walk reaches for the
+  first time, across all three personas, which axe-scans several states the
+  hand-picked fixed-mock-state list above never visited (e.g. the reader
+  route mid-story, and whatever the walk's random link choice happens to
+  land on that run). What is still NOT covered even after I7: loading/error
+  variants of a route are not distinguished from its normal state unless the
+  walk's random path happens to land on one (I7's state signature is
+  route+first-heading, not route+data-state, so a loading and a loaded
+  variant of the same route usually collapse to one scan; see
+  `deriveStateSignature`'s doc comment in
+  `frontend/e2e-usersim/support/invariants.ts` for the full collapse
+  rationale), and I7 only runs weekly (`A11Y_EXTENDED=1`,
+  `accessibility-compliance-weekly.yml`), never per-PR.
 - **Accessibility, extended (weekly, non-blocking, ADR-029)**: the same
   `a11y.spec.ts` suite re-run with `A11Y_EXTENDED=1` by
   `.github/workflows/accessibility-compliance-weekly.yml`, widening the axe
@@ -830,8 +844,8 @@ read's starting variables; the client never derives a seed of its own.
 
 ## Kid: go back / undo (K5)
 
-- E2E-mocked: `frontend/e2e/reader-go-back.spec.ts` ("Go back" is absent at the start node, appears after a choice, and undoing past a state-gated choice (`c_dark_passage`, gated on `has_lantern`) still offers that choice correctly afterward, proving the engine replays the recorded path rather than corrupting state)
-- E2E-real: `frontend/e2e-real/kid-go-back-real.spec.ts` (after two real choices, "Go back" reverts the reader to the prior node and the real `PUT /v1/reading-state/{profile_id}/{storybook_id}` this triggers persists the reverted `current_node`/`path`, confirmed not just via the PUT's own response but via an independent guardian-authorized `GET` re-fetch of the same row, proving the server, not only client state, holds the reverted position)
+- E2E-mocked: `frontend/e2e/reader-go-back.spec.ts` ("Go back" is absent at the start node, appears after a choice, and undoing past a state-gated choice (`c_dark_passage`, gated on `has_lantern`) still offers that choice correctly afterward, proving the engine replays the recorded path rather than corrupting state; since #290, the mocked PUT route captures every request body it receives and the go-back test asserts its own PUT's `current_node` is the reverted node, not merely that the UI shows it, pins the persisted-node contract that #290 showed was only asserted at the real tier)
+- E2E-real: `frontend/e2e-real/kid-go-back-real.spec.ts` (after two real choices, "Go back" reverts the reader to the prior node and the real `PUT /v1/reading-state/{profile_id}/{storybook_id}` this triggers persists the reverted `current_node`/`path`, confirmed not just via the PUT's own response but via an independent guardian-authorized `GET` re-fetch of the same row, proving the server, not only client state, holds the reverted position. `f68c4f71` (#635) added the `n_open` prelude that made mount emit a second PUT and thereby exposed the order-blind wait `259421fa` (#369) introduced; reading-state saves are not concurrent (ReaderPage.tsx chains each save behind the previous one and awaits it before issuing the next), so the two PUTs were never simultaneously in flight on the wire. The real hazard is an off-by-one in response DELIVERY: an earlier save's response can still be undelivered to `page.waitForResponse`'s listener when the next wait registers, so it resolves on whichever matching response is delivered first, which is queue position at the observer, not the save this test had just triggered, so the assertion against the captured body was order-dependent even though the server's actual persisted state was already correct. Fixed (#290) by having `waitForReadingStatePut` accept the expected `current_node` and match the request body instead of the URL alone, so each wait names the specific save it is waiting for.)
 - Component: `frontend/src/reader/BackToLibrary.test.tsx`, `frontend/src/player/engine.test.ts` (go-back is a bounded replay computation in the player engine)
 - **Gap**: no `e2e-staging` or `e2e-prod` coverage yet.
 - **Gap (F-6c), registered but deliberately skipped**:
@@ -869,6 +883,7 @@ read's starting variables; the client never derives a seed of its own.
 - E2E-mocked: `frontend/e2e/device-authorization.spec.ts`, `frontend/e2e/landing.spec.ts`, `frontend/e2e/naive-user/naive-kid-misuse.spec.ts`, `frontend/e2e/guardian-devices.spec.ts` (the guardian's authorized-device list in the routed app: revoking is gated behind the confirm dialog and fires `DELETE /v1/device-grants/{id}` for that device only, cancelling sends nothing, and an unauthenticated visit redirects to guardian login)
 - E2E-real: `frontend/e2e-real/kid-reads.spec.ts`, `frontend/e2e-real/naive-kid-misuse-real.spec.ts`, `frontend/e2e-real/series-continue-real.spec.ts`, `frontend/e2e-real/real-stack.ts` (helper)
 - E2E-staging: `frontend/e2e-staging/kid-library-smoke.spec.ts` (one of two grant-writing staging specs, with `afterAll` cleanup, mirroring the prod pattern; `moderation-qa-invisibility.spec.ts` runs the same reversible mint/revoke pattern)
+- E2E-staging-sweep: `frontend/e2e-staging-sweep/device-grant-sweep.spec.ts`, the authoritative end-of-job backstop for the two E2E-staging specs above (see `docs/testing/README.md`, "Concurrent runs must not race the same fixtures"). Runs after the main staging tier and asks staging itself whether the test family still holds an active device grant, independent of whether either spec's own `afterAll` teardown ran; fail-closed on anything other than a confirmed-empty list (a 429, a non-2xx, a network error, or an unparseable body all fail the spec rather than being read as "no leaks"). Reports without auto-revoking.
 - E2E-prod: `frontend/e2e-prod/kid-device-grant.spec.ts` (the one prod spec that writes, with `afterAll` cleanup)
 - Component: `frontend/src/auth/DeviceAuthorizedRoute.test.tsx`, `frontend/src/auth/deviceGrant.test.ts`, `frontend/src/auth/deviceGrantApi.test.ts`, `frontend/src/landing/LandingPage.test.tsx`, `frontend/src/guardian/ConsolePage.test.tsx` (mint/re-authorize/revoke), `frontend/src/guardian/LoginPage.test.tsx` (authorize-device intent), `frontend/src/offline/db.test.ts` (device-grant mirror + migration), `frontend/src/hooks/useApi.test.ts` (device-grant bearer selection/clearing), `frontend/src/guardian/DevicesPage.test.tsx` (the guardian's authorized-device list: empty state, a granted device rendered with its label and grant date, the "Unnamed device" fallback for a null label, and the "This device" marker driven by matching the browser's own stored `device_grant` id so only the matching row is marked. Revoking is gated behind a confirm dialog, the `DELETE /v1/device-grants/{id}` fires only on confirm and the row then disappears, cancelling leaves the list untouched with no request sent, and a failed revoke shows a row-level error while keeping the device listed and its button re-enabled. Also pins the revocation copy against real backend behavior: `api/deps.py::_child_principal` does no database round-trip, so an already-minted child session survives revocation for the rest of its 12-hour TTL, and the page must not claim the cut-off happens on the next reconnect. The same suite also covers the page's G15 downloads section: grouped-by-device rendering, the empty/loading/error states fetched independently of the device-grant list, and each row's profile name/book title/last-confirmed display), `frontend/src/guardian/deviceDownloadsApi.test.ts` (the `GET /v1/device-downloads` adapter backing that section: payload pass-through and null on any HTTP or transport failure)
 - Integration: `frontend/src/test/App.test.tsx`
@@ -879,6 +894,114 @@ read's starting variables; the client never derives a seed of its own.
 - E2E-real: `frontend/e2e-real/ratings-real.spec.ts` (tap a star against the real backend, reload, confirm the rating persisted server-side rather than only in client state)
 - Component: `frontend/src/library/StarRating.test.tsx`, `frontend/src/library/LibraryPage.test.tsx` (rate POST + optimistic/revert), `frontend/src/library/libraryApi.test.ts` (`rate()`)
 - **Remaining gap**: still no `e2e-staging` or `e2e-prod` coverage; low priority given the real-backend and component coverage now in place.
+
+## Cross-cutting: user-simulation walk (usersim tier)
+
+Not tied to a single journey by design: a seeded random walk over the live,
+built app (`frontend/e2e-usersim/`, `usersim` Playwright project in the
+shared default `frontend/playwright.config.ts`), one walk per persona (kid,
+guardian, admin), asserting I1-I5 at every state it reaches and I6 after
+an occasional random back/forward step, rather than exercising one
+predetermined path. See
+`docs/testing/user-side-testing-module-proposal-2026-08-27.md` for why a
+random walk over the real click graph earns its keep alongside the
+predetermined journeys above. Route via `npm run test:e2e:usersim`.
+
+- E2E-usersim: `frontend/e2e-usersim/walk.spec.ts` runs the walk itself
+  (everything under `frontend/e2e-usersim/support/` is the non-spec
+  substrate behind this tier, excluded from this guard's discovery by the
+  `*.spec.ts` glob: `console-allowlist.ts`, `findings.ts`, `invariants.ts`,
+  `mocked-api.ts`, `personas.ts`, `prng.ts`, `reader-personas.ts`,
+  `real-canaries.ts`, `real-session-setup.ts`, `route-manifest.ts` and
+  `walk-runner.ts`, the last of which the real-backend and a11y legs below
+  share). Six invariants exist, but not six at every state: the walk's own
+  header docstring (`frontend/e2e-usersim/walk.spec.ts`) says it asserts
+  "I1-I5 at every state and I6 after an occasional random back/forward
+  step". Grep that sentence rather than trusting a line number here; this
+  tier's files move. I1
+  (no buffered console error/pageerror/unhandled-rejection since the last
+  drain), I2 (the state offers an enabled
+  interactive element, or is a recognised terminal for that persona), I3 (any
+  loading indicator resolves within budget, no fixed sleep), I4 (zero
+  page-level horizontal overflow), I5 (role and family isolation: a kid
+  session never renders guardian-only or cross-family content, and a
+  guardian session never renders another family's data, per the ADR-016
+  three-ring boundary), and I6 (a random back/forward step still lands in a
+  state satisfying I1-I4). A back/forward state is therefore checked against
+  four invariants, not six: I2 and I5 are deliberately not re-checked there.
+  The reason is documented on the I6 helper itself, in the doc comment above
+  `assertHistoryStepInvariants` in
+  `frontend/e2e-usersim/support/invariants.ts`, not in the spec. Cited by
+  symbol on purpose: that block's line number has already moved twice.
+- E2E-usersim, real-backend leg (task B3a): `frontend/e2e-usersim/walk-real.spec.ts`
+  runs the SAME seeded walk as `walk.spec.ts` above (shared via
+  `support/walk-runner.ts`, not a forked copy) against a real backend instead
+  of route-mocked fixtures, so I1-I6 are checked against genuine backend
+  responses rather than mock responses. Only session setup
+  (`support/real-session-setup.ts`, real device grant / seeded bearer tokens
+  instead of localStorage fixtures) and the I5 canary values
+  (`support/real-canaries.ts`, real seeded rows instead of the mocked-tier's
+  literals) differ from `walk.spec.ts`. Zero route mocks, matching
+  `frontend/e2e-real/`'s own convention. Runs only inside
+  `.github/workflows/e2e-real-nightly.yml` (Playwright project
+  `usersim-real`), which already brings up the real stack the other
+  real-backend projects in that job need; it is meaningless run alone
+  against this file's own mocked-tier `webServer`. Route via
+  `npm run test:e2e:usersim:real`.
+- E2E-usersim, I7 (task B3b): `frontend/e2e-usersim/walk-a11y.spec.ts` runs
+  the SAME seeded walk (via the shared `support/walk-runner.ts` substrate,
+  reusing `support/mocked-api.ts`'s route mocks) as a separate spec and a
+  separate Playwright project (`usersim-a11y`), never a tag or grep filter
+  on `walk.spec.ts` itself. Separate project, NOT a separate directory: all
+  three usersim projects in `frontend/playwright.config.ts` (`usersim`,
+  `usersim-real`, `usersim-a11y`) declare the same
+  `testDir: './e2e-usersim'` and are separated by `testMatch` instead, which
+  is what lets them share the
+  `support/walk-runner.ts` substrate. So I1-I6 keep running unaffected on
+  every nightly usersim run while I7 runs only where `.github/workflows/
+  accessibility-compliance-weekly.yml` puts it (`A11Y_EXTENDED=1`, weekly,
+  never per-PR; this is an explicit owner decision, not an oversight). I7
+  adds a seventh invariant: an axe accessibility scan
+  (`assertNoNewStateAxeViolations` in `support/invariants.ts`) run once per
+  DISTINCT state signature (route pathname + first heading in DOM order,
+  `deriveStateSignature`), the first time the walk reaches it; a state
+  already scanned is a Set lookup, not a rescan. This deliberately collapses
+  two states sharing a route and heading into one scan; concretely, the
+  reader route's many story nodes (`/read/:profileId/:storybookId/:version`)
+  render no heading at all in their normal state, so every such node the
+  walk visits collapses to a single signature and gets scanned once, not
+  once per node. The walk emits `distinct_states_scanned` (a running Set
+  size) in its console log at both a per-scan (`[usersim-a11y-new-state]`)
+  and a per-walk-end (`[usersim-a11y]`) granularity, so a healthy run (a
+  positive count) is distinguishable from one whose scanning silently broke
+  (nothing logged at all). Findings are recorded through the same
+  `support/findings.ts` sink as I1-I5, tagged `workflow:
+  'usersim-a11y-weekly'` (distinct from the nightly walks' own
+  `usersim-walk`/`usersim-walk-real` tags), so the two kinds of usersim
+  finding are distinguishable downstream without a second emitter; see
+  `docs/operations/runbook.md` for the resulting two-stream triage note.
+  Only WCAG-tagged (conformance) violations fail the run, matching
+  `a11y.spec.ts`'s own conformance/best-practice split (shared rule set via
+  `frontend/e2e/support/axeTags.ts`); non-WCAG best-practice findings are
+  logged and tracked as `UW-F27`, not failed, for the same reason
+  `a11y.spec.ts` does not fail on them either.
+- E2E-usersim, reader-persona fixture (task C2):
+  `frontend/e2e-usersim/reader-personas.spec.ts` is a non-browser check
+  against the ten fixed, age-banded reader personas in
+  `schema/personas/reader_personas.json` (loaded and validated at runtime by
+  `support/reader-personas.ts`, no `resolveJsonModule`, no unchecked casts
+  over the parsed JSON). It asserts every persona's `band` is one of the
+  six age bands `src/cyo_adventure/validator/band_profile.py` defines (via
+  the OpenAPI-generated `AgeBand` type, so a backend band rename fails this
+  file's typecheck too) and that every band has at least one persona. This
+  fixture is the canonical reader-persona set the leg B agentic runner under
+  `tools/usersim-agent/` (task D2) is expected to read directly rather than
+  copy; it is unrelated to `support/personas.ts`'s three ROLE personas
+  (kid/guardian/admin) used by the walk specs above.
+- Component: `frontend/src/router.usersim-manifest.test.ts` (see
+  "Cross-cutting component and utility tests" below; kept there rather than
+  duplicated here since it is a Vitest suite, not part of this Playwright
+  tier).
 
 ---
 
@@ -1002,6 +1125,13 @@ in their journey sections instead.
   hook every routed page calls: the app-name suffix, the `bare` opt-out the
   landing page uses so its title is not doubled, and re-firing when the title
   prop changes. Not tied to one journey because all 29 routed pages share it)
+- Usersim walk substrate (`frontend/e2e-usersim/`; the walk itself is now a
+  wired Playwright project, documented under "Cross-cutting: user-simulation
+  walk (usersim tier)" above): `frontend/src/router.usersim-manifest.test.ts`
+  (sync test asserting the checked-in `route-manifest.ts` walkable-route list
+  matches the real route tree in both directions, with a positive control
+  proving the leaf-path derivation is non-vacuous and correctly descends
+  nested pathless layouts)
 - Theme system (light/dark/system, mounted app-wide at the root via
   ThemeProvider; every surface's chrome renders a ThemeToggle):
   `frontend/src/theme/theme.test.ts` (mode validation, stored-preference

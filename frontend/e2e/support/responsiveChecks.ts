@@ -16,18 +16,25 @@ import { loadLanternStory } from './fixtures'
  * pass (i.e. call this directly inside a describe/file body, never inside
  * an async callback).
  */
-export function defineResponsiveChecks(): void {
-  async function assertNoHorizontalOverflow(page: Page, label: string) {
-    const { scrollWidth, clientWidth } = await page.evaluate(() => ({
-      scrollWidth: document.documentElement.scrollWidth,
-      clientWidth: document.documentElement.clientWidth,
-    }))
-    expect(
-      scrollWidth - clientWidth,
-      `${label}: page should not scroll horizontally`
-    ).toBeLessThanOrEqual(1)
-  }
+/**
+ * Zero page-level horizontal overflow, for a given breakpoint/label. Hoisted
+ * to module scope (out of defineResponsiveChecks) and exported so the usersim
+ * walk tier's I4 invariant (frontend/e2e-usersim/support/invariants.ts) can
+ * reuse this exact check instead of duplicating the overflow logic; every
+ * caller inside this file goes through defineResponsiveChecks() unchanged.
+ */
+export async function assertNoHorizontalOverflow(page: Page, label: string): Promise<void> {
+  const { scrollWidth, clientWidth } = await page.evaluate(() => ({
+    scrollWidth: document.documentElement.scrollWidth,
+    clientWidth: document.documentElement.clientWidth,
+  }))
+  expect(
+    scrollWidth - clientWidth,
+    `${label}: page should not scroll horizontally`
+  ).toBeLessThanOrEqual(1)
+}
 
+export function defineResponsiveChecks(): void {
   test('landing page has no horizontal overflow', async ({ page }) => {
     await page.goto('/')
     await expect(page.getByRole('link', { name: /Grown-ups/ })).toBeVisible()
@@ -140,16 +147,31 @@ export function defineResponsiveChecks(): void {
       first.boundingBox(),
       last.boundingBox(),
     ])
-    if (shelfBox && firstBox && lastBox) {
-      expect(
-        Math.abs(firstBox.x - shelfBox.x),
-        'the first shelf cell should start at the shelf left edge'
-      ).toBeLessThan(2)
-      expect(
-        lastBox.x + lastBox.width,
-        'the last shelf cell should reach the shelf right edge'
-      ).toBeGreaterThan(shelfBox.x + shelfBox.width * 0.98 - 1)
+    // Not `if (shelfBox && firstBox && lastBox)`. A null bounding box means the
+    // element is absent or not rendered, which is a WORSE outcome than a
+    // mis-sized shelf, and the conditional turned it into a silent pass: the
+    // whole regression guard evaporated exactly when the library failed to
+    // render at all. Failing here names which box was missing.
+    if (shelfBox === null || firstBox === null || lastBox === null) {
+      const missing = [
+        shelfBox === null ? '.library__shelf' : null,
+        firstBox === null ? 'the first shelf cell' : null,
+        lastBox === null ? 'the last shelf cell' : null,
+      ].filter((name) => name !== null)
+      throw new Error(
+        `the library shelf did not render, so the auto-fill regression guard could ` +
+          `not run: no bounding box for ${missing.join(', ')}. An absent shelf is a ` +
+          `harder failure than a mis-sized one, not a reason to skip the check.`
+      )
     }
+    expect(
+      Math.abs(firstBox.x - shelfBox.x),
+      'the first shelf cell should start at the shelf left edge'
+    ).toBeLessThan(2)
+    expect(
+      lastBox.x + lastBox.width,
+      'the last shelf cell should reach the shelf right edge'
+    ).toBeGreaterThan(shelfBox.x + shelfBox.width * 0.98 - 1)
   })
 
   test('reader page has no horizontal overflow', async ({ page, context }) => {
@@ -161,7 +183,7 @@ export function defineResponsiveChecks(): void {
     await page.route('**/api/v1/storybooks/**', (route) => route.fulfill({ json: lantern }))
     await page.route('**/api/v1/reading-state/**', (route) => {
       if (route.request().method() === 'GET') {
-        return route.fulfill({ status: 404, json: { error: 'not found' } })
+        return route.fulfill({ status: 200, json: { state: null } })
       }
       return route.fulfill({ status: 200, json: { current_node: 'n_entrance', state_revision: 1 } })
     })

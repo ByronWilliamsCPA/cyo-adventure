@@ -160,6 +160,22 @@ class ReadingStateView(BaseModel):
     seed_var_state: VarState | None
 
 
+class ReadingStateResultView(BaseModel):
+    """GET /reading-state response; ``state`` is null for a first-time reader.
+
+    A profile with no saved progress for a story is a normal condition, not
+    an error (matching ``SeriesNextView``'s convention below); errors are
+    reserved for the story or the profile's access to it being invalid. Do
+    not weaken ``ReadingStateView`` itself to make its fields nullable: it
+    is reused unchanged as ``ConflictView.current_row`` above, where the row
+    is always real.
+    """
+
+    model_config = ConfigDict(extra="forbid")
+
+    state: ReadingStateView | None = None
+
+
 class ConflictView(BaseModel):
     """The 409 body returned when a reading-state save loses a revision race."""
 

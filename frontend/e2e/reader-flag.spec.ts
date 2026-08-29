@@ -13,6 +13,31 @@ import { loadLanternStory } from './support/fixtures'
  * profile (see FlagButton.tsx); reader.spec.ts's beforeEach only seeds the
  * guardian-style `auth_token`, so this file additionally seeds a real
  * `child_session` blob matching auth/childSession.ts's storage format.
+ *
+ * Because this file is the only reader-tier spec that seeds a real
+ * `child_session`, it is also the only one where an unmocked call reaching a
+ * real backend can matter: `ReaderRoute`/`ReaderPage` fire four calls on
+ * mount this file did not use to mock (`GET /v1/profiles`, `GET
+ * /v1/me/progress`, `PUT /v1/device-downloads`, `GET /v1/characters`); any of
+ * them falling through to a real, live `:8000` would return a genuine `401`
+ * for this file's fabricated bearer, and `useApi`'s response interceptor
+ * reads a 401 on a request tagged as carrying the child token as "the child
+ * session died" and calls `clearChildSession()`, hiding the very button this
+ * file exists to test. Mocking all four here, not just the three the story
+ * itself needs, is what makes the suite's pass/fail track the flag flow
+ * instead of whether something else happens to be listening on `:8000`.
+ *
+ * This file being the only one of the eight reader/library-tier specs the
+ * webkit-kid Playwright project selects that seeds a real `child_session` is
+ * a fact about today's specs, not a structural guarantee. The other seven
+ * are immune to this exact hole only because none of them seeds one: the
+ * interceptor above tags a request as child-bearing, the precondition for a
+ * 401 to clear the session, only when `getValidChildSession()` returns
+ * non-null at issue time (`useApi.ts`, around lines 257-266). Any spec that
+ * starts seeding a `child_session` reacquires this hole immediately, with no
+ * change to itself and no signal that the precondition it relied on has
+ * shifted; whoever does that must re-run this audit for that spec, not
+ * assume the immunity documented in `UW-F50` still holds.
  */
 
 const lantern = loadLanternStory()
@@ -47,7 +72,7 @@ test.beforeEach(async ({ page, context }) => {
   await page.route('**/api/v1/storybooks/**', (route) => route.fulfill({ json: lantern }))
   await page.route('**/api/v1/reading-state/**', (route) => {
     if (route.request().method() === 'GET') {
-      return route.fulfill({ status: 404, json: { error: 'not found' } })
+      return route.fulfill({ status: 200, json: { state: null } })
     }
     return route.fulfill({ status: 200, json: READING_ROW })
   })
@@ -63,6 +88,56 @@ test.beforeEach(async ({ page, context }) => {
       },
     })
   )
+  // The four calls ReaderRoute/ReaderPage fire on mount that this file's
+  // assertions never look at directly, but which must not be left to fall
+  // through to a real backend; see the file header comment for why an
+  // unmocked one of these is load-bearing here specifically. Each mock below
+  // was checked against its real contract in
+  // frontend/src/client/types.gen.ts; where one takes a deliberate shortcut
+  // instead of the full envelope, its own comment says so and why the
+  // shortcut is safe for what this file exercises, rather than asserting
+  // fidelity that was not actually verified.
+  //
+  // ProfileListView's envelope (`{ profiles: [...] }`) is right, but the
+  // profile object below omits every ProfileView field this suite's one
+  // mount-time consumer, useKidProfile (feeding ReaderRoute's
+  // data-age-band lookup), does not read. A missing `age_band` resolves to
+  // `undefined`, which Reader.tsx already treats as "not flowed" rather
+  // than guessing, so the shortcut is deliberate, not an unverified guess.
+  await page.route('**/api/v1/profiles', (route) =>
+    route.fulfill({ json: { profiles: [{ id: 'child-a' }] } })
+  )
+  // Matches ProgressView field-for-field, including the nested
+  // ResolvedGamificationSettingsView.
+  await page.route('**/api/v1/me/progress', (route) =>
+    route.fulfill({
+      json: {
+        badges: [],
+        books: [],
+        totals: { books_finished: 0, endings_found: 0 },
+        days_read_this_week: 0,
+        lifetime_days_read: 0,
+        settings: {
+          ring_enabled: false,
+          ring_goal_days: 0,
+          badges_enabled: false,
+          time_capture_paused: false,
+        },
+      },
+    })
+  )
+  // The real endpoint returns 204 with no body
+  // (ReportDeviceDownloadApiV1DeviceDownloadsPutResponses). The sole caller,
+  // makeReportDownload in readerApi.ts, awaits the PUT and discards the
+  // response entirely, so 200 + `{}` here is a deliberate shortcut, not the
+  // real envelope.
+  await page.route('**/api/v1/device-downloads', (route) =>
+    route.fulfill({ status: 200, json: {} })
+  )
+  // CharacterListView's real envelope is `{ characters: CharacterView[] }`
+  // (consumed as res.data.characters in characterApi.ts); a bare array was
+  // wrong here and has been corrected to match.
+  await page.route('**/api/v1/characters**', (route) => route.fulfill({ json: { characters: [] } }))
 })
 
 test('submitting a reason posts the structured flag and shows the kid-language confirmation', async ({

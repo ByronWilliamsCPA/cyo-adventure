@@ -15,6 +15,8 @@ from typing import TYPE_CHECKING, ClassVar
 import pytest
 
 if TYPE_CHECKING:
+    from pathlib import Path
+
     from cyo_adventure.core.config import Settings
 
 # The dev-default DSN that the validator guards against leaking.
@@ -2380,3 +2382,221 @@ class TestD1RuledGenerationDefaults:
             defaults.openrouter_fallback_model.split("/")[0]
             != (defaults.openrouter_model.split("/")[0])
         )
+
+
+class TestEngagementCorrelationAnalysis:
+    """ADR-030 Decision 7: the kill switch and the working-tree refusal.
+
+    The refusal test alone is not evidence. A validator that raised
+    unconditionally would pass it while making the feature unusable, and one
+    that never raised would pass an acceptance test alone; each pin below is
+    therefore stated as a refuse/allow pair over the one property it pins.
+    """
+
+    @staticmethod
+    def _settings(*, enabled: bool, output_dir: str) -> Settings:
+        """Construct Settings with only the two engagement fields set.
+
+        Args:
+            enabled: The kill-switch value.
+            output_dir: The configured output directory.
+
+        Returns:
+            Settings: The constructed settings.
+        """
+        from cyo_adventure.core.config import Settings
+
+        return Settings(
+            analysis_engagement_correlation_enabled=enabled,
+            analysis_engagement_correlation_output_dir=output_dir,
+        )
+
+    @pytest.mark.unit
+    def test_the_engagement_analysis_is_off_by_default(
+        self, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        """ADR-030 is ``proposed``; the flag staying off is the mitigation."""
+        from cyo_adventure.core.config import Settings
+
+        monkeypatch.delenv("ANALYSIS_ENGAGEMENT_CORRELATION_ENABLED", raising=False)
+        defaults = Settings()
+        assert defaults.analysis_engagement_correlation_enabled is False
+        assert defaults.analysis_engagement_correlation_output_dir == ""
+
+    @pytest.mark.unit
+    def test_an_empty_flag_value_is_off_rather_than_a_boot_failure(
+        self, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        """``${VAR:-}`` in a compose file must not stop the container booting.
+
+        This project has already taken an outage from an empty env override
+        reaching a constrained field.
+        """
+        monkeypatch.setenv("ANALYSIS_ENGAGEMENT_CORRELATION_ENABLED", "")
+        from cyo_adventure.core.config import Settings
+
+        assert Settings().analysis_engagement_correlation_enabled is False
+
+    @pytest.mark.unit
+    def test_an_empty_output_path_counts_as_unset_and_is_refused(
+        self, monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+    ) -> None:
+        """Empty is unset, not "the current directory", which is the repo.
+
+        Two things make this test able to fail, and a mutation run proved both
+        are needed. Asserting only that some ConfigurationError was raised
+        passes against a validator with no empty-value branch at all, because
+        an empty path resolves to the process's working directory and this
+        suite runs inside a checkout, so the working-tree walk raises instead.
+        The message is therefore asserted, and the case is repeated from a
+        working directory outside any checkout, where nothing but the
+        empty-value branch can refuse.
+        """
+        from cyo_adventure.core.exceptions import ConfigurationError
+
+        for configured in ("", "   "):
+            with pytest.raises(ConfigurationError) as caught:
+                _ = self._settings(enabled=True, output_dir=configured)
+            assert "An empty value counts as unset" in str(caught.value)
+
+        monkeypatch.chdir(tmp_path)
+        with pytest.raises(ConfigurationError) as outside:
+            _ = self._settings(enabled=True, output_dir="")
+        assert "An empty value counts as unset" in str(outside.value)
+
+    @pytest.mark.unit
+    def test_an_output_path_inside_a_git_working_tree_is_refused(
+        self, tmp_path: Path
+    ) -> None:
+        """The refusal half of the pair, several directories deep.
+
+        Nested deliberately: a validator that checked only the configured
+        directory for a ``.git`` entry, rather than walking every parent, would
+        accept this path and pass a shallower test.
+        """
+        from cyo_adventure.core.exceptions import ConfigurationError
+
+        repo = tmp_path / "repo"
+        (repo / ".git").mkdir(parents=True)
+        target = repo / "var" / "analysis" / "reports"
+        target.mkdir(parents=True)
+        with pytest.raises(ConfigurationError):
+            _ = self._settings(enabled=True, output_dir=str(target))
+
+    @pytest.mark.unit
+    def test_an_output_path_outside_a_git_working_tree_is_accepted(
+        self, tmp_path: Path
+    ) -> None:
+        """The allow half of the pair.
+
+        Cite it alongside the refusal: an unconditional raise satisfies every
+        refusal test in this class and makes the job impossible to enable.
+        """
+        target = tmp_path / "outside" / "reports"
+        target.mkdir(parents=True)
+        constructed = self._settings(enabled=True, output_dir=str(target))
+        assert constructed.analysis_engagement_correlation_enabled is True
+
+    @pytest.mark.unit
+    def test_a_worktree_marked_by_a_git_file_is_refused(self, tmp_path: Path) -> None:
+        """This project's worktrees mark themselves with a ``.git`` FILE.
+
+        ``.worktrees/<slug>/.git`` is a file containing a ``gitdir:`` pointer, so
+        an ``is_dir()`` check would accept every path inside every worktree in
+        this repository, which is where a concurrent session works.
+        """
+        from cyo_adventure.core.exceptions import ConfigurationError
+
+        worktree = tmp_path / "worktree"
+        target = worktree / "reports"
+        target.mkdir(parents=True)
+        _ = (worktree / ".git").write_text("gitdir: /elsewhere\n", encoding="utf-8")
+        with pytest.raises(ConfigurationError):
+            _ = self._settings(enabled=True, output_dir=str(target))
+
+    @pytest.mark.unit
+    def test_a_traversal_path_that_resolves_into_a_working_tree_is_refused(
+        self, tmp_path: Path
+    ) -> None:
+        """``Path.resolve()`` before walking parents, pinned by a path that needs it.
+
+        ``<tmp>/outside/../repo/reports`` has no ``.git`` in any of its literal
+        parents, because those are ``<tmp>/outside/..``, ``<tmp>/outside`` and
+        ``<tmp>``. It is inside the working tree all the same.
+        """
+        from cyo_adventure.core.exceptions import ConfigurationError
+
+        repo = tmp_path / "repo"
+        (repo / ".git").mkdir(parents=True)
+        (repo / "reports").mkdir()
+        (tmp_path / "outside").mkdir()
+        traversal = tmp_path / "outside" / ".." / "repo" / "reports"
+        with pytest.raises(ConfigurationError):
+            _ = self._settings(enabled=True, output_dir=str(traversal))
+
+    @pytest.mark.unit
+    def test_a_symlink_into_a_working_tree_is_refused(self, tmp_path: Path) -> None:
+        """Resolution has to follow the link, not just normalise the text."""
+        from cyo_adventure.core.exceptions import ConfigurationError
+
+        repo = tmp_path / "repo"
+        (repo / ".git").mkdir(parents=True)
+        (repo / "reports").mkdir()
+        link = tmp_path / "link"
+        link.symlink_to(repo / "reports", target_is_directory=True)
+        with pytest.raises(ConfigurationError):
+            _ = self._settings(enabled=True, output_dir=str(link))
+
+    @pytest.mark.unit
+    def test_this_repository_is_itself_a_refused_destination(self) -> None:
+        """The concrete case the control exists for.
+
+        The repository is public and a push is not retractable, so an aggregate
+        over five families of real children stays reachable in history after any
+        later deletion.
+        """
+        from pathlib import Path as _Path
+
+        from cyo_adventure.core.exceptions import ConfigurationError
+
+        repo_root = _Path(__file__).resolve().parents[2]
+        with pytest.raises(ConfigurationError):
+            _ = self._settings(enabled=True, output_dir=str(repo_root / "artifacts"))
+
+    @pytest.mark.unit
+    def test_the_path_is_only_checked_when_the_job_is_enabled(
+        self, tmp_path: Path
+    ) -> None:
+        """Off must stay constructible everywhere, or every dev box fails to boot.
+
+        The flag is off in every environment today, so a validator that ran
+        unconditionally would refuse to construct Settings in this repository.
+        """
+        repo = tmp_path / "repo"
+        (repo / ".git").mkdir(parents=True)
+        constructed = self._settings(enabled=False, output_dir=str(repo / "reports"))
+        assert constructed.analysis_engagement_correlation_enabled is False
+
+    @pytest.mark.unit
+    def test_the_two_refusal_branches_do_not_share_a_message(
+        self, tmp_path: Path
+    ) -> None:
+        """Unset and inside-a-checkout are different mistakes with different fixes.
+
+        They are also what makes the unset test above able to fail: identical
+        messages would leave no way to tell which branch refused.
+        """
+        from cyo_adventure.core.exceptions import ConfigurationError
+
+        repo = tmp_path / "repo"
+        (repo / ".git").mkdir(parents=True)
+        with pytest.raises(ConfigurationError) as unset:
+            _ = self._settings(enabled=True, output_dir="")
+        with pytest.raises(ConfigurationError) as inside:
+            _ = self._settings(enabled=True, output_dir=str(repo))
+
+        assert "ANALYSIS_ENGAGEMENT_CORRELATION_OUTPUT_DIR" in str(unset.value)
+        assert "ANALYSIS_ENGAGEMENT_CORRELATION_OUTPUT_DIR" in str(inside.value)
+        assert "An empty value counts as unset" in str(unset.value)
+        assert "An empty value counts as unset" not in str(inside.value)
+        assert "resolves inside" in str(inside.value)

@@ -48,6 +48,11 @@ test("a hand-edited URL into another family's profile is rejected, not served", 
   // resolves only once that request has already settled).
   // #VERIFY: registering waitForResponse before goto() catches the request
   // as it happens, matching the standard Playwright wait-then-navigate order.
+  // Audited in the #290 sweep and found safe: this predicate matches on the
+  // request URL only (no body read off the response), and only one
+  // GET /api/v1/library for UNRELATED_PROFILE_ID is ever issued by this
+  // navigation, so there is no second in-flight request of the same shape
+  // for queue position to disambiguate.
   const apiResponsePromise = page.waitForResponse(
     (res) => res.url().includes(`/api/v1/library`) && res.url().includes(UNRELATED_PROFILE_ID),
     { timeout: 5_000 }
@@ -167,6 +172,10 @@ test('mashing "Send" once the 5-pending cap is hit returns an explicit 409', asy
   await page.getByRole('button', { name: 'Request a story' }).click()
   await page.getByLabel('What should your story be about?').fill('One idea too many')
 
+  // Audited in the #290 sweep and found safe: the pre-fill loop above uses
+  // fetch() directly, never page, so it cannot leave a same-shaped POST
+  // in flight for the browser's waitForResponse to race against; only the
+  // single click below issues a POST /v1/story-requests through the page.
   const responsePromise = page.waitForResponse(
     (res) => res.request().method() === 'POST' && /\/v1\/story-requests(?:\?|$)/.test(res.url())
   )

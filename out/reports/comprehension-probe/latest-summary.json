@@ -1,0 +1,6 @@
+{
+  "latest": "summary-20260829T002840Z.json",
+  "run_id": "20260829T002840Z",
+  "generated_at": "2026-08-29T00:43:59.657171+00:00",
+  "note": "Pointer only. Every run's aggregate is kept beside this file as summary-<run_id>.json; this file names the most recent one and carries no findings of its own."
+}

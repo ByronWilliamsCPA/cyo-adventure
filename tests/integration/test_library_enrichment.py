@@ -16,8 +16,9 @@ if TYPE_CHECKING:
 pytestmark = [pytest.mark.integration, pytest.mark.asyncio]
 
 # The seed story (03_tier2_lantern.json) starts here; a never-saved reading
-# state returns 404 (see test_reading_state_not_found_404), so the PUT body is
-# built from scratch rather than round-tripping a GET.
+# state returns 200 with state: null (see
+# test_reading_state_null_when_never_saved), so the PUT body is built from
+# scratch rather than round-tripping a GET.
 _START_NODE = "n_entrance"
 
 

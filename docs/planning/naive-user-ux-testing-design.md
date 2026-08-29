@@ -12,6 +12,21 @@ tags:
   - project
 ---
 
+> **Status (2026-08-28)**: Amended. Section 6's "one markdown file per persona
+> under `.claude/skills/naive-ux-check/prompts/`" layout no longer exists.
+> Task D2a (commit `57240a85`) migrated all 17 scenarios out of those three
+> prose files into a single machine-readable
+> `.claude/skills/naive-ux-check/scenarios.json`, and deleted the prose. The
+> paste block is now composed by `.claude/skills/naive-ux-check/render.py`
+> from an explicit allowlist of model-facing fields
+> (`persona_text`/`task_text`/`report_back_questions[]`), never by prose in a
+> per-persona file; SKILL.md step 4 runs that renderer. The Section 6.1
+> scenario table, the two worked examples in Section 6.2, and the scenario
+> content itself remain accurate; only the storage format and composition
+> mechanism changed. `docs/superpowers/specs/2026-07-10-naive-ux-check-scenario-redesign-design.md`
+> is a dated record of the format as it stood then and is intentionally left
+> unchanged.
+>
 > **Status (2026-07-11)**: Amended. The Track B scenario set grew from 14 to
 > 17: a new auth-gate tier (`K0`, `G0`, `A0`, added to the Section 6.1 table)
 > tests the sign-in/auth-gate step itself, giving the differentiated kid

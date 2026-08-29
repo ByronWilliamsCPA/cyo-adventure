@@ -36,6 +36,12 @@ test-results/
 blob-report/
 /playwright/.cache/
 
+# Playwright JSON reporter output (task A7-i). Deliberately its own directory,
+# never frontend/test-results/: that directory is uploaded wholesale as a
+# public artifact on Playwright failure in e2e-prod.yml/e2e-staging.yml/
+# e2e-real-nightly.yml, and this repository is public.
+playwright-json-report/
+
 # Environment files (use .env.example as template)
 .env
 .env.local
@@ -47,6 +53,14 @@ blob-report/
 
 # e2e-staging credentials (use .env.e2e-staging.example as template)
 .env.e2e-staging
+
+# e2e-staging Playwright storageState files (e2e-staging/auth.setup.ts writes
+# these; e2e-staging/support/auth-storage.ts resolves the path). Each one
+# holds a live staging bearer token for the seeded guardian or admin, and this
+# repo is public: never committed, and deliberately NOT under test-results/,
+# the one directory .github/workflows/e2e-staging.yml uploads wholesale as a
+# Playwright-failure artifact.
+e2e-staging/.auth/
 
 # Generated API client: TRACKED, not ignored. It is committed build output
 # (regenerate with `npm run generate-client`) so a CI drift check has a

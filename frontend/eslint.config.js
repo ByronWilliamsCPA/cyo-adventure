@@ -177,6 +177,7 @@ export default tseslint.config(
     // actually matter.
     files: [
       'e2e/**/*.{ts,tsx}',
+      'e2e-usersim/**/*.{ts,tsx}',
       'e2e-real/**/*.{ts,tsx}',
       'e2e-prod/**/*.{ts,tsx}',
       'e2e-staging/**/*.{ts,tsx}',

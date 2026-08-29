@@ -14,6 +14,7 @@ import type {
   KidFlagCreatedView,
   ReadingHistoryItem,
   ReadingHistoryView,
+  ReadingStateResultView,
   SeriesNextView,
 } from '../client/types.gen'
 import { OfflineError, type PutResponse, type SaveBody, type SyncApi } from '../offline/sync'
@@ -162,20 +163,50 @@ export type CompletionOutcome =
 
 /**
  * Fetch the server's saved reading state for cross-device resume. Returns null
- * when the server has no state (HTTP 404) so the caller can start fresh; a
- * transport failure surfaces as OfflineError so the caller can degrade to local
- * play instead of treating it as "no progress".
+ * when the server has no state (200 with `state: null`, per
+ * ReadingStateResultView) so the caller can start fresh; a transport failure
+ * surfaces as OfflineError so the caller can degrade to local play instead of
+ * treating it as "no progress".
  */
 export function makeFetchServerState(
   api: AxiosInstance
 ): (profileId: string, storybookId: string) => Promise<ReadingState | null> {
   return async (profileId: string, storybookId: string): Promise<ReadingState | null> => {
     try {
-      const res = await api.get<ReadingState>(`/v1/reading-state/${profileId}/${storybookId}`)
-      return res.data
+      const res = await api.get<ReadingStateResultView>(
+        `/v1/reading-state/${profileId}/${storybookId}`
+      )
+      // #CRITICAL: data-integrity: the server answers "no saved progress" as
+      // 200 { state: null }, never a 404, for a first-time reader. If this
+      // ever coerced a malformed or undefined body to "has progress", a
+      // first-time reader would look like a returning one: ADR-028
+      // active-character seeding would be skipped entirely
+      // (ReaderPage.tsx's start-a-read branch), and the "ignores a
+      // continuation when saved progress exists" guard would misfire. The
+      // `?? null` below is the entire contract: it must map only an
+      // explicit `state: null`, never coerce absence-of-field to "has
+      // progress".
+      // #VERIFY: readerApi.test.ts::makeFetchServerState covers the 200
+      // null-state, 200 with-state, legacy-404, and transport-failure cases;
+      // ReaderPage.test.tsx's continuation guard depends on this mapping
+      // staying accurate.
+      return res.data.state ?? null
     } catch (error) {
       if (isAxiosError(error)) {
-        // 404 is the honest "no saved progress on the server" answer, not an error.
+        // #EDGE: security: a 404 on this route is now always a genuine
+        // error, never "no saved progress" (see the #CRITICAL note above):
+        // either _load_readable_storybook found the story missing or
+        // unreadable, or _require_assignment is existence-hiding an
+        // unassigned/cross-family profile-story pair
+        // (src/cyo_adventure/api/reading.py). This branch deliberately
+        // degrades that error to "start fresh" instead of rethrowing, which
+        // silently converts an authorization denial into a fresh read. That
+        // is safe only because the sole production caller, ReaderPage.tsx,
+        // already catches every throw from this function and sets
+        // `saved = undefined` regardless of the reason, so the two paths are
+        // observationally identical there today. If a future caller needs to
+        // tell "no progress" apart from "denied", it must not reuse this
+        // function; it should call the endpoint directly and read the body.
         if (error.response?.status === 404) {
           return null
         }

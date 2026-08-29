@@ -364,3 +364,42 @@ verdict, severity, evidence_path}`. Triage rules are the skill's, promoted to mo
 
 Phase 1 is one PR-sized step and delivers the two cheapest wins on day one: the global clean-console invariant
 across everything the walk reaches, and mechanical dead-end detection for all three personas.
+
+### Engine expansion: `webkit-kid` (nightly, informational)
+
+Unlike legs A-C above, this item does not attack unscripted state space; it widens the *engine* coverage of
+kid journeys the fleet already tests, and this is the rationale the companion plan's WS-B2 row flagged as
+missing:
+
+- iPads are a primary reading device for the kid persona this product is built around, and every browser on
+  iOS, including Safari, runs WebKit as its engine. (That is no longer a platform-wide Apple requirement:
+  iOS 17.4 and the EU DMA permit alternative browser engines in the EU. It remains what essentially all
+  real iOS reading runs on, which is the load-bearing part of this argument.) A defect that only
+  reproduces on WebKit is invisible to the per-PR gate and to every scheduled workflow in this fleet, all of
+  which run their mocked and real tiers on Chromium.
+- The reader, offline, and read-aloud paths are the most engine-sensitive code the frontend has. IndexedDB
+  transaction and quota behavior, service worker install/activate/update lifecycle, the `SpeechSynthesis`
+  API's voice enumeration and event timing, and CSS scroll-containment behavior all differ materially between
+  WebKit and Chromium.
+- `cross-device-e2e.yml` already runs two WebKit profiles (`cross-device-tablet` on `devices['iPad (gen 7)']`
+  and `cross-browser-mobile-safari` on `devices['iPhone 14']`), but its `test:e2e:cross-device` script matches
+  all four of its projects, including both WebKit ones, only against `cross-device.spec.ts`. When this
+  was written, no reader, library, offline, or read-aloud spec ran on WebKit anywhere in this fleet.
+  **That gap is now closed**, by the `webkit-kid` work this section proposed: the `webkit-kid` project
+  is in `frontend/playwright.config.ts` (matching `reader`, `library`, `offline` and `kid-read-aloud`
+  specs on `devices['iPad (gen 7)']`) and `.github/workflows/webkit-kid.yml` runs it (commit
+  `88c904d9`). The bullet is kept in past tense as the recorded motivation, not as a live gap.
+
+Given that gap, a `webkit-kid` project in `frontend/playwright.config.ts` runs the existing reader, library,
+offline, and read-aloud mocked-tier specs against the `iPad (gen 7)` WebKit device profile (matching
+`cross-device-tablet`'s own choice, since the rationale above is specifically iPads). It excludes visual
+snapshot specs, whose baselines are captured on the Linux CI runner and are engine-specific, and the
+axe/accessibility specs, whose scope is ADR-029's to widen and not this project's.
+
+This is deliberately **nightly-only and informational**, not the per-PR job the companion plan's WS-B2 row
+first proposed. Keeping it off the merge gate leaves ADR-029's per-PR accessibility-scope constraint
+untouched and matches the informational posture every other engine-coverage workflow in this fleet already
+uses (`cross-device-e2e.yml`), rather than adding a second, differently-scoped exception. It files and
+resolves through the same tracking-issue pattern as the other scheduled alerts (`./.github/actions/ci-failure-issue`),
+inheriting the same `if: failure()`-only gating those alerts already use, and the same known limitation that a
+cancelled run (for example, a job-level timeout) does not currently trigger an alert.

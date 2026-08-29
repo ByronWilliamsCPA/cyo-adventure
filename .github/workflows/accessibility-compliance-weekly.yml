@@ -15,6 +15,22 @@
 # e2e-staging.yml (marker [a11y-weekly]) rather than shipping silent: a
 # scheduled workflow with no notification path is how a red run trains the
 # signal to zero before anyone acts on it.
+#
+# Second scan (I7, task B3b): this job also runs the `usersim-a11y` Playwright
+# project (frontend/e2e-usersim/walk-a11y.spec.ts), an axe scan of each
+# NEWLY-REACHED state of the existing usersim seeded-random-walk tier, gated
+# behind this same A11Y_EXTENDED flag. That is an explicit owner decision
+# (docs/testing/user-side-testing-module-proposal-2026-08-27.md, I7 section):
+# I7 widens the mocked-tier gap this scan already covers ("each remaining
+# page/dialog checked in one fixed mock state", coverage-matrix.md) rather
+# than opening a new workflow or, worse, widening the per-PR `frontend-e2e`
+# gate (ADR-029 freezes that gate's scope at WCAG 2.1 AA on fixed states).
+# Its findings are a SEPARATE stream from the first scan's: the first scan
+# checks a small, hand-picked set of fixed states; I7 checks whatever states
+# a seeded walk happens to reach, which changes as the app's routes and nav
+# do. See "Compose the issue body" below for how the two streams are told
+# apart in the alert, and docs/operations/runbook.md's a11y-weekly entry for
+# the two-stream triage note.
 # ============================================================================
 name: Accessibility Compliance Weekly
 
@@ -37,7 +53,13 @@ jobs:
   accessibility-compliance:
     name: Playwright (axe, extended tags)
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    # 15 -> 25 (task B3b): this job now runs two Playwright invocations, each
+    # with its own `npm run build && npm run preview` webServer boot
+    # (reuseExistingServer is false in CI, playwright.config.ts), plus I7's
+    # walk (3 personas x up to 10 steps, each newly-reached state getting an
+    # axe scan). 15 minutes was already tight for one build+scan; two needs
+    # headroom.
+    timeout-minutes: 25
     permissions:
       contents: read
       issues: write
@@ -84,8 +106,70 @@ jobs:
       - name: Accessibility scan (axe, WCAG 2.2 + best-practice)
         env:
           A11Y_EXTENDED: '1'
+          # This job runs against the DEFAULT frontend/playwright.config.ts,
+          # the same config the PR-blocking frontend-e2e job uses, and a
+          # later task adds a third project to that same config. Each of the
+          # other three scheduled tiers has its own dedicated config and so
+          # its own default report filename; this tier does not, so an
+          # explicit per-invocation path is what makes a collision
+          # impossible here rather than merely unlikely today.
+          PLAYWRIGHT_JSON_REPORT_PATH: playwright-json-report/a11y-weekly.json
         run: npx playwright test --project=chromium e2e/a11y.spec.ts
 
+      # I7 (task B3b): axe on each newly-reached state of the usersim seeded
+      # random walk, gated behind the same A11Y_EXTENDED flag as the scan
+      # above. `if: ${{ !cancelled() }}` (not the implicit default `success()`
+      # every other step in this job relies on) is deliberate: this step must
+      # produce its OWN pass/fail signal regardless of whether the fixed-state
+      # scan above failed. Under the default gate, a failure in the step above
+      # would skip this one entirely and the run would report only the first
+      # stream's findings, silently dropping I7 coverage for that week. This
+      # branch has hit exactly that implicit-`if: success()` class of defect
+      # twice before; `!cancelled()` closes it here rather than repeating it a
+      # third time. This is NOT the same as an explicit `always()`: `always()`
+      # runs even when the job was cancelled, `!cancelled()` does not, which is
+      # exactly why `!cancelled()` (not `always()`) was chosen -- it stays
+      # consistent with this file's `failure()`-based alerting below, which
+      # must never fire on a cancelled run.
+      #
+      # #CRITICAL: data-integrity: Playwright deletes its ENTIRE configured
+      # `outputDir` at the start of every invocation, including a sibling
+      # project's trace/screenshot output from earlier in this same job.
+      # Task B3b review, Important 1: with `!cancelled()` above, this step now
+      # always runs after the "Accessibility scan (axe, WCAG 2.2 +
+      # best-practice)" step, so if THAT step fails and this one shared a dir
+      # with it, this step would silently wipe stream 1's evidence before
+      # "Upload Playwright report on failure" below ever uploads it. The fix
+      # lives in playwright.config.ts: `chromium` and `usersim-a11y` each
+      # declare their own `outputDir` (`test-results/chromium`,
+      # `test-results/usersim-a11y`; task B3b second review, F2 gave
+      # `chromium` its own dir too, closing a latent nesting risk the first
+      # fix pass left in a comment rather than in code), so this invocation
+      # only ever clears its own subdirectory.
+      # #VERIFY: `frontend/playwright.config.ts`'s `chromium` and
+      # `usersim-a11y` projects keep distinct, non-nesting `outputDir` values;
+      # `tests/unit/test_playwright_output_dir_isolation.py` asserts this for
+      # every step in this job (and in `e2e-real-nightly.yml`'s `e2e-real`
+      # job) that invokes this shared config.
+      - name: Accessibility scan (usersim I7, axe on newly-reached states)
+        if: ${{ !cancelled() }}
+        env:
+          A11Y_EXTENDED: '1'
+          # Distinct from a11y-weekly.json above (this file's own comment on
+          # that step explains why a distinct path is mandatory here): two
+          # Playwright invocations in one job writing the same default report
+          # path would have the second overwrite the first's findings before
+          # either "Extract failing specs" step below ever reads them.
+          PLAYWRIGHT_JSON_REPORT_PATH: playwright-json-report/usersim-a11y-weekly.json
+        run: npx playwright test --project=usersim-a11y
+
+      # Uploads BOTH streams' evidence in one wholesale artifact: since
+      # playwright.config.ts gives `chromium` and `usersim-a11y` each their
+      # own `outputDir` (see the #CRITICAL comment on the step above),
+      # `frontend/test-results/` now holds stream 1's evidence under
+      # `test-results/chromium/` and stream 2's evidence under
+      # `test-results/usersim-a11y/`, and neither invocation's own outputDir
+      # clear touches the other's subtree.
       - name: Upload Playwright report on failure
         if: ${{ !cancelled() && failure() }}
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
@@ -93,6 +177,49 @@ jobs:
           name: accessibility-compliance-report
           path: frontend/test-results/
           retention-days: 14
+
+      # #CRITICAL: security: reads ONLY frontend/playwright-json-report/a11y-weekly.json
+      # (this workflow's own PLAYWRIGHT_JSON_REPORT_PATH override on the scan
+      # step above), never frontend/test-results/, which is uploaded wholesale
+      # as a public artifact by the step above because THIS REPOSITORY IS
+      # PUBLIC. scripts/extract-failing-specs.mjs reads only `spec.file` and
+      # `test.title` off the report; it never touches an error message, a
+      # stack trace, or any attachment, and it always exits 0 (a missing or
+      # unparseable report degrades to an explanatory line), so this step
+      # cannot itself fail the job.
+      # #VERIFY: a future edit to that script that reads any other field must
+      # be rejected in review; see its own header comment.
+      - name: Extract failing specs from the Playwright report
+        if: ${{ failure() }}
+        id: extract_specs
+        run: |
+          {
+            echo 'result<<EXTRACT_SPECS_EOF'
+            node scripts/extract-failing-specs.mjs playwright-json-report/a11y-weekly.json
+            echo 'EXTRACT_SPECS_EOF'
+          } >> "$GITHUB_OUTPUT"
+
+      # I7 (task B3b) counterpart of the extraction step above, reading the
+      # SECOND report (usersim-a11y-weekly.json). Same security contract:
+      # extract-failing-specs.mjs reads only spec.file/test.title, never an
+      # error message or stack trace, and always exits 0 (see that script's
+      # own header comment; this repository is public).
+      #
+      # `if: ${{ failure() }}` here (not `!cancelled()`): unlike the SCAN step
+      # above, this extraction step does not need to run independently of its
+      # sibling scan step's outcome; it only needs to run when there is
+      # something to extract, i.e. when the job has failed. If the usersim
+      # scan step above was itself skipped (job cancelled) there is no report
+      # to read and this correctly does not run either.
+      - name: Extract failing specs from the usersim I7 report
+        if: ${{ failure() }}
+        id: extract_specs_usersim
+        run: |
+          {
+            echo 'result<<EXTRACT_SPECS_USERSIM_EOF'
+            node scripts/extract-failing-specs.mjs playwright-json-report/usersim-a11y-weekly.json
+            echo 'EXTRACT_SPECS_USERSIM_EOF'
+          } >> "$GITHUB_OUTPUT"
 
       - name: Compose the issue body
         # Reusable alerting pattern for scheduled E2E tiers, same as
@@ -105,21 +232,74 @@ jobs:
         # file a duplicate. Findings this scan surfaces get their own UW-*
         # register row (see UW-F27); this step is about noticing a NEW
         # regression promptly, not about the known, already-tracked ones.
+        #
+        # `FAILING_SPECS` (task A7-i) is the prior step's output: which spec
+        # file(s) and test title(s) failed, or an explanatory line if the
+        # report was absent/unparseable. `FAILING_SPECS_USERSIM` (task B3b)
+        # is the same, for the second (I7) scan's report; the two are always
+        # labelled separately in the body below, never concatenated into one
+        # unlabelled blob, so a reader can tell "the fixed-state per-PR-
+        # mirroring scan found this" from "the newly-reached-state usersim
+        # walk found this" without cross-referencing the run log.
+        #
+        # This composite action's own contract (see its header comment) uses
+        # `body` only at issue creation and `comment-body` only at issue
+        # comment time, so a single composed string cannot serve both without
+        # going stale: `body`'s "First failing run" line would read false on
+        # every recurrence, exactly the defect a reviewer caught on an
+        # earlier task in this plan when that string was reused verbatim as
+        # `comment-body`. This step therefore composes two distinct bodies
+        # (createBody, the long standing-context one used once at creation;
+        # commentBody, a short one repeated on every recurrence) in the one
+        # script and returns them JSON-encoded, read back below via
+        # `fromJSON(...)`. That keeps runUrl/today/failingSpecs computed once
+        # rather than duplicated across a second `id`'d script step.
         if: ${{ failure() }}
         id: compose
         uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9.0.0
+        env:
+          FAILING_SPECS: ${{ steps.extract_specs.outputs.result }}
+          FAILING_SPECS_USERSIM: ${{ steps.extract_specs_usersim.outputs.result }}
         with:
           result-encoding: string
           script: |
             const runUrl = `${context.serverUrl}/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`
             const today = new Date().toISOString().slice(0, 10)
+            const failingSpecs = process.env.FAILING_SPECS ?? ''
+            const failingSpecsUsersim = process.env.FAILING_SPECS_USERSIM ?? ''
 
-            return [
+            const createBody = [
               'The scheduled `Accessibility Compliance Weekly` workflow',
               '(`.github/workflows/accessibility-compliance-weekly.yml`) failed.',
               '',
+              'This workflow runs TWO independent axe scans; a failure in either',
+              'one fails the job, and each is reported separately below so you',
+              'know which one to chase.',
+              '',
+              '## Stream 1: fixed-state scan (e2e/a11y.spec.ts)',
+              '',
+              failingSpecs || '(this stream passed or did not report)',
+              '',
+              '## Stream 2: newly-reached-state scan (e2e-usersim/walk-a11y.spec.ts, I7)',
+              '',
+              failingSpecsUsersim || '(this stream passed or did not report)',
+              '',
               'This tier runs the WCAG 2.2 + axe best-practice extended scan',
               '(A11Y_EXTENDED=1) against the mocked-tier build, weekly.',
+              '',
+              'Stream 2 (I7) scans a fresh axe pass at each DISTINCT route+heading',
+              'signature the seeded usersim walk reaches for the first time, on',
+              'top of the walk\'s existing I1-I6 invariant checks; see the walk\'s',
+              'own run log for `distinct_states_scanned` and',
+              '`docs/testing/coverage-matrix.md`\'s usersim-tier entry for what a',
+              '"state" means here and what it collapses. Its run-log lines',
+              '(`[usersim-a11y-new-state]`, `[usersim-a11y]`) and findings',
+              '(printed as `[usersim-finding]` lines tagged',
+              '`workflow=usersim-a11y-weekly`, not a JSONL file on disk) are a',
+              'separate stream from stream 1 above and from the nightly usersim',
+              'walks\' own I1-I6-only `[usersim-finding]` lines',
+              '(`workflow=usersim-walk`/`usersim-walk-real`);',
+              'see docs/operations/runbook.md for the two-stream triage note.',
               '',
               'This alert fires on `failure()`, so it covers BOTH of:',
               '',
@@ -164,6 +344,20 @@ jobs:
               'once a scheduled run succeeds; the next failure opens a fresh issue.',
             ].join('\n')
 
+            const commentBody = [
+              `Scheduled accessibility compliance scan failed again on ${today}.`,
+              '',
+              '## Stream 1: fixed-state (e2e/a11y.spec.ts)',
+              failingSpecs || '(this stream passed or did not report)',
+              '',
+              '## Stream 2: newly-reached-state (e2e-usersim/walk-a11y.spec.ts, I7)',
+              failingSpecsUsersim || '(this stream passed or did not report)',
+              '',
+              `This run: ${runUrl}`,
+            ].join('\n')
+
+            return JSON.stringify({ createBody, commentBody })
+
       - name: File or comment on the pinned issue
         if: ${{ failure() }}
         uses: ./.github/actions/ci-failure-issue
@@ -171,8 +365,8 @@ jobs:
           marker: '[a11y-weekly]'
           label: e2e-alert
           summary: scheduled accessibility compliance scan failing
-          body: ${{ steps.compose.outputs.result }}
-          comment-body: Scheduled accessibility compliance scan failed again.
+          body: ${{ fromJSON(steps.compose.outputs.result).createBody }}
+          comment-body: ${{ fromJSON(steps.compose.outputs.result).commentBody }}
 
       - name: Resolve the tracking issue on a green scheduled run
         # Every one of these issue bodies used to end by asking a human to

@@ -1,8 +1,9 @@
 """Unit tests for the reading-state and completion API handlers (no DB, no ASGI).
 
 Calls route functions directly with a fake session and constructed principals.
-Covers: get_reading_state (happy path, missing state, bad UUID, profile IDOR,
-storybook not found, family IDOR), put_reading_state (create first state,
+Covers: get_reading_state (happy path, absent state returns null, bad UUID,
+profile IDOR, storybook not found, family IDOR), put_reading_state (create
+first state,
 revision increment, idempotent replay via event_id, revision mismatch 409,
 version mismatch 409, nonzero first-revision 422, bad UUID), record_completion
 (new, idempotent existing, bad ending_id, version not found, storybook not
@@ -545,13 +546,20 @@ class TestGetReadingState:
 
         result = await get_reading_state(str(profile_id), "story-1", ctx)
 
-        assert result.storybook_id == "story-1"
-        assert result.child_profile_id == str(profile_id)
+        assert result.state is not None
+        assert result.state.storybook_id == "story-1"
+        assert result.state.child_profile_id == str(profile_id)
 
     @pytest.mark.unit
     @pytest.mark.asyncio
-    async def test_no_reading_state_row_raises_not_found(self) -> None:
-        """A profile with no saved state for the story raises ResourceNotFoundError."""
+    async def test_no_reading_state_row_returns_null_state(self) -> None:
+        """A profile with no saved state for the story gets a 200 with state: null.
+
+        A first-time reader is a normal condition, not an error (see
+        ReadingStateResultView's docstring); a 404 here would surface as an
+        uncatchable browser console error before application code can
+        handle it.
+        """
         family_id = uuid.uuid4()
         profile_id = uuid.uuid4()
         book = _published_book("story-1", family_id)
@@ -564,10 +572,9 @@ class TestGetReadingState:
         ctx = _ctx(_child_principal(family_id, profile_id), session)
         profile_id_str = str(profile_id)
 
-        with pytest.raises(
-            ResourceNotFoundError, match=r"no reading state for profile"
-        ):
-            await get_reading_state(profile_id_str, "story-1", ctx)
+        result = await get_reading_state(profile_id_str, "story-1", ctx)
+
+        assert result.state is None
 
     @pytest.mark.unit
     @pytest.mark.asyncio

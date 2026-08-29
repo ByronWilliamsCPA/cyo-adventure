@@ -1,0 +1,728 @@
+# ============================================================================
+# Unauthenticated DAST baseline scan for CYO Adventure (task D5,
+# docs/testing/testing-improvement-plan-2026-08-27.md; proposal reference:
+# docs/testing/user-side-testing-module-proposal-2026-08-27.md, "DAST" row).
+# ============================================================================
+#
+# UNAUTHENTICATED BASELINE ONLY. No credentials, no sign-in, no authenticated
+# extension, not even scaffolded "for later". Authenticated DAST scanning is
+# a separate, more expensive decision (it needs the same seeded-credential
+# and concurrency discipline as e2e-staging.yml) and is explicitly out of
+# scope for this workflow; do not add auth flows here without re-reading the
+# plan text this task was built from.
+#
+# -----------------------------------------------------------------------
+# Target decision (required reading before changing what this scans)
+# -----------------------------------------------------------------------
+# The task brief posed two candidate targets and asked for a justified choice:
+#
+#   (a) The shared staging Supabase project. Ruled out for a SCHEDULED,
+#       unattended job: staging is shared with other scheduled workflows
+#       (hence the e2e-staging concurrency group those workflows join), and
+#       even an "unauthenticated" spider can find an unauthenticated POST or
+#       a rate-limited endpoint and affect state or trip protections other
+#       jobs then fail against. That risk buys nothing here: the rate
+#       limiter must never be exempted for a scan (a CI-egress-IP exemption
+#       was already proposed on this project and rejected, because it blunts
+#       a control that protects a children's product against credential
+#       stuffing), so a staging run would either have to accept collisions
+#       with real protections or move slowly enough to defeat the point of a
+#       "cheap" baseline scan.
+#   (b) A locally built and served frontend alone (a static bundle with
+#       nothing behind it). Rejected as too close to vacuous: a DAST tool
+#       finds attack surface by following links and provoking responses, and
+#       a bare static SPA answers every request the same way regardless of
+#       path, with no live backend to differ from it.
+#
+# This workflow uses a THIRD option, assembled entirely from two patterns
+# already proven and committed elsewhere in this repo, not a new idea:
+#
+#   - The ephemeral local backend `ci.yml`'s `api-tests` job already brings
+#     up for its own newman suite: `docker compose up -d --build app db`.
+#     ENVIRONMENT defaults to `local` in that compose stack, which matters
+#     for two reasons: `app.py` wires `enable_rate_limiting=settings.
+#     environment != "local"`, so RateLimitMiddleware is OFF here BY THE
+#     STACK'S EXISTING DEFAULT, not by anything this workflow disables or
+#     exempts -- there is no rate limit for this scan to trip or bypass. And
+#     it is a fresh, disposable container with no seeded data and no real
+#     user, guardian, or child ever authenticated against it: nothing shared,
+#     nothing to leak, nothing another job could fail against.
+#   - The frontend build+preview pattern `frontend/playwright.config.ts`'s
+#     `webServer` already uses for the mocked and real-backend E2E tiers
+#     (`npm run build && npm run preview -- --port 4173 --strictPort`),
+#     whose `preview.proxy['/api']` (vite.config.ts) forwards `/api/*` to
+#     `VITE_API_URL` (default `http://localhost:8000`, which is exactly where
+#     step "Start the ephemeral backend" below listens) with NO env override
+#     needed. This is the same composition `e2e-real-nightly.yml` already
+#     runs ("this proxy to reach uvicorn"), just pointed at ZAP instead of
+#     Playwright.
+#
+# What this DOES exercise: the real, unmodified production frontend build
+# serving real client-routed SPA pages, backed by the real FastAPI security
+# middleware stack (SecurityHeadersMiddleware, CORS, SSRF prevention, body
+# size limits) running its actual code against actual HTTP traffic -- not a
+# mock, not a stub.
+#
+# What this CANNOT find, so a later reader does not mistake this scan for
+# broader coverage than it has:
+#   - Anything that requires authentication or session state (unauthenticated
+#     baseline only, by design; see the plan text above).
+#   - Anything that only appears with real story/library content, AND anything
+#     that requires a working schema at all: this workflow deliberately runs
+#     no migrations (see the "Readiness target" note on the backend-readiness
+#     step below for why, and why that is a deliberate choice rather than an
+#     oversight). Every database-touching route (library, reading, profiles,
+#     and any other route that queries a real table) therefore answers with a
+#     500-class error on this target, not an empty or unauthenticated state.
+#     Do not read this scan's findings as if the app rendered its normal
+#     empty states; a later triage pass that assumes populated-vs-empty
+#     content, rather than working-vs-broken schema, will misread the
+#     baseline. See .github/zap/dast-baseline-rules.conf's prediction list
+#     for the specific alert (90022, Application Error Disclosure) this
+#     produces.
+#   - Anything in the reverse-proxy layer: production and staging serve the
+#     frontend from behind nginx (frontend/nginx.conf), which can set or
+#     rewrite headers of its own. This stack runs `vite preview` directly
+#     with no nginx in front of it, so nginx-layer findings (or nginx-layer
+#     fixes to findings surfaced here) are not exercised either way.
+#   - Anything that depends on real TLS termination (plain HTTP target; see
+#     .github/zap/dast-baseline-rules.conf's note on rule 10035).
+#   - Anything requiring seeded persistent characters, ratings, moderation
+#     state, or any other feature that only activates on non-empty data.
+#
+# -----------------------------------------------------------------------
+# Informational, not blocking
+# -----------------------------------------------------------------------
+# schedule + workflow_dispatch only. No pull_request trigger, so this can
+# never fail a PR. zap-baseline.py's own exit code (0 pass, 1 >=1 FAIL,
+# 2 >=1 WARN and no FAIL, 3 other failure) is NOT used to fail this job --
+# see the "Run ZAP baseline scan" step, which always exits 0 itself. A job
+# that failed every week because a real app always has SOME passive finding
+# trains the signal to zero within a month (this is the documented failure
+# mode this whole workstream exists to undo); the separate "Verify the scan
+# actually ran" step below is the thing that can fail this job, and it is
+# gated on the scan having reached its target at all, never on what it found.
+#
+# -----------------------------------------------------------------------
+# Alerting: what the alert is FOR
+# -----------------------------------------------------------------------
+# Follows the single-job `ci-failure`-labelled tracking-issue pattern
+# actually in use in accessibility-compliance-weekly.yml and safety-eval.yml
+# (compose body -> .github/actions/ci-failure-issue open -> resolve on a
+# green scheduled run), not the separate-probe/alert/resolve JOB split
+# kws-delivery-health.yml uses. That split exists specifically for a MATRIX
+# job (see the ci-failure-issue composite's own header comment: a
+# concurrency group does not serialize legs WITHIN one run, so a matrix with
+# more than one leg needs a single downstream job to avoid two legs racing
+# on the same tracking issue). This job has no matrix, so the single-job
+# pattern the two named exemplars use satisfies that composite action's
+# actual contract, and is what "copy what is actually in use" means here.
+#
+# The alert fires whenever `job.status != 'success'` (evaluated with
+# `always()`, since a step without `always()` is skipped once any earlier
+# step fails), not on ZAP's own verdict:
+#   1. GitHub injects `if: success()` into any step with no explicit `if:`,
+#      so a step silently does not run once an earlier one fails. Every step
+#      below states its condition explicitly.
+#   2. `job.status` is `failure`, `cancelled`, or `success` regardless of
+#      which mechanism produced a non-success outcome, so it covers both an
+#      outright step failure and this job's own `timeout-minutes` cutting off
+#      a hung scan (browser launch for the client spider, a stuck
+#      passive-scan wait) without needing to resolve whether a step-level
+#      `cancelled()` reliably evaluates true for a timeout cutoff
+#      specifically (see the "Compose the issue body" step below for the
+#      full reasoning). The compose and file-issue steps below use
+#      `job.status != 'success'` for exactly that reason.
+#
+# So: this alert means "the scan did not run, or could not reach its
+# target" -- an infra failure (docker/npm/curl readiness, ZAP never
+# producing a report for the expected host) or a hang. It never means "the
+# scan found something". Findings are surfaced via the job summary and the
+# summary-only artifact below, and are triaged by a human on a cadence, not
+# gated on a red job. Treat any future edit that ties this alert to alert
+# COUNTS as a regression back to the failure mode this task was written to
+# avoid.
+#
+# -----------------------------------------------------------------------
+# Artifacts and the public-repository constraint
+# -----------------------------------------------------------------------
+# This repository is public. A full ZAP report can carry response headers,
+# cookie names, exact URLs, and response fragments from the scanned target.
+# This scan is unauthenticated against a throwaway local instance with only
+# well-known, repo-committed dev-default secrets (docker-compose.yml's
+# CHILD_SESSION_SECRET/DEVICE_GRANT_SECRET placeholders) and no seeded data,
+# so it SHOULD carry nothing sensitive -- but "should not" is not a control,
+# and this repo has a standing, documented instance of exactly this failure
+# mode (frontend/test-results/ has previously carried Playwright traces with
+# real staging bearer tokens). This workflow never touches that directory
+# and does not reuse its artifact name. Rather than trust "should be fine"
+# for a brand-new report format nobody has read yet, only a SUMMARY (risk-
+# level counts and the alert name/rule ID list, extracted by the "Verify the
+# scan actually ran" step's script, never raw headers/cookies/URLs/evidence)
+# is uploaded; the full HTML/JSON/XML report is deliberately NOT uploaded as
+# a workflow artifact. If, after a human has actually read several runs' raw
+# reports locally, the full report is judged safe to publish, that is a
+# deliberate follow-up change to this file, not a default.
+#
+# This containment is not total: `zap-baseline.py` also prints matching URLs
+# to its own stdout, which lands in this job's run log, and Actions run logs
+# are world-readable (for a public repo) for 90 days regardless of this
+# workflow's own 14-day artifact retention. Content here is throwaway
+# `localhost:4173` traffic against an unseeded, unauthenticated local
+# instance, so nothing sensitive is exposed today, but the run log is a
+# second channel a future reader should know about, not just the artifact.
+#
+# retention-days is set explicitly (14, matching accessibility-compliance-
+# weekly.yml's report retention) rather than inheriting Actions' 90-day
+# default.
+#
+# -----------------------------------------------------------------------
+# Rule configuration and first-run triage
+# -----------------------------------------------------------------------
+# .github/zap/dast-baseline-rules.conf is passed via -c. It intentionally
+# suppresses NOTHING (see that file's header): pre-suppressing rules nobody
+# has seen fire on this target would make the first scheduled run's findings
+# meaningless by construction, and the acceptance criterion for this task is
+# that the FIRST run's findings get triaged, not that they get silenced. The
+# file documents, as comments only, which rules are predicted to fire and
+# why (missing security headers on responses the Vite static server answers
+# instead of FastAPI; the one header this app never sets on any path; the
+# HSTS finding that is a property of scanning plain HTTP, not a code defect).
+#
+# The first-run triage itself is an owner checklist item (this task cannot
+# triage a run that has not happened) and is tracked in the unscheduled-work
+# register; see this task's report for the exact row text (not applied by
+# this task -- concurrent-session file-collision avoidance; the register is
+# a shared append-only file another session applies rows to).
+# ============================================================================
+name: DAST Baseline Scan (Weekly)
+
+on:
+  schedule:
+    # Thursday 08:20 UTC. Distinct from every other cron in this directory
+    # as of 2026-08-29. Nearest neighbour first, which the previous version
+    # of this comment omitted: supabase-backup.yml runs `0 8 * * *`, so it
+    # fires at 08:00 every day including this one, twenty minutes before this
+    # job and in the same hour. Being daily, it is a nearer neighbour than
+    # either weekly job named here before: sbom.yml (Monday 08:00, different
+    # day) and scheduled-health-rollup.yml (Thursday 07:00, same day,
+    # distinct hour).
+    #
+    # The day is not what makes this slot distinct, since ten daily crons
+    # fire on Thursday as well. The minute is: of the directory's 29 crons,
+    # minute 20 belongs to this file alone.
+    #
+    # Re-derive rather than trust this comment:
+    #   grep -rhoP "^\s*-\s*cron:\s*['\"]\K[^'\"]+" .github/workflows/
+    # Both quoting styles are in use here (18 crons single-quoted, 11 double);
+    # a probe matching only one style reads 62% of the fleet and returns a
+    # confident wrong number.
+    #
+    # See webkit-kid.yml's header comment for the pattern of citing
+    # neighboring schedules explicitly rather than assuming no collision.
+    - cron: '20 8 * * 4'
+  workflow_dispatch: {}
+
+permissions:
+  contents: read
+
+concurrency:
+  # Own group, not e2e-staging: this workflow never authenticates against or
+  # mutates the shared staging Supabase project (see the target-decision
+  # comment above), so there is nothing here for the e2e-staging group to
+  # serialize against.
+  #
+  # cancel-in-progress: false, matching the a11y exemplar
+  # (accessibility-compliance-weekly.yml), NOT e2e-real-nightly.yml's true.
+  # This job's alert condition (`job.status != 'success'`, see "Alerting:
+  # what the alert is FOR" below) treats a cancelled run as "the scan did not
+  # run, or could not reach its target" and file a tracking issue on it. With
+  # cancel-in-progress: true, a routine supersession -- a second scheduled
+  # trigger landing while the first is still running, or exactly the
+  # `workflow_dispatch` the owner checklist below asks the owner to run --
+  # would cancel the in-flight run and manufacture a false "scan did not
+  # run" alert about a run that was never actually unhealthy, only
+  # superseded. That every touched resource is fresh and disposable (true,
+  # and the reason e2e-real-nightly.yml can safely cancel) does not change
+  # this: the cost of a false alert on a low-traffic weekly job is not
+  # "wasted compute", it is a human reading a manufactured incident.
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  dast-baseline:
+    name: ZAP baseline (unauthenticated, ephemeral local stack)
+    runs-on: ubuntu-latest
+    # Budget: docker compose build+up+health-wait (~2 min), frontend npm ci
+    # + build (~1-2 min), preview boot (~10s), the ZAP image pull (~1.2GB,
+    # ~1-2 min cold) plus zap-baseline.py itself (-m 2 spider minutes, -T 8
+    # cap on total ZAP wait), plus teardown and the JSON-report verification
+    # script. 20 minutes leaves real headroom over that estimate; -T 8 below
+    # is the INNER bound so zap-baseline.py gives up cleanly with time left
+    # for this job's own cleanup/upload steps, rather than the outer
+    # timeout-minutes cutting it off mid-write (which would show as
+    # `cancelled`, not `failure()` -- see the alerting comment above for why
+    # both are handled).
+    timeout-minutes: 20
+    permissions:
+      contents: read
+      issues: write  # alerting steps below file/update/resolve the tracking issue
+    steps:
+      - name: Harden the runner
+        uses: step-security/harden-runner@bf7454d06d71f1098171f2acdf0cd4708d7b5920 # v2.20.0
+        with:
+          egress-policy: audit
+
+      - name: Checkout repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      # ---- Start the ephemeral backend (mirrors ci.yml's api-tests job) ----
+      # ENVIRONMENT defaults to `local` (docker-compose.yml), which is what
+      # keeps RateLimitMiddleware off for this scan -- see the target-decision
+      # comment above. No seed data, no migrations: this scan is unauthenticated
+      # and does not need populated content, and skipping both keeps this
+      # workflow's infra footprint smaller than ci.yml's api-tests job, which
+      # needs migrated+seeded data for its newman assertions and this does not.
+      #
+      # Readiness target (deliberate choice, not an oversight): the wait loop
+      # below polls /api/v1/health/ready, not /health/live. /health/live's own
+      # docstring says it is a fast check that never touches an external
+      # service and returns 200 with no database at all -- against a target
+      # that can be up as a process while the database is unreachable, that
+      # proves nothing about whether this scan is about to hit a live
+      # backend. /health/ready's gating check (`check_database`) runs
+      # `SELECT 1`, which needs a reachable Postgres but NOT an applied
+      # schema, so this is a real readiness improvement (it catches a db
+      # container that never came up, a network problem, or a crashed
+      # connection pool) at zero cost: it does not require running
+      # migrations. It does NOT mean the app is "genuinely healthy" in the
+      # sense of every route working: the non-gating checks in that payload
+      # (generation_queue, kws_verification, ...) query tables this schema
+      # does not have and report degraded/error, which is expected and does
+      # not gate the 200. The deliberate scope boundary is: verify the
+      # database is reachable, not that the schema is complete. Running
+      # migrations here to make every route fully healthy was considered and
+      # rejected as a real scope increase for a scan whose brief is
+      # unauthenticated-baseline-only; see the corrected "What this CANNOT
+      # find" note above for what that boundary means for this scan's
+      # findings (500s, not empty states, on every database-touching route).
+      - name: Start the ephemeral backend
+        run: docker compose up -d --build app db
+
+      - name: Wait for backend readiness
+        run: |
+          for _ in $(seq 1 30); do
+            if curl -fsS http://localhost:8000/api/v1/health/ready >/dev/null 2>&1; then
+              echo "Backend ready"; exit 0
+            fi
+            sleep 2
+          done
+          echo "::error::Backend did not become ready in time"; exit 1
+
+      # ---- Build and serve the real frontend against that live backend ----
+      - name: Setup Node.js
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: '22'
+          cache: 'npm'
+          cache-dependency-path: frontend/package-lock.json
+
+      - name: Install frontend dependencies
+        working-directory: ./frontend
+        run: npm ci
+
+      # VITE_SUPABASE_URL/VITE_SUPABASE_ANON_KEY: the guardian lazy chunk
+      # (supabaseClient.ts) throws at module load without these, which would
+      # replace the unauthenticated redirect with a hard error boundary on
+      # every guardian route and shrink what the client spider can render.
+      # Same dummy values playwright.config.ts's shared webServer already
+      # uses for the mocked and real-backend tiers; not real credentials.
+      # VITE_API_URL is deliberately left UNSET here (unlike the mocked
+      # tier's playwright.config.ts, which forces it empty to stay
+      # hermetic): useApi.ts resolves the built axios baseURL to `/api`
+      # either way in a prod build (`VITE_API_URL || '/api'`), and leaving
+      # VITE_API_URL unset for the PREVIEW SERVER process (a separate read,
+      # by vite.config.ts's `preview.proxy['/api'].target`, of the same env
+      # var name) leaves that proxy at its own default of
+      # `http://localhost:8000`, which is exactly where the backend step
+      # above listens. No override needed for either read.
+      - name: Build frontend (production build)
+        working-directory: ./frontend
+        env:
+          VITE_SUPABASE_URL: 'https://example.supabase.co'
+          VITE_SUPABASE_ANON_KEY: 'dummy-anon-key-for-e2e-build'
+        run: npm run build
+
+      - name: Serve the built frontend
+        working-directory: ./frontend
+        run: nohup npm run preview -- --port 4173 --strictPort > ../preview.log 2>&1 &
+
+      - name: Wait for frontend readiness
+        run: |
+          for _ in $(seq 1 30); do
+            if curl -fsS http://localhost:4173/ >/dev/null 2>&1; then
+              echo "Frontend ready"; exit 0
+            fi
+            sleep 2
+          done
+          echo "::error::Frontend preview server did not become ready in time"
+          cat preview.log || true
+          exit 1
+
+      # The two readiness checks above prove the frontend static server and
+      # the backend are each independently up; neither proves the hop BETWEEN
+      # them (vite.config.ts's `preview.proxy['/api']`) actually works. That
+      # hop is the entire reason this workflow rejected the bare-static-bundle
+      # target (see the "Target decision" header comment): a broken proxy
+      # would make ZAP's scan indistinguishable from scanning the static
+      # bundle alone, and would do so silently, since ZAP still gets a clean
+      # 200/404 style response either way, not a proxy error a human would
+      # notice. Fail here, before the scan spends its time budget, rather
+      # than after -- see the "Verify the scan actually ran" step for the
+      # matching post-scan check that the scan actually crossed this hop.
+      - name: Verify the /api proxy hop is live
+        run: |
+          for _ in $(seq 1 15); do
+            if curl -fsS http://localhost:4173/api/v1/health/live >/dev/null 2>&1; then
+              echo "Proxy hop to the backend is live"; exit 0
+            fi
+            sleep 2
+          done
+          echo "::error::http://localhost:4173/api/ did not proxy to the backend; the frontend's own preview.proxy config or the backend itself is broken."
+          cat preview.log || true
+          exit 1
+
+      # ---- Run the scan ----
+      # zap-baseline.py's own exit code (0 pass, 1 >=1 FAIL, 2 >=1 WARN and
+      # no FAIL, 3 other failure) is deliberately NOT this step's exit code:
+      # by zap-baseline.py's own documented default every alert is a WARN
+      # unless the -c config overrides it, so almost any real scan of a real
+      # app exits nonzero, and tying this job's status to that would fail
+      # every week on findings alone (exactly the "found something" alerting
+      # this task's brief says not to build; see the header comment). `set
+      # +e` plus an explicit trailing `echo` (never a bare `exit $zap_exit`)
+      # is what keeps this step's own exit code 0 regardless of what ZAP
+      # reports; the NEXT step is what can fail this job, and it checks
+      # whether the scan reached its target, never what it found there.
+      - name: Run ZAP baseline scan (informational only)
+        id: zap
+        run: |
+          mkdir -p zap-out
+          chmod 777 zap-out
+          cp .github/zap/dast-baseline-rules.conf zap-out/dast-baseline-rules.conf
+          set +e
+          docker run --rm --network=host \
+            -v "$GITHUB_WORKSPACE/zap-out:/zap/wrk/:rw" \
+            zaproxy/zap-stable@sha256:781a2bdaea47324e7bab583e2263f21d257b0aee61ed51521a5be45f5f5081ef \
+            zap-baseline.py \
+              -t http://localhost:4173/ \
+              -c /zap/wrk/dast-baseline-rules.conf \
+              -j \
+              -m 2 \
+              -T 8 \
+              -s \
+              -r zap-baseline-report.html \
+              -J zap-baseline-report.json \
+              -x zap-baseline-report.xml
+          zap_exit=$?
+          echo "zap_exit=$zap_exit" >> "$GITHUB_OUTPUT"
+          echo "zap-baseline.py exited $zap_exit"
+          echo "(0 pass, 1 >=1 FAIL, 2 >=1 WARN and no FAIL, 3 other failure)."
+          echo "This step always succeeds regardless; the next step is the real health check."
+
+      # This is the step that can genuinely fail this job -- on whether the
+      # scan reached ITS TARGET, never on what it found there (see the
+      # header comment "Alerting: what the alert is FOR"). A missing report
+      # file, or a report whose `site` list is empty or does not mention the
+      # scanned host, means ZAP never actually talked to localhost:4173 (a
+      # docker pull failure, a container crash, a network-mode problem, the
+      # client spider's browser failing to launch); that is an infrastructure
+      # failure this alert exists to catch, not a passive-scan finding.
+      # `!cancelled()` (not the implicit default): must still run and report
+      # correctly even if the ZAP step above were ever changed to be
+      # fallible, so the "did the scan run" signal survives that.
+      - name: Verify the scan actually ran, and summarize findings
+        id: verify_report
+        if: ${{ !cancelled() }}
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import json
+          import sys
+          from pathlib import Path
+
+          report_path = Path("zap-out/zap-baseline-report.json")
+          summary_path = Path("zap-out/zap-summary.md")
+
+          if not report_path.is_file():
+              print("::error::No ZAP JSON report was produced; the scan did not reach its target.")
+              sys.exit(1)
+
+          try:
+              data = json.loads(report_path.read_text(encoding="utf-8"))
+          except (json.JSONDecodeError, UnicodeDecodeError) as exc:
+              print(f"::error::ZAP JSON report is unreadable ({exc}); the scan did not complete cleanly.")
+              sys.exit(1)
+
+          sites = data.get("site") or []
+          target_host = "localhost:4173"
+          matched_sites = [
+              s for s in sites
+              if target_host in f"{s.get('@name', '')}{s.get('@host', '')}"
+          ]
+          if not matched_sites:
+              print(
+                  f"::error::ZAP report contains no site matching {target_host}; "
+                  "the scan produced a report but never actually reached its target."
+              )
+              sys.exit(1)
+
+          # Findings summary -- informational only, never gates this step.
+          # Positive proof that the scan crossed the /api proxy hop (rather
+          # than degrading to a scan of the bare static bundle) now lives in
+          # the NEXT step, "Verify the scan actually reached the backend
+          # through the proxy", which reads uvicorn's own access log -- a
+          # static-only crawl cannot fake a backend log entry the way it can
+          # fake alert-instance counts. A prior version of this step tried to
+          # prove the same thing from ZAP's own alert data (an `api_hit` flag
+          # OR'd with a floor on the count of distinct URLs seen across all
+          # alert instances); review found the URL-count arm passes on a
+          # REAL static-only build of this SPA (frontend/dist/'s own
+          # index.html carries 10 distinct same-origin references -- JS/CSS
+          # chunks, icons, the manifest -- before any backend is involved at
+          # all, comfortably clearing any floor low enough not to false-fail
+          # a healthy run). A count of static-asset URLs can never be
+          # evidence of a backend hop; the two are causally unrelated, so the
+          # floor is not kept as a weaker fallback. `api_hit` is kept below,
+          # but only as an informational note in the summary, never as a
+          # pass/fail signal.
+          risk_names = {"0": "Informational", "1": "Low", "2": "Medium", "3": "High"}
+          counts: dict[str, int] = {name: 0 for name in risk_names.values()}
+          alerts: list[str] = []
+          api_hit = False
+          for site in matched_sites:
+              for alert in site.get("alerts", []) or []:
+                  risk = risk_names.get(str(alert.get("riskcode", "")), "Unknown")
+                  counts[risk] = counts.get(risk, 0) + 1
+                  alerts.append(
+                      f"- [{risk}] {alert.get('name', 'unnamed')} "
+                      f"(plugin {alert.get('pluginid', '?')}, "
+                      f"{alert.get('count', '?')} instance(s))"
+                  )
+                  for instance in alert.get("instances", []) or []:
+                      if "/api/" in instance.get("uri", ""):
+                          api_hit = True
+
+          lines = [
+              "# ZAP baseline scan summary",
+              "",
+              f"Target: http://{target_host}/ (unauthenticated, ephemeral local stack)",
+              "",
+              "This is a COUNT AND RULE-NAME summary only. The full report (raw",
+              "headers, cookies, URLs, response evidence) is deliberately not",
+              "published; see the workflow file's public-repository comment.",
+              "",
+              "An alert instance under /api/ was "
+              + ("seen" if api_hit else "not seen")
+              + " (informational only; see the 'Verify the scan actually reached",
+              "the backend through the proxy' step for the actual pass/fail evidence).",
+              "",
+              "| Risk | Count |",
+              "|------|-------|",
+          ]
+          for name in ("High", "Medium", "Low", "Informational", "Unknown"):
+              if name in counts:
+                  lines.append(f"| {name} | {counts[name]} |")
+          lines.append("")
+          lines.append("## Alerts")
+          lines.append("")
+          lines.extend(alerts or ["(none)"])
+          summary_path.write_text("\n".join(lines) + "\n", encoding="utf-8")
+          print(f"Scan reached {target_host}: " + ", ".join(f"{k}={v}" for k, v in counts.items() if v))
+          PY
+          cat zap-out/zap-summary.md >> "$GITHUB_STEP_SUMMARY"
+
+      # This step is the ACTUAL positive proof the scan crossed the /api
+      # proxy hop into the backend, replacing the ZAP-alert-derived arm the
+      # step above used to carry (see its comment). uvicorn runs with
+      # default access logging (the Dockerfile CMD passes no
+      # `--no-access-log`), so every request that reached the backend --
+      # through the proxy or otherwise -- is already recorded there,
+      # independent of whether ZAP raised an alert about it. That
+      # independence is what makes this survive the I1 "no migrations, every
+      # DB route answers 500" decision: a 500 is still a logged request, so
+      # this oracle does not weaken when the API answers badly.
+      #
+      # The `/api/v1/health/` exclusion is required: the readiness-wait loop
+      # and the pre-scan "Verify the /api proxy hop is live" step both poll
+      # health endpoints through this same backend, and would otherwise
+      # trivially satisfy a bare "was anything logged" check on their own,
+      # before ZAP ever ran.
+      #
+      # Public-repository constraint: this counts distinct PATHS only and
+      # never prints them. A path can carry a query string from the scan
+      # (ZAP's spider and active checks can append one), and this repo is
+      # public, so only the numeric count is ever echoed into the run log --
+      # never a raw request line.
+      #
+      # `|| true` on the assignment: under `set -e` + `pipefail`, a pipeline
+      # whose `grep -v` stage matches nothing (the exact degraded case this
+      # step exists to catch) exits nonzero, which would abort the script at
+      # the assignment itself -- before the diagnostic `echo` below or the
+      # `::error::` message ever runs, silently losing the one piece of
+      # output a human reading a red run needs. `reached` still gets the
+      # correct `wc -l` count either way (proven by execution: see the task
+      # report); only the pipeline's own exit status is discarded here, and
+      # the explicit `-lt 1` check right after is what actually fails the
+      # step.
+      - name: Verify the scan actually reached the backend through the proxy
+        if: ${{ !cancelled() }}
+        run: |
+          set -euo pipefail
+          reached=$(docker compose logs --no-color app \
+            | grep -oE '"[A-Z]+ [^ "]+ HTTP/[0-9.]+"' \
+            | awk '{print $2}' \
+            | grep -v '^/api/v1/health/' \
+            | sort -u | wc -l) || true
+          echo "Distinct non-health backend paths reached: $reached"
+          if [ "$reached" -lt 1 ]; then
+            echo "::error::No scan traffic crossed the /api proxy into the backend (0 distinct non-health paths logged by uvicorn). The scan reached the frontend but degraded to scanning the bare static bundle -- the exact target this workflow's header comment rejected. Likely causes: the client spider's browser failed to launch, or preview.proxy['/api'] is broken (see the 'Verify the /api proxy hop is live' step, which should have caught a fully dead proxy before the scan started; a proxy that is up but not actually reached by ZAP's spider is the remaining gap this check closes)."
+            exit 1
+          fi
+
+      # Only the extracted summary is published (counts + rule names/IDs),
+      # never zap-out/'s raw HTML/JSON/XML report -- see the header comment
+      # on the public-repository constraint. retention-days set explicitly
+      # (matching accessibility-compliance-weekly.yml's 14) rather than
+      # inheriting Actions' 90-day default. if-no-files-found: error, not
+      # warn: gated on `steps.verify_report.outcome == 'success'` (not just
+      # `!cancelled()`) because that is the ONLY step that writes
+      # zap-summary.md; the step above it (backend-log verification) can
+      # fail without the summary ever being absent, and running the upload
+      # anyway in that case preserves the findings summary for a run that is
+      # still going to be red for an unrelated reason. `if-no-files-found:
+      # error` therefore means what it says: given verify_report succeeded,
+      # a missing file here means the upload path itself is broken (a step
+      # reordering, a typo'd path), not that an earlier step failed.
+      - name: Upload findings summary
+        if: ${{ !cancelled() && steps.verify_report.outcome == 'success' }}
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: dast-baseline-summary
+          path: zap-out/zap-summary.md
+          retention-days: 14
+          if-no-files-found: error
+
+      # ---- Alerting: "did not run", never "found something" ----
+      # These two steps run BEFORE teardown, deliberately: a timeout-minutes
+      # cutoff gives a cancelled job only a bounded grace window for its
+      # remaining `always()` steps, and `docker compose down -v` can take
+      # tens of seconds. If teardown ran first and the grace window closed
+      # before reaching these steps, the alert this whole section exists for
+      # would silently never fire -- exactly the hang case the "Alerting:
+      # what the alert is FOR" header comment's trap 2 claims this workflow
+      # handles. Teardown of an ephemeral, disposable runner matters less
+      # than the alert firing, so it moves after.
+      #
+      # if: ${{ always() && job.status != 'success' }} on both steps below,
+      # not `failure() || cancelled()`. This is deliberately NOT resolving
+      # the open question of whether a step-level `cancelled()` reliably
+      # evaluates true for a job-level `timeout-minutes` cutoff as opposed
+      # to only an explicit run cancellation (a review of this file could
+      # not execute a check of that either way); `job.status` sidesteps the
+      # question entirely; it is unambiguously `failure`, `cancelled`, or
+      # `success` regardless of which mechanism produced the non-success
+      # outcome, so this condition covers the timeout-cutoff case that
+      # `failure() || cancelled()` might or might not, at no cost.
+      - name: Compose the issue body
+        if: ${{ always() && job.status != 'success' }}
+        id: compose
+        uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9.0.0
+        with:
+          result-encoding: string
+          script: |
+            const runUrl = `${context.serverUrl}/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`
+            const today = new Date().toISOString().slice(0, 10)
+
+            const body = [
+              'The scheduled `DAST Baseline Scan (Weekly)` workflow',
+              '(`.github/workflows/dast-baseline-weekly.yml`) did not complete a',
+              'clean run.',
+              '',
+              'This alert means the scan DID NOT RUN, or COULD NOT REACH its target',
+              '-- never that it found something. Findings from a scan that did run',
+              'are reported via the job summary and the `dast-baseline-summary`',
+              'artifact on green runs, and are triaged on a cadence, not gated on a',
+              'red job. If this alert is ever changed to fire on findings instead,',
+              'that is a regression back to the failure mode this workflow was',
+              'written to avoid: a scan that alerts on noise gets muted within a',
+              'month and then reports nothing forever.',
+              '',
+              'Two distinct causes produce this alert, and the run conclusion tells',
+              'them apart:',
+              '',
+              '1. A step failed outright (docker compose bring-up, npm ci/build, a',
+              '   readiness curl loop timing out, or the JSON-report verification',
+              '   step finding no report or no matching site). Read the run log for',
+              '   which step failed.',
+              '2. The run was CANCELLED, most likely this job\'s own',
+              '   `timeout-minutes` cutting off a hung scan (a browser failing to',
+              '   launch for the client spider, or a stuck passive-scan wait). A',
+              '   cancelled run shows no failed step in the log; that absence IS',
+              '   the signal here, not evidence nothing went wrong.',
+              '',
+              'This target is an ephemeral, unauthenticated, unseeded local stack',
+              '(no staging or production credentials involved), so a red run here',
+              'is infrastructure or scan tooling, never a live-account or shared-',
+              'state incident.',
+              '',
+              `First failing run: ${runUrl}`,
+              `Date: ${today}`,
+              '',
+              'This issue accumulates one comment per failing run and closes itself',
+              'once a scheduled run succeeds; the next failure opens a fresh issue.',
+            ].join('\n')
+
+            const commentBody = [
+              `Scheduled DAST baseline scan failed or was cancelled again on ${today}.`,
+              `This run: ${runUrl}`,
+            ].join('\n')
+
+            return JSON.stringify({ body, commentBody })
+
+      - name: File or comment on the pinned issue
+        if: ${{ always() && job.status != 'success' }}
+        uses: ./.github/actions/ci-failure-issue
+        with:
+          marker: '[dast-baseline]'
+          summary: scheduled DAST baseline scan not completing cleanly
+          body: ${{ fromJSON(steps.compose.outputs.result).body }}
+          comment-body: ${{ fromJSON(steps.compose.outputs.result).commentBody }}
+
+      # ---- Teardown: always(), these must run even on a failed/cancelled
+      # run. Placed after the alerting steps above; see the comment there
+      # for why. `|| true` on the compose teardown, matching the `pkill`
+      # line right above it: a teardown hiccup on an otherwise-clean run
+      # must not turn the job red on its own, which would both file a false
+      # "scan did not run" alert and (since the resolve step below is gated
+      # on `success()`) skip resolving any real pre-existing tracking issue.
+      - name: Stop the preview server
+        if: always()
+        run: pkill -f "vite preview" || true
+
+      - name: Tear down the ephemeral backend
+        if: always()
+        run: docker compose down -v || true
+
+      # A green run here proves the scan actually reached its target (see
+      # the verification step above), which is the full alert condition --
+      # `github.event_name == 'schedule'` (not a manual dispatch) so a
+      # one-off `workflow_dispatch` success cannot close an issue about a
+      # dead SCHEDULE; see accessibility-compliance-weekly.yml's identical
+      # reasoning on its own resolve step.
+      - name: Resolve the tracking issue on a green scheduled run
+        if: success() && github.event_name == 'schedule'
+        uses: ./.github/actions/ci-failure-issue
+        with:
+          marker: '[dast-baseline]'
+          mode: resolve

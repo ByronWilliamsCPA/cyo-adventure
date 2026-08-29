@@ -11,6 +11,7 @@ from __future__ import annotations
 
 import asyncio
 import time
+from decimal import Decimal, InvalidOperation
 from typing import TYPE_CHECKING, Final, cast
 
 from cyo_adventure.core.exceptions import ProviderError
@@ -195,6 +196,62 @@ def dig_reasoning_tokens(payload: object) -> int | None:
     if details is None:
         return None
     return coerce_token_count(details.get("reasoning_tokens"))
+
+
+def dig_vendor_cost(payload: object) -> Decimal | None:
+    """Safely extract the vendor's own ``usage.cost`` for one call, in USD.
+
+    OpenRouter reports what it actually charged for a call under ``usage.cost``
+    when the request opts in (``usage: {"include": true}``). That number is an
+    OBSERVED cost, which is a different kind of fact from the estimate
+    :func:`cyo_adventure.core.pricing.estimate_cost` computes against a
+    hand-transcribed price table: the table's own module docstring warns that a
+    vendor price change makes every later estimate silently wrong, and nothing
+    in it validates against reality. Capturing the vendor's figure is what lets
+    a spend claim be a measurement rather than an inference.
+
+    Args:
+        payload: The decoded JSON response (untrusted shape).
+
+    Returns:
+        The call's cost as ``Decimal``, or ``None`` when absent or unusable.
+
+    Note:
+        The same ``None`` versus ``0`` discipline :func:`dig_usage` documents
+        applies and is if anything sharper here: a missing cost block and a
+        genuinely free call are the same absence to a consumer that flattens
+        them, and a consumer that treats the flattened zero as spend has a
+        budget that binds on nothing. ``bool`` is rejected before ``int`` for
+        the same reason :func:`coerce_token_count` rejects it, and the value is
+        routed through ``str`` so a JSON float never enters a money total as
+        binary floating point.
+    """
+    # #CRITICAL: payment/financial: this is the only path by which a vendor's
+    # own charge for a call reaches a spend total, and every layer below it is
+    # untrusted decoded JSON. Each narrowing step must keep reporting None
+    # (not reported) rather than 0 (free), because a consumer that sums a
+    # flattened zero has a spend figure that cannot rise and therefore a cap
+    # that cannot bind. `float` is converted through `str` so a repeating
+    # binary fraction never becomes the money value itself.
+    # #VERIFY: tests/unit/test_openrouter_provider_pin.py::
+    # test_vendor_cost_is_requested_and_captured_when_opted_in and
+    # ::test_an_absent_or_unusable_vendor_cost_reports_none_not_zero.
+    top = as_str_map(payload)
+    if top is None:
+        return None
+    usage = as_str_map(top.get("usage"))
+    if usage is None:
+        return None
+    cost = usage.get("cost")
+    if isinstance(cost, bool) or not isinstance(cost, (int, float, str)):
+        return None
+    try:
+        amount = Decimal(str(cost))
+    except (InvalidOperation, ValueError):
+        return None
+    if not amount.is_finite() or amount < 0:
+        return None
+    return amount
 
 
 def dig_flat_reasoning_tokens(payload: object) -> int | None:

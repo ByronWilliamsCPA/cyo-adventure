@@ -28,7 +28,17 @@ const READING_ROW = {
   save_slots: {},
 }
 
+// Captures every reading-state PUT body issued during a test, in send order.
+// #290 (kid-go-back-real.spec.ts) found the mocked tier had no pinned
+// coverage for "the go-back PUT actually carries the reverted current_node",
+// only for the UI reflecting it; the fixture below returns the same static
+// READING_ROW regardless of what was sent, so without this capture the
+// mocked tier could not tell a correct go-back save from a stale or missing
+// one either. Reset in beforeEach so each test starts with an empty array.
+let putBodies: Array<{ current_node?: string; state_revision?: number }> = []
+
 test.beforeEach(async ({ page, context }) => {
+  putBodies = []
   await context.addInitScript(() => {
     window.localStorage.setItem('auth_token', 'child-a')
   })
@@ -38,7 +48,19 @@ test.beforeEach(async ({ page, context }) => {
   await page.route('**/api/v1/storybooks/**', (route) => route.fulfill({ json: lantern }))
   await page.route('**/api/v1/reading-state/**', (route) => {
     if (route.request().method() === 'GET') {
-      return route.fulfill({ status: 404, json: { error: 'not found' } })
+      return route.fulfill({ status: 200, json: { state: null } })
+    }
+    if (route.request().method() === 'PUT') {
+      // Guarded: an unparseable body must still reach route.fulfill below.
+      // Left unguarded, a throw here skips fulfill entirely and the request
+      // hangs to the navigation timeout instead of failing cleanly, same
+      // hazard class as the predicate defects #290 fixed elsewhere in this
+      // file's family.
+      try {
+        putBodies.push(route.request().postDataJSON() as { current_node?: string })
+      } catch {
+        putBodies.push({})
+      }
     }
     return route.fulfill({ status: 200, json: READING_ROW })
   })
@@ -83,6 +105,29 @@ test('Go back undoes the last choice and replays state faithfully, not by corrup
   await page.getByTestId('go-back').click()
   await expect(page.getByTestId('reader')).toBeVisible()
   await expect(page.getByTestId('passage-body')).toContainText('The cave splits.')
+
+  // Pins the persisted contract #290 found unpinned at this tier: the
+  // go-back click's own PUT (not merely the UI reflecting the reverted
+  // state) must carry the reverted node, not the ending it undid.
+  // #ASSUME: timing-dependencies: ReaderPage's persist() is fire-and-forget
+  // (the UI updates from the optimistic local reducer, not the PUT
+  // response), so the ending transition's own PUT can still be in flight
+  // once the passage-body assertion above has settled, and can land AFTER
+  // the go-back click's PUT. A synchronous length snapshot taken right
+  // before the click (putBodies.length) is therefore order-blind in exactly
+  // the way #290 traced the real-tier failure to: it identifies the go-back
+  // save by ARRAY POSITION, so a late-arriving n_treasure save landing after
+  // the snapshot reads as "the go-back save" and the assertion below would
+  // read n_treasure. Reading the array's last entry instead names the save
+  // by its own content, not by when it was captured, and still fails
+  // correctly if go-back sends nothing at all (the last entry stays
+  // 'n_treasure' forever, so the poll times out rather than passing).
+  // #VERIFY: reading.py's PUT handler round-trips current_node verbatim;
+  // kid-go-back-real.spec.ts asserts the same property against the real
+  // backend.
+  await expect
+    .poll(() => putBodies.at(-1)?.current_node, 'go-back click did not persist the reverted node')
+    .toBe('n_cave_fork')
 
   // The state-gated choice still behaves correctly after the undo: the
   // engine recomputed has_lantern=true by replaying the recorded path, it

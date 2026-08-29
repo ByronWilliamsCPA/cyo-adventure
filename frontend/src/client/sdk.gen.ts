@@ -98,7 +98,13 @@ export const getStorybookVersionApiV1StorybooksStorybookIdVersionsVersionGet = <
 /**
  * Get Reading State
  *
- * Return a child's reading state for a story.
+ * Return a child's reading state for a story, or an explicit absence.
+ *
+ * A profile with no saved progress for the story is a normal condition,
+ * not an error: this answers 200 with ``state: null``, matching the
+ * convention ``get_series_next`` documents below for the other
+ * kid-scoped reading routes. Errors are reserved for the story or the
+ * profile's access to it being invalid.
  *
  * Args:
  * profile_id: The child profile.
@@ -106,10 +112,15 @@ export const getStorybookVersionApiV1StorybooksStorybookIdVersionsVersionGet = <
  * ctx: The request context (principal and session).
  *
  * Returns:
- * ReadingStateView: The stored reading state.
+ * ReadingStateResultView: The stored reading state, or ``state: null``
+ * if the profile has not started this book.
  *
  * Raises:
- * ResourceNotFoundError: If the story or reading state does not exist.
+ * ResourceNotFoundError: If the story does not exist, or the profile
+ * has no assignment for a cross-family catalog story (see
+ * ``_require_assignment``).
+ * AuthorizationError: If the story is a cross-family family-visibility
+ * book not readable by this profile.
  */
 export const getReadingStateApiV1ReadingStateProfileIdStorybookIdGet = <ThrowOnError extends boolean = false>(options: Options<GetReadingStateApiV1ReadingStateProfileIdStorybookIdGetData, ThrowOnError>): RequestResult<GetReadingStateApiV1ReadingStateProfileIdStorybookIdGetResponses, GetReadingStateApiV1ReadingStateProfileIdStorybookIdGetErrors, ThrowOnError> => (options.client ?? client).get<GetReadingStateApiV1ReadingStateProfileIdStorybookIdGetResponses, GetReadingStateApiV1ReadingStateProfileIdStorybookIdGetErrors, ThrowOnError>({
     responseType: 'json',

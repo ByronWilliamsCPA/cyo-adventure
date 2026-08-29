@@ -1,6 +1,10 @@
-// Test harness for the `script:` block in ../action.yml.
+// Test harness for `script:` blocks embedded in workflow-ish YAML: this
+// action's own ../action.yml, and (via the `stepId` option below) any
+// `actions/github-script` step in a plain `.github/workflows/*.yml` file,
+// such as `.github/workflows/test/health-rollup.test.mjs`'s use against
+// scheduled-health-rollup.yml.
 //
-// The script is EXTRACTED from action.yml at run time rather than copied here.
+// The script is EXTRACTED from the YAML at run time rather than copied here.
 // A copied fixture is the failure mode this harness exists to prevent: it keeps
 // passing after the real script changes, which is indistinguishable from the
 // script being correct. If the extraction stops finding a script, that is a
@@ -18,17 +22,41 @@ const HERE = dirname(fileURLToPath(import.meta.url))
 export const ACTION_YML = join(HERE, '..', 'action.yml')
 
 /**
- * Pull the github-script body out of action.yml.
+ * Pull a `script: |` body out of a workflow-ish YAML file.
  *
  * Deliberately not a YAML parse: the point is to run the exact text that
  * `actions/github-script` receives, and a parser that normalised the block
  * would put a transformation between the test and the thing under test.
+ *
+ * `path` defaults to this action's own action.yml, which has exactly one
+ * `script:` block. A plain workflow file can have several `github-script`
+ * steps; pass `stepId` (the step's `id:` value) to disambiguate by starting
+ * the search for `script: |` only after that step's `id:` line, matching how
+ * a human would locate it by reading the YAML top to bottom. A file with
+ * only one `script:` block, like scheduled-health-rollup.yml today, does not
+ * need `stepId` at all.
  */
-export function extractScript(path = ACTION_YML) {
+export function extractScript(path = ACTION_YML, { stepId } = {}) {
   const lines = readFileSync(path, 'utf8').split('\n')
-  const start = lines.findIndex((line) => /^\s*script:\s*\|\s*$/.test(line))
+  let searchFrom = 0
+  if (stepId !== undefined) {
+    const idPattern = new RegExp(`^\\s*id:\\s*${stepId}\\s*$`)
+    const idIndex = lines.findIndex((line) => idPattern.test(line))
+    if (idIndex === -1) {
+      throw new Error(`${path}: no step with id: ${stepId} found`)
+    }
+    searchFrom = idIndex
+  }
+  let start = -1
+  for (let i = searchFrom; i < lines.length; i += 1) {
+    if (/^\s*script:\s*\|\s*$/.test(lines[i])) {
+      start = i
+      break
+    }
+  }
   if (start === -1) {
-    throw new Error(`${path}: no \`script: |\` block found`)
+    const where = stepId === undefined ? '' : ` after step id: ${stepId}`
+    throw new Error(`${path}: no \`script: |\` block found${where}`)
   }
   const openerIndent = lines[start].match(/^\s*/)[0].length
   const body = []
@@ -51,8 +79,11 @@ export function extractScript(path = ACTION_YML) {
 
 // github-script evaluates the body inside an async function, which is what
 // makes the top-level `await`s in the script legal. Reproducing that wrapper is
-// the only way to run the real text unmodified.
-const AsyncFunction = Object.getPrototypeOf(async function () {}).constructor
+// the only way to run the real text unmodified. Exported so other extracted
+// scripts (e.g. scheduled-health-rollup.yml's, run from
+// .github/workflows/test/health-rollup.test.mjs) can be wrapped the same way
+// without redefining this.
+export const AsyncFunction = Object.getPrototypeOf(async function () {}).constructor
 
 /**
  * A faithful-enough Octokit double.

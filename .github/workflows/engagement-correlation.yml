@@ -1,0 +1,187 @@
+# ADR-030 engagement-correlation control arming check.
+#
+# What this does NOT do, deliberately: it does not run the analysis job. ADR-030
+# Decision 6 decides that the artifact never leaves the deployment host and that
+# its only reader is the flywheel running as the same account. A GitHub-hosted
+# runner is neither the deployment host nor that account, and a run here would
+# put an aggregate over real children's reading outcomes on third-party
+# infrastructure with an artifact store, a log, and a job summary attached to it.
+# The scheduled analysis run is therefore staged as a host-side task, and this
+# workflow checks the only thing a runner can honestly check: that the controls
+# standing between that data and this public repository are still armed.
+#
+# It runs `scripts/engagement_correlation.py --self-check`, which verifies that
+# the kill switch still defaults to off, that the settings validator still
+# refuses an unset path, a path inside this repository, and a worktree marked by
+# a `.git` FILE, that it still accepts a path outside any checkout (an
+# unconditional refusal would pass every other check and make the job
+# unusable), that no artifact-shaped file has reached the repository tree, and
+# that no `.gitignore` names the artifact.
+#
+# -----------------------------------------------------------------------
+# Secrets and environments: NONE, on purpose.
+# -----------------------------------------------------------------------
+#
+# This job touches no database, reads no credential, and needs no GitHub
+# Environment. It therefore does NOT authenticate against or mutate the shared
+# staging Supabase project, and does not join the `e2e-staging` concurrency
+# group. It targets nothing but this repository's own source.
+#
+# Injection posture: reads no GitHub event input (no issue or PR title or body,
+# no commit message, no ref). The alert job's github-script interpolates only
+# context.serverUrl, context.repo and context.runId, all runner-supplied, plus a
+# locally computed ISO date, matching moderation-report-health.yml.
+#
+# Not a required check: this is a scheduled detector, not a PR gate. The same
+# controls are enforced per-PR by the unit tests in
+# tests/unit/test_engagement_correlation*.py and tests/unit/test_config.py.
+name: Engagement correlation controls
+
+on:
+  schedule:
+    # 07:00 UTC every Tuesday. Spread from the other scheduled jobs
+    # (moderation-report-health.yml 06:00 Monday, supabase-backup.yml 08:00
+    # daily, notification-digest.yml 09:00 daily).
+    - cron: "0 7 * * 2"
+  workflow_dispatch: {}
+
+permissions: {}
+
+concurrency:
+  # The check writes nothing and is idempotent to re-run; one group only avoids
+  # two overlapping runs. Deliberately NOT `e2e-staging`: nothing here
+  # authenticates against or mutates the shared staging project.
+  group: ${{ github.workflow }}
+  cancel-in-progress: true
+
+jobs:
+  check:
+    name: Verify the ADR-030 controls are armed
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: read
+    steps:
+      - name: Harden the runner
+        uses: step-security/harden-runner@bf7454d06d71f1098171f2acdf0cd4708d7b5920 # v2.20.0
+        with:
+          egress-policy: audit
+
+      - name: Checkout repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Set up Python
+        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: "3.14"
+
+      - name: Install UV
+        uses: astral-sh/setup-uv@c771a70e6277c0a99b617c7a806ffedaca235ff9 # v9.0.0
+        with:
+          enable-cache: true
+
+      - name: Install backend (api extra)
+        run: uv sync --extra api
+
+      - name: Check the controls
+        run: uv run python scripts/engagement_correlation.py --self-check
+
+  alert:
+    name: Alert on failure
+    needs: check
+    if: failure()
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      issues: write
+    steps:
+      - name: Harden the runner
+        uses: step-security/harden-runner@bf7454d06d71f1098171f2acdf0cd4708d7b5920 # v2.20.0
+        with:
+          egress-policy: audit
+
+      - name: Check out the shared alerting action
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          sparse-checkout: .github/actions/ci-failure-issue
+          sparse-checkout-cone-mode: false
+          persist-credentials: false
+
+      - name: Compose the issue body
+        id: compose
+        uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9.0.0
+        with:
+          result-encoding: string
+          script: |
+            const runUrl = `${context.serverUrl}/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`
+            const today = new Date().toISOString().slice(0, 10)
+
+            return [
+                  'The scheduled `Engagement correlation controls` workflow',
+                  '(`.github/workflows/engagement-correlation.yml`) failed.',
+                  '',
+                  'This runs `scripts/engagement_correlation.py --self-check`, which',
+                  'touches no database and needs no secret. It verifies the ADR-030',
+                  'controls are still armed. A failure means one of:',
+                  '',
+                  '- the kill switch no longer defaults to off;',
+                  '- the settings validator no longer refuses an unset output path, a',
+                  '  path inside this repository, or a worktree marked by a `.git` file;',
+                  '- the validator now refuses a path outside any checkout, which would',
+                  '  make the job impossible to enable;',
+                  '- an engagement-correlation artifact file has reached the repository',
+                  '  tree, or a `.gitignore` entry now names one.',
+                  '',
+                  `First failing run: ${runUrl}`,
+                  `Date: ${today}`,
+                  '',
+                  'Triage: the last of those is the urgent one. This repository is',
+                  'public and a push is not retractable, so an artifact that reached the',
+                  'tree must be treated as disclosed, not merely deleted. The run log',
+                  'names each failed check; it never prints a row, a rate, or an',
+                  'identifier.',
+                  '',
+                  'This issue accumulates one comment per failing run and closes itself',
+                  'once a scheduled run succeeds; the next failure opens a fresh issue.',
+                ].join('\n')
+
+      - name: File or comment on the pinned issue
+        uses: ./.github/actions/ci-failure-issue
+        with:
+          marker: '[engagement-correlation-controls]'
+          summary: ADR-030 engagement-correlation controls check failing
+          body: ${{ steps.compose.outputs.result }}
+          comment-body: The ADR-030 engagement-correlation controls check failed again.
+
+  resolve:
+    name: Resolve the tracking issue
+    needs: check
+    # Gated on the explicit result rather than success(): a SKIPPED dependency
+    # does not fail success() and would close the issue on a run that proved
+    # nothing. Gated on the schedule too, because a manual dispatch going green
+    # proves only that a human-triggered run passed, not that the cron is alive.
+    if: needs.check.result == 'success' && github.event_name == 'schedule'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      issues: write
+    steps:
+      - name: Harden the runner
+        uses: step-security/harden-runner@bf7454d06d71f1098171f2acdf0cd4708d7b5920 # v2.20.0
+        with:
+          egress-policy: audit
+
+      - name: Check out the shared alerting action
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          sparse-checkout: .github/actions/ci-failure-issue
+          sparse-checkout-cone-mode: false
+          persist-credentials: false
+
+      - name: Close the pinned issue
+        uses: ./.github/actions/ci-failure-issue
+        with:
+          marker: '[engagement-correlation-controls]'
+          mode: resolve

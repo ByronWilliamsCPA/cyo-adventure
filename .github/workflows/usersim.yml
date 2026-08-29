@@ -1,0 +1,227 @@
+# Scheduled user-simulation ("usersim") walk workflow.
+#
+# Runs the usersim Playwright tier (frontend/e2e-usersim/): a seeded random
+# walk over the built app, one walk per persona (kid, guardian, admin),
+# asserting invariants I1-I6 at every state it reaches. Built in tasks B1a
+# (substrate and route-manifest sync test) and B1b (invariants, the walk,
+# the Playwright project); this workflow is task B1c's job 2.
+#
+# Informational only, never PR-blocking. This workflow is schedule +
+# workflow_dispatch only, carries no pull_request trigger, and must never be
+# added to branch protection as a required check.
+#
+# Runs against the MOCKED tier only, the same shared default
+# `frontend/playwright.config.ts` the per-PR `frontend-e2e` job builds from
+# (route-intercepted API, no backend). It therefore needs no secrets and
+# touches no shared environment: it does not authenticate against the
+# staging Supabase project the way e2e-staging.yml and its
+# `e2e-staging`-labelled workflows do, so it does not join that
+# `concurrency:` group (see docs/testing/README.md, "Concurrent runs must
+# not race the same fixtures"); joining it would serialize this workflow
+# against unrelated staging-project workflows for no reason. It has its own
+# group instead, following accessibility-compliance-weekly.yml's shape,
+# since that workflow is the closest precedent: same shared default config,
+# same single-project `npx playwright test --project=<name>` invocation,
+# same alerting pattern.
+name: Usersim walk
+
+on:
+  schedule:
+    # Daily, 14:00 UTC. Distinct from every other daily cron in this
+    # directory (release 01:00, kws-delivery-health 05/11/17/23:00,
+    # supabase-backup 08:00, notification-digest 09:00, security-analysis
+    # 09:07, e2e-real-nightly 09:30, e2e-staging 13:00, e2e-prod 13:30), so
+    # this run never starts alongside another scheduled job.
+    - cron: "0 14 * * *"
+  workflow_dispatch: {}
+
+# Least-privilege at workflow level; the job below declares the extra
+# issues: write it needs for the failure-alerting step.
+permissions:
+  contents: read
+
+concurrency:
+  # Own group, not e2e-staging: this workflow authenticates against nothing
+  # and mutates no shared state, so there is nothing for it to race. See the
+  # header comment.
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  usersim:
+    name: Playwright (usersim tier)
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: read
+      issues: write
+    defaults:
+      run:
+        working-directory: ./frontend
+    steps:
+      - name: Harden the runner
+        uses: step-security/harden-runner@bf7454d06d71f1098171f2acdf0cd4708d7b5920 # v2.20.0
+        with:
+          egress-policy: audit
+
+      - name: Checkout repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Setup Node.js
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: '22'
+          cache: 'npm'
+          cache-dependency-path: frontend/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Cache Playwright browsers
+        id: playwright-cache
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-chromium-${{ runner.os }}-${{ hashFiles('frontend/package-lock.json') }}
+
+      - name: Install Playwright browsers
+        if: steps.playwright-cache.outputs.cache-hit != 'true'
+        run: npx playwright install --with-deps chromium
+
+      - name: Install Playwright OS dependencies (browser cache hit)
+        if: steps.playwright-cache.outputs.cache-hit == 'true'
+        run: npx playwright install-deps chromium
+
+      - name: Usersim walk (Playwright, mocked tier)
+        env:
+          # The usersim project lives in the SHARED default
+          # frontend/playwright.config.ts, whose json reporter defaults to
+          # playwright-json-report/report.json. This job runs only that one
+          # project, but an explicit per-invocation filename is what stops a
+          # silent overwrite if this job is ever changed to also run another
+          # default-config project in the same invocation (see the config
+          # file's own header comment, and e2e-real-nightly.yml for the
+          # confirmed real-world shape of that collision).
+          PLAYWRIGHT_JSON_REPORT_PATH: playwright-json-report/usersim.json
+        run: npm run test:e2e:usersim
+
+      - name: Upload Playwright trace on failure
+        if: ${{ failure() }}
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: usersim-traces
+          path: frontend/test-results/
+          retention-days: 7
+
+      # #CRITICAL: security: reads ONLY frontend/playwright-json-report/usersim.json
+      # (this job's own PLAYWRIGHT_JSON_REPORT_PATH override on the walk step
+      # above), never frontend/test-results/, which is uploaded wholesale as
+      # a public artifact by the step above because THIS REPOSITORY IS
+      # PUBLIC. scripts/extract-failing-specs.mjs reads only `spec.file` and
+      # `test.title` off the report; it never touches an error message, a
+      # stack trace, or any attachment, and it always exits 0 (a missing or
+      # unparseable report degrades to an explanatory line), so this step
+      # cannot itself fail the job.
+      # #VERIFY: a future edit to that script that reads any other field must
+      # be rejected in review; see its own header comment.
+      - name: Extract failing specs from the Playwright report
+        if: ${{ failure() }}
+        id: extract_specs
+        run: |
+          {
+            echo 'result<<EXTRACT_SPECS_EOF'
+            node scripts/extract-failing-specs.mjs playwright-json-report/usersim.json
+            echo 'EXTRACT_SPECS_EOF'
+          } >> "$GITHUB_OUTPUT"
+
+      - name: Compose the issue body
+        # Reusable alerting pattern for scheduled E2E tiers, routed through
+        # the shared .github/actions/ci-failure-issue composite (label:
+        # e2e-alert) instead of a bare github-script block, matching
+        # e2e-prod.yml and accessibility-compliance-weekly.yml.
+        #
+        # This composite action's own contract (see its header comment) uses
+        # `body` only at issue creation and `comment-body` only at issue
+        # comment time, so a single composed string cannot serve both without
+        # going stale: a "First failing run" line would read false on every
+        # recurrence, which is the exact defect a reviewer caught on an
+        # earlier task in this plan when a create body was reused verbatim
+        # as a comment body. This step therefore composes two distinct
+        # bodies (createBody, the long standing-context one used once at
+        # creation; commentBody, a short one repeated on every recurrence)
+        # and returns them JSON-encoded, read back below via
+        # `fromJSON(...)`, matching accessibility-compliance-weekly.yml's
+        # shape.
+        #
+        # `FAILING_SPECS` (task A7-i) is the prior step's output: which spec
+        # file(s) and test title(s) failed, or an explanatory line if the
+        # report was absent/unparseable.
+        if: ${{ failure() }}
+        id: compose
+        uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9.0.0
+        env:
+          FAILING_SPECS: ${{ steps.extract_specs.outputs.result }}
+        with:
+          result-encoding: string
+          script: |
+            const runUrl = `${context.serverUrl}/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`
+            const today = new Date().toISOString().slice(0, 10)
+            const failingSpecs = process.env.FAILING_SPECS || 'No failing-spec detail is available for this run.'
+
+            const createBody = [
+              'The scheduled `Usersim walk` workflow (`.github/workflows/usersim.yml`) failed.',
+              '',
+              'This tier runs a seeded random walk over the built app',
+              '(frontend/e2e-usersim/), one walk per persona (kid, guardian,',
+              'admin), asserting invariants I1-I6 at every state it reaches',
+              '(unexpected console activity, dead ends, stuck loading',
+              'indicators, horizontal overflow, and role/family isolation).',
+              'It runs daily against the mocked tier only, no secrets and no',
+              'shared environment.',
+              '',
+              'All three personas pass as of this workflow shipping, so a',
+              'failure here is a genuine signal: either a real regression in',
+              'the app, or a change to the walk/invariants/personas that',
+              'needs review.',
+              '',
+              failingSpecs,
+              '',
+              `First failing run: ${runUrl}`,
+              `Date: ${today}`,
+              '',
+              'This issue accumulates one comment per failing run and closes itself',
+              'once a scheduled run succeeds; the next failure opens a fresh issue.',
+            ].join('\n')
+
+            const commentBody = [
+              `Scheduled usersim walk failed again on ${today}.`,
+              '',
+              failingSpecs,
+              '',
+              `This run: ${runUrl}`,
+            ].join('\n')
+
+            return JSON.stringify({ createBody, commentBody })
+
+      - name: File or comment on the pinned issue
+        if: ${{ failure() }}
+        uses: ./.github/actions/ci-failure-issue
+        with:
+          marker: '[usersim]'
+          label: e2e-alert
+          summary: scheduled usersim walk failing
+          body: ${{ fromJSON(steps.compose.outputs.result).createBody }}
+          comment-body: ${{ fromJSON(steps.compose.outputs.result).commentBody }}
+
+      - name: Resolve the tracking issue on a green scheduled run
+        # `&& github.event_name == 'schedule'`: a manual `workflow_dispatch`
+        # proves only that a human-triggered run went green, not that the
+        # SCHEDULE is alive; without this a dead cron could still have its
+        # tracking issue closed by a one-off dispatch (see supabase-backup.yml
+        # for the confirmed real-world shape of that failure, issue #667).
+        if: success() && github.event_name == 'schedule'
+        uses: ./.github/actions/ci-failure-issue
+        with:
+          marker: '[usersim]'
+          label: e2e-alert
+          mode: resolve

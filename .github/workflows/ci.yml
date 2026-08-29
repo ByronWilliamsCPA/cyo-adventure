@@ -890,12 +890,92 @@ jobs:
         env:
           # Raise in step with the suite. A floor that never moves stops
           # detecting a suite that quietly lost half its cases.
-          MIN_TESTS: '40'
+          #
+          # Four files, not a glob: `.github/workflows/test/health-rollup.test.mjs`
+          # covers `scheduled-health-rollup.yml`'s findTrackingIssue extraction,
+          # `frontend/scripts/test/extract-failing-specs.test.mjs` (task A7-i review,
+          # Important 2) covers `frontend/scripts/extract-failing-specs.mjs`'s
+          # failure-discrimination and security properties, the sole producer of
+          # every scheduled e2e alert's substantive content, and
+          # `frontend/scripts/test/artifact-upload-safety.test.mjs` covers
+          # `frontend/scripts/check-artifact-upload-safety.mjs`, the control that
+          # keeps a Playwright output directory from being published as a public
+          # artifact by any workflow that injects a repository secret. A glob here
+          # (e.g. `.github/**/*.test.mjs` or `**/*.test.mjs`) could silently match
+          # zero files after a rename or move and `node --test` would exit 0 having
+          # run nothing, which is the exact anti-oracle this step exists to close.
+          # An explicit missing path fails loudly instead (`node --test` exits 1
+          # with "Could not find <path>"), so listing all four files by name is the
+          # safer choice even though it means updating this line for a future
+          # fifth harness.
+          #
+          # Measured 2026-08-29 after adding six cases to
+          # extract-failing-specs.test.mjs (the shape-guard hardening), the
+          # 22-case artifact-upload-safety.test.mjs, and the final-wave fixes:
+          # eleven cases in health-rollup.test.mjs (the call-site discovery
+          # defects and the fleet-claim assertions) and seven in
+          # artifact-upload-safety.test.mjs (`secrets: inherit`, which the hard
+          # rule's `${{ secrets.` literal could never see). The four files now
+          # report `# pass 121`. Raised 75 -> 81 -> 103 -> 121 in step with
+          # those, per the rule at the top of this comment; a floor left behind
+          # would have let the new cases be deleted with the gate still green.
+          #
+          # Re-measured 2026-08-29 after the PR #780 review fixes: seven more
+          # cases in artifact-upload-safety.test.mjs covering the two defects
+          # in its own guard (a trailing YAML comment demoted a wholesale
+          # Playwright output directory to the `narrow` exemption, and that
+          # exemption was unbounded by filename so `error-context.md`, the file
+          # that actually leaked a password, passed clean). Two of the seven
+          # spawn the CLI itself rather than the exported function. Measured
+          # with the exact `node --test` line below: 121 -> 128 -> 158 -> 172.
+          #
+          # The 128 -> 158 step is the PR #780 review's own findings closed:
+          # +11 on the upload guard (the `playwright-json-report` output
+          # directory it could not see, and three further routes to a
+          # credential that a `secrets.` reference does not match: a `vars`
+          # context reference, an OIDC `id-token: write` grant, and a blanket
+          # write-all permissions grant that implies one), and +19 on the
+          # health rollup, where the cron collision detector was lifted out
+          # into `cronsCollide` and given range, step and comma-list handling
+          # in every field. It previously compared minutes with a bare `===`
+          # and split only hour and day-of-week on commas, so a neighbour
+          # written as `1-5` was invisible to it.
+          #
+          # The 158 -> 172 step is the four-reviewer pass over those same
+          # commits, which found two of them could not fail when their subject
+          # broke. +12 on the upload guard: it now decides by containment
+          # rather than by path spelling, so an ancestor of a Playwright output
+          # directory is no longer exempt, and its step parser no longer loses
+          # a step to a quoted `uses:` or a folded scalar. +2 on the health
+          # rollup, where a day-of-week step term counted to 7 and the Sunday
+          # normalisation turned that into a day the cron never named.
+          #
+          # This paragraph names the `vars` and write-all patterns in prose
+          # rather than as literal `${{ }}`/`key: value` syntax on purpose.
+          # `check-artifact-upload-safety.mjs`'s `injectsSecrets` docstring
+          # states that those two patterns occur nowhere in
+          # `.github/workflows/`; spelling the `vars` one out literally here
+          # would make this comment the one hit that falsifies that claim,
+          # because its detector regex has no `^`-anchor and matches after a
+          # `#` exactly as readily as in a live directive. The write-all
+          # detector is `^[ \t]*`-anchored and cannot match inside a comment,
+          # so writing it literally would not change any tier's classifier
+          # result, but the claim is about the pattern's textual occurrence
+          # in the directory, not about the classifier, so it would still be
+          # false the same way. Confirmed clean on 2026-08-29:
+          # `grep -rn '\${{ *vars\.' .github/workflows/` and
+          # `grep -rn 'permissions:\s*write-all' .github/workflows/` both
+          # return no matches. Re-run both before writing either pattern
+          # literally into this file again.
+          MIN_TESTS: '172'
         run: |
           set -euo pipefail
 
           node --test --test-reporter=tap \
-            .github/actions/ci-failure-issue/test/reconcile.test.mjs | tee harness.tap
+            .github/actions/ci-failure-issue/test/reconcile.test.mjs \
+            .github/workflows/test/health-rollup.test.mjs \
+            frontend/scripts/test/extract-failing-specs.test.mjs \
+            frontend/scripts/test/artifact-upload-safety.test.mjs | tee harness.tap
 
           passed="$(sed -n 's/^# pass \([0-9]\+\)$/\1/p' harness.tap | tail -1)"
           failed="$(sed -n 's/^# fail \([0-9]\+\)$/\1/p' harness.tap | tail -1)"

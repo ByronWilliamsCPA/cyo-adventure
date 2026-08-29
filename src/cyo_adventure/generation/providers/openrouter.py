@@ -31,6 +31,7 @@ from cyo_adventure.generation.providers._base import (
     dig_finish_reason,
     dig_reasoning_tokens,
     dig_usage,
+    dig_vendor_cost,
     elapsed_ms,
     run_with_retries,
     strip_code_fences,
@@ -202,6 +203,15 @@ class OpenRouterProvider:
             sets ``allow_fallbacks: false``, which is what makes a measurement
             attributable to one backend rather than to whichever backend
             happened to win the routing auction that minute.
+        report_vendor_cost: When ``True``, asks OpenRouter to include its own
+            per-call charge in the response (``usage: {"include": true}``) and
+            surfaces it as ``Completion.vendor_cost_usd``. ``False`` (the
+            default, and what every generation caller passes) sends no
+            ``usage`` field at all, so the request stays byte-identical to what
+            it was before this parameter existed and ``vendor_cost_usd`` stays
+            ``None``. Offline measurement harnesses opt in, because a spend
+            figure they report should be what the vendor charged rather than
+            what ``core/pricing.py``'s dated, hand-transcribed table infers.
         temperature: Optional sampling temperature. ``None`` (the default, and
             what every generation caller passes) sends no ``temperature`` field
             at all, leaving the model's own default intact, so story generation
@@ -227,6 +237,7 @@ class OpenRouterProvider:
         client: httpx.AsyncClient | None = None,
         provider_order: tuple[str, ...] = (),
         temperature: float | None = None,
+        report_vendor_cost: bool = False,
     ) -> None:
         self._api_key: Final[str] = api_key
         self._model: Final[str] = model
@@ -238,6 +249,7 @@ class OpenRouterProvider:
         self._client: Final[httpx.AsyncClient | None] = client
         self._provider_order: Final[tuple[str, ...]] = provider_order
         self._temperature: Final[float | None] = temperature
+        self._report_vendor_cost: Final[bool] = report_vendor_cost
 
     @property
     def temperature(self) -> float | None:
@@ -374,6 +386,17 @@ class OpenRouterProvider:
         # ::test_a_review_temperature_is_sent_when_set.
         if self._temperature is not None:
             body["temperature"] = self._temperature
+        # #CRITICAL: payment/financial: omitted rather than defaulted when the
+        # caller does not ask, for the same reason `provider` and `temperature`
+        # are: an always-present field changes every request that existed
+        # before it. Opting in is what makes an offline harness able to report
+        # what the vendor charged instead of what a dated local price table
+        # infers, without repointing a single production request.
+        # #VERIFY: tests/unit/test_openrouter_provider_pin.py::
+        # test_no_usage_accounting_field_is_sent_by_default and
+        # ::test_vendor_cost_is_requested_and_captured_when_opted_in.
+        if self._report_vendor_cost:
+            body["usage"] = {"include": True}
         headers = {
             "Authorization": f"Bearer {self._api_key}",
             "Content-Type": "application/json",
@@ -598,6 +621,9 @@ class OpenRouterProvider:
                 leg_fatal=finish_reason == "length",
             )
         input_tokens, output_tokens = dig_usage(payload)
+        # Absent unless the caller opted in, and `None` (not reported) rather
+        # than zero whenever the vendor did not send a usable figure.
+        vendor_cost = dig_vendor_cost(payload) if self._report_vendor_cost else None
         # Normalize away any markdown code fence so the orchestrator's json.loads
         # parses models (e.g. Gemini Flash) that wrap output despite instructions.
         return Completion(
@@ -611,4 +637,5 @@ class OpenRouterProvider:
                 reasoning_tokens=reasoning_tokens,
             ),
             finish_reason=finish_reason,
+            vendor_cost_usd=vendor_cost,
         )

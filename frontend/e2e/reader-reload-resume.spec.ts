@@ -31,7 +31,7 @@ test('reloading the same device resumes at the same node, not the start', async 
   let revision = 0
   await page.route('**/api/v1/reading-state/**', (route) => {
     if (route.request().method() === 'GET') {
-      return route.fulfill({ status: 404, json: { error: 'not found' } })
+      return route.fulfill({ status: 200, json: { state: null } })
     }
     const body = route.request().postDataJSON() as Record<string, unknown>
     revision += 1

@@ -3,6 +3,7 @@ import { expect, test, type BrowserContext, type Page } from '@playwright/test'
 
 import { LANDING_HEADLINE } from '../src/landing/headline'
 import { mockEmptyConsole, mockMe, seedDeviceGrant, seedGuardianSession } from './support/auth'
+import { AXE_TAGS, isConformance } from './support/axeTags'
 import { loadLanternStory } from './support/fixtures'
 import { LOGIN_HEADLINE } from '../src/guardian/loginHeadline'
 
@@ -62,20 +63,8 @@ const ONE_STORY = {
   ],
 }
 
-// Per-PR CI stays scoped to WCAG 2.1 conformance tags only (see the comment
-// below): fast and non-noisy, so it can gate every PR. The weekly
-// "Accessibility Compliance" workflow (.github/workflows/
-// accessibility-compliance-weekly.yml) sets A11Y_EXTENDED=1 to run this same
-// suite against WCAG 2.2 (both wcag22a AND wcag22aa: axe's WCAG tags are
-// additive per level, so wcag22aa alone would silently skip the 2.2 Level A
-// criteria, UW-N04) plus axe's "best-practice" rules (e.g. missing
-// landmark/heading structure), without adding that scope, or run time, to
-// every PR.
-const AXE_TAGS =
-  process.env.A11Y_EXTENDED === '1'
-    ? ['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa', 'wcag22a', 'wcag22aa', 'best-practice']
-    : ['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa']
-
+// AXE_TAGS: shared with the usersim walk tier's I7 invariant (task B3b), see
+// support/axeTags.ts for the full rationale and the per-PR-vs-weekly split.
 async function assertNoViolations(page: Page) {
   // Extended-only: axe's best-practice landmark/heading rules (unlike the
   // WCAG-tagged rules the default run checks) fire against the ABSENCE of
@@ -164,7 +153,6 @@ async function assertNoViolations(page: Page) {
   // The per-PR gate is untouched by construction: without A11Y_EXTENDED its
   // tag list has no `best-practice` entry, so `structural` is always empty and
   // this behaves exactly as the plain assertion did.
-  const isConformance = (v: { tags: string[] }) => v.tags.some((t) => t.startsWith('wcag'))
   const conformance = results.violations.filter(isConformance)
   const structural = results.violations.filter((v) => !isConformance(v))
 
@@ -271,7 +259,7 @@ test('the reader page has no detectable accessibility violations', async ({ page
   await page.route('**/api/v1/storybooks/**', (route) => route.fulfill({ json: lantern }))
   await page.route('**/api/v1/reading-state/**', (route) => {
     if (route.request().method() === 'GET') {
-      return route.fulfill({ status: 404, json: { error: 'not found' } })
+      return route.fulfill({ status: 200, json: { state: null } })
     }
     return route.fulfill({ status: 200, json: { current_node: 'n_entrance', state_revision: 1 } })
   })

@@ -33,7 +33,7 @@ test('kid reader choice buttons meet the 44x44 tap floor at a phone viewport', a
   await page.route('**/api/v1/storybooks/**', (route) => route.fulfill({ json: lantern }))
   await page.route('**/api/v1/reading-state/**', (route) => {
     if (route.request().method() === 'GET') {
-      return route.fulfill({ status: 404, json: { error: 'not found' } })
+      return route.fulfill({ status: 200, json: { state: null } })
     }
     return route.fulfill({ status: 200, json: { current_node: 'n_entrance', state_revision: 1 } })
   })

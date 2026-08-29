@@ -40,6 +40,7 @@ path = [
     "frontend/e2e-staging/**",  # Playwright end-to-end specs (staging smoke tier)
     "frontend/e2e-staging-sweep/**",  # Post-run staging device-grant sweep (own tier, own config)
     "frontend/e2e-support/**",  # Playwright helpers shared by the staging and production tiers
+    "frontend/e2e-usersim/**",  # Seeded random-walk user simulation tier (mocked and real legs)
     "frontend/*.ts",
     "frontend/*.js",
     "frontend/eslint.config.js",

@@ -145,13 +145,58 @@ jobs:
           CI: ""
         run: npm run test:e2e:prod
 
-      - name: Upload Playwright trace on failure
+      # #CRITICAL: security: there is deliberately NO artifact upload here, and
+      # nothing may be added that publishes `frontend/test-results/` or any
+      # file under it. This workflow signs a REAL production account in through
+      # the real login form, and THIS REPOSITORY IS PUBLIC, so any artifact is
+      # world-readable for its whole retention window by anyone, with no
+      # GitHub account required.
+      #
+      # This step used to be `Upload Playwright trace on failure`
+      # (`path: frontend/test-results/`, `retention-days: 7`). Two independent
+      # reproductions, each extracting a real Playwright trace with Python's
+      # `zipfile` from a deliberately failing run whose password came only from
+      # the environment, found E2E_PROD_TEST_PASSWORD in plain text in the
+      # `Fill "..."` step title (`test.trace`), in the `fill` action's
+      # `params.value` (`0-trace.trace`), and UNMASKED in the accessibility
+      # snapshot as `textbox "Password": <value>`, plus an
+      # `Authorization: Bearer ...` header in `0-trace.network`.
+      #
+      # `trace: 'off'` in playwright.e2e-prod.config.ts is necessary but NOT
+      # sufficient, which is why the step is deleted rather than narrowed: with
+      # traces, screenshots, and video all off, Playwright still writes
+      # `error-context.md` into that directory on failure, and that file is
+      # built from the same accessibility snapshot, so it carries the plaintext
+      # password too (verified: the only two files left in the output directory
+      # were `.last-run.json` and an `error-context.md` containing the
+      # credential). There is no subset of that directory that is safe to
+      # publish.
+      # #VERIFY: the failure alert below already names which spec failed, read
+      # from `frontend/playwright-json-report/e2e-prod.json`, which the config
+      # keeps OUTSIDE `test-results/` for exactly this reason. Debug a prod
+      # failure by reproducing it locally against staging, never by publishing
+      # an artifact from this job.
+
+      # #CRITICAL: security: reads ONLY frontend/playwright-json-report/e2e-prod.json
+      # (this workflow's own `json` reporter output, see the reporter array in
+      # playwright.e2e-prod.config.ts), never frontend/test-results/, whose
+      # per-failure artifacts carry the real production password in plain text
+      # (see the block above). scripts/extract-failing-specs.mjs reads only `spec.file` and
+      # `test.title` off the report; it never touches an error message, a
+      # stack trace, or any attachment, and it always exits 0 (a missing or
+      # unparseable report degrades to an explanatory line), so this step
+      # cannot itself fail the job.
+      # #VERIFY: a future edit to that script that reads any other field must
+      # be rejected in review; see its own header comment.
+      - name: Extract failing specs from the Playwright report
         if: ${{ failure() }}
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
-        with:
-          name: e2e-prod-traces
-          path: frontend/test-results/
-          retention-days: 7
+        id: extract_specs
+        run: |
+          {
+            echo 'result<<EXTRACT_SPECS_EOF'
+            node scripts/extract-failing-specs.mjs playwright-json-report/e2e-prod.json
+            echo 'EXTRACT_SPECS_EOF'
+          } >> "$GITHUB_OUTPUT"
 
       - name: Compose the issue body
         # Reusable alerting pattern for scheduled E2E tiers (test-
@@ -163,18 +208,35 @@ jobs:
         # or a 31st-oldest open issue, could hide the real tracking issue and
         # file a duplicate.
         #
-        # e2e-staging.yml should adopt this same composite-action pattern once
-        # PR #268 merges; today it only has the passive
-        # trace-artifact-on-failure signal (marker "[e2e-staging]" instead of
-        # "[e2e-prod]", everything else the same).
+        # e2e-staging.yml now adopts this same composite-action pattern too
+        # (marker "[e2e-staging]" instead of "[e2e-prod]"). Its own compose
+        # step additionally distinguishes which of its three tracked failure
+        # sources fired (a Playwright failure, an unconfirmed teardown revoke,
+        # or a staging device grant that may still be active, caught by the
+        # sweep). This job's `npm ci` can fail it too, same as e2e-staging's;
+        # the real distinction is that this job tracks only one semantically
+        # distinct failure source (the Playwright step) worth naming in the
+        # body, where e2e-staging tracks three, so this compose step can stay
+        # one fixed message.
+        #
+        # `FAILING_SPECS` (task A7-i) is the prior step's output: which spec
+        # file(s) and test title(s) failed, or an explanatory line if the
+        # report was absent/unparseable. It is composed into the return value
+        # here and passed to BOTH `body` and `comment-body` below, matching
+        # e2e-staging.yml: on this branch the composite action uses `body`
+        # only at issue creation, so anything that goes only into `body`
+        # would be visible exactly once.
         if: ${{ failure() }}
         id: compose
         uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9.0.0
+        env:
+          FAILING_SPECS: ${{ steps.extract_specs.outputs.result }}
         with:
           result-encoding: string
           script: |
             const runUrl = `${context.serverUrl}/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`
             const today = new Date().toISOString().slice(0, 10)
+            const failingSpecs = process.env.FAILING_SPECS || 'No failing-spec detail is available for this run.'
 
             return [
               'The scheduled `E2E (production)` workflow (`.github/workflows/e2e-prod.yml`) failed.',
@@ -184,7 +246,9 @@ jobs:
               'regression, a production outage, or the dedicated test account or its',
               'credentials need attention.',
               '',
-              `First failing run: ${runUrl}`,
+              failingSpecs,
+              '',
+              `This run: ${runUrl}`,
               `Date: ${today}`,
               '',
               'This issue accumulates one comment per failing run and closes itself',
@@ -199,7 +263,7 @@ jobs:
           label: e2e-alert
           summary: scheduled production E2E failing
           body: ${{ steps.compose.outputs.result }}
-          comment-body: Scheduled production E2E failed again.
+          comment-body: ${{ steps.compose.outputs.result }}
 
       - name: Resolve the tracking issue on a green scheduled run
         # Every one of these issue bodies used to end by asking a human to
