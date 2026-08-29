@@ -160,6 +160,30 @@ test('the upload-path classifier', async (t) => {
     assert.equal(classifyUploadPath('playwright-report/'), 'wholesale')
   })
 
+  // Important 2. Every Playwright config in this repository also writes a
+  // `playwright-json-report/` directory: `frontend/playwright.config.ts` and
+  // the three `e2e-*` configs each point the `json` reporter's `outputFile`
+  // under that name. Its failing-run JSON carries `results[].error.message`,
+  // `stdout`, `stderr` and `attachments`, which is the same disclosure surface
+  // as the two segments already listed, yet a path under it classified
+  // `unrelated` and so was never checked at all. An unchecked path is not a
+  // safe one; it is one the guard cannot fail on.
+  await t.test('recognises the json-report directory the configs actually write', () => {
+    assert.notEqual(
+      classifyUploadPath('frontend/playwright-json-report/'),
+      'unrelated',
+      'a json-report path must be classified, not skipped as unrelated'
+    )
+    assert.equal(classifyUploadPath('frontend/playwright-json-report/'), 'wholesale')
+    assert.equal(classifyUploadPath('frontend/playwright-json-report'), 'wholesale')
+    assert.equal(classifyUploadPath('frontend/playwright-json-report/*.json'), 'wholesale')
+    assert.equal(
+      classifyUploadPath('frontend/playwright-json-report/e2e-staging.json'),
+      'wholesale',
+      'no json-report basename is on the narrow allowlist, so a named report is refused too'
+    )
+  })
+
   await t.test('calls a single named file inside one narrow', () => {
     assert.equal(classifyUploadPath('frontend/test-results/leaked-device-grants.jsonl'), 'narrow')
   })
@@ -301,6 +325,35 @@ test('the secret detector', async (t) => {
     assert.equal(injectsSecrets("    secrets: 'inherit'\n"), true)
   })
 
+  // Important 4. The detector keyed on `secrets.` alone, so a workflow whose
+  // only credential arrives through a repository or environment VARIABLE, or
+  // which mints a cloud token over OIDC, read as non-secret-bearing and could
+  // then publish wholesale. Latent rather than live in this repository: `${{
+  // vars.` occurs nowhere in `.github/workflows`, and the four workflows that
+  // request `id-token` upload no Playwright output. Closed as prevention, so
+  // the first workflow to take either route does not arrive unguarded.
+  await t.test('sees a repository or environment variable expression', () => {
+    assert.equal(injectsSecrets('  LOGIN_TOKEN: ${{ vars.STAGING_LOGIN_TOKEN }}\n'), true)
+  })
+
+  await t.test('sees an OIDC token request, at workflow level and at job level', () => {
+    assert.equal(injectsSecrets('permissions:\n  contents: read\n  id-token: write\n'), true)
+    assert.equal(
+      injectsSecrets(
+        ['jobs:', '  publish:', '    permissions:', '      id-token: write', ''].join('\n')
+      ),
+      true
+    )
+  })
+
+  await t.test('sees the blanket write-all grant that implies an OIDC token', () => {
+    assert.equal(injectsSecrets('permissions: write-all\n'), true)
+    assert.equal(
+      injectsSecrets(['jobs:', '  publish:', '    permissions: write-all', ''].join('\n')),
+      true
+    )
+  })
+
   // Controls. Without these the widened rule could pass by calling every
   // workflow secret-bearing, which would make the hard rule unfalsifiable in
   // the other direction.
@@ -308,6 +361,28 @@ test('the secret detector', async (t) => {
     assert.equal(injectsSecrets('    # secrets: inherit\n'), false)
     assert.equal(injectsSecrets('  # this reusable call inherits nothing\n'), false)
     assert.equal(injectsSecrets('    with:\n      inherit: true\n'), false)
+  })
+
+  // The other direction of the widening. A detector that answers true for
+  // every input is exactly as useless as one that answers false for every
+  // input: it would make the hard rule fire on the whole repository and so
+  // justify nothing. `id-token` is only a credential when it is granted
+  // `write`; `none` is the value a workflow uses to REFUSE the token.
+  await t.test('does not treat a non-write id-token permission as a credential', () => {
+    assert.equal(injectsSecrets('permissions:\n  contents: read\n  id-token: none\n'), false)
+    assert.equal(injectsSecrets('permissions:\n  id-token: read\n'), false)
+    assert.equal(injectsSecrets('    # id-token: write\n'), false)
+    assert.equal(injectsSecrets('  # this job needs id-token for the OIDC exchange\n'), false)
+    assert.equal(injectsSecrets('  # and it must not mention vars. either\n'), false)
+  })
+
+  // Same direction for the blanket grant: `read-all` is the value that grants
+  // no credential, so a detector matching it would call half the repository
+  // secret-bearing on the strength of a read permission.
+  await t.test('does not treat a read-all permission block as a credential', () => {
+    assert.equal(injectsSecrets('permissions: read-all\n'), false)
+    assert.equal(injectsSecrets('    # permissions: write-all\n'), false)
+    assert.equal(injectsSecrets('  # write-all would be too broad here\n'), false)
   })
 })
 
@@ -446,6 +521,75 @@ test('the hard rule, end to end', async (t) => {
     )
     assert.equal(violations.length, 1)
     assert.match(violations[0], /some-future-diagnostic\.json/)
+  })
+
+  // Important 2, end to end. `playwright-json-report/` was invisible to the
+  // rule, so a secret-bearing workflow could publish a whole tree of
+  // failing-run JSON (error messages, stdout, stderr, attachment paths) and
+  // the CLI would exit 0 on it.
+  await t.test('a wholesale json-report upload from a secret-bearing workflow is refused', () => {
+    const violations = ruleOver(
+      INHERITING_UPLOADER.replace(
+        '          path: frontend/test-results/',
+        '          path: frontend/playwright-json-report/'
+      )
+    )
+    assert.equal(violations.length, 1)
+    assert.match(violations[0], /frontend\/playwright-json-report\//)
+  })
+
+  // Important 4, end to end. A workflow whose ONLY credential reference is a
+  // variable expression, or an OIDC token grant, read as non-secret-bearing
+  // and could publish wholesale. `NO_CREDENTIAL_UPLOADER` is the same fixture
+  // with the inherit line taken out, so each arm below differs from a proven
+  // clean tree by exactly the credential route under test.
+  const NO_CREDENTIAL_UPLOADER = INHERITING_UPLOADER.replace('    secrets: inherit\n', '')
+
+  await t.test(
+    'the credential-free fixture is clean, which is what makes the next two mean something',
+    () => {
+      assert.deepEqual(ruleOver(NO_CREDENTIAL_UPLOADER), [])
+    }
+  )
+
+  await t.test('a vars-only workflow publishing wholesale is a violation', () => {
+    const violations = ruleOver(
+      NO_CREDENTIAL_UPLOADER.replace(
+        '  publish:',
+        ['  publish:', '    env:', '      LOGIN_TOKEN: ${{ vars.STAGING_LOGIN_TOKEN }}'].join('\n')
+      )
+    )
+    assert.equal(violations.length, 1)
+    assert.match(violations[0], /tier\.yml/)
+  })
+
+  await t.test('an OIDC-only workflow publishing wholesale is a violation', () => {
+    const violations = ruleOver(
+      NO_CREDENTIAL_UPLOADER.replace(
+        '  publish:',
+        ['  publish:', '    permissions:', '      contents: read', '      id-token: write'].join(
+          '\n'
+        )
+      )
+    )
+    assert.equal(violations.length, 1)
+    assert.match(violations[0], /tier\.yml/)
+  })
+
+  await t.test('a workflow that REFUSES the OIDC token is not a violation', () => {
+    // The direction that keeps the widening from becoming a check that always
+    // fires. Identical to the arm above but for `none` in place of `write`.
+    assert.deepEqual(
+      ruleOver(
+        NO_CREDENTIAL_UPLOADER.replace(
+          '  publish:',
+          ['  publish:', '    permissions:', '      contents: read', '      id-token: none'].join(
+            '\n'
+          )
+        )
+      ),
+      []
+    )
   })
 
   await t.test('the one enumerated ledger filename is still accepted', () => {

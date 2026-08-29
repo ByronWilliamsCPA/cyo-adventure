@@ -15,8 +15,11 @@
 # trigger, and it must never be added to branch protection as a required
 # check. It is a reporting job, not a gate.
 #
-# Cron slot: Thursdays at 07:00 UTC, chosen so this run never starts in the
-# same minute as another scheduled workflow.
+# Cron slot: Thursdays at 07:00 UTC, chosen so this run never starts at the
+# same INSTANT as another scheduled workflow. The precision matters: minute 0
+# is not unique here, seventeen other crons in this directory also fire at
+# minute 0 of some hour. The claim is only the narrower one the test below
+# enforces, that nothing else shares this file's minute AND hour AND day.
 #
 # That claim is ASSERTED, not narrated. A hand-typed inventory of the fleet
 # stood here and was false within two days of being written: it said "23
@@ -26,8 +29,17 @@
 # .github/workflows/test/health-rollup.test.mjs now re-derives every `cron:`
 # line in this directory on every run and fails when one shares this file's
 # minute-and-hour on this file's day, so the slot is re-proved rather than
-# remembered. As of 2026-08-29 the nearest neighbours are dast-baseline-weekly
-# (Thursday 08:20) and container-security (Wednesday 07:00).
+# remembered. Its `cronsCollide` expands each field to the set of values it
+# matches, so ranges (`1-5`), steps (`*/2`) and comma lists are all seen, in
+# the minute field as well as hour and day-of-week; an earlier version read
+# commas only and would have missed a neighbour written as a range.
+#
+# As of 2026-08-29 the nearest neighbours on this file's own day are
+# supabase-backup.yml (`0 8 * * *`, so Thursday 08:00, one hour after this
+# run) and dast-baseline-weekly.yml (Thursday 08:20). container-security.yml
+# also sits at 07:00, but on Wednesday, so it is not a same-day neighbour at
+# all; naming it without naming the daily backup, as this comment previously
+# did, put the further job first.
 #
 # #CRITICAL: correctness: a bounded query window is not a streak. Asking for
 # the last N runs and reporting every-run-failed as "an N-run streak" has

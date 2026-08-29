@@ -200,9 +200,25 @@ name: DAST Baseline Scan (Weekly)
 on:
   schedule:
     # Thursday 08:20 UTC. Distinct from every other cron in this directory
-    # as of 2026-08-28: sbom.yml runs Monday 08:00 (different day), and
-    # scheduled-health-rollup.yml runs Thursday 07:00 (same day, distinct
-    # hour) -- see webkit-kid.yml's header comment for the pattern of citing
+    # as of 2026-08-29. Nearest neighbour first, which the previous version
+    # of this comment omitted: supabase-backup.yml runs `0 8 * * *`, so it
+    # fires at 08:00 every day including this one, twenty minutes before this
+    # job and in the same hour. Being daily, it is a nearer neighbour than
+    # either weekly job named here before: sbom.yml (Monday 08:00, different
+    # day) and scheduled-health-rollup.yml (Thursday 07:00, same day,
+    # distinct hour).
+    #
+    # The day is not what makes this slot distinct, since ten daily crons
+    # fire on Thursday as well. The minute is: of the directory's 29 crons,
+    # minute 20 belongs to this file alone.
+    #
+    # Re-derive rather than trust this comment:
+    #   grep -rhoP "^\s*-\s*cron:\s*['\"]\K[^'\"]+" .github/workflows/
+    # Both quoting styles are in use here (18 crons single-quoted, 11 double);
+    # a probe matching only one style reads 62% of the fleet and returns a
+    # confident wrong number.
+    #
+    # See webkit-kid.yml's header comment for the pattern of citing
     # neighboring schedules explicitly rather than assuming no collision.
     - cron: '20 8 * * 4'
   workflow_dispatch: {}

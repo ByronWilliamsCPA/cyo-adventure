@@ -209,22 +209,59 @@ name: Lighthouse (Weekly)
 
 on:
   schedule:
-    # Friday 07:40 UTC. As of 2026-08-29 no other scheduled workflow in this
-    # directory runs on a Friday (see scheduled-health-rollup.yml's own
-    # header comment for the fleet-wide cron inventory this cites), and
-    # 07:40 matches no daily job's minute either, so this run never starts
-    # alongside another scheduled job.
+    # Friday 07:40 UTC. This run never starts alongside another scheduled
+    # job, but NOT because Friday is empty: ten crons in this directory carry
+    # `*` in the day-of-week field and therefore fire every Friday too, the
+    # nearest being supabase-backup.yml (`0 8 * * *`, so Friday 08:00, twenty
+    # minutes after this one). Counting this file itself, eleven of the
+    # directory's 29 crons fire on a Friday.
+    #
+    # What actually keeps the slot clear is the MINUTE. As of 2026-08-29
+    # minute 40 belongs to this file alone, so nothing else in the directory
+    # starts in the same minute of any hour on any day. Moving this job to a
+    # minute another cron already uses would collide even if the day stayed
+    # Friday; moving it to another day at minute 40 would not.
+    #
+    # Re-derive rather than trust this comment:
+    #   grep -rhoP "^\s*-\s*cron:\s*['\"]\K[^'\"]+" .github/workflows/
+    # Both quoting styles are in use here (18 crons single-quoted, 11 double);
+    # a probe matching only one style reads 62% of the fleet and returns a
+    # confident wrong number.
     - cron: '40 7 * * 5'
   workflow_dispatch: {}
 
 permissions:
-  # `contents: read` rather than `{}`: both are used at top level in this
-  # directory (9 files use `{}`, 6 use `contents: read`), and either would
-  # be correct here because the single job below re-declares its own
-  # `contents: read` + `issues: write`, which fully overrides this. Matching
-  # dast-baseline-weekly.yml, the file this workflow is modelled on, is the
-  # only reason to prefer one over the other; there is no repo-wide
-  # convention that rules `{}` out.
+  # `contents: read` rather than `{}`. Either would be correct here, because
+  # the single job below re-declares its own `contents: read` + `issues:
+  # write`, which fully overrides this; the reason to prefer one is that it
+  # matches dast-baseline-weekly.yml, the file this workflow is modelled on.
+  #
+  # Counted 2026-08-29 over the directory's 46 workflows: 10 declare
+  # `permissions: {}` at top level and 25 declare exactly `contents: read`,
+  # so `contents: read` is the majority form rather than a coin flip, though
+  # `{}` is common enough that nothing here rules it out. An earlier version
+  # of this comment said 9 and 6; the second figure was wrong by a factor of
+  # four, which is why the derivation is written down instead of the belief.
+  #
+  # Re-derive rather than trust this comment. The block must be read, not
+  # grepped a line at a time: `grep -A1 '^permissions:$'` answers 29 because
+  # it counts any block whose FIRST entry is `contents: read`, and a variant
+  # that reads the next line literally answers 24 because it trips over the
+  # comment you are reading right now.
+  #
+  #   awk '
+  #     /^permissions: \{\}$/ { empty++ }
+  #     /^permissions:$/ {
+  #       n = 0; last = ""
+  #       while ((getline line) > 0) {
+  #         if (line !~ /^[ \t]/) break
+  #         if (line ~ /^[ \t]*#/) continue
+  #         n++; last = line
+  #       }
+  #       if (n == 1 && last == "  contents: read") sole++
+  #     }
+  #     END { print empty, sole }
+  #   ' .github/workflows/*.y*ml
   contents: read
 
 concurrency:

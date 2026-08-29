@@ -927,8 +927,20 @@ jobs:
           # exemption was unbounded by filename so `error-context.md`, the file
           # that actually leaked a password, passed clean). Two of the seven
           # spawn the CLI itself rather than the exported function. Measured
-          # with the exact `node --test` line below: 121 -> 128.
-          MIN_TESTS: '128'
+          # with the exact `node --test` line below: 121 -> 128 -> 158.
+          #
+          # The 128 -> 158 step is the PR #780 review's own findings closed:
+          # +11 on the upload guard (the `playwright-json-report` output
+          # directory it could not see, and three further routes to a
+          # credential that `${{ secrets. }}` does not match: `${{ vars. }}`,
+          # an OIDC `id-token: write` grant, and the blanket
+          # `permissions: write-all` that implies one), and +19 on the health
+          # rollup, where the cron collision detector was lifted out into
+          # `cronsCollide` and given range, step and comma-list handling in
+          # every field. It previously compared minutes with a bare `===` and
+          # split only hour and day-of-week on commas, so a neighbour written
+          # as `1-5` was invisible to it.
+          MIN_TESTS: '158'
         run: |
           set -euo pipefail
 

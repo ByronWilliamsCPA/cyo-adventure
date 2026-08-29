@@ -106,8 +106,27 @@ function readText(path) {
  * A path is treated as a Playwright output directory when any of its segments
  * matches one of these, so `frontend/test-results/`, `test-results/chromium/`
  * and `playwright-report/` are all covered.
+ *
+ * `playwright-json-report` is on the list because every Playwright config in
+ * this repository writes one: `frontend/playwright.config.ts` and the three
+ * `e2e-*` configs each set the `json` reporter's `outputFile` under that
+ * directory name. Its failing-run JSON is not a summary; a `results[]` entry
+ * carries `error.message`, `stdout`, `stderr` and `attachments`, so a login
+ * step that fails with the typed value in the assertion message puts that
+ * value in the report. Until 2026-08-29 a path under it classified
+ * `unrelated`, which is to say the guard did not examine it at all.
+ *
+ * #CRITICAL: security: this set is what makes a path visible to the guard. A
+ * segment missing here is not "allowed", it is UNCHECKED, and an unchecked
+ * path produces a clean result indistinguishable from a safe one. #VERIFY:
+ * when a Playwright config gains a reporter, confirm the directory it writes
+ * to is either under an existing segment or added here.
  */
-const PLAYWRIGHT_OUTPUT_SEGMENTS = new Set(['test-results', 'playwright-report'])
+const PLAYWRIGHT_OUTPUT_SEGMENTS = new Set([
+  'test-results',
+  'playwright-report',
+  'playwright-json-report',
+])
 
 /**
  * Basenames a secret-bearing workflow may publish from a Playwright output
@@ -391,20 +410,83 @@ const SECRET_EXPRESSION = /\$\{\{\s*secrets\./
 const SECRETS_INHERIT = /^[ \t]*secrets:[ \t]*['"]?inherit\b/m
 
 /**
- * Whether a workflow injects a repository or environment secret.
+ * A `${{ vars.NAME }}` expression. A repository or environment VARIABLE is not
+ * masked in logs and is not meant for secrets, but it is a perfectly ordinary
+ * place for a staging login identifier or a shared test password to end up,
+ * and a tier that types one into a real login form discloses it through the
+ * same channels a `secrets.` value would.
+ */
+const VARS_EXPRESSION = /\$\{\{\s*vars\./
+
+/**
+ * A request for an OIDC token: `id-token: write` in a `permissions:` block.
+ *
+ * The token is a credential the job mints at runtime rather than one written
+ * in the file, so nothing matching `secrets.` or `vars.` need appear anywhere,
+ * and a workflow exchanging it for a cloud session can hold access far broader
+ * than any single repository secret.
+ *
+ * `write` is load-bearing. `id-token: none` is the value a workflow uses to
+ * REFUSE the token, and treating it as a grant would make this detector answer
+ * true for every workflow that spells its permissions out, which is a check
+ * that always fires and therefore justifies nothing. The `^[ \t]*` anchor is
+ * what keeps a commented-out `# id-token: write` and prose mentioning the
+ * permission from matching, and the same anchor covers a workflow-level block
+ * and a job-level one without needing to know which is which: both are an
+ * indented `id-token:` line.
+ *
+ * @see SECRETS_INHERIT for why the pattern is not anchored to end-of-line.
+ */
+const ID_TOKEN_WRITE = /^[ \t]*id-token:[ \t]*['"]?write\b/m
+
+/**
+ * The blanket grant: `permissions: write-all`, which includes `id-token`.
+ *
+ * A third route to an OIDC token, and the one a detector keyed on the literal
+ * `id-token:` cannot see, because the workflow never spells the permission
+ * out. GitHub expands `write-all` to every permission scope it offers, so a
+ * job carrying it can mint the same token `ID_TOKEN_WRITE` exists to catch.
+ *
+ * Measured on 2026-08-29: zero occurrences in `.github/workflows`. Latent in
+ * the same sense the other two widenings are, and here for the same reason.
+ *
+ * `read-all` is the sibling value that grants no credential, so the `write-`
+ * prefix is load-bearing exactly as `write` is in `ID_TOKEN_WRITE`, and the
+ * `^[ \t]*` anchor keeps a commented-out line from matching.
+ */
+const PERMISSIONS_WRITE_ALL = /^[ \t]*permissions:[ \t]*['"]?write-all\b/m
+
+/**
+ * Whether a workflow can reach a credential.
  *
  * `${{ secrets.X }}` anywhere in the file is the signal that this tier can
  * type a real credential into a real login form, which is what turns a
  * wholesale upload from untidy into a disclosure. `secrets: inherit` is the
  * same signal by a different route: it grants the called workflow every
  * secret without naming one, so a rule keyed only on the literal
- * `${{ secrets.` would wave it straight through.
+ * `${{ secrets.` would wave it straight through. `${{ vars.X }}`, an OIDC
+ * `id-token: write` grant, and the blanket `permissions: write-all` that
+ * implies one are three more routes to the same place, none of which contains
+ * the word `secrets`.
+ *
+ * The three widenings are PREVENTION, not a live finding. Measured on
+ * 2026-08-29: `${{ vars.` occurs nowhere in `.github/workflows`, and the four
+ * workflows that request `id-token` (scorecard, docs, slsa-provenance,
+ * claude-baseline-review) publish no Playwright output, and no workflow
+ * carries `permissions: write-all`. They are here so the first workflow to
+ * take any of the three routes arrives guarded rather than exempt.
  *
  * @param {string} yamlText Raw workflow file contents.
- * @returns {boolean} True when the workflow references any secret.
+ * @returns {boolean} True when the workflow can reach a credential.
  */
 export function injectsSecrets(yamlText) {
-  return SECRET_EXPRESSION.test(yamlText) || SECRETS_INHERIT.test(yamlText)
+  return (
+    SECRET_EXPRESSION.test(yamlText) ||
+    SECRETS_INHERIT.test(yamlText) ||
+    VARS_EXPRESSION.test(yamlText) ||
+    ID_TOKEN_WRITE.test(yamlText) ||
+    PERMISSIONS_WRITE_ALL.test(yamlText)
+  )
 }
 
 /**

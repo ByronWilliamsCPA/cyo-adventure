@@ -38,6 +38,132 @@ const REQUIRE = createRequire(import.meta.url)
 const REPO = { owner: 'ByronWilliamsCPA', repo: 'cyo-adventure' }
 
 /**
+ * Expand one cron field to the exact set of values it matches.
+ *
+ * Handles every form GitHub's scheduler accepts in a numeric field: `*`, a
+ * bare value, a comma list, a range (`1-5`), a step over the whole range
+ * (`*\/2`), a step from a start value (`5\/2`), a step over a range
+ * (`1-5\/2`), and any comma combination of those (`1-5,0`).
+ *
+ * Anything it cannot parse THROWS. Returning an empty set instead would make
+ * the collision detector report "no overlap" for a cron it simply could not
+ * read, which is the silently-unfailable check this whole file exists to
+ * stop shipping.
+ *
+ * @param {string} field One cron field.
+ * @param {number} lo Lowest legal value for that field.
+ * @param {number} hi Highest legal value for that field.
+ * @returns {Set<number>} Every value the field matches.
+ */
+function expandCronField(field, lo, hi) {
+  const values = new Set()
+  for (const term of field.split(',')) {
+    const [rangePart, stepPart] = term.split('/')
+    const step = stepPart === undefined ? 1 : Number(stepPart)
+    let from
+    let to
+    if (rangePart === '*') {
+      from = lo
+      to = hi
+    } else if (rangePart.includes('-')) {
+      const [startText, endText] = rangePart.split('-')
+      from = Number(startText)
+      to = Number(endText)
+    } else {
+      from = Number(rangePart)
+      // `5/2` means "5 to the top of the range, every 2"; a bare `5` is just 5.
+      to = stepPart === undefined ? from : hi
+    }
+    const parsed = [from, to, step]
+    if (
+      !parsed.every((value) => Number.isInteger(value)) ||
+      step < 1 ||
+      from < lo ||
+      to > hi ||
+      from > to
+    ) {
+      throw new Error(
+        `unparseable cron field term "${term}" in field "${field}" ` +
+          `(legal range ${lo}-${hi}); extend expandCronField rather than ` +
+          'letting the collision check read it as no-overlap.'
+      )
+    }
+    for (let value = from; value <= to; value += step) values.add(value)
+  }
+  return values
+}
+
+/**
+ * Expand a day-of-week field, normalising 7 to 0.
+ *
+ * Cron accepts both 0 and 7 for Sunday, so `0 6 * * 0` and `0 6 * * 7` name
+ * the same slot and must be seen as colliding.
+ *
+ * @param {string} field The day-of-week field.
+ * @returns {Set<number>} Days matched, with Sunday always as 0.
+ */
+function expandCronDow(field) {
+  const days = new Set()
+  for (const day of expandCronField(field, 0, 7)) days.add(day === 7 ? 0 : day)
+  return days
+}
+
+/**
+ * @param {Set<number>} a One set.
+ * @param {Set<number>} b The other set.
+ * @returns {boolean} Whether they share at least one member.
+ */
+function setsIntersect(a, b) {
+  for (const value of a) {
+    if (b.has(value)) return true
+  }
+  return false
+}
+
+/**
+ * Whether two cron expressions can fire in the same minute.
+ *
+ * Each field is expanded to the set of values it matches and the sets are
+ * intersected, so ranges, steps and lists are all handled the same way in
+ * every field, and the answer does not depend on argument order. The
+ * previous version compared minutes with a bare `===` and split only hour
+ * and day-of-week on commas, so `0 7 * * 1-5` read as "no Monday" and
+ * `*\/15 7 * * 1` read as "no :00".
+ *
+ * Day-of-month and month are not expanded, only checked: every cron in this
+ * directory sets both to `*`, and a detector that quietly ignored a real
+ * day-of-month would be wrong in the direction that hides collisions.
+ *
+ * @param {string} a One cron expression.
+ * @param {string} b The other cron expression.
+ * @returns {boolean} Whether the two can start in the same minute.
+ */
+function cronsCollide(a, b) {
+  const parse = (cron) => {
+    const [minute, hour, dom, month, dow] = cron.trim().split(/\s+/)
+    if (dom !== '*' || month !== '*') {
+      throw new Error(
+        `cron "${cron}" constrains day-of-month or month; cronsCollide only ` +
+          'reasons about minute, hour and day-of-week. Teach it those fields ' +
+          'rather than accepting an answer it cannot compute.'
+      )
+    }
+    return {
+      minutes: expandCronField(minute, 0, 59),
+      hours: expandCronField(hour, 0, 23),
+      days: expandCronDow(dow),
+    }
+  }
+  const left = parse(a)
+  const right = parse(b)
+  return (
+    setsIntersect(left.minutes, right.minutes) &&
+    setsIntersect(left.hours, right.hours) &&
+    setsIntersect(left.days, right.days)
+  )
+}
+
+/**
  * A minimal workflow file the discovery regex recognises as scheduled.
  *
  * Matches the exact shape `scheduled-health-rollup.yml`'s own header comment
@@ -1004,6 +1130,134 @@ describe('the rollup workflow alerts on its own failure', () => {
  * the directory and compare. The prose is now a cache of a computed value,
  * with something that invalidates it.
  */
+describe('cronsCollide sees every field syntax GitHub actually accepts', () => {
+  // The detector that re-proves this workflow's cron slot is only worth the
+  // line it occupies if it can SEE a collision. Its first version compared
+  // the minute field with a bare `===`, and split the hour and day-of-week
+  // fields on commas only, so a range or a step in any field read as "no
+  // overlap" and the slot check silently passed. Each RED case below is a
+  // cron GitHub schedules perfectly happily that the first version missed.
+
+  describe('ranges', () => {
+    test('a day-of-week range overlapping the self day is a collision', () => {
+      // `1-5` is Mon-Fri; a Monday job is inside it.
+      assert.equal(cronsCollide('0 7 * * 1', '0 7 * * 1-5'), true)
+    })
+
+    test('an hour range overlapping the self hour is a collision', () => {
+      assert.equal(cronsCollide('0 7 * * 1', '0 6-8 * * 1'), true)
+    })
+
+    test('a minute range overlapping the self minute is a collision', () => {
+      assert.equal(cronsCollide('30 7 * * 1', '15-45 7 * * 1'), true)
+    })
+  })
+
+  describe('steps', () => {
+    test('an hour step landing on the self hour is a collision', () => {
+      // `*/2` is every even hour; 08:00 is one of them.
+      assert.equal(cronsCollide('0 8 * * 1', '0 */2 * * 1'), true)
+    })
+
+    test('a minute step landing on the self minute is a collision', () => {
+      // `*/15` is :00, :15, :30, :45.
+      assert.equal(cronsCollide('0 7 * * 1', '*/15 7 * * 1'), true)
+    })
+
+    test('a range-with-step landing on the self value is a collision', () => {
+      // `1-5/2` is Mon, Wed, Fri.
+      assert.equal(cronsCollide('0 7 * * 3', '0 7 * * 1-5/2'), true)
+    })
+
+    test('a combination of list, range and step is a collision', () => {
+      // The `1-5,0` shape: Mon-Fri plus Sunday. Saturday is the only day out.
+      assert.equal(cronsCollide('0 7 * * 0', '0 7 * * 1-5,0'), true)
+    })
+  })
+
+  describe('the minute field is treated exactly like the others', () => {
+    test('a comma list in the minute field is a collision', () => {
+      // Bare `===` made this the one field where a list could not match.
+      assert.equal(cronsCollide('0 7 * * 4', '0,30 7 * * 4'), true)
+    })
+  })
+
+  describe('detection does not depend on argument order', () => {
+    test('a collision found one way round is found the other way round', () => {
+      // The first version read the hour list off ONE side only, so whether a
+      // collision was visible depended on which cron was passed first. The
+      // fleet loop always passes self first, which is exactly how an
+      // asymmetric bug survives: the one call site never exercises it.
+      const self = '0 5,11,17,23 * * *'
+      const other = '0 11 * * 4'
+      assert.equal(cronsCollide(other, self), true, 'baseline direction')
+      assert.equal(cronsCollide(self, other), true, 'reversed direction')
+    })
+  })
+
+  describe('day-of-week 0 and 7 are both Sunday', () => {
+    test('0 and 7 in the day-of-week field collide', () => {
+      assert.equal(cronsCollide('0 6 * * 0', '0 6 * * 7'), true)
+    })
+  })
+
+  describe('CONTROL: things that genuinely do not overlap stay non-collisions', () => {
+    // Without these, the fix could degenerate into "everything collides",
+    // which passes every RED case above and makes the fleet test useless in
+    // the opposite direction.
+
+    test('a day outside a range is not a collision', () => {
+      // Saturday is not in Mon-Fri.
+      assert.equal(cronsCollide('0 7 * * 6', '0 7 * * 1-5'), false)
+    })
+
+    test('an odd hour does not collide with an every-even-hour step', () => {
+      assert.equal(cronsCollide('0 9 * * 1', '0 */2 * * 1'), false)
+    })
+
+    test('a minute outside a step series is not a collision', () => {
+      assert.equal(cronsCollide('7 7 * * 1', '*/15 7 * * 1'), false)
+    })
+
+    test("the rollup's real slot does not collide with its nearest neighbour", () => {
+      // Thursday 07:00 against dast-baseline-weekly's Thursday 08:20 and
+      // supabase-backup's daily 08:00: same day, distinct hour.
+      assert.equal(cronsCollide('0 7 * * 4', '20 8 * * 4'), false)
+      assert.equal(cronsCollide('0 7 * * 4', '0 8 * * *'), false)
+    })
+  })
+
+  describe('REGRESSION: the comma lists that already worked still work', () => {
+    test('an hour comma list containing the self hour is a collision', () => {
+      // kws-delivery-health.yml's real shape.
+      assert.equal(cronsCollide('0 11 * * 4', '0 5,11,17,23 * * *'), true)
+    })
+
+    test('a day-of-week comma list containing the self day is a collision', () => {
+      assert.equal(cronsCollide('0 7 * * 4', '0 7 * * 2,4'), true)
+    })
+
+    test('a wildcard day on either side is a collision', () => {
+      assert.equal(cronsCollide('0 7 * * 4', '0 7 * * *'), true)
+      assert.equal(cronsCollide('0 7 * * *', '0 7 * * 4'), true)
+    })
+  })
+
+  describe('a field it cannot reason about is loud, not silently blind', () => {
+    // The defect being removed here is a check that cannot fail when its
+    // subject breaks. Returning `false` for an unparseable field would
+    // rebuild exactly that, so these throw instead.
+
+    test('an unparseable field throws rather than reporting no collision', () => {
+      assert.throws(() => cronsCollide('0 7 * * 4', '0 7 * * MON'), /unparseable cron field/)
+    })
+
+    test('a non-wildcard day-of-month throws rather than being ignored', () => {
+      assert.throws(() => cronsCollide('0 7 * * 4', '0 7 1 * *'), /day-of-month|month/)
+    })
+  })
+})
+
 describe('the fleet claims in the rollup workflow are true of the real fleet', () => {
   const WORKFLOWS_DIR = join(HERE, '..')
   const SELF_FILE = 'scheduled-health-rollup.yml'
@@ -1104,14 +1358,10 @@ describe('the fleet claims in the rollup workflow are true of the real fleet', (
     // The claim the cron-slot comment makes, re-derived. A collision is two
     // crons sharing minute, hour, and a day-of-week (`*` matching any day).
     const [selfCron] = cronsOf(SELF_FILE)
-    const [selfMinute, selfHour, , , selfDow] = selfCron.split(/\s+/)
     const collisions = []
     for (const file of scheduledExcludingSelf()) {
       for (const cron of cronsOf(file)) {
-        const [minute, hour, , , dow] = cron.split(/\s+/)
-        const hours = hour.split(',')
-        const sameDay = dow === '*' || selfDow === '*' || dow.split(',').includes(selfDow)
-        if (minute === selfMinute && hours.includes(selfHour) && sameDay) {
+        if (cronsCollide(selfCron, cron)) {
           collisions.push(`${file} (${cron})`)
         }
       }
