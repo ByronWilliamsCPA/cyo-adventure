@@ -604,7 +604,14 @@ describe('KNOWN_ALERTS stays in sync with every ci-failure-issue adopter (repo-w
     const lines = fileText.split('\n')
     const sites = []
     for (let i = 0; i < lines.length; i += 1) {
-      const m = /^(\s*)uses:\s*\.\/\.github\/actions\/ci-failure-issue\s*$/.exec(lines[i])
+      // `\s*$` was `$`-anchored against the bare path, so
+      // `uses: ./.github/actions/ci-failure-issue # pinned` matched the
+      // pre-filter in discoverAdopters but not here, yielding zero sites and a
+      // `continue` that dropped the adopter silently. A trailing comment is
+      // valid YAML and the repo pins other `uses:` lines exactly that way.
+      const m = /^(\s*)uses:\s*\.\/\.github\/actions\/ci-failure-issue\s*(?:#.*)?$/.exec(
+        lines[i]
+      )
       if (!m) continue
       const usesIndent = m[1].length
       let end = lines.length
@@ -636,19 +643,39 @@ describe('KNOWN_ALERTS stays in sync with every ci-failure-issue adopter (repo-w
     }
   }
 
+  // The per-file half of discoverAdopters, split out so it can be exercised
+  // against synthetic text. Neither shape the two tests below feed it exists in
+  // the fleet today, so a fleet-only assertion could not fail on either defect.
+  function openCallSites(fileText) {
+    return extractCallSites(fileText)
+      .map(parseCallSite)
+      .filter((site) => site.mode !== 'resolve')
+  }
+
   // Discover every scheduled workflow that calls the shared action to file
   // or update an issue (excludes `mode: resolve` call sites, which close
   // rather than open one).
-  function discoverAdopters() {
+  // `files` and `readText` are injectable so the adopter map itself can be
+  // built over synthetic input. Without that, the truncation defect below was
+  // unreachable by any assertion: every workflow in the fleet has exactly one
+  // open call site, so keeping only the first was indistinguishable from
+  // keeping all of them.
+  function discoverAdopters(
+    files = discoverScheduledWorkflows(),
+    readText = (file) => readFileSync(join(WORKFLOWS_DIR, file), 'utf8')
+  ) {
     const adopters = {}
-    for (const file of discoverScheduledWorkflows()) {
-      const text = readFileSync(join(WORKFLOWS_DIR, file), 'utf8')
+    for (const file of files) {
+      const text = readText(file)
       if (!/uses:\s*\.\/\.github\/actions\/ci-failure-issue/.test(text)) continue
-      const openSites = extractCallSites(text)
-        .map(parseCallSite)
-        .filter((site) => site.mode !== 'resolve')
+      const openSites = openCallSites(text)
       if (openSites.length === 0) continue
-      adopters[file] = openSites[0]
+      // Every open call site, not `openSites[0]`. A workflow with two
+      // failure-reporting jobs files two different issues; keeping only the
+      // first meant the second's marker and label were never checked against
+      // KNOWN_ALERTS, and the rollup would report that issue as untracked
+      // while every test here passed.
+      adopters[file] = openSites
     }
     return adopters
   }
@@ -658,11 +685,12 @@ describe('KNOWN_ALERTS stays in sync with every ci-failure-issue adopter (repo-w
   const adopters = discoverAdopters()
 
   test('every non-grandfathered adopter has a KNOWN_ALERTS entry', () => {
-    for (const [file, site] of Object.entries(adopters)) {
+    for (const [file, sites] of Object.entries(adopters)) {
       if (GRANDFATHERED.has(file)) continue
+      const markers = sites.map((site) => site.marker).join(', ')
       assert.ok(
         knownAlerts[file],
-        `${file} calls the shared ci-failure-issue action (marker ${site.marker}) but has no ` +
+        `${file} calls the shared ci-failure-issue action (markers ${markers}) but has no ` +
           'KNOWN_ALERTS entry in scheduled-health-rollup.yml; the rollup will report it as ' +
           'untracked even though it does file its own tracking issue.'
       )
@@ -673,19 +701,33 @@ describe('KNOWN_ALERTS stays in sync with every ci-failure-issue adopter (repo-w
     // Covers grandfathered files too: if one later gains an entry, that
     // entry must still be correct, even though the ratchet test below will
     // also insist the file leave GRANDFATHERED at the same time.
-    for (const [file, site] of Object.entries(adopters)) {
+    for (const [file, sites] of Object.entries(adopters)) {
       const entry = knownAlerts[file]
       if (!entry) continue
+      // KNOWN_ALERTS holds ONE entry per file, so a file whose open call sites
+      // disagree cannot be represented by it at all. Asserting the agreement
+      // first is what makes the two comparisons below meaningful for every
+      // site rather than for whichever one happened to be scanned first.
+      const distinct = [...new Set(sites.map((site) => `${site.marker}|${site.label}`))]
       assert.equal(
-        entry.titlePrefix,
-        site.marker,
-        `${file}: KNOWN_ALERTS titlePrefix must match the marker it actually sets`
+        distinct.length,
+        1,
+        `${file} opens issues from ${distinct.length} different marker/label pairs ` +
+          `(${distinct.join(' and ')}), but KNOWN_ALERTS can hold only one entry per file; ` +
+          'the rollup will report every issue but the registered one as untracked.'
       )
-      assert.equal(
-        entry.label,
-        site.label,
-        `${file}: KNOWN_ALERTS label must match the label it actually sets`
-      )
+      for (const site of sites) {
+        assert.equal(
+          entry.titlePrefix,
+          site.marker,
+          `${file}: KNOWN_ALERTS titlePrefix must match the marker it actually sets`
+        )
+        assert.equal(
+          entry.label,
+          site.label,
+          `${file}: KNOWN_ALERTS label must match the label it actually sets`
+        )
+      }
     }
   })
 
@@ -720,6 +762,76 @@ describe('KNOWN_ALERTS stays in sync with every ci-failure-issue adopter (repo-w
           'ci-failure-issue adopter; the entry is stale.'
       )
     }
+  })
+
+  // The discovery helpers themselves. Everything above asserts against the
+  // live fleet, and the live fleet contains neither a commented `uses:` line
+  // nor a two-issue workflow, so both defects these arms cover were invisible
+  // to every fleet-scoped assertion in this file: discovery returned nothing
+  // (or returned one of two), the loop iterated it, and the test passed.
+  const TWO_SITE_FIXTURE = [
+    'jobs:',
+    '  alpha:',
+    '    steps:',
+    '      - name: File the alpha issue',
+    '        uses: ./.github/actions/ci-failure-issue',
+    '        with:',
+    "          marker: '[alpha-alert]'",
+    '          label: alpha-label',
+    '  beta:',
+    '    steps:',
+    '      - name: File the beta issue',
+    '        uses: ./.github/actions/ci-failure-issue',
+    '        with:',
+    "          marker: '[beta-alert]'",
+    '          label: beta-label',
+    '',
+  ].join('\n')
+
+  test('a call site whose uses: line carries a trailing YAML comment is still found', () => {
+    const commented = TWO_SITE_FIXTURE.replace(
+      'uses: ./.github/actions/ci-failure-issue\n        with:\n          marker: \'[alpha-alert]\'',
+      "uses: ./.github/actions/ci-failure-issue # local composite\n        with:\n          marker: '[alpha-alert]'"
+    )
+    assert.notEqual(commented, TWO_SITE_FIXTURE, 'the fixture edit must have applied')
+    const markers = openCallSites(commented).map((site) => site.marker)
+    assert.deepEqual(markers, ['[alpha-alert]', '[beta-alert]'])
+  })
+
+  test('the adopter map keeps every open call site in a file, not just the first', () => {
+    const synthetic = discoverAdopters(['two-issues.yml'], () => TWO_SITE_FIXTURE)
+    assert.deepEqual(
+      synthetic['two-issues.yml'].map((site) => site.marker),
+      ['[alpha-alert]', '[beta-alert]']
+    )
+  })
+
+  test('a file with two disagreeing call sites cannot be satisfied by one entry', () => {
+    // The consequence of the arm above, stated as the property the KNOWN_ALERTS
+    // comparison depends on. Without it a second, unregistered marker rides
+    // along under the first one's entry.
+    const sites = discoverAdopters(['two-issues.yml'], () => TWO_SITE_FIXTURE)['two-issues.yml']
+    const distinct = [...new Set(sites.map((site) => `${site.marker}|${site.label}`))]
+    assert.equal(distinct.length, 2)
+  })
+
+  // Two controls, so neither arm above can pass by matching everything.
+  test('a resolve-mode call site is not an open one', () => {
+    const resolving = TWO_SITE_FIXTURE.replace(
+      "          marker: '[beta-alert]'",
+      "          mode: resolve\n          marker: '[beta-alert]'"
+    )
+    assert.deepEqual(
+      openCallSites(resolving).map((site) => site.marker),
+      ['[alpha-alert]']
+    )
+  })
+
+  test('a workflow calling a different action yields no call site', () => {
+    assert.deepEqual(
+      openCallSites(TWO_SITE_FIXTURE.replaceAll('ci-failure-issue', 'some-other-action')),
+      []
+    )
   })
 })
 
@@ -848,13 +960,16 @@ describe('the rollup workflow alerts on its own failure', () => {
   test('an alert job exists and is gated on failure() || cancelled()', () => {
     const alert = jobBlock('alert')
     assert.ok(alert, 'scheduled-health-rollup.yml declares no `alert:` job')
-    // `failure()` alone is FALSE for a cancelled run, and this workflow sets
-    // `cancel-in-progress: true`, so cancellation is a routine outcome here.
+    // `failure()` alone is FALSE for a cancelled run. This workflow now sets
+    // `cancel-in-progress: false`, so cancellation is no longer routine here,
+    // but a manual cancel and a runner eviction still produce it, and neither
+    // is reported by `failure()`.
     assert.match(
       alert,
       /^\s*if:\s*failure\(\)\s*\|\|\s*cancelled\(\)\s*$/m,
       'the alert job must be gated on `failure() || cancelled()`; `failure()` alone ' +
-        'never fires for a cancelled run, and this workflow cancels itself by design.'
+        'never fires for a cancelled run, and a cancelled survey is the outcome ' +
+        'this workflow least wants to lose.'
     )
     assert.match(alert, /^\s*needs:\s*rollup\s*$/m)
   })
@@ -873,5 +988,210 @@ describe('the rollup workflow alerts on its own failure', () => {
     // `[health-rollup-watchdog]` was tried first and that contract rejected it.
     assert.match(alert, /marker:\s*'\[health-rollup\]'/)
     assert.match(alert, /^\s*issues:\s*write\s*$/m)
+  })
+})
+
+/**
+ * The prose in scheduled-health-rollup.yml makes three claims about the fleet
+ * that a reader would take at face value and that nothing read: how many
+ * scheduled workflows exist, how many adopt the shared alert action, and which
+ * ones adopt nothing. All three were wrong on arrival (23 surveyed against 28
+ * scheduled, "fourteen" adopters against 20, "twenty-seven" against 28), and a
+ * fourth claim, that Thursday carries no other weekly job, had been falsified
+ * by dast-baseline-weekly.yml taking Thursday 08:20.
+ *
+ * A comment cannot be made to fail, so these tests re-derive each number from
+ * the directory and compare. The prose is now a cache of a computed value,
+ * with something that invalidates it.
+ */
+describe('the fleet claims in the rollup workflow are true of the real fleet', () => {
+  const WORKFLOWS_DIR = join(HERE, '..')
+  const SELF_FILE = 'scheduled-health-rollup.yml'
+  const yamlText = readFileSync(ROLLUP_YML, 'utf8')
+
+  const NUMBER_WORDS = {
+    zero: 0,
+    one: 1,
+    two: 2,
+    three: 3,
+    four: 4,
+    five: 5,
+    six: 6,
+    seven: 7,
+    eight: 8,
+    nine: 9,
+    ten: 10,
+    eleven: 11,
+    twelve: 12,
+    thirteen: 13,
+    fourteen: 14,
+    fifteen: 15,
+    sixteen: 16,
+    seventeen: 17,
+    eighteen: 18,
+    nineteen: 19,
+    twenty: 20,
+    'twenty-one': 21,
+    'twenty-two': 22,
+    'twenty-three': 23,
+    'twenty-four': 24,
+    'twenty-five': 25,
+    'twenty-six': 26,
+    'twenty-seven': 27,
+    'twenty-eight': 28,
+    'twenty-nine': 29,
+    thirty: 30,
+  }
+
+  /**
+   * @param {string} word A number word as written in the workflow's prose.
+   * @returns {number} Its value.
+   */
+  function wordToNumber(word) {
+    const value = NUMBER_WORDS[word.toLowerCase()]
+    assert.notEqual(
+      value,
+      undefined,
+      `the rollup's prose uses the number word "${word}", which this test cannot ` +
+        'read; extend NUMBER_WORDS rather than deleting the assertion.'
+    )
+    return value
+  }
+
+  /**
+   * @returns {string[]} Every scheduled workflow filename except this one.
+   */
+  function scheduledExcludingSelf() {
+    return readdirSync(WORKFLOWS_DIR)
+      .filter(
+        (f) => /\.ya?ml$/.test(f) && f !== SELF_FILE && statSync(join(WORKFLOWS_DIR, f)).isFile()
+      )
+      .filter((f) => {
+        const text = readFileSync(join(WORKFLOWS_DIR, f), 'utf8')
+        return /^ {2}schedule:\s*$/m.test(text) && /cron:\s*['"][^'"]+['"]/.test(text)
+      })
+  }
+
+  /**
+   * @param {string} file A workflow filename.
+   * @returns {boolean} Whether it calls the shared alert action.
+   */
+  function callsSharedAction(file) {
+    return /uses:\s*\.\/\.github\/actions\/ci-failure-issue/.test(
+      readFileSync(join(WORKFLOWS_DIR, file), 'utf8')
+    )
+  }
+
+  /**
+   * @param {string} file A workflow filename.
+   * @returns {string[]} Its cron expressions.
+   */
+  function cronsOf(file) {
+    const text = readFileSync(join(WORKFLOWS_DIR, file), 'utf8')
+    return [...text.matchAll(/cron:\s*['"]([^'"]+)['"]/g)].map((m) => m[1])
+  }
+
+  test('the discovery itself is not vacuous', () => {
+    // Without this, every count assertion below could pass by comparing zero
+    // to zero after a discovery regression.
+    const scheduled = scheduledExcludingSelf()
+    assert.ok(scheduled.length > 10, `expected a real fleet, found ${scheduled.length}`)
+    assert.ok(scheduled.some(callsSharedAction), 'expected at least one adopter')
+    assert.deepEqual(cronsOf(SELF_FILE), ['0 7 * * 4'])
+  })
+
+  test("this workflow's cron slot collides with no other scheduled workflow", () => {
+    // The claim the cron-slot comment makes, re-derived. A collision is two
+    // crons sharing minute, hour, and a day-of-week (`*` matching any day).
+    const [selfCron] = cronsOf(SELF_FILE)
+    const [selfMinute, selfHour, , , selfDow] = selfCron.split(/\s+/)
+    const collisions = []
+    for (const file of scheduledExcludingSelf()) {
+      for (const cron of cronsOf(file)) {
+        const [minute, hour, , , dow] = cron.split(/\s+/)
+        const hours = hour.split(',')
+        const sameDay = dow === '*' || selfDow === '*' || dow.split(',').includes(selfDow)
+        if (minute === selfMinute && hours.includes(selfHour) && sameDay) {
+          collisions.push(`${file} (${cron})`)
+        }
+      }
+    }
+    assert.deepEqual(
+      collisions,
+      [],
+      `this workflow's slot (${selfCron}) now starts alongside: ${collisions.join(', ')}. ` +
+        'Move the slot, or the survey competes for a runner with the job it surveys.'
+    )
+  })
+
+  test('the stated adopter count matches the real one', () => {
+    const match = /\/\/ generic pattern\. ([A-Za-z-]+) scheduled workflows share this/.exec(
+      yamlText
+    )
+    assert.ok(match, 'the adopter-count sentence is gone or reworded; update this test with it')
+    const stated = wordToNumber(match[1])
+    const actual = scheduledExcludingSelf().filter(callsSharedAction).length
+    assert.equal(
+      stated,
+      actual,
+      `the rollup says ${stated} scheduled workflows adopt the shared action; ${actual} do.`
+    )
+  })
+
+  test('the stated non-adopter count and the named files match the real ones', () => {
+    const match =
+      /Only the following ([A-Za-z-]+) of the ([A-Za-z-]+) scheduled\s*\n\s*\/\/ workflows in this repo/.exec(
+        yamlText
+      )
+    assert.ok(match, 'the non-adopter sentence is gone or reworded; update this test with it')
+    const scheduled = scheduledExcludingSelf()
+    const nonAdopters = scheduled.filter((f) => !callsSharedAction(f)).sort()
+    assert.equal(
+      wordToNumber(match[2]),
+      scheduled.length,
+      `the rollup says ${match[2]} scheduled workflows (excluding itself); there are ${scheduled.length}.`
+    )
+    assert.equal(
+      wordToNumber(match[1]),
+      nonAdopters.length,
+      `the rollup says ${match[1]} file no tracking issue; ${nonAdopters.length} do not.`
+    )
+    // The list, not only its length: a swap of one name for another keeps the
+    // count right and the claim wrong.
+    const sentenceEnd = yamlText.indexOf('Keep this map in sync', match.index)
+    assert.ok(sentenceEnd > match.index, 'the sentence terminator moved; update this test')
+    const sentence = yamlText.slice(match.index, sentenceEnd)
+    const named = [...sentence.matchAll(/([a-z0-9-]+\.ya?ml)/g)].map((m) => m[1]).sort()
+    assert.deepEqual(
+      [...new Set(named)],
+      nonAdopters,
+      'the workflows the rollup names as filing no tracking issue are not the ones that file none.'
+    )
+  })
+
+  test('the workflow does not cancel its own weekly survey', () => {
+    // #VERIFY: flip `cancel-in-progress` back to `true` in
+    // scheduled-health-rollup.yml and re-run this file; this assertion must
+    // fail. A `workflow_dispatch` fired mid-survey used to kill the cron run
+    // outright, losing that week's report, which is the silence this workflow
+    // exists to detect.
+    assert.match(
+      yamlText,
+      /^\s*cancel-in-progress:\s*false\s*$/m,
+      'scheduled-health-rollup.yml must set `cancel-in-progress: false`; a cancelled ' +
+        'cron run produces no survey at all for that week.'
+    )
+    assert.doesNotMatch(yamlText, /^\s*cancel-in-progress:\s*true\s*$/m)
+  })
+
+  test('the prose about cancellation matches the setting', () => {
+    // The three sentences that argued FROM `cancel-in-progress: true`. A
+    // setting flipped without its rationale leaves a file that contradicts
+    // itself, and a reader believes the prose.
+    assert.doesNotMatch(
+      yamlText,
+      /cancel-in-progress: true/,
+      'the workflow still argues from `cancel-in-progress: true` somewhere in its prose.'
+    )
   })
 })

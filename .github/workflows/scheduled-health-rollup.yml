@@ -15,21 +15,19 @@
 # trigger, and it must never be added to branch protection as a required
 # check. It is a reporting job, not a gate.
 #
-# Cron slot: Thursdays at 07:00 UTC. Chosen against the full inventory of
-# `cron:` lines in this directory as of 2026-08-27 (23 scheduled jobs
-# surveyed): every weekly job lands on Sunday (mutation-testing 02:00,
-# safety-eval 04:00, python-compatibility 06:00, perf 06:00), Monday
-# (link-check-full 05:41, moderation-report-health 06:00,
-# dependency-provenance-weekly 06:23, planning-linkage 07:11, cifuzzy 07:13,
-# sbom 08:00, validate-cruft 09:00, fips-compatibility 10:00), Tuesday
-# (scorecard 21:21), or Wednesday (container-security 07:00,
-# accessibility-compliance-weekly 07:15); the daily jobs (release 01:00,
-# kws-delivery-health 05/11/17/23:00, supabase-backup 08:00,
-# notification-digest 09:00, security-analysis 09:07, e2e-real-nightly
-# 09:30, e2e-staging 13:00, e2e-prod 13:30) recur every day regardless of
-# day-of-week. Thursday carries no weekly job at all, and 07:00 UTC matches
-# none of the daily jobs' minutes, so this run never starts alongside
-# another scheduled job.
+# Cron slot: Thursdays at 07:00 UTC, chosen so this run never starts in the
+# same minute as another scheduled workflow.
+#
+# That claim is ASSERTED, not narrated. A hand-typed inventory of the fleet
+# stood here and was false within two days of being written: it said "23
+# scheduled jobs surveyed" when 28 were scheduled, and it said "Thursday
+# carries no weekly job at all" after dast-baseline-weekly.yml took Thursday
+# 08:20. Nothing could have caught either, because nothing read it.
+# .github/workflows/test/health-rollup.test.mjs now re-derives every `cron:`
+# line in this directory on every run and fails when one shares this file's
+# minute-and-hour on this file's day, so the slot is re-proved rather than
+# remembered. As of 2026-08-29 the nearest neighbours are dast-baseline-weekly
+# (Thursday 08:20) and container-security (Wednesday 07:00).
 #
 # #CRITICAL: correctness: a bounded query window is not a streak. Asking for
 # the last N runs and reporting every-run-failed as "an N-run streak" has
@@ -74,7 +72,13 @@ on:
 
 concurrency:
   group: scheduled-health-rollup-${{ github.ref }}
-  cancel-in-progress: true
+  # `false`, not `true`. This is a weekly reporting run, and the thing being
+  # reported is whether anyone would notice a scheduled workflow going quiet.
+  # With `true`, a `workflow_dispatch` fired while the Thursday cron run was
+  # surveying killed that run, and the week's survey was simply never
+  # produced: the exact silence this file exists to end, caused by this file.
+  # Serialising instead costs a queued run and loses nothing.
+  cancel-in-progress: false
 
 permissions:
   contents: read
@@ -206,7 +210,7 @@ jobs:
             // Hardcoded, and deliberately so: unlike workflow discovery above,
             // "does this workflow already file its own tracking issue on
             // failure, and under what marker" cannot be derived from a
-            // generic pattern. Fourteen scheduled workflows share this
+            // generic pattern. Twenty scheduled workflows share this
             // through one composite action, `.github/actions/ci-failure-issue/`
             // (introduced by PR #771, merged to main 2026-08-27), which
             // matches by a `marker` title-prefix and defaults to the
@@ -228,9 +232,9 @@ jobs:
             // .github/workflows/test/health-rollup.test.mjs is consequently
             // empty, and that test now FAILS on a non-empty set rather than
             // passing vacuously on an empty one.
-            // Only the following eight of the twenty-seven scheduled
+            // Only the following eight of the twenty-eight scheduled
             // workflows in this repo (excluding this file, as of
-            // 2026-08-28) genuinely file no tracking issue of any kind on
+            // 2026-08-29) genuinely file no tracking issue of any kind on
             // failure: container-security.yml,
             // dependency-provenance-weekly.yml, fips-compatibility.yml,
             // python-compatibility.yml, scorecard.yml, security-analysis.yml,
@@ -527,9 +531,13 @@ jobs:
   #     `uses: ./.github/actions/ci-failure-issue` needs a checkout to exist.
   #     A separate job does its own sparse checkout and is therefore able to
   #     report the case where the shared job's checkout is what broke.
-  #  2. `concurrency.cancel-in-progress: true` on this workflow makes
-  #     cancellation a routine outcome, and a cancelled job does not run its
-  #     remaining steps. `if: cancelled()` is only dependable at job level.
+  #  2. A cancelled job does not run its remaining steps, so an in-job step
+  #     cannot report its own cancellation; `if: cancelled()` is only
+  #     dependable at job level. This workflow sets
+  #     `concurrency.cancel-in-progress: false`, so cancellation is no longer
+  #     ROUTINE here, but a manual cancel and a runner eviction both still
+  #     produce it, and those are precisely the cases a survey of completed
+  #     runs cannot report on itself.
   #  3. `rollup` holds `actions: read` over the whole repository's run history.
   #     Keeping the reporting path in a job scoped to `issues: write` alone
   #     means the alert cannot be silenced by whatever broke the survey.
@@ -612,8 +620,9 @@ jobs:
             - An Actions API error outside `findTrackingIssue`'s guard. Only
               the tracking-issue Search call degrades gracefully; a failure of
               `actions.listWorkflowRuns` does not.
-            - A cancellation. `concurrency.cancel-in-progress: true` means a
-              `workflow_dispatch` fired during the weekly cron run cancels it.
+            - A cancellation. `concurrency.cancel-in-progress: false` means a
+              concurrent `workflow_dispatch` no longer cancels the cron run,
+              so this now means a manual cancel or a runner eviction.
 
             A single green rollup run does not prove the survey is trustworthy
             again, only that it completed once, so closing this is a human
