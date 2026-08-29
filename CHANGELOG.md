@@ -7,6 +7,25 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 <!-- version list -->
 
+## [0.85.0] - 2026-08-29
+
+### Bug Fixes
+
+- **moderation**: Stamp the repaired report from the resolved reviewer
+  ([#778](https://github.com/ByronWilliamsCPA/cyo-adventure/pull/778),
+  [`1f12166`](https://github.com/ByronWilliamsCPA/cyo-adventure/commit/1f121662f0c99eb9597d5e9ff2f61170813a7812))
+
+- **moderation**: Stop an unreviewed story passing as soft-flagged
+  ([#776](https://github.com/ByronWilliamsCPA/cyo-adventure/pull/776),
+  [`3eaeb88`](https://github.com/ByronWilliamsCPA/cyo-adventure/commit/3eaeb88bc012ab598e9e076a7a5fa3ff94dc0e12))
+
+### Features
+
+- **validator**: Flag a proper noun a reader meets before it is introduced
+  ([#773](https://github.com/ByronWilliamsCPA/cyo-adventure/pull/773),
+  [`bc2a23a`](https://github.com/ByronWilliamsCPA/cyo-adventure/commit/bc2a23af530a732baf4e28893bb6bb447be51637))
+
+
 ## [0.84.0] - 2026-08-28
 
 ### Bug Fixes
@@ -3632,6 +3651,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Safety dependency vulnerability scanning
 - Pre-commit hooks for security validation
 
+[0.85.0]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.84.0...v0.85.0
 [0.84.0]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.83.0...v0.84.0
 [0.83.0]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.82.0...v0.83.0
 [0.82.0]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.81.1...v0.82.0
