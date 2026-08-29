@@ -74,17 +74,42 @@
 # Budgets: measured baseline, and what "measured" means for each metric
 # -----------------------------------------------------------------------
 # BUNDLE SIZE was measured locally: `npm run build` in frontend/, then the
-# gzip size of every asset frontend/dist/index.html references for the `/`
-# route (the entry chunk, its three modulepreload chunks, and the one
-# stylesheet) was summed. See the "Bundle size budget" step below for the
-# exact real numbers (87081 + 3298 + 22773 + 3748 + 7181 + 2438 raw bytes =
-# 126519 bytes gzip transfer weight, measured 2026-08-29, ONE build). One
-# build is sufficient here, unlike the other three metrics: a Vite
+# gzip size of every asset a cold load of `/` transfers was summed. That
+# set is TWO groups, and the second one is the correction that matters:
+#
+#   (a) what dist/index.html references directly: the entry chunk, its
+#       three modulepreload chunks (jsx-runtime, hooks, db) and the one
+#       stylesheet. Five assets, 119198 bytes gzip.
+#   (b) the `/` route's own lazily imported view and everything that
+#       import pulls with it: LandingPage's JS chunk and CSS chunk, plus
+#       Button, ThemeToggle, Mascot and ChoiceButton (each JS, three of
+#       them with a stylesheet). Nine more assets, 14082 bytes gzip.
+#
+# Total 133280 bytes gzip, 14 assets, measured 2026-08-29 from that build.
+#
+# Group (b) is included DELIBERATELY, and an earlier version of this file
+# got this wrong in the most misleading way available: it excluded those
+# assets from the computation while quoting a total that partly counted
+# them. A budget on "the `/` route" that omits the component that renders
+# `/` is measuring the framework shell, not the page. A chart library or an
+# icon set imported into LandingPage would have added zero bytes to the
+# measured number, so the one budget in this workflow that can fail could
+# not see the one route it names. It can now.
+#
+# The group (b) list is not hand-maintained. Vite emits the exact dependency
+# list for every dynamic import into the entry chunk's `__vite__mapDeps`
+# table; the step below reads the `/` route's entry out of that table, which
+# is the same list the browser's preload helper uses at runtime. If that
+# table, or the `/` route's entry in it, cannot be found, the step FAILS
+# rather than falling back to group (a): silently reverting to the narrower
+# measurement is exactly the failure this correction exists to remove.
+#
+# ONE build is sufficient here, unlike the other three metrics: a Vite
 # production bundle's byte size for a given commit is deterministic
 # (content-hashed filenames aside), it does not vary run to run the way
 # paint timing does, so repeating the measurement three times would have
 # produced the same number three times. Headroom: +26% over the measured
-# 126519 bytes, rounded to 160000 bytes, to absorb normal feature growth
+# 133280 bytes, rounded to 168000 bytes, to absorb normal feature growth
 # without the budget tripping on the next unrelated small change while
 # still catching a real regression (e.g., an accidentally-unlazy-loaded
 # route chunk, a heavy dependency added to the landing bundle).
@@ -116,15 +141,32 @@
 # docs/planning/unscheduled-work-register.md, which carries this same
 # checklist and is the row to close when it is done):
 #   1. Run this workflow via workflow_dispatch at least three times, so the
-#      run-to-run spread on a real runner is visible, which is what the plan
-#      text asks for: "at least three times, and record the spread".
+#      run-to-run spread on a real runner is visible. The task brief that
+#      commissioned this workflow put it as "at least three times, and
+#      record the spread"; the plan text quoted at the top of this file
+#      says only "from a measured baseline", and three runs is how this
+#      workflow chooses to satisfy that.
 #   2. Read the job summary's LCP/TBT/CLS numbers for each route.
-#   3. Replace the `# BUDGET: not yet set` placeholders below with real
-#      numbers plus headroom, following the bundle-size budget's comment
-#      pattern (measured value, run count, headroom rationale) verbatim.
+#   3. Replace the three `# BUDGET: not yet set` placeholders in the
+#      "Summarize Lighthouse metrics and enforce any set budget" step
+#      below (`LCP_BUDGET_MS`, `TBT_BUDGET_MS`, `CLS_BUDGET`, all
+#      currently `None`) with real numbers plus headroom, following the
+#      bundle-size budget's comment pattern (measured value, run count,
+#      headroom rationale) verbatim.
+#      Setting a constant is the ONLY action needed to arm it: the
+#      comparison against every scanned route is already written and runs
+#      as soon as the value stops being `None`.
 #   4. Record the run id that established the baseline in the
 #      "BASELINE RUN ID" comment below (a plan-text requirement that
 #      cannot be satisfied before this workflow exists to produce a run).
+#   5. Do it before `BUDGET_DEADLINE` (2026-10-31, declared next to the
+#      three constants). While any budget is still `None` this job prints a
+#      `::warning::` on every run; on the first run after that date the
+#      step EXITS NON-ZERO and the alerting below files the tracking issue.
+#      That deadline, not this checklist and not the register row, is what
+#      stops three unset budgets from fossilizing: a register row is a
+#      note, and a note has never failed a build. Moving the date out is a
+#      deliberate, reviewable edit; letting it pass is not silent.
 #
 # # BASELINE RUN ID: not yet recorded. See the OWNER CHECKLIST above; fill
 # # this in from the first workflow_dispatch run once its numbers are read
@@ -176,6 +218,13 @@ on:
   workflow_dispatch: {}
 
 permissions:
+  # `contents: read` rather than `{}`: both are used at top level in this
+  # directory (9 files use `{}`, 6 use `contents: read`), and either would
+  # be correct here because the single job below re-declares its own
+  # `contents: read` + `issues: write`, which fully overrides this. Matching
+  # dast-baseline-weekly.yml, the file this workflow is modelled on, is the
+  # only reason to prefer one over the other; there is no repo-wide
+  # convention that rules `{}` out.
   contents: read
 
 concurrency:
@@ -241,63 +290,154 @@ jobs:
           VITE_SUPABASE_ANON_KEY: 'dummy-anon-key-for-lighthouse-weekly-build'
         run: npm run build
 
-      # ---- Bundle size budget: measured directly from the build output ----
-      # Runs before the preview server even starts: this check depends only
-      # on frontend/dist/, not on anything being served. Sums the gzip size
-      # of every same-origin script/modulepreload/stylesheet the `/` route's
-      # index.html references (the entry chunk, its three modulepreload
-      # chunks -- jsx-runtime, hooks, db -- and one CSS file), matching
-      # exactly what a browser would transfer on a cold load of `/` before
-      # any lazy route chunk (LandingPage's own chunk) is added on top.
+      # ---- Bundle size: MEASUREMENT, deliberately separated from the
+      # assertion ----
+      # This step measures and NEVER fails the job on the result. The
+      # verdict is written to ../bundle-size-verdict.json and asserted by a
+      # later step, after Lighthouse has run.
       #
-      # BUDGET_BYTES = 160000 (see the header comment's "Bundle size budget"
-      # section for the measured value, run count, and headroom rationale).
-      - name: Bundle size budget (measured baseline, see header comment)
+      # Why the split: this step used to `sys.exit(1)` on a breach, and it
+      # sits before the preview server, so the ONE week a size regression
+      # landed was the one week the job collected no LCP/TBT/CLS at all
+      # (every later step skips under GitHub's injected `if: success()`).
+      # That is the exact window an owner is trying to read numbers out of.
+      # Measuring early and asserting late keeps both signals.
+      #
+      # WHAT IS MEASURED: the gzip size of every asset a cold load of `/`
+      # transfers. That is index.html's own references PLUS the `/` route's
+      # lazily imported view chunk and its dependency closure, read out of
+      # Vite's own `__vite__mapDeps` table in the entry chunk. See the
+      # header comment's "Budgets" section for the measured baseline and why
+      # the lazy chunk is inside the budget rather than outside it.
+      - name: Bundle size measurement (writes a verdict, does not assert)
         run: |
           python3 - <<'PY'
           import gzip
+          import json
           import re
           import sys
           from pathlib import Path
 
+          # BUDGET_BYTES: measured 133280 bytes gzip across the 14 assets a
+          # cold load of `/` transfers (one build, 2026-08-29; deterministic
+          # per commit, see the header comment for why one measurement
+          # suffices here unlike the timing metrics below).
+          # +26% headroom, rounded to 168000.
+          budget_bytes = 168000
+
           dist = Path("dist")
+          verdict_path = Path("../bundle-size-verdict.json")
+
+
+          # Hands a structural failure to the later assert step. Exits 0
+          # on purpose: a build output this step cannot read is still not
+          # a reason to skip the Lighthouse run. The verdict file carries
+          # the failure forward and the assert step exits non-zero on it.
+          def bail(message):
+              print(f"::error::{message}")
+              verdict_path.write_text(
+                  json.dumps({"status": "error", "message": message}) + "\n",
+                  encoding="utf-8",
+              )
+              with open("../bundle-size-summary.md", "w", encoding="utf-8") as fh:
+                  fh.write("### Bundle size budget (`/` route, initial payload)\n\n")
+                  fh.write(f"- Result: ERROR, not measured: {message}\n")
+              sys.exit(0)
+
+
           index_html = (dist / "index.html").read_text(encoding="utf-8")
 
-          refs = set(re.findall(r'src="(/assets/[^"]+\.js)"', index_html))
-          refs.update(re.findall(r'href="(/assets/[^"]+\.js)"', index_html))
-          refs.update(re.findall(r'href="(/assets/[^"]+\.css)"', index_html))
+          static_refs = set(re.findall(r'src="(/assets/[^"]+\.js)"', index_html))
+          static_refs.update(re.findall(r'href="(/assets/[^"]+\.js)"', index_html))
+          static_refs.update(re.findall(r'href="(/assets/[^"]+\.css)"', index_html))
+          if not static_refs:
+              bail("No asset references found in dist/index.html; the build output shape changed unexpectedly.")
 
-          if not refs:
-              print("::error::No asset references found in dist/index.html; the build output shape changed unexpectedly.")
-              sys.exit(1)
+          # The `/` route's view (LandingPage) is a lazy import, so
+          # index.html never names it. Vite emits the exact dependency list
+          # of every dynamic import into the entry chunk's __vite__mapDeps
+          # table; that is the same list the runtime preload helper uses, so
+          # it is the build's own answer rather than this script's guess.
+          # Every failure below BAILS rather than falling back to the
+          # index.html-only set: silently reverting to the narrower
+          # measurement is the defect this whole block exists to remove.
+          entry_match = re.search(r'src="(/assets/index-[^"]+\.js)"', index_html)
+          if entry_match is None:
+              bail("dist/index.html references no /assets/index-*.js entry chunk; the build output shape changed.")
+          entry_path = dist / entry_match.group(1).lstrip("/")
+          if not entry_path.is_file():
+              bail(f"{entry_match.group(1)} is referenced by index.html but missing from dist/.")
+          entry_src = entry_path.read_text(encoding="utf-8")
+
+          table_match = re.search(r"__vite__mapDeps=\(.*?m\.f=(\[[^\]]*\])", entry_src, re.DOTALL)
+          if table_match is None:
+              bail("No __vite__mapDeps dependency table found in the entry chunk; Vite's dynamic-import output shape changed.")
+          try:
+              dep_table = json.loads(table_match.group(1))
+          except json.JSONDecodeError as exc:
+              bail(f"The __vite__mapDeps dependency table in the entry chunk is unparseable ({exc}).")
+
+          route_import = re.compile(
+              r"import\([\"'`]\./(LandingPage-[A-Za-z0-9_-]+\.js)[\"'`]\)"
+              r".{0,400}?__vite__mapDeps\(\[([0-9,\s]*)\]\)",
+              re.DOTALL,
+          )
+          found = route_import.findall(entry_src)
+          if len(found) != 1:
+              bail(
+                  f"Expected exactly one lazy import of the `/` route's LandingPage chunk in the entry chunk, found {len(found)}. "
+                  "If the landing route's component was renamed or its chunk name changed, update this pattern; "
+                  "do NOT drop the lazy chunk from the budget, which would stop this check seeing the route it measures."
+              )
+          route_chunk, index_csv = found[0]
+          indices = [int(part) for part in index_csv.split(",") if part.strip()]
+          if not indices:
+              bail(f"The `/` route's lazy import of {route_chunk} carries an empty __vite__mapDeps index list.")
+
+          lazy_refs = set()
+          for i in indices:
+              if not 0 <= i < len(dep_table):
+                  bail(f"__vite__mapDeps index {i} for the `/` route is outside the {len(dep_table)}-entry table.")
+              lazy_refs.add("/" + str(dep_table[i]).lstrip("/"))
 
           total = 0
-          print("Assets referenced by the `/` route's index.html:")
-          for ref in sorted(refs):
+          print("Assets a cold load of `/` transfers:")
+          for ref in sorted(static_refs | lazy_refs):
               asset_path = dist / ref.lstrip("/")
               if not asset_path.is_file():
-                  print(f"::error::{ref} is referenced by index.html but missing from dist/.")
-                  sys.exit(1)
-              raw = asset_path.read_bytes()
-              gz_size = len(gzip.compress(raw, compresslevel=9))
+                  bail(f"{ref} is part of the `/` route's payload but missing from dist/.")
+              gz_size = len(gzip.compress(asset_path.read_bytes(), compresslevel=9))
               total += gz_size
-              print(f"  {ref}: {gz_size} bytes gzip")
+              origin = "index.html" if ref in static_refs else f"lazy via {route_chunk}"
+              print(f"  {ref}: {gz_size} bytes gzip ({origin})")
 
-          # BUDGET_BYTES: measured 126519 bytes gzip (one build, 2026-08-29;
-          # deterministic per commit, see header comment for why one
-          # measurement suffices here unlike the timing metrics below).
-          # +26% headroom, rounded to 160000.
-          budget_bytes = 160000
+          breached = total > budget_bytes
           print(f"Total initial `/` route payload: {total} bytes gzip (budget {budget_bytes})")
-          with open("../bundle-size-summary.md", "w", encoding="utf-8") as f:
-              f.write("### Bundle size budget (`/` route, initial payload)\n\n")
-              f.write(f"- Measured: {total} bytes gzip\n")
-              f.write(f"- Budget: {budget_bytes} bytes gzip (measured baseline 126519 bytes + 26% headroom)\n")
-              f.write(f"- Result: {'PASS' if total <= budget_bytes else 'FAIL'}\n")
+          with open("../bundle-size-summary.md", "w", encoding="utf-8") as fh:
+              fh.write("### Bundle size budget (`/` route, initial payload)\n\n")
+              fh.write(f"- Measured: {total} bytes gzip across {len(static_refs | lazy_refs)} assets\n")
+              fh.write(f"- Budget: {budget_bytes} bytes gzip (measured baseline 133280 bytes + 26% headroom)\n")
+              fh.write(f"- Result: {'FAIL' if breached else 'PASS'}\n")
 
-          if total > budget_bytes:
-              print(f"::error::Bundle size {total} bytes gzip exceeds the {budget_bytes} byte budget.")
-              sys.exit(1)
+          message = (
+              f"Bundle size {total} bytes gzip exceeds the {budget_bytes} byte budget."
+              if breached
+              else f"Bundle size {total} bytes gzip is within the {budget_bytes} byte budget."
+          )
+          if breached:
+              print(f"::error::{message}")
+          verdict_path.write_text(
+              json.dumps(
+                  {
+                      "status": "fail" if breached else "pass",
+                      "total": total,
+                      "budget": budget_bytes,
+                      "message": message,
+                  }
+              )
+              + "\n",
+              encoding="utf-8",
+          )
           PY
 
       - name: Serve the built frontend
@@ -341,45 +481,161 @@ jobs:
               --quiet
           done
 
-      # Extracts LCP, TBT (INP proxy), and CLS from each report into the job
-      # summary. This step can fail the job if Lighthouse produced no
-      # report or an unreadable one (an infra failure: Chrome failed to
-      # launch, npx failed to fetch the package) -- mirroring
-      # dast-baseline-weekly.yml's "did the scan reach its target" check --
-      # but never on the metric VALUES themselves, since no threshold is
-      # enforced on them yet (see header comment).
-      - name: Summarize Lighthouse metrics (informational; not yet gated)
+      # This step is the "did the scan reach its target" oracle for the
+      # Lighthouse half of this job, mirroring dast-baseline-weekly.yml's.
+      # It fails the job, with a DISTINCT message per cause, when:
+      #   - no report file was produced, or the file does not parse (an
+      #     infra failure: Chrome failed to launch, npx failed to fetch);
+      #   - the report carries a `runtimeError`, Lighthouse's own signal
+      #     that the page never painted (NO_FCP, ERRORED_DOCUMENT_REQUEST,
+      #     a Chrome crash mid-run, a route 404ing under the SPA fallback);
+      #   - an expected audit is absent from the report;
+      #   - an audit is present but its `numericValue` is null.
+      #
+      # The last three are the correction. An earlier version of this step
+      # checked only the first, so a report that existed and parsed but
+      # measured nothing produced a GREEN job and a table of `None`s. That
+      # is worse than a silent pass: step 2 of the owner checklist says to
+      # read these numbers and set budgets from them, so the owner's next
+      # action was to copy `None` into a budget.
+      #
+      # It is also where the LCP/TBT/CLS budgets live: unset today, warned
+      # about on every run, and fatal after BUDGET_DEADLINE. The comparison
+      # against each scanned route is already written and arms itself the
+      # moment a constant stops being `None`, so setting a budget is a
+      # one-line edit rather than a request to write a comparator.
+      - name: Summarize Lighthouse metrics and enforce any set budget
         run: |
           python3 - <<'PY'
           import json
           import sys
+          from datetime import date
           from pathlib import Path
+
+          # ---- LCP / TBT / CLS budgets ----
+          # Set these from a real run; see the OWNER CHECKLIST in this
+          # file's header. The comparison below is ALREADY WRITTEN: a
+          # constant stops being `None` and that metric is gated on every
+          # scanned route from the next run. Nothing else needs adding.
+          LCP_BUDGET_MS = None  # BUDGET: not yet set
+          TBT_BUDGET_MS = None  # BUDGET: not yet set (INP proxy)
+          CLS_BUDGET = None  # BUDGET: not yet set
+
+          # Self-expiry for the three placeholders above (UW-F57). While
+          # any is None this step prints a ::warning:: every run; from the
+          # first run after this date it EXITS NON-ZERO instead, and the
+          # alerting steps below file the tracking issue. A register row is
+          # a note, and a note has never failed a build.
+          BUDGET_DEADLINE = date(2026, 10, 31)
+
+          # (column label, Lighthouse audit id, constant name, value, decimals)
+          METRICS = (
+              ("LCP", "largest-contentful-paint", "LCP_BUDGET_MS", LCP_BUDGET_MS, 0),
+              ("TBT", "total-blocking-time", "TBT_BUDGET_MS", TBT_BUDGET_MS, 0),
+              ("CLS", "cumulative-layout-shift", "CLS_BUDGET", CLS_BUDGET, 3),
+          )
 
           routes = {"root": "/", "privacy": "/privacy", "support": "/support"}
           lines = [
-              "### Lighthouse metrics (informational only; not yet gated, see workflow header comment)",
+              "### Lighthouse metrics (gated only where a budget is set; see workflow header comment)",
               "",
               "| Route | LCP (ms) | TBT (ms, INP proxy) | CLS |",
               "|-------|----------|----------------------|-----|",
           ]
           ok = True
+
           for slug, route in routes.items():
               report_path = Path(f"../lighthouse-out/{slug}.json")
               if not report_path.is_file():
                   print(f"::error::No Lighthouse report produced for {route} ({report_path}).")
+                  lines.append(f"| {route} | no report | no report | no report |")
                   ok = False
                   continue
               try:
                   data = json.loads(report_path.read_text(encoding="utf-8"))
               except (json.JSONDecodeError, UnicodeDecodeError) as exc:
                   print(f"::error::Lighthouse report for {route} is unreadable ({exc}).")
+                  lines.append(f"| {route} | unreadable | unreadable | unreadable |")
                   ok = False
                   continue
+
+              runtime_error = data.get("runtimeError")
+              if runtime_error:
+                  code = runtime_error.get("code", "unknown")
+                  detail = str(runtime_error.get("message", "")).replace("|", "/")
+                  print(
+                      f"::error::Lighthouse reported runtimeError {code} for {route}: {detail} "
+                      "The page never loaded, so this run measured nothing for that route. "
+                      "Do NOT read a budget out of this run."
+                  )
+                  cell = f"runtimeError {code}"
+                  lines.append(f"| {route} | {cell} | {cell} | {cell} |")
+                  ok = False
+                  continue
+
               audits = data.get("audits", {})
-              lcp = audits.get("largest-contentful-paint", {}).get("numericValue")
-              tbt = audits.get("total-blocking-time", {}).get("numericValue")
-              cls = audits.get("cumulative-layout-shift", {}).get("numericValue")
-              lines.append(f"| {route} | {lcp} | {tbt} | {cls} |")
+              cells = []
+              values = {}
+              for label, audit_id, _const, _budget, decimals in METRICS:
+                  audit = audits.get(audit_id)
+                  if audit is None:
+                      print(
+                          f"::error::Lighthouse report for {route} has no `{audit_id}` audit. "
+                          "The report shape changed or the run did not complete; this is not a measurement."
+                      )
+                      cells.append("audit absent")
+                      ok = False
+                      continue
+                  value = audit.get("numericValue")
+                  if value is None:
+                      mode = audit.get("scoreDisplayMode", "unknown")
+                      print(
+                          f"::error::Lighthouse audit `{audit_id}` for {route} has a null numericValue "
+                          f"(scoreDisplayMode={mode}); the page did not produce this metric. "
+                          "This is not a measurement and must not be copied into a budget."
+                      )
+                      cells.append(f"no value ({mode})")
+                      ok = False
+                      continue
+                  values[audit_id] = value
+                  cells.append(f"{value:.{decimals}f}")
+              lines.append(f"| {route} | " + " | ".join(cells) + " |")
+
+              for label, audit_id, const_name, budget, decimals in METRICS:
+                  if budget is None or audit_id not in values:
+                      continue
+                  value = values[audit_id]
+                  if value > budget:
+                      print(
+                          f"::error::{label} for {route} is {value:.{decimals}f}, "
+                          f"over the {const_name} budget of {budget}."
+                      )
+                      ok = False
+
+          unset = [const for _l, _a, const, budget, _d in METRICS if budget is None]
+          if unset:
+              detail = ", ".join(unset)
+              deadline = BUDGET_DEADLINE.isoformat()
+              if date.today() > BUDGET_DEADLINE:
+                  print(
+                      f"::error::{len(unset)} Lighthouse budget(s) are still unset ({detail}) past the "
+                      f"{deadline} deadline. An unset budget is a check that cannot fail. Set them from a "
+                      "real run per the OWNER CHECKLIST in this workflow's header, or move the deadline "
+                      "deliberately. Tracked as UW-F57."
+                  )
+                  ok = False
+              else:
+                  print(
+                      f"::warning::{len(unset)} Lighthouse budget(s) not yet set ({detail}). "
+                      f"This step starts FAILING the job after {deadline}. Tracked as UW-F57."
+                  )
+              lines.extend(
+                  [
+                      "",
+                      f"> {len(unset)} of 3 Lighthouse budgets are not yet set ({detail}). "
+                      f"Deadline {deadline}, after which this step fails the job. See `UW-F57`.",
+                  ]
+              )
 
           with open("../lighthouse-summary.md", "w", encoding="utf-8") as f:
               f.write("\n".join(lines) + "\n")
@@ -388,12 +644,63 @@ jobs:
               sys.exit(1)
           PY
 
+      # The bundle-size ASSERTION, deliberately after the Lighthouse steps
+      # so a size breach cannot cost the owner that week's LCP/TBT/CLS (see
+      # the measurement step above for the full reasoning). Explicit `if:`
+      # so GitHub's injected `if: success()` cannot skip it once an earlier
+      # step has failed; a Lighthouse failure must not swallow a real
+      # budget breach measured minutes earlier.
+      - name: Assert the bundle size budget
+        if: ${{ !cancelled() }}
+        run: |
+          python3 - <<'PY'
+          import json
+          import sys
+          from pathlib import Path
+
+          verdict_path = Path("../bundle-size-verdict.json")
+          if not verdict_path.is_file():
+              print(
+                  "::error::The bundle size measurement step produced no verdict file "
+                  f"({verdict_path}); it crashed or never ran, so the budget was not checked."
+              )
+              sys.exit(1)
+          try:
+              verdict = json.loads(verdict_path.read_text(encoding="utf-8"))
+          except (json.JSONDecodeError, UnicodeDecodeError) as exc:
+              print(f"::error::The bundle size verdict file is unreadable ({exc}).")
+              sys.exit(1)
+
+          status = verdict.get("status")
+          message = verdict.get("message", "(no message recorded)")
+          if status == "pass":
+              print(message)
+              sys.exit(0)
+          if status not in {"fail", "error"}:
+              print(f"::error::Unrecognised bundle size verdict status {status!r}: {message}")
+              sys.exit(1)
+          print(f"::error::{message}")
+          sys.exit(1)
+          PY
+
+      # `cat ... 2>/dev/null || true` used to hide a missing summary file
+      # behind an empty section, which reads identically to a run that had
+      # nothing to say. A file that was not produced is now named, in the
+      # log and in the summary itself. This step still never fails the job:
+      # the steps that WRITE those files are the oracles for whether they
+      # should exist, and both of them now fail loudly when they cannot.
       - name: Write job summary
         if: ${{ !cancelled() }}
         run: |
-          cat ../bundle-size-summary.md >> "$GITHUB_STEP_SUMMARY" 2>/dev/null || true
-          echo "" >> "$GITHUB_STEP_SUMMARY"
-          cat ../lighthouse-summary.md >> "$GITHUB_STEP_SUMMARY" 2>/dev/null || true
+          for summary_file in ../bundle-size-summary.md ../lighthouse-summary.md; do
+            if [ -f "$summary_file" ]; then
+              cat "$summary_file" >> "$GITHUB_STEP_SUMMARY"
+            else
+              echo "::warning::${summary_file} was not produced; the step that writes it did not reach the end."
+              echo "_${summary_file} was not produced; the step that writes it did not reach the end. See the run log._" >> "$GITHUB_STEP_SUMMARY"
+            fi
+            echo "" >> "$GITHUB_STEP_SUMMARY"
+          done
 
       # Full Lighthouse JSON reports (no cookies/headers of a real user;
       # this is an unauthenticated static build) plus the two summary
@@ -410,6 +717,13 @@ jobs:
             bundle-size-summary.md
             lighthouse-summary.md
           retention-days: 14
+          # `warn`, not `error`: this upload is not the oracle for whether
+          # the reports exist. The summarize step is, and it exits non-zero
+          # on a missing, unreadable, errored or null-valued report, so a
+          # green job cannot reach here with an empty lighthouse-out/.
+          # Making this `error` would only add a second, less informative
+          # failure on top of an already-red job (a failed build produces
+          # neither the reports nor the summaries).
           if-no-files-found: warn
 
       - name: Stop the preview server
@@ -445,12 +759,18 @@ jobs:
               '   A cancelled run shows no failed step in the log; that absence',
               '   IS the signal here.',
               '',
-              'Only the bundle-size budget can fail this job on a measured',
-              'threshold today; LCP/TBT/CLS are reported but not yet gated (see',
-              'the workflow file\'s header comment). A failure on those metrics',
-              'specifically would show as the Lighthouse summarize step erroring',
-              'because a report was missing or unreadable, an infra failure, not',
-              'a budget breach.',
+              'Only the bundle-size budget carries a measured threshold today.',
+              'The LCP/TBT/CLS budgets are still unset (tracked as UW-F57), so',
+              'the summarize step warns about them on every run and FAILS the',
+              'job once the deadline declared beside those constants passes.',
+              'That expiry is a legitimate cause of this alert and the run log',
+              'names it in as many words.',
+              '',
+              'The summarize step also fails when Lighthouse produced no report,',
+              'an unreadable one, one carrying a `runtimeError`, or one whose',
+              'metric values are null. Those are infra failures (the page never',
+              'painted) rather than budget breaches, and each prints its own',
+              'distinct message.',
               '',
               'This target is a locally built, unauthenticated static frontend',
               '(no staging or production credentials involved), so a red run',
@@ -470,14 +790,46 @@ jobs:
 
             return JSON.stringify({ body, commentBody })
 
+      # `steps.compose.outcome == 'success'` is load-bearing, not belt and
+      # braces: without it, a compose step that FAILED (rather than skipped)
+      # leaves `steps.compose.outputs.result` empty, `fromJSON('')` errors
+      # while evaluating this step's inputs, and NO issue is filed. The
+      # alert would be lost precisely when something unexpected happened.
+      # The fallback step below covers that branch with a static body.
       - name: File or comment on the pinned issue
-        if: ${{ always() && job.status != 'success' }}
+        if: ${{ always() && job.status != 'success' && steps.compose.outcome == 'success' }}
         uses: ./.github/actions/ci-failure-issue
         with:
           marker: '[lighthouse-weekly]'
           summary: scheduled Lighthouse weekly run not completing cleanly
           body: ${{ fromJSON(steps.compose.outputs.result).body }}
           comment-body: ${{ fromJSON(steps.compose.outputs.result).commentBody }}
+
+      # Same marker, same summary, same default label, so this reconciles
+      # the SAME tracking issue and the same `KNOWN_ALERTS` entry in
+      # scheduled-health-rollup.yml. Only the body differs.
+      - name: File or comment on the pinned issue (fallback body)
+        if: ${{ always() && job.status != 'success' && steps.compose.outcome != 'success' }}
+        uses: ./.github/actions/ci-failure-issue
+        with:
+          marker: '[lighthouse-weekly]'
+          summary: scheduled Lighthouse weekly run not completing cleanly
+          body: |
+            The scheduled `Lighthouse (Weekly)` workflow
+            (`.github/workflows/lighthouse-weekly.yml`) did not complete a clean
+            run, and the step that composes the detailed issue body did not
+            succeed either, so this is the fallback text.
+
+            Read the run log for which step failed. A CANCELLED run, most likely
+            this job's own `timeout-minutes` cutting off a hung
+            Lighthouse/Chrome launch, shows no failed step at all; that absence
+            IS the signal.
+
+            This target is a locally built, unauthenticated static frontend (no
+            staging or production credentials involved), so a red run here is
+            never a live-account or shared-state incident.
+          comment-body: |
+            Scheduled Lighthouse weekly run failed or was cancelled again, and the issue-body composer did not succeed either.
 
       # `github.event_name == 'schedule'`: a one-off workflow_dispatch
       # success (exactly what the owner checklist above asks for) must not
