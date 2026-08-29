@@ -20,10 +20,14 @@ human reading SKILL.md's instructions:
    emphatically, that a prompt leaking its own expected observations tests
    transcription, not comprehension, so every verdict downstream of a leak
    would be worthless.
-3. SKILL.md step 4 keeps running `render.py`. SKILL.md is the program an
-   agent executes when it invokes this skill, so an edit that drops the
-   renderer invocation and tells the agent to compose the block by hand is
-   a live path to the leak, no matter how safe `render.py` itself is.
+3. SKILL.md step 4 keeps running `render.py`, and its stdout is what the
+   checks below actually observe. SKILL.md is the program an agent
+   executes when it invokes this skill, so an edit that drops the renderer
+   invocation and tells the agent to compose the block by hand is a live
+   path to the leak, no matter how safe `render.py` itself is. The same
+   goes for `main()`: `render_paste_block` is a function nobody pastes,
+   and stdout is the artifact, so the CLI is exercised directly rather
+   than trusted to be a thin wrapper.
 
 Property 2 is pinned by two generic checks that never rebuild the block:
 
@@ -54,6 +58,27 @@ caught is a *leak through* such a field, that is, a field the composer has
 also been changed to read. The sentinel check catches that generically, and
 the narrowing check makes the composer raise `KeyError` the moment it reads
 anything the stripped record does not carry.
+
+The SKILL.md checks come in two strengths, and the difference matters when
+reading a green suite:
+
+* **Structural**, and therefore complete for what they claim: step 4 must
+  contain the literal renderer invocation inside a fenced block; every
+  `python3 <path>` invocation anywhere in SKILL.md must resolve to a file
+  on disk; and step 4 may name an operator-only field only in the exact
+  sentences grandfathered in `_STEP_4_OPERATOR_FIELD_SENTENCES`, fenced
+  templates included. A new occurrence anywhere in step 4 fails, and the
+  grandfather list is a ratchet that can only shrink.
+* **Tripwires**, and therefore incomplete by construction: the two
+  prose checks that look for an instruction to hand-compose the block or
+  to relay operator content into it. They match a finite list of English
+  verbs against rough sentence splits. They catch the ordinary phrasings
+  a maintainer or an agent would actually reach for, which is worth
+  having, but no verb list is closed and no negation heuristic is
+  airtight. Read a pass from them as "no common phrasing of the
+  instruction is present", never as "the leak cannot be reinstated in
+  prose". Prose is not a language a test can fully police; the structural
+  checks above are what actually hold the line.
 
 What none of this defends against, stated plainly rather than left to be
 discovered: operator-style text written straight into `persona_text`,
@@ -154,10 +179,21 @@ render_module = _load_render_module()
 # Golden paste blocks. Hand-transcribed from `scenarios.json` against the
 # shape SKILL.md step 4 documents, NOT computed from the record. If the
 # format changes, these must be retyped by a person; that friction is the
-# point. K0 is the non-credentialed production-safe scenario, G4 is a
-# mutating guardian scenario with non-empty `operator_notes`, and A1 is the
-# only scenario carrying `operator_notes.persona_context`. Every scenario's
-# operator content is absent from all three, by inspection.
+# point.
+#
+# What the three goldens actually cover, counted against `scenarios.json`
+# rather than asserted from memory: K0 is the non-credentialed
+# production-safe scenario, and the only golden carrying operator content
+# that states the answer (`operator_setup` 1 line, `expected_observations`
+# 1 line). G4 is a mutating guardian scenario whose `operator_notes` is
+# entirely EMPTY, all four sub-keys `[]`; it covers the mutating-scenario
+# shape, not operator content. A1 is the only scenario in the file carrying
+# `operator_notes.persona_context` (1 line).
+#
+# So no golden covers a populated `operator_note`; K1, K2, K4 and G1 are the
+# scenarios that have one. A leak confined to that sub-key would be caught
+# by the sentinel and narrowing checks below, which walk every scenario, and
+# not by any golden. Do not read this set as four-sub-key coverage.
 # ---------------------------------------------------------------------------
 
 GOLDEN_K0 = (
@@ -208,8 +244,9 @@ def _sentinelize(scenario: dict[str, Any]) -> tuple[dict[str, Any], list[str]]:
     Walks dicts and lists recursively instead of naming today's
     `operator_notes` sub-keys, so a field added anywhere in the schema
     later is sentinel-marked automatically. `id` is marked too, and the
-    marked id is what the caller renders by, which is why nine scenarios
-    with entirely empty `operator_notes` still exercise this check.
+    marked id is what the caller renders by, which is why the eight
+    scenarios with entirely empty `operator_notes` (G2-G7, A2, A3) still
+    exercise this check.
     """
     counter = itertools.count(1)
     sentinels: list[str] = []
@@ -250,12 +287,71 @@ _OPERATOR_FIELD_RE = re.compile(
     r"|expected_observations",
     re.IGNORECASE,
 )
-# Verbs that would put operator content INTO the block. Deliberately excludes
-# "relay" and "paste", which step 4 legitimately uses for telling the operator
-# things out of band, outside the pasted text.
+# Verbs that would put operator content INTO the block.
+#
+# Deliberately EXCLUDES "relay" and "paste": step 4 legitimately uses both for
+# telling the operator things out of band, outside the pasted text. Also
+# excludes "list", which in this document is overwhelmingly a noun about the
+# JSON schema ("an object with ... `[]`") rather than an imperative, so
+# including it would trip on schema prose and pressure a maintainer into
+# weakening this check.
+#
+# Suffixes are enumerated rather than left as `\w*` where the bare stem is a
+# prefix of an unrelated common word: `add\w*` would match "address" and
+# "additional".
 _INSERTION_VERB_RE = re.compile(
-    r"\b(append\w*|inline\w*|includ\w*|embed\w*|insert\w*|copy|copies|copying)\b",
+    r"\b("
+    r"add|adds|added|adding"
+    r"|append\w*|prepend\w*"
+    r"|inline\w*|includ\w*|embed\w*|insert\w*|attach\w*"
+    r"|put|puts|putting"
+    r"|supply|supplies|supplied|supplying"
+    r"|quote|quotes|quoted|quoting"
+    r"|reproduce|reproduces|reproduced|reproducing"
+    r"|copy|copies|copying"
+    r"|pass along|passes along|passed along|passing along"
+    r")\b",
     re.IGNORECASE,
+)
+# Double-negative constructions that turn a negation into an order. "Do not
+# forget to append X" carries a negation token while being an unambiguous
+# instruction to append X, so a negation in the same sentence as one of these
+# must not exempt anything.
+_NEGATION_REVERSAL_RE = re.compile(
+    r"\b(forget\w*|fail|fails|failing|omit\w*|neglect\w*|skip\w*|hesitat\w*)\b",
+    re.IGNORECASE,
+)
+# How far before a risky token a negation may sit and still be read as
+# governing it. Bounded so that a negation elsewhere in a long sentence does
+# not silently exempt a clause it has nothing to do with.
+_NEGATION_WINDOW = 60
+
+# Any `python3 <something>.py` command anywhere in SKILL.md, not only the
+# renderer. A second fenced command naming a script that does not exist is a
+# live instruction to run and paste unknown output.
+_PYTHON3_INVOCATION_RE = re.compile(r"\bpython3\s+(\S+\.py)")
+
+# Every sentence of SKILL.md step 4 that legitimately names an operator-only
+# field, verbatim as `_sentences` yields it. Step 4 has to name these fields in
+# order to tell the operator to keep them OUT of the pasted block, so the check
+# below cannot simply ban the names; it grandfathers exactly these three and
+# fails on any fourth, prose or fenced template alike. Both directions are
+# asserted, so this list can only ever shrink: deleting one of these sentences
+# from SKILL.md is also a failure.
+_STEP_4_OPERATOR_FIELD_SENTENCES = (
+    (
+        "it never reads `operator_notes` (`operator_setup`, `operator_note`, "
+        "`persona_context`, or `expected_observations`), by construction."
+    ),
+    (
+        "Do not append, inline, or otherwise relay any `operator_notes` content "
+        "into the pasted block itself;"
+    ),
+    (
+        "Where `operator_notes.operator_setup` is non-empty, relay it to the user "
+        "before they paste (it covers things like starting from a signed-out "
+        "browser or signing in first)."
+    ),
 )
 
 
@@ -293,6 +389,43 @@ def _sentences(text: str) -> list[str]:
     """
     flat = re.sub(r"\s+", " ", text)
     return [part for part in re.split(r"(?<=[.:;!?])\s+", flat) if part.strip()]
+
+
+def _negation_governs(sentence: str, target: re.Match[str]) -> bool:
+    """Is `target` inside this sentence actually negated?
+
+    Two conditions, both necessary, replacing the earlier "a negation token
+    appears somewhere in the sentence" rule. That rule was inverted for
+    imperatives: "Do not forget to append X" and "compose it yourself if
+    the renderer is not available" both carry a negation token while being
+    plain instructions to do the thing.
+
+    1. The negation must PRECEDE the target, within `_NEGATION_WINDOW`
+       characters. A negation after the target, or far away at the other
+       end of a long sentence, governs a different clause.
+    2. The sentence must carry no `_NEGATION_REVERSAL_RE` word. "Do not
+       forget", "do not omit", "never fail to" are double negatives: the
+       negation is there, and the sentence still says to do it.
+
+    This is a heuristic and is documented as one wherever it is used. It
+    is deliberately biased towards flagging: a false positive is a loud,
+    one-line fix, whereas a false negative is a silent leak.
+
+    Args:
+        sentence: the whole rough sentence the target was found in.
+        target: the match object for the risky token, from a search over
+            that same sentence.
+
+    Returns:
+        True when the target may be treated as negated and skipped.
+    """
+    if _NEGATION_REVERSAL_RE.search(sentence):
+        return False
+    window_start = max(0, target.start() - _NEGATION_WINDOW)
+    # `pos`/`endpos` rather than a slice: Python keeps the real surrounding
+    # characters in view for `\b`, so a window boundary landing mid-word
+    # cannot manufacture a "not" out of "cannot".
+    return _NEGATION_RE.search(sentence, window_start, target.start()) is not None
 
 
 # ---------------------------------------------------------------------------
@@ -519,6 +652,114 @@ def test_every_url_placeholder_in_both_substituted_fields_is_replaced(tmp_path: 
 
 
 # ---------------------------------------------------------------------------
+# The CLI is the artifact. Everything above tests `render_paste_block`, which
+# is a function nobody pastes; SKILL.md step 4 runs the module and says its
+# stdout is the block to paste, verbatim. Until stdout itself is observed, a
+# `main()` that prints the block and then prints the answer key underneath it
+# passes every leak check in this file.
+# ---------------------------------------------------------------------------
+
+
+def _non_model_facing_string_leaves(scenario: dict[str, Any]) -> list[str]:
+    """Every string leaf of `scenario` outside the three model-facing fields.
+
+    Same tree-walk as `_sentinelize`, without the substitution: used to
+    search real operator prose in real CLI output, where a sentinel-bearing
+    `scenarios.json` cannot be substituted because `main()` takes no path
+    override.
+    """
+    found: list[str] = []
+
+    def walk(node: Any) -> None:
+        if isinstance(node, str):
+            found.append(node)
+        elif isinstance(node, dict):
+            for value in node.values():
+                walk(value)
+        elif isinstance(node, list):
+            for item in node:
+                walk(item)
+
+    for key, value in scenario.items():
+        if key not in _MODEL_FACING_FIELD_NAMES:
+            walk(value)
+    return found
+
+
+# Below this length a scenario's non-model-facing strings are ids and one-word
+# persona labels ("K0", "kid"), which collide with ordinary block text. The
+# real operator lines in `scenarios.json` are 18 characters and up, so this
+# threshold separates the two cleanly with room to spare.
+_LEAK_SEARCH_MIN_LENGTH = 12
+
+
+@pytest.mark.parametrize("scenario", _load_scenarios(), ids=lambda s: s["id"])
+def test_cli_stdout_is_exactly_the_paste_block(scenario: dict[str, Any], capsys):
+    """`main()`'s stdout must be the composed block and nothing else.
+
+    Byte equality is the whole point: it transitively inherits every
+    property the checks above prove about `render_paste_block`, and it
+    fails on anything appended, prepended, or interleaved. A `main()` that
+    prints the block and then prints `operator_notes.expected_observations`
+    underneath is exactly the leak SKILL.md forbids, and it is invisible to
+    a suite that only calls the composer.
+    """
+    exit_code = render_module.main([scenario["id"], _TEST_URL])
+    captured = capsys.readouterr()
+
+    assert exit_code == 0, f"{scenario['id']}: CLI exited {exit_code}"
+    assert captured.err == "", (
+        f"{scenario['id']}: CLI wrote to stderr: {captured.err!r}"
+    )
+    expected = render_module.render_paste_block(scenario["id"], _TEST_URL) + "\n"
+    assert captured.out == expected
+
+
+@pytest.mark.parametrize("scenario", _load_scenarios(), ids=lambda s: s["id"])
+def test_no_operator_content_reaches_cli_stdout(scenario: dict[str, Any], capsys):
+    """No operator string from the record may appear in what the human pastes.
+
+    The sentinel walk of the checks above, aimed at real CLI output. It
+    searches the record's actual operator prose rather than substituted
+    markers, because `main()` reads `SCENARIOS_PATH` and takes no override,
+    so there is no sentinel-bearing file to point it at. Strings shorter
+    than `_LEAK_SEARCH_MIN_LENGTH` are skipped to keep ids and persona
+    labels from matching ordinary block text.
+    """
+    assert render_module.main([scenario["id"], _TEST_URL]) == 0
+    stdout = capsys.readouterr().out
+
+    searchable = [
+        text
+        for text in _non_model_facing_string_leaves(scenario)
+        if len(text) >= _LEAK_SEARCH_MIN_LENGTH
+    ]
+    leaked = [text for text in searchable if text in stdout]
+    assert not leaked, f"{scenario['id']}: operator content reached stdout: {leaked}"
+
+
+def test_cli_rejects_a_wrong_argument_count(capsys):
+    """Two arguments exactly; anything else is a usage error on stderr."""
+    for argv in ([], ["K0"], ["K0", _TEST_URL, "extra"]):
+        assert render_module.main(argv) == 2, f"argv {argv!r} should be a usage error"
+        captured = capsys.readouterr()
+        assert captured.out == "", f"argv {argv!r} printed to stdout: {captured.out!r}"
+        assert "usage:" in captured.err
+
+
+def test_cli_rejects_an_unknown_scenario_id(capsys):
+    """An unknown id exits 1 and prints nothing to stdout.
+
+    Printing a partial or empty block on a typo'd id would be worse than
+    failing: the operator pastes whatever appeared.
+    """
+    assert render_module.main(["NOPE", _TEST_URL]) == 1
+    captured = capsys.readouterr()
+    assert captured.out == ""
+    assert "NOPE" in captured.err
+
+
+# ---------------------------------------------------------------------------
 # SKILL.md is the program: step 4 must keep running the renderer.
 # ---------------------------------------------------------------------------
 
@@ -563,20 +804,81 @@ def test_skill_md_names_a_renderer_path_that_resolves_on_disk():
     )
 
 
+def test_every_python3_invocation_in_skill_md_resolves_on_disk():
+    """Every `python3 <path>` in SKILL.md must name a file that exists.
+
+    The renderer-path check above resolves only the path its regex matches,
+    `\\S+render\\.py`. That leaves a second fenced command free to name
+    anything at all: "then run the enrichment step and paste its output
+    too", pointing at a script nobody wrote, reads to an agent as a real
+    instruction and passes silently. SKILL.md is the program, so every
+    command in it is checked, not just the one the suite happens to care
+    about.
+    """
+    text = _skill_md_text()
+    named = _PYTHON3_INVOCATION_RE.findall(text)
+    assert named, "SKILL.md names no python3 invocation at all"
+
+    missing = [rel for rel in named if not (REPO_ROOT / rel).is_file()]
+    assert not missing, (
+        f"SKILL.md tells the operator to run scripts that do not exist: {missing}"
+    )
+
+
+def test_step_4_names_operator_fields_only_where_grandfathered():
+    """Step 4 may name an operator-only field only in the sentences on the list.
+
+    Structural, not a tripwire: this covers ALL of step 4, fenced blocks
+    included, and does not depend on a verb appearing anywhere. A code
+    fence documenting the paste block's shape with an
+    `OPERATOR EXPECTS: <operator_notes.expected_observations>` slot has no
+    verb for the prose guards to match, and an agent handed "paste stdout,
+    in the shape: <shape>" plus a shape with a slot stdout does not fill
+    has a plain instruction to fill it from the record.
+
+    Step 4 legitimately names these fields while telling the operator to
+    keep them out of the block, so the exceptions are grandfathered
+    verbatim, and their continued presence is asserted too. The list is a
+    ratchet: it can only shrink.
+    """
+    naming = [s for s in _sentences(_skill_md_step(4)) if _OPERATOR_FIELD_RE.search(s)]
+
+    unexpected = [s for s in naming if s not in _STEP_4_OPERATOR_FIELD_SENTENCES]
+    assert not unexpected, (
+        "SKILL.md step 4 names an operator-only field somewhere new. If this is "
+        "legitimate, say so out loud by adding it to "
+        "_STEP_4_OPERATOR_FIELD_SENTENCES; do not delete this check. "
+        f"New occurrences: {unexpected}"
+    )
+
+    for grandfathered in _STEP_4_OPERATOR_FIELD_SENTENCES:
+        assert grandfathered in naming, (
+            "a grandfathered step 4 sentence is gone or reworded, so the "
+            "exception list no longer describes SKILL.md. Re-verify the "
+            "sentence is still safe, then update the list: "
+            f"{grandfathered!r}"
+        )
+
+
 def test_skill_md_has_no_unnegated_self_composition_instruction():
     """No sentence may tell the agent to build the block itself.
 
-    Backstop to the two checks above, for a mutation that leaves the
-    fenced invocation in place and adds a competing instruction beside it.
-    Heuristic by nature: it requires every sentence mentioning "yourself"
-    to also carry a negation, which is the shape the existing "never by
-    composing it yourself" instruction already has.
+    Backstop to the checks above, for a mutation that leaves the fenced
+    invocation in place and adds a competing instruction beside it.
+
+    This is a TRIPWIRE, not a proof. It keys on the single word
+    "yourself", and asks `_negation_governs` whether a negation actually
+    precedes it. Passing means "no sentence phrased that way is present",
+    which is worth knowing and is not the same as "SKILL.md cannot tell
+    the agent to hand-compose the block". Plenty of English says that
+    without the word "yourself". The invocation and renderer-path checks
+    above are the structural half.
     """
-    offenders = [
-        sentence
-        for sentence in _sentences(_skill_md_text())
-        if _SELF_COMPOSE_RE.search(sentence) and not _NEGATION_RE.search(sentence)
-    ]
+    offenders = []
+    for sentence in _sentences(_skill_md_text()):
+        match = _SELF_COMPOSE_RE.search(sentence)
+        if match is not None and not _negation_governs(sentence, match):
+            offenders.append(sentence)
     assert not offenders, (
         f"SKILL.md appears to instruct composing the paste block by hand: {offenders}"
     )
@@ -587,16 +889,27 @@ def test_skill_md_never_instructs_putting_operator_content_in_the_block():
 
     The existing "Do not append, inline, or otherwise relay any
     `operator_notes` content into the pasted block" sentence passes because
-    it is negated. A sentence saying to include
-    `operator_notes.expected_observations` does not.
+    the negation directly precedes both verbs. "Then add each line of
+    `operator_notes.expected_observations` to the end of that stdout" does
+    not, and neither does "Do not forget to append ...", whose negation is
+    reversed by "forget".
+
+    This is a TRIPWIRE, not a proof. It matches a finite verb list against
+    rough sentence splits, and no verb list is closed: a sentence can
+    instruct the leak in words nobody enumerated ("the block should end
+    with the expected observations"). Read a pass as "no common phrasing
+    is present". What actually holds step 4's line is
+    `test_step_4_names_operator_fields_only_where_grandfathered`, which
+    needs no verb at all.
     """
-    offenders = [
-        sentence
-        for sentence in _sentences(_skill_md_text())
-        if _OPERATOR_FIELD_RE.search(sentence)
-        and _INSERTION_VERB_RE.search(sentence)
-        and not _NEGATION_RE.search(sentence)
-    ]
+    offenders = []
+    for sentence in _sentences(_skill_md_text()):
+        if not _OPERATOR_FIELD_RE.search(sentence):
+            continue
+        for verb in _INSERTION_VERB_RE.finditer(sentence):
+            if not _negation_governs(sentence, verb):
+                offenders.append(sentence)
+                break
     assert not offenders, (
         f"SKILL.md appears to instruct relaying operator-only content: {offenders}"
     )

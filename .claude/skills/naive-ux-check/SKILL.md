@@ -37,13 +37,28 @@ makes a field merely reachable, rendering nothing until the format string
 changes too.
 
 `tests/unit/test_naive_ux_scenarios.py` imports this module directly and
-pins three properties: hand-transcribed golden blocks for K0, G4 and A1 fix
+pins four properties: hand-transcribed golden blocks for K0, G4 and A1 fix
 the block's shape; a record stripped to just the three model-facing fields
-renders identically to the real one, so nothing else is read; and every
-string leaf outside those three fields, replaced with a unique sentinel,
-stays out of the rendered output, so nothing else is emitted. A further
-test binds step 4's fenced renderer invocation below to a path that exists,
-so this skill's own instructions cannot quietly stop running `render.py`.
+renders identically to the real one, so nothing else is read; every string
+leaf outside those three fields, replaced with a unique sentinel, stays out
+of the rendered output, so nothing else is emitted; and the CLI's own
+stdout, for all 17 scenarios, equals the composed block byte for byte,
+which matters because stdout is the artifact a human pastes and the
+composer is only a function underneath it.
+
+Three further tests read this file as the program it is: step 4's fenced
+renderer invocation must resolve to a path that exists, every `python3`
+command anywhere in this file must name a script that exists, and step 4
+may mention an operator-only field name only in the three sentences already
+grandfathered by the test module.
+
+Two more checks are tripwires rather than proofs, and say so in their own
+docstrings: they scan this file's sentences for a finite set of English
+verbs that would relay operator-only content into the block, and for an
+instruction to hand-compose the block. They catch the ordinary phrasings,
+which is worth having, but no verb set is closed. A green suite therefore
+means no common wording of that instruction is present in this file, not
+that such an instruction is impossible to write in prose.
 
 One thing that machinery does not do, so nobody reads more into it: the
 split is between *fields*, not between kinds of content. Operator-style
