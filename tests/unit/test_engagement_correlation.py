@@ -169,6 +169,21 @@ class TestCategoricalExclusions:
         assert is_eligible(_observations(visibility="family", readers=40)) is False
         assert is_eligible(_observations(is_personalized=True, readers=40)) is False
 
+    def test_an_unrecognised_visibility_is_excluded(self) -> None:
+        """A visibility value outside the CHECK constraint's set is excluded.
+
+        ``ck_storybook_visibility`` in
+        ``supabase/migrations/20260710000000_baseline.sql`` closes
+        ``visibility`` to exactly ``('family', 'catalog')``. Excluding by
+        negative equality against ``"family"`` alone means any third value,
+        whether from a future migration widening the set or from a caller
+        that failed to constrain a row, is treated as eligible rather than
+        excluded. Fail closed instead: only the recognised, non-family value
+        is eligible.
+        """
+        observations = _observations(visibility="draft", readers=40)
+        assert is_eligible(observations) is False
+
     def test_an_unpublished_status_is_excluded_with_a_version_still_present(
         self,
     ) -> None:

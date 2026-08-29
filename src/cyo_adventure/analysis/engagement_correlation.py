@@ -66,6 +66,16 @@ FLAG_REASONS: Final = ("did_not_like", "scared_me", "confusing")
 PUBLISHED_STATUS: Final = "published"
 FAMILY_VISIBILITY: Final = "family"
 
+# The one visibility value ``is_eligible`` allows through, mirroring the
+# ``ck_storybook_visibility`` CHECK constraint in
+# ``supabase/migrations/20260710000000_baseline.sql``, which closes
+# ``visibility`` to exactly ``('family', 'catalog')``. Positive-allow rather
+# than negative-equality against ``FAMILY_VISIBILITY``: a third value this
+# module has never seen, whether from a future migration widening the set or
+# from a caller that failed to constrain a row, is excluded rather than
+# silently treated as eligible.
+CATALOG_VISIBILITY: Final = "catalog"
+
 # The closed set of Stage-4 verdict values this job will emit (ADR-030 Decision
 # 3). Stage 4 never gates, so ``advisory`` and ``pass`` are the two values it
 # produces; anything else in a stored report is treated as no judgment rather
@@ -318,7 +328,7 @@ def is_eligible(observations: StorybookObservations) -> bool:
     Returns:
         bool: True when the storybook is included in the output.
     """
-    if observations.visibility == FAMILY_VISIBILITY:
+    if observations.visibility != CATALOG_VISIBILITY:
         return False
     if observations.is_personalized:
         return False
