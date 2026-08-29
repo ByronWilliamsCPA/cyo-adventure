@@ -137,6 +137,51 @@ export interface WalkOptions {
 }
 
 /**
+ * Entry-arrival gate: the walk must actually BE on the persona's own surface
+ * before it starts exploring, not merely somewhere.
+ *
+ * #CRITICAL: security: this is what keeps a broken session gate from
+ * presenting as a green walk. Without it the whole tier is silently
+ * self-disarming: `runWalk` navigates to `persona.entryPath`, and if that
+ * persona's `setupSession` has stopped working the app redirects the walk to
+ * a sign-in page, from which the seeded random walk cheerfully explores the
+ * public marketing tree (`/`, `/support`, `/privacy`) instead. Every
+ * invariant then evaluates against clean public pages and passes. This was
+ * proven, not hypothesised: stubbing out `seedDeviceGrant` in KID_PERSONA
+ * (a total regression of the ADR-014 device-grant gate) left the kid walk
+ * PASSING, having visited only `/guardian/login`, `/`, `/support` and
+ * `/privacy`. Zero kid surface was exercised and the run reported success.
+ *
+ * The kid persona is the acute case and explains why an invariant does not
+ * already cover this: `KID_PERSONA.terminals` legitimately includes
+ * `/guardian/login` ("Ask a grown-up"), so I2's dead-end check is disarmed
+ * on exactly the page a broken device grant lands on.
+ *
+ * Compares PATHNAME only, so a legitimate query string on the entry URL does
+ * not fail the walk, while a redirect to a different route (a sign-in page,
+ * an interstitial, the landing page) does. Deliberately an equality check
+ * against the persona's OWN `entryPath` and not a prefix or "did we
+ * navigate at all" test: `/guardian/login?intent=authorize-device` shares no
+ * prefix with `/kids`, but `startsWith` would also accept `/guardian/consent`
+ * for a `/guardian` entry, which is precisely a broken-session redirect.
+ * #VERIFY: a persona that acquires a LEGITIMATE entry redirect (an index
+ * route that forwards, say) must declare an explicit accept-set on `Persona`
+ * and have this check consult it. Do not loosen this to a prefix match or
+ * delete it to make such a persona green.
+ */
+function assertLandedOnEntryPath(page: Page, persona: Persona): void {
+  const landedPath = new URL(page.url()).pathname
+  expect(
+    landedPath,
+    `usersim/${persona.id}: entry navigation to ${persona.entryPath} landed on ${landedPath} ` +
+      `(full URL ${page.url()}). The walk never reached this persona's own surface, so every ` +
+      'invariant after this point would have been evaluated against whatever it was redirected ' +
+      "to. Check this persona's setupSession in personas.ts (or real-session-setup.ts on the " +
+      'real tier) and the route gate that redirected it.'
+  ).toBe(persona.entryPath)
+}
+
+/**
  * Run one persona's seeded random walk: seed its session, optionally
  * install mocks, then repeatedly pick a visible in-app link at random (via
  * the seeded PRNG, prng.ts) and click it, asserting I1-I5 at every state,
@@ -177,6 +222,7 @@ export async function runWalk(
 
   await page.goto(persona.entryPath)
   await settleAfterNavigation(page)
+  assertLandedOnEntryPath(page, persona)
   visited.push({ step: 0, url: page.url() })
 
   for (let step = 1; step <= STEP_BUDGET; step++) {

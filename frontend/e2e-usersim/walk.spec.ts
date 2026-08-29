@@ -34,7 +34,11 @@
 import { test } from '@playwright/test'
 
 import type { Workflow } from './support/invariants'
-import { installWalkMocks } from './support/mocked-api'
+import {
+  assertCanariesReachedPersona,
+  createCanaryDeliveryLedger,
+  installWalkMocks,
+} from './support/mocked-api'
 import { PERSONAS } from './support/personas'
 import { runWalk } from './support/walk-runner'
 
@@ -54,6 +58,13 @@ test.afterEach(async ({ page }, testInfo) => {
 
 for (const persona of PERSONAS) {
   test(persona.id, async ({ page, context }) => {
+    // Records which I5 canaries the mocked fixtures actually served to the
+    // browser during this walk, so `assertCanariesReachedPersona` below can
+    // tell "the ring boundary held" apart from "the canary was never in
+    // play". See mocked-api.ts's header comment: I5 was unfalsifiable on
+    // this tier until that distinction was enforced.
+    const canaryLedger = createCanaryDeliveryLedger()
+
     await runWalk(
       {
         persona,
@@ -63,7 +74,8 @@ for (const persona of PERSONAS) {
         // object (no `this` is used here, but the rule cannot see that
         // without a `this: void` annotation on the interface itself).
         setupSession: (context, page) => persona.setupSession(context, page),
-        installMocks: installWalkMocks,
+        installMocks: (context, page, personaId) =>
+          installWalkMocks(context, page, personaId, canaryLedger),
         workflow: WORKFLOW,
         // canaries omitted: defaults to invariants.ts's DEFAULT_CANARIES,
         // the same GUARDIAN_ONLY_CANARY/FAMILY_B_CANARY this file's mocks embed.
@@ -71,5 +83,7 @@ for (const persona of PERSONAS) {
       page,
       context
     )
+
+    assertCanariesReachedPersona(canaryLedger, persona.id)
   })
 }

@@ -29,7 +29,11 @@
 import { expect, test } from '@playwright/test'
 
 import { createAxeStateTracker, type Workflow } from './support/invariants'
-import { installWalkMocks } from './support/mocked-api'
+import {
+  assertCanariesReachedPersona,
+  createCanaryDeliveryLedger,
+  installWalkMocks,
+} from './support/mocked-api'
 import { PERSONAS } from './support/personas'
 import { runWalk } from './support/walk-runner'
 
@@ -55,12 +59,18 @@ for (const persona of PERSONAS) {
     )
 
     const axeTracker = createAxeStateTracker()
+    // Same I5 non-vacuity ledger walk.spec.ts uses; this spec runs the same
+    // walk over the same mocked fixtures, so it gets the same proof that the
+    // canaries I5 checks for were actually served. See mocked-api.ts's
+    // header comment.
+    const canaryLedger = createCanaryDeliveryLedger()
 
     await runWalk(
       {
         persona,
         setupSession: (context, page) => persona.setupSession(context, page),
-        installMocks: installWalkMocks,
+        installMocks: (context, page, personaId) =>
+          installWalkMocks(context, page, personaId, canaryLedger),
         workflow: WORKFLOW,
         // canaries omitted: defaults to invariants.ts's DEFAULT_CANARIES, the
         // same literals support/mocked-api.ts's fixtures embed, matching
@@ -89,5 +99,7 @@ for (const persona of PERSONAS) {
         "reachable state (unlikely; check personas.ts's entryPath) or " +
         "axeTracker was dropped from runWalk's options."
     ).toBeGreaterThan(0)
+
+    assertCanariesReachedPersona(canaryLedger, persona.id)
   })
 }

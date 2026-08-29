@@ -38,9 +38,16 @@ import { getPersona, type PersonaId } from './personas'
  *   cross-family; neither the kid ring nor a plain guardian (scoped to their
  *   own family) may ever render it.
  *
- * Exported so walk.spec.ts's mock fixtures and this module's check agree on
+ * Exported so mocked-api.ts's fixtures and this module's check agree on
  * one literal value each; a copy-pasted second literal is exactly how this
  * kind of trip-wire silently stops tripping.
+ *
+ * A shared literal is necessary but NOT sufficient: the fixtures must also
+ * actually serve the canary to the ring being checked, or the check below
+ * passes because the string was never in play. That was the real state of
+ * this tier until mocked-api.ts grew `withLeakBait` and
+ * `assertCanariesReachedPersona`; read that module's header comment before
+ * editing either the canaries or the fixtures.
  */
 export const GUARDIAN_ONLY_CANARY = 'usersim-canary-guardian-only-4f7c'
 export const FAMILY_B_CANARY = 'usersim-canary-family-b-9d21'
