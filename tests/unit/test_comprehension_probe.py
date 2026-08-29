@@ -13,9 +13,14 @@ No test here makes a network call: every provider is
 
 from __future__ import annotations
 
+import ast
 import asyncio
+import importlib.machinery
+import importlib.util
 import json
+import sys
 from decimal import Decimal
+from pathlib import Path
 from typing import TYPE_CHECKING
 
 import pytest
@@ -24,17 +29,20 @@ from cyo_adventure.core.exceptions import ConfigurationError
 from cyo_adventure.core.pricing import estimate_cost, price_for
 from cyo_adventure.generation.provider import MockProvider
 from cyo_adventure.generation.usage import Completion, TokenUsage
+from scripts import comprehension_probe
 from scripts.comprehension_probe import (
     _ANSWER_MODEL,  # pyright: ignore[reportPrivateUsage]
     _PROVIDER,  # pyright: ignore[reportPrivateUsage]
     _QUESTION_MODEL,  # pyright: ignore[reportPrivateUsage]
     _REPO_ROOT,  # pyright: ignore[reportPrivateUsage]
+    _SAMPLING_STRATEGY,  # pyright: ignore[reportPrivateUsage]
     AnswerRecord,
     BudgetTracker,
     CorpusStats,
     NodeResult,
     Passage,
     ProbeParseError,
+    ProbeSummary,
     UnaccountableSpendError,
     _ensure_gitignored_destination,  # pyright: ignore[reportPrivateUsage]
     _ensure_models_are_priced,  # pyright: ignore[reportPrivateUsage]
@@ -43,20 +51,40 @@ from scripts.comprehension_probe import (
     _parse_json_object,  # pyright: ignore[reportPrivateUsage]
     _validate_model_pair,  # pyright: ignore[reportPrivateUsage]
     collect_passages,
+    main,
     probe_passage,
     run_probe,
     summarize,
+    write_tracked_aggregate,
 )
 
 if TYPE_CHECKING:
     from collections.abc import Callable
-    from pathlib import Path
+    from types import CodeType
 
 # Real, priced (provider, model) pairs from core/pricing.py, so cost math in
 # these tests exercises the same price table a live run would, instead of a
 # fixture price that could drift from it unnoticed.
 _QUESTION_PAIR = ("openrouter", "google/gemini-2.5-flash")
 _ANSWER_PAIR = ("openrouter", "deepseek/deepseek-v4-flash")
+
+
+class _RewrittenSourceLoader(importlib.machinery.SourceFileLoader):
+    """Import a module from a pre-rewritten AST rather than from its file.
+
+    ``get_code`` is overridden rather than ``source_to_code`` so no
+    ``__pycache__`` entry can short-circuit the rewrite and quietly import the
+    unmodified module, which would turn an import-wiring test into a test that
+    always passes.
+    """
+
+    def __init__(self, fullname: str, path: str, tree: ast.Module) -> None:
+        super().__init__(fullname, path)
+        self._tree = tree
+
+    def get_code(self, fullname: str) -> CodeType:
+        """Return the rewritten module code, ignoring source and cache alike."""
+        return compile(self._tree, self.path, "exec")
 
 
 def _completion(
@@ -289,19 +317,31 @@ class TestFillDirectiveHandling:
             [{"id": f"n{i}", "body": f"Passage number {i}."} for i in range(10)],
         )
         passages, stats = collect_passages(tmp_path, max_passages=3)
-        assert [p.node_id for p in passages] == ["n0", "n1", "n2"]
+        # Deterministic AND strided: the block midpoints of 10 nodes taken 3
+        # at a time. ``["n0", "n1", "n2"]`` is what a prefix walk returns, and
+        # is the exact figure-narrowing defect this sampler exists to avoid.
+        assert [p.node_id for p in passages] == ["n1", "n5", "n8"]
         assert stats.passages_collected == 3
 
 
 class TestStratification:
-    """The cap must be spent ACROSS stories, not down the first one.
+    """The cap must be spent ACROSS stories, and ACROSS each story.
 
-    The pilot's headline ``0.2034`` was reported as an age-band figure and was
-    in fact a single-book figure: ``collect_passages`` filled greedily from
-    the first file in sorted order and stopped, so all 60 passages came from
-    ``sk_backyard_treasure_map`` and 27 of the 31 globbed files were never
-    opened. Nothing in the old suite could fail on that, because every corpus
-    fixture it used held exactly one story.
+    The first pilot's headline ``0.2034`` was reported as an age-band figure
+    and was in fact a single-book figure: ``collect_passages`` filled greedily
+    from the first file in sorted order and stopped, so all 60 passages came
+    from ``sk_backyard_treasure_map`` and 27 of the 31 globbed files were
+    never opened. Nothing in the old suite could fail on that, because every
+    corpus fixture it used held exactly one story.
+
+    The depth-interleaved fix for that spread the cap over six stories and
+    then took node positions 0 to 9 of every one of them, so the second
+    pilot's ``0.1954`` was the band's OPENING-PREFIX rate reported as the
+    band's rate. Story openings introduce their referents and carry the least
+    prior context, so a prefix is not a neutral narrower slice: it is biased
+    toward "unanswerable" for a probe that asks whether a passage stands
+    alone. Both defects are the same shape, a figure reading broader than the
+    slice behind it, so both get a test here.
     """
 
     def _write_story(
@@ -340,20 +380,74 @@ class TestStratification:
         assert stats.stories_available == 3
         assert stats.stories_sampled == 3
 
-    def test_a_short_story_does_not_starve_the_others(self, tmp_path: Path) -> None:
-        # story-a runs out at depth 1; the remaining budget must go to the
-        # stories that still have passages rather than stopping the walk.
+    def test_a_story_too_short_for_its_share_hands_the_remainder_back(
+        self, tmp_path: Path
+    ) -> None:
+        """A story with fewer nodes than its share must not strand the cap.
+
+        Renamed from ``test_a_short_story_does_not_starve_the_others``, which
+        claimed a property it could not discriminate: a greedy walk returns
+        the same STORY sequence here, so asserting story ids alone passed
+        under the very implementation the class exists to rule out. The
+        assertion is on node ids instead, which a greedy prefix walk fails
+        (it would return ``b-n0, b-n1, b-n2``).
+        """
         self._write_story(tmp_path, "story-a", 1)
         self._write_story(tmp_path, "story-b", 5)
         passages, stats = collect_passages(tmp_path, max_passages=4)
-        assert [p.story_id for p in passages] == [
-            "story-a",
-            "story-b",
-            "story-b",
-            "story-b",
+        # story-a can only supply 1 of its 2-passage share, so story-b takes
+        # 3, strided across all five of its nodes rather than its first three.
+        assert [p.node_id for p in passages] == [
+            "story-a-n0",
+            "story-b-n0",
+            "story-b-n2",
+            "story-b-n4",
         ]
         assert stats.stories_available == 2
         assert stats.stories_sampled == 2
+
+    def test_the_slice_spans_each_story_rather_than_its_opening(
+        self, tmp_path: Path
+    ) -> None:
+        """The published figure must be the band's rate, not its openings' rate.
+
+        This is the test that fails if the selection degenerates back to a
+        prefix. Under the depth-interleaved sampler it replaces, every
+        assertion below is false: that sampler returns positions 0 to 3 of
+        each story.
+        """
+        self._write_story(tmp_path, "story-a", 40)
+        self._write_story(tmp_path, "story-b", 40)
+        passages, _ = collect_passages(tmp_path, max_passages=8)
+        for story in ("story-a", "story-b"):
+            positions = [
+                int(p.node_id.rsplit("-n", 1)[1])
+                for p in passages
+                if p.story_id == story
+            ]
+            assert len(positions) == 4
+            assert positions == sorted(positions)
+            assert len(set(positions)) == 4
+            # Not the opening: the first pick is past the story's first tenth.
+            assert positions[0] >= 4
+            # And the slice reaches the story's final quarter rather than
+            # stopping wherever the per-story share ran out.
+            assert positions[-1] >= 30
+            # Spanning, not clustered: the picks cover most of the story.
+            assert positions[-1] - positions[0] >= 30
+
+    def test_a_story_shorter_than_its_share_contributes_every_node(
+        self, tmp_path: Path
+    ) -> None:
+        """Striding must not silently drop nodes when there is nothing to skip."""
+        self._write_story(tmp_path, "story-a", 3)
+        passages, stats = collect_passages(tmp_path, max_passages=10)
+        assert [p.node_id for p in passages] == [
+            "story-a-n0",
+            "story-a-n1",
+            "story-a-n2",
+        ]
+        assert stats.passages_collected == 3
 
     def test_every_matching_file_is_opened_even_once_the_cap_is_reachable(
         self, tmp_path: Path
@@ -742,9 +836,66 @@ class TestConfiguredModels:
     def test_the_two_configured_models_are_not_the_same_model(self) -> None:
         assert _QUESTION_MODEL != _ANSWER_MODEL
 
-    def test_one_model_asking_and_answering_is_refused_at_import(self) -> None:
+    def test_the_pair_validator_rejects_one_model_asking_and_answering(self) -> None:
+        """The validator itself, called directly.
+
+        Renamed from ``test_one_model_asking_and_answering_is_refused_at_import``:
+        that name claimed import-time WIRING and this call proves only that
+        the function raises when called. Deleting the module-level
+        ``_validate_model_pair(...)`` call left the whole suite green under
+        the old name. The wiring is pinned by the test below instead.
+        """
         with pytest.raises(ConfigurationError, match="both"):
             _validate_model_pair(_QUESTION_MODEL, _QUESTION_MODEL)
+
+    def test_a_same_model_pair_is_refused_at_import_time(
+        self, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        """IMPORTING a module configured with one model twice must fail.
+
+        Re-running the real import machinery over the module's own source,
+        with only the ``_ANSWER_MODEL`` assignment rewritten, is the only way
+        to exercise the import path: the plain import has already happened and
+        cannot be replayed with different constants, and monkeypatching the
+        constant afterwards cannot re-run a module-level call.
+
+        This fails if the module-level ``_validate_model_pair(...)`` call is
+        deleted, which is the mutation the direct-call test above cannot
+        detect.
+        """
+        module_path = Path(comprehension_probe.__file__)
+        tree = ast.parse(
+            module_path.read_text(encoding="utf-8"), filename=str(module_path)
+        )
+        rewritten = 0
+        for statement in tree.body:
+            if (
+                isinstance(statement, ast.AnnAssign)
+                and isinstance(statement.target, ast.Name)
+                and statement.target.id == "_ANSWER_MODEL"
+            ):
+                statement.value = ast.Constant(_QUESTION_MODEL)
+                rewritten += 1
+        assert rewritten == 1, (
+            "expected exactly one module-level _ANSWER_MODEL annotated "
+            f"assignment to rewrite, found {rewritten}"
+        )
+        ast.fix_missing_locations(tree)
+        loader = _RewrittenSourceLoader(
+            "comprehension_probe_import_under_test", str(module_path), tree
+        )
+        spec = importlib.util.spec_from_loader(loader.name, loader)
+        assert spec is not None
+        module = importlib.util.module_from_spec(spec)
+        # Registered under its throwaway name, and removed again by
+        # monkeypatch, so the module can execute to completion the way a real
+        # import does. Without it a ``@dataclass(slots=True)`` further down
+        # the module fails on a sys.modules lookup, and the mutation this test
+        # exists to catch would then be reported as an unrelated
+        # AttributeError instead of a clean "DID NOT RAISE".
+        monkeypatch.setitem(sys.modules, loader.name, module)
+        with pytest.raises(ConfigurationError, match="both"):
+            loader.exec_module(module)
 
     def test_both_configured_models_resolve_to_a_complete_price_row(self) -> None:
         for model in (_QUESTION_MODEL, _ANSWER_MODEL):
@@ -769,6 +920,50 @@ class TestConfiguredModels:
         )
         with pytest.raises(ConfigurationError, match="cap cannot bind"):
             _ensure_models_are_priced()
+
+    def test_an_unpriced_model_stops_the_run_before_the_corpus_is_walked(
+        self, monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
+    ) -> None:
+        """``main`` must REFUSE TO START, not merely have a guard available.
+
+        The test above proves the guard raises when called. It says nothing
+        about whether ``main`` calls it: replacing that call with ``pass``
+        left the whole suite green. This drives ``main`` itself and pins that
+        the refusal happens before the corpus walk, which is the last step
+        before any provider call.
+
+        No spend is possible on this path even if the guard were removed
+        (``BudgetTracker.add`` raises on an uncostable call), but "the second
+        line of defence would have caught it" is not a reason to leave the
+        first one untested.
+        """
+        monkeypatch.setattr(
+            "scripts.comprehension_probe._ANSWER_MODEL",
+            "deepseek/deepseek-v9-nonexistent",
+        )
+
+        def _must_not_walk(*_args: object, **_kwargs: object) -> None:
+            pytest.fail("main() reached the corpus walk with an unpriced model")
+
+        monkeypatch.setattr(
+            "scripts.comprehension_probe.collect_passages", _must_not_walk
+        )
+        # Paths that exist only as arguments: nothing is written on this path,
+        # and the run must abort before the corpus directory is even opened.
+        exit_code = main(
+            [
+                "--corpus",
+                str(_REPO_ROOT / "tmp" / "comprehension-probe-unpriced-corpus"),
+                "--out",
+                str(_REPO_ROOT / "tmp" / "comprehension-probe-unpriced-out"),
+                "--env-file",
+                str(_REPO_ROOT / "tmp" / "comprehension-probe-unpriced.env"),
+            ]
+        )
+        assert exit_code == 1
+        # The message discriminates: a run that got past the price guard and
+        # failed on provider construction instead reports something else.
+        assert "cap cannot bind" in capsys.readouterr().err
 
 
 class TestSummarize:
@@ -879,6 +1074,106 @@ class TestSummarize:
             "budget": 1,
             "question_generation:malformed": 1,
         }
+
+    def test_the_summary_records_the_sampling_strategy(self) -> None:
+        """A rate is only interpretable against the slice that produced it.
+
+        The second pilot's aggregate said ``max_passages=60`` and nothing
+        about WHICH 60, so an opening-prefix figure read as a band figure.
+        The strategy is taken from the module constant rather than from a
+        caller-supplied string, so it cannot describe a selection rule other
+        than the one ``collect_passages`` implements.
+        """
+        budget = BudgetTracker(cap_usd=Decimal("5.00"))
+        summary = summarize(
+            [], budget=budget, corpus_stats=self._stats(), corpus_description="test"
+        )
+        assert summary.sampling_strategy == _SAMPLING_STRATEGY
+        assert "stride" in summary.sampling_strategy
+        assert "rather than sampling its opening passages" in summary.sampling_strategy
+
+
+class TestWriteTrackedAggregate:
+    """The tracked aggregate is the run's durable finding, so it must survive.
+
+    Two properties, both previously unpinned because the writer had no test at
+    all: it must actually write (a no-op left the suite green), and a later
+    run must not destroy an earlier run's aggregate. The original writer used
+    a fixed ``latest-summary.json``, so the second paid run would silently
+    have overwritten the first: a defect against ``UW-F53``, the very row the
+    tracked aggregate exists to serve.
+    """
+
+    @staticmethod
+    def _summary() -> ProbeSummary:
+        return summarize(
+            [],
+            budget=BudgetTracker(cap_usd=Decimal("5.00")),
+            corpus_stats=CorpusStats(
+                files_scanned=1,
+                files_skipped_non_storybook=0,
+                files_skipped_age_band=0,
+                nodes_seen=1,
+                nodes_skipped_fill=0,
+                nodes_skipped_empty=0,
+                passages_collected=1,
+                stories_available=1,
+                stories_sampled=1,
+            ),
+            corpus_description="test",
+        )
+
+    def test_the_aggregate_is_written_under_its_run_id(self, tmp_path: Path) -> None:
+        """Fails if the writer becomes a no-op, which nothing previously did."""
+        written = write_tracked_aggregate(
+            tmp_path, self._summary(), run_id="20260101T000000Z"
+        )
+        assert written == tmp_path / "summary-20260101T000000Z.json"
+        assert written.exists()
+        payload = json.loads(written.read_text(encoding="utf-8"))
+        assert payload["sampling_strategy"] == _SAMPLING_STRATEGY
+        assert payload["corpus_description"] == "test"
+        assert "NOT precision" in payload["note"]
+
+    def test_a_later_run_does_not_destroy_an_earlier_runs_aggregate(
+        self, tmp_path: Path
+    ) -> None:
+        first = write_tracked_aggregate(
+            tmp_path, self._summary(), run_id="20260101T000000Z"
+        )
+        second = write_tracked_aggregate(
+            tmp_path, self._summary(), run_id="20260102T000000Z"
+        )
+        assert first != second
+        assert first.exists()
+        assert second.exists()
+
+    def test_the_fixed_name_holds_a_pointer_and_no_findings(
+        self, tmp_path: Path
+    ) -> None:
+        """``latest-summary.json`` is a convenience, never the record itself."""
+        write_tracked_aggregate(tmp_path, self._summary(), run_id="20260101T000000Z")
+        written = write_tracked_aggregate(
+            tmp_path, self._summary(), run_id="20260102T000000Z"
+        )
+        pointer = json.loads(
+            (tmp_path / "latest-summary.json").read_text(encoding="utf-8")
+        )
+        assert pointer["latest"] == written.name
+        assert pointer["run_id"] == "20260102T000000Z"
+        # No rate, no counts: reading the pointer can never yield a figure.
+        assert "unlabelled_unanswerable_rate" not in pointer
+        assert "corpus_stats" not in pointer
+
+    @pytest.mark.parametrize(
+        "run_id", ["", "../escape", "nested/run", "run id", "run\x00id"]
+    )
+    def test_a_run_id_that_is_not_a_safe_path_component_is_refused(
+        self, tmp_path: Path, run_id: str
+    ) -> None:
+        summary = self._summary()
+        with pytest.raises(ValueError, match="not a safe path component"):
+            write_tracked_aggregate(tmp_path, summary, run_id=run_id)
 
 
 class TestEnsureGitignoredDestination:

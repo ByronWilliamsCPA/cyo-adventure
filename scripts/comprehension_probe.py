@@ -52,6 +52,13 @@ markdown). A destination that merely looks safe is exactly the failure mode
 the cap-that-never-fires trap generalizes to: verify the property, do not
 assume it from the name.
 
+The run's AGGREGATE is the exception: counts, rates, model ids, prompt
+version, sampling strategy, per-story breakdown and observed spend go to a
+tracked directory (default ``out/reports/comprehension-probe/``) as
+``summary-<run_id>.json``, with ``latest-summary.json`` beside it as a
+pointer. Run-stamped rather than fixed-name, because a paid finding that the
+next invocation overwrites is barely more durable than one never written.
+
 Usage::
 
     uv run python scripts/comprehension_probe.py \\
@@ -133,6 +140,14 @@ _FILL_PREFIX: Final[str] = "<<FILL"
 
 _QUESTIONS_PER_PASSAGE: Final[int] = 3
 
+# A run id becomes a directory name and a filename, so it is constrained to
+# characters that cannot escape the destination it is joined onto.
+_RUN_ID_PATTERN: Final[re.Pattern[str]] = re.compile(r"[A-Za-z0-9._-]+")
+
+# The fixed-name file beside the run-stamped aggregates. It holds a POINTER,
+# never a run's findings: see :func:`write_tracked_aggregate`.
+_LATEST_POINTER_NAME: Final[str] = "latest-summary.json"
+
 # The one provider this script routes through, and the first half of the
 # ``core.pricing.PRICES`` key both models are looked up by.
 _PROVIDER: Final[str] = "openrouter"
@@ -212,6 +227,26 @@ _validate_model_pair(_QUESTION_MODEL, _ANSWER_MODEL)
 # model ids.
 _PROMPT_SET_VERSION: Final[str] = "comprehension-probe-v1"
 
+# Recorded verbatim in every report, because a rate is only interpretable
+# against the slice that produced it and "60 passages of this band" does not
+# say which 60. Bump the version suffix whenever the selection rule changes,
+# so two aggregates are never silently compared across different slices.
+#
+# #ASSUME: data-integrity: a figure published from a capped corpus walk is
+# read as a figure about the whole population unless the artifact itself says
+# otherwise, so the selection rule must travel with the number.
+# #VERIFY: tests/unit/test_comprehension_probe.py::TestStratification::
+# test_the_slice_spans_each_story_rather_than_its_opening pins that the
+# selection is not a prefix, and tests/unit/test_comprehension_probe.py::
+# TestSummarize::test_the_summary_records_the_sampling_strategy pins that the
+# strategy is carried in the artifact.
+_SAMPLING_STRATEGY: Final[str] = (
+    "stratified-stride/v1: the cap is divided round-robin across the stories "
+    "in the slice, and each story's share is taken at even intervals across "
+    "that story's whole eligible node list, so the slice spans each story "
+    "rather than sampling its opening passages"
+)
+
 # Sized for headroom over three short questions (or three short answers) plus
 # JSON structure, not for the answer alone: AL-323 is what a per-node budget
 # equal to the expected product buys you. Both chosen models are non-reasoning
@@ -277,8 +312,8 @@ class CorpusStats:
         nodes_skipped_empty: Nodes excluded because ``body`` was missing or
             blank.
         passages_collected: What survived the cap, in the order they will be
-            probed (round-robin across stories; see
-            :func:`collect_passages`).
+            probed (round-robin across stories, strided within each; see
+            :func:`collect_passages` and :data:`_SAMPLING_STRATEGY`).
         stories_available: How many distinct stories contributed at least one
             eligible passage before the cap was applied.
         stories_sampled: How many of those the collected slice actually drew
@@ -588,8 +623,9 @@ class ProbeSummary:
     Every field a reader needs in order not to mistake this for a precision
     figure lives here: the model ids, the prompt version, an explicit
     ``unlabelled_unanswerable_rate`` name rather than anything calling itself
-    precision, and ``per_story`` so an aggregate rate cannot be read as
-    band-wide when it came from one book.
+    precision, ``per_story`` so an aggregate rate cannot be read as band-wide
+    when it came from one book, and ``sampling_strategy`` so it cannot be read
+    as whole-story when it came from one part of each book.
 
     The two spend figures are deliberately both present and separately named.
     ``observed_spend_usd`` is what the vendor charged, summed from
@@ -603,6 +639,7 @@ class ProbeSummary:
 
     generated_at: str
     corpus_description: str
+    sampling_strategy: str
     question_model: str
     answer_model: str
     prompt_set_version: str
@@ -891,35 +928,112 @@ def _display_path(path: Path) -> str:
         return str(path)
 
 
-def _round_robin(
+def _round_robin_quotas(sizes: Sequence[int], *, max_passages: int) -> list[int]:
+    """Divide a cap across stories one passage at a time, skipping exhausted ones.
+
+    This is the fairness half of the sampler and nothing else: it decides HOW
+    MANY passages each story contributes, never WHICH ones. Spending the cap a
+    unit at a time (rather than as a flat ``cap // stories`` share) is what
+    keeps a story with fewer eligible nodes than its share from stranding the
+    remainder: whatever a short story cannot take is offered to the stories
+    that still have nodes left.
+
+    Args:
+        sizes: Eligible passage counts per story, in the order the stories
+            were first seen.
+        max_passages: The total the quotas must not exceed.
+
+    Returns:
+        One quota per story, positionally aligned with ``sizes``, summing to
+        ``min(max_passages, sum(sizes))``.
+    """
+    quotas = [0] * len(sizes)
+    total = 0
+    depth = 0
+    while total < max_passages:
+        took_any = False
+        for index, size in enumerate(sizes):
+            if depth >= size:
+                continue
+            quotas[index] += 1
+            total += 1
+            took_any = True
+            if total >= max_passages:
+                break
+        if not took_any:
+            break
+        depth += 1
+    return quotas
+
+
+def _stride_positions(count: int, *, take: int) -> list[int]:
+    """Choose ``take`` positions spread evenly across ``count`` items.
+
+    Returns the midpoint of each of ``take`` equal blocks, so the chosen
+    positions span the whole sequence and none of them is pinned to position
+    0. Strictly increasing and distinct whenever ``take <= count``, because
+    consecutive midpoints differ by ``count / take >= 1``.
+
+    Args:
+        count: How many items the sequence holds.
+        take: How many positions to choose.
+
+    Returns:
+        The chosen positions, ascending. Every position when ``take >=
+        count``, since there is then nothing to spread.
+    """
+    if take >= count:
+        return list(range(count))
+    return [((2 * index + 1) * count) // (2 * take) for index in range(take)]
+
+
+def _stratified_stride_sample(
     by_story: dict[str, list[Passage]], *, max_passages: int
 ) -> list[Passage]:
-    """Interleave each story's passages so a cap cannot land on one book.
+    """Take a story-balanced slice that spans each story rather than its opening.
 
-    Takes each story's first passage in file order, then each story's second,
-    and so on until the cap is reached or every story is exhausted. Fully
-    deterministic: the same corpus and cap always yield the same slice, which
-    is the property a *stated* slice needs.
+    Two properties, and they are separate defects if either is missing:
+
+    * Across stories, the cap is divided round-robin, so a cap smaller than
+      one book's node count cannot land entirely on that book.
+    * Within a story, that story's share is taken at even intervals across
+      its whole node list. The depth-interleaved walk this replaces satisfied
+      the first property and silently violated the second: a 60-passage cap
+      over 6 stories took node positions 0 to 9 of every story, so the
+      published rate was the band's OPENING-PREFIX rate. Story openings are
+      where referents are first introduced and where the least prior context
+      exists, which is plausibly the worst case for an "answerable from this
+      passage alone" probe, so a prefix figure is not merely a narrower
+      figure than the one it was read as: it is biased in a known direction.
+
+    Fully deterministic: the same corpus and cap always yield the same slice,
+    which is the property a *stated* slice needs.
 
     Args:
         by_story: Eligible passages per story, in file order, keyed in the
             order the stories were first seen.
-        max_passages: Stop once this many passages have been taken.
+        max_passages: The most passages to take in total.
 
     Returns:
-        The interleaved slice, at most ``max_passages`` long.
+        The slice, at most ``max_passages`` long, interleaved across stories.
     """
+    story_nodes = list(by_story.values())
+    quotas = _round_robin_quotas(
+        [len(nodes) for nodes in story_nodes], max_passages=max_passages
+    )
+    chosen = [
+        [nodes[position] for position in _stride_positions(len(nodes), take=quota)]
+        for nodes, quota in zip(story_nodes, quotas, strict=True)
+    ]
     collected: list[Passage] = []
     depth = 0
-    while len(collected) < max_passages:
+    while True:
         took_any = False
-        for nodes in by_story.values():
-            if depth >= len(nodes):
+        for picks in chosen:
+            if depth >= len(picks):
                 continue
-            collected.append(nodes[depth])
+            collected.append(picks[depth])
             took_any = True
-            if len(collected) >= max_passages:
-                break
         if not took_any:
             break
         depth += 1
@@ -936,8 +1050,11 @@ def collect_passages(
     """Walk a corpus directory and collect a slice STRATIFIED across stories.
 
     Every matching file is opened and every eligible node is grouped by story
-    before the cap is applied, then the cap is spent round-robin across the
-    stories rather than greedily down the first one.
+    before the cap is applied, then the cap is divided round-robin across the
+    stories (rather than greedily down the first one) and each story's share
+    is taken at even intervals across that story's whole node list (rather
+    than from its opening). See :func:`_stratified_stride_sample` and
+    :data:`_SAMPLING_STRATEGY`.
 
     The greedy version this replaces broke out of the file loop as soon as the
     cap was reached, so a 60-passage slice of a 31-file corpus came entirely
@@ -949,6 +1066,12 @@ def collect_passages(
     would reveal it. Scanning everything before capping also makes those
     counts describe the corpus rather than describing where the walk happened
     to stop.
+
+    The depth-interleaved fix for THAT defect then introduced a second one of
+    the same shape one level down: it spread the cap across stories but took
+    positions 0 to 9 of each, so the figure was the band's opening-prefix
+    rate while still reading as the band's rate. Striding within each story
+    is what closes it.
 
     Args:
         corpus_dir: Directory to scan (non-recursive).
@@ -1000,7 +1123,7 @@ def collect_passages(
                 )
             )
 
-    passages = _round_robin(by_story, max_passages=max_passages)
+    passages = _stratified_stride_sample(by_story, max_passages=max_passages)
     stats = CorpusStats(
         files_scanned=len(files),
         files_skipped_non_storybook=skipped_non_storybook,
@@ -1201,7 +1324,9 @@ def summarize(
         budget: The spend tracker, read for the spend/cap figures.
         corpus_stats: Corpus-walk counts from :func:`collect_passages`.
         corpus_description: Human-readable description of the slice, for the
-            report header.
+            report header. The selection RULE is not taken from here: it is
+            recorded from :data:`_SAMPLING_STRATEGY`, so it cannot drift from
+            what :func:`collect_passages` actually did.
 
     Returns:
         The aggregate summary, including a per-story breakdown so a
@@ -1249,6 +1374,10 @@ def summarize(
     return ProbeSummary(
         generated_at=datetime.now(UTC).isoformat(),
         corpus_description=corpus_description,
+        # Not a parameter: :func:`collect_passages` is the only sampler this
+        # script has, so the strategy is a property of the code that produced
+        # the results rather than something a caller may assert about them.
+        sampling_strategy=_SAMPLING_STRATEGY,
         question_model=_QUESTION_MODEL,
         answer_model=_ANSWER_MODEL,
         prompt_set_version=_PROMPT_SET_VERSION,
@@ -1293,6 +1422,7 @@ def _node_result_to_dict(result: NodeResult) -> dict[str, object]:
 def write_report(
     out_dir: Path,
     *,
+    run_id: str,
     passages: Sequence[Passage],
     results: Sequence[NodeResult],
     summary: ProbeSummary,
@@ -1304,15 +1434,19 @@ def write_report(
             verified gitignored by the caller (:func:`main` does this via
             ``_ensure_gitignored_destination`` before any spend); this
             function does not check again.
+        run_id: This run's identity, supplied by the caller rather than read
+            from the wall clock here, so the raw output directory and the
+            tracked aggregate carry the SAME stamp and a test can assert on
+            it deterministically.
         passages: The passages probed, aligned by position with ``results``,
             for grouping results back into their source stories.
         results: Every node result.
         summary: The aggregate summary.
 
     Returns:
-        The run's directory (a timestamped subdirectory of ``out_dir``).
+        The run's directory (``run_id`` under ``out_dir``).
     """
-    run_dir = out_dir / datetime.now(UTC).strftime("%Y%m%dT%H%M%SZ")
+    run_dir = out_dir / _validated_run_id(run_id)
     stories_dir = run_dir / "stories"
     stories_dir.mkdir(parents=True, exist_ok=True)
 
@@ -1334,8 +1468,47 @@ def write_report(
     return run_dir
 
 
-def write_tracked_aggregate(aggregate_path: Path, summary: ProbeSummary) -> Path:
-    """Persist the run's AGGREGATE to a tracked path, and nothing else.
+def _validated_run_id(run_id: str) -> str:
+    """Return ``run_id`` if it is safe to use as a single path component.
+
+    Run ids reach the filesystem as directory and file names. This script
+    generates its own, but the parameter exists precisely so a caller can
+    supply one, and a caller-supplied id containing a separator or a parent
+    reference would write outside the destination it was handed.
+
+    Args:
+        run_id: The candidate identity.
+
+    Returns:
+        The same string, unchanged.
+
+    Raises:
+        ValueError: When it is empty or contains anything outside
+            ``[A-Za-z0-9._-]``.
+    """
+    if not run_id or not _RUN_ID_PATTERN.fullmatch(run_id):
+        msg = (
+            f"run id {run_id!r} is not a safe path component: expected a "
+            "non-empty string of letters, digits, dots, underscores and "
+            "hyphens"
+        )
+        raise ValueError(msg)
+    return run_id
+
+
+def write_tracked_aggregate(
+    aggregate_dir: Path, summary: ProbeSummary, *, run_id: str
+) -> Path:
+    """Persist the run's AGGREGATE to a tracked, RUN-STAMPED path.
+
+    The aggregate is written as ``summary-<run_id>.json`` and a fixed
+    ``latest-summary.json`` POINTER is written beside it naming that file.
+    The pointer is a convenience; the run-stamped file is the record. Writing
+    the aggregate itself to a fixed name (as this did originally) means the
+    next run silently destroys the previous run's finding, which is the same
+    class of defect as not persisting it at all: an artifact that costs real
+    money to reproduce must not be overwritable by the next invocation of the
+    thing that produced it.
 
     The per-story reports and everything raw stay under the gitignored ``--out``
     tree: passages are copyrighted prose and model output is unreviewed text,
@@ -1353,22 +1526,39 @@ def write_tracked_aggregate(aggregate_path: Path, summary: ProbeSummary) -> Path
     model output, ``NodeResult.error_detail``, is deliberately not part of it.
 
     Args:
-        aggregate_path: The tracked JSON file to write.
+        aggregate_dir: The tracked directory to write both files into.
         summary: The aggregate to persist.
+        run_id: This run's identity, supplied by the caller so the filename
+            is not produced by a wall-clock call inside the writer.
 
     Returns:
-        The path written.
+        The run-stamped path written (not the pointer).
 
     Raises:
-        SystemExit: When ``aggregate_path`` is gitignored, via
+        ValueError: When ``run_id`` is not a safe path component.
+        SystemExit: When the destination is gitignored, via
             ``scripts/_paid_output.ensure_persistable``. A "durable" record
             that git is configured to ignore is the defect this call exists to
             prevent, and it is checked at write time as well as at start.
     """
+    aggregate_path = aggregate_dir / f"summary-{_validated_run_id(run_id)}.json"
     ensure_persistable(aggregate_path)
-    aggregate_path.parent.mkdir(parents=True, exist_ok=True)
+    aggregate_dir.mkdir(parents=True, exist_ok=True)
     aggregate_path.write_text(
         json.dumps(dataclasses.asdict(summary), indent=2) + "\n", encoding="utf-8"
+    )
+    pointer = {
+        "latest": aggregate_path.name,
+        "run_id": run_id,
+        "generated_at": summary.generated_at,
+        "note": (
+            "Pointer only. Every run's aggregate is kept beside this file as "
+            "summary-<run_id>.json; this file names the most recent one and "
+            "carries no findings of its own."
+        ),
+    }
+    (aggregate_dir / _LATEST_POINTER_NAME).write_text(
+        json.dumps(pointer, indent=2) + "\n", encoding="utf-8"
     )
     return aggregate_path
 
@@ -1382,6 +1572,7 @@ def _print_summary(summary: ProbeSummary) -> None:
     print(f"Answer model:   {summary.answer_model}")
     print(f"Prompt set:     {summary.prompt_set_version}")
     print(f"Corpus:         {summary.corpus_description}")
+    print(f"Sampling:       {summary.sampling_strategy}")
     stats = summary.corpus_stats
     print(
         f"Files scanned: {stats.files_scanned} "
@@ -1505,14 +1696,16 @@ def main(argv: Sequence[str] | None = None) -> int:
         "--out", type=Path, default=Path("tmp/comprehension-probe-reports")
     )
     parser.add_argument(
-        "--aggregate-out",
+        "--aggregate-dir",
         type=Path,
-        default=Path("out/reports/comprehension-probe/latest-summary.json"),
+        default=Path("out/reports/comprehension-probe"),
         help=(
-            "Tracked JSON path for the run's aggregate (counts, rates, model "
-            "ids, prompt version, per-story breakdown, observed spend). Must "
-            "NOT be gitignored: raw output stays under --out, the finding does "
-            "not."
+            "Tracked DIRECTORY for the run's aggregate (counts, rates, model "
+            "ids, prompt version, sampling strategy, per-story breakdown, "
+            "observed spend). Written as summary-<run_id>.json so a later run "
+            "cannot destroy this one's finding, with latest-summary.json "
+            "beside it as a pointer. Must NOT be gitignored: raw output stays "
+            "under --out, the finding does not."
         ),
     )
     parser.add_argument("--env-file", type=Path, default=Path(".env"))
@@ -1520,11 +1713,18 @@ def main(argv: Sequence[str] | None = None) -> int:
 
     corpus_dir = _resolve_within(args.corpus, label="--corpus")
     out_dir = _resolve_within(args.out, label="--out")
-    aggregate_path = _resolve_within(args.aggregate_out, label="--aggregate-out")
+    aggregate_dir = _resolve_within(args.aggregate_dir, label="--aggregate-dir")
     env_path = _resolve_within(args.env_file, label="--env-file")
 
+    # Stamped once, here, and passed to both writers: the raw output directory
+    # and the tracked aggregate then carry the same identity, and neither
+    # writer reads a clock a test would have to freeze.
+    run_id = datetime.now(UTC).strftime("%Y%m%dT%H%M%SZ")
+
     _ensure_gitignored_destination(out_dir)
-    ensure_persistable(aggregate_path)
+    # The exact file the run will write, not just its directory, so the
+    # gitignore check at start covers the path the finding actually lands on.
+    ensure_persistable(aggregate_dir / f"summary-{run_id}.json")
     _load_env_file(env_path)
 
     try:
@@ -1570,7 +1770,8 @@ def main(argv: Sequence[str] | None = None) -> int:
     corpus_description = (
         f"{args.corpus} (pattern={args.pattern!r}"
         + (f", age_band={args.age_band!r}" if args.age_band else "")
-        + f", max_passages={args.max_passages})"
+        + f", max_passages={args.max_passages}"
+        + f", sampling={_SAMPLING_STRATEGY})"
     )
     print(
         f"Probing {len(passages)} passages with question model "
@@ -1606,11 +1807,17 @@ def main(argv: Sequence[str] | None = None) -> int:
         corpus_stats=stats,
         corpus_description=corpus_description,
     )
-    run_dir = write_report(out_dir, passages=passages, results=results, summary=summary)
-    written = write_tracked_aggregate(aggregate_path, summary)
+    run_dir = write_report(
+        out_dir, run_id=run_id, passages=passages, results=results, summary=summary
+    )
+    written = write_tracked_aggregate(aggregate_dir, summary, run_id=run_id)
     _print_summary(summary)
     print(f"\nRaw report written to {run_dir} (gitignored; not committed).")
     print(f"Aggregate written to {written} (tracked; commit it).")
+    print(
+        f"Pointer updated at {aggregate_dir / _LATEST_POINTER_NAME} "
+        "(names the aggregate above; carries no findings of its own)."
+    )
     return 0
 
 
