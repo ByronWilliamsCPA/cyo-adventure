@@ -540,8 +540,19 @@ class TestLoadObservationsAndReport:
             # its cell publishes a real per-reason dict. Both sides of the
             # floor need a book, or a mutation to the floor or to the reducer
             # that only ever touches the below-floor side is invisible.
+            # ``self_harm_disclosure`` is not in FLAG_REASONS. It stands in for
+            # a reason a migration adds to kid_flag's CHECK vocabulary without
+            # touching this job, which is the only way an out-of-vocabulary
+            # value reaches the reducer. Five distinct families carry it, so it
+            # would clear every floor if the reducer let it through: an input
+            # that only ever carries in-vocabulary reasons cannot exercise the
+            # filter at all.
             "FROM kid_flag": [("book-open", "scared_me", "fam-0")]
-            + [("book-flagged", "scared_me", f"fam-{i}") for i in range(5)],
+            + [("book-flagged", "scared_me", f"fam-{i}") for i in range(5)]
+            + [
+                ("book-flagged", "self_harm_disclosure", f"fam-oov-{i}")
+                for i in range(5)
+            ],
         }
 
     @pytest.mark.asyncio
@@ -581,15 +592,27 @@ class TestLoadObservationsAndReport:
         # floor, so the cell publishes a real per-reason dict rather than the
         # whole-cell marker: the discriminating half of the assertion above.
         # Asserted as the exact dict, not merely "is a dict" or "is not <5",
-        # so a swapped unpack or a dropped reason filter (which drops every
-        # flag regardless of reason) is caught rather than passing by
-        # coincidence.
+        # so a swapped unpack is caught rather than passing by coincidence.
+        # It does NOT catch a dropped reason filter: `_flag_cell` iterates
+        # FLAG_REASONS itself, so an out-of-vocabulary reason the reducer let
+        # through never reaches this dict. That filter is pinned at the
+        # reducer's own boundary below.
         assert flagged_row["flag_counts"] == {
             "did_not_like": "<5",
             "scared_me": 5,
             "confusing": "<5",
         }
         assert flagged_row["flagger_family_band"] == "5-9"
+
+        # The reducer's `if reason in FLAG_REASONS` filter, asserted where it
+        # runs. kid_flag.reason is a DB CHECK vocabulary a migration can widen;
+        # a widened value that survives the reducer lands in the observations
+        # this job hands to the gating core, and what the core then does with
+        # it is the core's contract, not this one's. The fixture's five
+        # out-of-vocabulary flagging families would clear every floor.
+        flagged = next(o for o in observations if o.storybook_id == "book-flagged")
+        assert set(flagged.flag_families_by_reason) == {"scared_me"}
+        assert "self_harm_disclosure" not in flagged.flag_families_by_reason
 
     @pytest.mark.asyncio
     async def test_the_reducer_never_carries_a_version_across_a_republish(

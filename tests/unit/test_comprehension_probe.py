@@ -170,11 +170,68 @@ class TestParseJsonObject:
         # json.loads fails on an unbalanced object. Without checking
         # finish_reason first this reads as "the model emitted garbage",
         # which is the wrong diagnosis and the wrong fix.
+        #
+        # This fixture does not, on its own, prove finish_reason is what
+        # reached that verdict: the closing-brace fallback agrees with it
+        # here. The two `..._is_what_decides_...` tests below carry that
+        # proof, one per decision point, on fixtures where the fallback
+        # disagrees.
         truncated_mid_entry = '{"questions": ["What happened?", "Why did it'
         completion = _completion(truncated_mid_entry, finish_reason="length")
         with pytest.raises(ProbeParseError) as exc_info:
             _parse_json_object(completion)
         assert exc_info.value.kind == "truncated"
+
+    def test_finish_reason_is_what_decides_a_prose_prefixed_cut_off_reply(
+        self,
+    ) -> None:
+        """The no-JSON-match branch, on a fixture where the fallback disagrees.
+
+        Both arms of ``truncated_signal or raw.lstrip().startswith("{")`` reach
+        "truncated" whenever the reply's first character is the object's ``{``,
+        so a fixture of that shape cannot tell a working signal from a deleted
+        one. Here a prose preamble and a ```json fence precede the object, so
+        ``lstrip().startswith("{")`` is False and the fallback reaches
+        "malformed" by itself. Only ``finish_reason == "length"`` reaches
+        "truncated", and the paired call proves the fallback still governs when
+        the provider reports no finish_reason at all.
+
+        The shape is the commonest real one: a provider that narrates before it
+        emits JSON and is then cut off mid-object.
+        """
+        fenced = 'Here are the questions:\n```json\n{"questions": ["What happened'
+        signalled = _completion(fenced, finish_reason="length")
+        unsignalled = _completion(fenced, finish_reason=None)
+        with pytest.raises(ProbeParseError) as truncated:
+            _parse_json_object(signalled)
+        assert truncated.value.kind == "truncated"
+        with pytest.raises(ProbeParseError) as malformed:
+            _parse_json_object(unsignalled)
+        assert malformed.value.kind == "malformed"
+
+    def test_finish_reason_is_what_decides_a_reply_ending_on_an_inner_brace(
+        self,
+    ) -> None:
+        """The decode-error branch, on a fixture where the fallback disagrees.
+
+        ``truncated_signal or not raw.rstrip().endswith("}")`` has the same
+        weakness one branch down: a cut-off reply that happens to stop just
+        after an *inner* object's closing brace does end in ``}``, so the
+        fallback reaches "malformed" and only the finish_reason reaches
+        "truncated". Without this pair the whole signal is deletable here with
+        the suite green, and every such run is filed as
+        ``question_generation:malformed``, routing the operator to tighten the
+        prompt instead of raising the completion token budget.
+        """
+        ends_on_inner_brace = '{"questions": [{"q": "What happened?"}'
+        signalled = _completion(ends_on_inner_brace, finish_reason="length")
+        unsignalled = _completion(ends_on_inner_brace, finish_reason=None)
+        with pytest.raises(ProbeParseError) as truncated:
+            _parse_json_object(signalled)
+        assert truncated.value.kind == "truncated"
+        with pytest.raises(ProbeParseError) as malformed:
+            _parse_json_object(unsignalled)
+        assert malformed.value.kind == "malformed"
 
     def test_a_complete_reply_with_invalid_json_is_malformed_not_truncated(
         self,
@@ -1058,9 +1115,23 @@ class TestSummarize:
         assert summary.unlabelled_unanswerable_rate is None
 
     def test_budget_and_error_stage_skips_are_not_counted_as_processed(self) -> None:
+        """Both budget stages count as budget skips, and neither as processed.
+
+        ``nodes_skipped_budget`` is asserted here because it is the only field
+        that says how much of the declared slice the cap swallowed, and this
+        branch added ``budget_after_questions`` as a second stage that feeds
+        it. A cap that binds mid-passage produces that stage, not ``budget``,
+        so counting only the first understates the unprobed remainder by
+        exactly the number of passages that got their questions but not their
+        answers, and the unanswerable rate is then read as covering a slice it
+        never reached. Two budget results and one non-budget error, so a
+        summary that counted every skipped node, or only the first stage,
+        fails here.
+        """
         results = [
             self._result("n1", None, error_stage="budget"),
             self._result("n2", None, error_stage="question_generation:malformed"),
+            self._result("n3", None, error_stage="budget_after_questions"),
         ]
         budget = BudgetTracker(cap_usd=Decimal("5.00"))
         summary = summarize(
@@ -1070,10 +1141,12 @@ class TestSummarize:
             corpus_description="test",
         )
         assert summary.nodes_processed == 0
+        assert summary.nodes_skipped_budget == 2
         assert summary.unlabelled_unanswerable_rate is None
         assert summary.error_counts == {
             "budget": 1,
             "question_generation:malformed": 1,
+            "budget_after_questions": 1,
         }
 
     def test_the_summary_records_the_sampling_strategy(self) -> None:

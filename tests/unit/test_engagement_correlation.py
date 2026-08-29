@@ -167,11 +167,43 @@ class TestCategoricalExclusions:
         assert is_eligible(_observations(visibility="family", readers=40)) is False
         assert is_eligible(_observations(is_personalized=True, readers=40)) is False
 
-    def test_a_book_with_no_published_version_is_excluded(self) -> None:
-        """Version-scoped signals need a published version to be scoped to."""
+    def test_an_unpublished_status_is_excluded_with_a_version_still_present(
+        self,
+    ) -> None:
+        """Status alone, because in production it does arrive alone.
+
+        Setting ``status`` and ``current_published_version`` in one fixture
+        leaves each check individually deletable, which is the same shape as
+        the dual-role tests this branch already fixed. The archived case is
+        why it matters: archived is the only exit from published and it is
+        absorbing, an archived book keeps its ``current_published_version``,
+        and its historical ``reading_state`` rows survive. With the status
+        check gone every archived book with 5+ reader families is emitted into
+        the artifact and into the flywheel exclusion set, so a withdrawn book's
+        engagement governs which shells get mutated.
+        """
+        assert (
+            is_eligible(_observations(status="archived", current_published_version=3))
+            is False
+        )
+        assert (
+            is_eligible(_observations(status="in_review", current_published_version=3))
+            is False
+        )
+
+    def test_a_missing_published_version_is_excluded_at_published_status(
+        self,
+    ) -> None:
+        """Version alone, with ``published`` status still set.
+
+        Version-scoped signals need a published version to be scoped to, and
+        ``is_eligible`` is a public predicate that must hold that at its own
+        boundary rather than leaning on the reducer mapping a null version to
+        ``-1`` and the cohort floor catching the empty result downstream.
+        """
         assert (
             is_eligible(
-                _observations(status="in_review", current_published_version=None)
+                _observations(status="published", current_published_version=None)
             )
             is False
         )
@@ -205,6 +237,36 @@ class TestPerSignalFloor:
         row = row_to_json(build_row(_observations(readers=7, raters=12)))
         assert row["reader_family_band"] == "5-9"
         assert row["rater_family_band"] == "10+"
+
+    def test_a_completer_outside_the_reader_cohort_is_not_in_the_numerator(
+        self,
+    ) -> None:
+        """The rate's numerator is intersected with its own denominator.
+
+        Every other fixture in this file builds ``completed_families`` and
+        ``returned_families`` as slices of the reader set, so the intersection
+        in :func:`build_row` is a no-op in all of them and is deletable with
+        the suite green. Here two families have a completion but no
+        ``reading_state`` row for this (book, version), which is reachable
+        today: offline sync writes completions on reconnect, and
+        ``reading_state`` is a single row per (profile, book) that a republish
+        or a cleanup can leave unmatched on version.
+
+        Without the intersection this book publishes ``completion_rate`` 1.0
+        rather than 0.6. That is nonsense in the artifact and, being at or
+        above the ceiling, it silently exempts the parent shell from the
+        flywheel exclusion it should have received.
+        """
+        base = _observations(readers=5, completers=3, returners=1, raters=0)
+        ghosts = _families(2, "ghost")
+        observations = replace(
+            base,
+            completed_families=base.completed_families | ghosts,
+            returned_families=base.returned_families | ghosts,
+        )
+        row = row_to_json(build_row(observations))
+        assert row["completion_rate"] == pytest.approx(0.6)
+        assert row["return_read_rate"] == pytest.approx(0.2)
 
 
 class TestFlagCell:
@@ -475,6 +537,18 @@ class TestArtifactOnDisk:
         path = write_artifact(target, build_artifact([_observations()]))
         assert stat.S_IMODE(path.stat().st_mode) == 0o600
         assert stat.S_IMODE(target.stat().st_mode) == 0o700
+
+    def test_the_retention_window_is_two_runs(self) -> None:
+        """The integer itself, so a silent widening fails here first.
+
+        The behavioural test below asserts against ``RETAINED_RUNS`` imported
+        from the subject, so the constant and its expectation move together and
+        a window widened to 4 or 6 leaves that test green. ADR-030 Decision 6
+        fixes the window at the current run and the one before it, and it is a
+        privacy control over aggregated children's reading outcomes on disk, so
+        the literal is what holds the commitment.
+        """
+        assert RETAINED_RUNS == 2
 
     def test_only_the_current_and_previous_runs_are_retained(
         self, tmp_path: Path
