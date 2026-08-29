@@ -846,12 +846,18 @@ Issues by) both.**
 To list the current producers:
 
 ```bash
-# Every workflow that files or resolves a tracking issue (18 as of 2026-08-28;
-# this count moves as workflows are added, run the grep yourself rather than
-# trusting a number that was already stale once).
-# Match on `uses:`, not on the path alone: ci.yml names the same directory to run
-# the action's test harness and is not a producer.
-grep -rln 'uses: ./.github/actions/ci-failure-issue' .github/workflows/
+# Every workflow that files or resolves a tracking issue. Do NOT trust a literal
+# count here: the number in this section has now been wrong three separate times.
+# The two commands below ARE the count. Run them.
+#
+# Match on `uses:`, not on the path alone, and restrict to `*.yml`. Without
+# --include the pattern also matches .github/workflows/test/health-rollup.test.mjs,
+# which quotes the same line inside a JavaScript comment and is not a producer;
+# that one false positive is why the unfiltered grep returns one more line than
+# there are producers. ci.yml names the same directory too (it runs the action's
+# test harness) but never in the `uses:` form, so it does not match either grep.
+grep -rln --include='*.yml' 'uses: ./.github/actions/ci-failure-issue' .github/workflows/ | wc -l
+grep -rl 'label: e2e-alert' .github/workflows/ | wc -l
 
 # Which label and marker each one uses. A call site with no `label:` line uses
 # the action's default, `ci-failure`.
@@ -859,17 +865,27 @@ grep -rn -A6 'uses: ./.github/actions/ci-failure-issue' .github/workflows/ \
   | grep -E 'marker:|label:|mode:'
 ```
 
+Read the two counts as: **producers minus `e2e-alert` producers is the `ci-failure` backlog**, the
+workflows whose failures land under the default label. Derived on 2026-08-29 the first command
+returns **21** and the second **6**, so **15** producers fall through to `ci-failure`. Those figures
+are a snapshot, not the contract: if your run disagrees with them, your run is right and this
+paragraph is stale.
+
 Do NOT grep for `labels: '` here, which is what this section used to say. The label is now an input
-to the composite action and twelve of the eighteen workflows do not pass it at all, so that grep
-returns a near-empty list that reads exactly like "almost nothing alerts". This count has been wrong
-twice now: first from the retired `labels: '` grep, and again from a naive per-file
-`grep -c 'label:'`, which also matches `label:` inside JavaScript object literals in `github-script`
-steps (`planning-linkage.yml`, `scheduled-health-rollup.yml`) that are action-unrelated dictionary
-keys, not `with:` inputs. The number above instead comes from parsing all 18 producers as YAML and
-checking which `uses: ./.github/actions/ci-failure-issue` steps pass `label:` in their `with:` block:
-exactly 6 do (accessibility-compliance-weekly, e2e-prod, e2e-real-nightly, e2e-staging, usersim,
-webkit-kid, consistent with "Six workflows use `e2e-alert`" below), so 18 minus 6 is twelve.
-`tests/unit/test_ci_failure_action_contract.py`
+to the composite action and most producers do not pass it at all, so that grep returns a near-empty
+list that reads exactly like "almost nothing alerts". The count has been wrong three times: first
+from the retired `labels: '` grep; then from a naive per-file `grep -c 'label:'`, which also matches
+`label:` inside JavaScript object literals in `github-script` steps (`planning-linkage.yml`,
+`scheduled-health-rollup.yml`) that are action-unrelated dictionary keys rather than `with:` inputs;
+and most recently from a hardcoded 18 that later commits on the same branch left behind as producers
+were added, which also made the arithmetic derived from it wrong by three. That is the reason the
+numbers above are now stated as the output of a command rather than as a figure to trust.
+
+The six that pass `label:` are accessibility-compliance-weekly, e2e-prod, e2e-real-nightly,
+e2e-staging, usersim and webkit-kid, all of them `e2e-alert`, consistent with "Six workflows use
+`e2e-alert`" below. Confirm per call site rather than per file if you need to be exact: a workflow
+may hold several `uses: ./.github/actions/ci-failure-issue` steps, and the file-level greps above
+count files. `tests/unit/test_ci_failure_action_contract.py`
 enforces the invariants the commands above only report on: markers stay unique and mutually
 non-prefixing, both labels stay in use, and no workflow re-inlines the lookup.
 

@@ -132,7 +132,7 @@ exist will mis-scope the allowlist below.
   stays readable in history after deletion. That is a hard constraint on the artifact and is
   decided in Decision 6 rather than left to the implementer.
 - **Day grain is an established posture, not a new idea.** `ReadingActivityDay`'s docstring
-  (`db/models.py:1745-1747`) records that no session rows and no timestamp finer than a day
+  (`db/models.py:1746-1748`) records that no session rows and no timestamp finer than a day
   ever reach the server. Any timestamp this job touches inherits that posture.
 
 ### Significance
@@ -256,10 +256,10 @@ including fields a later change would find natural to add. The read allowlist in
 what the job may look at; this closes what it may say, and the two are separate holes.
 
 | Field | Form | Notes |
-|-------|------|-------|
+| --- | --- | --- |
 | `storybook_id` | the `storybook.id` UUID | The book's own identifier, not any person's |
 | `age_band` | the book's declared band | Never `child_profile.age_band` (paragraph above) |
-| `engagement_verdict` | the Stage-4 `Verdict` value, `advisory` or `pass` | A closed enum (`moderation/report.py:32-43`). The free-text `message` is not emitted, see below |
+| `engagement_verdict` | the Stage-4 `Verdict` value, `advisory` or `pass` | A closed enum (`moderation/report.py:32-47`). The free-text `message` is not emitted, see below |
 | `completion_rate` | families that reached any ending over reader families, rounded to the nearest `0.05` | Suppressed under Decision 1 if reader families are below 5 |
 | `return_read_rate` | families with a completion on a later calendar date than their first, over reader families, rounded to the nearest `0.05` | Derived only from the date-truncated `completion.found_at` that Decision 4 admits. Same suppression |
 | `rating_mean` | mean `rating.value` over rater families, rounded to the nearest `0.1` | Suppressed if rater families are below 5 |
@@ -275,7 +275,7 @@ that it is indistinguishable across the whole range it covers.
 
 Denied explicitly, each with the reason, because a denial without a reason gets reversed:
 
-- **The Stage-4 `message`.** It is LLM-authored free text (`moderation/stages.py:1275-1281`), and an
+- **The Stage-4 `message`.** It is LLM-authored free text (`moderation/stages.py:1274-1281`), and an
   allowlist whose entire purpose is that a row's contents can be enumerated is defeated by one
   unbounded field. It is also the field an agent would most naturally quote into a summary, which
   Decision 6 forbids. The two arguments that it cannot carry child data are both sound (personalized
@@ -306,7 +306,7 @@ The job may read these columns and no others. Anything not listed is denied, inc
 added to these tables in future.
 
 | Table | Columns the job may read | Used for |
-|-------|--------------------------|----------|
+| --- | --- | --- |
 | `storybook` | `id`, `visibility`, `status`, `current_published_version`, `personalization_subject_profile_id` | Eligibility and the categorical exclusions in Decision 2 |
 | `storybook_version` | `storybook_id`, `version`, `moderation_report` (the `stage: 4` entry only) | The synthetic engagement advisory being correlated |
 | `child_profile` | `id`, `family_id` | Mapping outcomes to families for the cohort count. Nothing else on this table is readable |
@@ -448,8 +448,8 @@ suppressing deltas or retaining a single run.
 
 ### 7. The kill switch and the construction-time validator
 
-Following the exemplar at `core/config.py:1211-1212` and
-`_reject_start_override_against_production_kws` at `core/config.py:2125`, the safety property
+Following the exemplar at `core/config.py:1212-1214` and
+`_reject_start_override_against_production_kws` at `core/config.py:2181`, the safety property
 is enforced by code that runs at settings construction, not by operator discipline.
 
 - **The flag**: `analysis_engagement_correlation_enabled: bool = Field(default=False,

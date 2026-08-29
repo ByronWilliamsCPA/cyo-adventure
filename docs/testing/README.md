@@ -111,14 +111,20 @@ asking when adding the pattern to a new workflow:
 
 | Label | For |
 | --- | --- |
-| `e2e-alert` | Browser-journey failures: any Playwright e2e tier (`frontend/e2e-prod/`, `frontend/e2e-staging/`, `frontend/e2e-real/` when run on a schedule, and the weekly accessibility scan, which drives the same Playwright/axe stack against a real browser). |
+| `e2e-alert` | Browser-journey failures: any Playwright tier that drives a real browser, the seeded usersim walks included. Do not read a fixed list here, derive it: `grep -rl 'label: e2e-alert' .github/workflows/`. On 2026-08-29 that returns six (`accessibility-compliance-weekly`, `e2e-prod`, `e2e-real-nightly`, `e2e-staging`, `usersim`, `webkit-kid`); an earlier parenthetical here named four and read as exhaustive after two more were added. |
 | `ci-failure` | Everything else: pytest tiers, fuzzing, mutation testing, link checking, performance regression, database backup, notification digest, KWS delivery health, moderation report health, planning linkage, and the semantic-release pipeline. |
 
 The dividing line is "does this failure mean a real browser journey broke",
 not "does this workflow touch the frontend". `security-analysis.yml`'s
-`semgrep-frontend` job lints the React tree but never drives a browser, so a
-failure there is `ci-failure`; `e2e-prod.yml` drives real Chromium through a
-real login form, so a failure there is `e2e-alert`.
+`semgrep-frontend` job lints the React tree but never drives a browser, so
+*if* that workflow filed a tracking issue the label would be `ci-failure`.
+Read that as normative and not as a description of the fleet: probing
+`security-analysis.yml` for `issues: write`, `createIssue`, `gh issue` and
+`ci-failure-issue` returns nothing, so it files no tracking issue at all
+today and `UW-F51` counts it among the scheduled workflows with no failure
+signal of any kind. Do not score it as covered when auditing alert coverage.
+`e2e-prod.yml`, by contrast, really does drive Chromium through a real login
+form and really does label `e2e-alert`.
 
 `.github/workflows/scheduled-health-rollup.yml`'s own rollup issue carries
 `ci-failure`, not `e2e-alert`: it is a meta-report over the whole scheduled

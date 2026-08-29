@@ -900,27 +900,39 @@ read's starting variables; the client never derives a seed of its own.
 Not tied to a single journey by design: a seeded random walk over the live,
 built app (`frontend/e2e-usersim/`, `usersim` Playwright project in the
 shared default `frontend/playwright.config.ts`), one walk per persona (kid,
-guardian, admin), asserting six invariants at every state it reaches rather
-than exercising one predetermined path. See
+guardian, admin), asserting I1-I5 at every state it reaches and I6 after
+an occasional random back/forward step, rather than exercising one
+predetermined path. See
 `docs/testing/user-side-testing-module-proposal-2026-08-27.md` for why a
 random walk over the real click graph earns its keep alongside the
 predetermined journeys above. Route via `npm run test:e2e:usersim`.
 
 - E2E-usersim: `frontend/e2e-usersim/walk.spec.ts` runs the walk itself
-  (`support/personas.ts`, `support/prng.ts`, `support/invariants.ts`,
-  `support/findings.ts`, `support/console-allowlist.ts`, and
-  `support/route-manifest.ts` are the non-spec substrate behind it, excluded
-  from this guard's discovery by the `*.spec.ts` glob). Six invariants, per
-  the walk's own docstring: I1 (no buffered console error/pageerror/
-  unhandled-rejection since the last drain), I2 (the state offers an enabled
+  (everything under `frontend/e2e-usersim/support/` is the non-spec
+  substrate behind this tier, excluded from this guard's discovery by the
+  `*.spec.ts` glob: `console-allowlist.ts`, `findings.ts`, `invariants.ts`,
+  `mocked-api.ts`, `personas.ts`, `prng.ts`, `reader-personas.ts`,
+  `real-canaries.ts`, `real-session-setup.ts`, `route-manifest.ts` and
+  `walk-runner.ts`, the last of which the real-backend and a11y legs below
+  share). Six invariants exist, but not six at every state: the walk's own
+  header docstring (`frontend/e2e-usersim/walk.spec.ts`) says it asserts
+  "I1-I5 at every state and I6 after an occasional random back/forward
+  step". Grep that sentence rather than trusting a line number here; this
+  tier's files move. I1
+  (no buffered console error/pageerror/unhandled-rejection since the last
+  drain), I2 (the state offers an enabled
   interactive element, or is a recognised terminal for that persona), I3 (any
   loading indicator resolves within budget, no fixed sleep), I4 (zero
   page-level horizontal overflow), I5 (role and family isolation: a kid
   session never renders guardian-only or cross-family content, and a
   guardian session never renders another family's data, per the ADR-016
   three-ring boundary), and I6 (a random back/forward step still lands in a
-  state satisfying I1-I4). I2 and I5 are deliberately not re-checked after a
-  back/forward step; see the walk's own comment on I6 for why.
+  state satisfying I1-I4). A back/forward state is therefore checked against
+  four invariants, not six: I2 and I5 are deliberately not re-checked there.
+  The reason is documented on the I6 helper itself, in the doc comment above
+  `assertHistoryStepInvariants` in
+  `frontend/e2e-usersim/support/invariants.ts`, not in the spec. Cited by
+  symbol on purpose: that block's line number has already moved twice.
 - E2E-usersim, real-backend leg (task B3a): `frontend/e2e-usersim/walk-real.spec.ts`
   runs the SAME seeded walk as `walk.spec.ts` above (shared via
   `support/walk-runner.ts`, not a forked copy) against a real backend instead
@@ -938,10 +950,15 @@ predetermined journeys above. Route via `npm run test:e2e:usersim`.
   `npm run test:e2e:usersim:real`.
 - E2E-usersim, I7 (task B3b): `frontend/e2e-usersim/walk-a11y.spec.ts` runs
   the SAME seeded walk (via the shared `support/walk-runner.ts` substrate,
-  reusing `support/mocked-api.ts`'s route mocks) as a separate spec, testDir
-  entry, and Playwright project (`usersim-a11y`), never a tag or grep filter
-  on `walk.spec.ts` itself, so I1-I6 keep running unaffected on every nightly
-  usersim run while I7 runs only where `.github/workflows/
+  reusing `support/mocked-api.ts`'s route mocks) as a separate spec and a
+  separate Playwright project (`usersim-a11y`), never a tag or grep filter
+  on `walk.spec.ts` itself. Separate project, NOT a separate directory: all
+  three usersim projects in `frontend/playwright.config.ts` (`usersim`,
+  `usersim-real`, `usersim-a11y`) declare the same
+  `testDir: './e2e-usersim'` and are separated by `testMatch` instead, which
+  is what lets them share the
+  `support/walk-runner.ts` substrate. So I1-I6 keep running unaffected on
+  every nightly usersim run while I7 runs only where `.github/workflows/
   accessibility-compliance-weekly.yml` puts it (`A11Y_EXTENDED=1`, weekly,
   never per-PR; this is an explicit owner decision, not an oversight). I7
   adds a seventh invariant: an axe accessibility scan

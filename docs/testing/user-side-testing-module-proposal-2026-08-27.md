@@ -372,7 +372,9 @@ kid journeys the fleet already tests, and this is the rationale the companion pl
 missing:
 
 - iPads are a primary reading device for the kid persona this product is built around, and every browser on
-  iOS, including Safari, runs WebKit as its engine (Apple requires it platform-wide). A defect that only
+  iOS, including Safari, runs WebKit as its engine. (That is no longer a platform-wide Apple requirement:
+  iOS 17.4 and the EU DMA permit alternative browser engines in the EU. It remains what essentially all
+  real iOS reading runs on, which is the load-bearing part of this argument.) A defect that only
   reproduces on WebKit is invisible to the per-PR gate and to every scheduled workflow in this fleet, all of
   which run their mocked and real tiers on Chromium.
 - The reader, offline, and read-aloud paths are the most engine-sensitive code the frontend has. IndexedDB
@@ -381,8 +383,12 @@ missing:
   WebKit and Chromium.
 - `cross-device-e2e.yml` already runs two WebKit profiles (`cross-device-tablet` on `devices['iPad (gen 7)']`
   and `cross-browser-mobile-safari` on `devices['iPhone 14']`), but its `test:e2e:cross-device` script matches
-  all four of its projects, including both WebKit ones, only against `cross-device.spec.ts`. No reader,
-  library, offline, or read-aloud spec runs on WebKit anywhere in this fleet today.
+  all four of its projects, including both WebKit ones, only against `cross-device.spec.ts`. When this
+  was written, no reader, library, offline, or read-aloud spec ran on WebKit anywhere in this fleet.
+  **That gap is now closed**, by the `webkit-kid` work this section proposed: the `webkit-kid` project
+  is in `frontend/playwright.config.ts` (matching `reader`, `library`, `offline` and `kid-read-aloud`
+  specs on `devices['iPad (gen 7)']`) and `.github/workflows/webkit-kid.yml` runs it (commit
+  `88c904d9`). The bullet is kept in past tense as the recorded motivation, not as a live gap.
 
 Given that gap, a `webkit-kid` project in `frontend/playwright.config.ts` runs the existing reader, library,
 offline, and read-aloud mocked-tier specs against the `iPad (gen 7)` WebKit device profile (matching
