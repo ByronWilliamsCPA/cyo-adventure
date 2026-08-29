@@ -542,24 +542,32 @@ describe('KNOWN_ALERTS stays in sync with every ci-failure-issue adopter (repo-w
   // mode is an `untracked` line in a rollup issue that reads like a known
   // gap rather than a regression.
   //
-  // GRANDFATHERED is a SHRINKING list, never a growing one. It records four
-  // pre-existing gaps this task did not create and is not scoped to fix:
-  // landing a test that is red on arrival for reasons outside this change
-  // would be worse than landing none. The ratchet test below is what keeps
-  // this from fossilizing into permanent debt: it fails the moment a
-  // grandfathered file gains a KNOWN_ALERTS entry, forcing its removal from
-  // this list rather than letting the gap go unnoticed forever.
+  // GRANDFATHERED is EMPTY, and the ratchet test below fails if it is not.
   //
-  // Do NOT add lighthouse-weekly.yml, or any other file, to this list. A
-  // new adopter that registers a correct KNOWN_ALERTS entry passes the
-  // tests below with no change to this file at all; that is the point of
-  // discovering the population instead of naming it.
-  const GRANDFATHERED = new Set([
-    'e2e-staging.yml',
-    'engagement-correlation.yml',
-    'usersim.yml',
-    'webkit-kid.yml',
-  ])
+  // It was seeded with four names -- e2e-staging.yml,
+  // engagement-correlation.yml, usersim.yml, webkit-kid.yml -- on the claim
+  // that they were "pre-existing gaps this task did not create". That claim
+  // was false, and checkably so. At merge-base 1f121662 three of those files
+  // DID NOT EXIST and the fourth, e2e-staging.yml, contained zero references
+  // to ci-failure-issue. All four alerting call sites were added by this same
+  // branch, which then exempted all four from the sync test it wrote to catch
+  // exactly that omission. A ratchet whose starting notch is entirely debt
+  // from its own commit records no inherited debt at all; it is the defect
+  // wearing the remedy's clothes.
+  //
+  // All four now have correct KNOWN_ALERTS entries, so the set is empty.
+  //
+  // Keeping the empty set, rather than deleting the mechanism, is deliberate:
+  // an escape hatch that is visible and asserted-against is safer than one
+  // that gets reinvented ad hoc the next time a test is red on arrival. But
+  // an empty set makes a `for (const file of GRANDFATHERED)` ratchet vacuous
+  // -- it passes by iterating nothing, which is indistinguishable from
+  // passing because the property holds. The assertion is therefore inverted:
+  // it fails LOUDLY on a non-empty set rather than quietly on an empty one,
+  // so the set can never grow, only stay at zero. Re-adding a name is not a
+  // config change a reader might skim past; it is a red test that forces the
+  // exemption to be argued for in a diff.
+  const GRANDFATHERED = new Set([])
 
   const WORKFLOWS_DIR = join(HERE, '..')
   const SELF_FILE = 'scheduled-health-rollup.yml'
@@ -681,19 +689,27 @@ describe('KNOWN_ALERTS stays in sync with every ci-failure-issue adopter (repo-w
     }
   })
 
-  test('the grandfather list only names files that are still real gaps (ratchet)', () => {
-    // #VERIFY: this is the property a per-file hardcoded test cannot
-    // express at all. Add a KNOWN_ALERTS entry for any one of these four
-    // files and re-run this file; this assertion must fail until the name
-    // is removed from GRANDFATHERED. (Verified manually while closing this
-    // finding; see the task report.)
-    for (const file of GRANDFATHERED) {
-      assert.ok(
-        !knownAlerts[file],
-        `${file} now has a KNOWN_ALERTS entry; remove it from GRANDFATHERED (the gap it ` +
-          'recorded is closed).'
-      )
-    }
+  test('the grandfather list is empty and adding any name to it fails here (ratchet)', () => {
+    // The ratchet, stated as the property it actually needs to hold rather
+    // than as a loop over a list that is now empty. A per-file
+    // `!knownAlerts[file]` loop over an empty set asserts nothing at all and
+    // reports a pass, which is the exact "a check that exists, reviews well,
+    // and cannot fail when its subject breaks" shape this branch exists to
+    // remove.
+    //
+    // #VERIFY: add any filename to GRANDFATHERED and re-run this file; this
+    // assertion must fail naming that file, whether or not the file has a
+    // KNOWN_ALERTS entry, whether or not it exists, and whether or not it
+    // adopts the shared action.
+    assert.deepEqual(
+      [...GRANDFATHERED].sort(),
+      [],
+      'GRANDFATHERED must stay empty. Every scheduled workflow that calls ' +
+        '.github/actions/ci-failure-issue needs a KNOWN_ALERTS entry in ' +
+        'scheduled-health-rollup.yml, or the rollup reports it UNTRACKED while its ' +
+        'tracking issue sits open. Exempting a workflow instead of registering it ' +
+        `is a deliberate regression in fleet coverage. Names present: ${[...GRANDFATHERED].join(', ')}`
+    )
   })
 
   test('KNOWN_ALERTS has no entry for a file that is not a discovered adopter (deleted/renamed workflow)', () => {
@@ -704,5 +720,158 @@ describe('KNOWN_ALERTS stays in sync with every ci-failure-issue adopter (repo-w
           'ci-failure-issue adopter; the entry is stale.'
       )
     }
+  })
+})
+
+/**
+ * Every test above this point runs the EXTRACTED script and asserts on the
+ * value it returns. That is the right contract for the script's logic, and it
+ * is structurally blind to how the workflow YAML wires that value into an
+ * issue. The rollup step returned a correct multi-line markdown string and
+ * shipped it JSON-escaped for exactly that reason: fourteen passing tests, all
+ * reading the raw return value, none of them able to see it.
+ *
+ * These tests read the YAML instead.
+ */
+describe('the YAML wiring around the script (invisible to every test above)', () => {
+  const yamlText = readFileSync(ROLLUP_YML, 'utf8')
+
+  /**
+   * Block-scope each `uses: actions/github-script` step: from its `uses:` line
+   * back up to the step's `- name:`, and forward to the first line that
+   * dedents to or past the `- ` bullet. Same block-slicing reasoning as
+   * extractCallSites above; a file-wide regex for `result-encoding` would be
+   * satisfied by ANY step declaring it, which is precisely the assertion that
+   * cannot fail when its subject breaks.
+   */
+  function githubScriptSteps(text) {
+    const lines = text.split('\n')
+    const steps = []
+    for (let i = 0; i < lines.length; i += 1) {
+      if (!/^\s*uses:\s*actions\/github-script@/.test(lines[i])) continue
+      let start = i
+      for (let j = i; j >= 0; j -= 1) {
+        if (/^\s*- name:/.test(lines[j])) {
+          start = j
+          break
+        }
+      }
+      const bulletIndent = /^(\s*)/.exec(lines[start])[1].length
+      let end = lines.length
+      for (let j = start + 1; j < lines.length; j += 1) {
+        if (lines[j].trim() === '') continue
+        if (/^(\s*)/.exec(lines[j])[1].length <= bulletIndent) {
+          end = j
+          break
+        }
+      }
+      steps.push({ name: /^\s*- name:\s*(.*)$/.exec(lines[start])?.[1] ?? '?', block: lines.slice(start, end).join('\n') })
+      i = end - 1
+    }
+    return steps
+  }
+
+  const steps = githubScriptSteps(yamlText)
+
+  test('the step extraction found real github-script steps (anti-vacuity)', () => {
+    // Without this, a broken extractor makes every assertion below iterate an
+    // empty array and report a pass: the failure mode the brief's own
+    // "vacuous discovery" note describes, reproduced one level up.
+    assert.ok(steps.length >= 1, `expected at least one github-script step, found ${steps.length}`)
+    assert.ok(
+      steps.some((s) => /Compute the scheduled-workflow health rollup/.test(s.name)),
+      `the rollup step was not among the extracted steps: ${steps.map((s) => s.name).join(' | ')}`
+    )
+  })
+
+  test('every github-script step that returns a value declares result-encoding: string', () => {
+    // github-script defaults to `result-encoding: json`, which sets the step
+    // output to JSON.stringify(result). For a multi-line markdown body fed
+    // straight into an issue that renders it as one double-quoted line of
+    // literal \n. A bare `return;` (used here for the no-escalations early
+    // exit) does not need the setting, so the detector requires a return WITH
+    // a value rather than flagging the keyword.
+    const valueReturning = steps.filter((s) => /^\s*return\s+[^;\s]/m.test(s.block))
+    assert.ok(
+      valueReturning.length >= 1,
+      'no value-returning github-script step found; the `return <value>` detector is out of sync'
+    )
+    for (const step of valueReturning) {
+      assert.match(
+        step.block,
+        /^\s*result-encoding:\s*string\s*$/m,
+        `github-script step "${step.name}" returns a value but does not set ` +
+          '`result-encoding: string`; its output will be JSON.stringify()d and any ' +
+          'multi-line markdown will render as one escaped line.'
+      )
+    }
+  })
+
+  test('the issue body is fed from the step that sets result-encoding', () => {
+    // Pins the two halves together. `result-encoding: string` on some other
+    // step would satisfy the test above while `body:` still consumed a
+    // JSON-encoded output from a different one.
+    const rollup = steps.find((s) => /Compute the scheduled-workflow health rollup/.test(s.name))
+    assert.ok(rollup, 'the rollup step disappeared')
+    assert.match(rollup.block, /^\s*id:\s*rollup\s*$/m)
+    assert.match(rollup.block, /^\s*result-encoding:\s*string\s*$/m)
+    assert.match(yamlText, /body:\s*\$\{\{\s*steps\.rollup\.outputs\.result\s*\}\}/)
+    assert.match(yamlText, /comment-body:\s*\$\{\{\s*steps\.rollup\.outputs\.result\s*\}\}/)
+  })
+})
+
+/**
+ * The watchdog needs a watchdog. Before this, the workflow had one job, no
+ * failure alerting, and excluded itself from its own survey, so a single throw
+ * would have made it red every Thursday forever with nobody notified: the
+ * 32-consecutive-red-nights failure this branch exists to eliminate,
+ * reproduced inside the thing built to eliminate it.
+ */
+describe('the rollup workflow alerts on its own failure', () => {
+  const doc = readFileSync(ROLLUP_YML, 'utf8')
+
+  function jobBlock(name) {
+    const lines = doc.split('\n')
+    const start = lines.findIndex((l) => new RegExp(`^  ${name}:\\s*$`).test(l))
+    if (start === -1) return null
+    let end = lines.length
+    for (let j = start + 1; j < lines.length; j += 1) {
+      if (lines[j].trim() === '') continue
+      if (/^ {2}\S/.test(lines[j])) {
+        end = j
+        break
+      }
+    }
+    return lines.slice(start, end).join('\n')
+  }
+
+  test('an alert job exists and is gated on failure() || cancelled()', () => {
+    const alert = jobBlock('alert')
+    assert.ok(alert, 'scheduled-health-rollup.yml declares no `alert:` job')
+    // `failure()` alone is FALSE for a cancelled run, and this workflow sets
+    // `cancel-in-progress: true`, so cancellation is a routine outcome here.
+    assert.match(
+      alert,
+      /^\s*if:\s*failure\(\)\s*\|\|\s*cancelled\(\)\s*$/m,
+      'the alert job must be gated on `failure() || cancelled()`; `failure()` alone ' +
+        'never fires for a cancelled run, and this workflow cancels itself by design.'
+    )
+    assert.match(alert, /^\s*needs:\s*rollup\s*$/m)
+  })
+
+  test('the alert job actually files an issue, under its own marker', () => {
+    const alert = jobBlock('alert')
+    assert.match(
+      alert,
+      /uses:\s*\.\/\.github\/actions\/ci-failure-issue/,
+      'the alert job must file a tracking issue; a red job nobody is notified about is ' +
+        'the failure mode this workflow exists to end.'
+    )
+    // The SAME marker the report leg uses.
+    // tests/unit/test_ci_failure_action_contract.py::test_each_workflow_uses_one_marker
+    // enforces one marker per workflow repo-wide; a distinct
+    // `[health-rollup-watchdog]` was tried first and that contract rejected it.
+    assert.match(alert, /marker:\s*'\[health-rollup\]'/)
+    assert.match(alert, /^\s*issues:\s*write\s*$/m)
   })
 })
