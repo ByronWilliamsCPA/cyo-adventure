@@ -63,8 +63,10 @@ taught us, so a lesson learned once becomes a change to the tooling instead of f
 author rediscovers.
 
 **MANDATORY**: at the end of any story authoring run (a new story or series book, a skeleton
-promotion, a fill pass, or a validator change made in service of authoring), you MUST append any
-lessons learned to [docs/planning/authoring-lessons-log.md](docs/planning/authoring-lessons-log.md).
+promotion, a fill pass, or a validator/gate change made in service of authoring), you MUST append
+any lessons learned to [docs/planning/authoring-lessons-log.md](docs/planning/authoring-lessons-log.md).
+A docs-only research or review PR counts as such a run whenever it reports a fill pass, a gate or
+validator change, or a rater-instrument change; the absence of a code diff is not an exemption.
 
 - One row per lesson: `ID`, `Date`, `Source`, `Category`, `Lesson`, `Proposed change`, `Status`, `Ref`.
 - A lesson qualifies if it cost real iteration to discover, if the tooling let a defect through or
