@@ -25,9 +25,15 @@ weakness; Medium and Low are real but smaller. Findings carry stable IDs R-1 and
 > as evidence, not maintained as current state: `main`'s registers cite `R-1` through `R-14` by name, and this
 > is the source those names point at. Current disposition for every finding lives in
 > [generation-review-workstream-plan-2026-08-22.md](./generation-review-workstream-plan-2026-08-22.md), which
-> traces each one to a step with acceptance criteria. Two findings have been overtaken by work that landed
-> between 2026-08-22 and this document reaching `main`; see the dated notes under R-2 and R-3. R-9's
-> promotion-CI half was re-verified against `main` on 2026-08-30 and still stands. Where this document and the
+> traces each one to a step with acceptance criteria. **Several findings have been overtaken by work that
+> landed after 2026-08-22**; a dated note appears under each affected finding, and this list is deliberately
+> not enumerated here, because an exhaustive count in a banner goes stale the next time something lands. The
+> current disposition of every `R-*` is carried by
+> [generation-review-workstream-plan-2026-08-22.md](./generation-review-workstream-plan-2026-08-22.md) and
+> [diversity-test-register.md](./diversity-test-register.md), and those are authoritative over anything here.
+> Absence of a note is weak evidence: it means nothing was found to have moved when the notes were last swept
+> (2026-08-30, covering R-1 through R-14), not that nothing has. R-9's promotion-CI half was re-verified
+> against `main` on 2026-08-30 and still stands. Where this document and the
 > brief it reviews disagree, the brief on `main` is the corrected text: it absorbed R-1, R-7 and others through
 > [#738](https://github.com/ByronWilliamsCPA/cyo-adventure/pull/738) and later PRs, and no copy of it is
 > carried alongside this review.
@@ -62,6 +68,18 @@ a single delivered book); and "six legs across five labs" describes the aborted 
 (eight legs, six labs). Fix: restate 4.1 and F4 as the priced trade they are, carry the three-axis table
 (quality, diversity, cost) forward, and re-open the fill-model choice as the policy question the test plan
 actually posed.
+
+> **Note added 2026-08-30. Fix landed; conclusion discharged.** All three parts of the fix are done on `main`.
+> The brief no longer makes the claim: `cyo-generation-research-brief-2026-08-22.md:283` now reads "DeepSeek
+> V4 Pro did not emerge as the best-judged prose. It is the cheapest leg per delivered book", and `:106` says
+> "It is not the best-judged prose model", both absorbed through
+> [#738](https://github.com/ByronWilliamsCPA/cyo-adventure/pull/738). The fill-model choice was re-opened as a
+> policy question and ruled: `D1` in the workstream plan, ruled provisionally 2026-08-23, keeps
+> `deepseek/deepseek-v4-pro` on the fill lane on cost and optionality grounds and states in as many words that
+> the ruling "deliberately does not rest on" the disputed ranking, with the measurement preceding it kept
+> rather than replaced. That is the shape this finding asked for: the conclusion was not that V4 Pro is the
+> wrong leg, it was that the stated reason for choosing it was false. The reason is now different and the
+> measurement it rests on is visible.
 
 ### R-2. The flagship defect has no working detector, and production is unguarded at the decision level (1, 4.4, F5)
 
@@ -148,6 +166,18 @@ section prices neither them nor skeleton authoring nor covers (unmetered in code
 model page the unscheduled-work register already specifies (UW-G19, test plan E5), derive and state the
 per-book cap by band, shadow-price subagent legs, and instrument review minutes in the approval UI.
 
+> **Note added 2026-08-30. Partly overtaken; the conclusion survives.** The "no target" half moved on
+> 2026-08-23, when the owner **partially ruled `D3`**: the revenue anchor is a subscription at $1.99 or $4.99
+> (which of the two is open), cost allocation is a credit system scaling with book length and age band, and
+> **human approval minutes are costed at a notional rate rather than excluded**, which is the specific
+> omission this finding was about. The workstream plan also records that the 20%-of-revenue target this
+> finding referenced "remains unrecorded anywhere in the tree, and is not adopted", so that figure should not
+> be quoted from here as project policy. What has not moved: Step 4, the unit-cost model page, is listed "not
+> started", `UW-G19` still carries open wall-clock, retry and repair columns, and `S-6`'s reviewer-minutes
+> measurement has not run (see R-11). **No per-book cost cap exists**, which was the finding, so the
+> conclusion stands; what changed is that the cap now has a parameterised structure to be computed against
+> instead of nothing at all.
+
 ### R-6. Safety measurement rigor lags quality rigor by an order of magnitude (F2, 3.4, 3.5, S-5)
 
 The quality side has calibrated floors and pre-registered rows; the safety side has a 13-item adversarial
@@ -165,6 +195,31 @@ current gates. Fix: run the already-built adversarial harness per band including
 with S-row discipline; repair S-5's corpus and citations before it runs; restate F2's safety sentence to match
 the code.
 
+> **Note added 2026-08-30. Fix landed; this finding's stated fix is discharged, and the measurement it asked
+> for found something worse than it predicted.** Three of the factual claims above are now false on `main`.
+> `docs/planning/safety/adversarial-corpus.json` is **v1.1, 25 items**, with **6 items at `13-16` and 6 at
+> `16+`** (verified by parsing the file on `main`), so "zero items for the 13-16 and 16+ bands" no longer
+> holds. It **has a register row**: `S-7` in [diversity-test-register.md](./diversity-test-register.md) (row
+> at `:1317`, section introduced at `:1298`), pre-registered two-sided so a gate that flags everything cannot
+> score 100%. And it is neither unrun nor unscheduled: `.github/workflows/safety-eval.yml` runs the corpus
+> against live classifiers weekly, and two `workflow_dispatch` runs on 2026-08-24 have artifacts committed
+> under `docs/planning/safety/`.
+>
+> **What those runs found is the part worth carrying forward, and it is not good news.** The operative run is
+> the majority-of-3-draws one (`adversarial-results-2026-08-24-majority-k.json`, run 32721963326), scored
+> under an owner amendment to `S-7` clause (b). It inverts both halves of the earlier single-draw run: the
+> `A7-control-onband-grief-13-16` over-block did not reproduce on any draw and is **withdrawn** as sampling
+> noise, while **`A9-actionable-harm-16plus` was missed on 3 of 3 draws** (`is_fail_safe: false` on every
+> draw, three distinct archived `reason` strings, Wilson 95% on the adverse rate [0.44, 1.0]). Class A is
+> therefore **6 of 7 (0.857)**, not the 7 of 7 the single-draw run reported. The retired single-draw scoring
+> was producing a false GREEN on the catch side as well as a false RED on the control side, and only the loud
+> one had been noticed. Remediation is an owner ruling on the band safety rubric, open at **`UW-C361`**
+> (`AL-601`), which explicitly must not be closed by relaxing `A9`'s `expected_min_verdict` or by narrowing
+> `_HARD_CATCH_CLASSES`. Class E is measured but not gated and its acceptance bar is unreconciled across three
+> documents (`UW-C360`), so no class-E rate is quotable. **So: "safety measurement lags quality measurement"
+> is discharged as a process claim; the underlying worry it was a proxy for is now a measured, tracked
+> defect** rather than an unprobed band.
+
 ## 3. High findings
 
 ### R-7. Checkable numbers in the brief are wrong or stale
@@ -178,6 +233,18 @@ and 15,470 nodes, not 61 and 11,458, and the "~118,000-word graph" is unsupporte
 per cell" is also stale (production-eligible shells now run 4 to 10 per covered cell). A one-line script at
 publication time would have caught all of these; adopt the rule that any count in the brief regenerates from
 records.
+
+> **Note added 2026-08-30. Fix landed, and this finding got one of its own numbers wrong.** The rule it asks
+> for is implemented rather than adopted on paper: `scripts/catalog_census.py` generates
+> [catalog-census.md](./catalog-census.md), which is now the single source for catalog counts, and it carries
+> exactly the figures argued for above (84 shells, 15,470 nodes, the 677-node/42,233-word and
+> 632-node/49,953-word superlatives). Counts cite the census; they are not hand-counted or globbed.
+>
+> **The correction runs the other way too.** This finding's own replacement figure, "production-eligible
+> shells now run 4 to 10 per covered cell", did not survive verification and was dropped by the workstream
+> plan. The census reports **3 to 5 per covered cell, median 4**. A finding about stale numbers shipping a
+> stale number of its own is the same defect at one remove, which is the argument for regenerating rather than
+> recomputing by hand. Whether `--check` gates the census in CI is still open as `D4`.
 
 ### R-8. S-1's per-model rankings are statistically and methodologically unsupported
 
@@ -250,6 +317,25 @@ sibling measurements onto the review surface, define the review-mode policy per 
 versus structured coverage), and add reviewer capacity to the framework before S-5 decides sourcing on
 review-burden grounds.
 
+> **Note added 2026-08-30. The first half of the fix landed; the conclusion survives, because the instrument
+> has not run.** "Nothing measures reviewer time, send-back rates" is no longer true of the codebase:
+> `src/cyo_adventure/publishing/gate_metrics.py` exists on `main`, added with `EventType.SUBMITTED` and
+> migration `20260823120000` on 2026-08-23. It pairs each `submitted` event with the `released`/`sent_back`
+> that follows it into review ROUNDS and reports median and p90 round duration, send-back rate over decided
+> rounds, and mean rounds-to-release. It is registered as **`S-6`** in
+> [diversity-test-register.md](./diversity-test-register.md) (row at `:1316`), pre-registered with a blocking
+> validity gate (at least 10 decided rounds and at least one round at `round_index >= 2`) and a refutable
+> expectation (median round duration under 24h, send-back rate under 0.20).
+>
+> **It has produced no figure.** `S-6`'s status is "registered, not yet run": neither staging nor production
+> has carried the `submitted` migration long enough for the validity gate to pass, so no duration or rate may
+> be quoted from it anywhere. **The finding's conclusion is therefore intact.** Nothing is yet known about
+> reviewer minutes, no reviewer-capacity plan exists, and R-5's human-minutes term still has no measurement
+> under it. The distinction matters for anyone citing this finding: the fix "log approval duration and
+> send-back reasons from existing events" is built, and the other three fix items (surfacing fill rate,
+> sibling similarity and the safety summary on the review surface; a per-band review-mode policy; reviewer
+> capacity in the framework) are open work in the workstream plan.
+
 ### R-12. "Refuted" is overstated, and two capital facts are mis-summarized (4.3)
 
 Most of the refuted list (S3, S5, S6, S7, S9, and the M-4 null) rests on recognition-style instruments later
@@ -257,12 +343,24 @@ shown broken or saturated, with the failure direction biased toward refutation; 
 are the deterministic ones (S8's structural distances, the gram counts, the leak measurements). Downgrade the
 rest to "not detected". Q-1 is quoted for its exhaustion half while the register's actual headline (depth is
 the wrong capital; narrative contracts cover 2 of 61 skeletons and gate the only mechanism ever measured to
-clear the anti-clone floor) is dropped, and no demand model exists anywhere (requests per child per month
+clear the anti-clone floor; **2 of the 61 then catalogued**, a figure now superseded, see the note below) is
+dropped, and no demand model exists anywhere (requests per child per month
 against skeletons or strata per cell per year; recomputation shows no-repeat depth at weekly cadence is about
 14x current, roughly 1,600 review-hours per year at the register's own amortization price). Premise curation
 is declared a control and remains unspecified beyond 16 frozen experiment premises: no size target, no per-cell
 coverage rule, no per-child repulsion. 4.3 also asserts the mutation pilot's perceptual claim that 4.4 rules
 unconfirmed two paragraphs later.
+
+> **Note added 2026-08-30. One citable number superseded; the rest of the finding has not moved.** The "2 of
+> 61 skeletons" figure above was correct when Q-2 was measured on 2026-08-11 and is stale now, in exactly the
+> way R-7 is about: 61 was the catalog size on that date, and the census reports **84 shells**. The current
+> value is **2 of 84** ([diversity-test-register.md](./diversity-test-register.md) `:1191`); the numerator did
+> not change, the denominator did, so contract coverage got relatively worse rather than better. The register
+> now dates the figure at its Q-2 row (`:1101`) so the comparison cannot be made silently again. **Everything
+> else in R-12 is untouched**: the over-generous "refuted" labels on S3, S5, S6, S7, S9 and the M-4 null, the
+> missing demand model, and the unspecified premise-curation control are addressed by no workstream step.
+> R-12 is in fact the one finding the workstream plan does not carry at all, which it states itself, so this
+> finding has no scheduled home; closing that citation gap is `UW-K21`.
 
 ### R-13. The brief omits the decision framework that would make it a decision document (5, 4.2)
 
