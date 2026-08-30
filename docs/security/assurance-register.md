@@ -1105,19 +1105,27 @@ is visible as a section with no rows rather than as a question nobody asked.
   register whose negative control is enforced by CI rather than described: a drifted SAST ruleset
   and a clean tree are otherwise indistinguishable.
 - **Trigger:** every pull request
-- **Existing coverage:** secret scanning half met; **SAST half in review, not yet landed.**
-  Repository-level secret scanning, push protection, and validity checks, plus GitGuardian
-  Security Checks on pull requests, cover the secret-scanning half and are unaffected throughout.
-  For the SAST half, `main` as of 2026-08-24 still has **no analyzer over `frontend/`**: code
-  scanning default setup is `not-configured`, and Bandit and SonarCloud are both Python-only
-  (`sonar.sources=src/`). Open PR #754 closes that on three of the four ranked routes below:
-  routes 1 (`eslint-plugin-security` and `eslint-plugin-no-unsanitized` on the `npm run lint` pass
-  that already blocks merges), 2 (a `semgrep-frontend` job with an in-repo ruleset, failing the
-  build directly rather than via SARIF upload, so no code-scanning metering is re-incurred), and
-  3 (`-Dsonar.sources=src,frontend/src`). Route 4 stays deliberately unused. **Do not mark this
-  row met until #754 merges**, and re-verify against `main` rather than against the pull request.
-  IaC scanning and SCA coverage remain unconfirmed and are untouched by #754.
-- **Residual once #754 lands**, all raised by the authors of the change rather than found in
+- **Existing coverage:** secret scanning half met; **SAST half now met over `frontend/`**, by a
+  different route than CodeQL. Repository-level secret scanning, push protection, and validity
+  checks, plus GitGuardian Security Checks on pull requests, cover the secret-scanning half and are
+  unaffected throughout. For the SAST half, PR #754 merged 2026-08-24 as `36dad55e` and closed the
+  gap on three of the four ranked routes below: routes 1 (`eslint-plugin-security` and
+  `eslint-plugin-no-unsanitized` on the `npm run lint` pass that already blocks merges), 2 (a
+  `semgrep-frontend` job with an in-repo ruleset, failing the build directly rather than via SARIF
+  upload, so no code-scanning metering is re-incurred), and 3 (`-Dsonar.sources=src,frontend/src`).
+  Route 4 stays deliberately unused. Code scanning default setup remains `not-configured` and is
+  not the mechanism here.
+
+  Re-verified against `main` rather than against the pull request, as this row required:
+  `.semgrep/frontend-security.yml` is the in-repo ruleset, `security-analysis.yml:139` defines the
+  `semgrep-frontend` job, and that job **gates merges** rather than merely reporting. The org
+  ruleset requires `Security Gate Validation`; that job declares
+  `needs: [security, semgrep-frontend]` and, because `if: always()` would otherwise let a failed
+  upstream job pass unread, its "Check security scan results" step reads
+  `needs.semgrep-frontend.result` explicitly and exits 1 on any non-`success`. An unread result
+  would have been an ignored result, so the explicit read is what makes this gating rather than
+  advisory. IaC scanning and SCA coverage remain unconfirmed and are untouched by #754.
+- **Residual after #754**, all raised by the authors of the change rather than found in
   review, and all carrying register rows: `UW-C365` (Semgrep's OSS TypeScript parser fails on 5
   frontend test files, which are therefore analysed by nothing; pinned by identity, not by count,
   so fixing five tests while breaking five production modules cannot hide the hole), `UW-C366`
@@ -1127,13 +1135,18 @@ is visible as a section with no rows rather than as a question nobody asked.
   every other pinned action in this repository).
 - **Phase home:** unassigned
 - **Owner:** core-maintainer
-- **Last verified:** 2026-08-24, against the live
-  `GET /repos/ByronWilliamsCPA/cyo-adventure/code-scanning/default-setup` (returns
-  `state: not-configured`) and against `sonar-project.properties:32` on `main`. Verified by API
-  and by file read, not by grepping `.github/workflows/`, which cannot see default setup at all.
-- **Status:** finding open, remediation in review (PR #754)
+- **Last verified:** 2026-08-30, against `main` at `6cc33aa5`: `.semgrep/frontend-security.yml`
+  and `tests/fixtures/semgrep-canary.tsx` present, `security-analysis.yml:139` defines
+  `semgrep-frontend`, and `security-analysis.yml:396-440` reads its result into the required
+  `Security Gate Validation` check. Code scanning default setup last checked 2026-08-24 via the
+  live `GET /repos/ByronWilliamsCPA/cyo-adventure/code-scanning/default-setup` (returns
+  `state: not-configured`). Verified by API and by file read, not by grepping
+  `.github/workflows/`, which cannot see default setup at all.
+- **Status:** SAST half met by #754; four residual rows open (`UW-C365`, `UW-C366`, `UW-C367`,
+  `UW-C369`). IaC and SCA coverage still unconfirmed.
 - **Check:** **AC.4.2**: SAST, secret scanning, IaC scanning, and SCA run on every pull request.
-  **Failing on SAST as of 2026-08-03.** Code scanning default setup was deliberately disabled on a
+  **Failed on SAST from 2026-08-03; restored 2026-08-24 by a different mechanism.** Code
+  scanning default setup was deliberately disabled on a
   billing rationale (`PATCH .../code-scanning/default-setup` with `state=not-configured`, endpoint
   now returns `{"state":"not-configured","updated_at":null}`), removing the only SAST that covered
   `frontend/`. Secret scanning, push protection, validity checks, and GitGuardian Security Checks
@@ -1142,11 +1155,12 @@ is visible as a section with no rows rather than as a question nobody asked.
   run and no CI secret scanning exists", false at the time and found by grepping
   `.github/workflows/`, which misses default setup because it has no workflow file; the second read
   "AISVS AC.4.2 is met, not failed", true when written and made false by the disable rather than by
-  any error in it. Closing this requires restoring SAST over `frontend/`, and the route matters
+  any error in it. Closing this required restoring SAST over `frontend/`, and the route mattered
   because re-enabling is no longer free: **as of 2026-08-24 the account holder confirms GitHub code
   scanning is no longer free on public repositories**, so the same PATCH with `state=configured`
   carries a real recurring cost. Ranked by cost, and by whether the result can actually block a
-  merge:
+  merge. **Routes 1, 2 and 3 were taken by #754 on 2026-08-24; route 4 remains deliberately
+  unused**, so the ranking below is retained as the record of why, not as an open menu:
 
   1. **Add security rules to the ESLint pass that already gates every pull request.**
      `npm run lint` runs at `.github/workflows/ci.yml:191` with `--max-warnings=0` and already
