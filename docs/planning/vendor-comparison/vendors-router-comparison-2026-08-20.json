@@ -6,7 +6,8 @@
     "family": "deepseek",
     "_price_per_mtok": "1.44 / 2.88",
     "_role": "ENDPOINT variable. Same model and same prompt as the 2026-08-20 baseline, served by a different endpoint at a DECLARED fp8 quantization. The baseline ran on azure/us, which reports quantization 'unknown', so that leg could not separate model behaviour from serving stack. This leg closes that gap.",
-    "_endpoint_verified": "2026-08-20, 200, served by Novita, max_completion_tokens 393216"
+    "_endpoint_verified": "2026-08-20, 200, served by Novita, max_completion_tokens 393216",
+    "_cost_basis": "NOT REPRODUCIBLE, and not billed. `core/pricing.py` is keyed on (provider, model) and cannot express a per-endpoint price, so price_for(\"openrouter\", \"deepseek/deepseek-v4-pro\") returns the azure/us row ($1.91 / $3.83 as of 2026-08-20) no matter what provider_order pins here. The cost this leg recorded ($0.24179236 on its one metered book; the other is unmetered and null) was therefore computed at the azure/us rate, NOT at the 1.44 / 2.88 novita rate above; the same metered counts at this pin's own rate come to about $0.182. A rerun reproduces the azure-priced figure, not the true novita spend. The recorded run data is preserved as evidence and must not be recomputed in place; see section 5.3 \"Cost of this comparison\" in docs/planning/deepseek-v4-pro-live-fill-plan-2026-08-20.md."
   },
   {
     "label": "anthropic-sonnet-5",
