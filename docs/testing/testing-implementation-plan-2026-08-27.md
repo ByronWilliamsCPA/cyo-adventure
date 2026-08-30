@@ -1,7 +1,7 @@
 ---
 title: "Testing Implementation Plan"
 schema_type: common
-status: draft
+status: published
 owner: core-maintainer
 purpose: "Task-level implementation plan executing the WS-A through WS-D program defined by PR #768's two testing documents."
 tags:
@@ -24,18 +24,22 @@ fact gets lost again.
 
 This plan was written on 2026-08-27 and merged on 2026-08-30. Most of it was executed in the
 interval, principally by [#780](https://github.com/ByronWilliamsCPA/cyo-adventure/pull/780) (134
-files, +25,814 lines). It is merged as the record of *how* the program was specified, not as a
+files, 25,814 lines changed). Every `+N` figure in this section is `git diff --stat`'s combined
+additions-plus-deletions for that path, not additions alone. It is merged as the record of *how* the program was specified, not as a
 queue of pending work, and the task detail below is unedited so the specification and the result
 stay comparable.
 
-Verified against `main` at `6cc33aa5`:
+Verified against `main` at `6cc33aa5`, with the status column re-checked against live CI and issue
+state on 2026-08-30 rather than tree presence alone. A file existing proves a task was implemented,
+not that its acceptance criterion is met, and three rows below differ on exactly that distinction:
 
 | Task | State | Evidence on `main` |
 | --- | --- | --- |
-| A1 nightly go-back | done | `frontend/e2e-real/kid-go-back-real.spec.ts` (+113), `frontend/e2e/reader-go-back.spec.ts` (+47) |
+| A1 nightly go-back | partial | Specs edited (`frontend/e2e-real/kid-go-back-real.spec.ts`, `frontend/e2e/reader-go-back.spec.ts`), but `e2e-real-nightly` is still red: 8 consecutive failures 2026-08-22 to 2026-08-29, on the same contested assertion. [#290](https://github.com/ByronWilliamsCPA/cyo-adventure/issues/290) is open |
 | A2 e2e-prod, A3 e2e-staging | done | `e2e-prod.yml` (+88), `e2e-staging.yml` (+286) |
 | A4 release workflow | done | `release.yml` (+22) |
-| A5a backup, A5b digest | done | `supabase-backup.yml`, `notification-digest.yml` |
+| A5a backup | partial | `supabase-backup.yml` ships and a first backup exists, but the acceptance bar below (two consecutive scheduled successes plus one recorded restore drill) is unmet: `docs/operations/restore-drill-log.md` still reads "No drill has been recorded yet" |
+| A5b digest | not done | `notification-digest.yml:54` still declares `environment: production`, the exact line A5b exists to remove; runs 2026-08-25 to 2026-08-28 are `cancelled` and 2026-08-29 is `waiting` |
 | A7 alerting mechanics | done | `scheduled-health-rollup.yml` plus `workflows/test/health-rollup.test.mjs` |
 | B1, B3 usersim legs | done | `frontend/e2e-usersim/` (`walk.spec.ts`, `walk-real.spec.ts`, `walk-a11y.spec.ts`) |
 | B2 `webkit-kid` per DR-2 | done | `frontend/playwright.config.ts:369`, nightly-only as ruled |
@@ -46,10 +50,13 @@ Verified against `main` at `6cc33aa5`:
 | D1 Lighthouse weekly | done | `.github/workflows/lighthouse-weekly.yml`, which cites this document by path |
 | D2 agentic persona runner | partial | `.claude/skills/naive-ux-check/` with `scenarios.json` and `render.py` |
 | D3 friction beacon | designed, not built | `docs/planning/adr/adr-031-first-party-friction-beacon.md` |
-| D4 load testing (k6) | **not started** | no k6 artifact anywhere in the tree |
+| D4 load testing (k6) | deferred by decision | No k6 artifact in the tree, and none is due: `UW-F54` on `main` records the ruling that a homelab-measured figure is worse than no figure |
+| D5 DAST baseline | done | `.github/workflows/dast-baseline-weekly.yml`, whose header cites this document by task id |
 
 A6 (close the recovered issues) is issue-state, not repository state, and is not assertable from a
-tree scan. D4 is the one substantive item with nothing behind it.
+tree scan. Nothing in this program is now unaccounted for: D4 is deferred by a recorded decision
+(`UW-F54`), D3 is specified but unbuilt, and A1 and A5 are the two rows where the work landed but the
+acceptance bar did not.
 
 Merging this document also repairs two references that shipped ahead of their referent:
 `.github/workflows/lighthouse-weekly.yml:3` and `frontend/playwright.config.ts:435` both cite
@@ -74,14 +81,15 @@ item; treat a contradiction as a signal to re-plan that item, not to force the p
 ## 2. Corrections to the source documents
 
 These were established by re-verifying the source documents' factual claims against live GitHub state and git
-history on 2026-08-27. Four claims moved. Each correction changes the task it belongs to, so the corrections
+history on 2026-08-27. Five claims moved. Each correction changes the task it belongs to, so the corrections
 come before the tasks.
 
 ### C-1: WS-A4 is not a tag desync (REFUTED)
 
 The source plan routes #765 to runbook section 7.2, the version/tag desync deadlock. That deadlock is not
-live. `pyproject.toml` on `origin/main` reads `0.83.0`, the tag `v0.83.0` exists on `origin`, and
-`git merge-base --is-ancestor v0.83.0 origin/main` succeeds. The workflow is genuinely red, but the current
+live. `pyproject.toml` on `origin/main` read `0.84.0` when this was written and reads `0.85.0` at merge;
+the matching tag exists on `origin` in both cases, and `git merge-base --is-ancestor v0.84.0 origin/main`
+succeeds. The workflow is genuinely red, but the current
 failure in the `Propose Release PR` job is:
 
 ```text
@@ -229,7 +237,11 @@ cd frontend
 npm run test:e2e:real -- e2e-real/kid-go-back-real.spec.ts
 ```
 
-Temporarily comment lines 140 and 146 for this run only. Read what the line-169 `GET /reading-state` returns:
+Temporarily comment the two `savedRow` assertions (`expect(savedRow.current_node)` and
+`expect(savedRow.path)`) for this run only, then read what the later `serverRow` `GET /reading-state`
+check returns. Anchor on those identifiers rather than line numbers: this spec grew from 172 to 263 lines
+after [#780](https://github.com/ByronWilliamsCPA/cyo-adventure/pull/780), so the original line 140 now
+holds an `Authorization` header and line 146 a fixture guard.
 
 - Returns `n_pools`: the persisted end state is correct, the spec observed the wrong PUT, and the verdict is
   **spec defect**. Proceed to step 2a.
@@ -288,10 +300,21 @@ await page.route('**/api/v1/reading-state/**', async (route) => {
   if (route.request().method() === 'PUT') puts.push(route.request().postDataJSON())
   await route.fulfill({ status: 200, json: READING_ROW })
 })
+
+// ... drive the reader forward to n_crab ...
+
+const before = puts.length
+await page.getByTestId('go-back').click()
+await expect.poll(() => puts.length).toBe(before + 1)
+expect(puts[before].current_node).toBe('n_pools')
 ```
 
-Then assert the go-back PUT carries the reverted `current_node`. Without this, the contract lives only in the
-nightly tier and silently regresses to UI-only coverage again.
+Correlate the assertion to the go-back action by index, as above. Do **not** assert that `puts` merely
+*contains* `n_pools`: the first choice already sends `n_pools`, so a membership check passes when the go-back
+PUT is wrong or absent entirely. That is the same order-blind shape step 3 sweeps for, and this step's own
+first draft carried it, which is a fair measure of how easily the pattern reappears. Without an
+action-correlated assertion the contract lives only in the nightly tier and silently regresses to UI-only
+coverage again.
 
 **Step 5, accounting.** Update `docs/testing/coverage-matrix.md`'s kid reading journey to cite the changed
 specs. Comment on #290 with the onset commit (`f68c4f71`, #635), the mechanism, and the step-1 result.
@@ -670,7 +693,9 @@ rationale for each threshold.
 
 **D2a, the prerequisite the proposal missed (see C-5).** Migrate the 17 naive-ux scenarios from markdown prose
 to machine-readable data. Today they exist only as headed prose blocks in
-`.claude/skills/naive-ux-check/prompts/{kid,guardian,admin}.md`. The structured form needs, per scenario:
+`.claude/skills/naive-ux-check/prompts/{kid,guardian,admin}.md`. **This migration has since been done:** on
+`main` the `prompts/` directory no longer exists and `scenarios.json` already holds all 17 scenarios, so this
+task is a record of the specification rather than work to do. The structured form needs, per scenario:
 `id`, `persona_text`, `task_text`, `report_back_questions[]`, `requires_credentials`, `production_safe`, and
 the operator-only notes kept in a separate field never sent to the model.
 
@@ -706,8 +731,11 @@ promotion.
 
 ### D3: leg C first-party friction beacon
 
-**Gated on its own ADR.** Write `docs/planning/adr/adr-030-<slug>.md` first, following the ADR-029 structure
-and cross-referencing ADR-018 as the children's-privacy authority. No code before the ADR is accepted.
+**Gated on its own ADR.** This ADR was written after this plan and landed as
+`docs/planning/adr/adr-031-first-party-friction-beacon.md`, not the `adr-030` slug reserved here: `ADR-030`
+was taken by C3's engagement-correlation privacy review. It follows the ADR-029 structure and
+cross-references ADR-018 as the children's-privacy authority. It is still `status: proposed`, and no code
+may land before it is accepted.
 
 **Client.** A small module beside `frontend/src/observability.ts`, batching a closed enum of events via
 `sendBeacon` on `visibilitychange`: bucketed Web Vitals (LCP, INP, CLS), error-boundary hits as a
@@ -737,7 +765,7 @@ time against the decision-time exemption set (a sweep that re-evaluates exemptio
 it should keep, and vice versa), and the redaction censor currently misses several credential shapes, so the
 beacon path must not assume the shared censor is sufficient.
 
-**Acceptance.** ADR-030 accepted; every enum variant walked against the privacy model in writing; retention
+**Acceptance.** ADR-031 accepted; every enum variant walked against the privacy model in writing; retention
 enforced and tested; a digest issue filed from synthetic data before any real traffic is enabled.
 
 ### D4: load testing (k6)
@@ -780,7 +808,7 @@ C2 (personas) ──┬──> B1's persona definitions
 
 D2a (scenario migration) ──> D2b (agentic runner)
 
-C3, D3 ────────────> blocked on privacy review / ADR-030 (not on any task here)
+C3, D3 ────────────> blocked on privacy review / ADR-031 (not on any task here)
 
 A2, A4, A5a, A5b, A6, C1, D4 ── independent, no blockers
 ```
@@ -796,7 +824,7 @@ A2, A4, A5a, A5b, A6, C1, D4 ── independent, no blockers
 | 5 | B2, B3a, B3b | All three sit on a green nightly and a working usersim tier |
 | 6 | C1, D1, D2a | Parallelisable. C1 is budget-gated, D1 is cheap, D2a is a data migration with no external dependency |
 | 7 | D2b, D5 | Both touch shared staging and both need the concurrency discipline in place |
-| 8 | C3, D3, D4 | Gated on privacy review, ADR-030, and Track 2 respectively. Do not start these to fill time |
+| 8 | C3, D3, D4 | Gated on privacy review, ADR-031, and Track 2 respectively. Do not start these to fill time |
 
 ### What can run concurrently, and what must not
 
@@ -812,51 +840,76 @@ Waves 1 to 3 are mostly independent and can run in parallel worktrees. Two cauti
 Every task needs a row in `docs/planning/unscheduled-work-register.md` before or with its first commit.
 `check_work_linkage.py` enforces this both as a pre-commit hook and as the `Planning Linkage` CI workflow.
 
-**Cluster and namespace.** Cluster F ("test and quality hardening") is the home for all of it. The highest
-`UW-F` id currently in use is `UW-F45`, so these start at `UW-F46`. The register tolerates gaps, so if a
-concurrent session claims an id first, renumber above the maximum rather than trying to merge textually. Note
-the contrast with the authoring lessons log, which is gapless and sequential and where a gap is an error.
+> **Superseded as an instruction (2026-08-30). Do not transcribe this table.**
+> The ids below were never claimed. This program's rows were filed during execution under
+> `UW-F46` through `UW-F57`, which are the same numbers this section proposed, for different work. The
+> table is kept as the record of what was specified; `docs/planning/unscheduled-work-register.md` is the
+> source of truth for what exists. Reconcile against it before filing anything, and allocate above the
+> live maximum, not above `UW-F45`.
+
+**Cluster and namespace.** Cluster F ("test and quality hardening") is the home for all of it. This section
+originally read that the highest `UW-F` id in use was `UW-F45`. That was wrong when written: the maximum was
+already `UW-F47` on 2026-08-27 and is `UW-F57` at `6cc33aa5`, the commit section 0 verifies against. The
+register tolerates gaps, so if a concurrent session claims an id first, renumber above the maximum rather
+than trying to merge textually. Note the contrast with the authoring lessons log, which is gapless and
+sequential and where a gap is an error.
+
+**Four of these were filed under different ids, and one is already closed.** Verified against `main`:
+
+| Proposed here | Actually filed as | State on `main` |
+| --- | --- | --- |
+| `UW-F67` load testing (k6) | `UW-F54` | `blocked`, Phase 8 |
+| `UW-F54` name failing specs in failure comments | `UW-F49` | **`done`** |
+| `UW-F65` leg B agentic persona runner | `UW-F56` | `unscheduled` |
+| `UW-F63` Lighthouse weekly budgets | `UW-F57` | `unscheduled` |
+
+The remaining rows were not individually reconciled; treat every one as unverified against the register.
+
+**Status vocabulary.** The Status values below were corrected on 2026-08-30. This section originally used
+`scheduled`, which is not a member of the enforced set. `check_work_linkage.py` accepts exactly
+`unscheduled`, `blocked`, `decision`, `verify`, and `done`; `scheduled` is a disposition word from the
+linkage-contract prose, not a cell value, and 16 of the rows below would have failed the gate as written.
 
 **Phase value.** `5` for anything with a product tie, since the Phase 5 "Hardening" row in `roadmap.md`
 explicitly names "the nightly/staging test ladder" as remaining open. `CI hygiene` for pure tooling with no
 product tie. Never a comma-list, never a cross-reference, never a repeat of the Status value.
 
-| Proposed ID | Item | Phase | Status |
+| Proposed ID (superseded) | Item | Phase | Status |
 | --- | --- | --- | --- |
-| UW-F46 | Fix `kid-go-back-real.spec.ts` order-blind PUT wait; pin persisted go-back contract at both tiers | now | scheduled |
-| UW-F47 | Sweep all e2e tiers for order-blind `waitForResponse` matchers (class defect from UW-F46) | now | scheduled |
-| UW-F48 | Diagnose e2e-prod streak (#623) or record a dated re-scope decision | now | scheduled |
-| UW-F49 | Work e2e-staging 23-run streak; add the missing tracking-issue step | now | scheduled |
-| UW-F50 | Unblock release `propose` job: python-semantic-release / GitPython API break (#765) | CI hygiene | scheduled |
-| UW-F51 | Database backup real failure (#667) plus first restore drill | now | scheduled |
-| UW-F52 | Move notification digest off `environment: production` reviewer gate | CI hygiene | scheduled |
+| UW-F46 | Fix `kid-go-back-real.spec.ts` order-blind PUT wait; pin persisted go-back contract at both tiers | now | unscheduled |
+| UW-F47 | Sweep all e2e tiers for order-blind `waitForResponse` matchers (class defect from UW-F46) | now | unscheduled |
+| UW-F48 | Diagnose e2e-prod streak (#623) or record a dated re-scope decision | now | unscheduled |
+| UW-F49 | Work e2e-staging 23-run streak; add the missing tracking-issue step | now | unscheduled |
+| UW-F50 | Unblock release `propose` job: python-semantic-release / GitPython API break (#765) | CI hygiene | unscheduled |
+| UW-F51 | Database backup real failure (#667) plus first restore drill | now | unscheduled |
+| UW-F52 | Move notification digest off `environment: production` reviewer gate | CI hygiene | unscheduled |
 | UW-F53 | Close recovered tracking issues (#700 now, #766 after one clean cycle) | CI hygiene | verify |
-| UW-F54 | Scheduled-failure comments name failing specs; weekly scheduled-health rollup; label convention | CI hygiene | scheduled |
-| UW-F55 | usersim leg A phase 1: walk, invariants I1-I6, seed replay, route manifest, `usersim.yml` | 5 | scheduled |
-| UW-F56 | Extend `check_coverage_matrix.py` to scan `frontend/e2e-usersim/` | 5 | scheduled |
-| UW-F57 | `webkit-kid` nightly informational project, with the rationale B2 shipped without (DR-2) | 5 | scheduled |
+| UW-F54 | Scheduled-failure comments name failing specs; weekly scheduled-health rollup; label convention | CI hygiene | unscheduled |
+| UW-F55 | usersim leg A phase 1: walk, invariants I1-I6, seed replay, route manifest, `usersim.yml` | 5 | unscheduled |
+| UW-F56 | Extend `check_coverage_matrix.py` to scan `frontend/e2e-usersim/` | 5 | unscheduled |
+| UW-F57 | `webkit-kid` nightly informational project, with the rationale B2 shipped without (DR-2) | 5 | unscheduled |
 | UW-F58 | usersim real-tier nightly variant; blocked on UW-F55 | 5 | blocked |
-| UW-F59 | I7 axe-on-newly-reached-states in `accessibility-compliance-weekly.yml` behind `A11Y_EXTENDED=1` (DR-1) | 5 | blocked |
-| UW-F60 | Comprehension probe offline pilot, measured against continuity's 1-in-6 baseline | 5 | scheduled |
-| UW-F61 | Fixed age-banded reader persona set as versioned fixtures | 5 | scheduled |
+| UW-F59 | I7 axe-on-newly-reached-states in `accessibility-compliance-weekly.yml` behind `A11Y_EXTENDED=1` (DR-1); names no prerequisite, and section 0 records I7 as shipped | 5 | blocked |
+| UW-F60 | Comprehension probe offline pilot, measured against continuity's 1-in-6 baseline | 5 | unscheduled |
+| UW-F61 | Fixed age-banded reader persona set as versioned fixtures | 5 | unscheduled |
 | UW-F62 | Prediction-versus-behaviour calibration job; blocked on the ADR-018 privacy review | 5 | blocked |
-| UW-F63 | Lighthouse CI weekly with measured baseline budgets | 5 | scheduled |
-| UW-F64 | Migrate naive-ux scenarios from prose to machine-readable data | 5 | scheduled |
+| UW-F63 | Lighthouse CI weekly with measured baseline budgets | 5 | unscheduled |
+| UW-F64 | Migrate naive-ux scenarios from prose to machine-readable data | 5 | unscheduled |
 | UW-F65 | Leg B agentic persona runner; blocked on UW-F64 and LLM budget sign-off | 5 | blocked |
-| UW-F66 | Leg C friction beacon plus weekly digest; blocked on ADR-030 acceptance | 5 | blocked |
+| UW-F66 | Leg C friction beacon plus weekly digest; blocked on ADR-031 acceptance | 5 | blocked |
 | UW-F67 | Load testing (k6); blocked on Track 2 public-launch scope | 8 | blocked |
-| UW-F68 | DAST: unauthenticated ZAP baseline against staging | 5 | scheduled |
+| UW-F68 | DAST: unauthenticated ZAP baseline against staging | 5 | unscheduled |
 
 **Blocked rows must name their prerequisite** in the Item text, or the linkage check treats them as orphans.
-UW-F62 and UW-F66 name the ADR-018 privacy review and ADR-030 respectively; UW-F65 names D2a plus the LLM
-budget sign-off; UW-F67 names Track 2.
+UW-F62 and UW-F66 name the ADR-018 privacy review and ADR-031 respectively; UW-F65 names D2a plus the LLM
+budget sign-off; UW-F67 names Track 2. `UW-F59` names none, and would have been an orphan as written.
 
 **Authoring lessons log.** A testing or CI finding qualifies for `docs/planning/authoring-lessons-log.md` only
 when it arose from an authoring or validator run, per that log's own "When to append" clause. Most of this
 plan does not qualify. Two candidates that plausibly do, if they surface during authoring work: the
 order-blind wait pattern (category `tooling`, since the tooling reported a failure without pointing at the
 cause) and any C1 comprehension-probe outcome (category `validator`, and a rejection is as loggable as an
-adoption). The current maximum is `AL-633`; ids there are gapless and sequential, so claim the next one only
+adoption). The current maximum is `AL-711`; ids there are gapless and sequential, so claim the next one only
 at write time.
 
 ## 10. Risks and standing assumptions
@@ -885,7 +938,8 @@ Carried from the source plan, with the corrections from section 2 folded in and 
 
 - `e2e-real-nightly` green for seven consecutive runs, and #290 closed citing the go-back root cause and its
   onset commit `f68c4f71`.
-- No scheduled workflow red for more than three consecutive runs without a named owner and a dated comment.
+- No scheduled workflow red for three or more consecutive runs without a named owner and a dated comment,
+  matching the A7-ii escalation threshold exactly.
 - The scheduled-health rollup exists and lists zero unexplained reds.
 - Every open `e2e-alert` and `ci-failure` issue describes a live failure.
 - A release PR opens on the next scheduled `propose` run.
