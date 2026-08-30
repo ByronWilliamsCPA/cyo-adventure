@@ -22,10 +22,15 @@ Analysis of 2026-08-22, revised the same day after adversarial validation. Subje
 >   carrying a severe finding, which a human may approve over but only with a recorded
 >   `override_reason` of at least 10 characters, stamped into the audit log with the overridden
 >   counts. The shipped admin console disables Approve until that reason is typed. **Three residuals
->   survive and are the only live part of `GA-D1`:** `submit()` still guards only
->   `moderation_report is None`; `ApproveBody` still carries no `version` field, so approve still
->   re-derives the latest version rather than the one the reviewer read; and the dual-role
->   self-approve leg is stamped, not refused, so there is still no four-eyes requirement.
+>   survive and are the only live part of `GA-D1`:** the audit payload records override *counts*,
+>   not the ids of the findings overridden, so a later re-moderation makes an override
+>   unreconstructible from durable state; `ApproveBody` still carries no `version` field, so approve
+>   still re-derives the latest version rather than binding to the one the reviewer read; and the
+>   dual-role self-approve leg is stamped, not refused, so there is still no four-eyes requirement.
+>   One adjacent claim outside `GA-D1`'s five requirements also still stands: `submit()`
+>   (`publishing/service.py:161`) still guards only `moderation_report is None`, so the
+>   `needs_revision -> in_review` hop still re-admits a BLOCK-carrying report with no forced
+>   re-screen.
 > - **The economics work is SUPERSEDED.** #784 (`2b8bc8e1`, 2026-08-30) landed
 >   [unit-cost-model.md](./unit-cost-model.md), `scripts/unit_cost_model.py` and
 >   `src/cyo_adventure/core/pricing.py`: a per-book cost model generated from billed prose-fill
@@ -208,6 +213,27 @@ convention, and the cell median is 0.0000 by design. At 13-16 it is much harder 
 gamebook exemption rather than leaving it as an unenforced rule.
 
 ### 1.3 A hard-blocked book can be published in two clicks, by design
+
+> **Correction, 2026-08-30: the two-clicks finding below is CLOSED; three narrower defects it names
+> still stand.** This section records what was true on 2026-08-22 and is left as written. What
+> changed: `approve()` no longer runs a single `moderation_report is None` check. Four ordered
+> refusals now stack in `publishing/service.py::_assert_report_permits_approval` (`:356` onward):
+> `approve_without_moderation` (`:409`), `approve_with_unusable_moderation` (`:422`),
+> `approve_with_incomplete_coverage` (`:444`), and `approve_requires_override_reason` (`:474`).
+> The fourth is gate D2 of the **ADR-005 amendment of 2026-08-25** (`#CRITICAL` comment at `:445`):
+> approving over a block or high-severity finding is refused unless a non-whitespace
+> `override_reason` is supplied, and the approval stamps `overridden_block_count` /
+> `overridden_high_count` onto the RELEASED audit payload (`:670`). So "two clicks" and "leaves no
+> distinguishable trace" are both retired.
+>
+> Still standing, verified against `origin/main` on 2026-08-30: `submit()` guards only
+> `moderation_report is None` (`service.py:161`, rule `submit_without_moderation`), so the
+> screened-ness-not-block-freeness reading of the invariant is unchanged for that hop;
+> `ApproveBody` (`api/schemas.py:1828`) still carries no `version` field, so approval still pins no
+> artifact hash; and the dual-role self-approve leg is stamped `guardian` by
+> `Principal.acting_role()`, not refused. The `has_hard_block` symbol is still read only inside
+> `moderation/`, because the new guard is expressed through `severe_finding_counts()`; grepping for
+> that symbol reports the guard as absent when it is present.
 
 `publishing/service.py:412` guards only `moderation_report is None`; `has_hard_block` is read at
 eight sites, all inside `moderation/`; no DB constraint exists across the 67 migrations on `main` as of 2026-08-30 (63 when written); the frontend

@@ -185,6 +185,19 @@ which clocktower book is used score 2.9 and 5.0, a 1.7x spread inside one condit
 **So I measured the floor properly.** Same-scale, no shared skeleton, body-only per-unit,
 n = 148 pairs over 19 books:
 
+> **Provisional, 2026-08-30.** The harness that produced the table below, and the input manifest
+> naming the 19 books and the 148 pairs it drew from them, were never committed; the paths this
+> report cites for them do not exist in this repository. Nothing here can be independently re-run,
+> so the table and `P(true mean floor >= 3.3) = 0.0008` are **provisional pending an independent
+> rerun**, and so is every consequence drawn from them below, including the rejection of the
+> published 3.3 floor. Committing the harness plus a manifest that reproduces these exact values is
+> the work item; until then the published 3.3 floor is *challenged*, not *refuted*, and should not
+> be changed on the strength of this table alone. What does not depend on the harness, and stands:
+> the criticism of the three-pair t-interval, which is re-derivable from
+> `diversity-test-register.md:294-297` alone, namely that three pairs drawn from about four books
+> are not three independent draws and that a 2.9-to-5.0 spread inside one condition makes the
+> interval uninformative.
+
 | statistic | value |
 | --- | --- |
 | mean | **1.94** |

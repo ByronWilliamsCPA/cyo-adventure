@@ -111,9 +111,14 @@ mis-sequenced and under-scoped in ways that would have caused a bad rollout.
   `the-undertow-season` 7, `the-hundred-door-hotel` 6, `the-midnight-frequency` 6,
   `the-school-garden-mystery` 6. This is precisely the mistake `AL-144` documented and fixed for
   the in-degree cap (topology-aware, hub topologies exempted) and never propagated to CG-2. Under
-  `--strict`, **`open_map` is not buildable and `time_cave` has a 0% demonstrated pass rate**,
-  which combined with PL-29's band table (3-5 may declare only `loop_and_grow` or `time_cave`)
-  leaves the youngest band almost no proven ground.
+  `--strict`, **a hubbed `open_map` shell is not buildable and `time_cave` has a 0% demonstrated
+  pass rate**, which combined with PL-29's band table (3-5 may declare only `loop_and_grow` or
+  `time_cave`) leaves the youngest band almost no proven ground. Corrected 2026-08-30: this read
+  "`open_map` is not buildable", which the table three lines above refutes on its own terms, since 2
+  of 13 `open_map` shells do pass `--strict`, and the same sentence that introduces them says both
+  have max fan-out 3, that is, no hub. The claim is true of the hubbed subset and only of it: every
+  `open_map` shell with fan-out >= 5 fails CG-2, and CG-2's `[2, 4]` envelope carries no hub
+  exemption. The `time_cave` half of the sentence is unaffected, since that pass count is 0 of 9.
 
 ---
 
@@ -476,14 +481,26 @@ failures. It should not be sequenced behind anything.
 
 **Phase 1, the flagship quality win, and it does not need `--strict` at all.** Add the
 duplicate-target rule as **blocking in the default gate**: a non-ending node's choices must have
->= 2 distinct targets, or differ in `condition`/`effects`. Blast radius measured: **9 shells, 352
-fork-pairs, 87% of them one shell.** Exclude the 64 legitimate differentiated choices by
-construction, so `the-tenfold-siege`, `the-serpent-vaults`, `the-sunken-signal` and
-`the-longwinter-station` are untouched. Then fix or delist `the-observatory-shift`, and re-derive
-PL-17's decision floor over real decisions. Add the missing invariant test
-`sum(len(n.choices)) == graph.number_of_edges()` or, better, switch `_build_graph` to a
+>= 2 distinct targets, or differ in `condition`/`effects`. **Blast radius under the proposed rule:
+4 of 84 shells**, three of them with a one-node fix. The **9 shells, 352 fork-pairs, 87% of them
+one shell** measured here is the *raw duplicate-target signal*, before the rule's own
+condition/effect exemption is applied, and is not the number of shells that would fail: exclude the
+64 legitimate differentiated choices by construction and `the-tenfold-siege`,
+`the-serpent-vaults`, `the-sunken-signal` and `the-longwinter-station` are untouched. Corrected
+2026-08-30: the pre-filter figure was being reported as the blast radius. The post-filter number
+comes from V6, which measures 11 of 84 shells carrying duplicate-target choices and **4 of 84**
+failing once "two distinct targets *or* differing conditions/effects" is applied. Note that V6's
+pre-filter count is 11 shells and this report's is 9; the two are measuring different units
+(V6 counts shells carrying duplicate-target *choices*, this report counts shells carrying
+duplicate-target *fork-pairs*) and the discrepancy wants one recomputation under a single stated
+unit rather than a choice between them. Then fix or delist `the-observatory-shift`, and re-derive
+PL-17's decision floor over real decisions. For the structural half, switch `_build_graph` to a
 `MultiDiGraph` with `admissible_topologies` counting distinct predecessors, so the two readings
-cannot diverge again.
+cannot diverge again. Do **not** add `sum(len(n.choices)) == graph.number_of_edges()` as an
+invariant test: this same report documents 64 legitimate parallel choices that differ in
+`condition`/`effects`, and every one of them makes that equality false by construction, so the test
+would fail on a correct catalog. It was proposed here and is withdrawn as of 2026-08-30; the
+`MultiDiGraph` change is the part that actually closes the seam.
 
 **Phase 2, `--strict` on ADDED shells only.** `git diff --diff-filter=A` for brand-new shells gets
 `--strict` unconditionally. Blast radius: **zero**, because no committed shell is added. This is

@@ -8,8 +8,17 @@
 >
 > **Re-read the testing-ladder findings against `6cc33aa5` (#780)** before citing any of them as
 > current; that 134-file commit targets exactly this subject matter. The rule arithmetic is stale
-> too: 58 distinct validator rule ids on `main`, not 55. The structural findings, including the
-> post-hoc pre-registration edit in `bf7cad1` and the three rows still not voided, stand.
+> too: **57** distinct validator rule ids on `main`, not 55 (corrected 2026-08-30; this notice said
+> 58, which is one too many). The derivation, so the next reader does not have to redo it: this
+> report's 55 is `CG-1..5` (5) + `CH-1..8` counting `CH-3a`/`CH-3b` separately (9) + `L1-1..8` (8) +
+> `L2-9..15` (7) + `PL-15..29` (15) + `RL-13` (1) + `SAFE-14` (1) + `SR-1..9` (9). `main` adds
+> exactly two, **`CG-6`** (outbound staging, `validator/choice_grammar.py`) and **`SR-10`** (shared
+> prose runs across a series chain, `validator/series.py`), both constructed with a real `rule_id=`
+> call site. 55 + 2 = 57. **Every count below that uses 55 as its denominator is therefore stale by
+> two**, including Claim 1's `54 of 55` and the ranking's "protects all 55 rules"; the *shape* of
+> Claim 1 is unaffected, because the two additions are new rules that were not in scope for the
+> firing measurement rather than corrections to it. The structural findings, including the post-hoc
+> pre-registration edit in `bf7cad1` and the three rows still not voided, stand.
 
 Target: synthesis section 4.7, prior findings `C6-testing-validation.md` (all 15) and
 `B3-evidence-methodology.md` (pre-registration items).
@@ -19,10 +28,23 @@ violation myself I did, with a positive control to prove the checker was live. W
 doing load-bearing work I recomputed it with my own resolver rather than accepting the prior count.
 
 **Trees used.** `/home/user/cyo-adventure/.worktrees/brief-evidence/` (the full evidence branch,
-HEAD `6fc2b34`) for all documents and evidence. `src/`, `tests/` and `scripts/` are **byte-identical**
-between that branch and `main` HEAD (`git diff --stat` over those paths returns only two
-`scripts/` additions), so the unit-suite instrumentation was run in the main checkout, which is the
-only one with `pytest` installed. That substitution is safe and I verified it rather than assuming it.
+HEAD `6fc2b34`) for all documents and evidence. The unit-suite instrumentation was run in the main
+checkout instead, which is the only one with `pytest` installed.
+
+> **Correction, 2026-08-30. Do not rely on the substitution.** This paragraph claimed `src/`,
+> `tests/` and `scripts/` are **byte-identical** between `6fc2b34` and `main` HEAD, with `git diff`
+> over those paths returning "only two `scripts/` additions", and called the substitution verified.
+> Re-measured today, `git diff --name-status 6fc2b34 origin/main -- src tests scripts` returns
+> **236 differing paths: 59 added, 176 modified, 1 deleted**, spanning checkers, source and tests.
+> Among the additions is `6cc33aa5` (#780), the 134-file testing-ladder commit that this report's
+> own notice says targets exactly this subject matter and that is **not an ancestor of `6fc2b34`**.
+> Two things follow. First, the claim cannot be re-checked as stated: this report does not record
+> the `main` SHA it compared against, only "`main` HEAD", so whether the trees matched on
+> 2026-08-22 is unrecoverable from the branch alone. Second, and regardless of that, it is false
+> now, so **any rerun of the instrumentation must pin the tree to a commit** rather than treating
+> the two as interchangeable. Measurements in this report that depend on which tree the suite ran
+> in, Claim 1's firing set above all, should be read as measured on an unrecorded `main` of
+> 2026-08-22.
 
 **Environment caveats that bound what I could verify, stated up front because they matter to
 claim 2.** The clone is **shallow** (`.git/shallow` present, 52 commits reachable) and **`gh` is not
@@ -901,7 +923,15 @@ directly gating a child-safety decision (S-5's defect corpus) sits below a corpu
 
 ---
 
-## Appendix: my artifacts, so this validation is itself reproducible
+## Appendix: my local artifacts, which are not in this repository
+
+Renamed 2026-08-30. This heading read "my artifacts, so this validation is itself reproducible",
+which the reproducibility notice at the head of this report contradicts: every path listed below is
+under a session-local scratchpad that does not exist in the repository and was never committed, so
+none of it is available to a third-party reader and the appendix makes nothing reproducible. The
+list is retained because it is an accurate inventory of what was produced and of what would have to
+be published, with the exact inputs and commands, to make the validation reproducible. Treat that
+publication as the open work item.
 
 All under `/tmp/claude-0/-home-user-cyo-adventure/95fe99a0-cfc0-5263-8504-f7a4f8df5262/scratchpad/v9/`:
 

@@ -484,7 +484,7 @@ you have the catalog audit C3-2 asks for, complete, for the price of a script. *
 discriminates nothing about the instrument, and that is the point: it makes the instrument
 unnecessary for this particular question.**
 
-**Test B (4 rater runs, decisive for the instrument question).** Run the frozen protocol on the two
+**Test B (6 rater runs, decisive for the instrument question).** Run the frozen protocol on the two
 structural extremes of the *existing filled* 10-13 books, plus the cross-band anchor:
 
 | pair | distance | pre-registered expectation |
@@ -493,7 +493,12 @@ structural extremes of the *existing filled* 10-13 books, plus the cross-band an
 | clocktower vs mapmakers-island | 0.2424 (most distant filled 10-13 pair) | **must not fire**, the within-band discrimination test |
 | clocktower vs school-garden (5-8) | 0.344 | **must not fire**, the saturation test |
 
-All four books are committed and filled. Cost: 3 prompt builds, 6 rater runs, no authoring. If the
+All five books are committed and filled. Cost: 3 prompt builds, 6 rater runs, no authoring.
+Corrected 2026-08-30: the heading of this test read "4 rater runs" against a plan of three pairs at
+two rater runs each, which is the 6 the cost line already gives; the sentence also read "All four
+books" against a table naming five distinct books (museum, hollow-lighthouse, clocktower,
+mapmakers-island, school-garden). Both are counting errors, not scope changes: the planned coverage
+is three pairs over five books at six rater runs, and the cost line was right all along. If the
 raters fire on *all* of these, the instrument is degenerate and claim 4 collapses completely. If they
 separate the 0.2424 pair, the instrument discriminates within band and the control "yes" becomes a
 real measurement. **This is the test that actually adjudicates instrument-failure vs catalog-

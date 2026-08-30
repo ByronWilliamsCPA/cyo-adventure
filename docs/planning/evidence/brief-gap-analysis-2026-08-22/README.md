@@ -85,7 +85,7 @@ and omissions.
 | `V5-s1-model-selection.md` | the S-1 experiment | Spearman replicates exactly but is confounded with node count; found cross-vendor convergence instead |
 | `V6-unwired-detectors.md` | the "detector gates nothing" pattern | 7 cases reduce to 2 plus an unrun registry; `AL-305` already states the rule |
 | `V7-fill-stage.md` | fill-stage cost and quality fixes | 120s timeout is per call, not per book; recoverable is $0.05-0.08/book |
-| `V8-safety.md` | safety and human approval | hard-block publish confirmed at 2 clicks and deliberate; measured path-level cost |
+| `V8-safety.md` | safety and human approval | hard-block publish confirmed at 2 clicks and deliberate (**closed on `main` 2026-08-25 by the ADR-005 amendment; see the correction inside V8**); measured path-level cost |
 | `V9-testing-register.md` | testing and honesty machinery | found the post-hoc pre-registration edit (`bf7cad1`); recount 4 not 57 |
 | `V10-skeleton-internals.md` | thresholds, canon, catalog arithmetic | census settled at 74; the canon mostly passes; 97% of strict findings are CG-1/2/3 |
 | `V11-framework-pipeline.md` | framework and pipeline seams | the tool-assisted regime does exist as code |

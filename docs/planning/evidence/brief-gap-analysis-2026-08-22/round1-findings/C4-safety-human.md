@@ -89,7 +89,36 @@ DFS-counting root-to-ending paths with a cycle guard.
 
 ## C4-2: A bright-line BLOCK is reversible by one admin in two clicks, with no re-screen and no distinct audit record
 
-- **Severity**: critical
+> **Correction, 2026-08-30. The "no distinct audit record" half of this finding is CLOSED; the
+> re-screen and self-approval halves still stand.** This entry is left as the record of what was
+> observed on 2026-08-22. Verified against `origin/main` on 2026-08-30:
+>
+> - **Closed.** `approve()` no longer guards on `moderation_report is None` alone. Four ordered
+>   refusals stack in `publishing/service.py::_assert_report_permits_approval` (`:356` onward);
+>   the fourth, `approve_requires_override_reason` (`:474`), is gate D2 of the **ADR-005 amendment
+>   of 2026-08-25** and refuses any approval over a block or high-severity finding unless a
+>   non-whitespace `override_reason` is supplied. The `RELEASED` payload allowlist is no longer
+>   `{"visibility"}`: `events/writer.py` now allows
+>   `{"visibility", "overridden_block_count", "overridden_high_count"}`, so the audit log **does**
+>   distinguish "published clean" from "published over a severe finding", and overrides are
+>   countable from the event log. The typed reason itself stays log-only by the PII-free payload
+>   contract (D3), so it is in structlog, not on the durable row.
+> - **Still standing.** No re-moderation is forced on the `needs_revision -> in_review` hop:
+>   `submit()` (`service.py:161`) still guards only `moderation_report is None`. `node_edit.py`
+>   still persists a fresh BLOCK rather than rejecting the write, by design. There is still no
+>   four-eyes rule: `api/approval.py::_load_admin_story` authorises on `is_admin` alone, so the
+>   dual-role adult described below can still approve their own family's blocked book, with
+>   `Principal.acting_role()` stamping it `guardian`.
+> - **Also worth noting**, because it will mislead the next reader: the `#CRITICAL` comment in
+>   `node_edit.py` that this finding quotes still says "approve() does not itself check
+>   has_hard_block either, it only requires SOME moderation_report to exist". That sentence is now
+>   false on `main` and the comment has not been updated.
+>
+> Two of the four recommendations below are therefore partly served by the amendment; the accurate
+> residual is recommendations (2) and (3), plus recording the overridden finding *ids* rather than
+> only their counts.
+
+- **Severity**: critical (as assessed 2026-08-22; see the correction above)
 - **Category**: review ergonomics
 - **Locus**: `src/cyo_adventure/publishing/service.py:412` (`if version_row.moderation_report is
   None`), `src/cyo_adventure/publishing/service.py:104-152` (`submit`, same None-only check),
@@ -817,7 +846,23 @@ DFS-counting root-to-ending paths with a cycle guard.
 
 ## C4-17: The mock-reviewer escape hatch can publish outside local; it is stamped but never refused
 
-- **Severity**: low
+> **Correction, 2026-08-30: CLOSED.** The refusal this entry asks for now exists, arriving by a
+> different route than the one recommended. The **ADR-005 amendment of 2026-08-28** ("an absent
+> judgment is not an overridable one") added `moderation_coverage_incomplete()`
+> (`moderation/report.py`), which returns true for any report naming a concern in
+> `MOCK_MODERATED_CONCERNS = {"mock_reviewer_active", "reviewer_unavailable",
+> "classifier_unavailable"}` and fails closed on every malformed shape.
+> `publishing/service.py:444` raises `BusinessLogicError(rule="approve_with_incomplete_coverage")`
+> on it, and that gate is deliberately *not* overridable: an override reason can justify
+> disagreeing with a verdict, never substitute for one never produced. A mock-moderated book can
+> therefore no longer be published at any tier.
+>
+> Note the check this entry proposed as its own falsifier: `grep -n "mock_reviewer_active"
+> src/cyo_adventure/publishing/` still returns no hits, because the guard is expressed through the
+> predicate rather than the concern string. That grep is now an anti-oracle; run the predicate, not
+> the symbol.
+
+- **Severity**: low (as assessed 2026-08-22; closed, see the correction above)
 - **Category**: reviewer model
 - **Locus**: `src/cyo_adventure/core/config.py:657-667`, `moderation/pipeline.py:252-268`
   (`_stamp_mock_reviewer`), `publishing/service.py:412`

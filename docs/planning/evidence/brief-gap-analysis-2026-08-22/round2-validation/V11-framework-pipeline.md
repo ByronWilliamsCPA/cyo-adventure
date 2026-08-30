@@ -162,6 +162,17 @@ the four Anthropic subagent legs, and there the workflow is legitimate but undoc
 "genuinely unimplemented", is false. **B2-23 should be withdrawn and replaced** by two narrower
 findings: the undocumented subagent protocol, and V11-N1's skill mis-attribution.
 
+> **Evidence-tree scope, 2026-08-30.** Stating the tree explicitly, because V12's B2-23 row phrases
+> the same finding as "exists as code nowhere" and that is false against the tree under review.
+> `scripts/modal_kimi_leg.py` is **tracked on `main`**. Its `--mode tools` path (`--mode` takes
+> `blind` or `tools`) calls `run_grid_point_tools`, which holds a persistent conversation across
+> iterations, feeds the checker's full untruncated output back verbatim, invokes
+> `check_skeleton.py --strict --allow-mvp` directly, and caps checker invocations at
+> `_TOOLS_CHECKER_CAP = 10`. So the tool-assisted regime exists as committed code for the API legs.
+> The gap that survives is narrower and should be the finding everywhere it is cited: **the external
+> driving procedure for the four Anthropic subagent legs is undocumented**, and no run book exists
+> for it. V12's row has been corrected to match; the two documents now state the same scope.
+
 ### A better finding sits in the same place, which everyone missed
 
 **New finding V11-N2 (high)**: the tools arm's pre-registered primary endpoint is structurally
@@ -484,7 +495,17 @@ than either B2 or the brief says.**
 find skeletons -name '*.json' | by suffix:  84 PLAIN, 47 contract, 16 lineage, 2 narrative
 ```
 
-84 shells, 47 `.contract.json` sidecars = 56% coverage, **44% with no theme contract**. Exact.
+84 shells, 47 `.contract.json` sidecars = 56% coverage, **44% with no theme contract**. Exact
+**as a file count over all 84 committed shells**, which is the only thing it is: qualified
+2026-08-30, because "44% of shells lack a theme contract" reads as production exposure and this
+figure does not measure that. The census (`docs/planning/catalog-census.md`) keeps three populations
+apart and they are not interchangeable: **84** committed shells, **81** declaring
+`metadata.production_eligible`, **74** reachable through one of the 18 offered cells. Coverage over
+the 74 reachable shells is the number that describes what a family can actually be served, and it is
+not computed here; nothing in this report licenses assuming the 47 contracts are distributed evenly
+across the reachable and unreachable sets. Recompute both the numerator and the denominator over the
+74 before citing this as a production-exposure figure, and keep the 81 and the 74 separate when you
+do.
 
 ### B2-19: the mechanism is not random-with-replacement
 
@@ -597,6 +618,49 @@ halted `e1` run. It documents **neither** `e1r3-2026-08-21` (the blind arm, 2/21
    approvable. The fix is one conditional plus one test. It has no dependency on any other item, no
    measurement prerequisite, and it closes a bypass of the product's primary safety control. Ranking
    it behind three measurement chores is the single clearest error in the list.
+
+   > **Correction, 2026-08-30. The observation above was true when made and is now closed; the
+   > recommendation it supports needs restating rather than re-ranking.** Verified against
+   > `origin/main`: `approve()` no longer runs a single `moderation_report is None` check. All four
+   > of the following now stack inside `_assert_report_permits_approval`
+   > (`publishing/service.py:356` onward), each raising `BusinessLogicError` with a distinct `rule`:
+   > `approve_without_moderation` (`:409`), `approve_with_unusable_moderation` (`:422`),
+   > `approve_with_incomplete_coverage` (`:444`), and `approve_requires_override_reason` (`:474`).
+   > The fourth is gate D2 of the **ADR-005 amendment of 2026-08-25**, carried in a `#CRITICAL`
+   > comment at `:445`: approving over a block or a high-severity flag requires a non-whitespace
+   > `override_reason`, and the approval emits a `storybook_approved_over_severe_finding` log line
+   > (`:660`) plus `overridden_block_count` / `overridden_high_count` on the audit payload (`:670`).
+   >
+   > Note for anyone re-checking this the way it was originally checked: **grepping for
+   > `has_hard_block` under `publishing/` still returns nothing**, because the guard is expressed
+   > through `severe_finding_counts()` and not through that symbol. A symbol grep therefore reports
+   > "still absent" for a guard that exists, which is how this claim survives re-verification by
+   > accident. Read the function, not the symbol.
+   >
+   > Three residuals survive and are genuine open items, stated here so they are not lost when this
+   > paragraph is read as closed:
+   >
+   > - **The durable record keeps counts, not identities.** The RELEASED event payload carries
+   >   `overridden_block_count` and `overridden_high_count` only; the free-text `override_reason` and
+   >   the identity of the findings overridden stay in the structlog line. That is deliberate (the
+   >   payload is PII-free by contract, `events/writer.py`'s `_PAYLOAD_ALLOWLIST`), but the
+   >   consequence is real: `moderation_report` is a mutable JSONB column
+   >   (`db/models.py::StorybookVersion`) that `api/remoderate.py` and `api/node_edit.py:811`
+   >   overwrite in place, so once it is rewritten, *which* findings a human overrode is no longer
+   >   reconstructible from durable state.
+   > - **Approval binds to a version row, not to a hash of what was reviewed.** `approve()` keys off
+   >   `(storybook_id, version)`; `node_edit.py:809` assigns a rebuilt `version_row.blob` onto that
+   >   same row. Nothing records a digest of the prose-plus-report that the approver actually saw.
+   > - **There is no separation of duties.** `api/approval.py::_load_admin_story` authorises on
+   >   `ctx.principal.is_admin` alone and deliberately omits `authorize_family`, because admin
+   >   authority is cross-family by design. An adult holding the guardian base role plus `is_admin`
+   >   can therefore approve their own family's blocked book; `Principal.acting_role()` stamps that
+   >   approval `guardian` rather than `admin`, so a self-review is *distinguishable* in the audit
+   >   log but not *prevented*. Four-eyes approval is not, and never has been, an invariant of this
+   >   system; ADR-005 names this the owner-as-admin exception.
+   >
+   > If this item is re-scheduled, its content is those three residuals plus an ADR-005 amendment
+   > that decides them, not the "one conditional plus one test" written above.
 2. **#9 feeds #12 and is ranked five places below it.** "Produce a cost-per-book number" is the
    input to "the review economics do not close, by 4 to 28x". The owner cannot make the #12 decision
    on a range that wide. #9's first half (a cost-per-book number and a `stage` field on `TokenUsage`)

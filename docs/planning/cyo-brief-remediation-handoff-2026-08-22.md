@@ -168,7 +168,7 @@ Full per-item plans in document 2. `$` is OpenRouter spend; nine of the fourteen
 
 | ID | Item | Type | Spend | Depends on |
 | --- | --- | --- | --- | --- |
-| **GA-D1** | ~~Rule on the hard-block publish override. A book carrying a moderation hard block publishes in two clicks; `publishing/service.py:412` guards only `moderation_report is None`. Deliberate design, but untraced, unversioned, and self-approvable by a dual-role adult~~ *Materially corrected 2026-08-30: only the separation-of-duties half survives. See the GA-D1 note below this table.* | **Owner decision** + code | $0 | Production query (see 7) |
+| **GA-D1** | ~~Rule on the hard-block publish override. A book carrying a moderation hard block publishes in two clicks; `publishing/service.py:412` guards only `moderation_report is None`. Deliberate design, but untraced, unversioned, and self-approvable by a dual-role adult~~ *Materially corrected 2026-08-30: the two-clicks and untraced halves are closed; what survives is the missing version pin, the counts-not-ids audit record, and separation of duties. See the GA-D1 note below this table.* | **Owner decision** + code | $0 | Production query (see 7) |
 | **GA-D2** | Decide what F5 claims, and find a cross-family reuse lever. The shared "structural" stratum is byte-identical across the flagship pair and enumerates a closed decision menu. **Rulings 1 and 6 excluded both previously proposed levers, so no candidate survives** | **Owner decision** + research | $10-25 | W3 |
 | **W1** | Job lifecycle: `queued->running` uncommitted, `rq_job_id` omitted, causing double enqueue and double spend. The only live money leak | Code | $0 | none; **blocks W2** |
 | **W2** | Cap the reading-level loop. Measured at **38%, 51%, 59%** of a book's bill for an `in_band` result of 0.155 | Code + validation | $3-5 | W1 |
@@ -195,9 +195,17 @@ Full per-item plans in document 2. `$` is OpenRouter spend; nine of the fourteen
 > without a non-whitespace `override_reason` (`approve_requires_override_reason`). The override is
 > also audited: the RELEASED pipeline event carries `overridden_block_count` and
 > `overridden_high_count`, and the free-text reason is logged (it is kept off the durable event row
-> by the PII-free payload allowlist, spec D3). So "two clicks", "untraced", and "unversioned" are all
-> retired: the override is versioned in ADR-005, gated on a reason, and structurally audited. The
-> `service.py:412` line reference has drifted with the file and should not be re-cited.
+> by the PII-free payload allowlist, spec D3). So "two clicks" and "untraced" are retired: the
+> override is now gated on a typed reason and structurally audited. The `service.py:412` line
+> reference has drifted with the file and should not be re-cited.
+>
+> **"Unversioned" is NOT retired, and neither is the reconstructability gap.** `ApproveBody`
+> (`api/schemas.py:1828`) carries `visibility` and `override_reason` and no `version` field, so an
+> approval still binds to a version row rather than to a hash of the artifact reviewed, and both
+> `moderation_report` and `blob` are mutable columns on that row (`api/node_edit.py:809`, `:811`).
+> The RELEASED payload records override *counts*, not the ids of the findings overridden, so once a
+> later re-moderation rewrites the report, what was overridden is no longer recoverable from
+> durable state.
 >
 > What still stands: **there is no separation of duties on approval.** An adult holding both the
 > guardian base role and `is_admin` can approve their own family's book, including over a hard block,

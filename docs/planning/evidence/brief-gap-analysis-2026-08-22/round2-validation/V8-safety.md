@@ -8,7 +8,30 @@ could not be settled at source, it is marked **unsettled**, not dismissed. Every
 
 ## Claim 2 (C4-2 / B2-3): a bright-line BLOCK is reversible; approve never reads `has_hard_block`
 
-**Verdict: CONFIRMED, and the prior finding UNDERSTATES it.** The escape is shorter and
+> **Correction, 2026-08-30: the two-clicks escape this section confirmed is CLOSED.** Everything
+> below is left as the 2026-08-22 record; do not read it as the state of `main`. What changed, all
+> verified against `origin/main` on 2026-08-30:
+>
+> - `approve()` no longer has "the only content-derived guard". `_assert_report_permits_approval`
+>   (`publishing/service.py:356` onward) stacks four refusals: `approve_without_moderation`
+>   (`:409`), `approve_with_unusable_moderation` (`:422`), `approve_with_incomplete_coverage`
+>   (`:444`), and `approve_requires_override_reason` (`:474`). The last is **gate D2 of the ADR-005
+>   amendment of 2026-08-25**: an approval over a block or high-severity finding is refused unless
+>   the caller supplies a non-whitespace `override_reason`.
+> - The frontend row of the refutation table is superseded. `frontend/src/admin/ReviewDetailPage.tsx`
+>   now disables Approve while `needsOverride && overrideReason.trim().length < 10`
+>   (`:1027-1030`), and renders the `approve_requires_override_reason` rule when the server refuses.
+>   The `Hard block` badge is no longer decoration.
+> - The audit row is no longer indistinguishable: `events/writer.py`'s `RELEASED` allowlist is
+>   `{"visibility", "overridden_block_count", "overridden_high_count"}`.
+> - **Unchanged and still true:** the `has_hard_block` symbol is still read only inside
+>   `moderation/`; there is still no DB constraint; `submit()` (`service.py:161`) still guards only
+>   `moderation_report is None`; `state_machine.py` is still report-blind; and
+>   `catalog_publish.py` still reaches `approve()`, which is now why it inherits the fix rather than
+>   the hole. The guard is expressed through `severe_finding_counts()`, so the symbol grep this
+>   section used as its oracle would still return zero hits in `publishing/` today.
+
+**Verdict as recorded on 2026-08-22: CONFIRMED, and the prior finding UNDERSTATES it.** The escape is shorter and
 cheaper than "3 clicks via an API-only submit"; the shortest path is **two clicks in the
 shipped admin console**, no scripting.
 
@@ -128,8 +151,23 @@ A 5-8 band book. Each node is individually gate-clean against every check that e
 
 The assembled path `n_meet -> n_secret -> n_gift -> n_alone -> e_best_friend` is a textbook
 grooming escalation, isolation, secrecy, gifts, private meeting, secrecy rewarded as the
-good ending. Every automated stage in this repository passes it. I traced each stage
-individually and found no exception:
+good ending.
+
+> **Scope, 2026-08-30. This is a hypothetical threat model, not an executed test.** The paragraph
+> below read "Every automated stage in this repository passes it. I traced each stage individually
+> and found no exception", which reads as a run result. It is not one: the five nodes above exist
+> only in this document, no fixture carries them, and no command or run record is committed that
+> would let a reader reproduce the verdict. What was actually done is a **paper trace against the
+> committed code and policy tables**, stage by stage, asking of each whether any rule it enforces
+> could match. That trace is checkable, because every rule it reasons about is committed
+> (`_OPENAI_BRIGHTLINE`, `_CONTENT_CONCERNS`, the PL-15/PL-18 ending kinds, `validator/imitable.py`'s
+> caller count), and it is worth acting on. It is not evidence that a generated book carrying this
+> arc has ever been passed by the pipeline. **To promote this from threat model to finding**, add
+> the five nodes as a committed adversarial fixture and run the real gate over the assembled path,
+> recording the verdict. Until then, read every "passes" below as "no committed rule matches", which
+> is the claim the trace supports.
+
+Read that way, no automated stage in this repository rejects it, stage by stage:
 
 - Stage 0 classifiers: no `_OPENAI_BRIGHTLINE` category matches; Perspective
   `SEXUALLY_EXPLICIT` is nowhere near 0.8.
@@ -446,6 +484,11 @@ which is new and cheap to fix.**
 `moderation_report is None` check at line 412.** This is not a preference; it is forced by
 the module's own structure:
 
+> **Note, 2026-08-30.** This recommendation was taken, at the location argued for here: the guard
+> now lives in `_assert_report_permits_approval`, called by `approve()`, so both privileged callers
+> are covered structurally. See the correction under Claim 2 above for the four refusals as
+> shipped.
+
 - It is **the sole path in `src/` that sets `status="published"`** (`service.py:6-12`), and
   `catalog_publish.py` reaches it by calling `approve()` rather than writing the column. A
   check here therefore covers both privileged callers structurally, exactly the argument the
@@ -710,7 +753,10 @@ Defence in depth, reusing what is already proven:
 Ordered by what I would fix first.
 
 1. **The shortest path to publishing a hard-blocked book is two clicks in the shipped UI, not
-   three API calls.** The `node_edit` route (edit an `in_review` book -> fresh BLOCK persists,
+   three API calls.** *(Closed 2026-08-30: the ADR-005 amendment of 2026-08-25 refuses that
+   approval without a typed override reason, and the console disables Approve until one is
+   entered. See the correction under Claim 2. The `node_edit` behaviour this item describes is
+   unchanged; what changed is that it no longer ends in a silent publish.)* The `node_edit` route (edit an `in_review` book -> fresh BLOCK persists,
    status untouched, Approve) is shorter, needs no scripting, and is **locked in by a passing
    test** (`tests/unit/test_node_edit.py:846`). Any fix that only closes the
    `needs_revision -> submit` route leaves the easier hole open. This reframes Claim 2 from

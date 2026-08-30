@@ -100,7 +100,21 @@ Catalog facts measured during this audit (identical on both trees, used repeated
 - **How to check I'm right**: Inject a `ProviderError` from `run_moderation_pipeline` in `tests/integration/test_generation_worker.py` and assert (a) no `storybook` row survives, (b) `generation_job.status == 'failed'`, (c) no RQ retry is scheduled, (d) no API route can re-drive the job.
 
 ## B2-3: `submit` and `approve` check that a moderation report *exists*, never what it says: a hard-BLOCKed book is two admin clicks from published
-- **Severity**: high
+
+> **Correction, 2026-08-30: the `approve` half is CLOSED, the `submit` half still stands.**
+> Recorded as observed on 2026-08-22 and left as written. On `origin/main` today, `approve()` reads
+> what the report says: `_assert_report_permits_approval` (`publishing/service.py:356` onward)
+> refuses on an absent report (`:409`), a report carrying no genuine judgment (`:422`), a report
+> whose reviewer did not see every node (`:444`), and, as **gate D2 of the ADR-005 amendment of
+> 2026-08-25**, on a block or high-severity finding without a recorded `override_reason` (`:474`).
+> `EventType.RELEASED` is no longer written identically either way: its payload allowlist in
+> `events/writer.py` is now `{"visibility", "overridden_block_count", "overridden_high_count"}`, so
+> an override is distinguishable in `pipeline_event`. `submit()` is unchanged: `service.py:161`
+> still tests only `moderation_report is None`, so the `needs_revision -> in_review` hop still
+> re-admits a BLOCK-carrying report with no re-screen. The recommendation's second half ("a
+> re-moderation pass that clears it") is therefore still open; its first half is delivered.
+
+- **Severity**: high (as assessed 2026-08-22; half closed, see above)
 - **Category**: seam/failure handling, **classification (a)**
 - **Locus**: `src/cyo_adventure/publishing/service.py:148-150` (submit: `if version_row.moderation_report is None: raise`), `service.py:412-414` (approve: same presence-only test); `src/cyo_adventure/publishing/state_machine.py:84` (`(NEEDS_REVISION, SUBMIT) -> IN_REVIEW`); `src/cyo_adventure/moderation/pipeline.py:447-450`
 - **Problem**: On a hard BLOCK the pipeline calls `auto_reject`, landing the book at `needs_revision` with the BLOCK report attached. `LEGAL_TRANSITIONS` permits `needs_revision --submit--> in_review`, and `api/approval.py:133-143` exposes that transition to any admin. Both `submit` and `approve` gate only on `moderation_report is not None`, satisfied by the very report that blocked it. So `draft -> auto_reject -> needs_revision -> submit -> in_review -> approve -> published` publishes a book the safety machinery rejected, with no re-screen, no verdict check, and no event distinguishing it from a clean approval (`EventType.RELEASED` is written either way). `api/rescreen.py` and `api/remoderate.py` exist but nothing on this path requires them.

@@ -69,13 +69,44 @@ collapses selection from 74 shells to 20.
 
 ### GA-D1. Rule on the hard-block publish override
 
-**Problem.** A book carrying a moderation hard block can be published in two clicks: edit any node
-of an `in_review` book (the fresh BLOCK merges, status stays `in_review`), then Approve.
-`publishing/service.py:412` guards only `moderation_report is None`. `has_hard_block` is read at
-eight sites, all inside `moderation/`. No DB constraint exists across the 67 migrations on `main` as of 2026-08-30 (63 when written). The frontend
-gates on status alone while rendering a "Hard block" badge.
+**Problem, as it stood on 2026-08-22. This is now closed; read the next paragraph before acting on
+it.** A book carrying a moderation hard block could be published in two clicks: edit any node of an
+`in_review` book (the fresh BLOCK merged, status stayed `in_review`), then Approve.
+`publishing/service.py:412` guarded only `moderation_report is None`. `has_hard_block` was read at
+eight sites, all inside `moderation/`. No DB constraint existed across the 63 migrations on `main`
+at the time (67 as of 2026-08-30). The frontend gated on status alone while rendering a "Hard block"
+badge.
 
-**This is deliberate.** It is commented `#CRITICAL` in `node_edit.py` as an intentional ADR-005
+**Closed on `main` as of 2026-08-30.** The single `moderation_report is None` check is gone.
+`publishing/service.py::_assert_report_permits_approval` (`:356` onward) now stacks four guards,
+each raising `BusinessLogicError` with its own `rule`: `approve_without_moderation` (`:409`),
+`approve_with_unusable_moderation` (`:422`), `approve_with_incomplete_coverage` (`:444`), and
+**guard 4, `approve_requires_override_reason` (`:474`)**, which is gate D2 of the **ADR-005
+amendment of 2026-08-25** and is what closes the override path described above: approving over a
+block or a high-severity flag is refused unless the caller supplies a non-whitespace
+`override_reason`, and the approval then emits a `storybook_approved_over_severe_finding` log line
+(`:660`) with `overridden_block_count` / `overridden_high_count` on the RELEASED audit payload
+(`:670`). The "two clicks, untraced, unversioned" framing is retired in full.
+
+**Three residuals survive**, and they are the whole of what remains open here:
+
+1. **Finding identities are not durable.** The audit payload records override *counts*, not the ids
+   of the findings overridden, and `moderation_report` is a mutable JSONB column that
+   `api/remoderate.py` and `api/node_edit.py:811` overwrite in place, so a later re-moderation makes
+   the override unreconstructible from durable state.
+2. **Approval binds to a version row, not to a hash of the artifact reviewed.** `node_edit.py:809`
+   assigns a rebuilt `blob` onto that same row; nothing pins a digest of what the approver saw.
+3. **No separation of duties.** A dual-role adult can still approve their own family's blocked book;
+   see "On requirement 4, stated precisely" below for the exact mechanism and why it is by design.
+
+Note for anyone re-verifying this: **grepping `publishing/` for `has_hard_block` still returns
+nothing**, because the guard is expressed through `severe_finding_counts()`, not through that
+symbol. A symbol grep therefore reports the guard as absent when it is present.
+
+*The remainder of this section is the 2026-08-22 record, preserved as written apart from dated
+annotations. Read it as history plus the three residuals above, not as an open work list.*
+
+**This was deliberate.** It is commented `#CRITICAL` in `node_edit.py` as an intentional ADR-005
 position ("surfaced, never rejects the write"), locked by a passing test
 (`tests/unit/test_node_edit.py:846`), and the service comment states the invariant as "no
 *unmoderated* path reaches published", which is screened-ness, not block-freeness. So the plan is a
