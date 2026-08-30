@@ -1535,11 +1535,19 @@ class Settings(BaseSettings):
         a half-set pair stays a hard :class:`ConfigurationError` rather than
         being silently downgraded to "leg absent".
 
+        Whitespace-only values count as absent. A compose interpolation of an
+        unset variable (``${MODAL_MODEL:- }``) or a stray space in a dotenv
+        entry would otherwise read as truthy here and put a leg with no usable
+        model into the cascade, which then fails on every call rather than
+        being cleanly omitted.
+
         Returns:
-            bool: True when both ``modal_base_url`` and ``modal_model`` are
-                set to non-empty values.
+            bool: True when both ``modal_base_url`` and ``modal_model`` hold a
+                non-empty, non-whitespace value.
         """
-        return bool(self.modal_base_url) and bool(self.modal_model)
+        return bool((self.modal_base_url or "").strip()) and bool(
+            (self.modal_model or "").strip()
+        )
 
     @model_validator(mode="after")
     def _reject_dev_database_url_outside_local(self) -> Settings:

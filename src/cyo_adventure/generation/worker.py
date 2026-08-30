@@ -2572,8 +2572,20 @@ async def run_generation_job(
                     # of them appear. `sys.exc_info` is empty for a true
                     # interrupt that unwinds without an exception object, so
                     # the old label is kept for that case.
+                    #
+                    # The isinstance narrowing is not only for the type
+                    # checker. sys.exc_info() returns BaseException, and the
+                    # BaseException-but-not-Exception cases (CancelledError,
+                    # KeyboardInterrupt, SystemExit) are precisely the "true
+                    # interrupt" this label was always meant to describe, so
+                    # they keep it rather than being recorded as the cause.
                     # #VERIFY: test_interrupted_job_records_the_real_cause.
-                    cause = sys.exc_info()[1] or RuntimeError("interrupted")
+                    in_flight = sys.exc_info()[1]
+                    cause = (
+                        in_flight
+                        if isinstance(in_flight, Exception)
+                        else RuntimeError("interrupted")
+                    )
                     await _record_failure(
                         session,
                         stranded,

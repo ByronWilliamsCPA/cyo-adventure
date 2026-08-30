@@ -8,12 +8,17 @@ import { classifyApiError } from '../hooks/classifyApiError'
 import { useApi } from '../hooks/useApi'
 import { usePageTitle } from '../hooks/usePageTitle'
 import { makeProviderAllowlistApi } from './providerAllowlistApi'
-import type { AllowlistListView } from '../client/types.gen'
+import type { AllowlistCreateBody, AllowlistListView } from '../client/types.gen'
 
-// Mirrors generation.allowlist.ALLOWLIST_PROVIDERS / ProviderName in
-// api/schemas.py ('mock' is a CI-only double, never allowlistable).
-const PROVIDERS = ['anthropic', 'openrouter', 'modal'] as const
-export type ProviderValue = (typeof PROVIDERS)[number]
+// Derived from the GENERATED contract rather than re-declared, so a backend
+// change to ProviderName (api/schemas.py) that is regenerated into the client
+// fails typecheck here instead of leaving this list silently stale. The
+// annotation on PROVIDERS is what forces that: without it the `as const`
+// literal would define its own type and drift independently.
+// 'mock' is a CI-only double and is never allowlistable, so it is absent from
+// the contract enum too.
+export type ProviderValue = AllowlistCreateBody['provider']
+const PROVIDERS: readonly ProviderValue[] = ['anthropic', 'openrouter', 'modal'] as const
 
 type LoadState =
   | { kind: 'loading' }

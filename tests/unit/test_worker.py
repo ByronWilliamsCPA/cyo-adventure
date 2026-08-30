@@ -161,6 +161,8 @@ class TestBuildProviderLive:
             openrouter_api_key="test-key",
             modal_base_url="https://example--cyo.modal.run/v1",
             modal_model="google/gemma-4-26b-a4b-it",
+            modal_proxy_key=None,
+            modal_proxy_secret=None,
         )
         provider = build_provider(settings)
         assert isinstance(provider, FallbackProvider)
@@ -247,6 +249,8 @@ class TestBuildProviderLive:
             openrouter_api_key="test-key",
             modal_base_url="https://example--cyo.modal.run/v1",
             modal_model="google/gemma-4-26b-a4b-it",
+            modal_proxy_key=None,
+            modal_proxy_secret=None,
         )
         with patch("cyo_adventure.generation.provider.logger") as mock_logger:
             build_provider(settings)
@@ -389,6 +393,52 @@ class TestBuildProviderOverrides:
         )
         assert isinstance(provider, AnthropicProvider)
         assert provider.model == "claude-opus-4-8"
+
+    def test_retired_provider_override_raises_a_named_error(self) -> None:
+        """A job row still naming a retired provider fails with an actionable message.
+
+        This is the one route by which "ollama" can still reach build_provider:
+        a job enqueued before the retirement deployed, whose
+        authoring_metadata the worker passes through verbatim. The generic
+        unknown-provider message would not tell an operator that the cause is a
+        stale row rather than a typo.
+        """
+        settings = Settings()  # type: ignore[call-arg]
+        with pytest.raises(ConfigurationError) as exc_info:
+            build_provider(settings, provider_override="ollama")
+        message = str(exc_info.value)
+        assert "retired" in message
+        assert "ollama" in message
+        # Must not be mistaken for the typo path.
+        assert "unknown generation_provider" not in message
+
+    def test_a_typo_never_gets_the_retirement_message(self) -> None:
+        """A genuine typo is not reported as a retirement, on either lane.
+
+        The invariant is the discrimination, not one exact string: on the
+        family lane FAMILY_LANE_PROVIDERS rejects an unrecognised name before
+        the unknown-provider branch is reached, so pinning "unknown
+        generation_provider" here would assert the ordering of a guard this
+        test is not about. What must hold on every lane is that a misspelling
+        is never attributed to a retirement.
+        """
+        settings = Settings()  # type: ignore[call-arg]
+        for lane in ("family", "admin"):
+            with pytest.raises(ConfigurationError) as exc_info:
+                build_provider(settings, provider_override="ollamaa", lane=lane)
+            assert "retired" not in str(exc_info.value)
+
+    def test_a_typo_on_the_admin_lane_keeps_the_generic_error(self) -> None:
+        """Past the lane guard, an unrecognised name still names itself.
+
+        The admin lane carries no allowlist, so this is the one path that
+        reaches build_provider's own unknown-provider branch and can assert
+        its message directly.
+        """
+        settings = Settings()  # type: ignore[call-arg]
+        with pytest.raises(ConfigurationError) as exc_info:
+            build_provider(settings, provider_override="ollamaa", lane="admin")
+        assert "unknown generation_provider" in str(exc_info.value)
 
     def test_unknown_provider_override_raises_configuration_error(self) -> None:
         """A provider_override outside the known branches raises, naming the value."""

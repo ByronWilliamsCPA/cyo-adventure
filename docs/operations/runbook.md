@@ -560,6 +560,24 @@ configured for a given environment, logs remain the only observability surface t
 5. `GenerationJob.status` progresses `queued` → `running` → one of `passed` / `needs_review` /
    `failed`. Check the row directly (admin-only `GET /generation-jobs/{id}`, or a database query)
    for `error` and `report` detail once it leaves `queued`.
+6. **After a provider retirement**, a job can fail immediately with `generation provider '<name>'
+   is retired and can no longer be built`. That is not a misconfiguration of the running service:
+   the row was enqueued before the retirement deployed and still names the old provider in its
+   `authoring_metadata`, which `process_generation_job` passes to `build_provider` verbatim. The
+   reclaim sweep in step 3 re-enqueues such a row rather than draining it, so it will keep failing
+   until someone acts on it. `build_provider` deliberately fails these rather than silently
+   substituting a live provider, because substituting one would bill the story to a backend the
+   admin did not choose and would make the job's own recorded provider attribution false (which is
+   what reviewer independence is computed from). Remediation: mark the affected rows `failed` and
+   have the guardian re-request, or rewrite `authoring_metadata->>'provider'` to a live provider if
+   you accept the changed attribution. Find them with:
+
+   ```sql
+   SELECT id, status, authoring_metadata ->> 'provider' AS provider
+   FROM generation_job
+   WHERE authoring_metadata ->> 'provider' = 'ollama'
+     AND status IN ('queued', 'running');
+   ```
 
 ### 5.2 Provider outage or degraded generation quality
 

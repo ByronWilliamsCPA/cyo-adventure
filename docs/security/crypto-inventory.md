@@ -94,8 +94,9 @@ protocol and has no group to negotiate.
 - **Ollama leg**: RETIRED. The leg built its own `ssl.SSLContext` from a private homelab CA
   (`OLLAMA_CA_BUNDLE`) and refused cleartext HTTP Basic off-loopback
   (`_reject_cleartext_basic_auth`). Both the private-CA trust path and the reversible
-  Basic-auth credential are gone with it, so every remaining egress leg verifies against the
-  public CA store alone and carries its credential in a header over TLS.
+  Basic-auth credential are gone with it, so the remaining external LLM-provider HTTP legs
+  verify against the public CA store and carry their credential in a header over TLS.
+  Database and Redis transport are separate and are documented in their own entries below.
 - **Supabase Postgres**: session pooler over TLS, driver defaults, no explicit `sslmode` in
   code; classical until Supabase offers PQC transport (accepted, ADR-013 out-of-scope list).
 - **Redis**: `redis://` (no TLS) on the internal Docker network; a network-trust boundary, not

@@ -348,6 +348,10 @@ class TestLiveHarnessHelpers:
         monkeypatch.setenv("OPENROUTER_API_KEY", "test-key")
         monkeypatch.setenv("MODAL_BASE_URL", "https://example--cyo.modal.run/v1")
         monkeypatch.setenv("MODAL_MODEL", "google/gemma-4-26b-a4b-it")
+        # A host half-set proxy pair would make Settings() raise before the
+        # factory is ever built (see _require_modal_proxy_credentials_together).
+        monkeypatch.delenv("MODAL_PROXY_KEY", raising=False)
+        monkeypatch.delenv("MODAL_PROXY_SECRET", raising=False)
         factory = _build_live_factory("openrouter", model=None, fallback=True)
         provider = factory()
         assert isinstance(provider, FallbackProvider)
@@ -364,6 +368,8 @@ class TestLiveHarnessHelpers:
         monkeypatch.setenv("OPENROUTER_API_KEY", "test-key")
         monkeypatch.delenv("MODAL_BASE_URL", raising=False)
         monkeypatch.delenv("MODAL_MODEL", raising=False)
+        monkeypatch.delenv("MODAL_PROXY_KEY", raising=False)
+        monkeypatch.delenv("MODAL_PROXY_SECRET", raising=False)
         factory = _build_live_factory("openrouter", model=None, fallback=True)
         provider = factory()
         assert isinstance(provider, FallbackProvider)

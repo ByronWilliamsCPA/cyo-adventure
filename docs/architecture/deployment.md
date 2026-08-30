@@ -73,7 +73,8 @@ Internal container-to-container communication uses Docker's bridge network:
 - `cyo-backend` -> `cyo-redis` (RQ enqueue, port 6379)
 - `cyo-worker` -> `cyo-redis` (job dequeue, port 6379)
 - `cyo-worker` -> OpenRouter API (HTTPS, egress to internet, primary LLM)
-- `cyo-worker` -> Modal Auto Endpoint (HTTPS, egress to internet, cascade leg 3;
+- `cyo-worker` -> Modal Auto Endpoint (HTTPS, egress to internet, cascade leg 3,
+  present only when `MODAL_BASE_URL` and `MODAL_MODEL` are both set;
   replaced the retired `cyo-ollama` container, which was removed ahead of the
   homelab-to-Vultr move because a self-hosted GPU leg has no cloud equivalent at a
   fallback-of-a-fallback's price. See ADR-003's 2026-08-18 amendment.)
