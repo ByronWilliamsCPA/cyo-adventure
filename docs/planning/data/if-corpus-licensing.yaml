@@ -1,0 +1,185 @@
+# Legally-tiered interactive-fiction corpus: licensing register.
+#
+# Companion data file to docs/planning/if-corpus-license-tiers.md. Tracks the fields a commercial
+# project needs before treating any third-party work as reusable, per that doc's "Legal handling
+# recommendations" section: author, title, source/download URL, exact license text found,
+# verification method, date accessed, jurisdiction, what the license covers (text/code/art), and
+# whether commercial use and derivatives are permitted.
+#
+# READ THIS BEFORE READING A `status` VALUE. No value in this file is a legal clearance. This
+# register records research leads and their strength, nothing more. A machine reading only this
+# file, with no access to the companion prose doc, must still come away with that understanding,
+# which is why the definitions below are written the weak way rather than the confident way.
+#
+# status values (closed set, matches the doc's color labels):
+#   green            - STRONG LEAD, NOT CLEARED: the best-supported public-domain case found, with
+#                       a source and a stated rights basis, still short of legal sign-off. Nothing
+#                       here authorises ingesting the work's text; that decision is separate and
+#                       gated on counsel, per docs/compliance/counsel-engagement-brief.md.
+#   green_attribution - CC0/CC-BY or similar found; commercial derivatives would be permitted with
+#                       attribution IF the licence is confirmed. Same "lead, not cleared" caveat.
+#   yellow           - a plausible permissive claim exists but rests on something weaker than an
+#                       author statement (community metadata, an inferred custom, a derivative
+#                       whose own status is unresolved). Case-by-case review required.
+#   red              - CC BY-NC / CC BY-ND / CC BY-NC-ND / freeware / unclear license
+#   reference_only   - copyrighted, or with no locatable rights basis; may be studied by a human
+#                       and labeled, never copied into any corpus, prompt, or generation input
+#
+# verification_method values: primary_source_fetch (WebFetch/browser read the actual page),
+# websearch_snippet (reconstructed from search results, not a direct page read), unverified
+# (claim relayed from an external source, not checked).
+#
+# Provenance in two passes. Pass 1 (2026-08-13) ran in a session whose network egress policy
+# blocked WebFetch for every relevant domain, so every entry was websearch_snippet or unverified.
+# Pass 2 (2026-08-30) re-ran the checks from a session with working egress and promoted the
+# entries below that a direct page read confirmed. Each entry records which pass produced its
+# current state. Re-verify again with direct access before treating any status as legal sign-off,
+# and before storing any work's actual text in this repository.
+
+schema_version: 1
+checked_date: "2026-08-13"
+reverified_date: "2026-08-30"
+checked_method_caveat: "Pass 1 (2026-08-13) was WebFetch egress-blocked for every candidate domain, so all entries began as websearch_snippet or unverified. Pass 2 (2026-08-30) had working egress and promoted four of five entries to primary_source_fetch; per-entry verification_method is authoritative over this summary."
+
+works:
+  - id: consider-the-consequences
+    title: "Consider the Consequences!"
+    author: "Doris Webster and Mary Alden Hopkins"
+    publication_year: 1930
+    source_url: "https://en.wikisource.org/wiki/Consider_the_Consequences!"
+    download_url: null
+    jurisdiction: "United States"
+    license_claimed: "Public domain (US) by copyright term expiry: Wikisource's licence banner gives the basis as publication before January 1, 1931, not as copyright non-renewal"
+    covers: [text]
+    commercial_use_permitted: true
+    derivatives_permitted: true
+    status: green
+    verification_method: primary_source_fetch
+    verification_confidence: high
+    verification_notes: >
+      CORRECTED 2026-08-30 against a direct read of the Wikisource page. Pass 1 recorded the PD
+      basis as non-renewal, relayed from a search snippet about Wikidata's determination method.
+      The page itself carries the standard US public-domain banner reading "This work is in the
+      public domain in the United States because it was published before January 1, 1931", which
+      is term expiry. That is a stronger basis than non-renewal: term expiry needs no renewal
+      record search to be sound, so confidence rises from medium to high and the entry no longer
+      depends on a negative search result. Author, publisher (The Century Co.), and 1930 date all
+      confirmed on the same page, as is the branching structure (three sections following Helen,
+      Jed, and Saunders through choice points). Still a strong lead rather than legal sign-off:
+      the banner covers the US only, and no non-US position was researched.
+
+  - id: the-interlopers-adaptation
+    title: "The Interlopers (interactive adaptation)"
+    author: "IFDB credits the entry to \"Saki and IF Classics\"; no natural person is named for the 2014 adaptation"
+    publication_year: 2014
+    source_url: "https://ifdb.org/viewgame?id=rg42893ymbsay0kk"
+    download_url: null
+    jurisdiction: "United States (original story, pre-1929 95-year rule) and life+70 jurisdictions (UK/EU, PD since 1987)"
+    license_claimed: "Saki's underlying short story is public domain (high confidence). The 2014 Quest 5 adaptation carries only IFDB's community-entered License field, 'Public Domain', with no author-signed dedication located"
+    covers: [text]
+    commercial_use_permitted: null
+    derivatives_permitted: null
+    status: yellow
+    verification_method: primary_source_fetch
+    verification_confidence: medium
+    verification_notes: >
+      DOWNGRADED 2026-08-30 from green/true/true/[text, code]. Pass 1's own notes already conceded
+      that no author-signed PD dedication exists and that the adaptation's creator could not be
+      identified, but the machine-readable fields said green with commercial use and derivatives
+      both permitted, so a reader of the fields alone got a clearance the prose withheld. Three
+      distinct rights objects are involved and only the first is settled: (1) Saki's 1919 text,
+      solidly PD; (2) the 2014 adaptation, a separately copyrightable derivative work whose
+      selection, arrangement, and any added prose attract their own term; (3) the Quest 5 engine
+      code, licensed separately again by its own vendor and never in scope of any PD claim about
+      the story. `covers` is therefore narrowed to [text] and the code claim is withdrawn.
+      Confirmed by direct read of the IFDB page 2026-08-30: License field reads exactly "Public
+      Domain"; the description reads "Interactively experience Saki's classic short story.
+      (Contains complete Feedbooks public-domain text)"; the credited author is "Saki and IF
+      Classics", which is a project label rather than an identifiable rights holder able to make a
+      dedication. The page also now states "There are no known download links for this game", so
+      pass 1's textadventures.co.uk download URL is removed (that URL returns HTTP 403) and the
+      "offers both play and full source download" claim does not hold as written. If only Saki's
+      text is wanted, source it from a PD edition directly and skip this entry entirely.
+
+  - id: the-tailgator
+    title: "The Tailgator"
+    author: "No author for the work the external proposal described; an unrelated Twine game of the same title is credited to NegativeSector on itch.io"
+    publication_year: null
+    source_url: null
+    download_url: null
+    jurisdiction: null
+    license_claimed: "Public domain (per the external proposal); NOT CONFIRMED, and the proposal's described work was never located"
+    covers: []
+    commercial_use_permitted: null
+    derivatives_permitted: null
+    status: reference_only
+    verification_method: primary_source_fetch
+    verification_confidence: unable_to_verify
+    verification_notes: >
+      Pass 1 could locate no work under this title and recommended treating the proposal's claim
+      as possibly fabricated. Pass 2 (2026-08-30) refines rather than overturns that. A real
+      interactive-fiction work titled "The Tailgator" does exist: a Twine game by NegativeSector
+      on itch.io (https://negativesector.itch.io/the-tailgator), about an encounter with an
+      aggressive driver. Direct read of that page shows NO licence or public-domain statement and
+      NO ratings or review counts. It is therefore not the work the proposal described (an IFDB
+      listing, public domain, "5 ratings and 1 written review"), and it supplies no rights basis
+      of its own. The proposal's claim remains unconfirmed. Do not add to any corpus, structural
+      or reference, until an IFDB entry matching the described work is actually located.
+
+  - id: cavern-of-the-morlocks
+    title: "The Cavern of the Morlocks / La caverne des Morlocks"
+    author: "François Coulon"
+    publication_year: 1985
+    source_url: "https://ifdb.org/viewgame?id=yern8xmey2e5dcwj"
+    download_url: null
+    jurisdiction: "France (original 1985 magazine type-in, L'Ordinateur Individuel issue 77; written for the Matra-Hachette Alice). An English TRS-80 MC-10 port also exists"
+    license_claimed: "IFDB's community-entered License field reads 'Public Domain'. No statement by the author was located, and none is asserted here"
+    covers: []
+    commercial_use_permitted: false
+    derivatives_permitted: false
+    status: reference_only
+    verification_method: primary_source_fetch
+    verification_confidence: high
+    verification_notes: >
+      DOWNGRADED 2026-08-30 from yellow. Pass 1 kept it at yellow on the reasoning that 1980s
+      French magazine type-in listings were printed for readers to copy freely, which is a custom,
+      not a grant. Two things make reference_only the right resting place rather than a holding
+      position. First, an IFDB License field is community metadata entered by any member; direct
+      read of the page confirms there is no author statement anywhere on it, only the field.
+      Second, French authors' droit moral is perpetual, inalienable, and unwaivable under the Code
+      de la propriete intellectuelle, so there is no clean public-domain-dedication route
+      available to a living French author in the first place: even a sincere dedication by Coulon
+      would not extinguish the moral rights that a derivative use has to respect. That is a
+      structural bar, not a missing document, so waiting for an author statement would not resolve
+      it. Direct read also confirms pass 1's numeric correction: the page shows 2 ratings (both
+      four-star) and 1 member review, against the external proposal's claimed "3 ratings and 1
+      detailed review". Study and label freely; do not ingest.
+
+  - id: lost-pig
+    title: "Lost Pig"
+    author: "Admiral Jota (the licence statement names 'Admiral Jota and Grunk'; real identity not publicly disclosed in sources found)"
+    publication_year: 2007
+    source_url: "https://grunk.org/lostpig/index.html"
+    download_url: "https://ifdb.org/viewgame?id=mohwfk47yjzii14w"
+    jurisdiction: "Unconfirmed; the author's own site is the licence source"
+    license_claimed: "CC BY-NC-ND 3.0 Unported"
+    covers: [text]
+    commercial_use_permitted: false
+    derivatives_permitted: false
+    status: red
+    verification_method: primary_source_fetch
+    verification_confidence: high
+    verification_notes: >
+      CONFIRMED 2026-08-30 by direct read of grunk.org/lostpig, which carries the licence
+      statement verbatim: "Lost Pig by Admiral Jota and Grunk is licensed under a Creative Commons
+      Attribution-NonCommercial-NoDerivs 3.0 Unported License". Confidence rises from medium to
+      high; this is the only entry in the file resting on the rights holder's own words. Note the
+      licence names two parties, so a permission request has to reach whatever "Grunk" denotes as
+      well. NonCommercial and NoDerivs both block this project's use outright without explicit
+      written permission (a corpus-inclusion use would likely be characterised as reproduction,
+      adaptation, or both). Award evidence also confirmed on the same page: first place in the
+      thirteenth annual IF Competition out of 27 entries, and four XYZZY Award wins for 2007 (Best
+      Game, Best Writing, Best Individual NPC, Best Individual PC) out of eight nominations. Pass
+      1's IFDB rating count (~523-526) was not re-checked and stays websearch-derived. This is the
+      strongest permission-request candidate checked, precisely because the review evidence is
+      solid and the blocker is a single missing permission rather than an absence of quality.
