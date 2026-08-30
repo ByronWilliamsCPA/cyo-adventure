@@ -3382,8 +3382,11 @@ are included because they are the evidence base each lesson cites.</p>
 proposed change and a status that tracks whether it landed.</p>
 <h2 id="how-to-use-this-log">How to use this log<a class="headerlink" href="#how-to-use-this-log" title="Permanent link">&para;</a></h2>
 <p><strong>When to append.</strong> At the end of any authoring run: a new story or series book, a skeleton
-promotion, a fill pass, or a validator/gate change made in service of authoring. If the run
-produced no lesson, append nothing; an empty run is a real outcome.</p>
+promotion, a fill pass, or a validator/gate change made in service of authoring. A docs-only
+research or review PR is itself such a run whenever it reports a fill pass, a gate or validator
+change, or a rater-instrument change, because the absence of a code diff is what makes the run
+easy to miss, not a reason it is exempt. If the run produced no lesson, append nothing; an empty
+run is a real outcome.</p>
 <p><strong>What counts as a lesson.</strong> Something a future author or a future tooling change should act on.
 Three tests, any one of which qualifies it:</p>
 <ol>
@@ -10576,6 +10579,376 @@ written, which is the error the row exists to correct.</p>
 <td>applied</td>
 <td>commit <code>0d047e2f</code></td>
 </tr>
+<tr>
+<td>AL-712</td>
+<td>2026-08-30</td>
+<td>Landing <code>claude/stoic-maxwell-60szsf</code></td>
+<td>tooling</td>
+<td>A review branch that copies its own subject document into itself ships a pre-correction snapshot, and merging that copy reverts the corrections the review itself caused. This branch's <code>3da7fc87</code> copied the 2026-08-22 brief; <code>main</code>'s copy has since taken 181 lines of correction (<code>git diff --numstat origin/claude/stoic-maxwell-60szsf origin/main</code> on that file, re-derived 2026-08-30), including the R-1 fix ("DeepSeek V4 Pro emerged as the best judged prose" corrected to fifth of eight at -0.13 z) that this very branch's R-1 finding produced. Taking the branch copy would have restored the sentence the branch exists to refute.</td>
+<td>On any review branch, never commit a copy of the document under review; link to it at a pinned ref instead. When landing an abandoned review branch, enumerate commits that add a copy of a companion (<code>git show --stat &lt;sha&gt;</code>) and drop them wholesale rather than resolving their conflicts.</td>
+<td>open</td>
+<td>Cited by <code>UW-C439</code>.</td>
+</tr>
+<tr>
+<td>AL-713</td>
+<td>2026-08-30</td>
+<td>Landing <code>claude/stoic-maxwell-60szsf</code></td>
+<td>tooling</td>
+<td>A residual-overlap percentage hides WHICH lines overlap. The landing pass scored "24.6% of added lines already present on main", which reads as diffuse staleness worth discounting. It was not diffuse: 842 of 3,376 lines (24.9%) were exactly the two copied companion files, and the other 2,534 lines were 100% novel. The single number pointed at the opposite conclusion from the file-level breakdown. The two figures are the landing run's own measurement and are recorded here as reported, not re-derived.</td>
+<td>Never act on a residual-overlap score without a per-file breakdown. A residual that concentrates in a few files is a different finding from one that spreads, and only the breakdown distinguishes them. Report residual as a file list, not a percentage.</td>
+<td>open</td>
+<td>Cited by <code>UW-C439</code>.</td>
+</tr>
+<tr>
+<td>AL-714</td>
+<td>2026-08-30</td>
+<td>Landing <code>claude/stoic-maxwell-60szsf</code></td>
+<td>tooling</td>
+<td>A stale finding is not a deletable finding when a register cites it by id. <code>main</code>'s <code>UW-G24</code> and <code>UW-G25</code> cite <code>R-1</code> through <code>R-14</code> by name while holding no evidence for them, so deleting a superseded <code>R-*</code> would have left a dangling citation rather than tidying one. R-3 and R-2's directive premise were both overtaken between 2026-08-22 and the landing.</td>
+<td>Date superseding notes onto the finding in place; never delete a finding that a register, plan, or ADR cites by id. State what changed, name the commit and PR that changed it, and say explicitly which half of the finding still stands.</td>
+<td>open</td>
+<td>Cited by <code>UW-C439</code>.</td>
+</tr>
+<tr>
+<td>AL-715</td>
+<td>2026-08-30</td>
+<td>Landing <code>claude/stoic-maxwell-60szsf</code></td>
+<td>tooling</td>
+<td>A narrated plan attributes a fix to the PR the narrative is about, not to the commit that made it. The prior review credited R-3's fill-rate wiring to PR #743. Re-derived 2026-08-30: <code>git log -S'_with_fill_rate' --all -- src/ scripts/</code> returns three commits, the earliest of which, <code>41d30909</code> (PR #737), is the one that added <code>orchestrator._with_fill_rate</code>; PR #743 (<code>9ea50b40</code>) is not among them at all. Attribution taken from a plan's prose was off by one PR. Note the search is only sound when scoped to code: unscoped it also returns documents that merely name the symbol in prose.</td>
+<td>Establish "which change introduced this symbol" with <code>git log -S'&lt;symbol&gt;' -- &lt;code paths&gt;</code> and take the EARLIEST commit, then map that commit to its PR. Treat a planning document's PR attribution as a claim to verify, not a source.</td>
+<td>open</td>
+<td>Cited by <code>UW-C439</code>.</td>
+</tr>
+<tr>
+<td>AL-716</td>
+<td>2026-08-30</td>
+<td>Landing <code>claude/stoic-maxwell-60szsf</code></td>
+<td>tooling</td>
+<td><code>markdownlint</code> is an inert gate for <code>docs/planning/evidence/</code>. It is configured at the <code>pre-push</code> stage only (<code>.pre-commit-config.yaml:543</code>), no <code>pre-push</code> hook is installed (<code>.git/hooks/</code> holds <code>pre-commit</code> alone), and no workflow references it. A 25-file sample of existing evidence documents on <code>main</code> produces the same violation classes as the newly landed reports (<code>MD029</code>, <code>MD032</code>, <code>MD036</code>, <code>MD025</code>, plus <code>MD026</code> and <code>MD060</code> unique to the pre-existing files), so the debt is tree-wide, not introduced by any one landing.</td>
+<td>Decide the intent: either install the <code>pre-push</code> hook and clear the existing evidence-tree debt, or move <code>markdownlint</code> to <code>pre-commit</code> with <code>docs/planning/evidence/</code> excluded and say in the config that preserved agent reports are exempt by provenance. The current state is the worst of both: a rule that is configured, universally violated, and never enforced.</td>
+<td>open</td>
+<td>Cited by <code>UW-C438</code>.</td>
+</tr>
+<tr>
+<td>AL-717</td>
+<td>2026-08-20</td>
+<td>Router comparison: three legs on <code>the-tin-whistle-map</code></td>
+<td>validator</td>
+<td><strong>The per-node word shortfall is a property of the PROMPT, not of the model, so model selection cannot fix it.</strong> Claude Sonnet 5 (pinned <code>amazon-bedrock/global</code>) delivered 40.9 and 45.2 percent of commissioned words, a mean of 43.1, on the same skeleton and the same two briefs where DeepSeek v4 Pro delivered 65.2 and 42.9, a mean of 54.0. Two independent frontier models from different labs, 9.4 times the cost and 3.7 times the latency apart, both fall far short of what the <code>words=</code> directives asked for; the better of the two still misses by 46 percent. Sonnet was also WORSE on reading-level conformance for the band (60.1 to 64.2 percent of nodes in band against DeepSeek's 75.1 to 77.2). The five-fill run could not see this because it ran one model on one endpoint, and the natural reading of its results was that DeepSeek was the weak link.</td>
+<td><code>UW-C307</code>'s fill-rate check remains right as a DETECTOR, but the remedy is the prompt, and vendor rotation should be struck from the option list before anyone spends on it. Concretely: the fill prompt states a per-node <code>words=</code> target and nothing in it makes the target consequential, so the next experiment is a prompt variant that does (per-node word count echoed back, or a subset fill with fewer nodes per call so each target gets attention), measured with the delivery ratio this row reports.</td>
+<td>open</td>
+<td>Cited by <code>UW-C440</code>; <code>docs/planning/deepseek-v4-pro-live-fill-plan-2026-08-20.md</code> section 5.3</td>
+</tr>
+<tr>
+<td>AL-718</td>
+<td>2026-08-20</td>
+<td>Router comparison: Sonnet 5 sibling pair</td>
+<td>authoring-craft</td>
+<td><strong>Same-skeleton sibling convergence is WORSE on the stronger model, so <code>AL-498</code> is not a vendor defect and vendor rotation does not address it.</strong> Sonnet 5's two fills of one skeleton from unrelated briefs scored 326.3 shared four-grams per 1000 leaf words against a 4.0 budget: 3,800 shared grams and 466 shared menu frames, against DeepSeek's 1,350 and 274 on the identical skeleton and briefs. That is 3.4 times DeepSeek's convergence and 81 times budget. The better model converges harder, plausibly because it follows the frozen beats more faithfully, which is the same behaviour that makes it a better instruction-follower. Note the comparison is a hand synthesis across two <code>report.json</code> files: <code>compare_vendors.py</code> emitted only the <code>within_vendor</code> cell for Sonnet, and this run's own <code>verdict</code> field reads "not measured: need both within-vendor and cross-vendor pairs".</td>
+<td>Stop treating skeleton reuse as safe with a diversity guard bolted on afterwards, and stop considering vendor rotation as the lever for it (<code>compare_vendors.py</code>'s founding question is answered in the negative for this axis). Measure the <code>differentiation_directive</code> first per <code>AL-498</code>; if its delta is small, the remaining levers are structural (per-family skeleton mutation via <code>mutation/</code>, or a cap on how many families share one skeleton), not prompt-side.</td>
+<td>open</td>
+<td>Cited by <code>UW-C441</code>.</td>
+</tr>
+<tr>
+<td>AL-719</td>
+<td>2026-08-30</td>
+<td>Landing <code>claude/cyo-brief-analysis-jys942</code></td>
+<td>process</td>
+<td>A review that criticises uncommitted harnesses can itself run on uncommitted harnesses. Fourteen of the twenty-four reports in the brief-gap evidence set state figures computed by harnesses that were never committed, and cite paths under <code>/home/user/</code> and <code>/tmp/claude-0/</code> that do not exist in the repository. That set's own <code>B3-evidence-methodology.md</code> criticises exactly this practice. The review reproduced the failure mode it was reviewing, and nothing in the pipeline caught it, because prose evidence has no equivalent of a build.</td>
+<td>A landing gate for evidence directories: a report that states a computed figure must either commit the harness that produced it under <code>docs/planning/evidence/&lt;set&gt;/scripts/</code>, or carry an explicit unreproducible marker. Related to <code>AL-510</code> and <code>UW-C317</code>, which record the same shape for pre-registered validations.</td>
+<td>open</td>
+<td>Cited by <code>UW-C445</code> and <code>UW-C446</code>.</td>
+</tr>
+<tr>
+<td>AL-720</td>
+<td>2026-08-30</td>
+<td>Landing <code>claude/cyo-brief-analysis-jys942</code></td>
+<td>process</td>
+<td>A citation to a sibling ledger can be silently wrong across a rebase. <code>51895145</code> (PR #736) inserted one row into the authoring lessons log, so every <code>AL-509</code> through <code>AL-513</code> citation written against the pre-merge branch pointed one row too low once the branch was rebased. Roughly 86 citations across 15 files were affected. Nothing detects this: <code>UW-K21</code> records that no check verifies an <code>AL-*</code> citation resolves to the lesson it describes, so all of them would have merged green. The branch was also internally inconsistent, because different sub-agents wrote against different numberings, so a blind textual substitution would have introduced new errors while fixing old ones. The only reliable method was to read what each citation's surrounding prose claims the lesson says and match it to the row that actually says that.</td>
+<td>Close <code>UW-K21</code> with a checker that resolves each <code>AL-*</code> citation and compares the cited row's summary text against the citing sentence, or at minimum warns when a document adds citations to <code>AL-*</code> ids that postdate its own branch point. Renumbering is mechanical; verifying is not, and only the verification catches the inconsistent-source case.</td>
+<td>open</td>
+<td>Cited by <code>UW-C336</code>.</td>
+</tr>
+<tr>
+<td>AL-721</td>
+<td>2026-08-30</td>
+<td>Landing <code>claude/cyo-brief-analysis-jys942</code></td>
+<td>process</td>
+<td>Landing an abandoned analysis branch is a correction exercise, not a merge. The branch was 35 files and 19,141 lines written against a tree that had moved 45 commits. Almost none of it conflicted textually, and one file (the research brief) would have silently reverted 179 lines of corrections from four later PRs if taken (<code>git diff --numstat origin/claude/cyo-brief-analysis-jys942 origin/main</code> on that file, re-derived 2026-08-30). The rest was worse: it merged cleanly while asserting things that were no longer true, including one standing correction (<code>V7-fill-stage.md</code>) that had inverted, because <code>3ad864a3</code> made the production fill model the exact model the correction said the figures were wrongly derived from.</td>
+<td>For any branch older than about two weeks that lands documents making current-state claims, require a dated supersession notice on each top-level document, verified against <code>main</code> at landing time, before the PR is opened. A clean merge is not evidence that a document is still true, and the more evidence-heavy the document, the less it is.</td>
+<td>open</td>
+<td>Cited by <code>UW-C439</code>.</td>
+</tr>
+<tr>
+<td>AL-722</td>
+<td>2026-08-30</td>
+<td>Abandoned-branch salvage sweep over <code>claude/deepseek-v4-provider-options-wd2mwy</code>, verified against main</td>
+<td>tooling</td>
+<td><strong>A request field validated by a live smoke test and written up only in that test's handoff acquires no owner, and stays unsent.</strong> <code>handoff-modal-deepseek-v4-smoke-test-2026-08-20.md</code> (<code>f41f334f</code>, PR #734) records three OpenRouter calls carrying <code>"provider": {"zdr": true, "quantizations": ["fp8"]}</code> returning 200 and concludes the run "validates the fields proposed for <code>OpenRouterProvider</code>". Ten days later <code>generation/providers/openrouter.py</code> still sends only <code>order</code> and <code>allow_fallbacks</code>. The handoff's other five findings all reached the register (<code>UW-F44</code>, <code>UW-M09</code> to <code>UW-M12</code>) because each was a defect or an action; the one finding that was a <em>success</em> was the one that fell out, since a validated field reads as concluded work rather than as work to schedule. It is also grep-resistant: <code>scripts/judge_books.py</code> carries the endpoint slug <code>xai/zdr</code> inside a provider <code>order</code> tuple, so searching for <code>zdr</code> returns a hit that has nothing to do with the boolean field, and a coverage check by grep reports the gap as closed.</td>
+<td>A smoke test that validates a request parameter must land its register row in the same PR as its handoff, on the same rule that already governs defects found by that test. Generally: when a run's output is a mix of defects and confirmations, enumerate the confirmations explicitly before closing it, because only the defects route themselves. Separately, never accept a bare token grep as evidence that a structured request field is present; grep for the field in the position it occupies (<code>"zdr":</code> as an object key), since the same token is a legal value elsewhere.</td>
+<td>open</td>
+<td>Cited by <code>UW-C448</code>.</td>
+</tr>
+<tr>
+<td>AL-723</td>
+<td>2026-08-30</td>
+<td>Main-tree verification pass, 2026-08-30</td>
+<td>process</td>
+<td><strong>A register row's status and its present-tense claims are both unchecked assertions about the tree, and main carries a live example of each pointing opposite ways.</strong> <code>UW-C290</code> was marked <code>done</code> with "verified against the tree 2026-08-18" and names, among its four REMOVE items, "SAFE-14's entry in the live application order while <code>validator/safety.py</code> is a stub". <code>validator/gate.py:269</code> still calls <code>check_safety(story)</code> and <code>validator/safety.py</code> is still 57 lines whose body is <code>_ = story</code> then <code>return ValidationReport()</code>, so the row claimed delivery of a removal that never happened. <code>UW-C264</code>, still open, states in the present tense that <code>validator/imitable.py</code> "routes 13 of 167 young-band endings to human attention"; the module's only importer in the entire tree is <code>tests/unit/test_imitable.py</code>, so it routes nothing. This is <code>UW-C338</code>/<code>AL-586</code> a third time: that row already records a stale NEGATIVE (<code>UW-G19</code> asserting columns absent that a migration had added) and proposes a guard for it, but the guard as proposed catches neither of these, because both are stale POSITIVES. A row that is right about the defect and wrong about the remedy's status is the expensive case: the <code>done</code> one stops anyone looking, and the present-tense one makes an unwired module read as a shipped control.</td>
+<td>Widen the <code>UW-C338</code> guard in both directions rather than only the one it was scoped for: flag an open row asserting a named symbol, file or flag does NOT exist when a grep finds it (the <code>AL-586</code> case), and flag a row marked <code>done</code> or written in the present tense that asserts a named call site was removed or a named module is invoked, when the call site is still present or the module has no importer outside its own test. Both halves are the same query over the same three inputs (the row's named symbol, <code>src/</code>, and the importer set), which is why one check should carry both. Independently: a <code>done</code> row asserting a REMOVAL is the shape most worth checking, because unlike an addition nothing else in the tree will notice its absence.</td>
+<td>open</td>
+<td>Cited by <code>UW-C449</code>.</td>
+</tr>
+<tr>
+<td>AL-724</td>
+<td>2026-08-30</td>
+<td>Main-tree verification pass, 2026-08-30</td>
+<td>tooling</td>
+<td><strong>A concurrency fix applied at one of two call sites left a <code>#CRITICAL</code> note asserting there is only one, so the note now certifies the gap it was written to close.</strong> <code>generation/queue.py</code>'s <code>#CRITICAL: concurrency</code> block explains that passing <code>job_id</code> alone does not make an enqueue idempotent, that <code>unique=True</code> rides on <code>rq_job_id</code>, and that "Both the normal per-request enqueue (<code>api/generation.py::_enqueue_safely</code>) and the reclaim sweep now pass <code>rq_job_id=row_id</code>", closing with "A caller that passes <code>rq_job_id=None</code> (none in production today) opts out". There are two normal per-request enqueues: <code>api/generation.py:181</code> passes it, <code>api/story_requests.py:107</code> does not. <code>story_requests.py</code>'s own <code>_enqueue_safely</code> docstring says it "Mirrors api/generation.py::_enqueue_safely", which is what made the divergence read as a duplicate rather than as a second site needing the same argument. The <code>#VERIFY</code> clause names <code>test_enqueue_safely_uses_row_id_as_rq_job_id</code>, a test whose subject is the one call site that was fixed, so the citation is satisfied by the half that already works.</td>
+<td>When a fix's correctness depends on every caller passing an argument, the <code>#VERIFY</code> must be a test over the CALLER SET, not over one caller: enumerate call sites of the function and assert each supplies the argument, so a new or missed site fails. Generally: a RAD note that enumerates call sites ("both", "none in production") is asserting a fact about the whole tree from inside one file, and that class of assertion needs a test that actually walks the tree, or it should be written as a rule rather than a census.</td>
+<td>open</td>
+<td>Cited by <code>UW-C451</code>.</td>
+</tr>
+<tr>
+<td>AL-725</td>
+<td>2026-08-30</td>
+<td>Main-tree verification pass, 2026-08-30</td>
+<td>process</td>
+<td><strong>A document's stated methodological discipline and its own headline finding can contradict each other and survive a dedicated correction pass, because a correction pass checks facts against the world and this defect is internal.</strong> <code>cyo-generation-research-brief-2026-08-22.md</code> states at F6 that blinded raters are "used to confirm, never to produce, rankings", and at F4 produces an eight-way supplier ranking with z-scores whose only source is the blind panel ("fifth of eight at -0.13 z, behind" four named models), repeating it at line 284. There is no deterministic instrument the panel is confirming; the panel is the instrument. PR #738 rewrote the brief specifically to fix its factual defects and did not touch this, which is the point: every claim in the pair is individually checkable and true, and the defect is only visible by reading two sections against each other. Compounding it, F6's own examples are the history of instruments that failed a known-answer test, so the rule it states is the lesson learned from those failures and F4 is the document breaking it in the same breath.</td>
+<td>Any document stating a rule about what an instrument may be used for must carry, for each headline that instrument produced, either the deterministic result it confirms or an explicit exception naming why. Concretely for this brief: either demote F4's ordering to "the panel did not separate the cheap leg from the top of the slate" without ranks, or name the deterministic measure the ordering confirms, or amend F6 to permit rater-produced rankings under stated conditions. Generally: a correction pass should include one read that checks the document against ITSELF, because external fact-checking cannot see an internal contradiction and neither can a reviewer reading linearly.</td>
+<td>open</td>
+<td>Cited by <code>UW-C452</code>.</td>
+</tr>
+<tr>
+<td>AL-726</td>
+<td>2026-08-30</td>
+<td>Main-tree verification pass, 2026-08-30</td>
+<td>tooling</td>
+<td><strong>Registering a checker in the guard battery was adopted as the remedy for "nothing invokes it", and the battery itself is invoked by nothing.</strong> <code>AL-305</code> ruled that "a checker that nothing invokes is not a gate, however complete it is" and made registration in <code>run_guard_battery.py</code> part of shipping a checker; <code>AL-293</code>, <code>AL-294</code>, <code>AL-566</code> and <code>AL-567</code> all then hardened the battery's honesty, its gating denominator, its unscorable-input verdict and its summary line, on the premise that a green battery must mean something. <code>run_guard_battery.py</code> appears in no workflow under <code>.github/</code>, no hook in <code>.pre-commit-config.yaml</code>, and no session in <code>noxfile.py</code>. <code>tests/unit/test_guard_gating.py</code> asserts what the battery registers and with which flags, which is why the gap is invisible: the tests that would fail if a guard were deregistered all pass, and none of them asserts that anything runs the battery. Four guards and a whole-book reading-level gate are correctly registered as <code>gating=True</code> inside a harness a human must remember to type. Main's own brief already states this at line 238 ("a hand-run dev harness that no CI"), so the fact is recorded; what is missing is anyone owning it.</td>
+<td>Give the battery an invoker and make the invoker the thing the test asserts. Concretely: a nox session plus a CI job that runs it over the committed fill corpus, and a test in <code>test_guard_gating.py</code> that asserts the battery is named by a workflow or a nox session, so deleting the runner fails the same suite that today only checks registrations. Generally: when a lesson's remedy is "register it with X", the next question is what runs X, and the chain terminates only at a workflow, a hook, or a call site in <code>src/</code>. Record the terminator in the lesson, not the intermediate.</td>
+<td>open</td>
+<td>Cited by <code>UW-C453</code>.</td>
+</tr>
+<tr>
+<td>AL-727</td>
+<td>2026-08-30</td>
+<td>Main-tree verification pass, 2026-08-30</td>
+<td>validator</td>
+<td><strong>A skeleton repair silently orphaned the fills built from it, because a fill carries its skeleton's <code>id</code> and <code>version</code> and neither moves when the graph does.</strong> The CG-2 hub-chain repair of <code>AL-446</code> restructured <code>the-night-market</code> (adding <code>n_hub2</code>, <code>n_hub3</code>) and <code>the-tide-pool-rescue</code> (adding <code>t_cr_pw</code>, <code>t_fi_cr</code>, <code>t_st_fi</code>) in <code>cc3d5f74</code> / PR #730; the committed fills in <code>out/</code> were last written four days earlier by PR #719 and still carry the pre-repair graphs, including nodes the skeletons no longer have (<code>n_promise</code>, <code>n_further</code>). Both drifted pairs share <code>id</code> and <code>version</code> with their skeleton, and each fill is internally valid on its own (no dangling targets, no unreachable nodes), so every check that reads a fill alone passes and no check reads the pair. 2 of 31 committed fills drift (swept 2026-08-30), and both are the exact two books <code>AL-446</code> records repairing, so the lesson that named the repair is the same lesson that would have predicted the orphaning. The cost is not a broken artifact: it is that the fill corpus is the measurement basis for the corpus-wide statistics several open rows quote, including <code>check_corpus_convergence.py</code>'s 465-pair sweep and <code>UW-C264</code>'s "13 of 167 young-band endings", so a stale fill biases figures nobody would think to re-derive.</td>
+<td>Make a skeleton's structural identity something a fill can be checked against, and check it: bump <code>version</code> on any node-set change and have the fill loader compare node sets against the skeleton it names, failing on a mismatch rather than reading the fill alone. Cheaper interim, if versioning is deferred: add the node-set comparison to the guard battery over <code>out/</code> and re-fill or delete the two drifted books. Generally: any repair that changes a graph must enumerate the artifacts derived from it in the same change, and a derived artifact that carries the source's identifier without carrying its shape cannot report that it has gone stale.</td>
+<td>open</td>
+<td>Cited by <code>UW-C454</code>.</td>
+</tr>
+<tr>
+<td>AL-728</td>
+<td>2026-08-30</td>
+<td>Main-tree verification pass, 2026-08-30</td>
+<td>process</td>
+<td><strong>A one-line default change swapped the counterparty a privacy conclusion was reasoning about, inside the section whose open action is to confirm counterparties.</strong> <code>privacy-model.md</code>'s review-provider paragraph concludes the LLM review leg "rides the same guardrailed route as generation", and the premise it offers is that <code>review_openrouter_model</code> "defaults to an Anthropic model (<code>core/config.py:562</code>)". <code>3ad864a3</code> (PR #747) moved that default to <code>deepseek/deepseek-v4-flash</code>; the setting is now at <code>core/config.py:607</code>. <code>AL-588</code> already recorded that this same edit retired the Stage-1 batch-size evidence, so the config-side consequence was caught and the privacy-side one was not, which is the asymmetry worth recording: a leg default is simultaneously a performance parameter, a cost parameter and a data-processor selection, and only the first two have owners who notice. The paragraph is not a typo: its conclusion is a posture claim, its <strong>Status</strong> is OPEN as ADR-018 Blocker 1, and its <strong>Required action</strong> is to record "provider, route, contract reference or API tier, effective date" for exactly this leg. Worse, <code>UW-C346</code> records the D1 lane rule as forbidding kid- or guardian-triggered work from routing through the owner's Anthropic subscription on terms grounds, so the premise was a configuration D1 ruled out, not merely one that later moved.</td>
+<td>Bind the privacy model to the config the way <code>AL-588</code> proposes binding the batch size: any setting that names an external processor must be enumerated in one place that <code>privacy-model.md</code> cites, so changing a processor default fails a test naming the privacy row rather than leaving a sentence to rot. Immediately: rewrite the paragraph to name DeepSeek V4 Flash via OpenRouter as the review counterparty, re-derive whether the "same guardrailed route" conclusion survives with a different processor, and treat the change as a new entry in the open Blocker 1 confirmation rather than as a citation fix. Generally: when a document's conclusion rests on a code default, cite the setting name and not the line number, and re-verify the VALUE at every review, because a stale line number is visible and a stale value is not.</td>
+<td>open</td>
+<td>Cited by <code>UW-C455</code>.</td>
+</tr>
+<tr>
+<td>AL-729</td>
+<td>2026-08-30</td>
+<td>PR #789 (<code>docs/land-deepseek-v4-pro-vendor-comparison</code>)</td>
+<td>tooling</td>
+<td>Landing a run directory under an evidence root is a silent write to every model that globs that root. <code>FILL_EVIDENCE_ROOT</code> (<code>scripts/unit_cost_model.py:55</code>) was globbed by three call sites that filtered on <code>mock</code> alone, so committing a comparator run repriced the product from another vendor's books, and the only signal was three unrelated-looking test failures.</td>
+<td>Every evidence root gets one scanner function that owns its filters (PR #789 gives the fill side <code>_scan_fill_reports</code>, mirroring the record side's <code>_scan_records</code>), and a run directory that is not delivery evidence is named in an exclusion frozenset at the same time it is committed, not after CI reports it.</td>
+<td>open</td>
+<td>Cited by <code>UW-C456</code>; <code>scripts/unit_cost_model.py</code></td>
+</tr>
+<tr>
+<td>AL-730</td>
+<td>2026-08-30</td>
+<td>PR #789 (<code>docs/land-deepseek-v4-pro-vendor-comparison</code>)</td>
+<td>tooling</td>
+<td>Two aggregates over one population reconciled only by coincidence. <code>fill_costs</code> was leg-keyed and <code>fill_by_band</code> was not; they agreed only while exactly one leg had fill evidence, and the reconciliation test that guards them read as a real invariant the whole time.</td>
+<td>When two published aggregates are asserted to reconcile, scope both to the same population explicitly, and add a fixture test with a second population member so the scoping is exercised rather than merely true today.</td>
+<td>open</td>
+<td>Cited by <code>UW-C456</code>; <code>tests/unit/test_unit_cost_model.py::test_the_band_table_counts_only_the_ruled_fill_leg</code> (lands with PR #789)</td>
+</tr>
+<tr>
+<td>AL-731</td>
+<td>2026-08-30</td>
+<td>PR #789 (<code>docs/land-deepseek-v4-pro-vendor-comparison</code>)</td>
+<td>tooling</td>
+<td>A comparator run is committed evidence and still not pricing evidence, and nothing in the record distinguishes the two: <code>mock</code> is false, the costs are real, the books validate. The distinction lives only in what the run was for.</td>
+<td>An evidence run directory carries its purpose in-tree (a README line or a <code>purpose</code> field in <code>report.json</code>) so a consumer can filter on the run's intent rather than on a hand-maintained name list that drifts.</td>
+<td>open</td>
+<td>Cited by <code>UW-C456</code>; <code>docs/planning/vendor-comparison/runs/</code></td>
+</tr>
+<tr>
+<td>AL-732</td>
+<td>2026-08-30</td>
+<td>Round-2 validation of the 2026-08-22 brief gap analysis (<code>V12-redteam.md</code>)</td>
+<td>process</td>
+<td><strong>A convergence figure was quoted from a tool whose scope the register already records as defective, and every reader downstream reproduced it instead of checking what the tool measures.</strong> The gap analysis's flagship finding, "the number is 3.2, not 2.3", is substantially an artifact of <code>scripts/check_sibling_fills.py</code> gramming a joined body-plus-label string, which <code>AL-309</code> and <code>UW-C225</code> already record with a fix and pre-established regression counts. Recomputed under the body-only scope the programme's own pre-registrations use, the D-7b pair is 2.55 shared four-grams per 1000, so the margin against the 3.3 idiom floor is about 0.75 rather than the collapsed 0.1 the synthesis reports. The synthesis states the mechanism correctly in one sentence and then reasons from the uncorrected number for the rest of the section. Reproducing a figure establishes that the tool is deterministic; it establishes nothing about whether the tool computes the quantity the publication names, and three reviewers plus the synthesis author each reproduced 3.2 without asking.</td>
+<td>Every convergence tool names its scope, body-only or label-inclusive, on each output line, and no rate is quoted without that label. <code>W3</code> of the remediation plan carries the change and the register's pre-established 48 / 34 / 37 / 9 counts are its regression test. Generally: when a computed figure disagrees with a published one, resolve the disagreement against the tool's scope before reasoning from either number.</td>
+<td>open</td>
+<td>Cited by <code>UW-C457</code>.</td>
+</tr>
+<tr>
+<td>AL-733</td>
+<td>2026-08-30</td>
+<td>Round-2 validation of the 2026-08-22 brief gap analysis (<code>V9-testing-register.md</code>)</td>
+<td>process</td>
+<td><strong>Three already-closed pre-registration rows were rewritten after the fact, and the register still reports the result as pre-registered.</strong> <code>bf7cad1</code> (PR #703, 2026-08-12) edited three <code>done</code> Falsifier cells in the diversity test register, and one edit flips <code>D-7b</code> from at the 3.3 floor to below it. That register's own section F requires voiding for exactly this, and no voiding happened; the method change is disclosed only in the commit body, and the published 2.3 needs two method changes of which one is disclosed. Nothing in the toolchain can see it, because the diversity register has no automated checks at all, so a closed row is plain text that any later commit may rewrite while the row keeps asserting it was registered in advance.</td>
+<td>Require section F voiding for any edit to a closed pre-registered row and enforce it rather than trusting memory: store a content hash of each closed row beside it so a later edit fails a checker, and extend <code>scripts/check_work_linkage.py</code> to cover the diversity register at all. <code>W9</code> of the remediation plan carries the enforcement; <code>UW-C447</code> carries the three rows that still need voiding.</td>
+<td>open</td>
+<td>Cited by <code>UW-C458</code>.</td>
+</tr>
+<tr>
+<td>AL-734</td>
+<td>2026-08-30</td>
+<td>Round-2 validation of the 2026-08-22 brief gap analysis (<code>V1-f5-d7b.md</code>)</td>
+<td>validator</td>
+<td><strong>A calibration floor was published with no matched-scale control, and building the control inverts the claim the floor supported.</strong> The 3.3 shared-idiom floor shipped without a null. The round-2 validation built one from 148 unrelated pairs at matched scale, giving mean 1.94, CI 1.25 to 2.64, and P(mean at or above 3.3) = 0.0008, which puts the published 3.3 at the 80<sup>th</sup> percentile of its own null and <code>D-7b</code>'s 2.33 at the 66<sup>th</sup>. A floor set near the top of the chance distribution reads as a demanding bar and is close to one. The control harness itself was never committed, so the percentile is a result to reproduce rather than a settled number, which is <code>AL-719</code>'s rule applied to this finding's own evidence.</td>
+<td>Every calibrated threshold ships with the control that gives it meaning, a null at matched scale plus a confidence interval, or is marked provisional in the document that quotes it; no published figure cites a floor without its interval. <code>W8</code> and <code>GA-D2</code> of the remediation plan carry the rebuild; <code>UW-C446</code> carries the floor itself.</td>
+<td>open</td>
+<td>Cited by <code>UW-C459</code>.</td>
+</tr>
+<tr>
+<td>AL-735</td>
+<td>2026-08-30</td>
+<td>Round-2 validation of the 2026-08-22 brief gap analysis (<code>V10-skeleton-internals.md</code>)</td>
+<td>validator</td>
+<td><strong>One random-walk floor is applied to two story forms and enforced for neither, and five catalog shells give a random-walking reader exactly zero probability of a satisfying ending.</strong> Measured across the 84 real graphs: five shells at exactly 0.0000, eight at or below 0.00005, and 11 selectable shells breaching the floor, all of them at 13-16 or 16+. The honest half of the finding is that 16+ is gamebook form, where a punishing win rate is a genre convention and the cell median is 0.0000 by design, so the defect is not that the floor is too low. Separately the instrument is unsound for enforcement as it stands: <code>satisfying_walk_probability</code> ignores choice conditions and can return a non-converged estimate without saying so.</td>
+<td>Make the walk floor form-aware, enforced for prose CYO with a written-down, lower, non-zero gamebook exemption; fix or declare the condition-blind estimator before any rule is enforced from it; and enforce it through the guard battery once that battery has an invoker (<code>AL-726</code>). Check cell depth before retiring any breaching shell: the three 13-16 shells at zero need repair or retirement and retiring them must not empty a cell.</td>
+<td>open</td>
+<td>Cited by <code>UW-C460</code>.</td>
+</tr>
+<tr>
+<td>AL-736</td>
+<td>2026-08-30</td>
+<td>Round-2 red team of the brief gap analysis itself (<code>V12-redteam.md</code>)</td>
+<td>process</td>
+<td><strong>A review pass run under a find-gaps instruction inflates its own severities and reports the programme's deliberate staging as defects.</strong> Red-teaming the review measured 65 percent of its 161 code-grounded findings at critical or high, a 63 percent criticality inflation rate on a 16-finding sample (10 downgraded, 3 by two notches), and 40 percent of finding titles framed as an absence ("no X", "nothing does Y", "never called", "unwired"). At least 24 findings, 15 percent of the total and 38 percent of the absence-framed set, restate something already registered, phased, owner-ruled or self-labelled in code. Two of the flagship "built but gates nothing" rows are unwired precisely because F6 forbids gating an instrument that has not survived a known-answer test, which is the discipline the same review's own section 5 demands, so the review penalised the programme for practising the rule the review was recommending. A severity scheme with two thirds of findings in the top two bands is not ranking anything.</td>
+<td>Every review pass pairs each finding with a refutation attempt and a register lookup before the finding is reported, and names the row it duplicates when it duplicates one. This is a practice rather than a deliverable, so it is recorded as recurring work. <code>AL-479</code> records the adjacent habit, that declaring something unestablished reads as rigour and can be its opposite; this row adds the measured framing bias and the register-lookup step.</td>
+<td>open</td>
+<td>Cited by <code>UW-C461</code>.</td>
+</tr>
+<tr>
+<td>AL-737</td>
+<td>2026-08-30</td>
+<td>Resolving the 2026-08-22 remediation plan's placeholder ids</td>
+<td>tooling</td>
+<td><strong>A planning document can carry unresolvable ledger citations while both ledger checkers report green, because neither checker reads anything outside the two ledger files.</strong> <code>cyo-brief-gap-remediation-plan-2026-08-22.md</code> shipped a proposal table holding <code>AL-a</code> through <code>AL-f</code> and <code>UW-x1</code> through <code>UW-x9</code>, fifteen ids that resolve to nothing. Run against that branch on 2026-08-30, <code>scripts/check_work_linkage.py</code> reported "satisfies the work-linkage contract" over 753 rows and <code>scripts/check_lessons_log.py</code> reported "well formed", because the linkage script's <code>_check_lessons_linkage</code> resolves <code>AL-*</code> tokens only inside cluster C of the register and nothing resolves <code>UW-*</code> tokens anywhere outside it. <code>UW-K21</code> already records the <code>AL-*</code> half of this; the <code>UW-*</code> half is not recorded anywhere, and a deferred placeholder is the shape most likely to exploit it, since the document that mints it says outright that the ids are provisional and then merges. Four of the fifteen also turned out to duplicate rows that already existed, so minting all fifteen would have produced four permanent near-duplicates on top of the dangling citations.</td>
+<td>Extend <code>UW-K21</code>'s proposed resolver to <code>UW-*</code> as well as <code>AL-*</code> over <code>docs/</code> and <code>src/</code>, erroring on a token that resolves to no row. Independently, and available before any checker exists: a document that defers ids must not spell them as ids. Write <code>TBD (lesson: convergence scope)</code> rather than <code>AL-a</code>, so the placeholder is not grep-compatible with the namespace and cannot merge looking like a citation. Before minting a deferred id, search the ledgers for the defect it describes rather than for its keywords; four of these fifteen were already covered.</td>
+<td>open</td>
+<td>Cited by <code>UW-C462</code>.</td>
+</tr>
+<tr>
+<td>AL-738</td>
+<td>2026-08-30</td>
+<td>Independent verification of the DeepSeek vendor comparison (PR #789)</td>
+<td>tooling</td>
+<td><strong>A price table keyed on (provider, model) silently bills every run at the provider's default-endpoint rate, even when the run pinned a different endpoint.</strong> <code>scripts/compare_vendors.py:1197</code> calls <code>price_for("openrouter", vendor.model)</code> with no endpoint argument, while the same run pins the endpoint through OpenRouter's <code>provider_order</code>. The two are independent, so a leg routed to Novita is costed at OpenRouter's default rate for that model id and the config's own <code>_price_per_mtok</code> is read by nothing. The reported per-book costs are therefore not the costs incurred, and the error is invisible in the artifact because a plausible number is still produced.</td>
+<td>Key the rate lookup on the endpoint actually pinned, not on the aggregator, and fail the run when a pinned endpoint has no card rather than falling back to a default. Assert in a test that <code>price_for</code> refuses a call that omits the endpoint while <code>provider_order</code> is set. Delete <code>_price_per_mtok</code> or wire it, since an unread config field reads as authoritative.</td>
+<td>open</td>
+<td>Cited by <code>UW-C463</code>.</td>
+</tr>
+<tr>
+<td>AL-739</td>
+<td>2026-08-30</td>
+<td>Independent verification of the DeepSeek vendor comparison (PR #789)</td>
+<td>tooling</td>
+<td><strong>A recorded cost computed with exact <code>Decimal</code> arithmetic is invertible, so a rate card can be falsified from the artifact alone with no provider access.</strong> <code>estimate_cost</code> does no rounding, so dividing a recorded cost by a candidate card recovers the input-token count as an exact integer under the true card and as a non-integer under a wrong one. Applied to five legs, each recovered an exact integer under exactly one card and under no other: Novita book0 (<code>cost=0.24179236</code>, <code>output_tokens=41038</code>) recovered 44302 under azure/us at 1.91/3.83 and a non-integer 85835.36 under its own declared Novita rate, which is what identified <code>AL-738</code>. Sonnet and GLM-5 legs inverted cleanly under their declared cards, so the technique has controls as well as hits.</td>
+<td>Make cost-card inversion a standing check on any run artifact that records both cost and token counts: a leg whose input-token count does not recover as an exact integer under its declared card has been billed at a different card. Add it to the vendor-comparison script as a self-check so the artifact reports its own inconsistency instead of waiting for a reviewer to notice.</td>
+<td>open</td>
+<td>Cited by <code>UW-C464</code>.</td>
+</tr>
+<tr>
+<td>AL-740</td>
+<td>2026-08-30</td>
+<td>Review of the IF corpus licensing dataset (PR #791)</td>
+<td>metadata</td>
+<td><strong>A caveat written as a YAML comment is invisible to every consumer of the file.</strong> <code>docs/planning/data/if-corpus-licensing.yaml</code> carried "this is not a legal clearance" in its <code>#</code> header block, which <code>yaml.safe_load</code> discards. Loading the file yielded five top-level keys, none of them recording the caveat, and a consumer filtering on <code>commercial_use_permitted is True</code> got a one-item allowlist with nothing in the parsed data marking it as unverified. The file was one naive comprehension away from being read as a clearance list.</td>
+<td>Any disclaimer that must survive machine reading is a field, not a comment. This file now carries <code>is_legal_clearance: false</code> and a <code>clearance_note</code> as real data, plus <code>status_definitions</code> and <code>verification_method_definitions</code> so every enum a consumer might branch on resolves inside the file. Apply the same rule to the other datasets under <code>docs/planning/data/</code>: if a caveat is load-bearing, it must appear in <code>yaml.safe_load</code> output.</td>
+<td>open</td>
+<td>Cited by <code>UW-C465</code>.</td>
+</tr>
+<tr>
+<td>AL-741</td>
+<td>2026-08-30</td>
+<td>Review of the IF corpus licensing dataset (PR #791)</td>
+<td>metadata</td>
+<td><strong>A field named for a permission held a claim, and the naming is what made the misreading available.</strong> <code>commercial_use_permitted: true</code> on <code>consider-the-consequences</code> was read off a Wikisource public-domain banner. A banner is an assertion by an uninvolved third party about copyright status; it grants nothing and it addresses neither commercial use nor derivatives. The field name asserted a permission the evidence never supported, and no reader of the field name alone would have known to check.</td>
+<td>Name a field for what the evidence is, not for the conclusion someone might draw from it: <code>commercial_use_claimed</code> and <code>derivatives_claimed</code>, both null where the source addresses neither. Sweep the remaining planning datasets for <code>*_permitted</code>, <code>*_allowed</code>, and <code>*_approved</code> fields whose value is derived rather than granted, and rename them.</td>
+<td>open</td>
+<td>Cited by <code>UW-C466</code>.</td>
+</tr>
+<tr>
+<td>AL-742</td>
+<td>2026-08-30</td>
+<td>Review of the IF corpus licensing dataset (PR #791)</td>
+<td>metadata</td>
+<td><strong>An absent <code>verification_method</code> is indistinguishable from an unverified row, so twenty checked rows read as unchecked.</strong> Twenty of the 35 source rows in <code>craft-benchmark-corpus.yaml</code> omitted the field entirely. They had in fact been checked, by search-snippet reading, which is the weakest method the file defines; omission made them look like a coverage gap while hiding that the covered rows rested on the weak method. The related trap is that a method field records that a check ran, never that it succeeded, so a populated field is not evidence of a verified row either.</td>
+<td>Require <code>verification_method</code> on every row, with an explicit <code>websearch_snippet</code> value rather than omission, and pair it with a confidence field so the method and its strength are separable. All 35 rows now carry one. A checker over <code>docs/planning/data/</code> that errors on a missing method field would make this mechanical.</td>
+<td>open</td>
+<td>Cited by <code>UW-C467</code>.</td>
+</tr>
+<tr>
+<td>AL-743</td>
+<td>2026-08-30</td>
+<td>Review of the IF corpus licensing dataset (PR #791)</td>
+<td>tooling</td>
+<td><strong><code>yamllint --strict</code> promotes a rule configured at <code>level: warning</code> to a failing exit, so a file clean under a bare <code>yamllint</code> run fails the hook.</strong> The two new datasets passed <code>yamllint</code> and failed the pre-commit invocation with 53 line-length findings, all of them configured as warnings. The bare run is the weaker oracle and it is the one a person reaches for by hand.</td>
+<td>Reach for the hook's own invocation, not the bare tool, when checking a file against a gate: <code>pre-commit run &lt;hook-id&gt; --files &lt;path&gt;</code>. This is the same shape as the isolated-<code>ruff</code> trap already recorded, so the general rule is worth stating once: a tool run outside its configured wrapper is a weaker oracle than the gate, and clean there proves nothing.</td>
+<td>open</td>
+<td>Cited by <code>UW-C468</code>.</td>
+</tr>
+<tr>
+<td>AL-744</td>
+<td>2026-08-30</td>
+<td>Review of the IF corpus licensing dataset (PR #791)</td>
+<td>tooling</td>
+<td><strong>markdownlint is declared <code>stages: [pre-push]</code>, the repo's pre-push git hook is not installed, and CI runs only <code>interrogate</code> tree-wide, so MD060 is enforced by nothing.</strong> Both new markdown files in PR #791 carried compact table separator rows (<code>\|---\|</code>) and passed every commit-stage hook. The first reading of this was that the rule would block the push; verifying it showed <code>.git/hooks/</code> holds <code>pre-commit</code> but only <code>pre-push.sample</code>, and <code>ci.yml:737</code> runs exactly one hook tree-wide (<code>interrogate</code>), so nothing between a local commit and a merge ever evaluates the rule. The register file already carries pre-existing MD060 debt on <code>main</code> (a separator row at line 1096, from a commit that is an ancestor of <code>origin/main</code>), which is the expected consequence: a rule no gate runs accumulates violations silently. A stage declaration reads as a gate whether or not the stage is wired.</td>
+<td>Decide the rule's status explicitly rather than leaving it declared-but-unrun: either move markdownlint to the commit stage and clear the pre-existing debt, or run <code>pre-commit run --hook-stage pre-push --all-files</code> in CI alongside <code>interrogate</code>, or delete the hook. Independently, treat a <code>stages:</code> declaration as unverified until the corresponding hook file exists in <code>git rev-parse --git-common-dir</code>/hooks; <code>.sample</code> is not installed. This is the third recurrence of hook-membership being mistaken for hook-coverage.</td>
+<td>open</td>
+<td>Cited by <code>UW-C469</code>.</td>
+</tr>
+<tr>
+<td>AL-745</td>
+<td>2026-08-30</td>
+<td>Completing the R-1..R-14 overtaken-findings sweep (PR #790)</td>
+<td>docs</td>
+<td><strong>A banner asserting a closed count of superseded findings goes stale silently and understates by a wide margin.</strong> The brief-review evidence set opened with "two findings have been overtaken", a claim with no mechanism keeping it true. Sweeping all fourteen findings found nine moved: R-1, R-6 and R-7 fully overtaken, R-5, R-11 and R-12 partly, and R-2, R-3 and R-9 already noted but never counted in the banner. The banner was off by seven. Worse, R-7's own replacement figure was itself wrong, quoting "4 to 10 per covered cell" where the census says 3 to 5, median 4, so a correction inherited the defect it was correcting.</td>
+<td>State supersession non-exhaustively in any banner ("findings noted below have been overtaken; the set is not closed") and carry the status per finding, where a reader lands, rather than in an aggregate at the top. Re-derive every figure in a correction from its source rather than carrying it across, since a correction is exactly where an unchecked number looks authoritative.</td>
+<td>open</td>
+<td>Cited by <code>UW-C470</code>.</td>
+</tr>
+<tr>
+<td>AL-746</td>
+<td>2026-08-30</td>
+<td>Concurrent doc agents in one shared worktree (PR #792)</td>
+<td>tooling</td>
+<td><strong>Two agents editing the same worktree lost work: one agent's <code>pre-commit</code> stash and pop silently discarded a peer's unstaged hunks in two files.</strong> <code>git fsck --no-progress --lost-found</code> recovered nothing, because unstaged content was never written as an object, so there was nothing for fsck to find. The loss is silent in both directions: the agent that ran the commit sees a normal successful commit, and the agent whose hunks vanished sees a clean tree it did not clean. This is the same shared-tree hazard already recorded for <code>git checkout --</code>, reached through a different command; the common factor is a peer mutating the index while another agent holds uncommitted work.</td>
+<td>Give concurrent agents separate worktrees whenever they may touch the same paths, which costs one <code>git worktree add</code> and removes the class. Where a shared tree is unavoidable, every agent must stage and commit at each checkpoint before any peer commits, since staged content is at least objectified and recoverable. Never rely on <code>git fsck</code> as the safety net for unstaged work; it cannot see it.</td>
+<td>open</td>
+<td>Cited by <code>UW-C471</code>.</td>
+</tr>
+<tr>
+<td>AL-747</td>
+<td>2026-08-30</td>
+<td>Retiring the stale hard-block claim across the brief-gap evidence set (PR #792)</td>
+<td>process</td>
+<td><strong>A symbol grep is an anti-oracle for a guard expressed as a predicate, and three independent evidence documents concluded "no guard exists anywhere in the stack" from one.</strong> <code>grep has_hard_block src/cyo_adventure/publishing/</code> returns zero on <code>main</code>, yet approve is guarded by four stacked checks, because the severe-finding test runs through <code>severe_finding_counts()</code> and raises <code>approve_requires_override_reason</code>. The absence of the symbol was read as the absence of the control. The conclusion survived two re-verifications, each of which repeated the same grep, so re-verification confirmed the method rather than the claim. Nine further passages inherited the finding by citation.</td>
+<td>A finding of the form "nothing guards X" must cite the enclosing function read end to end, naming the guard names or rules it does contain, never a symbol grep. Re-verification must re-derive by a different method than the original; repeating the original probe tests nothing. <code>AL-479</code> records the adjacent habit of absence-framing reading as rigour, and <code>AL-736</code> measured how often it is wrong; this row names the specific probe that produces it.</td>
+<td>open</td>
+<td>Cited by <code>UW-C472</code>.</td>
+</tr>
+<tr>
+<td>AL-748</td>
+<td>2026-08-30</td>
+<td>Retiring the stale hard-block claim across the brief-gap evidence set (PR #792)</td>
+<td>process</td>
+<td><strong>A <code>#CRITICAL</code> security comment asserts a false invariant about a different function, and its <code>#VERIFY</code> test cannot detect the staleness.</strong> <code>src/cyo_adventure/api/node_edit.py:793</code> states "approve() does not itself check has_hard_block either, it only requires SOME moderation_report to exist". False on <code>main</code> since the ADR-005 amendment of 2026-08-25: <code>publishing/service.py:474</code> refuses an approval over a block or high-severity finding without a recorded <code>override_reason</code>. The comment's <code>#VERIFY</code> citation, <code>test_node_edit.py::test_moderation_block_persists_not_rejects</code>, pins only the local mechanism (the write persists rather than rejects), which remains true, so the test passes and will keep passing regardless of what <code>approve()</code> does. A parenthetical about a remote function has no test that binds it. Two evidence documents cited this comment as their authority for calling the behaviour an accepted, annotated design.</td>
+<td>Correct the comment to name the four guards. Then adopt the general rule: a RAD marker may assert an invariant only about the code it annotates; a claim about another module must either move to that module or be dropped, because a <code>#VERIFY</code> test scoped to the local mechanism cannot fail when the remote claim goes stale. This is the third recorded instance of a <code>#CRITICAL</code> asserting something false; the recurring shape is the parenthetical aside, not the headline claim.</td>
+<td>open</td>
+<td>Cited by <code>UW-C473</code>.</td>
+</tr>
 </tbody>
 </table>
 <hr />
@@ -10615,7 +10988,7 @@ written, which is the error the row exists to correct.</p>
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="August 29, 2026 23:43:41 UTC">August 29, 2026</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="August 30, 2026 19:48:48 UTC">August 30, 2026</span>
   </span>
 
     
