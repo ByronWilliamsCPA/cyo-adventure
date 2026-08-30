@@ -21,7 +21,7 @@ disagree in places and supersede each other in others.
 | --- | --- | --- |
 | **This review** | 12 reviewers, then 12 adversarial validators told to refute before confirming | `claude/cyo-brief-analysis-jys942` |
 | **Parallel review** (`R-1`..`R-14`) | 13 agents in three groups, no second-pass validation | `claude/stoic-maxwell-60szsf`; now scheduled on `main` by [generation-review-workstream-plan-2026-08-22.md](./generation-review-workstream-plan-2026-08-22.md) |
-| **Live structural round** | Real spend, real fills, three owner rulings | `claude/cyo-live-story-generation-kxm0ya` (PR #737) |
+| **Live structural round** | Real spend, real fills, three owner rulings *(the 8.1-8.3 subset known when this table was written; #737 finally landed **eight**, see 8.3)* | `claude/cyo-live-story-generation-kxm0ya` (PR #737) |
 
 **Read this first.** The live round is empirical and postdates both reviews. Where it speaks, it
 wins. Several findings both reviews rated critical are now answered, and one is answered in the
@@ -245,8 +245,11 @@ of the parallel review.
 Five agents summarized every PR from 715 to 737 and tagged each against the analysis findings.
 Raw summaries in
 [evidence/brief-gap-analysis-2026-08-22/pr-sweep-715-737/](./evidence/brief-gap-analysis-2026-08-22/pr-sweep-715-737/).
-Two of the highest-impact PRs (**729** and **737**) are still **open**, so what they change is
-pending, not landed.
+~~Two of the highest-impact PRs (**729** and **737**) are still **open**, so what they change is
+pending, not landed.~~ *Corrected 2026-08-30: an as-of-2026-08-22 snapshot. Both are merged, #729 as
+`167c29da` and #737 as `41d30909`, so everything below that reads "open" or "pending" for those two
+has landed. The three "still open" statements in 8.2 are left as written because they were true of
+the tree this sweep read; re-verify each against `main` before planning from it.*
 
 ### 8.1 Findings superseded by merged work
 
@@ -262,9 +265,12 @@ pending, not landed.
   still passes only `--allow-mvp`. The enforcement half of the finding is untouched.
 - **Content-filter retried forever.** #731's own `AL-492` records a live incident: `content_filter`
   flattened to a generic transient failure and retried **7 of 7**, open and unfixed at HEAD.
-- **Provider cascade unpinned.** #729 (open) swaps Ollama for Modal but `build_provider()` still has
-  no `provider_order` parameter and `FallbackProvider` still has no `.model`. Retiring a leg changes
-  which model a silent degradation lands on, not that it happens.
+- **Provider cascade unpinned.** ~~#729 (open)~~ #729 (merged as `167c29da`) swaps Ollama for Modal
+  but `build_provider()` still has no `provider_order` parameter and `FallbackProvider` still has no
+  `.model`. Retiring a leg changes which model a silent degradation lands on, not that it happens.
+  *Status corrected 2026-08-30; the unpinned-cascade finding itself was not re-verified at that
+  date. Note also that `3ad864a3` (#747, 2026-08-24) went further than #729 and set the production
+  fill model to `deepseek/deepseek-v4-pro`.*
 - **Hard-block publish path.** Untouched by all 23 PRs. #718 changed only the *copy*, from "you
   approve" to "a reviewer approves", matching admin-only RBAC.
 - **Reading level.** #719 rebuilt the syllable counter against CMUdict ground truth (a real fix that

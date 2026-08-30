@@ -270,6 +270,37 @@ already dominated by two non-token line items.
 
 ### 2.3 Instantiation: large end (118,000 words, 677 nodes)
 
+> **Correction, 2026-08-30.** The `118,000 words, 677 nodes` pairing in this heading and in the
+> parameter line below it is not a measured book: it conflates two different shells. Per the
+> catalog census (`docs/planning/catalog-census.md`), the largest shell by node count is
+> `the-tenfold-siege.json` at **677 nodes / 42,233 commissioned words**, and the largest by word
+> count is `the-last-cartage.json` at **632 nodes / 49,953 words**. No shell in the catalog
+> approaches 118,000 words, so `W` here is about 2.4x too large and the derived `w = 174
+> words/node` is about 2.8x too large; the measured figure for the 677-node shell is 62 words per
+> node. The derivations below are internally consistent given the wrong `W`, so they are left
+> standing as the record of what was computed. Recomputed on the measured `the-tenfold-siege`
+> inputs, holding every other assumption fixed
+> (`W=42,233, N=677, w=62, O_prose=57,015, O_think=34,209, k=8 -> C=85, S=4,000, P=40,620`, and
+> scaling the two text-proportional judging lines by 42,233/118,000 = 0.358):
+>
+> | Branch | As written | Corrected |
+> |---|---|---|
+> | (a) naive full-context, Opus interactive | $58.79 | **$33.22** |
+> | (b) naive + incremental caching, Opus | $12.88 | **$6.01** |
+> | (c) pruned, Sonnet, batch: `G` before `x M` | $2.277 | **$1.049** |
+> | (c) pruned, Sonnet, batch: TOTAL | $3.88 | **$1.98** |
+>
+> The lever ladder measured from the corrected $33.22 baseline is pruning **0.151x**, batch
+> **0.50x**, tier **0.60x**, caching **0.70x**. Every multiplier moves, because output tokens are a
+> larger share of a smaller bill once `W` is right, but the ordering is unchanged and Position 3
+> ("prune first, batch second, tier third, cache fourth") survives intact. What does not survive is
+> the "weakest of the four levers by a factor of twelve" phrasing: twelve is not reproducible from
+> the ladder on either the stale or the corrected inputs. On the corrected inputs pruning's saving
+> multiple (6.6x) is about **four times** tier's (1.67x). Separately, the `$0.311` human-review
+> line is carried through here unchanged only because the source used the same small-book figure in
+> both instantiations; the review-time correction dated 2026-08-30 in
+> `A1-blankslate-architecture.md` applies to it.
+
 `W=118,000, N=677, w=174. O_prose = 159,300. O_think = 95,580. k=8 -> C=85.`
 `S=4,000. P = 60 tok/node x 677 = 40,620.`
 
@@ -381,9 +412,30 @@ architectural invariant and test it, assert in CI that judge-call count is O(1) 
 
 | Scenario | Small book | Median book | Large book | Fleet ceiling $0.58 verdict |
 |---|---|---|---|---|
-| 0.33x prices | $0.43 | $0.52 | $1.35 | median comfortable, large still 2.3x over |
-| **1x (baseline)** | **$0.44** | **$0.575** | **$3.88** | median knife-edge, large 6.7x over |
-| 3x prices | $0.50 | $0.86 | $10.83 | median 48% over, large 19x over, long books impossible |
+| 0.33x prices | $0.43 | **$0.466** | $1.35 (L) | median comfortable, large still 2.3x over (L) |
+| **1x (baseline)** | **$0.44** | **$0.575** | **$3.88** (L) | median knife-edge, large 6.7x over (L) |
+| 3x prices | $0.50 | **$0.906** | $10.83 (L) | median **56%** over, large 19x over (L), long books impossible |
+
+> **Correction, 2026-08-30.** Two cells in the Median-book column were arithmetically wrong when
+> written and are corrected in place: `0.33x` read **$0.52** and is **$0.466**, `3x` read **$0.86**
+> and is **$0.906**. The verdict text follows: at `3x` the median book is 56% over the $0.58
+> ceiling, not 48%. The sweep convention that reproduces the rest of the table is that a price
+> multiplier scales the token line items (generation and judging) and leaves cover art and human
+> review fixed. On the median book that is `$0.145 + $0.020 = $0.165` scaling against `$0.100 +
+> $0.311 = $0.411` fixed, so `0.33 x 0.165 + 0.411 = $0.466` and `3 x 0.165 + 0.411 = $0.906`. The
+> published `$0.52` and `$0.86` are what you get if judging is dropped from the scaling leg in one
+> direction and not the other, which is not a stated rule anywhere in the document. The Small-book
+> column reproduces on this convention to within a cent or two and is left alone.
+>
+> **(L)** The entire Large-book column inherits the stale `118,000 words, 677 nodes` baseline
+> corrected under section 2.3 above, so all four of its figures are superseded rather than merely
+> mis-arithmetic. Recomputed on the measured `the-tenfold-siege` inputs and on the same sweep
+> convention (`$1.446` generation plus `$0.118` judging scaling, `$0.411` fixed), the Large-book
+> column becomes **$0.93 / $1.98 / $5.10**, that is **1.6x / 3.4x / 8.8x** the $0.58 ceiling rather
+> than 2.3x / 6.7x / 19x. Note also that the published `$1.35` at `0.33x` is not reproducible from
+> the stale inputs either: on the stated convention it should have read about `$1.56`. The
+> direction of every conclusion in this section survives, since the large book stays over the
+> ceiling at every price level tested and the median book stays a knife-edge at 1x.
 
 Crossover word count where token cost equals the fixed $0.41 of human+art:
 
@@ -413,7 +465,7 @@ loss.
 
 | # | Waste mode | Mechanism | Detection signal | Control |
 |---|---|---|---|---|
-| 1 | **Non-convergent repair loop** | Chunk fails validator; regenerate with the same model, same prompt, same failure; fails again. Geometric spend with no convergence. | Attempts-per-chunk histogram tail; *the same validator error code repeating on the same node across attempts*. That repetition is the signature, a different error each time is progress, the same error is a loop. | Hard cap R=2 LLM repairs. Attempt 3 must change *strategy*, not re-roll: escalate a tier, switch to a targeted rewrite prompt, or delete-and-replan the node. Per-book hard spend ceiling that kills the job and surfaces it as a product-level failure, not a silent retry. |
+| 1 | **Non-convergent repair loop** | Chunk fails validator; regenerate with the same model, same prompt, same failure; fails again. Geometric spend with no convergence. | Attempts-per-chunk histogram tail; *the same validator error code repeating on the same node across attempts*. That repetition is the signature, a different error each time is progress, the same error is a loop. | Hard cap `R=2` *attempts*, meaning the initial generation plus one same-strategy repair; this is the same `R` as in the `M_chunk` formula in section 2.2 and in the table below. Corrected 2026-08-30: this cell previously read `Hard cap R=2 LLM repairs`, which counted repairs rather than attempts and so contradicted both the formula and the next sentence. Attempt 3 must change *strategy*, not re-roll: escalate a tier, switch to a targeted rewrite prompt, or delete-and-replan the node. Per-book hard spend ceiling that kills the job and surfaces it as a product-level failure, not a silent retry. |
 | 2 | **Wholesale late rejection** | The book is fully generated, then the safety gate rejects the *premise*, which was knowable for $0.002 before a single prose token was spent. | Ratio of cost-per-generated-book to cost-per-*published*-book. If it exceeds 1.3 you are paying for books nobody will ever read. | Order gates by (cost to run) ascending and (rejection probability) descending. Premise screen → plan screen → chunk-1 screen → full generation. Fail on chunk 1, never on chunk 85. |
 | 3 | **Superlinear context re-send** | §2.1(a). The default naive implementation. | Input-token share of spend > 50% on any multi-chunk job; `cache_read_input_tokens == 0`. | §2.1(c) pruning, plus incremental caching. Alarm when input tokens per book exceed `4 x output tokens`. |
 | 4 | **Truncation at the completion cap** | `stop_reason == "max_tokens"`. You paid for every generated token, and if the recovery path restarts the chunk you pay for them again. | `max_tokens` stop-reason rate; p99 output tokens as a fraction of the cap. | Alarm at >1%. Size chunks so p95 output ≤ 40% of the cap. Recover by *continuation* (feed the partial back and ask for the remainder), never by restart, restart discards paid output. Stream anything with a large cap so an HTTP timeout does not silently bill-and-discard. |
@@ -438,11 +490,22 @@ loss.
 | 0.20 | 1.20 | 1.24 | 1.25 | 1.25 |
 | 0.35 | 1.35 | 1.47 | 1.53 | 1.54 |
 | 0.50 | 1.50 | 1.75 | 1.94 | 2.00 |
-| 0.65 | 1.65 | 2.20 | 2.62 | 2.86 |
+| 0.65 | 1.65 | **2.07** | **2.53** | 2.86 |
 
 At p_v = 0.65 an uncapped retry policy triples your generation bill. **The cap is worth more than
 the model discount.** And note that R=2 vs uncapped differs by only 6% at p_v=0.20 but by 42% at
 p_v=0.65, the cap is cheap insurance that costs almost nothing when things are healthy.
+
+> **Correction, 2026-08-30.** Two cells in the `p_v = 0.65` row were arithmetically wrong when
+> written and have been corrected in place: `R=3` read **2.20** and is **2.07**, `R=5` read **2.62**
+> and is **2.53**. Both follow directly from the row's own formula,
+> `M_chunk = (1 - p_v^R) / (1 - p_v)`, with `R` the total attempt count:
+> `(1 - 0.65^3)/0.35 = 2.0725` and `(1 - 0.65^5)/0.35 = 2.5256`. Every other cell in the table
+> reproduces exactly, so the defect is confined to that one row. The paragraph's conclusions are
+> unaffected in direction: uncapped is still 2.86x, still the largest single multiplier in the
+> section, and still worth more than the model discount. The `42%` figure is reproducible if the
+> gap is read as a fraction of the uncapped multiplier, `(2.86 - 1.65)/2.86 = 42%`; on that same
+> convention the `p_v = 0.20` gap is `(1.25 - 1.20)/1.25 = 4%`, not the 6% stated above.
 
 ---
 

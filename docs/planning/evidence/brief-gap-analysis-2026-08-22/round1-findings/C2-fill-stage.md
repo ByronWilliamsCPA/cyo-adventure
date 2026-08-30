@@ -699,8 +699,19 @@ honest; the brief's framing is what reads as delivered.
   similar themes, that slug's weight is 1/13 against 1.0 for a fresh one, about 2.5% of draws.
   Reasonable *while fresh candidates exist*. Once every candidate has been used (the `leaf` level,
   reached by the fourth request per `Q-1` and confirmed by the 3-5 candidates per cell measured in
-  C2-15), all weights equalise and the pick is uniform over already-read structures, with the entire
-  differentiation burden transferred to a prompt block whose effect is unmeasured (C2-9). The
+  C2-15), ~~all weights equalise and the pick is uniform over already-read structures~~ **every
+  candidate is one the child has already read, and the draw is over that exhausted set**, with the
+  entire differentiation burden transferred to a prompt block whose effect is unmeasured (C2-9).
+
+  *Corrected 2026-08-30, wrong when written. "Equalise" and "uniform" do not describe `_weight`.
+  `1/(1+recent_count)` and `1/(1+recent_count+3*similar_count)` equalise only when the counts
+  themselves are equal: a candidate used once still draws at 1/2 against a candidate used three
+  times at 1/4, so the pick stays weighted toward the least-recently-read structure even after
+  exhaustion, which is the sensible behaviour and is what the never-zero floor exists to preserve.
+  The finding does not depend on uniformity: what matters is that once every candidate has been
+  read, no weighting can produce an unread structure, so the system's only remaining differentiation
+  lever is the unmeasured prompt block. Stating it as "uniform" overstates the defect and invites a
+  reader to reject the whole finding on a checkable error.* The
   system's response to exhaustion is a warning string and a `CELL_SATURATED` event for the flywheel;
   there is no refusal, no deferral, and no "we should write you a new one first".
 

@@ -181,9 +181,17 @@ content > 0.85 AND zero lexical differentiation at the reconvergence node. **[CO
 
 **F2. Vanishing Consequence / Reconvergence Amnesia.** Branches reconverge and nothing downstream
 ever refers to which was taken.
-*Signature:* for a choice C, no node reachable only-after-C contains a lexical or entity-level
-reference to C's distinguishing entity or action. Build a callback index by extracting each
-choice's distinguishing entity and searching downstream. **[CODE]**, confirm **[JUDGE]**
+*Signature:* ~~for a choice C, no node reachable only-after-C contains a lexical or entity-level
+reference to C's distinguishing entity or action.~~ **Corrected 2026-08-30, and this was wrong when
+written**: the nodes reachable only-after-C are exactly the branch-local ones, so a successor that
+simply narrates the action just taken satisfies the rule, and the detector passes precisely the book
+whose branches reconverge into an identical shared node. That is the defect this signature exists to
+find, so as written it is a false negative by construction. Test the **reconvergence node** instead:
+for a choice C whose branch reconverges at node R, R (and the nodes downstream of R) must carry a
+path-conditioned fact, action, or variant that differs by which branch reached it. Branch-local text
+before R is not evidence and must be excluded from the search. Build the callback index over
+`(choice, reconvergence node)` pairs from the graph's dominator structure rather than over raw
+downstream reachability. **[CODE]**, confirm **[JUDGE]**
 
 **F3. Coin-Flip Choice.** Labels carry no predictive information.
 *Signature:* **choice-label predictiveness**: embed each label and the first ~100 words of each
@@ -310,8 +318,14 @@ today, at any price, and should be treated as the human tier's job:
 
 Beyond reading level, the variables that genuinely change are: **who operates the interface,
 reversibility, time-to-consequence, threat-resolution latency, ending-valence floor, moral
-determinacy, and interiority.** Branching factor is *not* one of them: 2 to 3 options is correct
-at every band, and widening it makes books worse and more expensive.
+determinacy, and interiority.** Branching factor is *not* one of them: **2 options at ages 3-5 and 2
+to 4 thereafter** is correct, and widening beyond that makes books worse and more expensive.
+
+*Corrected 2026-08-30, internal inconsistency present when written: this read "2 to 3 options is*
+*correct at every band", which contradicts section 3.1 ("Options: exactly 2") and the monotone table*
+*in 3.7 (2 at 3-5; 2-3 at 5-8 and 8-10; 2-4 at 10-13, 13-16, and 16+) in both directions at once. The*
+*band-specific constraint governs; the general sentence now states the envelope rather than a range*
+*that is simultaneously too wide for the youngest band and too narrow for the oldest three.*
 
 ### 3.1 Ages 3 to 5 (read-aloud; the adult is the interface)
 
@@ -583,7 +597,21 @@ book sizes. Concrete validation designs:
 
 - **Hard gates (auto-reject, no human time spent):** structural integrity, precondition dominance,
   entity consistency, premise coverage per path, band-boundary violations (peril/valence/death
-  rules), safety.
+  rules), ~~safety~~ **safety, but see the note below**.
+
+> **Safety is not a deterministic hard gate today, noted 2026-08-30.** This framework is written as
+> an implementation requirement, so listing safety alongside the structural gates reads as a
+> description of a control that exists. It is not.
+> [The brief](../../../cyo-generation-research-brief-2026-08-22.md) states it plainly and it is
+> still true on `main`: `validator/gate.py` calls its safety seam on any story clearing Layer 1, but
+> `validator/safety.py`'s body is a Phase-2 no-op returning an empty report, so
+> `GateResult.safety_flagged` is structurally always `False`. **Deterministic safety classification
+> is unbuilt.** What protects a child today is the moderation classifiers, the LLM reviewer, and
+> mandatory human approval, which are the model-judged and human-gated classes, not this one, and
+> all three cost human time. Read this bullet as the target state. Anything that schedules from it
+> must schedule building the classifier first, and must not assume "no human time spent" for safety
+> in the meantime. `UW-C290` records the related register defect: SAFE-14 is still in the live
+> application order while the module behind it is a stub.
 - **Soft gates (surfaced to the human, not auto-rejected):** label predictiveness, callback density,
   ending distinctness, agency ratio, filler rate, tinting rate, style discontinuity.
 - **Report-only (never gate):** anything with judge-human alpha below 0.6, and anything the
@@ -884,7 +912,14 @@ that is worth knowing too.
 29. Endings are distinct on extracted outcome tuples, not merely on prose.
 30. The set of endings spans more than one outcome type and does not reduce to a single desirability ordering.
 31. Ending valence distribution complies with the band's ending-valence floor.
-32. Protagonist and companion death comply with the band's rules (never below age 8; off-page and rare at 8-10).
+32. Protagonist death and companion death comply with the band's rules, which are **not the same
+    rule** and must be checked separately. *Protagonist:* never below age 8; at 8-10, off-page,
+    abstracted, avoidable in hindsight, and rare. *Companion:* never below age 8; at 8-10, **a
+    beloved companion is not killed at all**. *Split 2026-08-30: this item previously read
+    "Protagonist and companion death comply with the band's rules (never below age 8; off-page and
+    rare at 8-10)", applying one parenthetical to both and thereby licensing at 8-10 exactly what
+    section 3.4 prohibits outright ("Do not kill a beloved companion at this band"). A checklist
+    that permits prohibited content is worse than a missing checklist item.*
 33. Peril is present: every path contains at least one beat in which the protagonist wants something they might not get.
 34. No ending appends an explicitly stated moral lesson.
 35. No path resolves via a reset device (dream, rewind, "luckily nothing happened").

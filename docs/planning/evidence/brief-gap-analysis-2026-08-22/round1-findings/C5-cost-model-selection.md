@@ -71,6 +71,24 @@ estimate and shows its arithmetic.
   Run total $1.9943 for 3 delivered books = **$0.665 per delivered book, fill stage only**. Two of
   five books failed first pass (40%).
 
+  > **Numerator and denominator note, 2026-08-30.** Re-read `report.json` on `origin/main`: it holds
+  > **five** book records, three `passed` ($1.0637 + $0.5383 + $0.3502 = $1.9522) and two `error`
+  > (one with `cost: null`, the unmetered 397.96 s book 0, and one at $0.0421). Its total is
+  > therefore $1.9943, and **that total includes the wasted attempt but not the $0.0474 rerun**,
+  > because the rerun is not in this report at all. Row 4 of the table above is from a separate run
+  > record and is labelled a rerun; it should not be read as part of the same $1.9943.
+  >
+  > So $0.665 is *cost of this run per book this run delivered*, which is a defensible figure but is
+  > not cost per unique delivered book. On the four distinct books actually delivered across both
+  > runs, spending $1.9943 + $0.0474 = **$2.0417 over 4 books is $0.510 each**. Quote whichever
+  > answers the question at hand and say which: $0.665 prices a run that fails 40% of its books,
+  > $0.510 prices the delivered catalog. The 40% first-pass failure rate itself is unchanged, and so
+  > is book 1's decomposition below, which uses only book 1's own metered cost.
+  >
+  > The `cost: null` book is the reason to check this at all: an empty-but-valid record contributes
+  > nothing to the numerator and one to any naive denominator, which moves an average in whichever
+  > direction the reader was not watching.
+
   Decomposing book 1: $1.0637 - (154,253 x $3.83/MTok = $0.5908) = $0.4729 of input at $1.91/MTok =
   **247,600 input tokens**, against a skeleton of ~99,400 tokens. The remaining ~148,000 input tokens
   and ~54,300 output tokens are the reading-level loop, i.e. **$0.492, 46% of that book's fill bill**

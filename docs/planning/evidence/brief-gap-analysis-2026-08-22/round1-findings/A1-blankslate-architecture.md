@@ -288,7 +288,33 @@ XL (118,000 words, 677 nodes):
 | Infra/storage/queue | 0.10 | 0.10 | 0.10 |
 | **Machine total** | **~$34.7** | **~$11.2** | **~$6.24** |
 | **Human, full read at 150 wpm** | **$328** | **$328** | **$328** |
-| **Human, evidence-packet review (12% coverage, 15 min)** | | | **$6.25** |
+| **Human, evidence-packet review (12% coverage, 15 min)** | | | ~~**$6.25**~~ **see note** |
+
+> **The evidence-packet review cost is understated, corrected 2026-08-30.** This row and the
+> "XL 15-18 min" estimate in section 7 are not consistent with the reading rate the row above them
+> uses, and the error is arithmetic rather than a change in the world, so it is named here rather
+> than swapped in.
+>
+> The full-read row prices 118,000 words at 150 wpm for $328, which implies a loaded rate of
+> **$25.02/hour**. At that same 150 wpm, the packet's own coverage statement (11,800 words, 10%)
+> takes **79 minutes** and costs **$32.78**; the 12% figure in this row is 14,160 words, **94
+> minutes**, and **$39.33**. The claimed 15 minutes implies an effective reading rate of about
+> **790 wpm**, which is 5.2x the raw rate, and no amount of "the packet is structured" buys that.
+> Even granting a generous 2x structured-packet premium the row is roughly **$16 to $20**, not
+> $6.25.
+>
+> That matters because this row is the whole economic case for evidence-packet review over full
+> read: at $6.25 the packet is 1.9% of the full read, at $16-20 it is 5% to 6%, and the machine
+> total in the same column is $6.24, so the packet stops being free relative to generation. Recompute
+> the unit economics before relying on it, or cut the coverage until the time is achievable at a
+> defensible rate.
+>
+> Separately, the **118,000-word XL baseline this column is built on is not a real book.** The
+> generated [catalog census](../../../catalog-census.md) puts the largest committed graph at 677
+> nodes commissioning **42,233** words, and the most word-heavy at 632 nodes commissioning **49,953**.
+> See [A3-blankslate-economics.md](./A3-blankslate-economics.md), whose stale-baseline note carries
+> the same correction. Every absolute dollar figure in this XL column is therefore roughly 2.4x too
+> large; the ratios between rows survive, the levels do not.
 
 M (6,000 words, 60 nodes), design C then design D:
 
@@ -658,8 +684,16 @@ Evidence packet contents, in the order the reviewer sees them:
 7. **A coverage statement**: "you will read approximately 11,800 of 118,000 words (10%), covering 100%
    of endings, 100% of flagged nodes, and a 5% random sample of the rest."
 
-Estimated review times: **S 2 min, M 6 min, L 10 min, XL 15-18 min.** The reviewer's effective rate is
+Estimated review times: ~~**S 2 min, M 6 min, L 10 min, XL 15-18 min.**~~ The reviewer's effective rate is
 higher than raw reading because most of the packet is structured.
+
+*Corrected 2026-08-30: the XL figure is not achievable at the reading rate this report prices
+elsewhere. The coverage statement immediately above commits the reviewer to 11,800 words, which is
+**79 minutes at the 150 wpm** used in section 6's cost table, not 15-18. A structured packet does
+buy some premium over raw prose, but 15 minutes implies ~790 wpm, a 5.2x premium, which is not
+credible. Treat the whole S/M/L/XL ladder as unvalidated: it was never measured against a real
+packet, and the XL rung is the one the economics depend on. The smaller rungs are the same shape
+(M's 6,000-word book is 40 minutes of raw reading), so the understatement is not confined to XL.*
 
 ### Who the human is
 
@@ -707,7 +741,14 @@ higher than raw reading because most of the packet is structured.
 
 At 10,000 families x 8 books/month = 80,000 books/month. At a 3% flag rate plus a 2% audit = 4,000
 paid reviews/month. At 8 minutes each = 533 hours = **3.3 FTE**. That is affordable. At a 15% flag
-rate it is 16 FTE and the margin is gone. **The flag rate is therefore a business-critical metric, not
+rate it is ~~16 FTE~~ **11.3 FTE** and the margin is gone.
+
+*Corrected 2026-08-30, wrong when written: 15% flag plus the same 2% audit is 17% of 80,000 =*
+*13,600 reviews, 1,813 hours, and 11.3 FTE at the 160 hours per FTE-month this paragraph's own 3.3*
+*already uses. The 16 came from scaling 3.3 by 15/3, which treats the 2% audit as if it scaled with*
+*the flag rate; it does not, it is a constant. The conclusion is unchanged in direction (the flag*
+*rate is the business-critical metric) but the slope is 3.4x from 5% to 17%, not 5x, so a flag-rate*
+*budget set from the 16 figure is set against a number 41% too high.* **The flag rate is therefore a business-critical metric, not
 a quality metric**, and reducing false positives in the safety gate has direct P&L impact. Track
 precision of the flag, not just recall, and make the flag-rate budget explicit (I would set 5% as the
 alarm threshold).

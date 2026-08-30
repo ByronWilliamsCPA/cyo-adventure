@@ -114,6 +114,13 @@ rows are listed in document 2 under "Ledger rows, as allocated" and land on
 
 ### Already decided by the owner (PR #737, eight rulings). Do not re-litigate.
 
+*Count note, 2026-08-30: nine entries follow but the ruling count is eight, and both are right.*
+*Entry 5 is not a separate ruling: it is the ADR-011 amendment that ruling 9.1 (entry 4)*
+*commissioned. Entries 1-4 are rulings 8.1-8.3 and 9.1; entries 6-9 are rulings 9.2-9.5. The*
+*merged commit `41d30909` is titled "eight owner rulings", and section 8.3 of the*
+*[reconciliation](./cyo-brief-review-reconciliation-2026-08-22.md) carries the same split. The*
+*entries are left numbered 1-9 so the cross-references into them stay valid.*
+
 1. The diversity bar is **any-reader, not social distance**. Interim serving rule: same-skeleton
    books must not reach the same reader.
 2. Machine-critical fields are **normalized post-fill** rather than trusted to model obedience.
@@ -154,11 +161,14 @@ rows are listed in document 2 under "Ledger rows, as allocated" and land on
 
 ## 6. The work inventory
 
-Full per-item plans in document 2. `$` is OpenRouter spend; nine of twelve items need none.
+Full per-item plans in document 2. `$` is OpenRouter spend; nine of the fourteen items need none.
+*Corrected 2026-08-30: read "nine of twelve". The table has fourteen rows, nine of them at $0*
+*(`GA-D1`, `W1`, `W3`, `W5`, `W6`, `W7`, `W8`, `W9`, `X2`). The nine is right, the twelve was a*
+*miscount of the denominator.*
 
 | ID | Item | Type | Spend | Depends on |
 | --- | --- | --- | --- | --- |
-| **GA-D1** | Rule on the hard-block publish override. A book carrying a moderation hard block publishes in two clicks; `publishing/service.py:412` guards only `moderation_report is None`. Deliberate design, but untraced, unversioned, and self-approvable by a dual-role adult | **Owner decision** + code | $0 | Production query (see 7) |
+| **GA-D1** | ~~Rule on the hard-block publish override. A book carrying a moderation hard block publishes in two clicks; `publishing/service.py:412` guards only `moderation_report is None`. Deliberate design, but untraced, unversioned, and self-approvable by a dual-role adult~~ *Materially corrected 2026-08-30: only the separation-of-duties half survives. See the GA-D1 note below this table.* | **Owner decision** + code | $0 | Production query (see 7) |
 | **GA-D2** | Decide what F5 claims, and find a cross-family reuse lever. The shared "structural" stratum is byte-identical across the flagship pair and enumerates a closed decision menu. **Rulings 1 and 6 excluded both previously proposed levers, so no candidate survives** | **Owner decision** + research | $10-25 | W3 |
 | **W1** | Job lifecycle: `queued->running` uncommitted, `rq_job_id` omitted, causing double enqueue and double spend. The only live money leak | Code | $0 | none; **blocks W2** |
 | **W2** | Cap the reading-level loop. Measured at **38%, 51%, 59%** of a book's bill for an `in_band` result of 0.155 | Code + validation | $3-5 | W1 |
@@ -173,8 +183,40 @@ Full per-item plans in document 2. `$` is OpenRouter spend; nine of twelve items
 | **X1** | Confirm cross-vendor structural convergence: 7 of 342 shell-shell pairs breach TAU_CELL, **all cross-vendor**, while 0 of 190 shell-catalog pairs do. Three labs independently emitted 45 nodes, 91 choices, branching exactly 3.000 | Research | $3-6 | W3 |
 | **X2** | Compose ADR-023 personalization and ADR-028 persistent characters with the framework. Persistent per-child casts push toward sameness exactly where S-4 measures distinctness | Design | $0 | D2 |
 
-**Totals**: immediate remediation $0; all open experiments $27-55. For scale, the live round that
-produced the decision-grade directive result cost **$3.28 metered**. Spend is not the constraint.
+> **GA-D1, corrected 2026-08-30.** The struck text was already stale when this handoff was
+> written, and the correction is recorded rather than swapped in silently, because the point of this
+> file is what the 2026-08-22 analysis concluded.
+>
+> What is now false: the guard is not one condition. `publishing/service.py::
+> _assert_report_permits_approval` runs four gates in order, refusing an approval when the report is
+> absent (`approve_without_moderation`), unusable (`approve_with_unusable_moderation`), or admits
+> nodes the reviewer never saw (`approve_with_incomplete_coverage`), and finally, under ADR-005's
+> **2026-08-25 amendment (gate D2)**, refusing to publish over a block or high-severity finding
+> without a non-whitespace `override_reason` (`approve_requires_override_reason`). The override is
+> also audited: the RELEASED pipeline event carries `overridden_block_count` and
+> `overridden_high_count`, and the free-text reason is logged (it is kept off the durable event row
+> by the PII-free payload allowlist, spec D3). So "two clicks", "untraced", and "unversioned" are all
+> retired: the override is versioned in ADR-005, gated on a reason, and structurally audited. The
+> `service.py:412` line reference has drifted with the file and should not be re-cited.
+>
+> What still stands: **there is no separation of duties on approval.** An adult holding both the
+> guardian base role and `is_admin` can approve their own family's book, including over a hard block,
+> because `api/approval.py::_load_admin_story` deliberately does not call `authorize_family` (admin
+> authority is cross-family by design). ADR-005 names this the owner-as-admin exception, and the
+> audit stamp does distinguish the two cases: `Principal.acting_role()` returns the guardian base
+> role for an own-family review and `admin` only for a genuine cross-family one. But nothing requires
+> a second reviewer. Four-eyes approval is not an existing invariant, and whether to make it one
+> remains the owner decision this row is asking for. State the item that way; do not restate the
+> retracted framing.
+
+**Totals**: immediate remediation $0; all open experiments **$21 to $51.10**. For scale, the live
+round that produced the decision-grade directive result cost **$3.28 metered**. Spend is not the
+constraint.
+
+*Corrected 2026-08-30: read "$27-55". This was wrong when written, not overtaken, so it is fixed in
+place. The five nonzero rows are `GA-D2` $10-25, `W2` $3-5, `W4` <$0.10, `W10` $5-15, and `X1` $3-6,
+which sum to $21 at the low end and $51.10 at the high end. Neither the conclusion (spend is not the
+constraint) nor any per-item figure changes.*
 
 ### Explicitly do not do
 
@@ -199,6 +241,13 @@ Each was proposed and refuted. Document 2 carries the reasoning.
   and the plan changes to incident response. This could not be run during the analysis: the
   `supabase` MCP server was unauthenticated. Authorise it via claude.ai connector settings, or
   `claude mcp` / `/mcp` in an interactive session.
+  *Corrected 2026-08-30: read the result against ADR-005's 2026-08-25 amendment (gate D2). Any hit
+  approved on or after that date carried a recorded `override_reason` and audited
+  `overridden_block_count` on its RELEASED event, so it is a deliberate, attributable override
+  rather than a silent one. Only a hit predating the amendment, or one with no override counts on
+  its event, is the silent-publish case this bullet was written to detect. The question the query
+  actually settles now is how often the override is exercised, and by whom relative to the book's
+  own family.*
 - **~~Two high-impact PRs are still open~~: #729 (retire Ollama, Modal becomes cascade leg 3) and
   #737 (the eight rulings).** *Corrected 2026-08-30: both merged. #729 landed as `167c29da` and #737
   as `41d30909`, and #737 carried eight rulings, not nine. This blocker is discharged; the code and

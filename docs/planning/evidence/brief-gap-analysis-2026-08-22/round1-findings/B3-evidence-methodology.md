@@ -243,7 +243,7 @@ All arithmetic is reproduced in Appendix A.
 - **Severity**: high
 - **Category**: confound
 - **Locus**: brief:58-63, brief:194-196; `runs/e1r3-2026-08-21/run.json` (`max_repair_rounds: 6`); register `S-1` (tool-assisted "up to 10 times")
-- **Problem**: This is the one statistically solid result in the brief (2/21 vs 12/21, Fisher p = **0.0013**; against pooled 27/42, p < 0.0001), and its design still confounds three things. (1) **Budget.** Blind gets 6 rounds, confirmed in `run.json`; tool-assisted gets 10 invocations. The arms differ in both the treatment and the attempt budget by a factor of 1.67, and several tool-assisted passes consumed 7-10 invocations, more than the blind arm ever had. A blind arm at ten rounds is the missing control and costs almost nothing for the zero-cost legs. (2) **Denominator.** "2 passes in 21 attempts across seven legs" versus tool-assisted "12 of 21" per cell: the blind figure is one cell (7 legs x 3), matching `e1r3`'s three replicates on cell A, but the brief never says so, and its "21" reads as the same denominator by coincidence. (3) **Failure classification.** `AL-513` records that blind failures are censored at the cap and that "each round fixes the named findings and surfaces new ones"; nothing separates structural-invalid failures from unparseable-output failures in either arm, and brief:204's "call budget lost to unparseable output" shows the second class is material.
+- **Problem**: This is the one statistically solid result in the brief (2/21 vs 12/21, Fisher p = **0.0025**, *corrected 2026-08-30 from 0.0013; see the Fisher sign correction in Appendix A*; against pooled 27/42, p < 0.0001), and its design still confounds three things. (1) **Budget.** Blind gets 6 rounds, confirmed in `run.json`; tool-assisted gets 10 invocations. The arms differ in both the treatment and the attempt budget by a factor of 1.67, and several tool-assisted passes consumed 7-10 invocations, more than the blind arm ever had. A blind arm at ten rounds is the missing control and costs almost nothing for the zero-cost legs. (2) **Denominator.** "2 passes in 21 attempts across seven legs" versus tool-assisted "12 of 21" per cell: the blind figure is one cell (7 legs x 3), matching `e1r3`'s three replicates on cell A, but the brief never says so, and its "21" reads as the same denominator by coincidence. (3) **Failure classification.** `AL-513` records that blind failures are censored at the cap and that "each round fixes the named findings and surfaces new ones"; nothing separates structural-invalid failures from unparseable-output failures in either arm, and brief:204's "call budget lost to unparseable output" shows the second class is material.
 - **Why it matters for the goal**: F3 is called the largest measured lever and the pipeline is already built around it. It is probably true, and `AL-513`'s mechanistic account is convincing. But its stated magnitude is inflated by whatever share the extra four rounds contribute, and nobody has estimated that share. If half the effect is budget, "give the author more attempts" is a cheaper change than "put the checker in the loop".
 - **Recommendation**: Run blind at ten rounds on the four zero-cost legs, same premises, and report the three-way comparison. State the blind denominator explicitly. Classify every failure as structural-invalid versus unparseable and report both classes in both arms.
 - **How to check I'm right**: `python3 -m json.tool runs/e1r3-2026-08-21/run.json` → `max_repair_rounds: 6`, `cells: ["A"]`, `replicates: 3`. Register `S-1` for the ten-invocation tool-assisted cap.
@@ -309,7 +309,28 @@ All arithmetic is reproduced in Appendix A.
 - **Severity**: medium
 - **Category**: generalization
 - **Locus**: brief:31 "the catalog spans 61 graphs and 11,458 nodes"; brief 4.3 "a child exhausts a cell by roughly the fourth request at 3-4 skeletons per cell (Q-1)"
-- **Problem**: Measured on this checkout: **86** skeletons carrying nodes, **15,507** nodes, **18** cells; **81** production-eligible across **14** production cells, mean **5.79** per cell, min 4, max 10. The node count is 35% low and per-cell depth is 61% low. Q-1's direction survives (a cell is still exhaustible) but "roughly the fourth request" is now the fifth to eleventh, which changes the reuse-versus-purchase arithmetic Q-1 exists to inform. `AL-481` already generalised this exact failure, *"A number measured against a growing artifact set has a shelf life, and a comment has no way to say so"*, and proposed dating every catalog-derived number.
+- **Problem**: Measured on this checkout: ~~**86** skeletons carrying nodes, **15,507** nodes~~ **84** shells, **15,470** nodes, **18** cells; **81** shells declaring `production_eligible`, of which **74** are reachable through an offered cell.
+
+> **Census note, added 2026-08-30. The 86 / 15,507 figures are a glob defect, not a second valid
+> census.** Both come from listing `skeletons/**/*.json` and excluding only `.contract.json` and
+> `.lineage.json`, which leaves the **two** `.narrative.json` sidecars in the population; that is
+> exactly where 86 minus 84 and 15,507 minus 15,470 come from. Reproduce on `origin/main`: the tree
+> holds **149** JSON files under `skeletons/`; excluding contract and lineage leaves **86**; also
+> excluding narrative leaves **84**. The authoritative count is
+> [catalog-census.md](../../../catalog-census.md), generated by `scripts/catalog_census.py`: **84**
+> shells, **15,470** nodes, **81** shells declaring `metadata.production_eligible`, **74** of those
+> reachable through one of the **18** cells `offered_cells()` offers, and 3 to 5 shells per covered
+> cell. The 81 and the 74 are different quantities and neither is "the catalog size". Use 84 /
+> 15,470 as the denominator; this was wrong when written rather than overtaken.
+>
+> The derived per-cell figures in this finding inherit the defect and are withdrawn with it: "81
+> production-eligible across **14** production cells, mean **5.79** per cell, min 4, max 10" counted
+> cells that hold a declaring shell, over a population that included the two narrative sidecars. The
+> generated census reports **18** covered cells at **3 to 5** shells each, median 4. Substitute
+> those; the finding's direction (the brief's 61 / 11,458 is materially stale, and Q-1's
+> "fourth request" understates cell depth) is unaffected, but the size of the correction is smaller
+> than stated here.
+ The node count is 35% low and per-cell depth is 61% low. Q-1's direction survives (a cell is still exhaustible) but "roughly the fourth request" is now the fifth to eleventh, which changes the reuse-versus-purchase arithmetic Q-1 exists to inform. `AL-481` already generalised this exact failure, *"A number measured against a growing artifact set has a shelf life, and a comment has no way to say so"*, and proposed dating every catalog-derived number.
 - **Why it matters for the goal**: Q-1 is cited as a capital fact bounding full-skeleton reuse and feeds the purchasing decision.
 - **Recommendation**: Date every catalog-derived number in the brief and regenerate the census as part of the brief's build; `UW-C274`'s census script is the intended mechanism.
 - **How to check I'm right**: the census one-liner in Appendix A.
@@ -377,7 +398,7 @@ def cp(x,n,a=.05):                       # Clopper-Pearson exact two-sided
 def fisher(a,b,c,d):                     # two-sided
     n=a+b+c+d
     def p(x):
-        y,z,w=a+b-x,a+c-x,d-(x-a)
+        y,z,w=a+b-x,a+c-x,d+(x-a)   # corrected 2026-08-30; was d-(x-a)
         return 0 if min(x,y,z,w)<0 else comb(a+b,x)*comb(c+d,z)/comb(n,a+c)
     o=p(a); return round(sum(p(x) for x in range(min(a+b,a+c)+1) if p(x)<=o+1e-12),4)
 def mcnemar(disc, one_way):              # exact, two-sided
@@ -394,6 +415,21 @@ def mcnemar(disc, one_way):              # exact, two-sided
 | 3/3 | [0.292, 1.000] | 5/6 | [0.359, 0.996] |
 | | | 6/6 | [0.541, 1.000] |
 
+> **Fisher sign correction, 2026-08-30.** `fisher()` above carried `w=d-(x-a)`. For a 2x2 table the
+> bottom-right cell of the hypergeometric table with `x` in the top-left is `d+(x-a)`, so the
+> support filter was zeroing valid tail tables whenever `x > a+d`, which discards one tail and
+> halves the p-value. The code is fixed in place because it was wrong when written and the appendix
+> is offered as reproduction code.
+>
+> **Two reported p-values below moved as a result**, and both are corrected in the table:
+> `12/21 vs 15/21` was 0.5199 and is **0.5204**; `2/21 vs 12/21` was 0.0013 and is **0.0025**,
+> exactly double, which is the signature of the discarded tail. Every six-replicate row is
+> unaffected (there `x` never exceeds `a+d`, so the wrong sign never bit), and `2/21 vs 27/42`
+> stays below 0.0001. **No conclusion in this report changes**: the blind-versus-tool-assisted
+> result is significant at 0.0025 as it was at 0.0013, and the cell A versus cell D comparison is
+> null either way. Re-derive rather than re-cite if a future claim turns on a value near a
+> threshold.
+
 **Tests** (S-1 is paired: premise fixed per cell x replicate across all seven legs)
 
 | comparison | Fisher (unpaired) | McNemar (paired) |
@@ -406,9 +442,9 @@ def mcnemar(disc, one_way):              # exact, two-sided
 | 6/6 vs 5/6 (Anthropic frontier vs Kimi K3) | **1.0000** | 1.000 |
 | 6/6 vs 4/6 | 0.4545 | 0.500 |
 | 6/6 vs 3/6 | 0.1818 | 0.250 |
-| 12/21 vs 15/21 (cell A vs cell D) | 0.5199  - |
-| 2/21 vs 12/21 (blind vs tool-assisted, cell A) | **0.0013**  - |
-| 2/21 vs 27/42 (blind vs tool-assisted, pooled) | **<0.0001**  - |
+| 12/21 vs 15/21 (cell A vs cell D) | 0.5204 | - |
+| 2/21 vs 12/21 (blind vs tool-assisted, cell A) | **0.0025** | - |
+| 2/21 vs 27/42 (blind vs tool-assisted, pooled) | **<0.0001** | - |
 
 Rank-test ceiling: for two independent n=3 samples the minimum two-sided Mann-Whitney p is
 2/C(6,3) = 0.10, so no checker-run comparison in the S-1 table can be significant.
@@ -467,6 +503,14 @@ print(sum(prod.values()),'production over',len(prod),'cells, mean',round(sum(pro
 ```
 → 86 skeletons, 15,507 nodes, 18 cells; 81 production over 14 cells, mean 5.79
 (brief:31 says 61 / 11,458; 4.3 says 3-4 per cell).
+
+*Withdrawn 2026-08-30. The one-liner above is preserved because it is what produced the numbers in
+B3-20, but it is defective and must not be re-run as a census: its `glob` excludes `.contract.json`
+and `.lineage.json` and does not exclude `.narrative.json`, so the two narrative sidecars are counted
+as skeletons. That is the whole of the 86-versus-84 and 15,507-versus-15,470 gaps. Use
+`uv run python scripts/catalog_census.py` and cite
+[catalog-census.md](../../../catalog-census.md) instead: 84 shells, 15,470 nodes, 81 declaring
+`production_eligible`, 74 reachable through one of the 18 offered cells.*
 
 ---
 

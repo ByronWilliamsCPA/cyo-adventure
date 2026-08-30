@@ -219,7 +219,11 @@ by nothing at all.
   `FAIL ... lesson 'AL-511' status is not applied/rejected/superseded and is not cited by
   any row in cluster C`. The checker works exactly as designed; the design has the hole.
 
-  Scale of exposure: 240 of 513 lessons are `applied`. Classifying their refs, 144 name a
+  Scale of exposure: 240 of 513 lessons are `applied` **before the demonstration edit above**
+  (*baseline labelled 2026-08-30: the `applied=241` in the checker output is the post-edit count,
+  because the demonstration flipped `AL-514` from `open` to `applied`. Both numbers are from the
+  same tree; 240 is the tree as committed, 241 is the tree with the one-cell edit applied. The
+  exposure classification below is over the 240.*). Classifying their refs, 144 name a
   path that resolves, 34 look like a commit/SHA, 5 name a PR or issue, and **57 are prose
   that resolves to nothing checkable**: e.g. `AL-025`'s ref is "this review; leads chased
   manually and closed".
@@ -374,9 +378,24 @@ by nothing at all.
   counts checker invocations from the tool-call log rather than from a self-report) or
   label the column `self-reported` in the register and the brief, so a reader prices it
   correctly.
-- **How to check I'm right**: `ls docs/planning/evidence/skeleton-author-vendors/runs/e1r3-tools-2026-08-21/`
-  (no `run.json`); `python3 -c "import json;print(json.load(open('.../records/A__r1__claude-fable-subagent.json.record.json')))"`;
-  `python3 -c "import json;print(list(json.load(open('.../verdict_ctrl-clocktower-museum_r1.json'))))"`.
+- **How to check I'm right** (*commands corrected 2026-08-30: they previously carried literal `...`
+  path prefixes that fail before reading anything, and asserted "no `run.json`", which is false*).
+  A `run.json` **does** exist, and it is the evidence rather than its absence, because it declares
+  its own provenance:
+
+  ```sh
+  R=docs/planning/evidence/skeleton-author-vendors/runs/e1r3-tools-2026-08-21
+  python3 -c "import json;print(json.load(open('$R/run.json'))['authored'])"
+  # -> hand-reconstructed 2026-08-22; ... neither of which writes run.json
+  #    (only compare_skeleton_authors.py run() does)
+  python3 -c "import json;print(json.load(open('$R/records/A__r1__claude-fable-subagent.json.record.json')))"
+  python3 -c "import json;print(list(json.load(open(
+    'docs/planning/evidence/recognition-protocol-pilot/verdict_ctrl-clocktower-museum_r1.json'))))"
+  ```
+
+  The finding stands on the reconstructed provenance, not on a missing file: no harness wrote this
+  run record, the checker counts live in a hand-maintained `tools-meta.json` whose value field is
+  named `reported`, and the verdict files carry no rater, model, timestamp, or pair identifier.
 
 ---
 
