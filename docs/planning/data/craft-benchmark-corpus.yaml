@@ -1,0 +1,825 @@
+# Craft-review benchmark corpus: sourced entries.
+#
+# Companion data file to docs/planning/craft-review-benchmark-corpus.md (register row proposed as
+# UW-N11; not yet assigned, see that doc's "Register linkage" note). Each entry stores title/author/ISBN/source/URL, a derived craft
+# label, and, where a claim needs its wording to be checkable, a short attributed quotation from
+# the review. It stores no review in whole or in substantial part.
+#
+# THE POSTURE, STATED ACCURATELY. An earlier version of this header and of the companion doc said
+# "never the review text itself". That was not what the file did: several `positive_signals` and
+# `negative_signals` fields are short verbatim or near-verbatim fragments of the reviews they cite,
+# because a paraphrase of "stilted dialogue" is worse evidence than the phrase itself. The honest
+# description of what is here is SHORT ATTRIBUTED QUOTATION PLUS DERIVED LABELS: brief phrases,
+# each attached to a named source and a URL, alongside labels this project wrote. That is a
+# different and weaker claim than "no review text", and it is the one a reader should audit
+# against. What the file still does not and must not contain: any review reproduced whole or in
+# substantial part, and any review text routed into a prompt, a generation input, or a training
+# set. A quotation long enough to substitute for reading the review does not belong here.
+#
+# Provenance, in two passes.
+#
+# Pass 1 (2026-08-13) sourced all ten titles via parallel research agents using WebSearch, in a
+# session whose network egress policy blocked WebFetch for every review-site domain attempted
+# (kirkusreviews.com, goodreads.com, commonsensemedia.org, slj.com, thestorygraph.com, amazon.com,
+# and others) on every agent run. Every finding was therefore reconstructed from search-snippet
+# synthesis rather than a first-hand page read.
+#
+# Pass 2 (2026-08-30) re-ran the checks from a session with working egress and read the pages
+# directly. Fourteen source rows across nine of the ten titles were promoted to
+# `verification_method: primary_source_fetch`. That
+# pass also FALSIFIED three claims that pass 1 had recorded at `confidence: high`, which is the
+# argument for never treating snippet synthesis as a substitute for a page read:
+#   * `traitors-in-space`: the claimed Kirkus "starred review" does not exist. The page shows no
+#     star. The "45+ endings" figure is also Kirkus's, not School Library Journal's.
+#   * `leviathan-shiga`: the claimed Kirkus "starred review" does not exist either. No star.
+#   * `the-citadel-of-whispers`: the Kirkus review does name Zara, Saeed, and Arjun, but only in
+#     its plot summary. It does not call the supporting cast interesting. The word the review
+#     applies, and applies to the magic system and the political machinations rather than to any
+#     character, is "intriguing".
+# Two starred-review claims survived pass 2 and are now sourced to the publisher's own review
+# round-up, which labels the star explicitly: `endlessly-ever-after` (SLJ) and
+# `search-for-a-giant-squid` (Booklist).
+#
+# Every source row states its `verification_method` explicitly. It used to be inferable from the
+# field's ABSENCE, which meant a parser saw `None` on 20 of the 35 rows with the rule attached
+# nowhere it could read; the 20 were written out on 2026-08-30. A row not marked
+# `primary_source_fetch` is pass-1 snippet synthesis and is capped at medium confidence
+# accordingly.
+#
+# Nothing falsified in pass 2 was deleted; it was corrected in place with the correction recorded,
+# so the file cannot silently improve its own track record.
+#
+# confidence values: high (a direct page read confirmed it, or multiple independent sources
+# converge), medium (single source, snippet-only), low (secondary/tertiary source, thin coverage).
+# verification_method values (present on every source row, never inferred from absence):
+# primary_source_fetch (the cited page was read directly), websearch_snippet, unverified.
+# craft_labels values: strong / mixed / weak / not_reported (source never addressed it).
+
+schema_version: 1
+sourced_date: "2026-08-13"
+reverified_date: "2026-08-30"
+sourcing_method: >-
+  Pass 1: WebSearch snippet synthesis via parallel research agents, WebFetch egress-blocked for all review
+  domains. Pass 2 (2026-08-30): direct page reads from a session with working egress; see the header for the
+  three pass-1 claims it falsified.
+
+titles:
+  - id: endlessly-ever-after
+    title: "Endlessly Ever After: Pick YOUR Path to Countless Fairy Tale Endings!"
+    author: "Laurel Snyder (illustrated by Dan Santat)"
+    isbn_or_asin: "9781452144825"
+    publisher: "Chronicle Books"
+    age_band_claimed: "Sources disagree: SLJ lists PreS-Gr3; Horn Book and parent reviewers place it closer to 7-11 due to dark/tragic endings"
+    band_group: "5-7"
+    format: picture_book_branching
+    sources:
+      - name: Kirkus Reviews
+        reviewer_type: professional
+        url: "https://www.kirkusreviews.com/book-reviews/laurel-snyder/endlessly-ever-after/"
+        confidence: high
+        verification_method: primary_source_fetch
+        positive_signals: ["branching gives the familiar fairy-tale road real variety", "closes on an imperative recommendation"]
+        negative_signals: []
+        evidence_paraphrase: >-
+          Praises the surprise twists the path choices create; the publisher's round-up quotes the verdict as
+          'Multiple reader options give the woodsy road...any number of surprise twists...Pick it up!'
+        verification_note: "Read directly 2026-08-30. No Kirkus star, and none was claimed."
+      - name: School Library Journal
+        reviewer_type: professional
+        url: "https://www.chroniclebooks.com/products/endlessly-ever-after"
+        confidence: high
+        verification_method: primary_source_fetch
+        positive_signals: ["starred review", "readers direct a rhyming story that changes on every reading"]
+        negative_signals: []
+        evidence_paraphrase: "Starred review crediting the choice-driven structure with making the story change every time through."
+        verification_note: >
+          The star is CONFIRMED, but not from SLJ directly: slj.com returns HTTP 403 to an
+          unauthenticated fetch. The citation URL is therefore the publisher's own review round-up
+          (Chronicle Books), read directly 2026-08-30, which lists "School Library Journal
+          (star Starred)" against the quotation "readers will delight in directing a rhyming story
+          that magically changes every time". A publisher round-up is an interested secondary
+          source; it is cited here because it names the awarding publication and labels the star
+          explicitly, which the pass-1 snippet did not. Pass 1's "suited to group read-alouds"
+          signal is dropped: it is unattributable to any text now readable, and it sits in direct
+          tension with the Horn Book caution recorded below.
+      - name: "The Horn Book"
+        reviewer_type: professional
+        url: "https://www.hbook.com/story/review-of-endlessly-ever-after-pick-your-path-to-countless-fairy-tale-endings-may22"
+        confidence: medium
+        verification_method: websearch_snippet
+        positive_signals: ["text and art called endlessly clever", "drives genuine reread demand since middles and endings vary"]
+        negative_signals: ["despite oversize trim, explicitly not a story-hour book; better for one or two listeners"]
+        evidence_paraphrase: "Praises the humor/grim tonal balance but cautions the format suits intimate reading, not group story-hour."
+      - name: "Goodreads (aggregate)"
+        reviewer_type: reader
+        url: "https://www.goodreads.com/en/book/show/58067218-endlessly-ever-after"
+        confidence: medium
+        verification_method: websearch_snippet
+        positive_signals: ["~4.37 average, 1500+ ratings", "reviewers cite high rereadability, kids wanting to exhaust every path"]
+        negative_signals: []
+        evidence_paraphrase: "Reader consensus centers on rereadability and humor; little discussion of character depth."
+      - name: "Publishers Weekly (via publisher round-up)"
+        reviewer_type: professional
+        url: "https://www.chroniclebooks.com/products/endlessly-ever-after"
+        confidence: high
+        verification_method: primary_source_fetch
+        positive_signals: ["characterised as a fairy story with logic gates", "illustration called exaggerated and kinetic"]
+        negative_signals: []
+        evidence_paraphrase: "Reads the structure as a branching-logic device applied to folklore."
+        verification_note: >-
+          Found in pass 2 on the publisher round-up; a source pass 1 missed entirely, and the one that names
+          the structural device most precisely.
+      - name: "Parent/family blogs (Little Village, Can We Read, Macaroni Kid)"
+        reviewer_type: parent
+        url: "https://littlevillagemag.com/book-review-endlessly-ever-after-by-laurel-snyder-ill-by-dan-santat/"
+        confidence: medium
+        verification_method: websearch_snippet
+        positive_signals: ["reread value called out by kids wanting more paths", "humor offsets dark beats"]
+        negative_signals:
+          - multiple parents flag some endings as surprisingly dark/tragic for a picture book
+          - one parent filtered storylines reading with a 4-year-old
+        evidence_paraphrase: "Parents enjoy the format but flag the tragic-ending branches as needing adult judgment for younger or sensitive kids."
+    craft_labels:
+      choice_meaningfulness: strong
+      character_depth_change: not_reported
+      ending_payoff: mixed
+      replayability: strong
+      dialogue_prose_craft: strong
+      age_fit: mixed
+    notes: >
+      Real title confirmed (hardcover, April 2022, 88pp). A 2023 sequel "Endlessly Ever After:
+      Endlessly Adventures" (9781797239118) exists and is a distinct title, easy to conflate in
+      search. Age-fit signals genuinely conflict across sources (SLJ's PreS-Gr3 vs. Horn Book's
+      one-on-one-only caution), which is itself a useful data point: this project's own band
+      system would have to pick a lane the published reviewers didn't agree on.
+
+  - id: jungle-adventure
+    title: "Jungle Adventure (US: You're the Hero: Jungle Adventure)"
+    author: "Lily Murray (illustrated by Essi Kimpimäki)"
+    isbn_or_asin: "9780711276093 (UK); 9781782409939 (US)"
+    publisher: "words & pictures (The Quarto Group)"
+    age_band_claimed: "5+"
+    band_group: "5-7"
+    format: picture_book_story_builder
+    sources:
+      - name: Kirkus Reviews
+        reviewer_type: professional
+        url: "https://www.kirkusreviews.com/book-reviews/lily-murray/jungle-adventure/"
+        confidence: high
+        verification_method: primary_source_fetch
+        positive_signals:
+          - described as a storyteller's toolkit stocked with choose-your-own characters, gear, locales, hazards, and plotlines
+          - 16 identity choices, ranging from a nature expert to a jungle baby to a monkey
+          - combinations described as running to millions rather than to a fixed set of endings
+        negative_signals: []
+        evidence_paraphrase: "Praises the choose-your-character/gear/locale/hazard/plotline toolkit and its identity range."
+        verification_note: >
+          Read directly 2026-08-30. No star. The "16 choices" count is confirmed, but pass 1's
+          gloss "spanning skin tone, disability, species" is narrowed here to what the review
+          actually enumerates (profession, jungle baby, monkey). Kirkus gives the publisher as
+          Wide Eyed Editions and the release as 2022-04-12; the entry's "words & pictures" is the
+          other Quarto children's imprint, so confirm which one carries the edition being cited
+          before quoting the imprint anywhere.
+      - name: "Goodreads"
+        reviewer_type: reader
+        url: "https://www.goodreads.com/book/show/58739252-jungle-adventure"
+        confidence: medium
+        verification_method: websearch_snippet
+        positive_signals:
+          - called creative and a good guide to building a hero's story
+          - vivid illustrations
+          - a 6-year-old reader rated it 5 stars
+        negative_signals: []
+        evidence_paraphrase: "Readers call it imaginative and visually striking."
+      - name: "Amazon (US edition)"
+        reviewer_type: reader
+        url: "https://www.amazon.com/Youre-Hero-Adventure-Lily-Murray/dp/1782409939"
+        confidence: medium
+        verification_method: websearch_snippet
+        positive_signals: ["build-your-own-story concept and art praised", "sustains interest across repeat reads"]
+        negative_signals: ["one reviewer liked the idea but found the execution a little simple"]
+        evidence_paraphrase: "Mixed-to-positive; one reviewer found the actual content thin despite liking the premise."
+    craft_labels:
+      choice_meaningfulness: mixed
+      character_depth_change: not_reported
+      ending_payoff: not_reported
+      replayability: strong
+      dialogue_prose_craft: not_reported
+      age_fit: strong
+    notes: >
+      High title-collision risk: "Jungle Adventure" is reused verbatim by several print-on-demand
+      personalization vendors (Shutterfly, Dinkleboo, I See Me, etc.) whose linear, non-branching
+      products have no independent reviews and are NOT this book. This one builds a story from
+      reader-picked components (identity/gear/locale/hazard/plotline) rather than branching to
+      different endings or inserting a real child's name/photo, so "personalized" in the original
+      proposal's description is a partial fit at best.
+
+  - id: the-cave-of-time
+    title: "The Cave of Time (Choose Your Own Adventure #1)"
+    author: "Edward Packard"
+    isbn_or_asin: "9780553269659 (common reissue; 100+ editions exist with different ISBNs)"
+    publisher: "Originally Bantam (1979); series now Chooseco LLC"
+    age_band_claimed: "Grades 4-7 / ages 7-12 depending on retailer"
+    band_group: "8-10"
+    format: cyoa_novel
+    sources:
+      - name: "Goodreads"
+        reviewer_type: reader
+        url: "https://www.goodreads.com/book/show/190917.The_Cave_of_Time"
+        confidence: high
+        verification_method: websearch_snippet
+        positive_signals:
+          - strong nostalgia; a childhood-favorite entry point into the series
+          - high replay value, explicit ending-hunting
+          - the second-person format still cited as appealing decades later
+        negative_signals:
+          - choices sometimes read as arbitrary rather than meaningful
+          - no unifying story; disconnected vignettes sharing only a premise and opening
+        evidence_paraphrase: >-
+          Ratings cluster high-3s to low-4s/5 across editions (largest single-edition sample 3.88, n=1417);
+          occasional notes that choices feel random.
+      - name: "These Heterogeneous Tasks (interactive-fiction craft blog)"
+        reviewer_type: critic
+        url: "https://heterogenoustasks.wordpress.com/2011/08/05/cyoa-structures-the-cave-of-time/"
+        confidence: high
+        verification_method: primary_source_fetch
+        positive_signals:
+          - 'called the classic CYOA structure: a choice almost every page, heavy branching'
+          - high replayability treated as part of that resemblance
+        negative_signals:
+          - 'states the book does not really have a unifying story: a number of different stories sharing a general style and some early content'
+          - small text blocks and frequent leaps between situations produce a fragmentary reading experience
+        evidence_paraphrase: >-
+          A structural critic reads it as the template branching pattern, broad and largely non-reconverging,
+          at the cost of narrative coherence.
+        verification_note: >
+          Read directly 2026-08-30. The substance holds, the label does not: this 2011 post calls
+          the pattern "the classic CYOA structure", not "Time Cave". The Time Cave name comes from
+          the same author's later taxonomy (Standard Patterns in Choice-Based Games, 2015), so
+          pass 1 attributed a 2015 coinage to a 2011 post. Corrected to the post's own wording.
+      - name: "50 Years of Text Games (Aaron A. Reed)"
+        reviewer_type: critic
+        url: "https://if50.substack.com/p/1979-the-cave-of-time"
+        confidence: medium
+        verification_method: primary_source_fetch
+        positive_signals:
+          - >-
+            deliberate structural craft: describes Packard sketching the branch diagram by hand in a spiral
+            notebook from 1969 and working the structural problems of branching narrative out from first
+            principles
+          - forty different endings
+          - rarely more than two pages pass without a choice
+        negative_signals: []
+        evidence_paraphrase: >-
+          A historical account crediting Packard with hand-solving the branching-narrative math, and stating a
+          forty-ending count.
+        verification_note: >
+          PARTIALLY FALSIFIED 2026-08-30 by a direct read, and this matters because pass 1 promoted
+          this row as the batch's most quantified craft data point and the companion doc held it up
+          as the model for good sourcing. What the page supports: forty endings, the hand-drawn
+          1969 branch diagram, and a choice roughly every two pages. What the page does NOT state:
+          the "39 choice points" figure, the "114 pages" figure, and the counted "18 good / 16 bad
+          / 6 ambiguous" split. The article shows a flowchart and describes it only as having
+          roughly an even number of good, bad, and neutral endings. Those three numbers are
+          withdrawn rather than deleted, so the withdrawal is on the record: they may come from a
+          section not rendered to an unauthenticated read, or pass 1 may have manufactured
+          precision from the flowchart's qualitative description. Confidence drops from high to
+          medium until someone reads the article with a subscription and settles it. The lesson
+          the companion doc drew from this row (that a counted, quantified craft datum is what good
+          sourcing looks like) survives; the claim that this row IS one does not.
+      - name: "Amazon"
+        reviewer_type: reader
+        url: "https://www.amazon.com/Cave-Choose-Adventure-Retro-Editions/dp/1933390794"
+        confidence: medium
+        verification_method: websearch_snippet
+        positive_signals: ["good for reluctant readers", "accessible even to a strong 1st-grade reader"]
+        negative_signals: []
+        evidence_paraphrase: "Reviewers emphasize accessibility for younger/reluctant readers over craft critique."
+    craft_labels:
+      choice_meaningfulness: mixed
+      character_depth_change: weak
+      ending_payoff: mixed
+      replayability: strong
+      dialogue_prose_craft: weak
+      age_fit: strong
+    notes: >
+      No Common Sense Media page exists for this title; no StoryGraph entry for the original book
+      (only for its sequel "Return to the Cave of Time"). No professional trade review (Kirkus,
+      SLJ, PW) exists either, unsurprising for a 1979 mass-market paperback of its category. The
+      counted 18/16/6 ending split that pass 1 attributed to the if50.substack.com history piece
+      was WITHDRAWN in pass 2: a direct read finds forty endings stated and the good/bad/neutral
+      balance described only qualitatively, with no numeric split, no choice-point count, and no
+      page count on the page (see that source row's verification_note). Pass 1 held this up as the
+      single most concrete quantified craft datum in the batch and as the template for what good
+      sourcing looks like. The aspiration was right and the example was not: a quantified,
+      countable craft datum IS what this corpus most wants, which is exactly why a fabricated one
+      is the most damaging thing it can carry. Nothing else in the batch reaches that standard
+      either, so the honest position is that the 30-title target has no sourcing exemplar yet.
+
+  - id: meanwhile
+    title: "Meanwhile"
+    author: "Jason Shiga"
+    isbn_or_asin: "9780810984233"
+    publisher: "Amulet Books (Abrams)"
+    age_band_claimed: "8-12 publisher-listed; one parent/librarian reviewer recommends 10+"
+    band_group: "8-10"
+    format: graphic_gamebook
+    sources:
+      - name: Kirkus Reviews
+        reviewer_type: professional
+        url: "https://www.kirkusreviews.com/book-reviews/jason-shiga-2/meanwhile/"
+        confidence: high
+        verification_method: primary_source_fetch
+        verification_note: >-
+          Read directly 2026-08-30, and the closest match in the batch: the review reads 'This is a truly
+          ingenious graphic novel in its construction' and 'The plots for some adventures can be shallow,
+          confusing or frustratingly circular, leading readers back to the same spot.' No star.
+        positive_signals:
+          - construction called truly ingenious
+          - story lines called unpredictable, ranging from the unremarkable to the end of the world
+        negative_signals: ["some branch plots are shallow, confusing, or frustratingly circular, looping readers back to the same spot"]
+        evidence_paraphrase: "Praises structural ingenuity but flags that individual paths can feel thin or repetitive."
+      - name: "Goodreads (aggregate)"
+        reviewer_type: reader
+        url: "https://www.goodreads.com/book/show/7229730-meanwhile"
+        confidence: medium
+        verification_method: websearch_snippet
+        positive_signals: ["3.94 average, 4251 ratings, 483 reviews (41% 5-star)", "praised by cartoonist Gene Luen Yang as a genre landmark"]
+        negative_signals: ["some readers call it dark/twisted in tone", "demanding to navigate; appeals most to puzzle/logic-minded readers"]
+        evidence_paraphrase: >-
+          Solidly positive aggregate; sentiment splits between delight at the puzzle format and reports it's
+          demanding or tonally dark.
+      - name: "Publisher/retailer copy"
+        reviewer_type: retailer
+        url: "https://www.amazon.com/Meanwhile-Path-Possibilities-Graphic-Novels/dp/0810984237"
+        confidence: medium
+        verification_method: websearch_snippet
+        positive_signals: ["markets true replay value; 3,856 story possibilities as the headline feature"]
+        negative_signals: []
+        evidence_paraphrase: "Publisher copy foregrounds replayability and finding the best path as the central hook."
+      - name: "TV Tropes (fan-analysis synthesis)"
+        reviewer_type: reader
+        url: "https://tvtropes.org/pmwiki/pmwiki.php/ComicBook/Meanwhile"
+        confidence: low
+        verification_method: websearch_snippet
+        positive_signals: ["branches genuinely diverge in outcome: death, time loops, or a dark-secret discovery, not cosmetic variation"]
+        negative_signals:
+          - the one fully happy ending is reachable only by breaking the intended navigation, undercutting a straightforward sense of earned payoff
+          - character depth secondary to puzzle-logic construction
+        evidence_paraphrase: "Choices lead to structurally distinct outcomes, but the most satisfying ending sits outside normal play."
+    craft_labels:
+      choice_meaningfulness: strong
+      character_depth_change: weak
+      ending_payoff: mixed
+      replayability: strong
+      dialogue_prose_craft: weak
+      age_fit: mixed
+    notes: >
+      Consensus across sources: the tab/tube navigation mechanism is treated as a real structural
+      innovation with outcomes that meaningfully diverge, but character/dialogue depth is
+      explicitly and repeatedly traded for puzzle-logic ingenuity. That trade-off, named
+      explicitly by multiple independent sources for the same book, is the strongest single
+      cross-source finding in this batch.
+
+  - id: traitors-in-space
+    title: "Traitors in Space: A Pick-Your-Own-Path Adventure"
+    author: "Tim Collins (illustrated by Steven Wood)"
+    isbn_or_asin: "9781665977623 (US, Aladdin/Simon & Schuster); UK ed. Buster Books 9781837250455"
+    publisher: "Aladdin (Simon & Schuster) / Buster Books (UK)"
+    age_band_claimed: "Ages 8-12 / Grades 3-6"
+    band_group: "8-10"
+    format: illustrated_gamebook
+    sources:
+      - name: Kirkus Reviews
+        reviewer_type: professional
+        url: "https://www.kirkusreviews.com/book-reviews/tim-collins/traitors-in-space/"
+        confidence: high
+        verification_method: primary_source_fetch
+        positive_signals:
+          - says the tale will invite readers to return again and again
+          - more than 45 possible endings, some deadly
+          - closes by calling it a cosmic journey that will have young adventurers rocketing back for further missions
+        negative_signals: ["states that scene-setting and character development take a back seat to rollicking side quests"]
+        evidence_paraphrase: >-
+          A fast-paced branching adventure where character work is secondary to side quests, but which the
+          reviewer expects readers to replay.
+        verification_note: >
+          CORRECTION 2026-08-30, from a direct read. Pass 1 recorded a Kirkus "starred review" at
+          confidence high. THE PAGE SHOWS NO STAR. The claim is struck, not softened. The same read
+          also relocates a detail: the "45+ endings" figure is Kirkus's ("more than 45 possible
+          endings (some deadly)"), and pass 1 attributed it to School Library Journal. The
+          criticism paraphrase itself was accurate, which is the awkward part: a row can carry a
+          correct summary and a fabricated accolade at the same confidence, so accolades need
+          checking independently of substance.
+      - name: School Library Journal
+        reviewer_type: professional
+        url: "https://www.slj.com/review/traitors-in-space-a-pickyourownpath-adventure-100005929"
+        confidence: low
+        verification_method: unverified
+        positive_signals: ["puzzle-solving and trust decisions framed as core engagement drivers", "grades 3-6 recommendation"]
+        negative_signals: []
+        evidence_paraphrase: "Describes a structure built around choices, puzzles, and trust decisions."
+        verification_note: >
+          Could not be re-verified: slj.com returns HTTP 403 to an unauthenticated fetch, and no
+          publisher round-up quoting this review was located. The "45+ endings" signal has been
+          moved to the Kirkus row above, where a direct read found it. What remains here is
+          pass-1 snippet synthesis with its distinguishing detail removed, so confidence drops to
+          low and the method to unverified. Retained rather than deleted so a later curator with
+          SLJ access knows exactly which claim to settle.
+      - name: "Goodreads (aggregate)"
+        reviewer_type: reader
+        url: "https://www.goodreads.com/book/show/225128825-traitors-in-space"
+        confidence: medium
+        verification_method: websearch_snippet
+        positive_signals: ["~4.08/5 (small sample, 13 ratings)", "readers report wanting to reread with different choices"]
+        negative_signals: ["at least one reader calls the underlying plot predictable, though still enjoyable for the format"]
+        evidence_paraphrase: "Small but positive rating; comments emphasize reread fun, with one note that the plot itself is fairly predictable."
+    craft_labels:
+      choice_meaningfulness: mixed
+      character_depth_change: weak
+      ending_payoff: mixed
+      replayability: strong
+      dialogue_prose_craft: mixed
+      age_fit: strong
+    notes: >
+      The original proposal's framing ("praised for replayability and numerous endings, character
+      development secondary to side quests") holds up almost exactly against Kirkus's actual
+      review, confirmed by direct read 2026-08-30. Pass 1 called that the strongest confirmation
+      of source fidelity in the batch and, on substance, it still is. But pass 1 also attached a
+      Kirkus "starred review" to the same row that the page does not show, so this entry is
+      simultaneously the batch's best evidence that snippet synthesis reproduces a review's
+      SUBSTANCE faithfully and its best evidence that snippet synthesis invents ACCOLADES. Those
+      are separable failure modes and the corpus should check them separately.
+
+  - id: samurai-vs-ninja
+    title: "Adventuregame Comics: Samurai vs. Ninja (Book 3)"
+    author: "Jason Shiga"
+    isbn_or_asin: "9781419757839"
+    publisher: "Abrams Fanfare"
+    age_band_claimed: "8-11 (some listings 8-12)"
+    band_group: "11-12"
+    format: interactive_graphic_novel
+    sources:
+      - name: Kirkus Reviews
+        reviewer_type: professional
+        url: "https://www.kirkusreviews.com/book-reviews/jason-shiga-2/samurai-vs-ninja/"
+        confidence: high
+        verification_method: primary_source_fetch
+        verification_note: >-
+          Read directly 2026-08-30 and confirmed close to verbatim: the shading is 'gray and green', the
+          review says 'This is a more tricky, cerebral adventure than hack and slash-type games', and 'With a
+          scenario this engaging, every path is a winner.' No star, and none was claimed.
+        positive_signals:
+          - praises the dual samurai/ninja path structure, visually distinguished by alternating gray and green shading
+          - branching called more tricky and cerebral than hack-and-slash gamebooks
+          - with a scenario this engaging, every path is called a winner
+        negative_signals: []
+        evidence_paraphrase: >-
+          Frames the samurai-vs-ninja split as the central craft device: the same castle-heist scenario
+          replayed with each role's distinct abilities and puzzle logic, judged so every path pays off.
+      - name: "Goodreads (aggregate, series page)"
+        reviewer_type: reader
+        url: "https://www.goodreads.com/book/show/208512465-adventuregame-comics"
+        confidence: medium
+        verification_method: websearch_snippet
+        positive_signals: ["map/exploration structure called engaging"]
+        negative_signals:
+          - one reviewer feels the interactive-comic novelty has diminished by this, the series' third/fourth entry
+          - same review rates it good but not great
+        evidence_paraphrase: >-
+          Mixed reader reception: fans of the mechanic enjoy it, one reviewer feels the format is showing
+          fatigue this deep into the series.
+    craft_labels:
+      choice_meaningfulness: strong
+      character_depth_change: not_reported
+      ending_payoff: strong
+      replayability: strong
+      dialogue_prose_craft: mixed
+      age_fit: strong
+    notes: >
+      Original proposal's framing (positive example of multiple approaches to one scenario) holds
+      at the professional-review tier; reader-tier reception is more mixed, tied partly to series
+      fatigue rather than this book's own mechanic. No source addressed character arc at all.
+
+  - id: leviathan-shiga
+    title: "Adventuregame Comics: Leviathan (Book 1)"
+    author: "Jason Shiga"
+    isbn_or_asin: "9781419757792"
+    publisher: "Abrams (Amulet Books)"
+    age_band_claimed: "Ages 8-12 / Grades 3-7"
+    band_group: "11-12"
+    format: interactive_graphic_novel
+    title_collision_note: "Not Scott Westerfeld's non-interactive YA novel 'Leviathan'; screened and confirmed distinct"
+    sources:
+      - name: Kirkus Reviews
+        reviewer_type: professional
+        url: "https://www.kirkusreviews.com/book-reviews/jason-shiga-2/leviathan-shiga/"
+        confidence: high
+        verification_method: primary_source_fetch
+        positive_signals:
+          - puzzles described as designed to challenge and delight
+          - calls it a clever story requiring investigation, diligence, and the ability to think outside the box
+          - closes that gamers and puzzlers will lose themselves for hours flipping back and forth through the book's crafty charms
+          - gray and blue palette used to distinguish day from night on shared locations
+        negative_signals: []
+        evidence_paraphrase: "Praises the puzzle design and the reward of panel-by-panel exploration."
+        verification_note: >
+          CORRECTION 2026-08-30, from a direct read. Pass 1 recorded a Kirkus "starred review" at
+          confidence high. THE PAGE SHOWS NO STAR. Struck. This is the second of two fabricated
+          star claims in the batch, both on Kirkus, both at high confidence, which is why the
+          header now treats accolades as a category needing its own check. Review posted online
+          2022-07-26, Kirkus issue 2022-08-15. The URL is also normalised to the www host used
+          everywhere else in this file. The day/night palette detail, which pass 1 attributed only
+          to a blogger below, is in the Kirkus review too, so the two sources corroborate.
+      - name: Common Sense Media
+        reviewer_type: professional
+        url: "https://www.commonsensemedia.org/book-reviews/adventuregame-comics-leviathan-book-1"
+        confidence: high
+        verification_method: primary_source_fetch
+        positive_signals:
+          - says comics need not be linear to be enjoyable, as this interactive graphic novel proves
+          - credited with promoting a new way of storytelling and encouraging creative problem solving
+          - age 8+ recommendation
+        negative_signals:
+          - 'violence rated very little: mild sea monster violence, one solid punch and minor tentacle tussling'
+          - 'drinking rated a little: a traveler, probably of legal age, may drink mead or poppy milk'
+        evidence_paraphrase: "Frames the non-linear format as a genuinely new storytelling approach with only minor content caveats."
+        verification_note: >-
+          Read directly 2026-08-30, confirming pass 1 including both content flags and their severity ratings,
+          and adding the age 8+ line.
+      - name: "Goodreads (aggregate)"
+        reviewer_type: reader
+        url: "https://www.goodreads.com/en/book/show/60310719"
+        confidence: medium
+        verification_method: websearch_snippet
+        positive_signals:
+          - 3.68/5, 316 ratings, 82 reviews
+          - tube/map navigation called visually engaging
+          - non-linear exploration called compelling
+        negative_signals:
+          - at least one reviewer reports getting stuck in navigation loops, calling it frustrating
+          - one reviewer states there are effectively only two endings
+          - another states there is no replayability once read through
+        evidence_paraphrase: >-
+          Readers split: some call the navigation clever, others report loops/dead-ends and dispute how much
+          genuine replay value exists.
+      - name: "Blogger/library review roundup (Kleefeld on Comics et al.)"
+        reviewer_type: critic
+        url: "http://www.kleefeldoncomics.com/2022/11/leviathan-review.html"
+        confidence: medium
+        verification_method: websearch_snippet
+        positive_signals:
+          - an opening low-stakes decision tree functions as a tutorial before the real branching maze begins
+          - a day/night mode on shared locations adds replay variation
+        negative_signals: ["page-flipping navigation called somewhat cumbersome"]
+        evidence_paraphrase: >-
+          Multiple reviewers converge on the same structural point: a tutorial-like opening precedes the maze,
+          and a day/night toggle adds replay variety, though page-flipping draws complaints.
+    craft_labels:
+      choice_meaningfulness: mixed
+      character_depth_change: not_reported
+      ending_payoff: mixed
+      replayability: mixed
+      dialogue_prose_craft: not_reported
+      age_fit: strong
+      navigation_clarity: mixed
+    notes: >
+      Navigation is the most consistently discussed dimension for this title, and reviewers
+      disagree on whether the result is elegant or cumbersome, so "mixed" rather than "strong"
+      despite the tutorial-onramp being well documented across sources. Readers explicitly
+      dispute the replayability claim (two vs. effectively-no-replay), a direct contradiction
+      worth flagging rather than averaging away.
+
+  - id: search-for-a-giant-squid
+    title: "Search for a Giant Squid: Pick Your Path"
+    author: "Amy Seto Forrester (illustrated by Andy Chou Musser)"
+    isbn_or_asin: "9781797213934"
+    publisher: "Chronicle Books"
+    age_band_claimed: "Ages 6-9 / Grades 1-4"
+    band_group: "8-10"
+    format: educational_gamebook
+    sources:
+      - name: Kirkus Reviews
+        reviewer_type: professional
+        url: "https://www.kirkusreviews.com/book-reviews/amy-seto-forrester/search-for-a-giant-squid/"
+        confidence: high
+        verification_method: primary_source_fetch
+        positive_signals:
+          - 'verdict reads: an engaging, fun, and deep guide to how sea research happens'
+          - says the exploration never gets so far into the science or the tools that it loses sight of the human faces driving the work
+          - diversity of the research crew commended
+        negative_signals: []
+        evidence_paraphrase: "Called an engaging, substantive guide to how sea research actually happens, with the people kept in frame."
+        verification_note: >-
+          Read directly 2026-08-30. No Kirkus star, and none was claimed here; the batch's Booklist star is a
+          separate claim, handled in the next source row.
+      - name: "Booklist (via publisher round-up)"
+        reviewer_type: professional
+        url: "https://www.chroniclebooks.com/products/search-for-a-giant-squid"
+        confidence: high
+        verification_method: primary_source_fetch
+        positive_signals: ["starred review", "calls the book immensely engaging and says it packs an informational punch"]
+        negative_signals: []
+        evidence_paraphrase: "Starred review says the book is immensely engaging while packing in real factual content."
+        verification_note: >
+          The star is CONFIRMED, and the bare `https://www.booklistonline.com` homepage that pass 1
+          offered as the citation for it is replaced. A homepage cannot evidence a review, and an
+          accolade sourced to one is exactly the shape of the two Kirkus star claims this pass
+          falsified. The citation is now the publisher's own review round-up (Chronicle Books),
+          read directly 2026-08-30, which prints "Booklist (starred review)" against the quotation.
+          Caveat carried in the open: a publisher round-up is an interested secondary source, and
+          the Chronicle page currently served is the 2026 paperback (ISBN 9781797240770), not the
+          hardcover ISBN this entry records. Booklist itself remains unread.
+      - name: "Goodreads reader/librarian reviews"
+        reviewer_type: reader
+        url: "https://www.goodreads.com/book/show/62058646-search-for-a-giant-squid"
+        confidence: medium
+        verification_method: websearch_snippet
+        positive_signals: ["multiple reviewers want to reread/replay across different paths", "praise for the clarity of real marine-science content"]
+        negative_signals: []
+        evidence_paraphrase: "Readers highlight rereadability across paths and say they learned genuine marine-science facts through the choices."
+    craft_labels:
+      choice_meaningfulness: mixed
+      character_depth_change: not_reported
+      ending_payoff: not_reported
+      replayability: strong
+      dialogue_prose_craft: strong
+      age_fit: strong
+      educational_integration: strong
+    notes: >
+      Not a Capstone "You Choose" title as the original proposal guessed; it's Chronicle Books'
+      "Science Explorers" pick-your-path nonfiction series (this is book 1; a sequel, "Search for
+      a Mysterious Mushroom," exists). Reader is a teuthologist on a submersible expedition;
+      reviewers consistently describe facts as delivered through path outcomes rather than static
+      lecture blocks, supporting "strong" educational_integration, but no source did close
+      comparative craft critique the way Kirkus did for "The Citadel of Whispers," so this entry
+      is thinner on the actual failure-mode signal the corpus most wants.
+
+  - id: the-citadel-of-whispers
+    title: "The Citadel of Whispers"
+    author: "Kazim Ali"
+    isbn_or_asin: "9781937133924"
+    publisher: "Chooseco (Choose Your Own Adventure)"
+    age_band_claimed: "Age 12+ / Grade 7 (publisher); one librarian review notes elementary-age patrons enjoyed it"
+    band_group: "negative-example-reference"
+    format: cyoa_novel
+    sources:
+      - name: Kirkus Reviews
+        reviewer_type: professional
+        url: "https://www.kirkusreviews.com/book-reviews/kazim-ali/the-citadel-of-whispers/"
+        confidence: high
+        verification_method: primary_source_fetch
+        verification_note: >
+          CORRECTION 2026-08-30, from a direct read, and it is a subtler error than the two struck
+          star claims. Pass 1 listed "supporting cast (Zara, Saeed, Arjun) called interesting" as a
+          Kirkus positive signal. All three names ARE in the review, so the names were not
+          invented, but they appear only in its plot summary ("Along with your friends, Zara and
+          Saeed, your days are filled with lessons, training, and chores... As mysterious new
+          student Arjun arrives..."). The review does not praise the supporting cast at all. The
+          nearest praise is "While lightly developed, the magic system and political machinations
+          are intriguing, as are the themes of leadership skills, power, and strategies to attain
+          peace during times of upheaval", which is about systems and themes, not people, and which
+          hedges with "lightly developed". The signal is replaced with what the review actually
+          says. This is the failure mode that should worry a later reader most: a plot-summary
+          detail promoted into an evaluative claim reads as sourced, cites a real page, and
+          survives a spot check that only asks whether the names appear. The protagonist is named
+          Krishi. Everything in this row's negative_signals was confirmed close to verbatim.
+        positive_signals:
+          - premise called intriguing
+          - magic system and political machinations called intriguing, though lightly developed
+          - themes of leadership, power, and routes to peace during upheaval called intriguing
+          - notes racial diversity in the world, with some Indian-influenced names
+        negative_signals:
+          - 'limited character growth: format foregrounds the protagonist''s actions over character interactions'
+          - choices and story paths described as haphazard
+          - weighty decisions presented without sufficient contextual information
+          - endings called abrupt and disjointed, as if continuing threads were cut short
+          - stilted dialogue
+          - anachronistic modern word choices
+          - clunky exposition/infodumps
+        evidence_paraphrase: >-
+          Praises the setup, the magic system, and the themes, but faults the branching structure for
+          flattening character development, calling paths haphazard, stakes under-contextualized, endings
+          abruptly cut off, and the prose marked by stiff dialogue, modern diction, and exposition dumps. Its
+          own summary line is that despite an intriguing premise, the interactive format frustrates rather
+          than entertains.
+      - name: "Goodreads"
+        reviewer_type: reader
+        url: "https://www.goodreads.com/book/show/58384703-the-citadel-of-whispers"
+        confidence: medium
+        verification_method: websearch_snippet
+        positive_signals:
+          - prose called almost poetic
+          - setting/world-building praised
+          - at least one reviewer calls characters developed and believable
+          - at least one reviewer describes endings as satisfying with more to discover
+        negative_signals: []
+        evidence_paraphrase: >-
+          Reader reviews trend positive on setting, prose, and character believability, in tension with the
+          professional review's critique.
+      - name: "TheNerdyGirlExpress (blog)"
+        reviewer_type: reader
+        url: "https://thenerdygirlexpress.com/2021/09/24/the-citadel-of-whispers-book-review-from-kleffnotes/"
+        confidence: medium
+        verification_method: websearch_snippet
+        positive_signals:
+          - recommended broadly for fantasy readers of all ages
+          - praised the reader-chosen protagonist gender/sexuality as inclusive
+          - highlighted 48 possible endings and digital page-jump navigation
+        negative_signals: []
+        evidence_paraphrase: "Largely celebratory, focused on inclusivity and navigation novelty rather than close craft critique."
+      - name: "Amazon"
+        reviewer_type: reader
+        url: "https://www.amazon.com/Citadel-Whispers-Choose-Your-Adventure/dp/1937133923"
+        confidence: medium
+        verification_method: websearch_snippet
+        positive_signals: ["world-building and imagination praised by some reviewers"]
+        negative_signals:
+          - many of the 48 endings described as feeling like a segue into an unfinished sub-plot rather than a resolution
+          - only about three endings register as clear high-stakes outcomes; most feel open/unresolved
+        evidence_paraphrase: "At least one reviewer echoes the lack-of-closure critique: most endings read as unfinished branches, not conclusions."
+    craft_labels:
+      choice_meaningfulness: weak
+      character_depth_change: mixed
+      ending_payoff: mixed
+      replayability: strong
+      dialogue_prose_craft: mixed
+      age_fit: strong
+    notes: >
+      Pass 2 (2026-08-30) read the Kirkus review directly and CONFIRMED every negative signal
+      recorded here close to verbatim, while striking one positive signal (see the Kirkus row's
+      verification_note). The entry is stronger after re-verification, not weaker, and it is the
+      only entry in the batch of which that is true.
+
+      This is the single richest negative-craft source found in the whole batch: Kirkus names
+      six distinct, specific failure modes in one review (limited character growth, haphazard
+      paths, under-contextualized weighty decisions, abrupt/disjointed endings, stilted dialogue,
+      anachronistic diction, clunky exposition), all independently corroborated by reader sources
+      on the ending-closure point specifically. Confirms the proposal's own claim that one
+      well-written negative professional review outperforms many five-star ratings for
+      actionability. 48 endings; player chooses protagonist's gender/sexuality; 344pp, 2021-10-01.
+
+  - id: eighth-grade-witch
+    title: "Eighth Grade Witch"
+    author: >-
+      C.E. Simpson (2012 prose original, Choose Your Own Nightmare #1); 2021 graphic-novel adaptation by
+      Andrew E.C. Gaska and E.L. Thomas, illustrated by Valerio Chiola
+    isbn_or_asin: "9781937133450 (2012 prose); 9781620109410 (2021 graphic novel)"
+    publisher: "Chooseco (2012); Oni Press with Chooseco (2021 graphic novel)"
+    age_band_claimed: "Sources disagree: original marketed ~9-12; graphic-novel listings range 8-12 to 12+ YA depending on retailer"
+    band_group: "negative-example-reference"
+    format: cyoa_novel_and_graphic_novel_two_editions
+    sources:
+      - name: "Goodreads (2021 graphic novel, work id 55711044)"
+        reviewer_type: reader
+        url: "https://www.goodreads.com/book/show/55711044-choose-your-own-adventure-eighth-grade-witch"
+        confidence: medium
+        verification_method: websearch_snippet
+        positive_signals: ["illustrations praised by some readers", "haunted-new-kid premise found appealing at the outset"]
+        negative_signals:
+          - 'a page-117 ''wake from the dream'' branch has no legitimate path leading to it: a structural/editing error'
+          - story described as breaking its own rules, with some characters flipping good/bad depending on path taken
+          - choice outcomes described as arbitrary, leading to abrupt deaths with no foreshadowing
+          - one heavily-trafficked early path funnels into a long dead-end cluster of bad-only endings with no warning
+        evidence_paraphrase: >-
+          Readers flag an unreachable page reference as a likely editing error, note internal-consistency
+          breaks (characters flip good/bad by path), and describe several choices as leading to
+          unforeshadowed, seemingly random deaths.
+      - name: "Book-blogger reviews (Twirling Book Princess, No Flying No Tights, Awake at Midnight, Concert Katie)"
+        reviewer_type: reader
+        url: "https://twirlingbookprincess.com/2021/08/review-for-choose-your-own-adventure-eight-grade-witch/"
+        confidence: low
+        verification_method: websearch_snippet
+        positive_signals: ["called fun, adventurous, and scary by one blogger", "art/illustration quality generally praised"]
+        negative_signals:
+          - choice-to-outcome jumps called odd and implausible
+          - one reviewer unsure what had actually happened for a large stretch, suggesting muddled plot logic
+          - blood/violence including an animal-sacrifice scene called gratuitous for the intended age group by at least one reviewer
+        evidence_paraphrase: >-
+          Multiple bloggers independently note implausible choice outcomes, hard-to-follow plot logic, and
+          violent content reading as more intense than the cover/title suggests.
+    craft_labels:
+      choice_meaningfulness: weak
+      character_depth_change: not_reported
+      ending_payoff: weak
+      replayability: mixed
+      dialogue_prose_craft: mixed
+      age_fit: mixed
+    notes: >
+      NOT RE-VERIFIED in pass 2 (2026-08-30): both sources are reader-aggregate and blog material
+      with no single citable page carrying the claims, so a direct read would not have settled
+      them. Every signal below remains pass-1 snippet synthesis and should be treated as the
+      weakest-evidenced entry in the file, notwithstanding that it is one of the two
+      negative-example entries the corpus most wants to be right about.
+
+      Two distinct editions exist (2012 prose original, 2021 graphic-novel adaptation), and the
+      original proposal's negative pattern (inconsistent editing, weak/implausible options,
+      excessive dead ends, some violence) is corroborated, but splits across the two editions
+      rather than one review set: the unreachable-page/breaks-its-own-rules complaint and the
+      violence/animal-sacrifice complaint trace to the 2021 graphic novel, while the
+      random-deaths-with-no-foreshadowing and dead-end-cluster complaint trace most clearly to
+      the 2012 original. No source explicitly confirmed the proposal's specific "title promises
+      more witch content than the story delivers" claim; multiple reviewers do note witches are
+      one thread among several (ghosts, time travel, a haunted house) rather than the story's
+      clear center, which is consistent with but weaker than a direct title-mismatch finding. No
+      StoryGraph page for this exact title could be located or accessed this session.
