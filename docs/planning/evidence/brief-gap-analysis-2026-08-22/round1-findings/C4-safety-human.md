@@ -11,9 +11,9 @@ Computed from the committed catalog (`skeletons/`, 84 shells, 81 production-elig
 
 | Shell | Band | Nodes | Edges | Commissioned words | Endings | Distinct root-to-ending paths |
 |---|---|---|---|---|---|---|
-| `the-big-cardboard-box` | 3-5 | 44  - | 1,904 | 18 | 18 |
+| `the-big-cardboard-box` | 3-5 | 44 | - | 1,904 | 18 | 18 |
 | `the-tin-whistle-map` | 8-11 | 193 | 466 | 19,574 | 35 | 3,324,033 |
-| `the-cartographers-apprentice` | 10-13 | 254  - | 22,258 | 43 | 85,753,081 |
+| `the-cartographers-apprentice` | 10-13 | 254 | - | 22,258 | 43 | 85,753,081 |
 | `the-tenfold-siege` | 16+ | 677 | 767 | 42,233 | 209 | >10^9 (enumeration capped) |
 
 Reading time for the brief's worked example (677 nodes): 42,233 commissioned words is

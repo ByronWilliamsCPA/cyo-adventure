@@ -528,8 +528,8 @@ recommending precisely the discipline failure it spends §5 condemning.
 | **Synthesis §1.1, sub-claims 1-3** | headline | **withdraw as stated** | 3.2 is the registered-defective scope; per-unit gives 2.55; the margin is 0.75 not 0.1; "shares decisions" is 2 of 35 generic verb frames. Replace the section with the recognition verdicts, which make the case far better. |
 | **Synthesis §1.4 magnitude** | "4 to 28x" | **withdraw the multiplier** | Invented price, invented margin, invented cadence, config default read as commercial quota, and the section's own 2.8x correction not propagated. Keep the direction. |
 | **Synthesis §2** | "seven separate cases" | **~four** | Three rows are deliberate F6 staging or brief-disclosed; the count is inflated by citing one gap under four finding IDs. |
-| **Synthesis §5 "Craft rules... unbuilt"**  - | **correct the list** | A2-34 (no moral-lesson coda) is built (`--max-moral-tags`); the tense rules are built; the list was never checked against `scripts/`. |
-| **All A3 §6.3 scale findings**  - | **defer** | 10k/100k/1M subscriber FTE tables against a system with no commerce and no subscribers. |
+| **Synthesis §5 "Craft rules... unbuilt"** | - | **correct the list** | A2-34 (no moral-lesson coda) is built (`--max-moral-tags`); the tense rules are built; the list was never checked against `scripts/`. |
+| **All A3 §6.3 scale findings** | - | **defer** | 10k/100k/1M subscriber FTE tables against a system with no commerce and no subscribers. |
 
 ## Findings I would upgrade
 

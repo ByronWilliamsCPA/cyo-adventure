@@ -16,7 +16,7 @@ Every divergence below was checked against **both** trees before being reported:
 
 Verified facts about the two trees:
 
-```
+```sh
 git diff --name-status origin/main HEAD -- src/ scripts/ .github/ skeletons/   -> EMPTY
 git diff --name-status HEAD origin/claude/model-selection-skeleton-dev-78yp7u \
       -- src/ scripts/ skeletons/ .github/

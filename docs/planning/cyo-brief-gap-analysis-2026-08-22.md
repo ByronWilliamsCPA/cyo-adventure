@@ -191,7 +191,7 @@ the answer, a larger degree of freedom than the one its own docstring warns abou
 
 Measured across the 84 real graphs, sidecars excluded **[verified]**:
 
-```
+```text
 0.0000  the-labyrinth-of-glass (13-16)   0.0000  the-tenfold-siege (16+)
 0.0000  the-ashfall-expedition (16+)     0.0000  the-drowned-court (16+)
 0.0000  the-pale-road (16+)              0.0000  the-thornwood-trial (13-16)

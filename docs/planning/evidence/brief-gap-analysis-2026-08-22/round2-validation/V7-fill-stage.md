@@ -96,8 +96,7 @@ latency and the run record does not capture what timeout was actually in force".
 
 ---
 
-## Claim 2 (C2-3): chunking bounds output only; ~594k input tokens/book, last batch ~193k,
-## over the context window at cap 32,768
+## Claim 2 (C2-3): chunking bounds output only; ~594k input tokens/book, last batch ~193k, over the context window at cap 32,768
 
 **Verdict: mechanism CONFIRMED, every number WRONG, and the cap cited belongs to a model
 production does not run. The real defect is narrower, and worse in a way the finding missed.**
@@ -105,7 +104,7 @@ production does not run. The real defect is narrower, and worse in a way the fin
 ### Mechanism, verified
 
 `orchestrator.py:1188-1189`:
-```
+```text
 batches = plan_fill_batches(skeleton, max_tokens=ctx.cap)
 skeleton_json = json.dumps(skeleton)          # bound ONCE, outside the loop
 ```
@@ -123,7 +122,7 @@ I executed `plan_fill_batches` + `build_fill_subset_prompt` over
 |---:|---:|---:|---:|---:|---|
 | 32,768 (`deepseek-chat-v3.1`) | 4 | 104k | 159k | 527k | no |
 | **64,000 (shipped Haiku 4.5)** | **2** | **120k** | **154k** | **274k** | **no** |
-| 131,072 (the measured run) | 1 | 85k  - | 85k | **yes** |
+| 131,072 (the measured run) | 1 | 85k | 85k | 85k | **yes** |
 
 - C2-3's "594k / 193k" is the 32,768 column at ~3.5 chars/token. Same order, but that cap
   belongs to `deepseek/deepseek-chat-v3.1`, which `core/config.py` does not configure and no run
@@ -192,8 +191,7 @@ benefit is unmeasured anywhere in the tree.** That, not the 46%, is the load-bea
 
 ---
 
-## Claim 4 (C2-1 / C6-1): the 0.6 floor is script-only; the sole backstop is a downgrade the
-## chunked path cannot use
+## Claim 4 (C2-1 / C6-1): the 0.6 floor is script-only; the sole backstop is a downgrade the chunked path cannot use
 
 **Verdict: first half CONFIRMED. Second half, as the synthesis paraphrases it, is FALSE.**
 
@@ -219,8 +217,7 @@ use it" phrasing is wrong and would send an implementer to the wrong place.
 
 ---
 
-## Claim 5 (C2-2): `drafting_guide.md`'s "a tense beat can run three words" licenses the AL-490
-## shortfall
+## Claim 5 (C2-2): `drafting_guide.md`'s "a tense beat can run three words" licenses the AL-490 shortfall
 
 **Verdict: the text is CONFIRMED verbatim and in the right place. The causal claim is REFUTED by
 the project's own control data.**
@@ -237,7 +234,7 @@ wildly overshoot or undershoot it", overshoot named first. All true.
 `compare_vendors.py` -> `fill_skeleton`, i.e. the same prompt tree with the same licence
 sentence in the same system block:
 
-```
+```text
 xai-grok-4.6          the-lantern-festival        capped=0.982
 xai-grok-4.6          the-night-market            capped=0.940
 xai-grok-4.6          the-backyard-treasure-map   capped=0.761
@@ -269,8 +266,7 @@ an effect, and add a large-book non-DeepSeek arm so the confound closes.
 
 ---
 
-## Claim 6 (C2-7): `batch_request` strips conditions/effects, so a reconverging node is written
-## blind to its arrival states
+## Claim 6 (C2-7): `batch_request` strips conditions/effects, so a reconverging node is written blind to its arrival states
 
 **Verdict: the code fact is CONFIRMED; the consequence is substantially OVERSTATED. Two
 independent mitigations the finding did not weigh.**
@@ -297,8 +293,7 @@ order is the right fix. **Severity: high -> medium.**
 
 ---
 
-## Claim 7 (C2-10 / C2-11): cascade unpinned; `FallbackProvider` has no `.model`; `finish_reason`
-## read nowhere
+## Claim 7 (C2-10 / C2-11): cascade unpinned; `FallbackProvider` has no `.model`; `finish_reason` read nowhere
 
 **Verdict: three sub-claims, one confirmed as stated, one confirmed but mis-attributed and
 already registered, one confirmed and under-rated.**
@@ -502,7 +497,7 @@ Across every committed (skeleton, filled) pair I could resolve, 43 pairs from `o
 `tests/data/diversity_panel/fills/`, `out/pilot/`, `out/w7/`, `out/distillation/`, the
 per-node-capped fill rate distribution is:
 
-```
+```text
 floor 0.50 :  0/43 fail
 floor 0.60 :  0/43 fail        <- the proposed floor
 floor 0.65 :  1/43 fail

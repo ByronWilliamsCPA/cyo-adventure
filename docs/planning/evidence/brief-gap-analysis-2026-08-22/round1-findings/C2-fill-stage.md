@@ -20,7 +20,7 @@ Ranked most severe first.
 `git diff --name-status HEAD origin/claude/model-selection-skeleton-dev-78yp7u -- src/ scripts/`
 returns exactly two rows, both additions, both skeleton-stage:
 
-```
+```text
 A	scripts/compare_skeleton_authors.py
 A	scripts/modal_kimi_leg.py
 ```

@@ -39,7 +39,7 @@ implementation; traced the figure through the register, the 2026-08-10 brief, an
 
 **Evidence.**
 
-```
+```sh
 $ uv run python scripts/check_sibling_fills.py .../d7b-bare-names/filled_{C,D}.json
 shared 4-grams across 2 fills: 10 (3.2 per 1000 mean leaf words; budget 4.0)
 ```

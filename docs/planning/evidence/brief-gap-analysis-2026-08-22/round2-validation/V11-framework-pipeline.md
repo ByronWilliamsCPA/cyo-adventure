@@ -17,7 +17,7 @@
 B2 asserts `src/` is byte-identical across trees; several findings depend on it. Verified
 independently, not taken on trust:
 
-```
+```sh
 diff -rq src/ .worktrees/brief-evidence/src/ -x '__pycache__'   -> no output
 239 .py files on each tree
 sha256 over sorted per-file sha256 (path-normalised):
@@ -51,7 +51,7 @@ The claim survives anyway, because of where that guard lives. `run_guard_battery
 CLI ("Usage: uv run python scripts/run_guard_battery.py <skeleton.json> <contract.json>
 <filled.json>..."), and I could find no caller:
 
-```
+```sh
 grep -rn 'run_guard_battery\|check_promise_discharge' .github/ .pre-commit-config.yaml noxfile.py  -> nothing
 grep -rn 'run_guard_battery' src/                                                                  -> nothing
 ```
@@ -169,7 +169,7 @@ uncomputable, and the headline is an exploratory column.
 
 `runs/e1r3-tools-2026-08-21/summary.md` reads, verbatim:
 
-```
+```text
 Primary endpoint (S-1): between-leg statistic 0.000, p = 1.0000 (10000 permutations, seed 20260821).
 Everything below is exploratory.
 | leg | ... | mean repair rounds | output tokens | ... |
@@ -381,7 +381,7 @@ and `needs_revision` assertions, both of which are wrong.
 job"*, with a sample crontab line **in a comment** (`# crontab: Mondays 09:00 UTC, dry-run report
 only`). Searching the repo for anything that would run it:
 
-```
+```sh
 grep -rln 'flywheel' .github/workflows/   ->  skeleton-promotion.yml  (a PR gate, not the cycle)
 grep -rn 'flywheel' src/cyo_adventure/api/ src/cyo_adventure/generation/  ->  comments only
 ```
@@ -480,7 +480,7 @@ than either B2 or the brief says.**
 
 ### B2-13: confirmed
 
-```
+```sh
 find skeletons -name '*.json' | by suffix:  84 PLAIN, 47 contract, 16 lineage, 2 narrative
 ```
 

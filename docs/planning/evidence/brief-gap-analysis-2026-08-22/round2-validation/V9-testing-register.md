@@ -59,7 +59,7 @@ withdrew the attack, because their run was serial and the hazard I found does no
 
 ### Static half, independently reproduced
 
-```
+```text
 distinct rule ids referenced in src/cyo_adventure/validator/*.py: 55
 CG-1..CG-5, CH-1..CH-8 (incl. CH-3a/CH-3b), L1-1..L1-8, L2-9..L2-15,
 PL-15..PL-29, RL-13, SAFE-14, SR-1..SR-9
@@ -90,7 +90,7 @@ pytest-xdist is on by default. Under xdist every worker registers that hook and 
 filename, so workers clobber each other. I measured the damage on one module
 (`tests/unit/test_corpus_layer2.py`, 15 tests) with a per-worker-sharded plugin:
 
-```
+```text
 merged across all workers : 10 ids  [L1-6 L1-7 L2-9 L2-10 L2-11 L2-12 PL-17 PL-24 PL-29 RL-13]
   dump-gw0 : 8    dump-gw1 : 6    dump-gw2 : 7    dump-gw3 : 7    dump-master : 0
 ```
@@ -113,7 +113,7 @@ reading-level, character, series, skeleton, choice-grammar, topology, safety, fi
 orchestrator and publishing test module: **2,430 passed, 9 skipped in 58.8s**, roughly 28% of the
 suite.
 
-```
+```text
 static rule ids in validator/          : 55
 constructed during my subset run       : 53
 NEVER CONSTRUCTED                      : ['L1-8', 'SAFE-14']
@@ -123,7 +123,7 @@ rules constructed ONLY from test code  : []      <-- none; every rule has a real
 
 Cross-checking my set against the prior pass's committed `ruledump.json` (54 ids):
 
-```
+```text
 in theirs, not mine : ['L1-8']     (fires in a module outside my selection)
 in mine, not theirs : []
 ```
@@ -141,7 +141,7 @@ that never fires anywhere is `SAFE-14`. Claim CONFIRMED by independent measureme
 2. **The twelve thin rules reproduce exactly.** Construction counts, with the number of distinct
    production call sites:
 
-   ```
+   ```text
    CG-5 1   CH-3a 1   PL-28 1   SR-2 1   SR-7 1
    CH-5 2   CH-7 2    PL-21 2   PL-22 2  SR-1 2   SR-4 2   SR-6 2
    ```
@@ -178,7 +178,7 @@ an order of magnitude.**
 I copied the live log, took `AL-514` (status `open`, the PL-18 topology-trap lesson), and rewrote its
 last two cells to `| applied | fixed it, see the thing |`. Both checkers pass:
 
-```
+```sh
 check_lessons_log.py  --log log_gamed.md
   ok: log_gamed.md is well formed
        513 lesson(s): accepted=3, applied=241, open=267, rejected=1, superseded=1
@@ -218,7 +218,7 @@ row-id index over every `docs/planning/*.md` table, and a symbol index over `src
 
 **Definition 1, "the ref contains no machine-checkable anchor of any kind":**
 
-```
+```text
 4 of 240
   AL-025  this review; leads chased manually and closed
   AL-026  45 shallowest failure leaves converted to vigor-costing pass-throughs; median read 5 -> 20 ...
@@ -233,7 +233,7 @@ heading inside them, which a human can follow in one grep. The genuinely un-foll
 **Definition 2, the strict one, "the ref contains no anchor that pins a specific change" (SHA, PR, or
 test node id, i.e. a bare file path is not proof a lesson was applied):**
 
-```
+```text
 140 of 240
 ```
 
@@ -292,7 +292,7 @@ diversity register as an input; none has a default path pointing at it.
 
 Repo-wide sweep for any reference to the document from anything executable:
 
-```
+```sh
 git grep -n "diversity-test-register" -- .github .pre-commit-config.yaml scripts noxfile.py Makefile
   scripts/compare_skeleton_authors.py:13:   `S-1` (`docs/planning/diversity-test-register.md` section F):
 ```
@@ -306,7 +306,7 @@ in about forty lines. The register's preamble (lines 9-10) declares a status voc
 `queued` / `running` / `done` / `blocked` / `retired`. Parsing the 30 rows in Status-bearing tables,
 **7 carry a status outside it**:
 
-```
+```text
 line   71  D-2     "halted at the guard battery, not rated"
 line 1100  M-2     "partially done, DETERMINISTIC PRE-TEST; the fill-and-rate half is un..."
 line 1243  R2-1b   "re-specified, unblocked; cost now LOWER than proposed"
@@ -344,7 +344,7 @@ I attempted actual reproduction on two experiments.
 **What reproduces, exactly.** I re-ran `check_skeleton.py --strict --allow-mvp` over all 42 committed
 shells and compared per-shell against each record's `strict_pass`:
 
-```
+```text
 re-run pass: 27  fail: 15
 matched shells: 42
 DISAGREEMENTS: 0
@@ -433,7 +433,7 @@ happening.
 
 Committed instrument on committed artifacts:
 
-```
+```sh
 uv run python scripts/check_sibling_fills.py \
     docs/planning/evidence/d7b-bare-names/filled_C.json \
     docs/planning/evidence/d7b-bare-names/filled_D.json
@@ -485,7 +485,7 @@ both inside the header prose. The skeleton path is not exercised by the nightly 
 The hollow-fill half is confirmed structurally, and it is stronger than "no test exists": **the
 production path cannot detect one.**
 
-```
+```sh
 git grep -c "commissioned_words_by_node\|fill_rate" -- \
   src/cyo_adventure/generation/worker.py src/cyo_adventure/generation/orchestrator.py
   (zero hits)
@@ -503,7 +503,7 @@ assert against, which is why the recommended test has to be written to fail.
 
 **Verdict: CONFIRMED, and I reproduced the failure mode live rather than inferring it.**
 
-```
+```sh
 git grep -rln "cassette\|vcr\|respx\|httpx_mock\|pytest-recording" -- tests/ pyproject.toml
   (nothing)
 ls tests/fixtures/providers
@@ -512,7 +512,7 @@ ls tests/fixtures/providers
 
 Every mock body is hand-authored. I then drove the real parsers with three response shapes:
 
-```
+```text
 legacy string              dig_content='hello'   finish='stop'
 content-block array        dig_content=None      finish='stop'
 null content + reasoning   dig_content=None      finish='stop'
@@ -541,7 +541,7 @@ findings.
 The implementation is `sorted(numbers) == list(range(1, len(numbers) + 1))`, which tests
 consecutiveness of whatever survives, not that nothing was removed. Two deletions, both green:
 
-```
+```text
 TEST 1  delete the newest lesson (AL-513) outright
         ok: well formed -- 512 lesson(s)                                     rc=0
 TEST 2  delete a MIDDLE lesson (AL-250) and renumber the tail (AL-251..513 -> AL-250..512)
@@ -581,7 +581,7 @@ wrong way round: a gap is cosmetic, a silently-repointed citation is a correctne
 It does not check that a cited id resolves. In my 2x2 I rewrote the register's `AL-514` citation to
 `AL-9999` and, with the lesson flipped to `applied`, the run is clean:
 
-```
+```sh
 check_work_linkage.py --register reg_nocite.md --lessons-log log_gamed.md
   ok: unscheduled-work-register.md satisfies the work-linkage contract
 ```
@@ -595,7 +595,7 @@ different lesson, and nothing anywhere reports it.
 The log has exactly one `rejected` lesson, `AL-249` (the decision-variance rating instrument).
 Flipping it:
 
-```
+```sh
 sed 's/| rejected |/| applied |/' authoring-lessons-log.md > log_unreject.md
 check_lessons_log.py --log log_unreject.md
   ok: well formed -- 513 lesson(s): accepted=3, applied=241, open=268, superseded=1   rc=0
@@ -616,7 +616,7 @@ it corrects `C6-3` in the programme's favour. Across every commit on the sourcin
 row's `Falsifier / margins (fixed at registration)` cell is **byte-identical throughout**. Only
 `Status` ever changed:
 
-```
+```text
 e757869: BASELINE
 86e380b .. 6fc2b34: CHANGED cells -> ['Status']    (9 commits, every one)
 ```
@@ -835,7 +835,7 @@ does not.
 Supporting audit I ran for this ranking, of the fifteen script-level gate checks, by whether they
 have a unit test and whether any workflow invokes them:
 
-```
+```sh
 check_fill_integrity       test=yes  ci=none
 check_sibling_fills        test=NO   ci=none
 check_prose_craft          test=yes  ci=none

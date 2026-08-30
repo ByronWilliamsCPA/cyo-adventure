@@ -65,7 +65,7 @@ estimate and shows its arithmetic.
   | 2 `the-quarry-signal` | 13-16 / 267 | 9,997 | 75,278 | **$0.5383** |
   | 3 `the-tin-whistle-map` | 8-11 / 193 | 8,353 | 50,147 | **$0.3502** |
   | 4 `the-last-blue-cup` (rerun) | 3-5 | 598 | 3,366 | **$0.0474** |
-  | 0 `the-last-cartage` | 16+ | 0  - | **unmetered** ("no provider call was metered for this book"), 397.96 s |
+  | 0 `the-last-cartage` | 16+ | 0 | - | **unmetered** ("no provider call was metered for this book"), 397.96 s |
   | 4 (first attempt) | 3-5 | 0 | 3,227 | **$0.0421** wasted |
 
   Run total $1.9943 for 3 delivered books = **$0.665 per delivered book, fill stage only**. Two of
@@ -426,7 +426,7 @@ estimate and shows its arithmetic.
   | Skeleton authoring (`mechanism="automated_provider"`) | `plan.provider` / `plan.model`, checked against a DB allowlist | admin choice |
   | Fill | `Settings.openrouter_model`, overridable per job via `_authoring_model_override` | `anthropic/claude-haiku-4.5` |
   | Fill fallback | `Settings.openrouter_fallback_model` | `anthropic/claude-sonnet-4.6` |
-  | Stage-1 fidelity review | `authoring["review_stage1_model"]`, else falls back to `prep_model`  - |
+  | Stage-1 fidelity review | `authoring["review_stage1_model"]`, else falls back to `prep_model` | - |
   | Moderation review (stage 2) | `Settings.review_openrouter_model`, with `_review_stage2_override` | `anthropic/claude-sonnet-4.6` |
   | Reading-level repair | **none**: reuses the fill provider | fill model |
   | Cover | `Settings.cover_model` | `gemini-3-pro-image` |

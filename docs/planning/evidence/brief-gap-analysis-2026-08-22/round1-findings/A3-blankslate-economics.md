@@ -49,7 +49,7 @@ counts move. I flag explicitly where a 3x price world changes a decision rather 
 
 ### 1.1 Net revenue per subscriber-month
 
-```
+```text
 Store leg : $12.99 x (1 - 0.15)                = $11.04
 Web leg   : $12.99 - (0.029 x 12.99 + 0.30)    = $12.31
 Blend     : 0.6 x 11.04 + 0.4 x 12.31          = $11.55  net ARPU
@@ -60,7 +60,7 @@ $10.38, not $11.55, for the first twelve months of any cohort.
 
 ### 1.2 The COGS envelope
 
-```
+```text
 Mature (30% COGS)  : 0.30 x 11.55 = $3.47 / sub-month
   less non-book B-8:            - $0.55
   BOOK BUDGET      :              $2.92 / sub-month
@@ -87,7 +87,7 @@ Pre-scale (50%)    : 0.50 x 11.55 = $5.78
 The per-user view is the wrong denominator for planning; the *fleet* view is the right one, but the
 fleet view only holds if a per-user cap exists. Assume the usage mix:
 
-```
+```text
 50% pull 1/mo, 30% pull 4/mo, 15% pull 12/mo, 5% pull 30/mo
 mean = 0.5(1) + 0.3(4) + 0.15(12) + 0.05(30) = 0.5 + 1.2 + 1.8 + 1.5 = 5.0 books/sub/month
 FLEET CEILING = $2.92 / 5.0 = $0.58 per book
@@ -104,7 +104,7 @@ unit-economic control.** Ship it before the first paying user. 8/month on standa
 
 ### 1.4 LTV, payback, and why cost is front-loaded
 
-```
+```text
 B-5 = 8%/mo churn  -> expected life = 1/0.08 = 12.5 months
 Gross LTV (net of store) = 12.5 x 11.55 = $144.4
 Contribution LTV at 30% COGS = 0.70 x 144.4 = $101.1
@@ -121,7 +121,7 @@ Now the asymmetry that kills naive models: **consumption is front-loaded, revenu
 A new family explores. Assume month-1 usage is 2.5x steady state (12.5 books) and a 7-day free
 trial at 33% trial-to-paid conversion, with 3 books pulled during trial.
 
-```
+```text
 Cost per trial start   = 3 x $0.575               = $1.73
 Trial starts per paid  = 1 / 0.33                 = 3.03
 Trial burn per acquired subscriber                = $5.24   <-- this is CAC, and nobody books it as CAC
@@ -158,7 +158,7 @@ Anyone who ignores token cost for the long tail loses money on individual books 
 
 Let:
 
-```
+```text
 W   = total words in book
 N   = number of prose nodes
 w   = W/N, average words per node
@@ -173,7 +173,7 @@ p_in, p_out = per-token prices
 
 **Output side (identical under all designs):**
 
-```
+```text
 O_prose  = tau * W
 O_think  = theta * O_prose
 O_total  = (1 + theta) * tau * W                                    ... LINEAR in W
@@ -184,14 +184,14 @@ O_total  = (1 + theta) * tau * W                                    ... LINEAR i
 *(a) Naive full-context re-send.* Every call carries the system prefix, the whole plan, and all
 prose generated so far:
 
-```
+```text
 I_naive = C*(S + P) + sum_{j=1..C} tau*W*(j-1)/C
         = C*(S + P) + tau*W*(C-1)/2
 ```
 
 Substituting `C = W/(k*w)`:
 
-```
+```text
 I_naive ~ (S+P)*W/(k*w)  +  tau*W^2 / (2*k*w)      <-- QUADRATIC IN W
 ```
 
@@ -202,7 +202,7 @@ Note `P` itself grows with `N`, so the first term is also quadratic-ish (`C * P 
 call's prefix is the previous call's prefix plus one block. Every token is written to cache once
 and read `(C - position)` times:
 
-```
+```text
 I_cached_effective = 1.25*(S + P + tau*W)  +  0.10*[ C*(S+P) + tau*W*(C-1)/2 ]
 ```
 
@@ -213,27 +213,27 @@ you roughly a 3x larger book at the same cost. It does not change the asymptotic
 of bounded size `A`, the local subgraph slice `P_loc` (parent + siblings + reachable endings), and
 the parent node's verbatim text `F`:
 
-```
+```text
 I_pruned = C * (S + P_loc + A + F)      with S cached
          ~ W/(k*w) * const                                          ... LINEAR IN W
 ```
 
 **Total gross generation cost:**
 
-```
+```text
 G = I_eff * p_in + O_total * p_out
 ```
 
 **Failure multipliers.** With per-chunk validator failure probability `p_v` and an attempt cap `R`:
 
-```
+```text
 M_chunk = (1 - p_v^R) / (1 - p_v)          expected attempts per chunk
 M_book  = 1 / (1 - p_w)                     wholesale re-plan/regenerate probability p_w
 ```
 
 **Judging / moderation:**
 
-```
+```text
 J = n_passes * [ (tau*W + S_policy) * p_in_judge + O_verdict * p_out_judge ]
 ```
 
@@ -242,7 +242,7 @@ plus path-walk fidelity checks, which must be sampled: `J_walk = K * (walk_token
 
 **Total:**
 
-```
+```text
 T = G * M_chunk * M_book  +  J * M_judge  +  art  +  human
 ```
 
@@ -275,7 +275,7 @@ already dominated by two non-token line items.
 
 **(a) Naive full-context, Opus-tier, interactive:**
 
-```
+```text
 I = 85*(4,000+40,620) + 159,300*(85-1)/2
   = 3,792,700 + 6,690,600
   = 10,483,300 input tokens
@@ -288,7 +288,7 @@ think     95,580 x $25/1M   =  $2.39
 
 **(b) Naive + incremental caching, Opus-tier:**
 
-```
+```text
 writes  (4,000+40,620+159,300) x 1.25 = 254,900 eq  -> $1.27
 reads   10,483,300 x 0.10             = 1,048,330 eq -> $5.24
 output + think                                        -> $6.37
@@ -297,7 +297,7 @@ output + think                                        -> $6.37
 
 **(c) Pruned context, Sonnet-tier, batch, the design I would ship:**
 
-```
+```text
 Per chunk: S 4,000 (cached read) + P_loc 1,200 + state summary A 800 + parent text F 400 = 6,400
 Cached leg : 85 x 4,000 x 0.10 = 34,000 eq  + one 4,000 x 1.25 write = 5,000 eq  -> 39,000 eq
 Fresh leg  : 85 x 2,400                                                          -> 204,000
@@ -333,7 +333,7 @@ you *cannot* prune (e.g. a genre where global continuity genuinely requires the 
 
 This is the number that actually governs the P&L.
 
-```
+```text
 C = 4. I_eff ~ 16,200. O = 6,750 prose + 4,050 think = 10,800.
 Sonnet batch: input $0.024 + output $0.081       G = $0.105
 x M 1.378                                          = $0.145
@@ -360,7 +360,7 @@ root-to-ending paths (a balanced binary tree with 677 nodes has ~339 leaves; bra
 raises it). If any LLM check is run *per path*: "is this path coherent end to end?", cost scales
 with path count, not node count, and each path carries most of the book's tokens.
 
-```
+```text
 Per-path continuity check, 500 paths x ~12,000 tokens x $1.50/1M (Sonnet batch) = $9.00 per book
 ```
 
@@ -387,7 +387,7 @@ architectural invariant and test it, assert in CI that judge-call count is O(1) 
 
 Crossover word count where token cost equals the fixed $0.41 of human+art:
 
-```
+```text
 1x prices  : ~14,000 words
 3x prices  : ~4,600 words
 0.33x      : ~42,000 words
@@ -615,7 +615,7 @@ have no instrument at all for the failure mode "the model changed and nothing er
 Start with the physical constraint. Adult careful-reading speed for child-appropriate prose with
 safety attention is ~200–250 wpm.
 
-```
+```text
 118,000 words / 250 wpm = 472 minutes = 7.87 hours per book
   at $28/hr onshore  = $220 per book
   at $8/hr offshore  =  $63 per book
@@ -632,7 +632,7 @@ the book. The review surface must be O(1) in book size, not O(W).**
 
 Model review time as:
 
-```
+```text
 T_review = t_fixed + n_flags * t_flag
 ```
 
@@ -640,7 +640,7 @@ T_review = t_fixed + n_flags * t_flag
 - `t_flag` = 20s: one machine-surfaced excerpt with its surrounding two sentences and the reason.
 - Target `n_flags ≤ 3`.
 
-```
+```text
 T_review = 45 + 3(20) = 105 s = 1.75 min
 Cost at $8/hr paid, 75% utilisation ($10.67/productive hr) = $0.311
 Cost at $28/hr paid, 75% utilisation ($37.33/productive hr) = $1.089
@@ -672,7 +672,7 @@ At 1.75 min/book and 75% utilisation, one reviewer handles `0.75 x 60 / 1.75 = 2
 
 Cost as a share of net revenue at 100k subs (net revenue $1.155M/month):
 
-```
+```text
 Review-all offshore : 122 FTE x $8/hr x 160 hr = $156,160/mo = 13.5% of net revenue
 Risk-routed         : 23 FTE                    =  $29,440/mo =  2.5%
 Guardian + audit    : 3.7 FTE                   =   $4,736/mo =  0.4%
@@ -721,7 +721,7 @@ book excerpts is a different instrument than the same reviewer at minute five.
 **Both effects are mitigated by the same intervention: salt the queue.** Inject known-bad synthetic
 books at ~3% of review volume, drawn from a maintained corpus of realistic near-miss failures.
 
-```
+```text
 Cost: 3% more review volume = 3% of review cost = $0.009/book at offshore rates
 Buys: (i) a perceptible base rate, restoring detection sensitivity
       (ii) a continuous, per-reviewer measurement of actual catch rate

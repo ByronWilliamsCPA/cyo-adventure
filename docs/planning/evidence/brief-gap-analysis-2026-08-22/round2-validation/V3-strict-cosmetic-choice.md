@@ -140,7 +140,7 @@ nodes are not gathers. Node ids run `a_l01 -> a_l02 -> ... -> a_l10`, three iden
 (`a`/`b`/`c`), each a straight corridor where **every** node offers three labels pointing at the
 next corridor node, which does the same:
 
-```
+```text
 a_l01  "Read the value out loud as you go."   -> a_l02
        "Copy it silently and move on."        -> a_l02
        "Double-check it a third way."         -> a_l02
@@ -215,7 +215,7 @@ matching the review. But I then asked the question the review did not: do the du
 
 **64 of 302 duplicate-target choices are legitimate convergent design**, and they are good:
 
-```
+```text
 the-tenfold-siege  a01_m -> a01_res  (3 labels, one target)
   "Spend everything on this stand"   effects: supplies -2, morale +1
   "Spend only what the moment demands" effects: supplies -1
@@ -391,7 +391,7 @@ author to put a *loop* in the story rather than let two paths share an ending.
   matching `finding.rule_id` against `STRICT_BLOCKING_WARNINGS`. Representative line, verbatim
   from my run:
 
-  ```
+  ```text
   FAIL strict: CG-1 advisory is blocking for a newly drafted skeleton: CG-1 grammar: node
   'c_l01' starts a run of 10 consecutive single-choice nodes in band '10-13' (cap 6) in story
   'sk_observatory_shift' (advisory only, new-content grammar per ADR-011 section 10); composed

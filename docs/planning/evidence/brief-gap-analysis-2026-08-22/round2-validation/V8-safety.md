@@ -227,7 +227,7 @@ profanity, other`.
 | **Stereotyping** | **Partially covered, weakest half missing** | `hate/threatening` gates; `hate` and `IDENTITY_ATTACK` are advisory. Benign-but-corrosive stereotyping (gendered competence, ethnic role assignment, disability-as-tragedy) has no category anywhere in the taxonomy. |
 | **Grooming** | **Uncovered, twice over** | No category in `_OPENAI_BRIGHTLINE`, `PERSPECTIVE_ATTRIBUTES`, or `_CONTENT_CONCERNS`. And structurally invisible per Claim 1: it is a *path* property. |
 | **Imitable instruction** | **Partially covered by prose rubric, dedicated instrument is dead code** | Stage 1's *"real-world danger modeled as achievable"* is a per-node BLOCK criterion, so a single explicitly-instructional node does gate. `validator/imitable.py::screen_for_review` has **zero callers in `src/`** (only `tests/unit/test_imitable.py:17`); the judged `imitable_practice` criterion it exists to route to is unbuilt. |
-| **Cover imagery** | See Claim 9. |
+| **Cover imagery** | See Claim 9. | - |
 
 ### SAFE-14
 
@@ -576,7 +576,7 @@ At ~1.33 tokens/word: **~719K input tokens**, plus ~271 short JSON verdicts ≈ 
 | Claude Sonnet 4.6 ($3 / $15 per MTok), synchronous | $2.16 | $0.61 | **≈ $2.77** |
 | Sonnet 4.6 via Batch API (50%) | $1.08 | $0.31 | **≈ $1.39** |
 | Claude Haiku 4.5 ($1 / $5 per MTok), synchronous | $0.72 | $0.21 | **≈ $0.93** |
-| Haiku 4.5 batched  -  - | **≈ $0.46** |
+| Haiku 4.5 batched | - | - | **≈ $0.46** |
 
 Calibrate against what the existing per-node Stage 1 costs on the same book: 42,233 words at
 `review_batch_size=8` is ~85 calls, ~82K input + ~27K output ≈ **$0.66** at Sonnet 4.6. So

@@ -79,7 +79,7 @@ the request path actually calls), the 84 reduce as follows:
 Series continuations: 1. The C1 audit's "81 production-eligible on-matrix" counts the 6 deprecated
 shells the matcher refuses; C3-9's "84" counts all four excluded classes.
 
-```
+```sh
 .venv/bin/python -c "
 from cyo_adventure.generation.skeleton_match import candidates_for_cell
 from cyo_adventure.validator.band_profile import offered_cells
@@ -96,7 +96,7 @@ shells in cells the API cannot route to.** That recommendation should be struck.
 
 Per-cell pools (all 18, live selector):
 
-```
+```text
 10-13 long/med/short prose  4 5 5      3-5  med/short prose   3 3
 13-16 long gb/prose         5 4        5-8  med/short prose   4 3
 13-16 med  gb/prose         5 4        8-11 long/med/short    4 4 4
@@ -131,7 +131,7 @@ Monotone decrease, four steps, one PR. Confirmed.
 
 ### But TAU_STRUCT gates nothing, so "the corpus it gates" is false
 
-```
+```sh
 grep -rn "TAU_STRUCT" --include=*.py src/ scripts/ | grep -E ">=|<|if "
 ```
 returns no comparison anywhere. The only live consumers are the docstring of
@@ -163,7 +163,7 @@ unread in a file the project regenerates every promotion. **Recommendation: publ
 Recomputed on the **74 selectable** shells (119 in-cell pairs, not the baseline's 145, which
 includes deprecated and series shells):
 
-```
+```text
 min 0.060110  p05 0.153704  p25 0.320965  median 0.387233  max 0.605791
 pairs below TAU_CELL 0.05:      0
 pairs below TAU_STRUCT 0.2983: 26  (22%)
@@ -253,12 +253,12 @@ against a true value near zero), so I report no walk-floor verdict for the gameb
 
 Verbatim, the decisive line:
 
-```
+```text
 ERROR PL-29 topology: band '10-13' may not declare 'time_cave'
       (allowed: ['branch_and_bottleneck','open_map','sorting_hat'])
 ```
 and, at 8-11 where `time_cave` is legal:
-```
+```text
 ok: skeleton passes gate and brief checks     # CYOA #53, exit 0
 ```
 
@@ -339,7 +339,7 @@ the finding. UPHELD on substance, restated.**
 
 Exact reproduction over all 84 graphs:
 
-```
+```text
 labels 22,165  label_words 127,365   slot tokens 2,440 (1.92% of label words)
 beats  15,470  beat_words  464,631   slot tokens 14,999 (3.23% of beat words)
 contracts 47   with a `decisions` block: 0
@@ -529,7 +529,7 @@ against a demand that grows linearly with subscribers x months. The catalog appr
 
 Measured in-process across all 84 shells (`/tmp/strictres.json`):
 
-```
+```text
 strict pass 20   default pass (with --allow-mvp) 84   of 84
 strict-passers by add-commit: [('cc3d5f7 2026-08-20', 20)]
 ```
@@ -653,8 +653,8 @@ section 1.3 rather than buried under threshold provenance.
 | 6 | Correct the brief's scale facts to "84 shells" | **Insufficient.** 84 is the file count. The production number is **74**, and the "4 empty cells" do not exist. Correct to: 149 files / 84 graphs / 74 selectable / 18 offered cells, all populated, pools 3-5. |
 | 7 | Promote `consequence.py` to a gate; a validator module with no gate caller fails the build | **Endorsed, and extend it.** `check_outcome_spread.py` (`grep -rn check_outcome_spread .github/` -> no hit) and `check_decision_overlap.py` (0 of 47 contracts carry the block it reads) are two more. The build rule should be "a checker with no caller **or no data to read** fails the build", an inert instrument and an unwired one are the same defect. |
 | 11 | Re-score S-1 with distance-from-catalog as a covariate | **Endorsed and now urgent.** Claim 6 shows the strict bar is one cohort's house style, and claim 2 shows the CG family is the bulk of it. "Strict-passing" and "resembles PR #730" are currently near-synonyms. |
- - | *missing* | **Publish the `ws5_floor_baseline.json` p05 series as the catalog-convergence alarm.** It has already fallen 33% (0.2305 -> 0.1547) across 78 added pairs while the median held. Free instrument, already regenerated on every promotion, currently unread. |
- - | *missing* | **The 11 walk-floor breaches, including 5 shells at P(satisfying) = 0.0000, are selectable now.** Either grandfather them explicitly or fix them; do not leave them undeclared. |
+| - | *missing* | **Publish the `ws5_floor_baseline.json` p05 series as the catalog-convergence alarm.** It has already fallen 33% (0.2305 -> 0.1547) across 78 added pairs while the median held. Free instrument, already regenerated on every promotion, currently unread. |
+| - | *missing* | **The 11 walk-floor breaches, including 5 shells at P(satisfying) = 0.0000, are selectable now.** Either grandfather them explicitly or fix them; do not leave them undeclared. |
 
 ## The blank-slate alternative: components + a 10^4 design cell sampled at plan time
 

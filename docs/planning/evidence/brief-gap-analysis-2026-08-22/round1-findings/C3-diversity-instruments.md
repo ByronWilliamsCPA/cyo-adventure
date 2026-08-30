@@ -320,7 +320,8 @@ All numbers below were recomputed from committed artifacts unless marked as quot
   claim of the form 'the shared artifact contains no X' is now checked programmatically before it is
   published"), no such check exists in `scripts/`.
 - **How to check I'm right**:
-  ```
+
+  ```sh
   uv run python - <<'EOF'
   import json,re
   s=json.load(open('docs/planning/evidence/d7b-bare-names/structural_bare.json'))
@@ -337,6 +338,7 @@ All numbers below were recomputed from committed artifacts unless marked as quot
       (globals().__setitem__('n',n+w) if p.startswith('.nodes.') else globals().__setitem__('g',g+w))
   EOF
   ```
+
   or simply `python3 -c "import json;print(json.load(open('docs/planning/evidence/d7b-bare-names/structural_bare.json'))['facts'])"`
   and read the outcome-pair names. `ls docs/planning/evidence/d7c-binding-notes/` shows no fills.
 
@@ -360,7 +362,7 @@ All numbers below were recomputed from committed artifacts unless marked as quot
   | `check_solution_transfer.py` | **nowhere** | no |
   | `structural_distance` / `TAU_CELL` | **catalog time only** (`ci.yml:580`, `check_incell_clones.py`) | yes, but over skeletons, never over books |
   | `run_diversity_eval.py --check` (panel R1-R6) | CI, offline panel | yes, over 8 fixture fills |
-  | `diversity/aggregate.py`, `lexical.py` (Phase 2) | **not implemented**: `diversity/__init__.py` says so explicitly |
+  | `diversity/aggregate.py`, `lexical.py` (Phase 2) | **not implemented**: `diversity/__init__.py` says so explicitly | n/a |
   | `measurement/` (sentinel reinsertion, taxonomy, report) | offline scripts only; no `src/` importer | no |
   | `flywheel/` | offline scripts only (`scripts/flywheel_*.py`) | no |
   | Recognition protocol | experiment only, and unvalidated | no |
@@ -420,11 +422,13 @@ All numbers below were recomputed from committed artifacts unless marked as quot
      spanning the join that exist in neither the body nor the label: seven of them in the flattened
      arm alone, including `drop down inside inside`". The shipped `_leaf_text` does exactly the
      disowned thing:
+
      ```python
      parts.append(str(node.get("body", "")))
      parts.extend(str(c.get("label","")) for c in node.get("choices") or [])
      return " ".join(parts)
      ```
+
      Every number the script produces is label-inclusive. Verified: the d7b pair returns **3.2**
      from the script against the brief's cited **2.3**, a 39% inflation, and the brief's own
      re-derivation block gives 3.19 label-inclusive and 2.33 body-only for that pair. So the

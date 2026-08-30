@@ -100,7 +100,7 @@ by nothing at all.
 - **Locus**: `scripts/check_sibling_fills.py:73` (`_leaf_text` → `" ".join(parts)`); `docs/planning/diversity-test-register.md` D-7b row; `docs/planning/authoring-lessons-log.md` AL-267
 - **Problem**: I ran the committed instrument on the committed artifacts:
 
-  ```
+  ```sh
   uv run python scripts/check_sibling_fills.py \
       docs/planning/evidence/d7b-bare-names/filled_C.json \
       docs/planning/evidence/d7b-bare-names/filled_D.json
@@ -206,7 +206,7 @@ by nothing at all.
   that cost three legs grid points in S-1) and rewrote its last two cells to
   `| applied | fixed it, see the thing |`:
 
-  ```
+  ```sh
   uv run python scripts/check_lessons_log.py --log <copy>
   → ok: log.md is well formed
        513 lesson(s): accepted=3, applied=241, open=267, rejected=1, superseded=1

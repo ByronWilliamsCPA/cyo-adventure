@@ -37,7 +37,7 @@ see the correction log (synthesis section 2) for why each was dropped.
 
 ## 0. Sequencing
 
-```
+```text
 GA-D1 hard-block ruling ──────────► W7 approval guard (shape depends on the ruling)
 GA-D2 F5 architecture ruling ─────► W10 settling experiment, and any stratified-plan work
 
@@ -274,7 +274,7 @@ committed pairs fail at 0.6** (tightest good 0.634), so blocking buys nothing to
 = 0.0000** on a random walk, eight at or below 0.00005, and 11 selectable shells breach the floor.
 All are 13-16 and 16+.
 
-```
+```text
 0.0000  the-labyrinth-of-glass (13-16)   0.0000  the-tenfold-siege (16+)
 0.0000  the-ashfall-expedition (16+)     0.0000  the-drowned-court (16+)
 0.0000  the-pale-road (16+)              0.0000  the-thornwood-trial (13-16)

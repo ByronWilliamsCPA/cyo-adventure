@@ -78,7 +78,7 @@ Catalog measurements used throughout (all reproduced in this session):
   `sorting_hat`) declares 348 choices across 115 decision nodes; **102 of those 115 nodes offer two or
   three differently-worded labels that all point at the same successor**, unconditioned:
 
-  ```
+  ```text
   a_l01  "Read the value out loud as you go."  -> a_l02
          "Copy it silently and move on."       -> a_l02
          "Double-check it a third way."        -> a_l02

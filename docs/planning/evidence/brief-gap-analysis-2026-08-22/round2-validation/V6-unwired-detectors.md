@@ -81,7 +81,7 @@ them), because the two readings can no longer diverge.
 wording ("two distinct targets *or* differing conditions/effects"), only **4 of 84 shells** fail,
 not 11: 7 of the 11 duplicate-target books differentiate by condition or effect and are legal.
 
-```
+```text
 the-observatory-shift.json          102 offending nodes   <- rewrite
 the-winter-of-the-wolf-queen.json     1
 the-harrowstone-keep.json             1
@@ -286,7 +286,7 @@ committed pairs, and add it to `cyo-author` step 6.
 **Blast radius, measured, and it is the decisive number in this whole report:**
 **the 0.6 fill-rate floor passes 31 of 31 committed books.** Wiring it today blocks **zero** books.
 
-```
+```text
 lowest four: the-lantern-festival 66.8%  |  the-sunken-signal 80.1%
              the-sky-ship-stowaway 80.2% |  the-cave-of-echoes 80.4%
 highest:     the-thornwood-trial 119.0% (100.0% once per-node surplus is discounted)
@@ -517,7 +517,7 @@ mutation scoring at once. Extend `only_mutate` to `generation/` and `scripts/`.
 | 5 | **Run `run_guard_battery.py` in CI + `cyo-author`** | one job + 2 bug fixes + 12 corpus repairs | 10 guards go live; 12 drifted pairs must be reconciled first | Unblocks cases 5 and 6 together and honours AL-305. |
 | 6 | **Case 4, delete `safety_flagged`** | ~30 min | 0 | Removes five dead reads and one phantom rule; fix the `UW-C292` mis-citation while there. |
 | 7 | **Case 3, build a path-scoped safety consumer** | feature work | unknown | Real coverage gap (C4-1), but new construction, and W2 shows naive re-unitting fails. |
-| 8 | **Case 7**  -  - | Do not wire. |
+| 8 | **Case 7** | - | 0 | Do not wire. |
 
 ---
 

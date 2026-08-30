@@ -103,7 +103,7 @@ These are two entries considered for one slot.
 **The decisive new number.** I computed `structural_distance` for all 105 pairs of 10-13 catalog
 skeletons:
 
-```
+```text
 n skeletons 15, pairs 105
 min 0.064 | p05 0.1239 | median 0.39
 6 most similar: 0.0640 lighthouse/museum · 0.0756 flooded-quarter/wolf-queen ·
@@ -143,7 +143,7 @@ loop, dumping non-ending node ids and ending titles from both books.
 
 **Evidence.** The chain is real and needs no rater:
 
-```
+```text
 CLOCKTOWER (26): n_note · n_stairs n_study n_pendulum n_basement · n_clockface ->
                  n_setcorrect / n_setjam · n_backpanel · n_vault
   endings: The Jammed Dial | The Living Workshop | The Settlement's Praise |
@@ -251,7 +251,7 @@ the catalog's own graphs. Sections 1 and 5 carry no catalog-convergence finding 
 That is an understatement, but the evidence that is being understated is **not the rater verdicts**.
 It is this, which I computed and nobody in this programme has:
 
-```
+```text
 structural_distance over the four committed FILLED 10-13 books
   0.0640  museum   vs lighthouse
   0.1239  clocktower vs museum
@@ -293,7 +293,7 @@ fixable misconfiguration.**
 **Evidence, instrument by instrument.**
 
 **1. Shared 4-grams, number CONFIRMED, interpretation weakened.**
-```
+```sh
 $ uv run python scripts/check_sibling_fills.py \
     docs/planning/evidence/d7-stratified-plan/filled_C.json \
     docs/planning/evidence/mutation-per-request-pilot/book-s-the-midnight-museum.json
@@ -308,7 +308,7 @@ negatives; the **measure** correctly reports "no signal". A metric that measures
 not wrong to report near-zero verbatim overlap on a pair that shares no wording.
 
 **2. Structural distance, number CONFIRMED, claim FLATLY REFUTED.**
-```
+```text
 structural_distance(clocktower_C, museum_S) = 0.12393815065501611
 ws5_floor_baseline.json / same_cell_structural:
   min 0.000469 | p05 0.154657 | p25 (TAU_STRUCT) 0.298321 | median 0.379906 | n=145
@@ -328,7 +328,7 @@ sits unused in the baseline file.** That is a live, cheap, fixable defect, and i
 than the one claimed.
 
 **3. Anti-template guard, the number does NOT belong to this pair. REFUTED.**
-```
+```pycon
 >>> anti_template_verdict(clocktower_C, museum_S, ...)
 ValidationError: anti_template_verdict requires two fills of the same structure
                  (cross-tree pairs are not comparable node-by-node)
@@ -372,7 +372,7 @@ more embarrassing, and fixable this week.
 genuinely-different anchor.
 
 **Evidence.**
-```
+```text
 atg_pairs:
   cave-sea    / cave-space            expected: pass
   cave-sea    / cave-dino             expected: pass
@@ -436,7 +436,7 @@ ablation README confirms `the-school-garden-mystery` is exactly the skeleton the
 pre-registration named; what was lost with the deleted branch (`AL-510`) was the W16 *rooftop-
 rethemed variants*, not the base fill.
 
-```
+```text
 structural_distance(clocktower_filled, school_garden_filled) = 0.344   (> TAU_STRUCT 0.298)
 structural_distance(museum_filled,     school_garden_filled) = 0.3906
 ```

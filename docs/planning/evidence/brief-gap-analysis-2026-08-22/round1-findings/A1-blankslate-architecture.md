@@ -116,7 +116,7 @@ that pretends these three are solved will ship confident dashboards and lose rep
 
 ### The pipeline
 
-```
+```json
                         [BUDGET ENVELOPE: words, nodes, tokens, $ ceiling]
                                        |
  (0) INTAKE ------------------------------------------------- LLM small, sync, <2s
