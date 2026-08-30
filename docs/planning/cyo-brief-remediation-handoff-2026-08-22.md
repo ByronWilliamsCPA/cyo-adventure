@@ -103,8 +103,10 @@ in flight, each appending. This has already caused real damage:
 - Commit `bf7cad1` cites `AL-296`/`AL-297` for content that now lives at `AL-309`.
 
 **Consequence for your plan**: do not append lesson or register rows on a long-lived branch. Draft
-them, and apply them at merge time renumbered from the merged head. Draft rows are already prepared
-in document 2 under "Draft register rows". `W9` exists to fix the underlying hazard.
+them, and allocate them at merge time from the merged head. That allocation has now happened: the
+rows are listed in document 2 under "Ledger rows, as allocated" and land on
+`docs/consolidate-landing-ledger`, which is the single allocation point for the parallel landings.
+`W9` exists to fix the underlying hazard.
 
 ---
 

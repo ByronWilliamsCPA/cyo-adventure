@@ -425,37 +425,48 @@ Each was proposed in round 1 and refuted in round 2. Recorded so it is not re-pr
 
 ---
 
-## Draft register rows, to apply after the branches converge
+## Ledger rows, as allocated
 
-**Not applied on this branch.** `check_lessons_log.py:244` requires consecutive ids from `AL-001`;
-this branch ends at `AL-508` and the sourcing branch holds `AL-509..513` and `UW-C317..320`. Adding
-rows here fails the checker or collides on merge. Apply these after the sourcing branch merges,
-renumbering from the merged head. This is `W9` hazard 2 occurring in practice.
+**Allocated, not draft.** These rows land in `docs/planning/authoring-lessons-log.md` and
+`docs/planning/unscheduled-work-register.md` on `docs/consolidate-landing-ledger`, which is the
+single allocation point for the five parallel landings; the ids below are the real ones. The
+lessons log is gapless, so ids could not be allocated on this branch: when this plan was first
+written it ended at `AL-508` while the sourcing branch held `AL-509..513`, and appending here would
+have failed `check_lessons_log.py` or collided on merge. That is `W9` hazard 2 occurring in
+practice, and the consolidation branch is the workaround.
+
+**Four of the fifteen proposals were already covered** by rows the consolidation branch or `main`
+holds, so they are cross-references rather than new work. They are marked *bound* below.
 
 ### Authoring lessons (`| ID | Date | Source | Category | Lesson | Proposed change | Status | Ref |`)
 
-| Draft id | Category | Lesson | Proposed change |
+| ID | Category | Lesson | Proposed change |
 |---|---|---|---|
-| AL-a | process | A published figure was quoted from a tool that computes a superseded scope; three reviewers and the synthesis author all reproduced 3.2 against a published 2.3 without checking that the tool matched the publication. | Make every convergence tool print its scope on every line, and forbid quoting a rate without it (`W3`). |
-| AL-b | process | `bf7cad1` rewrote three already-`done` Falsifier cells, flipping D-7b from at the floor to below it, with the method change disclosed only in the commit body. | Require section F voiding for any edit to a closed pre-registered row, enforced by a checker (`W9`). |
-| AL-c | validator | A calibration floor (3.3 shared grams) was published without a matched-scale control; the control puts it at the 80th percentile of the null, inverting the claim it supported. | Every calibrated threshold ships with its control and CI, or is marked provisional (`W8`). |
-| AL-d | tooling | `run_guard_battery.py` is the gate registry and is invoked by nothing; two checks registered `gating=True` therefore gate nothing, and the failure was misread as the checks being unwired. | Add a CI runner for the battery and assert the registry is non-empty and reachable (`W5`). |
-| AL-e | validator | Five catalog shells give a random-walking reader exactly zero probability of a satisfying ending; the rule that forbids this exists and is enforced nowhere. | Make the walk floor form-aware and enforce it through the battery (`W6`). |
-| AL-f | process | A review run under a find-gaps instruction produced 63% criticality inflation and 40% absence-framed findings, at least 24 restating existing owner rulings or UW rows. | Any future review pass pairs each finding with a refutation attempt before it is reported; `AL-479` already records this failure mode. |
+| `AL-732` | process | A published figure was quoted from a tool that computes a superseded scope; three reviewers and the synthesis author all reproduced 3.2 against a published 2.3 without checking that the tool matched the publication. | Make every convergence tool print its scope on every line, and forbid quoting a rate without it (`W3`). |
+| `AL-733` | process | `bf7cad1` rewrote three already-`done` Falsifier cells, flipping D-7b from at the floor to below it, with the method change disclosed only in the commit body. | Require section F voiding for any edit to a closed pre-registered row, enforced by a checker (`W9`). |
+| `AL-734` | validator | A calibration floor (3.3 shared grams) was published without a matched-scale control; the control puts it at the 80th percentile of the null, inverting the claim it supported. | Every calibrated threshold ships with its control and CI, or is marked provisional (`W8`). |
+| `AL-726` *(bound)* | tooling | `run_guard_battery.py` is the gate registry and is invoked by nothing; two checks registered `gating=True` therefore gate nothing, and the failure was misread as the checks being unwired. | Already recorded. `AL-726` states the same defect and terminates the chain at a workflow or nox session; `UW-C453` is its work row and carries the CI runner (`W5`). |
+| `AL-735` | validator | Five catalog shells give a random-walking reader exactly zero probability of a satisfying ending; the rule that forbids this exists and is enforced nowhere. | Make the walk floor form-aware and enforce it through the battery (`W6`). |
+| `AL-736` | process | A review run under a find-gaps instruction produced 63% criticality inflation and 40% absence-framed findings, at least 24 restating existing owner rulings or UW rows. | Any future review pass pairs each finding with a refutation attempt and a register lookup before it is reported. `AL-479` records the adjacent habit; this row adds the measured framing bias. |
 
 ### Unscheduled work (Cluster E `| ID | Item | Phase | Status |`, Cluster L `| ID | Item | Issue | Status |`)
 
-| Draft id | Cluster | Item | Status |
+| ID | Cluster | Item | Status |
 |---|---|---|---|
-| UW-x1 | E (security/safety) | `GA-D1`: hard-block publish override is untraced, unversioned, and self-approvable by a dual-role adult. Blocked on the production `summary.hard_block` query and an owner ruling. | decision |
-| UW-x2 | L (live defects) | `W1`: `queued->running` uncommitted and `rq_job_id` omitted cause double enqueue and double spend. | unscheduled |
-| UW-x3 | L (live defects) | `W4`: content-filter and empty-content-with-`stop` responses classified transient, producing unbounded retries of requests that cannot succeed. | unscheduled |
-| UW-x4 | G (diversity/catalog) | `W6`: 11 selectable shells breach the walk floor, 5 at exactly zero. | unscheduled |
-| UW-x5 | G (diversity/catalog) | `W8`: CG-1/2/3 calibrated to an internal table while the rest is calibrated to JHM; recalibrate against the 40 JHM digraphs before any `--strict` enforcement. | unscheduled |
-| UW-x6 | F (test/quality) | `W9`: six demonstrated integrity holes in the lessons log, register, and linkage checkers. | unscheduled |
-| UW-x7 | G (diversity/catalog) | `W10`: cross-vendor structural convergence, 7 of 342 shell-shell pairs breaching TAU_CELL while 0 of 190 shell-catalog pairs do. | unscheduled |
-| UW-x8 | K (documentation) | `GA-D2`: restate F5 as F5-a or F5-b; the shared stratum is byte-identical and enumerates the decision menu. | decision |
-| UW-x9 | F (test/quality) | Correct `UW-C264`: `imitable.py` has zero callers, so its present-tense "routes 13 of 167" is false. | unscheduled |
+| `UW-E17` | E (security/safety) | `GA-D1`: hard-block publish override is untraced, unversioned, and self-approvable by a dual-role adult. Blocked on the production `summary.hard_block` query and an owner ruling. | decision |
+| `UW-C451` *(bound)* | C (lessons linkage) | `W1`: `queued->running` uncommitted and `rq_job_id` omitted cause double enqueue and double spend. Already recorded, from `AL-724`'s side; `UW-C451` names `api/story_requests.py:107` as the omitting call site and carries this plan's `W1` second leg explicitly, so it is one defect and not two. | unscheduled |
+| `UW-L09` | L (live defects) | `W4` second leg: an empty-content response with `finish_reason: 'stop'` is classified transient and retried without bound. The content-filter leg of `W4` is already `UW-C309`, so `UW-L09` carries only the uncovered arm plus the single `finish_reason` mapping the two share. | unscheduled |
+| `UW-G26` | G (diversity/catalog) | `W6`: 11 selectable shells breach the walk floor, 5 at exactly zero. | unscheduled |
+| `UW-G27` | G (diversity/catalog) | `W8`: CG-1/2/3 calibrated to an internal table while the rest is calibrated to JHM; recalibrate against the 40 JHM digraphs before any `--strict` enforcement. | unscheduled |
+| `UW-F58` | F (test/quality) | `W9`: four of the six demonstrated integrity holes. The other two, the lessons log's false append-only claim and the renumbering its consecutive-id rule forces, are already `UW-C266`. | unscheduled |
+| `UW-C445` *(bound)* | C (lessons linkage) | `W10`: cross-vendor structural convergence, 7 of 342 shell-shell pairs breaching TAU_CELL while 0 of 190 shell-catalog pairs do. Already recorded, with the caveat that the statistics rest on an uncommitted harness and re-deriving them is part of the work. | unscheduled |
+| `UW-K22` | K (documentation) | `GA-D2`: restate F5 as F5-a or F5-b; the shared stratum is byte-identical and enumerates the decision menu. | decision |
+| `UW-C450` *(bound)* | C (lessons linkage) | Correct `UW-C264`: `imitable.py` has zero callers, so its present-tense "routes 13 of 167" is false. Already recorded, and it frames the correction as a decision rather than a copy-edit: wire the screen where its output reaches a human, or restate the row in the past tense with the module named as unwired. | unscheduled |
+
+Each new lesson above is open, so each is cited by a cluster C row per the linkage contract:
+`UW-C457` (`AL-732`), `UW-C458` (`AL-733`), `UW-C459` (`AL-734`), `UW-C460` (`AL-735`) and
+`UW-C461` (`AL-736`). Those rows carry the reporting discipline; the deliverables sit in the
+cluster each item's own description names.
 
 ---
 
