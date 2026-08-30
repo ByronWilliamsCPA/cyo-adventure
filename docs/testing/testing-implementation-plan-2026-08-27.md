@@ -20,6 +20,42 @@ Read it alongside them, not instead of them. Where this document contradicts eit
 explicitly and gives the evidence, because a plan that silently overwrites its own source is how a corrected
 fact gets lost again.
 
+## 0. Execution status as of 2026-08-30
+
+This plan was written on 2026-08-27 and merged on 2026-08-30. Most of it was executed in the
+interval, principally by [#780](https://github.com/ByronWilliamsCPA/cyo-adventure/pull/780) (134
+files, +25,814 lines). It is merged as the record of *how* the program was specified, not as a
+queue of pending work, and the task detail below is unedited so the specification and the result
+stay comparable.
+
+Verified against `main` at `6cc33aa5`:
+
+| Task | State | Evidence on `main` |
+| --- | --- | --- |
+| A1 nightly go-back | done | `frontend/e2e-real/kid-go-back-real.spec.ts` (+113), `frontend/e2e/reader-go-back.spec.ts` (+47) |
+| A2 e2e-prod, A3 e2e-staging | done | `e2e-prod.yml` (+88), `e2e-staging.yml` (+286) |
+| A4 release workflow | done | `release.yml` (+22) |
+| A5a backup, A5b digest | done | `supabase-backup.yml`, `notification-digest.yml` |
+| A7 alerting mechanics | done | `scheduled-health-rollup.yml` plus `workflows/test/health-rollup.test.mjs` |
+| B1, B3 usersim legs | done | `frontend/e2e-usersim/` (`walk.spec.ts`, `walk-real.spec.ts`, `walk-a11y.spec.ts`) |
+| B2 `webkit-kid` per DR-2 | done | `frontend/playwright.config.ts:369`, nightly-only as ruled |
+| I7 in the weekly a11y slot per DR-1 | done | `tests/unit/test_a11y_weekly_i7_flag_contract.py` |
+| C1 comprehension probe | done | `scripts/comprehension_probe.py` |
+| C2 fixed reader persona set | done | `schema/personas/reader_personas.json` |
+| C3 calibration loop | done | `src/cyo_adventure/analysis/engagement_correlation.py`, `engagement-correlation.yml` |
+| D1 Lighthouse weekly | done | `.github/workflows/lighthouse-weekly.yml`, which cites this document by path |
+| D2 agentic persona runner | partial | `.claude/skills/naive-ux-check/` with `scenarios.json` and `render.py` |
+| D3 friction beacon | designed, not built | `docs/planning/adr/adr-031-first-party-friction-beacon.md` |
+| D4 load testing (k6) | **not started** | no k6 artifact anywhere in the tree |
+
+A6 (close the recovered issues) is issue-state, not repository state, and is not assertable from a
+tree scan. D4 is the one substantive item with nothing behind it.
+
+Merging this document also repairs two references that shipped ahead of their referent:
+`.github/workflows/lighthouse-weekly.yml:3` and `frontend/playwright.config.ts:435` both cite
+`docs/testing/testing-implementation-plan-2026-08-27.md` by exact path, and until now that path
+did not exist on `main`.
+
 ## 1. Decisions of record
 
 Three decisions were open when PR #768 merged. All three are now settled and are binding on the tasks below.
