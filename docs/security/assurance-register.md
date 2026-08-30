@@ -320,7 +320,8 @@ First tranche of work. Each invalidates multiple rows at once.
   GitGuardian PR status are unaffected and remain enabled, so the secret-scanning half of AC.4.2
   still holds. Re-enabling is the same PATCH with `state=configured`, but that is not a free
   action: **as of 2026-08-24 the account holder confirms GitHub code scanning is no longer free on
-  public repositories.** An earlier revision of this entry read "this repository is public, where
+  public repositories** (owner attestation, not verified against GitHub's published
+  pricing). An earlier revision of this entry read "this repository is public, where
   code scanning is not metered, so ... re-enabling here may cost nothing", and concluded the
   billing pressure must originate elsewhere in the account. That was overtaken by a change in
   GitHub's terms rather than by an error in reasoning, and it inverted the conclusion: the
@@ -1177,7 +1178,6 @@ is visible as a section with no rows rather than as a question nobody asked.
   any error in it. Closing this required restoring SAST over `frontend/`, and the route mattered
   because re-enabling is no longer free: **as of 2026-08-24 the account holder confirms GitHub code
   scanning is no longer free on public repositories** (owner attestation, not verified against
-  GitHub's published pricing) (owner attestation, not verified against
   GitHub's published pricing), so the same PATCH with `state=configured`
   carries a real recurring cost. Ranked by cost, and by whether the result can block a merge.
   **Routes 1, 2 and 3 were taken by #754 on 2026-08-24; route 4 remains deliberately
