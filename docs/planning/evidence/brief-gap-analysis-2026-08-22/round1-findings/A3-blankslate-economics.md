@@ -538,8 +538,15 @@ opened, lazy generation alone saves 25% of art spend for zero product change.
 
 ### 4.2 What is safe to reuse
 
-- **Story topology / skeleton graphs**, provided a mutation operator perturbs them. Structure is not
-  what a reader perceives as "the same book"; prose is.
+- **Story topology / skeleton graphs**, provided a mutation operator perturbs them and the result
+  passes a structural-distance check, and provided the reuse is *across* children rather than back
+  to the same child. Corrected 2026-08-30: this bullet read "Structure is not what a reader
+  perceives as 'the same book'; prose is", which contradicts item 2 of section 4.3 below, where a
+  per-child skeleton cooldown of at least 20 books is required precisely because a child does
+  recognise a repeated shape. Both can be true only with the scope stated: prose is what makes two
+  books read as the same book *to different families*, while shape is what makes two books read as
+  the same book *to one returning child*. Reuse is therefore safe only after validated mutation and
+  distance checks, and never against the same reader inside the cooldown window.
 - **System prompts, style bibles, safety policy, output schema, age-band profiles.** These *must* be
   byte-stable anyway for caching to work, so stability is doubly load-bearing.
 - **Deterministic validator artifacts** (reading-level tables, banned-term lists, grammar rules).
@@ -685,8 +692,23 @@ safety attention is ~200–250 wpm.
 ```
 
 Against a fleet ceiling of $0.58. **Full human reading of a long book is not expensive; it is
-impossible by a factor of 100–380.** Even the 800-word book at 250 wpm is 3.2 minutes = $0.57
-onshore, already the entire fleet budget for one book.
+impossible by a factor of 100–380.** Even the 800-word book at 250 wpm is 3.2 minutes = **$1.49**
+onshore, already more than twice the entire fleet budget for one book.
+
+> **Correction, 2026-08-30.** Two defects in the block above.
+>
+> 1. **The $0.57 was mislabelled.** At the stated $28/hour onshore rate, 3.2 minutes costs
+>    `3.2/60 x 28 = $1.49`. The published $0.57 is 3.2 minutes at the $10.67 *offshore productive*
+>    hour used in section 6.2, not the onshore rate the sentence names. Corrected in place. The
+>    point the sentence is making gets stronger, not weaker: the smallest book in the catalogue
+>    consumes 2.6x the fleet budget in review labour alone, not 0.98x.
+> 2. **The 118,000-word input is the stale baseline** corrected under section 2.3. On the measured
+>    largest shell (`the-tenfold-siege.json`, 42,233 commissioned words) the same arithmetic gives
+>    `42,233 / 250 = 169 minutes = 2.82 hours`, so **$79 onshore and $23 offshore**, and the
+>    impossibility factor against the $0.58 ceiling is **39x to 136x** rather than 100x to 380x.
+>    The conclusion is unchanged in kind: full human reading of the largest book in the catalogue is
+>    still off by two orders of magnitude, and the O(1) review-surface constraint that follows from
+>    it still holds.
 
 **Consequence, and it is a hard architectural constraint, not a preference: the reviewer cannot read
 the book. The review surface must be O(1) in book size, not O(W).**
@@ -748,6 +770,25 @@ train, quality-manage, or supervise for child-safety-critical work.
 **"Risk-routed"** = human sees a book only if (a) any automated gate flagged anything, (b) it is one
 of the family's first three books, or (c) it fell into a 5% random audit of otherwise-clean books.
 At an 85% clean-pass rate: `0.15 + 0.05(0.85) = 19.25%` of volume.
+
+> **Correction, 2026-08-30.** The 19.25% covers only triggers (a) and (c). Trigger (b), a family's
+> first three books, contributes nothing to that arithmetic, so the figure is a **zero-growth
+> steady-state** number and must be labelled as one before the FTE table is used for capacity
+> planning. With `f` the share of a month's volume that is some family's first three books, and
+> assuming first-three books are flagged at the same 15% rate as everything else, the reviewed share
+> is `0.15 + 0.85f + 0.05 x 0.85 x (1 - f)`. Worked at the fleet average of 5 books per subscriber
+> per month, `f = 0.6g` where `g` is the month's new subscribers as a share of the base, so:
+>
+> | Growth regime | `f` | Reviewed share | FTE at 100k subs | FTE at 1M subs |
+> |---|---|---|---|---|
+> | Steady state, no new families | 0 | 19.25% (as published) | 23 | 234 |
+> | 5% monthly new subscribers | 0.03 | **21.7%** | **26** | **263** |
+> | 17% monthly new subscribers | 0.10 | **27.3%** | **33** | **332** |
+>
+> The growth regimes that matter commercially are exactly the ones where this term is largest, so
+> the published table understates staffing by 12% to 42% during any launch or growth phase and is
+> only correct once the subscriber base is flat. Either carry `f` explicitly, as above, or drop
+> trigger (b) from the policy; do not quote 19.25% while the policy still contains three triggers.
 
 **Position 8, the structural resolution.** "Mandatory human approval before a child reads it" is
 satisfiable at scale in exactly one configuration: **the mandatory human is the guardian, and staff
@@ -834,7 +875,7 @@ In priority order:
 
 | Failure mode | Leading indicator (before impact) | Mitigation | Decision rule |
 |---|---|---|---|
-| **Provider outage** | Error rate on the primary provider rising above 2% over 5 min; latency p99 doubling | Circuit-break to the secondary provider after 3 consecutive failures. Queue depth absorbs it, generation is async by design, and *that is the main reason to keep it async*. | Auto-failover at 5% error over 5 min. Human decides when to fail *back*, never automatic, flapping between providers is worse than either. |
+| **Provider outage** | Error rate on the primary provider rising above **2% over 5 min** (alarm only, deliberately below the failover threshold so a human sees the degradation before routing changes); latency p99 doubling | Circuit-break to the secondary provider when **either** limb trips: 3 consecutive failures on the primary, **or** error rate above 5% over a rolling 5-minute window. Queue depth absorbs it, generation is async by design, and *that is the main reason to keep it async*. | Corrected 2026-08-30: this row previously gave `after 3 consecutive failures` as the control and `auto-failover at 5% error over 5 min` as the runbook rule, which are two different triggers that can route differently on the same incident. The disjunction above is the single rule; use the same wording in the runbook and in checklist item 56. Human decides when to fail *back*, never automatic, flapping between providers is worse than either. |
 | **Rate limits** | Token-bucket headroom below 20%; 429 rate above 0.5% | Global token-bucket shaper in front of the provider, sized below the actual limit. Priority lanes: interactive repair > new-subscriber first book > standard queue > pre-generation. Shed the lowest lane first. | Shed pre-generation at 80% utilisation; shed standard queue at 95%; never shed a new subscriber's first book, that is the activation moment. |
 | **Cost spike** | Spend-per-hour >3x the trailing-7-day same-hour baseline | Four-scope pre-call ceilings (§3.7). Auto-throttle at 3x, auto-halt at 10x. | Auto-halt is a *page*, not an email. A cost spike is either a bug or an attack, and both need a human inside 15 minutes. |
 | **Model regression that degrades quality without failing gates** | **This is the dangerous one, by construction it has no in-band signal.** Out-of-band indicators: weekly golden-set score drift >2σ; guardian rejection rate rising; child completion rate falling; average nodes-read-per-book falling | Weekly pinned-model golden-set run. Shadow lane on the candidate model. Gate thresholds re-validated whenever the generator changes. | Any >2σ golden-set move or any safety-gate verdict flip halts promotion of that model and opens an investigation. Do not ship through it. |
@@ -962,7 +1003,7 @@ business either fires constantly or never fires at all.
 53. Is tokens-per-word tracked against a frozen reference text weekly to detect tokenizer or serving-stack changes?
 54. Is there a written, rehearsed safety-escape runbook covering identification by content hash, corpus-wide unpublish, guardian notification ordering, band freeze, and root-cause attribution to a model version?
 55. Is there a pre-committed written rule that any confirmed safety escape in the youngest age band halts generation for that band?
-56. Is provider failover automatic on a defined error-rate threshold, with fail-back requiring human authorisation?
+56. Is provider failover automatic on a single defined trigger, stated as one rule and matching the runbook (3 consecutive failures **or** >5% errors over a rolling 5 minutes, whichever trips first), with fail-back requiring human authorisation?
 57. Are generation requests prioritised into lanes, with pre-generation shed first and new-subscriber first books never shed?
 58. Is monthly logo churn measured per cohort, and is the unit-economic model re-run whenever it moves by more than 2 points?
 59. Is contribution margin per cohort tracked for at least the first three months, given that consumption is front-loaded and revenue is not?
