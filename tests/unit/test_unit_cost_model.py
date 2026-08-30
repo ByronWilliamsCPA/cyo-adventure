@@ -12,29 +12,71 @@ per-book cap; that is the part of D3 still owed.
 from __future__ import annotations
 
 import json
-from typing import TYPE_CHECKING
+import re
+from pathlib import Path
+from typing import Any
 
 import pytest
 
 from cyo_adventure.core.pricing import PRICES
 from cyo_adventure.validator.band_profile import offered_cells
 from scripts.unit_cost_model import (
+    EXCLUDED_RUNS,
     GENERATED_DOC,
     LEG_MODELS,
     PRICE_POINTS_USD,
     RULED_FILL_LEG,
     RULED_REVIEW_LEG,
+    _band_rank,
+    _cell_sort_key,
+    _render_legs,
     cell_weights,
+    delivery_quality,
+    fill_by_band,
     fill_costs,
+    fill_provenance,
     leg_costs,
     load_fill_books,
+    load_records,
     main,
     model,
+    record_provenance,
     render,
 )
 
-if TYPE_CHECKING:
-    from pathlib import Path
+EVIDENCE_README = Path("docs/planning/evidence/skeleton-author-vendors/README.md")
+
+
+def _write_record(root: Path, run: str, name: str, **fields: Any) -> Path:
+    """Write one run record into a synthetic evidence tree.
+
+    Args:
+        root: The synthetic evidence root.
+        run: The run directory name, which is what the exclusion filter reads.
+        name: The record's file stem.
+        **fields: Overrides merged over a minimal token-bearing record.
+
+    Returns:
+        The path written.
+    """
+    record: dict[str, Any] = {
+        "leg": RULED_FILL_LEG,
+        "band": "8-11",
+        "length": "short",
+        "style": "prose",
+        "input_tokens": 1000,
+        "output_tokens": 2000,
+        "reasoning_tokens": 0,
+        "strict_pass": True,
+        "latency_s": 1.0,
+        "error": "",
+    }
+    record.update(fields)
+    path = root / run / f"{name}.record.json"
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(json.dumps(record), encoding="utf-8")
+    return path
+
 
 # ---------------------------------------------------------------------------
 # The leg -> price key contract
@@ -70,19 +112,27 @@ def test_every_priced_leg_is_fully_priced() -> None:
 # ---------------------------------------------------------------------------
 
 
-def test_measured_cells_are_a_strict_subset_of_the_offered_grid() -> None:
+def test_the_model_publishes_its_own_measured_coverage() -> None:
     """The evidence covers a fraction of the grid, and the model says which.
 
     This is the finding step 4 turns on. Reporting a per-book cost for all 18
     offered cells while only two carry token records would be the exact defect
-    the workstream plan exists to catch, so the measured set is computed and
-    published rather than assumed to be the whole grid.
+    the workstream plan exists to catch.
+
+    The assertion reads ``model()["coverage"]`` rather than recomputing the
+    measured set from ``leg_costs()``. An earlier version recomputed it, so a
+    ``model()`` that published the whole offered grid as measured left this
+    test green: the test was checking its own re-implementation and not the
+    published claim. It is also ``<=`` rather than ``<``, because full grid
+    coverage is the project succeeding, not a regression to fail on.
     """
-    costs = leg_costs()
-    measured = {c for leg in costs.values() for c in leg["cells"]}
+    coverage = model()["coverage"]
+    measured = {tuple(c.split("/")) for c in coverage["measured"]}
 
     assert measured, "no committed run record carries token counts"
-    assert measured < offered_cells(), "measured coverage is not a strict subset"
+    assert coverage["measured_cells"] == len(measured)
+    assert measured <= offered_cells(), "a measured cell is not an offered cell"
+    assert coverage["off_grid"] == [], "a record names a cell the grid does not"
 
 
 def test_no_leg_claims_more_delivered_books_than_it_has() -> None:
@@ -237,18 +287,66 @@ def test_failed_fill_books_cost_money_and_deliver_nothing() -> None:
     assert row["usd_per_delivered_book"] > row["billed_usd"] / row["books"]
 
 
-def test_headroom_is_anchored_on_the_billed_fill_rate() -> None:
-    """Headroom scales the measured fill rate, not the skeleton-authoring rate.
+def test_headroom_scales_the_commissioned_word_rate() -> None:
+    """Headroom multiplies commissioned words by a per-commissioned-word rate.
 
-    Skeleton authoring and prose fill are different workloads on different
-    corpora; the earlier draft of this model scaled one by the other's word
-    counts, which is a category error.
+    Two category errors have to stay fixed here and they are different. The
+    first is scaling the fill workload by the skeleton-authoring corpus, which
+    an earlier draft did. The second is subtler and shipped: a cell's
+    ``median_words`` is what the skeleton COMMISSIONS, while
+    ``usd_per_1k_words`` is what a DELIVERED word cost. These books delivered
+    about half their commission, so the two rates differ by roughly 2x and
+    multiplying one by the other put the dearest cell at 95% of a $1.99
+    subscription instead of 44%.
+
+    Reporting the right rate is not the same as scaling by it, and only the
+    second is the defect. An earlier version of this test checked the reported
+    rate and the absent key; putting the delivered rate back into the
+    multiplication left both of those intact and this test green, so it did not
+    guard what its `#VERIFY` citation in `_headroom` claims. The scaled figures
+    are therefore recomputed here from both candidate rates: they must match
+    the commissioned one and must not match the delivered one.
     """
     data = model()
-    rate = fill_costs()[RULED_FILL_LEG]["usd_per_1k_words"]
+    fill = fill_costs()[RULED_FILL_LEG]
+    delivered_rate = float(fill["usd_per_1k_words"])
+    commissioned_rate = float(fill["usd_per_1k_commissioned_words"])
+
+    assert commissioned_rate < delivered_rate, (
+        "the two rates are indistinguishable, so this test cannot discriminate"
+    )
     for row in data["headroom"]:
-        assert row["basis"] == "billed fill, ruled leg"
-        assert row["usd_per_1k_words"] == rate
+        assert row["basis"] == "billed fill, ruled leg, per commissioned word"
+        assert row["usd_per_1k_commissioned_words"] == commissioned_rate
+        assert "usd_per_1k_words" not in row
+
+        words = int(data["cells"][row["dearest_cell"]]["median_words"])
+        assert row["scaled_max_usd"] == pytest.approx(
+            commissioned_rate * words / 1000, abs=5e-5
+        )
+        assert row["scaled_max_usd"] != pytest.approx(
+            delivered_rate * words / 1000, abs=5e-5
+        ), "the dearest cell was scaled by the delivered-word rate"
+
+
+def test_the_scaled_cost_of_a_cell_is_its_commissioned_words_times_the_rate() -> None:
+    """The published figure is reproducible from the two numbers beside it.
+
+    Both the cheapest and dearest cells are recomputed from the cell table's
+    own ``median_words`` and the fill table's own rate. A headroom row that
+    used any other rate, or any other word count, fails here.
+    """
+    data = model()
+    rate = fill_costs()[RULED_FILL_LEG]["usd_per_1k_commissioned_words"]
+    for row in data["headroom"]:
+        for cell_key, scaled_key in (
+            ("cheapest_cell", "scaled_min_usd"),
+            ("dearest_cell", "scaled_max_usd"),
+        ):
+            words = data["cells"][row[cell_key]]["median_words"]
+            assert row[scaled_key] == pytest.approx(rate * words / 1000, abs=5e-5), (
+                f"{row[cell_key]} does not reproduce from {words} words"
+            )
 
 
 def test_the_review_leg_carries_no_measured_fill_cost() -> None:
@@ -273,6 +371,13 @@ def test_billed_fill_books_are_attributed_to_a_catalog_band() -> None:
     assert books
     for book in books:
         assert book["skeleton"], "book not joined to a skeleton"
+        # The join, not merely the slug: an unresolvable slug leaves the band
+        # empty and the commissioned words at zero, which `fill_by_band` then
+        # drops while `fill_costs` keeps, so the two tables disagree with
+        # nothing reconciling them. Asserting only that `skeleton` is truthy
+        # passes either way and is what let that fallback survive review.
+        assert book["band"], f"{book['skeleton']} resolved to no catalog band"
+        assert book["commissioned_words"] > 0, book["skeleton"]
     banded = {b["band"] for b in books if b["band"]}
     assert len(banded) >= 3, f"fill evidence spans too few bands: {banded}"
 
@@ -289,3 +394,428 @@ def test_the_fill_rate_is_reported_per_band() -> None:
     assert {"13-16", "16+"} <= set(bands)
     for row in bands.values():
         assert row["usd_per_1k_commissioned_words"] > 0
+
+
+# ---------------------------------------------------------------------------
+# Run provenance: what the corpus itself disowns must not price a leg
+# ---------------------------------------------------------------------------
+
+
+def test_excluded_runs_match_the_evidence_readme() -> None:
+    """The exclusion list is the README's, not this file's opinion.
+
+    ``EXCLUDED_RUNS`` is hand-maintained, and nothing but this test ties it to
+    the document that actually decides which runs are evidence. A third run
+    excluded in the README and forgotten here would be priced as though it
+    counted, and the rendered page would give no sign of it.
+    """
+    readme = EVIDENCE_README.read_text(encoding="utf-8")
+    bullets = re.split(r"^- ", readme, flags=re.MULTILINE)[1:]
+    declared: set[str] = set()
+    named: set[str] = set()
+    for bullet in bullets:
+        match = re.match(r"`runs/([^/`]+)/`", bullet)
+        if match is None:
+            continue
+        named.add(match.group(1))
+        if "excluded from S-1 analysis" in bullet:
+            declared.add(match.group(1))
+
+    assert named, "no run bullets parsed; the README format changed"
+    assert declared == set(EXCLUDED_RUNS), (
+        f"README excludes {sorted(declared)}, EXCLUDED_RUNS holds "
+        f"{sorted(EXCLUDED_RUNS)}"
+    )
+    assert set(EXCLUDED_RUNS) <= named, "EXCLUDED_RUNS names a run that is gone"
+
+
+def test_records_under_an_excluded_run_are_not_read(tmp_path: Path) -> None:
+    """A run the corpus disowns contributes no record at all.
+
+    Not a cosmetic filter: two of the five priced legs have no error-free
+    record anywhere outside these runs, so reading them publishes a median for
+    those legs computed entirely from runs the README says are not evidence.
+    """
+    excluded_run = min(EXCLUDED_RUNS)
+    _write_record(tmp_path, excluded_run, "smoke", input_tokens=999)
+    _write_record(tmp_path, "e1-2026-08-21", "real", input_tokens=111)
+
+    records = load_records(tmp_path)
+
+    assert [r["input_tokens"] for r in records] == [111]
+    assert record_provenance(tmp_path) == {
+        "files": 2,
+        "excluded_run": 1,
+        "replays": 0,
+        "analysed": 1,
+    }
+
+
+def test_a_record_replayed_into_a_second_run_is_counted_once(
+    tmp_path: Path,
+) -> None:
+    """An identical record in two run directories is one authoring episode.
+
+    Three such pairs exist in the corpus, identical down to ``latency_s``,
+    which two independent model calls do not produce. Counting one episode
+    twice pulls the median toward whatever that episode happened to cost.
+    """
+    _write_record(tmp_path, "e1-2026-08-21", "A__r1", input_tokens=500)
+    _write_record(tmp_path, "e1r3-2026-08-21", "A__r1", input_tokens=500)
+
+    assert len(load_records(tmp_path)) == 1
+    assert record_provenance(tmp_path)["replays"] == 1
+
+
+def test_a_re_run_that_differs_in_any_field_is_not_a_replay(
+    tmp_path: Path,
+) -> None:
+    """The dedup key is content, so a genuine second attempt still counts.
+
+    This is the discrimination half of the test above. A key of
+    ``(leg, cell, replicate)`` would also make the replay test pass while
+    silently discarding real re-runs, which is the opposite defect and a worse
+    one: it would shrink the corpus in a direction nothing reports.
+    """
+    _write_record(tmp_path, "e1-2026-08-21", "A__r1", latency_s=1.0)
+    _write_record(tmp_path, "e1r3-2026-08-21", "A__r1", latency_s=1.5)
+
+    assert len(load_records(tmp_path)) == 2
+    assert record_provenance(tmp_path)["replays"] == 0
+
+
+def test_a_non_object_record_raises_rather_than_being_skipped(
+    tmp_path: Path,
+) -> None:
+    """A malformed record is a fault, not a record that quietly does not exist.
+
+    ``catalog_census.load_shells`` refuses to silently undercount its catalog
+    for the same reason: a leg priced from fewer episodes than the page claims
+    is indistinguishable, in the page, from a leg that ran fewer episodes.
+    """
+    path = tmp_path / "e1-2026-08-21" / "broken.record.json"
+    path.parent.mkdir(parents=True)
+    path.write_text("[]", encoding="utf-8")
+
+    with pytest.raises(ValueError, match="does not hold a JSON object"):
+        load_records(tmp_path)
+
+
+def test_the_page_states_what_it_set_aside() -> None:
+    """A filter that removes part of a corpus has to say so on the page.
+
+    A corpus silently reduced by a tenth renders exactly like a corpus that was
+    always that size, so the counts are published rather than kept internal.
+    """
+    provenance = record_provenance()
+    page = render(model())
+
+    assert provenance["excluded_run"] > 0, "no excluded run in the corpus"
+    assert provenance["replays"] > 0, "no replayed record in the corpus"
+    assert provenance["analysed"] == (
+        provenance["files"] - provenance["excluded_run"] - provenance["replays"]
+    )
+    for count in (
+        provenance["files"],
+        provenance["excluded_run"],
+        provenance["replays"],
+        provenance["analysed"],
+    ):
+        assert str(count) in page
+
+
+def test_a_leg_reports_its_whole_corpus_not_just_its_priced_records() -> None:
+    """Most records carry no tokens, so the priced count is a minority.
+
+    Printing only the priced count reads as the leg's full history and hides
+    that three quarters of its records were dropped before costing.
+    """
+    for leg, row in leg_costs().items():
+        assert row["corpus_records"] >= row["records"], leg
+    assert any(
+        row["corpus_records"] > row["records"] for row in leg_costs().values()
+    ), "no leg drops any record, so this test cannot discriminate"
+
+
+# ---------------------------------------------------------------------------
+# Rendering an empty or partial row rather than crashing on it
+# ---------------------------------------------------------------------------
+
+
+def test_a_leg_with_no_clean_record_renders_rather_than_crashing(
+    tmp_path: Path,
+) -> None:
+    """A leg whose every priced record errored has a spend and no cost.
+
+    This is reachable today, not theoretical: once the excluded runs are
+    filtered out, two of the five priced legs have no error-free record left.
+    Formatting ``None`` with ``:.4f`` raises, and a raise in the renderer takes
+    the whole page down, including every row that was fine.
+    """
+    _write_record(tmp_path, "e1-2026-08-21", "boom", error="HTTP 402")
+    row = leg_costs(tmp_path)[RULED_FILL_LEG]
+
+    assert row["records"] == 1
+    assert row["without_error"] == 0
+    assert row["median_usd"] is None
+
+    lines = _render_legs({"legs": leg_costs(tmp_path)})
+
+    assert any("n/a | n/a | n/a" in line for line in lines)
+    assert any("none that came back without an error" in line for line in lines)
+
+
+def test_a_record_missing_output_tokens_is_reported_as_incomplete(
+    tmp_path: Path,
+) -> None:
+    """Half a price is not a total, and the page has to say which rows are half.
+
+    ``core/pricing.py`` carries a standing ``#CRITICAL`` requiring that a
+    partial sum never silently contribute to a figure a reader takes as a
+    total. On these legs the input half alone understates by several times.
+    """
+    _write_record(tmp_path, "e1-2026-08-21", "half", output_tokens=None)
+    row = leg_costs(tmp_path)[RULED_FILL_LEG]
+
+    assert row["complete"] is False
+
+    lines = _render_legs({"legs": leg_costs(tmp_path)})
+
+    assert any("cost is the input half only" in line for line in lines)
+
+
+def test_the_reasoning_share_is_averaged_over_the_same_records_as_the_cost(
+    tmp_path: Path,
+) -> None:
+    """Two numbers printed side by side must describe the same set of runs.
+
+    A share averaged over every record while the median beside it is taken over
+    the error-free ones is a mixed population inside a single table row, and
+    nothing in the row shows it.
+    """
+    _write_record(
+        tmp_path, "e1-2026-08-21", "ok", reasoning_tokens=0, output_tokens=1000
+    )
+    _write_record(
+        tmp_path,
+        "e1-2026-08-21",
+        "bad",
+        reasoning_tokens=1000,
+        output_tokens=1000,
+        error="HTTP 402",
+    )
+    row = leg_costs(tmp_path)[RULED_FILL_LEG]
+
+    assert row["without_error"] == 1
+    assert row["reasoning_share"] == 0.0, "the errored record leaked into the mean"
+
+
+def test_an_unrecognised_band_sorts_last_instead_of_raising() -> None:
+    """A stray band must not take the whole report down with it.
+
+    ``_record_cell`` deliberately coerces a missing ``band`` to the literal
+    ``"None"``, so the sort key has to accept it. The ordering itself is read
+    from ``storybook.models`` rather than hand-copied, so a new age band cannot
+    land in two different orders in two different files.
+    """
+    assert _band_rank("3-5") < _band_rank("10-13") < _band_rank("16+")
+    assert _band_rank("None") > _band_rank("16+")
+    assert _cell_sort_key(("None", "nonsense", "prose")) > _cell_sort_key(
+        ("16+", "long", "prose")
+    )
+
+
+# ---------------------------------------------------------------------------
+# The two billed populations, and what the corpus says about short books
+# ---------------------------------------------------------------------------
+
+
+def test_the_per_band_total_is_reconciled_against_the_leg_total() -> None:
+    """Two tables headed with billed dollars disagree, and the page says why.
+
+    ``fill_costs`` charges failed books to the books that landed;
+    ``fill_by_band`` cannot, because a book that delivered nothing is not
+    evidence about the band it was aimed at. The difference is exactly the
+    failed spend, and a reader should not have to subtract two tables to find
+    it.
+    """
+    leg = fill_costs()[RULED_FILL_LEG]
+    band_total = sum(row["billed_usd"] for row in fill_by_band().values())
+
+    assert leg["billed_usd"] > band_total, "no failed book, so nothing to reconcile"
+    assert leg["billed_usd"] - band_total == pytest.approx(leg["failed_usd"], abs=1e-4)
+    assert f"{leg['billed_usd']:.4f}" in render(model())
+    assert f"{band_total:.4f}" in render(model())
+
+
+def test_the_scorable_share_is_settled_by_the_corpus_not_hedged() -> None:
+    """Delivered words near half of commission has two readings, and one is true.
+
+    The page used to say nothing committed separates "these books are short"
+    from "the measurement missed what they wrote", and that the second would
+    make every dollars-per-word figure pessimistic by up to 2x. The corpus does
+    separate them: the filler reports its own completeness, and repair reports
+    what it dropped before measurement.
+    """
+    quality = delivery_quality()
+
+    assert quality["books"] > 0
+    assert quality["min_fill_completeness"] == 1.0
+    assert quality["nodes_dropped_to_reading_level"] == 0
+    assert quality["degraded_books"] == 0
+
+    page = render(model())
+
+    assert "read it as book length" in page
+    assert "pessimistic by up to 2x" not in page
+
+
+def test_a_mock_report_never_contributes_billed_cost(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """A `--mock` run prices as zero money, and the guard has to be exercised.
+
+    Without this the only defence against a mock run entering the cost model is
+    one unexercised ``if``. A fabricated mock report carrying a large cost left
+    the whole suite green before this test existed.
+    """
+    run = tmp_path / "mock-run"
+    run.mkdir()
+    (run / "report.json").write_text(
+        json.dumps(
+            {
+                "mock": True,
+                "skeletons": ["skeletons/8-11/the-tin-whistle-map.json"],
+                "books": [
+                    {
+                        "vendor": RULED_FILL_LEG,
+                        "brief_index": 0,
+                        "cost": 99.0,
+                        "leaf_words": 10,
+                        "complete": True,
+                    }
+                ],
+            }
+        ),
+        encoding="utf-8",
+    )
+    monkeypatch.chdir(Path.cwd())
+
+    assert load_fill_books(tmp_path) == []
+    assert fill_provenance(tmp_path) == {
+        "books": 0,
+        "unmetered": 0,
+        "analysed": 0,
+    }
+
+
+def test_a_book_without_a_metered_cost_is_counted_out_loud(
+    tmp_path: Path,
+) -> None:
+    """A dropped book's spend is unknown rather than zero, so it is reported.
+
+    The corpus holds one such book. Including it as free understates the total;
+    dropping it in silence understates the corpus. Counting it does neither.
+    """
+    run = tmp_path / "run"
+    run.mkdir()
+    (run / "report.json").write_text(
+        json.dumps(
+            {
+                "skeletons": ["skeletons/8-11/the-tin-whistle-map.json"],
+                "books": [
+                    {"vendor": RULED_FILL_LEG, "brief_index": 0, "cost": None},
+                    {
+                        "vendor": RULED_FILL_LEG,
+                        "brief_index": 0,
+                        "cost": 1.0,
+                        "leaf_words": 100,
+                        "complete": True,
+                    },
+                ],
+            }
+        ),
+        encoding="utf-8",
+    )
+
+    assert fill_provenance(tmp_path) == {
+        "books": 2,
+        "unmetered": 1,
+        "analysed": 1,
+    }
+    assert len(load_fill_books(tmp_path)) == 1
+
+
+# ---------------------------------------------------------------------------
+# CLI contract
+# ---------------------------------------------------------------------------
+
+
+@pytest.mark.parametrize("other", ["--check", "--write"])
+def test_json_cannot_be_combined_with_a_document_mode(other: str) -> None:
+    """``--json`` used to win silently over both document modes.
+
+    It sat outside the mutually exclusive group and returned first, so
+    ``--json --check`` exited 0 with the document absent entirely and
+    ``--json --write`` was a no-op that reported success. A pair of flags that
+    cancel each other in silence is the defect ``catalog_census.py`` already
+    shipped once.
+    """
+    with pytest.raises(SystemExit) as excinfo:
+        main(["--json", other])
+
+    assert excinfo.value.code == 2
+
+
+def test_check_and_write_remain_mutually_exclusive() -> None:
+    """``--write`` is evaluated first, so losing the group would hide ``--check``."""
+    with pytest.raises(SystemExit) as excinfo:
+        main(["--check", "--write"])
+
+    assert excinfo.value.code == 2
+
+
+def test_missing_doc_is_reported_as_missing_not_stale(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    """A doc that was never generated is a different fault from a stale one.
+
+    Telling a reader "stale" when the file is absent sends them looking for a
+    diff that does not exist. Mirrors the sibling census's guarantee.
+    """
+    monkeypatch.setattr("scripts.unit_cost_model.GENERATED_DOC", tmp_path / "absent.md")
+
+    assert main(["--check"]) == 1
+    assert "does not exist" in capsys.readouterr().err
+
+
+def test_check_names_the_command_that_fixes_it(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    """A failing gate that does not say how to pass costs the reader a search."""
+    stale = tmp_path / "unit-cost-model.md"
+    stale.write_text("stale\n", encoding="utf-8")
+    monkeypatch.setattr("scripts.unit_cost_model.GENERATED_DOC", stale)
+
+    assert main(["--check"]) == 1
+    assert "--write" in capsys.readouterr().err
+
+
+def test_the_model_refuses_to_run_outside_the_repository_root(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """The anchoring guard is the module's own stated invariant, so it is tested.
+
+    ``load_shells`` honours a relative root but ``iter_cells`` reaches
+    ``skeleton_match``, whose root is a module-level relative constant with no
+    override, so the two halves would describe different catalogs from any
+    other directory.
+    """
+    monkeypatch.chdir(tmp_path)
+
+    with pytest.raises(ValueError, match="repository root"):
+        model()
