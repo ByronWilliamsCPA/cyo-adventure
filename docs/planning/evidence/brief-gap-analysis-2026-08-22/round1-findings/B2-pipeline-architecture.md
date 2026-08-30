@@ -1,0 +1,293 @@
+# B2. Pipeline architecture audit: brief section 3 (and 4-5) versus the implemented system
+
+Subject: `docs/planning/cyo-generation-research-brief-2026-08-22.md` sections 3-5, audited against
+`src/cyo_adventure/{generation,validator,moderation,story_requests,publishing,mutation,diversity,flywheel}`,
+`scripts/`, `.github/workflows/`.
+
+Scope: architecture end to end, stages, seams, failure paths, loops, scale, observability, coupling,
+and the offline/online boundary. Not individual algorithms.
+
+## Provenance check (two-tree verification)
+
+Every divergence below was checked against **both** trees before being reported:
+
+- audit tree: `claude/cyo-brief-analysis-jys942` (this checkout)
+- source tree: `origin/claude/model-selection-skeleton-dev-78yp7u` at `.worktrees/brief-evidence/`
+
+Verified facts about the two trees:
+
+```
+git diff --name-status origin/main HEAD -- src/ scripts/ .github/ skeletons/   -> EMPTY
+git diff --name-status HEAD origin/claude/model-selection-skeleton-dev-78yp7u \
+      -- src/ scripts/ skeletons/ .github/
+  A  scripts/compare_skeleton_authors.py
+  A  scripts/modal_kimi_leg.py
+git branch -r --contains origin/claude/model-selection-skeleton-dev-78yp7u
+  origin/claude/model-selection-skeleton-dev-78yp7u          (i.e. NOT merged to main)
+```
+
+So: **the code I audited is byte-identical to `origin/main` and to the source branch**, except for two
+files. Both of those two are offline experiment harnesses for the S-1 skeleton-authoring comparison
+(`compare_skeleton_authors.py`, 1,062 lines; `modal_kimi_leg.py`, 466 lines). Neither is imported by
+`src/`, neither is in any workflow, and neither participates in the request path. The source branch's
+other additions are all under `docs/planning/evidence/`.
+
+Consequence for the classification the coordinator asked for:
+
+- **(a) exists nowhere, real doc/code divergence**: every code-level finding below, B2-1 through
+  B2-22. I re-checked each against the source tree; none of them is resolved there.
+- **(b) exists only on the unmerged source branch, status-honesty problem**: one finding, **B2-0**,
+  covering the entire evidence base of §4.2, §4.4 and §5. Called out separately below and first,
+  because it changes how the whole document should be read.
+- **(c) exists on both, withdrawn**: none. Nothing I drafted before the correction had to be
+  withdrawn, and one finding (**B2-23**) was *added* because of it.
+
+Two claims are marked **inferred** (B2-1's concurrency interleaving, B2-11's arithmetic); everything
+else is direct from source.
+
+Catalog facts measured during this audit (identical on both trees, used repeatedly below):
+- 84 skeleton shells on disk, 81 production-eligible, spread over the 18 offered
+  `(band, length, style)` cells from `validator/band_profile.py:191-210`; 4-6 eligible shells per
+  cell; 15,507 nodes total.
+- 47 of 84 shells carry a `.contract.json` sidecar (56%).
+
+---
+
+## B2-0: The whole of §4.2, §4.4 and §5 rests on evidence and tooling that are unmerged
+- **Severity**: high
+- **Category**: doc/code divergence, **classification (b)**
+- **Locus**: brief §4.2 (the S-1 grid table), §4.4 (`evidence/recognition-protocol-pilot/results.md`, `AL-511`), §5 (`S-0`..`S-5`, `skeleton-sourcing-test-plan-2026-08-21.md`, `AL-510`..`AL-514`, `UW-C317`..`UW-C320`), Related section (`evidence/skeleton-author-vendors/`)
+- **Problem**: On `main` (and on this audit tree) the following do not exist: `docs/planning/skeleton-sourcing-test-plan-2026-08-21.md`, `docs/planning/evidence/skeleton-author-vendors/**`, `docs/planning/evidence/recognition-protocol-pilot/results.md`, the `S-0`..`S-5` register rows in `diversity-test-register.md`, lessons `AL-510`..`AL-514`, work rows `UW-C317`..`UW-C320`, and the harness that produced the S-1 data (`scripts/compare_skeleton_authors.py`, `scripts/modal_kimi_leg.py`). All of them exist only on `origin/claude/model-selection-skeleton-dev-78yp7u`, which is contained by no other branch. The brief's own framing is "the framework section distills what the whole evidence base now supports" and §3 is "the system as it actually runs today", a present tense that, for §4.2/§4.4/§5, is true only of an unmerged working branch. A reader on `main` following any §5 citation gets a dead link, and the repo's own linkage gates (`scripts/check_lessons_log.py`, `scripts/check_work_linkage.py`, the Planning Linkage workflow) have not yet been run against these rows on `main`.
+- **Why it matters for the goal**: §4.2 is what F4 ("select models per stage") and F3 ("put the checker in the author's loop") are earned by, and F3 is described as the single largest measured quality lever. Those two principles are currently supported by artifacts nobody outside the branch can read or re-run. The programme's decision output ("fill with V4 Pro, author structure with a tool-assisted Anthropic tier, review first-pass with V4 Flash") is being carried forward on evidence that has not landed.
+- **Recommendation**: Land the branch, or mark §4.2/§4.4/§5 explicitly as pending-merge with the branch name, so nobody mistakes an unmerged result for a settled one. If the brief is meant to be readable on `main`, it should not merge ahead of its own citations.
+- **How to check I'm right**: On `main`, `ls docs/planning/skeleton-sourcing-test-plan-2026-08-21.md docs/planning/evidence/skeleton-author-vendors/`, both absent; `grep -c "AL-514" docs/planning/authoring-lessons-log.md`, 0. In `.worktrees/brief-evidence/`, all present.
+
+---
+
+## B2-1: The `queued -> running` claim is never committed, so the reclaim sweep re-runs live jobs and silently double-spends
+- **Severity**: critical
+- **Category**: seam/failure handling, **classification (a)** (identical on both trees)
+- **Locus**: `src/cyo_adventure/generation/worker.py:1751-1752` (`job_row.status = "running"; await session.flush()`), the only happy-path `session.commit()` at `worker.py:2455`; `src/cyo_adventure/generation/queue.py:177-184`, `queue.py:56` (`DEFAULT_STALE_AFTER = 30 min`), `queue.py:241-266`; `src/cyo_adventure/core/config.py:404` (`generation_job_timeout_seconds: int = 1800`); `src/cyo_adventure/api/story_requests.py:107`
+- **Problem**: The worker claims a job by setting `status="running"` and **flushing only**; the transaction is not committed until the whole pipeline finishes. Three consequences compound:
+  1. **Sweep 2 is dead code.** `requeue_stranded_jobs`'s second sweep selects `status == "running"` rows to force-fail a hard-killed worker. No committed `"running"` row can ever exist, so it never fires. Its docstring's promise: "These are NOT auto-re-enqueued: the job may already have spent provider budget", is inverted in practice: a SIGKILLed worker's transaction rolls back, the row reverts to `"queued"`, and sweep 1 (`queue.py:218-232`) **does** re-enqueue it. The stated no-silent-re-spend policy does not hold. The code already knows this: `_record_failure`'s docstring (`worker.py:296-303`) tells callers to pass the row's "actual status ... (e.g. `"queued"`) rather than a phantom `running` transition".
+  2. **A healthy long job looks stranded.** The queued-stale window (30 min) equals the job timeout (1800 s). A large chunked fill still running at minute 30 is indistinguishable from a lost enqueue, because its `"running"` write is invisible. Any worker process starting in that window (deploy, scale-out, crash-restart) re-enqueues it.
+  3. **The de-duplication meant to catch (2) is not wired on the product path.** `queue.py:136-150` and `api/generation.py:181` are explicit that `rq_job_id=row_id` + `unique=True` is what stops a second execution. `api/story_requests.py:107`, the enqueue used by the *story-request* flow, i.e. every family-initiated book, calls `enqueue_generation(job_id, settings)` with no `rq_job_id`, so `unique=False`. Its own comment ("No automatic reconciler re-enqueues stale queued rows yet") is stale. And even with the id, RQ uniqueness cannot collide with a job that has already left the queue and is executing.
+  The compare-and-set guard at `worker.py:1743-1749` reads `job_row.status != "queued"` from a fresh session; the first worker's claim is uncommitted, so the second reads `"queued"` and proceeds (**inferred**: under READ COMMITTED the second session's own `UPDATE` then blocks on the first's row lock until the first job commits, and afterwards overwrites the terminal status back to `"running"`). Net: duplicate fill spend, a `persist_storybook` primary-key collision on `f"s_{job_id}"`, and a clobbered outcome.
+- **Why it matters for the goal**: The fill is the largest per-book cost. A recovery mechanism that re-runs in-flight fills is a cost multiplier growing with queue depth and deploy frequency, the opposite of "cost-effective". It also corrupts the cost record (B2-14), because two runs write one row.
+- **Recommendation**: Commit the `queued -> running` claim in its own transaction before the pipeline starts (a conditional `UPDATE ... WHERE status='queued'` returning row count, so the claim is durable *and* atomic). Sweep 2 then becomes live and sweep 1 stops seeing running work. Separately, pass `rq_job_id=job_id` in `api/story_requests.py::_enqueue_safely` and delete its stale comment. Make the queued-stale window strictly greater than `generation_job_timeout_seconds + margin`.
+- **How to check I'm right**: Start a job and, from a second psql session, `SELECT status FROM generation_job WHERE id=...` while the fill runs, it reads `queued`. Then run `requeue_stranded_jobs(stale_after=timedelta(0))` against a live in-flight job on the story-request path and observe a second RQ job admitted. Also confirm no test in `tests/integration/test_queue_reclaim.py` ever produces a committed `"running"` row.
+
+## B2-2: A transient review-backend failure destroys a completed, paid fill; there is no retry and no dead-letter
+- **Severity**: critical
+- **Category**: seam/failure handling, **classification (a)**
+- **Locus**: `src/cyo_adventure/generation/worker.py:1660-1700` (the `except Exception` around `run_moderation_pipeline` / `embed_series_block`: `await session.rollback()` then `_record_failure`); `src/cyo_adventure/moderation/pipeline.py:353-357` ("a review-backend outage (ProviderError) ... propagates INTENTIONALLY to the worker, which rolls back the unreviewed persist and records the job failed for RQ retry"); `src/cyo_adventure/generation/queue.py:151-158` (no `retry=` argument on `queue.enqueue`)
+- **Problem**: The most expensive artifact in the system, a fully filled, gate-passed book, is discarded when a *downstream, cheap* stage raises. The code's justification names "RQ retry", but no retry is configured: `enqueue_generation` passes no `rq.Retry`, so the job lands in RQ's failed registry and the DB row is terminal `"failed"`. The reclaim sweep only looks at `queued`/`running`, so nothing re-drives it. There is no endpoint to retry or resume a failed job (`grep` for retry/regenerate across `src/cyo_adventure/api/` returns nothing; `api/generation.py:518` offers only `force_fail_generation_job`). The filled document existed only in the rolled-back transaction and is gone.
+- **Why it matters for the goal**: A 5xx from a review provider costs the full price of a book. At the 16+ long gamebook scale (475-750 nodes) that is the most expensive artifact the system makes. This is the dominant avoidable cost mode in production, and it is invisible in the cost record because the run is recorded as `failed`.
+- **Recommendation**: Split the transaction: commit the persisted draft (status `draft`, unreviewed and unreachable by any guardian surface) before calling moderation, and make moderation a separately retriable step keyed on `(story_id, version)`. Failing that, add `retry=Retry(max=2, interval=[60,300])` on enqueue and make `persist_storybook` idempotent on `f"s_{job_id}"` so a retry resumes rather than collides.
+- **How to check I'm right**: Inject a `ProviderError` from `run_moderation_pipeline` in `tests/integration/test_generation_worker.py` and assert (a) no `storybook` row survives, (b) `generation_job.status == 'failed'`, (c) no RQ retry is scheduled, (d) no API route can re-drive the job.
+
+## B2-3: `submit` and `approve` check that a moderation report *exists*, never what it says: a hard-BLOCKed book is two admin clicks from published
+- **Severity**: high
+- **Category**: seam/failure handling, **classification (a)**
+- **Locus**: `src/cyo_adventure/publishing/service.py:148-150` (submit: `if version_row.moderation_report is None: raise`), `service.py:412-414` (approve: same presence-only test); `src/cyo_adventure/publishing/state_machine.py:84` (`(NEEDS_REVISION, SUBMIT) -> IN_REVIEW`); `src/cyo_adventure/moderation/pipeline.py:447-450`
+- **Problem**: On a hard BLOCK the pipeline calls `auto_reject`, landing the book at `needs_revision` with the BLOCK report attached. `LEGAL_TRANSITIONS` permits `needs_revision --submit--> in_review`, and `api/approval.py:133-143` exposes that transition to any admin. Both `submit` and `approve` gate only on `moderation_report is not None`, satisfied by the very report that blocked it. So `draft -> auto_reject -> needs_revision -> submit -> in_review -> approve -> published` publishes a book the safety machinery rejected, with no re-screen, no verdict check, and no event distinguishing it from a clean approval (`EventType.RELEASED` is written either way). `api/rescreen.py` and `api/remoderate.py` exist but nothing on this path requires them.
+- **Why it matters for the goal**: ADR-005 says a human approves everything; it does not say a human may silently overrule the auto-reject with no record. F8 judges architectures on *what the human is asked to review*; here the human can discard the machine's only hard verdict without the system noticing. For a children's product this is the highest-consequence seam in the pipeline.
+- **Recommendation**: Make `submit`/`approve` read the report's overall verdict. A `needs_revision` book carrying an unresolved BLOCK must require either a re-moderation pass that clears it, or an explicit `override_reason` recorded as a distinct event. Presence is not a verdict.
+- **How to check I'm right**: Seed a version with a BLOCK-verdict `moderation_report`, POST `/storybooks/{id}/submit` then `/approve` as admin, and observe status `published` with no new moderation run and no override record in `pipeline_event`.
+
+## B2-4: The two delivery measurements that answer the brief's own "a passing gate is not quality" finding are not in the production path at all
+- **Severity**: high
+- **Category**: doc/code divergence, **classification (a)** (`run_guard_battery.py` and the three checkers are identical on both trees; neither branch wires them into `src/`)
+- **Locus**: brief §3.4, "`check_fill_integrity.py` enforces a minimum fill rate (0.6 ...)" and "`check_sibling_fills.py` measures shared 4-grams ... (production wiring of this check is open work, `UW-C315`)"; `scripts/run_guard_battery.py:117,125,163` (the only callers); `scripts/check_fill_integrity.py:67,272`; `docs/planning/authoring-lessons-log.md:570` ("Gate carriage stays the `UW-C307` decision")
+- **Problem**: `check_fill_integrity.py`, `check_sibling_fills.py` and `check_prose_craft.py` are imported by nothing under `src/`. Their only invoker is `scripts/run_guard_battery.py`, a manual CLI harness. The brief flags only the *sibling* check as unwired; the fill-rate floor, the direct remedy for `AL-490`, the brief's own headline "hollow pass" finding, is equally unwired, and `AL-490`'s Ref line says so ("Gate carriage stays the `UW-C307` decision"). The nearest production equivalent is `generation/fidelity.py:125-166`'s per-node `±40%` tolerance, whose own comment calls it "A generous starting tolerance, not calibrated against real fill runs yet" (`fidelity.py:29-31`), and which skips any node missing from the filled document (`fidelity.py:151-152`). No story-level delivery ratio is ever computed, recorded, or enforced on a book a child can read.
+- **Why it matters for the goal**: F2 says "every gate is paired with a delivery measurement ... so a hollow pass is visible". In production, no delivery measurement exists. A book at 40% commissioned words reaches the guardian looking identical in the record to one at 98%.
+- **Recommendation**: Move `commissioned_words_by_node` / fill-rate into `validator/` (or `_regate_after_transform`) as an advisory finding at minimum, recorded on `StorybookVersion.validation_report`, so the number exists on every book before any block decision is made. Record before you enforce; enforcing later is then a threshold change, not a new stage. State in §3.4 that both delivery checks are unwired (`UW-C307` and `UW-C315`), not just one.
+- **How to check I'm right**: `grep -rn "fill_integrity\|sibling_fills" src/` returns only docstring mentions, on both trees. Publish a book through the worker and inspect `storybook_version.validation_report` for any delivery figure.
+
+## B2-5: The whole fill-stage evidence base was produced through a materially different pipeline than section 3 describes
+- **Severity**: high
+- **Category**: doc/code divergence, **classification (a)** (`compare_vendors.py` is identical on both trees)
+- **Locus**: `scripts/compare_vendors.py:937-947` (`fill_skeleton(..., stage1_gate="skipped", ...)`, no `slot_bindings`); brief §4.1 and §4.3 rest on `docs/planning/vendor-comparison/`; production path `generation/worker.py:1043-1053` and `worker.py:1120-1130` (`stage1_gate="required"`, `slot_bindings=result.bindings`)
+- **Problem**: The vendor comparison and the live fill runs that produced `AL-490`..`AL-498` ran with the Stage-1 fidelity gate explicitly **skipped**, no theme-contract binding, no sentinel reinsertion, no re-gate, and (per `AL-498`) no differentiation directive. Production runs all five. So "38.9-52.9% delivery through a passing gate" is a statement about the *offline* gate (`run_story_gate.py` / `check_skeleton.py`), not about the pipeline in §3, and conversely, production's real delivery rate under an armed Stage-1 gate has never been measured. §3 ("the system as it actually runs today") and §4 ("what the analyses found") describe two different systems, and the brief does not say so.
+- **Why it matters for the goal**: Every model-selection and cost conclusion in §4.1 is carried into a production configuration with additional gates (changing the pass rate) and additional calls (changing cost per book). The cost figures in §4.5 exclude the Stage-1 semantic review call, the moderation stages, the auto-repair, and the reading-level passes, all of which production pays.
+- **Recommendation**: Add one sentence to §4 naming the harness posture (`stage1_gate="skipped"`, unbound, undirected) and state that it is the raw floor, not the production configuration. Then run one production-path book end to end with the ledger dump attached, so there is at least one measured production cost-per-book.
+- **How to check I'm right**: `sed -n '937,947p' scripts/compare_vendors.py` on either tree; compare with the two `fill_skeleton` call sites in `worker.py`.
+
+## B2-6: The promotion gate runs `check_skeleton` **without** `--strict`, so the "authoring bar" is not the merge bar
+- **Severity**: high
+- **Category**: doc/code divergence, **classification (a)** (`.github/` and `scripts/check_promotion_bundle.py` identical on both trees)
+- **Locus**: brief §3.1 ("CI re-proves every changed skeleton from scratch") and §3.2 ("`scripts/check_skeleton.py --strict` is the authoring bar"); `scripts/check_promotion_bundle.py:322-330` (`skeleton_argv = [str(shell_path)]`, `--allow-mvp` only, no `--strict`); `scripts/check_skeleton.py:784` (`enforce_grammar=bool(args.strict)`), `:800-806`, `:876-880`, `:892-895`, `:905-930`
+- **Problem**: Everything the brief lists as strict-only is gated behind `args.strict`: advisory-blocking promotion (`:800`), the random-walk satisfying-ending floor (`:876`), the max-in-degree reconvergence cap (`:892`), the depth-qualified endings floor (`:905`), and choice-grammar enforcement (`:784`). `.github/workflows/skeleton-promotion.yml:117-122` calls `check_promotion_bundle.py`, which invokes `check_skeleton` with a bare argv. So §3.2's "reader-experience floors" and "policy and grammar" rows are re-proved at promotion **only in their non-strict form**. `--strict` appears in no workflow (`grep -rn -- "--strict" .github/workflows/` matches only mkdocs and FIPS).
+- **Why it matters for the goal**: F3's thesis is that the checker in the author's loop is the quality lever. If the merge gate is weaker than the author's bar, the catalog's floor is set by whoever skipped the flag, and §4.2's 12/21 and 15/21 tool-assisted pass rates describe a bar the repo does not enforce.
+- **Recommendation**: Pass `--strict` in `check_promotion_bundle.py` for any shell declaring `production_eligible: true` (keep `--allow-mvp`-only for seeds). Expect an initial red on grandfathered shells, that measurement is itself the finding.
+- **How to check I'm right**: Run `uv run python scripts/check_skeleton.py skeletons/<band>/<slug>.json --strict` across the production shells and diff exit codes against `check_promotion_bundle.py` on the same set.
+
+## B2-7: No cost ceiling anywhere in the production path; the family quota is a count, and cell costs span two orders of magnitude
+- **Severity**: high
+- **Category**: scale, **classification (a)**
+- **Locus**: `src/cyo_adventure/story_requests/service.py:82-129` (`_approved_count_since`), `service.py:251-300` (`enforce_family_quota`), `src/cyo_adventure/core/config.py:931` (`default_monthly_story_quota: int = 10`); `validator/band_profile.py:192` vs `:209` (10-23 nodes vs 475-750 nodes per book); `grep -rn "max_cost\|cost_limit\|budget_usd" src/` returns nothing on either tree
+- **Problem**: The only cost gate is a count of approved requests per family per month. A 3-5 short book (10-23 nodes) and a 16+ long gamebook (475-750 nodes) each consume exactly one unit while differing by ~30-50x in commissioned words, before repairs, reading-level passes, chunked re-asks, moderation stages and auto-repair. There is no per-job token or dollar ceiling, no per-family dollar cap, no circuit breaker on a provider price change, and no daily platform cap. `cost_usd` is computed and stored *after the fact* (`worker.py:216-265`) and read by nothing that can stop anything.
+- **Why it matters for the goal**: §1 asserts "unit economics cap what any one book may cost to produce". No such cap is implemented. F7 has been applied thoroughly to the *harness* (`--resume`, preflight, credits checks) and not at all to production, which is where the money will actually be spent at volume.
+- **Recommendation**: Add a per-job token budget derived from the cell's commissioned words (a multiple of `expected_output_tokens`), enforced inside `MeteredProvider` so no stage escapes it, plus a per-family monthly dollar cap alongside the count quota. Fail deterministically at the cap rather than letting a repair loop discover it.
+- **How to check I'm right**: `grep -rn "cost_usd" src/`, every hit is a write or a read-back for display; nothing branches on it.
+
+## B2-8: A rejection is paid for by the family, and nothing tells them a book was auto-rejected
+- **Severity**: high
+- **Category**: seam/failure handling, **classification (a)**
+- **Locus**: `src/cyo_adventure/story_requests/service.py:99-108` ("`approved_at` is stamped exactly once ... a request's status never regresses out of `approved`"), `service.py:290-300`; `src/cyo_adventure/notifications/registry.py:264-271` (composer table); `moderation/pipeline.py:447-450`
+- **Problem**: Quota is spent at request-approval time and never refunded. If generation fails (B2-2), if moderation hard-blocks, or if an admin sends the book back, the family's monthly allowance is gone; the comment at `service.py:99-108` acknowledges there is no ledger and no refunds (G13 follow-up). On the notification side, `_COMPOSERS` handles `GENERATION_FINISHED` but has **no composer for `MODERATION_COMPLETED` or `SENT_BACK`**. So the auto-reject path produces: guardian told "your story finished and is awaiting review" (outcome `passed`), then silence forever, while the book sits at `needs_revision`, a state that, per `state_machine.py:20-23`, does not even imply a human looked at it.
+- **Why it matters for the goal**: The rejection paths are where product trust is won or lost, and they are the least-designed seams here. A child who asked for a story gets nothing and the family is charged.
+- **Recommendation**: Refund the quota unit on any terminal non-publish outcome (an explicit `spend_ledger` row rather than a derived count), and add composers for `MODERATION_COMPLETED -> needs_revision` and `SENT_BACK`.
+- **How to check I'm right**: Drive a book to `auto_reject` and check `notification` rows for the family, none. Then compare `family_monthly_spend` before and after, unchanged.
+
+## B2-9: The human review queue is the pipeline's serialization point and has no queue discipline
+- **Severity**: high
+- **Category**: scale, **classification (a)**
+- **Locus**: `src/cyo_adventure/api/approval.py:393-465` (`get_review_queue`)
+- **Problem**: `select(Storybook).where(Storybook.status == _IN_REVIEW)`, no `limit`, no `offset`, no `order_by`. It then bulk-loads the full latest `StorybookVersion` row per book, which includes the `blob` JSONB (a 16+ long gamebook is hundreds of KB to MB of prose). No oldest-first ordering, no aging or SLA, no assignment/claim so two admins cannot collide, no query-level flagged/clean partition, and `needs_revision` books never appear (only `in_review`), so auto-rejected books are invisible in the primary admin surface.
+- **Why it matters for the goal**: F8 makes a human the mandatory throughput limit on every book. At 10x volume this returns hundreds of full book blobs in one response; at 100x it times out and the human gate degrades to "whatever loaded". The queue that decides what ships has no notion of what should ship first.
+- **Recommendation**: Paginate with a stable `ORDER BY submitted_at ASC`, select summary columns only (never `blob`) for the list view, add explicit flagged/clean and `needs_revision` buckets, and record a review claim.
+- **How to check I'm right**: `approval.py:418-421` and `:463-470`, no `.limit(`, no `.order_by(`, and `select(StorybookVersion)` selects the entity, blob included.
+
+## B2-10: Catalog production is entirely manual; there is no runner for the flywheel, and an empty cell is a 422 with no demand signal
+- **Severity**: high
+- **Category**: feedback loop / scale, **classification (a)**
+- **Locus**: `src/cyo_adventure/story_requests/authoring_plan.py:418-424` (empty cell -> `ValidationError` -> 422); `authoring_plan.py:465-495` (`CELL_SATURATED` recorded only on the *saturated* path, after a successful pick); `scripts/flywheel_scan.py`, `flywheel_candidates.py`, `flywheel_cycle.py` referenced by no workflow (`grep -rln flywheel .github/` matches only a comment in `skeleton-promotion.yml`); `flywheel/cadence.py` (`MONTHLY_MERGE_BUDGET`, `COOLDOWN_DAYS`, `OPEN_PR_GLOBAL`)
+- **Problem**: The demand side is automated (`CELL_SATURATED` events; `trigger.py` thresholds of 3 events / 2 distinct requests) but the supply side is a set of CLI scripts nobody schedules, gated behind a monthly merge budget, a per-cell cooldown, a global open-PR cap, and a reviewed PR requiring a human. Meanwhile the hardest demand signal, a request whose cell has zero eligible skeletons, raises before any event is recorded, so the flywheel can see saturated cells but never empty ones. Measured supply today: 4-6 shells per cell across 18 cells.
+- **Why it matters for the goal**: This is question 5's arithmetic, and it is not in the brief's favour. Per the brief's Q-1 a child exhausts a cell in ~4 requests; the default quota is 10 requests/family/month (`config.py:931`). One active child exhausts their cell inside the first month. Supply's *maximum* rate is `MONTHLY_MERGE_BUDGET` skeletons per month across the entire catalog, human-reviewed, and it is not scheduled to run at all. Demand scales with families; supply is capped by one reviewer's month. At 10x families the catalog cannot grow to match, and anti-repetition degrades to prompt-level differentiation whose value is explicitly unmeasured (`AL-498`).
+- **Recommendation**: (a) record a `CELL_EMPTY` event before raising the 422 so unmet demand is visible; (b) schedule `flywheel_cycle.py` on a cron workflow so the loop at least runs; (c) publish the supply/demand arithmetic in §5, cells x shells-per-cell vs families x quota, because it currently sets the product's ceiling and appears nowhere in the brief.
+- **How to check I'm right**: `grep -rn "flywheel" .github/workflows/`, no scheduled job, on either tree.
+
+## B2-11: Selection is weighted-random *with replacement*, not "least recently used", and the recency window is family-wide
+- **Severity**: medium
+- **Category**: doc/code divergence + feedback loop, **classification (a)**
+- **Locus**: brief §3.3 ("picks with recency weighting so a family sees the least recently used armature"); `src/cyo_adventure/generation/skeleton_match.py:552-565` (`_weight = 1/(1+n)`, "never zero"), `:597-672` (`rng.choices(...)`), `:677` (`_RECENT_WINDOW = 20`), `:680-729` (`recent_skeleton_usage` filters on `Storybook.family_id` only)
+- **Problem**: Two divergences. First, the pick is a weighted random draw with a deliberate never-zero floor (decision C-4), not a least-recently-used rotation: with 4 in-cell candidates and one used once, the used one still draws with probability ~1/7. Repeats therefore arrive materially earlier than a rotation implies (**inferred**: expected distinct armatures after 4 uniform draws from 4 candidates is ~2.7, so a family typically sees a repeated tree by their third or fourth book, not at exhaustion). Second, the recency window is the family's 20 most recent `storybook_version` rows across **all children and all bands**, a three-child family with three bands in flight has an effective per-cell window of ~6, diluting the signal exactly in the households generating the most books.
+- **Why it matters for the goal**: This mechanism operationalizes F5 against Q-1. The brief's exhaustion arithmetic assumes orderly rotation; the code gives earlier collisions and a weaker signal for large families. Combined with `AL-498`'s 96.3 shared 4-grams/1000 on same-skeleton siblings and the unmeasured directive, the earliest-visible quality defect is a repeat arriving sooner than planned.
+- **Recommendation**: Either correct §3.3 to "weighted random with a novelty floor" and state the collision arithmetic, or make the draw a true rotation with a floor (exclude the most-recent pick when `len(candidates) > 1`). Scope `recent_skeleton_usage` to the requesting profile *and* cell.
+- **How to check I'm right**: `sed -n '552,575p;677,700p' src/cyo_adventure/generation/skeleton_match.py`; simulate `select_skeleton_for_cell` over 4 candidates for 4 sequential requests and count distinct picks.
+
+## B2-12: The deterministic gate contains no safety check at all; safety is LLM/third-party, post-persist, and fail-open
+- **Severity**: high
+- **Category**: doc/code divergence, **classification (a)**
+- **Locus**: brief F2 ("Structure, budgets, reading level, safety classification, and graph soundness are checked by code before any model or human judges anything") and §3.4 ("safety findings ... Blocking findings stop the book"); `src/cyo_adventure/validator/safety.py:41-57` (`check_safety` returns an empty report, "Phase-2 stub"); `validator/gate.py:33,212-213,220`; `validator/gate.py:29,199-200` (RL-13 reading level is WARNING and never sets `blocked`); `moderation/classifiers.py:243,259,264` (fail-open `return []` with a `classifier_degraded` advisory)
+- **Problem**: `run_gate`'s safety leg is a stub that always returns nothing, so `safety_flagged` is always `False` and no safety finding can block at gate time. Reading level is advisory-only. Real safety screening happens later, in `moderation/`, after the book is persisted, via LLM stages plus third-party classifier APIs that fail open (an outage yields an advisory, not a block). F2's ordering claim, deterministic safety before any model judges, is inverted: no deterministic safety exists, and the only safety verdicts in the system are model-produced.
+- **Why it matters for the goal**: F2 is the load-bearing claim for a children's product, and it is the one principle the code does not implement. It also changes what the human is being asked to do: they are the *first* independent check on safety, not the last.
+- **Recommendation**: Either implement SAFE-14 deterministically (banned-term/pattern screening per band, at minimum) so the claim becomes true, or rewrite F2 and §3.4 to say safety is model-and-vendor-judged, post-persist, fail-open, with the human as the primary safety control. Do not leave a stub described as a gate.
+- **How to check I'm right**: `cat src/cyo_adventure/validator/safety.py`, 57 lines, returns `ValidationReport()`; then `grep -rn "safety_flagged" src/` to confirm it is dead.
+
+## B2-13: The binding stage the brief describes as a pipeline stage is absent for 44% of the catalog
+- **Severity**: medium
+- **Category**: doc/code divergence, **classification (a)** (contract counts identical on both trees)
+- **Locus**: brief §3.3 ("**Binding.** Theme contracts bind per-request settings, casts, and props (`scripts/bind_theme.py`)"); `src/cyo_adventure/generation/worker.py:1023-1030` (`contract = load_contract_for(...)`; `if contract is None:` -> legacy free-text fill); measured 47 `.contract.json` files vs 84 shells
+- **Problem**: The bound path (slot validation, `validate_slot_bindings`, `render_bound_skeleton`, the D7 re-route, the sentinel transform) only runs when a sidecar exists. 37 of 84 shells have none and take the "byte-identical WS-1 free-text path" (`worker.py:1030-1074`), where the theme brief goes straight into the fill prompt with no slot contract and no deterministic validation of what the theme changed. Separately, `scripts/bind_theme.py` is an *offline* CLI (its own docstring: "Offline deterministic validate+render"); the request-path binder is `generation/binding.py::interpret_and_bind`, which the brief does not name.
+- **Why it matters for the goal**: F5's stratified plan is only mechanically enforced on the contract-bearing 56%. For the rest, the split between shared and per-book material is whatever the fill prompt achieves, precisely the regime `AL-498` measured at 24x the sharing budget.
+- **Recommendation**: State contract coverage in §3.3 and treat "shell without a contract" as catalog debt with a target date; `scripts/parameterize_skeleton.py` exists to close it. Cite `generation/binding.py` as the request-path binder.
+- **How to check I'm right**: `ls skeletons/*/*.contract.json | wc -l` (47) vs shell count (84); `sed -n '1023,1035p' src/cyo_adventure/generation/worker.py`.
+
+## B2-14: You cannot answer "what did this book cost" or "which model wrote which node" from what is recorded
+- **Severity**: high
+- **Category**: observability, **classification (a)**
+- **Locus**: `src/cyo_adventure/generation/worker.py:253-265` (`_stamp_provider_accounting` collapses the ledger to 7 scalars); `generation/usage.py:73-105` (`TokenUsage` carries per-call `provider`, `model`, `reasoning_tokens`, `duration_ms`, none persisted); `src/cyo_adventure/covers/` (no cost/usage accounting anywhere); `src/cyo_adventure/db/models.py:2622-2712` (`report` JSONB, nulled by the nightly sweep after 30 days, with the acknowledged slow-review hole `UW-C227`)
+- **Problem**: The ledger records every call with its own provider and model, exactly what F4's per-stage model selection needs to be evaluated in production, and `_stamp_provider_accounting` then writes only `provider_call_count`, `provider_unknown_calls`, `input_tokens`, `output_tokens`, `provider_duration_ms`, `cost_usd`, `cost_complete`. The per-call breakdown is discarded, so nobody can say how much of a book's cost was fill vs Stage-1 review vs repair vs moderation vs reading-level passes, nor how much was reasoning overhead (which `AL-332` says spans 36x). Cover art (a `google-genai` call per published book) has no accounting at all. And `job.report`, the only home for the stage log and gate findings, is nulled 30 days after the job's last update regardless of whether the review concluded, so "why did this book fail" evaporates on exactly the books that sat longest.
+- **Why it matters for the goal**: F4 and F7 are empirical claims requiring per-stage attribution to maintain. The production system cannot reproduce the measurement that justified its own design.
+- **Recommendation**: Persist the ledger's per-call rows (a `generation_call` child table: job_id, stage, provider, model, tokens in/out, reasoning, duration, cost), small, PII-free, and the table every question in this finding needs. Meter the cover call onto the same ledger. Touch `updated_at` when a human decides, so the retention exemption protects slow reviews.
+- **How to check I'm right**: `sed -n '253,265p' src/cyo_adventure/generation/worker.py`; `grep -rn "cost\|ledger" src/cyo_adventure/covers/*.py`, one unrelated docstring hit.
+
+## B2-15: The chunked-fill path has zero repair budget and discards every paid batch on one bad batch
+- **Severity**: medium
+- **Category**: seam/failure handling, **classification (a)**
+- **Locus**: `src/cyo_adventure/generation/orchestrator.py:1517` (`max_repairs=0 if chunked else max_repairs`), `:1491-1499` (a batch returning nothing terminates the fill), `:1432-1436` ("19 of the 73 production skeletons" chunk on the shipped default model)
+- **Problem**: For the ~19 skeletons exceeding the serving model's output ceiling, the fill runs batch by batch; a single unusable batch fails the whole book after all preceding batches were paid for, and there is no repair budget because the repair prompt asks for the whole document. The reasoning is sound (`AL-329`); the economics are not, the failure is most expensive on the biggest books.
+- **Why it matters for the goal**: These are the highest-cost books in the catalog with the weakest recovery. The all-or-nothing merge makes the marginal cost of a late failure the whole book.
+- **Recommendation**: Persist merged batches as a resumable partial keyed on the job, so a retry re-asks only the failed batch. That also makes B2-2's retry proposal cheap exactly where it matters most.
+- **How to check I'm right**: `sed -n '1486,1520p' src/cyo_adventure/generation/orchestrator.py`.
+
+## B2-16: The admin skeleton override silently disables the entire anti-repetition mechanism
+- **Severity**: medium
+- **Category**: seam/failure handling, **classification (a)**
+- **Locus**: `src/cyo_adventure/story_requests/authoring_plan.py:406-412` (override path returns an empty `_Differentiation()` and computes no `similarity_context`); brief §3.3 ("admin override exists but warns")
+- **Problem**: On the override path the code skips `similarity_context`, so: no similarity de-weighting, no `CELL_SATURATED` event (so the flywheel's demand signal is not recorded), no `prior_titles`/`prior_theme_tags`, and therefore an empty `differentiation_directive` reaching the fill (`worker.py:1010`). The warnings the brief mentions are about eligibility and cell fit, not about the differentiation loss. An admin re-picking the same skeleton for the same family, the most likely reason to override, is the case with no anti-repetition steering at all.
+- **Why it matters for the goal**: The escape hatch turns off the mechanism in the situation that most needs it, and the resulting book records no evidence that it happened (`theme_contract.rerouted_from` covers re-routes, not overrides).
+- **Recommendation**: Compute `similarity_context` on the override path too; use it for the directive and the `CELL_SATURATED` event even though it must not change the pick.
+- **How to check I'm right**: `sed -n '400,415p' src/cyo_adventure/story_requests/authoring_plan.py`, the early `return` with `_Differentiation()`.
+
+## B2-17: Catalog growth is gated on structural distance, a measure the brief's own S8 result says is perceptually blind
+- **Severity**: medium
+- **Category**: feedback loop, **classification (a)**
+- **Locus**: brief §4.3 ("per-request single-parent mutation ... shape-preserving operators are perceptual no-ops ... S8"); `src/cyo_adventure/flywheel/strategy.py:38-47` (imports `mutation.compose.apply_chain`, ranks by `diversity.structure.structural_distance`); `src/cyo_adventure/mutation/floors.py:104,325-330` (`TAU_CELL` is the acceptance floor); brief §4.4 (the recognition instrument failed its own control, `AL-511`)
+- **Problem**: The flywheel grows the catalog by running the same single-parent mutation operators S8 refuted as a variety lever, accepting a candidate when it clears `TAU_CELL` structural distance against parent and siblings. Since S8's finding is that shape-preserving operators are perceptually inert, and §4.4 says no validated perceptual instrument currently exists, the loop can add skeletons indefinitely that pass the structural floor while a reader experiences no new variety. Its only counter-pressure is `CELL_SATURATED`, computed from *theme* similarity of prior stories rather than structural novelty of the catalog, so a cell can be "grown" without its saturation signal ever improving.
+- **Why it matters for the goal**: This is the one loop that can degrade the catalog over time while every metric it reports improves, and it is the loop the product's scale depends on (B2-10).
+- **Recommendation**: Until a validated perceptual instrument exists (§5 names its repair as one of the two cheapest levers), require flywheel candidates to clear a *decision-level* criterion, not only a structural one, at minimum a differing `choice_semantics` / first-decision profile, and hold promotion of shape-preserving-only chains. Track whether a cell's `CELL_SATURATED` rate falls after a promotion; if it does not, the promotion did nothing.
+- **How to check I'm right**: `sed -n '30,50p' src/cyo_adventure/flywheel/strategy.py`; `sed -n '300,335p' src/cyo_adventure/mutation/floors.py`; then check whether any acceptance criterion in `mutation/` references decisions rather than graph shape.
+
+## B2-18: No loop exists from what children actually read, finish, or abandon back into generation, and there should be
+- **Severity**: medium
+- **Category**: feedback loop, **classification (a)**
+- **Locus**: `grep -rn "Rating" src/cyo_adventure/`, consumers are `api/recommendations.py`, `api/library.py`, `progress/badges.py`, `api/ratings.py`; nothing under `generation/`, `story_requests/`, `diversity/` or `flywheel/` reads ratings, reading state, completion or abandonment; `player/`, `progress/`, `api/reading_history.py`, `api/reading_time.py` all record rich behaviour
+- **Problem**: The system records reading position, replay, time, completion, badges, ratings and kid flags, and none of it reaches the generation inputs. Skeleton selection weights on *authoring* activity (`skeleton_match.py:700-712` explicitly chooses authoring over delivery); the flywheel triggers on theme saturation at *request* time; the diversity machinery compares books to books, never books to behaviour. The closed loops that exist are: request history -> selection weights; saturation -> catalog growth; admin thresholds -> what surfaces. The loop that would actually measure quality, did the child finish it, did they come back, did they abandon at node N, is open.
+- **Why it matters for the goal**: F6 says no instrument is trusted until it survives a known-answer test, and §4.4 concludes every *automated* perceptual instrument has failed so far. Completion and abandonment are the cheapest known-answer signals available, and the system is already collecting them. A per-node abandonment histogram over published books would be a deterministic instrument for exactly the question the model-judged panels keep failing to answer.
+- **Recommendation**: Add a read-side measurement stage (not a control loop yet): per-book completion rate, per-node drop-off, re-read rate, joined to `skeleton_slug` and `model`. Publish it as a catalog report before wiring it to anything. It is the missing empirical leg of the programme and costs no new data collection.
+- **How to check I'm right**: `grep -rln "Rating\|reading_state" src/cyo_adventure/{generation,story_requests,diversity,flywheel}/` returns nothing.
+
+## B2-19: Moderation surfacing thresholds change what the guardian sees without changing what publishes
+- **Severity**: low
+- **Category**: feedback loop, **classification (a)**
+- **Locus**: `src/cyo_adventure/moderation/thresholds.py:1-9` ("decides which recorded findings SURFACE on guardian- and kid-facing responses ... Admin surfaces never filter"); `src/cyo_adventure/api/moderation_thresholds.py:228,309,389`
+- **Problem**: The brief lists moderation thresholds among the pipeline's feedback loops. They are a display filter, not a control: raising a threshold removes findings from guardian view while the same book still publishes on the same verdict. The change is auditable (both event types exist) but is not stamped on the books it affected, so a book approved under a permissive threshold is later indistinguishable from one approved under a strict one.
+- **Why it matters for the goal**: F8 judges the architecture on what the human is asked to review. Thresholds silently change that, and the record of what the reviewer actually saw is not reconstructable from the book.
+- **Recommendation**: Stamp the effective threshold set (or its version) onto `moderation_report` at review time, so the review record is self-describing.
+- **How to check I'm right**: `sed -n '1,10p' src/cyo_adventure/moderation/thresholds.py`; confirm no threshold value is copied into `StorybookVersion.moderation_report`.
+
+## B2-20: Section 3's stage ordering and three named artifacts do not match the code
+- **Severity**: low
+- **Category**: doc/code divergence, **classification (a)**
+- **Locus**: brief §3.4 ("**Stage-1 fidelity gate** (`generation/fidelity.py`): the filled book is checked against its skeleton's directives **before anything else runs**") vs actual order in `generation/orchestrator.py:1470-1530` (fill -> `run_gate` -> repair loop, inside which Stage 1 runs); brief §3.2's anti-clone bullet vs `scripts/check_skeleton.py` (no `TAU_CELL`, no `structural_distance`; the check lives in `scripts/check_incell_clones.py`, run by `.github/workflows/ci.yml:580`); brief §3.5 ("DeepSeek V4 Flash ... first-pass reviewer **ahead of costlier review**") vs `moderation/review_provider.py:138-164` (one review model per job, no cascade); brief §1 ("61 graphs and 11,458 nodes") vs measured 84 shells / 15,507 nodes, and §4.3's "3-4 skeletons per cell" vs measured 4-6
+- **Problem**: Four small but load-bearing mismatches. (a) The deterministic gate runs *first*; Stage 1 fidelity runs inside the repair loop afterwards. (b) The anti-clone `TAU_CELL` check is not part of `check_skeleton.py --strict`, so it is not in the author's loop at all, it fires only in `ci.yml`, i.e. after the author has finished. That is an F3 regression, not just a documentation slip. (c) There is no two-tier review cascade in code; the Flash-first-pass is a manual model choice per job. (d) The catalog counts are stale in both directions, and §4.3's Q-1 arithmetic is anchored to the low figure.
+- **Why it matters for the goal**: (b) is the substantive one: F3 says the checker in the author's loop is the largest measured quality lever, and the one check enforcing catalog-level distinctness sits outside it.
+- **Recommendation**: Fold `check_incell_clones` into `check_skeleton --strict` (or at least into `generate_drafting_brief`'s emitted command list, which already names it at `scripts/generate_drafting_brief.py:273`) so the author sees the verdict while drafting. Correct the ordering sentence, the review-cascade sentence, and the catalog counts.
+- **How to check I'm right**: `grep -n "TAU_CELL\|structural_distance" scripts/check_skeleton.py`, no hits; `grep -n "check_incell_clones" .github/workflows/ci.yml`, line 580.
+
+## B2-21: Coupling and reversibility: the skeleton-reuse thesis has a real escape path, but it is the refuted regime
+- **Severity**: medium
+- **Category**: coupling, **classification (a)**
+- **Locus**: `src/cyo_adventure/api/schemas.py:1195` (`AuthoringMethod = Literal["skeleton_fill", "fresh_generation"]`); `generation/orchestrator.py:918` (`generate_story`, Stage A structure + Stage B prose); `generation/worker.py:2394-2404` (routing on `skeleton_slug` presence); the `<<FILL role=... words=... beats='...'>>` grammar parsed by a single regex at `generation/fidelity.py:21-25` and re-parsed independently in `generation/skeleton.py`, `generation/chunking.py`, `scripts/check_fill_integrity.py`, `scripts/check_prose_craft.py`, `mutation/`
+- **Problem**: Good news first: the design is *less* locked in than it looks. `fresh_generation` is a live, admin-selectable method that generates structure per request and validates through the identical `run_gate`, so if `S-2`..`S-5` refute the skeleton-reuse thesis there is a code path back that does not require rewriting the validator, moderation, publishing or the schema. The bad news is what that path is: per §4.2, blind (non-tool-assisted) structure authoring passed 2 of 21 attempts, and `fresh_generation` is exactly blind authoring inside an RQ worker with `max_repairs=3`, the regime the brief's strongest measurement refutes. So the escape hatch exists mechanically and is unusable empirically. The narrower real coupling risks: the FILL-directive grammar is re-implemented in at least six places with no shared parser (a format change touches all six), and `TAU_STRUCT` is already documented as derived-from-the-catalog and therefore moving whenever the catalog grows (`diversity/incell.py:21-30`).
+- **Why it matters for the goal**: The cost of being wrong about skeleton reuse is not "rewrite the pipeline"; it is "have no viable structure-authoring regime in the request path", because the only automated one is the refuted one. That is worth fixing *before* `S-2`..`S-5` report, not after.
+- **Recommendation**: See B2-23, making the tool-assisted regime real is what converts this escape hatch from theoretical into usable. Separately, extract one shared FILL-directive parser.
+- **How to check I'm right**: `sed -n '918,1000p' src/cyo_adventure/generation/orchestrator.py`, the repair loop re-prompts the model with findings, but the model never invokes the checker; compare with §4.2's tool-assisted condition.
+
+## B2-22: The offline/online boundary is clean, and it is carrying more than it can
+- **Severity**: low
+- **Category**: boundary, **classification (a)**
+- **Locus**: `grep -rn "from cyo_adventure.mutation" src/`, only `flywheel/{strategy,ledger,reguide_draft}.py`; `grep -rn "from cyo_adventure.flywheel" src/ scripts/`, only `scripts/flywheel_*.py`; `flywheel/strategy.py:9-22` (documented purity, "imports nothing from `story_requests`"). Re-verified on the source tree: the two branch-only scripts are likewise imported by nothing in `src/`.
+- **Problem**: The boundary is enforced structurally and holds: `mutation/` reaches production through nothing, `flywheel/` reaches production through nothing, and the D2 grep test pins it. The architectural concern runs the other way: catalog-time work is being asked to supply per-book variety only request-time can supply. The catalog gives 4-6 armatures per cell, refreshed at best monthly under human review (B2-10); per-book variety must therefore come from the request-time layer, theme binding (missing for 44% of shells, B2-13) and the differentiation directive (effect explicitly unmeasured, `AL-498`). S8 already established that moving variety generation to catalog-time mutation does not work perceptually. The correct division is being pushed the wrong way by supply pressure.
+- **Why it matters for the goal**: If the answer to Q-1 is "grow the catalog", B2-10's arithmetic says it cannot be grown fast enough. The load has to sit at request time, which means the request-time levers need measurement before they are relied on.
+- **Recommendation**: Prioritise measuring the differentiation directive's actual effect (the open item in `AL-498`) over further catalog-time investment; it is the lever the architecture already leans on. Keep the boundary as it is, one of the cleaner things in this codebase.
+- **How to check I'm right**: The two greps above; then `sed -n '1,25p' src/cyo_adventure/flywheel/strategy.py`.
+
+## B2-23: F3's "single largest quality lever", the tool-assisted regime, is implemented nowhere, on either branch
+- **Severity**: high
+- **Category**: doc/code divergence, **classification (a)**, discovered only by checking the source tree
+- **Locus**: brief F3 and §4.2 (the tool-assisted condition, "the author may run the checker, ten-invocation cap"); `.worktrees/brief-evidence/scripts/compare_skeleton_authors.py:12-22` ("**Shared repair-loop contract.** ... every leg gets the identical loop: same author system prompt, same validator-feedback format ... same **stateless-repair** prompt shape"), `:722-745` (`_emit_prompts_mode`: "The input side of a subagent leg ... an external driver hands these files verbatim to a model-tier subagent"), `:748-765` (`_score_shell_mode`: "an external driver authors a shell ... the mode ... prints the validator feedback (the driver relays it verbatim into the stateless repair prompt)")
+- **Problem**: The branch-only harness implements the **blind** arm only. Its subagent support is an emit-inputs / score-shell hand-off in which a human or external agent relays checker output into a *stateless* repair prompt, that is a manual re-enactment of the blind loop by a driver, not an author holding the tool. The winning condition in §4.2, where the model itself invokes `check_skeleton --strict` up to ten times and iterates on its own draft, exists as an operating procedure executed outside the repository (the `cyo-author` skill plus a human driver) and as code nowhere: not on `main`, not on the source branch, and not in the request path (`generate_story`'s repair loop feeds findings back into a prompt, it never lets the model call the gate). Consequences: (i) the strongest result in the brief cannot be reproduced by anyone without re-creating the manual procedure; (ii) it cannot be applied at request time, which is B2-21's whole problem; (iii) F3 is stated as a property of the system when it is a property of how a person currently works.
+- **Why it matters for the goal**: F3 is described as "the single largest quality lever we have measured", a 2/21 to 15/21 swing. A programme whose biggest lever is unautomated cannot scale that lever, cannot regression-test it, and cannot fall back on it when the skeleton-reuse thesis is tested. It also makes the §4.2 grid a measurement of a procedure rather than of the models, which weakens its transferability.
+- **Recommendation**: Implement the tool-assisted regime as a bounded agentic loop the harness owns: give the author model a `check_skeleton --strict` tool with an invocation cap and per-round state, so the §4.2 condition is a code path with a test rather than a run book. Then expose the same loop behind `fresh_generation` in the worker, which converts B2-21's escape hatch from the refuted regime into the measured one. Until that lands, say in §4.2 that the tool-assisted arm was driven manually.
+- **How to check I'm right**: `grep -n "stateless" .worktrees/brief-evidence/scripts/compare_skeleton_authors.py`; then search either tree for any code that lets a generation model invoke the validator as a tool, there is none (`orchestrator.py`'s repair loop only injects findings into a prompt).
+
+---
+
+## Seam table (question 2), summarized
+
+| Seam | Contract | On failure | Retried | Idempotent | State left by a crash |
+|---|---|---|---|---|---|
+| request -> selection | `(band,length,style)` cell -> non-empty candidate list | empty cell = 422 to admin, no event | no | yes (pure + 2 reads) | none (pre-job) |
+| selection -> binding | contract sidecar present -> validated slot bindings | `ValidationError(field=theme_brief)` -> bounded re-route (`_REROUTE_LIMIT=2`), then fail closed; `field=prompt` (PII) never re-routed | bind-internal small-JSON retries only | yes | job `failed` + `CANNOT_CARRY` surface |
+| binding -> fill | bound skeleton -> filled document | provider error propagates; unpartitionable = deterministic fail | `max_repairs=3` (0 when chunked) | no (fresh doc each attempt) | **row reverts to `queued`, re-enqueued after 30 min (B2-1)** |
+| fill -> Stage-1 fidelity | filled doc vs directives | shares the repair budget; on exhaustion downgrades `passed -> needs_review`, keeps the doc | inside the same budget | yes (pure code + 1 review call) | as above |
+| Stage-1 -> gate | doc -> `GateResult` | `blocked` -> `needs_review`/`failed`; no doc -> `failed` | no | yes (pure) | as above |
+| gate -> moderation | persisted draft -> submit/auto_reject | **provider outage rolls back the persist and fails the job, losing the fill (B2-2)** | no | no (`s_{job_id}` collides on re-run) | job `failed`, no storybook |
+| moderation -> human | `in_review` (clean) or `needs_revision` (BLOCK) | hard block = `auto_reject`; **family not notified (B2-8)** | one bounded auto-repair | pipeline holds `FOR UPDATE` | book at `draft` if the commit never lands |
+| human -> publish | admin approves an `in_review` version with a moderation report | **verdict never checked (B2-3)**; second approve blocked by lock + `assert_transition` | n/a | yes (transition guard) | none (single transaction) |
+
+Seams with **no defined failure behaviour**: request -> selection on an empty cell (no event, no queue, no family message); moderation -> human on auto-reject (no notification, no owner, no SLA); and the human review queue itself, which has no aging, claim, or ordering (B2-9).
