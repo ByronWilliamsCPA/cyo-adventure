@@ -3638,6 +3638,100 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#53-router-comparison-2026-08-20-neither-tested-model-closes-the-word-shortfall" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.3 Router comparison (2026-08-20): neither tested model closes the word shortfall
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="5.3 Router comparison (2026-08-20): neither tested model closes the word shortfall">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#the-result-neither-tested-model-closes-the-word-shortfall" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The result: neither tested model closes the word shortfall
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#sibling-convergence-is-worse-on-the-stronger-model" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Sibling convergence is WORSE on the stronger model
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#only-one-of-three-legs-could-complete-a-fill-at-all" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Only one of three legs could complete a fill at all
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#the-counterintuitive-conclusion" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The counterintuitive conclusion
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#cost-of-this-comparison" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Cost of this comparison
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#three-caveats-on-the-artifacts" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Three caveats on the artifacts
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lessons-from-this-leg" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Lessons from this leg
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#6-findings-from-planning" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -4436,7 +4530,11 @@ book, so its verdict is uninformative until you read which field moved.</p>
 words, far inside the 4.0 budget. But the three surviving pairs share neither
 skeleton nor band, while the 3.3 calibration is for pairs sharing a band, so this
 is not comparable to that floor. The shared-skeleton pair the run was designed
-around did not happen, because book 0 was the leg that failed.</p>
+around did not happen <em>inside this grid</em>, because book 0 was the leg that
+failed. A separate two-book follow-up run on <code>the-tin-whistle-map</code> supplied that
+pair afterwards, under
+<code>runs/deepseek-v4-pro-2026-08-20/shared-skeleton-pair/</code>, and it is that run, not
+this grid, that produced the 96.3 shared four-grams per 1000 quoted in 5.3.</p>
 <h3 id="the-two-failures-initial-diagnosis-book-0s-verdict-is-superseded-below">The two failures (initial diagnosis; book 0's verdict is superseded below)<a class="headerlink" href="#the-two-failures-initial-diagnosis-book-0s-verdict-is-superseded-below" title="Permanent link">&para;</a></h3>
 <ul>
 <li><strong>Book 0</strong>, three attempts each returning HTTP 200 with an empty body,
@@ -4569,6 +4667,216 @@ citing dune 1 and desert 0 while missing sand 220 and scriptorium 104. <strong>A
 mechanical noun-substitution check is only as good as its hand-picked word list</strong>,
 and the honest reading of book 1 is that surface nouns were reskinned densely
 while the source theme's apparatus and physics were retained wholesale.</p>
+<h2 id="53-router-comparison-2026-08-20-neither-tested-model-closes-the-word-shortfall">5.3 Router comparison (2026-08-20): neither tested model closes the word shortfall<a class="headerlink" href="#53-router-comparison-2026-08-20-neither-tested-model-closes-the-word-shortfall" title="Permanent link">&para;</a></h2>
+<p>Built to break the five-fill run's two structural confounds: one endpoint, one
+model. Same skeleton (<code>the-tin-whistle-map</code>, 193 nodes, 19,574 commissioned
+words) and the same two briefs that produced the 96.3 sibling floor in the
+shared-skeleton pair run, so the only things that move are the model and the
+endpoint serving it.
+<code>docs/planning/vendor-comparison/briefs-router-comparison.json</code> is byte-identical to
+<code>docs/planning/vendor-comparison/runs/deepseek-v4-pro-2026-08-20/shared-skeleton-pair/briefs.json</code>,
+which is what makes the DeepSeek column below a matched control rather than a
+different measurement.</p>
+<p>Artifacts: <code>docs/planning/vendor-comparison/runs/router-comparison-2026-08-20/report.json</code>,
+<code>books.jsonl</code>, <code>books/anthropic-sonnet-5__0{0,1}.json</code>,
+<code>sibling-fill-check-sonnet.txt</code>, and the run config
+<code>docs/planning/vendor-comparison/vendors-router-comparison-2026-08-20.json</code>.</p>
+<table>
+<thead>
+<tr>
+<th>Metric</th>
+<th style="text-align: right;">DeepSeek @ <code>azure/us</code></th>
+<th style="text-align: right;">DeepSeek @ <code>novita/fp8</code></th>
+<th style="text-align: right;">Sonnet 5 @ <code>bedrock</code></th>
+<th style="text-align: right;">GLM-5 @ <code>z-ai</code></th>
+<th style="text-align: right;">Budget</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Books passed (of 2)</td>
+<td style="text-align: right;"><strong>2</strong></td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;"><strong>2</strong></td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">-</td>
+</tr>
+<tr>
+<td>Delivery ratio</td>
+<td style="text-align: right;"><strong>42.9-65.2%</strong></td>
+<td style="text-align: right;">n/a</td>
+<td style="text-align: right;">40.9-45.2%</td>
+<td style="text-align: right;">n/a</td>
+<td style="text-align: right;">100%</td>
+</tr>
+<tr>
+<td>In-band nodes</td>
+<td style="text-align: right;"><strong>75.1-77.2%</strong></td>
+<td style="text-align: right;">n/a</td>
+<td style="text-align: right;">60.1-64.2%</td>
+<td style="text-align: right;">n/a</td>
+<td style="text-align: right;">-</td>
+</tr>
+<tr>
+<td>Sibling 4-grams per 1000</td>
+<td style="text-align: right;"><strong>96.3</strong></td>
+<td style="text-align: right;">n/a</td>
+<td style="text-align: right;">326.3</td>
+<td style="text-align: right;">n/a</td>
+<td style="text-align: right;">4.0</td>
+</tr>
+<tr>
+<td>Cost per completed book</td>
+<td style="text-align: right;">$0.371</td>
+<td style="text-align: right;">none completed</td>
+<td style="text-align: right;">$3.498</td>
+<td style="text-align: right;">none completed</td>
+<td style="text-align: right;">-</td>
+</tr>
+<tr>
+<td>Burn per metered failed book</td>
+<td style="text-align: right;">n/a</td>
+<td style="text-align: right;">$0.242 (1 of 2 metered)</td>
+<td style="text-align: right;">n/a</td>
+<td style="text-align: right;">$0.380 (2 of 2)</td>
+<td style="text-align: right;">-</td>
+</tr>
+<tr>
+<td>Latency per book</td>
+<td style="text-align: right;"><strong>690s</strong></td>
+<td style="text-align: right;">1,712s</td>
+<td style="text-align: right;">2,519s</td>
+<td style="text-align: right;">1,594s</td>
+<td style="text-align: right;">-</td>
+</tr>
+</tbody>
+</table>
+<p>The DeepSeek column does not come from 5.2's five-fill grid. It is a separate
+two-book follow-up run,
+<code>runs/deepseek-v4-pro-2026-08-20/shared-skeleton-pair/report.json</code>
+(<code>brief_index</code> 0 and 1), commissioned precisely because the grid produced no
+shared-skeleton pair of its own: 5.2 records that book 0 failed, so no two books
+in that grid share a skeleton. Read 5.2's "the shared-skeleton pair did not
+happen" as scoped to the grid; the run named here is the one that supplied the
+pair afterwards, and it is this section's matched control. An earlier draft of
+this section sourced its in-band, cost and latency cells from the five-fill
+run's single tin-whistle book (<code>brief_index</code> 3: 73.1%, $0.35, 469s) instead.
+That book answers a different brief and is not comparable to the Sonnet pair;
+the figures above replace it.</p>
+<p>Cost is split across two rows deliberately. The DeepSeek/Novita and GLM-5 legs
+completed no book at all, so their figures are what a leg that returned nothing
+still billed, and are not comparable to the per-book costs of the two legs that
+delivered. Novita's row is also only half its own leg: its second book is
+unmetered and carries <code>cost: null</code>, so $0.242 is one failed book rather than a
+mean over two. GLM-5's $0.380 is a mean over both of its failed books.</p>
+<h3 id="the-result-neither-tested-model-closes-the-word-shortfall">The result: neither tested model closes the word shortfall<a class="headerlink" href="#the-result-neither-tested-model-closes-the-word-shortfall" title="Permanent link">&para;</a></h3>
+<p>Sonnet 5 delivered <strong>40.9 and 45.2 percent</strong> of commissioned words, a mean of
+<strong>43.1 percent</strong>. On identical inputs DeepSeek delivered <strong>65.2 and 42.9
+percent</strong>, a mean of <strong>54.0 percent</strong>. Both fall far short of the <code>words=</code>
+directive, and the Sonnet leg bought its shortfall at 9.4 times the cost per book
+and 3.7 times the latency.</p>
+<p>What this supports is bounded: <strong>neither of the two models tested closes the
+gap</strong>. Two frontier models from different labs, on an identical skeleton and
+identical briefs, both under-deliver by a wide margin, so rotating between these
+two is not the fix.</p>
+<p>What it does <strong>not</strong> support is the stronger reading, that the shortfall is a
+property of the prompt rather than of the model or the endpoint serving it. Two
+arms is too few, and these two arms differ on two variables at once, the model
+and the endpoint (<code>azure/us</code> against <code>amazon-bedrock/global</code>). They also
+disagree: 54.0 percent against 43.1 percent is an 11 point spread, so delivery
+demonstrably moves with something that changed between the arms, and nothing
+here isolates which of the two changes moved it. The GLM-5 leg would have been
+the third arm and a third endpoint family, and it completed no book, so it
+contributes nothing either way. Prompt-invariance remains a plausible reading of
+two arms that both fall far short; establishing it needs a leg that varies the
+prompt against a fixed model and endpoint, which this run does not contain.</p>
+<p>Note also that the two arms are not tied. DeepSeek delivered about 25 percent
+more words than Sonnet on the same skeleton and briefs (21,150 against 16,855
+across the two books); the point is that the better of the two still misses the
+directive by 46 percent.</p>
+<p>For <code>UW-C307</code> that is still decision-grade on the narrower claim. Neither model
+tested here is the fix, so "rotate the fill model" is not a shortcut available
+on this evidence, and a sprint spent moving between these two would buy nothing.
+It does not license the converse, that the remedy must be prompt-side; that
+stays an open hypothesis, and the note above says what would test it. The
+fill-rate gate is correctly aimed as a detector either way, because it measures
+the shortfall without needing to know its cause.</p>
+<h3 id="sibling-convergence-is-worse-on-the-stronger-model">Sibling convergence is WORSE on the stronger model<a class="headerlink" href="#sibling-convergence-is-worse-on-the-stronger-model" title="Permanent link">&para;</a></h3>
+<p>Sonnet's two books on one skeleton scored <strong>326.3 shared four-grams per 1000 leaf
+words against a 4.0 budget</strong>: 3,800 shared grams and 466 shared menu frames,
+against DeepSeek's 1,350 and 274. That is 3.4 times DeepSeek's convergence and 81
+times budget. So <code>AL-498</code> is not a DeepSeek defect: it is worse on the better
+model, and rotating between the two vendors tested does not address it.</p>
+<p>This particular comparison is a hand synthesis across two separate <code>report.json</code>
+files, not a single tool output. <code>compare_vendors.py</code> computed only the
+<code>within_vendor</code> cell for <code>anthropic-sonnet-5</code>; every cross-vendor cell in this
+run's report is <code>0.0</code> and its <code>verdict</code> field reads
+<code>not measured: need both within-vendor and cross-vendor pairs</code>, because the two
+non-Anthropic legs produced no books to pair against. Do not read 326.3 against
+96.3 as something the tool emitted.</p>
+<h3 id="only-one-of-three-legs-could-complete-a-fill-at-all">Only one of three legs could complete a fill at all<a class="headerlink" href="#only-one-of-three-legs-could-complete-a-fill-at-all" title="Permanent link">&para;</a></h3>
+<p>Both failing legs died the same way, on <code>finish_reason=length</code> with the output
+budget consumed before any usable content came back. The metered reasoning splits
+are DeepSeek on Novita 8,608 on its first book, and GLM-5 58,924 then 108,775.
+Novita's second book is <strong>unmetered</strong>: its <code>output_tokens</code>, <code>reasoning_tokens</code>
+and <code>cost</code> are all <code>null</code>, with <code>cost_unavailable_reason</code> recorded as "no
+provider call was metered for this book". The "131,072 of them on reasoning"
+figure for that book exists only inside the provider's error <em>string</em>, and that
+string is not a reliable channel: it reports 8,192 reasoning tokens for both GLM
+books where the metered fields say 58,924 and 108,775, understating them by 7x
+and 13x. What was observed for that book is that the budget was exhausted and
+nothing usable returned; the reasoning split is unmeasured.</p>
+<p>Sonnet reasons heavily too (164,388 of 303,996 output tokens on book 0) and still
+delivered, so reasoning is not disqualifying by itself; spending the whole budget
+on it is. <code>is_fill_feasible</code> derives its estimate from <code>words=</code> directives and
+therefore models content tokens only, so it is blind to this by construction.</p>
+<h3 id="the-counterintuitive-conclusion">The counterintuitive conclusion<a class="headerlink" href="#the-counterintuitive-conclusion" title="Permanent link">&para;</a></h3>
+<p><strong>DeepSeek v4 Pro on <code>azure/us</code> is the best leg tested</strong>, on delivery ratio,
+reading-level conformance, sibling diversity, cost and latency simultaneously.
+The run was designed expecting to find that DeepSeek was the weak link. It is the
+strongest of the three, and the defects the five-fill run attributed to it are
+not DeepSeek-specific: both reappear, and sibling convergence sharply worsens,
+on a different lab's model at a different endpoint.</p>
+<h3 id="cost-of-this-comparison">Cost of this comparison<a class="headerlink" href="#cost-of-this-comparison" title="Permanent link">&para;</a></h3>
+<p>Harness reported $7.9979 over 5 priced books, 1 of 6 unmetered. OpenRouter's own
+accounting puts the session at $11.4431 total. The gap is the unattributed
+failed-leg spend: the three metered failures recorded $1.0022 between them
+(DeepSeek/Novita 41,038 output tokens; GLM-5 99,606 and 157,966), and the fourth
+failure, Novita's second book, billed an unrecorded amount over 2,904 seconds.</p>
+<p><strong>The DeepSeek/Novita cost is priced at the wrong endpoint, and a rerun
+reproduces that rather than fixing it.</strong> <code>core/pricing.py</code> keys on
+<code>(provider, model)</code>, so <code>price_for("openrouter", "deepseek/deepseek-v4-pro")</code>
+returns the <code>azure/us</code> row ($1.91 / $3.83 as of 2026-08-20) no matter what
+<code>provider_order</code> pins. This leg pinned <code>novita/fp8</code>, whose rate the run config
+records as $1.44 / $2.88, so the $0.24179236 it booked was costed at Azure's
+rate over its metered counts, not at Novita's; the same counts at the pinned
+endpoint's own rate come to about $0.182. The figure is therefore neither a
+billed amount nor reproducible against the endpoint it names, and the run config
+now carries a <code>_cost_basis</code> key saying so. The <code>azure/us</code> cell is not mispriced,
+because that leg did run on the endpoint the table prices; the consequence for
+the table is instead that both DeepSeek cost cells were costed at the one
+<code>azure/us</code> rate, so they differ only by token count and encode no endpoint price
+difference at all. Sonnet 5 and GLM-5 are unaffected, each costed at exactly the
+rate its own config declares. The recorded numbers stay as recorded, because
+they are what the run produced and the run cannot be repeated.</p>
+<h3 id="three-caveats-on-the-artifacts">Three caveats on the artifacts<a class="headerlink" href="#three-caveats-on-the-artifacts" title="Permanent link">&para;</a></h3>
+<ul>
+<li><code>excluded_incomplete</code> is <code>[]</code> in this run's report while four books were in
+  fact incomplete, so that field is not a usable exclusion record here.</li>
+<li>This report predates the <code>differentiation_directives</code> key that later reports
+  carry, so a diff against a newer run will show that field missing rather than
+  null.</li>
+<li>Every <code>cost</code> in this report is computed from <code>core/pricing.py</code>, not read back
+  from a provider invoice, and that table cannot express a per-endpoint price.
+  See "Cost of this comparison" above: the DeepSeek/Novita leg is priced at the
+  <code>azure/us</code> rate it did not run on.</li>
+</ul>
+<h3 id="lessons-from-this-leg">Lessons from this leg<a class="headerlink" href="#lessons-from-this-leg" title="Permanent link">&para;</a></h3>
+<p>Two lessons come out of 5.3: the bounded finding above that neither model tested
+closes the delivery gap, and the sibling convergence result. Both are held for a
+single later consolidation pass so their ids are assigned once, in sequence,
+against the current maxima of the lessons log and the register. Until that
+lands, this section is their record.</p>
 <h2 id="6-findings-from-planning">6. Findings from planning<a class="headerlink" href="#6-findings-from-planning" title="Permanent link">&para;</a></h2>
 <p>Five things surfaced while building this plan that are worth recording independently of the run.</p>
 <h3 id="f1-the-chunked-bound-path-cannot-be-exercised-by-this-run-and-max-tokens-will-not-help">F1. The chunked bound path cannot be exercised by this run, and <code>--max-tokens</code> will not help<a class="headerlink" href="#f1-the-chunked-bound-path-cannot-be-exercised-by-this-run-and-max-tokens-will-not-help" title="Permanent link">&para;</a></h3>
@@ -4744,7 +5052,7 @@ only the pre-run plan. Nine lessons are logged as <code>AL-490</code> through <c
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="August 20, 2026 23:16:06 UTC">August 20, 2026</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="August 30, 2026 19:30:50 UTC">August 30, 2026</span>
   </span>
 
     
