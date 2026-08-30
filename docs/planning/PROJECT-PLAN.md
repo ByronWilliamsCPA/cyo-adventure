@@ -335,7 +335,7 @@ Key architectural decisions, each recorded in an ADR:
 |-----|----------|-------------------|
 | [ADR-001](./adr/adr-001-story-format-json-storybook.md) | Custom versioned JSON Storybook schema | Most reliable LLM target; static safety properties are checkable; client-agnostic |
 | [ADR-002](./adr/adr-002-client-pwa.md) | PWA (React 19, TypeScript, Vite, service worker, IndexedDB) | One codebase, offline-capable, no app-store friction, client-agnostic format keeps native open |
-| [ADR-003](./adr/adr-003-frontier-llm-generation.md) | OpenRouter primary behind a `GenerationProvider` interface (amended 2026-06-22; Claude reached via OpenRouter, direct Anthropic SDK deferred); Ollama local fallback | Frontier models hold branching structure best; provider interface keeps switching cheap |
+| [ADR-003](./adr/adr-003-frontier-llm-generation.md) | OpenRouter primary behind a `GenerationProvider` interface (amended 2026-06-22; Claude reached via OpenRouter, direct Anthropic SDK deferred); Ollama local fallback, **retired 2026-08-18** and replaced by Modal as cascade leg 3 when configured (ADR-003 amendment) | Frontier models hold branching structure best; provider interface keeps switching cheap |
 | [ADR-004](./adr/adr-004-homelab-first-deployment.md) | Homelab-first, dev/family tier (Pangolin, Authentik, Postgres, Redis, MinIO); cloud-portable containers | Minors' data stays on controlled hardware; existing infra reused; Azure Container Apps is a drop-in |
 | [ADR-005](./adr/adr-005-mandatory-human-approval.md) | Publish state machine with mandatory guardian approval; no auto-publish path | Automated moderation helps but cannot be the sole safeguard for machine-generated content read by children |
 | [ADR-006](./adr/adr-006-conditions-inhouse-evaluator.md) | JSONLogic shape, in-house whitelisted evaluator (Python + TypeScript, 10 operators) | Tiny, exhaustively tested, no dependency, no supply-chain risk; validator and player guaranteed identical semantics |
@@ -677,7 +677,9 @@ from Phase 0 are preconditions. See [ADR-003](./adr/adr-003-frontier-llm-generat
   - Stage C (Repair): named failing node IDs and specific violations; cap at 3 attempts;
     no-progress abort (report or output hash unchanged); on exhaustion route to full regeneration
     or human review. Never auto-publish.
-- **Provider interface** (`GenerationProvider`): OpenRouter primary (Claude reached via OpenRouter); Modal as cascade leg 3 when configured; direct Anthropic SDK shipped as a per-job leg (ADR-003, amended 2026-06-22 and 2026-08-18; the Ollama leg is retired)
+- **Provider interface** (`GenerationProvider`): OpenRouter primary (Claude reached via
+  OpenRouter); Modal as cascade leg 3 when configured; direct Anthropic SDK shipped as a
+  per-job leg (ADR-003, amended 2026-06-22 and 2026-08-18; the Ollama leg is retired)
   ([ADR-003](./adr/adr-003-frontier-llm-generation.md)).
 - **Concept intake**: concept brief fields as defined in [Tech Spec](./tech-spec.md#authoring-pipeline-staged-generation);
   no real child PII in prompts.

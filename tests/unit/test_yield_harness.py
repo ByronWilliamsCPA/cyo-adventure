@@ -329,6 +329,31 @@ async def test_cli_smoke_run_yield_with_canned_story_factory() -> None:
 class TestLiveHarnessHelpers:
     """Live-factory, tier-split, results, and dotenv helpers (no network)."""
 
+    @pytest.fixture(autouse=True)
+    def _no_host_modal_proxy_credentials(self, monkeypatch: pytest.MonkeyPatch) -> None:
+        """Neutralize the host's Modal proxy pair for every test in this class.
+
+        ``_build_live_factory`` constructs its own ``Settings()`` on every
+        path, not just the Modal one, so any test here would otherwise build a
+        leg carrying whatever proxy credentials the developer's environment or
+        ``.env`` happened to hold. Autouse and class-scoped rather than
+        repeated per test: it was previously spelled out in two of the four
+        factory tests, which left the other two silently inheriting.
+
+        Note what this does NOT defend against, because an earlier comment here
+        claimed it did: a HALF-set host pair never reaches a test at all.
+        ``core/config.py`` builds a module-level ``settings = Settings()`` at
+        import time, so a half-set pair fails collection of the whole suite
+        before any fixture runs. What is left for this fixture is the coherent
+        pair, which imports fine and would quietly ride into the built leg.
+
+        Args:
+            monkeypatch: pytest's env patcher, which restores both vars after
+                each test.
+        """
+        monkeypatch.delenv("MODAL_PROXY_KEY", raising=False)
+        monkeypatch.delenv("MODAL_PROXY_SECRET", raising=False)
+
     def test_live_factory_openrouter_isolated_leg(
         self, monkeypatch: pytest.MonkeyPatch
     ) -> None:
@@ -348,10 +373,6 @@ class TestLiveHarnessHelpers:
         monkeypatch.setenv("OPENROUTER_API_KEY", "test-key")
         monkeypatch.setenv("MODAL_BASE_URL", "https://example--cyo.modal.run/v1")
         monkeypatch.setenv("MODAL_MODEL", "google/gemma-4-26b-a4b-it")
-        # A host half-set proxy pair would make Settings() raise before the
-        # factory is ever built (see _require_modal_proxy_credentials_together).
-        monkeypatch.delenv("MODAL_PROXY_KEY", raising=False)
-        monkeypatch.delenv("MODAL_PROXY_SECRET", raising=False)
         factory = _build_live_factory("openrouter", model=None, fallback=True)
         provider = factory()
         assert isinstance(provider, FallbackProvider)
@@ -368,8 +389,6 @@ class TestLiveHarnessHelpers:
         monkeypatch.setenv("OPENROUTER_API_KEY", "test-key")
         monkeypatch.delenv("MODAL_BASE_URL", raising=False)
         monkeypatch.delenv("MODAL_MODEL", raising=False)
-        monkeypatch.delenv("MODAL_PROXY_KEY", raising=False)
-        monkeypatch.delenv("MODAL_PROXY_SECRET", raising=False)
         factory = _build_live_factory("openrouter", model=None, fallback=True)
         provider = factory()
         assert isinstance(provider, FallbackProvider)

@@ -2573,13 +2573,21 @@ async def run_generation_job(
                     # interrupt that unwinds without an exception object, so
                     # the old label is kept for that case.
                     #
-                    # The isinstance narrowing is not only for the type
-                    # checker. sys.exc_info() returns BaseException, and the
+                    # The isinstance narrowing is purely behavioral, NOT a
+                    # type-checker appeasement: _record_failure's `exc`
+                    # parameter is already typed BaseException, so basedpyright
+                    # is clean without it. What it buys is the split.
+                    # sys.exc_info() returns BaseException, and the
                     # BaseException-but-not-Exception cases (CancelledError,
                     # KeyboardInterrupt, SystemExit) are precisely the "true
-                    # interrupt" this label was always meant to describe, so
-                    # they keep it rather than being recorded as the cause.
-                    # #VERIFY: test_interrupted_job_records_the_real_cause.
+                    # interrupt" this label was always meant to describe -- the
+                    # process is going away, not the job failing on its merits
+                    # -- so they keep the label rather than putting a
+                    # kill signal's message on the row as a failure reason.
+                    # #VERIFY: test_interrupted_job_records_the_real_cause pins
+                    # the Exception arm; test_true_interrupt_keeps_the_interrupted_label
+                    # pins this one and is the only test that dies if the
+                    # narrowing is removed (both in test_worker_persistence.py).
                     in_flight = sys.exc_info()[1]
                     cause = (
                         in_flight

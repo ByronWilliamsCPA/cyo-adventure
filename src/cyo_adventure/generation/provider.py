@@ -613,19 +613,33 @@ def build_modal_leg(settings: Settings) -> GenerationProvider:
         than catching the ``ConfigurationError`` below.
 
     Raises:
-        ConfigurationError: If ``MODAL_BASE_URL`` or ``MODAL_MODEL`` is not
-            configured, or if exactly one of ``MODAL_PROXY_KEY`` and
-            ``MODAL_PROXY_SECRET`` is set: a half-set credential pair is a
+        ConfigurationError: If ``MODAL_BASE_URL`` or ``MODAL_MODEL`` is unset
+            or holds only whitespace, or if exactly one of ``MODAL_PROXY_KEY``
+            and ``MODAL_PROXY_SECRET`` is set: a half-set credential pair is a
             misconfiguration to reject, not a valid no-auth state to guess at.
     """
     # #CRITICAL: security: fail fast (and by name only) when required config is
     # absent, rather than sending a request to an unconfigured/placeholder url.
     # #VERIFY: test_build_provider asserts ConfigurationError names the missing
     # setting and never echoes a value.
-    if not settings.modal_base_url:
+    #
+    # Stripped first, and the stripped values are what get used, so this agrees
+    # exactly with ``Settings.modal_leg_configured``. The two predicates must
+    # not diverge: that one treats a whitespace-only half as absent (a compose
+    # interpolation of an unset variable injects " "), so if this one still read
+    # " " as present, ``generation_provider="modal"`` would build a leg whose
+    # base url is " " and whose reported name is "modal:   " -- unusable on
+    # every call and mis-attributed while failing -- on the very settings for
+    # which the cascade path correctly omits the leg.
+    # #VERIFY: tests/unit/test_worker.py::TestBuildProviderLive::
+    # test_modal_with_whitespace_only_config_raises pins the direct path, and
+    # tests/unit/test_config.py::TestModalLegConfigured pins the predicate.
+    base_url = (settings.modal_base_url or "").strip()
+    model = (settings.modal_model or "").strip()
+    if not base_url:
         msg = "MODAL_BASE_URL is not set; required for generation_provider=modal"
         raise ConfigurationError(msg)
-    if not settings.modal_model:
+    if not model:
         msg = "MODAL_MODEL is not set; required for generation_provider=modal"
         raise ConfigurationError(msg)
 
@@ -639,8 +653,8 @@ def build_modal_leg(settings: Settings) -> GenerationProvider:
         raise ConfigurationError(msg)
 
     return ModalProvider(
-        base_url=settings.modal_base_url,
-        model=settings.modal_model,
+        base_url=base_url,
+        model=model,
         proxy_key=settings.modal_proxy_key,
         proxy_secret=settings.modal_proxy_secret,
         timeout_seconds=settings.modal_timeout_seconds,

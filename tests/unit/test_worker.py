@@ -295,6 +295,52 @@ class TestBuildProviderLive:
         with pytest.raises(ConfigurationError, match="MODAL_MODEL"):
             build_provider(settings)
 
+    @pytest.mark.parametrize(
+        ("base_url", "model", "expected"),
+        [
+            ("   ", "google/gemma-4-26b-a4b-it", "MODAL_BASE_URL"),
+            ("https://example--cyo-standard.modal.run/v1", "  ", "MODAL_MODEL"),
+            ("\t", "\n", "MODAL_BASE_URL"),
+        ],
+    )
+    def test_modal_with_whitespace_only_config_raises(
+        self, base_url: str, model: str, expected: str
+    ) -> None:
+        """Whitespace-only config is absent on the direct path too, not just the cascade.
+
+        ``Settings.modal_leg_configured`` treats a whitespace-only half as
+        absent so a compose interpolation of an unset variable
+        (``${MODAL_MODEL:- }``) omits the cascade leg instead of poisoning it.
+        This adapter has to agree: when it did not,
+        ``generation_provider="modal"`` built a ModalProvider whose base url was
+        ``"   "`` and whose reported name was ``"modal:   "``, so the leg failed
+        on every call and mis-attributed itself while doing so, while the
+        cascade path correctly degraded on the very same settings.
+        """
+        settings = Settings(  # type: ignore[call-arg]
+            generation_provider="modal", modal_base_url=base_url, modal_model=model
+        )
+        assert settings.modal_leg_configured is False
+        with pytest.raises(ConfigurationError, match=expected):
+            build_provider(settings)
+
+    def test_modal_config_is_stripped_before_use(self) -> None:
+        """Surrounding whitespace never reaches the HTTP client or the leg's name.
+
+        A padded value is a dotenv/compose artifact, never an intent, and it
+        would otherwise ride into the request url and into the provider
+        attribution that reviewer independence is computed from.
+        """
+        settings = Settings(  # type: ignore[call-arg]
+            generation_provider="modal",
+            modal_base_url="  https://example--cyo-standard.modal.run/v1  ",
+            modal_model="  google/gemma-4-26b-a4b-it\t",
+        )
+        provider = build_provider(settings)
+        assert isinstance(provider, ModalProvider)
+        assert provider.model == "google/gemma-4-26b-a4b-it"
+        assert provider.name == "modal:google/gemma-4-26b-a4b-it"
+
     def test_modal_with_config_returns_bare_leg(self) -> None:
         """modal with both required settings returns a bare ModalProvider (no cascade)."""
         settings = Settings(  # type: ignore[call-arg]
