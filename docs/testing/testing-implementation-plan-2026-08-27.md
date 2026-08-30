@@ -25,9 +25,14 @@ fact gets lost again.
 This plan was written on 2026-08-27 and merged on 2026-08-30. Most of it was executed in the
 interval, principally by [#780](https://github.com/ByronWilliamsCPA/cyo-adventure/pull/780) (134
 files, 25,814 lines changed). Every `+N` figure in this section is `git diff --stat`'s combined
-additions-plus-deletions for that path, not additions alone. It is merged as the record of *how* the program was specified, not as a
-queue of pending work, and the task detail below is unedited so the specification and the result
-stay comparable.
+additions-plus-deletions for that path, not additions alone.
+
+It is merged as the record of *how* the program was specified, not as a queue of pending work. The
+task detail below is preserved as written, with one class of exception: where the detail would send a
+reader to do something now wrong, it is corrected in place and the correction is marked. Those are the
+ADR identifier for D3, the step 1 line references, the step 4 mocked-tier snippet, the D2a migration,
+and the whole of section 9. Everything else stands unedited so the specification and the result stay
+comparable.
 
 Verified against `main` at `6cc33aa5`, with the status column re-checked against live CI and issue
 state on 2026-08-30 rather than tree presence alone. A file existing proves a task was implemented,
