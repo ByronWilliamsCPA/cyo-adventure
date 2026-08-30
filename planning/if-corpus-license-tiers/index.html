@@ -12,7 +12,7 @@
         <meta name="author" content="Byron Williams">
       
       
-        <link rel="canonical" href="https://cyo-adventure.readthedocs.io/planning/privacy-model/">
+        <link rel="canonical" href="https://cyo-adventure.readthedocs.io/planning/if-corpus-license-tiers/">
       
       
       
@@ -25,7 +25,7 @@
     
     
       
-        <title>Privacy and Provider Data-Handling Model - CYO Adventure</title>
+        <title>Legally-Tiered Interactive Fiction Corpus: Verification and Scope - CYO Adventure</title>
       
     
     
@@ -88,7 +88,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#privacy-and-provider-data-handling-model" class="md-skip">
+        <a href="#legally-tiered-interactive-fiction-corpus-verification-and-scope" class="md-skip">
           Skip to content
         </a>
       
@@ -122,7 +122,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Privacy and Provider Data-Handling Model
+              Legally-Tiered Interactive Fiction Corpus: Verification and Scope
             
           </span>
         </div>
@@ -3306,10 +3306,10 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#overview" class="md-nav__link">
+  <a href="#origin" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Overview
+        Origin
       
     </span>
   </a>
@@ -3317,10 +3317,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#data-classification" class="md-nav__link">
+  <a href="#correction-this-project-has-no-fine-tuning-pipeline" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Data Classification
+        Correction: this project has no fine-tuning pipeline
       
     </span>
   </a>
@@ -3328,10 +3328,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#no-real-child-pii-in-prompts" class="md-nav__link">
+  <a href="#verification-results-the-proposals-recommended-initial-set-of-five" class="md-nav__link">
     <span class="md-ellipsis">
       
-        No Real Child PII in Prompts
+        Verification results: the proposal's "recommended initial set" of five
       
     </span>
   </a>
@@ -3339,10 +3339,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#raw-llm-outputs-and-prompt-text" class="md-nav__link">
+  <a href="#what-this-doc-is-not-proposing" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Raw LLM Outputs and Prompt Text
+        What this doc is not proposing
       
     </span>
   </a>
@@ -3350,138 +3350,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#external-moderation-classifiers-stage-0-first-line-filter" class="md-nav__link">
+  <a href="#recommendation" class="md-nav__link">
     <span class="md-ellipsis">
       
-        External Moderation Classifiers (Stage 0, first-line filter)
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#deletion-readiness" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Deletion Readiness
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#prompt-injection-defense" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Prompt-Injection Defense
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#open-blockers" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        OPEN BLOCKERS
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="OPEN BLOCKERS">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#blocker-1-llm-provider-data-handling-terms" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Blocker 1: LLM Provider Data-Handling Terms
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#resolved-blockers" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Resolved Blockers
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Resolved Blockers">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#blocker-2-resolved-homelab-reachability-through-pangolin-p0-10" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Blocker 2 (resolved): Homelab Reachability Through Pangolin (P0-10)
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#if-shared-beyond-family" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        If Shared Beyond Family
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="If Shared Beyond Family">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#ring-2-disclosure-existing-guardian-authorized" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Ring-2 disclosure (existing, guardian-authorized)
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#public-tier-future-adr-008-adr-009" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Public tier (future, ADR-008 / ADR-009)
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#related-documents" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Related Documents
+        Recommendation
       
     </span>
   </a>
@@ -3508,411 +3380,242 @@
   
 
 
-<h1 id="privacy-and-provider-data-handling-model">Privacy and Provider Data-Handling Model<a class="headerlink" href="#privacy-and-provider-data-handling-model" title="Permanent link">&para;</a></h1>
+<h1 id="legally-tiered-interactive-fiction-corpus-verification-and-scope">Legally-Tiered Interactive Fiction Corpus: Verification and Scope<a class="headerlink" href="#legally-tiered-interactive-fiction-corpus-verification-and-scope" title="Permanent link">&para;</a></h1>
+<h2 id="origin">Origin<a class="headerlink" href="#origin" title="Permanent link">&para;</a></h2>
+<p>A second round of externally-authored AI feedback (pasted into a session on 2026-08-13, following
+on from <a href="../craft-review-benchmark-corpus/">craft-review-benchmark-corpus.md</a> and its proposed
+<code>UW-N11</code> register row) proposes a three-tier interactive-fiction corpus split by copyright status: works
+safe to use as full-text training material after license confirmation (Tier A/B in the source
+feedback), and copyrighted-but-well-reviewed works usable only as human-readable reference,
+labeled and never copied (Tier C). It names eight public-domain candidates and two
+permission-required ones (<em>Lost Pig</em>, <em>All Things Devours</em>), and recommends an initial set of
+five: <em>Consider the Consequences!</em>, <em>The Interlopers</em>, <em>The Tailgator</em>, <em>The Cavern of the
+Morlocks</em>, and <em>Lost Pig</em>.</p>
+<h2 id="correction-this-project-has-no-fine-tuning-pipeline">Correction: this project has no fine-tuning pipeline<a class="headerlink" href="#correction-this-project-has-no-fine-tuning-pipeline" title="Permanent link">&para;</a></h2>
+<p>The proposal's framing repeatedly refers to "internal training," a "training corpus," and
+"model-training implications." That framing does not have a consumer in this codebase.
+<a href="../adr/adr-003-frontier-llm-generation/">ADR-003</a> commits this project to a frontier LLM behind
+a provider-agnostic interface, called at generation time. Its 2026-06-22 amendment made OpenRouter
+the primary provider (Claude is reached through it), and its 2026-08-18 amendment retired the local
+Ollama leg entirely, leaving the cascade as OpenRouter primary, then the OpenRouter fallback model,
+then Modal. <code>src/cyo_adventure/generation/providers/</code> accordingly holds three provider adapters
+(<code>anthropic.py</code>, <code>openrouter.py</code>, <code>modal.py</code>) plus <code>_base.py</code> and <code>fallback.py</code>, and no
+fine-tuning, LoRA, or local-training code exists anywhere in the tree.</p>
 <blockquote>
-<p><strong>Status</strong>: Active | <strong>Version</strong>: 0.3 | <strong>Updated</strong>: 2026-07-29</p>
+<p><strong>Corrected 2026-08-30.</strong> This paragraph previously named <code>ollama.py</code> as a fourth adapter and
+restated ADR-003 as "Anthropic Claude primary, OpenRouter/Ollama fallback". Both were true at
+this document's 2026-08-13 merge base and false by the time it landed: <code>167c29da</code> (#729) removed
+the <code>OllamaProvider</code> adapter, the <code>OLLAMA_*</code> configuration surface, and the <code>ollama</code> enum and
+allowlist rows. The retirement strengthens rather than weakens this section's argument, since it
+removes the last locally-hosted model from the tree, but a doc arguing "there is no local model
+here" while naming a local adapter invites exactly the objection it is answering. There is no local model
+this project trains, so "safe to fine-tune on" is not a real distinction to make here, and the
+proposal's copyright caution about "a model-training use could be legally characterized as
+reproduction, adaptation, or both" does not describe any use this project would actually make of
+these works.</p>
 </blockquote>
-<h2 id="overview">Overview<a class="headerlink" href="#overview" title="Permanent link">&para;</a></h2>
-<p>CYO Adventure serves children across deployment tiers. Because stories are
-machine-generated and read by minors, the privacy controls and provider data-handling
-decisions are Phase-0 hard blockers: they must be resolved before any real LLM call is
-made in Phase 2. Privacy posture is tier-specific: the dev and family / homelab tiers may
-keep all data local, while the public tier hosts child-linked data on Supabase-managed
-Postgres (a US processor). ADR-008 and ADR-009 amend ADR-004's original absolute "no
-child data on third-party infrastructure" stance for the public tier; that stance still
-governs the homelab / family tier.</p>
-<p>This document covers data classification, what is and is not allowed in prompts, raw
-output retention, moderation report persistence, deletion readiness, and prompt-injection
-defense. Open blockers that gate the Phase 0 exit and the first Phase 2 LLM call are
-listed at the end.</p>
-<hr />
-<h2 id="data-classification">Data Classification<a class="headerlink" href="#data-classification" title="Permanent link">&para;</a></h2>
-<p>Child-linked data is any record that can be associated with an identified or identifiable
-child. The following are classified as child-linked:</p>
-<ul>
-<li><code>child_profile</code> rows: <code>display_name</code>, <code>age_band</code>, <code>reading_level_cap</code>,
-  <code>allowed_content_flags</code>, <code>tts_enabled</code>, <code>avatar</code>.</li>
-<li><code>reading_state</code> rows: <code>current_node</code>, <code>var_state</code>, <code>path</code>, <code>save_slots</code>, keyed by
-  <code>child_profile_id</code>.</li>
-<li><code>completion</code> rows: <code>ending_id</code>, <code>found_at</code>, keyed by <code>child_profile_id</code>.</li>
-<li>Raw LLM generation outputs stored in <code>generation_job.report</code> (a Postgres JSONB
-  column), if they were generated in a context where a concept brief containing profile
-  attributes was used. Per ADR-007 as amended 2026-07-16, <code>GET /generation-jobs/{id}</code>
-  exposes this field only to principals with the admin capability (a dual-role adult
-  qualifies via that capability); guardians receive job status, stage log, and error
-  information without <code>report</code>. The list endpoint and every child-facing endpoint
-  exclude it entirely.</li>
-<li><code>child_profile_personalization</code> rows: guardian-supplied personalization slot values
-  (<code>value_text</code>, <code>value_enum</code>, <code>value_profile_id</code>) and the profile-level
-  <code>real_name_ring1_enabled</code>/<code>real_name_ring2_enabled</code> flags, keyed by <code>child_profile_id</code>
-  (ADR-023). Same tier as the <code>child_profile</code> fields above: guardian-supplied, never
-  sent to a provider, never persisted into story content, delivered to family devices
-  only as a values payload resolved at read time. Retention: life of the profile,
-  purged by the existing profile-deactivation grace window in the retention table
-  (<code>docs/compliance/coppa-gdpr-remediation-plan.md:712</code>).</li>
-<li><code>personalization_disclosure_consent</code> rows: the ring-2 disclosure consent record
-  (<code>consent_accepted_at</code>, <code>consent_policy_version</code>, <code>consent_signer_name</code>,
-  <code>consent_ip</code>, <code>covered_slot_types</code>, <code>sibling_authority_attested</code>), keyed by
-  <code>child_profile_id</code> (ADR-023 P4). Same tier as <code>User</code>'s own consent columns
-  (<code>db/models.py:416-426</code>): consent evidence, not reading data. Retention should
-  follow the consent-evidence rationale rather than the reading-data rationale;
-  flagged for the same counsel pass as ADR-018 D1.</li>
-<li>The client-held personalization values payload: child-linked data at rest on a
-  device, in the same category as the offline <code>reading_states</code> store already covered
-  by the SEC-F5 sign-out purge (<code>frontend/src/offline/db.ts:192-201</code>). <strong>Shared-device
-  isolation (risk R20), RESOLVED 2026-07-28 (owner): accepted for v1.</strong> A shared
-  family device is a shared trust boundary; no per-profile encryption and no
-  in-memory-only mode ship in v1.</li>
-</ul>
-<p>The following are not child-linked on their own (they link to a family or a story, not
-to an individual child):</p>
-<ul>
-<li><code>storybook</code> and <code>storybook_version</code> records (family-linked, not child-linked).</li>
-<li><code>concept</code> and <code>generation_job</code> records (family-linked).</li>
-<li>Moderation reports attached to <code>storybook_version</code> (persisted for audit; no child
-  identifier unless a profile ID appears in the flagged text, which the privacy controls
-  below prevent).</li>
-</ul>
-<hr />
-<h2 id="no-real-child-pii-in-prompts">No Real Child PII in Prompts<a class="headerlink" href="#no-real-child-pii-in-prompts" title="Permanent link">&para;</a></h2>
-<p>Concept briefs pass age band and a fictional reader profile to the LLM. They must not
-contain:</p>
-<ul>
-<li>A real child's name (use fictional names or role descriptions such as "the protagonist").</li>
-<li>A real child's birthdate or age in a way that links to an identified individual.</li>
-<li>Sensitive traits, medical conditions, learning differences, or behavioral notes tied to
-  a real child.</li>
-<li>Family member names or other identifying personal details.</li>
-</ul>
-<p>The concept brief intake fields are: <code>title?</code>, <code>premise</code>, <code>protagonist</code> (name/age/role,
-must be fictional), <code>point_of_view</code> (default 2<sup>nd</sup> person), <code>age_band</code>, <code>reading_level_target</code>,
-<code>tier</code>, <code>tone</code>, <code>themes_allowed[]</code>, <code>content_nogo[]</code>, <code>target_node_count</code>, <code>ending_count</code>,
-<code>structure_pattern</code>, <code>desired_variables[]?</code>, <code>special_constraints[]?</code>.</p>
-<p><code>age_band</code> is a categorical value (one of the six bands "3-5", "5-8", "8-11", "10-13",
-"13-16", "16+"); it identifies a generation target, not an individual child. The backend must validate that the concept brief does not
-contain free-text fields with real names before dispatching to the provider.</p>
-<p><strong>Child-initiated requests (shipped in WS-B of the story-lifecycle redesign; budget-consent
-semantics added by ADR-015)</strong>: a child-typed story wish is child-provided free text and is
-likely to contain the child's own name or friends' names. Current behavior, verified in
-<code>api/story_requests.py</code>: wish text is screened at intake against the family's child-profile
-names and for safety, and a blocked wish persists as a <code>blocked</code> row that proceeds nowhere.
-The wish reaches the <strong>generation</strong> provider only after guardian approval converts it into a
-concept, and the PII guard runs on the resulting brief before that egress. Note, however,
-that the intake <strong>screening</strong> step itself sends the wish text to the external moderation
-classifiers described in the next section, so those services are data-handling
-counterparties for child-typed text as well as for generated prose.</p>
-<hr />
-<h2 id="raw-llm-outputs-and-prompt-text">Raw LLM Outputs and Prompt Text<a class="headerlink" href="#raw-llm-outputs-and-prompt-text" title="Permanent link">&para;</a></h2>
-<p>Raw LLM outputs (the full text returned by the provider for each stage) and the prompt
-text sent to the provider are admin-only (ADR-007 as amended 2026-07-16). They are no longer
-uniformly short-lived: as of ADR-007's 2026-08-10 and 2026-08-11 amendments, a raw output that
-a human reached a decision about is retained for the life of the storybook, and only an
-undecided one is short-lived. The detail is in the second bullet.</p>
-<ul>
-<li><strong>Prompt text</strong>: store the prompt template version and a hash, not the full rendered
-  prompt, where the rendered text could carry child-specific detail. The hash allows
-  audit without persisting the content.</li>
-<li><strong>Raw generation outputs</strong>: stored in <code>generation_job.report</code>, a Postgres JSONB column
-  (not object storage; there is no <code>raw_output_ref</code> field). The purpose was originally
-  debugging and repair-pass analysis alone; ADR-007's 2026-08-10 amendment added a second,
-  broader one: calibrating the review scorecard against the decision a human actually made.
-  That is a purpose change as well as a window change, and it is what justifies the longer
-  retention below rather than the debugging need, which is satisfied inside 30 days.
-  The retention window is defined (ADR-007): purge 30
-  days after job completion, via a <code>pg_cron</code> job (ADR-009), <strong>except</strong> where a human
-  reached a review decision about the storybook the job produced, which ADR-007's
-  2026-08-10 amendment exempts so the raw output can be paired with the reviewer's
-  decision. ADR-007's 2026-08-11 amendment withdrew the original "or on publish, whichever
-  comes first" leg: publishing is now an exemption from the purge rather than a trigger for
-  it, because the immediate on-publish null in <code>publishing/service.py::approve</code> fired before
-  the approve half of the exemption could ever apply. The <code>pg_cron</code> job is built and
-  scheduled (<code>20260718000000_add_report_retention_purge.sql</code>, predicate amended by
-  <code>20260810000000_exempt_reviewed_generation_job_report_from_purge.sql</code>); it is no longer
-  the unbuilt Phase 5 deliverable this section once described.</li>
-</ul>
-<p>The exemption has a boundary worth stating here rather than only in the retention policy:
-  it is evaluated when the nightly sweep runs, not when the human decides. A job whose
-  storybook is still <code>in_review</code> on day 31 is purged, and a later approval cannot restore the
-  column, so the pairing this exemption exists to enable only happens for reviews that
-  conclude inside the 30 days. See <code>docs/compliance/data-retention-policy.md</code> Section 4 and
-  <code>UW-C227</code>.</p>
-<div class="language-python highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="c1"># #CRITICAL: data integrity: generation_job.report holds raw LLM output that may</span>
-</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="c1">#            carry child-derived detail; it must be purged and never leaked.</span>
-</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="c1"># #VERIFY: the pg_cron purge job (30 days post-completion, minus the human-decided</span>
-</span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="c1">#          exemption) is scheduled before the public tier goes live; confirm report</span>
-</span><span id="__span-0-5"><a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a><span class="c1">#          stays off child-facing endpoints and the job-list endpoint.</span>
-</span></code></pre></div>
-<ul>
-<li><strong>Access control</strong>: <code>generation_job.report</code> is returned by <code>GET /generation-jobs/{id}</code>
-  only to principals with the admin capability (ADR-007 as amended 2026-07-16; the
-  admin reviews first, then the parent receives content through post-approval surfaces).
-  It is excluded from the list endpoint (job status only) and every child-facing
-  endpoint, and is not accessible via the story-serving path.</li>
-</ul>
-<p>Moderation reports (the per-node flags and the moderation API response) persist with the
-<code>storybook_version</code> record for audit. They contain node IDs and flag categories, not raw
-child data.</p>
-<hr />
-<h2 id="external-moderation-classifiers-stage-0-first-line-filter">External Moderation Classifiers (Stage 0, first-line filter)<a class="headerlink" href="#external-moderation-classifiers-stage-0-first-line-filter" title="Permanent link">&para;</a></h2>
-<p>This is a deliberate design decision, not an incidental integration: <strong>all AI-generated
-story prose</strong> runs through external moderation classifiers as the first-line safety filter,
-precisely so that safety does not depend on a parent reading every path in detail. The
-human gates (guardian oversight, admin approval per ADR-005) sit on top of this floor, not
-in place of it.</p>
-<p>Current mechanism (<code>moderation/classifiers.py</code>, wired in <code>moderation/pipeline.py</code>): when
-keys are configured, every generated node's prose is sent per-node to the <strong>OpenAI
-Moderation API</strong> and <strong>Google Perspective API</strong> during Stage 0 of the moderation pipeline.
-The same classifiers screen child-typed story-request text at intake
-(<code>story_requests/screening.py</code>). Both services are therefore standing data-handling
-counterparties for two data categories:</p>
-<ul>
-<li><strong>Generated story prose</strong> (family-linked content produced by the pipeline; the PII guard
-  keeps real child detail out of the prompts that produce it).</li>
-<li><strong>Child-typed request text</strong> (child-provided free text, screened before storage).</li>
-</ul>
-<p>Consequences for the provider data-handling review (Blocker 1 below): OpenAI and Google
-(Perspective) must be included alongside the generation leg (OpenRouter) and the LLM
-review leg when confirming retention terms. <strong>Since the 2026-07-28 narrowing, this leg is
-where Blocker 1's force sits</strong> (Blocker 1b). The distinction is route control, not whether
-typed words egress at all: a child's own typed words reach the generation leg too, verbatim,
-because <code>ConceptBrief.premise</code> is <code>request.request_text</code> unaltered
-(<code>story_requests/brief.py:197</code>) and the brief is fenced into the generation prompt. What is
-different here is that the classifier leg calls OpenAI Moderation and Google Perspective
-<strong>directly</strong>, so it inherits none of the OpenRouter workspace guardrail that constrains the
-generation route, and ADR-023's proposed render-time substitution does nothing for it either
-(it addresses identifiers, not free text). Classifier calls should remain content-only:
-no child identifier, profile id, or family id accompanies the text, and failures are
-logged by node id only.</p>
-<p>Ring-2 recommendation sharing (guardian-connected families, the cousins case) is a new
-child-linked data flow: a recommendation visible to a connected family carries the
-recommending child's display name and a reading signal (book plus rating) into another
-household. Controls, binding per
-<a href="../adr/adr-016-recommendation-sharing-social-boundary/">ADR-016</a>:</p>
-<ul>
-<li>Visibility exists only along a directional, revocable <code>family_connection</code> with active
-  guardian consent on both sides; revocation removes visibility immediately.</li>
-<li>Payloads are structured data only (book reference, display name, rating); never free
-  text, reading progress, request text, or profile attributes beyond the display name.</li>
-<li>Ring-3 global aggregation (future) must be anonymized: no per-child or per-family
-  identifier may reach or be inferable from a global recommendation, with a
-  minimum-population threshold before aggregates surface.</li>
-<li>Deletion-readiness: recommendations and connections are family-linked rows in known
-  tables and must be included in family erasure.</li>
-</ul>
-<hr />
-<h2 id="deletion-readiness">Deletion Readiness<a class="headerlink" href="#deletion-readiness" title="Permanent link">&para;</a></h2>
-<p>A full deletion subsystem is a later deliverable. The requirement at Phase 0 is that the
-data model does not make deletion impossible. The following rules apply:</p>
-<ul>
-<li>Child-linked data must be kept in known, enumerable places: <code>child_profile</code> rows in
-  Postgres, <code>reading_state</code> rows in Postgres, <code>completion</code> rows in Postgres, and raw
-  generation outputs in the <code>generation_job.report</code> JSONB column in Postgres.</li>
-<li>Child-linked data must not be scattered through structured logs, Sentry breadcrumbs, or
-  application-level caches that are not enumerated in the data model.</li>
-<li>Sentry must not receive a child's reading content beyond a node ID or story ID. Exception
-  events should carry correlation IDs, not reading-state snapshots.</li>
-<li>When a child profile is deleted, the owning service must be able to identify and purge
-  all associated <code>reading_state</code> and <code>completion</code> rows. Cascades must be defined in the
-  Alembic schema.</li>
-</ul>
-<hr />
-<h2 id="prompt-injection-defense">Prompt-Injection Defense<a class="headerlink" href="#prompt-injection-defense" title="Permanent link">&para;</a></h2>
-<p>Concept brief text is untrusted input. A malicious or malformed brief must not alter the
-system prompt, bypass the safety constraints, or cause the model to produce content that
-skips moderation.</p>
-<p>Defense controls:</p>
-<ul>
-<li>The system prompt and safety constraints sent to the provider are fixed templates,
-  rendered from versioned template files. Brief content is inserted only into designated
-  user-turn slots and is never concatenated into the system prompt.</li>
-<li>The moderation pass runs independently of the generating model. Even if a brief causes
-  the generator to produce unsafe content, the independent moderation pass and the
-  mandatory guardian approval step remain in the path.</li>
-<li>Brief fields are validated against a strict schema before dispatch. Free-text fields
-  (<code>premise</code>, <code>protagonist</code>, <code>special_constraints</code>) are length-limited and stripped of
-  control characters before insertion.</li>
-<li>The generation orchestrator logs the prompt template version and the brief hash with
-  every job. Any anomaly in moderation flags can be correlated back to the brief that
-  triggered it.</li>
-</ul>
-<p><strong>Available but not enabled (recorded 2026-07-28)</strong>: the OpenRouter workspace offers a free,
-no-added-latency, OWASP-inspired regex scan for common injection techniques, with an
-allow-list for phrases that should never trigger it. Every defense listed above is ours and
-runs in-process; this would be an independent fourth layer at the egress boundary. It is
-<strong>disabled</strong> as of this record. The reason it is not simply switched on is false positives:
-a children's adventure brief can legitimately contain instruction-shaped phrasing, and a
-blocked generation is a visible product failure rather than a silent one. Worth trialling
-with the allow-list in reach; not a default yes.</p>
-<hr />
-<h2 id="open-blockers">OPEN BLOCKERS<a class="headerlink" href="#open-blockers" title="Permanent link">&para;</a></h2>
-<p>The following blocker is split into two sub-items. Only 1b (the classifier and review leg)
-gates anything; 1a (the generation leg) is narrowed to a documentation item and gates
-nothing. A second former blocker (homelab reachability through Pangolin) has since been
-resolved; see <a href="#resolved-blockers">Resolved Blockers</a> below.</p>
-<h3 id="blocker-1-llm-provider-data-handling-terms">Blocker 1: LLM Provider Data-Handling Terms<a class="headerlink" href="#blocker-1-llm-provider-data-handling-terms" title="Permanent link">&para;</a></h3>
-<p><strong>Narrowed 2026-07-28.</strong> This blocker was originally written as one undifferentiated gate
-over every model counterparty, and it stopped all generation ("No generation call may be
-made with a real concept brief until it is resolved"). It is now split, because the two
-legs do not carry the same data and never did.</p>
-<h4 id="1a-generation-leg-openrouter-narrowed-to-a-documentation-item">1a. Generation leg (OpenRouter): NARROWED to a documentation item<a class="headerlink" href="#1a-generation-leg-openrouter-narrowed-to-a-documentation-item" title="Permanent link">&para;</a></h4>
-<div class="language-python highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="c1"># #CRITICAL: external resource: retention posture on the generation leg rests on a</span>
-</span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="c1">#            mutable platform guardrail (dated snapshot), not on an executed DPA.</span>
-</span><span id="__span-1-3"><a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a><span class="c1"># #VERIFY: re-confirm the OpenRouter workspace guardrail state at P7-08 and on any</span>
-</span><span id="__span-1-4"><a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a><span class="c1">#          credential rotation; execute the DPA and record both in</span>
-</span><span id="__span-1-5"><a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a><span class="c1">#          docs/compliance/processor-dpa-checklist.md.</span>
-</span></code></pre></div>
-<p>The generation leg no longer gates dispatch. The reasoning, in the order it matters:</p>
+<p>That does not make the underlying license work wasted; it means the three tiers need different,
+real consumers than the ones the proposal named:</p>
+<table>
+<thead>
+<tr>
+<th>Proposal's tier</th>
+<th>Proposal's use case</th>
+<th>This project's actual matching consumer</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Tier A (public domain, structural)</td>
+<td>Internal training on graph extraction, path enumeration, choice-to-outcome mapping</td>
+<td><strong>Real structural test fixtures.</strong> <a href="../cyoa-book-benchmark-comparison/">cyoa-book-benchmark-comparison.md</a> already benchmarks the validator/condition-evaluator against published mechanics, but deliberately uses hand-built analogues, not real text, "to reproduce... only its publicly-documented branching mechanics." A verified-PD full text is the first chance to run the actual <code>validator/</code>/<code>diversity/</code> graph-analysis code against real branching prose instead of an analogue.</td>
+</tr>
+<tr>
+<td>Tier B (public domain, prose/age calibration)</td>
+<td>Internal training on sentence complexity, vocabulary, read-aloud suitability</td>
+<td><strong>Calibration reference for <code>validator/reading_level.py</code> and <code>validator/band_profile.py</code>.</strong> Validating that the FK-grade proxy tracks what a real published, age-banded PD children's book actually reads like, the same role <code>craft-review-benchmark-corpus.md</code> already proposed for professional reviews, from a different angle.</td>
+</tr>
+<tr>
+<td>Tier C (copyrighted, reference-only)</td>
+<td>Human reference; derived labels only, never copied</td>
+<td><strong>Already built.</strong> This is exactly <a href="../craft-review-benchmark-corpus/">craft-review-benchmark-corpus.md</a>'s existing schema and posture (title/ISBN/source/URL, short attributed quotation, and derived labels, never full text), just extended to general interactive fiction rather than only published children's books. That doc's consumer is now the LLM quality panel in <a href="../cyo-measurement-workplan-2026-08-12/">cyo-measurement-workplan-2026-08-12.md</a>, so a Tier C extension inherits that consumer too.</td>
+</tr>
+</tbody>
+</table>
+<p>Tier A and Tier C are the two worth acting on. Tier B (open children's-literature prose for
+reading-level calibration) is real but untouched this session; it needs its own title list and is
+out of scope for this pass.</p>
+<h2 id="verification-results-the-proposals-recommended-initial-set-of-five">Verification results: the proposal's "recommended initial set" of five<a class="headerlink" href="#verification-results-the-proposals-recommended-initial-set-of-five" title="Permanent link">&para;</a></h2>
+<p>The proposal itself flagged that IFDB's license field is "community metadata rather than a legal
+opinion" and that some entries should be added "if their rights metadata survives a manual
+verification." That verification ran in two passes: 2026-08-13 via <code>WebSearch</code> alone, with
+<code>WebFetch</code> blocked by network egress policy, and <strong>2026-08-30 from a session with working egress,
+which performed a direct page read for all five entries</strong>. Full entries with sources and caveats are
+in <a href="../data/if-corpus-licensing.yaml"><code>data/if-corpus-licensing.yaml</code></a>; the table below states the
+current position, flagging where it differs from the 2026-08-13 one.</p>
+<table>
+<thead>
+<tr>
+<th>Work</th>
+<th>Claimed</th>
+<th>Verified finding (2026-08-30 unless noted)</th>
+<th>Status</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><em>Consider the Consequences!</em></td>
+<td>PD in the US, historical press + modern discussion</td>
+<td><strong>Confirmed by direct read, and on a better basis than first recorded.</strong> Wikisource's licence banner reads "This work is in the public domain in the United States because it was published before January 1, 1931", which is <strong>term expiry, not copyright non-renewal</strong>. Term expiry needs no renewal-record search to hold, so the finding is stronger than the 2026-08-13 pass claimed. Author, publisher (The Century Co.), 1930 date, and the branching structure all confirmed on the same page. Modern discussion is real and well-corroborated (LOC blog, MetaFilter, an IF community forum thread, a 2024/25 commercial reprint); the "historical press coverage" claim still has exactly one unverified lead</td>
+<td><code>green</code>, <strong>high</strong> confidence (was medium); <code>commercial_use_claimed</code> and <code>derivatives_claimed</code> both moved to <code>null</code>, because the banner states a PD finding and does not address either permission specifically. The term-expiry basis is unchanged</td>
+</tr>
+<tr>
+<td><em>The Interlopers</em> (adaptation)</td>
+<td>PD source + PD adaptation</td>
+<td>Saki's original story is solidly PD. The adaptation is a <strong>separate rights object and was never cleared</strong>: IFDB credits it to "Saki and IF Classics", a project label rather than an identifiable rights holder, its License field is community metadata reading "Public Domain", and no author-signed dedication exists. The page now also states "There are no known download links for this game", so the 2026-08-13 entry's download URL is withdrawn (it returns HTTP 403)</td>
+<td><strong><code>yellow</code>, downgraded from <code>green</code></strong>; <code>covers</code> narrowed to <code>[text]</code>, and the <code>commercial_use_claimed</code> / <code>derivatives_claimed</code> booleans withdrawn to null</td>
+</tr>
+<tr>
+<td><em>The Tailgator</em></td>
+<td>PD, "5 ratings and 1 written review" on IFDB</td>
+<td>The 2026-08-13 pass found nothing under this title. Re-searching refines that: a real Twine IF game titled <em>The Tailgator</em> exists on itch.io (creator NegativeSector), but a direct read shows <strong>no licence statement and no ratings or reviews</strong>, so it is not the work the proposal described and supplies no rights basis. The proposal's claim remains unconfirmed</td>
+<td><code>reference_only</code>; <strong>do not add to any corpus under this title</strong></td>
+</tr>
+<tr>
+<td><em>The Cavern of the Morlocks</em></td>
+<td>PD, "3 ratings and 1 detailed review"</td>
+<td>Real work confirmed by direct read (François Coulon, 1985, Matra-Hachette Alice, French). IFDB's License field does read "Public Domain" but <strong>there is no author statement anywhere on the page</strong>, only the field, and the count is <strong>2 ratings, 1 review</strong>, not 3. Decisively: French <code>droit moral</code> is perpetual, inalienable, and unwaivable, so a living French author has <strong>no clean public-domain-dedication route available</strong> in the first place. Waiting for an author statement would not resolve this, because the bar is structural rather than evidentiary</td>
+<td><strong><code>reference_only</code>, downgraded from <code>yellow</code></strong></td>
+</tr>
+<tr>
+<td><em>Lost Pig</em></td>
+<td>CC BY-NC-ND 3.0, 500+ ratings, multiple awards</td>
+<td><strong>Confirmed verbatim from the rights holder's own site</strong>, the only entry here resting on the author's own words: "Lost Pig by Admiral Jota and Grunk is licensed under a Creative Commons Attribution-NonCommercial-NoDerivs 3.0 Unported License". Awards confirmed on the same page (1<sup>st</sup> of 27 in IFComp 2007; 4 XYZZY wins of 8 nominations). Note the licence names <strong>two</strong> parties, so a permission request must reach both</td>
+<td><code>red</code>, <strong>high</strong> confidence (was medium); permission request remains the only path, and that is a human, outward-facing action</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Two downgrades, one correction, one omission, and one field-level fix.</strong> The two downgrades are
+the load-bearing changes: <em>The Interlopers</em> and <em>The Cavern of the Morlocks</em> both moved to a
+stricter status because in each
+case the machine-readable fields were asserting more than the prose beside them could support. The
+correction is <em>The Tailgator</em>, where the proposal's described work still cannot be located and a
+same-titled itch.io game is not it; acting on an unverifiable title risks citing a wrong or
+nonexistent work in a legal-status table. The omission is <em>All Things Devours</em> (the proposal's
+other permission-required title), which has still not been checked; treat it as fully unverified. The
+field-level fix is <em>Consider the Consequences!</em>, whose finding did not change at all: only the two
+permission fields beside it did, for the reason set out immediately below.</p>
+<p><strong>A note on how the downgrades happened, because the pattern will recur.</strong> Neither downgrade rested
+on new facts. Both facts were already in the 2026-08-13 entries' own <code>verification_notes</code>: no
+author-signed dedication for the Quest adaptation, community metadata only for the Morlocks entry.
+What changed is that those hedges now reach the fields a script reads. A <code>status: green</code> beside
+<code>commercial_use_permitted: true</code> outlives the paragraph explaining why neither is settled, and the
+paragraph is the part a machine consumer never sees. When a caveat and a field disagree, move the
+field.</p>
+<p><strong>The rule had one entry left to apply to, and applying it took three changes.</strong> <em>Consider the
+Consequences!</em> was the one entry still carrying <code>true</code> in both permission fields, so it was also the
+one entry a script filtering on them would have added to an ingestion allowlist, off the strongest
+<code>status</code> value in the file, in a public repository. Three changes close that:</p>
 <ol>
-<li><strong>No registered child identifier can reach it.</strong> <code>assert_prompt_pii_safe</code>
-   (<code>generation/pii.py:229-289</code>) raises and fails the job rather than redacting, over both
-   the <code>system</code> and <code>user</code> blocks, and briefs fall back to a fictional <code>"Explorer"</code>
-   (<code>story_requests/brief.py:79-81</code>).</li>
-<li><strong>That is not expected to change under personalization, though the answer is proposed
-   rather than settled.</strong> ADR-023 <em>proposes</em> resolving guardian-opt-in personalization
-   client-side at render time over sentinels the server stores and serves unchanged, rather
-   than at generation time. It is <code>status: proposed</code> with counsel sign-off open and no code
-   written yet, and it is a third route rather than the rejected Route B (which would have put
-   real names into provider prompts and into <code>storybook_version.blob</code>). If ADR-023 is not
-   adopted, this reason lapses.</li>
-<li><strong>Routing on the OpenRouter leg is constrained at the platform, not by policy.</strong> A
-   guardrail on a dedicated, key-scoped OpenRouter workspace (configured 2026-07-28) requires
-   zero-data-retention endpoints across non-frontier, Anthropic, OpenAI, Google, and xAI
-   routing, and disables all three data-training paths (paid-trains, free-trains,
-   free-publishes-prompts). The guardrail's plugins-and-tools carve-out does not reach this
-   app: the generation request body contains no <code>plugins</code> or <code>tools</code> key
-   (<code>generation/providers/openrouter.py:154-164</code>). <strong>This covers the OpenRouter route only.</strong>
-   The direct-Anthropic leg (<code>generation/providers/anthropic.py</code>, selectable as
-   <code>generation_provider="anthropic"</code> and seeded in the admin allowlist) is built and bypasses
-   the guardrail; confining production generation to the guarded route is an open item, not an
-   existing control. Full state, limits, and that open item: ADR-003's 2026-07-28 amendment.</li>
-<li><strong>A second, independent egress chokepoint now exists.</strong> Key-level Sensitive Info
-   Detection redacts email, phone, SSN, credit-card, and IP patterns request-side, outside
-   our process and after <code>assert_prompt_pii_safe</code> has already hard-failed on the overlapping
-   ones. Person-name and address redaction are deliberately <strong>off</strong>: the protagonist name is
-   intentional fictional story content, and addresses are already a hard fail here. See
-   ADR-003 for the full reasoning, which should be read before anyone "completes" those
-   checkboxes.</li>
+<li><strong>The permission fields are renamed.</strong> <code>commercial_use_permitted</code> is now
+   <code>commercial_use_claimed</code>, and <code>derivatives_permitted</code> is now <code>derivatives_claimed</code>. No field name
+   in the register asserts a permission the register is not granting; every one of them now names
+   what it actually holds, which is a relayed claim.</li>
+<li><strong>Both of that entry's claim fields are <code>null</code>.</strong> Wikisource's banner states a public-domain
+   finding for the United States. It does not speak to commercial use or to derivative works
+   specifically, so <code>null</code> ("no located source addresses this permission") is the accurate value and
+   <code>true</code> was an inference. <strong>The term-expiry basis is untouched and undiminished</strong>: it lives in
+   <code>license_claimed</code> and in the entry's <code>verification_notes</code>, which is where a rights basis belongs.
+   Nulling a claim field is not a downgrade of the finding; <code>status</code> stays <code>green</code> and confidence
+   stays <code>high</code>.</li>
+<li><strong>The definitions became data.</strong> See the following section: the header comment block that
+   previously carried them is not something a parser can read.</li>
 </ol>
-<p><strong>What is still true, and is why this is narrowed rather than closed</strong>: briefs carry a
-coarse age band, guardian-set <code>banned_themes</code>, content-flag caps, and free-typed premise
-text. That is child-<em>derived</em> content, so the generation leg is identifier-free, not
-PII-free, and its terms still belong in the P7-08 processor record. A routing guardrail is
-also not a contract: no DPA has been executed, and console settings are mutable, so the
-configuration above is a dated snapshot rather than a permanent property.</p>
-<p><strong>Counterparty change, 2026-07-28</strong>: the ZDR toggles disable first-party Anthropic, OpenAI,
-and Google AI Studio endpoints rather than those model families, so generation traffic now
-reaches them through AWS Bedrock, Microsoft Azure, and Google Vertex. Those three are in
-scope as sub-processors for the generation leg. This does not affect the classifier leg
-below, which calls OpenAI Moderation directly.</p>
-<p><strong>Status</strong>: NARROWED. Not a dispatch gate. DPA execution and a re-confirmation of the
-guardrail state remain P7-08 deliverables; <code>docs/compliance/processor-dpa-checklist.md</code>
-still carries the OpenRouter row as unexecuted.</p>
-<h4 id="1b-classifier-and-review-leg-open-and-this-is-now-the-real-blocker">1b. Classifier and review leg: OPEN, and this is now the real blocker<a class="headerlink" href="#1b-classifier-and-review-leg-open-and-this-is-now-the-real-blocker" title="Permanent link">&para;</a></h4>
-<div class="language-python highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="c1"># #CRITICAL: external resource: retention terms for the Stage-0 classifiers, which</span>
-</span><span id="__span-2-2"><a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a><span class="c1">#            receive child-TYPED free text, are unconfirmed.</span>
-</span><span id="__span-2-3"><a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a><span class="c1"># #VERIFY: confirm terms per counterparty before the public tier ships; record here.</span>
-</span></code></pre></div>
-<p>This leg is different in kind, and the original blocker's force belongs here. The Stage-0
-external classifiers receive <strong>child-typed request text</strong> at intake
-(<code>story_requests/screening.py</code>) and <strong>every node of generated prose</strong> during moderation (see
-the External Moderation Classifiers section above). They are called directly, so nothing about
-the OpenRouter workspace guardrail reaches them, and ADR-023's proposed render-time
-substitution does not touch them either: it addresses identifiers, and this is the child's own
-free text, sent verbatim, before storage.</p>
-<p>The <strong>LLM review provider</strong> stays in scope here but for a different reason, and an earlier
-draft gave the wrong one. It is not a child-typed-text path: it is built from the same
-<code>build_openrouter_leg</code> adapter as generation
-(<code>moderation/review_provider.py</code>), and <code>review_openrouter_model</code> defaults to an Anthropic model
-(<code>core/config.py:562</code>), so when <code>review_provider="openrouter"</code> the review leg rides the <strong>same
-guardrailed route</strong> as generation and carries <strong>generated prose</strong>, not child-typed words. What
-it still needs is the same terms confirmation every counterparty needs, plus the caveat that
-its posture is inherited from the generation-route guardrail and moves with it.</p>
-<p><strong>Required action</strong>: confirm the applicable retention path for each classifier counterparty
-and the review provider, and record the outcome (provider, route, contract reference or API
-tier, effective date) here. Note that the Perspective counterparty is separately in flux
-under the Stage-0 Perspective sunset work; that changes who is on this list, not whether the
-confirmation is needed.</p>
-<p><strong>Status</strong>: OPEN. This is the standing Blocker 1 referenced by
-<a href="../adr/adr-018-childrens-privacy-compliance/">ADR-018</a> item 6.</p>
-<hr />
-<h2 id="resolved-blockers">Resolved Blockers<a class="headerlink" href="#resolved-blockers" title="Permanent link">&para;</a></h2>
-<h3 id="blocker-2-resolved-homelab-reachability-through-pangolin-p0-10">Blocker 2 (resolved): Homelab Reachability Through Pangolin (P0-10)<a class="headerlink" href="#blocker-2-resolved-homelab-reachability-through-pangolin-p0-10" title="Permanent link">&para;</a></h3>
-<p>The homelab needed to be reachable through the Pangolin zero-trust ingress before
-integration tests and the CI environment could reach the deployed stack. This was plan
-item P0-10 and a Phase 0 exit condition.</p>
-<p><strong>Resolution</strong>: the homelab stack is reachable through Pangolin and has been live in
-production since 2026-07-05 at <code>https://cyo.williamshome.family</code> (Cloudflare, Pangolin
-VPS, WireGuard tunnel, docker-host Traefik). R1 (the internal web release) is
-feature-complete as of 2026-07-03 and has been exercised end to end against this live
-URL, including guardian email/password sign-in through Supabase (ADR-009) and the full
-guardian-authoring to kid-reading journey. The 2026-07-07 record also cited <code>/health/live</code>
-and <code>/health/ready</code> "returning 200"; that leg of the evidence is withdrawn as of 2026-08-04
-(<code>UW-L04</code>). Those requests were answered by an nginx stub rather than by the application, so
-the 200 proved nothing about database connectivity. This does not change the blocker's
-disposition, which rests on the sign-in and reading journey above, but the probe evidence
-itself must not be cited: readiness became genuinely reachable only once the canonical
-<code>/api/v1/health/ready</code> path existed. See <code>docs/planning/roadmap.md</code> (Phase 5 success criteria: "✅
-Deployed behind Pangolin with Supabase guardian login (ADR-009)") and
-<code>docs/planning/r1-live-e2e-checklist.md</code> for the live verification record. Note this
-blocker was scoped to the homelab / family tier only; on the public tier, Supabase is the
-identity provider (Supabase OIDC, ADR-009) and Supabase-managed Postgres is the
-datastore, so Pangolin ingress and a self-hosted IdP do not apply there.</p>
-<p><strong>Status</strong>: RESOLVED (2026-07-05, verified live 2026-07-07; the health-probe leg of that
-verification was withdrawn 2026-08-04, see <code>UW-L04</code>).</p>
-<hr />
-<h2 id="if-shared-beyond-family">If Shared Beyond Family<a class="headerlink" href="#if-shared-beyond-family" title="Permanent link">&para;</a></h2>
-<h3 id="ring-2-disclosure-existing-guardian-authorized">Ring-2 disclosure (existing, guardian-authorized)<a class="headerlink" href="#ring-2-disclosure-existing-guardian-authorized" title="Permanent link">&para;</a></h3>
-<p>Personalization values also flow beyond the immediate family through the ring-2
-disclosure design (ADR-016, ADR-023 section 3). This is a designed, guardian-gated flow,
-not a future Phase 7 deliverable, and it carries its own controls distinct from the
-public-tier checklist below:</p>
+<p><strong>Methodology, and what changed between the two passes.</strong> The 2026-08-13 pass ran behind a network
+egress proxy that blocked every relevant domain (wikisource.org, wikidata.org, archive.org,
+ifdb.org, grunk.org, textadventures.co.uk, and others), so every finding it produced was
+<code>WebSearch</code>-snippet-derived rather than a first-hand page read, and it said so. The 2026-08-30 pass
+had unrestricted egress and read a page directly for <strong>all five</strong> entries, so all five now carry
+<code>verification_method: primary_source_fetch</code>.</p>
+<p>That count needs its meaning stated, because <code>5 of 5</code> reads like a clean sweep and is not one. <strong>A
+fetch records that a page was read, never that the page supported the entry.</strong> <em>The Tailgator</em>'s
+pass-2 fetch confirmed a <strong>non-match</strong>: the page that was read turned out to describe a different
+work from the one the external proposal named, which is why that entry pairs
+<code>verification_method: primary_source_fetch</code> with <code>verification_confidence: unable_to_verify</code>.
+Reading the method field alone would make that entry look checked. <code>data/if-corpus-licensing.yaml</code>'s
+<code>checked_method_caveat</code> now says exactly this, so a later edit can neither quietly launder a pass-1
+entry into a pass-2 one nor read a fetch as a confirmation.</p>
+<p>The re-verification changed two statuses and one rationale, which is the argument for not treating
+a snippet-derived legal claim as settled: a search snippet reproduced the <em>outcome</em> for <em>Consider
+the Consequences!</em> while getting its <em>basis</em> wrong, and it carried IFDB's License field for two
+entries without carrying the absence of any author statement behind it.</p>
+<p><strong>No entry here is legal sign-off, and no <code>status</code> value in the companion YAML means "cleared".</strong>
+Until 2026-08-30 that statement lived in the YAML's <code>#</code> comment header, which made it true of a
+<em>human</em> or an agent reading the raw text and false of the reader it was written for: a parser
+discards every comment line, so <code>yaml.safe_load()</code> returned five records and no caveat at all. The
+definitions are now top-level YAML data. A script that loads the file sees
+<code>is_legal_clearance: false</code>, a <code>clearance_note</code> saying in as many words that filtering <code>works</code> on
+<code>status</code> plus the claim fields to build an ingestion allowlist is a misuse of the file, a
+<code>status_definitions</code> mapping with an entry for every status value the file uses (each written to say
+what that status is <em>not</em>), and a matching <code>verification_method_definitions</code> mapping. Before any work's
+actual text enters this repository, re-verify again against the primary source, and route anything
+that will actually ship (not just an internal test fixture) through the same counsel-engagement
+pattern this project already uses for other rights questions (see
+<a href="../../compliance/counsel-engagement-brief/">counsel-engagement-brief.md</a>).</p>
+<h2 id="what-this-doc-is-not-proposing">What this doc is not proposing<a class="headerlink" href="#what-this-doc-is-not-proposing" title="Permanent link">&para;</a></h2>
 <ul>
-<li><strong>Which slot types can cross</strong>: protagonist first name, sibling/family-child name, pet
-  species, pet name, trusted-adult kinship label, favorites (color, food, hobby), and
-  home type. Pronouns and the dedication line never cross ring 2 (ADR-023 taxonomy, ring
-  ceiling column).</li>
-<li><strong>Under which consent</strong>: the mutual, directional <code>family_connection</code> consent (active
-  guardian approval on both sides) plus a separate, per-profile, per-connection
-  disclosure consent (<code>personalization_disclosure_consent</code>, scoped by
-  <code>covered_slot_types</code>). The sibling slot additionally requires
-  <code>sibling_authority_attested</code> and the referenced sibling's own ring-2 enablement and
-  consent on that same connection.</li>
-<li><strong>Revocation is prospective, not retroactive</strong>: revoking a connection or a disclosure
-  consent stops future reads and future device syncs immediately, but does not
-  retroactively claw back a values payload already synced to a connected family's
-  device. Guardian-facing copy for revocation must say so rather than implying
-  retroactive erasure.</li>
+<li><strong>No text has been downloaded or committed to this repository this session.</strong> Verifying a
+  license is not the same decision as ingesting a work's full text; that is a separate, larger
+  step this doc deliberately stops short of. (This bullet previously justified itself with "every
+  finding above is search-snippet-derived rather than primary-source-verified", which the
+  2026-08-30 pass made false. The bullet does not need that premise: a primary-source read is
+  still not legal sign-off, so the gap between verifying a licence and ingesting a text is exactly
+  as wide as it was.)</li>
+<li><strong>No contact with the <em>Lost Pig</em> author.</strong> The proposal's "most valuable single action" is
+  exactly that outreach, but it is a human, outward-facing action on the user's behalf, not
+  something to take without being asked.</li>
+<li><strong>No change to the licensing register's <code>status</code> fields based on anything short of a
+  primary-source re-verification.</strong> <code>green</code> here means "strong lead," not "cleared." As of
+  2026-08-30 that definition is <strong>parsed data</strong> in
+  <a href="../data/if-corpus-licensing.yaml"><code>data/if-corpus-licensing.yaml</code></a> (<code>is_legal_clearance</code>,
+  <code>clearance_note</code>, <code>status_definitions</code>), not a comment header and not prose living only here. The
+  two files previously disagreed outright: the YAML defined <code>green</code> as "public domain in the
+  intended jurisdiction, source and rights documented", which reads as a clearance. Moving that
+  definition into the comment header fixed the disagreement for a human reader and left it
+  untouched for the machine one, since the YAML is the file a script opens alone and comments are
+  the first thing a parser throws away.</li>
 </ul>
-<h3 id="public-tier-future-adr-008-adr-009">Public tier (future, ADR-008 / ADR-009)<a class="headerlink" href="#public-tier-future-adr-008-adr-009" title="Permanent link">&para;</a></h3>
-<p>The controls above are calibrated for private family use and the homelab / family tier.
-The public tier (ADR-008 / ADR-009) takes this beyond private family use, so COPPA and
-Kids Category compliance become launch blockers. That compliance work is a future Phase 7
-deliverable and is not yet done. Before the public tier launches, revisit with legal
-counsel:</p>
-<ul>
-<li>COPPA (US) and state-level children's privacy equivalents.</li>
-<li>ICO Age Appropriate Design Code (UK) as a design reference.</li>
-<li>Age assurance and verifiable parental consent mechanisms.</li>
-<li>Retention and deletion policy suitable for a public service.</li>
-<li>Vendor terms covering the LLM provider, storage, and auth for a non-family audience.</li>
-<li>Incident response plan and a published privacy notice.</li>
-</ul>
-<p>This note is a design reference, not legal advice.</p>
-<hr />
-<h2 id="related-documents">Related Documents<a class="headerlink" href="#related-documents" title="Permanent link">&para;</a></h2>
-<ul>
-<li><a href="../tech-spec/#security">Tech Spec: Security</a></li>
-<li><a href="../tech-spec/#privacy-controls-family-only">Tech Spec: Privacy controls</a></li>
-<li><a href="../../phase0-decisions/">Phase 0 Decision Log</a></li>
-<li><a href="../adr/adr-003-frontier-llm-generation/">ADR-003: Frontier LLM for generation</a></li>
-<li><a href="../adr/adr-004-homelab-first-deployment/">ADR-004: Homelab-first deployment</a> (governs the homelab / family tier)</li>
-<li><a href="../adr/adr-007-raw-output-retention/">ADR-007: Raw output retention</a></li>
-<li><a href="../adr/adr-008-public-app-store-launch/">ADR-008: Public app store launch</a></li>
-<li><a href="../adr/adr-009-supabase-platform/">ADR-009: Supabase platform (managed Postgres, OIDC)</a></li>
-<li><a href="../adr/adr-016-recommendation-sharing-social-boundary/">ADR-016: Recommendation sharing and the three-ring social
-  boundary</a></li>
-<li><a href="../adr/adr-023-story-personalization-slots/">ADR-023: Story personalization slots</a></li>
-</ul>
+<h2 id="recommendation">Recommendation<a class="headerlink" href="#recommendation" title="Permanent link">&para;</a></h2>
+<p>Two pieces of real, checkable work came out of this pass: the verification table above (which
+corrects three of the proposal's specific claims, one materially: <em>The Tailgator</em> likely does not
+exist under that title as described) and the licensing-register schema in
+<a href="../data/if-corpus-licensing.yaml"><code>data/if-corpus-licensing.yaml</code></a>, which is reusable for every
+future candidate regardless of which titles end up in scope. The 2026-08-30 re-verification pass
+adds a third: the register now demonstrates that its own statuses move under scrutiny, in both
+directions (one entry strengthened, two downgraded), which is the property a rights register needs
+and the one a single-pass table cannot show.</p>
+<p>Where this sits relative to work that landed after this doc's 2026-08-13 merge base:
+<a href="../cyo-measurement-workplan-2026-08-12/">cyo-measurement-workplan-2026-08-12.md</a> now governs how
+this project measures story quality, and its W7 known-bad battery is where a Tier A structural
+fixture would actually be consumed, if Tier A is ever pursued. Nothing in that workplan calls for
+real third-party text, so the owner gate below is unchanged; the consumer is simply now named.</p>
+<p>What remains genuinely owner-gated:</p>
+<ol>
+<li><strong>Whether to pursue Tier A at all</strong> (real PD branching text as structural test fixtures for
+   <code>validator/</code>/<code>diversity/</code>), given <code>cyoa-book-benchmark-comparison.md</code> already covers the same
+   ground with hand-built analogues and has no open gap calling for real text specifically.</li>
+<li><strong>Whether to contact the <em>Lost Pig</em> rights holder</strong> for written permission, given it is by far
+   the strongest quality/review signal of anything checked across both this doc and
+   <code>craft-review-benchmark-corpus.md</code>.</li>
+<li><strong>Tier B</strong> (open children's-literature prose for reading-level calibration) has no title list
+   yet and was not scoped this session.</li>
+</ol>
+<p><strong>Register linkage.</strong> <code>UW-N12</code> is the id proposed for this doc's row in
+<a href="../unscheduled-work-register/">unscheduled-work-register.md</a>; main's <code>UW-N</code> cluster stops at
+<code>UW-N10</code>, so it is free. As with <code>UW-N11</code> in the companion document, the row is not added here:
+register ids collide when concurrent branches allocate from the same cluster, and the fix is a
+renumber plus merge rather than a text merge, so rows are batched into a single consolidation
+change. Treat <code>UW-N12</code> as proposed rather than assigned until that lands.</p>
 
 
 
@@ -3935,7 +3638,7 @@ counsel:</p>
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="August 30, 2026 19:32:47 UTC">August 30, 2026</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="August 30, 2026 19:32:12 UTC">August 30, 2026</span>
   </span>
 
     
@@ -3945,7 +3648,7 @@ counsel:</p>
     <span class="md-icon" title="Created">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M14.47 15.08 11 13V7h1.5v5.25l3.08 1.83c-.41.28-.79.62-1.11 1m-1.39 4.84c-.36.05-.71.08-1.08.08-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8c0 .37-.03.72-.08 1.08.69.1 1.33.32 1.92.64.1-.56.16-1.13.16-1.72 0-5.5-4.5-10-10-10S2 6.5 2 12s4.47 10 10 10c.59 0 1.16-.06 1.72-.16-.32-.59-.54-1.23-.64-1.92M18 15v3h-3v2h3v3h2v-3h3v-2h-3v-3z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="June 22, 2026 00:17:31 UTC">June 22, 2026</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="August 30, 2026 19:32:12 UTC">August 30, 2026</span>
   </span>
 
     

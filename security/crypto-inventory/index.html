@@ -3743,8 +3743,9 @@ protocol and has no group to negotiate.</p>
 <li><strong>Ollama leg</strong>: RETIRED. The leg built its own <code>ssl.SSLContext</code> from a private homelab CA
   (<code>OLLAMA_CA_BUNDLE</code>) and refused cleartext HTTP Basic off-loopback
   (<code>_reject_cleartext_basic_auth</code>). Both the private-CA trust path and the reversible
-  Basic-auth credential are gone with it, so every remaining egress leg verifies against the
-  public CA store alone and carries its credential in a header over TLS.</li>
+  Basic-auth credential are gone with it, so the remaining external LLM-provider HTTP legs
+  verify against the public CA store and carry their credential in a header over TLS.
+  Database and Redis transport are separate and are documented in their own entries below.</li>
 <li><strong>Supabase Postgres</strong>: session pooler over TLS, driver defaults, no explicit <code>sslmode</code> in
   code; classical until Supabase offers PQC transport (accepted, ADR-013 out-of-scope list).</li>
 <li><strong>Redis</strong>: <code>redis://</code> (no TLS) on the internal Docker network; a network-trust boundary, not
@@ -3899,7 +3900,7 @@ MD5/SHA-1 anywhere (enforced by <code>scripts/check_fips_compatibility.py</code>
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="August 22, 2026 18:41:23 UTC">August 22, 2026</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="August 30, 2026 19:32:47 UTC">August 30, 2026</span>
   </span>
 
     

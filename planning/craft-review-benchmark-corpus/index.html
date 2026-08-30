@@ -12,7 +12,7 @@
         <meta name="author" content="Byron Williams">
       
       
-        <link rel="canonical" href="https://cyo-adventure.readthedocs.io/planning/privacy-model/">
+        <link rel="canonical" href="https://cyo-adventure.readthedocs.io/planning/craft-review-benchmark-corpus/">
       
       
       
@@ -25,7 +25,7 @@
     
     
       
-        <title>Privacy and Provider Data-Handling Model - CYO Adventure</title>
+        <title>External Craft-Review Benchmark Corpus: Feasibility and Scope - CYO Adventure</title>
       
     
     
@@ -88,7 +88,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#privacy-and-provider-data-handling-model" class="md-skip">
+        <a href="#external-craft-review-benchmark-corpus-feasibility-and-scope" class="md-skip">
           Skip to content
         </a>
       
@@ -122,7 +122,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Privacy and Provider Data-Handling Model
+              External Craft-Review Benchmark Corpus: Feasibility and Scope
             
           </span>
         </div>
@@ -3306,10 +3306,10 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#overview" class="md-nav__link">
+  <a href="#origin" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Overview
+        Origin
       
     </span>
   </a>
@@ -3317,10 +3317,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#data-classification" class="md-nav__link">
+  <a href="#verdict-feasible-but-as-manual-curation-not-automated-gathering" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Data Classification
+        Verdict: feasible, but as manual curation, not automated gathering
       
     </span>
   </a>
@@ -3328,10 +3328,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#no-real-child-pii-in-prompts" class="md-nav__link">
+  <a href="#craft-dimension-taxonomy-mapped-onto-what-this-project-already-has" class="md-nav__link">
     <span class="md-ellipsis">
       
-        No Real Child PII in Prompts
+        Craft-dimension taxonomy, mapped onto what this project already has
       
     </span>
   </a>
@@ -3339,10 +3339,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#raw-llm-outputs-and-prompt-text" class="md-nav__link">
+  <a href="#first-sourced-batch-10-of-30-titles-2026-08-13" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Raw LLM Outputs and Prompt Text
+        First sourced batch: 10 of ~30 titles (2026-08-13)
       
     </span>
   </a>
@@ -3350,10 +3350,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#external-moderation-classifiers-stage-0-first-line-filter" class="md-nav__link">
+  <a href="#failure-mode-to-check-mapping-mostly-built-re-derived-2026-08-30" class="md-nav__link">
     <span class="md-ellipsis">
       
-        External Moderation Classifiers (Stage 0, first-line filter)
+        Failure-mode-to-check mapping (mostly built, re-derived 2026-08-30)
       
     </span>
   </a>
@@ -3361,44 +3361,22 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#deletion-readiness" class="md-nav__link">
+  <a href="#what-this-doc-is-not-proposing" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Deletion Readiness
+        What this doc is not proposing
       
     </span>
   </a>
   
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#prompt-injection-defense" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Prompt-Injection Defense
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#open-blockers" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        OPEN BLOCKERS
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="OPEN BLOCKERS">
+    <nav class="md-nav" aria-label="What this doc is not proposing">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#blocker-1-llm-provider-data-handling-terms" class="md-nav__link">
+  <a href="#what-the-data-file-actually-holds-stated-accurately" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Blocker 1: LLM Provider Data-Handling Terms
+        What the data file actually holds, stated accurately
       
     </span>
   </a>
@@ -3411,77 +3389,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#resolved-blockers" class="md-nav__link">
+  <a href="#recommendation" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Resolved Blockers
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Resolved Blockers">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#blocker-2-resolved-homelab-reachability-through-pangolin-p0-10" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Blocker 2 (resolved): Homelab Reachability Through Pangolin (P0-10)
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#if-shared-beyond-family" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        If Shared Beyond Family
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="If Shared Beyond Family">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#ring-2-disclosure-existing-guardian-authorized" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Ring-2 disclosure (existing, guardian-authorized)
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#public-tier-future-adr-008-adr-009" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Public tier (future, ADR-008 / ADR-009)
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#related-documents" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Related Documents
+        Recommendation
       
     </span>
   </a>
@@ -3508,411 +3419,478 @@
   
 
 
-<h1 id="privacy-and-provider-data-handling-model">Privacy and Provider Data-Handling Model<a class="headerlink" href="#privacy-and-provider-data-handling-model" title="Permanent link">&para;</a></h1>
+<h1 id="external-craft-review-benchmark-corpus-feasibility-and-scope">External Craft-Review Benchmark Corpus: Feasibility and Scope<a class="headerlink" href="#external-craft-review-benchmark-corpus-feasibility-and-scope" title="Permanent link">&para;</a></h1>
+<h2 id="origin">Origin<a class="headerlink" href="#origin" title="Permanent link">&para;</a></h2>
+<p>This doc evaluates a concept proposed by an external AI model (pasted into a session on
+2026-08-13, no visibility into this repository): build a reference corpus from professional
+children's-book reviews (Kirkus, School Library Journal), parent-oriented reviews (Common Sense
+Media), reader-community ratings (Goodreads, StoryGraph), and retailer reviews, convert them into
+structured craft labels, and use that corpus as an external quality benchmark for this project's
+generated stories, distinct from internal graph/structure metrics.</p>
+<p>That makes it the same kind of artifact as
+<a href="../external-scope-comparison-2026-08-05/">external-scope-comparison-2026-08-05.md</a> and its
+<code>UW-N*</code> register rows: an outside, LLM-generated document compared against the live project,
+kept as reference material where it adds something real and discarded where it does not. It is
+also a sibling to <a href="../cyoa-book-benchmark-comparison/">cyoa-book-benchmark-comparison.md</a>, which
+already benchmarks published CYOA/gamebooks against this project, but on the opposite axis: that
+doc compares <em>structural mechanics</em> (state, conditions, topology) against the schema and
+validator; this doc is about <em>craft quality</em> (character arc, choice meaningfulness, ending
+payoff) as judged by external reviewers.</p>
+<p><strong>Scope note added 2026-08-30.</strong> This document was drafted on 2026-08-13 and said that nothing in
+this repository benchmarked craft quality. That framing needs re-anchoring:
+<a href="../cyo-measurement-workplan-2026-08-12/">cyo-measurement-workplan-2026-08-12.md</a> landed after
+this doc's merge base and does benchmark craft quality, through deterministic detectors plus an LLM
+quality panel with pre-registered decision rules, and
+<a href="../story-quality-technique-review-2026-08-15/">story-quality-technique-review-2026-08-15.md</a>
+surveys the technique families. What none of that supplies is an <strong>external</strong> reference point: an
+answer to "what score is good", as opposed to "does this instrument discriminate". That narrower
+gap is what remains, and this document should be read as addressing it rather than as addressing an
+absence of craft measurement.</p>
+<h2 id="verdict-feasible-but-as-manual-curation-not-automated-gathering">Verdict: feasible, but as manual curation, not automated gathering<a class="headerlink" href="#verdict-feasible-but-as-manual-curation-not-automated-gathering" title="Permanent link">&para;</a></h2>
+<p>Two existing planning docs already name the gap this proposal would close, from the code side
+rather than the review-corpus side:</p>
+<ul>
+<li><a href="../story-structure-diversity-critical-analysis/">story-structure-diversity-critical-analysis.md</a>
+  section 6.3 ("Measure the experience, not the graph") proposes per-path experience metrics
+  (decision cadence, agency density, outcome-mix entropy) computed from deterministic walks, with
+  no external reference point to calibrate them against.</li>
+<li><a href="../design-review-kid-appeal-2026-08-01/">design-review-kid-appeal-2026-08-01.md</a> section 2.4
+  ("Nothing in the pipeline asks for the story to be fun") found zero occurrences of humor, wonder,
+  or delight across every generation template and the drafting guide, and recommended adding
+  positive craft guidance from intuition, not from what published reviewers actually reward or
+  penalize.</li>
+</ul>
 <blockquote>
-<p><strong>Status</strong>: Active | <strong>Version</strong>: 0.3 | <strong>Updated</strong>: 2026-07-29</p>
+<p><strong>That gap is closed, as of 2026-08-30.</strong> This document was drafted on 2026-08-13 against a
+tree where it was open, and the closure changes what the corpus is for. Verified on current
+main: <code>src/cyo_adventure/generation/templates/drafting_guide.md</code> now carries a <strong>"Craft for
+Delight"</strong> section (line 277), cross-referenced twice from the reading-level table above it,
+and <code>src/cyo_adventure/generation/variation.py</code> defines the axes <code>running_joke</code>,
+<code>awestruck_wonder</code>, <code>playful_figurative</code>, and <code>mischievous_narrator</code>. The pipeline does now ask
+for the story to be fun. What it still does not have is any evidence that its intuitions about
+<em>how</em> match what published reviewers reward, which is a <strong>validation</strong> need rather than a
+creation need. The corpus's job moved accordingly: it is no longer the source of the
+drafting guide's positive-craft section, it is the external check on one that already exists.
+That is a smaller job and a better-defined one.</p>
 </blockquote>
-<h2 id="overview">Overview<a class="headerlink" href="#overview" title="Permanent link">&para;</a></h2>
-<p>CYO Adventure serves children across deployment tiers. Because stories are
-machine-generated and read by minors, the privacy controls and provider data-handling
-decisions are Phase-0 hard blockers: they must be resolved before any real LLM call is
-made in Phase 2. Privacy posture is tier-specific: the dev and family / homelab tiers may
-keep all data local, while the public tier hosts child-linked data on Supabase-managed
-Postgres (a US processor). ADR-008 and ADR-009 amend ADR-004's original absolute "no
-child data on third-party infrastructure" stance for the public tier; that stance still
-governs the homelab / family tier.</p>
-<p>This document covers data classification, what is and is not allowed in prompts, raw
-output retention, moderation report persistence, deletion readiness, and prompt-injection
-defense. Open blockers that gate the Phase 0 exit and the first Phase 2 LLM call are
-listed at the end.</p>
-<hr />
-<h2 id="data-classification">Data Classification<a class="headerlink" href="#data-classification" title="Permanent link">&para;</a></h2>
-<p>Child-linked data is any record that can be associated with an identified or identifiable
-child. The following are classified as child-linked:</p>
+<p>So closing this gap with an external reference corpus is worth doing. But "gather the necessary
+information" cannot mean an automated pipeline: as of 2026-08-13, none of the proposal's named
+sources offer a bulk or licensed API for their review text.</p>
+<table>
+<thead>
+<tr>
+<th>Source</th>
+<th>Access in practice</th>
+<th>Verdict</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Kirkus Reviews</td>
+<td>Paywalled full reviews; ToS forbids bulk reproduction</td>
+<td>Manual read of individual reviews only</td>
+</tr>
+<tr>
+<td>School Library Journal</td>
+<td>Subscriber-gated; same ToS posture as Kirkus</td>
+<td>Manual read only</td>
+</tr>
+<tr>
+<td>Common Sense Media</td>
+<td>Free to browse, no bulk/licensing API</td>
+<td>Manual read only</td>
+</tr>
+<tr>
+<td>Goodreads</td>
+<td>Public API deprecated and closed to new keys for years</td>
+<td>Manual read of individual review pages only</td>
+</tr>
+<tr>
+<td>StoryGraph</td>
+<td>No public API at all</td>
+<td>Manual read only</td>
+</tr>
+<tr>
+<td>Retailers (Amazon, B&amp;N, Bookshop.org)</td>
+<td>Review scraping is against most retailers' ToS</td>
+<td>Manual read only, lowest-priority source</td>
+</tr>
+</tbody>
+</table>
+<p>The proposal's own "Copyright and terms-of-use boundaries" section already reaches this
+conclusion; the correction needed here is to make explicit that this rules out a scraper or any
+automated corpus-assembly tool from the start, not just from the production architecture. A human
+has to read each review and fill in the schema below. The proposal states its own storage posture
+as "title/ISBN/source/URL plus a short derived label, never the review text itself"; that is <strong>not</strong>
+what the data file does, and the accurate description is given under
+<a href="#what-the-data-file-actually-holds-stated-accurately">What the data file actually holds</a> below.</p>
+<p><strong>Assumption (data integrity), tagged per this repo's RAD standard.</strong> The original draft flagged
+every specific claim as recalled from a proposing model's training data. A first sourcing pass on
+2026-08-13 replaced recollection with <code>WebSearch</code> results for 10 of the proposal's named titles.
+A second pass on <strong>2026-08-30</strong> re-ran those checks from a session with working network egress and
+read the cited pages directly. One title from the original proposal, <em>Violet and the Mystery Next
+Door</em> (cited only for its Common Sense Media framing, never put through either research batch),
+remains unverified in the sense the original draft described; drop or verify it before citing it
+anywhere.</p>
+<p><strong>What the second pass found, and why the first pass's caveat was not enough.</strong> The 2026-08-13 pass
+carried a blanket caveat: <code>WebFetch</code> was blocked by that session's egress policy for every
+review-site domain attempted, on all ten agent runs, so every finding was snippet synthesis rather
+than a first-hand read, with confidence capped accordingly. That caveat was honest and it was
+insufficient, because it treated the risk as uniform. It is not. Re-reading the pages directly
+promoted 14 source rows across 9 of the 10 titles to <code>primary_source_fetch</code> and <strong>falsified three
+claims that the first pass had recorded at <code>confidence: high</code></strong>:</p>
+<table>
+<thead>
+<tr>
+<th>Claim</th>
+<th>Recorded as</th>
+<th>Direct read</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><em>Traitors in Space</em> carries a Kirkus <strong>starred review</strong></td>
+<td><code>confidence: high</code></td>
+<td>No star on the page. Struck. The "45+ endings" figure is also Kirkus's, not SLJ's</td>
+</tr>
+<tr>
+<td><em>Leviathan</em> carries a Kirkus <strong>starred review</strong></td>
+<td><code>confidence: high</code></td>
+<td>No star on the page. Struck</td>
+</tr>
+<tr>
+<td>Kirkus called <em>The Citadel of Whispers</em>'s supporting cast (Zara, Saeed, Arjun) "interesting"</td>
+<td><code>confidence: high</code></td>
+<td>The names appear, but only in the review's plot summary. It does not praise the cast. "Intriguing" is applied to the magic system and the political machinations, and hedged with "lightly developed"</td>
+</tr>
+</tbody>
+</table>
+<p>The pattern is specific and worth carrying forward: <strong>snippet synthesis reproduced review substance
+faithfully and invented accolades.</strong> Every criticism paraphrase that was re-checked held up, in the
+<em>Citadel</em> case close to verbatim. What did not hold up was a star, a star, and a compliment. Those
+are the claims a summary is most likely to confabulate, because they are the claims a search
+snippet's surrounding marketing copy is most likely to supply. A future curation pass should treat
+accolades (stars, awards, "best of" placements) as a separate verification class from evaluative
+substance, and should not accept a bare publication homepage as a citation for one, which is how
+the batch's one <em>surviving</em> star claim was cited before this pass replaced the URL.</p>
+<p>Two starred-review claims did survive: <em>Endlessly Ever After</em> (SLJ) and <em>Search for a Giant Squid</em>
+(Booklist), both now cited to the publisher's own review round-up, which prints the star and names
+the awarding publication. Both trade publications' own sites return HTTP 403 to an unauthenticated
+fetch, so an interested secondary source is the best available citation and is labeled as such.</p>
+<h2 id="craft-dimension-taxonomy-mapped-onto-what-this-project-already-has">Craft-dimension taxonomy, mapped onto what this project already has<a class="headerlink" href="#craft-dimension-taxonomy-mapped-onto-what-this-project-already-has" title="Permanent link">&para;</a></h2>
+<p>The proposal's 19-dimension list is good but generic. Trimmed and mapped onto vocabulary this
+repository already uses, so a labeled corpus is directly actionable rather than a parallel
+glossary:</p>
+<blockquote>
+<p><strong>Re-derived against current main, 2026-08-30.</strong> The version of this table written on 2026-08-13
+said "unmeasured" of three dimensions this project has since built deterministic instruments for.
+The rows below name what exists now; each was confirmed by reading the module, not by grepping
+for a filename.</p>
+</blockquote>
+<table>
+<thead>
+<tr>
+<th>Dimension</th>
+<th>Existing project hook</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Choice meaningfulness / consequence visibility</td>
+<td><strong>Built, as a reported statistic.</strong> <code>validator/consequence.py</code> (W3) measures, per fork, rejoin distance and the set of variable names whose values differ on arrival, over the configuration graph rather than the node graph, and reports the two separately because they fail independently. Its own docstring records that it is deliberately not a gate and that <code>BandProfile.reconvergence_ceiling</code> stays unenforced. What is still missing is exactly what this corpus offers: a reviewer-grounded threshold for what counts as "meaningful"</td>
+</tr>
+<tr>
+<td>Character depth / character change</td>
+<td>Still unmeasured as an arc. <code>validator/character.py</code> checks structural presence</td>
+</tr>
+<tr>
+<td>Ending payoff</td>
+<td>Partly reachable through <code>validator/continuity.py</code> (below); <code>story-structure-diversity-critical-analysis.md</code> section 2.7 flags ending-valence miscoding as a related, narrower problem</td>
+</tr>
+<tr>
+<td>Navigation clarity</td>
+<td>Not applicable to this project's digital reader (no page-turn navigation), skip this dimension entirely</td>
+</tr>
+<tr>
+<td>Age fit / vocabulary complexity</td>
+<td><code>validator/reading_level.py</code>, <code>validator/band_profile.py</code> already gate this quantitatively; a reviewer corpus could validate whether the FK-grade proxy actually tracks what reviewers call age-appropriate</td>
+</tr>
+<tr>
+<td>Replayability</td>
+<td>Untested; the app's own multi-ending structure is the mechanism, no metric exists</td>
+</tr>
+<tr>
+<td>Dialogue quality / prose craft</td>
+<td><strong>Built.</strong> <code>validator/prose_craft.py</code> holds the shared self-repetition and narrative-person definitions, wired onto the request path by <code>moderation/prose_craft.py</code> (advisory, deliberately not a <code>Verdict.FLAG</code>, since neither defect is repairable by the pipeline's bounded auto-repair) and run offline by <code>scripts/check_prose_craft.py</code>. <code>validator/dialogue.py</code> detects tagged as well as quoted speech, after three prior implementations counted quote marks and scored a book with fifteen unquoted spoken lines at 0.000. The 2026-08-13 version of this row named <code>moderation/fidelity_review.py</code> as the closest hook; that is now out of date</td>
+</tr>
+<tr>
+<td>Emotional safety</td>
+<td>Owned by <code>moderation/</code> safety classifiers already; out of scope for this corpus, do not duplicate</td>
+</tr>
+<tr>
+<td>Educational integration</td>
+<td>Not applicable; this project's skeletons are not educational-nonfiction hybrids</td>
+</tr>
+</tbody>
+</table>
+<p>Dropping the not-applicable dimensions (navigation clarity, illustration support, educational
+integration) leaves six the proposal wanted labeled. Of those, three now have deterministic
+instruments on main and three do not, and the split changes what the corpus is asked to supply:</p>
 <ul>
-<li><code>child_profile</code> rows: <code>display_name</code>, <code>age_band</code>, <code>reading_level_cap</code>,
-  <code>allowed_content_flags</code>, <code>tts_enabled</code>, <code>avatar</code>.</li>
-<li><code>reading_state</code> rows: <code>current_node</code>, <code>var_state</code>, <code>path</code>, <code>save_slots</code>, keyed by
-  <code>child_profile_id</code>.</li>
-<li><code>completion</code> rows: <code>ending_id</code>, <code>found_at</code>, keyed by <code>child_profile_id</code>.</li>
-<li>Raw LLM generation outputs stored in <code>generation_job.report</code> (a Postgres JSONB
-  column), if they were generated in a context where a concept brief containing profile
-  attributes was used. Per ADR-007 as amended 2026-07-16, <code>GET /generation-jobs/{id}</code>
-  exposes this field only to principals with the admin capability (a dual-role adult
-  qualifies via that capability); guardians receive job status, stage log, and error
-  information without <code>report</code>. The list endpoint and every child-facing endpoint
-  exclude it entirely.</li>
-<li><code>child_profile_personalization</code> rows: guardian-supplied personalization slot values
-  (<code>value_text</code>, <code>value_enum</code>, <code>value_profile_id</code>) and the profile-level
-  <code>real_name_ring1_enabled</code>/<code>real_name_ring2_enabled</code> flags, keyed by <code>child_profile_id</code>
-  (ADR-023). Same tier as the <code>child_profile</code> fields above: guardian-supplied, never
-  sent to a provider, never persisted into story content, delivered to family devices
-  only as a values payload resolved at read time. Retention: life of the profile,
-  purged by the existing profile-deactivation grace window in the retention table
-  (<code>docs/compliance/coppa-gdpr-remediation-plan.md:712</code>).</li>
-<li><code>personalization_disclosure_consent</code> rows: the ring-2 disclosure consent record
-  (<code>consent_accepted_at</code>, <code>consent_policy_version</code>, <code>consent_signer_name</code>,
-  <code>consent_ip</code>, <code>covered_slot_types</code>, <code>sibling_authority_attested</code>), keyed by
-  <code>child_profile_id</code> (ADR-023 P4). Same tier as <code>User</code>'s own consent columns
-  (<code>db/models.py:416-426</code>): consent evidence, not reading data. Retention should
-  follow the consent-evidence rationale rather than the reading-data rationale;
-  flagged for the same counsel pass as ADR-018 D1.</li>
-<li>The client-held personalization values payload: child-linked data at rest on a
-  device, in the same category as the offline <code>reading_states</code> store already covered
-  by the SEC-F5 sign-out purge (<code>frontend/src/offline/db.ts:192-201</code>). <strong>Shared-device
-  isolation (risk R20), RESOLVED 2026-07-28 (owner): accepted for v1.</strong> A shared
-  family device is a shared trust boundary; no per-profile encryption and no
-  in-memory-only mode ship in v1.</li>
+<li><strong>Instrumented, needing calibration</strong>: choice meaningfulness (<code>validator/consequence.py</code>),
+  dialogue/prose craft (<code>validator/prose_craft.py</code>, <code>validator/dialogue.py</code>), and the reading-level
+  proxy (<code>validator/reading_level.py</code>, <code>validator/band_profile.py</code>). For these the corpus supplies
+  a threshold, not a measurement. A number exists; nothing says what value of it is good.</li>
+<li><strong>Still unmeasured</strong>: character depth/change, ending payoff, and replayability. For these the
+  corpus supplies the prior evidence that would justify building an instrument at all, and its
+  cross-cutting findings below argue against building two of the three.</li>
 </ul>
-<p>The following are not child-linked on their own (they link to a family or a story, not
-to an individual child):</p>
+<h2 id="first-sourced-batch-10-of-30-titles-2026-08-13">First sourced batch: 10 of ~30 titles (2026-08-13)<a class="headerlink" href="#first-sourced-batch-10-of-30-titles-2026-08-13" title="Permanent link">&para;</a></h2>
+<p>The full sourced entries, each with real citations, paraphrased evidence, and per-source
+confidence, live in
+<a href="../data/craft-benchmark-corpus.yaml"><code>data/craft-benchmark-corpus.yaml</code></a>. This section summarizes
+what that batch actually found; treat the YAML file as authoritative on any conflict with the
+summary below.</p>
+<table>
+<thead>
+<tr>
+<th>Band</th>
+<th>Title</th>
+<th>What held up vs. the original proposal</th>
+<th>Craft-label headline</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>5-7</td>
+<td><em>Endlessly Ever After</em></td>
+<td>Confirmed real (Snyder/Santat, Chronicle, 2022); age-fit conflicts across sources (SLJ: PreS-Gr3; Horn Book/parents: one-on-one only, dark endings)</td>
+<td>Strong choices/replayability; character depth not addressed by any source found</td>
+</tr>
+<tr>
+<td>5-7</td>
+<td><em>Jungle Adventure</em></td>
+<td>High title-collision risk resolved to a specific book (Murray/Kimpimäki, words &amp; pictures); "personalized" claim was a partial fit, not a real-child-name product</td>
+<td>Mixed choice meaningfulness; strong replayability</td>
+</tr>
+<tr>
+<td>8-10</td>
+<td><em>The Cave of Time</em></td>
+<td>Confirmed. The batch's most quantified craft claim (39 choice points, 40 endings, an 18/16/6 good/bad/ambiguous split, 114 pages) <strong>did not survive the 2026-08-30 direct read</strong>: the cited history states forty endings and describes the balance only qualitatively. Forty endings and the hand-drawn 1969 branch diagram stand; the other three figures are withdrawn</td>
+<td>Weak character depth/dialogue; strong replayability; choices sometimes read as arbitrary</td>
+</tr>
+<tr>
+<td>8-10</td>
+<td><em>Meanwhile</em></td>
+<td>Confirmed; Kirkus explicitly names shallow/circular branch plots alongside praising the construction</td>
+<td>Strong choice consequence, weak character depth: an explicit, named trade-off</td>
+</tr>
+<tr>
+<td>8-10</td>
+<td><em>Traitors in Space</em></td>
+<td>Substance held up almost exactly against Kirkus (replayability praised, character development and scene-setting explicitly secondary to side quests), but the claimed <strong>Kirkus star does not exist</strong> and was struck 2026-08-30; the "45+ endings" figure is Kirkus's, not SLJ's</td>
+<td>Strong replayability; weak character depth</td>
+</tr>
+<tr>
+<td>8-10</td>
+<td><em>Search for a Giant Squid</em></td>
+<td>Real book, but not the guessed series (Chronicle's "Science Explorers," not Capstone's "You Choose")</td>
+<td>Strong educational integration and replayability; thinnest failure-mode signal of the batch</td>
+</tr>
+<tr>
+<td>11-12</td>
+<td><em>Samurai vs. Ninja</em></td>
+<td>Confirmed (Shiga, Abrams Fanfare); positive-example framing holds at the professional tier, more mixed at the reader tier (series fatigue)</td>
+<td>Strong choice consequence and ending payoff; character depth never addressed</td>
+</tr>
+<tr>
+<td>11-12</td>
+<td><em>Leviathan</em></td>
+<td>Required active disambiguation from Westerfeld's unrelated non-interactive novel of the same title; a claimed <strong>Kirkus star does not exist</strong> and was struck 2026-08-30</td>
+<td>Readers directly disagree on replayability (two endings vs. none); navigation called both a strength and a weakness</td>
+</tr>
+<tr>
+<td>Negative-example reference</td>
+<td><em>The Citadel of Whispers</em></td>
+<td>Confirmed close to word-for-word on the 2026-08-30 direct read: Kirkus names the failure modes as recorded (limited character growth, haphazard paths, under-contextualized decisions, abrupt and disjointed endings, stilted dialogue, anachronistic diction, clunky infodumps). One <em>positive</em> signal was struck: the review names Zara, Saeed, and Arjun only in its plot summary and never praises the supporting cast</td>
+<td>The single richest negative-craft source in the batch, and the only entry that came out of re-verification stronger</td>
+</tr>
+<tr>
+<td>Negative-example reference</td>
+<td><em>Eighth Grade Witch</em></td>
+<td>Confirmed, but the claimed defects split across two distinct editions (2012 prose original vs. 2021 graphic-novel adaptation) rather than one review set</td>
+<td>Weak choice meaningfulness and ending payoff</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Cross-cutting findings worth acting on, not just filing:</strong></p>
 <ul>
-<li><code>storybook</code> and <code>storybook_version</code> records (family-linked, not child-linked).</li>
-<li><code>concept</code> and <code>generation_job</code> records (family-linked).</li>
-<li>Moderation reports attached to <code>storybook_version</code> (persisted for audit; no child
-  identifier unless a profile ID appears in the flagged text, which the privacy controls
-  below prevent).</li>
+<li><strong>Character depth is the format's default weak point, not this project's weak point alone.</strong>
+  6 of 10 titles score <code>weak</code> or <code>not_reported</code> on character depth/change; none score <code>strong</code>.
+  That's independent, external corroboration of
+  <a href="../design-review-kid-appeal-2026-08-01/">design-review-kid-appeal-2026-08-01.md</a> section 2.4's
+  finding from the opposite direction: a craft rubric built from this corpus should calibrate
+  "weak-to-absent character arc" as typical for the format, not as a uniquely damning finding
+  against generated stories, while still treating a genuinely <code>strong</code> result as the differentiator
+  worth chasing.</li>
+<li><strong>Replayability is a weak differentiator by itself.</strong> 7 of 10 titles score <code>strong</code>; it is
+  close to a format universal, not a craft signal. The two titles where reviewers actively
+  <em>disagree</em> with each other on replayability (<em>Leviathan</em>) are more informative than the seven
+  where everyone agrees it's good.</li>
+<li><strong>One well-sourced negative professional review outperforms a pile of five-star ratings</strong>, as
+  the original proposal claimed. <em>The Citadel of Whispers</em>'s single Kirkus review produced more
+  distinct, actionable failure modes than the other nine titles' reader-review aggregates
+  combined, and it is the only entry in the batch that came out of the 2026-08-30 re-verification
+  pass stronger than it went in.</li>
+<li><strong>Accolades and substance need separate verification, added 2026-08-30.</strong> Across the ten titles,
+  every re-checked criticism paraphrase held up and three of four checked accolades did not (two
+  fabricated Kirkus stars, one compliment relocated from a plot summary). A curation process that
+  spot-checks by asking "does the review say something like this" will pass all three. The check
+  has to be "does the page show the star", asked separately.</li>
+<li><strong>Title-collision risk is real, not hypothetical.</strong> 2 of 10 titles required active
+  disambiguation to avoid citing the wrong book entirely (<em>Leviathan</em> vs. Westerfeld's novel;
+  <em>Search for a Giant Squid</em> vs. a guessed-wrong series). Any future curation pass needs the same
+  "confirm the specific ISBN/edition before trusting a title match" discipline this batch used.</li>
 </ul>
-<hr />
-<h2 id="no-real-child-pii-in-prompts">No Real Child PII in Prompts<a class="headerlink" href="#no-real-child-pii-in-prompts" title="Permanent link">&para;</a></h2>
-<p>Concept briefs pass age band and a fictional reader profile to the LLM. They must not
-contain:</p>
+<p>Twenty titles remain against the original ~30-title target, but see the Recommendation below:
+scaling is no longer the first thing to do with this batch, and the 2026-08-30 re-verification pass
+is the reason. If a next batch is commissioned, it should skew toward filling the still-empty 3-5
+band (this batch has none) and toward titles that, like <em>The Citadel of Whispers</em>, have a
+substantive professional review rather than reader-aggregate-only coverage, since that is where the
+actionable failure-mode signal actually came from.</p>
+<h2 id="failure-mode-to-check-mapping-mostly-built-re-derived-2026-08-30">Failure-mode-to-check mapping (mostly built, re-derived 2026-08-30)<a class="headerlink" href="#failure-mode-to-check-mapping-mostly-built-re-derived-2026-08-30" title="Permanent link">&para;</a></h2>
+<p>The proposal's most useful table maps recurring review criticism to a possible check. The
+2026-08-13 version of this table marked every row <strong>Proposed</strong>. That is no longer true of most of
+it, and the correction is not cosmetic: a scoping doc whose value rests on naming unbuilt work is
+worth much less if the work is built. Each status below was confirmed by reading the module.</p>
+<table>
+<thead>
+<tr>
+<th>Reviewer criticism</th>
+<th>Check</th>
+<th>Status on main</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>"The choices do not change the ending"</td>
+<td>Per-fork rejoin distance and state delta over the configuration graph</td>
+<td><strong>Built.</strong> <code>validator/consequence.py</code> (W3), reported separately rather than pooled, and explicitly not a gate</td>
+</tr>
+<tr>
+<td>"The character does not develop"</td>
+<td>Compare a character's tracked <code>Variable</code> state before/after major nodes</td>
+<td><strong>Still proposed</strong>, and still needs a "major scene" annotation the schema does not have. The only row of the five that is genuinely open</td>
+</tr>
+<tr>
+<td>"The ending is abrupt" / a node presupposes state the path never established</td>
+<td>Name the content a node cannot presuppose on the taken path</td>
+<td><strong>Built.</strong> <code>validator/continuity.py</code> (W6 follow-on), on the provable instance of a book whose endings count three rescues on a path holding one. Its docstring records that it is exact but flags 3,815 of 4,472 nodes, so it is a reported statistic and explicitly <em>not</em> a gate candidate</td>
+</tr>
+<tr>
+<td>"The options feel arbitrary"</td>
+<td>Each choice's options express a distinct tactic/value, not near-duplicate wording</td>
+<td>Overlaps <code>moderation/leaf_diversity.py</code> and the anti-template guard in <code>story_requests/authoring_plan.py</code> and <code>generation/binding.py</code>; extend rather than duplicate. Unchanged</td>
+</tr>
+<tr>
+<td>"The prose is too difficult" / prose craft generally</td>
+<td>FK grade, plus self-repetition and narrative-person detectors</td>
+<td><strong>Built.</strong> <code>validator/reading_level.py</code> for FK grade; <code>validator/prose_craft.py</code> for the shared self-repetition and narrative-person definitions, wired on the request path by <code>moderation/prose_craft.py</code>. The corpus's contribution is validating the threshold, not adding a check</td>
+</tr>
+<tr>
+<td><em>(not anticipated by the proposal)</em> "Who is that?": a proper noun a reader meets before the prose introduces it</td>
+<td>Introduction check scoped to proper nouns, where the general definite-noun-phrase rule was unusable</td>
+<td><strong>Built.</strong> <code>validator/naming.py</code> (PN-1), on a book that names a companion in all 65 of its 65 nodes and never says he is a dog</td>
+</tr>
+</tbody>
+</table>
+<p>One row of six is still open, and one row exists that the proposal never anticipated. Both facts
+argue the same way: <strong>this project's craft-check design is now ahead of the external proposal that
+prompted this document, and the corpus's remaining value is calibration rather than ideation.</strong>
+<code>validator/naming.py</code> is the sharpest illustration. It exists because the general form of the check
+(require an introduction for every definite noun phrase) measures 3.48 findings per node and is
+unusable, and because proper nouns are a decidable subset where the same question can be asked
+soundly. No amount of reviewer labeling would have produced that narrowing; it came from measuring
+a failed formulation. Any row this doc still marks proposed needs its own scoped decision before
+implementation, per this project's existing pattern of a narrow, purpose-built check rather than a
+general rubric engine.</p>
+<h2 id="what-this-doc-is-not-proposing">What this doc is not proposing<a class="headerlink" href="#what-this-doc-is-not-proposing" title="Permanent link">&para;</a></h2>
 <ul>
-<li>A real child's name (use fictional names or role descriptions such as "the protagonist").</li>
-<li>A real child's birthdate or age in a way that links to an identified individual.</li>
-<li>Sensitive traits, medical conditions, learning differences, or behavioral notes tied to
-  a real child.</li>
-<li>Family member names or other identifying personal details.</li>
+<li>No scraper, crawler, or bulk-download tool against any review site.</li>
+<li>No classifier training or fine-tune. The corpus's first use, if commissioned, is calibration:
+  validating <code>drafting_guide.md</code>'s existing "Craft for Delight" guidance and supplying thresholds
+  to the quality panel described in
+  <a href="../cyo-measurement-workplan-2026-08-12/">cyo-measurement-workplan-2026-08-12.md</a>, never a
+  gating check on day one.</li>
 </ul>
-<p>The concept brief intake fields are: <code>title?</code>, <code>premise</code>, <code>protagonist</code> (name/age/role,
-must be fictional), <code>point_of_view</code> (default 2<sup>nd</sup> person), <code>age_band</code>, <code>reading_level_target</code>,
-<code>tier</code>, <code>tone</code>, <code>themes_allowed[]</code>, <code>content_nogo[]</code>, <code>target_node_count</code>, <code>ending_count</code>,
-<code>structure_pattern</code>, <code>desired_variables[]?</code>, <code>special_constraints[]?</code>.</p>
-<p><code>age_band</code> is a categorical value (one of the six bands "3-5", "5-8", "8-11", "10-13",
-"13-16", "16+"); it identifies a generation target, not an individual child. The backend must validate that the concept brief does not
-contain free-text fields with real names before dispatching to the provider.</p>
-<p><strong>Child-initiated requests (shipped in WS-B of the story-lifecycle redesign; budget-consent
-semantics added by ADR-015)</strong>: a child-typed story wish is child-provided free text and is
-likely to contain the child's own name or friends' names. Current behavior, verified in
-<code>api/story_requests.py</code>: wish text is screened at intake against the family's child-profile
-names and for safety, and a blocked wish persists as a <code>blocked</code> row that proceeds nowhere.
-The wish reaches the <strong>generation</strong> provider only after guardian approval converts it into a
-concept, and the PII guard runs on the resulting brief before that egress. Note, however,
-that the intake <strong>screening</strong> step itself sends the wish text to the external moderation
-classifiers described in the next section, so those services are data-handling
-counterparties for child-typed text as well as for generated prose.</p>
-<hr />
-<h2 id="raw-llm-outputs-and-prompt-text">Raw LLM Outputs and Prompt Text<a class="headerlink" href="#raw-llm-outputs-and-prompt-text" title="Permanent link">&para;</a></h2>
-<p>Raw LLM outputs (the full text returned by the provider for each stage) and the prompt
-text sent to the provider are admin-only (ADR-007 as amended 2026-07-16). They are no longer
-uniformly short-lived: as of ADR-007's 2026-08-10 and 2026-08-11 amendments, a raw output that
-a human reached a decision about is retained for the life of the storybook, and only an
-undecided one is short-lived. The detail is in the second bullet.</p>
+<h3 id="what-the-data-file-actually-holds-stated-accurately">What the data file actually holds, stated accurately<a class="headerlink" href="#what-the-data-file-actually-holds-stated-accurately" title="Permanent link">&para;</a></h3>
+<p>The 2026-08-13 version of this section said the corpus stores "only title/ISBN/source/URL plus a
+short internally-authored label", and "never the review text itself". <strong>That was not what the data
+file did</strong>, and the discrepancy is corrected here rather than left for a reader who trusts the
+stated posture and never audits the fields. Several <code>positive_signals</code> and <code>negative_signals</code>
+entries in <a href="../data/craft-benchmark-corpus.yaml"><code>data/craft-benchmark-corpus.yaml</code></a> are short
+verbatim or near-verbatim fragments of the reviews they cite, several of them paywalled. The honest
+description is:</p>
 <ul>
-<li><strong>Prompt text</strong>: store the prompt template version and a hash, not the full rendered
-  prompt, where the rendered text could carry child-specific detail. The hash allows
-  audit without persisting the content.</li>
-<li><strong>Raw generation outputs</strong>: stored in <code>generation_job.report</code>, a Postgres JSONB column
-  (not object storage; there is no <code>raw_output_ref</code> field). The purpose was originally
-  debugging and repair-pass analysis alone; ADR-007's 2026-08-10 amendment added a second,
-  broader one: calibrating the review scorecard against the decision a human actually made.
-  That is a purpose change as well as a window change, and it is what justifies the longer
-  retention below rather than the debugging need, which is satisfied inside 30 days.
-  The retention window is defined (ADR-007): purge 30
-  days after job completion, via a <code>pg_cron</code> job (ADR-009), <strong>except</strong> where a human
-  reached a review decision about the storybook the job produced, which ADR-007's
-  2026-08-10 amendment exempts so the raw output can be paired with the reviewer's
-  decision. ADR-007's 2026-08-11 amendment withdrew the original "or on publish, whichever
-  comes first" leg: publishing is now an exemption from the purge rather than a trigger for
-  it, because the immediate on-publish null in <code>publishing/service.py::approve</code> fired before
-  the approve half of the exemption could ever apply. The <code>pg_cron</code> job is built and
-  scheduled (<code>20260718000000_add_report_retention_purge.sql</code>, predicate amended by
-  <code>20260810000000_exempt_reviewed_generation_job_report_from_purge.sql</code>); it is no longer
-  the unbuilt Phase 5 deliverable this section once described.</li>
+<li><strong>Short attributed quotation plus derived labels.</strong> Brief phrases, each attached to a named
+  publication and a URL, alongside craft labels this project wrote. Quoting "stilted dialogue" is
+  better evidence than paraphrasing it, and the 2026-08-30 re-verification pass depended on the
+  quotations being checkable against the pages, so the practice is kept and the description is
+  fixed to match it.</li>
+<li><strong>Still excluded, and this is the line that matters:</strong> no review reproduced whole or in
+  substantial part, and no review text routed into a prompt, a generation input, or a training set.
+  A quotation long enough to substitute for reading the review does not belong in the file.</li>
 </ul>
-<p>The exemption has a boundary worth stating here rather than only in the retention policy:
-  it is evaluated when the nightly sweep runs, not when the human decides. A job whose
-  storybook is still <code>in_review</code> on day 31 is purged, and a later approval cannot restore the
-  column, so the pairing this exemption exists to enable only happens for reviews that
-  conclude inside the 30 days. See <code>docs/compliance/data-retention-policy.md</code> Section 4 and
-  <code>UW-C227</code>.</p>
-<div class="language-python highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="c1"># #CRITICAL: data integrity: generation_job.report holds raw LLM output that may</span>
-</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="c1">#            carry child-derived detail; it must be purged and never leaked.</span>
-</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="c1"># #VERIFY: the pg_cron purge job (30 days post-completion, minus the human-decided</span>
-</span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="c1">#          exemption) is scheduled before the public tier goes live; confirm report</span>
-</span><span id="__span-0-5"><a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a><span class="c1">#          stays off child-facing endpoints and the job-list endpoint.</span>
-</span></code></pre></div>
-<ul>
-<li><strong>Access control</strong>: <code>generation_job.report</code> is returned by <code>GET /generation-jobs/{id}</code>
-  only to principals with the admin capability (ADR-007 as amended 2026-07-16; the
-  admin reviews first, then the parent receives content through post-approval surfaces).
-  It is excluded from the list endpoint (job status only) and every child-facing
-  endpoint, and is not accessible via the story-serving path.</li>
-</ul>
-<p>Moderation reports (the per-node flags and the moderation API response) persist with the
-<code>storybook_version</code> record for audit. They contain node IDs and flag categories, not raw
-child data.</p>
-<hr />
-<h2 id="external-moderation-classifiers-stage-0-first-line-filter">External Moderation Classifiers (Stage 0, first-line filter)<a class="headerlink" href="#external-moderation-classifiers-stage-0-first-line-filter" title="Permanent link">&para;</a></h2>
-<p>This is a deliberate design decision, not an incidental integration: <strong>all AI-generated
-story prose</strong> runs through external moderation classifiers as the first-line safety filter,
-precisely so that safety does not depend on a parent reading every path in detail. The
-human gates (guardian oversight, admin approval per ADR-005) sit on top of this floor, not
-in place of it.</p>
-<p>Current mechanism (<code>moderation/classifiers.py</code>, wired in <code>moderation/pipeline.py</code>): when
-keys are configured, every generated node's prose is sent per-node to the <strong>OpenAI
-Moderation API</strong> and <strong>Google Perspective API</strong> during Stage 0 of the moderation pipeline.
-The same classifiers screen child-typed story-request text at intake
-(<code>story_requests/screening.py</code>). Both services are therefore standing data-handling
-counterparties for two data categories:</p>
-<ul>
-<li><strong>Generated story prose</strong> (family-linked content produced by the pipeline; the PII guard
-  keeps real child detail out of the prompts that produce it).</li>
-<li><strong>Child-typed request text</strong> (child-provided free text, screened before storage).</li>
-</ul>
-<p>Consequences for the provider data-handling review (Blocker 1 below): OpenAI and Google
-(Perspective) must be included alongside the generation leg (OpenRouter) and the LLM
-review leg when confirming retention terms. <strong>Since the 2026-07-28 narrowing, this leg is
-where Blocker 1's force sits</strong> (Blocker 1b). The distinction is route control, not whether
-typed words egress at all: a child's own typed words reach the generation leg too, verbatim,
-because <code>ConceptBrief.premise</code> is <code>request.request_text</code> unaltered
-(<code>story_requests/brief.py:197</code>) and the brief is fenced into the generation prompt. What is
-different here is that the classifier leg calls OpenAI Moderation and Google Perspective
-<strong>directly</strong>, so it inherits none of the OpenRouter workspace guardrail that constrains the
-generation route, and ADR-023's proposed render-time substitution does nothing for it either
-(it addresses identifiers, not free text). Classifier calls should remain content-only:
-no child identifier, profile id, or family id accompanies the text, and failures are
-logged by node id only.</p>
-<p>Ring-2 recommendation sharing (guardian-connected families, the cousins case) is a new
-child-linked data flow: a recommendation visible to a connected family carries the
-recommending child's display name and a reading signal (book plus rating) into another
-household. Controls, binding per
-<a href="../adr/adr-016-recommendation-sharing-social-boundary/">ADR-016</a>:</p>
-<ul>
-<li>Visibility exists only along a directional, revocable <code>family_connection</code> with active
-  guardian consent on both sides; revocation removes visibility immediately.</li>
-<li>Payloads are structured data only (book reference, display name, rating); never free
-  text, reading progress, request text, or profile attributes beyond the display name.</li>
-<li>Ring-3 global aggregation (future) must be anonymized: no per-child or per-family
-  identifier may reach or be inferable from a global recommendation, with a
-  minimum-population threshold before aggregates surface.</li>
-<li>Deletion-readiness: recommendations and connections are family-linked rows in known
-  tables and must be included in family erasure.</li>
-</ul>
-<hr />
-<h2 id="deletion-readiness">Deletion Readiness<a class="headerlink" href="#deletion-readiness" title="Permanent link">&para;</a></h2>
-<p>A full deletion subsystem is a later deliverable. The requirement at Phase 0 is that the
-data model does not make deletion impossible. The following rules apply:</p>
-<ul>
-<li>Child-linked data must be kept in known, enumerable places: <code>child_profile</code> rows in
-  Postgres, <code>reading_state</code> rows in Postgres, <code>completion</code> rows in Postgres, and raw
-  generation outputs in the <code>generation_job.report</code> JSONB column in Postgres.</li>
-<li>Child-linked data must not be scattered through structured logs, Sentry breadcrumbs, or
-  application-level caches that are not enumerated in the data model.</li>
-<li>Sentry must not receive a child's reading content beyond a node ID or story ID. Exception
-  events should carry correlation IDs, not reading-state snapshots.</li>
-<li>When a child profile is deleted, the owning service must be able to identify and purge
-  all associated <code>reading_state</code> and <code>completion</code> rows. Cascades must be defined in the
-  Alembic schema.</li>
-</ul>
-<hr />
-<h2 id="prompt-injection-defense">Prompt-Injection Defense<a class="headerlink" href="#prompt-injection-defense" title="Permanent link">&para;</a></h2>
-<p>Concept brief text is untrusted input. A malicious or malformed brief must not alter the
-system prompt, bypass the safety constraints, or cause the model to produce content that
-skips moderation.</p>
-<p>Defense controls:</p>
-<ul>
-<li>The system prompt and safety constraints sent to the provider are fixed templates,
-  rendered from versioned template files. Brief content is inserted only into designated
-  user-turn slots and is never concatenated into the system prompt.</li>
-<li>The moderation pass runs independently of the generating model. Even if a brief causes
-  the generator to produce unsafe content, the independent moderation pass and the
-  mandatory guardian approval step remain in the path.</li>
-<li>Brief fields are validated against a strict schema before dispatch. Free-text fields
-  (<code>premise</code>, <code>protagonist</code>, <code>special_constraints</code>) are length-limited and stripped of
-  control characters before insertion.</li>
-<li>The generation orchestrator logs the prompt template version and the brief hash with
-  every job. Any anomaly in moderation flags can be correlated back to the brief that
-  triggered it.</li>
-</ul>
-<p><strong>Available but not enabled (recorded 2026-07-28)</strong>: the OpenRouter workspace offers a free,
-no-added-latency, OWASP-inspired regex scan for common injection techniques, with an
-allow-list for phrases that should never trigger it. Every defense listed above is ours and
-runs in-process; this would be an independent fourth layer at the egress boundary. It is
-<strong>disabled</strong> as of this record. The reason it is not simply switched on is false positives:
-a children's adventure brief can legitimately contain instruction-shaped phrasing, and a
-blocked generation is a visible product failure rather than a silent one. Worth trialling
-with the allow-list in reach; not a default yes.</p>
-<hr />
-<h2 id="open-blockers">OPEN BLOCKERS<a class="headerlink" href="#open-blockers" title="Permanent link">&para;</a></h2>
-<p>The following blocker is split into two sub-items. Only 1b (the classifier and review leg)
-gates anything; 1a (the generation leg) is narrowed to a documentation item and gates
-nothing. A second former blocker (homelab reachability through Pangolin) has since been
-resolved; see <a href="#resolved-blockers">Resolved Blockers</a> below.</p>
-<h3 id="blocker-1-llm-provider-data-handling-terms">Blocker 1: LLM Provider Data-Handling Terms<a class="headerlink" href="#blocker-1-llm-provider-data-handling-terms" title="Permanent link">&para;</a></h3>
-<p><strong>Narrowed 2026-07-28.</strong> This blocker was originally written as one undifferentiated gate
-over every model counterparty, and it stopped all generation ("No generation call may be
-made with a real concept brief until it is resolved"). It is now split, because the two
-legs do not carry the same data and never did.</p>
-<h4 id="1a-generation-leg-openrouter-narrowed-to-a-documentation-item">1a. Generation leg (OpenRouter): NARROWED to a documentation item<a class="headerlink" href="#1a-generation-leg-openrouter-narrowed-to-a-documentation-item" title="Permanent link">&para;</a></h4>
-<div class="language-python highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="c1"># #CRITICAL: external resource: retention posture on the generation leg rests on a</span>
-</span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="c1">#            mutable platform guardrail (dated snapshot), not on an executed DPA.</span>
-</span><span id="__span-1-3"><a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a><span class="c1"># #VERIFY: re-confirm the OpenRouter workspace guardrail state at P7-08 and on any</span>
-</span><span id="__span-1-4"><a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a><span class="c1">#          credential rotation; execute the DPA and record both in</span>
-</span><span id="__span-1-5"><a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a><span class="c1">#          docs/compliance/processor-dpa-checklist.md.</span>
-</span></code></pre></div>
-<p>The generation leg no longer gates dispatch. The reasoning, in the order it matters:</p>
+<p>Short attributed quotation for the purpose of commentary is very likely fair use, and the point of
+restating the posture is not that the old one was legally wrong. It is that a stated posture
+stricter than the practice is worse than an accurate one: it discourages the audit that would have
+caught the mismatch, and it is the same failure the licensing register's <code>green</code> definition had, in
+which the written rule and the stored data disagreed and only the data was machine-readable.</p>
+<h2 id="recommendation">Recommendation<a class="headerlink" href="#recommendation" title="Permanent link">&para;</a></h2>
+<p>This started as a scoping document; it now has real, sourced data behind it, 10 titles in
+<a href="../data/craft-benchmark-corpus.yaml"><code>data/craft-benchmark-corpus.yaml</code></a>, re-read against primary
+sources on 2026-08-30.</p>
+<p><strong>The consumer question is answered, and it is not the one this doc originally named.</strong>
+<a href="../cyo-measurement-workplan-2026-08-12/">cyo-measurement-workplan-2026-08-12.md</a> did not exist at
+this document's merge base and now governs how this project measures story quality. It runs an LLM
+<strong>quality panel</strong> with per-criterion instruments, and it does not take a criterion on faith:
+<strong>W4</strong> (per-criterion instrument variance) flags a criterion whose spread across cells is too
+narrow to discriminate, and caught the <code>dialogue</code> criterion at a spread of 0.088; <strong>W7</strong> (the
+known-bad seeded-defect battery, the workplan's designated blocking item) retires any criterion
+that fails to detect its own seeded defect or that fires on a clean control; <strong>W12</strong> and <strong>W13</strong>
+add a human comprehension read and an age-appropriateness rubric.</p>
+<p>That panel is this corpus's actual consumer, and the fit is close. A panel criterion needs a
+threshold, and nothing internal can supply one: W7 establishes that a criterion <em>discriminates</em>,
+not what score is <em>good</em>. That is precisely what external calibration provides, and it is the one
+thing in this document that main's own measurement machinery does not already do better. The
+advisory LLM-judge module this doc originally floated alongside <code>moderation/fidelity_review.py</code>
+should be considered <strong>withdrawn</strong>: the panel is that module, better specified, already governed by
+pre-registered decision rules, and already funded in the workplan's sequencing.</p>
+<p>What remains genuinely unscheduled work, still awaiting the owner decision proposed as <code>UW-N11</code>:</p>
 <ol>
-<li><strong>No registered child identifier can reach it.</strong> <code>assert_prompt_pii_safe</code>
-   (<code>generation/pii.py:229-289</code>) raises and fails the job rather than redacting, over both
-   the <code>system</code> and <code>user</code> blocks, and briefs fall back to a fictional <code>"Explorer"</code>
-   (<code>story_requests/brief.py:79-81</code>).</li>
-<li><strong>That is not expected to change under personalization, though the answer is proposed
-   rather than settled.</strong> ADR-023 <em>proposes</em> resolving guardian-opt-in personalization
-   client-side at render time over sentinels the server stores and serves unchanged, rather
-   than at generation time. It is <code>status: proposed</code> with counsel sign-off open and no code
-   written yet, and it is a third route rather than the rejected Route B (which would have put
-   real names into provider prompts and into <code>storybook_version.blob</code>). If ADR-023 is not
-   adopted, this reason lapses.</li>
-<li><strong>Routing on the OpenRouter leg is constrained at the platform, not by policy.</strong> A
-   guardrail on a dedicated, key-scoped OpenRouter workspace (configured 2026-07-28) requires
-   zero-data-retention endpoints across non-frontier, Anthropic, OpenAI, Google, and xAI
-   routing, and disables all three data-training paths (paid-trains, free-trains,
-   free-publishes-prompts). The guardrail's plugins-and-tools carve-out does not reach this
-   app: the generation request body contains no <code>plugins</code> or <code>tools</code> key
-   (<code>generation/providers/openrouter.py:154-164</code>). <strong>This covers the OpenRouter route only.</strong>
-   The direct-Anthropic leg (<code>generation/providers/anthropic.py</code>, selectable as
-   <code>generation_provider="anthropic"</code> and seeded in the admin allowlist) is built and bypasses
-   the guardrail; confining production generation to the guarded route is an open item, not an
-   existing control. Full state, limits, and that open item: ADR-003's 2026-07-28 amendment.</li>
-<li><strong>A second, independent egress chokepoint now exists.</strong> Key-level Sensitive Info
-   Detection redacts email, phone, SSN, credit-card, and IP patterns request-side, outside
-   our process and after <code>assert_prompt_pii_safe</code> has already hard-failed on the overlapping
-   ones. Person-name and address redaction are deliberately <strong>off</strong>: the protagonist name is
-   intentional fictional story content, and addresses are already a hard fail here. See
-   ADR-003 for the full reasoning, which should be read before anyone "completes" those
-   checkboxes.</li>
+<li><strong>Calibrate the quality panel's thresholds against the 10 titles already sourced.</strong> This is the
+   deliverable, and it is a smaller job than the one originally proposed. The two cross-cutting
+   findings above are the substance: character depth is a format norm rather than a defect unique
+   to generated stories, and replayability is close to a format universal and therefore a poor
+   discriminator. Both are threshold-shaped inputs to a panel that currently has none, and both
+   are independent of every licensing question in the companion document.</li>
+<li><strong>Only then, whether to scale toward ~30 titles</strong>, prioritizing the 3-5 band (currently empty)
+   and professional-review-backed titles over reader-aggregate-only ones. Twenty further
+   reader-aggregate rows would not have changed either cross-cutting finding, and the 2026-08-30
+   re-verification pass is an argument for depth over breadth: three high-confidence claims in ten
+   titles did not survive a direct read, and re-checking what exists costs less than sourcing more.</li>
+<li><strong>No schema, validator, or generation change is proposed here regardless of that decision.</strong></li>
 </ol>
-<p><strong>What is still true, and is why this is narrowed rather than closed</strong>: briefs carry a
-coarse age band, guardian-set <code>banned_themes</code>, content-flag caps, and free-typed premise
-text. That is child-<em>derived</em> content, so the generation leg is identifier-free, not
-PII-free, and its terms still belong in the P7-08 processor record. A routing guardrail is
-also not a contract: no DPA has been executed, and console settings are mutable, so the
-configuration above is a dated snapshot rather than a permanent property.</p>
-<p><strong>Counterparty change, 2026-07-28</strong>: the ZDR toggles disable first-party Anthropic, OpenAI,
-and Google AI Studio endpoints rather than those model families, so generation traffic now
-reaches them through AWS Bedrock, Microsoft Azure, and Google Vertex. Those three are in
-scope as sub-processors for the generation leg. This does not affect the classifier leg
-below, which calls OpenAI Moderation directly.</p>
-<p><strong>Status</strong>: NARROWED. Not a dispatch gate. DPA execution and a re-confirmation of the
-guardrail state remain P7-08 deliverables; <code>docs/compliance/processor-dpa-checklist.md</code>
-still carries the OpenRouter row as unexecuted.</p>
-<h4 id="1b-classifier-and-review-leg-open-and-this-is-now-the-real-blocker">1b. Classifier and review leg: OPEN, and this is now the real blocker<a class="headerlink" href="#1b-classifier-and-review-leg-open-and-this-is-now-the-real-blocker" title="Permanent link">&para;</a></h4>
-<div class="language-python highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="c1"># #CRITICAL: external resource: retention terms for the Stage-0 classifiers, which</span>
-</span><span id="__span-2-2"><a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a><span class="c1">#            receive child-TYPED free text, are unconfirmed.</span>
-</span><span id="__span-2-3"><a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a><span class="c1"># #VERIFY: confirm terms per counterparty before the public tier ships; record here.</span>
-</span></code></pre></div>
-<p>This leg is different in kind, and the original blocker's force belongs here. The Stage-0
-external classifiers receive <strong>child-typed request text</strong> at intake
-(<code>story_requests/screening.py</code>) and <strong>every node of generated prose</strong> during moderation (see
-the External Moderation Classifiers section above). They are called directly, so nothing about
-the OpenRouter workspace guardrail reaches them, and ADR-023's proposed render-time
-substitution does not touch them either: it addresses identifiers, and this is the child's own
-free text, sent verbatim, before storage.</p>
-<p>The <strong>LLM review provider</strong> stays in scope here but for a different reason, and an earlier
-draft gave the wrong one. It is not a child-typed-text path: it is built from the same
-<code>build_openrouter_leg</code> adapter as generation
-(<code>moderation/review_provider.py</code>), and <code>review_openrouter_model</code> defaults to an Anthropic model
-(<code>core/config.py:562</code>), so when <code>review_provider="openrouter"</code> the review leg rides the <strong>same
-guardrailed route</strong> as generation and carries <strong>generated prose</strong>, not child-typed words. What
-it still needs is the same terms confirmation every counterparty needs, plus the caveat that
-its posture is inherited from the generation-route guardrail and moves with it.</p>
-<p><strong>Required action</strong>: confirm the applicable retention path for each classifier counterparty
-and the review provider, and record the outcome (provider, route, contract reference or API
-tier, effective date) here. Note that the Perspective counterparty is separately in flux
-under the Stage-0 Perspective sunset work; that changes who is on this list, not whether the
-confirmation is needed.</p>
-<p><strong>Status</strong>: OPEN. This is the standing Blocker 1 referenced by
-<a href="../adr/adr-018-childrens-privacy-compliance/">ADR-018</a> item 6.</p>
-<hr />
-<h2 id="resolved-blockers">Resolved Blockers<a class="headerlink" href="#resolved-blockers" title="Permanent link">&para;</a></h2>
-<h3 id="blocker-2-resolved-homelab-reachability-through-pangolin-p0-10">Blocker 2 (resolved): Homelab Reachability Through Pangolin (P0-10)<a class="headerlink" href="#blocker-2-resolved-homelab-reachability-through-pangolin-p0-10" title="Permanent link">&para;</a></h3>
-<p>The homelab needed to be reachable through the Pangolin zero-trust ingress before
-integration tests and the CI environment could reach the deployed stack. This was plan
-item P0-10 and a Phase 0 exit condition.</p>
-<p><strong>Resolution</strong>: the homelab stack is reachable through Pangolin and has been live in
-production since 2026-07-05 at <code>https://cyo.williamshome.family</code> (Cloudflare, Pangolin
-VPS, WireGuard tunnel, docker-host Traefik). R1 (the internal web release) is
-feature-complete as of 2026-07-03 and has been exercised end to end against this live
-URL, including guardian email/password sign-in through Supabase (ADR-009) and the full
-guardian-authoring to kid-reading journey. The 2026-07-07 record also cited <code>/health/live</code>
-and <code>/health/ready</code> "returning 200"; that leg of the evidence is withdrawn as of 2026-08-04
-(<code>UW-L04</code>). Those requests were answered by an nginx stub rather than by the application, so
-the 200 proved nothing about database connectivity. This does not change the blocker's
-disposition, which rests on the sign-in and reading journey above, but the probe evidence
-itself must not be cited: readiness became genuinely reachable only once the canonical
-<code>/api/v1/health/ready</code> path existed. See <code>docs/planning/roadmap.md</code> (Phase 5 success criteria: "✅
-Deployed behind Pangolin with Supabase guardian login (ADR-009)") and
-<code>docs/planning/r1-live-e2e-checklist.md</code> for the live verification record. Note this
-blocker was scoped to the homelab / family tier only; on the public tier, Supabase is the
-identity provider (Supabase OIDC, ADR-009) and Supabase-managed Postgres is the
-datastore, so Pangolin ingress and a self-hosted IdP do not apply there.</p>
-<p><strong>Status</strong>: RESOLVED (2026-07-05, verified live 2026-07-07; the health-probe leg of that
-verification was withdrawn 2026-08-04, see <code>UW-L04</code>).</p>
-<hr />
-<h2 id="if-shared-beyond-family">If Shared Beyond Family<a class="headerlink" href="#if-shared-beyond-family" title="Permanent link">&para;</a></h2>
-<h3 id="ring-2-disclosure-existing-guardian-authorized">Ring-2 disclosure (existing, guardian-authorized)<a class="headerlink" href="#ring-2-disclosure-existing-guardian-authorized" title="Permanent link">&para;</a></h3>
-<p>Personalization values also flow beyond the immediate family through the ring-2
-disclosure design (ADR-016, ADR-023 section 3). This is a designed, guardian-gated flow,
-not a future Phase 7 deliverable, and it carries its own controls distinct from the
-public-tier checklist below:</p>
-<ul>
-<li><strong>Which slot types can cross</strong>: protagonist first name, sibling/family-child name, pet
-  species, pet name, trusted-adult kinship label, favorites (color, food, hobby), and
-  home type. Pronouns and the dedication line never cross ring 2 (ADR-023 taxonomy, ring
-  ceiling column).</li>
-<li><strong>Under which consent</strong>: the mutual, directional <code>family_connection</code> consent (active
-  guardian approval on both sides) plus a separate, per-profile, per-connection
-  disclosure consent (<code>personalization_disclosure_consent</code>, scoped by
-  <code>covered_slot_types</code>). The sibling slot additionally requires
-  <code>sibling_authority_attested</code> and the referenced sibling's own ring-2 enablement and
-  consent on that same connection.</li>
-<li><strong>Revocation is prospective, not retroactive</strong>: revoking a connection or a disclosure
-  consent stops future reads and future device syncs immediately, but does not
-  retroactively claw back a values payload already synced to a connected family's
-  device. Guardian-facing copy for revocation must say so rather than implying
-  retroactive erasure.</li>
-</ul>
-<h3 id="public-tier-future-adr-008-adr-009">Public tier (future, ADR-008 / ADR-009)<a class="headerlink" href="#public-tier-future-adr-008-adr-009" title="Permanent link">&para;</a></h3>
-<p>The controls above are calibrated for private family use and the homelab / family tier.
-The public tier (ADR-008 / ADR-009) takes this beyond private family use, so COPPA and
-Kids Category compliance become launch blockers. That compliance work is a future Phase 7
-deliverable and is not yet done. Before the public tier launches, revisit with legal
-counsel:</p>
-<ul>
-<li>COPPA (US) and state-level children's privacy equivalents.</li>
-<li>ICO Age Appropriate Design Code (UK) as a design reference.</li>
-<li>Age assurance and verifiable parental consent mechanisms.</li>
-<li>Retention and deletion policy suitable for a public service.</li>
-<li>Vendor terms covering the LLM provider, storage, and auth for a non-family audience.</li>
-<li>Incident response plan and a published privacy notice.</li>
-</ul>
-<p>This note is a design reference, not legal advice.</p>
-<hr />
-<h2 id="related-documents">Related Documents<a class="headerlink" href="#related-documents" title="Permanent link">&para;</a></h2>
-<ul>
-<li><a href="../tech-spec/#security">Tech Spec: Security</a></li>
-<li><a href="../tech-spec/#privacy-controls-family-only">Tech Spec: Privacy controls</a></li>
-<li><a href="../../phase0-decisions/">Phase 0 Decision Log</a></li>
-<li><a href="../adr/adr-003-frontier-llm-generation/">ADR-003: Frontier LLM for generation</a></li>
-<li><a href="../adr/adr-004-homelab-first-deployment/">ADR-004: Homelab-first deployment</a> (governs the homelab / family tier)</li>
-<li><a href="../adr/adr-007-raw-output-retention/">ADR-007: Raw output retention</a></li>
-<li><a href="../adr/adr-008-public-app-store-launch/">ADR-008: Public app store launch</a></li>
-<li><a href="../adr/adr-009-supabase-platform/">ADR-009: Supabase platform (managed Postgres, OIDC)</a></li>
-<li><a href="../adr/adr-016-recommendation-sharing-social-boundary/">ADR-016: Recommendation sharing and the three-ring social
-  boundary</a></li>
-<li><a href="../adr/adr-023-story-personalization-slots/">ADR-023: Story personalization slots</a></li>
-</ul>
+<p><strong>Register linkage.</strong> This doc's own conventions require a row in
+<a href="../unscheduled-work-register/">unscheduled-work-register.md</a>, and <code>UW-N11</code> is the id proposed for
+it: main's <code>UW-N</code> cluster currently stops at <code>UW-N10</code>, so the id is free. The row is deliberately
+<strong>not</strong> added by the change that landed this document. Register ids collide when two branches
+allocate from the same cluster concurrently, and the resolution is a renumber plus merge rather
+than a text merge, so rows from separate workstreams are batched into a single consolidation
+change. Until that lands, treat <code>UW-N11</code> as proposed rather than assigned, and do not cite it as
+though the row exists. Its proposed scope is item 1 above, calibrating the quality panel's
+thresholds against the ten titles already sourced, with scaling to ~30 titles as a dependent
+follow-on rather than the headline.</p>
 
 
 
@@ -3935,7 +3913,7 @@ counsel:</p>
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="August 30, 2026 19:32:47 UTC">August 30, 2026</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="August 30, 2026 19:32:12 UTC">August 30, 2026</span>
   </span>
 
     
@@ -3945,7 +3923,7 @@ counsel:</p>
     <span class="md-icon" title="Created">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M14.47 15.08 11 13V7h1.5v5.25l3.08 1.83c-.41.28-.79.62-1.11 1m-1.39 4.84c-.36.05-.71.08-1.08.08-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8c0 .37-.03.72-.08 1.08.69.1 1.33.32 1.92.64.1-.56.16-1.13.16-1.72 0-5.5-4.5-10-10-10S2 6.5 2 12s4.47 10 10 10c.59 0 1.16-.06 1.72-.16-.32-.59-.54-1.23-.64-1.92M18 15v3h-3v2h3v3h2v-3h3v-2h-3v-3z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="June 22, 2026 00:17:31 UTC">June 22, 2026</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="August 30, 2026 19:32:12 UTC">August 30, 2026</span>
   </span>
 
     

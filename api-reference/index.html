@@ -3887,6 +3887,11 @@ actually be built, and degrade to the two OpenRouter legs otherwise.</p>
 excluded: an endpoint with no proxy auth is a valid configuration, and
 a half-set pair stays a hard :class:<code>ConfigurationError</code> rather than
 being silently downgraded to "leg absent".</p>
+<p>Whitespace-only values count as absent. A compose interpolation of an
+unset variable (<code>${MODAL_MODEL:- }</code>) or a stray space in a dotenv
+entry would otherwise read as truthy here and put a leg with no usable
+model into the cascade, which then fails on every call rather than
+being cleanly omitted.</p>
 
 
     <p><span class="doc-section-title">Returns:</span></p>
@@ -3904,8 +3909,8 @@ being silently downgraded to "leg absent".</p>
             </td>
             <td>
               <div class="doc-md-description">
-                <p>True when both <code>modal_base_url</code> and <code>modal_model</code> are
-set to non-empty values.</p>
+                <p>True when both <code>modal_base_url</code> and <code>modal_model</code> hold a
+non-empty, non-whitespace value.</p>
               </div>
             </td>
           </tr>
