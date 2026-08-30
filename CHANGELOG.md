@@ -7,6 +7,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 <!-- version list -->
 
+## [0.86.0] - 2026-08-30
+
+### Bug Fixes
+
+- **testing**: Make the testing ladder's checks fail when their subjects break
+  ([#780](https://github.com/ByronWilliamsCPA/cyo-adventure/pull/780),
+  [`6cc33aa`](https://github.com/ByronWilliamsCPA/cyo-adventure/commit/6cc33aa5953a184e18d1533b11de42b926369ce7))
+
+### Breaking Changes
+
+- **testing**: GET /api/v1/reading-state/{profile_id}/{storybook_id} no longer answers 404 for a
+  profile with no saved progress; it answers 200 with {"state": null}. Any client reading the prior
+  flat body or relying on the 404 for "no progress" must switch to checking body.state.
+  major_on_zero is false in this project's semantic-release config, so this bump lands as a minor
+  (0.x.0) release, not 1.0.0.
+
+
 ## [0.85.0] - 2026-08-29
 
 ### Bug Fixes
@@ -3651,6 +3668,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Safety dependency vulnerability scanning
 - Pre-commit hooks for security validation
 
+[0.86.0]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.85.0...v0.86.0
 [0.85.0]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.84.0...v0.85.0
 [0.84.0]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.83.0...v0.84.0
 [0.83.0]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.82.0...v0.83.0
