@@ -4,30 +4,18 @@
 # project needs before treating any third-party work as reusable, per that doc's "Legal handling
 # recommendations" section: author, title, source/download URL, exact license text found,
 # verification method, date accessed, jurisdiction, what the license covers (text/code/art), and
-# whether commercial use and derivatives are permitted.
+# whether commercial use and derivatives are claimed to be permitted by some located source.
 #
 # READ THIS BEFORE READING A `status` VALUE. No value in this file is a legal clearance. This
-# register records research leads and their strength, nothing more. A machine reading only this
-# file, with no access to the companion prose doc, must still come away with that understanding,
-# which is why the definitions below are written the weak way rather than the confident way.
+# register records research leads and their strength, nothing more.
 #
-# status values (closed set, matches the doc's color labels):
-#   green            - STRONG LEAD, NOT CLEARED: the best-supported public-domain case found, with
-#                       a source and a stated rights basis, still short of legal sign-off. Nothing
-#                       here authorises ingesting the work's text; that decision is separate and
-#                       gated on counsel, per docs/compliance/counsel-engagement-brief.md.
-#   green_attribution - CC0/CC-BY or similar found; commercial derivatives would be permitted with
-#                       attribution IF the licence is confirmed. Same "lead, not cleared" caveat.
-#   yellow           - a plausible permissive claim exists but rests on something weaker than an
-#                       author statement (community metadata, an inferred custom, a derivative
-#                       whose own status is unresolved). Case-by-case review required.
-#   red              - CC BY-NC / CC BY-ND / CC BY-NC-ND / freeware / unclear license
-#   reference_only   - copyrighted, or with no locatable rights basis; may be studied by a human
-#                       and labeled, never copied into any corpus, prompt, or generation input
-#
-# verification_method values: primary_source_fetch (WebFetch/browser read the actual page),
-# websearch_snippet (reconstructed from search results, not a direct page read), unverified
-# (claim relayed from an external source, not checked).
+# That warning is deliberately NOT left to this comment block. A YAML parser discards every line
+# beginning with `#`, and the reader this file most needs to stop is a script, not a person. The
+# machine-readable form of the same statement is the top-level `is_legal_clearance`,
+# `clearance_note`, `status_definitions`, and `verification_method_definitions` keys below, which
+# are data. The two permission-shaped fields are likewise named `commercial_use_claimed` and
+# `derivatives_claimed` rather than `*_permitted`, so that no field name in this file asserts a
+# permission the file is not granting.
 #
 # Provenance in two passes. Pass 1 (2026-08-13) ran in a session whose network egress policy
 # blocked WebFetch for every relevant domain, so every entry was websearch_snippet or unverified.
@@ -37,9 +25,58 @@
 # and before storing any work's actual text in this repository.
 
 schema_version: 1
+is_legal_clearance: false
+clearance_note: >-
+  Every field in this file records what some located source CLAIMS, not what this project is permitted to do.
+  Nothing here authorises copying any work's text into a corpus, a prompt, a generation input, or a training
+  set. That decision is separate, is made by a human, and is gated on counsel per
+  docs/compliance/counsel-engagement-brief.md. A consumer that filters `works` on any combination of `status`,
+  `commercial_use_claimed`, and `derivatives_claimed` to build an ingestion allowlist is misusing this file.
+  The two claim fields record only what a located source states explicitly about that specific permission:
+  true means a source states it, false means a located licence forbids it, and null means no located source
+  addresses it, which includes works whose general rights basis is otherwise strong.
 checked_date: "2026-08-13"
 reverified_date: "2026-08-30"
-checked_method_caveat: "Pass 1 (2026-08-13) was WebFetch egress-blocked for every candidate domain, so all entries began as websearch_snippet or unverified. Pass 2 (2026-08-30) had working egress and promoted four of five entries to primary_source_fetch; per-entry verification_method is authoritative over this summary."
+checked_method_caveat: >-
+  Pass 1 (2026-08-13) was WebFetch egress-blocked for every candidate domain, so all entries began as
+  websearch_snippet or unverified. Pass 2 (2026-08-30) had working egress and performed a direct page read for
+  all five entries, so all five now carry primary_source_fetch. A fetch records only that a page was read,
+  never that the page confirmed the entry: the-tailgator's pass-2 fetch confirmed a NON-MATCH, because the
+  page read turned out to describe a different work from the one the external proposal named. That is why it
+  carries primary_source_fetch alongside verification_confidence unable_to_verify. Read verification_method
+  and verification_confidence together; each per-entry pair is authoritative over this summary, and neither
+  field alone carries the meaning.
+status_definitions:
+  green: >-
+    Strong lead, NOT cleared. The best-supported public-domain case found, with a source and a stated rights
+    basis. It is NOT legal sign-off, NOT a jurisdiction-wide finding unless `jurisdiction` says so, and NOT an
+    authorisation to ingest the work's text.
+  green_attribution: >-
+    A CC0, CC-BY, or similar licence was located, so commercial derivatives would be permitted with
+    attribution IF that licence is confirmed. It is NOT a confirmation that the licence is genuine or that
+    whoever applied it held the rights, and NOT a clearance. No entry currently carries this status; it is
+    defined so the closed set stays complete.
+  yellow: >-
+    A plausible permissive claim exists but rests on something weaker than a statement by the rights holder:
+    community-entered metadata, an inferred custom, or a derivative whose own status is unresolved. It is NOT
+    a grant and NOT a lead that may be acted on without case-by-case review.
+  red: >-
+    A located licence positively blocks this project's use (CC BY-NC, CC BY-ND, CC BY-NC-ND, freeware, or
+    terms too unclear to rely on). It is NOT a statement that permission is unobtainable; it means no
+    permission exists today and outreach would be required.
+  reference_only: >-
+    Copyrighted, or with no locatable rights basis at all. A human may read the work and record derived labels
+    about it. It is NOT copyable, in whole or in part, into any corpus, prompt, generation input, or training
+    set, and NOT a holding status that more searching is expected to lift.
+verification_method_definitions:
+  primary_source_fetch: >-
+    A browser or WebFetch read the actual page cited in source_url. This says a page was read; it says NOTHING
+    about whether the read supported the entry. Pair it with verification_confidence.
+  websearch_snippet: >-
+    Reconstructed from search-result snippets rather than a direct page read. Capped at medium confidence; NOT
+    a first-hand reading of the cited source.
+  unverified: >-
+    A claim relayed from an external source and never checked against anything. NOT evidence.
 
 works:
   - id: consider-the-consequences
@@ -49,10 +86,12 @@ works:
     source_url: "https://en.wikisource.org/wiki/Consider_the_Consequences!"
     download_url: null
     jurisdiction: "United States"
-    license_claimed: "Public domain (US) by copyright term expiry: Wikisource's licence banner gives the basis as publication before January 1, 1931, not as copyright non-renewal"
+    license_claimed: >-
+      Public domain (US) by copyright term expiry: Wikisource's licence banner gives the basis as publication
+      before January 1, 1931, not as copyright non-renewal
     covers: [text]
-    commercial_use_permitted: true
-    derivatives_permitted: true
+    commercial_use_claimed: null
+    derivatives_claimed: null
     status: green
     verification_method: primary_source_fetch
     verification_confidence: high
@@ -66,7 +105,15 @@ works:
       depends on a negative search result. Author, publisher (The Century Co.), and 1930 date all
       confirmed on the same page, as is the branching structure (three sections following Helen,
       Jed, and Saunders through choice points). Still a strong lead rather than legal sign-off:
-      the banner covers the US only, and no non-US position was researched.
+      the banner covers the US only, and no non-US position was researched. CLAIM FIELDS NULLED
+      2026-08-30 (same pass, second correction): the entry previously carried
+      commercial_use_permitted: true and derivatives_permitted: true, which handed any script
+      filtering on those fields an ingestion clearance the rest of this file spends its length
+      withholding. The Wikisource banner states a public-domain finding for the United States; it
+      does not address commercial use or derivative works specifically, so both claim fields are
+      now null, meaning "no located source addresses this permission". The rights basis itself is
+      unchanged and unweakened: it is term expiry, and it lives in license_claimed and in this
+      note, which is where a basis belongs.
 
   - id: the-interlopers-adaptation
     title: "The Interlopers (interactive adaptation)"
@@ -75,10 +122,12 @@ works:
     source_url: "https://ifdb.org/viewgame?id=rg42893ymbsay0kk"
     download_url: null
     jurisdiction: "United States (original story, pre-1929 95-year rule) and life+70 jurisdictions (UK/EU, PD since 1987)"
-    license_claimed: "Saki's underlying short story is public domain (high confidence). The 2014 Quest 5 adaptation carries only IFDB's community-entered License field, 'Public Domain', with no author-signed dedication located"
+    license_claimed: >-
+      Saki's underlying short story is public domain (high confidence). The 2014 Quest 5 adaptation carries
+      only IFDB's community-entered License field, 'Public Domain', with no author-signed dedication located
     covers: [text]
-    commercial_use_permitted: null
-    derivatives_permitted: null
+    commercial_use_claimed: null
+    derivatives_claimed: null
     status: yellow
     verification_method: primary_source_fetch
     verification_confidence: medium
@@ -103,15 +152,17 @@ works:
 
   - id: the-tailgator
     title: "The Tailgator"
-    author: "No author for the work the external proposal described; an unrelated Twine game of the same title is credited to NegativeSector on itch.io"
+    author: >-
+      No author for the work the external proposal described; an unrelated Twine game of the same title is
+      credited to NegativeSector on itch.io
     publication_year: null
     source_url: null
     download_url: null
     jurisdiction: null
     license_claimed: "Public domain (per the external proposal); NOT CONFIRMED, and the proposal's described work was never located"
     covers: []
-    commercial_use_permitted: null
-    derivatives_permitted: null
+    commercial_use_claimed: null
+    derivatives_claimed: null
     status: reference_only
     verification_method: primary_source_fetch
     verification_confidence: unable_to_verify
@@ -124,7 +175,11 @@ works:
       NO ratings or review counts. It is therefore not the work the proposal described (an IFDB
       listing, public domain, "5 ratings and 1 written review"), and it supplies no rights basis
       of its own. The proposal's claim remains unconfirmed. Do not add to any corpus, structural
-      or reference, until an IFDB entry matching the described work is actually located.
+      or reference, until an IFDB entry matching the described work is actually located. Note the
+      pairing this entry makes: verification_method is primary_source_fetch because a real page
+      was read directly, and verification_confidence is unable_to_verify because what that read
+      established was a NON-MATCH. The method field records that a fetch happened, never that the
+      fetch supported the entry.
 
   - id: cavern-of-the-morlocks
     title: "The Cavern of the Morlocks / La caverne des Morlocks"
@@ -132,11 +187,13 @@ works:
     publication_year: 1985
     source_url: "https://ifdb.org/viewgame?id=yern8xmey2e5dcwj"
     download_url: null
-    jurisdiction: "France (original 1985 magazine type-in, L'Ordinateur Individuel issue 77; written for the Matra-Hachette Alice). An English TRS-80 MC-10 port also exists"
+    jurisdiction: >-
+      France (original 1985 magazine type-in, L'Ordinateur Individuel issue 77; written for the Matra-Hachette
+      Alice). An English TRS-80 MC-10 port also exists
     license_claimed: "IFDB's community-entered License field reads 'Public Domain'. No statement by the author was located, and none is asserted here"
     covers: []
-    commercial_use_permitted: false
-    derivatives_permitted: false
+    commercial_use_claimed: false
+    derivatives_claimed: false
     status: reference_only
     verification_method: primary_source_fetch
     verification_confidence: high
@@ -164,8 +221,8 @@ works:
     jurisdiction: "Unconfirmed; the author's own site is the licence source"
     license_claimed: "CC BY-NC-ND 3.0 Unported"
     covers: [text]
-    commercial_use_permitted: false
-    derivatives_permitted: false
+    commercial_use_claimed: false
+    derivatives_claimed: false
     status: red
     verification_method: primary_source_fetch
     verification_confidence: high

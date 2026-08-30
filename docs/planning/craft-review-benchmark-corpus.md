@@ -79,7 +79,7 @@ information" cannot mean an automated pipeline: as of 2026-08-13, none of the pr
 sources offer a bulk or licensed API for their review text.
 
 | Source | Access in practice | Verdict |
-|---|---|---|
+| --- | --- | --- |
 | Kirkus Reviews | Paywalled full reviews; ToS forbids bulk reproduction | Manual read of individual reviews only |
 | School Library Journal | Subscriber-gated; same ToS posture as Kirkus | Manual read only |
 | Common Sense Media | Free to browse, no bulk/licensing API | Manual read only |
@@ -113,7 +113,7 @@ promoted 14 source rows across 9 of the 10 titles to `primary_source_fetch` and 
 claims that the first pass had recorded at `confidence: high`**:
 
 | Claim | Recorded as | Direct read |
-|---|---|---|
+| --- | --- | --- |
 | *Traitors in Space* carries a Kirkus **starred review** | `confidence: high` | No star on the page. Struck. The "45+ endings" figure is also Kirkus's, not SLJ's |
 | *Leviathan* carries a Kirkus **starred review** | `confidence: high` | No star on the page. Struck |
 | Kirkus called *The Citadel of Whispers*'s supporting cast (Zara, Saeed, Arjun) "interesting" | `confidence: high` | The names appear, but only in the review's plot summary. It does not praise the cast. "Intriguing" is applied to the magic system and the political machinations, and hedged with "lightly developed" |
@@ -144,7 +144,7 @@ glossary:
 > for a filename.
 
 | Dimension | Existing project hook |
-|---|---|
+| --- | --- |
 | Choice meaningfulness / consequence visibility | **Built, as a reported statistic.** `validator/consequence.py` (W3) measures, per fork, rejoin distance and the set of variable names whose values differ on arrival, over the configuration graph rather than the node graph, and reports the two separately because they fail independently. Its own docstring records that it is deliberately not a gate and that `BandProfile.reconvergence_ceiling` stays unenforced. What is still missing is exactly what this corpus offers: a reviewer-grounded threshold for what counts as "meaningful" |
 | Character depth / character change | Still unmeasured as an arc. `validator/character.py` checks structural presence |
 | Ending payoff | Partly reachable through `validator/continuity.py` (below); `story-structure-diversity-critical-analysis.md` section 2.7 flags ending-valence miscoding as a related, narrower problem |
@@ -176,7 +176,7 @@ what that batch actually found; treat the YAML file as authoritative on any conf
 summary below.
 
 | Band | Title | What held up vs. the original proposal | Craft-label headline |
-|---|---|---|---|
+| --- | --- | --- | --- |
 | 5-7 | *Endlessly Ever After* | Confirmed real (Snyder/Santat, Chronicle, 2022); age-fit conflicts across sources (SLJ: PreS-Gr3; Horn Book/parents: one-on-one only, dark endings) | Strong choices/replayability; character depth not addressed by any source found |
 | 5-7 | *Jungle Adventure* | High title-collision risk resolved to a specific book (Murray/Kimpimäki, words & pictures); "personalized" claim was a partial fit, not a real-child-name product | Mixed choice meaningfulness; strong replayability |
 | 8-10 | *The Cave of Time* | Confirmed. The batch's most quantified craft claim (39 choice points, 40 endings, an 18/16/6 good/bad/ambiguous split, 114 pages) **did not survive the 2026-08-30 direct read**: the cited history states forty endings and describes the balance only qualitatively. Forty endings and the hand-drawn 1969 branch diagram stand; the other three figures are withdrawn | Weak character depth/dialogue; strong replayability; choices sometimes read as arbitrary |
@@ -232,7 +232,7 @@ it, and the correction is not cosmetic: a scoping doc whose value rests on namin
 worth much less if the work is built. Each status below was confirmed by reading the module.
 
 | Reviewer criticism | Check | Status on main |
-|---|---|---|
+| --- | --- | --- |
 | "The choices do not change the ending" | Per-fork rejoin distance and state delta over the configuration graph | **Built.** `validator/consequence.py` (W3), reported separately rather than pooled, and explicitly not a gate |
 | "The character does not develop" | Compare a character's tracked `Variable` state before/after major nodes | **Still proposed**, and still needs a "major scene" annotation the schema does not have. The only row of the five that is genuinely open |
 | "The ending is abrupt" / a node presupposes state the path never established | Name the content a node cannot presuppose on the taken path | **Built.** `validator/continuity.py` (W6 follow-on), on the provable instance of a book whose endings count three rescues on a path holding one. Its docstring records that it is exact but flags 3,815 of 4,472 nodes, so it is a reported statistic and explicitly *not* a gate candidate |
