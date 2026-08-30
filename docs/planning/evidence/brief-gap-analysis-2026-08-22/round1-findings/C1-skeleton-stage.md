@@ -25,13 +25,31 @@ Catalog measurements used throughout (all reproduced in this session):
 | Measurement | Value |
 | --- | --- |
 | Non-sidecar shells / nodes | 84 / 15,470 (brief says 61 / 11,458, stale) |
-| Offered cells | 18; 4-6 shells each; 81 production-eligible on-matrix |
+| Offered cells | 18; **81 shells declare `metadata.production_eligible`, 74 of those are reachable through an offered cell**; 3-5 shells per cell, median 4 (corrected 2026-08-30, see the note below) |
 | `check_skeleton.py` **default** pass | 81 of 84 (the 3 failures are MVP seeds needing `--allow-mvp`) |
 | `check_skeleton.py --strict` pass | **20 of 84** |
-| Strict-blocking findings in the catalog | 2,456 (CG-3 1,965, CG-2 344, CG-1 80, PL-23 31, PL-24 30, walk floor 11, in-degree 7, PL-26 6, endings floor 1) |
+| Strict-blocking findings in the catalog | **2,475** (CG-3 1,965, CG-2 344, CG-1 80, PL-23 31, PL-24 30, walk floor 11, in-degree 7, PL-26 6, endings floor 1; this cell read 2,456 when written, which is not the sum of its own components, see the note below) |
 | Declared choices vs distinct graph edges | 22,165 vs 21,863 (302 duplicate-target choices) |
 | Fork-consequence false-choice rate (`measure_consequence.py`) | mean 18.6%, max 72.5% |
 | In-cell structural distance | min 0.00047, p05 0.155, median 0.387 against `TAU_CELL` 0.05 |
+
+> **Census and arithmetic note, 2026-08-30.** Two rows of this table were wrong when written and are
+> corrected in place above.
+>
+> 1. **"81 production-eligible on-matrix" collapsed two different counts into one number.** The
+>    catalog census (`docs/planning/catalog-census.md`) reports these as two figures that must never
+>    be quoted as one: **81** shells declare `metadata.production_eligible`, and **74** of those are
+>    reachable through one of the 18 offered cells. Wherever this report says "production-eligible",
+>    read "declaring", and use 74 for anything that depends on a shell actually being offerable. The
+>    same row's "4-6 shells each" is also wrong: the census reports **3-5 per cell, median 4**.
+> 2. **The strict-finding components sum to 2,475, not 2,456.** The nine listed rule counts add to
+>    `1,965 + 344 + 80 + 31 + 30 + 11 + 7 + 6 + 1 = 2,475`. The published 2,456 is 19 low and no
+>    overlap rule is stated anywhere that would justify the difference. The dependent claim later in
+>    this report that "2,456 of 2,456 findings contain `advisory`" therefore rests on a total that
+>    does not reconcile; the claim's *direction* (every strict finding in the catalog is emitted as
+>    advisory) is unaffected, since it is a property of the emitter, not of the count.
+>
+> Neither correction changes any finding's severity or its recommendation.
 
 ---
 
@@ -61,10 +79,20 @@ Catalog measurements used throughout (all reproduced in this session):
   their finding counts, so the list can only shrink. Same for `mutation/acceptance.py` Stage 1 and
   `parameterize_skeleton.py` step 5.
 - **How to check I'm right**: `grep -rn '\-\-strict' .github/ scripts/check_promotion_bundle.py`
-  (no hit in either), then run the two totals:
-  `for f in skeletons/*/*.json; do ...; done`, or reuse my harness at
-  `scratchpad/runstrict.py` (`uv run python scratchpad/runstrict.py --strict` → 20 pass;
-  without `--strict` → 81 pass).
+  (no hit in either), then run the two totals over committed files only, since the harness this
+  check originally pointed at (`scratchpad/runstrict.py`) was never committed and does not exist in
+  the repository. Corrected 2026-08-30 to a command a reader can actually run:
+
+```sh
+for f in skeletons/*/*.json; do
+  case "$f" in *.contract.json|*.lineage.json|*.narrative.json) continue ;; esac
+  uv run python scripts/check_skeleton.py --strict "$f" >/dev/null 2>&1 && echo pass
+done | wc -l
+```
+
+  Drop `--strict` for the default-bar total. The reported figures were 20 pass with `--strict` and
+  81 pass without it, against the 84 non-sidecar shells; the sidecar exclusions in the `case` line
+  are what keeps the denominator at 84 rather than the 149 files a naive glob returns.
 
 ---
 
@@ -271,8 +299,10 @@ Catalog measurements used throughout (all reproduced in this session):
 - **Category**: catalog economics
 - **Locus**: `src/cyo_adventure/flywheel/strategy.py:67,85,89,94`;
   `src/cyo_adventure/generation/skeleton_match.py:552-596,673-679`; `skeletons/`
-- **Problem**: The grid is 18 offered cells (`band_profile.offered_cells()`), covered at 4-6 shells each,
-  81 production-eligible on-matrix shells. Supply side, all hard-coded: `MONTHLY_MERGE_BUDGET = 4`
+- **Problem**: The grid is 18 offered cells (`band_profile.offered_cells()`), covered at 3-5 shells
+  each with a median of 4, over **81 shells declaring `production_eligible` of which 74 are
+  reachable** through an offered cell (corrected 2026-08-30 against `docs/planning/catalog-census.md`;
+  this sentence read "covered at 4-6 shells each, 81 production-eligible on-matrix shells"). Supply side, all hard-coded: `MONTHLY_MERGE_BUDGET = 4`
   (net new trees per month, catalog-wide), `OPEN_PR_GLOBAL = 3`, `COOLDOWN_DAYS = 30` per cell. Ceiling
   is therefore **48 shells/year across 18 cells ≈ 2.7 per cell per year**, and each is human-merge-only
   by ADR-020 decision 4 (`skeleton-promotion.yml` actively fails a promotion PR with auto-merge enabled).
@@ -284,7 +314,8 @@ Catalog measurements used throughout (all reproduced in this session):
   now its sole correctness guarantee", i.e. the human in the F8 loop demonstrably cannot review the
   largest shells, and the flywheel's cap is set by that human.
   A family reading a book a fortnight needs ~26 distinct armatures/year in one cell; the flywheel supplies
-  2.7. Reaching 26 in a single cell takes ~8 years at the global budget, or ~2 years if the entire
+  2.7. Reaching 26 in a single cell takes **~9.6 years** at the global budget (`26 / 2.7`; this read
+  "~8 years" when written and was arithmetically wrong, corrected 2026-08-30), or ~2 years if the entire
   catalog-wide budget were spent on that one cell (and the 30-day cooldown caps a single cell at 12/year
   regardless), during which the other 17 cells get nothing.
 - **Why it matters for the goal**: full-shell reuse is bounded by catalog depth against demand, and the
@@ -299,7 +330,10 @@ Catalog measurements used throughout (all reproduced in this session):
   optimisation, it is the only path, and should be scheduled as such.
 - **How to check I'm right**: `grep -n "MONTHLY_MERGE_BUDGET\|OPEN_PR_GLOBAL\|COOLDOWN_DAYS"
   src/cyo_adventure/flywheel/strategy.py`; count shells per cell from `metadata`
-  (`(band,length,style)` → 4,4,4,4,4,4,4,4,5,5,5,5,5,5,5,6 across 18 cells); read `_weight` and
+  (the per-cell sequence given here when written, `4,4,4,4,4,4,4,4,5,5,5,5,5,5,5,6`, listed only 16
+  values for 18 cells and summed to 73, so it is **withdrawn as of 2026-08-30**; take the per-cell
+  distribution from `docs/planning/catalog-census.md`, which reports 3-5 shells per cell with a
+  median of 4 across all 18 offered cells, 74 reachable shells in total); read `_weight` and
   `_RECENT_WINDOW` in `skeleton_match.py`.
 
 ---

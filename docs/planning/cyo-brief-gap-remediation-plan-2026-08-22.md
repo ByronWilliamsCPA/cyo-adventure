@@ -38,7 +38,7 @@ see the correction log (synthesis section 2) for why each was dropped.
 ## 0. Sequencing
 
 ```text
-GA-D1 hard-block ruling ──────────► W7 approval guard (shape depends on the ruling)
+GA-D1 hard-block ruling ──────────► GA-D1's own accountability requirements (no W item owns them)
 GA-D2 F5 architecture ruling ─────► W10 settling experiment, and any stratified-plan work
 
 W1 job lifecycle ──── prerequisite ► W2 reading-level cap      (timeout/occupancy interact)
@@ -52,6 +52,16 @@ W9 register integrity ────────────► GA-D2's voiding st
 **Two hard orderings.** `W1` before `W2`, because changing fill-call behaviour while jobs can be
 double-enqueued multiplies the leak. `W8` before any `--strict` enforcement, because enforcing today
 collapses selection from 74 shells to 20.
+
+> **Correction, 2026-08-30.** The first line of the sequencing block read
+> `GA-D1 hard-block ruling ──────────► W7 approval guard (shape depends on the ruling)`. That
+> dependency pointed at the wrong item: `W7` is *Wire the two genuinely unwired detectors*
+> (`validator/blind_spots.py` and `validator/imitable.py`), which has nothing to do with the
+> approval path. No `W` item in this plan owns the approval-guard work, so the arrow now points at
+> GA-D1's own five accountability requirements, which are where that work is actually specified.
+> Anyone scheduling it should treat those five requirements as the work item and give them a ledger
+> row of their own; see the status note under GA-D1 below for which of the five `main` has since
+> closed.
 
 ---
 
@@ -98,6 +108,31 @@ version hash; overrides are countable; a dual-role self-approval of a blocked bo
 **Falsifier.** Any code path reaching `published` with `has_hard_block` true and no override record.
 
 **Effort** M. **Blast radius** none for existing books; new required field on approve.
+
+> **Status of the five requirements as of 2026-08-30.** Two of the five have since been closed on
+> `main` by the ADR-005 amendment of 2026-08-25 (gate D2), so this section is preserved as the
+> record of what the analysis found on 2026-08-22, not as an open work list. Re-verified against
+> `main`:
+>
+> | # | Requirement | Status on `main` |
+> |---|---|---|
+> | 1 | Typed override reason, required when the report carries a block | **Met.** `ApproveBody.override_reason` is required whenever `severe_finding_counts()` reports a block or a high-severity flag; `publishing/service.py` raises `BusinessLogicError(rule="approve_requires_override_reason")` on a missing or whitespace-only reason. |
+> | 2 | Blocking finding *ids* copied onto the approval record | **Open.** The audit payload carries `overridden_block_count` and `overridden_high_count`, which are counts, not ids, so an override still cannot be reconstructed after a later re-moderation rewrites the report. |
+> | 3 | Version hash pinned in `ApproveBody` | **Open.** Approval still binds to a version row, not to a hash of the artifact reviewed. |
+> | 4 | Separation of duties for a dual-role adult | **Open**, and see the note below. |
+> | 5 | A countable override event and an admin surface | **Partly met.** The approval emits a `storybook_approved_over_severe_finding` log line and the RELEASED event payload carries the two override counts, so overrides are countable from the event log. There is no distinct admin-dashboard surface. |
+>
+> **On requirement 4, stated precisely.** `api/approval.py::_load_admin_story` authorises on
+> `ctx.principal.is_admin` alone and deliberately does not call `authorize_family`, because admin
+> authority is cross-family by design. An adult who holds the guardian base role plus the
+> orthogonal `is_admin` capability can therefore approve a book belonging to their own family,
+> including over a hard block, provided they supply an override reason. `Principal.acting_role()`
+> returns `ADMIN` only when the target family differs from the principal's own, so the audit event
+> stamps such a self-approval as `guardian`: the act is *distinguishable* in the log but not
+> *prevented*. Four-eyes approval is not an existing invariant of this system, and ADR-005 names
+> this the owner-as-admin exception. What the 2026-08-25 amendment retired is the framing this
+> section used elsewhere, "two clicks, untraced, unversioned": the override is now refused without a
+> reason and the reason is recorded. What survives is separation of duties, and only that.
 **Rollback** the guard is one conditional plus a nullable column; revert is clean.
 
 ### GA-D2. Rule on what F5 actually claims, and void the edited register rows
@@ -379,6 +414,20 @@ confirmed: `applied` simultaneously satisfies the ref test and deletes the sched
 
 **Effort** M. **Acceptance.** Each of the six edits is rejected by a checker.
 **Falsifier.** Any of the six still passing.
+
+> **Disposition for `UW-C290`, added 2026-08-30.** The supersession notice lists `UW-C290`'s false
+> `done` marking among the items that stand unweakened, and this plan carried no remediation,
+> exclusion, or ledger binding for it. It is scoped here as an instance of `W9`, not as a new item:
+> it is exactly the failure mode `W9` exists to close, a register row marked `done` whose subject
+> was never built. Re-verified against `main` on 2026-08-30: `src/cyo_adventure/validator/safety.py`
+> is still the 57-line Phase-2 stub whose `check_safety` returns an empty `ValidationReport()`, and
+> `src/cyo_adventure/validator/gate.py:269` still calls it (`merged.extend(check_safety(story))`),
+> so the gate merges an empty report on every run and no deterministic safety rule is enforced
+> there. Nothing about the finding has been overtaken. The `W9` change that closes it is the
+> requirement that `applied` and `done` carry a machine-checkable anchor: a row claiming this one is
+> done has no SHA, PR, or test node id that could satisfy that requirement, because no such change
+> exists. Owner action needed: bind `UW-C290` to `W9`'s ledger row rather than leaving it
+> unscheduled.
 
 ### W10. Settle model selection properly
 
