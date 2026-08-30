@@ -21,6 +21,7 @@ import pytest
 from cyo_adventure.core.pricing import PRICES
 from cyo_adventure.validator.band_profile import offered_cells
 from scripts.unit_cost_model import (
+    EXCLUDED_FILL_RUNS,
     EXCLUDED_RUNS,
     GENERATED_DOC,
     LEG_MODELS,
@@ -744,6 +745,118 @@ def test_a_book_without_a_metered_cost_is_counted_out_loud(
         "analysed": 1,
     }
     assert len(load_fill_books(tmp_path)) == 1
+
+
+def test_the_comparator_run_never_reaches_the_fill_corpus() -> None:
+    """A vendor comparator is committed evidence, but not evidence about price.
+
+    `router-comparison-2026-08-20` is a real metered run, so `mock` is false
+    and nothing else in the fill path would hold it back. It put three vendors
+    on the same briefs to answer a routing question, and the only books it
+    delivered are `anthropic-sonnet-5`'s at roughly 3.50 USD each against
+    `deepseek-v4-pro`'s roughly 0.42. Reading it would price a DeepSeek-ruled
+    product off two Sonnet books, and the page would show a plausible number
+    rather than raising.
+
+    The expectations are computed from the committed tree rather than written
+    down here, so this fails when the exclusion is lifted, not when the corpus
+    grows.
+    """
+    runs_root = Path("docs/planning/vendor-comparison/runs")
+    present = {path.name for path in runs_root.iterdir() if path.is_dir()}
+
+    assert set(EXCLUDED_FILL_RUNS) <= present, (
+        f"EXCLUDED_FILL_RUNS names a run that is gone: "
+        f"{sorted(set(EXCLUDED_FILL_RUNS) - present)}"
+    )
+
+    excluded_vendors: set[str] = set()
+    excluded_books = 0
+    for run in sorted(EXCLUDED_FILL_RUNS):
+        for report in sorted((runs_root / run).glob("**/report.json")):
+            data: dict[str, Any] = json.loads(report.read_text(encoding="utf-8"))
+            books: list[dict[str, Any]] = list(data.get("books", []))
+            excluded_books += len(books)
+            excluded_vendors |= {str(b.get("vendor")) for b in books}
+
+    assert excluded_books, "the excluded run holds no books, so this proves nothing"
+    assert excluded_vendors - {RULED_FILL_LEG}, (
+        "the excluded run shares every vendor label with the ruled leg, so "
+        "vendor labels cannot witness its absence"
+    )
+
+    read_vendors = {str(b.get("vendor")) for b in load_fill_books()}
+
+    assert not (excluded_vendors & read_vendors) - {RULED_FILL_LEG}, (
+        f"comparator vendors reached the fill corpus: "
+        f"{sorted((excluded_vendors & read_vendors) - {RULED_FILL_LEG})}"
+    )
+
+    counted = 0
+    for report in sorted(runs_root.glob("**/report.json")):
+        data = json.loads(report.read_text(encoding="utf-8"))
+        if report.relative_to(runs_root).parts[0] in EXCLUDED_FILL_RUNS:
+            continue
+        if data.get("mock"):
+            continue
+        counted += len(list(data.get("books", [])))
+
+    assert fill_provenance()["books"] == counted, (
+        "the reported book count includes runs the model disowns"
+    )
+    assert delivery_quality()["books"] == sum(
+        1
+        for b in load_fill_books()
+        if b.get("complete") and int(b.get("leaf_words") or 0) > 0
+    )
+
+
+def test_the_band_table_counts_only_the_ruled_fill_leg(tmp_path: Path) -> None:
+    """A second leg's books must not reach a table printed as the ruled cost.
+
+    ``fill_costs`` is keyed by leg and ``fill_by_band`` is not, so the two
+    summed the same population only for as long as exactly one leg had fill
+    evidence anywhere in the tree. Once a second leg lands, an unscoped band
+    table stops reconciling against the leg row beside it, and the gap reads
+    as failed spend rather than as another vendor's books.
+
+    Against today's corpus the filter changes nothing, which is why it needs a
+    fixture that does contain a second leg.
+    """
+    run = tmp_path / "two-leg-run"
+    run.mkdir()
+    (run / "report.json").write_text(
+        json.dumps(
+            {
+                "skeletons": ["skeletons/8-11/the-tin-whistle-map.json"],
+                "books": [
+                    {
+                        "vendor": RULED_FILL_LEG,
+                        "brief_index": 0,
+                        "cost": 0.5,
+                        "leaf_words": 1000,
+                        "complete": True,
+                    },
+                    {
+                        "vendor": "anthropic-sonnet-5",
+                        "brief_index": 0,
+                        "cost": 7.0,
+                        "leaf_words": 1000,
+                        "complete": True,
+                    },
+                ],
+            }
+        ),
+        encoding="utf-8",
+    )
+
+    assert len(load_fill_books(tmp_path)) == 2, "the fixture lost a book"
+
+    bands = fill_by_band(tmp_path)
+
+    assert list(bands) == ["8-11"]
+    assert bands["8-11"]["books"] == 1, "a non-ruled leg reached the band table"
+    assert bands["8-11"]["billed_usd"] == pytest.approx(0.5)
 
 
 # ---------------------------------------------------------------------------
