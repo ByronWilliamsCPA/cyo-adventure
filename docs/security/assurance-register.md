@@ -281,7 +281,8 @@ First tranche of work. Each invalidates multiple rows at once.
   with a known residual failure mode. This entry is retained rather than deleted because a register
   that silently drops a finding once it is fixed cannot show that its own findings ever led
   anywhere.
-- **CodeQL is disabled as of 2026-08-03; AISVS AC.4.2 fails on SAST coverage.** Read the
+- **CodeQL is disabled as of 2026-08-03; AISVS AC.4.2 failed on SAST coverage until PR #754
+  restored it by a different mechanism on 2026-08-24.** Read the
   supersession paragraph below before acting on the rest of this entry. The earlier text is kept
   because the reasoning error it records is still the instructive part.
 
@@ -307,17 +308,26 @@ First tranche of work. Each invalidates multiple rows at once.
   The control was turned off deliberately, on a billing rationale, by
   `PATCH /repos/ByronWilliamsCPA/cyo-adventure/code-scanning/default-setup` with
   `state=not-configured`; the endpoint now returns `{"state":"not-configured","updated_at":null}`.
-  The consequence is a real coverage loss, not a documentation change: **no SAST runs over
-  `frontend/` at all.** SonarCloud does not close the gap, because `sonar-project.properties:26`
-  sets `sonar.sources=src/`, the Python backend only, and the SonarCloud gate cannot block a PR
-  regardless (see the SonarCloud entry below). Bandit and OSV-Scanner remain, and both are
-  Python-only. The claim in `CLAUDE.md` that there is "no SAST over the TypeScript tree", which was
+  The consequence was a real coverage loss, not a documentation change: from 2026-08-03 until
+  #754 landed on 2026-08-24, **no SAST ran over `frontend/` at all.** SonarCloud did not close the
+  gap at the time, because `sonar-project.properties:35` sets `sonar.sources=src/`, the Python
+  backend only, and the SonarCloud gate cannot block a PR regardless (see the SonarCloud entry
+  below); CI has since overridden that value to
+  `src,frontend/src,frontend/design-system/src` (`sonarcloud.yml:143`). Bandit and OSV-Scanner
+  remain, and both are Python-only. The claim in `CLAUDE.md` that there is "no SAST over the TypeScript tree", which was
   the inverse of the truth when written, has become true by a change in the world rather than by a
   correction in the document. Secret scanning, push protection, validity checks, and the
   GitGuardian PR status are unaffected and remain enabled, so the secret-scanning half of AC.4.2
-  still holds. Re-enabling is the same PATCH with `state=configured`; note that this repository is
-  public, where code scanning is not metered, so the billing pressure that motivated the change
-  most likely originates elsewhere in the account and re-enabling here may cost nothing.
+  still holds. Re-enabling is the same PATCH with `state=configured`, but that is not a free
+  action: **as of 2026-08-24 the account holder confirms GitHub code scanning is no longer free on
+  public repositories** (owner attestation, not verified against GitHub's published
+  pricing). An earlier revision of this entry read "this repository is public, where
+  code scanning is not metered, so ... re-enabling here may cost nothing", and concluded the
+  billing pressure must originate elsewhere in the account. That was overtaken by a change in
+  GitHub's terms rather than by an error in reasoning, and it inverted the conclusion: the
+  2026-08-03 disable was a sound cost decision, not a mistake to reverse. Closing AC.4.2 therefore
+  means adding an analyzer that is free or already paid for, not restoring default setup by
+  default. The ranked routes are in the AC.4.2 row below.
 
   This entry is retained rather than deleted because the error is the instructive part. A control
   configured outside the artifact being searched is invisible to a search of that artifact, and
@@ -330,9 +340,11 @@ First tranche of work. Each invalidates multiple rows at once.
   copies `dist/` wholesale; `frontend/nginx.conf:69`'s asset regex does not match `.map`, so they
   fall through to `location /` and are served at predictable URLs.
 - **SonarCloud cannot gate a PR.** `sonarcloud.yml:13-36` triggers on push to main/develop and
-  `workflow_dispatch` only, and `:68` sets `fail-on-quality-gate` only for `push`. Scope narrowed
-  twice: CI overrides `sonar.sources=src`, excluding the frontend, and
-  `sonar-project.properties:76` excludes tests.
+  `workflow_dispatch` only, and `:68` sets `fail-on-quality-gate` only for `push`. Scope was
+  narrowed twice: CI overrode `sonar.sources=src`, excluding the frontend, and
+  `sonar-project.properties:76` excludes tests. #754 lifted the first narrowing, setting
+  `-Dsonar.sources=src,frontend/src,frontend/design-system/src` (`sonarcloud.yml:143`); the
+  PR-gating limitation above is unaffected.
 - **Merge-queue holes.** `frontend` and `frontend-e2e` carry `if: github.event_name !=
   'merge_group'` (`ci.yml:156`) and `ci-gate` counts `skipped` as pass (`ci.yml:969-971`). The
   `ci-gate` `needs` list (`ci.yml:935`) omits `diversity`, `api-tests`, and `coverage-upload`.
@@ -1092,19 +1104,69 @@ is visible as a section with no rows rather than as a question nobody asked.
 - **Failure oracle:** A pull request merges without CodeQL (or another SAST tool), secret
   scanning, IaC scanning, or SCA having run against it; or code scanning default setup, secret
   scanning, or push protection is found disabled at the repository level.
-- **Negative control:** not determined
+- **Negative control:** `tests/fixtures/semgrep-canary.tsx`, added by PR #754. It carries one
+  site per `pattern-either` alternative rather than one per rule (29 marked sites across the 6
+  in-repo rules), and the `semgrep-frontend` job compares findings to markers per rule and fails
+  unless the defined rule count also stays above a pinned floor of 6. Both refinements were forced
+  by measurement: an id-only assertion and a naive per-rule count each stayed green through a real
+  break. This is the first entry in this
+  register whose negative control is enforced by CI rather than described: a drifted SAST ruleset
+  and a clean tree are otherwise indistinguishable.
 - **Trigger:** every pull request
-- **Existing coverage:** secret scanning half only. Repository-level secret scanning, push
-  protection, and validity checks; GitGuardian Security Checks on pull requests. **No SAST**: code
-  scanning default setup was disabled 2026-08-03 (state `not-configured`), and the surviving
-  static analyzers are Python-only (Bandit, plus SonarCloud at `sonar.sources=src/`), so `frontend/`
-  has no SAST coverage at all. IaC scanning and SCA coverage remain unconfirmed.
+- **Existing coverage:** secret scanning half met; **SAST half now met over `frontend/`**, by a
+  different route than CodeQL. Repository-level secret scanning, push protection, and validity
+  checks, plus GitGuardian Security Checks on pull requests, cover the secret-scanning half and are
+  unaffected throughout. For the SAST half, PR #754 merged 2026-08-24 as `36dad55e` and closed the
+  gap on three of the four ranked routes below: routes 1 (`eslint-plugin-security` and
+  `eslint-plugin-no-unsanitized` on the `npm run lint` pass that already blocks merges), 2 (a
+  `semgrep-frontend` job with an in-repo ruleset, failing the build directly rather than via SARIF
+  upload, so no code-scanning metering is re-incurred), and 3
+  (`-Dsonar.sources=src,frontend/src,frontend/design-system/src`).
+  Route 4 stays deliberately unused. Code scanning default setup remains `not-configured` and is
+  not the mechanism here.
+
+  Re-verified against `main` rather than against the pull request, as this row required:
+  `.semgrep/frontend-security.yml` is the in-repo ruleset, `security-analysis.yml:139` defines the
+  `semgrep-frontend` job, and that job **gates merges** rather than merely reporting. The org
+  ruleset requires `Security Gate Validation`; that job declares
+  `needs: [security, semgrep-frontend]` and, because `if: always()` would otherwise let a failed
+  upstream job pass unread, its "Check security scan results" step reads
+  `needs.semgrep-frontend.result` explicitly and exits 1 on any non-`success`. An unread result
+  would have been an ignored result, so the explicit read is what makes this gating rather than
+  advisory. The other two halves of AC.4.2 differ and should not be stated together: **SCA does
+  run and is gated**, since the `security` job runs OSV-Scanner recursively
+  (`security-analysis.yml:93`) on `pull_request` against `main`, and the same "Check security scan
+  results" step reads `needs.security.result`; **IaC scanning has no mechanism in this repository
+  at all**. Neither was touched by #754.
+- **Residual after #754**, all carrying register rows: `UW-C365` (Semgrep's OSS TypeScript parser
+  fails on 5 frontend test files, three unparsed outright and two `PartialParsing`, so **Semgrep**
+  does not analyse them; ESLint's security rules still reach all five through the
+  `src/**/*.{ts,tsx}` glob, so the gap is Semgrep-specific rather than a total analysis hole. The
+  five are pinned by identity, not by count, so fixing five tests while breaking five production
+  modules cannot hide the hole), `UW-C367` (frontend test files are excluded from Sonar rather
+  than declared as tests), and `UW-C369` (Semgrep pinned by version without a hash, unlike every
+  other pinned action in this repository).
+
+  `UW-C366` was raised alongside these but is **not** a residual: it was closed on 2026-08-29 by
+  direct measurement of the live SonarCloud project, whose `ncloc_language_distribution` reports
+  `ts=24169`. The repeated `-D` last-wins assumption is therefore confirmed by observation rather
+  than inferred from a green run, and the widening is real.
 - **Phase home:** unassigned
 - **Owner:** core-maintainer
-- **Last verified:** not verified
-- **Status:** finding open
+- **Last verified:** 2026-08-30, against `main` at `6cc33aa5`: `.semgrep/frontend-security.yml`
+  and `tests/fixtures/semgrep-canary.tsx` present, `security-analysis.yml:139` defines
+  `semgrep-frontend`, and the "Check security scan results" step at
+  `security-analysis.yml:414-440` reads that result (the expression is on `:417`) into the
+  required `Security Gate Validation` check. Code scanning default setup last checked 2026-08-24 via the
+  live `GET /repos/ByronWilliamsCPA/cyo-adventure/code-scanning/default-setup` (returns
+  `state: not-configured`). Verified by API and by file read, not by grepping
+  `.github/workflows/`, which cannot see default setup at all.
+- **Status:** finding open (the SAST half is met by #754 and the secret-scanning half is
+  unaffected, but IaC scanning has no mechanism in this repository; three residual rows are open,
+  `UW-C365`, `UW-C367`, and `UW-C369`).
 - **Check:** **AC.4.2**: SAST, secret scanning, IaC scanning, and SCA run on every pull request.
-  **Failing on SAST as of 2026-08-03.** Code scanning default setup was deliberately disabled on a
+  **Failed on SAST from 2026-08-03; restored 2026-08-24 by a different mechanism.** Code
+  scanning default setup was deliberately disabled on a
   billing rationale (`PATCH .../code-scanning/default-setup` with `state=not-configured`, endpoint
   now returns `{"state":"not-configured","updated_at":null}`), removing the only SAST that covered
   `frontend/`. Secret scanning, push protection, validity checks, and GitGuardian Security Checks
@@ -1113,9 +1175,36 @@ is visible as a section with no rows rather than as a question nobody asked.
   run and no CI secret scanning exists", false at the time and found by grepping
   `.github/workflows/`, which misses default setup because it has no workflow file; the second read
   "AISVS AC.4.2 is met, not failed", true when written and made false by the disable rather than by
-  any error in it. Closing this requires restoring SAST over `frontend/`, either by re-enabling
-  default setup (same PATCH with `state=configured`; note this repository is public, where code
-  scanning is not metered) or by adding a TypeScript-capable analyzer to CI.
+  any error in it. Closing this required restoring SAST over `frontend/`, and the route mattered
+  because re-enabling is no longer free: **as of 2026-08-24 the account holder confirms GitHub code
+  scanning is no longer free on public repositories** (owner attestation, not verified against
+  GitHub's published pricing), so the same PATCH with `state=configured`
+  carries a real recurring cost. Ranked by cost, and by whether the result can block a merge.
+  **Routes 1, 2 and 3 were taken by #754 on 2026-08-24; route 4 remains deliberately
+  unused**, so the ranking below is retained as the record of why, not as an open menu:
+
+  1. **Add security rules to the ESLint pass that already gates every pull request.**
+     `npm run lint` runs at `.github/workflows/ci.yml:191` with `--max-warnings=0` and already
+     covers `src/` (less `src/client`, the generated API client, which `eslint.config.js:73`
+     ignores), all seven e2e directories, and the four Playwright configs. Adding
+     `eslint-plugin-security` and `eslint-plugin-no-unsanitized` costs nothing and blocks merges
+     today. This is lint-grade pattern matching, materially weaker than a taint engine, so treat
+     it as a floor rather than a complete answer.
+  2. **Add Semgrep OSS to CI** for genuine cross-file TypeScript rules. The CLI is free.
+     #VERIFY: DONE. Whether SARIF upload into GitHub code scanning is itself metered was mooted
+     rather than answered: #754 took the fail-directly branch, so `semgrep-frontend` fails the
+     build on findings and never routes through code scanning alerts.
+  3. **Widen SonarCloud to `frontend/src`.** No new tooling cost, since SonarCloud already
+     analyzes this repository. The org reusable workflow
+     `ByronWilliamsCPA/.github/.github/workflows/python-sonarcloud.yml` emits its own
+     `-Dsonar.sources`, which made this look like a cross-repo change when the route was ranked.
+     It was not: #754 overrode it in-repo by appending
+     `-Dsonar.sources=src,frontend/src,frontend/design-system/src` through
+     `additional-sonar-args` (`sonarcloud.yml:142-143`), relying on repeated `-D` keys resolving
+     last-wins. The remaining limit stands: per the entry above the SonarCloud gate cannot block a
+     pull request, so this buys visibility rather than enforcement.
+  4. **Re-enable code scanning default setup** (`state=configured`). Best analysis of the four,
+     and now a paid line item. This is an owner decision, not a remediation to apply.
 
 #### O-82
 
