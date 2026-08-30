@@ -31,6 +31,27 @@ that is not deployed. This is not a quibble: it moves C2-3 from "594k tokens, ov
 to "2-3 skeletons, 96-109% of the window", and it moves the machine cost from $1.45 to
 $0.22/book at the fill stage.
 
+> **Model resolution, 2026-08-30. The standing correction above is void and this report's original
+> figures are the ones that describe production.** Read against `main`,
+> `core/config.py:490` sets `openrouter_model = "deepseek/deepseek-v4-pro"`. That is the **active
+> primary fill model**, not a fallback: the fallback slot is a separate field,
+> `openrouter_fallback_model = "anthropic/claude-sonnet-4.6"`, deliberately on a different vendor
+> family for failure-domain coverage. `anthropic/claude-haiku-4.5` occupies neither slot; it is
+> named in `config.py` only in the comment recording what `3ad864a3` (#747, 2026-08-24) replaced.
+> The consequences for this report, which cannot be patched by editing individual numbers and are
+> stated here instead:
+>
+> - The claim that "the review is pricing and diagnosing a configuration that is not deployed" has
+>   inverted. The DeepSeek V4 Pro figures at cap **131,072** are the deployed configuration; the
+>   Haiku 4.5 figures at cap 64,000 are the ones that describe nothing.
+> - Everything downstream of the Haiku cap goes with it: the "chunks 19 of 84 skeletons" count, the
+>   "$1.45 to $0.22/book" move, and the 64,000-token `ask` that drives Claim 2's overflow all assume
+>   a cap that is no longer configured.
+> - Anything in this report keyed to the 131,072 cap, including the one-shot behaviour of the whole
+>   catalog, still describes `main`.
+>
+> Scope every claim below to the commit it was measured at before citing it, and prefer the
+> pre-correction figure wherever the two disagree.
 ---
 
 ## Claim 1 (C2-4): `llm_timeout_seconds = 120` against fills of 469-1874s
@@ -161,12 +182,30 @@ says so.
 not "19 of 73 production skeletons" as a cost multiplier. Keep critical only because the failure
 mode is a mis-diagnosed dead leg.
 
+> **Superseded, 2026-08-30. This describes pre-fix behaviour.** The `154,145 + 64,000 = 218,145`
+> request no longer follows from the code. `_fill_in_batches` on `main` no longer asks for the full
+> cap unconditionally: it sets `ask = ctx.cap`, then computes
+> `room = window - estimate_input_tokens(prompt.system, prompt.user)`, refuses the batch with a
+> blocked gate result when `is_fill_feasible({"nodes": batch_nodes}, max_tokens=room)` is false, and
+> otherwise clamps with `ask = min(ask, room)` (`generation/orchestrator.py`, lines 1352-1390 as of
+> this writing; the clamp arrived with `41d30909` / #737). So the overflow either does not happen or
+> surfaces as an explicit blocked gate carrying `room` and the batch's expected need, rather than as
+> an HTTP 400 misclassified `leg_fatal=True`. Two things survive the fix and are worth keeping: the
+> **fill-rate interaction** immediately above, which is a property of `prose_so_far` growing with
+> delivery and is unaffected by the clamp, and the general point that a provider-side 400 gets
+> classified "invalid or unavailable model". The recommendation repeated later in this report to
+> clamp the `max_tokens` ask is therefore **already implemented** and should not be re-scheduled.
 ---
 
 ## Claim 3 (C5-8): the reading-level loop was 46% of a 16+ book's bill for `in_band` 0.155
 
-**Verdict: CONFIRMED, reproducible, and if anything understated. Not an artifact of one book,
-it holds on all three measured books.**
+**Verdict: CONFIRMED, and if anything understated. Not an artifact of one book, it holds on all
+three measured books.** Corrected 2026-08-30: this verdict read "CONFIRMED, **reproducible**, and
+if anything understated". It is **not reproducible from this branch**, and saying so here rather
+than only in the notice at the head of the report is the point: the decomposition below rests on
+`v7_econ.py` and `v7_cost.py`, which were never committed, so a third-party reader can re-derive
+nothing. Read it as an analyst reconstruction over `report.json` plus file sizes on disk, and treat
+the per-book residual shares as provisional until the harness and an input manifest are committed.
 
 C5-8 assumed the fill emitted `expected_output_tokens` = 99,906. It did not: the delivered
 document on disk is 280,512 chars, ~70-80k tokens. Using the actual artifact instead of the
@@ -248,7 +287,14 @@ google-gemini-3.1-pro the-tide-pool-rescue        capped=0.879
 
 0.714-0.982 under the exact sentence that is supposed to license 0.389-0.529. **The licence
 cannot be a sufficient cause of a defect that nine of nine control books, on three vendors, do
-not exhibit.** The differentiating variable in the record is the model.
+not exhibit.** Corrected 2026-08-30: the next sentence read "The differentiating variable in the
+record is the model", which the paragraph immediately below then contradicts. **The nine-book
+control does not isolate a model effect and cannot**, because the control pool differs from the
+DeepSeek books in model, band, node count and provenance at once. What the record supports is the
+narrower, still sufficient statement: **the licence is not a sufficient cause**, and *some*
+difference between the two sets, of which the model is one candidate among several confounded with
+it, is doing the work. The matched experiment proposed below is what would separate them, and it
+should be run before any claim that the model is the differentiating variable.
 
 **The honest residual confound, which I will not paper over:** the pool is all 5-8 band,
 37-62 nodes; the DeepSeek books are 193-632 nodes. Vendor and scale are confounded in the
@@ -282,9 +328,13 @@ But:
    says "You are seeing the whole skeleton for context". The model is not blind to conditions; it
    is merely not handed them in the work order. The one-shot path likewise sends the whole
    skeleton.
-2. **Only 15 of 86 skeletons carry any condition or effect at all** (I counted). For
+2. **Only 15 of 84 skeletons carry any condition or effect at all** (I counted). For
    `the-last-cartage`, the finding's own worked example, the counts are `condition: 0`,
-   `effects: 0`. "Guaranteed by construction" is true of 17% of the catalog, not of the catalog.
+   `effects: 0`. "Guaranteed by construction" is true of **18%** of the catalog, not of the catalog.
+   Corrected 2026-08-30: this read `15 of 86` and `17%`. The denominator is the census's **84**
+   committed shells (`docs/planning/catalog-census.md`); 86 comes from a glob that excludes
+   `.contract.json` and `.lineage.json` but not `.narrative.json`, which is itself a sidecar suffix.
+   The 15 condition/effect count is unaffected.
 
 The defensible residual claim is weaker and still worth acting on: nothing computes the set of
 variable states reachable at a node, so the model would have to do graph analysis over a 300k-char
@@ -376,9 +426,16 @@ band-dependent out-of-band fraction. Medians per band across all 84 skeletons:
 **40/40/20 mix (3-5 / 8-11 / 16+): fill $0.131 + reading-level $0.092 = $0.223 per book.**
 
 Against the synthesis's $1.45 machine cost: that figure is DeepSeek V4 Pro fill ($0.665/delivered
-book measured) plus Sonnet-4.6 moderation ($0.978 estimated). **On the shipped fill backend the
-fill stage is $0.22, not $1.45**, and moderation, not the fill, is the machine-cost centre of
-gravity. If production really routes to DeepSeek V4 Pro, multiply the fill column by ~2.5.
+book measured) plus Sonnet-4.6 moderation ($0.978 estimated), which sum to **$1.643**, not $1.45
+(corrected 2026-08-30; the two components were never reconciled with the headline they were offered
+as a decomposition of, and no other cohort or pricing basis is stated anywhere that would explain
+the $0.193 difference). Read the machine cost as **$1.64** wherever this report compares against it.
+**On the shipped fill backend the fill stage is $0.22, not $1.64**, and moderation, not the fill, is
+the machine-cost centre of gravity. Note that "the shipped fill backend" here means Haiku 4.5, which
+the model-resolution note at the head of this report retires: on `main`'s DeepSeek V4 Pro the fill
+column is the $0.665 measured figure, so the fill stage is roughly 40% of the machine cost rather
+than 13%, and the conclusion that moderation dominates is the one part of this paragraph that does
+not survive the model change.
 
 ### Ranked recoverable saving, my arithmetic
 
@@ -394,8 +451,9 @@ gravity. If production really routes to DeepSeek V4 Pro, multiply the fill colum
 | | **aggressive total (2+3+4+5)** | **~$0.084** | **~$0.46** | |
 
 **Answer to the brief: $0.05-0.08 per book is recoverable in the fill stage, 24-38% of a
-$0.223 fill-stage bill, and 3-6% of the synthesis's claimed $1.45 machine cost.** Eliminating
-the entire fill stage would recover $0.22, i.e. 15% of $1.45. **The fill stage is not where the
+$0.223 fill-stage bill, and 3-5% of the synthesis's claimed machine cost.** Eliminating
+the entire fill stage would recover $0.22, i.e. **14%** of the corrected $1.643 machine cost
+(corrected 2026-08-30 from "15% of $1.45", following the component sum above). **The fill stage is not where the
 money is.** Section 1.4 already says the constraint is human review; section 4.3's
 recommendations optimise a term that is 15% of a term that is 24% of the all-in cost. That is
 the single most important thing this validation has to say about recommendation ranking.
@@ -420,8 +478,13 @@ artifact. You have converted a cheap failure into an expensive one.
 
 1. **Cap the serial budget before raising any timeout.** Reading-level at `_BATCH_SIZE=12` and
    2 passes is ~72 sequential round-trips on a 632-node book, the dominant term in the 1874s.
-   `_BATCH_SIZE` 12 -> 40 plus 1 pass at high bands takes that to ~11 calls. Do this first; it
-   buys ~1000s of headroom for free.
+   `_BATCH_SIZE` 12 -> 40 plus 1 pass at high bands takes that to **14** calls
+   (`ceil(632 x (1 - 0.155) / 40) = ceil(13.35) = 14`; corrected 2026-08-30 from "~11 calls", which
+   does not follow from this report's own 632-node book and `in_band = 0.155`). For the same reason
+   the "~72 sequential round-trips" figure in the sentence above does not reproduce either: the same
+   inputs at `_BATCH_SIZE = 12` over 2 passes give `ceil(534/12) x 2 = 90`. Do this first; even at
+   14 calls it buys most of the headroom, and the timeout ceiling in step 2 must be derived from 14,
+   not 11.
 2. **Derive the per-call timeout from the request**, as C2-4 says: `t = expected_output_tokens /
    tps_floor + overhead`, floored at 120s, ceilinged so that `sum(planned call ceilings) <
    generation_job_timeout_seconds`. Add a test asserting that invariant, otherwise the two

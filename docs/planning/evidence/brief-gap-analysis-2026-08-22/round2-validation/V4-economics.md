@@ -24,7 +24,14 @@ bracket. I broke three of the eight claims, materially corrected three more, and
 ### 0.1 The word-count correction propagates further than the synthesis says
 
 Measured directly over `skeletons/*/*.json` by summing `words=` in every `<<FILL ...>>` directive
-(86 shells, excluding `.contract.json` / `.lineage.json`):
+(**84 shells**; corrected 2026-08-30, this read "86 shells, excluding `.contract.json` /
+`.lineage.json`", which is one exclusion short: `.narrative.json` is itself a sidecar suffix, so the
+two narrative sidecars on `main`, `skeletons/3-5/the-lost-mitten.narrative.json` and
+`skeletons/10-13/the-clocktower-cipher.narrative.json`, were being counted as shells. The
+authoritative population is the census at `docs/planning/catalog-census.md`: 84 shells, of which 81
+declare `production_eligible` and 74 are reachable through an offered cell. Those last two are
+different numbers and are not interchangeable; every count in this report is a **file count over all
+84 shells**, not a production-exposure count):
 
 | | |
 |---|---|
@@ -192,6 +199,13 @@ So:
   it. C5 invented the denominator. **Claim 2 as stated: refuted.**
 - The real subscription is **$5-8**, not $10, and it buys *catalog* access whose marginal cost is
   ~$0 (amortized across all subscribers). Subscription economics are not the constraint.
+  **Historical as of 2026-08-30**: the `$5-8` figure and everything derived from it in this section
+  are pre-#784 analysis. `2b8bc8e1` replaced the revenue anchor with a **$1.99 or $4.99**
+  subscription and made `docs/planning/unit-cost-model.md` the source of truth for cost figures, as
+  the notice at the head of this report says. The refutation of C5's invented $10 denominator stands
+  on its own, since it turns on C5 having no source for $10 at all, but the required-price table
+  below is priced against the retired anchor and must be recomputed against the current one before
+  it is used for any decision.
 - C5 also ignored the **15% store take**, which is written down in the plan.
 
 ### Redone against the real model
@@ -668,7 +682,10 @@ cost never get modelled.
    is reading a broken instrument.
 
 7. **The 40/40/20 band mix is unevidenced and the catalog contradicts it.** The catalog is
-   3-5: 12, 5-8: 9, 8-11: 12, 10-13: 16, 13-16: 19, 16+: 18, **43% of shells are 13-16 or 16+**,
+   3-5: **11**, 5-8: 9, 8-11: 12, 10-13: **15**, 13-16: 19, 16+: 18, **44% of shells are 13-16 or
+   16+** (corrected 2026-08-30: this read `3-5: 12 ... 10-13: 16 ... 43%` and summed to 86, because
+   the two `.narrative.json` sidecars, one in each of those two bands, were counted as shells; the
+   corrected mix sums to the census's 84 and the share becomes `37/84 = 44%`),
    the two most expensive bands, in an app whose vision statement says "for kids". Either the
    catalog is mis-invested relative to demand, or the mix is far more expensive than 40/40/20.
    Nobody checked, and the mix is the multiplier on every headline number.
