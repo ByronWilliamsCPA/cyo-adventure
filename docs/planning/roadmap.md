@@ -578,6 +578,10 @@ orchestrator shipped first against MockProvider; the two deferred criteria (live
 adapters and measured yield) are now closed: the OpenRouter cascade and Ollama leg are
 merged, and a live run recorded **70% yield (14/20)** on 2026-06-22, clearing the 60%
 bar. Tier-2 is the weak leg (3/7) and carries forward as a quality risk.
+**Amended 2026-08-18**: the Ollama leg is retired. Modal replaces it as leg 3, but only
+when `MODAL_BASE_URL` and `MODAL_MODEL` are set; otherwise the cascade runs on its two
+OpenRouter legs and `build_provider` logs `generation.cascade_single_vendor` at WARNING.
+See ADR-003's 2026-08-18 amendment.
 
 ### Objective
 

@@ -54,6 +54,12 @@ FAMILY_LANE_PROVIDERS: Final[frozenset[str]] = frozenset(
     {"mock", "openrouter", "modal"}
 )
 
+# Providers that were once selectable and are now removed. Kept as data rather
+# than deleted outright so build_provider can tell "retired" apart from
+# "misspelled": persisted job rows and historical GenerationJob attribution
+# still carry these names long after the adapter is gone.
+RETIRED_PROVIDERS: Final[frozenset[str]] = frozenset({"ollama"})
+
 # What MockProvider reports when a test does not inject its own usage: a call
 # that happened (so it is counted) but whose token cost is unknown, never zero.
 # Shared as a module constant because a frozen dataclass default has to be a
@@ -607,19 +613,33 @@ def build_modal_leg(settings: Settings) -> GenerationProvider:
         than catching the ``ConfigurationError`` below.
 
     Raises:
-        ConfigurationError: If ``MODAL_BASE_URL`` or ``MODAL_MODEL`` is not
-            configured, or if exactly one of ``MODAL_PROXY_KEY`` and
-            ``MODAL_PROXY_SECRET`` is set: a half-set credential pair is a
+        ConfigurationError: If ``MODAL_BASE_URL`` or ``MODAL_MODEL`` is unset
+            or holds only whitespace, or if exactly one of ``MODAL_PROXY_KEY``
+            and ``MODAL_PROXY_SECRET`` is set: a half-set credential pair is a
             misconfiguration to reject, not a valid no-auth state to guess at.
     """
     # #CRITICAL: security: fail fast (and by name only) when required config is
     # absent, rather than sending a request to an unconfigured/placeholder url.
     # #VERIFY: test_build_provider asserts ConfigurationError names the missing
     # setting and never echoes a value.
-    if not settings.modal_base_url:
+    #
+    # Stripped first, and the stripped values are what get used, so this agrees
+    # exactly with ``Settings.modal_leg_configured``. The two predicates must
+    # not diverge: that one treats a whitespace-only half as absent (a compose
+    # interpolation of an unset variable injects " "), so if this one still read
+    # " " as present, ``generation_provider="modal"`` would build a leg whose
+    # base url is " " and whose reported name is "modal:   " -- unusable on
+    # every call and mis-attributed while failing -- on the very settings for
+    # which the cascade path correctly omits the leg.
+    # #VERIFY: tests/unit/test_worker.py::TestBuildProviderLive::
+    # test_modal_with_whitespace_only_config_raises pins the direct path, and
+    # tests/unit/test_config.py::TestModalLegConfigured pins the predicate.
+    base_url = (settings.modal_base_url or "").strip()
+    model = (settings.modal_model or "").strip()
+    if not base_url:
         msg = "MODAL_BASE_URL is not set; required for generation_provider=modal"
         raise ConfigurationError(msg)
-    if not settings.modal_model:
+    if not model:
         msg = "MODAL_MODEL is not set; required for generation_provider=modal"
         raise ConfigurationError(msg)
 
@@ -633,8 +653,8 @@ def build_modal_leg(settings: Settings) -> GenerationProvider:
         raise ConfigurationError(msg)
 
     return ModalProvider(
-        base_url=settings.modal_base_url,
-        model=settings.modal_model,
+        base_url=base_url,
+        model=model,
         proxy_key=settings.modal_proxy_key,
         proxy_secret=settings.modal_proxy_secret,
         timeout_seconds=settings.modal_timeout_seconds,
@@ -704,9 +724,42 @@ def build_provider(
     Raises:
         ConfigurationError: For a resolved provider outside the known set,
             when a live provider's required credential is missing, or when
-            the resolved provider is not permitted on ``lane``.
+            the resolved provider is not permitted on ``lane``. A provider
+            named in :data:`RETIRED_PROVIDERS` gets its own message naming the
+            retirement, because that case reaches here by a different route
+            than a typo (see the branch below).
     """
     provider = provider_override or settings.generation_provider
+
+    # #CRITICAL: data-integrity: a retired provider cannot reach this function
+    # through settings (the Literal rejects it) or through a new request (the
+    # allowlist no longer carries it), but it CAN reach it through a job row
+    # written before the retirement deployed: process_generation_job reads
+    # authoring_metadata["provider"] verbatim and passes it as
+    # provider_override. Those rows outlive the deploy, and the reclaim sweep
+    # re-enqueues stranded ones, so the window is not just "jobs in flight
+    # during the restart".
+    #
+    # This is deliberately still a raise, not a silent fall back to
+    # settings.generation_provider. Substituting a different backend would
+    # bill a family's story to a provider the admin did not choose and would
+    # make the job's own recorded provider attribution false, which matters
+    # because reviewer independence is computed from it
+    # (moderation/review_provider.py::build_review_provider). Failing the job
+    # loudly is recoverable by re-requesting; a silently mis-attributed story
+    # is not detectable after the fact. What this branch buys is a message an
+    # operator can act on instead of a bare "unknown generation_provider".
+    # #VERIFY: tests/unit/test_worker.py::
+    # test_retired_provider_override_raises_a_named_error.
+    if provider in RETIRED_PROVIDERS:
+        msg = (
+            f"generation provider '{provider}' is retired and can no longer be "
+            "built. This job was almost certainly enqueued before the "
+            "retirement deployed and still carries the old provider in its "
+            "authoring_metadata. Fail or re-request the job; see "
+            "docs/operations/runbook.md section 5.1."
+        )
+        raise ConfigurationError(msg)
 
     # #CRITICAL: security: enforced on the RESOLVED provider, so the override
     # and the global default are both covered by one check, and enforced before

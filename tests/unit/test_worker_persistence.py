@@ -453,6 +453,46 @@ async def test_interrupted_job_records_the_real_cause(
 
 @pytest.mark.unit
 @pytest.mark.asyncio
+async def test_true_interrupt_keeps_the_interrupted_label(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """A BaseException-but-not-Exception unwinding keeps the "interrupted" label.
+
+    The companion to test_interrupted_job_records_the_real_cause, and the only
+    test that discriminates the ``isinstance(in_flight, Exception)`` narrowing
+    in the finally guard: that test raises a RuntimeError, so it exercises only
+    the True arm and passes just as well with the narrowing deleted.
+
+    KeyboardInterrupt, SystemExit and asyncio.CancelledError are what the
+    "interrupted" label was always meant to name -- the process is going away,
+    not the job failing on its own merits -- so recording their message as the
+    job's cause would put an operator-facing failure reason on a row that was
+    simply killed. ``_record_failure`` accepts BaseException, so nothing but
+    this narrowing keeps them apart.
+    """
+    job, concept = _job_and_concept()
+    session = _FakeSession(job=job, concept=concept)
+    provider = MockProvider(responses=[])
+
+    def _halt(*_args: object, **_kwargs: object) -> ConceptBrief:
+        raise KeyboardInterrupt("worker received SIGINT")
+
+    monkeypatch.setattr(ConceptBrief, "model_validate", _halt)
+    job_id = uuid.uuid4()
+    session_factory = _factory_for(session)
+
+    with pytest.raises(KeyboardInterrupt):
+        await run_generation_job(
+            job_id, provider=provider, session_factory=session_factory
+        )
+
+    assert job.status == "failed"
+    # NOT "worker received SIGINT": the narrowing is what keeps this generic.
+    assert job.error == "interrupted"
+
+
+@pytest.mark.unit
+@pytest.mark.asyncio
 async def test_late_interrupt_during_persist_records_failed_not_passed(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:

@@ -161,6 +161,8 @@ class TestBuildProviderLive:
             openrouter_api_key="test-key",
             modal_base_url="https://example--cyo.modal.run/v1",
             modal_model="google/gemma-4-26b-a4b-it",
+            modal_proxy_key=None,
+            modal_proxy_secret=None,
         )
         provider = build_provider(settings)
         assert isinstance(provider, FallbackProvider)
@@ -247,6 +249,8 @@ class TestBuildProviderLive:
             openrouter_api_key="test-key",
             modal_base_url="https://example--cyo.modal.run/v1",
             modal_model="google/gemma-4-26b-a4b-it",
+            modal_proxy_key=None,
+            modal_proxy_secret=None,
         )
         with patch("cyo_adventure.generation.provider.logger") as mock_logger:
             build_provider(settings)
@@ -290,6 +294,52 @@ class TestBuildProviderLive:
         )
         with pytest.raises(ConfigurationError, match="MODAL_MODEL"):
             build_provider(settings)
+
+    @pytest.mark.parametrize(
+        ("base_url", "model", "expected"),
+        [
+            ("   ", "google/gemma-4-26b-a4b-it", "MODAL_BASE_URL"),
+            ("https://example--cyo-standard.modal.run/v1", "  ", "MODAL_MODEL"),
+            ("\t", "\n", "MODAL_BASE_URL"),
+        ],
+    )
+    def test_modal_with_whitespace_only_config_raises(
+        self, base_url: str, model: str, expected: str
+    ) -> None:
+        """Whitespace-only config is absent on the direct path too, not just the cascade.
+
+        ``Settings.modal_leg_configured`` treats a whitespace-only half as
+        absent so a compose interpolation of an unset variable
+        (``${MODAL_MODEL:- }``) omits the cascade leg instead of poisoning it.
+        This adapter has to agree: when it did not,
+        ``generation_provider="modal"`` built a ModalProvider whose base url was
+        ``"   "`` and whose reported name was ``"modal:   "``, so the leg failed
+        on every call and mis-attributed itself while doing so, while the
+        cascade path correctly degraded on the very same settings.
+        """
+        settings = Settings(  # type: ignore[call-arg]
+            generation_provider="modal", modal_base_url=base_url, modal_model=model
+        )
+        assert settings.modal_leg_configured is False
+        with pytest.raises(ConfigurationError, match=expected):
+            build_provider(settings)
+
+    def test_modal_config_is_stripped_before_use(self) -> None:
+        """Surrounding whitespace never reaches the HTTP client or the leg's name.
+
+        A padded value is a dotenv/compose artifact, never an intent, and it
+        would otherwise ride into the request url and into the provider
+        attribution that reviewer independence is computed from.
+        """
+        settings = Settings(  # type: ignore[call-arg]
+            generation_provider="modal",
+            modal_base_url="  https://example--cyo-standard.modal.run/v1  ",
+            modal_model="  google/gemma-4-26b-a4b-it\t",
+        )
+        provider = build_provider(settings)
+        assert isinstance(provider, ModalProvider)
+        assert provider.model == "google/gemma-4-26b-a4b-it"
+        assert provider.name == "modal:google/gemma-4-26b-a4b-it"
 
     def test_modal_with_config_returns_bare_leg(self) -> None:
         """modal with both required settings returns a bare ModalProvider (no cascade)."""
@@ -389,6 +439,52 @@ class TestBuildProviderOverrides:
         )
         assert isinstance(provider, AnthropicProvider)
         assert provider.model == "claude-opus-4-8"
+
+    def test_retired_provider_override_raises_a_named_error(self) -> None:
+        """A job row still naming a retired provider fails with an actionable message.
+
+        This is the one route by which "ollama" can still reach build_provider:
+        a job enqueued before the retirement deployed, whose
+        authoring_metadata the worker passes through verbatim. The generic
+        unknown-provider message would not tell an operator that the cause is a
+        stale row rather than a typo.
+        """
+        settings = Settings()  # type: ignore[call-arg]
+        with pytest.raises(ConfigurationError) as exc_info:
+            build_provider(settings, provider_override="ollama")
+        message = str(exc_info.value)
+        assert "retired" in message
+        assert "ollama" in message
+        # Must not be mistaken for the typo path.
+        assert "unknown generation_provider" not in message
+
+    def test_a_typo_never_gets_the_retirement_message(self) -> None:
+        """A genuine typo is not reported as a retirement, on either lane.
+
+        The invariant is the discrimination, not one exact string: on the
+        family lane FAMILY_LANE_PROVIDERS rejects an unrecognised name before
+        the unknown-provider branch is reached, so pinning "unknown
+        generation_provider" here would assert the ordering of a guard this
+        test is not about. What must hold on every lane is that a misspelling
+        is never attributed to a retirement.
+        """
+        settings = Settings()  # type: ignore[call-arg]
+        for lane in ("family", "admin"):
+            with pytest.raises(ConfigurationError) as exc_info:
+                build_provider(settings, provider_override="ollamaa", lane=lane)
+            assert "retired" not in str(exc_info.value)
+
+    def test_a_typo_on_the_admin_lane_keeps_the_generic_error(self) -> None:
+        """Past the lane guard, an unrecognised name still names itself.
+
+        The admin lane carries no allowlist, so this is the one path that
+        reaches build_provider's own unknown-provider branch and can assert
+        its message directly.
+        """
+        settings = Settings()  # type: ignore[call-arg]
+        with pytest.raises(ConfigurationError) as exc_info:
+            build_provider(settings, provider_override="ollamaa", lane="admin")
+        assert "unknown generation_provider" in str(exc_info.value)
 
     def test_unknown_provider_override_raises_configuration_error(self) -> None:
         """A provider_override outside the known branches raises, naming the value."""

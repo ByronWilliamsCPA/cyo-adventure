@@ -141,6 +141,8 @@ class TestModalLegConfigured:
         settings = Settings(
             modal_base_url="https://example--cyo.modal.run/v1",
             modal_model="google/gemma-4-26b-a4b-it",
+            modal_proxy_key=None,
+            modal_proxy_secret=None,
         )
         assert settings.modal_leg_configured is True
 
@@ -153,6 +155,12 @@ class TestModalLegConfigured:
             (None, "google/gemma-4-26b-a4b-it"),
             ("", "google/gemma-4-26b-a4b-it"),
             ("https://example--cyo.modal.run/v1", ""),
+            # Whitespace-only reads as absent: a compose interpolation of an
+            # unset variable injects " " rather than leaving it unset, and a
+            # truthy-but-unusable value would put a broken leg in the cascade.
+            ("   ", "google/gemma-4-26b-a4b-it"),
+            ("https://example--cyo.modal.run/v1", "  "),
+            ("\t", "\n"),
         ],
     )
     def test_missing_or_empty_half_is_not_configured(
@@ -166,7 +174,12 @@ class TestModalLegConfigured:
         """
         from cyo_adventure.core.config import Settings
 
-        settings = Settings(modal_base_url=base_url, modal_model=model)
+        settings = Settings(
+            modal_base_url=base_url,
+            modal_model=model,
+            modal_proxy_key=None,
+            modal_proxy_secret=None,
+        )
         assert settings.modal_leg_configured is False
 
 
