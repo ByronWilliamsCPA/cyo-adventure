@@ -11,6 +11,7 @@ import { usePageTitle } from '../hooks/usePageTitle'
 import { makeCoverApi } from '../guardian/coverApi'
 import { makeRescreenApi, type BookVerdictView } from './rescreenApi'
 import { FlagBadge } from '../guardian/FlagBadge'
+import { verdictTone } from '../guardian/verdictTone'
 import {
   affectedPassagesLabel,
   distinctFindingsLabel,
@@ -583,6 +584,37 @@ function ReviewDetailPageInner() {
     if (finding.node_id !== null) findingNodeIds.add(finding.node_id)
     for (const nodeId of finding.node_ids ?? []) findingNodeIds.add(nodeId)
   }
+  // `RS-A6`: every finding that names a node, keyed by node, so the edit
+  // dialog can show a reviewer WHAT is wrong with the prose it is asking them
+  // to rewrite. Both sources are unioned for the same reason findingNodeIds
+  // unions them: a low advisory is kept out of the fan-out by design
+  // (`RS-A1`), so a node named only by one is absent from flagged_passages,
+  // and a dialog built on that source alone would show "nothing recorded" for
+  // a passage the gate did comment on.
+  const findingsByNodeId = new Map<string, FindingView[]>()
+  const noteFinding = (nodeId: string, finding: FindingView) => {
+    const existing = findingsByNodeId.get(nodeId)
+    if (existing === undefined) {
+      findingsByNodeId.set(nodeId, [finding])
+      return
+    }
+    // The two sources overlap by construction (a fanned-out finding is in
+    // both), so dedupe on the same identity the triage store keys on.
+    const key = findingKey(finding)
+    if (!existing.some((seen) => findingKey(seen) === key)) existing.push(finding)
+  }
+  for (const passage of surface.flagged_passages) {
+    for (const finding of passage.findings) noteFinding(passage.node_id, finding)
+  }
+  for (const finding of mergedFindings) {
+    const targets =
+      finding.node_ids && finding.node_ids.length > 0
+        ? finding.node_ids
+        : finding.node_id !== null && finding.node_id !== undefined
+          ? [finding.node_id]
+          : []
+    for (const nodeId of targets) noteFinding(nodeId, finding)
+  }
   const sample = buildReviewSample(
     [...readThrough.reachable, ...readThrough.unreachable],
     findingNodeIds,
@@ -635,6 +667,10 @@ function ReviewDetailPageInner() {
       ? surface.blob.title
       : surface.storybook_id
   const reasonValid = reason.trim().length >= 1 && reason.trim().length <= 2000
+  // `RS-A6`: the findings on the passage the edit dialog is open over. Empty
+  // is a real case, not a bug: the `RS-A4` spot check offers an edit on a
+  // passage nothing flagged.
+  const editFindings = editNodeId === null ? [] : (findingsByNodeId.get(editNodeId) ?? [])
 
   return (
     <section className="review-detail">
@@ -1607,6 +1643,60 @@ function ReviewDetailPageInner() {
               </ul>
             </div>
           ) : null}
+          {/*
+            `RS-A6`: the reviewer is being asked to rewrite prose, so the
+            dialog states what is wrong with it and what band the rewrite has
+            to hold. Before this, the dialog was a bare textarea: a reviewer
+            who reached it from the ranked list had to remember the finding,
+            and one who reached it from the spot check had never seen one.
+            #VERIFY: ReviewDetailPage.test.tsx "shows the findings that name
+            the passage being edited" and "says so when no finding names the
+            passage being edited".
+          */}
+          <div className="review-edit__context">
+            <h3 className="review-edit__context-heading">What the gate said about this passage</h3>
+            {editFindings.length > 0 ? (
+              <ul className="review-findings review-edit__findings">
+                {editFindings.map((finding) => (
+                  <li key={findingKey(finding)} className="review-finding">
+                    <FlagBadge tone={verdictTone(finding.verdict)} />
+                    {finding.severity ? (
+                      <span
+                        className={`review-finding__severity review-finding__severity--${finding.severity}`}
+                      >
+                        {finding.severity}
+                      </span>
+                    ) : null}
+                    <span className="review-finding__category">
+                      {finding.concern ?? finding.category}
+                    </span>
+                    {typeof finding.score === 'number' ? (
+                      <span className="review-finding__score">{finding.score.toFixed(2)}</span>
+                    ) : null}
+                    <span className="review-finding__message">{finding.message}</span>
+                  </li>
+                ))}
+              </ul>
+            ) : (
+              <p className="cyo-text-muted">
+                No finding names this passage. You are editing it on your own reading, not to clear
+                a recorded concern.
+              </p>
+            )}
+            {bandContext.ageBand !== null || bandContext.readingLevel !== null ? (
+              <p className="review-edit__band cyo-text-muted">
+                Write for{' '}
+                {bandContext.ageBand !== null
+                  ? ageBandLabel(bandContext.ageBand)
+                  : 'the target band'}
+                {bandContext.readingLevel !== null
+                  ? `, reading level ${bandContext.readingLevel}`
+                  : ''}
+                . Saving re-runs the deterministic gate, which rejects an edit that leaves the
+                band's reading-level or length envelope.
+              </p>
+            ) : null}
+          </div>
           <label className="review-detail__edit-body">
             Passage text
             <textarea

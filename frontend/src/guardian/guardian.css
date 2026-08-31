@@ -958,6 +958,30 @@
   margin: 0 0 0.5rem;
 }
 
+/* `RS-A6`: the edit dialog's context block. A reviewer must not be asked to
+   rewrite prose without being shown what is wrong with it, so this sits ABOVE
+   the textarea rather than beside it: on a narrow viewport anything beside the
+   field is what gets pushed below the fold. Separated from the field by a rule
+   so the two read as "the finding" and "your rewrite", not one form. */
+.review-edit__context {
+  margin: 0 0 0.75rem;
+  padding: 0 0 0.75rem;
+  border-bottom: 1px solid var(--color-border-soft, rgb(44 26 14 / 12%));
+}
+
+.review-edit__context-heading {
+  margin: 0 0 0.5rem;
+  font-size: 1rem;
+}
+
+.review-edit__findings {
+  margin: 0 0 0.5rem;
+}
+
+.review-edit__band {
+  margin: 0;
+}
+
 /* What the automated gate measured (R-2): the numbers behind the routing
    decision, read alongside the findings they explain. */
 .review-measures__list {

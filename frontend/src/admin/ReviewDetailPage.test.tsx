@@ -2571,4 +2571,131 @@ describe('ReviewDetailPage', () => {
       expect(screen.queryByText(/marked reviewed in this browser/i)).not.toBeInTheDocument()
     })
   })
+
+  describe('edit-path context (RS-A6)', () => {
+    async function openEditDialog(user: ReturnType<typeof userEvent.setup>, nodeId: string) {
+      renderAt('s1')
+      const editButtons = await screen.findAllByRole('button', { name: 'Edit passage' })
+      for (const button of editButtons) {
+        await user.click(button)
+        const dialog = screen.queryByRole('dialog', { name: `Edit passage ${nodeId}` })
+        if (dialog !== null) return dialog
+        await user.click(screen.getByRole('button', { name: 'Cancel' }))
+      }
+      throw new Error(`no Edit passage control opened a dialog for ${nodeId}`)
+    }
+
+    it('shows the findings that name the passage being edited', async () => {
+      const user = userEvent.setup()
+      const dialog = await openEditDialog(user, 'n1')
+      // SURFACE flags n1 with "possibly scary". Scoped to the dialog: the page
+      // renders the same finding in its own list, so an unscoped query would
+      // pass with the dialog showing nothing at all.
+      expect(within(dialog).getByText('possibly scary')).toBeInTheDocument()
+      expect(within(dialog).getByText('safety')).toBeInTheDocument()
+      expect(
+        within(dialog).getByRole('heading', { name: /what the gate said about this passage/i })
+      ).toBeInTheDocument()
+    })
+
+    it('says so when no finding names the passage being edited', async () => {
+      // Reachable from the RS-A4 spot check, which offers passages nothing
+      // flagged. An empty findings list must read as "nothing was recorded",
+      // never as a section that failed to load.
+      const user = userEvent.setup()
+      const dialog = await openEditDialog(user, 'n2')
+      expect(within(dialog).getByText(/no finding names this passage/i)).toBeInTheDocument()
+      expect(within(dialog).queryByText('possibly scary')).not.toBeInTheDocument()
+    })
+
+    it('shows a low advisory that names the passage, though it is not fanned out', async () => {
+      // `RS-A1` deliberately keeps low advisories out of flagged_passages, so
+      // an edit dialog sourced from the fan-out alone would tell a reviewer
+      // nothing was recorded about a passage the gate did comment on.
+      const user = userEvent.setup()
+      mockGet.mockResolvedValue({
+        data: {
+          ...SURFACE,
+          flagged_passages: [],
+          low_advisory_findings: [
+            {
+              stage: 1,
+              source: 'llm_safety',
+              category: 'safety',
+              node_id: 'n2',
+              verdict: 'advisory',
+              score: 0.06,
+              message: 'a faint gloom in the fork',
+              severity: 'low',
+              node_ids: ['n2'],
+              structural: false,
+              concern: 'scariness',
+            },
+          ],
+        },
+      })
+      const dialog = await openEditDialog(user, 'n2')
+      expect(within(dialog).getByText('a faint gloom in the fork')).toBeInTheDocument()
+      expect(within(dialog).getByText('scariness')).toBeInTheDocument()
+      expect(within(dialog).getByText('0.06')).toBeInTheDocument()
+    })
+
+    it('lists a finding once when both populations carry it', async () => {
+      // A node-bearing finding is in the fan-out AND in ranked_findings by
+      // construction. Without the dedupe, every ranked finding would render
+      // twice in this dialog.
+      const user = userEvent.setup()
+      const finding = {
+        stage: 1,
+        source: 'llm_safety',
+        category: 'safety',
+        node_id: 'n1',
+        verdict: 'block',
+        score: null,
+        message: 'graphic violence',
+        severity: 'high',
+        node_ids: ['n1'],
+        structural: false,
+        concern: 'violence',
+      }
+      mockGet.mockResolvedValue({
+        data: {
+          ...SURFACE,
+          flagged_passages: [
+            { node_id: 'n1', prose: 'A dark cave yawned ahead.', findings: [finding] },
+          ],
+          ranked_findings: [finding],
+        },
+      })
+      const dialog = await openEditDialog(user, 'n1')
+      expect(within(dialog).getAllByText('graphic violence')).toHaveLength(1)
+    })
+
+    it('states the band the rewrite has to hold', async () => {
+      const user = userEvent.setup()
+      mockGet.mockResolvedValue({
+        data: {
+          ...SURFACE,
+          blob: {
+            ...SURFACE.blob,
+            metadata: { age_band: '9-12', reading_level: 'grade_4' },
+          },
+        },
+      })
+      const dialog = await openEditDialog(user, 'n1')
+      const band = within(dialog).getByText(/Write for/i)
+      expect(band).toHaveTextContent(/9-12/)
+      expect(band).toHaveTextContent(/reading level grade_4/)
+      // And that the gate, not this dialog, is what enforces it.
+      expect(band).toHaveTextContent(/re-runs the deterministic gate/i)
+    })
+
+    it('omits the band line when the blob records no band', async () => {
+      // Rather than printing "the target band, reading level undefined": an
+      // invented target is worse than an absent one.
+      const user = userEvent.setup()
+      const dialog = await openEditDialog(user, 'n1')
+      expect(within(dialog).queryByText(/Write for/i)).not.toBeInTheDocument()
+    })
+  })
 })
