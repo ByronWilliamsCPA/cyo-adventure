@@ -918,6 +918,23 @@ describe('ReviewDetailPage', () => {
     expect(screen.getByRole('button', { name: /Approve cover/i })).toBeEnabled()
   })
 
+  it('offers the Approve action without an image when a pending cover has no URL yet', async () => {
+    // #EDGE: external resources: R2 can be unconfigured or briefly unavailable
+    // between the job finishing and a presigned URL being issued, so
+    // cover_status can reach "pending_review" while cover_url is still null.
+    // The preview must not render a broken <img src="">; it renders the
+    // Approve action alone so the reviewer can still act on record.
+    mockGet.mockImplementation((url: string) =>
+      typeof url === 'string' && url.endsWith('/cover')
+        ? Promise.resolve({ data: { cover_status: 'pending_review', cover_url: null } })
+        : Promise.resolve({ data: SURFACE })
+    )
+    renderAt('s1')
+    const approveButton = await screen.findByRole('button', { name: /Approve cover/i })
+    expect(approveButton).toBeEnabled()
+    expect(screen.queryByRole('img')).not.toBeInTheDocument()
+  })
+
   it('approves a pending cover and reflects the approved state', async () => {
     const user = userEvent.setup()
     mockGet.mockImplementation((url: string) =>

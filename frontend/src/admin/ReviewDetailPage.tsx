@@ -561,7 +561,8 @@ function ReviewDetailPageInner() {
         checks cover_status, never the book's lifecycle status), so it must be
         discoverable on its own rather than inferred from the action bar.
         #VERIFY: ReviewDetailPage.test.tsx renders-pending-cover-with-approve,
-        approves-a-pending-cover, and surfaces-a-cover-approval-error tests.
+        approves-a-pending-cover, surfaces-a-cover-approval-error, and
+        offers-the-approve-action-without-an-image tests.
       */}
       {coverStatus === 'pending_review' || coverStatus === 'ready' ? (
         <div className="review-cover-preview">
