@@ -232,6 +232,18 @@ that passes both ways is not evidence.
 **Where**: `frontend/src/admin/ReviewDetailPage.tsx`, section order at `:642` (`Flagged passages`) and `:698`
 (`Ranked findings`).
 
+**Interaction with PR #795** (`fix/cover-approval-placement`, open at time of writing). That PR moves the
+cover-approval block from the foot of the page to directly under the moderation verdict strip, on the same
+diagnosis as this task: a decision placed below 250 screens of prose is never found. Two consequences:
+
+- Its new DOM-order test asserts only that the cover block falls **somewhere between** `.review-summary` and
+  `Full story`, via two `compareDocumentPosition` checks. It does not pin the block immediately after the verdict
+  strip, so this task can place `Ranked findings` above the cover block and the test still passes. Keep it that
+  way; do not tighten that test into an adjacency assertion, because page order is this task's to decide.
+- PR #795 places the cover block **above** the `classifier_degraded` `role="alert"` banner. That inverts the
+  right priority: a degraded safety classifier outranks a cover approval. Whichever change lands second must
+  leave the order as verdict strip, then safety banners, then cover approval, then findings triage.
+
 Move `Ranked findings` above `Flagged passages`, and make each ranked finding the entry point to its own
 affected passages rather than a sibling of a flat list. `Ranked findings` is **conditionally rendered** today and
 disappears entirely on the four books whose findings are all low-severity advisories, meaning the most
@@ -409,6 +421,33 @@ Two consequences to state in the endpoint's own docstring rather than discover l
 The gap the `remoderate.py` docstring already names as "a real gap and a real feature". Needed for ruling 5 to
 be usable: after a threshold change, an admin must be able to see which published books now carry a block
 without opening each one. Pairs with `RS-C1`; a recall action with no way to find recall candidates is inert.
+
+### `RS-C3` Orphaned pending cover approvals
+
+The same structural gap as `RS-C2`, discovered while reviewing PR #795, and already live in production.
+
+Cover state on the latest version of all 31 books, measured 2026-08-31:
+
+| Status | `none` | `failed` | `pending_review`, URL present, 0 approvals |
+|---|---|---|---|
+| `in_review` (13) | 12 | 1 | **0** |
+| `published` (13) | 9 | 2 | **2** |
+| `archived` (5) | 4 | 0 | **1** |
+
+Two consequences, and the second is the one that matters:
+
+- **The cover block renders nothing for any book in the review queue.** Zero of the 13 `in_review` books have a
+  cover in `pending_review`. Repositioning it improves the discoverability of something that never appears there,
+  which is why PR #795 is low-urgency rather than wrong.
+- **Two published, readable books have an unapproved cover.** Only `cover_status == "ready"` reaches a child's
+  library card (`covers/service.py::approve_cover`, `#CRITICAL`), so those two books show kids no cover while an
+  approval waits that nothing surfaces. The admin queue lists only `in_review`, so no placement change inside
+  `/admin/review/:id` can help: nobody opens that page for a published book.
+
+Fold into `RS-C2`'s surface rather than building a second one. The generalisation worth stating in that
+surface's design: **any decision attached to a book the queue no longer lists is invisible**, whether it is a
+fresh moderation block or a pending cover, and the fix is one list of outstanding decisions across all
+statuses, not per-decision placement tuning.
 
 ## 9. Sequencing
 
