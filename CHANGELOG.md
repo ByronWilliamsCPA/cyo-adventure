@@ -7,6 +7,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 <!-- version list -->
 
+## [0.87.0] - 2026-08-31
+
+### Bug Fixes
+
+- **generation**: Reject retired providers by name
+  ([#788](https://github.com/ByronWilliamsCPA/cyo-adventure/pull/788),
+  [`494234d`](https://github.com/ByronWilliamsCPA/cyo-adventure/commit/494234df1fe3346d22e3fa553416fbbd12498cc2))
+
+### Features
+
+- **planning**: Price a book from billed prose-fill records, not skeleton authoring
+  ([#784](https://github.com/ByronWilliamsCPA/cyo-adventure/pull/784),
+  [`2b8bc8e`](https://github.com/ByronWilliamsCPA/cyo-adventure/commit/2b8bc8e140c78ba82c863e1d7338f23bc7074865))
+
+
 ## [0.86.0] - 2026-08-30
 
 ### Bug Fixes
@@ -3668,6 +3683,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Safety dependency vulnerability scanning
 - Pre-commit hooks for security validation
 
+[0.87.0]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.86.0...v0.87.0
 [0.86.0]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.85.0...v0.86.0
 [0.85.0]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.84.0...v0.85.0
 [0.84.0]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.83.0...v0.84.0
