@@ -544,12 +544,15 @@ function ReviewDetailPageInner() {
       {/*
         A16 (capability-register.md), H2 human-approval half
         (security-hardening-plan-2026-07.md): a generated cover stops at
-        cover_status "pending_review" and carries no presigned URL until an
-        admin approves it here. Rendered whenever the backend hands back a
-        URL for either "pending_review" or "ready" (api/covers.py::_cover_url
-        widens the presign gate for this admin-only surface); a
-        pending_review cover with no URL yet (R2 unconfigured) shows the
-        status text below without an image rather than a broken <img>.
+        cover_status "pending_review" and is withheld from CHILDREN until an
+        admin approves it here. This admin surface is deliberately not
+        withheld: api/covers.py::_cover_url presigns "pending_review" as well
+        as "ready", because the reviewer has to see the image to judge it, and
+        every endpoint reaching that helper is behind _require_admin. A
+        pending_review cover with no URL yet (R2 unconfigured) renders the
+        Approve action ALONE, with no image and no status line, rather than a
+        broken <img>: the "Cover approved." line is the else arm of the
+        pending_review branch and never renders while a cover is pending.
 
         Placed directly under the moderation verdict strip, NOT at the foot of
         the page: a pending cover is an outstanding approval action, and below
@@ -561,11 +564,15 @@ function ReviewDetailPageInner() {
         checks cover_status, never the book's lifecycle status), so it must be
         discoverable on its own rather than inferred from the action bar.
         #VERIFY: ReviewDetailPage.test.tsx renders-pending-cover-with-approve,
-        approves-a-pending-cover, surfaces-a-cover-approval-error, and
-        offers-the-approve-action-without-an-image tests.
+        approves-a-pending-cover, surfaces-a-cover-approval-error,
+        offers-the-approve-action-without-an-image, and
+        renders-the-cover-approval-above-the-fold (which asserts this DOM
+        order, so a refactor that pushes the block back down the page fails a
+        test instead of shipping silently) tests.
       */}
       {coverStatus === 'pending_review' || coverStatus === 'ready' ? (
         <div className="review-cover-preview">
+          <h2>Generated cover</h2>
           {coverUrl ? (
             <img
               src={coverUrl}

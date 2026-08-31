@@ -1093,8 +1093,11 @@
   margin: 0;
 }
 
-/* A16 (capability-register.md): the pending/approved cover review surface
-   rendered just above the sticky action bar. */
+/* A16 (capability-register.md): the pending/approved cover review surface,
+   rendered directly under the .review-summary moderation verdict strip so an
+   outstanding cover decision is visible without scrolling the story text. No
+   rule here is position-dependent, so this comment is documentation only; the
+   placement itself is asserted in ReviewDetailPage.test.tsx. */
 .review-cover-preview {
   display: flex;
   flex-direction: column;

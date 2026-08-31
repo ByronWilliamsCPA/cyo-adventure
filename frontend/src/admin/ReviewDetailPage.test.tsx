@@ -924,6 +924,10 @@ describe('ReviewDetailPage', () => {
     // cover_status can reach "pending_review" while cover_url is still null.
     // The preview must not render a broken <img src="">; it renders the
     // Approve action alone so the reviewer can still act on record.
+    // #VERIFY: this test. It asserts the Approve action is present and enabled
+    // while no cover image is rendered, so deleting the coverUrl guard (which
+    // would emit an <img> with no src but a real alt, still role="img") fails
+    // here.
     mockGet.mockImplementation((url: string) =>
       typeof url === 'string' && url.endsWith('/cover')
         ? Promise.resolve({ data: { cover_status: 'pending_review', cover_url: null } })
@@ -932,7 +936,38 @@ describe('ReviewDetailPage', () => {
     renderAt('s1')
     const approveButton = await screen.findByRole('button', { name: /Approve cover/i })
     expect(approveButton).toBeEnabled()
-    expect(screen.queryByRole('img')).not.toBeInTheDocument()
+    expect(screen.queryByRole('img', { name: /Generated cover for/i })).not.toBeInTheDocument()
+  })
+
+  it('renders the cover approval above the fold, under the moderation verdict strip', async () => {
+    // #ASSUME: UI state: the whole point of this block's placement is that a
+    // reviewer sees an outstanding cover decision without scrolling past every
+    // passage and the full story text. A code comment cannot enforce that, so
+    // assert DOM order directly: the block must follow the moderation verdict
+    // strip and precede the "Full story" section it used to sit below.
+    // #VERIFY: this test.
+    mockGet.mockImplementation((url: string) =>
+      typeof url === 'string' && url.endsWith('/cover')
+        ? Promise.resolve({
+            data: { cover_status: 'pending_review', cover_url: 'https://r2.example/c.png' },
+          })
+        : Promise.resolve({ data: SURFACE })
+    )
+    const { container } = renderAt('s1')
+    await screen.findByRole('button', { name: /Approve cover/i })
+
+    const summary = container.querySelector('.review-summary')
+    const cover = container.querySelector('.review-cover-preview')
+    expect(summary).not.toBeNull()
+    expect(cover).not.toBeNull()
+    if (!summary || !cover) return
+
+    const fullStory = screen.getByRole('heading', { name: /Full story/i })
+    const following = Node.DOCUMENT_POSITION_FOLLOWING
+
+    // strip -> cover -> full story, in that order
+    expect(summary.compareDocumentPosition(cover) & following).toBeTruthy()
+    expect(cover.compareDocumentPosition(fullStory) & following).toBeTruthy()
   })
 
   it('approves a pending cover and reflects the approved state', async () => {
