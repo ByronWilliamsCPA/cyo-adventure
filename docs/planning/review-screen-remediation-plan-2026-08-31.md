@@ -232,17 +232,21 @@ that passes both ways is not evidence.
 **Where**: `frontend/src/admin/ReviewDetailPage.tsx`, section order at `:642` (`Flagged passages`) and `:698`
 (`Ranked findings`).
 
-**Interaction with PR #795** (`fix/cover-approval-placement`, open at time of writing). That PR moves the
-cover-approval block from the foot of the page to directly under the moderation verdict strip, on the same
-diagnosis as this task: a decision placed below 250 screens of prose is never found. Two consequences:
+**Interaction with PR #795** (`fix/cover-approval-placement`, merged 2026-08-31 with one ordering change made
+during review). That PR moves the cover-approval block from the foot of the page to just below the moderation
+verdict strip, on the same diagnosis as this task: a decision placed below 250 screens of prose is never found.
+Two consequences for this task:
 
-- Its new DOM-order test asserts only that the cover block falls **somewhere between** `.review-summary` and
-  `Full story`, via two `compareDocumentPosition` checks. It does not pin the block immediately after the verdict
+- Its DOM-order test asserts that the cover block falls **somewhere between** `.review-summary` and `Full story`,
+  plus that it follows the `classifier_degraded` alert. It does not pin the block immediately after the verdict
   strip, so this task can place `Ranked findings` above the cover block and the test still passes. Keep it that
-  way; do not tighten that test into an adjacency assertion, because page order is this task's to decide.
-- PR #795 places the cover block **above** the `classifier_degraded` `role="alert"` banner. That inverts the
-  right priority: a degraded safety classifier outranks a cover approval. Whichever change lands second must
-  leave the order as verdict strip, then safety banners, then cover approval, then findings triage.
+  way; do not tighten those checks into adjacency assertions, because page order is this task's to decide. The
+  one ordering the test does pin, safety alert before cover, is settled and must survive this task.
+- As opened, PR #795 placed the cover block **above** the `classifier_degraded` `role="alert"` banner, which
+  inverted the right priority: a degraded safety classifier outranks a cover approval. That was corrected before
+  merge, in the PR's second commit, and the third assertion above is what keeps it corrected. The page order
+  is verdict strip, then safety alerts, then cover approval, then findings triage; this task inserts
+  `Ranked findings` into the last slot and must not disturb the first three.
 
 Move `Ranked findings` above `Flagged passages`, and make each ranked finding the entry point to its own
 affected passages rather than a sibling of a flat list. `Ranked findings` is **conditionally rendered** today and
