@@ -939,19 +939,41 @@ describe('ReviewDetailPage', () => {
     expect(screen.queryByRole('img', { name: /Generated cover for/i })).not.toBeInTheDocument()
   })
 
-  it('renders the cover approval above the fold, under the moderation verdict strip', async () => {
+  it('renders the cover approval above the fold, below the verdict strip and safety alerts', async () => {
     // #ASSUME: UI state: the whole point of this block's placement is that a
     // reviewer sees an outstanding cover decision without scrolling past every
     // passage and the full story text. A code comment cannot enforce that, so
     // assert DOM order directly: the block must follow the moderation verdict
     // strip and precede the "Full story" section it used to sit below.
+    //
+    // The third assertion pins the other half of the ordering ruling: a
+    // classifier_degraded alert says part of the automated safety net never
+    // ran, which outranks a cover decision, so the cover block must fall
+    // BELOW that alert and not above it. Without this assertion the two
+    // remaining checks are satisfied by either order, since both elements sit
+    // between the verdict strip and "Full story".
     // #VERIFY: this test.
     mockGet.mockImplementation((url: string) =>
       typeof url === 'string' && url.endsWith('/cover')
         ? Promise.resolve({
             data: { cover_status: 'pending_review', cover_url: 'https://r2.example/c.png' },
           })
-        : Promise.resolve({ data: SURFACE })
+        : Promise.resolve({
+            data: {
+              ...SURFACE,
+              story_level_findings: [
+                {
+                  stage: 0,
+                  source: 'openai',
+                  category: 'classifier_degraded',
+                  node_id: null,
+                  verdict: 'advisory',
+                  score: null,
+                  message: 'openai classifier unavailable: not configured',
+                },
+              ],
+            },
+          })
     )
     const { container } = renderAt('s1')
     await screen.findByRole('button', { name: /Approve cover/i })
@@ -963,11 +985,13 @@ describe('ReviewDetailPage', () => {
     if (!summary || !cover) return
 
     const fullStory = screen.getByRole('heading', { name: /Full story/i })
+    const degraded = screen.getByText(/Automated screening was degraded/i)
     const following = Node.DOCUMENT_POSITION_FOLLOWING
 
-    // strip -> cover -> full story, in that order
+    // strip -> degraded alert -> cover -> full story, in that order
     expect(summary.compareDocumentPosition(cover) & following).toBeTruthy()
     expect(cover.compareDocumentPosition(fullStory) & following).toBeTruthy()
+    expect(degraded.compareDocumentPosition(cover) & following).toBeTruthy()
   })
 
   it('approves a pending cover and reflects the approved state', async () => {
