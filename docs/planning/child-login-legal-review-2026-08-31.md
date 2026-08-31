@@ -38,10 +38,11 @@ already covers the collection, and what changes is consent *content* (an updated
 a material-change refresh), the data inventory, the retention schedule, and a real step-up in
 breach exposure, because a child username-plus-password pair is itself a breach-notification
 trigger under state law. A credential that adds **child-held recovery contact info** (Design B) or
-a **third-party identity** (Design C) is a different animal: it collides with COPPA's necessity
-limit, permanently forecloses the consent-free free tier ADR-018 D8 is pricing, falsifies factual
-premises the counsel engagement brief currently states, contradicts three recorded decisions, and
-fights both app platforms' kids rules. The genuinely new law since those decisions were made sits
+a **third-party identity** (Design C) is a different animal: it collects online contact
+information or an IdP account from the child, permanently forecloses the consent-free free tier
+ADR-018 D8 is pricing for any child holding one, falsifies factual premises the counsel engagement
+brief currently states, contradicts three recorded decisions, and fights both app platforms' kids
+rules. The genuinely new law since those decisions were made sits
 mostly outside COPPA: New York's Child Data Protection Act binds this product **at any operator
 size, today**, and treats a login as the thing that spreads actual knowledge of a minor across
 devices; and the app-store accountability statutes (Utah and Texas in force now, Alabama
@@ -151,15 +152,21 @@ existing lane**, which drags three obligations with it:
    the family's verification is usable, which the existing gate function
    (`usable_verification_id`) already expresses.
 
-### 3.2 The necessity limit is what rules out Design B
+### 3.2 What actually rules out Design B (and what 312.7 does and does not say)
 
-16 CFR 312.7 bars conditioning a child's participation on collecting more personal information
-than is reasonably necessary to participate. Self-service recovery contact info fails that test
-here, because a guardian-mediated reset path exists by construction (the guardian console). Design
-B also collects **online contact information from the child**, a heavier 312.2 category than a
-persistent identifier, and none of the 312.5(c) contact exceptions cover holding a child's email
-as a standing account attribute. There is no product payoff that justifies opening that front:
-recovery through the guardian is the feature working as intended for this audience.
+An earlier draft of this section leaned on 16 CFR 312.7, and the lean was too hard; corrected here
+so counsel does not inherit an overclaim. 312.7 bars **conditioning a child's participation** on
+collecting more personal information than is reasonably necessary to participate. Reading works
+with no credential at all (the device-grant path stays), so no design in this review conditions
+participation on anything, and an optional, guardian-enabled collection conditions nothing by
+construction; 312.7 would bite only if a credential carrying child contact info ever became the
+sole way to read. What actually rules out Design B is the rest of the picture: it collects
+**online contact information from the child**, a heavier 312.2 category than a persistent
+identifier, with none of the 312.5(c) contact exceptions covering a standing account attribute; it
+forecloses the D8 exception for that child (section 3.4); it is collection Apple guideline 5.1.4
+tells kids apps not to perform except for compliance purposes; it adds the child's email to the
+breach class in section 3.5; and it buys nothing, because guardian-mediated reset is the feature
+working as intended for this audience.
 
 ### 3.3 Design C fights the rest of the rule set
 
@@ -354,11 +361,53 @@ What does not fall away:
    [DPA checklist](../compliance/processor-dpa-checklist.md) that is already the long pole, and
    splits kid authentication into two architectures whose boundary is a guardian-editable field.
 
+**The guardian-enabled variant (owner proposal, 2026-08-31): guardian signs in first, creates the
+child profile, then enables Google as an allowed login for that child.** This is the strongest
+form of a federated lane and the right shape if one is ever built, because it fixes the consent
+instrument. It changes the analysis in some places and not in others:
+
+- **It supplies the consent instrument.** Enablement is an explicit, per-child parental choice
+  recorded against a verified guardian account. For an under-13 that is the VPC posture COPPA
+  wants (with the direct notice updated to describe the linkage); it is also the shape Apple's own
+  Kids-page carve-out contemplates ("unless the parent explicitly consents") and the
+  parent-affiliation model the app-store statutes mandate anyway. Note per section 3.2's
+  correction: because the method is optional and parent-enabled, 16 CFR 312.7 is not the obstacle;
+  the obstacles are the enumerated ones below.
+- **It softens, without closing, the D2 gatekeeper question.** Eligibility keyed to an explicit
+  parental enablement is materially better evidence than a band alone; if eligibility is also
+  band-gated to 13-plus, the mis-band question in item 1 above survives in weaker form and still
+  goes to counsel.
+- **It cannot conjure the child's Google account.** Under 13, the child must already hold a Family
+  Link supervised account and the parent must separately permit third-party access on Google's
+  side; 13-to-15-year-olds often sit behind school Workspace admin gates. Two parent-or-admin
+  gates outside this product's control stand in front of ours, for exactly the cohort the feature
+  targets.
+- **It does not change items 2 through 6 above.** In particular, New York's 13-to-17 consent
+  belongs to the teen, not the parent, for anything beyond strictly-necessary processing (the
+  guidance's parental-agreement passage reaches strictly-necessary processing of a parent-agreed
+  service, not non-necessary processing consented to in the teen's place), so the robust build is
+  a dual gate: guardian enables, then the teen confirms at first link with the § 899-ff UX.
+  Guideline 4.8 still triggers Sign in with Apple; the processor rows and ADR revisions still
+  land; and enabling it for an under-13 still forecloses D8 for that child and falsifies the 1A
+  facts, so if built at all it should start teens-only.
+- **The smaller-footprint implementation exists and is the one to spec.** "Enable Google as an
+  allowed login" does not require the child to become a Supabase Auth user: the backend can verify
+  a Google ID token directly (the same cached-JWKS validation pattern `api/deps.py` already uses
+  for Supabase tokens) and map the guardian-linked Google subject to the child profile, minting
+  the **existing** child session. That keeps Supabase Auth adults-only, keeps the child out of
+  every IdP user table this product operates, and leaves Google as the single added recipient. It
+  is a second token-verification path rather than a second issuer, but it still needs a deliberate
+  [ADR-009](adr/adr-009-supabase-platform.md) amendment saying so. The remaining middle option, a
+  Supabase-native child email account with Google skipped, is the worst point on the spectrum:
+  child contact information collected with no convenience payoff, and it is not priced further.
+
 Bottom line: a Google login for guardian-attested 13-plus readers is possible in principle, but it
-is not "Design A with Google". It is Design C narrowed to teens; it reopens D2, triggers the New
-York consent UX and Apple guideline 4.8, and buys password-less convenience that Design A2's
-ordinary login page already approximates. If federated teen login is wanted, take it as its own
-later ADR with the D2/1A counsel question answered first; do not fold it into a Design A build.
+is not "Design A with Google". It is Design C narrowed to teens, and the guardian-enabled,
+backend-verified variant above is the only form of it worth specifying; even that form reopens D2,
+triggers the New York teen-consent UX and Apple guideline 4.8, and buys password-less convenience
+that Design A2's ordinary login page already approximates, in front of Google-side account gates
+this product does not control. If federated teen login is wanted, take it as its own later ADR
+with the D2/1A counsel question answered first; do not fold it into a Design A build.
 
 ## 5. App-store accountability statutes (the iOS channel, R2/R3)
 
