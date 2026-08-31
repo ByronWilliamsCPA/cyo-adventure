@@ -49,7 +49,11 @@ devices; and the app-store accountability statutes (Utah and Texas in force now,
 iOS build age-category and parental-consent signals it must consume no matter which login design
 is chosen. Recommendation: if the feature is wanted, pursue Design A only, sequence it after the
 KWS consent gate is actually on in production, and route the two open legal questions through the
-existing counsel and state-law workstreams rather than new ones.
+existing counsel and state-law workstreams rather than new ones. Section 4.3 answers the follow-on
+question of a Google login for the 13-plus bands alone: COPPA genuinely drops away at 13, but that
+lane is Design C narrowed to teens, running through Supabase Auth either way; it reopens the D2
+child-directed classification (the only age evidence is a guardian-set band), triggers New York's
+teen-consent UX and Apple guideline 4.8, and buys little that Design A does not already provide.
 
 ## 1. What is already decided, and what this change would touch
 
@@ -93,7 +97,8 @@ The legal analysis diverges immediately on what the credential is, so the design
 - **Design B: Design A plus child-held recovery contact info** (the child's own email or phone for
   self-service reset), or child self-signup.
 - **Design C: the child becomes an identity-provider account**: a Supabase Auth user, possibly via
-  "Sign in with Google" or "Sign in with Apple".
+  "Sign in with Google" or "Sign in with Apple". Section 4.3 treats the teens-only variant of this
+  design separately, because parts of the analysis genuinely change at 13.
 
 "Older kids" needs no age machinery for Design A: COPPA obligations on a child-directed service do
 not soften at any age below 13, and nothing in Design A is unlawful for a seven-year-old, so
@@ -175,7 +180,9 @@ counsel brief's 1A section asks about exactly this, with saving reading position
 case). Designs B and C collect other personal information by construction (contact info, an IdP
 account), so shipping either **forecloses D8 for every family that has one**, before counsel has
 even answered whether the tier works (`UW-A52`). This is the cheapest place to lose an option the
-owner has repeatedly wanted; it belongs in any decision memo verbatim.
+owner has repeatedly wanted; it belongs in any decision memo verbatim. Scope note: the foreclosure
+is about credentials held by profiles under 13, the population 312.5(c)(7) governs; a strictly
+teens-only variant escapes this particular cost, and section 4.3 covers what it pays instead.
 
 ### 3.5 Security program and breach exposure (this is a real step-up)
 
@@ -279,6 +286,79 @@ Statuses below are as of 2026-08-31; confidence tags follow the research method 
 The register row for all of this already exists: `UW-A53` (ADR-018 D9 and the wider US state-law
 gap). The teen-login question does not need a new workstream; it needs `UW-A53` to run with New
 York and Colorado first on the list.
+
+### 4.3 The hybrid the bands invite: a Google login for the 13-plus bands only
+
+The obvious follow-on question is whether the "13-16" and "16+" bands could keep Design A's frame
+but authenticate with Google. Two framing corrections first, then the analysis.
+
+- **Design A involves no identity provider for any child, at any age.** The credential is a
+  first-party backend artifact, like the device grant; Supabase Auth stays adults-only. So the
+  choice is not "Google or Supabase": a teen IdP login **is Design C narrowed to teens**, and
+  under [ADR-009](adr/adr-009-supabase-platform.md)'s single-issuer decision it would run Google
+  as a provider **through** Supabase Auth. A teens-only IdP lane therefore means both: the teen's
+  Google identity and email land in Supabase Auth, with Google as an additional recipient.
+- **What genuinely falls away at 13 is COPPA, and two of this review's own arguments soften with
+  it.** A person 13 or older is not a "child" under 16 CFR 312.2, so section 3.3's COPPA analysis
+  does not reach a genuine teen. Consequently a strictly teens-only IdP lane does **not** foreclose
+  the D8 free tier (section 3.4's scope note), and it does not falsify the counsel brief's
+  Question 1A facts, which are COPPA claims about under-13 collection, though the brief should
+  still be annotated so counsel is not reasoning from a stale product description.
+
+What does not fall away:
+
+1. **The gatekeeper question, and it belongs to counsel, not to us.** The only age evidence is the
+   guardian-set band, on a service whose declared posture is child-directed with mixed-audience
+   defenses recorded as unavailable (D2). Parent-attested age is the strongest evidence shape an
+   operator can hold, far stronger than a self-declared age screen; whether it is enough to run a
+   13-plus lane on a child-directed service, and what follows when a guardian mis-bands an
+   under-13 to unlock it, is an open legal question this review deliberately does not answer. The
+   failure mode is concrete: a mis-banded actual under-13 in a Google lane is an under-13 holding
+   a third-party identity, the exact outcome ADR-008 decision 2 exists to prevent. If a teen IdP
+   lane is ever pursued, this question rides with the 1A rider to counsel, and band edits across
+   the 13 boundary become auth-architecture events (a thirteenth birthday is an identity
+   migration; a band correction downward must destroy an IdP identity that should not exist).
+2. **New York's teen rules apply in full.** The sign-in transaction makes Google a recipient and
+   processor of a covered user's personal data (account identifier, email, plus Google's own
+   telemetry under Google's own terms). Whether offering a disclosing login route counts as
+   "strictly necessary" for the service requested, when a non-disclosing first-party route exists,
+   is a gray reading of § 899-ff(2)(a); the safe implementation is teen informed consent at link
+   time with the mandated UX (a separate request, refusal as the most prominent option, freely
+   revocable). That is workable for an optional convenience feature, but it is real build cost.
+3. **Platform rules bite on iOS whatever the age.** Offering any third-party or social login
+   triggers Apple guideline 4.8, so Sign in with Apple must be offered alongside Google. The Kids
+   Category declaration (bands top out at 9-11) sits badly with a teen social login in the same
+   binary, and the Kids page bars transmitting personally identifiable information to third
+   parties without explicit parental consent, which an OAuth handshake does by construction. On
+   the later Android channel, the Families policy's approved-SDK rule constrains a general-purpose
+   Sign in with Google SDK in a child-directed app. None of this binds the web PWA, so the
+   web/iOS divergence in section 5.3 shows up here too.
+4. **The app-store accountability statutes do not care which IdP is used.** In the states where
+   they are in force, a teen's account still requires the store-verified age category and
+   parental-consent confirmation (section 5.2), so a Google login does not take the parent out of
+   the loop on iOS; it only changes who verifies the password.
+5. **The practical payoff is thinner than it looks.** Google's own floor for a self-managed
+   account is 13 in the US
+   ([Google account age requirements](https://support.google.com/accounts/answer/1350409), fetched
+   2026-08-31). Many real 13-to-15-year-olds hold either a Family Link-supervised account, where
+   third-party access is parent-gated per app
+   ([Google support page](https://support.google.com/families/answer/9204736), fetched by the
+   research pass), or a school Google Workspace account, where the administrator typically
+   controls which third-party apps may authenticate (stated from practice, unverified). "Sign in
+   with the Google account you already have" therefore fails for a meaningful slice of the target
+   band, while a Design A credential works for all of them.
+6. **The record cost is unchanged.** ADR-008 decision 2 and ADR-018 already-decided item 1 say
+   "children", not "children under 13", and the product's own vocabulary treats every profile as a
+   kid, so a teens-only IdP lane still revises those decisions, adds processor rows (Supabase Auth
+   holding teen identities, Google as recipient) to a
+   [DPA checklist](../compliance/processor-dpa-checklist.md) that is already the long pole, and
+   splits kid authentication into two architectures whose boundary is a guardian-editable field.
+
+Bottom line: a Google login for guardian-attested 13-plus readers is possible in principle, but it
+is not "Design A with Google". It is Design C narrowed to teens; it reopens D2, triggers the New
+York consent UX and Apple guideline 4.8, and buys password-less convenience that Design A2's
+ordinary login page already approximates. If federated teen login is wanted, take it as its own
+later ADR with the D2/1A counsel question answered first; do not fold it into a Design A build.
 
 ## 5. App-store accountability statutes (the iOS channel, R2/R3)
 
@@ -436,7 +516,7 @@ retrieval from this environment (the same convention ADR-018 adopted).
 | [Louisiana HB 570, enrolled text](https://www.legis.la.gov/legis/ViewDocument.aspx?d=1425304) | Developer-side duties including the account-creation trigger and lowest-age-category rule |
 | [Neb. Rev. Stat. § 87-1302](https://nebraskalegislature.gov/laws/statutes.php?statute=87-1302) | Nebraska applicability thresholds |
 | [Apple: Kids apps](https://developer.apple.com/app-store/kids-apps/), [App Review Guidelines](https://developer.apple.com/app-store/review/guidelines/), [age assurance Q&A](https://developer.apple.com/support/age-assurance), [developer news 2025-12-23](https://developer.apple.com/news/?id=8jzbigf4) | Kids Category bands and rules; 5.1.4 and 4.8 text; Declared Age Range API and consent-revocation mechanics; Texas pause. Contractual, not legal, authority |
-| [Google Play Families policy](https://support.google.com/googleplay/android-developer/answer/9893335), [Family Link third-party access](https://support.google.com/families/answer/9204736) | SDK restrictions in child-directed apps; supervised-account third-party access is parent-gated, not absent |
+| [Google Play Families policy](https://support.google.com/googleplay/android-developer/answer/9893335), [Family Link third-party access](https://support.google.com/families/answer/9204736), [Google account age requirements](https://support.google.com/accounts/answer/1350409) | SDK restrictions in child-directed apps; supervised-account third-party access is parent-gated, not absent; 13 as the US minimum for a self-managed Google account |
 | [Utah SB 142 bill page](https://le.utah.gov/~2025/bills/static/SB0142.html) | Bill identity only; the fetched page is a navigation shell, so Utah substantive claims rest on the secondary column |
 | FTC: *US v. Microsoft* (Xbox) press release, 2023-06-05; FTC COPPA age-verification policy statement, 2026-02-25 (fetched; URLs omitted per the ftc.gov convention) | Account-creation ordering enforcement and the two-week pre-consent deletion remedy; age-screen forbearance conditions |
 | [Federal Register doc. 2025-05904](https://www.federalregister.gov/d/2025-05904) | The amended COPPA Rule (citation carried from ADR-018; substance re-confirmation remains on ADR-018's validation checklist) |
