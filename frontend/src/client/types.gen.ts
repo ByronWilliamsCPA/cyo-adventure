@@ -4200,6 +4200,7 @@ export type ReviewQueueItem = {
      */
     themes?: Array<string>;
     content_flags?: ContentFlags | null;
+    top_finding?: FindingView | null;
 };
 
 /**

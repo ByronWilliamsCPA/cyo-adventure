@@ -976,6 +976,26 @@ def build_review_queue_item(
         1 for f in merged if f.verdict == Verdict.FLAG and not f.structural
     )
     advisory_findings = sum(1 for f in merged if f.verdict == Verdict.ADVISORY)
+    # `RS-A7`: the one finding the queue row names. Taken from the ALREADY
+    # RANKED lists rather than re-sorted here, so the row's headline finding is
+    # the same object the detail page shows first; re-deriving an order would
+    # be a second ranking rule to keep in step with _ranking_key.
+    #
+    # Bucket precedence, not a merged sort: a ranked finding outranks a
+    # structural one (the book, not the pipeline), and both outrank a low
+    # advisory. A structural finding is a real headline when it is all there
+    # is, because it means the report itself needs a re-run.
+    # #VERIFY: tests/unit/test_review_surface.py::
+    # test_queue_top_finding_prefers_ranked_over_structural and
+    # ::test_queue_top_finding_falls_back_to_low_advisory.
+    top_finding = next(
+        iter(
+            surface.ranked_findings
+            or surface.structural_findings
+            or surface.low_advisory_findings
+        ),
+        None,
+    )
     return ReviewQueueItem(
         storybook_id=storybook_id,
         title=_queue_title(blob, storybook_id),
@@ -992,6 +1012,7 @@ def build_review_queue_item(
         waiting_since=created_at,
         themes=_queue_themes(blob),
         content_flags=_queue_content_flags(blob),
+        top_finding=top_finding,
     )
 
 

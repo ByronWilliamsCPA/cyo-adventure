@@ -265,6 +265,145 @@ describe('AdminConsolePage', () => {
     ])
   })
 
+  it('ranks the flagged bucket by tier weight, not by occurrence count', async () => {
+    // `RS-A7`: this is the case the old flagged_count tiebreak got backwards.
+    // None of the three trips summary.hard_block, so the tier comparison is
+    // the only thing that can separate them. The counts are chosen so each
+    // book wins on a DIFFERENT tier and loses on the ones above it: swapping
+    // any two comparisons, or reinstating the occurrence-count tiebreak,
+    // reorders this list.
+    const oneBlock = {
+      ...FLAGGED,
+      storybook_id: 'block-tier-1',
+      title: 'One Block Tale',
+      flagged_count: 1,
+      block_findings: 1,
+      flag_findings: 0,
+      advisory_findings: 0,
+    }
+    const manyFlags = {
+      ...FLAGGED,
+      storybook_id: 'flag-many-1',
+      title: 'Many Flag Tale',
+      flagged_count: 5,
+      block_findings: 0,
+      flag_findings: 5,
+      advisory_findings: 0,
+    }
+    // 380 is an OCCURRENCE count: one merged advisory fanned across the story.
+    // Under the old sort this book led the queue.
+    const manyAdvisories = {
+      ...FLAGGED,
+      storybook_id: 'advisory-many-1',
+      title: 'Many Advisory Tale',
+      flagged_count: 380,
+      block_findings: 0,
+      flag_findings: 0,
+      advisory_findings: 8,
+    }
+    // Response order is the old sort's order, so passing cannot be incidental.
+    mockQueue([manyAdvisories, manyFlags, oneBlock])
+    renderPage()
+    await screen.findByText('One Block Tale')
+    const titles = screen.getAllByRole('link').map((link) => link.textContent)
+    expect(titles).toEqual([
+      expect.stringContaining('One Block Tale'),
+      expect.stringContaining('Many Flag Tale'),
+      expect.stringContaining('Many Advisory Tale'),
+    ])
+  })
+
+  it('ranks a flag above an advisory at equal block count', async () => {
+    const oneFlag = {
+      ...FLAGGED,
+      storybook_id: 'flag-tier-1',
+      title: 'One Flag Tier Tale',
+      flagged_count: 1,
+      block_findings: 0,
+      flag_findings: 1,
+      advisory_findings: 0,
+    }
+    const threeAdvisories = {
+      ...FLAGGED,
+      storybook_id: 'advisory-tier-1',
+      title: 'Three Advisory Tier Tale',
+      flagged_count: 3,
+      block_findings: 0,
+      flag_findings: 0,
+      advisory_findings: 3,
+    }
+    mockQueue([threeAdvisories, oneFlag])
+    renderPage()
+    await screen.findByText('One Flag Tier Tale')
+    const titles = screen.getAllByRole('link').map((link) => link.textContent)
+    expect(titles).toEqual([
+      expect.stringContaining('One Flag Tier Tale'),
+      expect.stringContaining('Three Advisory Tier Tale'),
+    ])
+  })
+
+  it('names the top finding on the queue row', async () => {
+    const withReason = {
+      ...HARD_BLOCKED,
+      storybook_id: 'reason-1',
+      title: 'Cistern Tale',
+      top_finding: {
+        stage: 2,
+        source: 'safety',
+        category: 'violence',
+        node_id: 'n42',
+        verdict: 'block',
+        score: 0.91,
+        message: 'The cistern passage describes a drowning in graphic detail.',
+        severity: 'high',
+        concern: 'graphic peril',
+      },
+    }
+    mockQueue([withReason])
+    renderPage()
+    const row = within(await screen.findByRole('link', { name: /Cistern Tale/ }))
+    // The concern, not the raw category, is what the detail page leads with.
+    expect(row.getByText('graphic peril')).toBeInTheDocument()
+    expect(
+      row.getByText('The cistern passage describes a drowning in graphic detail.')
+    ).toBeInTheDocument()
+  })
+
+  it('falls back to the finding category when the report records no concern', async () => {
+    const withoutConcern = {
+      ...HARD_BLOCKED,
+      storybook_id: 'reason-2',
+      title: 'Uncategorized Tale',
+      top_finding: {
+        stage: 2,
+        source: 'safety',
+        category: 'self_harm',
+        node_id: 'n7',
+        verdict: 'block',
+        score: 0.8,
+        message: 'A character talks about hurting themselves.',
+      },
+    }
+    mockQueue([withoutConcern])
+    renderPage()
+    const row = within(await screen.findByRole('link', { name: /Uncategorized Tale/ }))
+    expect(row.getByText('self_harm')).toBeInTheDocument()
+  })
+
+  it('shows no reason line on a row the backend sent no top finding for', async () => {
+    // Two absences to cover: a clean book (nothing to name) and a payload
+    // cached before the field existed. Both must render nothing rather than
+    // an empty separator or a guessed reason.
+    const clean = { ...READY, storybook_id: 'clean-1', title: 'Clean Tale', top_finding: null }
+    mockQueue([clean, FLAGGED])
+    renderPage()
+    const cleanRow = await screen.findByRole('link', { name: /Clean Tale/ })
+    expect(cleanRow.querySelector('.console-row__reason')).toBeNull()
+    // FLAGGED carries no top_finding key at all, the legacy-payload shape.
+    const legacyRow = screen.getByRole('link', { name: /Scary Tale/ })
+    expect(legacyRow.querySelector('.console-row__reason')).toBeNull()
+  })
+
   it('orders the sections Flagged, then Ready, then Still processing', async () => {
     renderPage()
     await screen.findByText('Scary Tale')

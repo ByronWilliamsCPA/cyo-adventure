@@ -2159,6 +2159,15 @@ class ReviewQueueItem(BaseModel):
     # queue item.
     themes: list[str] = Field(default_factory=list)
     content_flags: ContentFlags | None = None
+    # `RS-A7`: the highest-ranked finding on this version, so the queue row can
+    # say WHAT the decision is about. Before this, learning that a hard block
+    # was one cistern passage meant loading the whole book (2.5 MB, ~10,900 DOM
+    # nodes) to read one line. The full FindingView is reused rather than a
+    # narrower projection: the queue is admin-only and the same admin sees
+    # every one of these fields on the detail surface anyway, so a second
+    # shape would only be a chance for the two to disagree. ``None`` when the
+    # version has no findings at all (a clean or unscreened book).
+    top_finding: FindingView | None = None
 
 
 class ReviewQueueView(BaseModel):

@@ -17,6 +17,7 @@ import type {
   ContentFlagLevel,
   ContentFlags,
   FindingSeverity,
+  FindingView as GeneratedFindingView,
   GenerationMeasuresView,
   SafetyConcernCount,
 } from '../client/types.gen'
@@ -72,6 +73,21 @@ export interface ReviewQueueItem {
   /** Themes and content-sensitivity flags for the book-detail popover. */
   themes?: string[]
   content_flags?: ContentFlags | null
+  /**
+   * `RS-A7`: the single highest-ranked finding on this version, so the queue
+   * row can say WHAT the block is. Absent on a clean book and on an older
+   * cached payload; the row renders nothing in either case rather than
+   * inventing a reason.
+   *
+   * Typed against the GENERATED FindingView, not the hand-typed one below,
+   * because ReviewQueueItem is an EXACT-mirror entry in apiContractParity.ts
+   * while FindingView is a deliberately loose one (it widens `source` to
+   * `string`). Embedding the loose type here would force ReviewQueueItem off
+   * the exact assertion and weaken the drift check on every other field.
+   * Assignment still flows the useful way: `Source` extends `string`, so a
+   * top_finding can be handed to anything expecting the hand-typed view.
+   */
+  top_finding?: GeneratedFindingView | null
 }
 
 export interface FindingView {

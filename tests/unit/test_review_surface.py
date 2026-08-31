@@ -2257,6 +2257,116 @@ def test_tiered_counts_are_distinct_findings_not_occurrences() -> None:
     assert item.flagged_count == 7
 
 
+def test_queue_top_finding_is_the_first_ranked_finding() -> None:
+    """`RS-A7`: the row's headline finding is the detail page's first one.
+
+    The queue row has to say WHAT the decision is about; before this it said
+    only how many findings there were, so learning that a hard block was one
+    passage meant loading the whole book. Taken from the already-ranked list
+    rather than re-derived, so the two surfaces cannot disagree about which
+    finding leads.
+    """
+    item = build_review_queue_item(
+        storybook_id="s1",
+        status="in_review",
+        version=1,
+        blob=_mixed_tier_blob(),
+        moderation_report=_mixed_tier_report(),
+    )
+    assert item.top_finding is not None
+    assert item.top_finding.verdict is Verdict.BLOCK
+    assert item.top_finding.message == "hard block"
+    surface = build_review_surface(
+        status="in_review",
+        storybook_id="s1",
+        version=1,
+        blob=_mixed_tier_blob(),
+        moderation_report=_mixed_tier_report(),
+    )
+    assert item.top_finding == surface.ranked_findings[0]
+
+
+def test_queue_top_finding_prefers_ranked_over_structural() -> None:
+    """A structural finding describes the pipeline; a ranked one describes the book.
+
+    ``_structural_with_content_report`` carries a HIGH-severity structural
+    finding and a MEDIUM-severity content flag. A merged sort by
+    ``_ranking_key`` alone would put the structural row first on severity, so
+    this pins the bucket precedence rather than the severity order.
+    """
+    item = build_review_queue_item(
+        storybook_id="s1",
+        status="in_review",
+        version=1,
+        blob=_boundary_blob(),
+        moderation_report=_structural_with_content_report(),
+    )
+    assert item.top_finding is not None
+    assert item.top_finding.structural is False
+    assert item.top_finding.message == "ordinary content flag"
+
+
+def test_queue_top_finding_falls_back_to_low_advisory() -> None:
+    """A book whose only findings are low advisories still names one.
+
+    `RS-A1` keeps low advisories out of the default detail view, which makes
+    the queue row the only place their existence is visible before opening the
+    book. Reporting ``None`` here would tell an admin the book was clean.
+    """
+    report = {
+        "findings": [
+            {
+                "stage": 3,
+                "source": "llm_coherence",
+                "category": "coherence",
+                "node_id": "n_fork",
+                "verdict": "advisory",
+                "score": 0.05,
+                "message": "a faint gloom",
+                "severity": "low",
+            },
+        ],
+        "summary": {
+            "count": 1,
+            "hard_block": False,
+            "soft_flag": True,
+            "repaired": False,
+            "reviewer_independent": True,
+        },
+    }
+    item = build_review_queue_item(
+        storybook_id="s1",
+        status="in_review",
+        version=1,
+        blob=_boundary_blob(),
+        moderation_report=report,
+    )
+    assert item.top_finding is not None
+    assert item.top_finding.message == "a faint gloom"
+    assert item.top_finding.severity is FindingSeverity.LOW
+
+
+def test_queue_top_finding_is_none_when_there_is_nothing_to_name() -> None:
+    """No findings means no headline, not an empty-string headline."""
+    item = build_review_queue_item(
+        storybook_id="s1",
+        status="in_review",
+        version=1,
+        blob=_boundary_blob(),
+        moderation_report={
+            "findings": [],
+            "summary": {
+                "count": 0,
+                "hard_block": False,
+                "soft_flag": False,
+                "repaired": False,
+                "reviewer_independent": True,
+            },
+        },
+    )
+    assert item.top_finding is None
+
+
 def _partially_fail_safe_report() -> dict[str, object]:
     """The production shape: one stage judged, another defaulted to fail-safe.
 

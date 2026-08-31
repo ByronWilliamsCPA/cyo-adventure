@@ -48,21 +48,33 @@ function isFlagged(item: ReviewQueueItem): boolean {
 }
 
 /**
- * Sort rule for the flagged bucket: hard blocks first (the safety gate
- * refused those stories outright), then by flagged-finding count descending;
- * everything else keeps the backend's queue order (Array.prototype.sort is
- * stable, so equal ranks never reshuffle). flagged_count, not summary.count,
- * is the count key: the backend guarantees flagged_count counts exactly the
- * findings the floored review detail will show (review_surface.py), while
- * summary.count includes sub-floor advisory noise.
+ * Sort rule for the flagged bucket: decision weight, not volume. Hard blocks
+ * first (the safety gate refused those stories outright), then reports that
+ * could not be scored at all, then the distinct tier counts in gate order:
+ * blocks, then flags, then advisories. Everything else keeps the backend's
+ * queue order (Array.prototype.sort is stable, so equal ranks never
+ * reshuffle).
  *
- * #ASSUME: data-integrity: flagged_count on the queue item matches the count
- * of findings the review detail page will actually render for that story
- * (both keyed off review_surface.py's floor), so sorting by it here reflects
- * the same severity order the reviewer will see after opening the item.
- * #VERIFY: if review_surface.py's floor logic and the queue endpoint's
- * flagged_count ever diverge, this sort order stops matching what Send
- * Back/Approve act on; cover with a queue-vs-detail parity test.
+ * `RS-A7`: the only tiebreak used to be `flagged_count` descending, and that
+ * field counts OCCURRENCES. One merged advisory fanned across 380 nodes
+ * outranked a book holding a distinct block, which is backwards: the
+ * reviewer's work is per distinct finding, and one block outweighs any number
+ * of advisories. queueItemCounts() is the same module the row's badge label
+ * reads, so the order a reviewer sees and the number they are shown cannot
+ * disagree.
+ *
+ * `distinct` stays on as the LAST key rather than being dropped, because it is
+ * the tier sum on a payload that carries the tiers (so it discriminates
+ * nothing the three comparisons above have not already settled) and falls back
+ * to `flagged_count` on one that does not. Dropping it would leave every
+ * pre-tier row tied, which loses the only ordering signal such a row has.
+ *
+ * #ASSUME: data-integrity: block_findings/flag_findings/advisory_findings are
+ * distinct-finding counts from the same merge the review detail page renders
+ * (api/review_surface.py::build_review_queue_item).
+ * #VERIFY: AdminConsolePage.test.tsx "ranks the flagged bucket by tier
+ * weight, not by occurrence count" and "ranks a flag above an advisory at
+ * equal block count".
  */
 function bySeverity(a: ReviewQueueItem, b: ReviewQueueItem): number {
   const aBlock = a.summary?.hard_block === true
@@ -70,12 +82,17 @@ function bySeverity(a: ReviewQueueItem, b: ReviewQueueItem): number {
   if (aBlock !== bBlock) return aBlock ? -1 : 1
 
   // A report_unusable book needs a re-run, not a read: rank it right after
-  // hard blocks so it is not lost among ordinary flagged-count sorting.
+  // hard blocks so it is not lost among ordinary tier sorting.
   const aUnusable = a.report_unusable === true
   const bUnusable = b.report_unusable === true
   if (aUnusable !== bUnusable) return aUnusable ? -1 : 1
 
-  return b.flagged_count - a.flagged_count
+  const aCounts = queueItemCounts(a)
+  const bCounts = queueItemCounts(b)
+  if (aCounts.block !== bCounts.block) return bCounts.block - aCounts.block
+  if (aCounts.flag !== bCounts.flag) return bCounts.flag - aCounts.flag
+  if (aCounts.advisory !== bCounts.advisory) return bCounts.advisory - aCounts.advisory
+  return bCounts.distinct - aCounts.distinct
 }
 
 /** Local-clock HH:MM (24-hour), deterministic across runner locales. */
@@ -163,6 +180,38 @@ function QueueRowMeta({ item, nowMs }: { item: ReviewQueueItem; nowMs: number })
   )
 }
 
+/**
+ * `RS-A7`: the top-ranked finding's concern and reason, on the row.
+ *
+ * The queue row used to name the severity ("Hard block", "3 flags") and
+ * nothing else, so learning WHAT the block was cost a full review-detail
+ * load: 2.5 MB of blob and ~10,900 DOM nodes to read one sentence. The
+ * backend now sends the same finding the detail page ranks first, so the
+ * reviewer can triage, and often dismiss, from the queue.
+ *
+ * #ASSUME: data integrity: top_finding is the first entry of the same ranked
+ * bucket the detail page renders first (api/review_surface.py derives it from
+ * build_review_surface's ranked/structural/low-advisory buckets in that
+ * order), so the row's reason is the reason the reviewer will land on. It is
+ * absent on a clean book and on a payload cached before the field existed;
+ * both render nothing rather than a guess.
+ * #VERIFY: tests/unit/test_review_surface.py::test_queue_top_finding_is_the_first_ranked_finding
+ * pins the backend half; AdminConsolePage.test.tsx "names the top finding on
+ * the queue row" pins this half.
+ */
+function QueueRowReason({ item }: { item: ReviewQueueItem }): ReactElement | null {
+  const finding = item.top_finding
+  if (finding === null || finding === undefined) return null
+  const concern = finding.concern ?? finding.category
+  return (
+    <span className="console-row__reason cyo-text-muted">
+      <span className="console-row__reason-concern">{concern}</span>
+      <span aria-hidden="true"> · </span>
+      <span>{finding.message}</span>
+    </span>
+  )
+}
+
 function QueueRow({
   item,
   queue,
@@ -183,8 +232,16 @@ function QueueRow({
         to={`/admin/review/${item.storybook_id}`}
         state={{ reviewQueue: queue }}
       >
-        <span className="console-row__title">{item.title}</span>
-        <QueueRowMeta item={item} nowMs={nowMs} />
+        {/* Title, triage metadata and the top finding's reason stack in one
+            column so the reason gets a line of its own instead of competing
+            with the badges for horizontal room (RS-A7). */}
+        <span className="console-row__primary">
+          <span className="console-row__headline">
+            <span className="console-row__title">{item.title}</span>
+            <QueueRowMeta item={item} nowMs={nowMs} />
+          </span>
+          <QueueRowReason item={item} />
+        </span>
         <SeverityBadges item={item} />
       </Link>
       <Button
