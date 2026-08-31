@@ -367,3 +367,7 @@ docs/template_feedback.md
 # half and stays tracked, so re-targeting the seed's magnitude never costs
 # money again.
 out/w7/arms/
+
+# Production moderation-report snapshots taken before a re-moderation sweep.
+# Real child-facing story content and verdicts; never commit.
+.remoderation-backups/
