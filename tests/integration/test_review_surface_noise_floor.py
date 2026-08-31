@@ -13,7 +13,13 @@ from typing import TYPE_CHECKING
 
 import pytest
 
-from cyo_adventure.db.models import Family, Storybook, StorybookVersion, User
+from cyo_adventure.db.models import (
+    Family,
+    ModerationThreshold,
+    Storybook,
+    StorybookVersion,
+    User,
+)
 
 from .conftest import auth
 
@@ -226,6 +232,152 @@ async def test_guardian_content_summary_unaffected_by_admin_noise_floor(
     min_verdict=FLAG policy; only the BLOCK finding surfaces.
     """
     story_id = await _seed_published_with_noisy_report(sessions)
+    res = await client.get(
+        f"/api/v1/storybooks/{story_id}/content-summary",
+        headers=auth("guardian-nf"),
+    )
+    assert res.status_code == 200
+    categories = [f["category"] for f in res.json()["findings"]]
+    assert categories == ["safety"]
+
+
+# ---------------------------------------------------------------------------
+# `RS-B3`: a seeded moderation_threshold row makes the admin floor band-aware.
+#
+# These cases are what prove the wiring is real rather than plausible: the
+# band comes off the stored blob's metadata and the floor comes out of the
+# database, so a break anywhere between the router and admin_surfaces (a
+# dropped age_band, an unloaded policy) shows up here as a finding that stops
+# being hidden or starts being hidden.
+# ---------------------------------------------------------------------------
+
+
+async def _seed_threshold_row(
+    sessions: async_sessionmaker[AsyncSession],
+    *,
+    age_band: str,
+    category: str,
+    min_score: float | None,
+) -> None:
+    """Seed one moderation_threshold override row."""
+    async with sessions() as session:
+        session.add(
+            ModerationThreshold(
+                age_band=age_band,
+                category=category,
+                min_verdict="flag",
+                min_score=min_score,
+            )
+        )
+        await session.commit()
+
+
+async def test_a_band_row_hides_an_advisory_the_flat_floor_would_show(
+    client: AsyncClient, sessions: async_sessionmaker[AsyncSession]
+) -> None:
+    """A 0.5 row on (8-11, engagement) hides the 0.09 advisory (`RS-B3`).
+
+    Without the row that advisory clears the 0.05 flat floor and surfaces (see
+    test_admin_review_shows_advisory_above_default_floor above), so the change
+    in visibility is attributable to the row and nothing else.
+    """
+    story_id = await _seed_published_with_noisy_report(sessions)
+    await _seed_threshold_row(
+        sessions, age_band="8-11", category="engagement", min_score=0.5
+    )
+    res = await client.get(
+        f"/api/v1/storybooks/{story_id}/review",
+        headers=auth("admin-nf"),
+    )
+    assert res.status_code == 200
+    categories = [f["category"] for f in res.json()["story_level_findings"]]
+    assert "engagement" not in categories
+    # The BLOCK is still there: no row can hide a bright-line finding.
+    assert "safety" in categories
+
+
+async def test_a_band_row_can_reveal_an_advisory_the_flat_floor_hides(
+    client: AsyncClient, sessions: async_sessionmaker[AsyncSession]
+) -> None:
+    """A 0.001 row on (8-11, toxicity) reveals the 0.02 advisory (`RS-B3`).
+
+    The band row replaces the flat floor rather than being combined with it,
+    which is what lets a younger band be tuned to see MORE than the global
+    floor allows. This is the direction that matters for recall.
+    """
+    story_id = await _seed_published_with_noisy_report(sessions)
+    await _seed_threshold_row(
+        sessions, age_band="8-11", category="toxicity", min_score=0.001
+    )
+    res = await client.get(
+        f"/api/v1/storybooks/{story_id}/review",
+        headers=auth("admin-nf"),
+    )
+    assert res.status_code == 200
+    categories = [f["category"] for f in res.json()["story_level_findings"]]
+    assert "toxicity" in categories
+
+
+async def test_a_row_for_another_band_leaves_this_story_alone(
+    client: AsyncClient, sessions: async_sessionmaker[AsyncSession]
+) -> None:
+    """A row on 3-5 does not denoise an 8-11 story (`RS-B3`).
+
+    If ``age_band`` were dropped anywhere on the way to the resolver, the
+    surface would fall back to the empty-string band, every row would miss,
+    and this test would keep passing while its sibling above failed. Both
+    directions are asserted for exactly that reason.
+    """
+    story_id = await _seed_published_with_noisy_report(sessions)
+    await _seed_threshold_row(
+        sessions, age_band="3-5", category="engagement", min_score=0.5
+    )
+    res = await client.get(
+        f"/api/v1/storybooks/{story_id}/review",
+        headers=auth("admin-nf"),
+    )
+    assert res.status_code == 200
+    categories = [f["category"] for f in res.json()["story_level_findings"]]
+    assert "engagement" in categories
+
+
+async def test_a_row_with_a_null_min_score_leaves_the_flat_floor_in_place(
+    client: AsyncClient, sessions: async_sessionmaker[AsyncSession]
+) -> None:
+    """A verdict-only row is not a score override (`RS-B3`).
+
+    ``min_verdict`` rows are the table's original purpose. A row that carries
+    no ``min_score`` must leave the admin floor exactly where it was, and must
+    NOT drag ``min_verdict=flag`` into the admin lane (which would hide the
+    above-floor advisory too).
+    """
+    story_id = await _seed_published_with_noisy_report(sessions)
+    await _seed_threshold_row(
+        sessions, age_band="8-11", category="engagement", min_score=None
+    )
+    res = await client.get(
+        f"/api/v1/storybooks/{story_id}/review",
+        headers=auth("admin-nf"),
+    )
+    assert res.status_code == 200
+    categories = [f["category"] for f in res.json()["story_level_findings"]]
+    assert "engagement" in categories
+    assert "toxicity" not in categories
+
+
+async def test_a_band_row_does_not_reach_the_guardian_content_summary(
+    client: AsyncClient, sessions: async_sessionmaker[AsyncSession]
+) -> None:
+    """The guardian lane still resolves through ThresholdPolicy.surfaces.
+
+    `RS-B3` touched the admin lane only. Seeding a permissive score row must
+    not widen what a guardian sees, because the guardian gate is the verdict
+    (``min_verdict``), and this row's verdict is still ``flag``.
+    """
+    story_id = await _seed_published_with_noisy_report(sessions)
+    await _seed_threshold_row(
+        sessions, age_band="8-11", category="toxicity", min_score=0.001
+    )
     res = await client.get(
         f"/api/v1/storybooks/{story_id}/content-summary",
         headers=auth("guardian-nf"),

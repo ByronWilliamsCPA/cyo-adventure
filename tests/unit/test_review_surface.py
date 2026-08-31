@@ -20,7 +20,7 @@ from cyo_adventure.api.schemas import (
 )
 from cyo_adventure.core.exceptions import ValidationError
 from cyo_adventure.moderation.report import FindingSeverity, Source, Verdict
-from cyo_adventure.moderation.thresholds import ThresholdPolicy
+from cyo_adventure.moderation.thresholds import Threshold, ThresholdPolicy
 
 _DEFAULT_POLICY = ThresholdPolicy(rows={})
 
@@ -2928,3 +2928,198 @@ def test_low_advisory_with_no_node_stays_story_level() -> None:
     assert [f.message for f in view.low_advisory_findings] == [
         "the ending feels abrupt overall"
     ]
+
+
+# ---------------------------------------------------------------------------
+# `RS-B3`: the admin lane's score floor is resolved per (age_band, category).
+# ---------------------------------------------------------------------------
+
+
+def _band_noisy_report() -> dict[str, object]:
+    """A report with one violence advisory and one harassment advisory.
+
+    Both score 0.30, comfortably above the flat floor used below, so anything
+    that hides one of them can only be a band row and not the flat floor.
+    """
+    return {
+        "findings": [
+            {
+                "stage": 0,
+                "source": "openai",
+                "category": "violence",
+                "node_id": None,
+                "verdict": "advisory",
+                "score": 0.30,
+                "message": "sword fight",
+            },
+            {
+                "stage": 0,
+                "source": "openai",
+                "category": "harassment",
+                "node_id": None,
+                "verdict": "advisory",
+                "score": 0.30,
+                "message": "name calling",
+            },
+            {
+                "stage": 1,
+                "source": "llm_safety",
+                "category": "violence",
+                "node_id": None,
+                "verdict": "flag",
+                "score": 0.01,
+                "message": "reviewer must see this",
+            },
+        ],
+        "summary": {
+            "count": 3,
+            "hard_block": False,
+            "soft_flag": True,
+            "repaired": False,
+            "reviewer_independent": True,
+        },
+    }
+
+
+def _band_policy(band: str, category: str, min_score: float) -> ThresholdPolicy:
+    return ThresholdPolicy(
+        rows={
+            (band, category): Threshold(min_verdict=Verdict.FLAG, min_score=min_score)
+        }
+    )
+
+
+def _messages(view: ReviewSurfaceView) -> set[str]:
+    return {
+        f.message
+        for f in (
+            *view.flagged_passages,
+            *view.story_level_findings,
+            *view.low_advisory_findings,
+        )
+    }
+
+
+@pytest.mark.unit
+def test_band_row_denoises_only_its_own_category() -> None:
+    """A seeded (band, category) row raises the floor for that pair alone."""
+    view = build_review_surface(
+        status="in_review",
+        storybook_id="s1",
+        version=1,
+        blob={"nodes": []},
+        moderation_report=_band_noisy_report(),
+        admin_noise_floor=0.05,
+        age_band="10-13",
+        policy=_band_policy("10-13", "violence", 0.5),
+    )
+    messages = _messages(view)
+    assert "sword fight" not in messages
+    assert "name calling" in messages
+    # A FLAG is never hidden by any floor, however high the band row sets it.
+    assert "reviewer must see this" in messages
+
+
+@pytest.mark.unit
+def test_band_row_for_another_band_does_not_denoise_this_story() -> None:
+    """The row is keyed on the band; a story in a different band is unaffected.
+
+    This is the test that would fail if ``age_band`` were dropped anywhere
+    between the router and ``_route_findings``: the surface would silently
+    resolve against the empty-string band and every row would miss.
+    """
+    view = build_review_surface(
+        status="in_review",
+        storybook_id="s1",
+        version=1,
+        blob={"nodes": []},
+        moderation_report=_band_noisy_report(),
+        admin_noise_floor=0.05,
+        age_band="3-5",
+        policy=_band_policy("10-13", "violence", 0.5),
+    )
+    assert "sword fight" in _messages(view)
+
+
+@pytest.mark.unit
+def test_an_empty_policy_leaves_the_surface_identical_to_the_flat_floor() -> None:
+    """`RS-B3` is behaviour-preserving while ``moderation_threshold`` is empty.
+
+    Compares the new band-aware call against the pre-`RS-B3` call shape
+    (no band, no policy) on the same report, so a divergence shows up as a
+    diff between two surfaces rather than as an assertion about one.
+    """
+    report = _band_noisy_report()
+    without = build_review_surface(
+        status="in_review",
+        storybook_id="s1",
+        version=1,
+        blob={"nodes": []},
+        moderation_report=report,
+        admin_noise_floor=0.05,
+    )
+    with_empty = build_review_surface(
+        status="in_review",
+        storybook_id="s1",
+        version=1,
+        blob={"nodes": []},
+        moderation_report=report,
+        admin_noise_floor=0.05,
+        age_band="10-13",
+        policy=ThresholdPolicy(rows={}),
+    )
+    assert with_empty.model_dump() == without.model_dump()
+
+
+@pytest.mark.unit
+def test_a_band_row_cannot_hide_findings_from_a_guardian_caller() -> None:
+    """A None flat floor keeps the guardian lane un-denoised (`RS-B3`).
+
+    The guardian reuse path passes ``admin_noise_floor=None``; a band row must
+    not start filtering behind that, or a guardian would see less than the
+    native report while believing the opposite.
+    """
+    view = build_review_surface(
+        status="in_review",
+        storybook_id="s1",
+        version=1,
+        blob={"nodes": []},
+        moderation_report=_band_noisy_report(),
+        admin_noise_floor=None,
+        age_band="10-13",
+        policy=_band_policy("10-13", "violence", 0.99),
+    )
+    assert "sword fight" in _messages(view)
+
+
+@pytest.mark.unit
+def test_queue_item_flagged_count_uses_the_band_aware_floor() -> None:
+    """The queue badge and the detail view must resolve the SAME floor.
+
+    A queue row counted against the flat floor while its detail view filtered
+    against a band row would put a story in the Flagged bucket whose detail
+    page shows nothing, which is exactly the contradiction the flat floor's
+    original queue plumbing existed to prevent.
+    """
+    report = _band_noisy_report()
+    floored = build_review_queue_item(
+        storybook_id="s1",
+        status="in_review",
+        version=1,
+        blob={"nodes": []},
+        moderation_report=report,
+        admin_noise_floor=0.05,
+        age_band="10-13",
+        policy=_band_policy("10-13", "violence", 0.5),
+    )
+    unfloored = build_review_queue_item(
+        storybook_id="s1",
+        status="in_review",
+        version=1,
+        blob={"nodes": []},
+        moderation_report=report,
+        admin_noise_floor=0.05,
+        age_band="10-13",
+        policy=ThresholdPolicy(rows={}),
+    )
+    assert floored.flagged_count == unfloored.flagged_count - 1

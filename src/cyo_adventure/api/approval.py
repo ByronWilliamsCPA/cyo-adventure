@@ -51,7 +51,10 @@ from cyo_adventure.core.exceptions import (
 )
 from cyo_adventure.db.models import Storybook, StorybookVersion
 from cyo_adventure.events import Actor
-from cyo_adventure.moderation.thresholds import load_admin_noise_floor
+from cyo_adventure.moderation.thresholds import (
+    load_admin_noise_floor,
+    load_threshold_policy,
+)
 from cyo_adventure.publishing import service as approval_service
 from cyo_adventure.publishing.state_machine import Visibility
 from cyo_adventure.storybook.models import ContentFlags
@@ -403,6 +406,14 @@ async def get_review_surface(
     floor = (
         await load_admin_noise_floor(ctx.session) if ctx.principal.is_admin else None
     )
+    # #ASSUME: security: `RS-B3` resolves the admin floor per (age_band,
+    # category), so the band rides along with the floor. The policy read is
+    # skipped entirely when floor is None (the guardian path), because a None
+    # flat floor short-circuits admin_noise_floor_for before the policy is
+    # consulted: loading it there would be a query whose result cannot matter.
+    # #VERIFY: tests/unit/test_admin_noise_floor.py::
+    # test_flat_floor_none_wins_over_a_band_row.
+    policy = await load_threshold_policy(ctx.session) if floor is not None else None
     return build_review_surface(
         status=book.status,
         storybook_id=storybook_id,
@@ -411,6 +422,8 @@ async def get_review_surface(
         moderation_report=version_row.moderation_report,
         admin_noise_floor=floor,
         validation_report=version_row.validation_report,
+        age_band=_summary_age_band(version_row.blob) or "",
+        policy=policy,
     )
 
 
@@ -498,6 +511,10 @@ async def get_review_queue(ctx: Context) -> ReviewQueueView:
     # #VERIFY: tests/integration/test_review_surface_noise_floor.py queue case;
     # admin_surfaces guarantees FLAG/BLOCK/unscored findings always surface.
     floor = await load_admin_noise_floor(ctx.session)
+    # `RS-B3`: loaded once for the whole listing for the same reason the floor
+    # is, and passed per row alongside that row's band so a queue badge and the
+    # detail view it links to resolve the same floor.
+    policy = await load_threshold_policy(ctx.session)
     items: list[ReviewQueueItem] = []
     for book in books:
         version = latest.get(book.id)
@@ -527,6 +544,8 @@ async def get_review_queue(ctx: Context) -> ReviewQueueView:
                     moderation_report=row.moderation_report,
                     admin_noise_floor=floor,
                     created_at=row.created_at,
+                    age_band=_summary_age_band(row.blob) or "",
+                    policy=policy,
                 )
             )
         except ValidationError as exc:

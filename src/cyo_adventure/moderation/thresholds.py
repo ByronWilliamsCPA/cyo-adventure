@@ -219,6 +219,72 @@ def admin_surfaces(
     )
 
 
+def admin_noise_floor_for(
+    category: str,
+    *,
+    age_band: str,
+    policy: ThresholdPolicy | None,
+    flat_floor: float | None,
+) -> float | None:
+    """Resolve the ADMIN score floor for one category, band-aware (`RS-B3`).
+
+    `RS-B3` makes only the admin lane's SCORE band-aware. It deliberately does
+    not consult ``ThresholdPolicy.min_verdict``: that field defaults to
+    ``Verdict.FLAG``, so routing the admin lane through
+    ``ThresholdPolicy.surfaces`` would hide every ADVISORY finding admin-wide
+    for as long as ``moderation_threshold`` holds no rows, which is a
+    fail-dangerous change wearing a refactor's clothes. ``admin_surfaces``
+    keeps its never-hide guarantees; this only chooses the number it compares
+    against.
+
+    Absence semantics, in precedence order, because each arm means something
+    different and collapsing any two of them changes what a reviewer sees:
+
+    - ``flat_floor is None``: floor filtering is OFF for this caller (the
+      guardian reuse path, and any non-admin principal). A band row must not
+      switch it back on, so this returns ``None`` before the policy is read.
+      That keeps the existing kill switch absolute.
+    - a row exists for ``(age_band, category)`` with a ``min_score``: that
+      score, so an admin can denoise one noisy category in one band without
+      touching the global dial.
+    - anything else, including a row whose ``min_score`` is ``None``: the flat
+      floor. A row with no score states a verdict rule only, so it contributes
+      no score floor of its own and the global dial still applies.
+
+    While ``moderation_threshold`` is empty this returns ``flat_floor``
+    unchanged for every input, so the change is behaviour-preserving until
+    somebody seeds a row.
+
+    Args:
+        category: The finding's category string.
+        age_band: The story's age band; an empty string resolves to the code
+            default.
+        policy: The resolved threshold policy, or ``None`` when the caller has
+            not loaded one.
+        flat_floor: The global ``admin_noise_floor``, or ``None`` to skip floor
+            filtering entirely.
+
+    Returns:
+        float | None: The score floor to compare against, or ``None`` to apply
+        no floor at all.
+    """
+    # #CRITICAL: security: this function decides what a safety reviewer is
+    # shown. Returning a HIGHER number than intended hides advisory findings
+    # from the human who is the final gate under ADR-005, so every arm above
+    # must stay distinguishable; in particular a `min_score` of None must not
+    # be read as 0.0 (which would disable the flat floor) nor as the flat
+    # floor's absence (which would disable filtering).
+    # #VERIFY: tests/unit/test_admin_noise_floor.py::
+    # test_flat_floor_none_wins_over_a_band_row and
+    # ::test_a_row_without_a_min_score_falls_back_to_the_flat_floor
+    if flat_floor is None:
+        return None
+    if policy is None:
+        return flat_floor
+    band_min = policy.resolve(age_band, category).min_score
+    return flat_floor if band_min is None else band_min
+
+
 async def load_admin_noise_floor(session: AsyncSession) -> float:
     """Load the admin noise floor scalar, falling back to the code default.
 

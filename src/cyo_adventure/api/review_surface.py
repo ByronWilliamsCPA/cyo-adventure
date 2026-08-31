@@ -35,7 +35,10 @@ from cyo_adventure.moderation.report import (
     legacy_hidden_fail_safe_node_counts,
     moderation_report_unusable,
 )
-from cyo_adventure.moderation.thresholds import admin_surfaces
+from cyo_adventure.moderation.thresholds import (
+    admin_noise_floor_for,
+    admin_surfaces,
+)
 from cyo_adventure.storybook.models import ContentFlags
 from cyo_adventure.utils.logging import get_logger
 
@@ -235,6 +238,8 @@ def _route_findings(
     findings: list[dict[str, object]],
     *,
     admin_noise_floor: float | None,
+    age_band: str = "",
+    policy: ThresholdPolicy | None = None,
 ) -> _RoutedFindings:
     """Route each persisted finding into the per-node, story-level, and ranker lanes.
 
@@ -243,6 +248,10 @@ def _route_findings(
             caller wants routed (empty when the report is wholly unusable).
         admin_noise_floor: The admin-configured global noise floor, or ``None``
             to skip floor filtering entirely. See ``build_review_surface``.
+        age_band: The story's age band, used with ``policy`` to resolve a
+            per-category floor (`RS-B3`). Empty resolves to the code default.
+        policy: The resolved threshold policy, or ``None`` to use the flat
+            floor for every category (the behaviour before `RS-B3`).
 
     Returns:
         The four lanes, as a ``_RoutedFindings``.
@@ -260,8 +269,19 @@ def _route_findings(
         # FLAG/BLOCK/unscored findings always surface, so a bright-line
         # 0.0 BLOCK is never hidden.
         # #VERIFY: tests/integration/test_review_surface_noise_floor.py.
-        if admin_noise_floor is not None and not admin_surfaces(
-            view.verdict, view.score, noise_floor=admin_noise_floor
+        # `RS-B3`: the floor is resolved per CATEGORY and band, while the
+        # never-hide guarantees stay in admin_surfaces. The resolution is
+        # deliberately not ThresholdPolicy.surfaces: that would import a
+        # min_verdict default of FLAG and hide every advisory admin-wide while
+        # moderation_threshold is empty. See admin_noise_floor_for.
+        floor = admin_noise_floor_for(
+            view.category,
+            age_band=age_band,
+            policy=policy,
+            flat_floor=admin_noise_floor,
+        )
+        if floor is not None and not admin_surfaces(
+            view.verdict, view.score, noise_floor=floor
         ):
             continue
         # #CRITICAL: security: all_views must be appended to BEFORE the
@@ -368,6 +388,8 @@ def build_review_surface(
     moderation_report: dict[str, object] | None,
     admin_noise_floor: float | None = None,
     validation_report: dict[str, object] | None = None,
+    age_band: str = "",
+    policy: ThresholdPolicy | None = None,
 ) -> ReviewSurfaceView:
     """Build the guardian review surface for one story version.
 
@@ -392,6 +414,15 @@ def build_review_surface(
             guardian content-summary reuse path, that does not need it).
             Read-only: this function never re-runs the validator, it only
             projects RL-13/PL-19 findings already in the stored report.
+        age_band: The story's age band (`RS-B3`), used with ``policy`` to
+            resolve the admin floor per category. Only meaningful alongside a
+            non-``None`` ``admin_noise_floor``; the guardian reuse path leaves
+            both at their defaults.
+        policy: The resolved threshold policy (`RS-B3`), or ``None`` to apply
+            the flat floor to every category. Supplies ``min_score`` only:
+            ``min_verdict`` is never read here, because its FLAG default would
+            hide every advisory from the admin lane while
+            ``moderation_threshold`` is empty.
 
     Returns:
         ReviewSurfaceView: Blob plus summary, flagged passages, story-level
@@ -427,6 +458,8 @@ def build_review_surface(
         routed = _route_findings(
             [] if report_unusable else _findings(moderation_report),
             admin_noise_floor=admin_noise_floor,
+            age_band=age_band,
+            policy=policy,
         )
         flagged, order, story_level = routed.flagged, routed.order, routed.story_level
         all_views = (
@@ -903,6 +936,8 @@ def build_review_queue_item(
     moderation_report: dict[str, object] | None,
     admin_noise_floor: float | None = None,
     created_at: datetime | None = None,
+    age_band: str = "",
+    policy: ThresholdPolicy | None = None,
 ) -> ReviewQueueItem:
     """Project one storybook version into a review-queue item.
 
@@ -922,6 +957,11 @@ def build_review_queue_item(
             noise-only story no longer reads as flagged.
         created_at: When this version was created, surfaced as the queue item's
             ``waiting_since`` triage metadata (UX-A3), or ``None`` to omit it.
+        age_band: The story's age band (`RS-B3`), forwarded so a queue row's
+            counts are floored on the same per-category basis as the detail
+            view the admin clicks into. A queue and a detail view resolving
+            different floors would make the badge contradict the list.
+        policy: The resolved threshold policy (`RS-B3`), forwarded unchanged.
 
     Returns:
         ReviewQueueItem: Title, status, version, screened flag, flagged count,
@@ -953,6 +993,8 @@ def build_review_queue_item(
         blob=blob,
         moderation_report=moderation_report,
         admin_noise_floor=admin_noise_floor,
+        age_band=age_band,
+        policy=policy,
     )
     flagged_count = sum(
         len(passage.findings) for passage in surface.flagged_passages
