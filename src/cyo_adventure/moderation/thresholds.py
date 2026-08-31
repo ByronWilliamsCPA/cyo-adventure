@@ -31,31 +31,71 @@ _SEVERITY: dict[Verdict, int] = {
     Verdict.BLOCK: 3,
 }
 
+# The Stage-0 categories a `min_score` floor can actually act on (`RS-B2`).
+#
+# The live Stage-0 classifier grades 13 OpenAI moderation categories, but seven
+# of them are BRIGHT LINE (moderation/classifiers.py::_OPENAI_BRIGHTLINE): a
+# flagged bright-line category BLOCKS at any score, and admin_surfaces never
+# hides a BLOCK, so no score floor changes what a reviewer sees for those. The
+# six below are the graded remainder, and they are where every reviewer-load
+# lever measured against production actually lives: all 14 production findings
+# spanning 40 or more nodes are low-severity advisories on `violence` or
+# `violence/graphic` (docs/planning/safety/production-floor-replay-2026-08-31.md).
+#
+# This tuple is mirrored EXACTLY by the seed migration
+# supabase/migrations/20260831120000_seed_moderation_threshold_grid.sql.
+# #ASSUME: data integrity: the two are hand-synced by contract, the same way
+# generation/allowlist.py::DEFAULT_ALLOWLIST and its seed migration are; there
+# is no runtime check tying them together.
+# #VERIFY: tests/unit/test_threshold_seed_grid.py::
+# test_the_seed_migration_mirrors_the_graded_categories_exactly.
+GRADED_SCORE_CATEGORIES: tuple[str, ...] = (
+    "harassment",
+    "hate",
+    "illicit",
+    "self-harm",
+    "violence",
+    "violence/graphic",
+)
+
 # Known category values across pipeline stages, for the admin editor's
 # suggestion list ONLY. Categories are open-ended strings (Stage-0 classifier
 # payload keys are provider-defined), so this list is advisory, never a gate.
-KNOWN_CATEGORIES: tuple[str, ...] = (
-    "coherence",
-    "engagement",
-    "harassment/threatening",
-    "hate/threatening",
-    "identity_attack",
-    "illicit/violent",
-    "insult",
-    "invalid_story",
-    "personal_information",
-    "profanity",
-    "reading_level",
-    "reviewer_independence",
-    "safety",
-    "self-harm/instructions",
-    "self-harm/intent",
-    "severe_toxicity",
-    "sexual",
-    "sexual/minors",
-    "sexually_explicit",
-    "threat",
-    "toxicity",
+#
+# `RS-B2`: this list previously named seven of the 13 live OpenAI categories and
+# every one of them was BRIGHT LINE, so the admin editor suggested only the
+# categories where a score floor is inert and omitted all six where it bites.
+# GRADED_SCORE_CATEGORIES is unioned in below so the suggestion list cannot
+# drift away from the graded set again.
+# #VERIFY: tests/unit/test_threshold_seed_grid.py::
+# test_every_graded_category_is_suggested_by_the_admin_editor.
+KNOWN_CATEGORIES: tuple[str, ...] = tuple(
+    sorted(
+        {
+            "coherence",
+            "engagement",
+            "harassment/threatening",
+            "hate/threatening",
+            "identity_attack",
+            "illicit/violent",
+            "insult",
+            "invalid_story",
+            "personal_information",
+            "profanity",
+            "reading_level",
+            "reviewer_independence",
+            "safety",
+            "self-harm/instructions",
+            "self-harm/intent",
+            "severe_toxicity",
+            "sexual",
+            "sexual/minors",
+            "sexually_explicit",
+            "threat",
+            "toxicity",
+            *GRADED_SCORE_CATEGORIES,
+        }
+    )
 )
 
 
