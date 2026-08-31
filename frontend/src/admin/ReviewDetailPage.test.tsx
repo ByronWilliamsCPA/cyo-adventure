@@ -1,6 +1,6 @@
 import { render, screen, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { MemoryRouter, Route, Routes } from 'react-router'
+import { MemoryRouter, Route, Routes, useNavigate } from 'react-router'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 import { ReviewDetailPage } from './ReviewDetailPage'
@@ -205,6 +205,23 @@ function mockCompareRoutes() {
   })
 }
 
+/**
+ * A navigation control OUTSIDE the <Routes>, so clicking it changes the
+ * :storybookId param the way auto-advance through the review queue does:
+ * a route change under the same route pattern, rather than the fresh mount a
+ * second renderAt() would give. What the page does with that change (remount
+ * via `key`, or re-run an effect) is the thing under test, so the harness
+ * must not decide it.
+ */
+function NextBookLink({ to }: { to: string }) {
+  const navigate = useNavigate()
+  return (
+    <button type="button" onClick={() => void navigate(to)}>
+      NEXT BOOK
+    </button>
+  )
+}
+
 function renderAt(storybookId: string) {
   return render(
     <MemoryRouter initialEntries={[`/admin/review/${storybookId}`]}>
@@ -220,6 +237,10 @@ beforeEach(() => {
   mockGet.mockReset().mockResolvedValue({ data: SURFACE })
   mockPost.mockReset()
   mockPatch.mockReset()
+  // RS-A5's triage markers live in localStorage, which jsdom shares across
+  // every test in this file. Without this, a marker one case set would change
+  // what a later case renders.
+  localStorage.clear()
 })
 
 describe('ReviewDetailPage', () => {
@@ -2325,6 +2346,229 @@ describe('ReviewDetailPage', () => {
       })
       renderAt('s1')
       expect(await screen.findByText(/author-declared/i)).toBeInTheDocument()
+    })
+  })
+
+  describe('client-local finding triage (RS-A5)', () => {
+    const BLOCK_FINDING = {
+      stage: 1,
+      source: 'llm_safety',
+      category: 'safety',
+      node_id: 'n1',
+      verdict: 'block',
+      score: null,
+      message: 'graphic violence',
+      severity: 'high',
+      node_ids: ['n1'],
+      structural: false,
+      concern: 'violence',
+    }
+    const FLAG_FINDING = {
+      stage: 1,
+      source: 'llm_safety',
+      category: 'safety',
+      node_id: 'n2',
+      verdict: 'flag',
+      score: null,
+      message: 'moderate peril',
+      severity: 'medium',
+      node_ids: ['n2'],
+      structural: false,
+      concern: 'peril',
+    }
+
+    /**
+     * A block finding, so `needsOverride` is true and the approve path has a
+     * precondition a broken triage implementation could plausibly satisfy.
+     *
+     * Both findings appear TWICE, in `ranked_findings` and in the fan-out
+     * population, because that is the shape the backend actually produces:
+     * `_route_findings` fans every non-low-advisory finding out into
+     * `flagged_passages` (or `story_level_findings` when it names no node) and
+     * ALSO feeds it to `_rank_and_split`. A fixture carrying the block only in
+     * `ranked_findings` would leave `needsOverride` false, and this test would
+     * then pass for the wrong reason: no override was ever required.
+     */
+    const TRIAGE_SURFACE = {
+      ...SURFACE,
+      story_level_findings: [],
+      flagged_passages: [
+        { node_id: 'n1', prose: 'A dark cave yawned ahead.', findings: [BLOCK_FINDING] },
+        { node_id: 'n2', prose: 'The path forked left and right.', findings: [FLAG_FINDING] },
+      ],
+      ranked_findings: [BLOCK_FINDING, FLAG_FINDING],
+    }
+
+    it('marking every finding reviewed changes nothing about approval', async () => {
+      // #CRITICAL: security: triage is browser-local state a cleared cache can
+      // wipe. If it ever became an input to approval, a cache eviction would
+      // silently reset a safety decision. This is the test both
+      // findingTriageStore.ts and RankedFinding's `triage` prop cite.
+      const user = userEvent.setup()
+      mockGet.mockResolvedValue({ data: TRIAGE_SURFACE })
+      mockPost.mockResolvedValue({ data: { id: 's1', status: 'published' } })
+      renderAt('s1')
+
+      const toggles = await screen.findAllByRole('button', { name: /Mark reviewed/i })
+      expect(toggles).toHaveLength(2)
+      for (const toggle of toggles) await user.click(toggle)
+      expect(screen.getAllByRole('button', { name: /^Reviewed$/i })).toHaveLength(2)
+
+      // The override requirement is untouched: confirm is still disabled, and
+      // still needs the reason the backend demands.
+      await user.click(await screen.findByRole('button', { name: /^Approve$/i }))
+      const confirm = await screen.findByRole('button', { name: /Confirm approve/i })
+      expect(confirm).toBeDisabled()
+      await user.type(
+        screen.getByLabelText(/override reason/i),
+        'Read both flagged passages in full; appropriate for the band.'
+      )
+      expect(confirm).toBeEnabled()
+      await user.click(confirm)
+      // And the request body carries no trace of the triage state.
+      expect(mockPost).toHaveBeenCalledWith('/v1/storybooks/s1/approve', {
+        visibility: 'family',
+        override_reason: 'Read both flagged passages in full; appropriate for the band.',
+      })
+    })
+
+    it('names the triage state as browser-local and non-gating', async () => {
+      // The affordance is only safe if the reviewer knows what it is not. A
+      // toggle that reads as a decision invites treating an untoggled finding
+      // as an unresolved gate.
+      mockGet.mockResolvedValue({ data: TRIAGE_SURFACE })
+      renderAt('s1')
+      const progress = await screen.findByText(/marked reviewed in this browser/i)
+      expect(progress).toHaveTextContent('0 of 2 findings marked reviewed')
+      expect(progress).toHaveTextContent(/no effect on approval/i)
+    })
+
+    it('counts marked findings as the reviewer works through the list', async () => {
+      const user = userEvent.setup()
+      mockGet.mockResolvedValue({ data: TRIAGE_SURFACE })
+      renderAt('s1')
+      const toggles = await screen.findAllByRole('button', { name: /Mark reviewed/i })
+      await user.click(toggles[0])
+      expect(screen.getByText(/marked reviewed in this browser/i)).toHaveTextContent(
+        '1 of 2 findings marked reviewed'
+      )
+      // Toggling back off decrements: a mis-click must be recoverable, or the
+      // count stops meaning "where I am" and starts meaning "what I clicked".
+      await user.click(screen.getByRole('button', { name: /^Reviewed$/i }))
+      expect(screen.getByText(/marked reviewed in this browser/i)).toHaveTextContent(
+        '0 of 2 findings marked reviewed'
+      )
+    })
+
+    it('keeps a marker across a reload of the same book and version', async () => {
+      const user = userEvent.setup()
+      mockGet.mockResolvedValue({ data: TRIAGE_SURFACE })
+      const first = renderAt('s1')
+      const toggles = await screen.findAllByRole('button', { name: /Mark reviewed/i })
+      await user.click(toggles[0])
+      first.unmount()
+
+      renderAt('s1')
+      // Proves the load effect reads the store back, not just that the store
+      // round-trips (findingTriageStore.test.ts pins that separately).
+      expect(await screen.findByRole('button', { name: /^Reviewed$/i })).toBeInTheDocument()
+      expect(screen.getByText(/marked reviewed in this browser/i)).toHaveTextContent(
+        '1 of 2 findings marked reviewed'
+      )
+    })
+
+    it('does not carry a marker onto a different book', async () => {
+      // A fresh visit to another book. This case cannot see a stale dependency
+      // array (the remount re-runs the load effect regardless); the
+      // same-instance case below is the one that pins that.
+      const user = userEvent.setup()
+      mockGet.mockResolvedValue({ data: TRIAGE_SURFACE })
+      const first = renderAt('s1')
+      await user.click((await screen.findAllByRole('button', { name: /Mark reviewed/i }))[0])
+      first.unmount()
+
+      mockGet.mockResolvedValue({ data: { ...TRIAGE_SURFACE, storybook_id: 's2' } })
+      renderAt('s2')
+      expect(await screen.findByText(/marked reviewed in this browser/i)).toHaveTextContent(
+        '0 of 2 findings marked reviewed'
+      )
+      expect(screen.queryByRole('button', { name: /^Reviewed$/i })).not.toBeInTheDocument()
+    })
+
+    it('shows the next book unmarked when the queue advances to it', async () => {
+      // Auto-advance navigates to another book under the SAME route pattern,
+      // which is the one path where triage could bleed between books. Two
+      // independent guards stop it: ReviewDetailPage's `key={storybookId}`
+      // remounts the inner page, and the triage load effect names
+      // storybookId in its dependency array. Verified by mutation: removing
+      // either one alone leaves all 111 tests green (the remount case is
+      // caught by "clears the approve dialog ... when the queue advances");
+      // removing BOTH fails this case. So this is the assertion that keeps
+      // triage from silently inheriting its correctness from the `key`.
+      const user = userEvent.setup()
+      mockGet.mockResolvedValue({ data: TRIAGE_SURFACE })
+      render(
+        <MemoryRouter initialEntries={['/admin/review/s1']}>
+          <NextBookLink to="/admin/review/s2" />
+          <Routes>
+            <Route path="/admin/review/:storybookId" element={<ReviewDetailPage />} />
+          </Routes>
+        </MemoryRouter>
+      )
+      await user.click((await screen.findAllByRole('button', { name: /Mark reviewed/i }))[0])
+      expect(screen.getByText(/marked reviewed in this browser/i)).toHaveTextContent(
+        '1 of 2 findings marked reviewed'
+      )
+
+      mockGet.mockResolvedValue({ data: { ...TRIAGE_SURFACE, storybook_id: 's2' } })
+      await user.click(screen.getByRole('button', { name: 'NEXT BOOK' }))
+      await screen.findByText('0 of 2 findings marked reviewed', { exact: false })
+      expect(screen.queryByRole('button', { name: /^Reviewed$/i })).not.toBeInTheDocument()
+    })
+
+    it('offers triage on low-priority advisories too', async () => {
+      // The low-advisory bucket is where a long tail of findings actually
+      // accumulates (RS-A1 moved it out of the default view), so it is the
+      // section that most needs a place-keeper.
+      mockGet.mockResolvedValue({
+        data: {
+          ...TRIAGE_SURFACE,
+          // A low advisory is never fanned out (RS-A1), so a realistic
+          // low-advisory-only surface has no flagged passages at all.
+          flagged_passages: [],
+          ranked_findings: [],
+          low_advisory_findings: [
+            {
+              stage: 1,
+              source: 'llm_safety',
+              category: 'safety',
+              node_id: 'n2',
+              verdict: 'advisory',
+              score: 0.04,
+              message: 'faint gloom',
+              severity: 'low',
+              node_ids: ['n2'],
+              structural: false,
+              concern: 'scariness',
+            },
+          ],
+        },
+      })
+      renderAt('s1')
+      const details = await screen.findByText(/Low-priority advisories \(1\)/i)
+      expect(details).toBeInTheDocument()
+      expect(screen.getByRole('button', { name: /Mark reviewed/i })).toBeInTheDocument()
+      expect(screen.getByText(/marked reviewed in this browser/i)).toHaveTextContent(
+        '0 of 1 finding marked reviewed'
+      )
+    })
+
+    it('renders no triage control on a surface with nothing to triage', async () => {
+      mockGet.mockResolvedValue({ data: SURFACE })
+      renderAt('s1')
+      await screen.findByRole('heading', { name: 'Ranked findings' })
+      expect(screen.queryByRole('button', { name: /Mark reviewed/i })).not.toBeInTheDocument()
+      expect(screen.queryByText(/marked reviewed in this browser/i)).not.toBeInTheDocument()
     })
   })
 })

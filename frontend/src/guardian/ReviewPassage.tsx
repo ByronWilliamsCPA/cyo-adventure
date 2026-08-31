@@ -60,11 +60,25 @@ export function RankedFinding({
   onJump,
   knownIds,
   proseFor,
+  triage,
 }: {
   finding: FindingView
   onJump: (nodeId: string) => void
   knownIds: Set<string>
   proseFor?: (nodeId: string) => string | null
+  /**
+   * `RS-A5`: optional client-local progress marker. Omitted (the guardian
+   * surface) renders no control at all.
+   *
+   * #CRITICAL: security: `reviewed` is a progress marker and nothing else. It
+   * must not reach any approval predicate: it lives in one browser's
+   * localStorage, so a cleared cache would otherwise silently reset a safety
+   * decision (ruling 4, 2026-08-31: unresolved findings do not gate a book,
+   * the reviewer does).
+   * #VERIFY: ReviewDetailPage.test.tsx "marking every finding reviewed changes
+   * nothing about approval".
+   */
+  triage?: { reviewed: boolean; onToggle: () => void }
 }) {
   const nodeIds =
     finding.node_ids && finding.node_ids.length > 0
@@ -72,8 +86,11 @@ export function RankedFinding({
       : finding.node_id !== null && finding.node_id !== undefined
         ? [finding.node_id]
         : []
+  const reviewed = triage?.reviewed ?? false
   return (
-    <li className="review-finding review-finding--ranked">
+    <li
+      className={`review-finding review-finding--ranked${reviewed ? ' review-finding--reviewed' : ''}`}
+    >
       <FlagBadge tone={verdictTone(finding.verdict)} />
       {finding.severity ? (
         <span className={`review-finding__severity review-finding__severity--${finding.severity}`}>
@@ -120,6 +137,16 @@ export function RankedFinding({
             })}
           </ul>
         </details>
+      ) : null}
+      {triage ? (
+        <button
+          type="button"
+          className="review-finding__triage"
+          aria-pressed={reviewed}
+          onClick={triage.onToggle}
+        >
+          {reviewed ? 'Reviewed' : 'Mark reviewed'}
+        </button>
       ) : null}
     </li>
   )

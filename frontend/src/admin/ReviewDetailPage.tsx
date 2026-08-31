@@ -19,9 +19,11 @@ import {
   tierBreakdownLabel,
 } from '../guardian/findingCounts'
 import { makePassageEditApi } from '../guardian/passageEditApi'
+import { findingKey, readReviewedKeys, toggleReviewed } from './findingTriageStore'
 import { Finding, passageDomId, Passage, RankedFinding } from '../guardian/ReviewPassage'
 import {
   makeReviewApi,
+  type FindingView,
   type GenerationMeasuresView,
   type ReviewSurface,
   type SendBackReasonCode,
@@ -224,6 +226,8 @@ export function ReviewDetailPage() {
   return <ReviewDetailPageInner key={storybookId} />
 }
 
+const EMPTY_KEYS: Set<string> = new Set()
+
 function ReviewDetailPageInner() {
   usePageTitle('Review')
   const { storybookId = '' } = useParams()
@@ -343,6 +347,65 @@ function ReviewDetailPageInner() {
   // from this same state slot after a save.
   const readyVersion = state.kind === 'ready' ? state.surface.version : null
   const readySurface = state.kind === 'ready' ? state.surface : null
+
+  // RS-A5: per-finding "I have looked at this" markers, so a reviewer 60
+  // findings deep can see where they are. Browser-local (localStorage),
+  // scoped to this book and version, and deliberately never sent to the
+  // server.
+  //
+  // #CRITICAL: security: triage state MUST NOT gate approval. It lives in a
+  // store the reviewer's browser can clear at any moment, so treating it as
+  // an approval precondition would let a cache eviction silently reset a
+  // safety decision. Nothing below feeds `needsOverride`, the confirm
+  // button's disabled state, or the approve request body.
+  // #VERIFY: ReviewDetailPage.test.tsx "marking every finding reviewed
+  // changes nothing about approval".
+  //
+  // Derived, not synced: `stored` re-reads whenever the book or version
+  // changes, and `override` (this session's toggles) only wins while its own
+  // scope still matches. An effect that pushed the stored value into state
+  // would be the same logic with a stale window in it, and would make the
+  // reset depend on a dependency array instead of on the scope comparison.
+  // ReviewDetailPage's `key={storybookId}` remounts this component per book
+  // as well, so the scope check is the second of two guards; it is kept
+  // because that `key` exists for the approve dialog, not for triage.
+  // #VERIFY: ReviewDetailPage.test.tsx "shows the next book unmarked when the
+  // queue advances to it" fails when both guards are removed.
+  const triageScope = `${storybookId}:${readyVersion ?? ''}`
+  const storedReviewedKeys = useMemo(
+    () => (readyVersion === null ? EMPTY_KEYS : readReviewedKeys(storybookId, readyVersion)),
+    [storybookId, readyVersion]
+  )
+  const [reviewedOverride, setReviewedOverride] = useState<{
+    scope: string
+    keys: Set<string>
+  } | null>(null)
+  const reviewedKeys =
+    reviewedOverride !== null && reviewedOverride.scope === triageScope
+      ? reviewedOverride.keys
+      : storedReviewedKeys
+  const toggleFindingReviewed = useCallback(
+    (key: string) => {
+      if (readyVersion === null) return
+      setReviewedOverride((current) => ({
+        scope: triageScope,
+        keys: toggleReviewed(
+          storybookId,
+          readyVersion,
+          key,
+          current !== null && current.scope === triageScope ? current.keys : storedReviewedKeys
+        ),
+      }))
+    },
+    [storybookId, readyVersion, triageScope, storedReviewedKeys]
+  )
+  const triageFor = useCallback(
+    (finding: FindingView) => {
+      const key = findingKey(finding)
+      return { reviewed: reviewedKeys.has(key), onToggle: () => toggleFindingReviewed(key) }
+    },
+    [reviewedKeys, toggleFindingReviewed]
+  )
 
   const {
     coverStatus,
@@ -559,6 +622,14 @@ function ReviewDetailPageInner() {
   const structuralFindings = surface.structural_findings ?? []
   const lowAdvisoryFindings = surface.low_advisory_findings ?? []
   const validatorFindings = surface.validator_findings ?? []
+  // The findings that actually render a triage control. The fan-out fallback
+  // population (surfacePopulation's legacy arm) renders through Passage/Finding
+  // instead, so counting it here would give the progress line a denominator
+  // the reviewer has no way to reach.
+  const triageableFindings = [...rankedFindings, ...structuralFindings, ...lowAdvisoryFindings]
+  const triagedCount = triageableFindings.filter((finding) =>
+    reviewedKeys.has(findingKey(finding))
+  ).length
   const title =
     typeof surface.blob.title === 'string' && surface.blob.title
       ? surface.blob.title
@@ -761,6 +832,13 @@ function ReviewDetailPageInner() {
       */}
       <div className="review-group" id="ranked-findings">
         <h2>Ranked findings</h2>
+        {triageableFindings.length > 0 ? (
+          <p className="review-triage__progress cyo-text-muted">
+            {`${triagedCount} of ${pluralize(triageableFindings.length, 'finding')} marked reviewed in this browser.`}{' '}
+            Triage is a bookmark for your own place in the list. It is stored only on this device
+            and has no effect on approval.
+          </p>
+        ) : null}
         {rankedFindings.length > 0 ? (
           <ul className="review-findings review-findings--ranked">
             {rankedFindings.map((finding) => (
@@ -770,6 +848,7 @@ function ReviewDetailPageInner() {
                 onJump={jumpToPassage}
                 knownIds={readThrough.knownIds}
                 proseFor={proseForNode}
+                triage={triageFor(finding)}
               />
             ))}
           </ul>
@@ -794,6 +873,7 @@ function ReviewDetailPageInner() {
                 onJump={jumpToPassage}
                 knownIds={readThrough.knownIds}
                 proseFor={proseForNode}
+                triage={triageFor(finding)}
               />
             ))}
           </ul>
@@ -811,6 +891,7 @@ function ReviewDetailPageInner() {
                 onJump={jumpToPassage}
                 knownIds={readThrough.knownIds}
                 proseFor={proseForNode}
+                triage={triageFor(finding)}
               />
             ))}
           </ul>

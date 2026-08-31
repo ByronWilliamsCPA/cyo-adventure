@@ -928,6 +928,36 @@
   font-variant-numeric: tabular-nums;
 }
 
+/* `RS-A5`: per-finding triage. Browser-local and non-gating by design (ruling
+   4, 2026-08-31), so the affordance is styled as a bookmark rather than as a
+   decision: a low-contrast toggle, and a reviewed finding is de-emphasised
+   instead of hidden, since hiding it would make a cleared cache look like a
+   shorter findings list. Never color alone; the button's own label carries the
+   state, and `aria-pressed` carries it to assistive tech. */
+.review-finding__triage {
+  padding: 0.15rem 0.5rem;
+  font: inherit;
+  font-size: 0.85em;
+  color: var(--color-ink-secondary, #5a3e28);
+  background: none;
+  border: 1px solid var(--color-border-soft, rgb(44 26 14 / 12%));
+  border-radius: 999px;
+  cursor: pointer;
+}
+
+.review-finding__triage[aria-pressed='true'] {
+  background: var(--color-amber-subtle, #fdf3e6);
+  font-weight: 600;
+}
+
+.review-finding--reviewed {
+  opacity: 0.72;
+}
+
+.review-triage__progress {
+  margin: 0 0 0.5rem;
+}
+
 /* What the automated gate measured (R-2): the numbers behind the routing
    decision, read alongside the findings they explain. */
 .review-measures__list {
