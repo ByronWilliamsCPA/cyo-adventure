@@ -2966,6 +2966,126 @@ export type OnboardingView = {
 };
 
 /**
+ * OutstandingCoverDetail
+ *
+ * The detail behind a pending cover-art decision (`RS-C3`).
+ *
+ * ``cover_status`` is echoed rather than assumed: the surface only lists
+ * ``pending_review`` today, and a reader of a stored response should not have
+ * to know that to interpret the row.
+ */
+export type OutstandingCoverDetail = {
+    /**
+     * Cover Status
+     */
+    cover_status: string;
+    /**
+     * Child Facing
+     */
+    child_facing: boolean;
+};
+
+/**
+ * OutstandingDecisionItem
+ *
+ * One decision nobody is being shown (`RS-C2`, `RS-C3`).
+ *
+ * The generalisation this surface exists for: **any decision attached to a
+ * book the review queue no longer lists is invisible**, whether it is a
+ * moderation verdict on a live book or a cover waiting for approval. Before
+ * this, the only list of pending admin work was the ``in_review`` queue, so a
+ * published book that a threshold change had just turned non-compliant, and a
+ * published book showing kids no cover because its approval was never
+ * surfaced, both sat indefinitely with nothing pointing at them.
+ *
+ * One row per decision, not per book: a book can hold both kinds at once, and
+ * each kind resolves through a different action on a different page.
+ */
+export type OutstandingDecisionItem = {
+    /**
+     * Kind
+     */
+    kind: 'moderation' | 'cover';
+    /**
+     * Storybook Id
+     */
+    storybook_id: string;
+    /**
+     * Title
+     */
+    title: string;
+    /**
+     * Status
+     */
+    status: string;
+    /**
+     * Version
+     */
+    version: number;
+    /**
+     * Family Id
+     */
+    family_id: string;
+    /**
+     * Age Band
+     */
+    age_band?: string | null;
+    /**
+     * Version Created At
+     */
+    version_created_at?: string | null;
+    /**
+     * Recallable
+     */
+    recallable: boolean;
+    moderation?: OutstandingModerationDetail | null;
+    cover?: OutstandingCoverDetail | null;
+};
+
+/**
+ * OutstandingDecisionsView
+ *
+ * Every outstanding admin decision on a book the review queue omits.
+ */
+export type OutstandingDecisionsView = {
+    /**
+     * Items
+     */
+    items: Array<OutstandingDecisionItem>;
+};
+
+/**
+ * OutstandingModerationDetail
+ *
+ * The gating detail behind a moderation decision (`RS-C2`).
+ *
+ * The same four numbers a ``ReviewQueueItem`` carries, computed by the same
+ * routing and flooring code (``review_surface.py::build_decision_counts``), so
+ * a book that reads "1 block" here reads "1 block" in the queue and on the
+ * detail page. Deliberately no ``flagged_count``: that one counts occurrences
+ * and is derived from the blob's nodes, which this surface does not load.
+ */
+export type OutstandingModerationDetail = {
+    /**
+     * Block Findings
+     */
+    block_findings: number;
+    /**
+     * Flag Findings
+     */
+    flag_findings: number;
+    /**
+     * Advisory Findings
+     */
+    advisory_findings: number;
+    /**
+     * Report Unusable
+     */
+    report_unusable: boolean;
+    top_finding?: FindingView | null;
+};
+
+/**
  * PersonalizationReceiveBody
  *
  * Set the viewer-side receive switch for the caller's own family.
@@ -7086,6 +7206,39 @@ export type GetReviewQueueApiV1ReviewQueueGetResponses = {
 };
 
 export type GetReviewQueueApiV1ReviewQueueGetResponse = GetReviewQueueApiV1ReviewQueueGetResponses[keyof GetReviewQueueApiV1ReviewQueueGetResponses];
+
+export type GetOutstandingDecisionsApiV1AdminOutstandingDecisionsGetData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/api/v1/admin/outstanding-decisions';
+};
+
+export type GetOutstandingDecisionsApiV1AdminOutstandingDecisionsGetErrors = {
+    /**
+     * Missing, malformed, expired, or unknown bearer token.
+     */
+    401: ErrorResponse;
+    /**
+     * Authenticated, but not permitted to act on this resource.
+     */
+    403: ErrorResponse;
+    /**
+     * Validation Error
+     */
+    422: HttpValidationError;
+};
+
+export type GetOutstandingDecisionsApiV1AdminOutstandingDecisionsGetError = GetOutstandingDecisionsApiV1AdminOutstandingDecisionsGetErrors[keyof GetOutstandingDecisionsApiV1AdminOutstandingDecisionsGetErrors];
+
+export type GetOutstandingDecisionsApiV1AdminOutstandingDecisionsGetResponses = {
+    /**
+     * Successful Response
+     */
+    200: OutstandingDecisionsView;
+};
+
+export type GetOutstandingDecisionsApiV1AdminOutstandingDecisionsGetResponse = GetOutstandingDecisionsApiV1AdminOutstandingDecisionsGetResponses[keyof GetOutstandingDecisionsApiV1AdminOutstandingDecisionsGetResponses];
 
 export type ListAdminStorybooksApiV1AdminStorybooksGetData = {
     body?: never;

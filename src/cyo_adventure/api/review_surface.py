@@ -20,6 +20,7 @@ from cyo_adventure.api.schemas import (
     GenerationMeasuresView,
     GuardianFinding,
     GuardianValidatorNote,
+    OutstandingModerationDetail,
     ReviewQueueItem,
     ReviewSummary,
     ReviewSurfaceView,
@@ -927,6 +928,155 @@ def _as_bool(value: object) -> bool:
     return value if isinstance(value, bool) else False
 
 
+class DecisionCounts(NamedTuple):
+    """The gating numbers every admin list shows for one story version.
+
+    Named fields rather than a bare tuple so the two call sites (`RS-A7`'s queue
+    row and `RS-C2`'s outstanding-decisions row) name the same four things;
+    ``NamedTuple`` matches ``_RoutedFindings`` above rather than introducing a
+    second value-object idiom in one module.
+    """
+
+    block_findings: int
+    flag_findings: int
+    advisory_findings: int
+    top_finding: FindingView | None
+
+
+def build_decision_counts(surface: ReviewSurfaceView) -> DecisionCounts:
+    """Count the distinct gating findings on a built surface, and pick its headline.
+
+    Task 4: tiered DISTINCT-finding counts, as opposed to a queue item's
+    ``flagged_count`` (which counts occurrences: a finding fanned across 3 nodes
+    via ``node_ids`` counts 3 times there). Each merged finding view here counts
+    exactly once, regardless of its node coverage. Sourced from the three
+    merged-finding buckets (ranked/structural/low_advisory), which together are
+    every non-PASS finding the surface produced; advisories never gate and are
+    counted separately, never folded into block/flag.
+
+    ``top_finding`` (`RS-A7`) is taken from the ALREADY RANKED lists rather than
+    re-sorted here, so a row's headline finding is the same object the detail
+    page shows first; re-deriving an order would be a second ranking rule to
+    keep in step with ``_ranking_key``. Bucket precedence, not a merged sort: a
+    ranked finding outranks a structural one (the book, not the pipeline), and
+    both outrank a low advisory. A structural finding is a real headline when it
+    is all there is, because it means the report itself needs a re-run.
+
+    Args:
+        surface: A surface already built by ``build_review_surface``, so the
+            noise floor and per-band policy have been applied. Passing an
+            unfloored surface would produce counts that contradict the detail
+            view an admin clicks into.
+
+    Returns:
+        DecisionCounts: Distinct block/flag/advisory counts plus the headline
+            finding, or ``None`` for the latter when the report has no non-PASS
+            finding at all.
+    """
+    # #VERIFY: tests/unit/test_review_surface.py::
+    # test_tiered_counts_are_distinct_findings_not_occurrences,
+    # ::test_queue_top_finding_prefers_ranked_over_structural and
+    # ::test_queue_top_finding_falls_back_to_low_advisory.
+    merged = [
+        *surface.ranked_findings,
+        *surface.structural_findings,
+        *surface.low_advisory_findings,
+    ]
+    return DecisionCounts(
+        block_findings=sum(1 for f in merged if f.verdict == Verdict.BLOCK),
+        flag_findings=sum(
+            1 for f in merged if f.verdict == Verdict.FLAG and not f.structural
+        ),
+        advisory_findings=sum(1 for f in merged if f.verdict == Verdict.ADVISORY),
+        top_finding=next(
+            iter(
+                surface.ranked_findings
+                or surface.structural_findings
+                or surface.low_advisory_findings
+            ),
+            None,
+        ),
+    )
+
+
+def build_moderation_decision_detail(
+    *,
+    storybook_id: str,
+    status: str,
+    version: int,
+    moderation_report: dict[str, object] | None,
+    admin_noise_floor: float | None,
+    age_band: str,
+    policy: ThresholdPolicy | None,
+) -> OutstandingModerationDetail | None:
+    """Project one version's report into a `RS-C2` decision row, without its blob.
+
+    THE EMPTY BLOB IS DELIBERATE and this is the only place it appears. Every
+    bucket ``build_review_surface`` routes findings into is report-derived; the
+    blob is read for exactly two things, the prose attached to
+    ``flagged_passages`` and the echoed ``blob`` field, neither of which this
+    surface projects. The outstanding-decisions list spans every status rather
+    than the 13 ``in_review`` books, so loading blobs to reach counts that do
+    not depend on them would pull tens of megabytes per request to compute four
+    integers. Reusing ``build_review_surface`` rather than re-deriving the
+    counts is the other half of that choice: a second routing implementation
+    would drift from the floored detail view it is supposed to agree with.
+
+    Args:
+        storybook_id: The story id, forwarded for the surface's own projection.
+        status: The storybook's lifecycle status.
+        version: The version the decision is about.
+        moderation_report: That version's stored report, or ``None``.
+        admin_noise_floor: The admin-configured global floor. Always passed
+            here: this is an admin-only surface, and its counts must match the
+            floored detail view.
+        age_band: The story's age band, for per-category flooring (`RS-B3`).
+        policy: The resolved threshold policy (`RS-B3`).
+
+    Returns:
+        OutstandingModerationDetail: The gating detail, or ``None`` when this
+        version holds no outstanding moderation decision at all (no block, no
+        flag, and a usable report). Returning ``None`` rather than a row of
+        zeroes is what keeps a clean published book off the surface.
+
+    Raises:
+        ValidationError: If the stored report is corrupt at rest (propagated
+            from ``build_review_surface``); the caller isolates the bad row.
+    """
+    surface = build_review_surface(
+        status=status,
+        storybook_id=storybook_id,
+        version=version,
+        blob={},
+        moderation_report=moderation_report,
+        admin_noise_floor=admin_noise_floor,
+        age_band=age_band,
+        policy=policy,
+    )
+    counts = build_decision_counts(surface)
+    # #CRITICAL: security: an UNUSABLE report is an outstanding decision in its
+    # own right, not a clean bill of health. A report that failed to parse or
+    # came back empty produces zero findings, which without this clause would
+    # read exactly like a compliant book and drop a live story off the list
+    # that exists to find it. This is the same fail-closed reading
+    # moderation/report.py::moderation_report_unusable was added for.
+    # #VERIFY: tests/unit/test_outstanding_decisions.py::
+    # test_an_unusable_report_on_a_published_book_is_an_outstanding_decision.
+    if (
+        not counts.block_findings
+        and not counts.flag_findings
+        and not surface.report_unusable
+    ):
+        return None
+    return OutstandingModerationDetail(
+        block_findings=counts.block_findings,
+        flag_findings=counts.flag_findings,
+        advisory_findings=counts.advisory_findings,
+        report_unusable=surface.report_unusable,
+        top_finding=counts.top_finding,
+    )
+
+
 def build_review_queue_item(
     *,
     storybook_id: str,
@@ -999,45 +1149,12 @@ def build_review_queue_item(
     flagged_count = sum(
         len(passage.findings) for passage in surface.flagged_passages
     ) + len(surface.story_level_findings)
-    # Task 4: tiered DISTINCT-finding counts for the queue badge, as opposed to
-    # flagged_count above (which counts occurrences: a finding fanned across 3
-    # nodes via node_ids counts 3 times there). Each merged finding view here
-    # counts exactly once, regardless of its node coverage. Sourced from the
-    # three merged-finding buckets (ranked/structural/low_advisory), which
-    # together are every non-PASS finding the surface produced; advisories
-    # never gate and are counted separately, never folded into block/flag.
-    # #VERIFY: tests/unit/test_review_surface.py::
-    # test_tiered_counts_are_distinct_findings_not_occurrences.
-    merged = [
-        *surface.ranked_findings,
-        *surface.structural_findings,
-        *surface.low_advisory_findings,
-    ]
-    block_findings = sum(1 for f in merged if f.verdict == Verdict.BLOCK)
-    flag_findings = sum(
-        1 for f in merged if f.verdict == Verdict.FLAG and not f.structural
-    )
-    advisory_findings = sum(1 for f in merged if f.verdict == Verdict.ADVISORY)
-    # `RS-A7`: the one finding the queue row names. Taken from the ALREADY
-    # RANKED lists rather than re-sorted here, so the row's headline finding is
-    # the same object the detail page shows first; re-deriving an order would
-    # be a second ranking rule to keep in step with _ranking_key.
-    #
-    # Bucket precedence, not a merged sort: a ranked finding outranks a
-    # structural one (the book, not the pipeline), and both outrank a low
-    # advisory. A structural finding is a real headline when it is all there
-    # is, because it means the report itself needs a re-run.
-    # #VERIFY: tests/unit/test_review_surface.py::
-    # test_queue_top_finding_prefers_ranked_over_structural and
-    # ::test_queue_top_finding_falls_back_to_low_advisory.
-    top_finding = next(
-        iter(
-            surface.ranked_findings
-            or surface.structural_findings
-            or surface.low_advisory_findings
-        ),
-        None,
-    )
+    # The tiered counts and the headline finding both come from
+    # build_decision_counts below, shared with `RS-C2`'s outstanding-decisions
+    # surface so a book cannot read "1 block" in one admin list and "0" in the
+    # other. Note the contrast with flagged_count just above, which counts
+    # OCCURRENCES and is blob-derived; these count distinct findings.
+    counts = build_decision_counts(surface)
     return ReviewQueueItem(
         storybook_id=storybook_id,
         title=_queue_title(blob, storybook_id),
@@ -1046,15 +1163,15 @@ def build_review_queue_item(
         screened=surface.screened,
         report_unusable=surface.report_unusable,
         flagged_count=flagged_count,
-        block_findings=block_findings,
-        flag_findings=flag_findings,
-        advisory_findings=advisory_findings,
+        block_findings=counts.block_findings,
+        flag_findings=counts.flag_findings,
+        advisory_findings=counts.advisory_findings,
         summary=surface.summary,
         age_band=_queue_age_band(blob),
         waiting_since=created_at,
         themes=_queue_themes(blob),
         content_flags=_queue_content_flags(blob),
-        top_finding=top_finding,
+        top_finding=counts.top_finding,
     )
 
 

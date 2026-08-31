@@ -18,14 +18,15 @@ state-transition handler in this module stays admin-only.
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Literal, cast
+from typing import TYPE_CHECKING, Literal, NamedTuple, TypeAlias, cast
 
 from fastapi import APIRouter
 from pydantic import ValidationError as PydanticValidationError
-from sqlalchemy import func, select, tuple_
+from sqlalchemy import and_, case, func, or_, select, tuple_
 
 from cyo_adventure.api.deps import Context, authorize_family
 from cyo_adventure.api.review_surface import (
+    build_moderation_decision_detail,
     build_review_queue_item,
     build_review_surface,
 )
@@ -33,6 +34,10 @@ from cyo_adventure.api.schemas import (
     ApproveBody,
     ApprovedView,
     ArchivedView,
+    OutstandingCoverDetail,
+    OutstandingDecisionItem,
+    OutstandingDecisionsView,
+    OutstandingModerationDetail,
     RecalledView,
     RecallRequest,
     ReviewQueueItem,
@@ -58,12 +63,19 @@ from cyo_adventure.moderation.thresholds import (
     load_threshold_policy,
 )
 from cyo_adventure.publishing import service as approval_service
-from cyo_adventure.publishing.state_machine import Visibility
+from cyo_adventure.publishing.state_machine import (
+    LEGAL_TRANSITIONS,
+    Action,
+    Status,
+    Visibility,
+)
 from cyo_adventure.storybook.models import ContentFlags
 from cyo_adventure.utils.logging import get_logger
 
 if TYPE_CHECKING:
+    import uuid
     from collections.abc import Sequence
+    from datetime import datetime
 
     from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -74,7 +86,14 @@ router = APIRouter(
 _logger = get_logger(__name__)
 
 _IN_REVIEW = "in_review"
+_PUBLISHED = "published"
 _ADMIN_ROLE_REQUIRED = "admin role required"
+
+# The one cover_status that represents an unmade human decision. The other four
+# ("none", "generating", "ready", "failed") are all states in which nobody is
+# waiting on an admin: covers/service.py::generate_cover parks a finished cover
+# here and only covers/service.py::approve_cover moves it to "ready".
+_COVER_PENDING_REVIEW = "pending_review"
 
 # The five storybook lifecycle statuses (mirrors db/models._STORYBOOK_STATUS_VALUES).
 # Used to validate the master-library status filter (P19).
@@ -608,6 +627,325 @@ async def get_review_queue(ctx: Context) -> ReviewQueueView:
             )
             continue
     return ReviewQueueView(items=items)
+
+
+def _is_recallable(status: str) -> bool:
+    """Report whether a RECALL is legal from ``status`` right now.
+
+    Derived from the publish state machine's transition table rather than
+    compared against the ``"published"`` literal, so this surface and the
+    ``POST .../recall`` handler can never disagree about which rows are
+    actionable: widening RECALL's legal sources in LEGAL_TRANSITIONS widens this
+    flag in the same commit, and narrowing it stops offering the control.
+
+    Args:
+        status: The storybook's persisted lifecycle status.
+
+    Returns:
+        bool: True when ``(status, RECALL)`` is a legal transition.
+    """
+    # #ASSUME: data integrity: ``status`` came from a column carrying
+    # ck_storybook_status, so Status(status) succeeds for every row written by
+    # this application. A value outside the enum means the CHECK was dropped or
+    # bypassed; report "not recallable" and log rather than 500 the whole
+    # listing, matching the per-row isolation the rest of this surface uses.
+    # #VERIFY: tests/unit/test_outstanding_decisions.py::
+    # test_recallable_is_derived_from_the_transition_table.
+    try:
+        current = Status(status)
+    except ValueError:
+        _logger.warning("outstanding_decision_unknown_status", status=status)
+        return False
+    return (current, Action.RECALL) in LEGAL_TRANSITIONS
+
+
+# The bulk query's column shape, in select() order. Kept separate from
+# _OutstandingRow below because a SQLAlchemy Row is NOT the named object it is
+# projected into: a Row's attributes are the COLUMN names, so
+# ``row.storybook_id`` raises AttributeError on a query that selected
+# ``Storybook.id``, and a JSONB extraction arrives as ``anon_1``. Positional
+# construction is therefore the only honest bridge.
+_CandidateRow: TypeAlias = tuple[
+    str,
+    str,
+    "uuid.UUID",
+    int | None,
+    int,
+    str | None,
+    str | None,
+    "dict[str, object] | None",
+    str,
+    "datetime",
+]
+
+
+class _OutstandingRow(NamedTuple):
+    """One candidate (storybook, version) pair for the outstanding-decisions list.
+
+    Names the ten columns the bulk query selects so the loop below reads by
+    field rather than by tuple position, which is what keeps a column reorder
+    from silently swapping ``status`` and ``title``. ``NamedTuple`` matches the
+    idiom review_surface.py already uses for its own row shapes.
+
+    Constructed positionally from a ``_CandidateRow``, so the field ORDER here
+    must match the select() column order exactly; the field names are this
+    module's own and are unrelated to the query's column labels.
+    """
+
+    storybook_id: str
+    status: str
+    family_id: uuid.UUID
+    current_published_version: int | None
+    version: int
+    title: str | None
+    age_band: str | None
+    moderation_report: dict[str, object] | None
+    cover_status: str
+    version_created_at: datetime
+
+
+def _build_decision_item(
+    row: _OutstandingRow,
+    *,
+    kind: Literal["moderation", "cover"],
+    moderation: OutstandingModerationDetail | None = None,
+    cover: OutstandingCoverDetail | None = None,
+) -> OutstandingDecisionItem:
+    """Project one row into a decision item of the given kind.
+
+    A book can hold a moderation decision and a cover decision at once, and the
+    two rows share every identifying field. Building both through one function
+    is what guarantees they agree: a moderation row and a cover row for the same
+    book cannot end up naming different versions or different recallability.
+
+    Args:
+        row: The bulk query row for this (storybook, version) pair.
+        kind: Which decision this row represents.
+        moderation: The moderation detail, for ``kind="moderation"``.
+        cover: The cover detail, for ``kind="cover"``.
+
+    Returns:
+        OutstandingDecisionItem: The projected row.
+    """
+    return OutstandingDecisionItem(
+        kind=kind,
+        storybook_id=row.storybook_id,
+        # #EDGE: data integrity: a blob with no string title falls back to the
+        # id rather than an empty string, matching _summary_title, so an admin
+        # always has something clickable to identify the book by.
+        title=row.title or row.storybook_id,
+        status=row.status,
+        version=row.version,
+        family_id=str(row.family_id),
+        age_band=row.age_band,
+        version_created_at=row.version_created_at,
+        recallable=_is_recallable(row.status),
+        moderation=moderation,
+        cover=cover,
+    )
+
+
+def _decision_rank(item: OutstandingDecisionItem) -> tuple[int, float]:
+    """Order outstanding decisions by how much a child is exposed meanwhile.
+
+    Not by recency: this list exists because these decisions were already
+    missed, so "newest first" would bury exactly the rows that have been
+    invisible longest. The four ranks, worst first:
+
+    0. A block on a book children can read right now.
+    1. Any other moderation decision on a published book (a flag, or a report
+       too damaged to draw a verdict from, which is not a clean bill of health).
+    2. A cover awaiting review on the version a child reads, so the book is on
+       the shelf with no art.
+    3. A cover awaiting review on a version no child reaches.
+
+    Args:
+        item: One built decision row.
+
+    Returns:
+        tuple[int, float]: (rank, epoch seconds) with unknown timestamps sorted
+            last within their rank rather than treated as brand new.
+    """
+    if item.moderation is not None:
+        rank = 0 if item.moderation.block_findings else 1
+    else:
+        rank = 2 if item.cover is not None and item.cover.child_facing else 3
+    stamp = (
+        item.version_created_at.timestamp()
+        if item.version_created_at is not None
+        else float("inf")
+    )
+    return (rank, stamp)
+
+
+@router.get("/admin/outstanding-decisions")
+async def get_outstanding_decisions(ctx: Context) -> OutstandingDecisionsView:
+    """Return every admin decision the review queue does not list (admin only).
+
+    The review queue lists ``in_review`` stories only, which is correct for its
+    own job and is why two whole classes of decision have no surface at all: a
+    moderation verdict that turned into a block on an ALREADY-PUBLISHED book
+    (what `RS-C1`'s recall exists to act on, and what a threshold change
+    produces in bulk), and a cover parked at ``pending_review`` on a book of any
+    status. Both are decisions nobody is being shown, which under ADR-005 makes
+    them safety defects rather than missing convenience.
+
+    Args:
+        ctx: The request context (principal and session).
+
+    Returns:
+        OutstandingDecisionsView: One row per outstanding decision, worst first
+            (see ``_decision_rank``). A book holding both kinds yields two rows,
+            because each resolves through a different action on a different page.
+
+    Raises:
+        AuthorizationError: If the caller is not an admin (-> 403).
+    """
+    # #CRITICAL: security: admin-only GLOBAL surface, gated before any row is
+    # read so a non-admin never learns which books carry an unresolved verdict.
+    # authorize_family is intentionally NOT called: this is the cross-family
+    # safety operator's view, exactly as get_review_queue is.
+    # #VERIFY: tests/unit/test_outstanding_decisions.py::
+    # test_outstanding_decisions_blocks_non_admin (no DB round trip).
+    if not ctx.principal.is_admin:
+        msg = _ADMIN_ROLE_REQUIRED
+        raise AuthorizationError(msg, required_permission="admin")
+    latest_version = (
+        select(func.max(StorybookVersion.version))
+        .where(StorybookVersion.storybook_id == Storybook.id)
+        .correlate(Storybook)
+        .scalar_subquery()
+    )
+    # #CRITICAL: data integrity: for a PUBLISHED book the decision is about the
+    # version a child actually reads, which api/library.py resolves as
+    # current_published_version, NOT the latest row: a newer draft version can
+    # sit above it, and a verdict read off that version would describe content
+    # no child can reach. For every other status the latest version is the
+    # subject. A bare coalesce(current_published_version, latest) would be
+    # WRONG rather than merely imprecise: `RS-C1`'s recall deliberately leaves
+    # current_published_version set on a book it moves to in_review, so a
+    # coalesce would keep reading the now-unpublished version forever.
+    # #VERIFY: tests/integration/test_outstanding_decisions_api.py::
+    # test_a_recalled_book_reports_its_latest_version_not_the_published_one.
+    decision_version = case(
+        (
+            and_(
+                Storybook.status == _PUBLISHED,
+                Storybook.current_published_version.is_not(None),
+            ),
+            Storybook.current_published_version,
+        ),
+        else_=latest_version,
+    )
+    # #ASSUME: external resources: this surface must never load a content blob.
+    # A blob averages megabytes and there is one per candidate row, while every
+    # number here is derived from moderation_report; selecting specific columns
+    # (Core Rows, not ORM objects, so no deferred-attribute reload can happen
+    # later) keeps the whole listing to one round trip plus the two config
+    # loads. Title and age band are pulled out of the blob IN POSTGRES for the
+    # same reason.
+    # #VERIFY: tests/unit/test_outstanding_decisions.py::
+    # test_outstanding_decisions_is_bulk_not_n_plus_one.
+    candidates = cast(
+        "list[_CandidateRow]",
+        (
+            await ctx.session.execute(
+                select(
+                    Storybook.id,
+                    Storybook.status,
+                    Storybook.family_id,
+                    Storybook.current_published_version,
+                    StorybookVersion.version,
+                    StorybookVersion.blob["title"].as_string(),
+                    StorybookVersion.blob["metadata"]["age_band"].as_string(),
+                    StorybookVersion.moderation_report,
+                    StorybookVersion.cover_status,
+                    StorybookVersion.created_at,
+                )
+                .join(
+                    StorybookVersion,
+                    and_(
+                        StorybookVersion.storybook_id == Storybook.id,
+                        StorybookVersion.version == decision_version,
+                    ),
+                )
+                .where(
+                    or_(
+                        Storybook.status == _PUBLISHED,
+                        StorybookVersion.cover_status == _COVER_PENDING_REVIEW,
+                    )
+                )
+            )
+        ).all(),
+    )
+    if not candidates:
+        return OutstandingDecisionsView(items=[])
+    # Loaded once for the whole listing, never per row, and for the same reason
+    # get_review_queue loads them: a count shown here must equal the count the
+    # detail view this row links to computes from the same floor and policy.
+    floor = await load_admin_noise_floor(ctx.session)
+    policy = await load_threshold_policy(ctx.session)
+    items: list[OutstandingDecisionItem] = []
+    for candidate in candidates:
+        row = _OutstandingRow(*candidate)
+        try:
+            # Only a published book can carry an outstanding MODERATION
+            # decision. A draft or in_review book's verdict already has a home
+            # (the review queue), and an archived or needs_revision book reaches
+            # no child, so re-surfacing its verdict would only add noise to the
+            # one list that must stay short enough to be read.
+            moderation = (
+                build_moderation_decision_detail(
+                    storybook_id=row.storybook_id,
+                    status=row.status,
+                    version=row.version,
+                    moderation_report=row.moderation_report,
+                    admin_noise_floor=floor,
+                    age_band=row.age_band or "",
+                    policy=policy,
+                )
+                if row.status == _PUBLISHED
+                else None
+            )
+            if moderation is not None:
+                items.append(
+                    _build_decision_item(row, kind="moderation", moderation=moderation)
+                )
+            # A pending cover, by contrast, is outstanding at ANY status: the
+            # decision is unmade regardless of where the book sits, and
+            # ``child_facing`` is what separates the urgent case (a published
+            # book on the shelf with no art) from the merely unfinished one.
+            if row.cover_status == _COVER_PENDING_REVIEW:
+                items.append(
+                    _build_decision_item(
+                        row,
+                        kind="cover",
+                        cover=OutstandingCoverDetail(
+                            cover_status=row.cover_status,
+                            child_facing=(
+                                row.status == _PUBLISHED
+                                and row.version == row.current_published_version
+                            ),
+                        ),
+                    )
+                )
+        except ValidationError as exc:
+            # #EDGE: data integrity: one book's moderation_report is corrupt at
+            # rest. Isolate that book (logged with its id) rather than failing
+            # the listing: this surface is the only place the OTHER books'
+            # unresolved decisions appear, so one bad row must not hide them.
+            # Mirrors get_review_queue's review_queue_item_corrupt handling.
+            # #VERIFY: tests/integration/test_outstanding_decisions_api.py::
+            # test_a_corrupt_report_isolates_only_its_own_book.
+            _logger.warning(
+                "outstanding_decision_item_corrupt",
+                storybook_id=row.storybook_id,
+                version=row.version,
+                error=str(exc),
+            )
+            continue
+    items.sort(key=_decision_rank)
+    return OutstandingDecisionsView(items=items)
 
 
 def _summary_title(blob: object, storybook_id: str) -> str:

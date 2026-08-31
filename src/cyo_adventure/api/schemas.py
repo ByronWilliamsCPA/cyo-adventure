@@ -2218,6 +2218,97 @@ class ReviewQueueView(BaseModel):
     items: list[ReviewQueueItem]
 
 
+class OutstandingModerationDetail(BaseModel):
+    """The gating detail behind a moderation decision (`RS-C2`).
+
+    The same four numbers a ``ReviewQueueItem`` carries, computed by the same
+    routing and flooring code (``review_surface.py::build_decision_counts``), so
+    a book that reads "1 block" here reads "1 block" in the queue and on the
+    detail page. Deliberately no ``flagged_count``: that one counts occurrences
+    and is derived from the blob's nodes, which this surface does not load.
+    """
+
+    block_findings: int = Field(ge=0)
+    flag_findings: int = Field(ge=0)
+    advisory_findings: int = Field(ge=0)
+    report_unusable: bool
+    # The one finding the row names, taken from the already-ranked buckets, same
+    # as ReviewQueueItem.top_finding. ``None`` only when the report has no
+    # non-PASS finding at all, which for this surface means the row would not
+    # exist; kept optional so the model stays projectable from any report.
+    top_finding: FindingView | None = None
+
+
+class OutstandingCoverDetail(BaseModel):
+    """The detail behind a pending cover-art decision (`RS-C3`).
+
+    ``cover_status`` is echoed rather than assumed: the surface only lists
+    ``pending_review`` today, and a reader of a stored response should not have
+    to know that to interpret the row.
+    """
+
+    cover_status: str
+    # Whether this version's cover would reach a child if it were approved. True
+    # only for the version a child actually reads (api/library.py serves the
+    # cover of ``current_published_version`` and only at ``ready``), which is
+    # what separates the two production rows that show kids no cover from the
+    # archived one that nobody is waiting on.
+    child_facing: bool
+
+
+class OutstandingDecisionItem(BaseModel):
+    """One decision nobody is being shown (`RS-C2`, `RS-C3`).
+
+    The generalisation this surface exists for: **any decision attached to a
+    book the review queue no longer lists is invisible**, whether it is a
+    moderation verdict on a live book or a cover waiting for approval. Before
+    this, the only list of pending admin work was the ``in_review`` queue, so a
+    published book that a threshold change had just turned non-compliant, and a
+    published book showing kids no cover because its approval was never
+    surfaced, both sat indefinitely with nothing pointing at them.
+
+    One row per decision, not per book: a book can hold both kinds at once, and
+    each kind resolves through a different action on a different page.
+    """
+
+    kind: Literal["moderation", "cover"]
+    storybook_id: str
+    title: str
+    status: str
+    # The version the decision is about. For a ``published`` book this is
+    # ``current_published_version`` (the version a child reads), NOT the latest
+    # row: those differ, and only the former is the one a decision changes what
+    # children see. For every other status it is the latest version.
+    version: int
+    family_id: str
+    age_band: str | None = None
+    # That version's creation time. Deliberately NOT named "waiting_since" like
+    # the queue's field: what put a published book on this list is usually a
+    # THRESHOLD change, which happened long after the version was written, and
+    # nothing records per-book when a verdict turned into a block. So this dates
+    # the content, not the wait, and is honest about which. It is still the
+    # tiebreaker inside a rank (see approval.py::_decision_rank), because oldest
+    # content first is a defensible order and "newest first" would bury the rows
+    # that have been invisible longest.
+    version_created_at: datetime | None = None
+    # #ASSUME: security: whether a RECALL is legal from this row's status,
+    # derived from publishing/state_machine.py's transition table rather than
+    # hardcoded as ``status == "published"`` in the client. A client that
+    # decided for itself would offer a button the API answers 409 to the moment
+    # the table changes.
+    # #VERIFY: tests/unit/test_outstanding_decisions.py::
+    # test_recallable_is_derived_from_the_transition_table
+    recallable: bool
+    moderation: OutstandingModerationDetail | None = None
+    cover: OutstandingCoverDetail | None = None
+
+
+class OutstandingDecisionsView(BaseModel):
+    """Every outstanding admin decision on a book the review queue omits."""
+
+    items: list[OutstandingDecisionItem]
+
+
 class StorybookSummary(BaseModel):
     """One storybook in the admin master library, any lifecycle status (P19).
 
