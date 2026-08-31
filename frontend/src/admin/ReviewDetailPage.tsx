@@ -27,9 +27,16 @@ import {
   type SendBackReasonCode,
   type Visibility,
 } from '../guardian/reviewApi'
+import { ageBandLabel } from '../guardian/storyRequestOptions'
 import { StoryStructureSummary } from '../guardian/StoryStructureSummary'
 import { usePassageEdit } from '../guardian/usePassageEdit'
 import { buildReadThrough, pluralize } from './reviewDiff'
+import {
+  DEFAULT_SAMPLE_SIZE,
+  SAMPLE_NOT_CALIBRATED,
+  buildReviewSample,
+  readSampleBandContext,
+} from './reviewSample'
 import { VersionDiffView } from './ReviewCompare'
 import { useCoverGeneration } from './useCoverGeneration'
 import { useVersionCompare } from './useVersionCompare'
@@ -503,6 +510,22 @@ function ReviewDetailPageInner() {
   // footer's tier split, so the badge and its breakdown cannot disagree: both
   // come from surfacePopulation, including its legacy-report fallback.
   const mergedFindings = surfacePopulation(surface)
+  // `RS-A4`: every node any finding names, which is a wider set than
+  // flaggedIds. flagged_passages is the fan-out, and `RS-A1` deliberately
+  // keeps low advisories out of it, so a node named ONLY by a collapsed low
+  // advisory is absent there. Sampling it as "the gate said nothing here"
+  // would be false: the gate did say something, quietly.
+  const findingNodeIds = new Set<string>(surface.flagged_passages.map((passage) => passage.node_id))
+  for (const finding of mergedFindings) {
+    if (finding.node_id !== null) findingNodeIds.add(finding.node_id)
+    for (const nodeId of finding.node_ids ?? []) findingNodeIds.add(nodeId)
+  }
+  const sample = buildReviewSample(
+    [...readThrough.reachable, ...readThrough.unreachable],
+    findingNodeIds,
+    DEFAULT_SAMPLE_SIZE
+  )
+  const bandContext = readSampleBandContext(surface.blob)
   const tierBreakdown = tierBreakdownLabel(counts)
   const passageScope = affectedPassagesLabel(counts)
   const flaggedIds = new Set(surface.flagged_passages.map((passage) => passage.node_id))
@@ -863,6 +886,74 @@ function ReviewDetailPageInner() {
               </li>
             ))}
           </ul>
+        </div>
+      ) : null}
+
+      {/*
+        `RS-A4`: rendered only when the draw is genuinely a SAMPLE. A spot check
+        exists because reading 250 screens is infeasible; on a book with 15 or
+        fewer passages the full read-through below already is the sample, and
+        repeating every passage twice on one page adds noise to the surface
+        this whole plan exists to de-noise.
+      */}
+      {sample.nodes.length > 0 && sample.totalPassages > sample.nodes.length ? (
+        <div className="review-group" id="review-sample">
+          <h2>Spot check for missed content</h2>
+          {/*
+            `RS-A4`: the findings sections above serve the false-POSITIVE half
+            of the reviewer's job. This serves the other half. Owner ruling
+            2026-08-31: "I dont expect that a reviewer can read the entire
+            book. They are trying to catch false positives and false
+            negatives." The only affordance for the second half used to be the
+            full read-through below, which is 250-plus screens on a large book.
+          */}
+          <p className="review-sample__caveat" role="note">
+            {`${pluralize(sample.nodes.length, 'passage')} drawn across the story's ${pluralize(sample.totalPassages, 'passage')}, weighted toward passages the gate raised nothing about.`}{' '}
+            {/*
+              #CRITICAL: security: the caveat is not decoration. Ruling 2
+              (2026-08-31) settled that the sample size ships labelled
+              provisional until `RS-CAL3` measures a false-negative rate,
+              because "15 of 550 passages checked" with no qualifier
+              manufactures confidence in exactly the channel this section
+              exists to make trustworthy. A reviewer must never read a clean
+              sample as evidence the book is clean.
+              #VERIFY: ReviewDetailPage.test.tsx "labels the spot check sample
+              as uncalibrated, beside the count".
+            */}
+            <strong className="review-sample__uncalibrated">{SAMPLE_NOT_CALIBRATED}</strong>: a
+            clean sample is not evidence the book is clean.
+          </p>
+          {bandContext.ageBand !== null || bandContext.readingLevel !== null ? (
+            <p className="review-sample__band cyo-text-muted">
+              Judge these passages against{' '}
+              {bandContext.ageBand !== null ? ageBandLabel(bandContext.ageBand) : 'the target band'}
+              {bandContext.readingLevel !== null
+                ? `, reading level ${bandContext.readingLevel}`
+                : ''}
+              .
+            </p>
+          ) : null}
+          <ol className="review-sample__list">
+            {sample.nodes.map((node) => (
+              <li key={node.id} className="review-sample__item">
+                <div className="review-sample__head">
+                  <span className="review-sample__node">{node.id}</span>
+                  <span className="review-sample__position cyo-text-muted">
+                    {`passage ${node.position} of ${sample.totalPassages}`}
+                  </span>
+                  {node.hasFinding ? <FlagBadge tone="flag" label="already flagged above" /> : null}
+                  <button
+                    type="button"
+                    className="review-jump"
+                    onClick={() => jumpToPassage(node.id)}
+                  >
+                    Show in story
+                  </button>
+                </div>
+                <PassageText text={node.body} />
+              </li>
+            ))}
+          </ol>
         </div>
       ) : null}
 

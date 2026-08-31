@@ -658,6 +658,133 @@ describe('ReviewDetailPage', () => {
     })
   })
 
+  describe('false-negative spot check (RS-A4)', () => {
+    /**
+     * A book large enough that reading it all is the failure mode: 40
+     * passages in one chain. `SURFACE` has 2, which is why the section does
+     * not render there (the full read-through already is the sample).
+     */
+    const bigSurface = (over: Record<string, unknown> = {}) => ({
+      ...SURFACE,
+      blob: {
+        title: 'The Long Cave',
+        start_node: 'p1',
+        metadata: { age_band: '8-11', reading_level: 'grade_3' } as Record<string, unknown>,
+        nodes: Array.from({ length: 40 }, (_, index) => ({
+          id: `p${index + 1}`,
+          body: `Passage ${index + 1} prose.`,
+          choices:
+            index === 39 ? [] : [{ id: `c${index}`, label: 'Onward', target: `p${index + 2}` }],
+        })),
+      },
+      flagged_passages: [],
+      story_level_findings: [],
+      ...over,
+    })
+
+    it('labels the spot check sample as uncalibrated, beside the count', async () => {
+      // Ruling 2 (2026-08-31): 15 is a working figure, not a derived one.
+      // "15 of 550 passages checked" with no qualifier manufactures exactly
+      // the false confidence this section exists to prevent, so the caveat
+      // ships with the count or the feature does not ship.
+      mockGet.mockResolvedValue({ data: bigSurface() })
+      renderAt('s1')
+      await screen.findByRole('heading', { name: 'Spot check for missed content' })
+      const note = screen.getByRole('note')
+      expect(note.textContent).toContain('15 passages drawn across')
+      expect(note.textContent).toContain("story's 40 passages")
+      expect(note.textContent).toContain('sample size not yet calibrated')
+      expect(note.textContent).toContain('a clean sample is not evidence the book is clean')
+    })
+
+    it('draws a spread of passages, not a prefix of the story', async () => {
+      mockGet.mockResolvedValue({ data: bigSurface() })
+      renderAt('s1')
+      const section = await screen.findByRole('heading', { name: 'Spot check for missed content' })
+      const group = section.closest('.review-group')
+      expect(group).not.toBeNull()
+      const positions = Array.from(
+        (group as HTMLElement).querySelectorAll('.review-sample__position')
+      ).map((el) => Number(/passage (\d+) of/.exec(el.textContent ?? '')?.[1]))
+      expect(positions).toHaveLength(15)
+      // A prefix draw would end in the low single digits; this must reach the
+      // far end of the story.
+      expect(positions[0]).toBeLessThan(5)
+      expect(positions[14]).toBeGreaterThan(35)
+    })
+
+    it('names the band a reviewer should judge the passages against', async () => {
+      mockGet.mockResolvedValue({ data: bigSurface() })
+      renderAt('s1')
+      await screen.findByRole('heading', { name: 'Spot check for missed content' })
+      expect(screen.getByText(/Judge these passages against Ages 8-11/)).toBeInTheDocument()
+      expect(screen.getByText(/reading level grade_3/)).toBeInTheDocument()
+    })
+
+    it('renders no band line when the blob declares no band, rather than an empty one', async () => {
+      const noMetadata = bigSurface()
+      noMetadata.blob = { ...noMetadata.blob, metadata: {} }
+      mockGet.mockResolvedValue({ data: noMetadata })
+      renderAt('s1')
+      await screen.findByRole('heading', { name: 'Spot check for missed content' })
+      expect(screen.queryByText(/Judge these passages against/)).not.toBeInTheDocument()
+    })
+
+    it('excludes passages a collapsed low advisory names, not just flagged_passages', async () => {
+      /*
+        The trap `RS-A1` created: a low advisory is deliberately kept out of
+        flagged_passages, so a node named ONLY by one is absent there. Sampling
+        it as "the gate raised nothing here" would be false, and would send the
+        reviewer hunting for a miss the gate had already reported.
+      */
+      const covered = Array.from({ length: 30 }, (_, index) => `p${index + 1}`)
+      mockGet.mockResolvedValue({
+        data: bigSurface({
+          low_advisory_findings: [
+            {
+              stage: 1,
+              source: 'llm_safety',
+              category: 'safety',
+              node_id: null,
+              verdict: 'advisory',
+              score: 0.1,
+              message: 'mild peril throughout',
+              severity: 'low',
+              node_ids: covered,
+              structural: false,
+              concern: 'peril',
+            },
+          ],
+        }),
+      })
+      renderAt('s1')
+      const section = await screen.findByRole('heading', { name: 'Spot check for missed content' })
+      const group = section.closest('.review-group') as HTMLElement
+      const ids = Array.from(group.querySelectorAll('.review-sample__node')).map(
+        (el) => el.textContent
+      )
+      // 10 unflagged passages exist (p31..p40); they are all drawn first, and
+      // the remaining 5 are topped up from the advisory-covered ones, which
+      // the UI marks so the reviewer knows they are not fresh ground.
+      expect(ids).toHaveLength(15)
+      const unflagged = ids.filter((id) => Number((id ?? 'p0').slice(1)) > 30)
+      expect(unflagged).toHaveLength(10)
+      expect(group.querySelectorAll('.flag-badge')).toHaveLength(5)
+    })
+
+    it('omits the section entirely when the whole story fits in one sitting', async () => {
+      // SURFACE is a 2-passage book: the read-through below IS the sample, and
+      // rendering every passage twice would add noise to the page this plan
+      // exists to de-noise.
+      mockGet.mockResolvedValue({ data: SURFACE })
+      renderAt('s1')
+      await screen.findByRole('heading', { name: 'Full story' })
+      expect(
+        screen.queryByRole('heading', { name: 'Spot check for missed content' })
+      ).not.toBeInTheDocument()
+    })
+  })
+
   describe('what the automated gate measured (R-2)', () => {
     /*
       The approval screen showed findings without showing the measurements

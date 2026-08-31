@@ -885,6 +885,49 @@
   margin: 0.25rem 0 0.5rem 1rem;
 }
 
+/* `RS-A4`: the false-negative spot check. The caveat is styled to be read,
+   not skimmed past: ruling 2 (2026-08-31) ships the 15-passage size labelled
+   provisional, and a reviewer who misses that label reads a clean sample as
+   evidence the book is clean. Asserted in ReviewDetailPage.test.tsx
+   ("labels the spot check sample as uncalibrated, beside the count"). */
+.review-sample__caveat {
+  margin: 0 0 0.5rem;
+}
+
+.review-sample__uncalibrated {
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  font-size: 0.85em;
+}
+
+.review-sample__band {
+  margin: 0 0 0.75rem;
+}
+
+.review-sample__list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.review-sample__head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.review-sample__node {
+  font-family: var(--font-mono, ui-monospace, monospace);
+}
+
+.review-sample__position {
+  font-variant-numeric: tabular-nums;
+}
+
 /* What the automated gate measured (R-2): the numbers behind the routing
    decision, read alongside the findings they explain. */
 .review-measures__list {
