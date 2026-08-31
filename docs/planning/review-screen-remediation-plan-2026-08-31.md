@@ -1,7 +1,7 @@
 # Review screen remediation plan
 
-> **Status**: Scoped, ready to schedule | **Created**: 2026-08-31 | **Owner rulings**: 2026-08-31 (sections 3
-> and 10)
+> **Status**: Delivered except `RS-CAL3`/`RS-CAL4`/`RS-B4` (see section 12) | **Created**: 2026-08-31 |
+> **Owner rulings**: 2026-08-31 (sections 3 and 10)
 >
 > Implementation plan for making the admin story-review surface reviewable. Supersedes nothing. Every
 > measurement it rests on is reproduced in section 2 from production, read-only, so this document is
@@ -210,6 +210,20 @@ constraint in this document.
 | `RS-CAL2` | Re-derive `UW-C378`'s per-floor advisories-per-node and adversarial-recall table from the 2026-08-01 baseline JSON as a **script**, not by hand, so the number has an oracle. | free | nothing |
 | `RS-CAL3` | Fresh capture against adversarial corpus v1.1 for all 6 bands, plus a production-representative clean sample (section 5.6). | API calls | `RS-CAL2` |
 | `RS-CAL4` | Choose per-(band, category) floors against the `RS-CAL3` distribution; record the chosen values, the measured noise, and the measured recall loss together. A floor shipped without its recall cost stated is not calibrated. | free | `RS-CAL3` |
+
+**Re-scope after `RS-CAL1` ran (2026-08-31).** `RS-CAL1`'s replay inverted the premise both paid tasks were
+scoped against, so neither should be spent as written. Against all 31 stored production reports the ratified
+per-category floor removes **0.2%** of surfaced occurrences on band 13-16 and **0.6%** on 16+, while `RS-A1`'s
+low-advisory collapse, already shipped, removes **96-100%** at no recall cost: all 14 findings spanning 40 or
+more nodes are low-severity `openai` advisories on `violence`/`violence/graphic` scoring 0.33-0.45. The
+reviewer-load question `RS-CAL3` was scoped to answer is therefore already answered, by a change that shipped.
+The one floor with real leverage is `violence*` near **0.50** (71-90% of remaining occurrences), and it sits
+inside the graded range, so it buys nothing except by trading recall.
+
+`RS-CAL3` should therefore be narrowed to the two questions that remain, both about recall rather than load:
+does a `violence*` floor near 0.50 drop a true positive, and is anything measurable below 0.01. `RS-CAL4` rules
+on recall, not on noise. `RS-B4` stays blocked behind both. Full evidence:
+`docs/planning/safety/production-floor-replay-2026-08-31.md`; register row `UW-C439`, lesson `AL-714`.
 
 ### 5.6 Sampling constraint on the clean corpus
 
@@ -595,3 +609,39 @@ collection renders, measure how much of it the server should not have sent.
 - `A4` (re-screen the already-published catalog when thresholds change) is Track C's target. `A4` is marked ✅
   because `POST /api/v1/admin/rescreen` exists, but a re-screened published book has nowhere to go: archive is
   the only exit from published and is absorbing. `RS-C1` is what makes `A4`'s ✅ true end to end.
+
+## 12. Delivery status
+
+Recorded 2026-08-31, at the end of the build that this document scoped. Every commit named below is on
+`feat/review-screen-remediation`.
+
+| ID | State | Ref |
+|---|---|---|
+| `RS-A1` | delivered | `0056b9407` |
+| `RS-A2` | delivered | `bef132f64` |
+| `RS-A3` | delivered | `b2eb84a9d` |
+| `RS-A4` | delivered | `c66f31e51` |
+| `RS-A5` | delivered | `50dace303` |
+| `RS-A6` | delivered | `4c5cd1a11` |
+| `RS-A7` | delivered | `ef9866d39` |
+| `RS-CAL1` | delivered, and it inverted the Track B premise (section 5.5) | `e0f22ba42` |
+| `RS-CAL2` | delivered | `2f84ea7c1` |
+| `RS-CAL3` | **blocked**: needs paid classifier calls, and needs the section 5.5 re-scope first | `UW-C439` |
+| `RS-CAL4` | **blocked** on `RS-CAL3` | `UW-C439` |
+| `RS-B1` | delivered | `a3bc2d20e` |
+| `RS-B2` | migration written, **not applied to production** | `8844595f7` |
+| `RS-B3` | delivered | `a3bc2d20e` |
+| `RS-B4` | **blocked** on `RS-CAL4`; scope is the 13 `in_review` books only (ruling 3) | `UW-J42` |
+| `RS-B5` | delivered | `3a2d32696` |
+| `RS-C1` | delivered | `ca9ae4710` |
+| `RS-C2` | delivered (backend and console) | `6ad996307`, `f0637f402` |
+| `RS-C3` | delivered as part of the same surface, by design | `6ad996307`, `f0637f402` |
+
+Two things a reader should not have to infer:
+
+- **`RS-B2`'s migration has not been applied to production.** It is a file in `supabase/migrations/`, and every
+  production interaction during this build was read-only. Until it is applied, `moderation_threshold` holds zero
+  rows and the admin console's threshold editor still renders an empty grid.
+- **`RS-C2` and `RS-C3` shipped as one surface**, not two, because the gap is one gap: any decision attached to
+  a book the queue does not list is invisible, whether it is a moderation verdict or a pending cover. Splitting
+  them would have produced two lists an admin has to remember to check.
