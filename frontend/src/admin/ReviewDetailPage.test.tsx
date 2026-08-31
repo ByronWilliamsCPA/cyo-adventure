@@ -504,6 +504,160 @@ describe('ReviewDetailPage', () => {
     })
   })
 
+  describe('one canonical count (RS-A3)', () => {
+    /*
+      One book used to render four mutually inconsistent numbers: `2
+      advisories` on its queue row, `4 findings` in this header, "no content
+      concerns" in the gate summary, and `5 flagged` / `5 advisorys` in the
+      overview footer, over 5 passage cards. Every assertion here is against
+      the rendered DOM rather than the source, because Prettier-wrapped JSX
+      prose defeats a source grep: a zero result for a claim AND for its
+      negation means the probe is broken, not that the bug is gone.
+    */
+    /** The header verdict strip, one of the two places a count is shown. */
+    const headerStrip = () => {
+      const strip = document.querySelector('.review-summary')
+      expect(strip).not.toBeNull()
+      return within(strip as HTMLElement)
+    }
+    /** The story-overview footer, the other place a count is shown. */
+    const overviewFooter = () => {
+      const details = document.querySelector('.review-overview')
+      expect(details).not.toBeNull()
+      return within(details as HTMLElement)
+    }
+
+    const finding = (over: Record<string, unknown>) => ({
+      stage: 1,
+      source: 'llm_safety',
+      category: 'safety',
+      node_id: 'n1',
+      verdict: 'advisory',
+      score: null,
+      message: 'a finding',
+      severity: 'low',
+      node_ids: ['n1'],
+      structural: false,
+      concern: null,
+      ...over,
+    })
+
+    it('counts the findings it renders, not the report summary persisted total', async () => {
+      // summary.count is `len(persisted)` from moderation/report.py::to_dict,
+      // taken BEFORE the admin noise floor filters anything, so a floored
+      // report leaves the header claiming rows the page never shows. 99 here
+      // is deliberately impossible for this surface.
+      mockGet.mockResolvedValue({
+        data: {
+          ...SURFACE,
+          summary: { ...SURFACE.summary, count: 99 },
+          flagged_passages: [],
+          story_level_findings: [],
+          ranked_findings: [
+            finding({ verdict: 'block', severity: 'high', message: 'one' }),
+            finding({ verdict: 'flag', severity: 'high', message: 'two' }),
+          ],
+        },
+      })
+      renderAt('s1')
+      expect(await screen.findByText('2 findings')).toBeInTheDocument()
+      expect(screen.queryByText('99 findings')).not.toBeInTheDocument()
+    })
+
+    it('names the passage denominator instead of leaving two bare numbers', async () => {
+      mockGet.mockResolvedValue({
+        data: {
+          ...SURFACE,
+          ranked_findings: [finding({ verdict: 'flag', severity: 'high', message: 'one' })],
+        },
+      })
+      renderAt('s1')
+      // One finding, one passage card: both numbers are 1 here, and the point
+      // is that each says what it counted. SURFACE has a single flagged
+      // passage, so the scope line has something to name.
+      expect(await screen.findByText('1 finding')).toBeInTheDocument()
+      expect(screen.getByText('1 flagged passage below')).toBeInTheDocument()
+    })
+
+    it('gives the header and the story-overview footer the same number', async () => {
+      /*
+        The regression that produced Teddy's four numbers: one merged advisory
+        spanning three nodes plus two flags. The footer used to count the
+        fan-out (allFindings.length) while the header counted the persisted
+        total, so they could not agree by construction.
+      */
+      mockGet.mockResolvedValue({
+        data: {
+          ...SURFACE,
+          summary: { ...SURFACE.summary, count: 7 },
+          ranked_findings: [
+            finding({ verdict: 'flag', severity: 'high', message: 'first flag' }),
+            finding({ verdict: 'flag', severity: 'medium', message: 'second flag' }),
+          ],
+          low_advisory_findings: [
+            finding({ message: 'spans the book', node_ids: ['n1', 'n2', 'n3'] }),
+          ],
+        },
+      })
+      renderAt('s1')
+      expect(await screen.findByText('3 findings')).toBeInTheDocument()
+      expect(overviewFooter().getByText('3 flagged findings')).toBeInTheDocument()
+      // And both surfaces' tier splits agree with the totals beside them.
+      // Scoped per surface on purpose: an unscoped query throws "found
+      // multiple", which would pass a weaker assertion for the wrong reason.
+      expect(headerStrip().getByText('2 flags · 1 advisory')).toBeInTheDocument()
+      expect(overviewFooter().getByText('2 flags · 1 advisory')).toBeInTheDocument()
+    })
+
+    it('pluralizes advisories as advisories', async () => {
+      mockGet.mockResolvedValue({
+        data: {
+          ...SURFACE,
+          flagged_passages: [],
+          story_level_findings: [],
+          low_advisory_findings: [
+            finding({ message: 'first' }),
+            finding({ message: 'second' }),
+            finding({ message: 'third' }),
+          ],
+        },
+      })
+      renderAt('s1')
+      expect(await screen.findByText('3 findings')).toBeInTheDocument()
+      expect(headerStrip().getByText('3 advisories')).toBeInTheDocument()
+      expect(overviewFooter().getByText('3 advisories')).toBeInTheDocument()
+      expect(screen.queryByText(/advisorys/)).not.toBeInTheDocument()
+    })
+
+    it('keeps structural findings out of the flag tier, matching the backend', async () => {
+      // review_surface.py excludes structural rows from flag_findings, so a
+      // surface with one real flag and one structural flag must read "1 flag".
+      // The overview footer used to tally them itself and said "2 flags".
+      mockGet.mockResolvedValue({
+        data: {
+          ...SURFACE,
+          flagged_passages: [],
+          story_level_findings: [],
+          ranked_findings: [finding({ verdict: 'flag', severity: 'high', message: 'real flag' })],
+          structural_findings: [
+            finding({
+              verdict: 'flag',
+              severity: 'medium',
+              message: 'report incomplete',
+              structural: true,
+              category: 'coverage',
+            }),
+          ],
+        },
+      })
+      renderAt('s1')
+      expect(await screen.findByText('2 findings')).toBeInTheDocument()
+      expect(headerStrip().getByText('1 flag')).toBeInTheDocument()
+      expect(overviewFooter().getByText('1 flag')).toBeInTheDocument()
+      expect(screen.queryByText(/2 flags/)).not.toBeInTheDocument()
+    })
+  })
+
   describe('what the automated gate measured (R-2)', () => {
     /*
       The approval screen showed findings without showing the measurements
@@ -632,7 +786,11 @@ describe('ReviewDetailPage', () => {
       })
       renderAt('s1')
       await screen.findByRole('heading', { name: 'What the automated gate measured' })
-      expect(screen.getByText(/no content concerns/i)).toBeInTheDocument()
+      // `RS-A3`: the old copy said "The moderation gate raised no content
+      // concerns" while the findings sections rendered below it. The line
+      // reports only LABELLED safety concerns, so it now says so.
+      expect(screen.getByText(/no safety concern labels were recorded/i)).toBeInTheDocument()
+      expect(screen.queryByText(/raised no content concerns/i)).not.toBeInTheDocument()
     })
 
     it('renders nothing at all when an older backend omits the block', async () => {
@@ -756,7 +914,10 @@ describe('ReviewDetailPage', () => {
       },
     })
     renderAt('s1')
-    expect(await screen.findByText('3 findings')).toBeInTheDocument()
+    // `RS-A3`: the count comes from the rendered surface (one finding here),
+    // NOT from summary.count, which is deliberately 3 in this fixture. See
+    // "counts the findings it renders, not the report's persisted total".
+    expect(await screen.findByText('1 finding')).toBeInTheDocument()
     expect(screen.getByText('Hard block')).toBeInTheDocument()
     expect(screen.getByText('Repaired')).toBeInTheDocument()
     expect(screen.getByText('Not independently reviewed')).toBeInTheDocument()
@@ -1569,7 +1730,9 @@ describe('ReviewDetailPage', () => {
       expect(details).toHaveAttribute('open')
       const overview = within(details as HTMLElement)
       // SURFACE has one flagged passage with one 'flag'-verdict finding.
-      expect(overview.getByText('1 flagged')).toBeInTheDocument()
+      // `RS-A3`: "1 flagged finding", not a bare "1 flagged": this footer and
+      // the header strip count the same population and now say which.
+      expect(overview.getByText('1 flagged finding')).toBeInTheDocument()
     })
 
     it('derives node/ending counts and branch shape from the blob', async () => {

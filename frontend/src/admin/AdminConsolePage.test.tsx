@@ -122,7 +122,10 @@ describe('AdminConsolePage', () => {
     renderPage()
     expect(await screen.findByText('Scary Tale')).toBeInTheDocument()
     expect(screen.getByText('Gentle Tale')).toBeInTheDocument()
-    expect(screen.getByText('2 flags')).toBeInTheDocument()
+    // `RS-A3`: FLAGGED carries no tiered counts, so the badge falls back to
+    // flagged_count and must NAME it. That field counts occurrences, which is
+    // a different number from the tiers, and "2 flags" claimed otherwise.
+    expect(screen.getByText('2 flagged occurrences')).toBeInTheDocument()
     expect(screen.getByText('Clean')).toBeInTheDocument()
   })
 
@@ -135,8 +138,8 @@ describe('AdminConsolePage', () => {
     expect(within(dialog).getByText('adventure')).toBeInTheDocument()
     expect(within(dialog).getByText(/Violence: moderate/)).toBeInTheDocument()
     // The dialog's moderation slot reuses the same SeverityBadges the queue
-    // row already shows: "2 flags", not a duplicated/independent computation.
-    expect(within(dialog).getByText('2 flags')).toBeInTheDocument()
+    // row already shows, not a duplicated/independent computation.
+    expect(within(dialog).getByText('2 flagged occurrences')).toBeInTheDocument()
     await user.click(within(dialog).getByRole('button', { name: /^Close$/ }))
     expect(screen.queryByRole('dialog')).not.toBeInTheDocument()
   })
@@ -162,7 +165,7 @@ describe('AdminConsolePage', () => {
     mockQueue([REPAIRED])
     renderPage()
     expect(await screen.findByText('Patched Tale')).toBeInTheDocument()
-    expect(screen.getByText('1 flag')).toBeInTheDocument()
+    expect(screen.getByText('1 flagged occurrence')).toBeInTheDocument()
     expect(screen.getByText('Repaired')).toBeInTheDocument()
   })
 
@@ -186,6 +189,20 @@ describe('AdminConsolePage', () => {
     renderPage()
     expect(await screen.findByText('1 block · 3 flags · 47 advisories')).toBeInTheDocument()
     expect(screen.queryByText('51 flags')).not.toBeInTheDocument()
+    // `RS-A3`: the occurrence fallback must not ALSO render once the tiers are
+    // known, or the row shows two numbers for one book again.
+    expect(screen.queryByText(/flagged occurrence/)).not.toBeInTheDocument()
+  })
+
+  it('pluralizes each tier independently rather than hard-coding one form', async () => {
+    // `RS-A3`: the hand-rolled label read "2 block" and "1 flags"; both arms
+    // of every tier's plural are now the shared pluralize's problem, so this
+    // pins the singular block/advisory forms the old code could not produce.
+    mockQueue([
+      { ...FLAGGED, block_findings: 2, flag_findings: 1, advisory_findings: 1, flagged_count: 4 },
+    ])
+    renderPage()
+    expect(await screen.findByText('2 blocks · 1 flag · 1 advisory')).toBeInTheDocument()
   })
 
   it('sorts the flagged bucket hard blocks first, then flag count desc, stable within ties', async () => {

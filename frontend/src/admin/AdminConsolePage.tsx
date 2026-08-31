@@ -7,7 +7,9 @@ import { ErrorBanner } from '@ds/components/ErrorBanner'
 import { LoadingStatus } from '@ds/components/LoadingStatus'
 import { BookDetailsDialog } from '../guardian/BookDetailsDialog'
 import { FlagBadge } from '../guardian/FlagBadge'
+import { queueItemCounts, tierBreakdownLabel } from '../guardian/findingCounts'
 import { formatRelativeTime } from '../guardian/intakeApi'
+import { pluralize } from '../guardian/storyReadThrough'
 import { ageBandLabel } from '../guardian/storyRequestOptions'
 import { classifyApiError } from '../hooks/classifyApiError'
 import { useApi } from '../hooks/useApi'
@@ -88,23 +90,28 @@ function formatUpdatedAt(at: Date): string {
  * backend supplies them, falling back to the flat flagged_count for a report
  * from before those fields existed.
  *
+ * `RS-A3`: the tiers and their pluralization now come from
+ * `guardian/findingCounts.ts`, the one module that defines these counts, so
+ * this row and the review detail page cannot drift apart. Two defects went
+ * with the hand-rolled version: it rendered `2 block` and `1 flags`, and its
+ * fallback labelled `flagged_count` as "flags" when that field counts
+ * OCCURRENCES (one merged finding across 380 nodes counted 380 times), which
+ * is a different number from the tiers above it and now says so.
+ *
  * #ASSUME: data integrity: block_findings/flag_findings/advisory_findings are
  * either all present (a Stage-B-or-later report) or all absent (an older
  * cached queue payload); a partial set would silently under-report the
  * missing tiers rather than fail, since each is defaulted to 0 independently.
+ * A report carrying ONLY structural findings also lands on the fallback, since
+ * the backend excludes structural rows from flag_findings; the fallback's
+ * wording therefore has to hold for that case too, not just for a legacy row.
  * #VERIFY: AdminConsolePage.test.tsx asserts the tiered string replaces the
  * flat count when the tiered fields are present.
  */
 function tierLabel(item: ReviewQueueItem): string {
-  const blockFindings = item.block_findings ?? 0
-  const flagFindings = item.flag_findings ?? 0
-  const advisoryFindings = item.advisory_findings ?? 0
-  const parts: string[] = []
-  if (blockFindings > 0) parts.push(`${blockFindings} block`)
-  if (flagFindings > 0) parts.push(`${flagFindings} flags`)
-  if (advisoryFindings > 0) parts.push(`${advisoryFindings} advisories`)
-  if (parts.length > 0) return parts.join(' · ')
-  return item.flagged_count === 1 ? '1 flag' : `${item.flagged_count} flags`
+  return (
+    tierBreakdownLabel(queueItemCounts(item)) ?? pluralize(item.flagged_count, 'flagged occurrence')
+  )
 }
 
 /**

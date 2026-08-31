@@ -11,6 +11,13 @@ import { usePageTitle } from '../hooks/usePageTitle'
 import { makeCoverApi } from '../guardian/coverApi'
 import { makeRescreenApi, type BookVerdictView } from './rescreenApi'
 import { FlagBadge } from '../guardian/FlagBadge'
+import {
+  affectedPassagesLabel,
+  distinctFindingsLabel,
+  surfaceCounts,
+  surfacePopulation,
+  tierBreakdownLabel,
+} from '../guardian/findingCounts'
 import { makePassageEditApi } from '../guardian/passageEditApi'
 import { Finding, passageDomId, Passage, RankedFinding } from '../guardian/ReviewPassage'
 import {
@@ -130,9 +137,21 @@ function GenerationMeasuresBlock({ measures }: { measures: GenerationMeasuresVie
             <FlagBadge tone="flag" label="Below the fill floor" />
           ) : null}
         </li>
+        {/*
+            `RS-A3`: this read "The moderation gate raised no content
+            concerns" while five findings rendered directly below it, because
+            `measures.safety_concerns` is built ONLY from non-structural
+            safety-category findings that carry a concern label
+            (review_surface.py::_generation_measures). Empty here means no
+            concern LABEL was recorded, which is not the same claim as no
+            findings, so the copy now names the population it counted.
+          */}
         <li className="review-measures__item">
           {concerns.length === 0 ? (
-            <span className="cyo-text-muted">The moderation gate raised no content concerns.</span>
+            <span className="cyo-text-muted">
+              No safety concern labels were recorded for this version. Findings below still need a
+              look; this line only reports labelled concerns.
+            </span>
           ) : (
             <>
               <span className="review-measures__label">Concerns raised</span>
@@ -476,6 +495,16 @@ function ReviewDetailPageInner() {
   const proseForNode = (nodeId: string): string | null => proseByNodeId.get(nodeId) ?? null
   const totalPassages = readThrough.reachable.length + readThrough.unreachable.length
   const coverage = `${pluralize(totalPassages, 'passage')}, ${readThrough.reachable.length} reachable from the start, ${pluralize(readThrough.endingCount, 'ending')}`
+  // `RS-A3`: every count this page shows comes from here, so a reviewer can
+  // never be handed two numbers for one book without being told which
+  // population each one counted.
+  const counts = surfaceCounts(surface)
+  // The very population `counts.distinct` counted, for the story-overview
+  // footer's tier split, so the badge and its breakdown cannot disagree: both
+  // come from surfacePopulation, including its legacy-report fallback.
+  const mergedFindings = surfacePopulation(surface)
+  const tierBreakdown = tierBreakdownLabel(counts)
+  const passageScope = affectedPassagesLabel(counts)
   const flaggedIds = new Set(surface.flagged_passages.map((passage) => passage.node_id))
   const allFindings = [
     ...surface.flagged_passages.flatMap((passage) => passage.findings),
@@ -534,9 +563,25 @@ function ReviewDetailPageInner() {
         // hard_block gets the danger tone; every badge carries text, never
         // color alone.
         <div className="review-summary">
-          <span className="review-summary__count">
-            {pluralize(surface.summary.count, 'finding')}
-          </span>
+          {/*
+            `RS-A3`: this used to render `surface.summary.count`, the count of
+            finding rows PERSISTED on the version (moderation/report.py
+            ::to_dict, `len(persisted)`). That is a third population, distinct
+            from both what this page renders and what the queue row shows: it
+            predates the admin noise floor, so a floor that filters rows leaves
+            the header claiming findings the page never displays. Derive from
+            the rendered surface instead, via the one module that defines these
+            counts, and name each denominator: `The Teddy Bears' Picnic` used to
+            report `2 advisories` on its queue row, `4 findings` here, and
+            `5 flagged` in the overview footer, for one book.
+          */}
+          <span className="review-summary__count">{distinctFindingsLabel(counts)}</span>
+          {tierBreakdown !== null ? (
+            <span className="review-summary__scope cyo-text-muted">{tierBreakdown}</span>
+          ) : null}
+          {passageScope !== null ? (
+            <span className="review-summary__scope cyo-text-muted">{passageScope}</span>
+          ) : null}
           {surface.summary.hard_block ? <FlagBadge tone="block" label="Hard block" /> : null}
           {surface.summary.soft_flag ? <FlagBadge tone="flag" label="Soft flags" /> : null}
           {surface.summary.repaired ? <FlagBadge tone="flag" label="Repaired" /> : null}
@@ -623,11 +668,20 @@ function ReviewDetailPageInner() {
       <details className="review-overview" open>
         <summary>Story overview</summary>
         <div className="review-overview__body">
+          {/*
+            `RS-A3`: the distinct merged population, not `allFindings.length`.
+            allFindings is the fan-out (flagged_passages x their findings, plus
+            story-level), so this footer read `5 flagged` on a book whose
+            header read `4 findings` and whose queue row read `2 advisories`.
+            countBasis makes the denominator explicit in the badge rather than
+            leaving the reader to guess which of the two numbers it is.
+          */}
           <StoryStructureSummary
             blob={surface.blob}
             screened={surface.screened}
-            flaggedCount={allFindings.length}
-            findings={allFindings}
+            flaggedCount={counts.distinct}
+            findings={mergedFindings}
+            countBasis="distinct"
           />
         </div>
       </details>
