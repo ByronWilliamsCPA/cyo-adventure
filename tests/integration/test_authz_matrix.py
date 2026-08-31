@@ -367,6 +367,14 @@ def _send_back_body(_seed: Seed) -> dict[str, Any]:
     }
 
 
+def _recall_body(_seed: Seed) -> dict[str, Any]:
+    # `other`, not `threshold_change`, for the same reason _send_back_body uses
+    # `other`: the code decides notification severity, and this suite is only
+    # proving the role gate, so it should pick the value that asserts nothing
+    # about why a recall happened.
+    return {"reason_code": "other"}
+
+
 def _assignment_body(seed: Seed) -> dict[str, Any]:
     # Must be a profile the guardian actually owns (authorize_profile runs a
     # second time per-id, after the guardian-only gate); seed.child_profile_id
@@ -1137,6 +1145,17 @@ _ROUTE_SPECS: list[RouteSpec] = [
         frozenset({Role.ADMIN}),
         path_params=_storybook_path,
     ),
+    RouteSpec(
+        "POST",
+        "/api/v1/storybooks/{storybook_id}/recall",
+        frozenset({Role.ADMIN}),
+        path_params=_storybook_path,
+        json_body=_recall_body,
+    ),
+    # `RS-C2`/`RS-C3`: the decisions the review queue structurally cannot list.
+    # Admin-only for the same reason the queue is: the rows name moderation
+    # findings across every family.
+    RouteSpec("GET", "/api/v1/admin/outstanding-decisions", frozenset({Role.ADMIN})),
     # -- assignments.py: guardian-only (admin rejected too) ------------------
     RouteSpec(
         "POST",

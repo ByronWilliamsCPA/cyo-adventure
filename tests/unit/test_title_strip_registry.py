@@ -82,6 +82,12 @@ DECIDED: dict[tuple[str, str], str] = {
     ("StorybookSummary", "title"): _RAW_REVIEW_SURFACE,
     ("StorybookSummary", "themes"): _RAW_REVIEW_SURFACE,
     ("FlaggedPassage", "prose"): _RAW_REVIEW_SURFACE,
+    # `RS-C2`/`RS-C3`. Same ruling as ReviewQueueItem.title, and for the same
+    # reason: this row exists so an admin can decide about a book, and a
+    # personalization marker in the title is part of what they are deciding
+    # about. The surface is admin-gated (approval.py::get_outstanding_decisions
+    # raises AuthorizationError without is_admin), so no child reads it.
+    ("OutstandingDecisionItem", "title"): _RAW_REVIEW_SURFACE,
     # --- raw: stripping would destroy a legitimate slot ---
     ("NodeEditBody", "body"): _RAW_LEGAL_SENTINEL_SURFACE,
     # --- raw: adult-authored input, no sentinel can be present ---
