@@ -232,6 +232,11 @@ export const ROUTE_MANIFEST: readonly RouteManifestEntry[] = [
     note: 'Same admin-console gate as /admin.',
   },
   {
+    path: '/admin/outstanding-decisions',
+    walkers: ['admin'],
+    note: 'Same admin-console gate as /admin.',
+  },
+  {
     path: '/admin/audit',
     walkers: ['admin'],
     note: 'Same admin-console gate as /admin.',

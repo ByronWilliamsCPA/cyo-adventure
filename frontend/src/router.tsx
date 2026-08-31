@@ -44,6 +44,7 @@ import {
   RouteFallback,
   SupportPage,
   AuditPage,
+  OutstandingDecisionsPage,
   UserManagementPage,
 } from './routeElements'
 import {
@@ -298,6 +299,16 @@ export const routes = [
                   {
                     path: 'users',
                     element: suspended(<UserManagementPage />),
+                  },
+                  {
+                    // `RS-C2`/`RS-C3`: the decisions the index route's review
+                    // queue structurally cannot show, since that queue is
+                    // in_review only. Its own route rather than a tab on the
+                    // queue because the two lists answer different questions
+                    // and an admin comes here on a different trigger (a
+                    // threshold change), not while working the queue.
+                    path: 'outstanding-decisions',
+                    element: suspended(<OutstandingDecisionsPage />),
                   },
                   {
                     path: 'audit',

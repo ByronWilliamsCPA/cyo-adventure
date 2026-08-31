@@ -78,12 +78,15 @@ describe('usersim route manifest sync', () => {
   // The exact count is a cross-check, not an invariant: this repo's own
   // recon before this test counted 30 leaf routes across four surfaces
   // (landing 3, kid 3, guardian 16, admin 10 = 32), one short of the 33 a
-  // structural walk of the current tree actually produces (32 real leaves
-  // plus the '/*' catch-all). The count below is asserted against the real
-  // tree, not the earlier estimate; see the task report for the discrepancy.
+  // structural walk of the tree produced at the time (32 real leaves plus the
+  // '/*' catch-all). The count below is asserted against the real tree, not
+  // the earlier estimate; see the task report for the discrepancy. It moves
+  // whenever a route is added, and doing that deliberately is the point: a new
+  // route that nothing walks is exactly what this file exists to surface.
+  // Now 34 (33 real leaves plus '/*') after /admin/outstanding-decisions.
   it('derives a non-vacuous, correctly-nested reachable path set (positive control)', () => {
-    expect(ALL_LEAF_PATHS.size).toBe(33)
-    expect(REACHABLE_LEAF_PATHS.size).toBe(32)
+    expect(ALL_LEAF_PATHS.size).toBe(34)
+    expect(REACHABLE_LEAF_PATHS.size).toBe(33)
     expect(REACHABLE_LEAF_PATHS.has('/guardian/profiles')).toBe(true)
     expect(REACHABLE_LEAF_PATHS.has('/admin/moderation-dashboard')).toBe(true)
     expect(REACHABLE_LEAF_PATHS.has('/library/:profileId')).toBe(true)
