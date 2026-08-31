@@ -2529,3 +2529,292 @@ def test_gating_fail_safe_rows_are_not_also_counted_as_hidden() -> None:
     assert all(
         f.concern != "reviewer_unavailable" for f in surface.story_level_findings
     )
+
+
+def _boundary_blob() -> dict[str, object]:
+    return {
+        "title": "The Clocktower",
+        "nodes": [
+            {"id": "n_start", "body": "Start prose."},
+            {"id": "n_fork", "body": "Fork prose."},
+            {"id": "n_end", "body": "End prose."},
+        ],
+    }
+
+
+def _low_advisory_boundary_report() -> dict[str, object]:
+    """A corpus spanning both sides of the `RS-A1` low-advisory boundary.
+
+    Every message is unique so a test can identify a finding by message
+    across the three output lanes (fan-out, story-level, collapsed).
+    """
+    return {
+        "findings": [
+            {
+                "stage": 3,
+                "source": "llm_coherence",
+                "category": "coherence",
+                "node_id": "n_start",
+                "verdict": "advisory",
+                "score": None,
+                "message": "low advisory spanning every node",
+                "severity": "low",
+                "node_ids": ["n_start", "n_fork", "n_end"],
+            },
+            {
+                "stage": 3,
+                "source": "llm_coherence",
+                "category": "coherence",
+                "node_id": "n_start",
+                "verdict": "advisory",
+                "score": None,
+                "message": "low advisory on one node",
+                "severity": "low",
+            },
+            {
+                "stage": 3,
+                "source": "llm_readability",
+                "category": "reading_level",
+                "node_id": "n_fork",
+                "verdict": "advisory",
+                "score": None,
+                "message": "medium advisory on one node",
+                "severity": "medium",
+            },
+            {
+                "stage": 1,
+                "source": "llm_safety",
+                "category": "safety",
+                "node_id": "n_end",
+                "verdict": "flag",
+                "score": None,
+                "message": "low flag on one node",
+                "severity": "low",
+            },
+            {
+                "stage": 1,
+                "source": "llm_safety",
+                "category": "safety",
+                "node_id": "n_end",
+                "verdict": "block",
+                "score": 0.9,
+                "message": "high block on one node",
+                "severity": "high",
+            },
+            {
+                "stage": 3,
+                "source": "llm_coherence",
+                "category": "coherence",
+                "node_id": None,
+                "verdict": "advisory",
+                "score": None,
+                "message": "medium advisory with no node at all",
+                "severity": "medium",
+            },
+        ],
+        "summary": {
+            "count": 6,
+            "hard_block": True,
+            "soft_flag": True,
+            "repaired": False,
+            "reviewer_independent": True,
+        },
+    }
+
+
+@pytest.mark.unit
+def test_low_advisory_is_not_fanned_out_but_stays_collapsed() -> None:
+    """`RS-A1`: a LOW ADVISORY is counted and reachable, never fanned out.
+
+    The owner ruling of 2026-08-31 is that low advisories are "counted and
+    available for a reviewer to dig into, but not part of the default view in
+    detail". The fan-out is O(findings x affected_nodes), so a single merged
+    low advisory covering three nodes previously emitted three full-prose
+    passage cards; on the largest queued book the same mechanism emitted 380.
+    """
+    report: dict[str, object] = {
+        "findings": [
+            {
+                "stage": 3,
+                "source": "llm_coherence",
+                "category": "coherence",
+                "node_id": "n_start",
+                "verdict": "advisory",
+                "score": None,
+                "message": "phrasing is slightly stiff (3 findings merged)",
+                "severity": "low",
+                "node_ids": ["n_start", "n_fork", "n_end"],
+            }
+        ],
+        "summary": {
+            "count": 1,
+            "hard_block": False,
+            "soft_flag": False,
+            "repaired": False,
+            "reviewer_independent": True,
+        },
+    }
+    view = build_review_surface(
+        status="in_review",
+        storybook_id="s1",
+        version=1,
+        blob=_boundary_blob(),
+        moderation_report=report,
+    )
+    # Not one passage card, not three: the default detail view is untouched.
+    assert view.flagged_passages == []
+    # And it did not fall through to the story-level lane either, which would
+    # have put it in front of a guardian via build_content_summary.
+    assert view.story_level_findings == []
+    # It remains counted and reachable in the collapsed lane, with its full
+    # node coverage intact for the admin detail panel.
+    assert len(view.low_advisory_findings) == 1
+    collapsed = view.low_advisory_findings[0]
+    assert collapsed.category == "coherence"
+    assert collapsed.node_ids == ["n_start", "n_fork", "n_end"]
+
+
+@pytest.mark.unit
+def test_medium_advisory_still_fans_out_into_passages() -> None:
+    """`RS-A1`: the skip is narrower than "any advisory".
+
+    Pins the other side of the boundary. Widening the predicate to verdict
+    alone would hide graded provider signal a reviewer is meant to read in
+    context, so a MEDIUM advisory keeps its passage card.
+    """
+    report: dict[str, object] = {
+        "findings": [
+            {
+                "stage": 3,
+                "source": "llm_readability",
+                "category": "reading_level",
+                "node_id": "n_start",
+                "verdict": "advisory",
+                "score": None,
+                "message": "sentence length above band on two nodes",
+                "severity": "medium",
+                "node_ids": ["n_start", "n_fork"],
+            }
+        ],
+        "summary": {
+            "count": 1,
+            "hard_block": False,
+            "soft_flag": False,
+            "repaired": False,
+            "reviewer_independent": True,
+        },
+    }
+    view = build_review_surface(
+        status="in_review",
+        storybook_id="s1",
+        version=1,
+        blob=_boundary_blob(),
+        moderation_report=report,
+    )
+    assert [p.node_id for p in view.flagged_passages] == ["n_start", "n_fork"]
+    # A MEDIUM advisory is not low-tier, so nothing collapses.
+    assert view.low_advisory_findings == []
+
+
+@pytest.mark.unit
+def test_fan_out_skip_set_and_collapsed_set_are_the_same_set() -> None:
+    """`RS-A1`: both callers of _is_low_advisory must agree, exactly.
+
+    Two behaviours run over one set: _rank_and_split collapses it into
+    low_advisory_findings, and the fan-out declines to expand it into
+    flagged_passages. If the two ever test different conditions a finding can
+    be dropped from BOTH lanes at once, which removes it from the admin
+    surface entirely while every count still reports it. The human approver
+    is the final gate under ADR-005, so that is a safety defect rather than a
+    display bug. Set equality over a mixed corpus is what makes an inlined,
+    divergent copy of the predicate fail here.
+    """
+    report = _low_advisory_boundary_report()
+    view = build_review_surface(
+        status="in_review",
+        storybook_id="s1",
+        version=1,
+        blob=_boundary_blob(),
+        moderation_report=report,
+    )
+    findings = cast("list[dict[str, object]]", report["findings"])
+    # Every node-bearing finding in the corpus, by its unique message.
+    node_bearing = {
+        cast("str", f["message"]) for f in findings if f.get("node_id") is not None
+    }
+    fanned_out = {
+        finding.message
+        for passage in view.flagged_passages
+        for finding in passage.findings
+    }
+    collapsed = {finding.message for finding in view.low_advisory_findings}
+
+    # The set the fan-out skipped is exactly the set the ranker collapsed.
+    assert node_bearing - fanned_out == collapsed
+    # Stated the other way: nothing is in both lanes, and nothing node-bearing
+    # fell out of both, so no finding became unreachable.
+    assert collapsed & fanned_out == set()
+    assert collapsed | fanned_out == node_bearing
+    # The corpus really did exercise both sides, so the equality above is not
+    # vacuously true of an all-low or all-high population.
+    assert collapsed == {
+        "low advisory spanning every node",
+        "low advisory on one node",
+    }
+    assert fanned_out == {
+        "medium advisory on one node",
+        "low flag on one node",
+        "high block on one node",
+    }
+
+
+@pytest.mark.unit
+def test_low_advisory_with_no_node_stays_story_level() -> None:
+    """`RS-A1`: the skip fixes multiplication, it does not shrink the summary.
+
+    Pins the placement of the skip relative to the empty-``target_nodes``
+    fallback. A low advisory naming N nodes emits N passage cards, which is
+    the defect. One naming no node emits exactly one story-level row, and
+    ``story_level_findings`` is a different audience: it is redacted into
+    ``build_content_summary`` for a guardian and counted into the queue's
+    ``flagged_count``. Hoisting the skip above the fallback would drop that
+    row from the guardian summary and decrement the badge, which the owner
+    ruling never asked for.
+    """
+    report: dict[str, object] = {
+        "findings": [
+            {
+                "stage": 3,
+                "source": "llm_coherence",
+                "category": "coherence",
+                "node_id": None,
+                "verdict": "advisory",
+                "score": None,
+                "message": "the ending feels abrupt overall",
+                "severity": "low",
+            }
+        ],
+        "summary": {
+            "count": 1,
+            "hard_block": False,
+            "soft_flag": False,
+            "repaired": False,
+            "reviewer_independent": True,
+        },
+    }
+    view = build_review_surface(
+        status="in_review",
+        storybook_id="s1",
+        version=1,
+        blob=_boundary_blob(),
+        moderation_report=report,
+    )
+    assert view.flagged_passages == []
+    assert [f.message for f in view.story_level_findings] == [
+        "the ending feels abrupt overall"
+    ]
+    # Still collapsed for the admin lane as well; the two lanes are separate
+    # routings of one finding, not alternatives.
+    assert [f.message for f in view.low_advisory_findings] == [
+        "the ending feels abrupt overall"
+    ]
