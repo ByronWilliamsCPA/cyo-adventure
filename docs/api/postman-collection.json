@@ -6431,7 +6431,7 @@
   },
   {
    "name": "archive",
-   "description": "Storybook archive lifecycle on the second seeded published story. Runs LAST: archiving removes the book from the library, so earlier folders (library, reading, assignments) must complete before it disappears.",
+   "description": "Storybook archive lifecycle on the second seeded published story. Runs after the folders that read the library (library, reading, assignments): archiving removes the book from the library, so those must complete before it disappears. The recall folder follows this one, and deliberately targets the OTHER published story, so this folder's closing assertion that storybook_id_1 is still on the shelf stays meaningful.",
    "item": [
     {
      "name": "POST archive as guardian (admin-only) -> 403",
@@ -6595,6 +6595,312 @@
       ],
       "url": {
        "raw": "{{base_url}}/api/v1/library?profile_id={{profile_id}}",
+       "host": [
+        "{{base_url}}"
+       ],
+       "path": [
+        "api",
+        "v1",
+        "library"
+       ],
+       "query": [
+        {
+         "key": "profile_id",
+         "value": "{{profile_id}}"
+        }
+       ]
+      }
+     },
+     "response": []
+    }
+   ]
+  },
+  {
+   "name": "recall",
+   "description": "Storybook recall lifecycle (`RS-C1`) on the first seeded published story. Runs LAST, after archive: recall takes the book off the shelf, so every earlier folder that reads it (library, reading, assignments, and archive's own closing assertion that this book survived) must complete first. Recall is the second exit from `published` and the only recoverable one; unlike archive it keeps `current_published_version`, which is what the 200 case asserts.",
+   "item": [
+    {
+     "name": "POST recall as guardian (admin-only) -> 403",
+     "event": [
+      {
+       "listen": "test",
+       "script": {
+        "exec": [
+         "pm.test(\"status is 403\", function () { pm.response.to.have.status(403); });",
+         "var schema = {\"type\": \"object\", \"properties\": {\"error\": {\"type\": \"string\"}, \"message\": {\"type\": \"string\"}}, \"required\": [\"error\", \"message\"]};",
+         "pm.test(\"response matches schema\", function () { pm.response.to.have.jsonSchema(schema); });",
+         "pm.test(\"error body names AuthorizationError\", function () { var body = pm.response.json(); pm.expect(body.error).to.eql(\"AuthorizationError\"); });"
+        ],
+        "type": "text/javascript"
+       }
+      }
+     ],
+     "request": {
+      "method": "POST",
+      "header": [
+       {
+        "key": "Content-Type",
+        "value": "application/json"
+       },
+       {
+        "key": "Authorization",
+        "value": "Bearer {{guardian_token}}",
+        "type": "text"
+       }
+      ],
+      "url": {
+       "raw": "{{base_url}}/api/v1/storybooks/{{storybook_id_1}}/recall",
+       "host": [
+        "{{base_url}}"
+       ],
+       "path": [
+        "api",
+        "v1",
+        "storybooks",
+        "{{storybook_id_1}}",
+        "recall"
+       ]
+      },
+      "body": {
+       "mode": "raw",
+       "raw": "{\n  \"reason_code\": \"threshold_change\"\n}",
+       "options": {
+        "raw": {
+         "language": "json"
+        }
+       }
+      }
+     },
+     "response": []
+    },
+    {
+     "name": "POST recall with a send-back-only reason code -> 422",
+     "event": [
+      {
+       "listen": "test",
+       "script": {
+        "exec": [
+         "pm.test(\"status is 422\", function () { pm.response.to.have.status(422); });",
+         "var schema = {\"type\": \"object\", \"properties\": {\"detail\": {\"type\": \"array\"}}, \"required\": [\"detail\"]};",
+         "pm.test(\"response matches schema\", function () { pm.response.to.have.jsonSchema(schema); });",
+         "pm.test(\"the message names the recall vocabulary, not the send-back one\", function () { pm.expect(pm.response.text()).to.include(\"threshold_change\"); pm.expect(pm.response.text()).to.not.include(\"unsatisfying_ending\"); });",
+         "pm.test(\"the refused code is not echoed back\", function () { pm.expect(pm.response.text()).to.not.include(\"prose_quality\"); });"
+        ],
+        "type": "text/javascript"
+       }
+      }
+     ],
+     "request": {
+      "method": "POST",
+      "header": [
+       {
+        "key": "Content-Type",
+        "value": "application/json"
+       },
+       {
+        "key": "Authorization",
+        "value": "Bearer {{admin_token}}",
+        "type": "text"
+       }
+      ],
+      "url": {
+       "raw": "{{base_url}}/api/v1/storybooks/{{storybook_id_1}}/recall",
+       "host": [
+        "{{base_url}}"
+       ],
+       "path": [
+        "api",
+        "v1",
+        "storybooks",
+        "{{storybook_id_1}}",
+        "recall"
+       ]
+      },
+      "body": {
+       "mode": "raw",
+       "raw": "{\n  \"reason_code\": \"prose_quality\"\n}",
+       "options": {
+        "raw": {
+         "language": "json"
+        }
+       }
+      }
+     },
+     "response": []
+    },
+    {
+     "name": "POST recall as admin sends the published story back to review",
+     "event": [
+      {
+       "listen": "test",
+       "script": {
+        "exec": [
+         "pm.test(\"status is 200\", function () { pm.response.to.have.status(200); });",
+         "var schema = {\"type\": \"object\", \"properties\": {\"id\": {\"type\": \"string\"}, \"status\": {\"type\": \"string\", \"const\": \"in_review\"}, \"current_published_version\": {\"anyOf\": [{\"type\": \"integer\"}, {\"type\": \"null\"}]}, \"reason_code\": {\"type\": \"string\"}}, \"required\": [\"id\", \"status\", \"current_published_version\", \"reason_code\"]};",
+         "pm.test(\"response matches schema\", function () { pm.response.to.have.jsonSchema(schema); });",
+         "pm.test(\"recalled id matches the target book\", function () { var body = pm.response.json(); pm.expect(body.id).to.eql(pm.collectionVariables.get(\"storybook_id_1\")); pm.expect(body.status).to.eql(\"in_review\"); });",
+         "pm.test(\"the published version is retained, unlike an archive\", function () { var body = pm.response.json(); pm.expect(body.current_published_version).to.not.eql(null); pm.expect(body.reason_code).to.eql(\"threshold_change\"); });"
+        ],
+        "type": "text/javascript"
+       }
+      }
+     ],
+     "request": {
+      "method": "POST",
+      "header": [
+       {
+        "key": "Content-Type",
+        "value": "application/json"
+       },
+       {
+        "key": "Authorization",
+        "value": "Bearer {{admin_token}}",
+        "type": "text"
+       }
+      ],
+      "url": {
+       "raw": "{{base_url}}/api/v1/storybooks/{{storybook_id_1}}/recall",
+       "host": [
+        "{{base_url}}"
+       ],
+       "path": [
+        "api",
+        "v1",
+        "storybooks",
+        "{{storybook_id_1}}",
+        "recall"
+       ]
+      },
+      "body": {
+       "mode": "raw",
+       "raw": "{\n  \"reason_code\": \"threshold_change\"\n}",
+       "options": {
+        "raw": {
+         "language": "json"
+        }
+       }
+      }
+     },
+     "response": []
+    },
+    {
+     "name": "POST recall again -> 409 (not published)",
+     "event": [
+      {
+       "listen": "test",
+       "script": {
+        "exec": [
+         "pm.test(\"status is 409\", function () { pm.response.to.have.status(409); });",
+         "var schema = {\"type\": \"object\", \"properties\": {\"error\": {\"type\": \"string\"}, \"message\": {\"type\": \"string\"}}, \"required\": [\"error\", \"message\"]};",
+         "pm.test(\"response matches schema\", function () { pm.response.to.have.jsonSchema(schema); });",
+         "pm.test(\"error body names StateTransitionError\", function () { var body = pm.response.json(); pm.expect(body.error).to.eql(\"StateTransitionError\"); });"
+        ],
+        "type": "text/javascript"
+       }
+      }
+     ],
+     "request": {
+      "method": "POST",
+      "header": [
+       {
+        "key": "Content-Type",
+        "value": "application/json"
+       },
+       {
+        "key": "Authorization",
+        "value": "Bearer {{admin_token}}",
+        "type": "text"
+       }
+      ],
+      "url": {
+       "raw": "{{base_url}}/api/v1/storybooks/{{storybook_id_1}}/recall",
+       "host": [
+        "{{base_url}}"
+       ],
+       "path": [
+        "api",
+        "v1",
+        "storybooks",
+        "{{storybook_id_1}}",
+        "recall"
+       ]
+      },
+      "body": {
+       "mode": "raw",
+       "raw": "{\n  \"reason_code\": \"threshold_change\"\n}",
+       "options": {
+        "raw": {
+         "language": "json"
+        }
+       }
+      }
+     },
+     "response": []
+    },
+    {
+     "name": "GET review-queue lists the recalled story",
+     "event": [
+      {
+       "listen": "test",
+       "script": {
+        "exec": [
+         "pm.test(\"status is 200\", function () { pm.response.to.have.status(200); });",
+         "pm.test(\"the recalled book is now a review candidate\", function () { var body = pm.response.json(); var ids = body.items.map(function (i) { return i.storybook_id; }); pm.expect(ids).to.include(pm.collectionVariables.get(\"storybook_id_1\")); });"
+        ],
+        "type": "text/javascript"
+       }
+      }
+     ],
+     "request": {
+      "method": "GET",
+      "header": [
+       {
+        "key": "Authorization",
+        "value": "Bearer {{admin_token}}",
+        "type": "text"
+       }
+      ],
+      "url": {
+       "raw": "{{base_url}}/api/v1/review-queue",
+       "host": [
+        "{{base_url}}"
+       ],
+       "path": [
+        "api",
+        "v1",
+        "review-queue"
+       ]
+      }
+     },
+     "response": []
+    },
+    {
+     "name": "GET /library as guardian excludes the recalled story",
+     "event": [
+      {
+       "listen": "test",
+       "script": {
+        "exec": [
+         "pm.test(\"status is 200\", function () { pm.response.to.have.status(200); });",
+         "var schema = {\"type\": \"object\", \"properties\": {\"stories\": {\"type\": \"array\", \"items\": {\"type\": \"object\"}}}, \"required\": [\"stories\"]};",
+         "pm.test(\"response matches schema\", function () { pm.response.to.have.jsonSchema(schema); });",
+         "pm.test(\"the recalled story is off the shelf while it is in review\", function () { var body = pm.response.json(); var ids = body.stories.map(function (s) { return s.id; }); pm.expect(ids).to.not.include(pm.collectionVariables.get(\"storybook_id_1\")); });"
+        ],
+        "type": "text/javascript"
+       }
+      }
+     ],
+     "request": {
+      "method": "GET",
+      "header": [
+       {
+        "key": "Authorization",
+        "value": "Bearer {{guardian_token}}",
+        "type": "text"
+       }
+      ],
+      "url": {
+       "raw": "{{base_url}}/api/v1/library",
        "host": [
         "{{base_url}}"
        ],

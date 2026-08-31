@@ -33,6 +33,8 @@ from cyo_adventure.api.schemas import (
     ApproveBody,
     ApprovedView,
     ArchivedView,
+    RecalledView,
+    RecallRequest,
     ReviewQueueItem,
     ReviewQueueView,
     ReviewSurfaceView,
@@ -245,6 +247,49 @@ async def archive_storybook(storybook_id: str, ctx: Context) -> ArchivedView:
     book = await _load_admin_story(ctx, storybook_id)
     await approval_service.archive(ctx.session, ctx.principal, book)
     return ArchivedView(id=book.id, status=cast("Literal['archived']", book.status))
+
+
+@router.post("/storybooks/{storybook_id}/recall", responses=error_responses(404, 409))
+async def recall_storybook(
+    storybook_id: str, body: RecallRequest, ctx: Context
+) -> RecalledView:
+    """Recall a published story back to the review queue (admin only).
+
+    The recoverable alternative to ``archive``, added for `RS-C1`. Use it when a
+    published book needs another look, typically because the moderation
+    thresholds moved after it was approved, so its stored verdict was reached
+    under rules that no longer apply.
+
+    Three consequences a caller should know, stated here rather than left to be
+    discovered:
+
+    - A ``catalog``-visibility book recalls from **every** family at once, not
+      just its owning one, because catalog visibility is ANDed with
+      ``status == "published"`` on every read path.
+    - Assignment rows **survive**, which is what makes this recoverable:
+      re-approving puts the book back on exactly the shelves it left. Nothing
+      needs to be reassigned.
+    - An offline copy already downloaded to a device is **not** reached. It is
+      evicted only by that device's next successful ``/v1/library`` fetch
+      (``frontend/src/offline/revocation.ts``); there is no push channel. This
+      is pre-existing and shared with ``archive``, so recall does not introduce
+      it, but it means neither action is an incident-response tool.
+    """
+    # #CRITICAL: security: authorization is _load_admin_story and nothing in
+    # this body, same as send_back/archive above; it raises before the service
+    # call for a non-admin or a foreign-family story. Do not reorder.
+    # #VERIFY: tests/integration/test_recall_api.py::
+    # test_a_guardian_cannot_recall_a_published_book asserts 403 on this route.
+    book = await _load_admin_story(ctx, storybook_id)
+    await approval_service.recall(
+        ctx.session, ctx.principal, book, reason_code=body.reason_code
+    )
+    return RecalledView(
+        id=book.id,
+        status=cast("Literal['in_review']", book.status),
+        current_published_version=book.current_published_version,
+        reason_code=body.reason_code,
+    )
 
 
 async def _load_review_target(ctx: Context, storybook_id: str) -> Storybook:

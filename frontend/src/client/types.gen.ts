@@ -3916,6 +3916,54 @@ export type ReadingTimeFlushBody = {
 };
 
 /**
+ * RecallRequest
+ *
+ * Body for the recall endpoint (`RS-C1`).
+ *
+ * A reason code with no accompanying free-text field, unlike
+ * ``SendBackRequest``. Send-back's prose tells an author what to fix; a recall
+ * has no author to address, and its consumers are the pipeline event log and a
+ * guardian notification, both of which take the code alone. Adding a free-text
+ * field would create a channel whose content is logged but never read.
+ */
+export type RecallRequest = {
+    /**
+     * Reason Code
+     */
+    reason_code: 'threshold_change' | 'safety_concern' | 'content_correction' | 'curation' | 'other';
+};
+
+/**
+ * RecalledView
+ *
+ * The response to a successful recall action.
+ *
+ * ``current_published_version`` is echoed back deliberately, and it is NOT
+ * None here: a recalled book keeps the column (see
+ * ``publishing/service.py::recall``). Returning it makes that visible at the
+ * wire contract rather than leaving a caller to assume a recalled book has no
+ * published version to re-approve.
+ */
+export type RecalledView = {
+    /**
+     * Id
+     */
+    id: string;
+    /**
+     * Status
+     */
+    status: 'in_review';
+    /**
+     * Current Published Version
+     */
+    current_published_version: number | null;
+    /**
+     * Reason Code
+     */
+    reason_code: 'threshold_change' | 'safety_concern' | 'content_correction' | 'curation' | 'other';
+};
+
+/**
  * RecommendationItem
  *
  * One recommended book: a rating from another profile, never a message.
@@ -6912,6 +6960,52 @@ export type ArchiveStorybookApiV1StorybooksStorybookIdArchivePostResponses = {
 };
 
 export type ArchiveStorybookApiV1StorybooksStorybookIdArchivePostResponse = ArchiveStorybookApiV1StorybooksStorybookIdArchivePostResponses[keyof ArchiveStorybookApiV1StorybooksStorybookIdArchivePostResponses];
+
+export type RecallStorybookApiV1StorybooksStorybookIdRecallPostData = {
+    body: RecallRequest;
+    path: {
+        /**
+         * Storybook Id
+         */
+        storybook_id: string;
+    };
+    query?: never;
+    url: '/api/v1/storybooks/{storybook_id}/recall';
+};
+
+export type RecallStorybookApiV1StorybooksStorybookIdRecallPostErrors = {
+    /**
+     * Missing, malformed, expired, or unknown bearer token.
+     */
+    401: ErrorResponse;
+    /**
+     * Authenticated, but not permitted to act on this resource.
+     */
+    403: ErrorResponse;
+    /**
+     * The referenced resource does not exist.
+     */
+    404: ErrorResponse;
+    /**
+     * The action conflicts with the resource's current state.
+     */
+    409: ErrorResponse;
+    /**
+     * Validation Error
+     */
+    422: HttpValidationError;
+};
+
+export type RecallStorybookApiV1StorybooksStorybookIdRecallPostError = RecallStorybookApiV1StorybooksStorybookIdRecallPostErrors[keyof RecallStorybookApiV1StorybooksStorybookIdRecallPostErrors];
+
+export type RecallStorybookApiV1StorybooksStorybookIdRecallPostResponses = {
+    /**
+     * Successful Response
+     */
+    200: RecalledView;
+};
+
+export type RecallStorybookApiV1StorybooksStorybookIdRecallPostResponse = RecallStorybookApiV1StorybooksStorybookIdRecallPostResponses[keyof RecallStorybookApiV1StorybooksStorybookIdRecallPostResponses];
 
 export type GetReviewSurfaceApiV1StorybooksStorybookIdReviewGetData = {
     body?: never;

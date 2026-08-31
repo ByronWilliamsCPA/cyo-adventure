@@ -27,6 +27,7 @@ from typing import TYPE_CHECKING
 
 from cyo_adventure.events.models import EventType
 from cyo_adventure.notifications.models import EntityContext, RawNotification
+from cyo_adventure.publishing.reason_codes import QUIET_RECALL_REASON_CODES
 
 if TYPE_CHECKING:
     from cyo_adventure.db.models import PipelineEvent
@@ -183,11 +184,73 @@ def _compose_storybook_archived(
     return RawNotification(
         kind="story_archived",
         title=f"{_story_label(ctx)} was removed from your library",
+        # #CRITICAL: security: this copy must not promise more than the system
+        # does. It previously read "including offline copies already on a
+        # device", which states an immediate pull. Revocation is
+        # reconcile-on-fetch only (frontend/src/offline/revocation.ts): a device
+        # that stays offline keeps reading the copy it has, and there is no push
+        # channel. capability-register.md's own G8 row states the condition
+        # correctly ("including offline copies at next connection"); this string
+        # did not, so a guardian reading it during a real safety pull would
+        # believe a device was already covered when it was not.
+        # #VERIFY: tests/unit/test_notifications_registry.py::
+        # test_archive_notification_does_not_claim_offline_copies_are_gone.
         body=(
-            "This story was archived and is no longer available to read, "
-            "including offline copies already on a device."
+            "This story was archived and is no longer available to read. An "
+            "offline copy already on a device is removed the next time that "
+            "device connects."
         ),
         severity="alert",
+    )
+
+
+def _compose_storybook_recalled(
+    event: PipelineEvent, ctx: EntityContext
+) -> RawNotification | None:
+    """Map STORYBOOK_RECALLED (`RS-C1`): a published book went back to review.
+
+    Severity forks on the event's ``reason_code``, which is what recall has and
+    archive does not. ``_compose_storybook_archived`` above documents being
+    unable to tell a safety pull from a curation decision and therefore
+    alerting on both; recall carries the label, so it can be honest about which
+    one this was without training guardians to ignore alerts.
+
+    The fork is an ALLOW-list of quiet reasons
+    (``reason_codes.QUIET_RECALL_REASON_CODES``) and fails closed: an unknown or
+    missing code alerts. A payload with no ``reason_code`` should be impossible
+    (the service validates before writing, and the writer's allowlist rejects
+    anything else), but "impossible" is not a severity policy.
+    """
+    # `or {}` matches the two composers above. The column is NOT NULL with a
+    # server default of '{}', so this is defensive against a hand-constructed
+    # fixture rather than against the database; an isinstance guard here is what
+    # basedpyright rejects as unnecessary given the declared type.
+    payload = event.payload or {}
+    reason_code = payload.get("reason_code")
+    # #CRITICAL: security: default-alert. `not in` over the quiet allow-list,
+    # never `in` over a loud one: a reason added to the vocabulary later, a
+    # missing payload, or a non-string value all land on alert rather than
+    # silently downgrading a safety pull to an info notice.
+    # #VERIFY: tests/unit/test_notifications_registry.py::
+    # test_recall_alerts_when_the_reason_code_is_missing_or_unknown.
+    quiet = isinstance(reason_code, str) and reason_code in QUIET_RECALL_REASON_CODES
+    return RawNotification(
+        kind="story_recalled",
+        title=f"{_story_label(ctx)} was paused for another review",
+        # #ASSUME: data integrity: the body states the offline condition for the
+        # same reason the archive body now does, and adds what recall has that
+        # archive does not: the book can come back. Saying so is what stops a
+        # guardian treating a routine threshold recheck as a book they lost.
+        # #VERIFY: tests/unit/test_notifications_registry.py::
+        # test_recall_notification_does_not_claim_offline_copies_are_gone and
+        # ::test_recall_notification_says_the_book_can_return.
+        body=(
+            "This story is temporarily unavailable while it is reviewed again. "
+            "It can return to the shelf once the review is done. An offline "
+            "copy already on a device is removed the next time that device "
+            "connects."
+        ),
+        severity="info" if quiet else "alert",
     )
 
 
@@ -268,6 +331,7 @@ _COMPOSERS: dict[EventType, Composer] = {
     EventType.RELEASED: _compose_released,
     EventType.BOOK_ASSIGNED: _compose_book_assigned,
     EventType.STORYBOOK_ARCHIVED: _compose_storybook_archived,
+    EventType.STORYBOOK_RECALLED: _compose_storybook_recalled,
     EventType.NOTIFICATION_DIGEST_READY: _compose_notification_digest_ready,
 }
 

@@ -36,7 +36,10 @@ from cyo_adventure.db.models import (
 )
 from cyo_adventure.generation.concept import ConceptBrief
 from cyo_adventure.moderation.report import FindingSeverity, Source, Verdict
-from cyo_adventure.publishing.reason_codes import SendBackReasonCodeLiteral
+from cyo_adventure.publishing.reason_codes import (
+    RecallReasonCodeLiteral,
+    SendBackReasonCodeLiteral,
+)
 from cyo_adventure.storybook.character_vocabulary import ARCHETYPE_ROSTER
 from cyo_adventure.storybook.evaluator import VarState
 from cyo_adventure.storybook.models import (
@@ -1897,6 +1900,45 @@ class ArchivedView(BaseModel):
 
     id: str
     status: Literal["archived"]
+
+
+class RecallRequest(BaseModel):
+    """Body for the recall endpoint (`RS-C1`).
+
+    A reason code with no accompanying free-text field, unlike
+    ``SendBackRequest``. Send-back's prose tells an author what to fix; a recall
+    has no author to address, and its consumers are the pipeline event log and a
+    guardian notification, both of which take the code alone. Adding a free-text
+    field would create a channel whose content is logged but never read.
+    """
+
+    model_config = ConfigDict(extra="forbid")
+
+    # #ASSUME: data integrity: required, not optional, for the same reason
+    # SendBackRequest.reason_code is: it is what makes "every recall carries a
+    # reason a later reader can act on" structural rather than a matter of
+    # reviewer discipline. It also decides the guardian notification's severity
+    # (notifications/registry.py), so a recall with no code would have to
+    # default to alert and would train guardians to ignore alerts.
+    # #VERIFY: tests/integration/test_recall_api.py::
+    # test_recall_requires_a_reason_code (422 when omitted).
+    reason_code: RecallReasonCodeLiteral
+
+
+class RecalledView(BaseModel):
+    """The response to a successful recall action.
+
+    ``current_published_version`` is echoed back deliberately, and it is NOT
+    None here: a recalled book keeps the column (see
+    ``publishing/service.py::recall``). Returning it makes that visible at the
+    wire contract rather than leaving a caller to assume a recalled book has no
+    published version to re-approve.
+    """
+
+    id: str
+    status: Literal["in_review"]
+    current_published_version: int | None
+    reason_code: RecallReasonCodeLiteral
 
 
 # ---------------------------------------------------------------------------

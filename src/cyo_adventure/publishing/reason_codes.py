@@ -1,4 +1,4 @@
-"""The closed send-back reason vocabulary, owned by the domain.
+"""The closed send-back and recall reason vocabularies, owned by the domain.
 
 This module exists so the vocabulary has one home that both the API boundary
 and the publishing service can reach. It previously lived in ``api/schemas.py``,
@@ -21,7 +21,17 @@ construction: a value from a closed set, never free text. The reviewer's prose
 travels in ``send_back``'s separate ``reason`` argument, which is logged and
 not persisted.
 
-Nothing here does I/O; it is a vocabulary plus one guard function.
+Two vocabularies live here, not one, and they are deliberately separate sets.
+A send-back answers "why is this draft not publishable yet"; a recall answers
+"why is this already-published book coming back to the human gate". The only
+overlap is ``safety_concern``, and collapsing them into one list would let a
+recall be labelled ``unsatisfying_ending`` (a drafting critique that cannot
+motivate pulling a live book) or a send-back be labelled ``threshold_change``
+(which cannot apply to a book that was never published under the old
+thresholds). Both vocabularies are persisted on append-only pipeline events, so
+a label that cannot be true is a permanent corpus defect.
+
+Nothing here does I/O; it is two vocabularies plus their guard functions.
 """
 
 from __future__ import annotations
@@ -90,3 +100,75 @@ def validate_reason_code(value: str) -> SendBackReasonCodeLiteral:
         )
         raise ValidationError(message, field="reason_code", value=value)
     return cast("SendBackReasonCodeLiteral", value)
+
+
+# Closed-vocabulary reason for recalling a PUBLISHED book back to the human
+# gate (publishing/service.py::recall, the published->in_review hop added for
+# `RS-C1`). Same Literal-not-enum rationale as the send-back vocabulary above.
+#
+# The members are the reasons that can motivate pulling a live book, which is a
+# different question from why a draft is not publishable yet:
+#
+# - threshold_change: the moderation thresholds moved, so this book's stored
+#   verdict was reached under a rule set that no longer applies. This is the
+#   case that motivated recall existing at all.
+# - safety_concern: a specific safety problem in this book, found by a fresh
+#   re-moderation, a kid flag, or a human reading it.
+# - content_correction: a non-safety content defect worth fixing (a continuity
+#   break, a factual error) that does not make the book unsafe to have shipped.
+# - curation: a deliberate catalog decision with no defect in the book.
+# - other: the escape hatch, matching the send-back vocabulary's.
+RecallReasonCodeLiteral = Literal[
+    "threshold_change",
+    "safety_concern",
+    "content_correction",
+    "curation",
+    "other",
+]
+
+# Derived from the Literal, same as SEND_BACK_REASON_CODES above.
+RECALL_REASON_CODES: Final[frozenset[str]] = frozenset(
+    get_args(RecallReasonCodeLiteral)
+)
+
+# #CRITICAL: security: the reasons that do NOT raise a guardian alert, as an
+# ALLOW-list. notifications/registry.py::_compose_storybook_recalled reads this
+# to decide severity, and it must fail CLOSED: a reason absent from this set
+# (including any member added later, and any value that somehow bypassed
+# validation) alerts the guardian. The negation (`reason != "curation"`) would
+# be default-open over an open vocabulary, which is the exact defect
+# api/remoderate.py::_allow_repair_for documents having fixed.
+# #VERIFY: tests/unit/test_recall_reason_codes.py::
+# test_every_reason_outside_the_quiet_set_alerts and
+# ::test_the_quiet_set_is_a_subset_of_the_vocabulary.
+QUIET_RECALL_REASON_CODES: Final[frozenset[str]] = frozenset(
+    {"content_correction", "curation"}
+)
+
+
+def validate_recall_reason_code(value: str) -> RecallReasonCodeLiteral:
+    """Return ``value`` if it is in the recall vocabulary, else raise.
+
+    Args:
+        value: The candidate reason code.
+
+    Returns:
+        The same string, narrowed to ``RecallReasonCodeLiteral``.
+
+    Raises:
+        ValidationError: If ``value`` is outside the closed vocabulary.
+    """
+    # #CRITICAL: data integrity: same append-only argument as
+    # validate_reason_code above. The API boundary is not the only caller: a
+    # threshold-change sweep script is the motivating use case for recall and
+    # would reach this service directly.
+    # #VERIFY: tests/unit/test_recall_reason_codes.py::
+    # test_validate_recall_reason_code_rejects_unknown_code and
+    # ::test_a_send_back_code_is_not_a_valid_recall_code.
+    if value not in RECALL_REASON_CODES:
+        message = (
+            f"Unknown recall reason code {value!r}; expected one of "
+            f"{sorted(RECALL_REASON_CODES)}"
+        )
+        raise ValidationError(message, field="reason_code", value=value)
+    return cast("RecallReasonCodeLiteral", value)

@@ -64,6 +64,9 @@ _PAYLOAD_ALLOWLIST: dict[EventType, frozenset[str]] = {
     # requires. SENT_BACK above used to be the comparison here and no longer
     # is: it now carries a reason_code.
     EventType.STORYBOOK_ARCHIVED: frozenset(),
+    # `RS-C1`: the recall reason, from publishing/reason_codes.py's closed
+    # recall vocabulary. Same shape and same D3 argument as SENT_BACK above.
+    EventType.STORYBOOK_RECALLED: frozenset({"reason_code"}),
     EventType.THRESHOLD_CHANGED: frozenset(
         {"age_band", "category", "action", "min_verdict", "min_score"}
     ),

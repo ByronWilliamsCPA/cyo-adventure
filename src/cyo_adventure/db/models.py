@@ -164,10 +164,13 @@ _PIPELINE_EVENT_TYPE_VALUES = (
     # the full cumulative value list.
     "'notification_digest_ready', "
     # R-11 human-gate measurement. Added alongside
-    # supabase/migrations/20260823120000_add_submitted_to_pipeline_event.sql,
+    # supabase/migrations/20260823120000_add_submitted_to_pipeline_event.sql.
+    "'submitted', "
+    # `RS-C1` recall (published -> in_review). Added alongside
+    # supabase/migrations/20260831130000_add_storybook_recalled_to_pipeline_event.sql,
     # which is the newest migration to replace this CHECK and therefore carries
     # the full cumulative value list.
-    "'submitted'"
+    "'storybook_recalled'"
 )
 _PIPELINE_ACTOR_ROLE_VALUES = "'system', 'guardian', 'child', 'admin', 'device'"
 _PIPELINE_ENTITY_TYPE_VALUES = (
