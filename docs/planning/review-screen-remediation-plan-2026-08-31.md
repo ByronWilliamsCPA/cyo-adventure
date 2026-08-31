@@ -1,9 +1,11 @@
 # Review screen remediation plan
 
-> **Status**: Draft for owner approval | **Created**: 2026-08-31 | **Owner rulings**: 2026-08-31
+> **Status**: Scoped, ready to schedule | **Created**: 2026-08-31 | **Owner rulings**: 2026-08-31 (sections 3
+> and 10)
 >
-> Implementation plan for making the admin story-review surface reviewable. Supersedes nothing; consumes the
-> evidence brief in `tmp_cleanup/.tmp-review-screen-evidence.md` and the owner rulings recorded in section 3.
+> Implementation plan for making the admin story-review surface reviewable. Supersedes nothing. Every
+> measurement it rests on is reproduced in section 2 from production, read-only, so this document is
+> self-contained; the working notes it was drafted from were scratch files and are deliberately not cited.
 
 ## 1. Problem
 
@@ -20,13 +22,31 @@ Two independent censuses. Neither is estimated; re-derive before citing, do not 
 
 ### 2.1 Rendered-page census (production browser, 2026-08-30/31, read-only)
 
-Full 13-book table in `tmp_cleanup/.tmp-review-screen-evidence.md` section 3. Load-bearing rows:
+All 13 books in the queue, measured in a real browser at a 1037px viewport as `test_admin@`. `Ranked` is the
+pixel height of the `Ranked findings` section, or `absent` where it did not render at all.
 
-| Book | Band | Page px | Screens | Words | `Advisory` badges | `Flagged` | `Blocked` |
-|---|---|---|---|---|---|---|---|
-| The Harrowstone Keep | 13-16 | 259,411 | 250 | 87,622 | 595 | 14 | 1 |
-| The Drowned Court | 16+ | 162,146 | 156 | 48,343 | 432 | 0 | 0 |
-| The Teddy Bears' Picnic | 3-5 | 8,819 | 9 | 2,191 | 5 | 0 | 0 |
+| Book | Band | Queue label | Page px | Scr | Words | Nodes | Adv | Ranked |
+|---|---|---|---|---|---|---|---|---|
+| The Harrowstone Keep | 13-16 | Hard block | 259,411 | 250 | 87,622 | 550 | 595 | 1,411 |
+| The Sunken Temple | 13-16 | 15 flags, 7 adv | 227,204 | 219 | 73,195 | 550 | 415 | 1,619 |
+| The Thornwood Trial | 13-16 | 1 flag, 5 adv | 168,015 | 162 | 54,469 | 375 | 406 | 352 |
+| The Drowned Court | 16+ | 9 advisories | 162,146 | 156 | 48,343 | 314 | 432 | 358 |
+| The Salt Archive | 16+ | 4 advisories | 142,397 | 137 | 57,752 | 225 | 104 | 304 |
+| The Sunspire Ascent | 13-16 | 5 advisories | 112,664 | 109 | 35,137 | 252 | 268 | 304 |
+| The Mapmaker's Island | 10-13 | 2 flags, 4 adv | 98,899 | 95 | 36,105 | 224 | 69 | 300 |
+| The Last Train North | 16+ | 2 advisories | 64,663 | 62 | 25,625 | 143 | 4 | 221 |
+| The Hollow Lighthouse | 10-13 | 1 flag, 5 adv | 61,072 | 59 | 20,924 | 148 | 72 | 208 |
+| The Signal in the Static | 13-16 | 3 advisories | 55,799 | 54 | 20,227 | 123 | 31 | **absent** |
+| The Sunken Signal | 16+ | 6 advisories | 33,455 | 32 | 13,325 | 32 | 61 | 230 |
+| The Clocktower Cipher | 10-13 | 2 advisories | 15,925 | 15 | 5,971 | 25 | 10 | **absent** |
+| The Teddy Bears' Picnic | 3-5 | 2 advisories | 8,819 | 9 | 2,191 | 29 | 5 | **absent** |
+
+Queue totals: **~1,360 screens and ~481,000 words** outstanding. Largest book: **10,895 DOM nodes**, a
+**2,528 KB** review payload decoded in **1,736 ms**.
+
+Severity census inside `Flagged passages` on the largest book, across its 391 passage articles: `Advisory` 595
+(580 of them OpenAI provider boilerplate), `Flagged` 14, `Blocked` 1. Signal-to-noise **2.5%**, and the single
+`Blocked` finding is the entire hard block.
 
 `The Drowned Court` is the pure case: 75 screens of `Flagged passages` containing 430 boilerplate advisories
 and **zero human-written findings**.
@@ -196,6 +216,18 @@ constraint in this document.
 The 120 clean records in the existing baseline are sampled prose, not production content, so they do not measure
 production noise. `RS-CAL3` must sample real book nodes per band.
 
+**The 5 `archived` books are available as calibration input** (ruling 3, 2026-08-31): *The Ashfall Expedition*,
+*The Ninth Hand*, *The Sunless March*, *The Vanishing Orchard*, *The Vault of Nine Iron*. They are not expected
+to be child-facing again, so they are not re-moderated for their own sake (`RS-B4`), but nothing stops their
+stored prose and reports from feeding `RS-CAL1` and `RS-CAL3`. This matters more than it sounds: they hold
+**109 of the 248 findings**, 44% of the whole corpus, so excluding them would discard nearly half the available
+signal and bias every floor toward the queue's particular content mix.
+
+Two constraints on using them. They are still real prose subject to the personalization filter in the code block
+below, which is a property of the prose and not of the book's lifecycle status, so the filter applies unchanged.
+And four of the five predate the `reviewer` field, so they can inform a **score distribution** but cannot support
+any claim about reviewer agreement; do not let them into a rater-agreement statistic.
+
 ```text
 # #CRITICAL: security: a personalized book's prose can carry a real child's name, and the
 # calibration capture sends prose to third-party classifiers (OpenAI, Perspective).
@@ -281,9 +313,17 @@ zero result for both a claim and its negation means the probe is broken.
 Ruling 3 says the reviewer hunts false negatives, and nothing on the screen supports that. Reading 250 screens
 is not sampling; it is the failure mode.
 
-Provide a bounded, structured sample: N passages drawn across the branch shape (not sequential), weighted toward
-regions with **no** findings, with the band's content expectations shown alongside. The reviewer's question
-becomes "did the gate miss anything here", answerable in a known number of screens.
+Provide a bounded, structured sample: 15 passages drawn across the branch shape (not sequential), weighted
+toward regions with **no** findings, with the band's content expectations shown alongside. The reviewer's
+question becomes "did the gate miss anything here", answerable in a known number of screens.
+
+**The 15 is provisional and must be labelled as such in the UI, not just here** (ruling 2, 2026-08-31). A
+defensible sample size needs the false-negative rate, and nothing measures that yet; `RS-CAL3` is what supplies
+the basis. Until it does, 15 is a working figure chosen to fit one sitting, not a statistically derived one.
+Ship it with the sample header saying so (for example "15-passage spot check, sample size not yet calibrated"),
+so a reviewer never reads a clean sample as evidence the book is clean. A bare "15 of 550 passages checked" with
+no such qualifier is the failure mode: it manufactures false confidence in exactly the channel this task exists
+to make trustworthy.
 
 This is the task that makes a floor raise defensible. It is sized as a Track A item because it needs no
 calibration input, but it gates Track B.
@@ -293,9 +333,16 @@ calibration input, but it gates Track B.
 Per-finding disposition with no server round-trip and **no gating effect** (ruling 4): mark a finding reviewed,
 so a reviewer 60 findings in can see where they are. Client-local state only, scoped to the book and version.
 
-Deliberately not persisted server-side in this track: there is **no stable finding id**, and
-`api/remoderate.py:778` overwrites `version_row.moderation_report` wholesale, so any server-side disposition
-would be silently orphaned by the next re-moderation. Server-side triage is `RS-D1`.
+Client-local is the settled scope (ruling 1, 2026-08-31), not a placeholder to revisit inside this plan.
+Deliberately not persisted server-side: there is **no stable finding id**, and `api/remoderate.py:778`
+overwrites `version_row.moderation_report` wholesale, so any server-side disposition would be silently orphaned
+by the next re-moderation. Server-side triage is `RS-D1`, a separate register row and not a dependency of
+anything in Tracks A through C; it needs a stable `finding_id` in the report schema plus a decided rule for what
+happens to dispositions when a re-moderation rewrites the report, and neither exists today.
+
+Because the state is client-local, it is per-browser and lost on a device change. That is acceptable for a
+progress marker and unacceptable for anything that gates: `RS-A5` must not become an input to approval, or a
+cleared cache would silently reset a safety decision.
 
 ### `RS-A6` Edit-path context
 
@@ -371,6 +418,11 @@ retained as a global override. That keeps one emergency dial and adds band aware
 `scripts/remoderate_books.py` already does this for `in_review`. Run it after `RS-CAL4` lands so the queue is
 scored against calibrated floors rather than arbitrary ones. Record before-and-after node-hit counts per book;
 that is the evidence the calibration worked.
+
+Scope is the 13 `in_review` books only. The 5 `archived` books stay archived (ruling 3): they are not expected to
+be child-facing again, and archive is absorbing, so re-moderating them would require `RS-C1` first and would buy
+nothing. They remain readable as calibration input under section 5.6, which is a different use of the same rows
+and needs no state change. The 13 `published` books are also out of scope here and are `RS-C2`'s subject.
 
 ### `RS-B5` Tests pinned to the current global scalar
 
@@ -463,35 +515,83 @@ RS-A4 ──────────────────────┘
    │  (RS-A4 is a hard prerequisite: section 5.4)
    ▼
 RS-CAL1, RS-CAL2 ──► RS-CAL3 ──► RS-CAL4 ──► RS-B1, RS-B2, RS-B3 ──► RS-B4
+                                                       │
+                                                       └──► RS-B5  (retarget the pinned tests)
 
 RS-C1 ──► RS-C2        (independent of A and B; do not ship RS-C1 without RS-C2)
+
+RS-C3                  (independent of everything above; 3 covers stuck today)
 ```
+
+`RS-B2` is ordered inside its own group: the unique constraint on `(age_band, category)` lands before the seed,
+never after, because a seed into a table without it admits duplicate rows that then resolve nondeterministically.
 
 `RS-A1` alone is measured to remove 97.0% of the volume. If only one thing ships, ship that.
 
 Track C is independent but internally ordered: recall without a candidate-finding surface gives an owner a
 button and no way to know when to press it.
 
-## 10. Open decisions for the owner
+## 10. Scoping decisions (resolved 2026-08-31)
 
-1. **Does `RS-A5` stay client-local, or is server-side per-finding triage (`RS-D1`) in scope?** Server-side needs
-   a stable `finding_id` in the report schema plus a decision about what happens to dispositions when
-   `remoderate.py:778` rewrites the report. Recommendation: client-local now, `RS-D1` as a separate register row.
-2. **How large is the `RS-A4` sample?** A defensible answer needs the false-negative rate, which nothing
-   currently measures. Recommendation: start at a fixed 15 passages per book, and treat the number as
-   provisional until `RS-CAL3` gives a basis.
-3. **Do the 5 `archived` books get re-moderated?** They hold 109 of the 248 findings and four lack reviewer
-   attribution. Archive is absorbing, so they cannot re-enter review without `RS-C1`. Recommendation: leave them;
-   they are not reader-facing.
+All three questions this plan opened are now decided. Recorded here with what each one closed off, so a later
+reader does not reopen a settled scope question.
 
-## 11. Linkage obligations
+1. **`RS-A5` is client-local.** Server-side per-finding triage is out of scope for this plan and becomes `RS-D1`,
+   a separate register row with no task here depending on it. It stays out until two things exist that do not
+   exist today: a stable `finding_id` in the report schema, and a decided rule for what happens to dispositions
+   when `api/remoderate.py:778` rewrites the report wholesale. Consequence carried into `RS-A5`: the state is
+   per-browser and must never gate approval.
+2. **The `RS-A4` sample is 15 passages, explicitly labelled provisional.** The owner's ruling was that the number
+   is not yet knowable, so the plan does not pretend otherwise: 15 is a working figure sized to one sitting, and
+   the UI must say the sample size is uncalibrated until `RS-CAL3` supplies a basis. This is a deliberate choice
+   to ship a qualified affordance rather than block `RS-A4` (and therefore all of Track B) on calibration that
+   `RS-A4` itself is meant to make defensible.
+3. **The 5 `archived` books are not re-moderated, but are valid calibration input.** They are not expected to be
+   child-facing again, so no lifecycle change and no `RS-C1` dependency. Their stored prose and reports do feed
+   `RS-CAL1` and `RS-CAL3`, which is what keeps 109 of the 248 findings (44% of the corpus) in the calibration
+   population instead of discarding it. Two limits apply, recorded in section 5.6: the personalization filter is
+   a property of the prose and still applies, and four of the five predate the `reviewer` field so they cannot
+   support a rater-agreement claim.
 
-Per project `CLAUDE.md`:
+Measurement note: the archived set is **5** books, not 3, verified against production on 2026-08-31
+(*The Ashfall Expedition, The Ninth Hand, The Sunless March, The Vanishing Orchard, The Vault of Nine Iron*).
+The ruling applies to the set, so the count does not change the decision, but it does change the calibration
+population size and is therefore stated rather than left approximate.
 
-- Every task above needs a `UW-C*` row in `docs/planning/unscheduled-work-register.md` or a phase home in
-  `roadmap.md` before implementation starts. `RS-B1` through `RS-B4` extend the existing `UW-C378`, which is
-  already ratified; they should cite it rather than duplicate it.
-- Any lesson this work produces goes to `docs/planning/authoring-lessons-log.md`, validated by
-  `uv run python scripts/check_lessons_log.py`. `AL-625` is `UW-C378`'s existing lesson and is the precedent.
-- New feature proposals must cite the capability-register IDs they serve
-  (`docs/planning/capability-register.md`). Track C in particular changes an admin capability and needs one.
+## 11. Linkage (satisfied 2026-08-31)
+
+Per project `CLAUDE.md`, this plan is schedulable only once its tasks have a phase home, its lesson is logged,
+and it cites the capabilities it serves. All three are done; `scripts/check_work_linkage.py` and
+`scripts/check_lessons_log.py` both pass.
+
+**Register rows** (`docs/planning/unscheduled-work-register.md`):
+
+| Row | Covers | Phase |
+|---|---|---|
+| `UW-J41` | Track A, `RS-A1` through `RS-A7` | `now` |
+| `UW-J42` | Track B, `RS-B1` through `RS-B5`; extends the ratified `UW-C378` rather than duplicating it | `5` |
+| `UW-J43` | Track C, `RS-C1` through `RS-C3` | `5` |
+| `UW-C438` | Phase home for the new lesson `AL-712` | `now` |
+| `UW-C02` | Updated, not duplicated: `AL-036`'s existing row, now pointing here | `5` |
+
+**Predecessor.** This plan is not the first look at this surface. `AL-036` (2026-07-25) and its register row
+`UW-C02` already recorded that the review surface cannot deliver the approval ADR-005 requires. That review
+measured the DOM (746 unvirtualized passages, a 444 KB blob) and proposed pagination. This plan reaches a
+different diagnosis from production measurement: the volume is 97.0% a findings-by-nodes fan-out, so pagination
+would have made 250 screens of boilerplate navigable rather than removing it, while reading as a fix and closing
+the row. `UW-C02` now cites this document and should be closed against `RS-A1`..`RS-A7`.
+
+**Lesson.** `AL-712`, open, cites this document. The generalisation it carries: before optimising how a large
+collection renders, measure how much of it the server should not have sent.
+
+**Capabilities served** (`docs/planning/capability-register.md`):
+
+- `A1` (moderation queue, each item showing why) and `A6` (the admin's recorded approval as the only path from
+  generated content to a child) are what Track A restores. `A6` is marked ✅ on the strength of the approval
+  action existing; `AL-036`'s point, still true, is that an approval recorded after 250 unreadable screens
+  attests to less than the ✅ implies.
+- `A3` (global policy levers, classifier thresholds) is Track B's target. Its 🟡 is precisely the per-band
+  thresholds this plan calibrates.
+- `A4` (re-screen the already-published catalog when thresholds change) is Track C's target. `A4` is marked ✅
+  because `POST /api/v1/admin/rescreen` exists, but a re-screened published book has nowhere to go: archive is
+  the only exit from published and is absorbing. `RS-C1` is what makes `A4`'s ✅ true end to end.
