@@ -867,6 +867,24 @@
   color: var(--color-ink-secondary, #5a3e28);
 }
 
+/* `RS-A2`: the classifier score beside the verdict and severity, so a
+   reviewer can calibrate a finding against the band threshold instead of
+   reading a bare label. Tabular figures so a column of scores lines up in the
+   ranked list; the label itself carries the meaning, never color alone. */
+.review-finding__score {
+  font-variant-numeric: tabular-nums;
+  color: var(--color-ink-secondary, #5a3e28);
+}
+
+/* `RS-A2`: the affected node's prose, inside the finding's own collapsed node
+   drill-down, which is what makes a ranked finding the entry point to its
+   passages. Indented under the node id it belongs to. Nothing here is
+   position-dependent; the placement is asserted in ReviewDetailPage.test.tsx
+   ("makes a ranked finding the entry point to its own affected passages"). */
+.review-finding__prose {
+  margin: 0.25rem 0 0.5rem 1rem;
+}
+
 /* What the automated gate measured (R-2): the numbers behind the routing
    decision, read alongside the findings they explain. */
 .review-measures__list {

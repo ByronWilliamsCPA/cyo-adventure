@@ -464,6 +464,16 @@ function ReviewDetailPageInner() {
 
   const { surface } = state
   const readThrough = buildReadThrough(surface.blob)
+  // `RS-A2`: prose lookup so a ranked finding can be the entry point to its
+  // own affected passages. Built from the read-through rather than from
+  // flagged_passages, because `RS-A1` deliberately keeps low advisories OUT
+  // of flagged_passages; sourcing the prose there would leave exactly the
+  // collapsed findings with no context, which is the opposite of "counted and
+  // available for a reviewer to dig into".
+  const proseByNodeId = new Map(
+    [...readThrough.reachable, ...readThrough.unreachable].map((node) => [node.id, node.body])
+  )
+  const proseForNode = (nodeId: string): string | null => proseByNodeId.get(nodeId) ?? null
   const totalPassages = readThrough.reachable.length + readThrough.unreachable.length
   const coverage = `${pluralize(totalPassages, 'passage')}, ${readThrough.reachable.length} reachable from the start, ${pluralize(readThrough.endingCount, 'ending')}`
   const flaggedIds = new Set(surface.flagged_passages.map((passage) => passage.node_id))
@@ -637,6 +647,99 @@ function ReviewDetailPageInner() {
         </div>
       )}
 
+      {/*
+        Stage B3 (design doc 2.6): the merged findings ranked by
+        (verdict, severity, affected-node-count, stable tiebreak), with
+        structural findings split into their own block and low-ADVISORY
+        findings collapsed behind a toggle. All four buckets default empty on
+        an older backend response or a pre-Stage-B stored report, so this
+        renders nothing extra in that case.
+        The "Story-level notes" section (which rendered story_level_findings
+        directly) was removed here as a pure duplicate: ranked_findings and
+        structural_findings are built from the SAME FindingView objects that
+        populate flagged_passages and story_level_findings, so every
+        story-level finding already lands in one of the two sections here
+        (structural if `structural` is true, otherwise ranked or
+        low-advisory).
+
+        `RS-A2`: this triage cluster now sits ABOVE "Flagged passages", which
+        follows it. The overlap between the two is deliberate and is not the
+        duplication described above: this list is triage-ordered for scanning
+        verdict/severity across the whole story, while "Flagged passages"
+        joins each finding to its node prose in read order. Ranking is what a
+        reviewer needs first, so it goes first; the flat list is the
+        second read, not the entry point.
+      */}
+      {/*
+        `RS-A2`: rendered UNCONDITIONALLY, unlike the two blocks below it.
+        Conditional rendering removed the most decision-useful section from
+        the page exactly on the books a reviewer could clear fastest: on the
+        four queued books whose findings are all low-severity advisories,
+        ranked_findings is empty, so the section vanished and the reviewer was
+        left with prose and no triage summary at all. An explicit "nothing
+        ranked" statement is a finding about the book; an absent section is
+        indistinguishable from a page that failed to load.
+        #VERIFY: ReviewDetailPage.test.tsx "renders the ranked findings
+        section above the flagged passages, even with nothing ranked".
+      */}
+      <div className="review-group" id="ranked-findings">
+        <h2>Ranked findings</h2>
+        {rankedFindings.length > 0 ? (
+          <ul className="review-findings review-findings--ranked">
+            {rankedFindings.map((finding) => (
+              <RankedFinding
+                key={`${finding.concern ?? finding.category}-${finding.severity ?? ''}-${finding.verdict}-${finding.message}`}
+                finding={finding}
+                onJump={jumpToPassage}
+                knownIds={readThrough.knownIds}
+                proseFor={proseForNode}
+              />
+            ))}
+          </ul>
+        ) : (
+          <p className="console__muted cyo-text-muted">
+            No findings are ranked for triage on this version.
+            {lowAdvisoryFindings.length > 0
+              ? ` ${lowAdvisoryFindings.length} low-priority ${lowAdvisoryFindings.length === 1 ? 'advisory is' : 'advisories are'} collapsed below.`
+              : ''}
+          </p>
+        )}
+      </div>
+
+      {structuralFindings.length > 0 ? (
+        <div className="review-group" id="structural-findings">
+          <h2>Structural findings</h2>
+          <ul className="review-findings review-findings--ranked">
+            {structuralFindings.map((finding) => (
+              <RankedFinding
+                key={`${finding.concern ?? finding.category}-${finding.severity ?? ''}-${finding.verdict}-${finding.message}`}
+                finding={finding}
+                onJump={jumpToPassage}
+                knownIds={readThrough.knownIds}
+                proseFor={proseForNode}
+              />
+            ))}
+          </ul>
+        </div>
+      ) : null}
+
+      {lowAdvisoryFindings.length > 0 ? (
+        <details className="review-group" id="low-advisory-findings">
+          <summary>Low-priority advisories ({lowAdvisoryFindings.length})</summary>
+          <ul className="review-findings review-findings--ranked">
+            {lowAdvisoryFindings.map((finding) => (
+              <RankedFinding
+                key={`${finding.concern ?? finding.category}-${finding.severity ?? ''}-${finding.verdict}-${finding.message}`}
+                finding={finding}
+                onJump={jumpToPassage}
+                knownIds={readThrough.knownIds}
+                proseFor={proseForNode}
+              />
+            ))}
+          </ul>
+        </details>
+      ) : null}
+
       {surface.flagged_passages.length > 0 ? (
         <div className="review-group">
           <h2>Flagged passages</h2>
@@ -672,73 +775,6 @@ function ReviewDetailPageInner() {
         <p className="console__muted cyo-text-muted">
           No flagged passages. This story screened clean.
         </p>
-      ) : null}
-
-      {/*
-        Stage B3 (design doc 2.6): the merged findings ranked by
-        (verdict, severity, affected-node-count, stable tiebreak), with
-        structural findings split into their own block and low-ADVISORY
-        findings collapsed behind a toggle. All four buckets default empty on
-        an older backend response or a pre-Stage-B stored report, so this
-        renders nothing extra in that case.
-        The "Story-level notes" section (which rendered story_level_findings
-        directly) was removed here as a pure duplicate: ranked_findings and
-        structural_findings are built from the SAME FindingView objects that
-        populate flagged_passages and story_level_findings, so every
-        story-level finding already lands in one of the two sections below
-        (structural if `structural` is true, otherwise ranked or
-        low-advisory). The overlap between "Flagged passages" above and
-        "Ranked findings" below is deliberate, not the same duplication:
-        "Flagged passages" joins each finding to its node prose for reading
-        in context (drill-down), while "Ranked findings" is a triage-ordered
-        list for scanning severity/verdict across the whole story.
-      */}
-      {rankedFindings.length > 0 ? (
-        <div className="review-group" id="ranked-findings">
-          <h2>Ranked findings</h2>
-          <ul className="review-findings review-findings--ranked">
-            {rankedFindings.map((finding) => (
-              <RankedFinding
-                key={`${finding.concern ?? finding.category}-${finding.severity ?? ''}-${finding.verdict}-${finding.message}`}
-                finding={finding}
-                onJump={jumpToPassage}
-                knownIds={readThrough.knownIds}
-              />
-            ))}
-          </ul>
-        </div>
-      ) : null}
-
-      {structuralFindings.length > 0 ? (
-        <div className="review-group" id="structural-findings">
-          <h2>Structural findings</h2>
-          <ul className="review-findings review-findings--ranked">
-            {structuralFindings.map((finding) => (
-              <RankedFinding
-                key={`${finding.concern ?? finding.category}-${finding.severity ?? ''}-${finding.verdict}-${finding.message}`}
-                finding={finding}
-                onJump={jumpToPassage}
-                knownIds={readThrough.knownIds}
-              />
-            ))}
-          </ul>
-        </div>
-      ) : null}
-
-      {lowAdvisoryFindings.length > 0 ? (
-        <details className="review-group" id="low-advisory-findings">
-          <summary>Low-priority advisories ({lowAdvisoryFindings.length})</summary>
-          <ul className="review-findings review-findings--ranked">
-            {lowAdvisoryFindings.map((finding) => (
-              <RankedFinding
-                key={`${finding.concern ?? finding.category}-${finding.severity ?? ''}-${finding.verdict}-${finding.message}`}
-                finding={finding}
-                onJump={jumpToPassage}
-                knownIds={readThrough.knownIds}
-              />
-            ))}
-          </ul>
-        </details>
       ) : null}
 
       {validatorFindings.length > 0 ? (

@@ -223,7 +223,7 @@ beforeEach(() => {
 })
 
 describe('ReviewDetailPage', () => {
-  it('shows flagged passages with their findings first', async () => {
+  it('shows flagged passages with their findings', async () => {
     renderAt('s1')
     expect(await screen.findByText('possibly scary')).toBeInTheDocument()
     expect(screen.getAllByText(/A dark cave yawned ahead/).length).toBeGreaterThan(0)
@@ -262,6 +262,144 @@ describe('ReviewDetailPage', () => {
       await user.click(screen.getByText('2 affected nodes'))
       expect(screen.getByRole('button', { name: 'n1' })).toBeInTheDocument()
       expect(screen.getByRole('button', { name: 'n2' })).toBeInTheDocument()
+    })
+
+    it('renders the ranked findings section above the flagged passages, even with nothing ranked', async () => {
+      /*
+        `RS-A2`. Two claims, one test, because they fail together in practice.
+
+        Order: triage before prose. A ranked list that sits below a flat
+        passage list is not a triage surface; it is a footnote a reviewer
+        reaches after the reading they were trying to avoid.
+
+        Unconditional: the section used to disappear when ranked_findings was
+        empty, which on the four queued books whose findings are all
+        low-severity advisories removed the most decision-useful section from
+        exactly the books a reviewer could clear fastest. SURFACE carries
+        flagged_passages and no ranked_findings, so it is that shape.
+      */
+      renderAt('s1')
+      const ranked = await screen.findByRole('heading', { name: 'Ranked findings' })
+      const flagged = screen.getByRole('heading', { name: 'Flagged passages' })
+      expect(
+        ranked.compareDocumentPosition(flagged) & Node.DOCUMENT_POSITION_FOLLOWING
+      ).toBeTruthy()
+      expect(
+        screen.getByText(/No findings are ranked for triage on this version/)
+      ).toBeInTheDocument()
+    })
+
+    it('surfaces the classifier score on a ranked finding and stays blank when unscored', async () => {
+      /*
+        `RS-A2`: "advisory, violence, 0.41" lets a reviewer calibrate against
+        the band threshold; "advisory, violence" does not. A deterministic,
+        unscored finding must render no score rather than 0.00, so the two
+        cases are asserted together: a printed 0.00 for `score: null` would
+        tell the reviewer the classifier judged this passage maximally safe
+        when it never scored it at all.
+      */
+      mockGet.mockResolvedValue({
+        data: {
+          ...SURFACE,
+          ranked_findings: [
+            {
+              stage: 1,
+              source: 'llm_safety',
+              category: 'safety',
+              node_id: 'n1',
+              verdict: 'advisory',
+              score: 0.41,
+              message: 'mild scuffle',
+              severity: 'medium',
+              node_ids: ['n1'],
+              structural: false,
+              concern: 'violence',
+            },
+            {
+              stage: 1,
+              source: 'validator',
+              category: 'reading_level',
+              node_id: 'n2',
+              verdict: 'advisory',
+              score: null,
+              message: 'sentence length above band',
+              severity: 'low',
+              node_ids: ['n2'],
+              structural: false,
+              concern: null,
+            },
+            {
+              stage: 1,
+              source: 'llm_safety',
+              category: 'safety',
+              node_id: 'n2',
+              verdict: 'block',
+              score: 0,
+              message: 'bright-line refusal',
+              severity: 'high',
+              node_ids: ['n2'],
+              structural: false,
+              concern: 'self_harm',
+            },
+          ],
+        },
+      })
+      renderAt('s1')
+      await screen.findByRole('heading', { name: 'Ranked findings' })
+      const scored = screen.getByText('mild scuffle').closest('li') as HTMLElement
+      const unscored = screen.getByText('sentence length above band').closest('li') as HTMLElement
+      const zero = screen.getByText('bright-line refusal').closest('li') as HTMLElement
+      expect(within(scored).getByText('0.41')).toBeInTheDocument()
+      expect(unscored.querySelector('.review-finding__score')).toBeNull()
+      // A genuine 0 is a score, and a falsy one: rendering it by truthiness
+      // would drop it, which is why the component tests typeof. Without this
+      // case that distinction is a comment nothing enforces.
+      expect(within(zero).getByText('0.00')).toBeInTheDocument()
+    })
+
+    it('makes a ranked finding the entry point to its own affected passages', async () => {
+      /*
+        `RS-A2`: the finding, not a separate flat list, is where a reviewer
+        gets context. Expanding one finding's node drill-down shows that
+        node's prose in place.
+
+        This matters most for the findings `RS-A1` keeps out of
+        flagged_passages: a low advisory has no passage card anywhere on the
+        page, so if its prose were sourced from flagged_passages the collapsed
+        lane would be the one tier with no context at all, which is the
+        opposite of "counted and available for a reviewer to dig into". The
+        finding below is a low advisory for exactly that reason.
+      */
+      mockGet.mockResolvedValue({
+        data: {
+          ...SURFACE,
+          ranked_findings: [
+            {
+              stage: 3,
+              source: 'llm_coherence',
+              category: 'coherence',
+              node_id: 'n2',
+              verdict: 'advisory',
+              score: null,
+              message: 'the fork is abrupt',
+              severity: 'medium',
+              node_ids: ['n2'],
+              structural: false,
+              concern: null,
+            },
+          ],
+        },
+      })
+      renderAt('s1')
+      await screen.findByRole('heading', { name: 'Ranked findings' })
+      const row = screen.getByText('the fork is abrupt').closest('li') as HTMLElement
+      // Collapsed until asked for, so the triage list itself stays scannable.
+      // A closed <details> keeps its children in the DOM, so presence is the
+      // wrong probe here and would pass either way; visibility is the claim.
+      expect(within(row).getByText(/The path forked/)).not.toBeVisible()
+      const user = userEvent.setup()
+      await user.click(within(row).getByText('1 affected node'))
+      expect(within(row).getByText(/The path forked/)).toBeVisible()
     })
 
     it('splits structural findings into their own block', async () => {
@@ -340,11 +478,26 @@ describe('ReviewDetailPage', () => {
       expect(screen.getByText('story mean too long')).toBeInTheDocument()
     })
 
-    it('renders none of the new sections when the backend has not sent the additive fields', async () => {
+    it('invents no findings when the backend has not sent the additive fields', async () => {
+      /*
+        A pre-Stage-B stored report projects all four additive buckets empty.
+        The page must not throw on the absent fields and must not manufacture
+        rows, so the three optional sections stay absent.
+
+        `RS-A2` changed one of the four: "Ranked findings" now renders
+        unconditionally, with an explicit empty state instead of vanishing.
+        The assertion below therefore checks the heading is present while its
+        list is not, which is the distinction that matters here: an empty
+        state is a statement about the book, a missing section is
+        indistinguishable from a page that failed to load.
+      */
       mockGet.mockResolvedValue({ data: SURFACE })
       renderAt('s1')
       await screen.findByText('possibly scary')
-      expect(screen.queryByRole('heading', { name: 'Ranked findings' })).not.toBeInTheDocument()
+      expect(screen.getByRole('heading', { name: 'Ranked findings' })).toBeInTheDocument()
+      expect(
+        screen.getByText(/No findings are ranked for triage on this version/)
+      ).toBeInTheDocument()
       expect(screen.queryByRole('heading', { name: 'Structural findings' })).not.toBeInTheDocument()
       expect(screen.queryByText(/Low-priority advisories/)).not.toBeInTheDocument()
       expect(screen.queryByRole('heading', { name: 'Validator findings' })).not.toBeInTheDocument()
