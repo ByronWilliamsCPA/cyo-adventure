@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 <!-- version list -->
 
+## [0.87.1] - 2026-09-01
+
+### Bug Fixes
+
+- **admin**: Surface the pending-cover approval above the fold
+  ([#795](https://github.com/ByronWilliamsCPA/cyo-adventure/pull/795),
+  [`6efb5d6`](https://github.com/ByronWilliamsCPA/cyo-adventure/commit/6efb5d6e99c023e19fa322df7c5e4410d78e4b0e))
+
+
 ## [0.87.0] - 2026-08-31
 
 ### Bug Fixes
@@ -3683,6 +3692,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Safety dependency vulnerability scanning
 - Pre-commit hooks for security validation
 
+[0.87.1]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.87.0...v0.87.1
 [0.87.0]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.86.0...v0.87.0
 [0.86.0]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.85.0...v0.86.0
 [0.85.0]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.84.0...v0.85.0
