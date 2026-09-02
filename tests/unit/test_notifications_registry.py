@@ -220,13 +220,17 @@ class TestComposeStorybookArchived:
         guardian acting on the old wording during a real safety pull would
         believe a device was covered when it was not.
 
-        Asserted as "mentions the reconnect condition", not as an exact string,
-        so rewording stays free while the claim stays honest.
+        Asserted as "mentions the successful-sync condition", not as an exact
+        string, so rewording stays free while the claim stays honest. It says
+        SUCCESSFUL sync rather than "connects": reconciliation runs inside the
+        `/v1/library` response handler, so a device that comes back online but
+        whose fetch fails still holds the copy, and copy that stops at
+        "connects" promises a guarantee the client does not make.
         """
         event = _event(EventType.STORYBOOK_ARCHIVED, to_state="archived")
         raw = registry.compose(event, _ctx())
         assert raw is not None
-        assert "next time that device connects" in raw.body
+        assert "after its next successful library sync" in raw.body
         assert "including offline copies already on a device" not in raw.body
 
 
@@ -303,7 +307,7 @@ class TestComposeStorybookRecalled:
         )
         raw = registry.compose(event, _ctx())
         assert raw is not None
-        assert "next time that device connects" in raw.body
+        assert "after its next successful library sync" in raw.body
 
     def test_recall_notification_says_the_book_can_return(self) -> None:
         """What distinguishes recall from archive, in the guardian's words.

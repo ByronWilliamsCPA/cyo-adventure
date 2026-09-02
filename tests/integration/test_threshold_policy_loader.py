@@ -140,11 +140,12 @@ async def test_audit_action_check_rejects_unknown_action(engine: AsyncEngine) ->
             await session.commit()
 
 
-async def test_malformed_min_verdict_row_is_skipped_with_warning(
+async def test_malformed_min_verdict_row_is_skipped_and_logged_at_error(
     engine: AsyncEngine, caplog: pytest.LogCaptureFixture
 ) -> None:
     """A row that bypasses the CHECK (constraint dropped, e.g. pre-constraint
-    backfill) is skipped by the loader, logged, and falls back to the default.
+    backfill) is skipped by the loader, logged at ERROR, and falls back to the
+    default.
     """
     # #EDGE: data-integrity: `engine` shares one schema for every test in this
     # xdist worker (tests/integration/conftest.py TRUNCATEs data between tests
@@ -176,6 +177,19 @@ async def test_malformed_min_verdict_row_is_skipped_with_warning(
         assert policy.resolve("3-5", "violence") == DEFAULT_THRESHOLD
         assert "moderation_threshold_row_malformed" in caplog.text
         assert "violence" in caplog.text
+        # ERROR, not warning. The fallback direction is safe by construction
+        # (the code default is the stricter rule, so a malformed override
+        # cannot loosen what surfaces), which means nothing downstream ever
+        # fails and this line is the only evidence the row exists at all.
+        # Captured from WARNING up on purpose: a downgrade back to warning
+        # then fails here on the level rather than vanishing as a missing
+        # record.
+        malformed = [
+            record
+            for record in caplog.records
+            if "moderation_threshold_row_malformed" in record.getMessage()
+        ]
+        assert [record.levelname for record in malformed] == ["ERROR"]
     finally:
         # The malformed row itself would violate the CHECK being restored, so
         # it must be cleared first (the row's own id is irrelevant; delete by

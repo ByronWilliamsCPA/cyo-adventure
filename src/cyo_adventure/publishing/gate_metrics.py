@@ -7,6 +7,14 @@ recorded how a review round ENDED (``released``/``sent_back``) and never when
 one BEGAN. ``EventType.SUBMITTED`` (added 2026-08-23) closes that, and this
 module is its read side.
 
+A round BEGINS on either of two events, not one. ``submitted`` is the ordinary
+entry (a draft or a revised story arrives at the gate). ``storybook_recalled``
+(`RS-C1`) is the second: it moves a published book back to ``in_review``, where
+the ordinary approve path decides it again, so it opens a genuine new human-gate
+round whose ``released`` or ``sent_back`` would otherwise have no entry to pair
+with. Treating it as an entry is what keeps ``unpaired_decisions`` meaning only
+what it says it means below.
+
 Pure computation lives in module-level functions so it unit tests without a
 database; ``load_gate_events`` is the only DB read. This module never writes,
 mirroring ``moderation/insights.py``.
@@ -19,7 +27,9 @@ Two pairing rules carry the whole measurement's credibility:
 - A decision with **no preceding entry** is dropped. Every ``released`` and
   ``sent_back`` row written before the ``submitted`` migration is such a row;
   pairing one with a later entry invents a negative duration, and pairing it
-  with an earlier one invents a duration spanning the migration.
+  with an earlier one invents a duration spanning the migration. Nothing
+  written AFTER that migration should land here, which is what makes a growing
+  count a defect signal rather than noise.
 
 Same-transaction transitions (a measurement limit, not a bug):
 ``pipeline_event.occurred_at`` defaults to Postgres ``now()``, which is
@@ -51,10 +61,19 @@ if TYPE_CHECKING:
 
     from sqlalchemy.ext.asyncio import AsyncSession
 
-# The three gate events, all keyed on entity_type "storybook" with the
+# The four gate events, all keyed on entity_type "storybook" with the
 # storybook id as entity_id (publishing/service.py::submit, ::approve,
-# ::send_back), so pairing needs no cross-entity join.
+# ::send_back, ::recall), so pairing needs no cross-entity join.
 _ENTITY_TYPE = "storybook"
+
+# The two events that OPEN a round. Both put a story in front of a human at the
+# approval gate: ``submitted`` from draft or needs_revision, ``storybook_recalled``
+# from published. A decision is paired against whichever of them last preceded
+# it, so a recall-then-re-approve cycle measures as its own round instead of
+# arriving as a decision with no entry.
+_ENTRY: frozenset[str] = frozenset(
+    {EventType.SUBMITTED.value, EventType.STORYBOOK_RECALLED.value}
+)
 
 
 class GateOutcome(StrEnum):
@@ -77,7 +96,8 @@ class GateRound:
     Attributes:
         storybook_id: The story under review.
         round_index: 1-based position in this story's sequence of rounds.
-        entered_at: When the story entered the queue (the ``submitted`` event).
+        entered_at: When the story entered the queue (the ``submitted`` or
+            ``storybook_recalled`` event that opened this round).
         decision: ``(decided_at, outcome)`` once a person has closed the
             round, or ``None`` while it is still open. The time and the
             outcome travel as one value because neither exists without the
@@ -139,9 +159,12 @@ class GateRounds:
         unpaired_decisions: Decisions seen with no preceding entry, and so
             excluded from ``rounds``. Expected to be non-zero and roughly
             constant on real data: every gate decision written before the
-            ``submitted`` migration is one of these. A number that keeps
-            GROWING means entries are going missing after the migration,
-            which is a defect rather than a historical artefact.
+            ``submitted`` migration is one of these, and nothing written since
+            should be. A number that keeps GROWING means entries are going
+            missing after the migration, which is a defect rather than a
+            historical artefact. Post-`RS-C1` re-approvals do NOT land here:
+            a recall opens a round (see ``_ENTRY``), so the release that
+            follows it pairs.
     """
 
     rounds: list[GateRound]
@@ -186,7 +209,7 @@ def build_rounds(
 
     Args:
         events: ``(storybook_id, event_type, occurred_at)`` tuples in any
-            order. Event types outside the three gate events are ignored.
+            order. Event types outside the four gate events are ignored.
 
     Returns:
         The rounds, sorted by storybook id then round index, together with
@@ -213,10 +236,11 @@ def build_rounds(
     unpaired_decisions = 0
 
     for storybook_id, event_type, occurred_at in ordered:
-        if event_type == EventType.SUBMITTED.value:
-            # #EDGE: data-integrity: a second submit while a round is already
+        if event_type in _ENTRY:
+            # #EDGE: data-integrity: a second entry while a round is already
             # open should be impossible (state_machine.py refuses in_review ->
-            # in_review). If one appears, both rounds are kept, so the anomaly
+            # in_review, and recall only leaves published, which is never an
+            # open round). If one appears, both rounds are kept, so the anomaly
             # surfaces as an inflated open_rounds rather than being swallowed.
             # #VERIFY: no test asserts this shape because no code path can
             # produce it; the branch exists so a future one is visible.
@@ -231,10 +255,13 @@ def build_rounds(
             continue
         entry = open_round.pop(storybook_id, None)
         if entry is None:
-            # A decision with no entry: a pre-migration row. Dropped rather
-            # than paired, see this module's docstring, but COUNTED, because
-            # a silent drop makes a partial measurement look like a complete
-            # one.
+            # A decision with no entry. On real data this is a pre-migration
+            # row: a ``released``/``sent_back`` written before ``submitted``
+            # existed. It is NOT the recall case, which opens a round above
+            # precisely so a re-approval does not arrive here and quietly
+            # falsify that reading. Dropped rather than paired, see this
+            # module's docstring, but COUNTED, because a silent drop makes a
+            # partial measurement look like a complete one.
             unpaired_decisions += 1
             continue
         index, entered_at = entry
@@ -339,7 +366,7 @@ async def load_gate_events(session: AsyncSession) -> list[tuple[str, str, dateti
     """
     # #ASSUME: external-resources: a whole-corpus read, mirroring
     # insights.py::load_version_records' no-window stance at v1 volumes.
-    # Three event types over one entity type is a narrow slice of the log;
+    # Four event types over one entity type is a narrow slice of the log;
     # revisit with an occurred_at window if pipeline_event grows past a few
     # hundred thousand rows.
     # #VERIFY: tests/integration/test_publishing_gate_metrics.py exercises the
@@ -355,6 +382,7 @@ async def load_gate_events(session: AsyncSession) -> list[tuple[str, str, dateti
                 PipelineEvent.event_type.in_(
                     [
                         EventType.SUBMITTED.value,
+                        EventType.STORYBOOK_RECALLED.value,
                         EventType.RELEASED.value,
                         EventType.SENT_BACK.value,
                     ]

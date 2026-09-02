@@ -791,12 +791,31 @@ async def recall(
             and read by the guardian-notification composer to decide severity.
 
     Raises:
+        AuthorizationError: If ``principal`` does not hold the admin
+            capability. The one production caller
+            (``api/approval.py::recall_storybook``) already gates on this via
+            ``_load_admin_story``, so this is a defense-in-depth re-check at
+            the service boundary itself, mirroring ``approve`` above.
         StateTransitionError: If the story is not in ``published``.
         core.exceptions.ValidationError: If ``reason_code`` is outside the
             closed recall vocabulary. Qualified for the same reason
             ``send_back``'s docstring gives: the only bare ``ValidationError``
             bound in this module is pydantic's.
     """
+    # #CRITICAL: security: recall changes what a child can reach (it pulls a
+    # published book off every shelf that lists it), so it carries the same
+    # service-boundary admin re-check approve() does. The one production
+    # caller, api/approval.py::recall_storybook, already gates on is_admin
+    # inside _load_admin_story; relying on that alone means a future caller,
+    # or a bug in this one, could skip the gate silently. Enforcing it here
+    # keeps "only an admin moves a published book" structural rather than a
+    # matter of caller discipline. It runs before the reason-code check so an
+    # unauthorized caller cannot probe the closed vocabulary.
+    # #VERIFY: test_recall_rejects_a_non_admin_principal in
+    # tests/unit/test_publishing_service_unit.py.
+    if not principal.is_admin:
+        msg = "admin role required to recall a storybook"
+        raise AuthorizationError(msg, required_permission="admin")
     # Validate before the transition, so a bad code cannot leave a book out of
     # the library with no event written to explain why (send_back's ordering,
     # and the stakes here are higher: this one was reader-facing).

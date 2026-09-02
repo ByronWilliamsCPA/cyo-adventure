@@ -846,6 +846,23 @@ async def get_outstanding_decisions(ctx: Context) -> OutstandingDecisionsView:
     # same reason.
     # #VERIFY: tests/unit/test_outstanding_decisions.py::
     # test_outstanding_decisions_is_bulk_not_n_plus_one.
+    # #ASSUME: external resources: this query has no LIMIT and the endpoint has
+    # no pagination, so the response grows with the catalog rather than being
+    # bounded. That is deliberate, not an oversight: the surface exists because
+    # these decisions were already missed, and a page-one cutoff would hide the
+    # oldest ones, which are exactly the rows most in need of being seen. It is
+    # also why the listing cannot self-drain: moderation_report_unusable(None)
+    # is True, so every published book whose stored report is NULL stays
+    # outstanding forever by design (fail-closed), and a threshold change can
+    # add rows in bulk. Adding a window or pagination is a product decision, not
+    # a patch.
+    # #VERIFY: operational, not covered by any automated check. Watch the
+    # response size in production: the candidate count is published books plus
+    # versions parked at cover_status 'pending_review', which the admin console
+    # renders in one list. Once that count passes a few hundred, the surface
+    # needs a windowing decision from the owner before it becomes both slow and
+    # unreadable. See docs/operations/runbook.md for where admin-surface
+    # latency is tracked.
     candidates = cast(
         "list[_CandidateRow]",
         (
@@ -888,14 +905,31 @@ async def get_outstanding_decisions(ctx: Context) -> OutstandingDecisionsView:
     items: list[OutstandingDecisionItem] = []
     for candidate in candidates:
         row = _OutstandingRow(*candidate)
-        try:
-            # Only a published book can carry an outstanding MODERATION
-            # decision. A draft or in_review book's verdict already has a home
-            # (the review queue), and an archived or needs_revision book reaches
-            # no child, so re-surfacing its verdict would only add noise to the
-            # one list that must stay short enough to be read.
-            moderation = (
-                build_moderation_decision_detail(
+        moderation: OutstandingModerationDetail | None = None
+        # Only a published book can carry an outstanding MODERATION decision. A
+        # draft or in_review book's verdict already has a home (the review
+        # queue), and an archived or needs_revision book reaches no child, so
+        # re-surfacing its verdict would only add noise to the one list that
+        # must stay short enough to be read.
+        if row.status == _PUBLISHED:
+            # #EDGE: data integrity: one book's moderation_report is corrupt at
+            # rest. Isolate that book (logged with its id) rather than failing
+            # the listing: this surface is the only place the OTHER books'
+            # unresolved decisions appear, so one bad row must not hide them.
+            # Mirrors get_review_queue's review_queue_item_corrupt handling.
+            # The try wraps ONLY this projection, which is the only call in the
+            # loop that raises the project's ValidationError
+            # (review_surface.py::build_moderation_decision_detail, which maps
+            # a malformed stored report onto it). Widening it over the cover
+            # branch below would drop that book's pending_review COVER row too,
+            # even though the cover decision is derived entirely from
+            # cover_status and current_published_version and cannot be affected
+            # by a corrupt report.
+            # #VERIFY: tests/integration/test_outstanding_decisions_api.py::
+            # test_a_corrupt_report_isolates_only_its_own_book and
+            # ::test_a_corrupt_report_still_surfaces_that_books_pending_cover.
+            try:
+                moderation = build_moderation_decision_detail(
                     storybook_id=row.storybook_id,
                     status=row.status,
                     version=row.version,
@@ -904,46 +938,35 @@ async def get_outstanding_decisions(ctx: Context) -> OutstandingDecisionsView:
                     age_band=row.age_band or "",
                     policy=policy,
                 )
-                if row.status == _PUBLISHED
-                else None
-            )
-            if moderation is not None:
-                items.append(
-                    _build_decision_item(row, kind="moderation", moderation=moderation)
+            except ValidationError as exc:
+                _logger.warning(
+                    "outstanding_decision_item_corrupt",
+                    storybook_id=row.storybook_id,
+                    version=row.version,
+                    error=str(exc),
                 )
-            # A pending cover, by contrast, is outstanding at ANY status: the
-            # decision is unmade regardless of where the book sits, and
-            # ``child_facing`` is what separates the urgent case (a published
-            # book on the shelf with no art) from the merely unfinished one.
-            if row.cover_status == _COVER_PENDING_REVIEW:
-                items.append(
-                    _build_decision_item(
-                        row,
-                        kind="cover",
-                        cover=OutstandingCoverDetail(
-                            cover_status=row.cover_status,
-                            child_facing=(
-                                row.status == _PUBLISHED
-                                and row.version == row.current_published_version
-                            ),
+        if moderation is not None:
+            items.append(
+                _build_decision_item(row, kind="moderation", moderation=moderation)
+            )
+        # A pending cover, by contrast, is outstanding at ANY status: the
+        # decision is unmade regardless of where the book sits, and
+        # ``child_facing`` is what separates the urgent case (a published
+        # book on the shelf with no art) from the merely unfinished one.
+        if row.cover_status == _COVER_PENDING_REVIEW:
+            items.append(
+                _build_decision_item(
+                    row,
+                    kind="cover",
+                    cover=OutstandingCoverDetail(
+                        cover_status=row.cover_status,
+                        child_facing=(
+                            row.status == _PUBLISHED
+                            and row.version == row.current_published_version
                         ),
-                    )
+                    ),
                 )
-        except ValidationError as exc:
-            # #EDGE: data integrity: one book's moderation_report is corrupt at
-            # rest. Isolate that book (logged with its id) rather than failing
-            # the listing: this surface is the only place the OTHER books'
-            # unresolved decisions appear, so one bad row must not hide them.
-            # Mirrors get_review_queue's review_queue_item_corrupt handling.
-            # #VERIFY: tests/integration/test_outstanding_decisions_api.py::
-            # test_a_corrupt_report_isolates_only_its_own_book.
-            _logger.warning(
-                "outstanding_decision_item_corrupt",
-                storybook_id=row.storybook_id,
-                version=row.version,
-                error=str(exc),
             )
-            continue
     items.sort(key=_decision_rank)
     return OutstandingDecisionsView(items=items)
 

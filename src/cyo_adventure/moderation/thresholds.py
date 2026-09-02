@@ -191,15 +191,28 @@ async def load_threshold_policy(
             # #EDGE: data-integrity: the ck_moderation_threshold_min_verdict
             # CHECK should make this unreachable; a row that still lands here
             # (constraint dropped, pre-constraint backfill) silently reverts
-            # its (band, category) to the code default, so log it loudly
-            # rather than skipping in silence.
+            # its (band, category) to the code default. The fallback direction
+            # is safe (the code default is the stricter rule, so a malformed
+            # override cannot loosen what surfaces), which is exactly why this
+            # is logged at ERROR rather than warning: nothing downstream will
+            # ever fail because of it, so the log line is the only evidence the
+            # row exists at all, and a warning in a safety-relevant table is
+            # indistinguishable from routine noise. Every field needed to
+            # repair the row by hand is on the record: the (age_band, category)
+            # key that identifies it, the rejected value, the field it came
+            # from, and the default now in force for that pair. `exception`
+            # rather than `error` so the ValueError that rejected the value
+            # travels with it.
             # #VERIFY: malformed-row case in
             # tests/integration/test_threshold_policy_loader.py.
-            _logger.warning(
+            _logger.exception(
                 "moderation_threshold_row_malformed",
                 age_band=row.age_band,
                 category=row.category,
+                malformed_field="min_verdict",
                 min_verdict=row.min_verdict,
+                fallback_min_verdict=DEFAULT_THRESHOLD.min_verdict.value,
+                fallback_min_score=DEFAULT_THRESHOLD.min_score,
             )
             continue
         rows[(row.age_band, row.category)] = Threshold(

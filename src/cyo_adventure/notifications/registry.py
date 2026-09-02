@@ -192,13 +192,17 @@ def _compose_storybook_archived(
         # channel. capability-register.md's own G8 row states the condition
         # correctly ("including offline copies at next connection"); this string
         # did not, so a guardian reading it during a real safety pull would
-        # believe a device was already covered when it was not.
+        # believe a device was already covered when it was not. The copy now
+        # names the SUCCESSFUL library sync rather than the device merely
+        # connecting: reconciliation happens inside the /v1/library response
+        # handler, so a device that comes online but whose fetch fails, or
+        # returns a partial shelf, still holds the copy.
         # #VERIFY: tests/unit/test_notifications_registry.py::
         # test_archive_notification_does_not_claim_offline_copies_are_gone.
         body=(
             "This story was archived and is no longer available to read. An "
-            "offline copy already on a device is removed the next time that "
-            "device connects."
+            "offline copy already on a device is removed after its next "
+            "successful library sync."
         ),
         severity="alert",
     )
@@ -247,8 +251,8 @@ def _compose_storybook_recalled(
         body=(
             "This story is temporarily unavailable while it is reviewed again. "
             "It can return to the shelf once the review is done. An offline "
-            "copy already on a device is removed the next time that device "
-            "connects."
+            "copy already on a device is removed after its next successful "
+            "library sync."
         ),
         severity="info" if quiet else "alert",
     )

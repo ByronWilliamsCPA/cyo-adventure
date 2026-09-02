@@ -48,7 +48,18 @@ _EXPECTED_ROWS = len(AgeBand) * len(GRADED_SCORE_CATEGORIES)
 async def _seeded_rows(
     pg_url: str, db_name: str
 ) -> list[tuple[str, str, str, float | None]]:
-    """Apply every migration to a fresh database and read the seeded grid back."""
+    """Apply every migration to a fresh database and read the seeded grid back.
+
+    Deliberately NOT the shared ``sessions``/``engine`` fixtures: those build
+    the schema from ``Base.metadata.create_all`` and apply no migration at all,
+    so the seeded grid this module is about would simply be absent and every
+    assertion below would pass or fail for the wrong reason. A rolled-back
+    transaction over a pre-existing database has the same problem from the
+    other side; it cannot distinguish "the migration seeded this" from "a
+    developer's database already held it". Same reason, same helper, as
+    ``test_schema_parity.py`` and the RLS enforcement suites; see the
+    ADR-021/ADR-022 harness note at the foot of ``tests/integration/conftest.py``.
+    """
     mig_url = await create_migrated_database(pg_url, db_name)
     engine = create_async_engine(mig_url, poolclass=NullPool)
     try:
@@ -146,6 +157,11 @@ async def test_reapplying_the_seed_does_not_duplicate_or_revert(
         for path in MIGRATIONS
         if path.name == "20260831120000_seed_moderation_threshold_grid.sql"
     )
+    # A standalone engine again, for the reason given on ``_seeded_rows``, plus
+    # one specific to this test: replaying the seed has to COMMIT so the second
+    # application sees the first one's rows and the operator's edit. Inside the
+    # shared session fixture's rolled-back transaction there is no second
+    # application to observe, so the idempotency claim would be untestable.
     mig_url = await create_migrated_database(pg_url, "threshold_seed_replay")
     engine = create_async_engine(mig_url, poolclass=NullPool)
     try:

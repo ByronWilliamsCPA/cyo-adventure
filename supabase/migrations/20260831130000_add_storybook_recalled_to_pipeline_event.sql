@@ -36,6 +36,21 @@
 -- then an unconditional ADD, matching 20260823120000. A conditional guard would take the
 -- false branch on a database missing the constraint entirely and report success having left
 -- the column unconstrained.
+--
+-- Why the ADD is validated inline rather than split into NOT VALID here plus a VALIDATE
+-- CONSTRAINT in a later migration (raised in review of PR #797 and declined):
+--   1. This CHECK only WIDENS the vocabulary. Every existing pipeline_event row already
+--      satisfies the new list by construction, because the old list is a strict subset of
+--      it, so the validating scan can never fail and NOT VALID buys nothing but the scan
+--      duration on an append-only internal event log.
+--   2. The drift guard resolves "the migration that describes the live vocabulary" as the
+--      LAST-SORTING file mentioning ck_pipeline_event_event_type, then parses its string
+--      literals. A follow-up file carrying only VALIDATE CONSTRAINT would sort last and
+--      contain no value list, so the guard would parse an empty vocabulary and fail, while
+--      also no longer guarding the file that actually holds the list.
+--   3. Every prior migration touching this constraint uses the same inline pattern, so
+--      splitting this one alone would make the newest file the odd one out for the next
+--      person who copies the most recent example.
 ALTER TABLE "public"."pipeline_event"
     DROP CONSTRAINT IF EXISTS "ck_pipeline_event_event_type";
 ALTER TABLE "public"."pipeline_event"

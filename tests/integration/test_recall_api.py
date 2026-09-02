@@ -152,6 +152,14 @@ async def test_a_recalled_book_cannot_be_newly_assigned(
     ``api/assignments.py`` gates assignment creation on published status, so
     recall closes the door on new access as well as existing access. Without
     this, a guardian could re-add a book an admin had just pulled.
+
+    The exact status is asserted rather than "any 4xx": ``assign_storybook``
+    raises a bare ``BusinessLogicError`` for a non-published story, and
+    ``app.py::_status_for`` has no row for that class, so it falls through to
+    the 400 default (``StateTransitionError`` and ``RateLimitedError`` are the
+    subclasses with rows of their own, at 409 and 429). A range assertion would
+    also pass on the 500 an unhandled failure inside the handler would produce,
+    which is the one outcome this test needs to distinguish from a refusal.
     """
     await _recall(client, seed)
     resp = await client.post(
@@ -159,7 +167,7 @@ async def test_a_recalled_book_cannot_be_newly_assigned(
         headers=auth(seed.guardian_token),
         json={"profile_ids": [str(seed.child_profile_id)]},
     )
-    assert resp.status_code >= 400, resp.text
+    assert resp.status_code == 400, resp.text
 
 
 async def test_recall_keeps_the_assignment_row_so_reapproval_restores_the_shelf(

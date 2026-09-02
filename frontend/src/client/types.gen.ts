@@ -2973,6 +2973,18 @@ export type OnboardingView = {
  * ``cover_status`` is echoed rather than assumed: the surface only lists
  * ``pending_review`` today, and a reader of a stored response should not have
  * to know that to interpret the row.
+ *
+ * It stays ``str`` rather than narrowing to a ``Literal`` of the five values
+ * in ``db/models.py``'s ``ck_storybook_version_cover_status``. That CHECK is
+ * a hand-written SQL string, not a Python enum, so a ``Literal`` here would
+ * be a second, unlinked copy of the vocabulary that a widening migration
+ * could silently outdate. The consequence of that drift is not a mislabelled
+ * row: pydantic would reject the value and 500 the whole list. This surface
+ * exists because outstanding decisions were invisible, and its client treats
+ * a failed load as unsafe precisely so an outage cannot read as "nothing
+ * outstanding" (see ``OutstandingDecisionsPage.tsx``). Emptying the list to
+ * keep a display field's type tidy trades the exact failure the surface was
+ * built to end.
  */
 export type OutstandingCoverDetail = {
     /**
@@ -3000,6 +3012,21 @@ export type OutstandingCoverDetail = {
  *
  * One row per decision, not per book: a book can hold both kinds at once, and
  * each kind resolves through a different action on a different page.
+ *
+ * ``kind`` and the two detail fields move together, and the producer enforces
+ * it: ``api/approval.py::get_outstanding_decisions`` appends a ``moderation``
+ * row only inside ``if moderation is not None``, and a ``cover`` row only
+ * while constructing its ``OutstandingCoverDetail``. So a ``moderation`` row
+ * always carries ``moderation`` and never ``cover``, and the reverse for a
+ * ``cover`` row; the four states this flat model can express are two states
+ * in practice.
+ *
+ * That invariant is documented rather than encoded as a discriminated union
+ * of two models. The union would be the better type, and it is worth doing
+ * on its own change: it rewrites the wire schema into a ``oneOf``, which
+ * regenerates the committed client's shape and re-narrows every consumer in
+ * ``OutstandingDecisionsPage.tsx``, and that is a refactor of a shipped
+ * contract rather than a fix to a defect. Tracked as ``UW-C477``.
  */
 export type OutstandingDecisionItem = {
     /**
@@ -4058,11 +4085,24 @@ export type RecallRequest = {
  *
  * The response to a successful recall action.
  *
- * ``current_published_version`` is echoed back deliberately, and it is NOT
- * None here: a recalled book keeps the column (see
+ * ``current_published_version`` is echoed back deliberately: a recalled book
+ * KEEPS the column, unlike what "no longer published" suggests (see
  * ``publishing/service.py::recall``). Returning it makes that visible at the
  * wire contract rather than leaving a caller to assume a recalled book has no
  * published version to re-approve.
+ *
+ * The field stays nullable, and the docstring no longer claims otherwise. In
+ * practice every recallable book carries a value, because ``recall`` only
+ * leaves ``published`` and every path that reaches ``published`` sets the
+ * column (``publishing/service.py::approve``, the sole publish path in
+ * ``src/``, plus the seed scripts its module docstring names). But the type
+ * mirrors the nullable ORM column rather than asserting that invariant,
+ * because the only way to assert it here is a serialization-time guard, and
+ * that guard would abort the request AFTER the transition and before the
+ * unit of work commits: a book with an unexpectedly NULL column could then
+ * never be recalled at all. Recall is how a book is pulled away from
+ * children, so it must not be blocked to keep a response type tidy. The
+ * invariant is enforced where it is created, at the publish path.
  */
 export type RecalledView = {
     /**

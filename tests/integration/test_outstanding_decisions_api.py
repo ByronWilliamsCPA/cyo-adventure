@@ -414,6 +414,42 @@ async def test_a_corrupt_report_isolates_only_its_own_book(
     assert {i["storybook_id"] for i in items} == {"healthy"}
 
 
+async def test_a_corrupt_report_still_surfaces_that_books_pending_cover(
+    client: AsyncClient, sessions: async_sessionmaker[AsyncSession]
+) -> None:
+    """A corrupt report drops that book's moderation row only, not its cover row.
+
+    The cover decision derives entirely from ``cover_status`` and
+    ``current_published_version``; nothing about it reads the moderation
+    report. Isolating the corruption any wider than the moderation projection
+    would silently retire a real pending cover decision on the same book, and
+    the only symptom would be a row that never appears.
+    """
+    async with sessions() as session:
+        fam = await _seed_admin_family(session)
+        _add_book(
+            session,
+            fam,
+            storybook_id="corrupt_with_cover",
+            status="published",
+            current_published_version=1,
+            versions=[
+                {
+                    "version": 1,
+                    "moderation_report": _corrupt_report(),
+                    "cover_status": "pending_review",
+                }
+            ],
+        )
+        await session.commit()
+
+    items = await _get_items(client)
+    assert [(i["storybook_id"], i["kind"]) for i in items] == [
+        ("corrupt_with_cover", "cover")
+    ]
+    assert items[0]["cover"]["child_facing"] is True
+
+
 async def test_a_book_with_no_moderation_report_is_an_outstanding_decision(
     client: AsyncClient, sessions: async_sessionmaker[AsyncSession]
 ) -> None:

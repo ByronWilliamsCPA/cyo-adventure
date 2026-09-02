@@ -131,7 +131,14 @@ async def load_anchor_context(
         logger.warning(
             "anchor.context_unavailable",
             anchor_storybook_id=anchor_storybook_id,
-            reason="missing_or_unpublished",
+            # Name only what this predicate actually tested. It checks for a
+            # missing row or a NULL current_published_version; it does NOT
+            # read `status`, so it cannot distinguish an unpublished book from
+            # a recalled or archived one. A broader literal here would read as
+            # a status check during the next incident and send the reader
+            # looking for a gate that is not in this function. The status gate
+            # is resolve_anchor, which every caller passes through first.
+            reason="missing_or_no_published_version",
         )
         return None
     version = await session.scalar(
