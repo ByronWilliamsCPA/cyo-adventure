@@ -85,10 +85,13 @@ describe('makeReviewApi', () => {
     })
     const result = await makeReviewApi(api as never).stillProcessing()
     expect(api.get).toHaveBeenCalledWith('/v1/generation-jobs')
-    expect(result).toEqual([
-      { job_id: 'j1', title: 'The Brave Fox', status: 'queued' },
-      { job_id: 'j2', title: 'A robot learns to paint...', status: 'running' },
-    ])
+    expect(result).toEqual({
+      jobs: [
+        { job_id: 'j1', title: 'The Brave Fox', status: 'queued' },
+        { job_id: 'j2', title: 'A robot learns to paint...', status: 'running' },
+      ],
+      degraded: false,
+    })
   })
 
   it('stillProcessing falls back to premise snippet then a generic label for the title', async () => {
@@ -108,7 +111,7 @@ describe('makeReviewApi', () => {
       },
     })
     const result = await makeReviewApi(api as never).stillProcessing()
-    expect(result).toEqual([
+    expect(result.jobs).toEqual([
       { job_id: 'j1', title: 'snippet only', status: 'running' },
       { job_id: 'j2', title: 'Untitled request', status: 'queued' },
       { job_id: 'j3', title: 'from snippet', status: 'running' },
@@ -128,30 +131,46 @@ describe('makeReviewApi', () => {
       },
     })
     const result = await makeReviewApi(api as never).stillProcessing()
-    expect(result).toEqual([{ job_id: 'j1', title: 'keep me', status: 'queued' }])
+    expect(result.jobs).toEqual([{ job_id: 'j1', title: 'keep me', status: 'queued' }])
   })
 
-  it('stillProcessing resolves to [] on a 403 without logging (expected admin outcome)', async () => {
+  it('stillProcessing reports a 403 as a NON-degraded empty (expected admin outcome)', async () => {
     const api = fakeAxios()
     // A real axios 403: the endpoint is guardian-only and the admin reviewer
-    // gets a 403, which must resolve to [] silently so it never sinks the queue.
+    // gets a 403, which must resolve to an empty list silently so it never
+    // sinks the queue. It is the truthful answer for that caller, so it is not
+    // degraded: marking it degraded would pin a permanent "could not load"
+    // notice on the console's primary user.
     api.get.mockRejectedValue({ isAxiosError: true, response: { status: 403 } })
     const errorSpy = vi.spyOn(console, 'error').mockImplementation(() => {})
     const result = await makeReviewApi(api as never).stillProcessing()
-    expect(result).toEqual([])
+    expect(result).toEqual({ jobs: [], degraded: false })
     // Deletion-sensitive: a 403 is expected and must not be logged as a failure.
     expect(errorSpy).not.toHaveBeenCalled()
     errorSpy.mockRestore()
   })
 
-  it('stillProcessing resolves to [] on a non-403 error but logs it (not silent)', async () => {
+  it('stillProcessing reports a non-403 error as a DEGRADED empty and logs it', async () => {
     const api = fakeAxios()
     api.get.mockRejectedValue(new Error('network down'))
     const errorSpy = vi.spyOn(console, 'error').mockImplementation(() => {})
     const result = await makeReviewApi(api as never).stillProcessing()
-    expect(result).toEqual([])
-    // Deletion-sensitive: a 500/network failure must surface in the log rather
-    // than degrade to an indistinguishable "nothing generating" with no trace.
+    // Deletion-sensitive: the empty list alone cannot distinguish "nothing is
+    // generating" from "the load failed". degraded:true is what lets the
+    // console say which one it is instead of asserting the former.
+    expect(result).toEqual({ jobs: [], degraded: true })
+    expect(errorSpy).toHaveBeenCalledOnce()
+    errorSpy.mockRestore()
+  })
+
+  it('stillProcessing reports a malformed body as a degraded empty, not a silent one', async () => {
+    const api = fakeAxios()
+    // `jobs` absent entirely: the `.filter` throws inside the try, which is the
+    // third way this call used to produce an indistinguishable [].
+    api.get.mockResolvedValue({ data: {} })
+    const errorSpy = vi.spyOn(console, 'error').mockImplementation(() => {})
+    const result = await makeReviewApi(api as never).stillProcessing()
+    expect(result).toEqual({ jobs: [], degraded: true })
     expect(errorSpy).toHaveBeenCalledOnce()
     errorSpy.mockRestore()
   })

@@ -148,6 +148,11 @@ describe('OutstandingDecisionsPage', () => {
     expect(within(shelved).getByText(/on the shelf without it/)).toBeInTheDocument()
     const notShelved = screen.getByTestId('cover:other:2')
     expect(within(notShelved).getByText(/Cover art is waiting for approval$/)).toBeInTheDocument()
+    // Deletion-sensitive: the badge must agree with the sentence next to it.
+    // Both cover rows used to read "Advisory", which says no action is needed
+    // while the shelved row's own headline says a child can reach the book now.
+    expect(within(shelved).getByText('Flagged')).toBeInTheDocument()
+    expect(within(notShelved).getByText('Advisory')).toBeInTheDocument()
   })
 
   it('offers recall only on a recallable moderation row', async () => {

@@ -289,10 +289,15 @@ export function StoryStructureSummary({
   const structure = useMemo(() => readStoryStructure(blob), [blob])
   const severity = !compact && findings ? verdictTally(findings) : null
   const severityLabel = severity ? tierBreakdownLabel(severity) : null
+  // Both arms name their denominator and both pluralize. The occurrences arm
+  // used to render a bare `${flaggedCount} flagged`, which stated neither: it
+  // read as a finding count on the surface whose whole point is that one
+  // merged finding can cover 380 nodes. "flagged occurrence" is the same noun
+  // AdminConsolePage's queue-row fallback already uses for this population.
   const flaggedLabel =
     countBasis === 'distinct'
       ? pluralize(flaggedCount, 'flagged finding')
-      : `${flaggedCount} flagged`
+      : pluralize(flaggedCount, 'flagged occurrence')
   const classes = ['story-structure', compact ? 'story-structure--compact' : '', className]
     .filter(Boolean)
     .join(' ')

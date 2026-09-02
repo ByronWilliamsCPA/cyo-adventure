@@ -153,7 +153,7 @@ describe('AssignChildrenDialog', () => {
 
   it('shows content review tags for the story', async () => {
     render(<AssignChildrenDialog storybookId="s1" onClose={vi.fn()} />)
-    expect(await screen.findByText('2 flagged')).toBeInTheDocument()
+    expect(await screen.findByText('2 flagged occurrences')).toBeInTheDocument()
     expect(screen.getByText('coherence')).toBeInTheDocument()
     expect(screen.getByText('slightly disjoint')).toBeInTheDocument()
   })
@@ -218,7 +218,7 @@ describe('AssignChildrenDialog', () => {
 
   it('omits the validator-notes list when validator_notes is absent or empty', async () => {
     render(<AssignChildrenDialog storybookId="s1" onClose={vi.fn()} />)
-    await screen.findByText('2 flagged')
+    await screen.findByText('2 flagged occurrences')
     expect(screen.queryByText(/warning x|error x/)).not.toBeInTheDocument()
   })
 
@@ -270,7 +270,7 @@ describe('AssignChildrenDialog', () => {
       render(<AssignChildrenDialog storybookId="s1" onClose={vi.fn()} />)
       // The existing content-review tags still render (they do not depend on
       // the blob fetch); the assign checklist stays usable either way.
-      expect(await screen.findByText('2 flagged')).toBeInTheDocument()
+      expect(await screen.findByText('2 flagged occurrences')).toBeInTheDocument()
       expect(await screen.findByRole('checkbox', { name: /Reader A$/ })).toBeInTheDocument()
       expect(screen.queryByText('Story overview')).not.toBeInTheDocument()
     })

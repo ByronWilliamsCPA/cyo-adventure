@@ -464,6 +464,47 @@ describe('AdminConsolePage', () => {
     expect(screen.getByText('Processing…')).toBeInTheDocument()
   })
 
+  // The three ways the jobs list comes back empty are not the same fact, and
+  // the console used to render the same sentence for all three. These two
+  // tests pin the split: only a real failure may say "could not load".
+  it('says the jobs load failed rather than asserting nothing is generating', async () => {
+    mockGet.mockImplementation((url: string) =>
+      url === '/v1/generation-jobs'
+        ? Promise.reject(new Error('jobs endpoint down'))
+        : Promise.resolve({ data: { items: [READY] } })
+    )
+    const errorSpy = vi.spyOn(console, 'error').mockImplementation(() => {})
+    renderPage()
+    expect(await screen.findByText('Gentle Tale')).toBeInTheDocument()
+    expect(screen.getByText(/Could not load what is generating right now/i)).toBeInTheDocument()
+    expect(screen.queryByText(/No stories are generating right now/i)).not.toBeInTheDocument()
+    errorSpy.mockRestore()
+  })
+
+  it('keeps the plain empty state for a 403, the expected admin outcome', async () => {
+    // Guardian-only endpoint; the admin reviewer who is this console's primary
+    // user always 403s here. Treating that as degraded would show a permanent
+    // failure notice on every normal admin visit.
+    // Object.assign onto a real Error rather than a bare object literal:
+    // @typescript-eslint/prefer-promise-reject-errors rejects the literal at an
+    // inline Promise.reject, and axios's isAxiosError only reads the flag.
+    const forbidden = Object.assign(new Error('forbidden'), {
+      isAxiosError: true,
+      response: { status: 403 },
+    })
+    mockGet.mockImplementation((url: string) =>
+      url === '/v1/generation-jobs'
+        ? Promise.reject(forbidden)
+        : Promise.resolve({ data: { items: [READY] } })
+    )
+    renderPage()
+    expect(await screen.findByText('Gentle Tale')).toBeInTheDocument()
+    expect(screen.getByText(/No stories are generating right now/i)).toBeInTheDocument()
+    expect(
+      screen.queryByText(/Could not load what is generating right now/i)
+    ).not.toBeInTheDocument()
+  })
+
   it('shows an Updated HH:MM label and refetches on Refresh without a reload', async () => {
     const user = userEvent.setup()
     renderPage()

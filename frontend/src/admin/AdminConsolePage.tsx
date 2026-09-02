@@ -28,6 +28,11 @@ type LoadState =
       kind: 'ready'
       items: ReviewQueueItem[]
       processing: StillProcessingItem[]
+      // True when `processing` is empty because the generation-jobs load
+      // failed, not because nothing is generating. Kept separate from the
+      // list so the empty state can say which of the two it is; a guardian-only
+      // 403 (the expected admin outcome) is NOT degraded.
+      processingDegraded: boolean
       updatedAt: Date
     }
 
@@ -277,16 +282,20 @@ export function AdminConsolePage() {
   const [detailsFor, setDetailsFor] = useState<string | null>(null)
 
   const fetchQueue = useCallback(async () => {
-    const [items, processing] = await Promise.all([reviewApi.queue(), reviewApi.stillProcessing()])
-    return { items, processing }
+    const [items, stillProcessing] = await Promise.all([
+      reviewApi.queue(),
+      reviewApi.stillProcessing(),
+    ])
+    return { items, processing: stillProcessing.jobs, processingDegraded: stillProcessing.degraded }
   }, [reviewApi])
 
   useEffect(() => {
     let cancelled = false
     async function load() {
       try {
-        const { items, processing } = await fetchQueue()
-        if (!cancelled) setState({ kind: 'ready', items, processing, updatedAt: new Date() })
+        const { items, processing, processingDegraded } = await fetchQueue()
+        if (!cancelled)
+          setState({ kind: 'ready', items, processing, processingDegraded, updatedAt: new Date() })
       } catch (err) {
         // #CRITICAL: security: the route is admin-gated, but the backend
         // check is independent (defense in depth); a 403 here means the
@@ -321,8 +330,8 @@ export function AdminConsolePage() {
     setRefreshing(true)
     setRefreshFailed(false)
     try {
-      const { items, processing } = await fetchQueue()
-      setState({ kind: 'ready', items, processing, updatedAt: new Date() })
+      const { items, processing, processingDegraded } = await fetchQueue()
+      setState({ kind: 'ready', items, processing, processingDegraded, updatedAt: new Date() })
     } catch (err) {
       // #ASSUME: security: a 403 on refresh means the admin capability was
       // revoked mid-session; fail closed to the same no-access notice as the
@@ -466,12 +475,14 @@ export function AdminConsolePage() {
                       </ul>
                     </div>
                   ) : null}
-                  {searching && processing.length === 0 ? null : (
+                  {searching && processing.length === 0 && !state.processingDegraded ? null : (
                     <div className="console-group">
                       <h2 className="console-group__heading">Still processing</h2>
                       {processing.length === 0 ? (
                         <p className="console__muted cyo-text-muted">
-                          No stories are generating right now.
+                          {state.processingDegraded
+                            ? 'Could not load what is generating right now. Refresh to try again.'
+                            : 'No stories are generating right now.'}
                         </p>
                       ) : (
                         <ul className="console-list">

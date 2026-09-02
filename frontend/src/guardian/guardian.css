@@ -950,8 +950,15 @@
   font-weight: 600;
 }
 
+/* De-emphasis has an accessibility floor: `opacity` composites the row's own
+   --color-ink-secondary over the page's --color-parchment, so the value IS a
+   contrast setting. Measured on the light palette (#5a3e28 over #f8f3e8):
+   0.72 gives 4.19:1, below the 4.5:1 WCAG 2.1 AA minimum for normal text;
+   0.85 gives 5.87:1. The dark palette (#d3b98f over #1a130d) clears AA at
+   either value (5.56:1 at 0.72), so the light theme sets the floor. Do not
+   lower this without re-measuring both palettes. */
 .review-finding--reviewed {
-  opacity: 0.72;
+  opacity: 0.85;
 }
 
 .review-triage__progress {

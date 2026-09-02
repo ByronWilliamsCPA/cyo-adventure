@@ -3,8 +3,9 @@ import type { StoryNodeView } from '../guardian/storyReadThrough'
 /**
  * `RS-A4`: a bounded false-negative spot check.
  *
- * Owner ruling (2026-08-31): "I dont expect that a reviewer can read the
- * entire book. They are trying to catch false positives and false negatives."
+ * Owner ruling (2026-08-31), quoted verbatim: "I dont [sic] expect that a
+ * reviewer can read the entire book. They are trying to catch false positives
+ * and false negatives."
  * The findings sections above serve the false-POSITIVE half: everything the
  * gate raised is there to be dismissed or acted on. Nothing served the
  * false-negative half, and the only affordance the page offered was the full

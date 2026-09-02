@@ -88,17 +88,31 @@ export function readReviewedKeys(storybookId: string, version: number): Set<stri
   }
 }
 
+// Latches the first persistence failure so the warning below fires once per
+// page load instead of once per marker toggle.
+let warnedAboutStorage = false
+
 function writeReviewedKeys(storybookId: string, version: number, keys: Set<string>): void {
   try {
     localStorage.setItem(
       storageKey(storybookId, version),
       JSON.stringify([...keys].slice(-MAX_MARKERS))
     )
-  } catch {
+  } catch (err) {
     // #EDGE: browser-compat: storage unavailable or over quota. The caller's
     // in-memory set still drives this render, so the reviewer's session is
     // unaffected; only a reload loses the markers. Failing loudly here would
     // interrupt a review over a progress marker, which is the wrong trade.
+    // Warn ONCE per page load rather than not at all: a reviewer reporting
+    // "my triage markers keep disappearing" is otherwise unsupportable, and
+    // warning on every keystroke-driven write would drown the console.
+    if (!warnedAboutStorage) {
+      warnedAboutStorage = true
+      console.warn(
+        'triage markers could not be persisted; they will not survive a reload:',
+        err instanceof Error ? err.message : err
+      )
+    }
   }
 }
 

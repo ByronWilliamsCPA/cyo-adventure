@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, it, vi } from 'vitest'
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
 import type { FindingView } from '../guardian/reviewApi'
 import { findingKey, readReviewedKeys, toggleReviewed } from './findingTriageStore'
@@ -51,6 +51,15 @@ describe('reviewed marker storage', () => {
     localStorage.clear()
   })
 
+  // Unconditional, not a restore at the end of the one test that spies: the
+  // storage spies below patch Storage.prototype, which every later test in
+  // this file shares. Restoring only on the success path meant a single failed
+  // assertion left getItem/setItem throwing for the rest of the run, burying
+  // the real failure under a cascade of unrelated ones.
+  afterEach(() => {
+    vi.restoreAllMocks()
+  })
+
   it('round-trips markers per book version', () => {
     const key = findingKey(finding())
     expect(readReviewedKeys('s1', 1)).toEqual(new Set())
@@ -84,16 +93,14 @@ describe('reviewed marker storage', () => {
   it('degrades to empty when storage throws, rather than breaking the review page', () => {
     // A reviewer in private browsing or a locked-down profile must still be
     // able to review; a progress marker is never worth an unusable page.
-    const getItem = vi.spyOn(Storage.prototype, 'getItem').mockImplementation(() => {
+    vi.spyOn(Storage.prototype, 'getItem').mockImplementation(() => {
       throw new Error('denied')
     })
-    const setItem = vi.spyOn(Storage.prototype, 'setItem').mockImplementation(() => {
+    vi.spyOn(Storage.prototype, 'setItem').mockImplementation(() => {
       throw new Error('denied')
     })
     expect(readReviewedKeys('s1', 1)).toEqual(new Set())
     const key = findingKey(finding())
     expect(toggleReviewed('s1', 1, key, new Set()).has(key)).toBe(true)
-    getItem.mockRestore()
-    setItem.mockRestore()
   })
 })

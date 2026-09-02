@@ -74,12 +74,23 @@ function decisionHeadline(item: OutstandingDecisionItem): string {
   if (moderation.flag_findings > 0) {
     parts.push(`${moderation.flag_findings} flag${moderation.flag_findings === 1 ? '' : 's'}`)
   }
+  // A usable report with neither a block nor a flag still lands here: the row
+  // was queued on the advisory-only case, which the headline deliberately does
+  // not count (owner ruling 3). Without a subject the sentence rendered as a
+  // bare " on a published book", so the fallback names what is outstanding.
+  if (parts.length === 0) return 'A moderation decision is unresolved on a published book'
   return `${parts.join(' and ')} on a published book`
 }
 
 /** The severity pill tone for a row, matching the server's own ordering. */
 function rowTone(item: OutstandingDecisionItem): 'block' | 'flag' | 'unscreened' | 'advisory' {
-  if (item.kind === 'cover') return 'advisory'
+  if (item.kind === 'cover') {
+    // A child-facing book is on the shelf RIGHT NOW without approved cover art,
+    // which decisionHeadline already says in words; "Advisory" reads as "no
+    // action needed" and contradicted it. The non-child-facing case genuinely
+    // is advisory: nobody can see the book yet.
+    return item.cover?.child_facing ? 'flag' : 'advisory'
+  }
   const moderation = item.moderation
   if (!moderation) return 'flag'
   if (moderation.block_findings > 0) return 'block'
@@ -123,8 +134,8 @@ export function OutstandingDecisionsPage() {
   // #EDGE: timing dependencies: a load can settle after an unmount (route
   // change mid-flight) or after a recall bumped the token, so the flag drops a
   // stale response instead of overwriting a newer list with an older one.
-  // #VERIFY: OutstandingDecisionsPage.test.tsx asserts the post-recall re-fetch
-  // is what the list reflects ("sends the chosen reason code and re-fetches").
+  // #VERIFY: OutstandingDecisionsPage.test.tsx, "sends the chosen reason code
+  // and re-fetches the list on success".
   useEffect(() => {
     let cancelled = false
     async function load() {
