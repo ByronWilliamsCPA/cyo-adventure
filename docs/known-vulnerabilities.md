@@ -295,8 +295,15 @@ no shell and no package manager, so there is no project-side upgrade path.
 
 ### References
 
-- [Aqua AVD CVE-2026-66046](https://avd.aquasec.com/nvd/cve-2026-66046)
+- [Debian security tracker: CVE-2026-66046](https://security-tracker.debian.org/tracker/CVE-2026-66046), the
+  authoritative source for the `affected`, no-fix-available status this
+  entry records
 - [Debian security tracker: expat](https://security-tracker.debian.org/tracker/source-package/expat)
+- [CVE record CVE-2026-66046](https://www.cve.org/CVERecord?id=CVE-2026-66046)
+- Aqua AVD has no page for this CVE yet, so the sibling entries'
+  `avd.aquasec.com/nvd/<cve-id>` link is deliberately omitted here rather
+  than added dead. Re-add it once AVD publishes; do not restore it blind,
+  the link check treats a 404 as a build failure.
 - Discovered by the Container Security workflow (Trivy) on
   [run 33601842565](https://github.com/ByronWilliamsCPA/cyo-adventure/actions/runs/33601842565)
 
