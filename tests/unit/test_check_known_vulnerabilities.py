@@ -28,6 +28,29 @@ from check_known_vulnerabilities import (
 )
 
 _TODAY: Final = date(2026, 8, 16)
+"""Frozen reference date for the synthetic fixtures in this module.
+
+Do not move it. The fixtures below encode exact offsets from this date
+(`_document("2026-08-15")` asserting "1 day(s) ago", `_document("2026-08-16")`
+asserting that an entry due today still passes), so bumping it silently
+invalidates their arithmetic.
+"""
+
+_DOCUMENT_VERIFIED: Final = date(2026, 9, 2)
+"""Date the shipped `docs/known-vulnerabilities.md` was last verified current.
+
+Deliberately separate from `_TODAY`, which cannot move. A single shared anchor
+made the two consumers incompatible: `_TODAY` has to stay frozen for the
+fixtures, while the real document keeps acquiring entries discovered after it,
+and a `Discovered` date later than the reference reads as "in the future" and
+fails the gate. That is how adding a legitimate new entry came to break this
+suite.
+
+Bump this to the current date whenever an entry is added or reassessed. It is
+the "document verified as of" marker, not a wall-clock read: real expiry is
+caught by the pre-commit hook and the weekly workflow, which both run the
+checker against today.
+"""
 
 
 def _document(due: str, *, discovered: str = "2026-08-01", blocking: str = "No") -> str:
@@ -396,9 +419,11 @@ class TestRepositoryState:
     def test_shipped_document_is_current(self) -> None:
         """Guards against committing an already-expired entry.
 
-        Pinned to a fixed date rather than today's so the suite does not start
-        failing on a calendar boundary; the weekly scheduled workflow is what
-        catches real expiry.
+        Pinned to `_DOCUMENT_VERIFIED` rather than today's date so the suite
+        does not start failing on a calendar boundary; the weekly scheduled
+        workflow is what catches real expiry. Bump that constant when adding
+        or reassessing an entry, or a newer `Discovered` date reads as being
+        in the future and fails here.
         """
         repo_root = Path(__file__).resolve().parents[2]
 
@@ -406,7 +431,7 @@ class TestRepositoryState:
             repo_root / "docs" / "known-vulnerabilities.md",
             repo_root / ".trivyignore.yaml",
             repo_root / "known-vulnerabilities-baseline.toml",
-            _TODAY,
+            _DOCUMENT_VERIFIED,
             warn_within=14,
         )
 
