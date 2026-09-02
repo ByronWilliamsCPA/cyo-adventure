@@ -656,8 +656,20 @@ but holds none of the approve/publish authority. The passage-edit modules
 
 - E2E-mocked: `frontend/e2e/guardian-review.spec.ts`, `frontend/e2e/review-edit.spec.ts` (passage-edit save: PATCHes a reachable node's body + choice_labels and an unreachable/orphan node's body-only from the review detail, asserting the exact `PATCH /v1/storybooks/{id}/versions/{v}/nodes/{node}` contract at the network layer), `frontend/e2e/guardian-console.spec.ts` (navigation), `frontend/e2e/naive-user/naive-admin-misuse.spec.ts`, `frontend/e2e/naive-user/naive-misuse-shared.spec.ts`
 - E2E-real: `frontend/e2e-real/approval-flow.spec.ts`
-- Component: `frontend/src/admin/ReviewDetailPage.test.tsx`, `frontend/src/admin/AdminConsolePage.test.tsx` (links into it), `frontend/src/guardian/reviewApi.test.ts`, `frontend/src/guardian/coverApi.test.ts` (cover generation on review page), `frontend/src/admin/rescreenApi.test.ts` (the re-screen trigger's request contract: `triggerForStorybook` scopes the sweep to a single id by posting `{ storybook_ids: [id] }` to `/v1/admin/rescreen` and returns the summary unchanged, and a backend rejection such as a 403 propagates to the caller rather than being swallowed into a fake success). The passage-edit modules this page uses now live under `guardian/` and are shared with the guardian review route; their tests are listed in the guardian section below.
+- Component: `frontend/src/admin/ReviewDetailPage.test.tsx`, `frontend/src/admin/AdminConsolePage.test.tsx` (links into it), `frontend/src/guardian/reviewApi.test.ts`, `frontend/src/guardian/coverApi.test.ts` (cover generation on review page), `frontend/src/admin/reviewSample.test.ts` (RS-A5: the bounded false-negative spot check draws a deterministic 15-passage sample and never counts as a clean verdict), `frontend/src/admin/findingTriageStore.test.ts` (RS-A4: per-finding triage is browser-local and non-gating, so a cleared store reverts to untriaged rather than to approved), `frontend/src/admin/rescreenApi.test.ts` (the re-screen trigger's request contract: `triggerForStorybook` scopes the sweep to a single id by posting `{ storybook_ids: [id] }` to `/v1/admin/rescreen` and returns the summary unchanged, and a backend rejection such as a 403 propagates to the caller rather than being swallowed into a fake success). The passage-edit modules this page uses now live under `guardian/` and are shared with the guardian review route; their tests are listed in the guardian section below.
 - **Gap**: no E2E-staging coverage, `/admin/review/:id` needs a real storybook id and is excluded from the render-only staging smoke for the same reason `e2e-prod` excludes it. The passage-edit E2E is mocked-only for now; promote alongside `approval-flow.spec.ts` when the real tier grows a review-edit journey.
+
+## Admin: outstanding decisions (RS-C2, RS-C3)
+
+- Component: `frontend/src/admin/OutstandingDecisionsPage.test.tsx` (the load-failure branch is
+  the load-bearing one: an outage must not render as "Nothing outstanding", because under ADR-005
+  that sentence is a safety claim about every published book), `frontend/src/admin/outstandingDecisionsApi.test.ts`
+  (the adapter lets a failed call reject rather than resolving to an empty list, which is what
+  makes the page's error branch reachable at all), `frontend/src/admin/AdminShell.test.tsx`
+  (nav link only)
+- **Gap**: no E2E coverage in any tier yet. The mocked tier is the reachable one and is tracked
+  by `UW-J43`; the staging and prod smokes need a published book carrying an unresolved verdict,
+  which is the same real-fixture constraint that keeps `/admin/review/:id` out of them.
 
 ## Admin: cover generation (A16)
 

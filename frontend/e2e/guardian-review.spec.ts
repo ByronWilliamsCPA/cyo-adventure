@@ -64,9 +64,17 @@ test('flagged passages render before the full story', async ({ page }) => {
   await page.goto('/admin/review/s1')
   await expect(page.getByRole('heading', { name: 'The Cave' })).toBeVisible()
   const h2s = page.getByRole('heading', { level: 2 })
-  await expect(h2s.first()).toHaveText('Flagged passages')
+  // RS-A2 put the ranked findings first: each finding is its own entry point, so
+  // the reviewer lands on a decision rather than on prose to scroll through.
+  await expect(h2s.first()).toHaveText('Ranked findings')
   await expect(page.getByText('possibly scary')).toBeVisible()
   await expect(page.getByRole('heading', { name: 'Full story' })).toBeVisible()
+  // The property this test is named for, asserted as an ordering rather than as a
+  // fixed first heading, so a future section inserted above cannot quietly move the
+  // full story above the findings without failing here.
+  const headings = await h2s.allTextContents()
+  expect(headings.indexOf('Flagged passages')).toBeGreaterThan(-1)
+  expect(headings.indexOf('Flagged passages')).toBeLessThan(headings.indexOf('Full story'))
 })
 
 test('admin approve posts visibility:family by default and returns to the console (ADR-005)', async ({
