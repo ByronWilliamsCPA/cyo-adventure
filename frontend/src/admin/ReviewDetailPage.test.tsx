@@ -994,6 +994,73 @@ describe('ReviewDetailPage', () => {
     expect(degraded.compareDocumentPosition(cover) & following).toBeTruthy()
   })
 
+  // The placement test above puts the cover decision above the fold, which is
+  // right for a reviewer ARRIVING on the page. It does nothing for a reviewer
+  // who has just clicked "Generate cover" in the sticky action bar pinned to
+  // the bottom of the viewport: the image lands several screens up, past the
+  // findings, the flagged passages and the full story, and nothing at the
+  // button says a cover is now waiting. These three tests pin the return trip.
+  // ---------------------------------------------------------------------
+
+  it('offers a jump to the pending cover from the action bar', async () => {
+    // #ASSUME: UI state: the reviewer's viewport is at the sticky action bar
+    // (its own CSS pins it to the bottom), so a cover parked above the fold is
+    // off-screen at exactly the moment it becomes actionable. Assert the jump
+    // lives INSIDE .review-actionbar rather than merely somewhere on the page,
+    // because a control anywhere else does not solve the problem it exists for.
+    // #VERIFY: this test.
+    mockGet.mockImplementation((url: string) =>
+      typeof url === 'string' && url.endsWith('/cover')
+        ? Promise.resolve({
+            data: { cover_status: 'pending_review', cover_url: 'https://x/pending.webp' },
+          })
+        : Promise.resolve({ data: SURFACE })
+    )
+    const { container } = renderAt('s1')
+    const jump = await screen.findByRole('button', { name: /cover ready to review/i })
+    expect(container.querySelector('.review-actionbar')?.contains(jump)).toBe(true)
+  })
+
+  it('moves focus to the cover preview when the action-bar jump is used', async () => {
+    // #ASSUME: UI state: scrollIntoView is absent under jsdom, so scroll
+    // position itself is unobservable here; focus is the half that IS
+    // observable and the half assistive tech depends on. Asserting focus lands
+    // on the preview container pins both the keyboard path and the wiring
+    // (a jump pointing at a missing/mismatched id would leave focus on body).
+    // #VERIFY: this test.
+    const user = userEvent.setup()
+    mockGet.mockImplementation((url: string) =>
+      typeof url === 'string' && url.endsWith('/cover')
+        ? Promise.resolve({
+            data: { cover_status: 'pending_review', cover_url: 'https://x/pending.webp' },
+          })
+        : Promise.resolve({ data: SURFACE })
+    )
+    const { container } = renderAt('s1')
+    const jump = await screen.findByRole('button', { name: /cover ready to review/i })
+    await user.click(jump)
+    expect(document.activeElement).toBe(container.querySelector('.review-cover-preview'))
+  })
+
+  it('drops the action-bar cover jump once the cover is approved', async () => {
+    // #ASSUME: UI state: the jump is an outstanding-decision pointer, not a
+    // permanent link to the artwork. An approved ('ready') cover is not a
+    // decision anymore, so the affordance must disappear rather than keep
+    // sending the reviewer somewhere nothing is asked of them.
+    // #VERIFY: this test; the sibling above covers the pending arm, so a
+    // gate widened to every non-'none' status fails here.
+    mockGet.mockImplementation((url: string) =>
+      typeof url === 'string' && url.endsWith('/cover')
+        ? Promise.resolve({
+            data: { cover_status: 'ready', cover_url: 'https://x/approved.webp' },
+          })
+        : Promise.resolve({ data: SURFACE })
+    )
+    renderAt('s1')
+    await screen.findByText(/Cover approved\./i)
+    expect(screen.queryByRole('button', { name: /cover ready to review/i })).not.toBeInTheDocument()
+  })
+
   it('approves a pending cover and reflects the approved state', async () => {
     const user = userEvent.setup()
     mockGet.mockImplementation((url: string) =>
