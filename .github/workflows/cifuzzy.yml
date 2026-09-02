@@ -10,7 +10,9 @@
 #
 # Duration: 600 seconds per run
 # Sanitizer: AddressSanitizer for memory safety
-# Reporting: SARIF format uploaded to Security tab
+# Reporting: SARIF format uploaded as a workflow artifact (GitHub Advanced
+#   Security / Code Security is not active on this repo, so results no
+#   longer go to the Security tab)
 name: Continuous Fuzzing
 
 on:
@@ -23,7 +25,6 @@ on:
 
 permissions:
   contents: read
-  security-events: write  # For SARIF upload
   issues: write  # failure-notification step files a tracking issue
 
 concurrency:
@@ -78,16 +79,20 @@ jobs:
           sanitizer: ${{  matrix.sanitizer  }}
           output-sarif: true
 
-      - name: Upload SARIF
+      - name: Upload SARIF artifact
         # Only upload when a SARIF was actually produced. ClusterFuzzLite emits
         # results.sarif only when the fuzz run finds a crash; with no crash the
         # file is absent and an unconditional upload fails on the missing path.
         # (Matches the dna/cifuzzy.yml reference pattern.)
+        # GitHub Advanced Security (Code Security) is not active on this repo,
+        # so SARIF no longer reaches the Security tab; publish it as a plain
+        # artifact instead so a crash finding stays downloadable.
         if: always() && steps.check-fuzz.outputs.has-targets == 'true' && hashFiles('results.sarif') != ''
-        uses: github/codeql-action/upload-sarif@f205ea1c3313d32999d8d6a48b4f6530d4437b38 # v4.37.4
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
-          sarif_file: results.sarif
-          category: fuzzing-${{  matrix.sanitizer  }}
+          name: fuzzing-sarif-${{  matrix.sanitizer  }}
+          path: results.sarif
+          retention-days: 90
 
       - name: Upload Crash Artifacts
         if: failure() && steps.check-fuzz.outputs.has-targets == 'true'
@@ -122,8 +127,8 @@ jobs:
             ${{ matrix.sanitizer }}).
 
 
-            A failing fuzz run either found a crash (see the SARIF upload in the Security
-            tab and the fuzzing-crashes artifact) or the harness build broke.
+            A failing fuzz run either found a crash (see the fuzzing-sarif and
+            fuzzing-crashes artifacts) or the harness build broke.
 
             Filed automatically because schedule-only workflows never surface a failure
             on a pull request. It closes itself once a weekly run succeeds.
@@ -135,8 +140,8 @@ jobs:
             The scheduled Continuous Fuzzing workflow failed again (sanitizer:
             ${{ matrix.sanitizer }}).
 
-            A failing fuzz run either found a crash (see the SARIF upload in the Security
-            tab and the fuzzing-crashes artifact) or the harness build broke.
+            A failing fuzz run either found a crash (see the fuzzing-sarif and
+            fuzzing-crashes artifacts) or the harness build broke.
 
       - name: Resolve the tracking issue on a green scheduled run
         # The close condition every one of these issue bodies stated in prose and

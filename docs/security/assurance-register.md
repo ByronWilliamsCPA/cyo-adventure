@@ -329,6 +329,24 @@ First tranche of work. Each invalidates multiple rows at once.
   means adding an analyzer that is free or already paid for, not restoring default setup by
   default. The ranked routes are in the AC.4.2 row below.
 
+  **Superseded 2026-09-02: the repo-wide `github/codeql-action/upload-sarif` uses named above no
+  longer exist, and `dependency-review.yml` has been deleted.** GitHub Advanced Security (Code
+  Security) is now billed separately account-wide and is not enabled for this repository, so SARIF
+  ingestion into the Security tab and the `dependency-review-action` (which requires Advanced
+  Security on a private repo) do not function regardless of whether the calling workflow exists.
+  `cifuzzy.yml`'s ClusterFuzzLite SARIF and `scorecard.yml`'s OpenSSF Scorecard SARIF are now
+  published as plain `actions/upload-artifact` steps instead, so a crash or a Scorecard finding
+  stays downloadable even though neither reaches the Security tab. `security-analysis.yml`'s Bandit
+  and OSV-Scanner coverage, and the `semgrep-frontend` job's in-repo Semgrep ruleset, are unaffected
+  by this change and remain the SAST/SCA coverage this repository has. Two callers to
+  `ByronWilliamsCPA/.github` reusable workflows still request Advanced-Security-dependent behavior
+  that this entry does not resolve: `container-security.yml`'s `upload-sarif: true` input and
+  `sbom.yml`'s workflow-level `security-events: write` grant. Both are inputs to shared reusable
+  workflows owned outside this repository; changing them here without a corresponding change to
+  those reusable workflows risks the same silent-workflow-file-issue failure mode CodeQL's caller
+  inputs carry elsewhere, so they are left for the coordinated `.github` follow-up rather than
+  edited in this pass.
+
   This entry is retained rather than deleted because the error is the instructive part. A control
   configured outside the artifact being searched is invisible to a search of that artifact, and
   reporting its absence as a finding is the exact failure mode the verification vantage rule in
