@@ -36,6 +36,8 @@ import math
 from dataclasses import dataclass, field
 from pathlib import Path
 
+from cyo_adventure.core.exceptions import ValidationError
+
 DEFAULT_EXTRACT = Path(
     "docs/planning/safety/production-findings-extract-2026-08-31.json"
 )
@@ -210,7 +212,18 @@ def render_markdown(
 
 
 def main(argv: list[str] | None = None) -> int:
-    """Replay candidate floors and print the per-band table."""
+    """Replay candidate floors and print the per-band table.
+
+    Args:
+        argv: Command-line arguments; ``None`` reads ``sys.argv``.
+
+    Returns:
+        int: 0 on success, 1 for an unusable extract, 2 when a requested floor
+            sits below the production floor.
+
+    Raises:
+        ValidationError: If any requested floor is not a finite number.
+    """
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--extract", type=Path, default=DEFAULT_EXTRACT)
     parser.add_argument("--floors", type=float, nargs="+", default=[0.02, 0.05, 0.10])
@@ -222,6 +235,30 @@ def main(argv: list[str] | None = None) -> int:
     if not isinstance(books, list):
         print(f"{args.extract}: no 'books' array")
         return 1
+
+    # #CRITICAL: data integrity: reject a non-finite floor BEFORE the
+    # below-production check, because that check cannot see one. argparse's
+    # `type=float` accepts "nan", "inf" and "-inf", and every comparison with
+    # nan is False, so `nan < PRODUCTION_FLOOR` is False and a nan floor sails
+    # through. It then reaches `Scenario.surfaces`, where `score >= nan` is
+    # False for every scored finding, so the scenario rejects the entire corpus
+    # and the table reports a ~100% load reduction that is an artifact of
+    # IEEE-754 comparison rules, not a measurement. `inf` fails the same way
+    # for the same reason (it is simply above every score); `-inf` would be
+    # caught below, but is rejected here so the refusal reads on the value
+    # rather than on the floor.
+    # #VERIFY: tests/unit/test_replay_production_floors.py::
+    # test_a_non_finite_floor_is_rejected_rather_than_replayed.
+    non_finite = [f for f in args.floors if not math.isfinite(f)]
+    if non_finite:
+        joined = ", ".join(repr(f) for f in non_finite)
+        msg = (
+            f"floor values must be finite numbers; got {joined}. A non-finite "
+            f"floor compares False against every score, so the replay would "
+            f"drop the whole corpus and report a load reduction that is a "
+            f"comparison artifact rather than a measurement."
+        )
+        raise ValidationError(msg, field="floors", value=non_finite)
 
     below = [f for f in args.floors if f < PRODUCTION_FLOOR]
     if below:

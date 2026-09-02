@@ -38,7 +38,11 @@ from scripts.derive_stage0_floor_table import (
     surfaced_verdict,
 )
 
-BASELINE = Path(DEFAULT_BASELINE)
+# ``DEFAULT_BASELINE`` is relative to the repository root (the script is run
+# from there), so it is anchored against ``__file__`` here rather than against
+# the process working directory; otherwise every fixture-dependent test below
+# fails with FileNotFoundError when pytest is invoked from anywhere else.
+BASELINE = Path(__file__).resolve().parents[2] / DEFAULT_BASELINE
 
 
 @pytest.fixture(scope="module")

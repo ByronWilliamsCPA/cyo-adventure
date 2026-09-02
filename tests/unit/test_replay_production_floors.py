@@ -15,6 +15,7 @@ from __future__ import annotations
 
 import json
 from pathlib import Path
+from typing import cast
 
 import pytest
 
@@ -22,6 +23,7 @@ from cyo_adventure.api.review_surface import (
     _is_low_advisory as surface_is_low_advisory,  # pyright: ignore[reportPrivateUsage]
 )
 from cyo_adventure.api.schemas import FindingView
+from cyo_adventure.core.exceptions import ValidationError
 from cyo_adventure.moderation.report import FindingSeverity, Source, Verdict
 from scripts.replay_production_floors import (
     BAND_ORDER,
@@ -35,16 +37,54 @@ from scripts.replay_production_floors import (
     render_markdown,
 )
 
-EXTRACT = Path(DEFAULT_EXTRACT)
+# ``DEFAULT_EXTRACT`` is relative to the repository root (the script is run
+# from there), so it is anchored against ``__file__`` rather than against the
+# process working directory; otherwise every fixture-dependent test below fails
+# with FileNotFoundError when pytest is invoked from anywhere else.
+EXTRACT = Path(__file__).resolve().parents[2] / DEFAULT_EXTRACT
+
+
+def _records(value: object, *, label: str) -> list[dict[str, object]]:
+    """Validate that ``value`` is a list of string-keyed objects, and return it.
+
+    ``load_extract`` hands back ``dict[str, object]`` because that is all JSON
+    promises, so every nested shape the assertions below index into has to be
+    proven before it can be typed. The proof is a real runtime walk rather than
+    a bare cast: a cast alone would let a malformed extract surface as an
+    ``AttributeError`` inside an unrelated assertion, and would make this module
+    claim an input shape it never checked.
+
+    Args:
+        value: The raw JSON value to validate.
+        label: The extract path being validated, used in the failure message.
+
+    Returns:
+        list[dict[str, object]]: The same records, typed.
+
+    Raises:
+        TypeError: If the value is not a list of objects with string keys.
+    """
+    if not isinstance(value, list):
+        msg = f"{label}: expected a list, got {type(value).__name__}"
+        raise TypeError(msg)
+    records: list[dict[str, object]] = []
+    for index, item in enumerate(cast("list[object]", value)):
+        if not isinstance(item, dict):
+            msg = f"{label}[{index}]: expected an object, got {type(item).__name__}"
+            raise TypeError(msg)
+        keyed = cast("dict[object, object]", item)
+        non_str = sorted(repr(key) for key in keyed if not isinstance(key, str))
+        if non_str:
+            msg = f"{label}[{index}]: non-string keys {', '.join(non_str)}"
+            raise TypeError(msg)
+        records.append(cast("dict[str, object]", item))
+    return records
 
 
 @pytest.fixture(scope="module")
 def books() -> list[dict[str, object]]:
     """The anonymized production findings extract."""
-    payload = load_extract(EXTRACT)
-    loaded = payload["books"]
-    assert isinstance(loaded, list)
-    return loaded
+    return _records(load_extract(EXTRACT)["books"], label="books")
 
 
 def _finding(**kw: object) -> dict[str, object]:
@@ -109,7 +149,7 @@ def test_node_hits_are_counted_per_book_not_band_wide() -> None:
     ids merges unrelated books' nodes and undercounts reviewer load. This is the
     defect the first pass of this analysis shipped in SQL.
     """
-    books = [
+    books: list[dict[str, object]] = [
         {"age_band": "8-11", "node_count": 10, "findings": [_finding(node_ixs=[0])]},
         {"age_band": "8-11", "node_count": 10, "findings": [_finding(node_ixs=[0])]},
     ]
@@ -121,7 +161,7 @@ def test_node_hits_are_counted_per_book_not_band_wide() -> None:
 
 def test_occurrences_and_findings_are_different_axes() -> None:
     """One merged finding spanning 40 nodes is 1 finding and 40 occurrences."""
-    books = [
+    books: list[dict[str, object]] = [
         {
             "age_band": "16+",
             "node_count": 50,
@@ -141,7 +181,9 @@ def test_an_unscored_finding_survives_every_floor() -> None:
     Treating a missing score as zero would delete structural and verdict-only
     safety signal, which is the direction that gets a book published.
     """
-    books = [{"age_band": "16+", "node_count": 5, "findings": [_finding(score=None)]}]
+    books: list[dict[str, object]] = [
+        {"age_band": "16+", "node_count": 5, "findings": [_finding(score=None)]}
+    ]
     for floor in (0.01, 0.5, 0.99):
         assert evaluate(books, Scenario(name="t", default=floor))["16+"].findings == 1
 
@@ -164,10 +206,39 @@ def test_a_sub_production_floor_is_refused_rather_than_reported(
     0.005 would be byte-identical to the baseline and would read as the false
     conclusion "lowering the floor surfaces nothing new".
     """
-    assert main(["--floors", "0.005"]) == 2
+    # ``--extract`` is passed explicitly for the same reason ``EXTRACT`` is
+    # anchored above: ``main`` loads the extract before it reaches the refusal,
+    # so the script's cwd-relative default would make this a FileNotFoundError
+    # rather than the exit code under test.
+    assert main(["--extract", str(EXTRACT), "--floors", "0.005"]) == 2
     out = capsys.readouterr().out
     assert "Refusing to report floors below the production floor" in out
     assert "RS-CAL3" in out
+
+
+@pytest.mark.parametrize(
+    "argv",
+    [
+        ["--floors", "nan"],
+        ["--floors", "inf"],
+        # "=" form: argparse reads a bare "-inf" as an option, not a value.
+        ["--floors=-inf"],
+    ],
+)
+def test_a_non_finite_floor_is_rejected_rather_than_replayed(argv: list[str]) -> None:
+    """A non-finite floor is refused, not silently reported as a huge win.
+
+    argparse's ``type=float`` accepts these strings, and the below-production
+    guard cannot catch nan or inf: every comparison with nan is False, so
+    ``nan < PRODUCTION_FLOOR`` is False. Left unchecked, the scenario's own
+    ``score >= floor`` is then False for every scored finding, the whole corpus
+    drops out, and the table reports a near-total load reduction that is an
+    IEEE-754 artifact rather than a measurement, which is the worst possible
+    failure mode for a script whose only output is a percentage someone
+    ratifies a safety floor from.
+    """
+    with pytest.raises(ValidationError, match="finite"):
+        main(argv)
 
 
 def test_the_extract_holds_nothing_below_the_production_floor(
@@ -175,10 +246,11 @@ def test_the_extract_holds_nothing_below_the_production_floor(
 ) -> None:
     """The truncation the refusal above depends on is real in the data."""
     scores = [
-        float(f["score"])
+        score
         for b in books
-        for f in b["findings"]  # pyright: ignore[reportIndexIssue]
-        if isinstance(f, dict) and isinstance(f.get("score"), (int, float))
+        for f in _records(b["findings"], label="findings")
+        for score in [f.get("score")]
+        if isinstance(score, (int, float))
     ]
     assert scores
     assert min(scores) >= PRODUCTION_FLOOR
@@ -297,8 +369,7 @@ def test_the_extract_carries_no_story_text_or_identifiers(
             "findings",
             "distinct_nodes_with_findings",
         }
-        for finding in book["findings"]:  # pyright: ignore[reportIndexIssue]
-            assert isinstance(finding, dict)
+        for finding in _records(book["findings"], label="findings"):
             assert set(finding) <= allowed
     blob = json.dumps(books)
     for banned in ("storybook_id", "family_id", "profile_id", "title", "message"):

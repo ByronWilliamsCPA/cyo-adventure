@@ -430,6 +430,12 @@ def main(argv: list[str] | None = None) -> int:
     # The production floor is the reference: every marginal figure answers
     # "what would CHANGING today's floor cost", not "what does the classifier
     # miss", which is a different and much larger number.
+    # Fail rather than substitute. Every marginal figure below is a delta
+    # against this reference, and the header prints the production floor as a
+    # fact, so silently falling back to results[0] would relabel a whole table
+    # of deltas against some other floor while still calling it production.
+    # A --floors list that omits the production floor is a caller error, not a
+    # degraded mode.
     reference = next(
         (
             r
@@ -437,8 +443,15 @@ def main(argv: list[str] | None = None) -> int:
             if r.scenario.default == _ADVISORY_SCORE_FLOOR
             and not r.scenario.per_category
         ),
-        results[0],
+        None,
     )
+    if reference is None:
+        raise SystemExit(
+            f"--floors must include the production floor "
+            f"{_ADVISORY_SCORE_FLOOR:g}; every marginal figure in this table is "
+            f"a delta against it. Got: "
+            f"{', '.join(format(f, 'g') for f in args.floors)}"
+        )
 
     print(f"Stage-0 advisory-floor table derived from {args.baseline}")
     print(f"Records: {len(records)}; production floor {_ADVISORY_SCORE_FLOOR:g}")
