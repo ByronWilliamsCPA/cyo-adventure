@@ -1104,7 +1104,19 @@ in their journey sections instead.
 - Guardian widgets: `frontend/src/guardian/BudgetBanner.test.tsx`,
   `frontend/src/guardian/budgetApi.test.ts`,
   `frontend/src/guardian/StoryStructureSummary.test.tsx`,
-  `frontend/src/guardian/storyRequestOptions.test.ts`
+  `frontend/src/guardian/storyRequestOptions.test.ts`,
+  `frontend/src/guardian/findingCounts.test.ts` (the shared counting substrate behind every
+  finding total the review surfaces print. Listed here rather than under one journey because
+  three pages across two consoles import it: `guardian/StoryStructureSummary.tsx`,
+  `admin/ReviewDetailPage.tsx`, and `admin/AdminConsolePage.tsx`. What it pins is that the
+  denominators stay distinct: `surfacePopulation` unions the three merged buckets and falls
+  back to the fan-out plus story-level findings only on a legacy report, so the same finding is
+  never counted twice; structural findings are dropped from the `flag` tier and from nothing
+  else, matching `_route_findings` on the backend, so a structural `block` still gates and the
+  tally cannot disagree with the queue badge; and `queueItemCounts` falls back to
+  `flagged_count` only when all three tiers are zero or absent, so a clean row reports zero
+  instead of inventing a finding. It also pins the label formatting that would otherwise print
+  "0 flagged passages below" or "advisorys")
 - Auth/session utilities: `frontend/src/auth/childSession.test.ts`
 - Library display: `frontend/src/library/EndingsBadge.test.tsx`,
   `frontend/src/library/RecommendationChip.test.tsx`,
