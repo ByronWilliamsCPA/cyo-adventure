@@ -188,11 +188,12 @@ admin.
 
 Likewise, pulling a published book back off the shelves in an emergency (the "kill switch")
 removes it from every guardian's and child's library listing immediately, and a copy a child's
-device already downloaded for offline reading is now also removed the next time that device
-connects. The one remaining edge case: if a child is actively reading a book at the exact moment
-it gets pulled, that one reading session is not interrupted mid-story; the removal takes effect
-the next time they return to their library. Details are in the companion
-[operator runbook](runbook.md).
+device already downloaded for offline reading is removed after that device's next successful
+library sync. Two caveats follow from that. A device that comes back online but whose sync fails,
+or returns only part of the shelf, keeps its copy until a sync does succeed. And if a child is
+actively reading a book at the exact moment it gets pulled, that one reading session is not
+interrupted mid-story; the removal takes effect the next time they return to their library.
+Details are in the companion [operator runbook](runbook.md).
 
 ---
 

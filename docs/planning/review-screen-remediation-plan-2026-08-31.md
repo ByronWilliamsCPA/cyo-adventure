@@ -269,9 +269,26 @@ invariant still holds for gating findings and no longer describes low advisories
 would leave a `#CRITICAL` marker asserting something false about the code beneath it.
 
 **Acceptance**: a test asserting a `LOW`+`ADVISORY` finding appears in `low_advisory_findings` and **not** in
-`flagged_passages`, while a `MEDIUM`+`ADVISORY` and every `flag`/`block` finding still fan out across every
-`node_id`. **Prove discrimination by mutation**: revert the exclusion and confirm the new test fails. A test
-that passes both ways is not evidence.
+`flagged_passages`, while a `MEDIUM`+`ADVISORY` and every **non-structural** `flag`/`block` finding still fans
+out across every `node_id`. **Prove discrimination by mutation**: revert the exclusion and confirm the new test
+fails. A test that passes both ways is not evidence.
+
+**The structural case is a separate acceptance criterion, not an exception to the one above** (corrected
+2026-09-01; the rule as first written would have rejected the current, correct behaviour). `_route_findings`
+(`api/review_surface.py`) tests `view.structural` **before** the fan-out and routes any structural finding to
+`story_level` unconditionally, whatever its verdict. That matters because a structural finding is not
+hypothetical at `FLAG`: `moderation/stages.py`'s `reviewer_unavailable` notice is persisted with
+`verdict=FLAG`, `structural=True`, and populated `node_ids`, and Stage A collapsed N per-node fail-safe
+findings into that one row precisely so a reviewer outage cannot flood the queue with N identical cards. So
+the criterion is:
+
+- a `structural=True` finding carrying `node_ids` and a `flag` or `block` verdict appears **once** in
+  `story_level_findings` and in `structural_findings`, and **not** in `flagged_passages`;
+- its `node_ids` stay populated on the view, since the ranker and the admin detail panel read them;
+- severity and verdict do not change either half, which is what separates this rule from `RS-A1`'s.
+
+`tests/unit/test_review_surface.py::test_structural_finding_node_ids_survive_alongside_content_finding`
+already pins both halves; the acceptance obligation here is that `RS-A1`'s own test does not contradict it.
 
 ### `RS-A2` Invert the screen to findings-first
 
@@ -398,11 +415,21 @@ rejected on cost and on `screening.py` having no band, not on feasibility.
 Raw scores stay in the persisted report either way, so the stored report and what a given reader sees can
 diverge. They already do, by existing design, between the admin and guardian lanes.
 
-### `RS-B2` Seed `moderation_threshold`, with a unique constraint first
+### `RS-B2` Seed `moderation_threshold` idempotently
 
-The table has no unique constraint on `(age_band, category)`, so add one before an idempotent
-`INSERT ... ON CONFLICT DO NOTHING` seed. Copy the pattern in
+Write an idempotent `INSERT ... ON CONFLICT DO NOTHING` seed. Copy the pattern in
 `supabase/migrations/20260721230000_seed_provider_model_allowlist.sql`.
+
+**Corrected 2026-09-01.** This section was headed "with a unique constraint first" and read "The table has no
+unique constraint on `(age_band, category)`, so add one before an idempotent seed." That is false. The premise
+came from reading only the `CREATE TABLE` at `supabase/migrations/20260710000000_baseline.sql:119-130`, which
+declares no inline `UNIQUE`; line 449 of the same file adds it out of line as
+`uq_moderation_threshold_band_category` over `("age_band", "category")`. The delivered migration
+`20260831120000_seed_moderation_threshold_grid.sql` reads it correctly, pins its `ON CONFLICT` to that
+constraint by name, and its own comment records the constraint as verified present in production. Only the
+add-a-constraint-first sub-step is void; the seed's idempotency requirement and everything downstream stand.
+`UW-J42` carries the same correction. Read a schema's out-of-line `ADD CONSTRAINT` statements before concluding
+a table lacks one.
 
 ```text
 # #CRITICAL: data integrity: a conditional migration guard exits 0 having done nothing when its
@@ -537,13 +564,42 @@ RS-C1 ──► RS-C2        (independent of A and B; do not ship RS-C1 without 
 RS-C3                  (independent of everything above; 3 covers stuck today)
 ```
 
-`RS-B2` is ordered inside its own group: the unique constraint on `(age_band, category)` lands before the seed,
-never after, because a seed into a table without it admits duplicate rows that then resolve nondeterministically.
+~~`RS-B2` is ordered inside its own group: the unique constraint on `(age_band, category)` lands before the
+seed, never after, because a seed into a table without it admits duplicate rows that then resolve
+nondeterministically.~~ **Struck 2026-09-01: the constraint already exists.** Line 449 of
+`supabase/migrations/20260710000000_baseline.sql` adds it out of line, `ALTER TABLE ONLY
+"public"."moderation_threshold" ADD
+CONSTRAINT "uq_moderation_threshold_band_category" UNIQUE ("age_band", "category")`; only the `CREATE TABLE` at
+`:119-130`, which is what `RS-B2` was written against, has no inline `UNIQUE`. The delivered seed migration
+already pins its `ON CONFLICT DO NOTHING` to that constraint by name. The `RS-B2` section above carries the same
+correction. Nothing else in this plan moves: the seed is still idempotent and still `DO NOTHING`, and this
+ordering sub-step was the only thing the false premise produced.
 
 `RS-A1` alone is measured to remove 97.0% of the volume. If only one thing ships, ship that.
 
 Track C is independent but internally ordered: recall without a candidate-finding surface gives an owner a
 button and no way to know when to press it.
+
+### Ordering deviation recorded 2026-08-31: Track B shipped ahead of `RS-CAL3`/`RS-CAL4`
+
+The graph above puts `RS-CAL3` and `RS-CAL4` upstream of `RS-B1`, `RS-B2`, and `RS-B3`. In the delivered build
+those three landed while `RS-CAL3` and `RS-CAL4` were still blocked (section 12), so this is a deviation from the
+plan's own sequencing, stated rather than left for a reader to notice from the commit dates.
+
+What makes it safe is narrow, and it is a property of what shipped rather than a judgement about the ordering:
+
+- **`RS-B2` picks no cutoff.** Every seeded row carries `min_score = NULL`, which
+  `moderation/thresholds.py::admin_noise_floor_for` resolves as "fall back to the flat admin noise floor", and
+  `min_verdict = 'flag'`, which is `moderation/thresholds.py::DEFAULT_THRESHOLD`. Both lanes therefore behave on
+  every band and every category exactly as they did before the migration.
+- **The flat floor stays live and remains the kill switch.** `RS-B3` deliberately kept the admin lane on
+  `admin_surfaces()` rather than `ThresholdPolicy.surfaces()`, so an empty or all-NULL grid cannot hide anything.
+- **`RS-B2` has not been applied to production** (section 12), so even the no-op grid is not live there yet.
+
+What the calibration tasks gate is unchanged: `RS-B4`, the re-moderation of the 13 `in_review` books, stays
+blocked, and no cutoff may be set anywhere until `RS-CAL4` rules. `UW-C476` records why `RS-CAL3`/`RS-CAL4` need
+re-scoping first. Shipping the mechanism with the dial at its previous value is not the same as shipping the
+calibration, and nothing here should be read as evidence that a floor raise is measured.
 
 ## 10. Scoping decisions (resolved 2026-08-31)
 

@@ -259,6 +259,20 @@ nav:
 # would be served as public static assets. Non-Markdown files never trip
 # `strict: true`, so a green docs build is not evidence that they stay
 # unpublished; only this entry is.
+# planning/safety/*.json is the moderation-safety evidence tree's DATA: the adversarial corpus and
+# its run artifacts, the Stage-0 baseline capture, and the production-derived floor-replay and
+# findings-extract payloads (~650 KB, the 2026-08-31 findings extract alone 138 KB). The extract is
+# de-identified (no child, family, profile, title, or prose field survives it), but it is still
+# production moderation data and it is nobody's published reading. Excluded for the same reason as
+# planning/evidence/: MkDocs copies non-Markdown files under docs/ verbatim, so without this entry
+# they are served as public static assets by direct URL, and a green `strict: true` build says
+# nothing about it, because non-Markdown files never trip strict.
+# The pattern is scoped to *.json rather than to the whole directory ON PURPOSE. The six Markdown
+# reports under planning/safety/ are prose, already published, and reached by seven links from
+# pages that ARE published (operations/runbook.md, planning/roadmap.md, adr-005, the register).
+# MkDocs reports a link to an excluded page at INFO level, so excluding the directory wholesale
+# would 404 those seven links while `strict: true` stayed green: the same trap the
+# sentinel-reinsertion re-include above exists to avoid.
 exclude_docs: |
   planning/README.md
   planning/project-plan-template.md
@@ -266,6 +280,7 @@ exclude_docs: |
   !planning/evidence/sentinel-reinsertion/
   planning/vendor-comparison/
   !planning/vendor-comparison/README.md
+  planning/safety/*.json
   template_feedback.md
 
 # Validation

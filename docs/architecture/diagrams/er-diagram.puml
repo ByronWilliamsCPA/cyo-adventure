@@ -431,7 +431,7 @@ entity "pipeline_event" as pipeline_event #ECEFF1 {
   actor_role : VARCHAR(16) [system|guardian|child|admin|device]
   entity_type : VARCHAR(32) [story_request|generation_job|storybook|...]
   entity_id : VARCHAR(255)
-  event_type : VARCHAR(48) [30 values, see EventType]
+  event_type : VARCHAR(48) [31 values, see EventType]
   from_state : VARCHAR(32) NULL
   to_state : VARCHAR(32) NULL
   payload : JSONB [PII-free, allowlisted fields only]

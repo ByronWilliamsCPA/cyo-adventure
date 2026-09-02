@@ -406,7 +406,7 @@ erDiagram
         varchar(16) actor_role "system, guardian, child, admin, or device"
         varchar(32) entity_type "story_request, storybook, series, etc."
         varchar(255) entity_id
-        varchar(48) event_type "one of 30 lifecycle event types"
+        varchar(48) event_type "one of 31 lifecycle event types"
         varchar(32) from_state "NULL"
         varchar(32) to_state "NULL"
         jsonb payload "PII-free, allowlisted fields only"
@@ -1103,7 +1103,7 @@ trigger created in the migration; the ORM never updates or deletes them.
 | actor_role | VARCHAR(16) | `system`, `guardian`, `child`, `admin`, or `device` (ADR-014; the CHECK constraint's vocabulary is a superset of every valid `Role`, though no event is written with `actor_role='device'` yet, since the device principal is not wired into any event-emitting endpoint) |
 | entity_type | VARCHAR(32) | `story_request`, `generation_job`, `storybook`, `storybook_version`, `series`, `storybook_assignment`, `rating`, `moderation_threshold`, `moderation_setting`, `kid_flag`, `user`, `family`, or `family_connection` |
 | entity_id | VARCHAR(255) | The affected row's id; composite ids (e.g. `f"{profile_id}:{storybook_id}"`) can reach ~157 chars |
-| event_type | VARCHAR(48) | One of 30 lifecycle event types (`request_created`, `request_approved`, `request_declined`, `plan_assigned`, `generation_started`, `generation_finished`, `moderation_completed`, `repair_applied`, `submitted`, `sent_back`, `released`, `storybook_archived`, `threshold_changed`, `noise_floor_changed`, `book_assigned`, `book_unassigned`, `rated`, `kid_flagged`, `flag_resolved`, `user_managed`, `family_managed`, `family_connection_changed`, `node_edited`, `profile_viewed`, `cell_saturated`, `personalization_toggled`, `ring2_consent_granted`, `ring2_consent_revoked`, `storybook_remoderated`, `notification_digest_ready`). `cyo_adventure.events.models.EventType` is the source of truth; the CHECK constraint is pinned to it by `tests/unit/test_pipeline_event_check_vocab.py` |
+| event_type | VARCHAR(48) | One of 31 lifecycle event types (`request_created`, `request_approved`, `request_declined`, `plan_assigned`, `generation_started`, `generation_finished`, `moderation_completed`, `repair_applied`, `submitted`, `sent_back`, `released`, `storybook_archived`, `storybook_recalled`, `threshold_changed`, `noise_floor_changed`, `book_assigned`, `book_unassigned`, `rated`, `kid_flagged`, `flag_resolved`, `user_managed`, `family_managed`, `family_connection_changed`, `node_edited`, `profile_viewed`, `cell_saturated`, `personalization_toggled`, `ring2_consent_granted`, `ring2_consent_revoked`, `storybook_remoderated`, `notification_digest_ready`). `cyo_adventure.events.models.EventType` is the source of truth; the CHECK constraint is pinned to it by `tests/unit/test_pipeline_event_check_vocab.py` |
 | from_state | VARCHAR(32) NULL | |
 | to_state | VARCHAR(32) NULL | |
 | payload | JSONB | PII-free event payload; defaults to `{}` |

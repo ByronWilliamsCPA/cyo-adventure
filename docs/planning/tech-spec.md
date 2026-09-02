@@ -267,9 +267,10 @@ GenerationJob:  queued → running ─┬─► passed        (L1/L2 + moderatio
                                   ├─► needs_review  (safety flag; a human must clear it)
                                   └─► failed        (hard validation failure)
 
-Storybook:      draft → in_review ─┬─► published → archived
-                  ▲                └─► needs_revision → (repair / regenerate) ──┐
-                  └────────────────────────── (re-review on edit) ◄────────────┘
+Storybook:      draft → in_review ─┬─► published ─┬─► archived  (terminal; absorbing)
+                  ▲                │              └─► in_review (recall, RS-C1)
+                  │                └─► needs_revision → (repair / regenerate) ──┐
+                  └────────────────────────── (re-review on edit) ◄─────────────┘
 ```
 
 A story is visible to a child profile only in `published`. The `in_review → published`
@@ -278,6 +279,15 @@ transition is a single approve-and-publish action that requires the global **adm
 draft version becomes reviewable only after its GenerationJob reaches `passed`; a
 `needs_review` job routes to a person and a `failed` job routes to repair or regeneration.
 See [ADR-005](./adr/adr-005-mandatory-human-approval.md).
+
+`published` has two exits. `archive` ends the book's life (`archived` is absorbing);
+`recall` (`RS-C1`, `POST /api/v1/storybooks/{id}/recall`) returns it to `in_review` with a
+closed-vocabulary `reason_code`, and is the path for a book whose stored verdict was
+reached under thresholds that have since moved. Recall is admin-only and extends ADR-005
+rather than relaxing it: a recalled book must clear the human gate again before it is
+reader-facing. Assignment rows survive it, so re-approval restores the book to exactly the
+shelves it left. Neither exit reaches a copy already downloaded to a device, which is
+evicted only on that device's next successful `/v1/library` fetch.
 
 ### Multi-device sync rules
 

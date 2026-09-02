@@ -101,8 +101,9 @@ queued -> running -> passed | needs_review | failed
 
 ```text
 draft ----submit-----> in_review ----approve----> published --archive--> archived
-  |                        |
-  |auto_reject             |send_back
+  |                        |    ^                     |
+  |auto_reject             |    +------recall---------+
+  |                        |send_back
   v                        v
 needs_revision <-----------+
   |
@@ -117,6 +118,15 @@ or `draft -> needs_revision`; a reviewer can send a story back with
 storybook state; those live only in the GenerationJob lifecycle (`passed`,
 `needs_review`) or are folded into `published`. A story is visible to a child only
 in `published`.
+
+`published` has two exits, not one. `archive` is terminal (`archived` is absorbing);
+`recall` (`RS-C1`) returns the book to `in_review`, which is where a threshold change
+that invalidated a stored verdict is handled without killing the book. Recall is also
+admin-only and extends ADR-005 rather than relaxing it: the recalled book must clear
+the human gate again before any child sees it. Assignment rows survive a recall, so a
+re-approval restores the book to exactly the shelves it left. Neither exit reaches a
+copy already downloaded to a device; that copy is evicted only on the device's next
+successful `/v1/library` fetch, so neither is an incident-response tool.
 
 ## Further Reading
 
