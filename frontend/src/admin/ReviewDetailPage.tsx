@@ -747,6 +747,71 @@ function ReviewDetailPageInner() {
         ) : null
       })()}
 
+      {/*
+        A16 (capability-register.md), H2 human-approval half
+        (security-hardening-plan-2026-07.md): a generated cover stops at
+        cover_status "pending_review" and is withheld from CHILDREN until an
+        admin approves it here. This admin surface is deliberately not
+        withheld: api/covers.py::_cover_url presigns "pending_review" as well
+        as "ready", because the reviewer has to see the image to judge it, and
+        every endpoint reaching that helper is behind _require_admin. A
+        pending_review cover with no URL yet (R2 unconfigured) renders the
+        Approve action ALONE, with no image and no status line, rather than a
+        broken <img>: the "Cover approved." line is the else arm of the
+        pending_review branch and never renders while a cover is pending.
+
+        Placed near the top of the page, below the moderation verdict strip and
+        the degraded-screening alert, NOT at the foot of the page: a pending
+        cover is an outstanding approval action, and below this point the page
+        runs through every passage, finding list and the full story text, so a
+        reviewer who does not scroll to the very bottom never learns the cover
+        is waiting on them. It sits BELOW the classifier_degraded alert rather
+        than above it because that alert says part of the automated safety net
+        never ran, which outranks a cover decision; a reviewer must read it
+        before anything else on the page. This is a second, separate approval
+        from the story approve in the action bar (publishing the book does not
+        approve its cover, and covers/service.py::approve_cover only checks
+        cover_status, never the book's lifecycle status), so it must be
+        discoverable on its own rather than inferred from the action bar.
+        #VERIFY: ReviewDetailPage.test.tsx renders-pending-cover-with-approve,
+        approves-a-pending-cover, surfaces-a-cover-approval-error,
+        offers-the-approve-action-without-an-image, and
+        renders-the-cover-approval-above-the-fold (which asserts this DOM
+        order, including that the block follows the degraded-screening alert,
+        so a refactor that pushes the block back down the page, or back above
+        the safety alert, fails a test instead of shipping silently) tests.
+      */}
+      {coverStatus === 'pending_review' || coverStatus === 'ready' ? (
+        <div className="review-cover-preview">
+          <h2>Generated cover</h2>
+          {coverUrl ? (
+            <img
+              src={coverUrl}
+              alt={
+                coverStatus === 'pending_review'
+                  ? `Generated cover for ${title}, pending review`
+                  : `Approved cover for ${title}`
+              }
+              className="review-cover-preview__image"
+            />
+          ) : null}
+          {coverStatus === 'pending_review' ? (
+            <div className="review-cover-preview__actions">
+              <Button onClick={() => void approveCover()} disabled={coverBusy}>
+                Approve cover
+              </Button>
+              {coverApproveError ? (
+                <span className="review-cover-error" role="alert">
+                  Could not approve the cover; try again.
+                </span>
+              ) : null}
+            </div>
+          ) : (
+            <p className="review-cover-preview__status cyo-text-muted">Cover approved.</p>
+          )}
+        </div>
+      ) : null}
+
       {surface.summary?.repaired ? (
         <p className="review-repaired-hint cyo-text-muted">
           This story was auto-repaired. Compare with the previous version to see what changed.
@@ -1122,48 +1187,6 @@ function ReviewDetailPageInner() {
           </section>
         ) : null}
       </div>
-
-      {/*
-        A16 (capability-register.md), H2 human-approval half
-        (security-hardening-plan-2026-07.md): a generated cover stops at
-        cover_status "pending_review" and carries no presigned URL until an
-        admin approves it here. Rendered whenever the backend hands back a
-        URL for either "pending_review" or "ready" (api/covers.py::_cover_url
-        widens the presign gate for this admin-only surface); a
-        pending_review cover with no URL yet (R2 unconfigured) shows the
-        status text below without an image rather than a broken <img>.
-        #VERIFY: ReviewDetailPage.test.tsx renders-pending-cover-with-approve,
-        approves-a-pending-cover, and surfaces-a-cover-approval-error tests.
-      */}
-      {coverStatus === 'pending_review' || coverStatus === 'ready' ? (
-        <div className="review-cover-preview">
-          {coverUrl ? (
-            <img
-              src={coverUrl}
-              alt={
-                coverStatus === 'pending_review'
-                  ? `Generated cover for ${title}, pending review`
-                  : `Approved cover for ${title}`
-              }
-              className="review-cover-preview__image"
-            />
-          ) : null}
-          {coverStatus === 'pending_review' ? (
-            <div className="review-cover-preview__actions">
-              <Button onClick={() => void approveCover()} disabled={coverBusy}>
-                Approve cover
-              </Button>
-              {coverApproveError ? (
-                <span className="review-cover-error" role="alert">
-                  Could not approve the cover; try again.
-                </span>
-              ) : null}
-            </div>
-          ) : (
-            <p className="review-cover-preview__status cyo-text-muted">Cover approved.</p>
-          )}
-        </div>
-      ) : null}
 
       {/*
         #ASSUME: UI state: the backend already re-checks status on approve/send-back

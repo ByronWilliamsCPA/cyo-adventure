@@ -1,0 +1,27 @@
+shared 4-grams across 2 fills: 3800 (326.3 per 1000 mean leaf words; budget 4.0)
+  x2  for it spend thursday
+  x2  five brass plates in
+  x2  a bag and about
+  x2  a sheet with six
+  x2  with patience and a
+  x2  be six real places
+  x2  of unknown damp things
+  x2  ten times a list
+  x2  bottle of valve oil
+  x2  chip shop ask at
+  x2  and a sheet with
+  x2  the wall above the
+  x2  annoyed about the summer
+  x2  by five to five
+  x2  wall above the door
+menu frames shared by 2+ fills (same node, same choice position, same opening words): 466
+  fn_bill3[0]: get light
+  fn_bill3[1]: find how
+  fn_bill3[2]: meet lorry
+  fn_door[0]: set six
+  fn_door[1]: try other
+  fn_door[2]: look door
+  fn_inventory[0]: put trail
+  fn_inventory[1]: set last
+  fn_inventory[2]: write before
+  fn_light[0]: leave until

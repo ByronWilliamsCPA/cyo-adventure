@@ -364,7 +364,7 @@ free text, sent verbatim, before storage.
 
 The **LLM review provider** stays in scope here but for a different reason, and an earlier
 draft gave the wrong one. It is not a child-typed-text path: it is built from the same
-`build_openrouter_leg` / `build_modal_leg` adapters as generation
+`build_openrouter_leg` adapter as generation
 (`moderation/review_provider.py`), and `review_openrouter_model` defaults to an Anthropic model
 (`core/config.py:562`), so when `review_provider="openrouter"` the review leg rides the **same
 guardrailed route** as generation and carries **generated prose**, not child-typed words. What

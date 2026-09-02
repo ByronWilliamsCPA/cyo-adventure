@@ -423,7 +423,11 @@ Within-vendor shared four-grams came in at mean 0.64 and max 1.34 per 1000 leaf
 words, far inside the 4.0 budget. But the three surviving pairs share neither
 skeleton nor band, while the 3.3 calibration is for pairs sharing a band, so this
 is not comparable to that floor. The shared-skeleton pair the run was designed
-around did not happen, because book 0 was the leg that failed.
+around did not happen *inside this grid*, because book 0 was the leg that
+failed. A separate two-book follow-up run on `the-tin-whistle-map` supplied that
+pair afterwards, under
+`runs/deepseek-v4-pro-2026-08-20/shared-skeleton-pair/`, and it is that run, not
+this grid, that produced the 96.3 shared four-grams per 1000 quoted in 5.3.
 
 ### The two failures (initial diagnosis; book 0's verdict is superseded below)
 
@@ -539,6 +543,180 @@ citing dune 1 and desert 0 while missing sand 220 and scriptorium 104. **A
 mechanical noun-substitution check is only as good as its hand-picked word list**,
 and the honest reading of book 1 is that surface nouns were reskinned densely
 while the source theme's apparatus and physics were retained wholesale.
+
+## 5.3 Router comparison (2026-08-20): neither tested model closes the word shortfall
+
+Built to break the five-fill run's two structural confounds: one endpoint, one
+model. Same skeleton (`the-tin-whistle-map`, 193 nodes, 19,574 commissioned
+words) and the same two briefs that produced the 96.3 sibling floor in the
+shared-skeleton pair run, so the only things that move are the model and the
+endpoint serving it.
+`docs/planning/vendor-comparison/briefs-router-comparison.json` is byte-identical to
+`docs/planning/vendor-comparison/runs/deepseek-v4-pro-2026-08-20/shared-skeleton-pair/briefs.json`,
+which is what makes the DeepSeek column below a matched control rather than a
+different measurement.
+
+Artifacts: `docs/planning/vendor-comparison/runs/router-comparison-2026-08-20/report.json`,
+`books.jsonl`, `books/anthropic-sonnet-5__0{0,1}.json`,
+`sibling-fill-check-sonnet.txt`, and the run config
+`docs/planning/vendor-comparison/vendors-router-comparison-2026-08-20.json`.
+
+| Metric | DeepSeek @ `azure/us` | DeepSeek @ `novita/fp8` | Sonnet 5 @ `bedrock` | GLM-5 @ `z-ai` | Budget |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| Books passed (of 2) | **2** | 0 | **2** | 0 | - |
+| Delivery ratio | **42.9-65.2%** | n/a | 40.9-45.2% | n/a | 100% |
+| In-band nodes | **75.1-77.2%** | n/a | 60.1-64.2% | n/a | - |
+| Sibling 4-grams per 1000 | **96.3** | n/a | 326.3 | n/a | 4.0 |
+| Cost per completed book | $0.371 | none completed | $3.498 | none completed | - |
+| Burn per metered failed book | n/a | $0.242 (1 of 2 metered) | n/a | $0.380 (2 of 2) | - |
+| Latency per book | **690s** | 1,712s | 2,519s | 1,594s | - |
+
+The DeepSeek column does not come from 5.2's five-fill grid. It is a separate
+two-book follow-up run,
+`runs/deepseek-v4-pro-2026-08-20/shared-skeleton-pair/report.json`
+(`brief_index` 0 and 1), commissioned precisely because the grid produced no
+shared-skeleton pair of its own: 5.2 records that book 0 failed, so no two books
+in that grid share a skeleton. Read 5.2's "the shared-skeleton pair did not
+happen" as scoped to the grid; the run named here is the one that supplied the
+pair afterwards, and it is this section's matched control. An earlier draft of
+this section sourced its in-band, cost and latency cells from the five-fill
+run's single tin-whistle book (`brief_index` 3: 73.1%, $0.35, 469s) instead.
+That book answers a different brief and is not comparable to the Sonnet pair;
+the figures above replace it.
+
+Cost is split across two rows deliberately. The DeepSeek/Novita and GLM-5 legs
+completed no book at all, so their figures are what a leg that returned nothing
+still billed, and are not comparable to the per-book costs of the two legs that
+delivered. Novita's row is also only half its own leg: its second book is
+unmetered and carries `cost: null`, so $0.242 is one failed book rather than a
+mean over two. GLM-5's $0.380 is a mean over both of its failed books.
+
+### The result: neither tested model closes the word shortfall
+
+Sonnet 5 delivered **40.9 and 45.2 percent** of commissioned words, a mean of
+**43.1 percent**. On identical inputs DeepSeek delivered **65.2 and 42.9
+percent**, a mean of **54.0 percent**. Both fall far short of the `words=`
+directive, and the Sonnet leg bought its shortfall at 9.4 times the cost per book
+and 3.7 times the latency.
+
+What this supports is bounded: **neither of the two models tested closes the
+gap**. Two frontier models from different labs, on an identical skeleton and
+identical briefs, both under-deliver by a wide margin, so rotating between these
+two is not the fix.
+
+What it does **not** support is the stronger reading, that the shortfall is a
+property of the prompt rather than of the model or the endpoint serving it. Two
+arms is too few, and these two arms differ on two variables at once, the model
+and the endpoint (`azure/us` against `amazon-bedrock/global`). They also
+disagree: 54.0 percent against 43.1 percent is an 11 point spread, so delivery
+demonstrably moves with something that changed between the arms, and nothing
+here isolates which of the two changes moved it. The GLM-5 leg would have been
+the third arm and a third endpoint family, and it completed no book, so it
+contributes nothing either way. Prompt-invariance remains a plausible reading of
+two arms that both fall far short; establishing it needs a leg that varies the
+prompt against a fixed model and endpoint, which this run does not contain.
+
+Note also that the two arms are not tied. DeepSeek delivered about 25 percent
+more words than Sonnet on the same skeleton and briefs (21,150 against 16,855
+across the two books); the point is that the better of the two still misses the
+directive by 46 percent.
+
+For `UW-C307` that is still decision-grade on the narrower claim. Neither model
+tested here is the fix, so "rotate the fill model" is not a shortcut available
+on this evidence, and a sprint spent moving between these two would buy nothing.
+It does not license the converse, that the remedy must be prompt-side; that
+stays an open hypothesis, and the note above says what would test it. The
+fill-rate gate is correctly aimed as a detector either way, because it measures
+the shortfall without needing to know its cause.
+
+### Sibling convergence is WORSE on the stronger model
+
+Sonnet's two books on one skeleton scored **326.3 shared four-grams per 1000 leaf
+words against a 4.0 budget**: 3,800 shared grams and 466 shared menu frames,
+against DeepSeek's 1,350 and 274. That is 3.4 times DeepSeek's convergence and 81
+times budget. So `AL-498` is not a DeepSeek defect: it is worse on the better
+model, and rotating between the two vendors tested does not address it.
+
+This particular comparison is a hand synthesis across two separate `report.json`
+files, not a single tool output. `compare_vendors.py` computed only the
+`within_vendor` cell for `anthropic-sonnet-5`; every cross-vendor cell in this
+run's report is `0.0` and its `verdict` field reads
+`not measured: need both within-vendor and cross-vendor pairs`, because the two
+non-Anthropic legs produced no books to pair against. Do not read 326.3 against
+96.3 as something the tool emitted.
+
+### Only one of three legs could complete a fill at all
+
+Both failing legs died the same way, on `finish_reason=length` with the output
+budget consumed before any usable content came back. The metered reasoning splits
+are DeepSeek on Novita 8,608 on its first book, and GLM-5 58,924 then 108,775.
+Novita's second book is **unmetered**: its `output_tokens`, `reasoning_tokens`
+and `cost` are all `null`, with `cost_unavailable_reason` recorded as "no
+provider call was metered for this book". The "131,072 of them on reasoning"
+figure for that book exists only inside the provider's error *string*, and that
+string is not a reliable channel: it reports 8,192 reasoning tokens for both GLM
+books where the metered fields say 58,924 and 108,775, understating them by 7x
+and 13x. What was observed for that book is that the budget was exhausted and
+nothing usable returned; the reasoning split is unmeasured.
+
+Sonnet reasons heavily too (164,388 of 303,996 output tokens on book 0) and still
+delivered, so reasoning is not disqualifying by itself; spending the whole budget
+on it is. `is_fill_feasible` derives its estimate from `words=` directives and
+therefore models content tokens only, so it is blind to this by construction.
+
+### The counterintuitive conclusion
+
+**DeepSeek v4 Pro on `azure/us` is the best leg tested**, on delivery ratio,
+reading-level conformance, sibling diversity, cost and latency simultaneously.
+The run was designed expecting to find that DeepSeek was the weak link. It is the
+strongest of the three, and the defects the five-fill run attributed to it are
+not DeepSeek-specific: both reappear, and sibling convergence sharply worsens,
+on a different lab's model at a different endpoint.
+
+### Cost of this comparison
+
+Harness reported $7.9979 over 5 priced books, 1 of 6 unmetered. OpenRouter's own
+accounting puts the session at $11.4431 total. The gap is the unattributed
+failed-leg spend: the three metered failures recorded $1.0022 between them
+(DeepSeek/Novita 41,038 output tokens; GLM-5 99,606 and 157,966), and the fourth
+failure, Novita's second book, billed an unrecorded amount over 2,904 seconds.
+
+**The DeepSeek/Novita cost is priced at the wrong endpoint, and a rerun
+reproduces that rather than fixing it.** `core/pricing.py` keys on
+`(provider, model)`, so `price_for("openrouter", "deepseek/deepseek-v4-pro")`
+returns the `azure/us` row ($1.91 / $3.83 as of 2026-08-20) no matter what
+`provider_order` pins. This leg pinned `novita/fp8`, whose rate the run config
+records as $1.44 / $2.88, so the $0.24179236 it booked was costed at Azure's
+rate over its metered counts, not at Novita's; the same counts at the pinned
+endpoint's own rate come to about $0.182. The figure is therefore neither a
+billed amount nor reproducible against the endpoint it names, and the run config
+now carries a `_cost_basis` key saying so. The `azure/us` cell is not mispriced,
+because that leg did run on the endpoint the table prices; the consequence for
+the table is instead that both DeepSeek cost cells were costed at the one
+`azure/us` rate, so they differ only by token count and encode no endpoint price
+difference at all. Sonnet 5 and GLM-5 are unaffected, each costed at exactly the
+rate its own config declares. The recorded numbers stay as recorded, because
+they are what the run produced and the run cannot be repeated.
+
+### Three caveats on the artifacts
+
+- `excluded_incomplete` is `[]` in this run's report while four books were in
+  fact incomplete, so that field is not a usable exclusion record here.
+- This report predates the `differentiation_directives` key that later reports
+  carry, so a diff against a newer run will show that field missing rather than
+  null.
+- Every `cost` in this report is computed from `core/pricing.py`, not read back
+  from a provider invoice, and that table cannot express a per-endpoint price.
+  See "Cost of this comparison" above: the DeepSeek/Novita leg is priced at the
+  `azure/us` rate it did not run on.
+
+### Lessons from this leg
+
+Two lessons come out of 5.3: the bounded finding above that neither model tested
+closes the delivery gap, and the sibling convergence result. Both are held for a
+single later consolidation pass so their ids are assigned once, in sequence,
+against the current maxima of the lessons log and the register. Until that
+lands, this section is their record.
 
 ## 6. Findings from planning
 

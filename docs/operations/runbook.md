@@ -560,6 +560,77 @@ configured for a given environment, logs remain the only observability surface t
 5. `GenerationJob.status` progresses `queued` → `running` → one of `passed` / `needs_review` /
    `failed`. Check the row directly (admin-only `GET /generation-jobs/{id}`, or a database query)
    for `error` and `report` detail once it leaves `queued`.
+6. **After a provider retirement**, a job can fail immediately with `generation provider '<name>'
+   is retired and can no longer be built`. That is not a misconfiguration of the running service:
+   the row was enqueued before the retirement deployed and still names the old provider in its
+   `authoring_metadata`, which `process_generation_job` passes to `build_provider` verbatim.
+   `build_provider` deliberately fails these rather than silently substituting a live provider,
+   because substituting one would bill the story to a backend the admin did not choose and would
+   make the job's own recorded provider attribution false (which is what reviewer independence is
+   computed from).
+
+   The failure is terminal, not a loop: `build_provider` raises before the pipeline's own
+   try/except, so `run_generation_job`'s finally guard force-fails the row via `_record_failure`
+   and it lands at `status='failed'` with the retirement message in `error`. The step-3 reclaim
+   sweep only re-enqueues rows still sitting at `'queued'`, so it never picks a failed row back
+   up. What that means operationally: a stale row the worker has already reached is **already
+   failed** and needs a guardian re-request, not draining; a stale row still at `'queued'` (or one
+   the sweep re-enqueues after a Redis loss, which is why the exposure window outlasts the deploy
+   itself) will fail exactly once on the next worker pass. Rewriting a row in place is therefore
+   only useful **before** a worker reaches it.
+
+   Find the affected rows with (`'ollama'` is the only current entry in `RETIRED_PROVIDERS` in
+   `generation/provider.py`; read that set rather than trusting this literal, or the query returns
+   a false all-clear after the next retirement):
+
+   ```sql
+   SELECT id, status,
+          authoring_metadata ->> 'provider' AS provider,
+          authoring_metadata ->> 'model'    AS model
+   FROM generation_job
+   WHERE authoring_metadata ->> 'provider' = 'ollama'
+   ORDER BY status;
+   ```
+
+   Deliberately unfiltered by status: the rows most in need of action are the ones already at
+   `'failed'`, and a `status IN ('queued','running')` filter would hide exactly those.
+
+   **Preferred remediation** is to let the rows reach `'failed'` and have the guardian re-request,
+   which re-runs the authoring-plan endpoint and produces a coherent provider/model pair validated
+   against the current allowlist. To drain the not-yet-executed ones immediately instead of waiting
+   for a worker to fail each in turn:
+
+   ```sql
+   UPDATE generation_job
+   SET status = 'failed',
+       error  = 'provider retired; re-request required'
+   WHERE authoring_metadata ->> 'provider' = 'ollama'
+     AND status IN ('queued', 'running');
+   ```
+
+   **Rewriting the row in place** is the alternative, and it must change *both* keys.
+   `process_generation_job` reads `authoring_metadata->>'provider'` **and**
+   `authoring_metadata->>'model'` and passes them to `build_provider` as `provider_override` and
+   `model_override` (`_authoring_provider_override` / `_authoring_model_override`). Rewriting the
+   provider alone leaves the retired backend's model id (e.g. `llama3.1:8b`) as the override, and
+   that string is not rejected at build time: the job would run the new provider against a model
+   it does not serve, failing at the API call or, worse, resolving to some other model than the
+   one recorded. Drop the `model` key to take the new provider's configured default, which is the
+   safer of the two rewrites:
+
+   ```sql
+   UPDATE generation_job
+   SET authoring_metadata = (authoring_metadata - 'model')
+                            || jsonb_build_object('provider', 'openrouter')
+   WHERE authoring_metadata ->> 'provider' = 'ollama'
+     AND status IN ('queued', 'running');
+   ```
+
+   The replacement provider must be one the family lane permits (`FAMILY_LANE_PROVIDERS` in
+   `generation/provider.py`: `openrouter` or `modal`; `mock` is a CI-only double). The worker
+   always calls `build_provider(..., lane="family")`, so rewriting to `anthropic` just swaps the
+   retirement error for a lane-rejection error. Accept, too, that this changes the job's recorded
+   provider attribution, which is what the raise was protecting.
 
 ### 5.2 Provider outage or degraded generation quality
 

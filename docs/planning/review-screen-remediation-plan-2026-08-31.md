@@ -223,7 +223,7 @@ inside the graded range, so it buys nothing except by trading recall.
 `RS-CAL3` should therefore be narrowed to the two questions that remain, both about recall rather than load:
 does a `violence*` floor near 0.50 drop a true positive, and is anything measurable below 0.01. `RS-CAL4` rules
 on recall, not on noise. `RS-B4` stays blocked behind both. Full evidence:
-`docs/planning/safety/production-floor-replay-2026-08-31.md`; register row `UW-C439`, lesson `AL-714`.
+`docs/planning/safety/production-floor-replay-2026-08-31.md`; register row `UW-C476`, lesson `AL-751`.
 
 ### 5.6 Sampling constraint on the clean corpus
 
@@ -585,7 +585,7 @@ and it cites the capabilities it serves. All three are done; `scripts/check_work
 | `UW-J41` | Track A, `RS-A1` through `RS-A7` | `now` |
 | `UW-J42` | Track B, `RS-B1` through `RS-B5`; extends the ratified `UW-C378` rather than duplicating it | `5` |
 | `UW-J43` | Track C, `RS-C1` through `RS-C3` | `5` |
-| `UW-C438` | Phase home for the new lesson `AL-712` | `now` |
+| `UW-C475` | Phase home for the new lesson `AL-749` | `now` |
 | `UW-C02` | Updated, not duplicated: `AL-036`'s existing row, now pointing here | `5` |
 
 **Predecessor.** This plan is not the first look at this surface. `AL-036` (2026-07-25) and its register row
@@ -595,7 +595,7 @@ different diagnosis from production measurement: the volume is 97.0% a findings-
 would have made 250 screens of boilerplate navigable rather than removing it, while reading as a fix and closing
 the row. `UW-C02` now cites this document and should be closed against `RS-A1`..`RS-A7`.
 
-**Lesson.** `AL-712`, open, cites this document. The generalisation it carries: before optimising how a large
+**Lesson.** `AL-749`, open, cites this document. The generalisation it carries: before optimising how a large
 collection renders, measure how much of it the server should not have sent.
 
 **Capabilities served** (`docs/planning/capability-register.md`):
@@ -626,8 +626,8 @@ Recorded 2026-08-31, at the end of the build that this document scoped. Every co
 | `RS-A7` | delivered | `ef9866d39` |
 | `RS-CAL1` | delivered, and it inverted the Track B premise (section 5.5) | `e0f22ba42` |
 | `RS-CAL2` | delivered | `2f84ea7c1` |
-| `RS-CAL3` | **blocked**: needs paid classifier calls, and needs the section 5.5 re-scope first | `UW-C439` |
-| `RS-CAL4` | **blocked** on `RS-CAL3` | `UW-C439` |
+| `RS-CAL3` | **blocked**: needs paid classifier calls, and needs the section 5.5 re-scope first | `UW-C476` |
+| `RS-CAL4` | **blocked** on `RS-CAL3` | `UW-C476` |
 | `RS-B1` | delivered | `a3bc2d20e` |
 | `RS-B2` | migration written, **not applied to production** | `8844595f7` |
 | `RS-B3` | delivered | `a3bc2d20e` |
