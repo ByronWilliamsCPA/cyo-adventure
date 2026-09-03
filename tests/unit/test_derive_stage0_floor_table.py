@@ -19,6 +19,7 @@ from pathlib import Path
 
 import pytest
 
+from cyo_adventure.core.exceptions import ValidationError
 from cyo_adventure.moderation.classifiers import (
     _ADVISORY_SCORE_FLOOR,  # pyright: ignore[reportPrivateUsage]
     _openai_finding,  # pyright: ignore[reportPrivateUsage]
@@ -31,6 +32,7 @@ from scripts.derive_stage0_floor_table import (
     _was_screened,  # pyright: ignore[reportPrivateUsage]
     evaluate,
     load_records,
+    main,
     ratified_scenario,
     record_verdicts,
     render_markdown,
@@ -319,6 +321,38 @@ def test_the_derived_table_names_every_scenario_it_measured(
     assert len(lines) == 2 + len(scenarios)
     for scenario in scenarios:
         assert any(scenario.name in line for line in lines)
+
+
+@pytest.mark.parametrize(
+    "argv",
+    [
+        # ``--baseline`` is passed for the same reason ``BASELINE`` is anchored
+        # against ``__file__`` above: the script's default is relative to the
+        # repository root, so without it a non-root working directory would
+        # raise FileNotFoundError and this test would pass for the wrong
+        # reason. The guard under test runs before the baseline is read, so the
+        # path only has to be correct, not reached.
+        ["--baseline", str(BASELINE), "--floors", "nan"],
+        ["--baseline", str(BASELINE), "--floors", "inf"],
+        # "=" form: argparse reads a bare "-inf" as an option, not a value.
+        [f"--baseline={BASELINE}", "--floors=-inf"],
+    ],
+)
+def test_a_non_finite_floor_is_rejected_rather_than_derived(argv: list[str]) -> None:
+    """A non-finite floor is refused, not silently derived into a table.
+
+    argparse's ``type=float`` accepts these strings, and no downstream check
+    catches them: every comparison with nan is False, so the
+    production-floor equality check does not reject a nan floor. Left
+    unchecked, ``surfaced_verdict``'s own ``score >= floor`` is then False for
+    every scored finding, the whole baseline drops out, and the table reports a
+    near-total advisory reduction that is an IEEE-754 artifact rather than a
+    measurement. ``-inf`` is the same defect with the sign flipped: it surfaces
+    every scored finding. Either way the output is a percentage someone
+    ratifies a safety floor from.
+    """
+    with pytest.raises(ValidationError, match="finite"):
+        main(argv)
 
 
 def test_the_baseline_artifact_is_the_one_the_script_defaults_to() -> None:

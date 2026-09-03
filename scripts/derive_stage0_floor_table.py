@@ -45,6 +45,7 @@ from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Final
 
+from cyo_adventure.core.exceptions import ValidationError
 from cyo_adventure.moderation.classifiers import (
     _ADVISORY_SCORE_FLOOR,  # pyright: ignore[reportPrivateUsage]
     _OPENAI_BRIGHTLINE,  # pyright: ignore[reportPrivateUsage]
@@ -409,7 +410,11 @@ def load_records(baseline: Path) -> list[dict[str, object]]:
 
 
 def main(argv: list[str] | None = None) -> int:
-    """Derive and print the floor table."""
+    """Derive and print the floor table.
+
+    Raises:
+        ValidationError: If any requested floor is not a finite number.
+    """
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--baseline", type=Path, default=DEFAULT_BASELINE)
     parser.add_argument(
@@ -423,6 +428,30 @@ def main(argv: list[str] | None = None) -> int:
         "--json", type=Path, default=None, help="Also write the table as JSON here."
     )
     args = parser.parse_args(argv)
+
+    # #CRITICAL: data integrity: reject a non-finite floor BEFORE the floors
+    # are used anywhere, because nothing downstream can see one. argparse's
+    # `type=float` accepts "nan", "inf" and "-inf", and every comparison with
+    # nan is False, so the production-floor equality check below is False and a
+    # nan floor sails through it. It then reaches `surfaced_verdict`, where
+    # `score >= nan` is False for every scored finding, so the scenario
+    # surfaces nothing and the table reports a ~100% advisory reduction that is
+    # an artifact of IEEE-754 comparison rules, not a measurement. `inf` fails
+    # the same way for the same reason (it is simply above every score); `-inf`
+    # surfaces every scored finding instead, which is the same defect with the
+    # sign flipped. All three are rejected here so the refusal reads on the
+    # value rather than on some downstream figure.
+    # #VERIFY: tests/unit/test_derive_stage0_floor_table.py::test_a_non_finite_floor_is_rejected_rather_than_derived
+    non_finite = [f for f in args.floors if not math.isfinite(f)]
+    if non_finite:
+        joined = ", ".join(repr(f) for f in non_finite)
+        msg = (
+            f"floor values must be finite numbers; got {joined}. A non-finite "
+            f"floor compares False against every score, so the derived table "
+            f"would report an advisory reduction that is a comparison artifact "
+            f"rather than a measurement."
+        )
+        raise ValidationError(msg, field="floors", value=non_finite)
 
     records = load_records(args.baseline)
     scenarios = [*scalar_scenarios(tuple(args.floors)), ratified_scenario()]

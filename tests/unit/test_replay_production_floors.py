@@ -219,10 +219,15 @@ def test_a_sub_production_floor_is_refused_rather_than_reported(
 @pytest.mark.parametrize(
     "argv",
     [
-        ["--floors", "nan"],
-        ["--floors", "inf"],
+        # ``--extract`` is passed for the same reason as in the test above:
+        # ``main`` loads the extract before it reaches the finiteness check, so
+        # the cwd-relative default would raise FileNotFoundError from a
+        # non-root working directory and the test would pass for the wrong
+        # reason.
+        ["--extract", str(EXTRACT), "--floors", "nan"],
+        ["--extract", str(EXTRACT), "--floors", "inf"],
         # "=" form: argparse reads a bare "-inf" as an option, not a value.
-        ["--floors=-inf"],
+        ["--extract", str(EXTRACT), "--floors=-inf"],
     ],
 )
 def test_a_non_finite_floor_is_rejected_rather_than_replayed(argv: list[str]) -> None:
