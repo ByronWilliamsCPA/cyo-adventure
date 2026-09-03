@@ -12,7 +12,10 @@ if TYPE_CHECKING:
     from collections.abc import Callable
 
 from cyo_adventure.moderation import classifiers
-from cyo_adventure.moderation.classifiers import run_classifiers
+from cyo_adventure.moderation.classifiers import (
+    _ADVISORY_SCORE_FLOOR,  # pyright: ignore[reportPrivateUsage]
+    run_classifiers,
+)
 from cyo_adventure.moderation.report import (
     FindingSeverity,
     ModerationReport,
@@ -22,6 +25,25 @@ from cyo_adventure.moderation.report import (
 )
 
 pytestmark = pytest.mark.asyncio
+
+
+# `RS-B5`: the six boundary cases below describe positions RELATIVE to the
+# Stage-0 advisory floor ("below", "at", "above"), so they derive their stimulus
+# scores from the constant instead of restating today's 0.01. A hard-coded 0.02
+# stops meaning "above the floor" the moment the floor moves to 0.10, and a
+# hard-coded 0.01 stops being the boundary at all: the test would then still
+# pass or fail, but for a reason its name no longer describes.
+#
+# This is not an assertion that reads a constant back off its own module. The
+# constant parameterizes the INPUT; every assertion is on the resulting verdict,
+# so flipping the predicate from >= to > (or dropping the floor entirely) still
+# fails these tests.
+_AT_FLOOR = _ADVISORY_SCORE_FLOOR
+_ABOVE_FLOOR = _ADVISORY_SCORE_FLOOR * 2.0
+_BELOW_FLOOR = _ADVISORY_SCORE_FLOOR / 2.0
+# The real noise ceiling observed on clean prose is ~6e-4; keep it genuinely
+# sub-floor even if the floor is ever lowered toward it.
+_NOISE = min(0.0006, _ADVISORY_SCORE_FLOOR / 10.0)
 
 
 def _client(handler: Callable[[httpx.Request], httpx.Response]) -> httpx.AsyncClient:
@@ -128,10 +150,9 @@ async def test_openai_near_zero_score_yields_no_finding() -> None:
                     {
                         "flagged": False,
                         "categories": {"violence": False, "harassment": False},
-                        # Real noise ceiling observed on clean prose: ~6e-4.
                         "category_scores": {
-                            "violence": 0.0006,
-                            "harassment": 0.0000022,
+                            "violence": _NOISE,
+                            "harassment": _NOISE / 100.0,
                         },
                     }
                 ]
@@ -158,7 +179,7 @@ async def test_openai_elevated_score_yields_advisory() -> None:
                     {
                         "flagged": False,
                         "categories": {"violence": False},
-                        "category_scores": {"violence": 0.02},
+                        "category_scores": {"violence": _ABOVE_FLOOR},
                     }
                 ]
             },
@@ -188,7 +209,7 @@ async def test_openai_flagged_non_brightline_bypasses_floor() -> None:
                     {
                         "flagged": True,
                         "categories": {"violence": True},
-                        "category_scores": {"violence": 0.001},
+                        "category_scores": {"violence": _BELOW_FLOOR},
                     }
                 ]
             },
@@ -221,7 +242,7 @@ async def test_openai_brightline_below_floor_still_blocks() -> None:
                     {
                         "flagged": True,
                         "categories": {"sexual/minors": True},
-                        "category_scores": {"sexual/minors": 0.005},
+                        "category_scores": {"sexual/minors": _BELOW_FLOOR},
                     }
                 ]
             },
@@ -247,7 +268,7 @@ async def test_openai_score_at_floor_yields_advisory() -> None:
                     {
                         "flagged": False,
                         "categories": {"violence": False},
-                        "category_scores": {"violence": 0.01},
+                        "category_scores": {"violence": _AT_FLOOR},
                     }
                 ]
             },
@@ -273,7 +294,10 @@ async def test_openai_mixed_scores_filter_per_category() -> None:
                     {
                         "flagged": False,
                         "categories": {"violence": False, "harassment": False},
-                        "category_scores": {"violence": 0.02, "harassment": 0.0005},
+                        "category_scores": {
+                            "violence": _ABOVE_FLOOR,
+                            "harassment": _BELOW_FLOOR,
+                        },
                     }
                 ]
             },

@@ -308,8 +308,10 @@ async def _seed_published_storybook(
     """Seed Family + admin user + a published single-version story.
 
     Mirrors ``_seed_in_review_storybook`` above (own-family, own-admin); used
-    by the ``archive()``/``STORYBOOK_ARCHIVED`` (A5) tests, which need a
-    story already in ``published`` rather than ``in_review``.
+    by the ``archive()``/``STORYBOOK_ARCHIVED`` (A5) and
+    ``recall()``/``STORYBOOK_RECALLED`` (`RS-C1`) tests, the two exits from
+    ``published``, which need a story already there rather than in
+    ``in_review``.
     """
     async with sessions() as session:
         fam = Family(name="Archive Event Test Family")
@@ -340,8 +342,8 @@ async def _seed_published_storybook_for_family(
     """Seed a published Storybook owned by a caller-supplied family.
 
     Mirrors ``_seed_in_review_storybook_for_family`` above; used by the
-    dual-role archive tests so a dual-role adult's own-family versus
-    foreign-family archive can be exercised against the same fixture
+    dual-role archive and recall tests so a dual-role adult's own-family
+    versus foreign-family action can be exercised against the same fixture
     identities that mint the tokens.
     """
     async with sessions() as session:
@@ -940,6 +942,93 @@ async def test_dual_role_foreign_family_archive_stamps_admin(
         event_type="storybook_archived",
         entity_type="storybook",
         to_state="archived",
+        actor_role="admin",
+    )
+
+
+async def test_recall_writes_storybook_recalled_event(
+    client: AsyncClient, sessions: async_sessionmaker[AsyncSession]
+) -> None:
+    """Admin recall on a published story writes exactly one storybook_recalled event.
+
+    `RS-C1`'s re-review path: the transition that publishing/service.py::recall's
+    RAD marker cites. Unlike ``storybook_archived`` just above, this event carries
+    a payload, and the payload is the whole point: a recall for a threshold change
+    and a recall for a safety concern are the same state hop, and only the
+    ``reason_code`` distinguishes them for a later reader or for
+    notifications/registry.py's severity fork.
+    """
+    story_id = "s_recall_event"
+    await _seed_published_storybook(sessions, story_id)
+
+    resp = await client.post(
+        f"/api/v1/storybooks/{story_id}/recall",
+        headers=auth("admin-a"),
+        json={"reason_code": "threshold_change"},
+    )
+    assert resp.status_code == 200, resp.text
+
+    event = await assert_single_event(
+        sessions,
+        event_type="storybook_recalled",
+        entity_type="storybook",
+        to_state="in_review",
+        actor_role="admin",
+    )
+    # from_state matters as much as to_state here: in_review is reachable from
+    # draft (submit) and from needs_revision (resubmit) as well, so a row whose
+    # to_state alone said in_review would not identify a recall.
+    assert event.from_state == "published"
+    assert event.payload == {"reason_code": "threshold_change"}
+
+
+async def test_dual_role_same_family_recall_stamps_guardian(
+    client: AsyncClient,
+    sessions: async_sessionmaker[AsyncSession],
+    seed: Seed,
+) -> None:
+    """A dual-role adult recalling their own family's story acts as guardian."""
+    story_id = "s_recall_dual_same_family"
+    await _seed_published_storybook_for_family(sessions, story_id, seed.family_id)
+
+    resp = await client.post(
+        f"/api/v1/storybooks/{story_id}/recall",
+        headers=auth(seed.dual_token),
+        json={"reason_code": "curation"},
+    )
+    assert resp.status_code == 200, resp.text
+
+    await assert_single_event(
+        sessions,
+        event_type="storybook_recalled",
+        entity_type="storybook",
+        to_state="in_review",
+        actor_role="guardian",
+    )
+
+
+async def test_dual_role_foreign_family_recall_stamps_admin(
+    client: AsyncClient,
+    sessions: async_sessionmaker[AsyncSession],
+    seed: Seed,
+    stranger: Stranger,
+) -> None:
+    """A dual-role adult recalling a foreign family's story acts as admin."""
+    story_id = "s_recall_dual_foreign_family"
+    await _seed_published_storybook_for_family(sessions, story_id, stranger.family_id)
+
+    resp = await client.post(
+        f"/api/v1/storybooks/{story_id}/recall",
+        headers=auth(seed.dual_token),
+        json={"reason_code": "safety_concern"},
+    )
+    assert resp.status_code == 200, resp.text
+
+    await assert_single_event(
+        sessions,
+        event_type="storybook_recalled",
+        entity_type="storybook",
+        to_state="in_review",
         actor_role="admin",
     )
 

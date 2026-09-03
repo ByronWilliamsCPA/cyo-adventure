@@ -31,31 +31,71 @@ _SEVERITY: dict[Verdict, int] = {
     Verdict.BLOCK: 3,
 }
 
+# The Stage-0 categories a `min_score` floor can actually act on (`RS-B2`).
+#
+# The live Stage-0 classifier grades 13 OpenAI moderation categories, but seven
+# of them are BRIGHT LINE (moderation/classifiers.py::_OPENAI_BRIGHTLINE): a
+# flagged bright-line category BLOCKS at any score, and admin_surfaces never
+# hides a BLOCK, so no score floor changes what a reviewer sees for those. The
+# six below are the graded remainder, and they are where every reviewer-load
+# lever measured against production actually lives: all 14 production findings
+# spanning 40 or more nodes are low-severity advisories on `violence` or
+# `violence/graphic` (docs/planning/safety/production-floor-replay-2026-08-31.md).
+#
+# This tuple is mirrored EXACTLY by the seed migration
+# supabase/migrations/20260831120000_seed_moderation_threshold_grid.sql.
+# #ASSUME: data integrity: the two are hand-synced by contract, the same way
+# generation/allowlist.py::DEFAULT_ALLOWLIST and its seed migration are; there
+# is no runtime check tying them together.
+# #VERIFY: tests/unit/test_threshold_seed_grid.py::
+# test_the_seed_migration_mirrors_the_graded_categories_exactly.
+GRADED_SCORE_CATEGORIES: tuple[str, ...] = (
+    "harassment",
+    "hate",
+    "illicit",
+    "self-harm",
+    "violence",
+    "violence/graphic",
+)
+
 # Known category values across pipeline stages, for the admin editor's
 # suggestion list ONLY. Categories are open-ended strings (Stage-0 classifier
 # payload keys are provider-defined), so this list is advisory, never a gate.
-KNOWN_CATEGORIES: tuple[str, ...] = (
-    "coherence",
-    "engagement",
-    "harassment/threatening",
-    "hate/threatening",
-    "identity_attack",
-    "illicit/violent",
-    "insult",
-    "invalid_story",
-    "personal_information",
-    "profanity",
-    "reading_level",
-    "reviewer_independence",
-    "safety",
-    "self-harm/instructions",
-    "self-harm/intent",
-    "severe_toxicity",
-    "sexual",
-    "sexual/minors",
-    "sexually_explicit",
-    "threat",
-    "toxicity",
+#
+# `RS-B2`: this list previously named seven of the 13 live OpenAI categories and
+# every one of them was BRIGHT LINE, so the admin editor suggested only the
+# categories where a score floor is inert and omitted all six where it bites.
+# GRADED_SCORE_CATEGORIES is unioned in below so the suggestion list cannot
+# drift away from the graded set again.
+# #VERIFY: tests/unit/test_threshold_seed_grid.py::
+# test_every_graded_category_is_suggested_by_the_admin_editor.
+KNOWN_CATEGORIES: tuple[str, ...] = tuple(
+    sorted(
+        {
+            "coherence",
+            "engagement",
+            "harassment/threatening",
+            "hate/threatening",
+            "identity_attack",
+            "illicit/violent",
+            "insult",
+            "invalid_story",
+            "personal_information",
+            "profanity",
+            "reading_level",
+            "reviewer_independence",
+            "safety",
+            "self-harm/instructions",
+            "self-harm/intent",
+            "severe_toxicity",
+            "sexual",
+            "sexual/minors",
+            "sexually_explicit",
+            "threat",
+            "toxicity",
+            *GRADED_SCORE_CATEGORIES,
+        }
+    )
 )
 
 
@@ -151,15 +191,28 @@ async def load_threshold_policy(
             # #EDGE: data-integrity: the ck_moderation_threshold_min_verdict
             # CHECK should make this unreachable; a row that still lands here
             # (constraint dropped, pre-constraint backfill) silently reverts
-            # its (band, category) to the code default, so log it loudly
-            # rather than skipping in silence.
+            # its (band, category) to the code default. The fallback direction
+            # is safe (the code default is the stricter rule, so a malformed
+            # override cannot loosen what surfaces), which is exactly why this
+            # is logged at ERROR rather than warning: nothing downstream will
+            # ever fail because of it, so the log line is the only evidence the
+            # row exists at all, and a warning in a safety-relevant table is
+            # indistinguishable from routine noise. Every field needed to
+            # repair the row by hand is on the record: the (age_band, category)
+            # key that identifies it, the rejected value, the field it came
+            # from, and the default now in force for that pair. `exception`
+            # rather than `error` so the ValueError that rejected the value
+            # travels with it.
             # #VERIFY: malformed-row case in
             # tests/integration/test_threshold_policy_loader.py.
-            _logger.warning(
+            _logger.exception(
                 "moderation_threshold_row_malformed",
                 age_band=row.age_band,
                 category=row.category,
+                malformed_field="min_verdict",
                 min_verdict=row.min_verdict,
+                fallback_min_verdict=DEFAULT_THRESHOLD.min_verdict.value,
+                fallback_min_score=DEFAULT_THRESHOLD.min_score,
             )
             continue
         rows[(row.age_band, row.category)] = Threshold(
@@ -217,6 +270,72 @@ def admin_surfaces(
     return not (
         verdict is Verdict.ADVISORY and score is not None and score < noise_floor
     )
+
+
+def admin_noise_floor_for(
+    category: str,
+    *,
+    age_band: str,
+    policy: ThresholdPolicy | None,
+    flat_floor: float | None,
+) -> float | None:
+    """Resolve the ADMIN score floor for one category, band-aware (`RS-B3`).
+
+    `RS-B3` makes only the admin lane's SCORE band-aware. It deliberately does
+    not consult ``ThresholdPolicy.min_verdict``: that field defaults to
+    ``Verdict.FLAG``, so routing the admin lane through
+    ``ThresholdPolicy.surfaces`` would hide every ADVISORY finding admin-wide
+    for as long as ``moderation_threshold`` holds no rows, which is a
+    fail-dangerous change wearing a refactor's clothes. ``admin_surfaces``
+    keeps its never-hide guarantees; this only chooses the number it compares
+    against.
+
+    Absence semantics, in precedence order, because each arm means something
+    different and collapsing any two of them changes what a reviewer sees:
+
+    - ``flat_floor is None``: floor filtering is OFF for this caller (the
+      guardian reuse path, and any non-admin principal). A band row must not
+      switch it back on, so this returns ``None`` before the policy is read.
+      That keeps the existing kill switch absolute.
+    - a row exists for ``(age_band, category)`` with a ``min_score``: that
+      score, so an admin can denoise one noisy category in one band without
+      touching the global dial.
+    - anything else, including a row whose ``min_score`` is ``None``: the flat
+      floor. A row with no score states a verdict rule only, so it contributes
+      no score floor of its own and the global dial still applies.
+
+    While ``moderation_threshold`` is empty this returns ``flat_floor``
+    unchanged for every input, so the change is behaviour-preserving until
+    somebody seeds a row.
+
+    Args:
+        category: The finding's category string.
+        age_band: The story's age band; an empty string resolves to the code
+            default.
+        policy: The resolved threshold policy, or ``None`` when the caller has
+            not loaded one.
+        flat_floor: The global ``admin_noise_floor``, or ``None`` to skip floor
+            filtering entirely.
+
+    Returns:
+        float | None: The score floor to compare against, or ``None`` to apply
+        no floor at all.
+    """
+    # #CRITICAL: security: this function decides what a safety reviewer is
+    # shown. Returning a HIGHER number than intended hides advisory findings
+    # from the human who is the final gate under ADR-005, so every arm above
+    # must stay distinguishable; in particular a `min_score` of None must not
+    # be read as 0.0 (which would disable the flat floor) nor as the flat
+    # floor's absence (which would disable filtering).
+    # #VERIFY: tests/unit/test_admin_noise_floor.py::
+    # test_flat_floor_none_wins_over_a_band_row and
+    # ::test_a_row_without_a_min_score_falls_back_to_the_flat_floor
+    if flat_floor is None:
+        return None
+    if policy is None:
+        return flat_floor
+    band_min = policy.resolve(age_band, category).min_score
+    return flat_floor if band_min is None else band_min
 
 
 async def load_admin_noise_floor(session: AsyncSession) -> float:

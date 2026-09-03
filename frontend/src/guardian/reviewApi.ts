@@ -17,6 +17,7 @@ import type {
   ContentFlagLevel,
   ContentFlags,
   FindingSeverity,
+  FindingView as GeneratedFindingView,
   GenerationMeasuresView,
   SafetyConcernCount,
 } from '../client/types.gen'
@@ -72,6 +73,21 @@ export interface ReviewQueueItem {
   /** Themes and content-sensitivity flags for the book-detail popover. */
   themes?: string[]
   content_flags?: ContentFlags | null
+  /**
+   * `RS-A7`: the single highest-ranked finding on this version, so the queue
+   * row can say WHAT the block is. Absent on a clean book and on an older
+   * cached payload; the row renders nothing in either case rather than
+   * inventing a reason.
+   *
+   * Typed against the GENERATED FindingView, not the hand-typed one below,
+   * because ReviewQueueItem is an EXACT-mirror entry in apiContractParity.ts
+   * while FindingView is a deliberately loose one (it widens `source` to
+   * `string`). Embedding the loose type here would force ReviewQueueItem off
+   * the exact assertion and weaken the drift check on every other field.
+   * Assignment still flows the useful way: `Source` extends `string`, so a
+   * top_finding can be handed to anything expecting the hand-typed view.
+   */
+  top_finding?: GeneratedFindingView | null
 }
 
 export interface FindingView {
@@ -185,6 +201,25 @@ export interface StillProcessingItem {
 }
 
 /**
+ * Outcome of a stillProcessing() load.
+ *
+ * `jobs` is empty in three distinct situations that the previous bare
+ * `StillProcessingItem[]` return collapsed into one indistinguishable value:
+ * nothing is generating, the caller is an admin and the guardian-only endpoint
+ * 403s, or the load actually failed. `degraded` separates the last one from the
+ * first two, so a caller can say "we could not check" instead of asserting the
+ * false "nothing is generating right now".
+ *
+ * A 403 is deliberately NOT degraded. It is the expected outcome for the admin
+ * reviewer who is the console's primary user, so folding it in here would pin a
+ * permanent degradation notice on the surface it is meant to protect.
+ */
+export interface StillProcessingResult {
+  jobs: StillProcessingItem[]
+  degraded: boolean
+}
+
+/**
  * Minimal view of a C4a-5 generation-job row consumed by stillProcessing().
  * Deliberately hand-typed to mirror GenerationJobSummary in intakeApi.ts (the
  * generated client is not committed) without coupling the two adapters. Only
@@ -211,7 +246,7 @@ export interface ReviewApi {
     reasonCode: SendBackReasonCode
   ): Promise<SentBackResult>
   archive(storybookId: string): Promise<ArchivedResult>
-  stillProcessing(): Promise<StillProcessingItem[]>
+  stillProcessing(): Promise<StillProcessingResult>
 }
 
 export function makeReviewApi(api: AxiosInstance): ReviewApi {
@@ -271,34 +306,43 @@ export function makeReviewApi(api: AxiosInstance): ReviewApi {
     // primary user is the admin reviewer, for whom queue() succeeds and this
     // 403s. ConsolePage.load() awaits both in one Promise.all, so a reject here
     // would hide the admin's loaded review queue behind the forbidden branch.
-    // Swallow every error and return [] so this can never sink the console load.
-    // #VERIFY: reviewApi.test.ts asserts a 403 and a generic error both resolve
-    // to [] (the deletion-sensitive tests proving this catch is load-bearing).
-    async stillProcessing(): Promise<StillProcessingItem[]> {
+    // Swallow every error and return an empty list so this can never sink the
+    // console load. The empty list is reported alongside a `degraded` flag so
+    // the caller can distinguish a real failure from a genuine empty rather
+    // than rendering "nothing is generating" over an outage.
+    // #VERIFY: reviewApi.test.ts asserts a 403 resolves to degraded:false and a
+    // generic error to degraded:true, both with jobs: [] (the deletion-sensitive
+    // tests proving this catch is load-bearing).
+    async stillProcessing(): Promise<StillProcessingResult> {
       try {
         const res = await api.get<{ jobs: GenerationJobRow[] }>('/v1/generation-jobs')
-        return res.data.jobs
-          .filter((job) => job.status === 'queued' || job.status === 'running')
-          .map((job) => ({
-            job_id: job.id,
-            // Mirror IntakePage: chain with `||` (not `??`) so an empty-string
-            // title OR premise_snippet (both reachable backend rows) falls
-            // through to the generic label instead of rendering a blank console
-            // row. `??` would let a title of "" pass through unblanked.
-            title: job.title || job.premise_snippet || 'Untitled request',
-            status: job.status,
-          }))
-      } catch (err) {
-        // A 403 is the expected admin outcome (this endpoint is guardian-only)
-        // and must resolve to [] so it never sinks the console load; but a 500,
-        // network failure, or malformed body should not be invisible. Log
-        // anything that is not a 403 before degrading to [].
-        if (!(isAxiosError(err) && err.response?.status === 403)) {
-          // Log the message, not the axios error object: err.config.headers
-          // carries the caller's Authorization bearer token.
-          console.error('still-processing load failed:', err instanceof Error ? err.message : err)
+        return {
+          jobs: res.data.jobs
+            .filter((job) => job.status === 'queued' || job.status === 'running')
+            .map((job) => ({
+              job_id: job.id,
+              // Mirror IntakePage: chain with `||` (not `??`) so an empty-string
+              // title OR premise_snippet (both reachable backend rows) falls
+              // through to the generic label instead of rendering a blank
+              // console row. `??` would let a title of "" pass through unblanked.
+              title: job.title || job.premise_snippet || 'Untitled request',
+              status: job.status,
+            })),
+          degraded: false,
         }
-        return []
+      } catch (err) {
+        // A 403 is the expected admin outcome (this endpoint is guardian-only):
+        // an empty list is the truthful answer for that caller, so it is not
+        // degraded. A 500, network failure, or malformed body is a real
+        // unknown: log it and say so, so the console stops asserting that
+        // nothing is generating when it simply could not find out.
+        if (isAxiosError(err) && err.response?.status === 403) {
+          return { jobs: [], degraded: false }
+        }
+        // Log the message, not the axios error object: err.config.headers
+        // carries the caller's Authorization bearer token.
+        console.error('still-processing load failed:', err instanceof Error ? err.message : err)
+        return { jobs: [], degraded: true }
       }
     },
   }

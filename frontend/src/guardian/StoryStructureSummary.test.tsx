@@ -82,7 +82,7 @@ describe('StoryStructureSummary (full, admin variant)', () => {
     render(
       <StoryStructureSummary blob={BLOB} screened={true} flaggedCount={4} findings={FINDINGS} />
     )
-    expect(screen.getByText('4 flagged')).toBeInTheDocument()
+    expect(screen.getByText('4 flagged occurrences')).toBeInTheDocument()
     expect(screen.getByText(/1 block/)).toBeInTheDocument()
     expect(screen.getByText(/2 flags/)).toBeInTheDocument()
     expect(screen.getByText(/1 advisory/)).toBeInTheDocument()
@@ -143,7 +143,7 @@ describe('StoryStructureSummary (compact, guardian variant)', () => {
     expect(screen.getByText('2')).toBeInTheDocument() // endings
     expect(screen.getByText('12 minutes')).toBeInTheDocument()
     expect(screen.getByText('friendship, courage', { exact: false })).toBeInTheDocument()
-    expect(screen.getByText('4 flagged')).toBeInTheDocument()
+    expect(screen.getByText('4 flagged occurrences')).toBeInTheDocument()
     expect(screen.getByText('Treasure Found')).toBeInTheDocument()
   })
 })

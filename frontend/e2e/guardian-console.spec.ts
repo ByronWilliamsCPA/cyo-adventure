@@ -124,7 +124,12 @@ test.describe('signed-in admin console', () => {
       'Ready to review',
       'Still processing',
     ])
-    await expect(page.getByText('2 flags')).toBeVisible()
+    // 'flagged occurrences', not 'flags': this fixture carries no tiered
+    // block/flag/advisory fields, so the row falls back to flagged_count, which
+    // counts OCCURRENCES rather than findings (one merged finding spanning 380
+    // nodes counted 380 times). RS-A3 renamed it so the row stops reporting a
+    // number under a label that means something else.
+    await expect(page.getByText('2 flagged occurrences')).toBeVisible()
     await expect(page.getByText('Clean')).toBeVisible()
     await expect(page.getByText('Processing…')).toBeVisible()
     await expect(page.getByText('Brewing a Tale')).toBeVisible()

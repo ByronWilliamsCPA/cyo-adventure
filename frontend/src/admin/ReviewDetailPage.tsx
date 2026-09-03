@@ -11,18 +11,35 @@ import { usePageTitle } from '../hooks/usePageTitle'
 import { makeCoverApi } from '../guardian/coverApi'
 import { makeRescreenApi, type BookVerdictView } from './rescreenApi'
 import { FlagBadge } from '../guardian/FlagBadge'
+import { verdictTone } from '../guardian/verdictTone'
+import {
+  affectedPassagesLabel,
+  distinctFindingsLabel,
+  surfaceCounts,
+  surfacePopulation,
+  tierBreakdownLabel,
+} from '../guardian/findingCounts'
 import { makePassageEditApi } from '../guardian/passageEditApi'
+import { findingKey, readReviewedKeys, toggleReviewed } from './findingTriageStore'
 import { Finding, passageDomId, Passage, RankedFinding } from '../guardian/ReviewPassage'
 import {
   makeReviewApi,
+  type FindingView,
   type GenerationMeasuresView,
   type ReviewSurface,
   type SendBackReasonCode,
   type Visibility,
 } from '../guardian/reviewApi'
+import { ageBandLabel } from '../guardian/storyRequestOptions'
 import { StoryStructureSummary } from '../guardian/StoryStructureSummary'
 import { usePassageEdit } from '../guardian/usePassageEdit'
 import { buildReadThrough, pluralize } from './reviewDiff'
+import {
+  DEFAULT_SAMPLE_SIZE,
+  SAMPLE_NOT_CALIBRATED,
+  buildReviewSample,
+  readSampleBandContext,
+} from './reviewSample'
 import { VersionDiffView } from './ReviewCompare'
 import { useCoverGeneration } from './useCoverGeneration'
 import { useVersionCompare } from './useVersionCompare'
@@ -130,9 +147,21 @@ function GenerationMeasuresBlock({ measures }: { measures: GenerationMeasuresVie
             <FlagBadge tone="flag" label="Below the fill floor" />
           ) : null}
         </li>
+        {/*
+            `RS-A3`: this read "The moderation gate raised no content
+            concerns" while five findings rendered directly below it, because
+            `measures.safety_concerns` is built ONLY from non-structural
+            safety-category findings that carry a concern label
+            (review_surface.py::_generation_measures). Empty here means no
+            concern LABEL was recorded, which is not the same claim as no
+            findings, so the copy now names the population it counted.
+          */}
         <li className="review-measures__item">
           {concerns.length === 0 ? (
-            <span className="cyo-text-muted">The moderation gate raised no content concerns.</span>
+            <span className="cyo-text-muted">
+              No safety concern labels were recorded for this version. Findings below still need a
+              look; this line only reports labelled concerns.
+            </span>
           ) : (
             <>
               <span className="review-measures__label">Concerns raised</span>
@@ -172,6 +201,163 @@ function businessRuleOf(err: unknown): string | null {
 }
 
 /**
+ * Everything this page derives from one loaded review surface, in one place.
+ *
+ * Extracted and memoized (see the `useMemo` in `ReviewDetailPageInner`)
+ * because it is not cheap: it walks the whole story graph, builds two maps
+ * over every node, and strides a sample across every passage. Inline in the
+ * render body it re-ran on every keystroke in the passage-edit textarea, the
+ * override-reason field, and the send-back reason, none of which can change
+ * any of it. Memoizing the leaf calls alone would not have helped:
+ * `buildReviewSample` takes freshly-allocated arrays, so its dependencies were
+ * never referentially stable. Deriving the whole block from `surface` in one
+ * pass is what makes the identity stable, and `surface` is the only input.
+ *
+ * Deliberately excluded, because they depend on state this does not see:
+ * `triagedCount` (the triage markers), `reasonValid` (the send-back reason),
+ * and `editFindings` (which passage the edit dialog is open over).
+ */
+function deriveSurfaceView(surface: ReviewSurface) {
+  const readThrough = buildReadThrough(surface.blob)
+  // `RS-A2`: prose lookup so a ranked finding can be the entry point to its
+  // own affected passages. Built from the read-through rather than from
+  // flagged_passages, because `RS-A1` deliberately keeps low advisories OUT
+  // of flagged_passages; sourcing the prose there would leave exactly the
+  // collapsed findings with no context, which is the opposite of "counted and
+  // available for a reviewer to dig into".
+  const proseByNodeId = new Map(
+    [...readThrough.reachable, ...readThrough.unreachable].map((node) => [node.id, node.body])
+  )
+  const proseForNode = (nodeId: string): string | null => proseByNodeId.get(nodeId) ?? null
+  const totalPassages = readThrough.reachable.length + readThrough.unreachable.length
+  const coverage = `${pluralize(totalPassages, 'passage')}, ${readThrough.reachable.length} reachable from the start, ${pluralize(readThrough.endingCount, 'ending')}`
+  // `RS-A3`: every count this page shows comes from here, so a reviewer can
+  // never be handed two numbers for one book without being told which
+  // population each one counted.
+  const counts = surfaceCounts(surface)
+  // The very population `counts.distinct` counted, for the story-overview
+  // footer's tier split, so the badge and its breakdown cannot disagree: both
+  // come from surfacePopulation, including its legacy-report fallback.
+  const mergedFindings = surfacePopulation(surface)
+  // `RS-A4`: every node any finding names, which is a wider set than
+  // flaggedIds. flagged_passages is the fan-out, and `RS-A1` deliberately
+  // keeps low advisories out of it, so a node named ONLY by a collapsed low
+  // advisory is absent there. Sampling it as "the gate said nothing here"
+  // would be false: the gate did say something, quietly.
+  const findingNodeIds = new Set<string>(surface.flagged_passages.map((passage) => passage.node_id))
+  for (const finding of mergedFindings) {
+    if (finding.node_id !== null) findingNodeIds.add(finding.node_id)
+    for (const nodeId of finding.node_ids ?? []) findingNodeIds.add(nodeId)
+  }
+  // `RS-A6`: every finding that names a node, keyed by node, so the edit
+  // dialog can show a reviewer WHAT is wrong with the prose it is asking them
+  // to rewrite. Both sources are unioned for the same reason findingNodeIds
+  // unions them: a low advisory is kept out of the fan-out by design
+  // (`RS-A1`), so a node named only by one is absent from flagged_passages,
+  // and a dialog built on that source alone would show "nothing recorded" for
+  // a passage the gate did comment on.
+  const findingsByNodeId = new Map<string, FindingView[]>()
+  const noteFinding = (nodeId: string, finding: FindingView) => {
+    const existing = findingsByNodeId.get(nodeId)
+    if (existing === undefined) {
+      findingsByNodeId.set(nodeId, [finding])
+      return
+    }
+    // The two sources overlap by construction (a fanned-out finding is in
+    // both), so dedupe on the same identity the triage store keys on.
+    const key = findingKey(finding)
+    if (!existing.some((seen) => findingKey(seen) === key)) existing.push(finding)
+  }
+  for (const passage of surface.flagged_passages) {
+    for (const finding of passage.findings) noteFinding(passage.node_id, finding)
+  }
+  for (const finding of mergedFindings) {
+    const targets =
+      finding.node_ids && finding.node_ids.length > 0
+        ? finding.node_ids
+        : finding.node_id !== null && finding.node_id !== undefined
+          ? [finding.node_id]
+          : []
+    for (const nodeId of targets) noteFinding(nodeId, finding)
+  }
+  const sample = buildReviewSample(
+    [...readThrough.reachable, ...readThrough.unreachable],
+    findingNodeIds,
+    DEFAULT_SAMPLE_SIZE
+  )
+  const bandContext = readSampleBandContext(surface.blob)
+  const tierBreakdown = tierBreakdownLabel(counts)
+  const passageScope = affectedPassagesLabel(counts)
+  const flaggedIds = new Set(surface.flagged_passages.map((passage) => passage.node_id))
+  const allFindings = [
+    ...surface.flagged_passages.flatMap((passage) => passage.findings),
+    ...surface.story_level_findings,
+  ]
+  // Mirrors the backend's severe_finding_counts exactly (moderation/report.py,
+  // gated on by publishing/service.py::approve, rule="approve_requires_
+  // override_reason"; api/approval.py::approve_storybook only forwards
+  // override_reason to that call and holds none of the gating logic itself):
+  // a block verdict at any severity, or a flag verdict at high severity,
+  // requires the reviewer to record why they are approving over it.
+  // Advisories, and flags below high severity, never require one.
+  // #CRITICAL: security: this predicate must stay in lockstep with the
+  // backend's; drifting it looser would let the confirm button enable without
+  // the reason the backend actually demands (a 400 the reviewer cannot
+  // recover from except by retyping), and drifting it stricter would block a
+  // legitimate approval the backend would have allowed.
+  // #VERIFY: ReviewDetailPage.test.tsx "requires an override reason before
+  // approving over a block finding".
+  const needsOverride = allFindings.some(
+    (finding) =>
+      finding.verdict === 'block' || (finding.verdict === 'flag' && finding.severity === 'high')
+  )
+  // Stage B3 additive fields (design doc 2.6): default to [] so an older
+  // backend response or a pre-Stage-B stored report (which projects these as
+  // empty, per test_build_review_surface_new_buckets_degrade_on_legacy_report)
+  // renders none of the new sections rather than throwing on `undefined`.
+  const rankedFindings = surface.ranked_findings ?? []
+  const structuralFindings = surface.structural_findings ?? []
+  // The array is what the collapsed section renders; every COUNT of it on the
+  // page reads `counts.lowAdvisory` instead (`RS-A3`: the module that owns
+  // this page's counts owns this one too, rather than the page deriving a
+  // fifth number from the same field beside four that come from there).
+  const lowAdvisoryFindings = surface.low_advisory_findings ?? []
+  const validatorFindings = surface.validator_findings ?? []
+  // The findings that actually render a triage control. The fan-out fallback
+  // population (surfacePopulation's legacy arm) renders through Passage/Finding
+  // instead, so counting it here would give the progress line a denominator
+  // the reviewer has no way to reach.
+  const triageableFindings = [...rankedFindings, ...structuralFindings, ...lowAdvisoryFindings]
+  const title =
+    typeof surface.blob.title === 'string' && surface.blob.title
+      ? surface.blob.title
+      : surface.storybook_id
+
+  return {
+    surface,
+    readThrough,
+    proseForNode,
+    totalPassages,
+    coverage,
+    counts,
+    mergedFindings,
+    findingsByNodeId,
+    sample,
+    bandContext,
+    tierBreakdown,
+    passageScope,
+    flaggedIds,
+    needsOverride,
+    rankedFindings,
+    structuralFindings,
+    lowAdvisoryFindings,
+    validatorFindings,
+    triageableFindings,
+    title,
+  }
+}
+
+/**
  * Thin wrapper whose only job is the `key`: React Router reuses the same
  * `ReviewDetailPageInner` instance across a `storybookId` param change (the
  * route registers no key of its own), which is exactly what the review
@@ -197,6 +383,8 @@ export function ReviewDetailPage() {
   const { storybookId = '' } = useParams()
   return <ReviewDetailPageInner key={storybookId} />
 }
+
+const EMPTY_KEYS: Set<string> = new Set()
 
 /** DOM id shared by the cover preview block and the action-bar jump that
  *  targets it. One constant rather than two literals, so a rename cannot
@@ -342,6 +530,76 @@ function ReviewDetailPageInner() {
   const readyVersion = state.kind === 'ready' ? state.surface.version : null
   const readySurface = state.kind === 'ready' ? state.surface : null
 
+  // Every value the page derives from the surface, computed once per loaded
+  // surface rather than once per render. It has to live up here with the other
+  // hooks, above the loading/error returns below, because a hook cannot run
+  // after a conditional return; `null` while nothing is loaded is what those
+  // returns then key off. See `deriveSurfaceView` for what is in it and why
+  // memoizing the individual leaf calls would not have worked.
+  const view = useMemo(
+    () => (readySurface === null ? null : deriveSurfaceView(readySurface)),
+    [readySurface]
+  )
+
+  // RS-A5: per-finding "I have looked at this" markers, so a reviewer 60
+  // findings deep can see where they are. Browser-local (localStorage),
+  // scoped to this book and version, and deliberately never sent to the
+  // server.
+  //
+  // #CRITICAL: security: triage state MUST NOT gate approval. It lives in a
+  // store the reviewer's browser can clear at any moment, so treating it as
+  // an approval precondition would let a cache eviction silently reset a
+  // safety decision. Nothing below feeds `needsOverride`, the confirm
+  // button's disabled state, or the approve request body.
+  // #VERIFY: ReviewDetailPage.test.tsx "marking every finding reviewed
+  // changes nothing about approval".
+  //
+  // Derived, not synced: `stored` re-reads whenever the book or version
+  // changes, and `override` (this session's toggles) only wins while its own
+  // scope still matches. An effect that pushed the stored value into state
+  // would be the same logic with a stale window in it, and would make the
+  // reset depend on a dependency array instead of on the scope comparison.
+  // ReviewDetailPage's `key={storybookId}` remounts this component per book
+  // as well, so the scope check is the second of two guards; it is kept
+  // because that `key` exists for the approve dialog, not for triage.
+  // #VERIFY: ReviewDetailPage.test.tsx "shows the next book unmarked when the
+  // queue advances to it" fails when both guards are removed.
+  const triageScope = `${storybookId}:${readyVersion ?? ''}`
+  const storedReviewedKeys = useMemo(
+    () => (readyVersion === null ? EMPTY_KEYS : readReviewedKeys(storybookId, readyVersion)),
+    [storybookId, readyVersion]
+  )
+  const [reviewedOverride, setReviewedOverride] = useState<{
+    scope: string
+    keys: Set<string>
+  } | null>(null)
+  const reviewedKeys =
+    reviewedOverride !== null && reviewedOverride.scope === triageScope
+      ? reviewedOverride.keys
+      : storedReviewedKeys
+  const toggleFindingReviewed = useCallback(
+    (key: string) => {
+      if (readyVersion === null) return
+      setReviewedOverride((current) => ({
+        scope: triageScope,
+        keys: toggleReviewed(
+          storybookId,
+          readyVersion,
+          key,
+          current !== null && current.scope === triageScope ? current.keys : storedReviewedKeys
+        ),
+      }))
+    },
+    [storybookId, readyVersion, triageScope, storedReviewedKeys]
+  )
+  const triageFor = useCallback(
+    (finding: FindingView) => {
+      const key = findingKey(finding)
+      return { reviewed: reviewedKeys.has(key), onToggle: () => toggleFindingReviewed(key) }
+    },
+    [reviewedKeys, toggleFindingReviewed]
+  )
+
   const {
     coverStatus,
     coverUrl,
@@ -471,61 +729,57 @@ function ReviewDetailPageInner() {
     }
   }
 
-  if (state.kind === 'loading') {
+  // Gate on the memo, not on `state.kind`: the two are equivalent (both read
+  // the same state slot, and `view` is null exactly when the surface is not
+  // loaded), but narrowing `view` here is what gives the render body below a
+  // non-nullable set of derived values without a second, unreachable guard.
+  if (view === null) {
+    if (state.kind === 'error') {
+      return (
+        <p role="alert" className="console__error cyo-text-error">
+          {state.message}
+        </p>
+      )
+    }
     return (
       <div role="status" aria-live="polite">
         Loading story…
       </div>
     )
   }
-  if (state.kind === 'error') {
-    return (
-      <p role="alert" className="console__error cyo-text-error">
-        {state.message}
-      </p>
-    )
-  }
 
-  const { surface } = state
-  const readThrough = buildReadThrough(surface.blob)
-  const totalPassages = readThrough.reachable.length + readThrough.unreachable.length
-  const coverage = `${pluralize(totalPassages, 'passage')}, ${readThrough.reachable.length} reachable from the start, ${pluralize(readThrough.endingCount, 'ending')}`
-  const flaggedIds = new Set(surface.flagged_passages.map((passage) => passage.node_id))
-  const allFindings = [
-    ...surface.flagged_passages.flatMap((passage) => passage.findings),
-    ...surface.story_level_findings,
-  ]
-  // Mirrors the backend's severe_finding_counts exactly (moderation/report.py,
-  // gated on by publishing/service.py::approve, rule="approve_requires_
-  // override_reason"; api/approval.py::approve_storybook only forwards
-  // override_reason to that call and holds none of the gating logic itself):
-  // a block verdict at any severity, or a flag verdict at high severity,
-  // requires the reviewer to record why they are approving over it.
-  // Advisories, and flags below high severity, never require one.
-  // #CRITICAL: security: this predicate must stay in lockstep with the
-  // backend's; drifting it looser would let the confirm button enable without
-  // the reason the backend actually demands (a 400 the reviewer cannot
-  // recover from except by retyping), and drifting it stricter would block a
-  // legitimate approval the backend would have allowed.
-  // #VERIFY: ReviewDetailPage.test.tsx "requires an override reason before
-  // approving over a block finding".
-  const needsOverride = allFindings.some(
-    (finding) =>
-      finding.verdict === 'block' || (finding.verdict === 'flag' && finding.severity === 'high')
-  )
-  // Stage B3 additive fields (design doc 2.6): default to [] so an older
-  // backend response or a pre-Stage-B stored report (which projects these as
-  // empty, per test_build_review_surface_new_buckets_degrade_on_legacy_report)
-  // renders none of the new sections rather than throwing on `undefined`.
-  const rankedFindings = surface.ranked_findings ?? []
-  const structuralFindings = surface.structural_findings ?? []
-  const lowAdvisoryFindings = surface.low_advisory_findings ?? []
-  const validatorFindings = surface.validator_findings ?? []
-  const title =
-    typeof surface.blob.title === 'string' && surface.blob.title
-      ? surface.blob.title
-      : surface.storybook_id
+  const {
+    surface,
+    readThrough,
+    proseForNode,
+    totalPassages,
+    coverage,
+    counts,
+    mergedFindings,
+    findingsByNodeId,
+    sample,
+    bandContext,
+    tierBreakdown,
+    passageScope,
+    flaggedIds,
+    needsOverride,
+    rankedFindings,
+    structuralFindings,
+    lowAdvisoryFindings,
+    validatorFindings,
+    triageableFindings,
+    title,
+  } = view
+  // Not part of the memo above: this is the one derived number that depends on
+  // the reviewer's own triage markers rather than on the surface.
+  const triagedCount = triageableFindings.filter((finding) =>
+    reviewedKeys.has(findingKey(finding))
+  ).length
   const reasonValid = reason.trim().length >= 1 && reason.trim().length <= 2000
+  // `RS-A6`: the findings on the passage the edit dialog is open over. Empty
+  // is a real case, not a bug: the `RS-A4` spot check offers an edit on a
+  // passage nothing flagged.
+  const editFindings = editNodeId === null ? [] : (findingsByNodeId.get(editNodeId) ?? [])
 
   return (
     <section className="review-detail">
@@ -548,9 +802,25 @@ function ReviewDetailPageInner() {
         // hard_block gets the danger tone; every badge carries text, never
         // color alone.
         <div className="review-summary">
-          <span className="review-summary__count">
-            {pluralize(surface.summary.count, 'finding')}
-          </span>
+          {/*
+            `RS-A3`: this used to render `surface.summary.count`, the count of
+            finding rows PERSISTED on the version (moderation/report.py
+            ::to_dict, `len(persisted)`). That is a third population, distinct
+            from both what this page renders and what the queue row shows: it
+            predates the admin noise floor, so a floor that filters rows leaves
+            the header claiming findings the page never displays. Derive from
+            the rendered surface instead, via the one module that defines these
+            counts, and name each denominator: `The Teddy Bears' Picnic` used to
+            report `2 advisories` on its queue row, `4 findings` here, and
+            `5 flagged` in the overview footer, for one book.
+          */}
+          <span className="review-summary__count">{distinctFindingsLabel(counts)}</span>
+          {tierBreakdown !== null ? (
+            <span className="review-summary__scope cyo-text-muted">{tierBreakdown}</span>
+          ) : null}
+          {passageScope !== null ? (
+            <span className="review-summary__scope cyo-text-muted">{passageScope}</span>
+          ) : null}
           {surface.summary.hard_block ? <FlagBadge tone="block" label="Hard block" /> : null}
           {surface.summary.soft_flag ? <FlagBadge tone="flag" label="Soft flags" /> : null}
           {surface.summary.repaired ? <FlagBadge tone="flag" label="Repaired" /> : null}
@@ -702,11 +972,20 @@ function ReviewDetailPageInner() {
       <details className="review-overview" open>
         <summary>Story overview</summary>
         <div className="review-overview__body">
+          {/*
+            `RS-A3`: the distinct merged population, not `allFindings.length`.
+            allFindings is the fan-out (flagged_passages x their findings, plus
+            story-level), so this footer read `5 flagged` on a book whose
+            header read `4 findings` and whose queue row read `2 advisories`.
+            countBasis makes the denominator explicit in the badge rather than
+            leaving the reader to guess which of the two numbers it is.
+          */}
           <StoryStructureSummary
             blob={surface.blob}
             screened={surface.screened}
-            flaggedCount={allFindings.length}
-            findings={allFindings}
+            flaggedCount={counts.distinct}
+            findings={mergedFindings}
+            countBasis="distinct"
           />
         </div>
       </details>
@@ -725,6 +1004,109 @@ function ReviewDetailPageInner() {
           be approved until a genuine report exists.
         </div>
       )}
+
+      {/*
+        Stage B3 (design doc 2.6): the merged findings ranked by
+        (verdict, severity, affected-node-count, stable tiebreak), with
+        structural findings split into their own block and low-ADVISORY
+        findings collapsed behind a toggle. All four buckets default empty on
+        an older backend response or a pre-Stage-B stored report, so this
+        renders nothing extra in that case.
+        The "Story-level notes" section (which rendered story_level_findings
+        directly) was removed here as a pure duplicate: ranked_findings and
+        structural_findings are built from the SAME FindingView objects that
+        populate flagged_passages and story_level_findings, so every
+        story-level finding already lands in one of the two sections here
+        (structural if `structural` is true, otherwise ranked or
+        low-advisory).
+
+        `RS-A2`: this triage cluster now sits ABOVE "Flagged passages", which
+        follows it. The overlap between the two is deliberate and is not the
+        duplication described above: this list is triage-ordered for scanning
+        verdict/severity across the whole story, while "Flagged passages"
+        joins each finding to its node prose in read order. Ranking is what a
+        reviewer needs first, so it goes first; the flat list is the
+        second read, not the entry point.
+      */}
+      {/*
+        `RS-A2`: rendered UNCONDITIONALLY, unlike the two blocks below it.
+        Conditional rendering removed the most decision-useful section from
+        the page exactly on the books a reviewer could clear fastest: on the
+        four queued books whose findings are all low-severity advisories,
+        ranked_findings is empty, so the section vanished and the reviewer was
+        left with prose and no triage summary at all. An explicit "nothing
+        ranked" statement is a finding about the book; an absent section is
+        indistinguishable from a page that failed to load.
+        #VERIFY: ReviewDetailPage.test.tsx "renders the ranked findings
+        section above the flagged passages, even with nothing ranked".
+      */}
+      <div className="review-group" id="ranked-findings">
+        <h2>Ranked findings</h2>
+        {triageableFindings.length > 0 ? (
+          <p className="review-triage__progress cyo-text-muted">
+            {`${triagedCount} of ${pluralize(triageableFindings.length, 'finding')} marked reviewed in this browser.`}{' '}
+            Triage is a bookmark for your own place in the list. It is stored only on this device
+            and has no effect on approval.
+          </p>
+        ) : null}
+        {rankedFindings.length > 0 ? (
+          <ul className="review-findings review-findings--ranked">
+            {rankedFindings.map((finding) => (
+              <RankedFinding
+                key={`${finding.concern ?? finding.category}-${finding.severity ?? ''}-${finding.verdict}-${finding.message}`}
+                finding={finding}
+                onJump={jumpToPassage}
+                knownIds={readThrough.knownIds}
+                proseFor={proseForNode}
+                triage={triageFor(finding)}
+              />
+            ))}
+          </ul>
+        ) : (
+          <p className="console__muted cyo-text-muted">
+            No findings are ranked for triage on this version.
+            {counts.lowAdvisory > 0
+              ? ` ${counts.lowAdvisory} low-priority ${counts.lowAdvisory === 1 ? 'advisory is' : 'advisories are'} collapsed below.`
+              : ''}
+          </p>
+        )}
+      </div>
+
+      {structuralFindings.length > 0 ? (
+        <div className="review-group" id="structural-findings">
+          <h2>Structural findings</h2>
+          <ul className="review-findings review-findings--ranked">
+            {structuralFindings.map((finding) => (
+              <RankedFinding
+                key={`${finding.concern ?? finding.category}-${finding.severity ?? ''}-${finding.verdict}-${finding.message}`}
+                finding={finding}
+                onJump={jumpToPassage}
+                knownIds={readThrough.knownIds}
+                proseFor={proseForNode}
+                triage={triageFor(finding)}
+              />
+            ))}
+          </ul>
+        </div>
+      ) : null}
+
+      {counts.lowAdvisory > 0 ? (
+        <details className="review-group" id="low-advisory-findings">
+          <summary>Low-priority advisories ({counts.lowAdvisory})</summary>
+          <ul className="review-findings review-findings--ranked">
+            {lowAdvisoryFindings.map((finding) => (
+              <RankedFinding
+                key={`${finding.concern ?? finding.category}-${finding.severity ?? ''}-${finding.verdict}-${finding.message}`}
+                finding={finding}
+                onJump={jumpToPassage}
+                knownIds={readThrough.knownIds}
+                proseFor={proseForNode}
+                triage={triageFor(finding)}
+              />
+            ))}
+          </ul>
+        </details>
+      ) : null}
 
       {surface.flagged_passages.length > 0 ? (
         <div className="review-group">
@@ -763,73 +1145,6 @@ function ReviewDetailPageInner() {
         </p>
       ) : null}
 
-      {/*
-        Stage B3 (design doc 2.6): the merged findings ranked by
-        (verdict, severity, affected-node-count, stable tiebreak), with
-        structural findings split into their own block and low-ADVISORY
-        findings collapsed behind a toggle. All four buckets default empty on
-        an older backend response or a pre-Stage-B stored report, so this
-        renders nothing extra in that case.
-        The "Story-level notes" section (which rendered story_level_findings
-        directly) was removed here as a pure duplicate: ranked_findings and
-        structural_findings are built from the SAME FindingView objects that
-        populate flagged_passages and story_level_findings, so every
-        story-level finding already lands in one of the two sections below
-        (structural if `structural` is true, otherwise ranked or
-        low-advisory). The overlap between "Flagged passages" above and
-        "Ranked findings" below is deliberate, not the same duplication:
-        "Flagged passages" joins each finding to its node prose for reading
-        in context (drill-down), while "Ranked findings" is a triage-ordered
-        list for scanning severity/verdict across the whole story.
-      */}
-      {rankedFindings.length > 0 ? (
-        <div className="review-group" id="ranked-findings">
-          <h2>Ranked findings</h2>
-          <ul className="review-findings review-findings--ranked">
-            {rankedFindings.map((finding) => (
-              <RankedFinding
-                key={`${finding.concern ?? finding.category}-${finding.severity ?? ''}-${finding.verdict}-${finding.message}`}
-                finding={finding}
-                onJump={jumpToPassage}
-                knownIds={readThrough.knownIds}
-              />
-            ))}
-          </ul>
-        </div>
-      ) : null}
-
-      {structuralFindings.length > 0 ? (
-        <div className="review-group" id="structural-findings">
-          <h2>Structural findings</h2>
-          <ul className="review-findings review-findings--ranked">
-            {structuralFindings.map((finding) => (
-              <RankedFinding
-                key={`${finding.concern ?? finding.category}-${finding.severity ?? ''}-${finding.verdict}-${finding.message}`}
-                finding={finding}
-                onJump={jumpToPassage}
-                knownIds={readThrough.knownIds}
-              />
-            ))}
-          </ul>
-        </div>
-      ) : null}
-
-      {lowAdvisoryFindings.length > 0 ? (
-        <details className="review-group" id="low-advisory-findings">
-          <summary>Low-priority advisories ({lowAdvisoryFindings.length})</summary>
-          <ul className="review-findings review-findings--ranked">
-            {lowAdvisoryFindings.map((finding) => (
-              <RankedFinding
-                key={`${finding.concern ?? finding.category}-${finding.severity ?? ''}-${finding.verdict}-${finding.message}`}
-                finding={finding}
-                onJump={jumpToPassage}
-                knownIds={readThrough.knownIds}
-              />
-            ))}
-          </ul>
-        </details>
-      ) : null}
-
       {validatorFindings.length > 0 ? (
         <div className="review-group" id="validator-findings">
           <h2>Validator findings</h2>
@@ -862,6 +1177,74 @@ function ReviewDetailPageInner() {
               </li>
             ))}
           </ul>
+        </div>
+      ) : null}
+
+      {/*
+        `RS-A4`: rendered only when the draw is genuinely a SAMPLE. A spot check
+        exists because reading 250 screens is infeasible; on a book with 15 or
+        fewer passages the full read-through below already is the sample, and
+        repeating every passage twice on one page adds noise to the surface
+        this whole plan exists to de-noise.
+      */}
+      {sample.nodes.length > 0 && sample.totalPassages > sample.nodes.length ? (
+        <div className="review-group" id="review-sample">
+          <h2>Spot check for missed content</h2>
+          {/*
+            `RS-A4`: the findings sections above serve the false-POSITIVE half
+            of the reviewer's job. This serves the other half. Owner ruling
+            2026-08-31: "I dont expect that a reviewer can read the entire
+            book. They are trying to catch false positives and false
+            negatives." The only affordance for the second half used to be the
+            full read-through below, which is 250-plus screens on a large book.
+          */}
+          <p className="review-sample__caveat" role="note">
+            {`${pluralize(sample.nodes.length, 'passage')} drawn across the story's ${pluralize(sample.totalPassages, 'passage')}, weighted toward passages the gate raised nothing about.`}{' '}
+            {/*
+              #CRITICAL: security: the caveat is not decoration. Ruling 2
+              (2026-08-31) settled that the sample size ships labelled
+              provisional until `RS-CAL3` measures a false-negative rate,
+              because "15 of 550 passages checked" with no qualifier
+              manufactures confidence in exactly the channel this section
+              exists to make trustworthy. A reviewer must never read a clean
+              sample as evidence the book is clean.
+              #VERIFY: ReviewDetailPage.test.tsx "labels the spot check sample
+              as uncalibrated, beside the count".
+            */}
+            <strong className="review-sample__uncalibrated">{SAMPLE_NOT_CALIBRATED}</strong>: a
+            clean sample is not evidence the book is clean.
+          </p>
+          {bandContext.ageBand !== null || bandContext.readingLevel !== null ? (
+            <p className="review-sample__band cyo-text-muted">
+              Judge these passages against{' '}
+              {bandContext.ageBand !== null ? ageBandLabel(bandContext.ageBand) : 'the target band'}
+              {bandContext.readingLevel !== null
+                ? `, reading level ${bandContext.readingLevel}`
+                : ''}
+              .
+            </p>
+          ) : null}
+          <ol className="review-sample__list">
+            {sample.nodes.map((node) => (
+              <li key={node.id} className="review-sample__item">
+                <div className="review-sample__head">
+                  <span className="review-sample__node">{node.id}</span>
+                  <span className="review-sample__position cyo-text-muted">
+                    {`passage ${node.position} of ${sample.totalPassages}`}
+                  </span>
+                  {node.hasFinding ? <FlagBadge tone="flag" label="already flagged above" /> : null}
+                  <button
+                    type="button"
+                    className="review-jump"
+                    onClick={() => jumpToPassage(node.id)}
+                  >
+                    Show in story
+                  </button>
+                </div>
+                <PassageText text={node.body} />
+              </li>
+            ))}
+          </ol>
         </div>
       ) : null}
 
@@ -1407,6 +1790,60 @@ function ReviewDetailPageInner() {
               </ul>
             </div>
           ) : null}
+          {/*
+            `RS-A6`: the reviewer is being asked to rewrite prose, so the
+            dialog states what is wrong with it and what band the rewrite has
+            to hold. Before this, the dialog was a bare textarea: a reviewer
+            who reached it from the ranked list had to remember the finding,
+            and one who reached it from the spot check had never seen one.
+            #VERIFY: ReviewDetailPage.test.tsx "shows the findings that name
+            the passage being edited" and "says so when no finding names the
+            passage being edited".
+          */}
+          <div className="review-edit__context">
+            <h3 className="review-edit__context-heading">What the gate said about this passage</h3>
+            {editFindings.length > 0 ? (
+              <ul className="review-findings review-edit__findings">
+                {editFindings.map((finding) => (
+                  <li key={findingKey(finding)} className="review-finding">
+                    <FlagBadge tone={verdictTone(finding.verdict)} />
+                    {finding.severity ? (
+                      <span
+                        className={`review-finding__severity review-finding__severity--${finding.severity}`}
+                      >
+                        {finding.severity}
+                      </span>
+                    ) : null}
+                    <span className="review-finding__category">
+                      {finding.concern ?? finding.category}
+                    </span>
+                    {typeof finding.score === 'number' ? (
+                      <span className="review-finding__score">{finding.score.toFixed(2)}</span>
+                    ) : null}
+                    <span className="review-finding__message">{finding.message}</span>
+                  </li>
+                ))}
+              </ul>
+            ) : (
+              <p className="cyo-text-muted">
+                No finding names this passage. You are editing it on your own reading, not to clear
+                a recorded concern.
+              </p>
+            )}
+            {bandContext.ageBand !== null || bandContext.readingLevel !== null ? (
+              <p className="review-edit__band cyo-text-muted">
+                Write for{' '}
+                {bandContext.ageBand !== null
+                  ? ageBandLabel(bandContext.ageBand)
+                  : 'the target band'}
+                {bandContext.readingLevel !== null
+                  ? `, reading level ${bandContext.readingLevel}`
+                  : ''}
+                . Saving re-runs the deterministic gate, which rejects an edit that leaves the
+                band's reading-level or length envelope.
+              </p>
+            ) : null}
+          </div>
           <label className="review-detail__edit-body">
             Passage text
             <textarea

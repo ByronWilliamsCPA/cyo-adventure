@@ -7,7 +7,9 @@ import { ErrorBanner } from '@ds/components/ErrorBanner'
 import { LoadingStatus } from '@ds/components/LoadingStatus'
 import { BookDetailsDialog } from '../guardian/BookDetailsDialog'
 import { FlagBadge } from '../guardian/FlagBadge'
+import { queueItemCounts, tierBreakdownLabel } from '../guardian/findingCounts'
 import { formatRelativeTime } from '../guardian/intakeApi'
+import { pluralize } from '../guardian/storyReadThrough'
 import { ageBandLabel } from '../guardian/storyRequestOptions'
 import { classifyApiError } from '../hooks/classifyApiError'
 import { useApi } from '../hooks/useApi'
@@ -26,6 +28,11 @@ type LoadState =
       kind: 'ready'
       items: ReviewQueueItem[]
       processing: StillProcessingItem[]
+      // True when `processing` is empty because the generation-jobs load
+      // failed, not because nothing is generating. Kept separate from the
+      // list so the empty state can say which of the two it is; a guardian-only
+      // 403 (the expected admin outcome) is NOT degraded.
+      processingDegraded: boolean
       updatedAt: Date
     }
 
@@ -46,21 +53,33 @@ function isFlagged(item: ReviewQueueItem): boolean {
 }
 
 /**
- * Sort rule for the flagged bucket: hard blocks first (the safety gate
- * refused those stories outright), then by flagged-finding count descending;
- * everything else keeps the backend's queue order (Array.prototype.sort is
- * stable, so equal ranks never reshuffle). flagged_count, not summary.count,
- * is the count key: the backend guarantees flagged_count counts exactly the
- * findings the floored review detail will show (review_surface.py), while
- * summary.count includes sub-floor advisory noise.
+ * Sort rule for the flagged bucket: decision weight, not volume. Hard blocks
+ * first (the safety gate refused those stories outright), then reports that
+ * could not be scored at all, then the distinct tier counts in gate order:
+ * blocks, then flags, then advisories. Everything else keeps the backend's
+ * queue order (Array.prototype.sort is stable, so equal ranks never
+ * reshuffle).
  *
- * #ASSUME: data-integrity: flagged_count on the queue item matches the count
- * of findings the review detail page will actually render for that story
- * (both keyed off review_surface.py's floor), so sorting by it here reflects
- * the same severity order the reviewer will see after opening the item.
- * #VERIFY: if review_surface.py's floor logic and the queue endpoint's
- * flagged_count ever diverge, this sort order stops matching what Send
- * Back/Approve act on; cover with a queue-vs-detail parity test.
+ * `RS-A7`: the only tiebreak used to be `flagged_count` descending, and that
+ * field counts OCCURRENCES. One merged advisory fanned across 380 nodes
+ * outranked a book holding a distinct block, which is backwards: the
+ * reviewer's work is per distinct finding, and one block outweighs any number
+ * of advisories. queueItemCounts() is the same module the row's badge label
+ * reads, so the order a reviewer sees and the number they are shown cannot
+ * disagree.
+ *
+ * `distinct` stays on as the LAST key rather than being dropped, because it is
+ * the tier sum on a payload that carries the tiers (so it discriminates
+ * nothing the three comparisons above have not already settled) and falls back
+ * to `flagged_count` on one that does not. Dropping it would leave every
+ * pre-tier row tied, which loses the only ordering signal such a row has.
+ *
+ * #ASSUME: data-integrity: block_findings/flag_findings/advisory_findings are
+ * distinct-finding counts from the same merge the review detail page renders
+ * (api/review_surface.py::build_review_queue_item).
+ * #VERIFY: AdminConsolePage.test.tsx "ranks the flagged bucket by tier
+ * weight, not by occurrence count" and "ranks a flag above an advisory at
+ * equal block count".
  */
 function bySeverity(a: ReviewQueueItem, b: ReviewQueueItem): number {
   const aBlock = a.summary?.hard_block === true
@@ -68,12 +87,17 @@ function bySeverity(a: ReviewQueueItem, b: ReviewQueueItem): number {
   if (aBlock !== bBlock) return aBlock ? -1 : 1
 
   // A report_unusable book needs a re-run, not a read: rank it right after
-  // hard blocks so it is not lost among ordinary flagged-count sorting.
+  // hard blocks so it is not lost among ordinary tier sorting.
   const aUnusable = a.report_unusable === true
   const bUnusable = b.report_unusable === true
   if (aUnusable !== bUnusable) return aUnusable ? -1 : 1
 
-  return b.flagged_count - a.flagged_count
+  const aCounts = queueItemCounts(a)
+  const bCounts = queueItemCounts(b)
+  if (aCounts.block !== bCounts.block) return bCounts.block - aCounts.block
+  if (aCounts.flag !== bCounts.flag) return bCounts.flag - aCounts.flag
+  if (aCounts.advisory !== bCounts.advisory) return bCounts.advisory - aCounts.advisory
+  return bCounts.distinct - aCounts.distinct
 }
 
 /** Local-clock HH:MM (24-hour), deterministic across runner locales. */
@@ -88,23 +112,28 @@ function formatUpdatedAt(at: Date): string {
  * backend supplies them, falling back to the flat flagged_count for a report
  * from before those fields existed.
  *
+ * `RS-A3`: the tiers and their pluralization now come from
+ * `guardian/findingCounts.ts`, the one module that defines these counts, so
+ * this row and the review detail page cannot drift apart. Two defects went
+ * with the hand-rolled version: it rendered `2 block` and `1 flags`, and its
+ * fallback labelled `flagged_count` as "flags" when that field counts
+ * OCCURRENCES (one merged finding across 380 nodes counted 380 times), which
+ * is a different number from the tiers above it and now says so.
+ *
  * #ASSUME: data integrity: block_findings/flag_findings/advisory_findings are
  * either all present (a Stage-B-or-later report) or all absent (an older
  * cached queue payload); a partial set would silently under-report the
  * missing tiers rather than fail, since each is defaulted to 0 independently.
+ * A report carrying ONLY structural findings also lands on the fallback, since
+ * the backend excludes structural rows from flag_findings; the fallback's
+ * wording therefore has to hold for that case too, not just for a legacy row.
  * #VERIFY: AdminConsolePage.test.tsx asserts the tiered string replaces the
  * flat count when the tiered fields are present.
  */
 function tierLabel(item: ReviewQueueItem): string {
-  const blockFindings = item.block_findings ?? 0
-  const flagFindings = item.flag_findings ?? 0
-  const advisoryFindings = item.advisory_findings ?? 0
-  const parts: string[] = []
-  if (blockFindings > 0) parts.push(`${blockFindings} block`)
-  if (flagFindings > 0) parts.push(`${flagFindings} flags`)
-  if (advisoryFindings > 0) parts.push(`${advisoryFindings} advisories`)
-  if (parts.length > 0) return parts.join(' · ')
-  return item.flagged_count === 1 ? '1 flag' : `${item.flagged_count} flags`
+  return (
+    tierBreakdownLabel(queueItemCounts(item)) ?? pluralize(item.flagged_count, 'flagged occurrence')
+  )
 }
 
 /**
@@ -156,6 +185,38 @@ function QueueRowMeta({ item, nowMs }: { item: ReviewQueueItem; nowMs: number })
   )
 }
 
+/**
+ * `RS-A7`: the top-ranked finding's concern and reason, on the row.
+ *
+ * The queue row used to name the severity ("Hard block", "3 flags") and
+ * nothing else, so learning WHAT the block was cost a full review-detail
+ * load: 2.5 MB of blob and ~10,900 DOM nodes to read one sentence. The
+ * backend now sends the same finding the detail page ranks first, so the
+ * reviewer can triage, and often dismiss, from the queue.
+ *
+ * #ASSUME: data integrity: top_finding is the first entry of the same ranked
+ * bucket the detail page renders first (api/review_surface.py derives it from
+ * build_review_surface's ranked/structural/low-advisory buckets in that
+ * order), so the row's reason is the reason the reviewer will land on. It is
+ * absent on a clean book and on a payload cached before the field existed;
+ * both render nothing rather than a guess.
+ * #VERIFY: tests/unit/test_review_surface.py::test_queue_top_finding_is_the_first_ranked_finding
+ * pins the backend half; AdminConsolePage.test.tsx "names the top finding on
+ * the queue row" pins this half.
+ */
+function QueueRowReason({ item }: { item: ReviewQueueItem }): ReactElement | null {
+  const finding = item.top_finding
+  if (finding === null || finding === undefined) return null
+  const concern = finding.concern ?? finding.category
+  return (
+    <span className="console-row__reason cyo-text-muted">
+      <span className="console-row__reason-concern">{concern}</span>
+      <span aria-hidden="true"> · </span>
+      <span>{finding.message}</span>
+    </span>
+  )
+}
+
 function QueueRow({
   item,
   queue,
@@ -176,8 +237,16 @@ function QueueRow({
         to={`/admin/review/${item.storybook_id}`}
         state={{ reviewQueue: queue }}
       >
-        <span className="console-row__title">{item.title}</span>
-        <QueueRowMeta item={item} nowMs={nowMs} />
+        {/* Title, triage metadata and the top finding's reason stack in one
+            column so the reason gets a line of its own instead of competing
+            with the badges for horizontal room (RS-A7). */}
+        <span className="console-row__primary">
+          <span className="console-row__headline">
+            <span className="console-row__title">{item.title}</span>
+            <QueueRowMeta item={item} nowMs={nowMs} />
+          </span>
+          <QueueRowReason item={item} />
+        </span>
         <SeverityBadges item={item} />
       </Link>
       <Button
@@ -213,16 +282,20 @@ export function AdminConsolePage() {
   const [detailsFor, setDetailsFor] = useState<string | null>(null)
 
   const fetchQueue = useCallback(async () => {
-    const [items, processing] = await Promise.all([reviewApi.queue(), reviewApi.stillProcessing()])
-    return { items, processing }
+    const [items, stillProcessing] = await Promise.all([
+      reviewApi.queue(),
+      reviewApi.stillProcessing(),
+    ])
+    return { items, processing: stillProcessing.jobs, processingDegraded: stillProcessing.degraded }
   }, [reviewApi])
 
   useEffect(() => {
     let cancelled = false
     async function load() {
       try {
-        const { items, processing } = await fetchQueue()
-        if (!cancelled) setState({ kind: 'ready', items, processing, updatedAt: new Date() })
+        const { items, processing, processingDegraded } = await fetchQueue()
+        if (!cancelled)
+          setState({ kind: 'ready', items, processing, processingDegraded, updatedAt: new Date() })
       } catch (err) {
         // #CRITICAL: security: the route is admin-gated, but the backend
         // check is independent (defense in depth); a 403 here means the
@@ -257,8 +330,8 @@ export function AdminConsolePage() {
     setRefreshing(true)
     setRefreshFailed(false)
     try {
-      const { items, processing } = await fetchQueue()
-      setState({ kind: 'ready', items, processing, updatedAt: new Date() })
+      const { items, processing, processingDegraded } = await fetchQueue()
+      setState({ kind: 'ready', items, processing, processingDegraded, updatedAt: new Date() })
     } catch (err) {
       // #ASSUME: security: a 403 on refresh means the admin capability was
       // revoked mid-session; fail closed to the same no-access notice as the
@@ -402,12 +475,14 @@ export function AdminConsolePage() {
                       </ul>
                     </div>
                   ) : null}
-                  {searching && processing.length === 0 ? null : (
+                  {searching && processing.length === 0 && !state.processingDegraded ? null : (
                     <div className="console-group">
                       <h2 className="console-group__heading">Still processing</h2>
                       {processing.length === 0 ? (
                         <p className="console__muted cyo-text-muted">
-                          No stories are generating right now.
+                          {state.processingDegraded
+                            ? 'Could not load what is generating right now. Refresh to try again.'
+                            : 'No stories are generating right now.'}
                         </p>
                       ) : (
                         <ul className="console-list">

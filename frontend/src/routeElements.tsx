@@ -218,6 +218,11 @@ export const UserManagementPage = lazyWithReload('UserManagementPage', () =>
   }))
 )
 
+export const OutstandingDecisionsPage = lazyWithReload('OutstandingDecisionsPage', () =>
+  import('./admin/OutstandingDecisionsPage').then((m) => ({
+    default: m.OutstandingDecisionsPage,
+  }))
+)
 export const AuditPage = lazyWithReload('AuditPage', () =>
   import('./admin/AuditPage').then((m) => ({ default: m.AuditPage }))
 )

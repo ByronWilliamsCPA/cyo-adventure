@@ -267,9 +267,10 @@ GenerationJob:  queued → running ─┬─► passed        (L1/L2 + moderatio
                                   ├─► needs_review  (safety flag; a human must clear it)
                                   └─► failed        (hard validation failure)
 
-Storybook:      draft → in_review ─┬─► published → archived
-                  ▲                └─► needs_revision → (repair / regenerate) ──┐
-                  └────────────────────────── (re-review on edit) ◄────────────┘
+Storybook:      draft → in_review ─┬─► published ─┬─► archived  (terminal; absorbing)
+                  ▲                │              └─► in_review (recall, RS-C1)
+                  │                └─► needs_revision → (repair / regenerate) ──┐
+                  └────────────────────────── (re-review on edit) ◄─────────────┘
 ```
 
 A story is visible to a child profile only in `published`. The `in_review → published`
@@ -278,6 +279,15 @@ transition is a single approve-and-publish action that requires the global **adm
 draft version becomes reviewable only after its GenerationJob reaches `passed`; a
 `needs_review` job routes to a person and a `failed` job routes to repair or regeneration.
 See [ADR-005](./adr/adr-005-mandatory-human-approval.md).
+
+`published` has two exits. `archive` ends the book's life (`archived` is absorbing);
+`recall` (`RS-C1`, `POST /api/v1/storybooks/{id}/recall`) returns it to `in_review` with a
+closed-vocabulary `reason_code`, and is the path for a book whose stored verdict was
+reached under thresholds that have since moved. Recall is admin-only and extends ADR-005
+rather than relaxing it: a recalled book must clear the human gate again before it is
+reader-facing. Assignment rows survive it, so re-approval restores the book to exactly the
+shelves it left. Neither exit reaches a copy already downloaded to a device, which is
+evicted only on that device's next successful `/v1/library` fetch.
 
 ### Multi-device sync rules
 
@@ -474,6 +484,7 @@ is never trusted on its own. Inputs are validated against the published story
 | PATCH | /api/v1/storybooks/{id}/versions/{v}/nodes/{node_id} | Edit a passage (Phase 4b) | Guardian |
 | POST | /api/v1/storybooks/{id}/versions/{v}/submit-review | Move to review | Guardian |
 | POST | /api/v1/storybooks/{id}/approve | Approve and publish in one step (→ published) | Admin |
+| POST | /api/v1/storybooks/{id}/recall | Return a published book to `in_review` | Admin |
 
 ### Request/Response Format (reading-state PUT)
 
@@ -534,6 +545,7 @@ including one acting on their own family's story, may perform it. See
 | List profiles / mint a child session | Any family profile | No (403) | Own family only | Guardian/admin bearer, or a matching device grant (ADR-014) |
 | Generate / submit concept for review | Yes | No (403) | No (403) | Guardian role required; scoped to own family |
 | Approve and publish (single `in_review -> published` transition) | No (403) | No (403) | No (403) | Global admin role required (`Role.ADMIN` / `is_admin`), cross-family; there is no guardian path |
+| Recall a published book (`published -> in_review`) | No (403) | No (403) | No (403) | Global admin role required (`Role.ADMIN` / `is_admin`), cross-family; anonymous is 401/403 and there is no guardian path |
 | Access another family's data | No (403) | No (403) | No (403) | Family ownership checked on every resource |
 
 **IDOR negative tests** (each expects 403): child A requesting child B's library or state;

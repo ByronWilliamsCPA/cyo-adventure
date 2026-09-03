@@ -67,6 +67,16 @@ class EventType(StrEnum):
     # from any device that already downloaded it
     # (frontend/src/offline/revocation.ts).
     STORYBOOK_ARCHIVED = "storybook_archived"
+    # `RS-C1`: an admin recalls a published story back to the human gate
+    # (publishing/service.py::recall, the sole published->in_review hop per
+    # state_machine.py). Distinguished from STORYBOOK_ARCHIVED because the
+    # book is coming back for another review round, not ending its life, and
+    # from SENT_BACK because that event means a reviewer rejected a book that
+    # was never published. The payload's reason_code is what lets a later
+    # reader tell a threshold-driven recall from a safety pull; the archive
+    # composer's own docstring records not being able to make that distinction
+    # as a limitation, so recall carries the label from the start.
+    STORYBOOK_RECALLED = "storybook_recalled"
     THRESHOLD_CHANGED = "threshold_changed"
     NOISE_FLOOR_CHANGED = "noise_floor_changed"
     BOOK_ASSIGNED = "book_assigned"

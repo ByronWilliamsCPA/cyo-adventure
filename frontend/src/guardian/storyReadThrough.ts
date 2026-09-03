@@ -217,6 +217,16 @@ export function buildReadThrough(blob: Record<string, unknown>): ReadThrough {
  * page. Kept here rather than in any one component file so none imports from
  * another.
  */
-export function pluralize(count: number, noun: string): string {
-  return `${count} ${noun}${count === 1 ? '' : 's'}`
+/**
+ * Pluralize a count, with an optional explicit plural for irregular nouns.
+ *
+ * `RS-A3`: the naive `+ "s"` default rendered `5 advisorys` on a live review
+ * page, and "advisory" is the most common noun on that surface. An explicit
+ * plural is opt-in rather than a lookup table, so a caller states the
+ * irregular form beside the noun it belongs to instead of relying on this
+ * function to know English.
+ */
+export function pluralize(count: number, noun: string, plural?: string): string {
+  if (count === 1) return `${count} ${noun}`
+  return `${count} ${plural ?? `${noun}s`}`
 }

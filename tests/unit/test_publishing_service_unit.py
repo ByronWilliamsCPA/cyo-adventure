@@ -227,6 +227,30 @@ async def test_approve_rejects_a_non_admin_principal() -> None:
 
 
 @pytest.mark.unit
+async def test_recall_rejects_a_non_admin_principal() -> None:
+    """recall() itself refuses a non-admin principal, before any state change.
+
+    Defense in depth, matching test_approve_rejects_a_non_admin_principal
+    above. Recall's only production caller
+    (api/approval.py::recall_storybook) already gates on is_admin inside
+    _load_admin_story, so this asserts the service-level re-check, which is
+    what makes "only an admin moves a published book" hold even if a caller's
+    own gate is ever skipped. The book must still be published and no event
+    written, otherwise the refusal would have already had an effect.
+    """
+    story = _story("published", current=1)
+    session = AsyncMock(spec=AsyncSession)
+
+    principal = _principal("guardian")
+    with pytest.raises(AuthorizationError, match="admin role required"):
+        await service.recall(session, principal, story, reason_code="curation")
+
+    assert story.status == "published"
+    session.add.assert_not_called()
+    session.flush.assert_not_awaited()
+
+
+@pytest.mark.unit
 async def test_approve_rejects_mqa_fixture_outside_staging(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:

@@ -46,7 +46,10 @@ from cyo_adventure.moderation.report import (
     moderation_report_unusable,
     severe_finding_counts,
 )
-from cyo_adventure.publishing.reason_codes import validate_reason_code
+from cyo_adventure.publishing.reason_codes import (
+    validate_reason_code,
+    validate_recall_reason_code,
+)
 from cyo_adventure.publishing.state_machine import (
     Action,
     Status,
@@ -753,6 +756,114 @@ async def send_back(
         event_type=EventType.SENT_BACK,
         from_state="in_review",
         to_state="needs_revision",
+        payload={"reason_code": checked_reason_code},
+    )
+
+
+async def recall(
+    session: AsyncSession,
+    principal: Principal,
+    storybook: Storybook,
+    *,
+    reason_code: str,
+) -> None:
+    """Recall a published story back to the human review gate (`RS-C1`).
+
+    The recoverable counterpart of ``archive``. Both remove the book from every
+    child-facing read path immediately, because every one of those paths gates
+    on ``status == "published"`` and nothing else: the shelf query
+    (``api/library.py``), the single-book read (same module), the reader
+    (``api/reading.py``), the recommendation candidate set
+    (``api/recommendations.py``), and new assignments (``api/assignments.py``).
+    The difference is what survives: ``archived`` is absorbing, while a recalled
+    book sits in ``in_review`` where the ordinary approve path can publish it
+    again, and its assignment rows are untouched either way, so re-approval puts
+    it back on exactly the shelves it left.
+
+    Args:
+        session: The request session (caller owns the transaction).
+        principal: The admin recalling it.
+        storybook: The published story being recalled.
+        reason_code: Why it is being recalled. Must be a member of
+            ``reason_codes.RECALL_REASON_CODES``; validated here so the closed
+            vocabulary holds for every caller, not only for requests arriving
+            through the API boundary. Persisted on the STORYBOOK_RECALLED event,
+            and read by the guardian-notification composer to decide severity.
+
+    Raises:
+        AuthorizationError: If ``principal`` does not hold the admin
+            capability. The one production caller
+            (``api/approval.py::recall_storybook``) already gates on this via
+            ``_load_admin_story``, so this is a defense-in-depth re-check at
+            the service boundary itself, mirroring ``approve`` above.
+        StateTransitionError: If the story is not in ``published``.
+        core.exceptions.ValidationError: If ``reason_code`` is outside the
+            closed recall vocabulary. Qualified for the same reason
+            ``send_back``'s docstring gives: the only bare ``ValidationError``
+            bound in this module is pydantic's.
+    """
+    # #CRITICAL: security: recall changes what a child can reach (it pulls a
+    # published book off every shelf that lists it), so it carries the same
+    # service-boundary admin re-check approve() does. The one production
+    # caller, api/approval.py::recall_storybook, already gates on is_admin
+    # inside _load_admin_story; relying on that alone means a future caller,
+    # or a bug in this one, could skip the gate silently. Enforcing it here
+    # keeps "only an admin moves a published book" structural rather than a
+    # matter of caller discipline. It runs before the reason-code check so an
+    # unauthorized caller cannot probe the closed vocabulary.
+    # #VERIFY: test_recall_rejects_a_non_admin_principal in
+    # tests/unit/test_publishing_service_unit.py.
+    if not principal.is_admin:
+        msg = "admin role required to recall a storybook"
+        raise AuthorizationError(msg, required_permission="admin")
+    # Validate before the transition, so a bad code cannot leave a book out of
+    # the library with no event written to explain why (send_back's ordering,
+    # and the stakes here are higher: this one was reader-facing).
+    checked_reason_code = validate_recall_reason_code(reason_code)
+    # #CRITICAL: security: this does NOT reach an offline copy already on a
+    # device. `frontend/src/offline/revocation.ts` evicts a book only when a
+    # later successful `/v1/library` fetch no longer lists it, and there is no
+    # push channel, so a device that stays offline keeps reading the version it
+    # has. Recall does not introduce that window (archive has always had it),
+    # but it must not be documented, surfaced, or messaged as an immediate pull.
+    # #VERIFY: tests/unit/test_notifications_registry.py::
+    # test_recall_notification_does_not_claim_offline_copies_are_gone asserts
+    # the guardian-facing copy states the online-reconciliation condition.
+    storybook.status = assert_transition(Status(storybook.status), Action.RECALL).value
+    _logger.info(
+        "storybook_recalled",
+        storybook_id=storybook.id,
+        reason_code=checked_reason_code,
+        actor=str(principal.user_id),
+    )
+    # #CRITICAL: data-integrity: `current_published_version` is deliberately
+    # LEFT SET, exactly as `archive` leaves it. It is not an access grant:
+    # every read path ANDs it with `status == "published"`, so it grants
+    # nothing on its own. Clearing it would instead break the surfaces that
+    # legitimately need to know which version was the published one, including
+    # `story_requests/anchoring.py` (series continuity reads the published
+    # sibling), `moderation/rescreen.py` (which errors out on a published book
+    # with no such version), and the guardian device-download inventory. The
+    # re-approval writes the column again anyway.
+    # #VERIFY: tests/integration/test_recall_api.py::
+    # test_recall_leaves_current_published_version_set and
+    # ::test_a_recalled_book_leaves_every_child_facing_surface.
+    # #CRITICAL: security: same own-family-aware persona stamping as
+    # approve()/send_back()/archive(): an owner recalling their own family's
+    # story is stamped guardian (ADR-005 owner-as-admin exception), a genuine
+    # cross-family recall is stamped admin.
+    # #VERIFY: tests/integration/test_pipeline_event_instrumentation.py::
+    # test_recall_writes_storybook_recalled_event.
+    await record_event(
+        session,
+        Actor.from_principal(
+            principal, acting_role=principal.acting_role(storybook.family_id).value
+        ),
+        entity_type="storybook",
+        entity_id=storybook.id,
+        event_type=EventType.STORYBOOK_RECALLED,
+        from_state="published",
+        to_state="in_review",
         payload={"reason_code": checked_reason_code},
     )
 

@@ -2966,6 +2966,153 @@ export type OnboardingView = {
 };
 
 /**
+ * OutstandingCoverDetail
+ *
+ * The detail behind a pending cover-art decision (`RS-C3`).
+ *
+ * ``cover_status`` is echoed rather than assumed: the surface only lists
+ * ``pending_review`` today, and a reader of a stored response should not have
+ * to know that to interpret the row.
+ *
+ * It stays ``str`` rather than narrowing to a ``Literal`` of the five values
+ * in ``db/models.py``'s ``ck_storybook_version_cover_status``. That CHECK is
+ * a hand-written SQL string, not a Python enum, so a ``Literal`` here would
+ * be a second, unlinked copy of the vocabulary that a widening migration
+ * could silently outdate. The consequence of that drift is not a mislabelled
+ * row: pydantic would reject the value and 500 the whole list. This surface
+ * exists because outstanding decisions were invisible, and its client treats
+ * a failed load as unsafe precisely so an outage cannot read as "nothing
+ * outstanding" (see ``OutstandingDecisionsPage.tsx``). Emptying the list to
+ * keep a display field's type tidy trades the exact failure the surface was
+ * built to end.
+ */
+export type OutstandingCoverDetail = {
+    /**
+     * Cover Status
+     */
+    cover_status: string;
+    /**
+     * Child Facing
+     */
+    child_facing: boolean;
+};
+
+/**
+ * OutstandingDecisionItem
+ *
+ * One decision nobody is being shown (`RS-C2`, `RS-C3`).
+ *
+ * The generalisation this surface exists for: **any decision attached to a
+ * book the review queue no longer lists is invisible**, whether it is a
+ * moderation verdict on a live book or a cover waiting for approval. Before
+ * this, the only list of pending admin work was the ``in_review`` queue, so a
+ * published book that a threshold change had just turned non-compliant, and a
+ * published book showing kids no cover because its approval was never
+ * surfaced, both sat indefinitely with nothing pointing at them.
+ *
+ * One row per decision, not per book: a book can hold both kinds at once, and
+ * each kind resolves through a different action on a different page.
+ *
+ * ``kind`` and the two detail fields move together, and the producer enforces
+ * it: ``api/approval.py::get_outstanding_decisions`` appends a ``moderation``
+ * row only inside ``if moderation is not None``, and a ``cover`` row only
+ * while constructing its ``OutstandingCoverDetail``. So a ``moderation`` row
+ * always carries ``moderation`` and never ``cover``, and the reverse for a
+ * ``cover`` row; the four states this flat model can express are two states
+ * in practice.
+ *
+ * That invariant is documented rather than encoded as a discriminated union
+ * of two models. The union would be the better type, and it is worth doing
+ * on its own change: it rewrites the wire schema into a ``oneOf``, which
+ * regenerates the committed client's shape and re-narrows every consumer in
+ * ``OutstandingDecisionsPage.tsx``, and that is a refactor of a shipped
+ * contract rather than a fix to a defect. Tracked as ``UW-C477``.
+ */
+export type OutstandingDecisionItem = {
+    /**
+     * Kind
+     */
+    kind: 'moderation' | 'cover';
+    /**
+     * Storybook Id
+     */
+    storybook_id: string;
+    /**
+     * Title
+     */
+    title: string;
+    /**
+     * Status
+     */
+    status: string;
+    /**
+     * Version
+     */
+    version: number;
+    /**
+     * Family Id
+     */
+    family_id: string;
+    /**
+     * Age Band
+     */
+    age_band?: string | null;
+    /**
+     * Version Created At
+     */
+    version_created_at?: string | null;
+    /**
+     * Recallable
+     */
+    recallable: boolean;
+    moderation?: OutstandingModerationDetail | null;
+    cover?: OutstandingCoverDetail | null;
+};
+
+/**
+ * OutstandingDecisionsView
+ *
+ * Every outstanding admin decision on a book the review queue omits.
+ */
+export type OutstandingDecisionsView = {
+    /**
+     * Items
+     */
+    items: Array<OutstandingDecisionItem>;
+};
+
+/**
+ * OutstandingModerationDetail
+ *
+ * The gating detail behind a moderation decision (`RS-C2`).
+ *
+ * The same four numbers a ``ReviewQueueItem`` carries, computed by the same
+ * routing and flooring code (``review_surface.py::build_decision_counts``), so
+ * a book that reads "1 block" here reads "1 block" in the queue and on the
+ * detail page. Deliberately no ``flagged_count``: that one counts occurrences
+ * and is derived from the blob's nodes, which this surface does not load.
+ */
+export type OutstandingModerationDetail = {
+    /**
+     * Block Findings
+     */
+    block_findings: number;
+    /**
+     * Flag Findings
+     */
+    flag_findings: number;
+    /**
+     * Advisory Findings
+     */
+    advisory_findings: number;
+    /**
+     * Report Unusable
+     */
+    report_unusable: boolean;
+    top_finding?: FindingView | null;
+};
+
+/**
  * PersonalizationReceiveBody
  *
  * Set the viewer-side receive switch for the caller's own family.
@@ -3916,6 +4063,67 @@ export type ReadingTimeFlushBody = {
 };
 
 /**
+ * RecallRequest
+ *
+ * Body for the recall endpoint (`RS-C1`).
+ *
+ * A reason code with no accompanying free-text field, unlike
+ * ``SendBackRequest``. Send-back's prose tells an author what to fix; a recall
+ * has no author to address, and its consumers are the pipeline event log and a
+ * guardian notification, both of which take the code alone. Adding a free-text
+ * field would create a channel whose content is logged but never read.
+ */
+export type RecallRequest = {
+    /**
+     * Reason Code
+     */
+    reason_code: 'threshold_change' | 'safety_concern' | 'content_correction' | 'curation' | 'other';
+};
+
+/**
+ * RecalledView
+ *
+ * The response to a successful recall action.
+ *
+ * ``current_published_version`` is echoed back deliberately: a recalled book
+ * KEEPS the column, unlike what "no longer published" suggests (see
+ * ``publishing/service.py::recall``). Returning it makes that visible at the
+ * wire contract rather than leaving a caller to assume a recalled book has no
+ * published version to re-approve.
+ *
+ * The field stays nullable, and the docstring no longer claims otherwise. In
+ * practice every recallable book carries a value, because ``recall`` only
+ * leaves ``published`` and every path that reaches ``published`` sets the
+ * column (``publishing/service.py::approve``, the sole publish path in
+ * ``src/``, plus the seed scripts its module docstring names). But the type
+ * mirrors the nullable ORM column rather than asserting that invariant,
+ * because the only way to assert it here is a serialization-time guard, and
+ * that guard would abort the request AFTER the transition and before the
+ * unit of work commits: a book with an unexpectedly NULL column could then
+ * never be recalled at all. Recall is how a book is pulled away from
+ * children, so it must not be blocked to keep a response type tidy. The
+ * invariant is enforced where it is created, at the publish path.
+ */
+export type RecalledView = {
+    /**
+     * Id
+     */
+    id: string;
+    /**
+     * Status
+     */
+    status: 'in_review';
+    /**
+     * Current Published Version
+     */
+    current_published_version: number | null;
+    /**
+     * Reason Code
+     */
+    reason_code: 'threshold_change' | 'safety_concern' | 'content_correction' | 'curation' | 'other';
+};
+
+/**
  * RecommendationItem
  *
  * One recommended book: a rating from another profile, never a message.
@@ -4200,6 +4408,7 @@ export type ReviewQueueItem = {
      */
     themes?: Array<string>;
     content_flags?: ContentFlags | null;
+    top_finding?: FindingView | null;
 };
 
 /**
@@ -6912,6 +7121,52 @@ export type ArchiveStorybookApiV1StorybooksStorybookIdArchivePostResponses = {
 
 export type ArchiveStorybookApiV1StorybooksStorybookIdArchivePostResponse = ArchiveStorybookApiV1StorybooksStorybookIdArchivePostResponses[keyof ArchiveStorybookApiV1StorybooksStorybookIdArchivePostResponses];
 
+export type RecallStorybookApiV1StorybooksStorybookIdRecallPostData = {
+    body: RecallRequest;
+    path: {
+        /**
+         * Storybook Id
+         */
+        storybook_id: string;
+    };
+    query?: never;
+    url: '/api/v1/storybooks/{storybook_id}/recall';
+};
+
+export type RecallStorybookApiV1StorybooksStorybookIdRecallPostErrors = {
+    /**
+     * Missing, malformed, expired, or unknown bearer token.
+     */
+    401: ErrorResponse;
+    /**
+     * Authenticated, but not permitted to act on this resource.
+     */
+    403: ErrorResponse;
+    /**
+     * The referenced resource does not exist.
+     */
+    404: ErrorResponse;
+    /**
+     * The action conflicts with the resource's current state.
+     */
+    409: ErrorResponse;
+    /**
+     * Validation Error
+     */
+    422: HttpValidationError;
+};
+
+export type RecallStorybookApiV1StorybooksStorybookIdRecallPostError = RecallStorybookApiV1StorybooksStorybookIdRecallPostErrors[keyof RecallStorybookApiV1StorybooksStorybookIdRecallPostErrors];
+
+export type RecallStorybookApiV1StorybooksStorybookIdRecallPostResponses = {
+    /**
+     * Successful Response
+     */
+    200: RecalledView;
+};
+
+export type RecallStorybookApiV1StorybooksStorybookIdRecallPostResponse = RecallStorybookApiV1StorybooksStorybookIdRecallPostResponses[keyof RecallStorybookApiV1StorybooksStorybookIdRecallPostResponses];
+
 export type GetReviewSurfaceApiV1StorybooksStorybookIdReviewGetData = {
     body?: never;
     path: {
@@ -6991,6 +7246,39 @@ export type GetReviewQueueApiV1ReviewQueueGetResponses = {
 };
 
 export type GetReviewQueueApiV1ReviewQueueGetResponse = GetReviewQueueApiV1ReviewQueueGetResponses[keyof GetReviewQueueApiV1ReviewQueueGetResponses];
+
+export type GetOutstandingDecisionsApiV1AdminOutstandingDecisionsGetData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/api/v1/admin/outstanding-decisions';
+};
+
+export type GetOutstandingDecisionsApiV1AdminOutstandingDecisionsGetErrors = {
+    /**
+     * Missing, malformed, expired, or unknown bearer token.
+     */
+    401: ErrorResponse;
+    /**
+     * Authenticated, but not permitted to act on this resource.
+     */
+    403: ErrorResponse;
+    /**
+     * Validation Error
+     */
+    422: HttpValidationError;
+};
+
+export type GetOutstandingDecisionsApiV1AdminOutstandingDecisionsGetError = GetOutstandingDecisionsApiV1AdminOutstandingDecisionsGetErrors[keyof GetOutstandingDecisionsApiV1AdminOutstandingDecisionsGetErrors];
+
+export type GetOutstandingDecisionsApiV1AdminOutstandingDecisionsGetResponses = {
+    /**
+     * Successful Response
+     */
+    200: OutstandingDecisionsView;
+};
+
+export type GetOutstandingDecisionsApiV1AdminOutstandingDecisionsGetResponse = GetOutstandingDecisionsApiV1AdminOutstandingDecisionsGetResponses[keyof GetOutstandingDecisionsApiV1AdminOutstandingDecisionsGetResponses];
 
 export type ListAdminStorybooksApiV1AdminStorybooksGetData = {
     body?: never;

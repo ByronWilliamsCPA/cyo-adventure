@@ -17,11 +17,22 @@ import { useMemo } from 'react'
 
 import type { FindingVerdict } from './reviewApi'
 import { FlagBadge } from './FlagBadge'
+import { tierBreakdownLabel, verdictTally } from './findingCounts'
+import { pluralize } from './storyReadThrough'
 
 const WORDS_PER_MINUTE = 200
 
 export interface StoryStructureFinding {
   verdict: FindingVerdict
+  /**
+   * `RS-A3`: structural findings describe the pipeline, not the book, and the
+   * backend excludes them from its flag tier. This component's own tally used
+   * to count them as flags, so the same book read `3 flags` here and `2 flags`
+   * on its queue row. Passing the flag through lets the shared tally apply the
+   * one rule; absent (a caller with no structural information) it counts as
+   * not structural, which is what a pre-Stage-B finding is.
+   */
+  structural?: boolean
 }
 
 export interface StoryStructureEnding {
@@ -225,33 +236,26 @@ function readStoryStructure(blob: Record<string, unknown>): StoryStructureData {
   }
 }
 
-function pluralize(count: number, noun: string): string {
-  return `${count} ${noun}${count === 1 ? '' : 's'}`
-}
-
-interface SeverityCounts {
-  block: number
-  flag: number
-  advisory: number
-}
-
-function severityCounts(findings: StoryStructureFinding[]): SeverityCounts {
-  const counts: SeverityCounts = { block: 0, flag: 0, advisory: 0 }
-  for (const finding of findings) {
-    if (finding.verdict === 'block') counts.block += 1
-    else if (finding.verdict === 'flag') counts.flag += 1
-    else if (finding.verdict === 'advisory') counts.advisory += 1
-  }
-  return counts
-}
-
 export interface StoryStructureSummaryProps {
   /** The Storybook content blob (nodes, start_node, metadata). */
   blob: Record<string, unknown>
   /** Whether this version has been moderation-screened. */
   screened: boolean
-  /** Total flagged-passage count: per-node plus story-level findings. */
+  /** Total flagged count, in the population `countBasis` names. */
   flaggedCount: number
+  /**
+   * Which population `flaggedCount` counted.
+   *
+   * `RS-A3`: the two callers hand in genuinely different numbers, and the
+   * badge used to render both as a bare "N flagged". The admin review page
+   * passes the distinct merged findings, the same population as its own
+   * header and the queue row; the guardian content summary has only the
+   * backend's surfaced-occurrence total, where one merged finding covering 380
+   * nodes counts 380 times. `occurrences` is the default because it is what a
+   * caller that never thought about the question is almost certainly passing,
+   * and understating precision is safe where overstating it is not.
+   */
+  countBasis?: 'distinct' | 'occurrences'
   /**
    * Per-finding verdicts for a block/flag/advisory severity split. Admin-only:
    * the guardian content summary does not carry per-node finding detail, so
@@ -278,11 +282,22 @@ export function StoryStructureSummary({
   screened,
   flaggedCount,
   findings,
+  countBasis = 'occurrences',
   compact = false,
   className,
 }: StoryStructureSummaryProps) {
   const structure = useMemo(() => readStoryStructure(blob), [blob])
-  const severity = !compact && findings ? severityCounts(findings) : null
+  const severity = !compact && findings ? verdictTally(findings) : null
+  const severityLabel = severity ? tierBreakdownLabel(severity) : null
+  // Both arms name their denominator and both pluralize. The occurrences arm
+  // used to render a bare `${flaggedCount} flagged`, which stated neither: it
+  // read as a finding count on the surface whose whole point is that one
+  // merged finding can cover 380 nodes. "flagged occurrence" is the same noun
+  // AdminConsolePage's queue-row fallback already uses for this population.
+  const flaggedLabel =
+    countBasis === 'distinct'
+      ? pluralize(flaggedCount, 'flagged finding')
+      : pluralize(flaggedCount, 'flagged occurrence')
   const classes = ['story-structure', compact ? 'story-structure--compact' : '', className]
     .filter(Boolean)
     .join(' ')
@@ -367,17 +382,9 @@ export function StoryStructureSummary({
           <FlagBadge tone="unscreened" />
         ) : flaggedCount > 0 ? (
           <>
-            <FlagBadge tone="flag" label={`${flaggedCount} flagged`} />
-            {severity ? (
-              <span className="story-structure__severity cyo-text-muted">
-                {[
-                  severity.block > 0 ? pluralize(severity.block, 'block') : null,
-                  severity.flag > 0 ? pluralize(severity.flag, 'flag') : null,
-                  severity.advisory > 0 ? pluralize(severity.advisory, 'advisory') : null,
-                ]
-                  .filter((part): part is string => part !== null)
-                  .join(', ')}
-              </span>
+            <FlagBadge tone="flag" label={flaggedLabel} />
+            {severityLabel !== null ? (
+              <span className="story-structure__severity cyo-text-muted">{severityLabel}</span>
             ) : null}
           </>
         ) : (

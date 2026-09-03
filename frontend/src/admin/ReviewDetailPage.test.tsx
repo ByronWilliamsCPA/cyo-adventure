@@ -1,6 +1,6 @@
 import { render, screen, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { MemoryRouter, Route, Routes } from 'react-router'
+import { MemoryRouter, Route, Routes, useNavigate } from 'react-router'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 import { ReviewDetailPage } from './ReviewDetailPage'
@@ -205,6 +205,23 @@ function mockCompareRoutes() {
   })
 }
 
+/**
+ * A navigation control OUTSIDE the <Routes>, so clicking it changes the
+ * :storybookId param the way auto-advance through the review queue does:
+ * a route change under the same route pattern, rather than the fresh mount a
+ * second renderAt() would give. What the page does with that change (remount
+ * via `key`, or re-run an effect) is the thing under test, so the harness
+ * must not decide it.
+ */
+function NextBookLink({ to }: { to: string }) {
+  const navigate = useNavigate()
+  return (
+    <button type="button" onClick={() => void navigate(to)}>
+      NEXT BOOK
+    </button>
+  )
+}
+
 function renderAt(storybookId: string) {
   return render(
     <MemoryRouter initialEntries={[`/admin/review/${storybookId}`]}>
@@ -220,10 +237,14 @@ beforeEach(() => {
   mockGet.mockReset().mockResolvedValue({ data: SURFACE })
   mockPost.mockReset()
   mockPatch.mockReset()
+  // RS-A5's triage markers live in localStorage, which jsdom shares across
+  // every test in this file. Without this, a marker one case set would change
+  // what a later case renders.
+  localStorage.clear()
 })
 
 describe('ReviewDetailPage', () => {
-  it('shows flagged passages with their findings first', async () => {
+  it('shows flagged passages with their findings', async () => {
     renderAt('s1')
     expect(await screen.findByText('possibly scary')).toBeInTheDocument()
     expect(screen.getAllByText(/A dark cave yawned ahead/).length).toBeGreaterThan(0)
@@ -262,6 +283,144 @@ describe('ReviewDetailPage', () => {
       await user.click(screen.getByText('2 affected nodes'))
       expect(screen.getByRole('button', { name: 'n1' })).toBeInTheDocument()
       expect(screen.getByRole('button', { name: 'n2' })).toBeInTheDocument()
+    })
+
+    it('renders the ranked findings section above the flagged passages, even with nothing ranked', async () => {
+      /*
+        `RS-A2`. Two claims, one test, because they fail together in practice.
+
+        Order: triage before prose. A ranked list that sits below a flat
+        passage list is not a triage surface; it is a footnote a reviewer
+        reaches after the reading they were trying to avoid.
+
+        Unconditional: the section used to disappear when ranked_findings was
+        empty, which on the four queued books whose findings are all
+        low-severity advisories removed the most decision-useful section from
+        exactly the books a reviewer could clear fastest. SURFACE carries
+        flagged_passages and no ranked_findings, so it is that shape.
+      */
+      renderAt('s1')
+      const ranked = await screen.findByRole('heading', { name: 'Ranked findings' })
+      const flagged = screen.getByRole('heading', { name: 'Flagged passages' })
+      expect(
+        ranked.compareDocumentPosition(flagged) & Node.DOCUMENT_POSITION_FOLLOWING
+      ).toBeTruthy()
+      expect(
+        screen.getByText(/No findings are ranked for triage on this version/)
+      ).toBeInTheDocument()
+    })
+
+    it('surfaces the classifier score on a ranked finding and stays blank when unscored', async () => {
+      /*
+        `RS-A2`: "advisory, violence, 0.41" lets a reviewer calibrate against
+        the band threshold; "advisory, violence" does not. A deterministic,
+        unscored finding must render no score rather than 0.00, so the two
+        cases are asserted together: a printed 0.00 for `score: null` would
+        tell the reviewer the classifier judged this passage maximally safe
+        when it never scored it at all.
+      */
+      mockGet.mockResolvedValue({
+        data: {
+          ...SURFACE,
+          ranked_findings: [
+            {
+              stage: 1,
+              source: 'llm_safety',
+              category: 'safety',
+              node_id: 'n1',
+              verdict: 'advisory',
+              score: 0.41,
+              message: 'mild scuffle',
+              severity: 'medium',
+              node_ids: ['n1'],
+              structural: false,
+              concern: 'violence',
+            },
+            {
+              stage: 1,
+              source: 'validator',
+              category: 'reading_level',
+              node_id: 'n2',
+              verdict: 'advisory',
+              score: null,
+              message: 'sentence length above band',
+              severity: 'low',
+              node_ids: ['n2'],
+              structural: false,
+              concern: null,
+            },
+            {
+              stage: 1,
+              source: 'llm_safety',
+              category: 'safety',
+              node_id: 'n2',
+              verdict: 'block',
+              score: 0,
+              message: 'bright-line refusal',
+              severity: 'high',
+              node_ids: ['n2'],
+              structural: false,
+              concern: 'self_harm',
+            },
+          ],
+        },
+      })
+      renderAt('s1')
+      await screen.findByRole('heading', { name: 'Ranked findings' })
+      const scored = screen.getByText('mild scuffle').closest('li') as HTMLElement
+      const unscored = screen.getByText('sentence length above band').closest('li') as HTMLElement
+      const zero = screen.getByText('bright-line refusal').closest('li') as HTMLElement
+      expect(within(scored).getByText('0.41')).toBeInTheDocument()
+      expect(unscored.querySelector('.review-finding__score')).toBeNull()
+      // A genuine 0 is a score, and a falsy one: rendering it by truthiness
+      // would drop it, which is why the component tests typeof. Without this
+      // case that distinction is a comment nothing enforces.
+      expect(within(zero).getByText('0.00')).toBeInTheDocument()
+    })
+
+    it('makes a ranked finding the entry point to its own affected passages', async () => {
+      /*
+        `RS-A2`: the finding, not a separate flat list, is where a reviewer
+        gets context. Expanding one finding's node drill-down shows that
+        node's prose in place.
+
+        This matters most for the findings `RS-A1` keeps out of
+        flagged_passages: a low advisory has no passage card anywhere on the
+        page, so if its prose were sourced from flagged_passages the collapsed
+        lane would be the one tier with no context at all, which is the
+        opposite of "counted and available for a reviewer to dig into". The
+        finding below is a low advisory for exactly that reason.
+      */
+      mockGet.mockResolvedValue({
+        data: {
+          ...SURFACE,
+          ranked_findings: [
+            {
+              stage: 3,
+              source: 'llm_coherence',
+              category: 'coherence',
+              node_id: 'n2',
+              verdict: 'advisory',
+              score: null,
+              message: 'the fork is abrupt',
+              severity: 'medium',
+              node_ids: ['n2'],
+              structural: false,
+              concern: null,
+            },
+          ],
+        },
+      })
+      renderAt('s1')
+      await screen.findByRole('heading', { name: 'Ranked findings' })
+      const row = screen.getByText('the fork is abrupt').closest('li') as HTMLElement
+      // Collapsed until asked for, so the triage list itself stays scannable.
+      // A closed <details> keeps its children in the DOM, so presence is the
+      // wrong probe here and would pass either way; visibility is the claim.
+      expect(within(row).getByText(/The path forked/)).not.toBeVisible()
+      const user = userEvent.setup()
+      await user.click(within(row).getByText('1 affected node'))
+      expect(within(row).getByText(/The path forked/)).toBeVisible()
     })
 
     it('splits structural findings into their own block', async () => {
@@ -340,14 +499,310 @@ describe('ReviewDetailPage', () => {
       expect(screen.getByText('story mean too long')).toBeInTheDocument()
     })
 
-    it('renders none of the new sections when the backend has not sent the additive fields', async () => {
+    it('invents no findings when the backend has not sent the additive fields', async () => {
+      /*
+        A pre-Stage-B stored report projects all four additive buckets empty.
+        The page must not throw on the absent fields and must not manufacture
+        rows, so the three optional sections stay absent.
+
+        `RS-A2` changed one of the four: "Ranked findings" now renders
+        unconditionally, with an explicit empty state instead of vanishing.
+        The assertion below therefore checks the heading is present while its
+        list is not, which is the distinction that matters here: an empty
+        state is a statement about the book, a missing section is
+        indistinguishable from a page that failed to load.
+      */
       mockGet.mockResolvedValue({ data: SURFACE })
       renderAt('s1')
       await screen.findByText('possibly scary')
-      expect(screen.queryByRole('heading', { name: 'Ranked findings' })).not.toBeInTheDocument()
+      expect(screen.getByRole('heading', { name: 'Ranked findings' })).toBeInTheDocument()
+      expect(
+        screen.getByText(/No findings are ranked for triage on this version/)
+      ).toBeInTheDocument()
       expect(screen.queryByRole('heading', { name: 'Structural findings' })).not.toBeInTheDocument()
       expect(screen.queryByText(/Low-priority advisories/)).not.toBeInTheDocument()
       expect(screen.queryByRole('heading', { name: 'Validator findings' })).not.toBeInTheDocument()
+    })
+  })
+
+  describe('one canonical count (RS-A3)', () => {
+    /*
+      One book used to render four mutually inconsistent numbers: `2
+      advisories` on its queue row, `4 findings` in this header, "no content
+      concerns" in the gate summary, and `5 flagged` / `5 advisorys` in the
+      overview footer, over 5 passage cards. Every assertion here is against
+      the rendered DOM rather than the source, because Prettier-wrapped JSX
+      prose defeats a source grep: a zero result for a claim AND for its
+      negation means the probe is broken, not that the bug is gone.
+    */
+    /** The header verdict strip, one of the two places a count is shown. */
+    const headerStrip = () => {
+      const strip = document.querySelector('.review-summary')
+      expect(strip).not.toBeNull()
+      return within(strip as HTMLElement)
+    }
+    /** The story-overview footer, the other place a count is shown. */
+    const overviewFooter = () => {
+      const details = document.querySelector('.review-overview')
+      expect(details).not.toBeNull()
+      return within(details as HTMLElement)
+    }
+
+    const finding = (over: Record<string, unknown>) => ({
+      stage: 1,
+      source: 'llm_safety',
+      category: 'safety',
+      node_id: 'n1',
+      verdict: 'advisory',
+      score: null,
+      message: 'a finding',
+      severity: 'low',
+      node_ids: ['n1'],
+      structural: false,
+      concern: null,
+      ...over,
+    })
+
+    it('counts the findings it renders, not the report summary persisted total', async () => {
+      // summary.count is `len(persisted)` from moderation/report.py::to_dict,
+      // taken BEFORE the admin noise floor filters anything, so a floored
+      // report leaves the header claiming rows the page never shows. 99 here
+      // is deliberately impossible for this surface.
+      mockGet.mockResolvedValue({
+        data: {
+          ...SURFACE,
+          summary: { ...SURFACE.summary, count: 99 },
+          flagged_passages: [],
+          story_level_findings: [],
+          ranked_findings: [
+            finding({ verdict: 'block', severity: 'high', message: 'one' }),
+            finding({ verdict: 'flag', severity: 'high', message: 'two' }),
+          ],
+        },
+      })
+      renderAt('s1')
+      expect(await screen.findByText('2 findings')).toBeInTheDocument()
+      expect(screen.queryByText('99 findings')).not.toBeInTheDocument()
+    })
+
+    it('names the passage denominator instead of leaving two bare numbers', async () => {
+      mockGet.mockResolvedValue({
+        data: {
+          ...SURFACE,
+          ranked_findings: [finding({ verdict: 'flag', severity: 'high', message: 'one' })],
+        },
+      })
+      renderAt('s1')
+      // One finding, one passage card: both numbers are 1 here, and the point
+      // is that each says what it counted. SURFACE has a single flagged
+      // passage, so the scope line has something to name.
+      expect(await screen.findByText('1 finding')).toBeInTheDocument()
+      expect(screen.getByText('1 flagged passage below')).toBeInTheDocument()
+    })
+
+    it('gives the header and the story-overview footer the same number', async () => {
+      /*
+        The regression that produced Teddy's four numbers: one merged advisory
+        spanning three nodes plus two flags. The footer used to count the
+        fan-out (allFindings.length) while the header counted the persisted
+        total, so they could not agree by construction.
+      */
+      mockGet.mockResolvedValue({
+        data: {
+          ...SURFACE,
+          summary: { ...SURFACE.summary, count: 7 },
+          ranked_findings: [
+            finding({ verdict: 'flag', severity: 'high', message: 'first flag' }),
+            finding({ verdict: 'flag', severity: 'medium', message: 'second flag' }),
+          ],
+          low_advisory_findings: [
+            finding({ message: 'spans the book', node_ids: ['n1', 'n2', 'n3'] }),
+          ],
+        },
+      })
+      renderAt('s1')
+      expect(await screen.findByText('3 findings')).toBeInTheDocument()
+      expect(overviewFooter().getByText('3 flagged findings')).toBeInTheDocument()
+      // And both surfaces' tier splits agree with the totals beside them.
+      // Scoped per surface on purpose: an unscoped query throws "found
+      // multiple", which would pass a weaker assertion for the wrong reason.
+      expect(headerStrip().getByText('2 flags · 1 advisory')).toBeInTheDocument()
+      expect(overviewFooter().getByText('2 flags · 1 advisory')).toBeInTheDocument()
+    })
+
+    it('pluralizes advisories as advisories', async () => {
+      mockGet.mockResolvedValue({
+        data: {
+          ...SURFACE,
+          flagged_passages: [],
+          story_level_findings: [],
+          low_advisory_findings: [
+            finding({ message: 'first' }),
+            finding({ message: 'second' }),
+            finding({ message: 'third' }),
+          ],
+        },
+      })
+      renderAt('s1')
+      expect(await screen.findByText('3 findings')).toBeInTheDocument()
+      expect(headerStrip().getByText('3 advisories')).toBeInTheDocument()
+      expect(overviewFooter().getByText('3 advisories')).toBeInTheDocument()
+      expect(screen.queryByText(/advisorys/)).not.toBeInTheDocument()
+    })
+
+    it('keeps structural findings out of the flag tier, matching the backend', async () => {
+      // review_surface.py excludes structural rows from flag_findings, so a
+      // surface with one real flag and one structural flag must read "1 flag".
+      // The overview footer used to tally them itself and said "2 flags".
+      mockGet.mockResolvedValue({
+        data: {
+          ...SURFACE,
+          flagged_passages: [],
+          story_level_findings: [],
+          ranked_findings: [finding({ verdict: 'flag', severity: 'high', message: 'real flag' })],
+          structural_findings: [
+            finding({
+              verdict: 'flag',
+              severity: 'medium',
+              message: 'report incomplete',
+              structural: true,
+              category: 'coverage',
+            }),
+          ],
+        },
+      })
+      renderAt('s1')
+      expect(await screen.findByText('2 findings')).toBeInTheDocument()
+      expect(headerStrip().getByText('1 flag')).toBeInTheDocument()
+      expect(overviewFooter().getByText('1 flag')).toBeInTheDocument()
+      expect(screen.queryByText(/2 flags/)).not.toBeInTheDocument()
+    })
+  })
+
+  describe('false-negative spot check (RS-A4)', () => {
+    /**
+     * A book large enough that reading it all is the failure mode: 40
+     * passages in one chain. `SURFACE` has 2, which is why the section does
+     * not render there (the full read-through already is the sample).
+     */
+    const bigSurface = (over: Record<string, unknown> = {}) => ({
+      ...SURFACE,
+      blob: {
+        title: 'The Long Cave',
+        start_node: 'p1',
+        metadata: { age_band: '8-11', reading_level: 'grade_3' } as Record<string, unknown>,
+        nodes: Array.from({ length: 40 }, (_, index) => ({
+          id: `p${index + 1}`,
+          body: `Passage ${index + 1} prose.`,
+          choices:
+            index === 39 ? [] : [{ id: `c${index}`, label: 'Onward', target: `p${index + 2}` }],
+        })),
+      },
+      flagged_passages: [],
+      story_level_findings: [],
+      ...over,
+    })
+
+    it('labels the spot check sample as uncalibrated, beside the count', async () => {
+      // Ruling 2 (2026-08-31): 15 is a working figure, not a derived one.
+      // "15 of 550 passages checked" with no qualifier manufactures exactly
+      // the false confidence this section exists to prevent, so the caveat
+      // ships with the count or the feature does not ship.
+      mockGet.mockResolvedValue({ data: bigSurface() })
+      renderAt('s1')
+      await screen.findByRole('heading', { name: 'Spot check for missed content' })
+      const note = screen.getByRole('note')
+      expect(note.textContent).toContain('15 passages drawn across')
+      expect(note.textContent).toContain("story's 40 passages")
+      expect(note.textContent).toContain('sample size not yet calibrated')
+      expect(note.textContent).toContain('a clean sample is not evidence the book is clean')
+    })
+
+    it('draws a spread of passages, not a prefix of the story', async () => {
+      mockGet.mockResolvedValue({ data: bigSurface() })
+      renderAt('s1')
+      const section = await screen.findByRole('heading', { name: 'Spot check for missed content' })
+      const group = section.closest('.review-group')
+      expect(group).not.toBeNull()
+      const positions = Array.from(
+        (group as HTMLElement).querySelectorAll('.review-sample__position')
+      ).map((el) => Number(/passage (\d+) of/.exec(el.textContent ?? '')?.[1]))
+      expect(positions).toHaveLength(15)
+      // A prefix draw would end in the low single digits; this must reach the
+      // far end of the story.
+      expect(positions[0]).toBeLessThan(5)
+      expect(positions[14]).toBeGreaterThan(35)
+    })
+
+    it('names the band a reviewer should judge the passages against', async () => {
+      mockGet.mockResolvedValue({ data: bigSurface() })
+      renderAt('s1')
+      await screen.findByRole('heading', { name: 'Spot check for missed content' })
+      expect(screen.getByText(/Judge these passages against Ages 8-11/)).toBeInTheDocument()
+      expect(screen.getByText(/reading level grade_3/)).toBeInTheDocument()
+    })
+
+    it('renders no band line when the blob declares no band, rather than an empty one', async () => {
+      const noMetadata = bigSurface()
+      noMetadata.blob = { ...noMetadata.blob, metadata: {} }
+      mockGet.mockResolvedValue({ data: noMetadata })
+      renderAt('s1')
+      await screen.findByRole('heading', { name: 'Spot check for missed content' })
+      expect(screen.queryByText(/Judge these passages against/)).not.toBeInTheDocument()
+    })
+
+    it('excludes passages a collapsed low advisory names, not just flagged_passages', async () => {
+      /*
+        The trap `RS-A1` created: a low advisory is deliberately kept out of
+        flagged_passages, so a node named ONLY by one is absent there. Sampling
+        it as "the gate raised nothing here" would be false, and would send the
+        reviewer hunting for a miss the gate had already reported.
+      */
+      const covered = Array.from({ length: 30 }, (_, index) => `p${index + 1}`)
+      mockGet.mockResolvedValue({
+        data: bigSurface({
+          low_advisory_findings: [
+            {
+              stage: 1,
+              source: 'llm_safety',
+              category: 'safety',
+              node_id: null,
+              verdict: 'advisory',
+              score: 0.1,
+              message: 'mild peril throughout',
+              severity: 'low',
+              node_ids: covered,
+              structural: false,
+              concern: 'peril',
+            },
+          ],
+        }),
+      })
+      renderAt('s1')
+      const section = await screen.findByRole('heading', { name: 'Spot check for missed content' })
+      const group = section.closest('.review-group') as HTMLElement
+      const ids = Array.from(group.querySelectorAll('.review-sample__node')).map(
+        (el) => el.textContent
+      )
+      // 10 unflagged passages exist (p31..p40); they are all drawn first, and
+      // the remaining 5 are topped up from the advisory-covered ones, which
+      // the UI marks so the reviewer knows they are not fresh ground.
+      expect(ids).toHaveLength(15)
+      const unflagged = ids.filter((id) => Number((id ?? 'p0').slice(1)) > 30)
+      expect(unflagged).toHaveLength(10)
+      expect(group.querySelectorAll('.flag-badge')).toHaveLength(5)
+    })
+
+    it('omits the section entirely when the whole story fits in one sitting', async () => {
+      // SURFACE is a 2-passage book: the read-through below IS the sample, and
+      // rendering every passage twice would add noise to the page this plan
+      // exists to de-noise.
+      mockGet.mockResolvedValue({ data: SURFACE })
+      renderAt('s1')
+      await screen.findByRole('heading', { name: 'Full story' })
+      expect(
+        screen.queryByRole('heading', { name: 'Spot check for missed content' })
+      ).not.toBeInTheDocument()
     })
   })
 
@@ -479,7 +934,11 @@ describe('ReviewDetailPage', () => {
       })
       renderAt('s1')
       await screen.findByRole('heading', { name: 'What the automated gate measured' })
-      expect(screen.getByText(/no content concerns/i)).toBeInTheDocument()
+      // `RS-A3`: the old copy said "The moderation gate raised no content
+      // concerns" while the findings sections rendered below it. The line
+      // reports only LABELLED safety concerns, so it now says so.
+      expect(screen.getByText(/no safety concern labels were recorded/i)).toBeInTheDocument()
+      expect(screen.queryByText(/raised no content concerns/i)).not.toBeInTheDocument()
     })
 
     it('renders nothing at all when an older backend omits the block', async () => {
@@ -603,7 +1062,10 @@ describe('ReviewDetailPage', () => {
       },
     })
     renderAt('s1')
-    expect(await screen.findByText('3 findings')).toBeInTheDocument()
+    // `RS-A3`: the count comes from the rendered surface (one finding here),
+    // NOT from summary.count, which is deliberately 3 in this fixture. See
+    // "counts the findings it renders, not the report's persisted total".
+    expect(await screen.findByText('1 finding')).toBeInTheDocument()
     expect(screen.getByText('Hard block')).toBeInTheDocument()
     expect(screen.getByText('Repaired')).toBeInTheDocument()
     expect(screen.getByText('Not independently reviewed')).toBeInTheDocument()
@@ -1559,7 +2021,9 @@ describe('ReviewDetailPage', () => {
       expect(details).toHaveAttribute('open')
       const overview = within(details as HTMLElement)
       // SURFACE has one flagged passage with one 'flag'-verdict finding.
-      expect(overview.getByText('1 flagged')).toBeInTheDocument()
+      // `RS-A3`: "1 flagged finding", not a bare "1 flagged": this footer and
+      // the header strip count the same population and now say which.
+      expect(overview.getByText('1 flagged finding')).toBeInTheDocument()
     })
 
     it('derives node/ending counts and branch shape from the blob', async () => {
@@ -2025,6 +2489,356 @@ describe('ReviewDetailPage', () => {
       })
       renderAt('s1')
       expect(await screen.findByText(/author-declared/i)).toBeInTheDocument()
+    })
+  })
+
+  describe('client-local finding triage (RS-A5)', () => {
+    const BLOCK_FINDING = {
+      stage: 1,
+      source: 'llm_safety',
+      category: 'safety',
+      node_id: 'n1',
+      verdict: 'block',
+      score: null,
+      message: 'graphic violence',
+      severity: 'high',
+      node_ids: ['n1'],
+      structural: false,
+      concern: 'violence',
+    }
+    const FLAG_FINDING = {
+      stage: 1,
+      source: 'llm_safety',
+      category: 'safety',
+      node_id: 'n2',
+      verdict: 'flag',
+      score: null,
+      message: 'moderate peril',
+      severity: 'medium',
+      node_ids: ['n2'],
+      structural: false,
+      concern: 'peril',
+    }
+
+    /**
+     * A block finding, so `needsOverride` is true and the approve path has a
+     * precondition a broken triage implementation could plausibly satisfy.
+     *
+     * Both findings appear TWICE, in `ranked_findings` and in the fan-out
+     * population, because that is the shape the backend actually produces:
+     * `_route_findings` fans every non-low-advisory finding out into
+     * `flagged_passages` (or `story_level_findings` when it names no node) and
+     * ALSO feeds it to `_rank_and_split`. A fixture carrying the block only in
+     * `ranked_findings` would leave `needsOverride` false, and this test would
+     * then pass for the wrong reason: no override was ever required.
+     */
+    const TRIAGE_SURFACE = {
+      ...SURFACE,
+      story_level_findings: [],
+      flagged_passages: [
+        { node_id: 'n1', prose: 'A dark cave yawned ahead.', findings: [BLOCK_FINDING] },
+        { node_id: 'n2', prose: 'The path forked left and right.', findings: [FLAG_FINDING] },
+      ],
+      ranked_findings: [BLOCK_FINDING, FLAG_FINDING],
+    }
+
+    it('marking every finding reviewed changes nothing about approval', async () => {
+      // #CRITICAL: security: triage is browser-local state a cleared cache can
+      // wipe. If it ever became an input to approval, a cache eviction would
+      // silently reset a safety decision. This is the test both
+      // findingTriageStore.ts and RankedFinding's `triage` prop cite.
+      const user = userEvent.setup()
+      mockGet.mockResolvedValue({ data: TRIAGE_SURFACE })
+      mockPost.mockResolvedValue({ data: { id: 's1', status: 'published' } })
+      renderAt('s1')
+
+      const toggles = await screen.findAllByRole('button', { name: /Mark reviewed/i })
+      expect(toggles).toHaveLength(2)
+      for (const toggle of toggles) await user.click(toggle)
+      expect(screen.getAllByRole('button', { name: /^Reviewed$/i })).toHaveLength(2)
+
+      // The override requirement is untouched: confirm is still disabled, and
+      // still needs the reason the backend demands.
+      await user.click(await screen.findByRole('button', { name: /^Approve$/i }))
+      const confirm = await screen.findByRole('button', { name: /Confirm approve/i })
+      expect(confirm).toBeDisabled()
+      await user.type(
+        screen.getByLabelText(/override reason/i),
+        'Read both flagged passages in full; appropriate for the band.'
+      )
+      expect(confirm).toBeEnabled()
+      await user.click(confirm)
+      // And the request body carries no trace of the triage state.
+      expect(mockPost).toHaveBeenCalledWith('/v1/storybooks/s1/approve', {
+        visibility: 'family',
+        override_reason: 'Read both flagged passages in full; appropriate for the band.',
+      })
+    })
+
+    it('names the triage state as browser-local and non-gating', async () => {
+      // The affordance is only safe if the reviewer knows what it is not. A
+      // toggle that reads as a decision invites treating an untoggled finding
+      // as an unresolved gate.
+      mockGet.mockResolvedValue({ data: TRIAGE_SURFACE })
+      renderAt('s1')
+      const progress = await screen.findByText(/marked reviewed in this browser/i)
+      expect(progress).toHaveTextContent('0 of 2 findings marked reviewed')
+      expect(progress).toHaveTextContent(/no effect on approval/i)
+    })
+
+    it('counts marked findings as the reviewer works through the list', async () => {
+      const user = userEvent.setup()
+      mockGet.mockResolvedValue({ data: TRIAGE_SURFACE })
+      renderAt('s1')
+      const toggles = await screen.findAllByRole('button', { name: /Mark reviewed/i })
+      await user.click(toggles[0])
+      expect(screen.getByText(/marked reviewed in this browser/i)).toHaveTextContent(
+        '1 of 2 findings marked reviewed'
+      )
+      // Toggling back off decrements: a mis-click must be recoverable, or the
+      // count stops meaning "where I am" and starts meaning "what I clicked".
+      await user.click(screen.getByRole('button', { name: /^Reviewed$/i }))
+      expect(screen.getByText(/marked reviewed in this browser/i)).toHaveTextContent(
+        '0 of 2 findings marked reviewed'
+      )
+    })
+
+    it('keeps a marker across a reload of the same book and version', async () => {
+      const user = userEvent.setup()
+      mockGet.mockResolvedValue({ data: TRIAGE_SURFACE })
+      const first = renderAt('s1')
+      const toggles = await screen.findAllByRole('button', { name: /Mark reviewed/i })
+      await user.click(toggles[0])
+      first.unmount()
+
+      renderAt('s1')
+      // Proves the load effect reads the store back, not just that the store
+      // round-trips (findingTriageStore.test.ts pins that separately).
+      expect(await screen.findByRole('button', { name: /^Reviewed$/i })).toBeInTheDocument()
+      expect(screen.getByText(/marked reviewed in this browser/i)).toHaveTextContent(
+        '1 of 2 findings marked reviewed'
+      )
+    })
+
+    it('does not carry a marker onto a different book', async () => {
+      // A fresh visit to another book. This case cannot see a stale dependency
+      // array (the remount re-runs the load effect regardless); the
+      // same-instance case below is the one that pins that.
+      const user = userEvent.setup()
+      mockGet.mockResolvedValue({ data: TRIAGE_SURFACE })
+      const first = renderAt('s1')
+      await user.click((await screen.findAllByRole('button', { name: /Mark reviewed/i }))[0])
+      first.unmount()
+
+      mockGet.mockResolvedValue({ data: { ...TRIAGE_SURFACE, storybook_id: 's2' } })
+      renderAt('s2')
+      expect(await screen.findByText(/marked reviewed in this browser/i)).toHaveTextContent(
+        '0 of 2 findings marked reviewed'
+      )
+      expect(screen.queryByRole('button', { name: /^Reviewed$/i })).not.toBeInTheDocument()
+    })
+
+    it('shows the next book unmarked when the queue advances to it', async () => {
+      // Auto-advance navigates to another book under the SAME route pattern,
+      // which is the one path where triage could bleed between books. Two
+      // independent guards stop it: ReviewDetailPage's `key={storybookId}`
+      // remounts the inner page, and the triage load effect names
+      // storybookId in its dependency array. Verified by mutation: removing
+      // either one alone leaves all 111 tests green (the remount case is
+      // caught by "clears the approve dialog ... when the queue advances");
+      // removing BOTH fails this case. So this is the assertion that keeps
+      // triage from silently inheriting its correctness from the `key`.
+      const user = userEvent.setup()
+      mockGet.mockResolvedValue({ data: TRIAGE_SURFACE })
+      render(
+        <MemoryRouter initialEntries={['/admin/review/s1']}>
+          <NextBookLink to="/admin/review/s2" />
+          <Routes>
+            <Route path="/admin/review/:storybookId" element={<ReviewDetailPage />} />
+          </Routes>
+        </MemoryRouter>
+      )
+      await user.click((await screen.findAllByRole('button', { name: /Mark reviewed/i }))[0])
+      expect(screen.getByText(/marked reviewed in this browser/i)).toHaveTextContent(
+        '1 of 2 findings marked reviewed'
+      )
+
+      mockGet.mockResolvedValue({ data: { ...TRIAGE_SURFACE, storybook_id: 's2' } })
+      await user.click(screen.getByRole('button', { name: 'NEXT BOOK' }))
+      await screen.findByText('0 of 2 findings marked reviewed', { exact: false })
+      expect(screen.queryByRole('button', { name: /^Reviewed$/i })).not.toBeInTheDocument()
+    })
+
+    it('offers triage on low-priority advisories too', async () => {
+      // The low-advisory bucket is where a long tail of findings actually
+      // accumulates (RS-A1 moved it out of the default view), so it is the
+      // section that most needs a place-keeper.
+      mockGet.mockResolvedValue({
+        data: {
+          ...TRIAGE_SURFACE,
+          // A low advisory is never fanned out (RS-A1), so a realistic
+          // low-advisory-only surface has no flagged passages at all.
+          flagged_passages: [],
+          ranked_findings: [],
+          low_advisory_findings: [
+            {
+              stage: 1,
+              source: 'llm_safety',
+              category: 'safety',
+              node_id: 'n2',
+              verdict: 'advisory',
+              score: 0.04,
+              message: 'faint gloom',
+              severity: 'low',
+              node_ids: ['n2'],
+              structural: false,
+              concern: 'scariness',
+            },
+          ],
+        },
+      })
+      renderAt('s1')
+      const details = await screen.findByText(/Low-priority advisories \(1\)/i)
+      expect(details).toBeInTheDocument()
+      expect(screen.getByRole('button', { name: /Mark reviewed/i })).toBeInTheDocument()
+      expect(screen.getByText(/marked reviewed in this browser/i)).toHaveTextContent(
+        '0 of 1 finding marked reviewed'
+      )
+    })
+
+    it('renders no triage control on a surface with nothing to triage', async () => {
+      mockGet.mockResolvedValue({ data: SURFACE })
+      renderAt('s1')
+      await screen.findByRole('heading', { name: 'Ranked findings' })
+      expect(screen.queryByRole('button', { name: /Mark reviewed/i })).not.toBeInTheDocument()
+      expect(screen.queryByText(/marked reviewed in this browser/i)).not.toBeInTheDocument()
+    })
+  })
+
+  describe('edit-path context (RS-A6)', () => {
+    async function openEditDialog(user: ReturnType<typeof userEvent.setup>, nodeId: string) {
+      renderAt('s1')
+      const editButtons = await screen.findAllByRole('button', { name: 'Edit passage' })
+      for (const button of editButtons) {
+        await user.click(button)
+        const dialog = screen.queryByRole('dialog', { name: `Edit passage ${nodeId}` })
+        if (dialog !== null) return dialog
+        await user.click(screen.getByRole('button', { name: 'Cancel' }))
+      }
+      throw new Error(`no Edit passage control opened a dialog for ${nodeId}`)
+    }
+
+    it('shows the findings that name the passage being edited', async () => {
+      const user = userEvent.setup()
+      const dialog = await openEditDialog(user, 'n1')
+      // SURFACE flags n1 with "possibly scary". Scoped to the dialog: the page
+      // renders the same finding in its own list, so an unscoped query would
+      // pass with the dialog showing nothing at all.
+      expect(within(dialog).getByText('possibly scary')).toBeInTheDocument()
+      expect(within(dialog).getByText('safety')).toBeInTheDocument()
+      expect(
+        within(dialog).getByRole('heading', { name: /what the gate said about this passage/i })
+      ).toBeInTheDocument()
+    })
+
+    it('says so when no finding names the passage being edited', async () => {
+      // Reachable from the RS-A4 spot check, which offers passages nothing
+      // flagged. An empty findings list must read as "nothing was recorded",
+      // never as a section that failed to load.
+      const user = userEvent.setup()
+      const dialog = await openEditDialog(user, 'n2')
+      expect(within(dialog).getByText(/no finding names this passage/i)).toBeInTheDocument()
+      expect(within(dialog).queryByText('possibly scary')).not.toBeInTheDocument()
+    })
+
+    it('shows a low advisory that names the passage, though it is not fanned out', async () => {
+      // `RS-A1` deliberately keeps low advisories out of flagged_passages, so
+      // an edit dialog sourced from the fan-out alone would tell a reviewer
+      // nothing was recorded about a passage the gate did comment on.
+      const user = userEvent.setup()
+      mockGet.mockResolvedValue({
+        data: {
+          ...SURFACE,
+          flagged_passages: [],
+          low_advisory_findings: [
+            {
+              stage: 1,
+              source: 'llm_safety',
+              category: 'safety',
+              node_id: 'n2',
+              verdict: 'advisory',
+              score: 0.06,
+              message: 'a faint gloom in the fork',
+              severity: 'low',
+              node_ids: ['n2'],
+              structural: false,
+              concern: 'scariness',
+            },
+          ],
+        },
+      })
+      const dialog = await openEditDialog(user, 'n2')
+      expect(within(dialog).getByText('a faint gloom in the fork')).toBeInTheDocument()
+      expect(within(dialog).getByText('scariness')).toBeInTheDocument()
+      expect(within(dialog).getByText('0.06')).toBeInTheDocument()
+    })
+
+    it('lists a finding once when both populations carry it', async () => {
+      // A node-bearing finding is in the fan-out AND in ranked_findings by
+      // construction. Without the dedupe, every ranked finding would render
+      // twice in this dialog.
+      const user = userEvent.setup()
+      const finding = {
+        stage: 1,
+        source: 'llm_safety',
+        category: 'safety',
+        node_id: 'n1',
+        verdict: 'block',
+        score: null,
+        message: 'graphic violence',
+        severity: 'high',
+        node_ids: ['n1'],
+        structural: false,
+        concern: 'violence',
+      }
+      mockGet.mockResolvedValue({
+        data: {
+          ...SURFACE,
+          flagged_passages: [
+            { node_id: 'n1', prose: 'A dark cave yawned ahead.', findings: [finding] },
+          ],
+          ranked_findings: [finding],
+        },
+      })
+      const dialog = await openEditDialog(user, 'n1')
+      expect(within(dialog).getAllByText('graphic violence')).toHaveLength(1)
+    })
+
+    it('states the band the rewrite has to hold', async () => {
+      const user = userEvent.setup()
+      mockGet.mockResolvedValue({
+        data: {
+          ...SURFACE,
+          blob: {
+            ...SURFACE.blob,
+            metadata: { age_band: '9-12', reading_level: 'grade_4' },
+          },
+        },
+      })
+      const dialog = await openEditDialog(user, 'n1')
+      const band = within(dialog).getByText(/Write for/i)
+      expect(band).toHaveTextContent(/9-12/)
+      expect(band).toHaveTextContent(/reading level grade_4/)
+      // And that the gate, not this dialog, is what enforces it.
+      expect(band).toHaveTextContent(/re-runs the deterministic gate/i)
+    })
+
+    it('omits the band line when the blob records no band', async () => {
+      // Rather than printing "the target band, reading level undefined": an
+      // invented target is worse than an absent one.
+      const user = userEvent.setup()
+      const dialog = await openEditDialog(user, 'n1')
+      expect(within(dialog).queryByText(/Write for/i)).not.toBeInTheDocument()
     })
   })
 })

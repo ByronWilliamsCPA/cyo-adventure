@@ -12,6 +12,7 @@ import { makeProfilesApi, type ProfileView } from '../profiles/profilesApi'
 import { makeAssignApi, type ContentSummary } from './assignApi'
 import { FlagBadge } from './FlagBadge'
 import { verdictTone } from './verdictTone'
+import { pluralize } from './storyReadThrough'
 import { StoryStructureSummary } from './StoryStructureSummary'
 import './guardian.css'
 
@@ -47,7 +48,7 @@ function ContentSummarySection({ summary }: { summary: ContentSummary }) {
     <div className="assign__content-summary">
       <h3>Content review</h3>
       {summary.flagged_count > 0 ? (
-        <FlagBadge tone="flag" label={`${summary.flagged_count} flagged`} />
+        <FlagBadge tone="flag" label={pluralize(summary.flagged_count, 'flagged occurrence')} />
       ) : (
         <FlagBadge tone="clean" />
       )}

@@ -9,7 +9,7 @@ per-node findings) and whole-story findings.
 from __future__ import annotations
 
 import math
-from typing import TYPE_CHECKING, cast
+from typing import TYPE_CHECKING, NamedTuple, cast
 
 from pydantic import ValidationError as PydanticValidationError
 
@@ -20,6 +20,7 @@ from cyo_adventure.api.schemas import (
     GenerationMeasuresView,
     GuardianFinding,
     GuardianValidatorNote,
+    OutstandingModerationDetail,
     ReviewQueueItem,
     ReviewSummary,
     ReviewSurfaceView,
@@ -35,7 +36,10 @@ from cyo_adventure.moderation.report import (
     legacy_hidden_fail_safe_node_counts,
     moderation_report_unusable,
 )
-from cyo_adventure.moderation.thresholds import admin_surfaces
+from cyo_adventure.moderation.thresholds import (
+    admin_noise_floor_for,
+    admin_surfaces,
+)
 from cyo_adventure.storybook.models import ContentFlags
 from cyo_adventure.utils.logging import get_logger
 
@@ -215,6 +219,167 @@ def _partial_gap_findings(
     ]
 
 
+class _RoutedFindings(NamedTuple):
+    """The four lanes one moderation report's findings are routed into.
+
+    Extracted from ``build_review_surface`` so the routing rules live in one
+    named place: the function was over Ruff's C901 complexity ceiling, and
+    every branch inside the loop carries a `#CRITICAL` marker about which
+    lane a finding must land in, which is exactly the logic that benefits
+    from a name of its own.
+    """
+
+    flagged: dict[str, list[FindingView]]
+    order: list[str]
+    story_level: list[FindingView]
+    all_views: list[FindingView]
+
+
+def _route_findings(
+    findings: list[dict[str, object]],
+    *,
+    admin_noise_floor: float | None,
+    age_band: str = "",
+    policy: ThresholdPolicy | None = None,
+) -> _RoutedFindings:
+    """Route each persisted finding into the per-node, story-level, and ranker lanes.
+
+    Args:
+        findings: The persisted finding dicts, already narrowed to the set the
+            caller wants routed (empty when the report is wholly unusable).
+        admin_noise_floor: The admin-configured global noise floor, or ``None``
+            to skip floor filtering entirely. See ``build_review_surface``.
+        age_band: The story's age band, used with ``policy`` to resolve a
+            per-category floor (`RS-B3`). Empty resolves to the code default.
+        policy: The resolved threshold policy, or ``None`` to use the flat
+            floor for every category (the behaviour before `RS-B3`).
+
+    Returns:
+        The four lanes, as a ``_RoutedFindings``.
+    """
+    flagged: dict[str, list[FindingView]] = {}
+    order: list[str] = []
+    story_level: list[FindingView] = []
+    all_views: list[FindingView] = []
+    for finding in findings:
+        view = _finding_view(finding)
+        if view.verdict is Verdict.PASS:
+            continue
+        # #ASSUME: security: the floor denoises the ADMIN review view only
+        # (opt-in via admin_noise_floor); admin_surfaces guarantees
+        # FLAG/BLOCK/unscored findings always surface, so a bright-line
+        # 0.0 BLOCK is never hidden.
+        # #VERIFY: tests/integration/test_review_surface_noise_floor.py.
+        # `RS-B3`: the floor is resolved per CATEGORY and band, while the
+        # never-hide guarantees stay in admin_surfaces. The resolution is
+        # deliberately not ThresholdPolicy.surfaces: that would import a
+        # min_verdict default of FLAG and hide every advisory admin-wide while
+        # moderation_threshold is empty. See admin_noise_floor_for.
+        floor = admin_noise_floor_for(
+            view.category,
+            age_band=age_band,
+            policy=policy,
+            flat_floor=admin_noise_floor,
+        )
+        if floor is not None and not admin_surfaces(
+            view.verdict, view.score, noise_floor=floor
+        ):
+            continue
+        # #CRITICAL: security: all_views must be appended to BEFORE the
+        # structural guard below, because _rank_and_split reads all_views to
+        # build structural_findings. Moving this append after the guard's
+        # `continue` leaves structural_findings permanently empty, which
+        # looks like "no pipeline problems" on the admin surface rather than
+        # like a bug. The two routings are orthogonal: all_views feeds the
+        # ranker, flagged/story_level feed the legacy fan-out.
+        # #VERIFY: tests/unit/test_review_surface.py::
+        # test_structural_finding_node_ids_survive_alongside_content_finding
+        # asserts both halves (story-level routing AND structural_findings
+        # membership) on a genuinely-structural finding, so either
+        # ordering mistake fails it; the fully-collapsed
+        # test_structural_finding_with_node_ids_stays_story_level no
+        # longer exercises this branch at all.
+        all_views.append(view)
+        # #CRITICAL: security: a structural finding describes the PIPELINE
+        # ("the reviewer was unavailable on 12 nodes"), not the prose of any
+        # one passage, so it must never enter the per-node fan-out below.
+        # Stage A (8ca8d1b3) collapsed N per-node fail-safe findings into a
+        # single story-level finding precisely to stop a reviewer outage from
+        # flooding the approver's queue with N identical rows. Stage B2 gave
+        # that finding node_ids so the ranking stage can weigh its true node
+        # coverage; without this guard those ids route it straight back
+        # through the fan-out and reinstate the flood, while simultaneously
+        # dropping it out of the guardian content summary, which is built
+        # from story_level_findings. Both regressions, opposite directions,
+        # one cause. node_ids stays populated on the view for the admin
+        # detail panel and the ranker; only the routing changes.
+        # #VERIFY: tests/unit/test_review_surface.py::
+        # test_structural_finding_node_ids_survive_alongside_content_finding
+        # keeps node_ids populated on a genuinely-structural finding while
+        # routing it to story_level instead of the fan-out below.
+        if view.structural:
+            story_level.append(view)
+            continue
+        # #CRITICAL: security: a merged finding (design doc 2.2) names every
+        # affected node in node_ids and only the first in node_id. Grouping
+        # on node_id alone would render one passage and leave the rest of
+        # the flagged prose looking clean to the human approver, who is the
+        # final gate under ADR-005. Fan out across node_ids, falling back to
+        # node_id for unmerged and pre-Stage-B findings.
+        # #VERIFY: tests/unit/test_review_surface.py::
+        # test_merged_finding_fans_out_across_every_affected_node.
+        target_nodes = view.node_ids or ([] if view.node_id is None else [view.node_id])
+        if not target_nodes:
+            story_level.append(view)
+            continue
+        # `RS-A1` (owner ruling 2026-08-31): a LOW-severity ADVISORY is
+        # counted and reachable, but is NOT part of the default detail
+        # view. It is already carried, ranked, by low_advisory_findings
+        # via all_views (appended above) -> _rank_and_split, and the
+        # frontend renders that list collapsed. Fanning it out here as
+        # well is what made the surface unreviewable: the fan-out is
+        # O(findings x affected_nodes), so one merged provider advisory
+        # covering 380 nodes emitted 380 full-prose passage cards. On the
+        # largest queued book that produced 610 cards for 1 blocking
+        # finding plus 14 flags, a 2.5% signal-to-noise ratio, and put 102
+        # screens of boilerplate between the reviewer and the ranked list
+        # that states the block in one line.
+        #
+        # #CRITICAL: security: the skip sits BELOW the empty-target_nodes
+        # fallback above, not above it, and the placement is the whole
+        # difference between fixing the fan-out and shrinking what a
+        # guardian sees. Multiplication is the defect: a low advisory
+        # naming N nodes emits N cards. One naming NO node emits exactly
+        # one story-level row, and story_level_findings is a different
+        # audience, redacted into build_content_summary and counted into
+        # the queue's flagged_count. Skipping before the fallback drops
+        # that row from the guardian summary and decrements the badge,
+        # which the ruling never asked for.
+        #
+        # #CRITICAL: security: the predicate is also deliberately narrower
+        # than "any advisory". A MEDIUM or HIGH advisory still fans out,
+        # and a scored BLOCK at any severity always does, because the low
+        # tier is the only one the owner ruled out of the default view. Do
+        # not widen this to verdict alone; that would hide graded provider
+        # signal a reviewer is meant to read in context.
+        # #VERIFY: tests/unit/test_review_surface.py::
+        # test_low_advisory_is_not_fanned_out_but_stays_collapsed and
+        # ::test_medium_advisory_still_fans_out_into_passages pin both
+        # sides of the severity boundary;
+        # ::test_low_advisory_with_no_node_stays_story_level pins the
+        # placement, so hoisting the skip above the fallback fails it.
+        if _is_low_advisory(view):
+            continue
+        for nid in target_nodes:
+            if nid not in flagged:
+                flagged[nid] = []
+                order.append(nid)
+            flagged[nid].append(view)
+    return _RoutedFindings(
+        flagged=flagged, order=order, story_level=story_level, all_views=all_views
+    )
+
+
 def build_review_surface(
     *,
     status: str,
@@ -224,6 +389,8 @@ def build_review_surface(
     moderation_report: dict[str, object] | None,
     admin_noise_floor: float | None = None,
     validation_report: dict[str, object] | None = None,
+    age_band: str = "",
+    policy: ThresholdPolicy | None = None,
 ) -> ReviewSurfaceView:
     """Build the guardian review surface for one story version.
 
@@ -248,6 +415,15 @@ def build_review_surface(
             guardian content-summary reuse path, that does not need it).
             Read-only: this function never re-runs the validator, it only
             projects RL-13/PL-19 findings already in the stored report.
+        age_band: The story's age band (`RS-B3`), used with ``policy`` to
+            resolve the admin floor per category. Only meaningful alongside a
+            non-``None`` ``admin_noise_floor``; the guardian reuse path leaves
+            both at their defaults.
+        policy: The resolved threshold policy (`RS-B3`), or ``None`` to apply
+            the flat floor to every category. Supplies ``min_score`` only:
+            ``min_verdict`` is never read here, because its FLAG default would
+            hide every advisory from the admin lane while
+            ``moderation_threshold`` is empty.
 
     Returns:
         ReviewSurfaceView: Blob plus summary, flagged passages, story-level
@@ -267,92 +443,31 @@ def build_review_surface(
     # #VERIFY: the pydantic detail is not forwarded to the client.
     try:
         prose_by_id = _prose_index(blob)
-        flagged: dict[str, list[FindingView]] = {}
-        order: list[str] = []
-        story_level: list[FindingView] = []
-        all_views: list[FindingView] = []
         # #CRITICAL: security: a report with no genuine content judgment (every
         # finding a fail-safe artifact, or a non-independent/mock reviewer)
         # must never render as N separate flagged passages: that dresses up
         # "nothing was actually reviewed" as a busy, reviewed-looking surface
         # and buries the one fact an approver needs (re-run moderation) under
-        # noise. Short-circuit the whole per-finding loop below rather than
-        # post-filtering its output, so flagged/order/story_level stay empty
-        # and the queue's flagged_count (:663-665) reads 0, not the count of
-        # discarded fail-safe rows.
+        # noise. Starve _route_findings of input (pass it no findings at all)
+        # rather than post-filtering what it returns, so its flagged/order/
+        # story_level lanes come back empty and the queue's flagged_count
+        # reads 0, not the count of discarded fail-safe rows.
         # #VERIFY: tests/unit/test_review_surface.py::
         # test_unusable_report_collapses_to_one_structural_finding and
         # ::test_unusable_report_queue_item_counts.
         report_unusable = moderation_report_unusable(moderation_report)
-        if report_unusable:
-            all_views = [_unusable_report_finding(moderation_report)]
-        for finding in [] if report_unusable else _findings(moderation_report):
-            view = _finding_view(finding)
-            if view.verdict is Verdict.PASS:
-                continue
-            # #ASSUME: security: the floor denoises the ADMIN review view only
-            # (opt-in via admin_noise_floor); admin_surfaces guarantees
-            # FLAG/BLOCK/unscored findings always surface, so a bright-line
-            # 0.0 BLOCK is never hidden.
-            # #VERIFY: tests/integration/test_review_surface_noise_floor.py.
-            if admin_noise_floor is not None and not admin_surfaces(
-                view.verdict, view.score, noise_floor=admin_noise_floor
-            ):
-                continue
-            # #CRITICAL: security: all_views must be appended to BEFORE the
-            # structural guard below, because _rank_and_split reads all_views to
-            # build structural_findings. Moving this append after the guard's
-            # `continue` leaves structural_findings permanently empty, which
-            # looks like "no pipeline problems" on the admin surface rather than
-            # like a bug. The two routings are orthogonal: all_views feeds the
-            # ranker, flagged/story_level feed the legacy fan-out.
-            # #VERIFY: tests/unit/test_review_surface.py::
-            # test_structural_finding_node_ids_survive_alongside_content_finding
-            # asserts both halves (story-level routing AND structural_findings
-            # membership) on a genuinely-structural finding, so either
-            # ordering mistake fails it; the fully-collapsed
-            # test_structural_finding_with_node_ids_stays_story_level no
-            # longer exercises this branch at all.
-            all_views.append(view)
-            # #CRITICAL: security: a structural finding describes the PIPELINE
-            # ("the reviewer was unavailable on 12 nodes"), not the prose of any
-            # one passage, so it must never enter the per-node fan-out below.
-            # Stage A (8ca8d1b3) collapsed N per-node fail-safe findings into a
-            # single story-level finding precisely to stop a reviewer outage from
-            # flooding the approver's queue with N identical rows. Stage B2 gave
-            # that finding node_ids so the ranking stage can weigh its true node
-            # coverage; without this guard those ids route it straight back
-            # through the fan-out and reinstate the flood, while simultaneously
-            # dropping it out of the guardian content summary, which is built
-            # from story_level_findings. Both regressions, opposite directions,
-            # one cause. node_ids stays populated on the view for the admin
-            # detail panel and the ranker; only the routing changes.
-            # #VERIFY: tests/unit/test_review_surface.py::
-            # test_structural_finding_node_ids_survive_alongside_content_finding
-            # keeps node_ids populated on a genuinely-structural finding while
-            # routing it to story_level instead of the fan-out below.
-            if view.structural:
-                story_level.append(view)
-                continue
-            # #CRITICAL: security: a merged finding (design doc 2.2) names every
-            # affected node in node_ids and only the first in node_id. Grouping
-            # on node_id alone would render one passage and leave the rest of
-            # the flagged prose looking clean to the human approver, who is the
-            # final gate under ADR-005. Fan out across node_ids, falling back to
-            # node_id for unmerged and pre-Stage-B findings.
-            # #VERIFY: tests/unit/test_review_surface.py::
-            # test_merged_finding_fans_out_across_every_affected_node.
-            target_nodes = view.node_ids or (
-                [] if view.node_id is None else [view.node_id]
-            )
-            if not target_nodes:
-                story_level.append(view)
-                continue
-            for nid in target_nodes:
-                if nid not in flagged:
-                    flagged[nid] = []
-                    order.append(nid)
-                flagged[nid].append(view)
+        routed = _route_findings(
+            [] if report_unusable else _findings(moderation_report),
+            admin_noise_floor=admin_noise_floor,
+            age_band=age_band,
+            policy=policy,
+        )
+        flagged, order, story_level = routed.flagged, routed.order, routed.story_level
+        all_views = (
+            [_unusable_report_finding(moderation_report)]
+            if report_unusable
+            else routed.all_views
+        )
         # #CRITICAL: security: admin lane ONLY, matching the wholly-unusable
         # notice above (which is also appended to all_views alone). all_views
         # feeds _rank_and_split, so a structural=True gap notice lands in
@@ -516,6 +631,32 @@ def _ranking_key(view: FindingView) -> tuple[int, int, int]:
     )
 
 
+def _is_low_advisory(view: FindingView) -> bool:
+    """Is this the lowest-consequence tier: a LOW-severity ADVISORY?
+
+    `RS-A1`: this predicate has two callers that MUST agree, and the whole
+    correctness of the low-advisory channel rests on them agreeing. Owner
+    ruling 2026-08-31: low advisories are "counted and available for a
+    reviewer to dig into, but not part of the default view in detail". That
+    is two behaviours over one set: `_rank_and_split` collapses the set into
+    ``low_advisory_findings``, and ``_review_surface`` declines to fan the
+    node-bearing members of that same set out into ``flagged_passages``.
+
+    #CRITICAL: data integrity: if the two callers ever test different
+    conditions, a finding can be dropped from the fan-out AND from the
+    collapsed list at the same time, which removes it from the admin surface
+    entirely while every count still reports it. The human approver is the
+    final gate under ADR-005, so a silently unreachable finding is a safety
+    defect, not a display bug. Both callers therefore call this function and
+    neither inlines the comparison.
+    #VERIFY: tests/unit/test_review_surface.py::
+    test_fan_out_skip_set_and_collapsed_set_are_the_same_set asserts set
+    equality over a mixed corpus, so inlining a divergent copy in either
+    caller fails it.
+    """
+    return view.severity is FindingSeverity.LOW and view.verdict is Verdict.ADVISORY
+
+
 def _rank_and_split(
     findings: list[FindingView],
 ) -> tuple[list[FindingView], list[FindingView], list[FindingView]]:
@@ -535,7 +676,7 @@ def _rank_and_split(
     for view in findings:
         if view.structural:
             structural.append(view)
-        elif view.severity is FindingSeverity.LOW and view.verdict is Verdict.ADVISORY:
+        elif _is_low_advisory(view):
             low_advisory.append(view)
         else:
             primary.append(view)
@@ -787,6 +928,155 @@ def _as_bool(value: object) -> bool:
     return value if isinstance(value, bool) else False
 
 
+class DecisionCounts(NamedTuple):
+    """The gating numbers every admin list shows for one story version.
+
+    Named fields rather than a bare tuple so the two call sites (`RS-A7`'s queue
+    row and `RS-C2`'s outstanding-decisions row) name the same four things;
+    ``NamedTuple`` matches ``_RoutedFindings`` above rather than introducing a
+    second value-object idiom in one module.
+    """
+
+    block_findings: int
+    flag_findings: int
+    advisory_findings: int
+    top_finding: FindingView | None
+
+
+def build_decision_counts(surface: ReviewSurfaceView) -> DecisionCounts:
+    """Count the distinct gating findings on a built surface, and pick its headline.
+
+    Task 4: tiered DISTINCT-finding counts, as opposed to a queue item's
+    ``flagged_count`` (which counts occurrences: a finding fanned across 3 nodes
+    via ``node_ids`` counts 3 times there). Each merged finding view here counts
+    exactly once, regardless of its node coverage. Sourced from the three
+    merged-finding buckets (ranked/structural/low_advisory), which together are
+    every non-PASS finding the surface produced; advisories never gate and are
+    counted separately, never folded into block/flag.
+
+    ``top_finding`` (`RS-A7`) is taken from the ALREADY RANKED lists rather than
+    re-sorted here, so a row's headline finding is the same object the detail
+    page shows first; re-deriving an order would be a second ranking rule to
+    keep in step with ``_ranking_key``. Bucket precedence, not a merged sort: a
+    ranked finding outranks a structural one (the book, not the pipeline), and
+    both outrank a low advisory. A structural finding is a real headline when it
+    is all there is, because it means the report itself needs a re-run.
+
+    Args:
+        surface: A surface already built by ``build_review_surface``, so the
+            noise floor and per-band policy have been applied. Passing an
+            unfloored surface would produce counts that contradict the detail
+            view an admin clicks into.
+
+    Returns:
+        DecisionCounts: Distinct block/flag/advisory counts plus the headline
+            finding, or ``None`` for the latter when the report has no non-PASS
+            finding at all.
+    """
+    # #VERIFY: tests/unit/test_review_surface.py::
+    # test_tiered_counts_are_distinct_findings_not_occurrences,
+    # ::test_queue_top_finding_prefers_ranked_over_structural and
+    # ::test_queue_top_finding_falls_back_to_low_advisory.
+    merged = [
+        *surface.ranked_findings,
+        *surface.structural_findings,
+        *surface.low_advisory_findings,
+    ]
+    return DecisionCounts(
+        block_findings=sum(1 for f in merged if f.verdict == Verdict.BLOCK),
+        flag_findings=sum(
+            1 for f in merged if f.verdict == Verdict.FLAG and not f.structural
+        ),
+        advisory_findings=sum(1 for f in merged if f.verdict == Verdict.ADVISORY),
+        top_finding=next(
+            iter(
+                surface.ranked_findings
+                or surface.structural_findings
+                or surface.low_advisory_findings
+            ),
+            None,
+        ),
+    )
+
+
+def build_moderation_decision_detail(
+    *,
+    storybook_id: str,
+    status: str,
+    version: int,
+    moderation_report: dict[str, object] | None,
+    admin_noise_floor: float | None,
+    age_band: str,
+    policy: ThresholdPolicy | None,
+) -> OutstandingModerationDetail | None:
+    """Project one version's report into a `RS-C2` decision row, without its blob.
+
+    THE EMPTY BLOB IS DELIBERATE and this is the only place it appears. Every
+    bucket ``build_review_surface`` routes findings into is report-derived; the
+    blob is read for exactly two things, the prose attached to
+    ``flagged_passages`` and the echoed ``blob`` field, neither of which this
+    surface projects. The outstanding-decisions list spans every status rather
+    than the 13 ``in_review`` books, so loading blobs to reach counts that do
+    not depend on them would pull tens of megabytes per request to compute four
+    integers. Reusing ``build_review_surface`` rather than re-deriving the
+    counts is the other half of that choice: a second routing implementation
+    would drift from the floored detail view it is supposed to agree with.
+
+    Args:
+        storybook_id: The story id, forwarded for the surface's own projection.
+        status: The storybook's lifecycle status.
+        version: The version the decision is about.
+        moderation_report: That version's stored report, or ``None``.
+        admin_noise_floor: The admin-configured global floor. Always passed
+            here: this is an admin-only surface, and its counts must match the
+            floored detail view.
+        age_band: The story's age band, for per-category flooring (`RS-B3`).
+        policy: The resolved threshold policy (`RS-B3`).
+
+    Returns:
+        OutstandingModerationDetail: The gating detail, or ``None`` when this
+        version holds no outstanding moderation decision at all (no block, no
+        flag, and a usable report). Returning ``None`` rather than a row of
+        zeroes is what keeps a clean published book off the surface.
+
+    Raises:
+        ValidationError: If the stored report is corrupt at rest (propagated
+            from ``build_review_surface``); the caller isolates the bad row.
+    """
+    surface = build_review_surface(
+        status=status,
+        storybook_id=storybook_id,
+        version=version,
+        blob={},
+        moderation_report=moderation_report,
+        admin_noise_floor=admin_noise_floor,
+        age_band=age_band,
+        policy=policy,
+    )
+    counts = build_decision_counts(surface)
+    # #CRITICAL: security: an UNUSABLE report is an outstanding decision in its
+    # own right, not a clean bill of health. A report that failed to parse or
+    # came back empty produces zero findings, which without this clause would
+    # read exactly like a compliant book and drop a live story off the list
+    # that exists to find it. This is the same fail-closed reading
+    # moderation/report.py::moderation_report_unusable was added for.
+    # #VERIFY: tests/unit/test_outstanding_decisions.py::
+    # test_an_unusable_report_on_a_published_book_is_an_outstanding_decision.
+    if (
+        not counts.block_findings
+        and not counts.flag_findings
+        and not surface.report_unusable
+    ):
+        return None
+    return OutstandingModerationDetail(
+        block_findings=counts.block_findings,
+        flag_findings=counts.flag_findings,
+        advisory_findings=counts.advisory_findings,
+        report_unusable=surface.report_unusable,
+        top_finding=counts.top_finding,
+    )
+
+
 def build_review_queue_item(
     *,
     storybook_id: str,
@@ -796,6 +1086,8 @@ def build_review_queue_item(
     moderation_report: dict[str, object] | None,
     admin_noise_floor: float | None = None,
     created_at: datetime | None = None,
+    age_band: str = "",
+    policy: ThresholdPolicy | None = None,
 ) -> ReviewQueueItem:
     """Project one storybook version into a review-queue item.
 
@@ -815,6 +1107,11 @@ def build_review_queue_item(
             noise-only story no longer reads as flagged.
         created_at: When this version was created, surfaced as the queue item's
             ``waiting_since`` triage metadata (UX-A3), or ``None`` to omit it.
+        age_band: The story's age band (`RS-B3`), forwarded so a queue row's
+            counts are floored on the same per-category basis as the detail
+            view the admin clicks into. A queue and a detail view resolving
+            different floors would make the badge contradict the list.
+        policy: The resolved threshold policy (`RS-B3`), forwarded unchanged.
 
     Returns:
         ReviewQueueItem: Title, status, version, screened flag, flagged count,
@@ -846,29 +1143,18 @@ def build_review_queue_item(
         blob=blob,
         moderation_report=moderation_report,
         admin_noise_floor=admin_noise_floor,
+        age_band=age_band,
+        policy=policy,
     )
     flagged_count = sum(
         len(passage.findings) for passage in surface.flagged_passages
     ) + len(surface.story_level_findings)
-    # Task 4: tiered DISTINCT-finding counts for the queue badge, as opposed to
-    # flagged_count above (which counts occurrences: a finding fanned across 3
-    # nodes via node_ids counts 3 times there). Each merged finding view here
-    # counts exactly once, regardless of its node coverage. Sourced from the
-    # three merged-finding buckets (ranked/structural/low_advisory), which
-    # together are every non-PASS finding the surface produced; advisories
-    # never gate and are counted separately, never folded into block/flag.
-    # #VERIFY: tests/unit/test_review_surface.py::
-    # test_tiered_counts_are_distinct_findings_not_occurrences.
-    merged = [
-        *surface.ranked_findings,
-        *surface.structural_findings,
-        *surface.low_advisory_findings,
-    ]
-    block_findings = sum(1 for f in merged if f.verdict == Verdict.BLOCK)
-    flag_findings = sum(
-        1 for f in merged if f.verdict == Verdict.FLAG and not f.structural
-    )
-    advisory_findings = sum(1 for f in merged if f.verdict == Verdict.ADVISORY)
+    # The tiered counts and the headline finding both come from
+    # build_decision_counts below, shared with `RS-C2`'s outstanding-decisions
+    # surface so a book cannot read "1 block" in one admin list and "0" in the
+    # other. Note the contrast with flagged_count just above, which counts
+    # OCCURRENCES and is blob-derived; these count distinct findings.
+    counts = build_decision_counts(surface)
     return ReviewQueueItem(
         storybook_id=storybook_id,
         title=_queue_title(blob, storybook_id),
@@ -877,14 +1163,15 @@ def build_review_queue_item(
         screened=surface.screened,
         report_unusable=surface.report_unusable,
         flagged_count=flagged_count,
-        block_findings=block_findings,
-        flag_findings=flag_findings,
-        advisory_findings=advisory_findings,
+        block_findings=counts.block_findings,
+        flag_findings=counts.flag_findings,
+        advisory_findings=counts.advisory_findings,
         summary=surface.summary,
         age_band=_queue_age_band(blob),
         waiting_since=created_at,
         themes=_queue_themes(blob),
         content_flags=_queue_content_flags(blob),
+        top_finding=counts.top_finding,
     )
 
 

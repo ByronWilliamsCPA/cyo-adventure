@@ -18,8 +18,11 @@
 # whatever the app renders, so a human must confirm the new appearance is
 # correct, not a regression.
 #
-# Bump: 2026-08-01 regenerate after the reader chrome change (PR #532: the
-# position pill replaced the in-read progress bar per AL-029/ADR-026).
+# Bump: 2026-09-01 regenerate after the review-screen remediation (PR #797).
+# Every admin baseline moved, not only the review page: AdminShell gained an
+# "Outstanding decisions" nav entry, which renders on all of them. The review
+# and queue baselines moved on their own account (ranked findings lead the
+# detail page; the queue row now names its top finding).
 # Re-run trigger: touch this file (a comment bump is enough) and push to a
 # feature branch to regenerate after a UI change or a merge from main.
 #

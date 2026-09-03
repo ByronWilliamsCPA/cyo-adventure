@@ -70,6 +70,60 @@ def test_a_send_back_and_resubmit_are_two_rounds() -> None:
 
 
 @pytest.mark.unit
+def test_a_recall_then_re_approval_is_its_own_paired_round() -> None:
+    """`RS-C1`: a recall opens a round, so the re-approval is not left unpaired.
+
+    Without this, the second ``released`` would have no open round and would
+    land in ``unpaired_decisions``, whose whole documented meaning is "a row
+    written before the submitted migration". One recall would have made that
+    counter's comment false and turned a normal post-recall re-approval into
+    what the drop count exists to flag as a defect.
+    """
+    built = build_rounds(
+        [
+            _ev(EventType.SUBMITTED, 0),
+            _ev(EventType.RELEASED, 30),
+            _ev(EventType.STORYBOOK_RECALLED, 100),
+            _ev(EventType.RELEASED, 145),
+        ]
+    )
+
+    assert built.unpaired_decisions == 0
+    assert [r.round_index for r in built.rounds] == [1, 2]
+    assert [r.outcome for r in built.rounds] == [
+        GateOutcome.RELEASED,
+        GateOutcome.RELEASED,
+    ]
+    # Round 2 is measured from the recall, not from the original submit: the
+    # reviewer's clock starts when the book lands back in front of them.
+    assert [r.duration_seconds for r in built.rounds] == [30 * 60, 45 * 60]
+
+
+@pytest.mark.unit
+def test_a_recall_that_is_still_in_review_is_an_open_round() -> None:
+    """A recalled book nobody has decided yet is open, not invisible.
+
+    The counterpart of the pairing above: if recall opened no round, a book
+    pulled from the shelf and left sitting at the gate would contribute
+    nothing at all to ``open_rounds``, which is the one figure that says how
+    much work is waiting.
+    """
+    built = build_rounds(
+        [
+            _ev(EventType.SUBMITTED, 0),
+            _ev(EventType.RELEASED, 30),
+            _ev(EventType.STORYBOOK_RECALLED, 100),
+        ]
+    )
+    summary = summarize_rounds(
+        built.rounds, unpaired_decisions=built.unpaired_decisions
+    )
+
+    assert summary.open_rounds == 1
+    assert summary.decided_rounds == 1
+
+
+@pytest.mark.unit
 def test_an_undecided_round_carries_no_duration() -> None:
     """A story still sitting in the queue is open, not instantly approved.
 

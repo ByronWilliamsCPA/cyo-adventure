@@ -36,7 +36,10 @@ from cyo_adventure.db.models import (
 )
 from cyo_adventure.generation.concept import ConceptBrief
 from cyo_adventure.moderation.report import FindingSeverity, Source, Verdict
-from cyo_adventure.publishing.reason_codes import SendBackReasonCodeLiteral
+from cyo_adventure.publishing.reason_codes import (
+    RecallReasonCodeLiteral,
+    SendBackReasonCodeLiteral,
+)
 from cyo_adventure.storybook.character_vocabulary import ARCHETYPE_ROSTER
 from cyo_adventure.storybook.evaluator import VarState
 from cyo_adventure.storybook.models import (
@@ -1899,6 +1902,58 @@ class ArchivedView(BaseModel):
     status: Literal["archived"]
 
 
+class RecallRequest(BaseModel):
+    """Body for the recall endpoint (`RS-C1`).
+
+    A reason code with no accompanying free-text field, unlike
+    ``SendBackRequest``. Send-back's prose tells an author what to fix; a recall
+    has no author to address, and its consumers are the pipeline event log and a
+    guardian notification, both of which take the code alone. Adding a free-text
+    field would create a channel whose content is logged but never read.
+    """
+
+    model_config = ConfigDict(extra="forbid")
+
+    # #ASSUME: data integrity: required, not optional, for the same reason
+    # SendBackRequest.reason_code is: it is what makes "every recall carries a
+    # reason a later reader can act on" structural rather than a matter of
+    # reviewer discipline. It also decides the guardian notification's severity
+    # (notifications/registry.py), so a recall with no code would have to
+    # default to alert and would train guardians to ignore alerts.
+    # #VERIFY: tests/integration/test_recall_api.py::
+    # test_recall_requires_a_reason_code (422 when omitted).
+    reason_code: RecallReasonCodeLiteral
+
+
+class RecalledView(BaseModel):
+    """The response to a successful recall action.
+
+    ``current_published_version`` is echoed back deliberately: a recalled book
+    KEEPS the column, unlike what "no longer published" suggests (see
+    ``publishing/service.py::recall``). Returning it makes that visible at the
+    wire contract rather than leaving a caller to assume a recalled book has no
+    published version to re-approve.
+
+    The field stays nullable, and the docstring no longer claims otherwise. In
+    practice every recallable book carries a value, because ``recall`` only
+    leaves ``published`` and every path that reaches ``published`` sets the
+    column (``publishing/service.py::approve``, the sole publish path in
+    ``src/``, plus the seed scripts its module docstring names). But the type
+    mirrors the nullable ORM column rather than asserting that invariant,
+    because the only way to assert it here is a serialization-time guard, and
+    that guard would abort the request AFTER the transition and before the
+    unit of work commits: a book with an unexpectedly NULL column could then
+    never be recalled at all. Recall is how a book is pulled away from
+    children, so it must not be blocked to keep a response type tidy. The
+    invariant is enforced where it is created, at the publish path.
+    """
+
+    id: str
+    status: Literal["in_review"]
+    current_published_version: int | None
+    reason_code: RecallReasonCodeLiteral
+
+
 # ---------------------------------------------------------------------------
 # Passage edit schema (G6: lightweight passage editor with re-review)
 # ---------------------------------------------------------------------------
@@ -2159,12 +2214,139 @@ class ReviewQueueItem(BaseModel):
     # queue item.
     themes: list[str] = Field(default_factory=list)
     content_flags: ContentFlags | None = None
+    # `RS-A7`: the highest-ranked finding on this version, so the queue row can
+    # say WHAT the decision is about. Before this, learning that a hard block
+    # was one cistern passage meant loading the whole book (2.5 MB, ~10,900 DOM
+    # nodes) to read one line. The full FindingView is reused rather than a
+    # narrower projection: the queue is admin-only and the same admin sees
+    # every one of these fields on the detail surface anyway, so a second
+    # shape would only be a chance for the two to disagree. ``None`` when the
+    # version has no findings at all (a clean or unscreened book).
+    top_finding: FindingView | None = None
 
 
 class ReviewQueueView(BaseModel):
     """The admin review queue: storybooks awaiting a publish decision."""
 
     items: list[ReviewQueueItem]
+
+
+class OutstandingModerationDetail(BaseModel):
+    """The gating detail behind a moderation decision (`RS-C2`).
+
+    The same four numbers a ``ReviewQueueItem`` carries, computed by the same
+    routing and flooring code (``review_surface.py::build_decision_counts``), so
+    a book that reads "1 block" here reads "1 block" in the queue and on the
+    detail page. Deliberately no ``flagged_count``: that one counts occurrences
+    and is derived from the blob's nodes, which this surface does not load.
+    """
+
+    block_findings: int = Field(ge=0)
+    flag_findings: int = Field(ge=0)
+    advisory_findings: int = Field(ge=0)
+    report_unusable: bool
+    # The one finding the row names, taken from the already-ranked buckets, same
+    # as ReviewQueueItem.top_finding. ``None`` only when the report has no
+    # non-PASS finding at all, which for this surface means the row would not
+    # exist; kept optional so the model stays projectable from any report.
+    top_finding: FindingView | None = None
+
+
+class OutstandingCoverDetail(BaseModel):
+    """The detail behind a pending cover-art decision (`RS-C3`).
+
+    ``cover_status`` is echoed rather than assumed: the surface only lists
+    ``pending_review`` today, and a reader of a stored response should not have
+    to know that to interpret the row.
+
+    It stays ``str`` rather than narrowing to a ``Literal`` of the five values
+    in ``db/models.py``'s ``ck_storybook_version_cover_status``. That CHECK is
+    a hand-written SQL string, not a Python enum, so a ``Literal`` here would
+    be a second, unlinked copy of the vocabulary that a widening migration
+    could silently outdate. The consequence of that drift is not a mislabelled
+    row: pydantic would reject the value and 500 the whole list. This surface
+    exists because outstanding decisions were invisible, and its client treats
+    a failed load as unsafe precisely so an outage cannot read as "nothing
+    outstanding" (see ``OutstandingDecisionsPage.tsx``). Emptying the list to
+    keep a display field's type tidy trades the exact failure the surface was
+    built to end.
+    """
+
+    cover_status: str
+    # Whether this version's cover would reach a child if it were approved. True
+    # only for the version a child actually reads (api/library.py serves the
+    # cover of ``current_published_version`` and only at ``ready``), which is
+    # what separates the two production rows that show kids no cover from the
+    # archived one that nobody is waiting on.
+    child_facing: bool
+
+
+class OutstandingDecisionItem(BaseModel):
+    """One decision nobody is being shown (`RS-C2`, `RS-C3`).
+
+    The generalisation this surface exists for: **any decision attached to a
+    book the review queue no longer lists is invisible**, whether it is a
+    moderation verdict on a live book or a cover waiting for approval. Before
+    this, the only list of pending admin work was the ``in_review`` queue, so a
+    published book that a threshold change had just turned non-compliant, and a
+    published book showing kids no cover because its approval was never
+    surfaced, both sat indefinitely with nothing pointing at them.
+
+    One row per decision, not per book: a book can hold both kinds at once, and
+    each kind resolves through a different action on a different page.
+
+    ``kind`` and the two detail fields move together, and the producer enforces
+    it: ``api/approval.py::get_outstanding_decisions`` appends a ``moderation``
+    row only inside ``if moderation is not None``, and a ``cover`` row only
+    while constructing its ``OutstandingCoverDetail``. So a ``moderation`` row
+    always carries ``moderation`` and never ``cover``, and the reverse for a
+    ``cover`` row; the four states this flat model can express are two states
+    in practice.
+
+    That invariant is documented rather than encoded as a discriminated union
+    of two models. The union would be the better type, and it is worth doing
+    on its own change: it rewrites the wire schema into a ``oneOf``, which
+    regenerates the committed client's shape and re-narrows every consumer in
+    ``OutstandingDecisionsPage.tsx``, and that is a refactor of a shipped
+    contract rather than a fix to a defect. Tracked as ``UW-C477``.
+    """
+
+    kind: Literal["moderation", "cover"]
+    storybook_id: str
+    title: str
+    status: str
+    # The version the decision is about. For a ``published`` book this is
+    # ``current_published_version`` (the version a child reads), NOT the latest
+    # row: those differ, and only the former is the one a decision changes what
+    # children see. For every other status it is the latest version.
+    version: int
+    family_id: str
+    age_band: str | None = None
+    # That version's creation time. Deliberately NOT named "waiting_since" like
+    # the queue's field: what put a published book on this list is usually a
+    # THRESHOLD change, which happened long after the version was written, and
+    # nothing records per-book when a verdict turned into a block. So this dates
+    # the content, not the wait, and is honest about which. It is still the
+    # tiebreaker inside a rank (see approval.py::_decision_rank), because oldest
+    # content first is a defensible order and "newest first" would bury the rows
+    # that have been invisible longest.
+    version_created_at: datetime | None = None
+    # #ASSUME: security: whether a RECALL is legal from this row's status,
+    # derived from publishing/state_machine.py's transition table rather than
+    # hardcoded as ``status == "published"`` in the client. A client that
+    # decided for itself would offer a button the API answers 409 to the moment
+    # the table changes.
+    # #VERIFY: tests/unit/test_outstanding_decisions.py::
+    # test_recallable_is_derived_from_the_transition_table
+    recallable: bool
+    moderation: OutstandingModerationDetail | None = None
+    cover: OutstandingCoverDetail | None = None
+
+
+class OutstandingDecisionsView(BaseModel):
+    """Every outstanding admin decision on a book the review queue omits."""
+
+    items: list[OutstandingDecisionItem]
 
 
 class StorybookSummary(BaseModel):

@@ -40,21 +40,45 @@ export function Finding({ finding }: { finding: FindingView }) {
 
 /**
  * A ranked/structural/low-advisory finding (Stage B3, design doc 2.6): the
- * same badge/category/message as `Finding` above, plus a severity pill when
- * present and an on-demand node drill-down. The finding's affected nodes
- * (`node_ids` when the merge stage fanned it across several, falling back to
- * the single `node_id` otherwise) stay collapsed behind a <details> so the
- * ranked list itself stays scannable; expanding it offers a jump-to-passage
- * button per node that resolves in the current read-through.
+ * same badge/category/message as `Finding` above, plus a severity pill and
+ * score when present, and an on-demand node drill-down. The finding's
+ * affected nodes (`node_ids` when the merge stage fanned it across several,
+ * falling back to the single `node_id` otherwise) stay collapsed behind a
+ * <details> so the ranked list itself stays scannable; expanding it offers a
+ * jump-to-passage button per node that resolves in the current read-through.
+ *
+ * `RS-A2`: pass `proseFor` to make the finding the entry point to its own
+ * affected passages, rather than a triage row whose prose lives only in a
+ * separate flat list further down the page. The prose renders inside the
+ * already-collapsed node drill-down, so the scannable list is unchanged until
+ * a reviewer asks for context on one finding. Omitting `proseFor` keeps the
+ * pre-`RS-A2` behaviour (ids and jump buttons only), which is what the
+ * guardian surface wants: it renders no story prose of its own.
  */
 export function RankedFinding({
   finding,
   onJump,
   knownIds,
+  proseFor,
+  triage,
 }: {
   finding: FindingView
   onJump: (nodeId: string) => void
   knownIds: Set<string>
+  proseFor?: (nodeId: string) => string | null
+  /**
+   * `RS-A5`: optional client-local progress marker. Omitted (the guardian
+   * surface) renders no control at all.
+   *
+   * #CRITICAL: security: `reviewed` is a progress marker and nothing else. It
+   * must not reach any approval predicate: it lives in one browser's
+   * localStorage, so a cleared cache would otherwise silently reset a safety
+   * decision (ruling 4, 2026-08-31: unresolved findings do not gate a book,
+   * the reviewer does).
+   * #VERIFY: ReviewDetailPage.test.tsx "marking every finding reviewed changes
+   * nothing about approval".
+   */
+  triage?: { reviewed: boolean; onToggle: () => void }
 }) {
   const nodeIds =
     finding.node_ids && finding.node_ids.length > 0
@@ -62,8 +86,11 @@ export function RankedFinding({
       : finding.node_id !== null && finding.node_id !== undefined
         ? [finding.node_id]
         : []
+  const reviewed = triage?.reviewed ?? false
   return (
-    <li className="review-finding review-finding--ranked">
+    <li
+      className={`review-finding review-finding--ranked${reviewed ? ' review-finding--reviewed' : ''}`}
+    >
       <FlagBadge tone={verdictTone(finding.verdict)} />
       {finding.severity ? (
         <span className={`review-finding__severity review-finding__severity--${finding.severity}`}>
@@ -71,6 +98,17 @@ export function RankedFinding({
         </span>
       ) : null}
       <span className="review-finding__category">{finding.concern ?? finding.category}</span>
+      {/*
+        `RS-A2`: a reviewer told "advisory, violence, 0.41" can calibrate
+        against the band's threshold; one told "advisory, violence" cannot.
+        Rendered only when the classifier actually returned a score:
+        typeof-number rather than a truthiness test, because a genuine 0 is a
+        bright-line score, and `null` (deterministic, unscored) must stay
+        blank rather than reading as 0.00.
+      */}
+      {typeof finding.score === 'number' ? (
+        <span className="review-finding__score">{finding.score.toFixed(2)}</span>
+      ) : null}
       <span className="review-finding__message">{finding.message}</span>
       {nodeIds.length > 0 ? (
         <details className="review-finding__nodes">
@@ -78,19 +116,37 @@ export function RankedFinding({
             {nodeIds.length} affected node{nodeIds.length === 1 ? '' : 's'}
           </summary>
           <ul>
-            {nodeIds.map((nodeId) => (
-              <li key={nodeId}>
-                {knownIds.has(nodeId) ? (
-                  <button type="button" className="review-jump" onClick={() => onJump(nodeId)}>
-                    {nodeId}
-                  </button>
-                ) : (
-                  <span className="cyo-text-muted">{nodeId}</span>
-                )}
-              </li>
-            ))}
+            {nodeIds.map((nodeId) => {
+              const prose = proseFor ? proseFor(nodeId) : null
+              return (
+                <li key={nodeId}>
+                  {knownIds.has(nodeId) ? (
+                    <button type="button" className="review-jump" onClick={() => onJump(nodeId)}>
+                      {nodeId}
+                    </button>
+                  ) : (
+                    <span className="cyo-text-muted">{nodeId}</span>
+                  )}
+                  {prose !== null ? (
+                    <div className="review-finding__prose">
+                      <PassageText text={prose} />
+                    </div>
+                  ) : null}
+                </li>
+              )
+            })}
           </ul>
         </details>
+      ) : null}
+      {triage ? (
+        <button
+          type="button"
+          className="review-finding__triage"
+          aria-pressed={reviewed}
+          onClick={triage.onToggle}
+        >
+          {reviewed ? 'Reviewed' : 'Mark reviewed'}
+        </button>
       ) : null}
     </li>
   )

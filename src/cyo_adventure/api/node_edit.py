@@ -108,7 +108,10 @@ from cyo_adventure.moderation.review_provider import (
     resolve_review_settings,
 )
 from cyo_adventure.moderation.stages import run_safety_stage
-from cyo_adventure.moderation.thresholds import load_admin_noise_floor
+from cyo_adventure.moderation.thresholds import (
+    load_admin_noise_floor,
+    load_threshold_policy,
+)
 from cyo_adventure.publishing.state_machine import Status
 from cyo_adventure.storybook.reinsertion import (
     build_manifest,
@@ -849,6 +852,13 @@ async def edit_node(
     floor = (
         await load_admin_noise_floor(ctx.session) if ctx.principal.is_admin else None
     )
+    # #ASSUME: security: `RS-B3` makes the admin floor per (age_band, category),
+    # so the band the gate just re-ran against (`_age_band(new_blob)`) is the
+    # band the surface is floored against. Skipped for a guardian, whose None
+    # floor short-circuits resolution before the policy is read.
+    # #VERIFY: tests/unit/test_admin_noise_floor.py::
+    # test_flat_floor_none_wins_over_a_band_row.
+    policy = await load_threshold_policy(ctx.session) if floor is not None else None
     return build_review_surface(
         status=book.status,
         storybook_id=storybook_id,
@@ -856,6 +866,8 @@ async def edit_node(
         blob=new_blob,
         moderation_report=refreshed_report,
         admin_noise_floor=floor,
+        age_band=_age_band(new_blob),
+        policy=policy,
         # The gate re-ran above (`gate_result`) and the SAME serialized report
         # was assigned to `version_row.validation_report` a few lines up; reuse
         # that exact object so the refreshed surface's validator findings

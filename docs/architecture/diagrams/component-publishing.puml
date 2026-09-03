@@ -9,9 +9,9 @@
 '                                                   assert_transition: pure,
 '                                                   dependency-free transition table)
 '   src/cyo_adventure/publishing/service.py       (submit, auto_reject, approve,
-'                                                   send_back, archive: each wraps
-'                                                   a transition + ORM writes +
-'                                                   record_event, one flush)
+'                                                   send_back, archive, recall:
+'                                                   each wraps a transition + ORM
+'                                                   writes + record_event, one flush)
 '   src/cyo_adventure/publishing/catalog_publish.py (promote_catalog_story():
 '                                                   standalone CLI, delegates
 '                                                   entirely to service.py's
@@ -23,10 +23,13 @@
 '                                                   never publishes)
 '   src/cyo_adventure/api/approval.py             (admin-only HTTP surface:
 '                                                   submit/approve/send-back/
-'                                                   archive/review/review-queue)
+'                                                   archive/recall/review/
+'                                                   review-queue)
 '   src/cyo_adventure/publishing/reason_codes.py  (SendBackReasonCodeLiteral +
-'                                                   validate_reason_code: the
-'                                                   closed send-back vocabulary,
+'                                                   validate_reason_code, and
+'                                                   RecallReasonCodeLiteral +
+'                                                   validate_recall_reason_code:
+'                                                   the two closed vocabularies,
 '                                                   moved OUT of api/schemas.py so
 '                                                   the domain owns it; the
 '                                                   dependency now runs one way,
@@ -37,7 +40,9 @@
 '   src/cyo_adventure/moderation/pipeline.py      (worker-path caller of
 '                                                   submit()/auto_reject();
 '                                                   see component-moderation.puml)
-'   src/cyo_adventure/events/writer.py            (RELEASED, SENT_BACK events)
+'   src/cyo_adventure/events/writer.py            (RELEASED, SENT_BACK,
+'                                                   STORYBOOK_ARCHIVED,
+'                                                   STORYBOOK_RECALLED events)
 '   docs/planning/adr/adr-005-mandatory-human-approval.md (amended 2026-06-30:
 '                                                   approve/publish is
 '                                                   admin-only; no guardian path)
@@ -60,7 +65,7 @@ component "Moderation Pipeline\nmoderation/pipeline.py\n[worker path]\n[see comp
 
 package "Publishing" #F3E5F5 {
 
-  component "approval.py [global admin]\napi/approval.py\nPOST .../submit\nPOST .../approve\nPOST .../send-back\nPOST .../archive\nGET .../review\nGET /review-queue" as approval_router #E1BEE7
+  component "approval.py [global admin]\napi/approval.py\nPOST .../submit\nPOST .../approve\nPOST .../send-back\nPOST .../archive\nPOST .../recall\nGET .../review\nGET /review-queue" as approval_router #E1BEE7
 
   component "_load_admin_story()\napi/approval.py\nrequires ctx.principal.is_admin\n(role checked BEFORE any load);\nSELECT ... FOR UPDATE\n(closes #129 concurrency race)" as load_admin #D1C4E9
 
@@ -68,9 +73,9 @@ package "Publishing" #F3E5F5 {
 
   component "State Machine\npublishing/state_machine.py\nassert_transition()\npure, dependency-free" as state_machine #CE93D8
 
-  component "Send-Back Vocabulary\npublishing/reason_codes.py\nSendBackReasonCodeLiteral\nvalidate_reason_code()\nclosed set, no I/O" as reason_codes #CE93D8
+  component "Reason-Code Vocabularies\npublishing/reason_codes.py\nSendBackReasonCodeLiteral\nvalidate_reason_code()\nRecallReasonCodeLiteral\nvalidate_recall_reason_code()\nclosed sets, no I/O" as reason_codes #CE93D8
 
-  component "Publishing Service\npublishing/service.py\nsubmit()\napprove()\nsend_back()\narchive()" as service #CE93D8
+  component "Publishing Service\npublishing/service.py\nsubmit()\napprove()\nsend_back()\narchive()\nrecall()" as service #CE93D8
 
   component "auto_reject()\npublishing/service.py\nmachine-side rejection;\nActor.system(), no principal" as auto_reject #CE93D8
 
@@ -86,7 +91,7 @@ database "PostgreSQL" as pg #E0F7FA {
 component "Pipeline Event Log\nevents/writer.py [WS-D]\n[see component-events.puml]" as events_log #FFF8E1
 
 ' --- HTTP entry ---
-admin --> approval_router : "submit / approve /\nsend-back / archive"
+admin --> approval_router : "submit / approve /\nsend-back / archive / recall"
 approval_router --> load_admin : "admin role check\n(403 before any query)"
 load_admin --> storybook_row : "SELECT ... FOR UPDATE"
 approval_router --> review_surface : "GET .../review,\nGET /review-queue"
@@ -101,14 +106,15 @@ auto_reject --> state_machine
 
 approval_router ==> service : "approve(session, principal,\nbook, version, visibility)\n[ADMIN ONLY -- ADR-005]"
 approval_router --> service : "send_back(session, principal,\nbook, reason, *, reason_code)"
-service --> reason_codes : "validate_reason_code(reason_code)\n(in send_back, so the closed set holds\nfor EVERY caller, not only the API)"
+service --> reason_codes : "validate_reason_code(reason_code)\n(in send_back, so the closed set holds\nfor EVERY caller, not only the API)\nvalidate_recall_reason_code(reason_code)\n(same placement, inside recall)"
 approval_router --> service : "archive(session,\nprincipal, book)"
+approval_router --> service : "recall(session, principal,\nbook, *, reason_code)\n[ADMIN ONLY -- re-checked\nin the service]"
 
 service --> storybook_row : "status, visibility,\ncurrent_published_version"
 service --> version_row : "approved_by,\npublished_at"
 auto_reject --> storybook_row : "status = needs_revision"
 
-service --> events_log : "RELEASED (approve)\nSENT_BACK (send_back;\npayload {reason_code})"
+service --> events_log : "RELEASED (approve)\nSENT_BACK (send_back;\npayload {reason_code})\nSTORYBOOK_ARCHIVED (archive)\nSTORYBOOK_RECALLED (recall;\npayload {reason_code})"
 
 note left of reason_codes
   The vocabulary lives here, not in
@@ -162,9 +168,23 @@ note right of state_machine
   in_review --approve--> published
   in_review --send_back--> needs_revision
   published --archive--> archived
+  published --recall--> in_review
 
   Any other (from_state, action) pair
   raises StateTransitionError -> 409.
+
+  recall (RS-C1) is the only hop that
+  moves a book backwards out of a
+  reader-facing state without ending its
+  life: archived is absorbing, so archive
+  was previously published's sole exit.
+  It EXTENDS ADR-005 rather than relaxing
+  it: a recalled book re-enters in_review
+  and needs a fresh admin approval before
+  any child sees it again. Emits
+  STORYBOOK_RECALLED, whose reason_code
+  separates a threshold-driven recall
+  from a safety pull.
 end note
 
 note right of approval_router

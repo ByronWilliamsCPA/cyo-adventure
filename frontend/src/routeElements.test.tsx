@@ -12,6 +12,7 @@ import {
   DevicesPage,
   GuardianReviewDetailPage,
   NotFoundPage,
+  OutstandingDecisionsPage,
   PrivacyPage,
   PrivacyPolicyPage,
   ProviderAllowlistPage,
@@ -20,6 +21,7 @@ import {
   SupportPage,
   UserManagementPage,
 } from './routeElements'
+import * as routeElements from './routeElements'
 import { routes } from './router'
 
 // The lazy route chunks below are loaded through their real dynamic-import
@@ -33,6 +35,9 @@ vi.mock('./admin/AuditPage', () => ({
 }))
 vi.mock('./admin/AuthoringQueuePage', () => ({
   AuthoringQueuePage: () => <div>AuthoringQueuePage loaded</div>,
+}))
+vi.mock('./admin/OutstandingDecisionsPage', () => ({
+  OutstandingDecisionsPage: () => <div>OutstandingDecisionsPage loaded</div>,
 }))
 vi.mock('./admin/ProviderAllowlistPage', () => ({
   ProviderAllowlistPage: () => <div>ProviderAllowlistPage loaded</div>,
@@ -215,6 +220,11 @@ describe('lazy page loaders', () => {
     // DevicesPage on PR #473, GuardianReviewDetailPage).
     ['PrivacyPolicyPage', PrivacyPolicyPage],
     ['SupportPage', SupportPage],
+    // The admin outstanding-decisions surface, and the sixth instance. It is
+    // reached only from an admin nav link, so no router-navigation test
+    // resolves its chunk deterministically; its two uncovered functions took
+    // this file from 71.43% to 69.62% against the 70% per-file gate.
+    ['OutstandingDecisionsPage', OutstandingDecisionsPage],
   ] as const
 
   it.each(cases)('resolves the %s loader to the named export', async (name, LazyPage) => {
@@ -226,5 +236,84 @@ describe('lazy page loaders', () => {
       </MemoryRouter>
     )
     expect(await screen.findByText(`${name} loaded`)).toBeInTheDocument()
+  })
+
+  // Every entry above was appended only AFTER CI failed the 70% per-file
+  // function-coverage gate on this file: six times now. The gate reports
+  // "Coverage for functions (69.62%) does not meet global threshold (70%)",
+  // which names the file but not the export that moved the denominator, so
+  // each recurrence cost a fresh diagnosis of the same defect.
+  //
+  // This guard converts that into a named, local failure. Adding a
+  // `lazyWithReload` export to routeElements.tsx without classifying it fails
+  // here, in plain `npm run test:run`, saying which export is unaccounted for.
+  // Both directions are checked, so a deleted export cannot rot either list.
+  //
+  // Classification is deliberate rather than automatic: mounting all 38 lazy
+  // wrappers would require mocking all 38 pages, and the ones reached by the
+  // router-navigation tests above already have their thunks executed.
+  const ROUTER_NAVIGATION_COVERED = [
+    'AdminConsolePage',
+    'AdminLibraryPage',
+    'AdminRequestsPage',
+    'AdminShell',
+    'AdultGate',
+    'BooksPage',
+    'ConnectionsPage',
+    'ConsolePage',
+    'GuardianAuthLayout',
+    'GuardianAwaitingApprovalPage',
+    'GuardianBackendUnavailablePage',
+    'GuardianConsentPage',
+    'GuardianShell',
+    'GuardianVerificationPage',
+    'IntakePage',
+    'KidShell',
+    'LandingPage',
+    'LibraryPage',
+    'LoginPage',
+    'ModerationDashboardPage',
+    'ModerationThresholdsPage',
+    'PreviewAsChildPage',
+    'ProfilePickerPage',
+    'ProfilesPage',
+    'ReaderRoute',
+    'ReadingPage',
+    'RequestsPage',
+    'ReviewDetailPage',
+  ] as const
+
+  const REACT_LAZY = Symbol.for('react.lazy')
+
+  function lazyExportNames(): string[] {
+    return Object.entries(routeElements)
+      .filter(
+        ([, value]) =>
+          typeof value === 'object' &&
+          value !== null &&
+          ($$typeofOf(value) as symbol | undefined) === REACT_LAZY
+      )
+      .map(([name]) => name)
+      .sort()
+  }
+
+  function $$typeofOf(value: object): unknown {
+    return (value as { $$typeof?: unknown }).$$typeof
+  }
+
+  it('accounts for every lazy route export in exactly one coverage bucket', () => {
+    const accounted = new Set<string>([
+      ...cases.map(([name]) => name),
+      ...ROUTER_NAVIGATION_COVERED,
+    ])
+    const lazyExports = lazyExportNames()
+
+    // A new lazy export nobody classified: add it to `cases` (and mock it) if
+    // no router-navigation test mounts it, otherwise to ROUTER_NAVIGATION_COVERED.
+    expect(lazyExports.filter((name) => !accounted.has(name))).toEqual([])
+
+    // A name that is classified but no longer exported: drop the stale entry.
+    const exported = new Set(lazyExports)
+    expect([...accounted].filter((name) => !exported.has(name)).sort()).toEqual([])
   })
 })

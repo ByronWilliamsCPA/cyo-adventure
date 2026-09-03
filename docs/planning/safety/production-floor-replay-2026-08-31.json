@@ -1,0 +1,402 @@
+{
+  "extract": "docs/planning/safety/production-findings-extract-2026-08-31.json",
+  "production_floor": 0.01,
+  "scenarios": [
+    {
+      "name": "production 0.01",
+      "default": 0.01,
+      "per_category": {},
+      "drop_low_advisory": false,
+      "bands": {
+        "10-13": {
+          "books": 6,
+          "nodes": 497,
+          "findings": 22,
+          "occurrences": 176,
+          "node_hits": 123,
+          "node_hit_rate": 0.2475
+        },
+        "13-16": {
+          "books": 6,
+          "nodes": 2027,
+          "findings": 70,
+          "occurrences": 1776,
+          "node_hits": 1189,
+          "node_hit_rate": 0.5866
+        },
+        "16+": {
+          "books": 8,
+          "nodes": 2575,
+          "findings": 135,
+          "occurrences": 1925,
+          "node_hits": 1138,
+          "node_hit_rate": 0.4419
+        },
+        "3-5": {
+          "books": 3,
+          "nodes": 60,
+          "findings": 4,
+          "occurrences": 7,
+          "node_hits": 5,
+          "node_hit_rate": 0.0833
+        },
+        "5-8": {
+          "books": 2,
+          "nodes": 97,
+          "findings": 3,
+          "occurrences": 6,
+          "node_hits": 5,
+          "node_hit_rate": 0.0515
+        },
+        "8-11": {
+          "books": 6,
+          "nodes": 480,
+          "findings": 14,
+          "occurrences": 211,
+          "node_hits": 185,
+          "node_hit_rate": 0.3854
+        }
+      }
+    },
+    {
+      "name": "flat 0.02",
+      "default": 0.02,
+      "per_category": {},
+      "drop_low_advisory": false,
+      "bands": {
+        "10-13": {
+          "books": 6,
+          "nodes": 497,
+          "findings": 18,
+          "occurrences": 164,
+          "node_hits": 123,
+          "node_hit_rate": 0.2475
+        },
+        "13-16": {
+          "books": 6,
+          "nodes": 2027,
+          "findings": 65,
+          "occurrences": 1757,
+          "node_hits": 1183,
+          "node_hit_rate": 0.5836
+        },
+        "16+": {
+          "books": 8,
+          "nodes": 2575,
+          "findings": 124,
+          "occurrences": 1847,
+          "node_hits": 1134,
+          "node_hit_rate": 0.4404
+        },
+        "3-5": {
+          "books": 3,
+          "nodes": 60,
+          "findings": 2,
+          "occurrences": 5,
+          "node_hits": 5,
+          "node_hit_rate": 0.0833
+        },
+        "5-8": {
+          "books": 2,
+          "nodes": 97,
+          "findings": 2,
+          "occurrences": 5,
+          "node_hits": 5,
+          "node_hit_rate": 0.0515
+        },
+        "8-11": {
+          "books": 6,
+          "nodes": 480,
+          "findings": 13,
+          "occurrences": 210,
+          "node_hits": 185,
+          "node_hit_rate": 0.3854
+        }
+      }
+    },
+    {
+      "name": "flat 0.05",
+      "default": 0.05,
+      "per_category": {},
+      "drop_low_advisory": false,
+      "bands": {
+        "10-13": {
+          "books": 6,
+          "nodes": 497,
+          "findings": 17,
+          "occurrences": 162,
+          "node_hits": 123,
+          "node_hit_rate": 0.2475
+        },
+        "13-16": {
+          "books": 6,
+          "nodes": 2027,
+          "findings": 60,
+          "occurrences": 1740,
+          "node_hits": 1182,
+          "node_hit_rate": 0.5831
+        },
+        "16+": {
+          "books": 8,
+          "nodes": 2575,
+          "findings": 101,
+          "occurrences": 1736,
+          "node_hits": 1117,
+          "node_hit_rate": 0.4338
+        },
+        "3-5": {
+          "books": 3,
+          "nodes": 60,
+          "findings": 2,
+          "occurrences": 5,
+          "node_hits": 5,
+          "node_hit_rate": 0.0833
+        },
+        "5-8": {
+          "books": 2,
+          "nodes": 97,
+          "findings": 1,
+          "occurrences": 3,
+          "node_hits": 3,
+          "node_hit_rate": 0.0309
+        },
+        "8-11": {
+          "books": 6,
+          "nodes": 480,
+          "findings": 9,
+          "occurrences": 180,
+          "node_hits": 164,
+          "node_hit_rate": 0.3417
+        }
+      }
+    },
+    {
+      "name": "flat 0.1",
+      "default": 0.1,
+      "per_category": {},
+      "drop_low_advisory": false,
+      "bands": {
+        "10-13": {
+          "books": 6,
+          "nodes": 497,
+          "findings": 15,
+          "occurrences": 158,
+          "node_hits": 123,
+          "node_hit_rate": 0.2475
+        },
+        "13-16": {
+          "books": 6,
+          "nodes": 2027,
+          "findings": 55,
+          "occurrences": 1679,
+          "node_hits": 1179,
+          "node_hit_rate": 0.5816
+        },
+        "16+": {
+          "books": 8,
+          "nodes": 2575,
+          "findings": 87,
+          "occurrences": 1585,
+          "node_hits": 1096,
+          "node_hit_rate": 0.4256
+        },
+        "3-5": {
+          "books": 3,
+          "nodes": 60,
+          "findings": 1,
+          "occurrences": 2,
+          "node_hits": 2,
+          "node_hit_rate": 0.0333
+        },
+        "5-8": {
+          "books": 2,
+          "nodes": 97,
+          "findings": 0,
+          "occurrences": 0,
+          "node_hits": 0,
+          "node_hit_rate": 0.0
+        },
+        "8-11": {
+          "books": 6,
+          "nodes": 480,
+          "findings": 4,
+          "occurrences": 130,
+          "node_hits": 124,
+          "node_hit_rate": 0.2583
+        }
+      }
+    },
+    {
+      "name": "ratified (0.01, 0.10 violence*)",
+      "default": 0.01,
+      "per_category": {
+        "violence": 0.1
+      },
+      "drop_low_advisory": false,
+      "bands": {
+        "10-13": {
+          "books": 6,
+          "nodes": 497,
+          "findings": 20,
+          "occurrences": 172,
+          "node_hits": 123,
+          "node_hit_rate": 0.2475
+        },
+        "13-16": {
+          "books": 6,
+          "nodes": 2027,
+          "findings": 69,
+          "occurrences": 1772,
+          "node_hits": 1189,
+          "node_hit_rate": 0.5866
+        },
+        "16+": {
+          "books": 8,
+          "nodes": 2575,
+          "findings": 133,
+          "occurrences": 1914,
+          "node_hits": 1135,
+          "node_hit_rate": 0.4408
+        },
+        "3-5": {
+          "books": 3,
+          "nodes": 60,
+          "findings": 3,
+          "occurrences": 6,
+          "node_hits": 5,
+          "node_hit_rate": 0.0833
+        },
+        "5-8": {
+          "books": 2,
+          "nodes": 97,
+          "findings": 1,
+          "occurrences": 1,
+          "node_hits": 1,
+          "node_hit_rate": 0.0103
+        },
+        "8-11": {
+          "books": 6,
+          "nodes": 480,
+          "findings": 9,
+          "occurrences": 145,
+          "node_hits": 129,
+          "node_hit_rate": 0.2687
+        }
+      }
+    },
+    {
+      "name": "violence* 0.50",
+      "default": 0.01,
+      "per_category": {
+        "violence": 0.5
+      },
+      "drop_low_advisory": false,
+      "bands": {
+        "10-13": {
+          "books": 6,
+          "nodes": 497,
+          "findings": 14,
+          "occurrences": 30,
+          "node_hits": 29,
+          "node_hit_rate": 0.0584
+        },
+        "13-16": {
+          "books": 6,
+          "nodes": 2027,
+          "findings": 60,
+          "occurrences": 360,
+          "node_hits": 319,
+          "node_hit_rate": 0.1574
+        },
+        "16+": {
+          "books": 8,
+          "nodes": 2575,
+          "findings": 122,
+          "occurrences": 550,
+          "node_hits": 352,
+          "node_hit_rate": 0.1367
+        },
+        "3-5": {
+          "books": 3,
+          "nodes": 60,
+          "findings": 2,
+          "occurrences": 4,
+          "node_hits": 4,
+          "node_hit_rate": 0.0667
+        },
+        "5-8": {
+          "books": 2,
+          "nodes": 97,
+          "findings": 1,
+          "occurrences": 1,
+          "node_hits": 1,
+          "node_hit_rate": 0.0103
+        },
+        "8-11": {
+          "books": 6,
+          "nodes": 480,
+          "findings": 7,
+          "occurrences": 21,
+          "node_hits": 19,
+          "node_hit_rate": 0.0396
+        }
+      }
+    },
+    {
+      "name": "RS-A low-advisory collapse",
+      "default": 0.01,
+      "per_category": {},
+      "drop_low_advisory": true,
+      "bands": {
+        "10-13": {
+          "books": 6,
+          "nodes": 497,
+          "findings": 7,
+          "occurrences": 5,
+          "node_hits": 5,
+          "node_hit_rate": 0.0101
+        },
+        "13-16": {
+          "books": 6,
+          "nodes": 2027,
+          "findings": 40,
+          "occurrences": 40,
+          "node_hits": 40,
+          "node_hit_rate": 0.0197
+        },
+        "16+": {
+          "books": 8,
+          "nodes": 2575,
+          "findings": 50,
+          "occurrences": 60,
+          "node_hits": 59,
+          "node_hit_rate": 0.0229
+        },
+        "3-5": {
+          "books": 3,
+          "nodes": 60,
+          "findings": 0,
+          "occurrences": 0,
+          "node_hits": 0,
+          "node_hit_rate": 0.0
+        },
+        "5-8": {
+          "books": 2,
+          "nodes": 97,
+          "findings": 0,
+          "occurrences": 0,
+          "node_hits": 0,
+          "node_hit_rate": 0.0
+        },
+        "8-11": {
+          "books": 6,
+          "nodes": 480,
+          "findings": 1,
+          "occurrences": 1,
+          "node_hits": 1,
+          "node_hit_rate": 0.0021
+        }
+      }
+    }
+  ]
+}

@@ -51,6 +51,10 @@ describe('AdminShell', () => {
       'href',
       '/admin/authoring-queue'
     )
+    expect(screen.getByRole('link', { name: 'Outstanding decisions' })).toHaveAttribute(
+      'href',
+      '/admin/outstanding-decisions'
+    )
     expect(screen.getByRole('link', { name: 'Moderation dashboard' })).toHaveAttribute(
       'href',
       '/admin/moderation-dashboard'

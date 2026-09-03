@@ -867,6 +867,128 @@
   color: var(--color-ink-secondary, #5a3e28);
 }
 
+/* `RS-A2`: the classifier score beside the verdict and severity, so a
+   reviewer can calibrate a finding against the band threshold instead of
+   reading a bare label. Tabular figures so a column of scores lines up in the
+   ranked list; the label itself carries the meaning, never color alone. */
+.review-finding__score {
+  font-variant-numeric: tabular-nums;
+  color: var(--color-ink-secondary, #5a3e28);
+}
+
+/* `RS-A2`: the affected node's prose, inside the finding's own collapsed node
+   drill-down, which is what makes a ranked finding the entry point to its
+   passages. Indented under the node id it belongs to. Nothing here is
+   position-dependent; the placement is asserted in ReviewDetailPage.test.tsx
+   ("makes a ranked finding the entry point to its own affected passages"). */
+.review-finding__prose {
+  margin: 0.25rem 0 0.5rem 1rem;
+}
+
+/* `RS-A4`: the false-negative spot check. The caveat is styled to be read,
+   not skimmed past: ruling 2 (2026-08-31) ships the 15-passage size labelled
+   provisional, and a reviewer who misses that label reads a clean sample as
+   evidence the book is clean. Asserted in ReviewDetailPage.test.tsx
+   ("labels the spot check sample as uncalibrated, beside the count"). */
+.review-sample__caveat {
+  margin: 0 0 0.5rem;
+}
+
+.review-sample__uncalibrated {
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  font-size: 0.85em;
+}
+
+.review-sample__band {
+  margin: 0 0 0.75rem;
+}
+
+.review-sample__list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.review-sample__head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.review-sample__node {
+  font-family: var(--font-mono, ui-monospace, monospace);
+}
+
+.review-sample__position {
+  font-variant-numeric: tabular-nums;
+}
+
+/* `RS-A5`: per-finding triage. Browser-local and non-gating by design (ruling
+   4, 2026-08-31), so the affordance is styled as a bookmark rather than as a
+   decision: a low-contrast toggle, and a reviewed finding is de-emphasised
+   instead of hidden, since hiding it would make a cleared cache look like a
+   shorter findings list. Never color alone; the button's own label carries the
+   state, and `aria-pressed` carries it to assistive tech. */
+.review-finding__triage {
+  padding: 0.15rem 0.5rem;
+  font: inherit;
+  font-size: 0.85em;
+  color: var(--color-ink-secondary, #5a3e28);
+  background: none;
+  border: 1px solid var(--color-border-soft, rgb(44 26 14 / 12%));
+  border-radius: 999px;
+  cursor: pointer;
+}
+
+.review-finding__triage[aria-pressed='true'] {
+  background: var(--color-amber-subtle, #fdf3e6);
+  font-weight: 600;
+}
+
+/* De-emphasis has an accessibility floor: `opacity` composites the row's own
+   --color-ink-secondary over the page's --color-parchment, so the value IS a
+   contrast setting. Measured on the light palette (#5a3e28 over #f8f3e8):
+   0.72 gives 4.19:1, below the 4.5:1 WCAG 2.1 AA minimum for normal text;
+   0.85 gives 5.87:1. The dark palette (#d3b98f over #1a130d) clears AA at
+   either value (5.56:1 at 0.72), so the light theme sets the floor. Do not
+   lower this without re-measuring both palettes. */
+.review-finding--reviewed {
+  opacity: 0.85;
+}
+
+.review-triage__progress {
+  margin: 0 0 0.5rem;
+}
+
+/* `RS-A6`: the edit dialog's context block. A reviewer must not be asked to
+   rewrite prose without being shown what is wrong with it, so this sits ABOVE
+   the textarea rather than beside it: on a narrow viewport anything beside the
+   field is what gets pushed below the fold. Separated from the field by a rule
+   so the two read as "the finding" and "your rewrite", not one form. */
+.review-edit__context {
+  margin: 0 0 0.75rem;
+  padding: 0 0 0.75rem;
+  border-bottom: 1px solid var(--color-border-soft, rgb(44 26 14 / 12%));
+}
+
+.review-edit__context-heading {
+  margin: 0 0 0.5rem;
+  font-size: 1rem;
+}
+
+.review-edit__findings {
+  margin: 0 0 0.5rem;
+}
+
+.review-edit__band {
+  margin: 0;
+}
+
 /* What the automated gate measured (R-2): the numbers behind the routing
    decision, read alongside the findings they explain. */
 .review-measures__list {

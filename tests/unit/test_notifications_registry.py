@@ -208,6 +208,130 @@ class TestComposeStorybookArchived:
         assert raw is not None
         assert raw.title == "A story was removed from your library"
 
+    def test_archive_notification_does_not_claim_offline_copies_are_gone(
+        self,
+    ) -> None:
+        """The body must state the condition, not promise an immediate pull.
+
+        This copy previously read "including offline copies already on a
+        device", which is false: `frontend/src/offline/revocation.ts` evicts a
+        cached book only on the next successful `/v1/library` fetch, and there
+        is no push channel, so a device that stays offline keeps reading. A
+        guardian acting on the old wording during a real safety pull would
+        believe a device was covered when it was not.
+
+        Asserted as "mentions the successful-sync condition", not as an exact
+        string, so rewording stays free while the claim stays honest. It says
+        SUCCESSFUL sync rather than "connects": reconciliation runs inside the
+        `/v1/library` response handler, so a device that comes back online but
+        whose fetch fails still holds the copy, and copy that stops at
+        "connects" promises a guarantee the client does not make.
+        """
+        event = _event(EventType.STORYBOOK_ARCHIVED, to_state="archived")
+        raw = registry.compose(event, _ctx())
+        assert raw is not None
+        assert "after its next successful library sync" in raw.body
+        assert "including offline copies already on a device" not in raw.body
+
+
+@pytest.mark.unit
+class TestComposeStorybookRecalled:
+    """`RS-C1`: recall() -> a notice whose severity forks on the reason code."""
+
+    def test_names_the_story_and_is_an_alert_for_a_safety_recall(self) -> None:
+        event = _event(
+            EventType.STORYBOOK_RECALLED,
+            from_state="published",
+            to_state="in_review",
+            payload={"reason_code": "safety_concern"},
+        )
+        raw = registry.compose(event, _ctx())
+        assert raw is not None
+        assert raw.kind == "story_recalled"
+        assert raw.severity == "alert"
+        assert raw.title == "The Lighthouse Mystery was paused for another review"
+
+    def test_a_threshold_recheck_still_alerts(self) -> None:
+        """``threshold_change`` is a safety-motivated reason, so it is not quiet.
+
+        It is the routine case, which is exactly why the temptation is to
+        downgrade it. The thresholds moved because the old ones were judged
+        wrong, so a book pulled by that change is a book whose verdict is no
+        longer trusted.
+        """
+        event = _event(
+            EventType.STORYBOOK_RECALLED,
+            payload={"reason_code": "threshold_change"},
+        )
+        raw = registry.compose(event, _ctx())
+        assert raw is not None
+        assert raw.severity == "alert"
+
+    @pytest.mark.parametrize("code", ["curation", "content_correction"])
+    def test_a_non_safety_recall_is_informational(self, code: str) -> None:
+        event = _event(EventType.STORYBOOK_RECALLED, payload={"reason_code": code})
+        raw = registry.compose(event, _ctx())
+        assert raw is not None
+        assert raw.severity == "info"
+
+    @pytest.mark.parametrize(
+        "payload",
+        [
+            {},
+            {"reason_code": "not_a_real_code"},
+            {"reason_code": None},
+            {"reason_code": 7},
+        ],
+    )
+    def test_recall_alerts_when_the_reason_code_is_missing_or_unknown(
+        self, payload: dict[str, object]
+    ) -> None:
+        """Severity is an allow-list of quiet reasons, so it fails closed.
+
+        None of these payloads should be writable (the service validates and
+        the writer's key allowlist rejects the rest), but a severity policy
+        that depends on that being true would downgrade a safety pull to an
+        info notice the one time it is not.
+        """
+        event = _event(EventType.STORYBOOK_RECALLED, payload=payload)
+        raw = registry.compose(event, _ctx())
+        assert raw is not None
+        assert raw.severity == "alert"
+
+    def test_recall_notification_does_not_claim_offline_copies_are_gone(
+        self,
+    ) -> None:
+        """Same honesty requirement as the archive body; see that test."""
+        event = _event(
+            EventType.STORYBOOK_RECALLED, payload={"reason_code": "curation"}
+        )
+        raw = registry.compose(event, _ctx())
+        assert raw is not None
+        assert "after its next successful library sync" in raw.body
+
+    def test_recall_notification_says_the_book_can_return(self) -> None:
+        """What distinguishes recall from archive, in the guardian's words.
+
+        Without this, a routine threshold recheck reads to a guardian exactly
+        like losing the book, which is the misreading the separate event type
+        and separate copy exist to prevent.
+        """
+        event = _event(
+            EventType.STORYBOOK_RECALLED,
+            payload={"reason_code": "threshold_change"},
+        )
+        raw = registry.compose(event, _ctx())
+        assert raw is not None
+        assert "can return" in raw.body
+
+    def test_falls_back_to_generic_label_without_a_title(self) -> None:
+        event = _event(
+            EventType.STORYBOOK_RECALLED, payload={"reason_code": "curation"}
+        )
+        raw = registry.compose(event, _ctx(storybook_title=None))
+        assert raw is not None
+        assert raw.title == "A story was paused for another review"
+
 
 @pytest.mark.unit
 class TestComposeNotificationDigestReady:

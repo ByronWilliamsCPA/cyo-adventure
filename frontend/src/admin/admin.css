@@ -164,6 +164,37 @@
   margin-left: var(--space-2, 0.5rem);
 }
 
+/* RS-A7: title, triage metadata and the top finding's reason stack in one
+   column on a queue row, so the reason gets a line of its own; the severity
+   badges keep the right-hand side of the flex link. */
+.console-row__primary {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1, 0.25rem);
+  min-width: 0;
+}
+
+.console-row__headline {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+}
+
+/* The reason is one sentence lifted from the moderation report. Clamp it to
+   two lines so a long message cannot squeeze the badges off a narrow row. */
+.console-row__reason {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  overflow: hidden;
+  font-size: var(--text-sm);
+}
+
+.console-row__reason-concern {
+  font-weight: var(--weight-bold, 600);
+}
+
 /* P19: admin master library page. */
 .admin-library__filters {
   display: flex;

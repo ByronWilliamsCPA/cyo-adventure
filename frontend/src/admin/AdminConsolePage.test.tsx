@@ -122,7 +122,10 @@ describe('AdminConsolePage', () => {
     renderPage()
     expect(await screen.findByText('Scary Tale')).toBeInTheDocument()
     expect(screen.getByText('Gentle Tale')).toBeInTheDocument()
-    expect(screen.getByText('2 flags')).toBeInTheDocument()
+    // `RS-A3`: FLAGGED carries no tiered counts, so the badge falls back to
+    // flagged_count and must NAME it. That field counts occurrences, which is
+    // a different number from the tiers, and "2 flags" claimed otherwise.
+    expect(screen.getByText('2 flagged occurrences')).toBeInTheDocument()
     expect(screen.getByText('Clean')).toBeInTheDocument()
   })
 
@@ -135,8 +138,8 @@ describe('AdminConsolePage', () => {
     expect(within(dialog).getByText('adventure')).toBeInTheDocument()
     expect(within(dialog).getByText(/Violence: moderate/)).toBeInTheDocument()
     // The dialog's moderation slot reuses the same SeverityBadges the queue
-    // row already shows: "2 flags", not a duplicated/independent computation.
-    expect(within(dialog).getByText('2 flags')).toBeInTheDocument()
+    // row already shows, not a duplicated/independent computation.
+    expect(within(dialog).getByText('2 flagged occurrences')).toBeInTheDocument()
     await user.click(within(dialog).getByRole('button', { name: /^Close$/ }))
     expect(screen.queryByRole('dialog')).not.toBeInTheDocument()
   })
@@ -162,7 +165,7 @@ describe('AdminConsolePage', () => {
     mockQueue([REPAIRED])
     renderPage()
     expect(await screen.findByText('Patched Tale')).toBeInTheDocument()
-    expect(screen.getByText('1 flag')).toBeInTheDocument()
+    expect(screen.getByText('1 flagged occurrence')).toBeInTheDocument()
     expect(screen.getByText('Repaired')).toBeInTheDocument()
   })
 
@@ -186,6 +189,20 @@ describe('AdminConsolePage', () => {
     renderPage()
     expect(await screen.findByText('1 block · 3 flags · 47 advisories')).toBeInTheDocument()
     expect(screen.queryByText('51 flags')).not.toBeInTheDocument()
+    // `RS-A3`: the occurrence fallback must not ALSO render once the tiers are
+    // known, or the row shows two numbers for one book again.
+    expect(screen.queryByText(/flagged occurrence/)).not.toBeInTheDocument()
+  })
+
+  it('pluralizes each tier independently rather than hard-coding one form', async () => {
+    // `RS-A3`: the hand-rolled label read "2 block" and "1 flags"; both arms
+    // of every tier's plural are now the shared pluralize's problem, so this
+    // pins the singular block/advisory forms the old code could not produce.
+    mockQueue([
+      { ...FLAGGED, block_findings: 2, flag_findings: 1, advisory_findings: 1, flagged_count: 4 },
+    ])
+    renderPage()
+    expect(await screen.findByText('2 blocks · 1 flag · 1 advisory')).toBeInTheDocument()
   })
 
   it('sorts the flagged bucket hard blocks first, then flag count desc, stable within ties', async () => {
@@ -248,6 +265,145 @@ describe('AdminConsolePage', () => {
     ])
   })
 
+  it('ranks the flagged bucket by tier weight, not by occurrence count', async () => {
+    // `RS-A7`: this is the case the old flagged_count tiebreak got backwards.
+    // None of the three trips summary.hard_block, so the tier comparison is
+    // the only thing that can separate them. The counts are chosen so each
+    // book wins on a DIFFERENT tier and loses on the ones above it: swapping
+    // any two comparisons, or reinstating the occurrence-count tiebreak,
+    // reorders this list.
+    const oneBlock = {
+      ...FLAGGED,
+      storybook_id: 'block-tier-1',
+      title: 'One Block Tale',
+      flagged_count: 1,
+      block_findings: 1,
+      flag_findings: 0,
+      advisory_findings: 0,
+    }
+    const manyFlags = {
+      ...FLAGGED,
+      storybook_id: 'flag-many-1',
+      title: 'Many Flag Tale',
+      flagged_count: 5,
+      block_findings: 0,
+      flag_findings: 5,
+      advisory_findings: 0,
+    }
+    // 380 is an OCCURRENCE count: one merged advisory fanned across the story.
+    // Under the old sort this book led the queue.
+    const manyAdvisories = {
+      ...FLAGGED,
+      storybook_id: 'advisory-many-1',
+      title: 'Many Advisory Tale',
+      flagged_count: 380,
+      block_findings: 0,
+      flag_findings: 0,
+      advisory_findings: 8,
+    }
+    // Response order is the old sort's order, so passing cannot be incidental.
+    mockQueue([manyAdvisories, manyFlags, oneBlock])
+    renderPage()
+    await screen.findByText('One Block Tale')
+    const titles = screen.getAllByRole('link').map((link) => link.textContent)
+    expect(titles).toEqual([
+      expect.stringContaining('One Block Tale'),
+      expect.stringContaining('Many Flag Tale'),
+      expect.stringContaining('Many Advisory Tale'),
+    ])
+  })
+
+  it('ranks a flag above an advisory at equal block count', async () => {
+    const oneFlag = {
+      ...FLAGGED,
+      storybook_id: 'flag-tier-1',
+      title: 'One Flag Tier Tale',
+      flagged_count: 1,
+      block_findings: 0,
+      flag_findings: 1,
+      advisory_findings: 0,
+    }
+    const threeAdvisories = {
+      ...FLAGGED,
+      storybook_id: 'advisory-tier-1',
+      title: 'Three Advisory Tier Tale',
+      flagged_count: 3,
+      block_findings: 0,
+      flag_findings: 0,
+      advisory_findings: 3,
+    }
+    mockQueue([threeAdvisories, oneFlag])
+    renderPage()
+    await screen.findByText('One Flag Tier Tale')
+    const titles = screen.getAllByRole('link').map((link) => link.textContent)
+    expect(titles).toEqual([
+      expect.stringContaining('One Flag Tier Tale'),
+      expect.stringContaining('Three Advisory Tier Tale'),
+    ])
+  })
+
+  it('names the top finding on the queue row', async () => {
+    const withReason = {
+      ...HARD_BLOCKED,
+      storybook_id: 'reason-1',
+      title: 'Cistern Tale',
+      top_finding: {
+        stage: 2,
+        source: 'safety',
+        category: 'violence',
+        node_id: 'n42',
+        verdict: 'block',
+        score: 0.91,
+        message: 'The cistern passage describes a drowning in graphic detail.',
+        severity: 'high',
+        concern: 'graphic peril',
+      },
+    }
+    mockQueue([withReason])
+    renderPage()
+    const row = within(await screen.findByRole('link', { name: /Cistern Tale/ }))
+    // The concern, not the raw category, is what the detail page leads with.
+    expect(row.getByText('graphic peril')).toBeInTheDocument()
+    expect(
+      row.getByText('The cistern passage describes a drowning in graphic detail.')
+    ).toBeInTheDocument()
+  })
+
+  it('falls back to the finding category when the report records no concern', async () => {
+    const withoutConcern = {
+      ...HARD_BLOCKED,
+      storybook_id: 'reason-2',
+      title: 'Uncategorized Tale',
+      top_finding: {
+        stage: 2,
+        source: 'safety',
+        category: 'self_harm',
+        node_id: 'n7',
+        verdict: 'block',
+        score: 0.8,
+        message: 'A character talks about hurting themselves.',
+      },
+    }
+    mockQueue([withoutConcern])
+    renderPage()
+    const row = within(await screen.findByRole('link', { name: /Uncategorized Tale/ }))
+    expect(row.getByText('self_harm')).toBeInTheDocument()
+  })
+
+  it('shows no reason line on a row the backend sent no top finding for', async () => {
+    // Two absences to cover: a clean book (nothing to name) and a payload
+    // cached before the field existed. Both must render nothing rather than
+    // an empty separator or a guessed reason.
+    const clean = { ...READY, storybook_id: 'clean-1', title: 'Clean Tale', top_finding: null }
+    mockQueue([clean, FLAGGED])
+    renderPage()
+    const cleanRow = await screen.findByRole('link', { name: /Clean Tale/ })
+    expect(cleanRow.querySelector('.console-row__reason')).toBeNull()
+    // FLAGGED carries no top_finding key at all, the legacy-payload shape.
+    const legacyRow = screen.getByRole('link', { name: /Scary Tale/ })
+    expect(legacyRow.querySelector('.console-row__reason')).toBeNull()
+  })
+
   it('orders the sections Flagged, then Ready, then Still processing', async () => {
     renderPage()
     await screen.findByText('Scary Tale')
@@ -306,6 +462,47 @@ describe('AdminConsolePage', () => {
     renderPage()
     expect(await screen.findByText('Brewing a Tale')).toBeInTheDocument()
     expect(screen.getByText('Processing…')).toBeInTheDocument()
+  })
+
+  // The three ways the jobs list comes back empty are not the same fact, and
+  // the console used to render the same sentence for all three. These two
+  // tests pin the split: only a real failure may say "could not load".
+  it('says the jobs load failed rather than asserting nothing is generating', async () => {
+    mockGet.mockImplementation((url: string) =>
+      url === '/v1/generation-jobs'
+        ? Promise.reject(new Error('jobs endpoint down'))
+        : Promise.resolve({ data: { items: [READY] } })
+    )
+    const errorSpy = vi.spyOn(console, 'error').mockImplementation(() => {})
+    renderPage()
+    expect(await screen.findByText('Gentle Tale')).toBeInTheDocument()
+    expect(screen.getByText(/Could not load what is generating right now/i)).toBeInTheDocument()
+    expect(screen.queryByText(/No stories are generating right now/i)).not.toBeInTheDocument()
+    errorSpy.mockRestore()
+  })
+
+  it('keeps the plain empty state for a 403, the expected admin outcome', async () => {
+    // Guardian-only endpoint; the admin reviewer who is this console's primary
+    // user always 403s here. Treating that as degraded would show a permanent
+    // failure notice on every normal admin visit.
+    // Object.assign onto a real Error rather than a bare object literal:
+    // @typescript-eslint/prefer-promise-reject-errors rejects the literal at an
+    // inline Promise.reject, and axios's isAxiosError only reads the flag.
+    const forbidden = Object.assign(new Error('forbidden'), {
+      isAxiosError: true,
+      response: { status: 403 },
+    })
+    mockGet.mockImplementation((url: string) =>
+      url === '/v1/generation-jobs'
+        ? Promise.reject(forbidden)
+        : Promise.resolve({ data: { items: [READY] } })
+    )
+    renderPage()
+    expect(await screen.findByText('Gentle Tale')).toBeInTheDocument()
+    expect(screen.getByText(/No stories are generating right now/i)).toBeInTheDocument()
+    expect(
+      screen.queryByText(/Could not load what is generating right now/i)
+    ).not.toBeInTheDocument()
   })
 
   it('shows an Updated HH:MM label and refetches on Refresh without a reload', async () => {
