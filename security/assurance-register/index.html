@@ -4718,6 +4718,23 @@ of them re-opens the classification. Tracked as O-118.</p>
   2026-08-03 disable was a sound cost decision, not a mistake to reverse. Closing AC.4.2 therefore
   means adding an analyzer that is free or already paid for, not restoring default setup by
   default. The ranked routes are in the AC.4.2 row below.</p>
+<p><strong>Superseded 2026-09-02: the repo-wide <code>github/codeql-action/upload-sarif</code> uses named above no
+  longer exist, and <code>dependency-review.yml</code> has been deleted.</strong> GitHub Advanced Security (Code
+  Security) is now billed separately account-wide and is not enabled for this repository, so SARIF
+  ingestion into the Security tab and the <code>dependency-review-action</code> (which requires Advanced
+  Security on a private repo) do not function regardless of whether the calling workflow exists.
+  <code>cifuzzy.yml</code>'s ClusterFuzzLite SARIF and <code>scorecard.yml</code>'s OpenSSF Scorecard SARIF are now
+  published as plain <code>actions/upload-artifact</code> steps instead, so a crash or a Scorecard finding
+  stays downloadable even though neither reaches the Security tab. <code>security-analysis.yml</code>'s Bandit
+  and OSV-Scanner coverage, and the <code>semgrep-frontend</code> job's in-repo Semgrep ruleset, are unaffected
+  by this change and remain the SAST/SCA coverage this repository has. Two callers to
+  <code>ByronWilliamsCPA/.github</code> reusable workflows still request Advanced-Security-dependent behavior
+  that this entry does not resolve: <code>container-security.yml</code>'s <code>upload-sarif: true</code> input and
+  <code>sbom.yml</code>'s workflow-level <code>security-events: write</code> grant. Both are inputs to shared reusable
+  workflows owned outside this repository; changing them here without a corresponding change to
+  those reusable workflows risks the same silent-workflow-file-issue failure mode CodeQL's caller
+  inputs carry elsewhere, so they are left for the coordinated <code>.github</code> follow-up rather than
+  edited in this pass.</p>
 <p>This entry is retained rather than deleted because the error is the instructive part. A control
   configured outside the artifact being searched is invisible to a search of that artifact, and
   reporting its absence as a finding is the exact failure mode the verification vantage rule in
@@ -8692,7 +8709,7 @@ duties in SP-12.</p>
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="August 30, 2026 03:57:33 UTC">August 30, 2026</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="September 3, 2026 12:26:34 UTC">September 3, 2026</span>
   </span>
 
     
