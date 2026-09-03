@@ -439,6 +439,29 @@ class GateRun:
         """
         return self.returncode == 0
 
+    @property
+    def diagnostic(self) -> str:
+        """Everything the run observed, for use as an assertion message.
+
+        ``assert run.passed`` reduces to ``assert False`` on failure, so
+        pytest's rewriting has nothing left to display and the report names
+        only the line number. That is survivable locally, where the run can be
+        repeated under ``-s``, and not survivable on a CI leg that fails on
+        one platform only: two ``TestGateDecisions`` failures on
+        ``windows-latest`` reached ``main`` undiagnosable for exactly this
+        reason. Pass this as the assertion's message so the next such failure
+        arrives with its cause attached.
+
+        Returns:
+            The exit status, the captured output, and the summary the script
+            wrote, each labelled.
+        """
+        return (
+            f"gate exited {self.returncode}\n"
+            f"--- stdout+stderr ---\n{self.stdout or '(empty)'}\n"
+            f"--- step summary ---\n{self.summary or '(empty)'}"
+        )
+
 
 BASH = shutil.which("bash")
 
@@ -502,7 +525,7 @@ class TestGateDecisions:
         """The baseline: nothing skipped, nothing failed."""
         run = run_gate()
 
-        assert run.passed
+        assert run.passed, run.diagnostic
         assert "CI Gate passed" in run.summary
         assert "::warning::" not in run.stdout
 
@@ -542,7 +565,7 @@ class TestGateDecisions:
             CONTRACT_RESULT="skipped",
         )
 
-        assert run.passed
+        assert run.passed, run.diagnostic
         assert "NOT verified on this commit" in run.summary
         assert "4 required job(s) were not run" in run.summary
         assert "::warning::" in run.stdout
@@ -613,7 +636,7 @@ class TestGateDecisions:
             SCHEMA_DOCS_RESULT="success",
         )
 
-        assert run.passed
+        assert run.passed, run.diagnostic
         assert "WITHOUT running the suite" in run.summary
         assert "no verification from this workflow" in run.summary
         # The disclosure has to carve out EVERY job that did run, or it

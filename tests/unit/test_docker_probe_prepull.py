@@ -19,6 +19,8 @@ raising its own).
 from __future__ import annotations
 
 import errno
+import sys
+import types
 from typing import TYPE_CHECKING, Any
 
 import pytest
@@ -288,6 +290,38 @@ class TestThePrePullIsBestEffort:
         )
 
 
+@pytest.fixture
+def stub_fcntl(monkeypatch: pytest.MonkeyPatch) -> types.SimpleNamespace:
+    """Make ``_pull_lock``'s ``fcntl`` import resolve on every platform.
+
+    ``_pull_lock`` imports ``fcntl`` *inside* the function body, so whatever
+    sits at ``sys.modules["fcntl"]`` at call time is what it gets. Installing a
+    stub there is what lets the tests below run off POSIX: without it they take
+    the ImportError degrade on Windows, which yields silently, so every
+    ``pytest.warns`` assertion fails for a reason that has nothing to do with
+    the behaviour under test. Skipping them there would have left the lock's
+    platform-independent logic (the deadline, which exception counts as
+    contention, whether a degrade warns) unexercised on one leg of the
+    compatibility matrix.
+
+    Substituting the stub on POSIX too is deliberate: these tests replace
+    ``flock`` with a raising fake in every case, so they never exercised real
+    kernel locking, and one code path for all platforms beats two.
+
+    Returns:
+        The stub module. Assign to its ``flock`` attribute to choose the
+        behaviour the lock sees.
+    """
+    module = types.SimpleNamespace(
+        LOCK_EX=2,
+        LOCK_NB=4,
+        LOCK_UN=8,
+        flock=lambda _fd, _operation: None,
+    )
+    monkeypatch.setitem(sys.modules, "fcntl", module)
+    return module
+
+
 class TestThePullLockReportsEveryDegrade:
     """A lock that does not do its job must say so, not just proceed.
 
@@ -296,10 +330,16 @@ class TestThePullLockReportsEveryDegrade:
     cannot discriminate a lock that acquired from one that silently did not;
     these tests exist because that discrimination is exactly what was
     missing.
+
+    The one thing faked is ``fcntl`` itself, via :func:`stub_fcntl`, so the
+    real lock body runs on Windows as well as POSIX.
     """
 
     def test_a_lock_that_times_out_warns_before_yielding_unlocked(
-        self, monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+        self,
+        monkeypatch: pytest.MonkeyPatch,
+        tmp_path: Path,
+        stub_fcntl: types.SimpleNamespace,
     ) -> None:
         """The give-up must be witnessable, not merely non-blocking.
 
@@ -318,12 +358,10 @@ class TestThePullLockReportsEveryDegrade:
             lambda seconds: clock.__setitem__(0, clock[0] + seconds),
         )
 
-        import fcntl
-
         def always_contended(_fd: int, _operation: int) -> None:
             raise BlockingIOError(errno.EAGAIN, "Resource temporarily unavailable")
 
-        monkeypatch.setattr(fcntl, "flock", always_contended)
+        stub_fcntl.flock = always_contended
 
         entered = False
         with (
@@ -334,6 +372,7 @@ class TestThePullLockReportsEveryDegrade:
 
         assert entered, "the caller's critical section must still run"
 
+    @pytest.mark.usefixtures("stub_fcntl")
     def test_an_unopenable_lock_file_degrades_with_its_own_warning(
         self, monkeypatch: pytest.MonkeyPatch, tmp_path: Path
     ) -> None:
@@ -362,7 +401,10 @@ class TestThePullLockReportsEveryDegrade:
         assert entered, "the caller's critical section must still run"
 
     def test_a_non_contention_oserror_from_flock_surfaces_immediately(
-        self, monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+        self,
+        monkeypatch: pytest.MonkeyPatch,
+        tmp_path: Path,
+        stub_fcntl: types.SimpleNamespace,
     ) -> None:
         """Only BlockingIOError is the LOCK_NB contention signal.
 
@@ -373,12 +415,10 @@ class TestThePullLockReportsEveryDegrade:
         """
         monkeypatch.setattr(_docker_probe, "_PULL_LOCK", tmp_path / "pull.lock")
 
-        import fcntl
-
         def broken_flock(_fd: int, _operation: int) -> None:
             raise OSError(errno.EBADF, "Bad file descriptor")
 
-        monkeypatch.setattr(fcntl, "flock", broken_flock)
+        stub_fcntl.flock = broken_flock
 
         sleep_calls: list[float] = []
         monkeypatch.setattr(_docker_probe.time, "sleep", sleep_calls.append)
@@ -395,4 +435,60 @@ class TestThePullLockReportsEveryDegrade:
         assert not sleep_calls, (
             "a non-contention OSError burned the retry budget instead of "
             "surfacing immediately"
+        )
+
+
+class TestThePullLockWithoutFcntl:
+    """The no-``fcntl`` degrade is the one Windows takes in production.
+
+    It was also the only degrade with no test: the three above all install a
+    stub ``fcntl``, and on POSIX this branch is unreachable without forcing
+    it. That left the platform whose real behaviour this IS covered by
+    nothing, which is backwards.
+    """
+
+    def test_an_absent_fcntl_yields_without_raising(
+        self, monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+    ) -> None:
+        """No lock is acceptable here; an ImportError escaping is not.
+
+        A ``None`` at ``sys.modules["fcntl"]`` is CPython's own "this import
+        is halted" sentinel, so ``import fcntl`` raises ImportError from it.
+        That reproduces Windows on any platform without patching
+        ``builtins.__import__``, which would intercept every unrelated import
+        the block makes as well.
+        """
+        monkeypatch.setattr(_docker_probe, "_PULL_LOCK", tmp_path / "pull.lock")
+        monkeypatch.setitem(sys.modules, "fcntl", None)
+
+        entered = False
+        with _docker_probe._pull_lock():
+            entered = True
+
+        assert entered, (
+            "a platform without fcntl must still run the caller's critical "
+            "section; the pull is racy there, which is what every platform "
+            "had before issue #614"
+        )
+
+    def test_an_absent_fcntl_leaves_no_lock_file_behind(
+        self, monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+    ) -> None:
+        """The give-up precedes ``os.open``, and the ordering is the point.
+
+        ``_pull_lock`` imports ``fcntl`` before it opens the lock file, so an
+        absent ``fcntl`` must not leave a lock file nothing will ever unlock.
+        Asserting on the file rather than on a mock pins that ordering
+        end-to-end: reverse the two statements in the source and this fails.
+        """
+        lock_path = tmp_path / "pull.lock"
+        monkeypatch.setattr(_docker_probe, "_PULL_LOCK", lock_path)
+        monkeypatch.setitem(sys.modules, "fcntl", None)
+
+        with _docker_probe._pull_lock():
+            pass
+
+        assert not lock_path.exists(), (
+            "the lock file was created on a platform that cannot lock it, so "
+            "os.open now runs before the fcntl import"
         )
