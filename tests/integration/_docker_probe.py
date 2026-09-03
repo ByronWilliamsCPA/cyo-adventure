@@ -125,8 +125,13 @@ def _pull_lock() -> Iterator[None]:
 
     Every fallback path below is deliberate: hanging the suite over a stale
     lock, or a full ``/tmp``, would be worse than a re-emergence of the #614
-    race. What must never happen again is that fallback going unreported, so
-    each one emits its own :func:`_warn_unserialized` before yielding.
+    race. What must never happen again is a fallback that could have been the
+    lock failing going unreported, so the two that can, a full lock file and a
+    timed-out acquire, each emit their own :func:`_warn_unserialized` before
+    yielding. The missing-``fcntl`` degrade above is the exception and stays
+    silent on purpose: it fires on every pull on Windows, where it is the
+    platform's normal steady state rather than a symptom, and warning per pull
+    would train readers to ignore the two warnings that do mean something.
 
     Yields:
         None: the caller runs its critical section while the lock is held,
