@@ -34,20 +34,22 @@
 # updating both is a silent, total loss of suppression.
 
 vulnerabilities:
-  # Retired on 2026-09-03: 15 of the 19 suppressions this file once carried were
+  # Retired on 2026-09-03: 16 of the 20 suppressions this file once carried were
   # deleted in one pass because every one of them was already dead against the
-  # pinned base digest. Six named Expat CVEs that Debian fixed in
-  # `expat 2.8.2-1~deb13u1` (DSA-6404-1), a version the base image has shipped
-  # for weeks; nine named `gawk` and `perl-base`, which the image does not
-  # contain at all. A suppressed finding and an absent finding look identical
-  # from outside, so the only way to tell them apart is to read the image rather
-  # than the scan report; see docs/known-vulnerabilities.md, "Resolution detail:
-  # the six Expat CVEs, `gawk` and `perl-base`".
+  # base digest. Six named Expat CVEs that Debian fixed in
+  # `expat 2.8.2-1~deb13u1` (DSA-6404-1), and the image ships 2.8.3; nine named
+  # `gawk` and `perl-base`, which the image does not contain at all; and
+  # CVE-2026-53615 on `libuuid1`, the one entry here that ever had an upstream
+  # fix, which the refreshed digest now carries (`util-linux 2.41.5`). A
+  # suppressed finding and an absent finding look identical from outside, so the
+  # only way to tell them apart is to read the image rather than the scan report;
+  # see docs/known-vulnerabilities.md, "Resolution detail: the six Expat CVEs,
+  # `gawk` and `perl-base`".
   #
   # Expat itself is still here: CVE-2026-66046 (High, no Debian fix) is reported
-  # against libexpat1 on both the pinned and the refreshed digest, and its
-  # suppression plus entry are written in PR #798 rather than duplicated here.
-  # Whichever change lands second must keep that block.
+  # against libexpat1 on both the pinned and the refreshed digest. Its
+  # suppression was written in PR #798; this change keeps that block and retires
+  # only its six siblings.
   #
   # #ASSUME: security: the four below still describe findings that EXIST in the
   # image and are UNFIXED upstream. Both halves were checked on 2026-09-03, and
@@ -80,22 +82,15 @@ vulnerabilities:
       terminal; nothing links or calls ncurses.
     expired_at: 2026-11-08
 
-  # --- libuuid1 (util-linux source package) ---
-  # #CRITICAL: security: unlike every other entry in this file, THIS ONE NOW HAS
-  # AN UPSTREAM FIX. Debian shipped `util-linux 2.41.5-0+deb13u1` on the
-  # trixie-security track, and the base image's current build carries it. This
-  # suppression is therefore hiding a fixable finding, which is precisely what
-  # `.trivy/ignore-policy.rego`'s `not input.FixedVersion` guard exists to
-  # prevent for the kernel headers. It survives only until the base-image digest
-  # refresh lands (PR #798), and its `expired_at` was deliberately left at
-  # 2026-09-06 rather than renewed so it cannot quietly outlast that.
-  # #VERIFY: delete this block in the same change that bumps the base digest;
-  # scripts/check_known_vulnerabilities.py will then fail until the matching
-  # entry in docs/known-vulnerabilities.md moves to Resolved.
-  - id: CVE-2026-53615
+  # --- libexpat1, libexpat1-dev; no Debian fix on the trixie track ---
+  # The only Expat CVE that survived the digest refresh. The six that did not
+  # were fixed in `expat 2.8.2-1~deb13u1` (DSA-6404-1) and the image now ships
+  # 2.8.3, so their suppressions were retired here in the same pass.
+  - id: CVE-2026-66046
     statement: >-
-      Integer overflow in libblkid's DOS partition-table parser. The container
-      has no raw block-device access and never probes partition tables. Fixed
-      upstream in util-linux 2.41.5-0+deb13u1; awaiting the base-image digest
-      refresh that carries it.
-    expired_at: 2026-09-06
+      libexpat denial of service in Expat through 2.8.3. Reported against
+      2.8.3-1~deb13u1+dhi2 with status `affected` and no Debian fix, so the
+      2026-09-02 base-image digest refresh that cleared 42 other CVEs does not
+      clear this one. No runtime code path parses untrusted XML; the API speaks
+      JSON only.
+    expired_at: 2026-09-17

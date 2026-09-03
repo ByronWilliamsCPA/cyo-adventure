@@ -57,98 +57,72 @@ in the `.github/` directory.
 
 ## Active Entries
 
-## CVE-2026-53615 | libuuid1 (util-linux) | Medium (fix available upstream)
+## CVE-2026-66046 | libexpat1, libexpat1-dev | High
 
 | Field | Value |
 |-------|-------|
-| **CVE ID** | CVE-2026-53615 |
-| **Package** | libuuid1 (Debian binary package from the `util-linux` source package) |
-| **Affected Version** | 2.41-5+dhi3, as shipped by the pinned base digest `sha256:5bbd41ae` |
-| **Fixed Version** | **`util-linux` 2.41.5-0+deb13u1 on the trixie-security track.** This is new as of the 2026-09-03 reassessment; the entry previously read "No fix available" |
-| **Severity** | Medium (Trivy 0.70.0 feed as of 2026-09-03). Recorded High on discovery, when the NVD record was RESERVED and the Aqua feed carried a provisional rating |
-| **CVSS Score** | Not carried in the advisory records consulted |
-| **Discovered** | 2026-07-08 |
+| **CVE ID** | CVE-2026-66046 |
+| **Package** | libexpat1, libexpat1-dev (Debian binary packages from the `expat` source package) |
+| **Affected Version** | 2.8.3-1~deb13u1+dhi2 (Debian 13 "trixie", DHI mirror build) |
+| **Fixed Version** | No fix available |
+| **Severity** | High (per Trivy/Aqua feed) |
+| **CVSS Score** | Not carried in the Trivy/Aqua feed as of 2026-09-02 |
+| **Discovered** | 2026-09-02 |
 | **Last Reassessed** | 2026-09-03 |
-| **Reassessment Due** | 2026-09-06 |
+| **Reassessment Due** | 2026-09-17 |
 | **Blocking Release** | No |
 
 ### Description
 
-Integer overflow or wraparound in util-linux's libblkid DOS partition-table
-parser (`libblkid/src/partitions/dos.c`). Trivy reports the finding against the
-`libuuid1` binary package because Debian tracks vulnerabilities per source
-package (`util-linux`); the vulnerable code lives in libblkid, not in the UUID
-library itself.
+A denial-of-service defect in Expat through 2.8.3. It is the seventh Expat CVE
+this project tracked and the only one still open; the other six were fixed in
+`expat 2.8.2-1~deb13u1` (DSA-6404-1) and now sit under "Resolution detail: the
+six Expat CVEs, `gawk` and `perl-base`" in Resolved Entries. It entered the feed
+between two scheduled scans: the 2026-08-26 run reported 35 findings and did not mention it,
+the 2026-09-02 run reports it against both `libexpat1` and `libexpat1-dev`.
+Like the other six it requires processing attacker-controlled XML through Expat.
 
 ### Impact on This Project
 
-`libuuid1` ships in the production runtime base image
-(`ghcr.io/byronwilliamscpa/dhi-python:3.14-debian13`). The vulnerable code path
-is libblkid's parsing of DOS partition tables on block devices. The application
-container never probes or parses block-device partition tables: it runs a
-FastAPI web service with no raw device access, and libblkid's partition APIs
-are not exercised by any runtime dependency. Exposure through the application
-surface is negligible.
+Accepted on the same reasoning that covered the six now-resolved Expat CVEs.
+`libexpat1`/`libexpat1-dev` ship in the production runtime base
+image; the application does not call into Expat (no `xml.parsers.expat` usage
+in this codebase) and parses no untrusted XML on any request path, because the
+API speaks JSON only. Exposure through the application surface is negligible.
 
 ### Remediation Plan
 
-- [x] Monitor the [Debian security tracker](https://security-tracker.debian.org/tracker/CVE-2026-53615)
-  for a fixed `util-linux` package in trixie. **Done, and it has shipped:**
-  trixie-security carries 2.41.5-0+deb13u1, status `fixed`
-- [x] Confirm the fixed package has reached the base image. **It has:** the
-  `3.14-debian13` tag's current build (`3.14.7-debian13`) ships
-  `libuuid1 2.41.5-0+deb13u1+dhi2`
-- [ ] **Land the base-image digest refresh.** This is now the whole remedy, and
-  it is already open as [PR #798](https://github.com/ByronWilliamsCPA/cyo-adventure/pull/798),
-  which moves the pin from `sha256:5bbd41ae` to `sha256:d66d6403`
-- [ ] On that merge, delete the `.trivyignore.yaml` suppression and move this
-  entry to Resolved
+- [ ] Monitor the [Debian security tracker](https://security-tracker.debian.org/tracker/source-package/expat)
+  for a fixed `expat` package that flows into the next DHI mirror rebuild
+- [ ] Once a fixed digest is published, remove this suppression and re-run the
+  Container Security scan to confirm the finding is gone
+- [ ] Reassess by 2026-09-17
 
 ### Why Not Fixed Yet
 
-Not for want of a fix: one exists, and the only thing between this project and
-it is a one-line digest bump that is already in review. Recorded plainly
-because the previous text ("Debian has not released a patched `util-linux` for
-trixie") is now false and would otherwise keep a stale justification alive.
-
-**Why `Reassessment Due` was deliberately NOT extended.** The Release Gate
-Policy allows a new date within 90 days of a reassessment, and this entry was
-reassessed on 2026-09-03. The date stays at 2026-09-06 anyway. Extending it
-would convert "a fix exists and we have not applied it" into another quarter of
-silence, which is the opposite of what the process gate is for. The same
-reasoning is already written into `.trivy/ignore-policy.rego`, whose
-`not input.FixedVersion` guard exists so that a *fixable* finding keeps failing
-the scan and prompts exactly this digest refresh. If PR #798 has not merged by
-2026-09-06, the gate closing is the correct outcome, not a paperwork failure.
-
-### Verification (2026-09-03)
-
-`security-tracker.debian.org` is reachable from this project's cloud sessions
-again, which it was not when the earlier entries were written (issue #711,
-item 1). Fix status is therefore corroborated independently of Trivy's own feed
-for the first time:
-
-- Debian tracker, `util-linux`: trixie `2.41-5` vulnerable,
-  **trixie-security `2.41.5-0+deb13u1` fixed**, forky and sid fixed. Upstream
-  fix commits `a2d85817` (v2.42) and `05c2dbad` (v2.41.4).
-- Base image, read directly from the GHCR manifest and layer contents rather
-  than inferred: pinned `sha256:5bbd41ae` ships `libuuid1 2.41-5+dhi3`; the
-  tag's current build ships `2.41.5-0+deb13u1+dhi2`.
-- Trivy 0.70.0 over both filesystems: CVE-2026-53615 present on the pinned
-  digest with `FixedVersion 2.41.5-0+deb13u1`, absent on the newer one.
-
-The reassessment also surfaced three sibling `libuuid1` CVEs that no entry
-covers and no suppression hides, all HIGH and all fixable by the same digest:
-CVE-2026-53612, CVE-2026-53613 and CVE-2026-53614. They need no acceptance
-entry, because the correct handling of a fixable finding is to fix it, and
-PR #798 does.
+Debian has not released a patched `expat` build for the DHI mirror's Debian 13
+snapshot. Checked directly on 2026-09-02 against both the previously pinned base
+digest (`sha256:5bbd41ae`) and the digest now on `main` (`sha256:d66d6403`):
+Trivy reports status `affected` with an empty Fixed Version on both, so the
+digest refresh that cleared the other 42 CVEs in that round does not clear this
+one. Re-confirmed on 2026-09-03 by reading the shipped package version out of
+the pinned digest rather than trusting a scan verdict: `libexpat1` is at 2.8.3,
+inside the affected range. The package comes from the hardened base image, which ships
+no shell and no package manager, so there is no project-side upgrade path.
 
 ### References
 
-- [NVD CVE-2026-53615](https://nvd.nist.gov/vuln/detail/CVE-2026-53615)
-- [Debian security tracker CVE-2026-53615](https://security-tracker.debian.org/tracker/CVE-2026-53615)
+- [Debian security tracker: CVE-2026-66046](https://security-tracker.debian.org/tracker/CVE-2026-66046), the
+  authoritative source for the `affected`, no-fix-available status this
+  entry records
+- [Debian security tracker: expat](https://security-tracker.debian.org/tracker/source-package/expat)
+- [CVE record CVE-2026-66046](https://www.cve.org/CVERecord?id=CVE-2026-66046)
+- Aqua AVD has no page for this CVE yet, so the sibling entries'
+  `avd.aquasec.com/nvd/<cve-id>` link is deliberately omitted here rather
+  than added dead. Re-add it once AVD publishes; do not restore it blind,
+  the link check treats a 404 as a build failure.
 - Discovered by the Container Security workflow (Trivy) on
-  [PR #165](https://github.com/ByronWilliamsCPA/cyo-adventure/pull/165)
+  [run 33601842565](https://github.com/ByronWilliamsCPA/cyo-adventure/actions/runs/33601842565)
 
 ---
 
@@ -525,6 +499,7 @@ does not read it. New unfixed kernel-header CVEs will not be appended.
 | CVE-2026-42497   | perl-base      | 2026-09-03    | Not applicable: `perl-base` is not in the image.       |
 | CVE-2026-48962   | perl-base      | 2026-09-03    | Not applicable: `perl-base` is not in the image.       |
 | CVE-2026-9538    | perl-base      | 2026-09-03    | Not applicable: `perl-base` is not in the image.       |
+| CVE-2026-53615   | libuuid1       | 2026-09-03    | Fixed by base util-linux 2.41.5-0+deb13u1+dhi2 (#798). |
 
 The four `linux-libc-dev` rows were all cleared by a base-image digest refresh rather than
 by a suppression. They are the precedent for the `not input.FixedVersion` guard in
@@ -537,9 +512,12 @@ PYSEC-2022-43183); PYSEC-2026-89 is CVE-2025-69534 and GHSA-5wmx-573v-2qwq.
 
 ### Resolution detail: the six Expat CVEs, `gawk` and `perl-base` (2026-09-03)
 
-Fifteen of the nineteen per-CVE suppressions in `.trivyignore.yaml` were retired in one
-pass on 2026-09-03. None of them needed a base-image change to retire: **every one was
-already dead against the digest this project has pinned since 2026-08-22**. They were
+Fifteen of the twenty per-CVE suppressions in `.trivyignore.yaml` were retired in one
+pass on 2026-09-03. None of those fifteen needed a base-image change to retire: **every
+one was already dead against the digest this project had pinned since 2026-08-22**.
+(A sixteenth, `CVE-2026-53615` on `libuuid1`, was retired in the same pass for the
+opposite reason: it was the one entry here that ever carried an upstream fix, and the
+digest refresh in PR #798 is what delivered it. Its detail is below.) They were
 suppressing findings that no longer existed, which is the failure mode a suppression file
 is least able to report on itself, because a suppressed finding and an absent finding look
 identical from the outside. The check that separates them has to be run deliberately, and
@@ -716,4 +694,4 @@ re-verified rather than carried forward:
 | 2026-08-16  | Byron Williams | Consolidated all eight `linux-libc-dev` per-CVE entries (61 CVEs) into a single package-scoped acceptance, enforced by `.trivy/ignore-policy.rego` via `trivy.yaml` rather than by 61 `.trivyignore` lines. The policy suppresses only findings with NO fixed version, so the CVE-2026-64530 / CVE-2026-64531 case (cleared by a base-image bump) would still surface today. Reassessment set to 2026-09-17, the earliest date carried by any superseded entry, so consolidation extends no deadline. Removed the duplicate CVE-2026-68480 block introduced on 2026-08-08. Corrected the libuuid1 and gawk entries, which named the 3.12 base image while the project has run 3.14 since #295, and replaced the placeholder creation date (UW-K02). Reassessment dates are now machine-enforced by `scripts/check_known_vulnerabilities.py`; two entries surfaced by the 2026-08-16 scan (CVE-2025-68174, CVE-2025-68735) are covered by the policy without individual entries. Answers item 2 of issue #711: the reusable workflow exposes no `ignore-unfixed` input, and none is needed. |
 | 2026-08-17  | Byron Williams | Reassessment window widened from 60 to 90 days, aligning this document with the org-wide `ignore-expiry-horizon-days` default in `ByronWilliamsCPA/.github` PR #293 so the repository and the reusable container-security workflow cannot disagree about how long a suppression may live. Added a `Last Reassessed` field: the window now runs from the last time evidence was gathered, so renewing an entry no longer requires editing `Discovered`. Closed UW-D31 by documenting the eight suppressions that entered the tree undocumented in `d1907a8` (PR #668, a frontend change): perl-base (5, including two Critical), libsqlite3-0 (2, both Medium and therefore inert at the CRITICAL,HIGH scan threshold) and ncurses (1). Fix status read directly from Trivy 0.70.0's Debian advisory records rather than inferred from scan absence; three perl CVEs carry Debian's `fix_deferred` status. Independent Debian-tracker corroboration is still outstanding and is recorded as such in each entry, since that host is unreachable from cloud sessions (#711 item 1). `known-vulnerabilities-baseline.toml` deleted: no grandfathered debt remains. |
 | 2026-08-17  | Byron Williams | Migrated `.trivyignore` to `.trivyignore.yaml`, adopting the org revisit-date format from `ByronWilliamsCPA/.github` PR #293 and bumping the reusable workflow pin to v10.1.0 (`07f56c2`). All 19 per-CVE suppressions now carry a `statement` and an `expired_at`; the plain-text format could not express an expiry, so every entry in it was permanent by construction. Verified both directions against Trivy 0.70.0: an unexpired entry suppresses, an expired one lets the finding back into the gate. The org's own `check_trivy_ignore_expiry.py` passes on the new file (19/19 within 90 days), and would have failed the bump had the plain file remained. Adopted `ignore-unfixed` scoped by trigger so only fixable findings gate a merge while push, schedule and manual runs keep the full inventory and the Security tab. Pinned `central-checker-ref` to a SHA rather than the default floating `main`, which would otherwise execute a moving third-party script in this repository's CI. Declined `python-container-revisit.yml`: its per-CVE tracker issue would rebuild the enumeration the 2026-08-16 consolidation removed. |
-| 2026-09-03  | Claude Code    | Reassessed all seven active entries against sources that were unreachable when they were written; `security-tracker.debian.org` is available from cloud sessions again, which discharges the standing corroboration caveat on the `libsqlite3-0`, `ncurses` and `perl-base` entries and closes issue #711 item 1. Retired 15 of the 19 per-CVE suppressions, all of them already dead against the pinned digest: the six Expat CVEs (fixed in trixie-security by `expat 2.8.2-1~deb13u1`, DSA-6404-1, and the base has shipped `2.8.2-1~deb13u1+dhi0` for weeks) plus nine naming `gawk` and `perl-base`, neither of which is in the image at all. Evidence read out of the GHCR layers and a Trivy 0.70.0 run over the extracted filesystem, not out of a scan report, since a suppressed finding and an absent one are indistinguishable from the outside. Corrected two claims that had gone stale: `libsqlite3-0` CVE-2026-11822/11824 are now High, not Medium, so the entry's "currently inert" note was wrong and those two suppressions are load-bearing; and CVE-2026-53615 (`libuuid1`) is no longer unfixed, `util-linux 2.41.5-0+deb13u1` is on trixie-security and in the base image's current build. Its `Reassessment Due` was deliberately left at 2026-09-06 rather than extended, because the remedy is the digest refresh already open as PR #798 and a fixable finding should not buy another quarter of silence. That refresh also clears 38 fixable HIGH `linux-libc-dev` findings and 6 fixable HIGH findings in `libuuid1` and OpenSSL that no entry covers and that are currently failing Container Security on `main`. |
+| 2026-09-03  | Claude Code    | Reassessed all seven active entries against sources that were unreachable when they were written; `security-tracker.debian.org` is available from cloud sessions again, which discharges the standing corroboration caveat on the `libsqlite3-0`, `ncurses` and `perl-base` entries and closes issue #711 item 1. Retired 16 of the 20 per-CVE suppressions. Fifteen were already dead against the pinned digest: the six Expat CVEs (fixed in trixie-security by `expat 2.8.2-1~deb13u1`, DSA-6404-1, and the base has shipped `2.8.2-1~deb13u1+dhi0` for weeks) plus nine naming `gawk` and `perl-base`, neither of which is in the image at all. Evidence read out of the GHCR layers and a Trivy 0.70.0 run over the extracted filesystem, not out of a scan report, since a suppressed finding and an absent one are indistinguishable from the outside. Corrected two claims that had gone stale: `libsqlite3-0` CVE-2026-11822/11824 are now High, not Medium, so the entry's "currently inert" note was wrong and those two suppressions are load-bearing; and CVE-2026-53615 (`libuuid1`) is no longer unfixed, `util-linux 2.41.5-0+deb13u1` is on trixie-security and in the base image's current build. Its `Reassessment Due` was deliberately left at 2026-09-06 rather than extended, because the remedy was the digest refresh then open as PR #798 and a fixable finding should not buy another quarter of silence. PR #798 has since merged, so that sixteenth suppression is retired here and its entry moved to Resolved, discharging the plan it recorded. Re-verified on 2026-09-03 by reading the shipped package version out of the merged digest (`sha256:d66d6403`) rather than from a scan verdict: `libuuid1` is at 2.41.5, and `gawk` and `perl-base` are absent from all 118 packages. The same digest clears 38 fixable HIGH `linux-libc-dev` findings and 6 fixable HIGH findings in `libuuid1` and OpenSSL that no entry covers. CVE-2026-66046 (`libexpat1`) is the one Expat CVE the refresh does NOT clear: the image ships `libexpat1` 2.8.3, inside its affected range, so its suppression is retained. |

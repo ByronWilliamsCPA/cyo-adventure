@@ -72,9 +72,10 @@ Security scanning with:
 A `Security Gate Validation` job fans in and is the required status check.
 
 CodeQL is not run here: it ran through GitHub code scanning **default setup**,
-which has no workflow file, and was disabled on 2026-08-03. Dependency review
-lives in its own `dependency-review.yml`. Safety and OWASP dependency check are
-not used in this repository.
+which has no workflow file, and was disabled on 2026-08-03. `dependency-review.yml`
+was removed (GitHub Advanced Security / Code Security is not enabled on this
+repository, so the `dependency-review-action` cannot run). Safety and OWASP
+dependency check are not used in this repository.
 
 **Triggers**: Push/PR to main, merge queue, daily schedule (09:07 UTC), manual
 dispatch. Daily rather than weekly since issue #594: this schedule is the floor

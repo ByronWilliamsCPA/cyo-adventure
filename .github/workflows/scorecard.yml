@@ -34,7 +34,6 @@ jobs:
     timeout-minutes: 30
     permissions:
       contents: read
-      security-events: write
       id-token: write
       actions: read
     steps:
@@ -58,11 +57,6 @@ jobs:
           # Distinct from the deprecated `publish-results` reusable-workflow
           # input (hyphen) removed from the org-workflow caller above.
           publish_results: true
-
-      - name: Upload SARIF results
-        uses: github/codeql-action/upload-sarif@f205ea1c3313d32999d8d6a48b4f6530d4437b38 # v4.37.4
-        with:
-          sarif_file: results.sarif
 
       - name: Upload Scorecard results as artifact
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1

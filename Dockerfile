@@ -43,9 +43,11 @@ COPY --from=ghcr.io/astral-sh/uv:0.8.17@sha256:db99140470350437166de1fc646323ecb
 # shipped /opt/python/bin/python3.12 (a symlink into /opt/python-3.12.13),
 # but 3.14-debian13 ships the interpreter at /usr/bin/python3.14 with no
 # /opt/python at all (verified by listing the image layers, 2026-07-18;
-# re-verified 2026-08-11 against digest sha256:5bbd41ae, which is unchanged on
-# all three counts: /usr/bin/python3.14 real, /usr/bin/python3 a symlink to it,
-# no /opt/python, Python 3.14.6, OpenSSL 3.5.6).
+# re-verified 2026-08-11 against digest sha256:5bbd41ae, and again 2026-09-02
+# against digest sha256:d66d6403, which is unchanged on all three counts:
+# /usr/bin/python3.14 real, /usr/bin/python3 a symlink to it, no /opt/python.
+# The 2026-09-02 digest moves Python 3.14.6 -> 3.14.7 and OpenSSL 3.5.6 ->
+# 3.5.7, so the fips-image-floor probe's `>= 3.5` assertion still holds).
 # On any base-image bump, re-verify the interpreter path in the new image
 # and keep this symlink, UV_PYTHON, and the fips-image-floor probe in
 # .github/workflows/fips-compatibility.yml in sync with it.
@@ -81,7 +83,7 @@ RUN uv sync --frozen --no-dev --extra api
 # =============================================================================
 # DHI hardened Python image: ~95% CVE reduction vs python:3.14-slim, ships 150
 # CA certs, no shell. Mirror syncs weekly from dhi.io/python:3.14-debian13.
-FROM ghcr.io/byronwilliamscpa/dhi-python:3.14-debian13@sha256:5bbd41aef3ca86147ef389f3f0d944aa89bbae0d6c3ee31417e7bed15342aadf
+FROM ghcr.io/byronwilliamscpa/dhi-python:3.14-debian13@sha256:d66d64039889e6d01eac264e75a28a55e5d240675d7274b42cfcea25333db442
 
 # Metadata labels (OCI standard)
 LABEL org.opencontainers.image.title="CYO Adventure"
