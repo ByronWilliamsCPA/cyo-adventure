@@ -83,11 +83,27 @@ jobs:
 
       - name: Run FIPS compatibility check
         id: fips-check
+        env:
+          # #CRITICAL security: a `${{ }}` expansion inside `run:` is spliced
+          # into the shell SOURCE before bash sees it, so the value is code
+          # rather than data. Reaching it through env keeps it a string. This
+          # input is a workflow_dispatch boolean today, but the property should
+          # not depend on that staying true.
+          # #VERIFY no `${{ }}` expansion of an input appears inside this
+          # step's `run:` block.
+          STRICT_MODE: ${{ github.event.inputs.strict_mode }}
         run: |
-          # Run the FIPS check script
-          STRICT_FLAG=""
-          if [[ "${{ github.event.inputs.strict_mode }}" == "true" ]]; then
-            STRICT_FLAG="--strict"
+          # Run the FIPS check script.
+          #
+          # An ARRAY, not a string: an unquoted "$STRICT_FLAG" relies on word
+          # splitting to vanish when empty (SC2086), which is the same
+          # mechanism that would split a value containing whitespace into two
+          # arguments. "${STRICT_FLAG[@]}" expands to zero arguments when the
+          # array is empty and to exactly one otherwise, so the empty case
+          # works without an unquoted expansion.
+          STRICT_FLAG=()
+          if [[ "${STRICT_MODE}" == "true" ]]; then
+            STRICT_FLAG=(--strict)
           fi
 
           # Run check and capture output. pipefail is required: the default
@@ -102,7 +118,7 @@ jobs:
             --fix-hints \
             --include-tests \
             --fail-level info \
-            $STRICT_FLAG \
+            "${STRICT_FLAG[@]}" \
             2>&1 | tee fips-report.txt
           EXIT_CODE=$?
           set +o pipefail
@@ -115,7 +131,7 @@ jobs:
             --fail-level info \
             > fips-report.json 2>/dev/null || true
 
-          echo "exit_code=$EXIT_CODE" >> $GITHUB_OUTPUT
+          echo "exit_code=$EXIT_CODE" >> "$GITHUB_OUTPUT"
 
           # Extract summary for PR comment
           if [ -f fips-report.json ]; then
@@ -123,10 +139,12 @@ jobs:
             WARNINGS=$(jq -r '.summary.warnings' fips-report.json)
             INFO=$(jq -r '.summary.info' fips-report.json)
             ACKNOWLEDGED=$(jq -r '.summary.acknowledged' fips-report.json)
-            echo "errors=$ERRORS" >> $GITHUB_OUTPUT
-            echo "warnings=$WARNINGS" >> $GITHUB_OUTPUT
-            echo "info=$INFO" >> $GITHUB_OUTPUT
-            echo "acknowledged=$ACKNOWLEDGED" >> $GITHUB_OUTPUT
+            {
+              echo "errors=$ERRORS"
+              echo "warnings=$WARNINGS"
+              echo "info=$INFO"
+              echo "acknowledged=$ACKNOWLEDGED"
+            } >> "$GITHUB_OUTPUT"
           fi
 
       - name: Upload FIPS report

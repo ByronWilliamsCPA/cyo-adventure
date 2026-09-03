@@ -53,10 +53,10 @@ jobs:
         id: check-fuzz
         run: |
           if [ -d "fuzz" ] && [ -n "$(find fuzz -name '*.py' -type f 2>/dev/null)" ]; then
-            echo "has-targets=true" >> $GITHUB_OUTPUT
+            echo "has-targets=true" >> "$GITHUB_OUTPUT"
           else
-            echo "has-targets=false" >> $GITHUB_OUTPUT
-            echo "ℹ️  No fuzz targets found in fuzz/ directory. Skipping fuzzing." >> $GITHUB_STEP_SUMMARY
+            echo "has-targets=false" >> "$GITHUB_OUTPUT"
+            echo "ℹ️  No fuzz targets found in fuzz/ directory. Skipping fuzzing." >> "$GITHUB_STEP_SUMMARY"
           fi
 
       - name: Build Fuzzers
@@ -100,12 +100,14 @@ jobs:
       - name: Fuzzing Summary
         if: always()
         run: |
-          echo "## Fuzzing Results" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-          echo "- **Sanitizer**: ${{  matrix.sanitizer  }}" >> $GITHUB_STEP_SUMMARY
-          echo "- **Duration**: 600 seconds" >> $GITHUB_STEP_SUMMARY
-          echo "- **Build Status**: ${{  steps.build.outcome  }}" >> $GITHUB_STEP_SUMMARY
-          echo "- **Run Status**: ${{  steps.run.outcome  }}" >> $GITHUB_STEP_SUMMARY
+          {
+            echo "## Fuzzing Results"
+            echo ""
+            echo "- **Sanitizer**: ${{  matrix.sanitizer  }}"
+            echo "- **Duration**: 600 seconds"
+            echo "- **Build Status**: ${{  steps.build.outcome  }}"
+            echo "- **Run Status**: ${{  steps.run.outcome  }}"
+          } >> "$GITHUB_STEP_SUMMARY"
 
       - name: File tracking issue on scheduled failure
         # Schedule-only workflows fail invisibly: no pull request turns red, so this

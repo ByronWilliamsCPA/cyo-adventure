@@ -87,11 +87,17 @@ name: Semantic Release
   workflow_dispatch:
     inputs:
       force_level:
-        description: 'Force bump level (leave empty for auto)'
+        # 'auto', not '': an empty `choice` option is not valid workflow
+        # syntax (actionlint syntax-check), and it renders as a blank row in
+        # the dispatch UI that reads as a missing entry rather than as the
+        # default. Both consumers below treat 'auto' and '' alike, because a
+        # `schedule` run supplies neither.
+        description: 'Force bump level (auto = let Conventional Commits decide)'
         required: false
         type: choice
+        default: auto
         options:
-          - ''
+          - auto
           - patch
           - minor
           - major
@@ -225,8 +231,10 @@ jobs:
           FORCE_LEVEL: ${{ inputs.force_level }}
         run: |
           CURRENT="$(uv version --short)"
+          # Empty on a schedule/push run (inputs are unset), 'auto' when a
+          # human dispatched without picking a level; neither forces a bump.
           FORCE_FLAG=""
-          if [ -n "${FORCE_LEVEL}" ]; then
+          if [ -n "${FORCE_LEVEL}" ] && [ "${FORCE_LEVEL}" != "auto" ]; then
             FORCE_FLAG="--${FORCE_LEVEL}"
           fi
           # shellcheck disable=SC2086  # FORCE_FLAG is intentionally unquoted
@@ -267,8 +275,10 @@ jobs:
           CURRENT: ${{ steps.version.outputs.current }}
         run: |
           set -euo pipefail
+          # Empty on a schedule/push run (inputs are unset), 'auto' when a
+          # human dispatched without picking a level; neither forces a bump.
           FORCE_FLAG=""
-          if [ -n "${FORCE_LEVEL}" ]; then
+          if [ -n "${FORCE_LEVEL}" ] && [ "${FORCE_LEVEL}" != "auto" ]; then
             FORCE_FLAG="--${FORCE_LEVEL}"
           fi
           # shellcheck disable=SC2086  # FORCE_FLAG is intentionally unquoted
@@ -360,6 +370,107 @@ jobs:
         run: |
           set -euo pipefail
           BRANCH="release/v${NEXT}"
+          MAX_ATTEMPTS=3
+
+          # #CRITICAL external: every GitHub API call in this step is a network
+          # call that can return a transient 5xx, and until issue #757 only the
+          # branch LOOKUP below was protected: the PATCH and POST that follow
+          # it, `gh pr list`, `gh pr create` and `gh pr merge --auto` all ran
+          # bare under `set -e`, so one 503 aborted the run at that point. That
+          # is the same failure mode that deadlocked this pipeline for a week
+          # (issue #752), one job over.
+          # #VERIFY: every `gh` invocation in this step is retried, and the two
+          # that are not wrapped in `retry_api` say why at their call site:
+          # `gh api graphql` has the surrounding expectedHeadOid loop, and
+          # `gh pr create` must not be blindly retried (a lost response means
+          # the PR exists) so its recovery is the retried re-lookup instead.
+          #
+          # Output is captured rather than streamed so a retry does not print a
+          # scary error for a call that then succeeded. Callers read stdout from
+          # RETRY_OUT and the failure text from RETRY_ERR.
+          RETRY_OUT=""
+          RETRY_ERR=""
+          retry_api() {
+            local what="$1"
+            shift
+            local attempt=1
+            local status=0
+            local out_file err_file
+            out_file="$(mktemp)"
+            err_file="$(mktemp)"
+            while [ "${attempt}" -le "${MAX_ATTEMPTS}" ]; do
+              set +e
+              "$@" >"${out_file}" 2>"${err_file}"
+              status=$?
+              set -e
+              RETRY_OUT="$(cat "${out_file}")"
+              RETRY_ERR="$(cat "${err_file}")"
+              if [ "${status}" -eq 0 ]; then
+                rm -f "${out_file}" "${err_file}"
+                return 0
+              fi
+              echo "${what} failed (attempt ${attempt}/${MAX_ATTEMPTS}):" \
+                "${RETRY_ERR}" >&2
+              attempt=$((attempt + 1))
+              if [ "${attempt}" -le "${MAX_ATTEMPTS}" ]; then
+                sleep 2
+              fi
+            done
+            rm -f "${out_file}" "${err_file}"
+            return "${status}"
+          }
+
+          # #CRITICAL data-integrity: close every OTHER open release/* PR before
+          # touching this one (issue #755). `propose` reuses a release PR only
+          # when the branch name matches exactly, and the branch name carries
+          # the computed version. If yesterday's PR never merged, no tag was
+          # written, so today recomputes from the same base -- and that
+          # recomputation changes the moment the highest-ranking commit type in
+          # the window changes (only `fix:` yesterday -> `release/v0.82.1`; a
+          # `feat:` lands today -> `release/v0.83.0`). The `--head` lookup then
+          # finds nothing and opens a SECOND PR, leaving the first orphaned with
+          # auto-merge still armed. If whatever blocked it later clears, it
+          # merges after the newer one and applies a LOWER version bump out of
+          # order.
+          #
+          # Only the newest computed version is ever correct, so any other open
+          # release PR is superseded by construction and closing it is always
+          # right. Auto-merge is disabled BEFORE the close, not after: if the
+          # close were to fail, an armed PR must not be what is left behind.
+          #
+          # This runs before the clean-tree early exit below on purpose. A
+          # re-run that finds the bump already applied still needs the stale PR
+          # gone, and that path returns without reaching any of the code after
+          # it.
+          # #VERIFY: at most one open release/* PR exists once this step
+          # returns, and it is the one for ${BRANCH}.
+          if ! retry_api "listing open release PRs" \
+              gh pr list --state open --limit 100 --json number,headRefName \
+                --jq '.[] | select(.headRefName | startswith("release/")) | "\(.number) \(.headRefName)"'; then
+            echo "::error::Could not list open release PRs: ${RETRY_ERR}"
+            exit 1
+          fi
+          while read -r STALE_NUMBER STALE_BRANCH; do
+            [ -n "${STALE_NUMBER}" ] || continue
+            [ "${STALE_BRANCH}" != "${BRANCH}" ] || continue
+            echo "Closing superseded release PR #${STALE_NUMBER}" \
+              "(${STALE_BRANCH}); v${NEXT} supersedes it."
+            # A PR with auto-merge never enabled makes this exit non-zero, which
+            # is not a failure: the post-condition (auto-merge is off) already
+            # holds. The close below is what must succeed.
+            retry_api "disabling auto-merge on #${STALE_NUMBER}" \
+              gh pr merge "${STALE_NUMBER}" --disable-auto || true
+            if ! retry_api "closing superseded release PR #${STALE_NUMBER}" \
+                gh pr close "${STALE_NUMBER}" \
+                  --comment "Superseded by the release PR for v${NEXT}. This branch's version was recomputed from the same base after it did not merge, so merging it now would apply a lower version bump out of order (#755)."; then
+              echo "::error::Could not close superseded release PR" \
+                "#${STALE_NUMBER} (${STALE_BRANCH}): ${RETRY_ERR}. It still" \
+                "carries auto-merge state that could apply an out-of-order" \
+                "version bump; close it by hand before re-running."
+              exit 1
+            fi
+          done <<< "${RETRY_OUT}"
+
           # #EDGE external: a re-run after a partial run (or after the hard-fail
           # auto-merge path below) can reach here with the bump already applied
           # and nothing changed on disk vs. HEAD; there is nothing new to
@@ -418,7 +529,7 @@ jobs:
 
           COMMIT_OID=""
           ATTEMPT=1
-          MAX_ATTEMPTS=3
+          # MAX_ATTEMPTS is set at the top of this step; `retry_api` reads it too.
           while [ -z "${COMMIT_OID}" ] && [ "${ATTEMPT}" -le "${MAX_ATTEMPTS}" ]; do
             # Release branches are machine-owned; reset the ref to the
             # current main tip on every attempt so a retry (or a recomputed
@@ -436,12 +547,25 @@ jobs:
               2>&1 >/dev/null)"
             LOOKUP_STATUS=$?
             set -e
+            # Issue #757: these two mutations used to run bare, so a transient
+            # 5xx on either aborted the run under `set -e` WITHOUT re-entering
+            # this loop -- the careful non-404 handling below protected only the
+            # read. `retry_api` gives them the same protection.
             if [ "${LOOKUP_STATUS}" -eq 0 ]; then
-              gh api -X PATCH "repos/${GITHUB_REPOSITORY}/git/refs/heads/${BRANCH}" \
-                -f sha="${BASE_SHA}" -F force=true >/dev/null
+              if ! retry_api "resetting ${BRANCH} to ${BASE_SHA}" \
+                  gh api -X PATCH \
+                    "repos/${GITHUB_REPOSITORY}/git/refs/heads/${BRANCH}" \
+                    -f sha="${BASE_SHA}" -F force=true; then
+                echo "::error::Could not reset ${BRANCH}: ${RETRY_ERR}"
+                exit 1
+              fi
             elif echo "${LOOKUP_ERR}" | grep -q "HTTP 404"; then
-              gh api -X POST "repos/${GITHUB_REPOSITORY}/git/refs" \
-                -f ref="refs/heads/${BRANCH}" -f sha="${BASE_SHA}" >/dev/null
+              if ! retry_api "creating ${BRANCH} at ${BASE_SHA}" \
+                  gh api -X POST "repos/${GITHUB_REPOSITORY}/git/refs" \
+                    -f ref="refs/heads/${BRANCH}" -f sha="${BASE_SHA}"; then
+                echo "::error::Could not create ${BRANCH}: ${RETRY_ERR}"
+                exit 1
+              fi
             else
               echo "Branch lookup for ${BRANCH} failed with a non-404 error" \
                 "(attempt ${ATTEMPT}/${MAX_ATTEMPTS}): ${LOOKUP_ERR}" >&2
@@ -530,11 +654,22 @@ jobs:
           # #VERIFY every release commit is confirmed Verified before this
           # step is allowed to succeed; if this ever fires, fix the
           # commit-creation path above, do not admin-merge past it.
-          VERIFIED="$(gh api "repos/${GITHUB_REPOSITORY}/commits/${COMMIT_OID}" \
-            --jq '.commit.verification.verified')"
+          if ! retry_api "reading the signature status of ${COMMIT_OID}" \
+              gh api "repos/${GITHUB_REPOSITORY}/commits/${COMMIT_OID}" \
+                --jq '.commit.verification.verified'; then
+            echo "::error::Could not read the signature status of release" \
+              "commit ${COMMIT_OID}: ${RETRY_ERR}. Treating an unreadable" \
+              "verification as unverified rather than assuming it is fine."
+            exit 1
+          fi
+          VERIFIED="${RETRY_OUT}"
           if [ "${VERIFIED}" != "true" ]; then
-            REASON="$(gh api "repos/${GITHUB_REPOSITORY}/commits/${COMMIT_OID}" \
-              --jq '.commit.verification.reason')"
+            REASON="unknown"
+            if retry_api "reading the signature reason for ${COMMIT_OID}" \
+                gh api "repos/${GITHUB_REPOSITORY}/commits/${COMMIT_OID}" \
+                  --jq '.commit.verification.reason'; then
+              REASON="${RETRY_OUT}"
+            fi
             echo "::error::Release commit ${COMMIT_OID} on ${BRANCH} is not" \
               "verified (reason: ${REASON}). Branch protection will block" \
               "this PR from merging; fix the commit-creation path in this" \
@@ -542,10 +677,28 @@ jobs:
             exit 1
           fi
           # Reuse an existing open release PR for this branch, else create one.
-          PR_NUMBER="$(gh pr list --head "${BRANCH}" --state open \
-            --json number --jq '.[0].number // empty')"
+          find_release_pr() {
+            retry_api "looking up the release PR for ${BRANCH}" \
+              gh pr list --head "${BRANCH}" --state open \
+                --json number --jq '.[0].number // empty'
+          }
+          if ! find_release_pr; then
+            echo "::error::Could not look up the release PR for ${BRANCH}:" \
+              "${RETRY_ERR}"
+            exit 1
+          fi
+          PR_NUMBER="${RETRY_OUT}"
           if [ -z "${PR_NUMBER}" ]; then
-            gh pr create \
+            # #CRITICAL external: `gh pr create` is NOT wrapped in retry_api.
+            # A create whose response was lost in transit has still created the
+            # PR, so a blind retry opens a duplicate -- the exact orphaned-PR
+            # state the cleanup at the top of this step exists to prevent. The
+            # re-lookup below is the retry: it is idempotent, it is already
+            # retried, and it distinguishes "created but unreported" from
+            # "never created" by asking GitHub instead of guessing.
+            # #VERIFY: no retry wraps `gh pr create`; recovery is the re-lookup.
+            set +e
+            CREATE_ERR="$(gh pr create \
               --base main \
               --head "${BRANCH}" \
               --title "chore(release): v${NEXT}" \
@@ -559,9 +712,19 @@ jobs:
                 "" \
                 "Closes #183" \
                 "Closes #157" \
-                "Closes #158")"
-            PR_NUMBER="$(gh pr list --head "${BRANCH}" --state open \
-              --json number --jq '.[0].number // empty')"
+                "Closes #158")" 2>&1 >/dev/null)"
+            CREATE_STATUS=$?
+            set -e
+            if [ "${CREATE_STATUS}" -ne 0 ]; then
+              echo "gh pr create for ${BRANCH} reported a failure; asking" \
+                "GitHub whether it landed anyway: ${CREATE_ERR}" >&2
+            fi
+            if ! find_release_pr; then
+              echo "::error::Could not look up the release PR for ${BRANCH}" \
+                "after creating it: ${RETRY_ERR}"
+              exit 1
+            fi
+            PR_NUMBER="${RETRY_OUT}"
           fi
           # #CRITICAL external: an empty PR number means the release silently
           # stalls; fail loudly instead of feeding "null" to gh pr merge.
@@ -577,7 +740,8 @@ jobs:
           # hard rather than emit a swallowed warning, matching the empty
           # PR_NUMBER guard above. #VERIFY a failed `gh pr merge --auto` is a
           # hard error (exit 1), not a warning.
-          if ! gh pr merge "${PR_NUMBER}" --auto; then
+          if ! retry_api "enabling auto-merge on #${PR_NUMBER}" \
+              gh pr merge "${PR_NUMBER}" --auto; then
             echo "::error::Could not enable auto-merge on release PR" \
               "#${PR_NUMBER}; re-run the workflow or merge it manually to" \
               "publish v${NEXT}."

@@ -9,7 +9,13 @@
 // action was written to end, which makes an untested version of it the same
 // class of risk as the copy-pasted code it replaced.
 //
-// Run: node --test .github/actions/ci-failure-issue/test/
+// Run: node --test .github/actions/ci-failure-issue/test/reconcile.test.mjs
+//
+// Name the file, not the directory. `node --test <dir>/` resolves the path
+// as a module rather than as a test directory and exits 1 with
+// MODULE_NOT_FOUND (issue #774; reproduced on Node 22.22.2 and 24.18.0),
+// which reads as a broken harness rather than as a wrong invocation. The
+// `alert-action` CI job names all four harness files for the same reason.
 
 import { strict as assert } from 'node:assert'
 import { test, describe } from 'node:test'

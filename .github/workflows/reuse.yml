@@ -58,7 +58,7 @@ jobs:
       - name: Generate REUSE SPDX
         if: success()
         run: |
-          docker run --rm --volume $(pwd):/data fsfe/reuse:latest spdx --output /data/reuse-spdx.json
+          docker run --rm --volume "$(pwd):/data" fsfe/reuse:latest spdx --output /data/reuse-spdx.json
 
       - name: Upload REUSE SPDX
         if: success()
