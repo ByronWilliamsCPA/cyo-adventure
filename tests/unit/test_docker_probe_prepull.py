@@ -18,6 +18,7 @@ raising its own).
 
 from __future__ import annotations
 
+import errno
 from typing import TYPE_CHECKING, Any
 
 import pytest
@@ -26,6 +27,7 @@ from tests.integration import _docker_probe
 
 if TYPE_CHECKING:
     from collections.abc import Iterator
+    from pathlib import Path
 
 pytestmark = [pytest.mark.unit]
 
@@ -33,9 +35,15 @@ pytestmark = [pytest.mark.unit]
 class _FakeImages:
     """docker-py's ``client.images`` reduced to what the pre-pull uses."""
 
-    def __init__(self, present: set[str], pull_fails: bool = False) -> None:
+    def __init__(
+        self,
+        present: set[str],
+        pull_fails: bool = False,
+        fail_pull_for: set[str] | None = None,
+    ) -> None:
         self.present = present
         self.pull_fails = pull_fails
+        self.fail_pull_for = fail_pull_for or set()
         self.pulled: list[str] = []
         self.inspected: list[str] = []
 
@@ -49,7 +57,7 @@ class _FakeImages:
 
     def pull(self, image: str) -> object:
         """Record the pull, or fail the way a blocked registry does."""
-        if self.pull_fails:
+        if self.pull_fails or image in self.fail_pull_for:
             msg = f"denied: layer fetch for {image}"
             raise _docker_probe.DockerException(msg)
         self.pulled.append(image)
@@ -250,3 +258,141 @@ class TestThePrePullIsBestEffort:
 
         assert result is None
         assert "server API version" in error
+
+    def test_a_failing_first_image_pull_still_attempts_the_second(
+        self, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        """Regression guard for #614's actual casualty.
+
+        Issue #614's own failure was on ``testcontainers/ryuk``, second in
+        ``_images_to_pull``, not on Postgres. A loop that gives up after the
+        first image's pull fails would leave ryuk exactly as unprotected as
+        it was before this module existed, while still looking correct
+        (no exception, best-effort contract upheld) for the container image
+        that happened to pull cleanly.
+        """
+        config: Any = _docker_probe.testcontainers_config
+        monkeypatch.setattr(config, "ryuk_disabled", False)
+        monkeypatch.setattr(config, "ryuk_image", "testcontainers/ryuk:0.8.1")
+
+        images = _FakeImages(present=set(), fail_pull_for={"postgres:17-alpine"})
+        monkeypatch.setattr(
+            _docker_probe, "DockerClient", lambda: _FakeDockerClient(images)
+        )
+
+        _docker_probe._prepull(_FakeContainer("postgres:17-alpine"))
+
+        assert "testcontainers/ryuk:0.8.1" in images.pulled, (
+            "the loop stopped after the first image's pull failed, so ryuk "
+            "was never attempted"
+        )
+
+
+class TestThePullLockReportsEveryDegrade:
+    """A lock that does not do its job must say so, not just proceed.
+
+    Every test here drives the REAL ``_pull_lock``, not the always-succeeding
+    ``traced_lock`` fake the classes above use. A fake with no failure mode
+    cannot discriminate a lock that acquired from one that silently did not;
+    these tests exist because that discrimination is exactly what was
+    missing.
+    """
+
+    def test_a_lock_that_times_out_warns_before_yielding_unlocked(
+        self, monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+    ) -> None:
+        """The give-up must be witnessable, not merely non-blocking.
+
+        A fake clock stands in for ``time.monotonic``/``time.sleep`` so the
+        deadline elapses deterministically, without an actual 300-second (or
+        even a tiny real) sleep and without depending on wall-clock timing.
+        """
+        monkeypatch.setattr(_docker_probe, "_PULL_LOCK", tmp_path / "pull.lock")
+        monkeypatch.setattr(_docker_probe, "_PULL_LOCK_TIMEOUT_SECONDS", 1.0)
+
+        clock = [0.0]
+        monkeypatch.setattr(_docker_probe.time, "monotonic", lambda: clock[0])
+        monkeypatch.setattr(
+            _docker_probe.time,
+            "sleep",
+            lambda seconds: clock.__setitem__(0, clock[0] + seconds),
+        )
+
+        import fcntl
+
+        def always_contended(_fd: int, _operation: int) -> None:
+            raise BlockingIOError(errno.EAGAIN, "Resource temporarily unavailable")
+
+        monkeypatch.setattr(fcntl, "flock", always_contended)
+
+        entered = False
+        with (
+            pytest.warns(RuntimeWarning, match="gave up.*UNSERIALIZED"),
+            _docker_probe._pull_lock(),
+        ):
+            entered = True
+
+        assert entered, "the caller's critical section must still run"
+
+    def test_an_unopenable_lock_file_degrades_with_its_own_warning(
+        self, monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+    ) -> None:
+        """A full or read-only /tmp must never read as 'Docker is down'.
+
+        ``start_or_probe_error``'s except clause labels any
+        ``(DockerException, OSError)`` it catches as the Docker probe
+        failure. If ``os.open`` raises unguarded, that mislabels a
+        filesystem problem as a daemon problem; the fix must degrade inside
+        this generator instead, with its own distinct warning.
+        """
+        monkeypatch.setattr(_docker_probe, "_PULL_LOCK", tmp_path / "pull.lock")
+
+        def broken_open(*_args: object, **_kwargs: object) -> int:
+            raise OSError(errno.ENOSPC, "No space left on device")
+
+        monkeypatch.setattr(_docker_probe.os, "open", broken_open)
+
+        entered = False
+        with (
+            pytest.warns(RuntimeWarning, match="lock file.*not a Docker-daemon"),
+            _docker_probe._pull_lock(),
+        ):
+            entered = True
+
+        assert entered, "the caller's critical section must still run"
+
+    def test_a_non_contention_oserror_from_flock_surfaces_immediately(
+        self, monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+    ) -> None:
+        """Only BlockingIOError is the LOCK_NB contention signal.
+
+        Anything else out of ``flock`` (a bad fd, a filesystem that refuses
+        the call) is a genuinely unexpected failure and must not be spent
+        against the 300-second contention retry budget; it should surface at
+        once instead of being retried until the deadline.
+        """
+        monkeypatch.setattr(_docker_probe, "_PULL_LOCK", tmp_path / "pull.lock")
+
+        import fcntl
+
+        def broken_flock(_fd: int, _operation: int) -> None:
+            raise OSError(errno.EBADF, "Bad file descriptor")
+
+        monkeypatch.setattr(fcntl, "flock", broken_flock)
+
+        sleep_calls: list[float] = []
+        monkeypatch.setattr(_docker_probe.time, "sleep", sleep_calls.append)
+
+        with (
+            pytest.raises(OSError, match="Bad file descriptor"),
+            _docker_probe._pull_lock(),
+        ):
+            pytest.fail(
+                "flock's OSError should have propagated before the block "
+                "was ever entered"
+            )
+
+        assert not sleep_calls, (
+            "a non-contention OSError burned the retry budget instead of "
+            "surfacing immediately"
+        )
