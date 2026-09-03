@@ -433,26 +433,72 @@ jobs:
           # merges after the newer one and applies a LOWER version bump out of
           # order.
           #
-          # Only the newest computed version is ever correct, so any other open
-          # release PR is superseded by construction and closing it is always
-          # right. Auto-merge is disabled BEFORE the close, not after: if the
-          # close were to fail, an armed PR must not be what is left behind.
+          # "Only the newest computed version is ever correct" holds for an
+          # AUTO-COMPUTED run, where the commit window only grows, but it is
+          # FALSE for a `workflow_dispatch` run passing `force_level` (issue
+          # #774). Verified against python-semantic-release 10.6.1:
+          # `version_from_forced_level` does `latest_version.bump(forced_level_bump)`,
+          # an absolute override computed from the latest TAG, ignoring what
+          # the accumulated commits justify. Concretely: a scheduled run
+          # computes v0.85.0 from a `feat:` commit and opens release/v0.85.0,
+          # which stalls in the merge queue; an operator then dispatches
+          # force_level=patch, PSR computes v0.84.1 from tag v0.84.0, and a
+          # branch-name-only cleanup would close the still-correct v0.85.0 PR
+          # and ship v0.84.1, silently dropping the minor bump the `feat:`
+          # commit warranted. The fix is to compare VERSIONS, not branch
+          # names: a stale PR is closed only when its version is not higher
+          # than this run's ${NEXT}. Auto-merge is disabled BEFORE the close,
+          # not after: if the close were to fail, an armed PR must not be
+          # what is left behind.
           #
           # This runs before the clean-tree early exit below on purpose. A
           # re-run that finds the bump already applied still needs the stale PR
           # gone, and that path returns without reaching any of the code after
           # it.
-          # #VERIFY: at most one open release/* PR exists once this step
-          # returns, and it is the one for ${BRANCH}.
+          # #VERIFY: at most one open release/* PR with a version <= ${NEXT}
+          # exists once this step returns; a higher-version PR survives with a
+          # `::warning::` explaining why.
           if ! retry_api "listing open release PRs" \
               gh pr list --state open --limit 100 --json number,headRefName \
                 --jq '.[] | select(.headRefName | startswith("release/")) | "\(.number) \(.headRefName)"'; then
             echo "::error::Could not list open release PRs: ${RETRY_ERR}"
             exit 1
           fi
+          # #ASSUME data-integrity: release branch names are always
+          # `release/vMAJOR.MINOR.PATCH` (no prerelease/build metadata
+          # segment), matching how this same step builds ${BRANCH} above.
+          # `sort -V` gives a correct numeric-field comparison without a
+          # hand-rolled split, and unlike a lexical string comparison it does
+          # not rank "0.9.0" above "0.10.0". #VERIFY
+          # tests/unit/test_release_propose_contract.py
+          # ::TestForcedRunsDoNotCloseAHigherVersionPr
+          # ::test_the_version_comparison_is_numeric_via_sort_v_not_lexical
+          version_gt() {
+            [ "$1" != "$2" ] && \
+              [ "$(printf '%s\n%s\n' "$1" "$2" | sort -V | tail -n1)" = "$1" ]
+          }
           while read -r STALE_NUMBER STALE_BRANCH; do
             [ -n "${STALE_NUMBER}" ] || continue
             [ "${STALE_BRANCH}" != "${BRANCH}" ] || continue
+            STALE_VERSION="${STALE_BRANCH#release/v}"
+            # #CRITICAL data-integrity: a `force_level` dispatch can compute a
+            # LOWER version than an already-open, still-correct release PR
+            # (#774, see the block comment above). Closing on branch identity
+            # alone would silently drop whatever higher bump that PR carries.
+            # #VERIFY
+            # tests/unit/test_release_propose_contract.py
+            # ::TestForcedRunsDoNotCloseAHigherVersionPr
+            # ::test_a_higher_version_stale_pr_is_skipped_before_the_close
+            if version_gt "${STALE_VERSION}" "${NEXT}"; then
+              echo "::warning::Not closing #${STALE_NUMBER}" \
+                "(${STALE_BRANCH}): its version v${STALE_VERSION} is higher" \
+                "than this run's computed v${NEXT}. A force_level dispatch" \
+                "computes from the latest tag and can be numerically lower" \
+                "than an unmerged higher-version PR; that PR is not" \
+                "superseded (#774). Merge or close it by hand if it is" \
+                "genuinely stale."
+              continue
+            fi
             echo "Closing superseded release PR #${STALE_NUMBER}" \
               "(${STALE_BRANCH}); v${NEXT} supersedes it."
             # A PR with auto-merge never enabled makes this exit non-zero, which
@@ -462,7 +508,11 @@ jobs:
               gh pr merge "${STALE_NUMBER}" --disable-auto || true
             if ! retry_api "closing superseded release PR #${STALE_NUMBER}" \
                 gh pr close "${STALE_NUMBER}" \
-                  --comment "Superseded by the release PR for v${NEXT}. This branch's version was recomputed from the same base after it did not merge, so merging it now would apply a lower version bump out of order (#755)."; then
+                  --comment "$(printf '%s' \
+                    "Superseded by the release PR for v${NEXT}. This branch's " \
+                    "version was recomputed from the same base after it did not " \
+                    "merge, so merging it now would apply a lower version bump " \
+                    "out of order (#755).")"; then
               echo "::error::Could not close superseded release PR" \
                 "#${STALE_NUMBER} (${STALE_BRANCH}): ${RETRY_ERR}. It still" \
                 "carries auto-merge state that could apply an out-of-order" \
@@ -560,11 +610,44 @@ jobs:
                 exit 1
               fi
             elif echo "${LOOKUP_ERR}" | grep -q "HTTP 404"; then
-              if ! retry_api "creating ${BRANCH} at ${BASE_SHA}" \
-                  gh api -X POST "repos/${GITHUB_REPOSITORY}/git/refs" \
-                    -f ref="refs/heads/${BRANCH}" -f sha="${BASE_SHA}"; then
-                echo "::error::Could not create ${BRANCH}: ${RETRY_ERR}"
-                exit 1
+              # #CRITICAL external: `POST .../git/refs` is NOT idempotent, so
+              # it must not sit inside `retry_api` the way the PATCH above
+              # does. If this POST succeeds server-side but the response is
+              # lost (network drop, timeout), a blind retry re-POSTs and gets
+              # back HTTP 422 "Reference already exists", and the step would
+              # hard-fail even though the branch now exists. `gh pr create`
+              # below is deliberately exempted from `retry_api` for the exact
+              # same reason; this mirrors that discipline instead of
+              # reinventing it. Recovery is the idempotent GET re-lookup: on
+              # a failed create, ask GitHub whether the branch landed anyway,
+              # and treat "the ref exists and points at BASE_SHA" as success.
+              # A ref that exists but points somewhere ELSE is a genuinely
+              # different situation, a real conflict rather than a lost
+              # response, and must still hard-fail. #VERIFY
+              # tests/unit/test_release_propose_contract.py
+              # ::TestTheBranchCreatePostIsNotBlindlyRetried
+              set +e
+              POST_ERR="$(gh api -X POST "repos/${GITHUB_REPOSITORY}/git/refs" \
+                -f ref="refs/heads/${BRANCH}" -f sha="${BASE_SHA}" 2>&1 >/dev/null)"
+              POST_STATUS=$?
+              set -e
+              if [ "${POST_STATUS}" -ne 0 ]; then
+                echo "Creating ${BRANCH} reported a failure; asking GitHub" \
+                  "whether it landed anyway: ${POST_ERR}" >&2
+                if ! retry_api "re-checking ${BRANCH} after a failed create" \
+                    gh api "repos/${GITHUB_REPOSITORY}/git/ref/heads/${BRANCH}" \
+                      --jq '.object.sha'; then
+                  echo "::error::Could not create ${BRANCH}: ${POST_ERR}." \
+                    "It still does not exist: ${RETRY_ERR}"
+                  exit 1
+                fi
+                CREATED_SHA="${RETRY_OUT}"
+                if [ "${CREATED_SHA}" != "${BASE_SHA}" ]; then
+                  echo "::error::${BRANCH} exists but points at" \
+                    "${CREATED_SHA}, not the expected ${BASE_SHA}" \
+                    "(create reported: ${POST_ERR})."
+                  exit 1
+                fi
               fi
             else
               echo "Branch lookup for ${BRANCH} failed with a non-404 error" \

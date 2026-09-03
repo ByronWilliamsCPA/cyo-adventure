@@ -1071,12 +1071,16 @@ jobs:
           workflow_count="$(find .github/workflows -maxdepth 1 \
             \( -name '*.yml' -o -name '*.yaml' \) -type f | wc -l)"
           if [ "${workflow_count}" -lt 30 ]; then
-            echo "::error::found only ${workflow_count} workflow files to lint; the repo has 46 (measured 2026-09-03). A shrunken input set reads exactly like a clean one."
+            echo "::error::found only ${workflow_count} workflow files to lint;" \
+              "the repo has 46 (measured 2026-09-03). A shrunken input set" \
+              "reads exactly like a clean one."
             exit 1
           fi
 
           if ! command -v shellcheck >/dev/null 2>&1; then
-            echo "::error::shellcheck is not on PATH, so actionlint would skip every \`run:\` block check while still reporting success. Install it in this job rather than accepting the reduced coverage."
+            echo "::error::shellcheck is not on PATH, so actionlint would skip" \
+              "every \`run:\` block check while still reporting success." \
+              "Install it in this job rather than accepting the reduced coverage."
             exit 1
           fi
 
