@@ -34,41 +34,35 @@
 # updating both is a silent, total loss of suppression.
 
 vulnerabilities:
-  # --- perl-base (perl source package); no Debian fix on the trixie track ---
-  # CVE-2026-42496, CVE-2026-42497 and CVE-2026-9538 carry Debian's
-  # `fix_deferred` status: an explicit decision not to fix in stable.
-  # Nothing in the image invokes perl; the application never shells out at all.
-  - id: CVE-2026-8376
-    statement: >-
-      perl regex heap overflow, 32-bit builds only; this image and its base are
-      linux/amd64 only, so it is not applicable by architecture. Critical.
-    expired_at: 2026-11-08
-  - id: CVE-2026-42496
-    statement: >-
-      Archive::Tar path traversal via crafted symlinks. Critical, fix_deferred
-      in Debian. The application never invokes perl or feeds it tar archives.
-    expired_at: 2026-11-08
-  - id: CVE-2026-42497
-    statement: >-
-      Archive::Tar arbitrary file modification via crafted hardlinks.
-      fix_deferred in Debian. Same non-reachability as CVE-2026-42496.
-    expired_at: 2026-11-08
-  - id: CVE-2026-9538
-    statement: >-
-      Archive::Tar denial of service via a crafted large entry size.
-      fix_deferred in Debian. Same non-reachability as CVE-2026-42496.
-    expired_at: 2026-11-08
-  - id: CVE-2026-48962
-    statement: >-
-      IO::Compress arbitrary code execution via an attacker-controlled output
-      glob. The application never invokes perl, so it supplies no glob.
-    expired_at: 2026-11-08
+  # Retired on 2026-09-03: 16 of the 20 suppressions this file once carried were
+  # deleted in one pass because every one of them was already dead against the
+  # base digest. Six named Expat CVEs that Debian fixed in
+  # `expat 2.8.2-1~deb13u1` (DSA-6404-1), and the image ships 2.8.3; nine named
+  # `gawk` and `perl-base`, which the image does not contain at all; and
+  # CVE-2026-53615 on `libuuid1`, the one entry here that ever had an upstream
+  # fix, which the refreshed digest now carries (`util-linux 2.41.5`). A
+  # suppressed finding and an absent finding look identical from outside, so the
+  # only way to tell them apart is to read the image rather than the scan report;
+  # see docs/known-vulnerabilities.md, "Resolution detail: the six Expat CVEs,
+  # `gawk` and `perl-base`".
+  #
+  # Expat itself is still here: CVE-2026-66046 (High, no Debian fix) is reported
+  # against libexpat1 on both the pinned and the refreshed digest. Its
+  # suppression was written in PR #798; this change keeps that block and retires
+  # only its six siblings.
+  #
+  # #ASSUME: security: the four below still describe findings that EXIST in the
+  # image and are UNFIXED upstream. Both halves were checked on 2026-09-03, and
+  # both are the kind of fact that goes stale silently.
+  # #VERIFY: at each reassessment, confirm the package is still in
+  # `var/lib/dpkg/status.d/` of the pinned base image and that the Debian tracker
+  # still shows no trixie-track fix. Do not infer either from a green scan.
 
   # --- libsqlite3-0 (sqlite3 source package); no Debian fix on the trixie track ---
-  # Both are Medium, below the workflow's CRITICAL,HIGH threshold, so these two
-  # entries suppress nothing today. Kept because the threshold is a caller input
-  # that could widen, and an undocumented entry going live later is exactly the
-  # failure this file's rules exist to prevent.
+  # Both were Medium when this file was written, and were described here as
+  # suppressing nothing because the workflow is called with CRITICAL,HIGH. That
+  # is no longer true: Trivy 0.70.0's feed rates BOTH HIGH as of 2026-09-03, so
+  # these two entries are inside the threshold and are load-bearing.
   - id: CVE-2026-11822
     statement: >-
       SQLite < 3.53.2 memory corruption. This project uses PostgreSQL via
@@ -88,72 +82,15 @@ vulnerabilities:
       terminal; nothing links or calls ncurses.
     expired_at: 2026-11-08
 
-  # --- libuuid1 (util-linux source package); no Debian fix on the trixie track ---
-  - id: CVE-2026-53615
-    statement: >-
-      Integer overflow in libblkid's DOS partition-table parser. The container
-      has no raw block-device access and never probes partition tables.
-    expired_at: 2026-09-06
-
-  # --- gawk; no Debian fix on the trixie track ---
-  # The application does not install gawk and never invokes it.
-  - id: CVE-2026-40467
-    statement: >-
-      gawk io.c use-after-free. The image ships gawk from the base layer but
-      the application never shells out, so it is never executed.
-    expired_at: 2026-09-12
-  - id: CVE-2026-40468
-    statement: >-
-      gawk builtin.c integer overflow (Critical). Same non-reachability as
-      CVE-2026-40467.
-    expired_at: 2026-09-12
-  - id: CVE-2026-40469
-    statement: >-
-      gawk builtin.c integer overflow (Critical). Same non-reachability as
-      CVE-2026-40467.
-    expired_at: 2026-09-12
-  - id: CVE-2026-40553
-    statement: >-
-      gawk buffer overflow. Same non-reachability as CVE-2026-40467.
-    expired_at: 2026-09-12
-
   # --- libexpat1, libexpat1-dev; no Debian fix on the trixie track ---
-  # A mirror-wide Debian 13 base-layer regression, independently reproduced on
-  # dhi-python:3.12-debian13, so not specific to the Python version in use.
-  - id: CVE-2025-59375
-    statement: >-
-      libexpat denial of service. No runtime code path parses untrusted XML;
-      the API speaks JSON only.
-    expired_at: 2026-09-17
-  - id: CVE-2026-25210
-    statement: >-
-      libexpat defect in the same base-layer regression as CVE-2025-59375.
-      Same non-reachability.
-    expired_at: 2026-09-17
-  - id: CVE-2026-45186
-    statement: >-
-      libexpat defect in the same base-layer regression as CVE-2025-59375.
-      Same non-reachability.
-    expired_at: 2026-09-17
-  - id: CVE-2026-56131
-    statement: >-
-      libexpat defect in the same base-layer regression as CVE-2025-59375.
-      Same non-reachability.
-    expired_at: 2026-09-17
-  - id: CVE-2026-56407
-    statement: >-
-      libexpat defect in the same base-layer regression as CVE-2025-59375.
-      Same non-reachability.
-    expired_at: 2026-09-17
-  - id: CVE-2026-56408
-    statement: >-
-      libexpat defect in the same base-layer regression as CVE-2025-59375.
-      Same non-reachability.
-    expired_at: 2026-09-17
+  # The only Expat CVE that survived the digest refresh. The six that did not
+  # were fixed in `expat 2.8.2-1~deb13u1` (DSA-6404-1) and the image now ships
+  # 2.8.3, so their suppressions were retired here in the same pass.
   - id: CVE-2026-66046
     statement: >-
       libexpat denial of service in Expat through 2.8.3. Reported against
       2.8.3-1~deb13u1+dhi2 with status `affected` and no Debian fix, so the
       2026-09-02 base-image digest refresh that cleared 42 other CVEs does not
-      clear this one. Same non-reachability as CVE-2025-59375.
+      clear this one. No runtime code path parses untrusted XML; the API speaks
+      JSON only.
     expired_at: 2026-09-17

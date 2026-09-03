@@ -36,15 +36,15 @@ asserting that an entry due today still passes), so bumping it silently
 invalidates their arithmetic.
 """
 
-_DOCUMENT_VERIFIED: Final = date(2026, 9, 2)
+_DOCUMENT_VERIFIED: Final = date(2026, 9, 3)
 """Date the shipped `docs/known-vulnerabilities.md` was last verified current.
 
 Deliberately separate from `_TODAY`, which cannot move. A single shared anchor
 made the two consumers incompatible: `_TODAY` has to stay frozen for the
-fixtures, while the real document keeps acquiring entries discovered after it,
-and a `Discovered` date later than the reference reads as "in the future" and
-fails the gate. That is how adding a legitimate new entry came to break this
-suite.
+fixtures, while the real document keeps acquiring `Discovered` and
+`Last Reassessed` dates later than it, and a date later than the reference
+reads as "in the future" and fails the gate. That is how reassessing an entry
+came to break this suite.
 
 Bump this to the current date whenever an entry is added or reassessed. It is
 the "document verified as of" marker, not a wall-clock read: real expiry is
@@ -422,8 +422,8 @@ class TestRepositoryState:
         Pinned to `_DOCUMENT_VERIFIED` rather than today's date so the suite
         does not start failing on a calendar boundary; the weekly scheduled
         workflow is what catches real expiry. Bump that constant when adding
-        or reassessing an entry, or a newer `Discovered` date reads as being
-        in the future and fails here.
+        or reassessing an entry, or a newer `Discovered` or `Last Reassessed`
+        date reads as being in the future and fails here.
         """
         repo_root = Path(__file__).resolve().parents[2]
 
