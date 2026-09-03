@@ -689,6 +689,57 @@ class TestTheHarnessIsWiredIntoARealGate:
             "artifact is checked in but never executed"
         )
 
+    def test_the_harness_invocation_names_files_not_directories(self) -> None:
+        """``node --test <dir>/`` is not a portable way to discover tests.
+
+        Issue #774: a trailing-slash directory argument is resolved as a module
+        path, so Node exits 1 with ``MODULE_NOT_FOUND`` having run nothing
+        (reproduced on 22.22.2 and 24.18.0). The floor above does catch that,
+        but it reports "the suite shrank", which sends the reader looking for a
+        deleted test rather than at the invocation. The four files are named
+        explicitly, and this keeps them that way.
+
+        A glob would be worse than either: ``.github/**/*.test.mjs`` can match
+        zero files after a rename and ``node --test`` exits 0 having run
+        nothing, which is the exact anti-oracle the floor exists to close. So
+        every argument must be a literal ``.test.mjs`` path that exists on
+        disk.
+        """
+        jobs: Any = _load(CI_WORKFLOW).get("jobs") or {}
+        steps: Any = jobs[HARNESS_JOB_ID]["steps"]
+        harness_step = next(
+            step for step in steps if "reconcile.test.mjs" in str(step.get("run", ""))
+        )
+        run = str(harness_step["run"])
+
+        # The invocation is one logical line continued with backslashes; join
+        # it back up before splitting, and stop at the pipe into `tee`.
+        joined = re.sub(r"\\\n\s*", " ", run)
+        invocation = next(line for line in joined.splitlines() if "node --test" in line)
+        args = [
+            token
+            for token in invocation.split("|")[0].split()
+            if not token.startswith("-") and token != "node"
+        ]
+
+        assert args, "the harness step passes no paths to `node --test`"
+        for arg in args:
+            assert arg.endswith(".test.mjs"), (
+                f"`node --test` is passed {arg!r}, which is not a literal test "
+                f"file. A directory argument exits 1 with MODULE_NOT_FOUND and "
+                f"a glob can match nothing and exit 0; name the files (#774)"
+            )
+            for wildcard in ("*", "?"):
+                assert wildcard not in arg, (
+                    f"`node --test` is passed the glob {arg!r}; a glob that "
+                    f"matches zero files after a rename exits 0 having run "
+                    f"nothing (#774)"
+                )
+            assert (REPO_ROOT / arg).is_file(), (
+                f"the harness step names {arg!r}, which does not exist; the "
+                f"leg would fail with 'Could not find' rather than run"
+            )
+
     def test_the_ci_job_asserts_a_test_count_floor(self) -> None:
         """``node --test`` exits 0 when it discovers no tests.
 

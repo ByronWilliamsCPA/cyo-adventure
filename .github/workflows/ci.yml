@@ -995,6 +995,99 @@ jobs:
           echo "${passed} harness assertions passed." >> "$GITHUB_STEP_SUMMARY"
 
 
+  # Nothing in this repo lints workflow files (issue #756). The only workflow
+  # validation was the `check-github-workflows` pre-commit hook, and that has
+  # two independent holes: it is SCHEMA validation, so it never resolves a
+  # `needs:` against declared job ids, evaluates a `${{ }}` expression, checks
+  # `if:` syntax, or looks at the shell inside a `run:` block; and pre-commit
+  # is not run in CI except for `interrogate`, so a workflow change pushed
+  # without local hooks reached `main` with no validation at all.
+  #
+  # This is the fourth checker in this repo to sit only in pre-commit, where it
+  # gates staged paths rather than the tree (see `UW-C354` for the third), and
+  # workflow defects are the worst fit for "caught at review": `release.yml` is
+  # 790 lines, its jobs run on triggers that never fire on a pull request, and a
+  # typo in a `needs:` or an `if:` fails SILENTLY by skipping rather than by
+  # erroring. The hook stays: schema validation and semantic linting catch
+  # different things.
+  workflow-lint:
+    name: Workflow Lint (actionlint)
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: read
+    steps:
+      - name: Harden the runner
+        # deferral: 2026-09-18
+        uses: step-security/harden-runner@bf7454d06d71f1098171f2acdf0cd4708d7b5920 # v2.20.0
+        with:
+          egress-policy: audit
+
+      - name: Checkout repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      # A pinned release tarball with its checksum verified, rather than
+      # `reviewdog/action-actionlint` or `rhysd/actionlint`. Adding a
+      # third-party action to lint this repo's actions puts the linter itself
+      # inside the supply chain it is checking; a version-pinned binary whose
+      # SHA-256 is asserted here is auditable in one line and pins the same
+      # thing an action SHA would.
+      # #CRITICAL security: an unverified download would let a compromised or
+      # mitm'd release execute in CI with the repository checked out.
+      # #VERIFY: the checksum below is compared before the archive is
+      # unpacked, and the step exits non-zero on a mismatch.
+      - name: Install actionlint
+        env:
+          ACTIONLINT_VERSION: 1.7.7
+          ACTIONLINT_SHA256: 023070a287cd8cccd71515fedc843f1985bf96c436b7effaecce67290e7e0757
+        run: |
+          set -euo pipefail
+          url="https://github.com/rhysd/actionlint/releases/download/v${ACTIONLINT_VERSION}/actionlint_${ACTIONLINT_VERSION}_linux_amd64.tar.gz"
+          curl --fail --silent --show-error --location --retry 3 \
+            --output actionlint.tar.gz "${url}"
+          echo "${ACTIONLINT_SHA256}  actionlint.tar.gz" | sha256sum --check --strict
+          tar -xzf actionlint.tar.gz actionlint
+          rm -f actionlint.tar.gz
+          ./actionlint --version
+
+      # #CRITICAL: data-integrity: actionlint exits 0 when it finds no workflow
+      # files, so a moved directory (or a run from the wrong working directory)
+      # would turn this required leg into a green no-op that reads exactly like
+      # a clean tree. This is the same anti-oracle the `alert-action` job's
+      # MIN_TESTS floor exists to close, so the input set is asserted rather
+      # than trusted.
+      #
+      # The shellcheck assertion is the second half of the same problem.
+      # actionlint shells out to `shellcheck` for every `run:` block IF it is on
+      # PATH and silently skips those checks if it is not. `ubuntu-latest` ships
+      # it today; a runner-image change that dropped it would quietly halve what
+      # this job checks while still reporting success.
+      # #VERIFY: both the file count and shellcheck's presence are checked
+      # before actionlint runs; either failing exits non-zero.
+      - name: Lint GitHub Actions workflows
+        run: |
+          set -euo pipefail
+
+          workflow_count="$(find .github/workflows -maxdepth 1 \
+            \( -name '*.yml' -o -name '*.yaml' \) -type f | wc -l)"
+          if [ "${workflow_count}" -lt 30 ]; then
+            echo "::error::found only ${workflow_count} workflow files to lint;" \
+              "the repo has 46 (measured 2026-09-03). A shrunken input set" \
+              "reads exactly like a clean one."
+            exit 1
+          fi
+
+          if ! command -v shellcheck >/dev/null 2>&1; then
+            echo "::error::shellcheck is not on PATH, so actionlint would skip" \
+              "every \`run:\` block check while still reporting success." \
+              "Install it in this job rather than accepting the reduced coverage."
+            exit 1
+          fi
+
+          echo "Linting ${workflow_count} workflow files with shellcheck $(shellcheck --version | sed -n 's/^version: //p')." \
+            >> "$GITHUB_STEP_SUMMARY"
+          ./actionlint -no-color
+
   # Uploads the backend's per-test-type coverage + JUnit to Codecov, INLINE so
   # it runs on PRs (the old workflow_run codecov.yml only ran on main). The
   # reusable `ci` job publishes coverage-{unit,integration,security}.xml and
@@ -1210,7 +1303,9 @@ jobs:
       # ever moves behind nginx, it needs the content-type check.
       - name: Wait for API readiness
         run: |
-          for i in $(seq 1 30); do
+          # `_`, not `i`: the counter is never read, and shellcheck's
+          # SC2034 is right that a named-but-unused variable reads as a bug.
+          for _ in $(seq 1 30); do
             if curl -fsS http://localhost:8000/api/v1/health/live >/dev/null 2>&1; then
               echo "API ready"; exit 0
             fi
@@ -1331,6 +1426,7 @@ jobs:
         rad-citations,
         docstrings,
         alert-action,
+        workflow-lint,
       ]
     if: always()
     permissions:
@@ -1370,6 +1466,7 @@ jobs:
           RAD_CITATIONS_RESULT: ${{ needs.rad-citations.result }}
           DOCSTRINGS_RESULT: ${{ needs.docstrings.result }}
           ALERT_ACTION_RESULT: ${{ needs.alert-action.result }}
+          WORKFLOW_LINT_RESULT: ${{ needs.workflow-lint.result }}
         run: |
           set -euo pipefail
 
@@ -1425,9 +1522,9 @@ jobs:
             exit 1
           fi
 
-          # #CRITICAL: data-integrity: FIVE jobs in this gate carry no
+          # #CRITICAL: data-integrity: SIX jobs in this gate carry no
           # job-level `if:` and no `needs:` (schema-docs, format-tree,
-          # rad-citations, docstrings, alert-action), so unlike the rest of the
+          # rad-citations, docstrings, alert-action, workflow-lint), so unlike the rest of the
           # suite they really run on a release-automation commit. Every one of their
           # results must be evaluated BEFORE the release-skip branch below
           # returns 0, or a genuine failure is discarded and reported as an
@@ -1437,13 +1534,14 @@ jobs:
           # joins it by name instead of silently inheriting the hole:
           # format-tree sat in this branch's blind spot for exactly that
           # reason before rad-citations became the second member, docstrings
-          # repeated the mistake as the fourth, and alert-action joined as the
-          # fifth by editing this loop rather than by being noticed later.
+          # repeated the mistake as the fourth, alert-action joined as the
+          # fifth by editing this loop rather than by being noticed later, and
+          # workflow-lint joined as the sixth the same way.
           # #VERIFY: test_ci_gate_contract.py::TestGateDecisions asserts a
           # release commit with each of these results set to failure fails the
           # gate, and TestEveryUnconditionalJobIsReleaseChecked derives the set
           # of no-`if:`/no-`needs:` jobs from the workflow and asserts this loop
-          # names every one of them, so a sixth such job cannot inherit the hole
+          # names every one of them, so a seventh such job cannot inherit the hole
           # by omission.
           if [ "$RELEASE_PR" = "true" ]; then
             for entry in \
@@ -1451,7 +1549,8 @@ jobs:
               "Format (tree-wide):$FORMAT_TREE_RESULT" \
               "RAD Citation Gate:$RAD_CITATIONS_RESULT" \
               "Docstring coverage (interrogate):$DOCSTRINGS_RESULT" \
-              "Scheduled-alert action harness:$ALERT_ACTION_RESULT"; do
+              "Scheduled-alert action harness:$ALERT_ACTION_RESULT" \
+              "Workflow Lint (actionlint):$WORKFLOW_LINT_RESULT"; do
               unconditional_label="${entry%%:*}"
               unconditional_result="${entry#*:}"
               if [ "$unconditional_result" != "success" ]; then
@@ -1478,9 +1577,10 @@ jobs:
               echo "## CI Gate passed WITHOUT running the suite"
               echo ""
               echo "Release-automation commit: every quality job except \`ER Diagram Drift\`,"
-              echo "\`Format (tree-wide)\`, \`RAD Citation Gate\`, \`Docstring coverage (interrogate)\`"
-              echo "and \`Scheduled-alert action harness\` was intentionally skipped."
-              echo "Those five carry no job-level condition, so they really ran and really"
+              echo "\`Format (tree-wide)\`, \`RAD Citation Gate\`, \`Docstring coverage (interrogate)\`,"
+              echo "\`Scheduled-alert action harness\` and \`Workflow Lint (actionlint)\` was"
+              echo "intentionally skipped."
+              echo "Those six carry no job-level condition, so they really ran and really"
               echo "passed. Beyond them this commit carries **no verification from this workflow**."
               echo "The tested content is the feature PR that produced it."
               echo ""
@@ -1520,6 +1620,7 @@ jobs:
           check_job "RAD Citation Gate" "$RAD_CITATIONS_RESULT" false
           check_job "Docstring coverage (interrogate)" "$DOCSTRINGS_RESULT" false
           check_job "Scheduled-alert action harness" "$ALERT_ACTION_RESULT" false
+          check_job "Workflow Lint (actionlint)" "$WORKFLOW_LINT_RESULT" false
           check_job "Frontend (Node 22)" "$FRONTEND_RESULT" "$merge_queue_skip_ok"
           check_job "Frontend E2E (Playwright, mocked tier)" "$FRONTEND_E2E_RESULT" "$merge_queue_skip_ok"
           check_job "Design System (Node 22)" "$DESIGN_SYSTEM_RESULT" "$merge_queue_skip_ok"

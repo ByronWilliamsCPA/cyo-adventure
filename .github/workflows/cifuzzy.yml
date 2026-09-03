@@ -54,10 +54,10 @@ jobs:
         id: check-fuzz
         run: |
           if [ -d "fuzz" ] && [ -n "$(find fuzz -name '*.py' -type f 2>/dev/null)" ]; then
-            echo "has-targets=true" >> $GITHUB_OUTPUT
+            echo "has-targets=true" >> "$GITHUB_OUTPUT"
           else
-            echo "has-targets=false" >> $GITHUB_OUTPUT
-            echo "ℹ️  No fuzz targets found in fuzz/ directory. Skipping fuzzing." >> $GITHUB_STEP_SUMMARY
+            echo "has-targets=false" >> "$GITHUB_OUTPUT"
+            echo "ℹ️  No fuzz targets found in fuzz/ directory. Skipping fuzzing." >> "$GITHUB_STEP_SUMMARY"
           fi
 
       - name: Build Fuzzers
@@ -118,13 +118,29 @@ jobs:
 
       - name: Fuzzing Summary
         if: always()
+        env:
+          # #ASSUME security: `matrix.sanitizer` is today a workflow-defined
+          # literal (`address`) and `steps.*.outcome` is a closed GitHub
+          # enum, so neither is attacker-controlled right now. A `${{ }}`
+          # expansion inside `run:` is spliced into the shell SOURCE before
+          # bash sees it, so the injection risk should not depend on a value
+          # happening to be closed-domain today; fips-compatibility.yml
+          # routes `strict_mode` through `env:` on that same principle, and
+          # this mirrors it rather than trusting the closed domain to hold.
+          # #VERIFY no `${{ }}` expansion appears inside this step's `run:`
+          # block.
+          FUZZ_SANITIZER: ${{ matrix.sanitizer }}
+          FUZZ_BUILD_OUTCOME: ${{ steps.build.outcome }}
+          FUZZ_RUN_OUTCOME: ${{ steps.run.outcome }}
         run: |
-          echo "## Fuzzing Results" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-          echo "- **Sanitizer**: ${{  matrix.sanitizer  }}" >> $GITHUB_STEP_SUMMARY
-          echo "- **Duration**: 600 seconds" >> $GITHUB_STEP_SUMMARY
-          echo "- **Build Status**: ${{  steps.build.outcome  }}" >> $GITHUB_STEP_SUMMARY
-          echo "- **Run Status**: ${{  steps.run.outcome  }}" >> $GITHUB_STEP_SUMMARY
+          {
+            echo "## Fuzzing Results"
+            echo ""
+            echo "- **Sanitizer**: ${FUZZ_SANITIZER}"
+            echo "- **Duration**: 600 seconds"
+            echo "- **Build Status**: ${FUZZ_BUILD_OUTCOME}"
+            echo "- **Run Status**: ${FUZZ_RUN_OUTCOME}"
+          } >> "$GITHUB_STEP_SUMMARY"
 
       - name: File tracking issue on scheduled failure
         # Schedule-only workflows fail invisibly: no pull request turns red, so this
