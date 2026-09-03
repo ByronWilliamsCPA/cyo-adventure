@@ -243,6 +243,72 @@ upgrade in PR #299.
 
 ---
 
+## CVE-2026-66046 | libexpat1, libexpat1-dev | High
+
+| Field | Value |
+|-------|-------|
+| **CVE ID** | CVE-2026-66046 |
+| **Package** | libexpat1, libexpat1-dev (Debian binary packages from the `expat` source package) |
+| **Affected Version** | 2.8.3-1~deb13u1+dhi2 (Debian 13 "trixie", DHI mirror build) |
+| **Fixed Version** | No fix available |
+| **Severity** | High (per Trivy/Aqua feed) |
+| **CVSS Score** | Not carried in the Trivy/Aqua feed as of 2026-09-02 |
+| **Discovered** | 2026-09-02 |
+| **Reassessment Due** | 2026-09-17 |
+| **Blocking Release** | No |
+
+### Description
+
+A denial-of-service defect in Expat through 2.8.3. It is a seventh Expat CVE on
+top of the six tracked in the entry above, and it entered the feed between two
+scheduled scans: the 2026-08-26 run reported 35 findings and did not mention it,
+the 2026-09-02 run reports it against both `libexpat1` and `libexpat1-dev`.
+Like the other six it requires processing attacker-controlled XML through Expat.
+
+### Impact on This Project
+
+Identical to the six Expat CVEs in the entry above, and accepted on the same
+reasoning. `libexpat1`/`libexpat1-dev` ship in the production runtime base
+image; the application does not call into Expat (no `xml.parsers.expat` usage
+in this codebase) and parses no untrusted XML on any request path, because the
+API speaks JSON only. Exposure through the application surface is negligible.
+
+### Remediation Plan
+
+- [ ] Monitor the [Debian security tracker](https://security-tracker.debian.org/tracker/source-package/expat)
+  for a fixed `expat` package that flows into the next DHI mirror rebuild
+- [ ] Once a fixed digest is published, remove this suppression together with
+  the six in the entry above and re-run the Container Security scan to confirm
+- [ ] Reassess by 2026-09-17, deliberately the same date as the six sibling
+  Expat CVEs, so the whole Expat acceptance is reviewed in one pass instead of
+  drifting into seven separate dates
+
+### Why Not Fixed Yet
+
+Debian has not released a patched `expat` build for the DHI mirror's Debian 13
+snapshot. Checked directly on 2026-09-02 against both the previously pinned base
+digest (`sha256:5bbd41ae`) and the newer digest this change ships
+(`sha256:d66d6403`): Trivy reports status `affected` with an empty Fixed Version
+on both, so the digest refresh that clears the other 42 CVEs in this round does
+not clear this one. The package comes from the hardened base image, which ships
+no shell and no package manager, so there is no project-side upgrade path.
+
+### References
+
+- [Debian security tracker: CVE-2026-66046](https://security-tracker.debian.org/tracker/CVE-2026-66046), the
+  authoritative source for the `affected`, no-fix-available status this
+  entry records
+- [Debian security tracker: expat](https://security-tracker.debian.org/tracker/source-package/expat)
+- [CVE record CVE-2026-66046](https://www.cve.org/CVERecord?id=CVE-2026-66046)
+- Aqua AVD has no page for this CVE yet, so the sibling entries'
+  `avd.aquasec.com/nvd/<cve-id>` link is deliberately omitted here rather
+  than added dead. Re-add it once AVD publishes; do not restore it blind,
+  the link check treats a 404 as a build failure.
+- Discovered by the Container Security workflow (Trivy) on
+  [run 33601842565](https://github.com/ByronWilliamsCPA/cyo-adventure/actions/runs/33601842565)
+
+---
+
 ## CVE-2026-8376, CVE-2026-42496 and 3 further CVEs | perl-base | Critical/High
 
 | Field | Value |
