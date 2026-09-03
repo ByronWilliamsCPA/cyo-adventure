@@ -277,7 +277,12 @@ def _discover_multi_invocation_jobs(
         for job_id in jobs:
             ordered = _ordered_projects_for_job(workflow_path, job_id, npm_scripts)
             if len(ordered) >= 2:
-                rel_path = str(workflow_path.relative_to(REPO_ROOT))
+                # as_posix(), not str(): str() renders a Path in the host OS's
+                # separator, so on Windows this produced
+                # ".github\\workflows\\x.yml" and compared unequal to every
+                # forward-slash entry in MULTI_INVOCATION_JOBS. The list is
+                # source text, so the discovered side is what has to normalise.
+                rel_path = workflow_path.relative_to(REPO_ROOT).as_posix()
                 discovered.add((rel_path, job_id))
     return discovered
 
