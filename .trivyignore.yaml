@@ -150,3 +150,10 @@ vulnerabilities:
       libexpat defect in the same base-layer regression as CVE-2025-59375.
       Same non-reachability.
     expired_at: 2026-09-17
+  - id: CVE-2026-66046
+    statement: >-
+      libexpat denial of service in Expat through 2.8.3. Reported against
+      2.8.3-1~deb13u1+dhi2 with status `affected` and no Debian fix, so the
+      2026-09-02 base-image digest refresh that cleared 42 other CVEs does not
+      clear this one. Same non-reachability as CVE-2025-59375.
+    expired_at: 2026-09-17
