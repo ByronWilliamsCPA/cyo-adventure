@@ -1265,6 +1265,17 @@
   border-top: 1px solid var(--color-border-soft, rgb(44 26 14 / 12%));
 }
 
+/* The action-bar jump to a cover parked at pending_review. Amber emphasis
+   rather than the neighbouring Generate button's plain ghost treatment: it
+   announces an outstanding decision the reviewer has NOT seen yet (the cover
+   block it points at is off-screen above), so reading as a twin of the button
+   they just pressed would defeat the point of having it. */
+.review-actionbar__cover-jump {
+  border-color: var(--color-amber, #e07f2e);
+  background: var(--color-amber-subtle, #fdf3e6);
+  color: var(--color-amber-text, #87561d);
+}
+
 /* color comes from the cyo-text-muted class added alongside this one in
    ReviewDetailPage.tsx; the rest stays local. */
 .review-actionbar__hint {

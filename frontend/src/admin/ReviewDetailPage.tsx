@@ -386,6 +386,12 @@ export function ReviewDetailPage() {
 
 const EMPTY_KEYS: Set<string> = new Set()
 
+/** DOM id shared by the cover preview block and the action-bar jump that
+ *  targets it. One constant rather than two literals, so a rename cannot
+ *  leave the jump pointing at nothing (which would fail silently: the jump
+ *  early-returns on a missing element). */
+const COVER_PREVIEW_DOM_ID = 'review-cover-preview'
+
 function ReviewDetailPageInner() {
   usePageTitle('Review')
   const { storybookId = '' } = useParams()
@@ -463,6 +469,24 @@ function ReviewDetailPageInner() {
     setHighlightedId(nodeId)
     if (highlightTimer.current !== null) clearTimeout(highlightTimer.current)
     highlightTimer.current = setTimeout(() => setHighlightedId(null), 1800)
+  }, [])
+
+  // The cover block sits above the fold, which is right for a reviewer
+  // ARRIVING on the page and wrong for one who just pressed "Generate cover":
+  // .review-actionbar is pinned to the bottom of the viewport, so the image
+  // they asked for renders several screens up, past every finding and the full
+  // story. This is the return trip. Same shape as jumpToPassage above, minus
+  // the transient tint: the focus ring is the landing cue here, because unlike
+  // a passage the block is a bordered card the eye already resolves.
+  const jumpToCover = useCallback(() => {
+    const el = document.getElementById(COVER_PREVIEW_DOM_ID)
+    if (!el) return
+    // Focus first (the block carries tabIndex={-1}): assistive tech announces
+    // the cover and the next Tab starts from Approve. preventScroll leaves the
+    // scrolling to scrollIntoView, which is absent under jsdom and always
+    // present in real browsers, hence the optional call.
+    el.focus({ preventScroll: true })
+    el.scrollIntoView?.({ behavior: 'smooth', block: 'start' })
   }, [])
 
   useEffect(() => {
@@ -867,7 +891,7 @@ function ReviewDetailPageInner() {
         the safety alert, fails a test instead of shipping silently) tests.
       */}
       {coverStatus === 'pending_review' || coverStatus === 'ready' ? (
-        <div className="review-cover-preview">
+        <div className="review-cover-preview" id={COVER_PREVIEW_DOM_ID} tabIndex={-1}>
           <h2>Generated cover</h2>
           {coverUrl ? (
             <img
@@ -1297,6 +1321,21 @@ function ReviewDetailPageInner() {
           <span className="review-cover-error" role="status">
             Still generating; keep waiting or retry.
           </span>
+        ) : null}
+        {/*
+          #ASSUME: UI state: a cover reaching pending_review is an outstanding
+          decision whose surface is off-screen from here. Gated on
+          pending_review alone, not on "has a cover": an approved ('ready')
+          cover asks nothing of the reviewer, so pointing at it would be noise.
+          #VERIFY: ReviewDetailPage.test.tsx "offers a jump to the pending
+          cover from the action bar", "moves focus to the cover preview when
+          the action-bar jump is used", "drops the action-bar cover jump once
+          the cover is approved".
+        */}
+        {coverStatus === 'pending_review' ? (
+          <Button variant="ghost" className="review-actionbar__cover-jump" onClick={jumpToCover}>
+            Cover ready to review
+          </Button>
         ) : null}
         <Button
           variant="danger"
