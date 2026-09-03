@@ -4619,9 +4619,10 @@ read-time upcaster chain is not built; migration, if ever needed, is a future de
 </span><span id="__span-3-2"><a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a>                                  ├─► needs_review  (safety flag; a human must clear it)
 </span><span id="__span-3-3"><a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a>                                  └─► failed        (hard validation failure)
 </span><span id="__span-3-4"><a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a>
-</span><span id="__span-3-5"><a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a>Storybook:      draft → in_review ─┬─► published → archived
-</span><span id="__span-3-6"><a id="__codelineno-3-6" name="__codelineno-3-6" href="#__codelineno-3-6"></a>                  ▲                └─► needs_revision → (repair / regenerate) ──┐
-</span><span id="__span-3-7"><a id="__codelineno-3-7" name="__codelineno-3-7" href="#__codelineno-3-7"></a>                  └────────────────────────── (re-review on edit) ◄────────────┘
+</span><span id="__span-3-5"><a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a>Storybook:      draft → in_review ─┬─► published ─┬─► archived  (terminal; absorbing)
+</span><span id="__span-3-6"><a id="__codelineno-3-6" name="__codelineno-3-6" href="#__codelineno-3-6"></a>                  ▲                │              └─► in_review (recall, RS-C1)
+</span><span id="__span-3-7"><a id="__codelineno-3-7" name="__codelineno-3-7" href="#__codelineno-3-7"></a>                  │                └─► needs_revision → (repair / regenerate) ──┐
+</span><span id="__span-3-8"><a id="__codelineno-3-8" name="__codelineno-3-8" href="#__codelineno-3-8"></a>                  └────────────────────────── (re-review on edit) ◄─────────────┘
 </span></code></pre></div>
 <p>A story is visible to a child profile only in <code>published</code>. The <code>in_review → published</code>
 transition is a single approve-and-publish action that requires the global <strong>admin</strong> role
@@ -4629,6 +4630,14 @@ transition is a single approve-and-publish action that requires the global <stro
 draft version becomes reviewable only after its GenerationJob reaches <code>passed</code>; a
 <code>needs_review</code> job routes to a person and a <code>failed</code> job routes to repair or regeneration.
 See <a href="../adr/adr-005-mandatory-human-approval/">ADR-005</a>.</p>
+<p><code>published</code> has two exits. <code>archive</code> ends the book's life (<code>archived</code> is absorbing);
+<code>recall</code> (<code>RS-C1</code>, <code>POST /api/v1/storybooks/{id}/recall</code>) returns it to <code>in_review</code> with a
+closed-vocabulary <code>reason_code</code>, and is the path for a book whose stored verdict was
+reached under thresholds that have since moved. Recall is admin-only and extends ADR-005
+rather than relaxing it: a recalled book must clear the human gate again before it is
+reader-facing. Assignment rows survive it, so re-approval restores the book to exactly the
+shelves it left. Neither exit reaches a copy already downloaded to a device, which is
+evicted only on that device's next successful <code>/v1/library</code> fetch.</p>
 <h3 id="multi-device-sync-rules">Multi-device sync rules<a class="headerlink" href="#multi-device-sync-rules" title="Permanent link">&para;</a></h3>
 <p>The server is canonical; IndexedDB is a cache. Concurrency is revision-based, not
 last-write-wins.</p>
@@ -4873,6 +4882,12 @@ approve action. No child path triggers generation directly.</p>
 <td>Approve and publish in one step (→ published)</td>
 <td>Admin</td>
 </tr>
+<tr>
+<td>POST</td>
+<td>/api/v1/storybooks/{id}/recall</td>
+<td>Return a published book to <code>in_review</code></td>
+<td>Admin</td>
+</tr>
 </tbody>
 </table>
 <h3 id="requestresponse-format-reading-state-put">Request/Response Format (reading-state PUT)<a class="headerlink" href="#requestresponse-format-reading-state-put" title="Permanent link">&para;</a></h3>
@@ -4968,6 +4983,13 @@ including one acting on their own family's story, may perform it. See
 <td>No (403)</td>
 <td>No (403)</td>
 <td>Global admin role required (<code>Role.ADMIN</code> / <code>is_admin</code>), cross-family; there is no guardian path</td>
+</tr>
+<tr>
+<td>Recall a published book (<code>published -&gt; in_review</code>)</td>
+<td>No (403)</td>
+<td>No (403)</td>
+<td>No (403)</td>
+<td>Global admin role required (<code>Role.ADMIN</code> / <code>is_admin</code>), cross-family; anonymous is 401/403 and there is no guardian path</td>
 </tr>
 <tr>
 <td>Access another family's data</td>
@@ -5175,7 +5197,7 @@ cap.</p>
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="August 22, 2026 18:41:23 UTC">August 22, 2026</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="September 3, 2026 12:58:05 UTC">September 3, 2026</span>
   </span>
 
     

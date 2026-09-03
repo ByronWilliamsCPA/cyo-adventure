@@ -10949,6 +10949,156 @@ written, which is the error the row exists to correct.</p>
 <td>open</td>
 <td>Cited by <code>UW-C473</code>.</td>
 </tr>
+<tr>
+<td>AL-749</td>
+<td>2026-08-31</td>
+<td>Admin review-surface audit (production, read-only)</td>
+<td>tooling</td>
+<td><code>AL-036</code> diagnosed the unreviewable review surface as a rendering-volume problem (746 unvirtualized passages, 444 KB blob) and proposed pagination. Measurement against production shows the volume is 97.0% self-inflicted: <code>api/review_surface.py:334-360</code> fans every merged finding out across each entry in <code>node_ids</code>, so one finding affecting 380 nodes emits 380 full-prose passage cards. The denoising already exists and is bypassed: <code>_rank_and_split</code> (<code>:519-545</code>) routes LOW+ADVISORY into <code>low_advisory_findings</code>, which the frontend already collapses, but the fan-out runs earlier and never consults the split. Paginating would have made 250 screens of boilerplate navigable instead of removing it, and would have read as a fix.</td>
+<td>Stop fanning low advisories into <code>flagged_passages</code> (<code>RS-A1</code>), i.e. consult the existing split before the fan-out rather than adding a rendering layer over its output. Generally: before optimising the rendering of a large collection, measure how much of the collection the server should not have sent.</td>
+<td>open</td>
+<td><code>docs/planning/review-screen-remediation-plan-2026-08-31.md</code></td>
+</tr>
+<tr>
+<td>AL-750</td>
+<td>2026-08-31</td>
+<td>Review-screen remediation build (<code>feat/review-screen-remediation</code>)</td>
+<td>tooling</td>
+<td>A ratified figure can be arithmetically correct and still wrong, because its two terms were counted over different populations. <code>UW-C378</code>'s recall claim divided findings recovered under one floor by occurrences surfaced under another, so the ratio described no population that exists. Nothing in the ratified text was false on its face, and no reviewer catches that by reading.</td>
+<td>Applied: <code>RS-CAL1</code> re-derives every floor figure from ONE denominator, stated inline next to the number. Generally, a ratio whose numerator and denominator were produced by different queries must name both populations, or it is not a measurement.</td>
+<td>applied</td>
+<td>commit <code>e0f22ba42</code></td>
+</tr>
+<tr>
+<td>AL-751</td>
+<td>2026-08-31</td>
+<td>Review-screen remediation build (<code>feat/review-screen-remediation</code>)</td>
+<td>process</td>
+<td>A fixture corpus and production disagreed about the same lever by two orders of magnitude. Replaying all 31 stored production moderation reports shows the ratified per-category floor removes 0.2% (band 13-16) and 0.6% (16+) of surfaced occurrences, while the already-shipped <code>RS-A1</code> low-advisory collapse removes 96-100% at no recall cost: all 14 findings spanning 40+ nodes are low-severity <code>openai</code> advisories on <code>violence</code>/<code>violence/graphic</code> scoring 0.33-0.45. The fixture corpus had made the floor look like the dominant lever. The only floor with real leverage is <code>violence*</code> near 0.50 (71-90%), which sits INSIDE the graded range and therefore trades recall.</td>
+<td>Re-scope <code>RS-CAL3</code>/<code>RS-CAL4</code> before authorising paid spend: their value is now entirely a recall question (does a 0.50 <code>violence*</code> floor drop a true positive), not a reviewer-load question, which <code>RS-A1</code> already answered. Generally, calibrate against the stored production population before paying for a fresh capture; a fixture corpus is a shape check, not a magnitude.</td>
+<td>open</td>
+<td></td>
+</tr>
+<tr>
+<td>AL-752</td>
+<td>2026-08-31</td>
+<td>Review-screen remediation build (<code>feat/review-screen-remediation</code>)</td>
+<td>tooling</td>
+<td>A band-wide <code>count(DISTINCT node_id)</code> silently conflates books. Node ids are book-scoped (<code>n-7</code> exists in every book), so counting distinct node ids across a band under-counts affected passages by however many books share an id, and the error grows with the corpus rather than staying constant.</td>
+<td>Applied: the replay counts <code>(storybook_id, version, node_id)</code> triples. Generally, any DISTINCT over an identifier that is unique only within a parent must carry the parent key, and a per-band aggregate is the place that mistake hides.</td>
+<td>applied</td>
+<td>commit <code>e0f22ba42</code></td>
+</tr>
+<tr>
+<td>AL-753</td>
+<td>2026-08-31</td>
+<td>Review-screen remediation build (<code>feat/review-screen-remediation</code>)</td>
+<td>product</td>
+<td>The admin threshold editor's category suggestion list named seven categories and every one of them was BRIGHT LINE, where a score floor is inert (a flagged bright-line category blocks, and <code>admin_surfaces</code> never hides a BLOCK). All six categories where a floor actually bites were missing. The editor therefore invited operators to tune exactly the dials that do nothing.</td>
+<td>Applied: <code>KNOWN_CATEGORIES</code> now unions <code>GRADED_SCORE_CATEGORIES</code>, pinned by <code>test_every_graded_category_is_suggested_by_the_admin_editor</code>. Generally, an affordance that suggests values must be derived from the set the mechanism reads, never hand-listed beside it.</td>
+<td>applied</td>
+<td>commit <code>8844595f7</code></td>
+</tr>
+<tr>
+<td>AL-754</td>
+<td>2026-08-31</td>
+<td>Review-screen remediation build (<code>feat/review-screen-remediation</code>)</td>
+<td>tooling</td>
+<td>Seeding a config-as-code grid with concrete values deadens the global override it falls back to. <code>moderation_threshold.min_score</code> WINS over the flat <code>moderation_setting</code> noise floor, so seeding today's 0.05 into all 36 cells would have retired the operator's one emergency dial while looking like a faithful no-op seed.</td>
+<td>Applied: every seeded row carries <code>min_score = NULL</code> so the fallback stays live, with a <code>#CRITICAL</code> marker on the migration and a test pinning the fallback. Generally, when seeding a table whose rows override a global, seed the ABSENCE (NULL), not the current effective value.</td>
+<td>applied</td>
+<td>commit <code>8844595f7</code></td>
+</tr>
+<tr>
+<td>AL-755</td>
+<td>2026-08-31</td>
+<td>Review-screen remediation build (<code>feat/review-screen-remediation</code>)</td>
+<td>tooling</td>
+<td>A new <code>EventType</code> has three homes and only the third fails loudly: the enum, the writer's payload allowlist, and a CHECK-constraint migration carrying the full cumulative vocabulary. The first two were updated, every unit test passed, and the database still refused the row; nothing surfaced it until an integration test actually wrote one.</td>
+<td>Applied: <code>20260831130000_add_storybook_recalled_to_pipeline_event.sql</code> plus an instrumentation test that writes the row. Generally, adding an <code>EventType</code> requires an integration test that writes it, because the enum and the allowlist are both satisfiable without the database agreeing.</td>
+<td>applied</td>
+<td>commit <code>ca9ae4710</code></td>
+</tr>
+<tr>
+<td>AL-756</td>
+<td>2026-08-31</td>
+<td>Review-screen remediation build (<code>feat/review-screen-remediation</code>)</td>
+<td>product</td>
+<td>A guardian-facing notification body asserted an immediate offline pull the system cannot perform: the archive notice claimed a downloaded copy was already gone, while <code>frontend/src/offline/revocation.ts</code> shows revocation is reconcile-on-fetch with no push channel, so a device that stays offline keeps reading. No test pinned the claim, so the wording was free to be wrong for as long as nobody read the offline code. A guardian acting on it during a real safety pull would believe a device was covered when it was not.</td>
+<td>Applied: both archive and recall now state the sync caveat in prose and in tests, in the API-side notification and in the console dialog. Generally, any user-facing sentence asserting a system CAPABILITY needs a test, the same as a computation; prose is the part of the product with no type checker.</td>
+<td>applied</td>
+<td>commit <code>ca9ae4710</code></td>
+</tr>
+<tr>
+<td>AL-757</td>
+<td>2026-08-31</td>
+<td>Review-screen remediation build (<code>feat/review-screen-remediation</code>)</td>
+<td>tooling</td>
+<td>A session double that returns your own NamedTuple passes while the real object raises. A SQLAlchemy <code>Row</code> is labelled by COLUMN name, so <code>row.storybook_id</code> is an <code>AttributeError</code> on a query that selected <code>Storybook.id</code>, and a JSONB extraction arrives as <code>anon_1</code>. The unit double was strictly more permissive than the thing it stood in for, so 23 unit tests were green while all six integration tests failed on the first real row.</td>
+<td>Applied: the query result is cast to a positional tuple alias and constructed into the NamedTuple by position, with a docstring saying only the integration test can catch that bridge. Generally, a double that names fields the real object does not name is not a double; either construct positionally or assert the label set against the real Row once.</td>
+<td>applied</td>
+<td>commit <code>6ad996307</code></td>
+</tr>
+<tr>
+<td>AL-758</td>
+<td>2026-08-31</td>
+<td>Review-screen remediation build (<code>feat/review-screen-remediation</code>)</td>
+<td>tooling</td>
+<td>Adding a route trips two whole-suite gates that no subset run reaches: <code>test_authz_matrix.py</code> discovers routes from the live app and demands an authorization expectation for each, and <code>test_title_strip_registry.py</code> (ADR-023 R2) demands a strip-or-raw decision for any response field a story blob projects into. Both are structural pins with no local test file a route author would think to run, so the recall route's omission stayed latent for four commits while every targeted run was green.</td>
+<td>Applied: both registries updated. Generally, a route addition's checklist is not "tests for the new route pass"; it is the whole suite, because the gates that care about a route living in the app at all are keyed on the app, not on the route's own module.</td>
+<td>applied</td>
+<td>commit <code>1d93e0c2d</code></td>
+</tr>
+<tr>
+<td>AL-759</td>
+<td>2026-09-02</td>
+<td>Review-screen remediation build (<code>feat/review-screen-remediation</code>), PR #797 review fix pass</td>
+<td>tooling</td>
+<td>A NaN makes every comparison False, so a non-finite floor turns a gate-calibration instrument into one that reports a clean sweep. <code>scripts/replay_production_floors.py --floors nan</code> passed the below-production-floor refusal (<code>nan &lt; 0.01</code> is False) and then surfaced zero findings at every band, because <code>score &gt;= nan</code> is False for every scored finding. The output is indistinguishable from a genuinely quiet corpus, which is the one result nobody re-checks.</td>
+<td>Applied: <code>main()</code> rejects non-finite floors at the parse boundary, pinned by a test parametrized over nan/inf/-inf. Generally, any float a caller supplies to a comparison-based gate predicate needs an <code>isfinite</code> guard, because NaN does not fail the guard, it fails every comparison the guard protects.</td>
+<td>applied</td>
+<td>commit <code>2d1f143a0</code></td>
+</tr>
+<tr>
+<td>AL-760</td>
+<td>2026-09-02</td>
+<td>Review-screen remediation build (<code>feat/review-screen-remediation</code>), PR #797 review fix pass</td>
+<td>tooling</td>
+<td>A report that prints a fact in its header must not have a degraded mode that keeps printing it. <code>scripts/derive_stage0_floor_table.py</code> silently fell back to <code>results[0]</code> when <code>--floors</code> omitted the production floor, so every marginal figure in the table became a delta against an arbitrary baseline while the header still said "production floor". The table stays internally consistent and plausible, so the relabelling survives review.</td>
+<td>Applied: the missing reference is now a <code>SystemExit</code> naming the required floor, verified on both paths. Generally, when a derived table's header asserts what its baseline is, the baseline's absence is a caller error, not a degraded mode.</td>
+<td>applied</td>
+<td>commit <code>2d1f143a0</code></td>
+</tr>
+<tr>
+<td>AL-761</td>
+<td>2026-09-02</td>
+<td>Review-screen remediation build (<code>feat/review-screen-remediation</code>), PR #797 review fix pass</td>
+<td>tooling</td>
+<td>A line-oriented search cannot find a claim the formatter has wrapped. The fix for the "offline copies are already gone" overclaim (AL-756) swept the tree and corrected three sites, but missed <code>docs/operations/authoring-guide.md</code>, where Prettier had broken "the next time that device / connects" across a newline, so a <code>grep</code> for the phrase returned zero and read exactly like a clean tree. The residual sat in the one document written for guardians, the audience the correction existed to protect.</td>
+<td>Applied: the guide now names the successful library sync, matching <code>notifications/registry.py</code>. Generally, when sweeping prose for a claim, flatten whitespace before matching (<code>re.sub(r"\s+", " ", text)</code>) rather than grepping lines, and treat a zero-hit result for both a claim and its negation as a broken probe rather than a clean sweep.</td>
+<td>applied</td>
+<td>commit <code>cf2ba8755</code></td>
+</tr>
+<tr>
+<td>AL-762</td>
+<td>2026-09-02</td>
+<td>Review-screen remediation build (<code>feat/review-screen-remediation</code>), PR #797 review fix pass</td>
+<td>tooling</td>
+<td><strong>The coverage-matrix drift-guard runs only in CI, so a clean local <code>pre-commit run --all-files</code> is not evidence that a new frontend test file is indexed.</strong> The fix pass added five Vitest files and the matrix picked up four; <code>frontend/src/guardian/findingCounts.test.ts</code> was the omission, and it turned <code>Frontend (Node 22)</code> red one push later. The guard itself did its job well: it named the exact file and stated the remedy. The gap is purely where it runs. <code>scripts/check_coverage_matrix.py</code> is invoked at <code>.github/workflows/ci.yml:217</code> and appears nowhere in <code>.pre-commit-config.yaml</code>, so nothing between writing the test and pushing evaluates it. A check whose only host is CI is a check the local gate cannot speak for, and a green <code>--all-files</code> run therefore reads as broader assurance than it is.</td>
+<td>Wire <code>check_coverage_matrix.py</code> into <code>.pre-commit-config.yaml</code> as a repo-local hook with <code>always_run: true</code> and <code>pass_filenames: false</code>, since it enumerates the tree rather than reading staged paths, so an unindexed test file fails at commit time instead of after a push. Until that lands, run it by hand after adding any Vitest file under <code>frontend/src/</code> or any Playwright spec under <code>frontend/e2e*/</code>. Generally: before treating a local <code>pre-commit</code> pass as a prediction of CI, check whether the CI step you are relying on is actually a hook.</td>
+<td>open</td>
+<td>Cited by <code>UW-C478</code>.</td>
+</tr>
+<tr>
+<td>AL-763</td>
+<td>2026-09-03</td>
+<td>Review-screen remediation build (<code>feat/review-screen-remediation</code>), PR #797 review-thread triage</td>
+<td>process</td>
+<td><strong><code>AL-759</code> recorded this exact defect, marked itself <code>applied</code>, and left the sibling script carrying it.</strong> Its Generally-clause quantifies over a class ("any float a caller supplies to a comparison-based gate predicate needs an <code>isfinite</code> guard"), but the applying commit <code>2d1f143a0</code> touched only <code>scripts/replay_production_floors.py</code>. <code>scripts/derive_stage0_floor_table.py</code> reads <code>--floors</code> through the same comparison shape and kept the bug for two days while the log said it was fixed, so the log itself was the reason nobody looked. The companion test gap compounded it: the nan/inf cases in <code>test_replay_production_floors.py</code> omitted <code>--extract</code>, so from any non-root cwd they raised <code>FileNotFoundError</code> before reaching the guard and passed for the wrong reason. The pin the <code>applied</code> status rested on never exercised the guard at all.</td>
+<td>Applied: the guard now exists in both scripts, and both tests pass <code>--extract</code>/<code>--baseline</code> so they fail on the finiteness check rather than on path resolution. Generally, when a lesson's Generally-clause quantifies over a CLASS of call sites, <code>applied</code> requires enumerating the class members in the applying commit and citing that enumeration in the <code>Ref</code>; a single-site fix earns <code>open</code>, because <code>applied</code> is precisely what stops the next person checking the siblings.</td>
+<td>applied</td>
+<td>commit <code>3f37036c7</code></td>
+</tr>
 </tbody>
 </table>
 <hr />
@@ -10988,7 +11138,7 @@ written, which is the error the row exists to correct.</p>
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="August 30, 2026 19:48:48 UTC">August 30, 2026</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="September 3, 2026 12:58:05 UTC">September 3, 2026</span>
   </span>
 
     

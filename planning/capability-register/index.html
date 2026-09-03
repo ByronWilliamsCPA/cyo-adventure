@@ -3859,7 +3859,7 @@ vision doc (v1.2):</p>
 <td>A4</td>
 <td>Policy re-evaluation: re-screen the already-published catalog when policy or thresholds change</td>
 <td>✅</td>
-<td>First cut delivered 2026-07-17 (Phase 5/M5): admin-only <code>POST /api/v1/admin/rescreen</code> (<code>moderation/rescreen.py</code>, <code>api/rescreen.py</code>) re-runs the deterministic policy/band gate plus Stage-0 classifiers over an already-published book, and writes a <code>moderation_completed</code> pipeline event; a flagged book is never auto-unpublished (ADR-005), only surfaced for an admin to archive by hand. The UI-only gap closed: <code>ReviewDetailPage.tsx</code>'s actionbar carries a single-story Re-screen button (published-only, confirm dialog, loading/success/error states, outcome and reasons shown inline) via <code>frontend/src/admin/rescreenApi.ts</code>. Full public-catalog re-screen (Phase 9) stays out of scope by design</td>
+<td>First cut delivered 2026-07-17 (Phase 5/M5): admin-only <code>POST /api/v1/admin/rescreen</code> (<code>moderation/rescreen.py</code>, <code>api/rescreen.py</code>) re-runs the deterministic policy/band gate plus Stage-0 classifiers over an already-published book, and writes a <code>moderation_completed</code> pipeline event; a flagged book is never auto-unpublished (ADR-005), only surfaced for an admin to act on by hand. That hand action now has two forms, not one: <code>archive</code> (terminal, <code>archived</code> is absorbing) and, since <code>RS-C1</code>, <code>recall</code> (<code>POST /api/v1/storybooks/{id}/recall</code>, <code>publishing/service.py::recall</code>), which returns the book to <code>in_review</code> with a closed-vocabulary <code>reason_code</code> and writes a <code>storybook_recalled</code> event. Recall is what makes this row's premise workable: re-screening under moved thresholds previously left an admin choosing between killing a book and leaving an invalidated verdict live. It extends ADR-005 rather than relaxing it, since a recalled book must clear the human gate again before any child sees it, and assignment rows survive, so re-approval restores it to exactly the shelves it left. The UI-only gap closed: <code>ReviewDetailPage.tsx</code>'s actionbar carries a single-story Re-screen button (published-only, confirm dialog, loading/success/error states, outcome and reasons shown inline) via <code>frontend/src/admin/rescreenApi.ts</code>. Full public-catalog re-screen (Phase 9) stays out of scope by design</td>
 </tr>
 <tr>
 <td>A5</td>
@@ -4136,7 +4136,7 @@ Added 2026-07-25 by the ADR-023 authorship pass:</p>
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="August 9, 2026 15:35:42 UTC">August 9, 2026</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="September 3, 2026 12:58:05 UTC">September 3, 2026</span>
   </span>
 
     

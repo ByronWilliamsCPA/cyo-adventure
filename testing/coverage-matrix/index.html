@@ -3546,6 +3546,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#admin-outstanding-decisions-rs-c2-rs-c3" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Admin: outstanding decisions (RS-C2, RS-C3)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#admin-cover-generation-a16" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -4469,8 +4480,20 @@ but holds none of the approve/publish authority. The passage-edit modules
 <ul>
 <li>E2E-mocked: <code>frontend/e2e/guardian-review.spec.ts</code>, <code>frontend/e2e/review-edit.spec.ts</code> (passage-edit save: PATCHes a reachable node's body + choice_labels and an unreachable/orphan node's body-only from the review detail, asserting the exact <code>PATCH /v1/storybooks/{id}/versions/{v}/nodes/{node}</code> contract at the network layer), <code>frontend/e2e/guardian-console.spec.ts</code> (navigation), <code>frontend/e2e/naive-user/naive-admin-misuse.spec.ts</code>, <code>frontend/e2e/naive-user/naive-misuse-shared.spec.ts</code></li>
 <li>E2E-real: <code>frontend/e2e-real/approval-flow.spec.ts</code></li>
-<li>Component: <code>frontend/src/admin/ReviewDetailPage.test.tsx</code>, <code>frontend/src/admin/AdminConsolePage.test.tsx</code> (links into it), <code>frontend/src/guardian/reviewApi.test.ts</code>, <code>frontend/src/guardian/coverApi.test.ts</code> (cover generation on review page), <code>frontend/src/admin/rescreenApi.test.ts</code> (the re-screen trigger's request contract: <code>triggerForStorybook</code> scopes the sweep to a single id by posting <code>{ storybook_ids: [id] }</code> to <code>/v1/admin/rescreen</code> and returns the summary unchanged, and a backend rejection such as a 403 propagates to the caller rather than being swallowed into a fake success). The passage-edit modules this page uses now live under <code>guardian/</code> and are shared with the guardian review route; their tests are listed in the guardian section below.</li>
+<li>Component: <code>frontend/src/admin/ReviewDetailPage.test.tsx</code>, <code>frontend/src/admin/AdminConsolePage.test.tsx</code> (links into it), <code>frontend/src/guardian/reviewApi.test.ts</code>, <code>frontend/src/guardian/coverApi.test.ts</code> (cover generation on review page), <code>frontend/src/admin/reviewSample.test.ts</code> (RS-A4: the bounded false-negative spot check draws a deterministic 15-passage sample and never counts as a clean verdict), <code>frontend/src/admin/findingTriageStore.test.ts</code> (RS-A5: per-finding triage is browser-local and non-gating, so a cleared store reverts to untriaged rather than to approved), <code>frontend/src/admin/rescreenApi.test.ts</code> (the re-screen trigger's request contract: <code>triggerForStorybook</code> scopes the sweep to a single id by posting <code>{ storybook_ids: [id] }</code> to <code>/v1/admin/rescreen</code> and returns the summary unchanged, and a backend rejection such as a 403 propagates to the caller rather than being swallowed into a fake success). The passage-edit modules this page uses now live under <code>guardian/</code> and are shared with the guardian review route; their tests are listed in the guardian section below.</li>
 <li><strong>Gap</strong>: no E2E-staging coverage, <code>/admin/review/:id</code> needs a real storybook id and is excluded from the render-only staging smoke for the same reason <code>e2e-prod</code> excludes it. The passage-edit E2E is mocked-only for now; promote alongside <code>approval-flow.spec.ts</code> when the real tier grows a review-edit journey.</li>
+</ul>
+<h2 id="admin-outstanding-decisions-rs-c2-rs-c3">Admin: outstanding decisions (RS-C2, RS-C3)<a class="headerlink" href="#admin-outstanding-decisions-rs-c2-rs-c3" title="Permanent link">&para;</a></h2>
+<ul>
+<li>Component: <code>frontend/src/admin/OutstandingDecisionsPage.test.tsx</code> (the load-failure branch is
+  the load-bearing one: an outage must not render as "Nothing outstanding", because under ADR-005
+  that sentence is a safety claim about every published book), <code>frontend/src/admin/outstandingDecisionsApi.test.ts</code>
+  (the adapter lets a failed call reject rather than resolving to an empty list, which is what
+  makes the page's error branch reachable at all), <code>frontend/src/admin/AdminShell.test.tsx</code>
+  (nav link only)</li>
+<li><strong>Gap</strong>: no E2E coverage in any tier yet. The mocked tier is the reachable one and is tracked
+  by <code>UW-J43</code>; the staging and prod smokes need a published book carrying an unresolved verdict,
+  which is the same real-fixture constraint that keeps <code>/admin/review/:id</code> out of them.</li>
 </ul>
 <h2 id="admin-cover-generation-a16">Admin: cover generation (A16)<a class="headerlink" href="#admin-cover-generation-a16" title="Permanent link">&para;</a></h2>
 <ul>
@@ -4896,7 +4919,19 @@ in their journey sections instead.</p>
 <li>Guardian widgets: <code>frontend/src/guardian/BudgetBanner.test.tsx</code>,
   <code>frontend/src/guardian/budgetApi.test.ts</code>,
   <code>frontend/src/guardian/StoryStructureSummary.test.tsx</code>,
-  <code>frontend/src/guardian/storyRequestOptions.test.ts</code></li>
+  <code>frontend/src/guardian/storyRequestOptions.test.ts</code>,
+  <code>frontend/src/guardian/findingCounts.test.ts</code> (the shared counting substrate behind every
+  finding total the review surfaces print. Listed here rather than under one journey because
+  three pages across two consoles import it: <code>guardian/StoryStructureSummary.tsx</code>,
+  <code>admin/ReviewDetailPage.tsx</code>, and <code>admin/AdminConsolePage.tsx</code>. What it pins is that the
+  denominators stay distinct: <code>surfacePopulation</code> unions the three merged buckets and falls
+  back to the fan-out plus story-level findings only on a legacy report, so the same finding is
+  never counted twice; structural findings are dropped from the <code>flag</code> tier and from nothing
+  else, matching <code>_route_findings</code> on the backend, so a structural <code>block</code> still gates and the
+  tally cannot disagree with the queue badge; and <code>queueItemCounts</code> falls back to
+  <code>flagged_count</code> only when all three tiers are zero or absent, so a clean row reports zero
+  instead of inventing a finding. It also pins the label formatting that would otherwise print
+  "0 flagged passages below" or "advisorys")</li>
 <li>Auth/session utilities: <code>frontend/src/auth/childSession.test.ts</code></li>
 <li>Library display: <code>frontend/src/library/EndingsBadge.test.tsx</code>,
   <code>frontend/src/library/RecommendationChip.test.tsx</code>,
@@ -5014,7 +5049,7 @@ closure. A companion action-level verdict for this audit lives at
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="August 29, 2026 23:43:41 UTC">August 29, 2026</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="September 3, 2026 12:58:05 UTC">September 3, 2026</span>
   </span>
 
     
