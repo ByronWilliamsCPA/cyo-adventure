@@ -7,6 +7,29 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 <!-- version list -->
 
+## [0.88.0] - 2026-09-04
+
+### Bug Fixes
+
+- **admin**: Point the action bar at a cover waiting for review
+  ([#799](https://github.com/ByronWilliamsCPA/cyo-adventure/pull/799),
+  [`3d28435`](https://github.com/ByronWilliamsCPA/cyo-adventure/commit/3d284350fb82f8d5c4486c5060cc5f5dc59975c0))
+
+- **deps**: Refresh the base-image digest and accept the new Expat CVE
+  ([#798](https://github.com/ByronWilliamsCPA/cyo-adventure/pull/798),
+  [`c9d5b26`](https://github.com/ByronWilliamsCPA/cyo-adventure/commit/c9d5b26d67958e5117ce07d80fb139f474469f4a))
+
+- **security**: Retire 16 dead Trivy suppressions and resolve the libuuid1 acceptance
+  ([#804](https://github.com/ByronWilliamsCPA/cyo-adventure/pull/804),
+  [`05cc564`](https://github.com/ByronWilliamsCPA/cyo-adventure/commit/05cc564de3434c19d65e499d98014f2c9ccfa149))
+
+### Features
+
+- **review**: Make the story review surface decidable
+  ([#797](https://github.com/ByronWilliamsCPA/cyo-adventure/pull/797),
+  [`3ce9393`](https://github.com/ByronWilliamsCPA/cyo-adventure/commit/3ce9393bbc0f3253b5df70fe76f6f876bf27ce88))
+
+
 ## [0.87.1] - 2026-09-01
 
 ### Bug Fixes
@@ -3692,6 +3715,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Safety dependency vulnerability scanning
 - Pre-commit hooks for security validation
 
+[0.88.0]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.87.1...v0.88.0
 [0.87.1]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.87.0...v0.87.1
 [0.87.0]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.86.0...v0.87.0
 [0.86.0]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.85.0...v0.86.0
