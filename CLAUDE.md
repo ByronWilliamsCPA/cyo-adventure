@@ -593,7 +593,7 @@ uv run mkdocs build                        # Build static site
 
 # Multi-version matrix and CI parity (nox is the orchestration layer)
 uv run nox -l                              # List all sessions
-uv run nox -s test                         # Tests across 3.10-3.14
+uv run nox -s test                         # Tests across 3.11-3.14
 uv run nox -s lint typecheck               # Lint + type-check matrix
 uv run nox -s fast                         # Quick unit run (single version)
 

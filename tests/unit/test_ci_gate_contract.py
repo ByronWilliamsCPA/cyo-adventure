@@ -276,9 +276,9 @@ class TestSkipAllowanceMatchesJobCondition:
     def test_allowance_is_derived_from_the_job_condition(self) -> None:
         """Tolerating a skip for a job that cannot legitimately skip is the #594 bug.
 
-        ``frontend``, ``frontend-e2e``, ``design-system`` and ``contract`` carry
-        ``github.event_name != 'merge_group'``, so merge_group is the one event
-        that explains their skip. ``ci`` and ``schema-docs`` carry no such
+        ``frontend``, ``frontend-e2e``, ``cross-device-e2e``, ``design-system``
+        and ``contract`` carry ``github.event_name != 'merge_group'``, so
+        merge_group is the one event that explains their skip. ``ci`` and ``schema-docs`` carry no such
         exclusion on this path, so for them any skip is a defect.
         """
         for job_id, (_label, skip_arg) in CHECKED_JOBS.items():

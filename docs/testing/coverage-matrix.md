@@ -133,8 +133,11 @@ relate to the Supabase project constraints.
   15-minute timeout the first time this ran inline. It lived in a
   standalone `cross-device-e2e.yml` workflow until 2026-09-04, and was
   informational there; moving it into `ci.yml` is what let `ci-gate`, the
-  repo's only required status check, require it, so all three engines now
-  block a merge. The move also dropped its trace upload, since `ci.yml`
+  only required status check this repo itself defines, require it, so all
+  three engines now block a merge. (Three further required contexts,
+  `Security Gate Validation`, `Dependency & Standards Validation` and
+  `Check REUSE Compliance`, come from the org-level default-branch ruleset
+  and fan in nothing from `ci.yml`.) The move also dropped its trace upload, since `ci.yml`
   injects coverage tokens and the upload guard is file-scoped
   (`UW-C433`). Found and fixed three real
   bugs neither the existing Desktop-Chrome-only suite nor visual.spec.ts's

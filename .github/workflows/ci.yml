@@ -381,10 +381,11 @@ jobs:
     # absorb a slow mirror day, not just the happy path.
     timeout-minutes: 25
     # #CRITICAL: data-integrity: this `if:` must stay character-identical to
-    # frontend-e2e's. ci-gate derives each job's skip allowance from the exact
-    # string `github.event_name != 'merge_group'`, so a paraphrase here would
-    # be classified as "this job can never legitimately skip" and fail the
-    # required check on every merge_group run.
+    # frontend-e2e's. A contract test derives each gated job's allowance from the exact
+    # string `github.event_name != 'merge_group'`, so a paraphrase here fails
+    # that test rather than reaching CI. (The gate script itself reads only
+    # `EVENT_NAME` and takes a hardcoded literal per job; the string-exactness
+    # lives in pytest, which is why the #VERIFY below is the authority.)
     # #VERIFY: tests/unit/test_ci_gate_contract.py::TestSkipAllowanceMatchesJobCondition
     # asserts the allowance against this expression and fails on any other
     # shape that mentions merge_group.
@@ -415,8 +416,26 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      # Mirrors frontend-e2e's cache above, with a distinct three-engine key
+      # so a chromium-only entry can never be restored here. This job carries
+      # no `paths:` filter (ci.yml has none), so without a cache a docs-only
+      # or backend-only PR pays a chromium+firefox+webkit download on every
+      # run. On a hit, `install-deps` is a fast apt check: the apt libraries
+      # are not preserved across ephemeral runners, but the browsers are.
+      - name: Cache Playwright browsers
+        id: playwright-cache
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-cross-device-${{ runner.os }}-${{ hashFiles('frontend/package-lock.json') }}
+
       - name: Install Playwright browsers (chromium + firefox + webkit)
+        if: steps.playwright-cache.outputs.cache-hit != 'true'
         run: npx playwright install --with-deps chromium firefox webkit
+
+      - name: Install Playwright OS dependencies (browser cache hit)
+        if: steps.playwright-cache.outputs.cache-hit == 'true'
+        run: npx playwright install-deps chromium firefox webkit
 
       # Pixel 7 (chromium) + iPad gen 7 / iPhone 14 (webkit) + Desktop
       # Firefox, each running e2e/cross-device.spec.ts's structural
@@ -1160,9 +1179,9 @@ jobs:
           workflow_count="$(find .github/workflows -maxdepth 1 \
             \( -name '*.yml' -o -name '*.yaml' \) -type f | wc -l)"
           if [ "${workflow_count}" -lt 30 ]; then
-            echo "::error::found only ${workflow_count} workflow files to lint;" \
-              "the repo has 46 (measured 2026-09-03). A shrunken input set" \
-              "reads exactly like a clean one."
+            echo "::error::found only ${workflow_count} workflow files to lint," \
+              "below the floor of 30 this check enforces. A shrunken input" \
+              "set reads exactly like a clean one."
             exit 1
           fi
 

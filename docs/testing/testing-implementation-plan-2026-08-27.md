@@ -10,6 +10,11 @@ tags:
   - quality
 ---
 
+> **Superseded reference (2026-09-04):** `cross-device-e2e.yml` no longer exists. Its job moved into
+> `ci.yml` as the `cross-device-e2e` job and is now a required check via `ci-gate`, rather than the
+> informational standalone workflow described below. The references that follow are preserved as
+> written on 2026-08-27 for the audit trail; read them as historical, not as current state.
+
 This document executes the program defined by PR #768
 ([testing-improvement-plan-2026-08-27.md](testing-improvement-plan-2026-08-27.md) and
 [user-side-testing-module-proposal-2026-08-27.md](user-side-testing-module-proposal-2026-08-27.md)). Those two

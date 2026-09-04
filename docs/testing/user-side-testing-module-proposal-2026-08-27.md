@@ -9,6 +9,11 @@ tags:
   - evaluation
 ---
 
+> **Superseded reference (2026-09-04):** `cross-device-e2e.yml` no longer exists. Its job moved into
+> `ci.yml` as the `cross-device-e2e` job and is now a required check via `ci-gate`, rather than the
+> informational standalone workflow described below. The references that follow are preserved as
+> written on 2026-08-27 for the audit trail; read them as historical, not as current state.
+
 This document does three things, in order:
 
 1. Inventories the testing process this repo actually runs today (2026-08-27).

@@ -37,11 +37,12 @@
 name: E2E (real user OS)
 
 on:
-  # Daily, 16:00 UTC. Distinct from every other cron in this directory
-  # (release 01:00, kws-delivery-health 05/11/17/23:00, supabase-backup 08:00,
-  # notification-digest 09:00, security-analysis 09:07, e2e-real-nightly 09:30,
-  # e2e-staging 13:00, e2e-prod 13:30, usersim 14:00, webkit-kid 15:00), so
-  # this run never starts alongside another scheduled job.
+  # Daily, 16:00 UTC. No other cron in this directory fires in the 16:00
+  # hour; the nearest neighbours are webkit-kid at 15:00 and
+  # kws-delivery-health at 17:00, so this run never starts alongside another
+  # scheduled job. Deliberately not an exhaustive list of the directory's
+  # crons: an enumeration here has no oracle and goes stale silently
+  # (`UW-C435`).
   schedule:
     - cron: '0 16 * * *'
   workflow_dispatch: {}
@@ -96,9 +97,22 @@ jobs:
       run:
         working-directory: ./frontend
     steps:
-      # No harden-runner step. It enforces egress policy on Linux only and
-      # silently no-ops elsewhere, and neither leg of this matrix is Linux, so
-      # including it would assert a protection this workflow does not have.
+      # No harden-runner step on this job, unlike every other job in this
+      # repo. Do not restore the rationale this file first carried ("enforces
+      # egress policy on Linux only and silently no-ops elsewhere"): that
+      # constraint describes BLOCK mode, and all 85 harden-runner call sites
+      # in this repo use `egress-policy: audit`, which GitHub-hosted macOS
+      # and Windows runners do support. Audit-mode monitoring is available
+      # here; it is simply not wired up yet, and cannot be exercised before
+      # this workflow reaches the default branch.
+      # #ASSUME: security: omitting it leaves `npm ci` and
+      # `npx playwright install`, the two highest supply-chain-exposure steps
+      # in this file, with no runtime egress monitoring on the two least
+      # observed runners in the fleet.
+      # #VERIFY: add `step-security/harden-runner` with
+      # `egress-policy: audit` to this job once one scheduled run has proved
+      # the tier green; the alert and resolve jobs below already pin
+      # v2.20.0 and can be copied verbatim.
       - name: Checkout repository
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
@@ -152,10 +166,17 @@ jobs:
   # tracking issue. `needs.real-os.result` is the matrix aggregate: it is
   # `failure` when ANY leg failed, which is the right trigger, since the issue
   # says "a real-OS leg is red" and the run log says which.
+  #
+  # Schedule-gated for the same reason `resolve` is: a `workflow_dispatch` on
+  # a branch is not evidence about the health of this tier on `main`, so it
+  # must not file a tracking issue that only a later green SCHEDULED run can
+  # close. `cancelled()` is kept because a run aborted mid-flight leaves the
+  # tier's health unknown, and `concurrency.cancel-in-progress` is false, so
+  # a cancellation is never self-inflicted.
   alert:
     name: Alert on a failed real-OS leg
     needs: real-os
-    if: failure() || cancelled()
+    if: (failure() || cancelled()) && github.event_name == 'schedule'
     runs-on: ubuntu-latest
     timeout-minutes: 5
     permissions:

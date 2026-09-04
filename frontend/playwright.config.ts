@@ -140,19 +140,32 @@ export default defineConfig({
       // captured on the Linux CI runner. A developer host (macOS/Windows/WSL)
       // renders fonts differently, so those baselines drift by sub-pixel anti-
       // aliasing noise off-CI and every visual test "fails" locally for no real
-      // reason. Ignore them when CI is unset so a local `npm run test:e2e` is
-      // clean; CI (GitHub Actions sets CI=true) still runs and enforces them,
+      // reason. Ignore them off the Linux CI runner so a local
+      // `npm run test:e2e` is clean; Linux CI still runs and enforces them,
       // and update-visual-snapshots.yml still regenerates them. Structural
       // gating, not a per-test skip marker. Run locally with
-      // `CI=1 npm run test:e2e -- visual.spec.ts`.
+      // `CI=1 npm run test:e2e -- visual.spec.ts` on Linux or WSL.
+      //
+      // #CRITICAL: data-integrity: the condition is `CI AND linux`, not `CI`.
+      // Playwright keys a baseline filename on `process.platform`, so every
+      // committed baseline is `*-chromium-linux.png`. A non-Linux CI runner
+      // (e2e-real-os.yml's windows-chromium leg runs this same project via
+      // `npm run test:e2e`) would look for `*-chromium-win32.png`, find
+      // nothing, and fail all 18 assertions on every run; `retries` cannot
+      // mask it, because a missing baseline sets `shouldNotRetryTest`.
+      // #VERIFY: any new non-Linux CI runner that invokes the `chromium`
+      // project must leave this file's exclusion intact rather than adding a
+      // per-leg flag; grep for `test:e2e` in .github/workflows before adding
+      // a runner on a new OS.
       //
       // cross-device.spec.ts is excluded too: it runs the same checks as
       // responsive.spec.ts's "@ desktop" block, once per real device/browser
       // project (see the cross-device-*/cross-browser-* projects below), and
       // would just be a redundant third desktop-chrome pass here.
-      testIgnore: process.env.CI
-        ? ['cross-device.spec.ts']
-        : ['visual.spec.ts', 'cross-device.spec.ts'],
+      testIgnore:
+        process.env.CI && process.platform === 'linux'
+          ? ['cross-device.spec.ts']
+          : ['visual.spec.ts', 'cross-device.spec.ts'],
       use: { ...devices['Desktop Chrome'] },
     },
     {

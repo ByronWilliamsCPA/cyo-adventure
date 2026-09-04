@@ -371,7 +371,7 @@ Configured to target the selected Python version:
 
 ```toml
 [tool.ruff]
-target-version = "py312"  # py311, py312, or py313
+target-version = "py311"  # py311 through py314
 ```
 
 This ensures Ruff:
@@ -386,7 +386,7 @@ Configured to match your Python version:
 
 ```toml
 [tool.basedpyright]
-pythonVersion = "3.12"  # 3.11, 3.12, or 3.13
+pythonVersion = "3.11"  # 3.11 through 3.14
 typeCheckingMode = "strict"
 ```
 
@@ -428,8 +428,13 @@ alone, and only `nox` runs lint and type checking off 3.14:
 Python 3.14, matching the production image (`dhi-python:3.14-debian13`):
 
 ```yaml
-env:
-  python-version: "3.14"
+# ci.yml has no top-level `env:` block; the version is set per consumer,
+# once in the reusable-workflow call and once per `actions/setup-python`.
+jobs:
+  ci:
+    uses: ./.github/workflows/python-ci.yml
+    with:
+      python-version: "3.14"
 ```
 
 The one exception is the `Diversity Regression Gate` job, still pinned to
@@ -454,10 +459,12 @@ strategy:
         python-version: '3.14'
 ```
 
-That range is the full span `requires-python = ">=3.11"` declares, and it
-matches the local `nox` matrix described above, so no supported version is
-exercised only locally. Python 3.10 is covered by neither, because it sits
-below the declared floor.
+That range is the span CI actually tests, and it matches the local `nox`
+matrix described above, so no tested version is exercised only locally.
+`requires-python = ">=3.11"` sets the floor but declares no ceiling, so
+3.15 and later are not excluded by package metadata; they are simply
+untested until a leg is added. Python 3.10 is covered by neither matrix,
+because it sits below the declared floor.
 
 ## Migration Guide
 
