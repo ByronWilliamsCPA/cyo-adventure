@@ -10,17 +10,17 @@ tags:
   - requirements
 ---
 
-This project requires **Python 3.11+** (`requires-python = ">=3.11"` in `pyproject.toml`, no upper bound). Python 3.12 is the primary local development target. CI coverage is split across two workflows with different scope: `ci.yml` runs the full quality gate (tests, lint, type checking) on **Python 3.12 only**; `python-compatibility.yml` runs a pytest-only compatibility check on Python 3.11-3.13 (Ubuntu), plus Python 3.12 on macOS and Windows. Python 3.10 and 3.14 appear only in the local `nox -s test` / `lint` / `typecheck` matrix (3.10-3.14); **no GitHub Actions workflow invokes `nox`**, so those two versions have no CI coverage, and 3.10 in particular falls below the project's `requires-python` floor (see the note under [Python 3.10 Support](#python-310-support-backports-needed) below).
+This project requires **Python 3.11+** (`requires-python = ">=3.11"` in `pyproject.toml`, no upper bound). Python 3.14 is the primary local development and runtime target, matching the production image (`dhi-python:3.14-debian13`). CI coverage is split across two workflows with different scope: `ci.yml` runs the full quality gate (tests, lint, type checking) on **Python 3.14**, with the `Diversity Regression Gate` job as the lone exception (still pinned to 3.12); `python-compatibility.yml` runs a pytest-only compatibility check on Python 3.11-3.14 (Ubuntu), plus Python 3.14 on macOS. There is deliberately no Windows leg, removed on 2026-09-04; see [CI/CD Matrix](#cicd-matrix) below for why. **No GitHub Actions workflow invokes `nox`**, but the local `nox -s test` / `lint` / `typecheck` matrix covers the same 3.11-3.14 range, so no supported version is exercised only locally. Python 3.10 appears in neither, because it falls below the project's `requires-python` floor (see the note under [Python 3.10 Support](#python-310-support-backports-needed) below).
 
 ## Version Support Matrix
 
 | Python Version | Support Status | Nox Testing (local only) | CI Testing | Notes |
 |----------------|----------------|--------------------------|------------|-------|
-| 3.10 | ❌ Not supported | ⚠️ Listed in `noxfile.py`'s `test`/`lint`/`typecheck` matrix | ❌ None | Below `requires-python = ">=3.11"`; not installable via `uv sync` |
+| 3.10 | ❌ Not supported | ❌ Not in any `noxfile.py` matrix | ❌ None | Below `requires-python = ">=3.11"`; not installable via `uv sync` |
 | 3.11 | ✅ Supported | ✅ test/lint/typecheck | ✅ `python-compatibility.yml` (Ubuntu only) | LTS version (EOL Oct 2027) |
-| 3.12 | ✅ Supported | ✅ test/lint/typecheck | ✅ Full quality gate (`ci.yml`) + `python-compatibility.yml` (Ubuntu, macOS, Windows) | Primary/default local dev target; only version covered by the main CI gate |
-| 3.13 | ✅ Supported | ✅ test/lint/typecheck | ✅ `python-compatibility.yml` (Ubuntu only) | Latest stable, PEP 594 removals |
-| 3.14 | ⚠️ Locally tested only | ✅ test/lint/typecheck | ❌ None | Not covered by any GitHub Actions workflow |
+| 3.12 | ✅ Supported | ✅ test/lint/typecheck | ✅ `python-compatibility.yml` (Ubuntu only) + `ci.yml`'s `Diversity Regression Gate` | The one job still pinned off 3.14 |
+| 3.13 | ✅ Supported | ✅ test/lint/typecheck | ✅ `python-compatibility.yml` (Ubuntu only) | PEP 594 removals |
+| 3.14 | ✅ Supported | ✅ test/lint/typecheck | ✅ Full quality gate (`ci.yml`) + `python-compatibility.yml` (Ubuntu, macOS) | Primary local and runtime target; the version the production image runs |
 | 3.15+ | ⚠️ Not tested | ❌ None | ❌ No CI/CD | May work but not guaranteed |
 
 ## Python 3.10 Support (Backports Needed)
@@ -400,14 +400,15 @@ This ensures BasedPyright:
 
 ### Nox Sessions
 
-`nox`'s `test`, `lint`, and `typecheck` sessions run a wide local matrix
-(3.10, 3.11, 3.12, 3.13, 3.14). This is a **local-only parity check**: no
-GitHub Actions workflow invokes `nox`, so running these sessions is the only
-way to exercise 3.10 or 3.14 at all, and the only way to run lint/typecheck
-against anything other than 3.12.
+`nox`'s `test`, `lint`, and `typecheck` sessions run the full supported
+matrix locally (3.11, 3.12, 3.13, 3.14). This is a **local-only parity
+check**: no GitHub Actions workflow invokes `nox`. The versions themselves
+are all covered in CI by `python-compatibility.yml`, so what these sessions
+uniquely give you is lint and type checking against something other than
+3.14, which CI never does.
 
 ```bash
-# Run tests locally across the nox matrix (3.10, 3.11, 3.12, 3.13, 3.14)
+# Run tests locally across the nox matrix (3.11, 3.12, 3.13, 3.14)
 nox -s test
 
 # Run linting locally across the nox matrix
@@ -419,35 +420,44 @@ nox -s typecheck
 
 ### CI/CD Matrix
 
-CI coverage is split across two separate workflows, neither of which matches
-the local `nox` matrix exactly:
+CI coverage is split across two separate workflows. Between them they cover
+the same 3.11-3.14 range as the local `nox` matrix, but neither does so
+alone, and only `nox` runs lint and type checking off 3.14:
 
 **`ci.yml`** (the main quality gate: tests, lint, type checking) runs on
-Python 3.12 only:
+Python 3.14, matching the production image (`dhi-python:3.14-debian13`):
 
 ```yaml
 env:
-  python-version: "3.12"
+  python-version: "3.14"
 ```
 
+The one exception is the `Diversity Regression Gate` job, still pinned to
+3.12.
+
 **`python-compatibility.yml`** (a pytest-only compatibility check, no lint or
-type checking) runs a matrix of 3.11-3.13 on Ubuntu, plus 3.12 on macOS and
-Windows:
+type checking) runs a matrix of 3.11-3.14 on Ubuntu, plus 3.14 on macOS.
+There is deliberately no Windows leg; it was removed on 2026-09-04 because
+this backend deploys only as a Linux container image, so "does the Python
+service run on Windows" is a question with no consumer. What users actually
+need is the frontend working from Windows, which is a browser-engine
+question answered by `ci.yml`'s `cross-device-e2e` job and by
+`e2e-real-os.yml`, not by running the interpreter there. The matrix:
 
 ```yaml
 strategy:
   matrix:
-    python-version: ['3.11', '3.12', '3.13']
+    python-version: ['3.11', '3.12', '3.13', '3.14']
     os: [ubuntu-latest]
     include:
       - os: macos-latest
-        python-version: '3.12'
-      - os: windows-latest
-        python-version: '3.12'
+        python-version: '3.14'
 ```
 
-Neither workflow covers Python 3.10 or 3.14; those two versions are exercised
-only by the local `nox` matrix described above.
+That range is the full span `requires-python = ">=3.11"` declares, and it
+matches the local `nox` matrix described above, so no supported version is
+exercised only locally. Python 3.10 is covered by neither, because it sits
+below the declared floor.
 
 ## Migration Guide
 

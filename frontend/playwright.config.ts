@@ -323,7 +323,7 @@ export default defineConfig({
       // proposal-2026-08-27.md, "Engine expansion: `webkit-kid`"): the
       // reader/library/offline/read-aloud mocked specs on real WebKit at an
       // iPad viewport, the engine and form factor kids actually read on.
-      // `cross-device-e2e.yml` already runs a WebKit profile, but only
+      // ci.yml's `cross-device-e2e` job already runs a WebKit profile, but only
       // against cross-device.spec.ts's structural checks; this is the first
       // project to run an actual kid reading journey on that engine.
       //

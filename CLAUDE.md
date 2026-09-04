@@ -107,9 +107,11 @@ in the same repository.
   and runtime target (issue #295 upgrade; the production image runs
   `dhi-python:3.14-debian13`). No GitHub Actions workflow invokes `nox`:
   `ci.yml` runs the full quality gate on Python 3.14 only, and
-  `python-compatibility.yml` covers 3.11-3.14 on Ubuntu plus 3.14 on
-  macOS/Windows. `nox -s test` runs the 3.11-3.14 matrix locally for parity
-  checks before pushing, but CI itself does not call it.
+  `python-compatibility.yml` covers 3.11-3.14 on Ubuntu plus 3.14 on macOS
+  only; the Windows leg was removed on 2026-09-04 because the backend
+  deploys only as a Linux container image. `nox -s test` runs the
+  3.11-3.14 matrix locally for parity checks before pushing, but CI itself
+  does not call it.
 - **Package Manager**: UV
 - **Web Framework**: FastAPI (async), Pydantic v2 / Pydantic Settings
 - **Database**: async SQLAlchemy 2.x over PostgreSQL (`core/database.py`),
@@ -1042,11 +1044,12 @@ uv run pytest tests/unit/test_example.py::test_function_name -v
 
 ## CI/CD Pipeline
 
-**GitHub Actions Workflows** (`.github/workflows/`, 38 files):
+**GitHub Actions Workflows** (`.github/workflows/`, 45 files):
 
 - **Quality gate**: `ci.yml` (tests/lint/typecheck on Python 3.14, includes the
   frontend contract-drift check), `python-compatibility.yml` (3.11-3.14 Ubuntu
-  plus 3.14 macOS/Windows), `pr-title.yml`, `pr-validation.yml`
+  plus 3.14 macOS only, Windows leg removed 2026-09-04), `pr-title.yml`,
+  `pr-validation.yml`
 - **Security/supply chain**: `security-analysis.yml` (Bandit and OSV-Scanner for
   Python, plus a `semgrep-frontend` job for the React tree). CodeQL previously ran
   via GitHub code scanning **default setup**, which has no workflow file, so

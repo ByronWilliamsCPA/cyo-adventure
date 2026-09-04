@@ -943,15 +943,22 @@ test('the real repository', async (t) => {
   )
 
   await t.test('the set of wholesale uploads has not widened', () => {
-    // A tripwire, not an approval. These six tiers run against a local or
+    // A tripwire, not an approval. These five tiers run against a local or
     // mocked backend and type a hardcoded local literal rather than a
     // repository secret, so they fall outside the hard rule above; they are
     // still on the owner's list to narrow. Pinning the exact set means a
-    // SEVENTH workflow, or a widened path in one of these, cannot be added
+    // SIXTH workflow, or a widened path in one of these, cannot be added
     // without this assertion failing and forcing the decision into review.
+    //
+    // Was six until 2026-09-04, when `cross-device-e2e.yml` was promoted into
+    // ci.yml's `cross-device-e2e` job so ci-gate could require it. Its upload
+    // step was DROPPED rather than moved: the hard rule above is file-scoped,
+    // and ci.yml injects `CODECOV_TOKEN`/`QLTY_COVERAGE_TOKEN` in its coverage
+    // jobs, so carrying the upload across would have tripped it. That makes
+    // this a genuine narrowing of `UW-C433` rather than bookkeeping. The new
+    // `e2e-real-os.yml` uploads nothing for the same reason; see its header.
     const expected = {
       'accessibility-compliance-weekly.yml': ['frontend/test-results/'],
-      'cross-device-e2e.yml': ['frontend/test-results/'],
       'e2e-real-nightly.yml': ['frontend/test-results/'],
       'e2e-real-pr-smoke.yml': ['frontend/test-results/'],
       'usersim.yml': ['frontend/test-results/'],

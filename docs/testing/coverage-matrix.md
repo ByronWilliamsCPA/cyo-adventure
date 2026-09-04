@@ -126,13 +126,17 @@ relate to the Supabase project constraints.
   same checks once per real device/browser project (`cross-device-mobile`:
   Pixel 7, `cross-device-tablet`: iPad (gen 7)/webkit, `cross-browser-
   mobile-safari`: iPhone 14/webkit, `cross-browser-firefox`: Desktop
-  Firefox: `npm run test:e2e:cross-device`, wired into its own
-  `cross-device-e2e.yml` workflow rather than `ci.yml`'s `frontend` job:
-  `playwright install --with-deps firefox webkit` apt-installs a much larger
-  dependency set than chromium alone, which pushed `frontend`'s 15-minute
-  timeout the first time this ran inline. `cross-device-e2e.yml` is
-  informational (not a merge gate), same posture as `e2e-real-pr-smoke.yml`,
-  until its per-PR reliability is established. Found and fixed three real
+  Firefox: `npm run test:e2e:cross-device`, wired into `ci.yml`'s
+  `cross-device-e2e` job rather than that file's `frontend` job:
+  `playwright install --with-deps firefox webkit` apt-installs a much
+  larger dependency set than chromium alone, which pushed `frontend`'s
+  15-minute timeout the first time this ran inline. It lived in a
+  standalone `cross-device-e2e.yml` workflow until 2026-09-04, and was
+  informational there; moving it into `ci.yml` is what let `ci-gate`, the
+  repo's only required status check, require it, so all three engines now
+  block a merge. The move also dropped its trace upload, since `ci.yml`
+  injects coverage tokens and the upload guard is file-scoped
+  (`UW-C433`). Found and fixed three real
   bugs neither the existing Desktop-Chrome-only suite nor visual.spec.ts's
   single-viewport baselines caught: `library.css`'s shelf grid used
   `auto-fill` (reserves empty tracks) instead of `auto-fit` (collapses
