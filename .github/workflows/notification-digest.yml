@@ -7,9 +7,25 @@
 # channel).
 #
 # -----------------------------------------------------------------------
-# Required secret on the `production` GitHub Environment (shared with
-# supabase-backup.yml's `environment: production`, but this is a distinct secret):
+# Required GitHub Environment: `production-ops` (NOT `production`)
 # -----------------------------------------------------------------------
+# The repo owner must create a `production-ops` Environment with NO protection
+# rules and add the secret below before the next scheduled run; until then the
+# job fails fast when scripts/run_notification_digest.py reads an unset
+# CYO_ADVENTURE_DATABASE_URL. The environment is shared with
+# moderation-report-health.yml, which reads the same secret through the same
+# ORM. It is NOT shared with supabase-backup.yml's `backups` environment, which
+# holds the direct dump connection and R2 credentials: one environment per
+# credential set, so a job can only ever read the secrets it needs.
+#
+#   gh api -X PUT repos/:owner/:repo/environments/production-ops
+#   gh secret set CYO_ADVENTURE_DATABASE_URL --env production-ops
+#
+# It is a separate environment from `production` on purpose: see the
+# #CRITICAL note on the job's `environment:` key. A required-reviewer rule
+# parks every scheduled run in `waiting`, and this workflow's own
+# `cancel-in-progress: true` then has the next day's cron cancel it, so the
+# digest never ran once between 2026-08-09 and 2026-09-05.
 #
 #   CYO_ADVENTURE_DATABASE_URL   The app's OWN runtime connection string (asyncpg DSN),
 #                                 authenticating as the least-privilege cyo_api role
@@ -20,8 +36,6 @@
 #                                 app's own ORM and must be bound by the same RLS
 #                                 posture as every other write path, not exempted from
 #                                 it.
-#
-#   gh secret set CYO_ADVENTURE_DATABASE_URL --env production
 #
 # Failure alerting: mirrors supabase-backup.yml's "file/comment on a labelled
 # ci-failure issue" pattern (docs/operations/runbook.md section 7 documents the
@@ -51,7 +65,31 @@ jobs:
     name: Run digest pass
     runs-on: ubuntu-latest
     timeout-minutes: 10
-    environment: production
+    # #CRITICAL: timing: deliberately NOT the `production` environment. That
+    # environment carries a required-reviewer protection rule, which is correct
+    # for supabase-production.yml (it applies migrations to the live database on
+    # push, with the pushing human present to approve) but fatal here: a
+    # scheduled, unattended run enters `waiting` for an approver who is not
+    # watching. This workflow's `cancel-in-progress: true` then decides the
+    # outcome: the next day's 09:00 cron cancels the waiting run and parks its
+    # own in the same state. The digest recorded 26 runs and ZERO executions
+    # between shipping on 2026-08-09 and 2026-09-05, and nothing turned red,
+    # because the `alert` job below needs `digest` to FAIL and a run that never
+    # starts cannot fail. e2e-prod.yml documented this exact trap on 2026-07-18
+    # and supabase-backup.yml walked into it again before 2026-08-11; this was
+    # the third time, which is why tests/unit/test_scheduled_workflow_environments.py
+    # now fails on any scheduled job that names `production`.
+    # #CRITICAL: external resources: switching this key does NOT clear a run
+    # already parked in `waiting`; it keeps the concurrency group's slot until
+    # cancelled by hand. Find it with
+    # `gh run list --workflow notification-digest.yml --status waiting` and
+    # `gh run cancel <id>` each one. This environment must stay UNPROTECTED; it
+    # holds only the app's own least-privilege cyo_api DSN, never a deploy key
+    # and never the direct/superuser connection.
+    # #VERIFY: `gh api repos/:owner/:repo/environments/production-ops --jq
+    # '.protection_rules'` returns `[]`, no run for this workflow is left in
+    # `waiting`, and a scheduled run reaches the "Run digest" step.
+    environment: production-ops
     permissions:
       contents: read
     steps:

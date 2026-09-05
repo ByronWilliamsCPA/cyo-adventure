@@ -10,16 +10,28 @@
 # human review.
 #
 # -----------------------------------------------------------------------
-# Required secret on the `production` GitHub Environment (same secret
-# notification-digest.yml uses; this job also reads through the app's own ORM):
+# Required GitHub Environment: `production-ops` (NOT `production`)
 # -----------------------------------------------------------------------
+# The repo owner must create a `production-ops` Environment with NO protection
+# rules and add the secret below before the next scheduled run; until then the
+# job fails fast when scripts/check_moderation_report_health.py reads an unset
+# CYO_ADVENTURE_DATABASE_URL. The environment and the secret are shared with
+# notification-digest.yml, which reads the same DSN through the same ORM, and
+# with nothing else: supabase-backup.yml's `backups` environment holds different
+# credentials and is deliberately not reused.
+#
+#   gh api -X PUT repos/:owner/:repo/environments/production-ops
+#   gh secret set CYO_ADVENTURE_DATABASE_URL --env production-ops
+#
+# It is a separate environment from `production` on purpose: see the
+# #CRITICAL note on the job's `environment:` key. A required-reviewer rule
+# parks every scheduled run in `waiting`, where the 2026-08-31 run (id
+# 33364655103) still sits.
 #
 #   CYO_ADVENTURE_DATABASE_URL   The app's OWN runtime connection string (asyncpg DSN),
 #                                 authenticating as the least-privilege cyo_api role
 #                                 per ADR-021/ADR-022, i.e. the SAME connection the
 #                                 deployed app itself uses.
-#
-#   gh secret set CYO_ADVENTURE_DATABASE_URL --env production
 #
 # Failure alerting: mirrors notification-digest.yml's "file/comment on a labelled
 # ci-failure issue" pattern (docs/operations/runbook.md section 7 documents the
@@ -42,7 +54,10 @@
 # sweep is deliberately held until feat/moderation-review-hardening deploys (see
 # docs/planning/unscheduled-work-register.md row UW-L08). Until that sweep runs,
 # this job WILL fail every Monday; that is the intended forcing function on
-# UW-L08, not a defect in this check or its schedule.
+# UW-L08, not a defect in this check or its schedule. Note that no Monday before
+# the `production-ops` retarget below was red OR green: every run parked in
+# `waiting` on the protected `production` environment and never started, so the
+# forcing function did not begin to apply until the retarget landed.
 # #ASSUME: process: a red run here, on any Monday before UW-L08 closes, is this
 # already-tracked known cause rather than a new regression.
 # #VERIFY: confirm the alert issue's book list matches the population UW-L08
@@ -71,7 +86,31 @@ jobs:
     name: Run health check
     runs-on: ubuntu-latest
     timeout-minutes: 10
-    environment: production
+    # #CRITICAL: timing: deliberately NOT the `production` environment. That
+    # environment carries a required-reviewer protection rule, which is correct
+    # for supabase-production.yml (it applies migrations to the live database on
+    # push, with the pushing human present to approve) but fatal here: a
+    # scheduled, unattended run enters `waiting` for an approver who is not
+    # watching. This workflow's `cancel-in-progress: true` then decides the
+    # outcome: the next Monday's cron cancels the waiting run and parks its own
+    # in the same state, so the check never executes and nothing turns red,
+    # because the `alert` job below needs `check` to FAIL and a run that never
+    # starts cannot fail. e2e-prod.yml documented this exact trap on 2026-07-18,
+    # supabase-backup.yml walked into it again before 2026-08-11, and this
+    # workflow and notification-digest.yml made it the third time, which is why
+    # tests/unit/test_scheduled_workflow_environments.py now fails on any
+    # scheduled job that names `production`.
+    # #CRITICAL: external resources: the 2026-08-31 run (id 33364655103) is
+    # still `waiting`, not cancelled, and will never resolve on its own.
+    # Switching this key does NOT clear it; it must be cancelled by hand
+    # (`gh run cancel 33364655103`) or it keeps occupying the concurrency
+    # group's slot. This environment must stay UNPROTECTED; it holds only the
+    # app's own least-privilege cyo_api DSN, never a deploy key and never the
+    # direct/superuser connection.
+    # #VERIFY: `gh api repos/:owner/:repo/environments/production-ops --jq
+    # '.protection_rules'` returns `[]`, no run for this workflow is left in
+    # `waiting`, and a scheduled run reaches the "Run health check" step.
+    environment: production-ops
     permissions:
       contents: read
     steps:
