@@ -113,6 +113,14 @@ PR #314. Follow-on enabler refinements from the original ADR-011 work are tracke
 #77, #78, and #79, all still open as of 2026-07-20 and unrelated to the diversity workstream
 above.
 
+**Corrected 2026-09-05**: the skeleton and story counts in this paragraph are historical. Current
+catalog totals are generated in [catalog-census.md](./catalog-census.md) (84 shells, 81 flagged
+`production_eligible`, 74 reachable in an offered cell at the 2026-08-22 census; do not transcribe
+them here again). The 23 filled stories were imported to production on 2026-07-21 (issue #347,
+25 including two pilot re-themes); as of the 2026-08-25 recount 17 sit `in_review` and 10 are
+published with `visibility='catalog'`, so "zero in the catalog" is no longer true either. Promotion
+of the rest is gated on the Stage D re-moderation sweep (`UW-G14`, `UW-L08`).
+
 **Timeline**:
 
 | Rung / band | Scope | Estimate |
@@ -122,11 +130,25 @@ above.
 | Limited release, adds iOS [R2] | R1 plus Phases 6 and 8 (TestFlight) | +6-9 weeks after R1 |
 | Public launch [R3] | R2 plus Phases 7 and 9 (App Store) | +11-17 weeks after R1 |
 
+**Timeline check, 2026-09-05** (eleven weeks after the 2026-06-20 start): R1 shipped in under two
+weeks against an 11-16 week estimate. The R2 window (six to nine weeks after 2026-07-03, so
+2026-08-14 to 2026-09-04) has closed with Phase 6 partial and Phase 8 unstarted, so R2 is overrun;
+the R3 window (2026-09-19 to 2026-10-31) is not yet due but depends on the counsel engagement
+(`UW-M03`) that has not started. The estimates below Section 5 are not re-baselined here; that is
+an owner decision, and the honest input to it is that engineering pace has exceeded every estimate
+while owner-gated and external items (counsel, Apple enrollment, DPAs, production credentials) have
+set the actual critical path.
+
 Source: [Project Vision](./project-vision.md) sections 1-3;
 [ADR-008](./adr/adr-008-public-app-store-launch.md) and
 [ADR-009](./adr/adr-009-supabase-platform.md) for the public rungs (R2/R3).
 
-### Current status (2026-07-10)
+### Current status (2026-09-05)
+
+> Rows 0 through 4d carry their earlier corrections unchanged. Rows 5 through 9 were rewritten
+> on 2026-09-05 against code by the six-agent audit described below; the previous text of each
+> is preserved in the phase sections' dated notes. Release at audit time: v0.88.0 (2026-09-04),
+> eleven weeks after the 2026-06-20 project start.
 
 | Phase | Status |
 |-------|--------|
@@ -140,11 +162,11 @@ Source: [Project Vision](./project-vision.md) sections 1-3;
 | 4b Editor + Engagement | ✅ Substantially delivered 2026-07-17, PR #270 (verified 2026-07-20; see the audit note below). G6 node editor, K6 tracker, K7 read-aloud, G2 controls UI, G3 permissions, K15 kid flag all shipped. **Corrected 2026-08-09**: K5/K8 test pins are done, not open (`reader-go-back.spec.ts`, `admin-review-cover.spec.ts`, `BookCard.test.tsx`, all present since 2026-08-04). Bookmarks and G15 device/storage view both closed 2026-08-09 (see roadmap.md's Phase 4b Deliverables for detail). Narrow remaining piece: G15's removal path is not wired into automatic client-side eviction |
 | 4c Family Loops (NEW 2026-07-16) | ✅ Delivered | S9 notification infra, G10 alerts, G9 visibility, K12 kid status, G7/G13 budget consent all shipped 2026-07-17 in PR #270 (verified 2026-07-20). The push channel closed 2026-07-29 via authenticated SSE (`api/notifications.py:351-419` resolves the principal and applies the guardian check before streaming any byte). **Closed 2026-08-09**: the server-scheduled digest job (`notifications/digest.py`, `.github/workflows/notification-digest.yml`) that kept capability S9 partial is now built; see roadmap.md's Phase 4c section for detail. **Apple readiness audit 2026-07-20, still open**: G10's `_COMPOSERS` registry (`notifications/registry.py`) alerts a guardian when their child flags a story (`KID_FLAGGED`), but `EventType.FLAG_RESOLVED` (emitted by `resolve_flag` in `api/flags.py:257-265`) has no composer - a guardian who reports content is never told how it was resolved. This narrows Guideline 1.2's "reporting mechanism" gap from "no notification at all" to "one-way notification, no resolution loop"; unrelated to the digest closure above and not addressed by it |
 | 4d Connections (NEW 2026-07-16) | ✅ Substantially delivered 2026-07-17, PR #270 (verified 2026-07-20). G17 dual-guardian consent with an enforced guard at the read path, K17 recommendation surfaces both shipped. Privacy-model erasure coverage for connections not independently re-verified |
-| 5 Hardening | 🟡 Partially delivered (post-R1; public-tier ops fold into Phase 9; 2026-07-16 replan items landed: ADR-007 purge, G8/A5 offline revocation, A13 audit-trail stamps, A4 re-screen first cut, the real-backend S2 conflict spec. Still open: performance pass, Sentry backups/restore drill, admin audit *view*, nightly e2e-real + staging golden journeys, adversarial live-model run, plus two newly surfaced safety gaps H1/G-band-bypass and H2/unmoderated-covers - see roadmap.md) |
-| 6 Public auth + multi-tenancy | 🟡 Partially delivered, ahead of schedule (verified 2026-07-20): P6-01/02/03/04/07/08/09 all built and tested (JWT validation, JIT onboarding, child-session tokens, profile picker+PIN, parental gate, negative-test suite). P6-05 partial (web OAuth done, native Apple/Capacitor path not). P6-06 partial (401-retry done, localStorage->Keychain-ready storage abstraction and CSP `connect-src` update not). P6-10's broader stranger-family IDOR suite not independently re-verified. See the Phase 6 section below for the full item-by-item correction |
-| 7 Kids compliance + account lifecycle | 🟡 Partially delivered (R3). PII-egress hardening (P7-10) shipped 2026-07-19 in PR #304; SECURITY.md correction half of P7-13 also shipped. P7-09's purge mechanism predates this (Phase 5/#270); its policy-doc and reading_state-expiry components remain open, as does all of P7-12 and the infosec-program half of P7-13. See the Phase 7 section below |
-| 8 iOS shell + subscriptions | ⏸️ Not started (R2; confirmed 2026-07-20: zero Capacitor/entitlement code anywhere in the repo) |
-| 9 Public catalog + hosted infra + launch | ⏸️ Not started (R3; confirmed 2026-07-20: no `catalog_published` state anywhere in the repo) |
+| 5 Hardening | 🟡 Partially delivered (post-R1; public-tier ops fold into Phase 9). **Verified 2026-09-05**: Sentry is wired and tested on client (`frontend/src/observability.ts`) and server (`core/observability.py`, PR #746); the admin audit view (`AuditPage.tsx`, `api/audit.py`) is built and routed; H1 (band ceiling on assign) is closed with a regression test and H2 (cover approval gate) is closed with the R2 domain unbound; nightly, staging, and production E2E ladders all run on schedule; weekly `perf.yml` and `lighthouse-weekly.yml` budgets exist; daily encrypted backups run (`supabase-backup.yml`). Still open: the restore drill has never been recorded (`docs/operations/restore-drill-log.md` is an empty scaffold), no capacity baseline records the Phase 5 latency targets as met, the live adversarial safety run is executed and RED on class A (`UW-C361`), and the moderation review-model successor work (`UW-C02`, `UW-C04`) remains |
+| 6 Public auth + multi-tenancy | 🟡 Partially delivered, ahead of schedule. P6-01/02/03/04/07/08/09 built and tested (JWT validation, JIT onboarding, child-session tokens, profile picker+PIN, parental gate, negative-test suite). **Verified 2026-09-05**: P6-10's stranger-family IDOR suite is now built (`tests/integration/test_authz_matrix.py`, "P6-10: third, stranger-family IDOR extension", 2026-08-23); the ADR-021 production cutover is verified live (2026-08-04, `UW-A03`) and ADR-022 Tier-1 RLS is implemented and tested as the real `cyo_api` role (`20260724120000_scoped_rls_tier1_family_scoping.sql`, `test_rls_tier1_enforcement.py`), so the database backstop is armed for Tier-1 tables. Still open: P6-05 native Apple/Google (no Capacitor code), P6-06 (`useApi.ts` still reads and writes `localStorage` directly; no CSP on the served frontend), the P6-08 OAuth parental-gate bypass, and the operational RLS verification log entry |
+| 7 Kids compliance + account lifecycle | 🟡 Partially delivered (R3). **Verified 2026-09-05**, and materially further along than the 2026-07-20 text: consent capture and a full KWS parent-verification subsystem exist (P7-02; production enforcement off, `kws_verification_required=False`); a public `/privacy` route is live and linked from the landing page (P7-03); `GET /api/v1/me/export` delivers the guardian data export (P7-05); reading-state expiry and blocked-request redaction run as `pg_cron` jobs and a per-category retention policy is drafted (P7-09); the cover bucket is private after the 2026-07-30 domain unbind (P7-11); infosec program and breach runbook are published (P7-13). Still open: no UI entry point for whole-family deletion and no Apple token revocation (P7-04); the consent page does not link the privacy notice; the SDK audit must now list Sentry (P7-06); `app-store-review-notes.md` and the P7-08 compliance checklist do not exist; no DPA is executed (P7-12); ADR-018 stays Proposed with D1 through D9 all open in some respect |
+| 8 iOS shell + subscriptions | ⏸️ Not started (R2; re-confirmed 2026-09-05: zero Capacitor, StoreKit, RevenueCat, or entitlement code). Adjacent groundwork that exists: per-job provider cost accounting on `generation_job` (`20260811160000_add_generation_job_provider_accounting.sql`); the family-level spend ledger (`UW-J20`) does not |
+| 9 Public catalog + hosted infra + launch | 🟡 Partially delivered (R3), corrected 2026-09-05 from "Not started". The catalog mechanism shipped as a `visibility` column (`family`/`catalog`) on the existing `published` status (`publishing/catalog_publish.py`, `Visibility.CATALOG`), not as the planned `catalog_published` state, and 10 books are published to the catalog in production (`UW-G14`); per-family monthly story quotas are enforced; mock review is refused in every non-local environment (`_require_real_reviewer_outside_local`); the production Supabase project, its gated migration pipeline, and nightly encrypted backups are live. Not started: the compute-host decision, the pgmq port, the Modal reviewer (P9-12 still raises as deferred), the load test and capacity baseline (P9-13), the curated starter library, and submission |
 
 With **Phases 0 through 3 and Phase 4a all merged, the internal web release (R1) is
 feature-complete as of 2026-07-03**: the approval, moderation, and review APIs are
@@ -266,6 +288,44 @@ document:
 This sweep deliberately rescheduled nothing and closed nothing. It establishes where work lives, not
 when it happens; sequencing the register against the phase estimates is the next pass.
 
+**2026-09-05 plan audit**: six Sonnet verifier agents, each given one slice of this document's
+claims as allegations to falsify against the tree (Phases 5 and 6; Phase 7; Phases 8 and 9 with the
+technology stack and deprecation register; the ADR inventory; the status tables and milestones against
+the registers and live GitHub state; and the lessons log mined for recurring process failures), ran in
+parallel while the supervisor wrote the corrections. Method and rules are recorded in
+[implementation-session-playbook.md](./implementation-session-playbook.md) and in `CLAUDE.md`'s
+Implementation Session Protocol. Headlines:
+
+1. **Every checked phase section understated delivery.** Sentry, the admin audit view, H1, the full
+   E2E ladder, perf and Lighthouse budgets, the P6-10 stranger-family IDOR suite, ADR-022 Tier-1 RLS
+   enforcement, the KWS consent subsystem, the `/privacy` route, the guardian data export, the
+   retention `pg_cron` jobs, and the private cover bucket were all in the tree and described here as
+   open. `plan-manifest.toml`'s 2026-08-01 validation had already caught several of these; this
+   document was never reconciled to it.
+2. **Phase 9 is partially delivered, not "Not started".** The catalog shipped as a `visibility`
+   column rather than the planned `catalog_published` state, ten books are in the catalog, quotas
+   and non-local live-review enforcement exist, and the production Supabase pipeline and backups
+   are live. Section 3's state diagram also omitted the `RECALL` and `AUTO_REJECT` transitions.
+3. **The ADR inventory was twelve behind.** ADR-020 through ADR-031 were absent from Section 12 and
+   ADR-025 through ADR-031 from Section 3; ADR-023 was listed Proposed a day after it was Accepted.
+   The ADR README was current throughout, so the drift was this document's alone.
+4. **Two register rows contradict merged code**: `UW-A01`/`UW-A02` (ADR-022) read "unscheduled,
+   zero references" while the migration, the request-context wiring, and an integration suite
+   running as `cyo_api` all exist. Corrected in the register with the residual (the verification
+   log entry and the ADR status flip) named.
+5. **The stack table named retired components**: Alembic (retired by ADR-012), CodeQL (disabled
+   2026-08-03), Authentik as if it were app auth, and a "commented" Redis service that is active.
+6. **Timeline**: R1 beat its estimate by an order of magnitude; the R2 window has closed overrun.
+   The critical path is now owner-gated and external (counsel, Apple enrollment, DPAs, production
+   credentials for the re-moderation sweep), not engineering.
+7. **The recurring process failures have a pattern.** The lessons log's process and tooling rows
+   cluster into a dozen shapes (a number in prose went stale, a check nothing invoked, a grep as an
+   oracle, a comment where a test should be, one worktree shared by two agents, a fix applied at
+   one site of a class). They are now session rules in `CLAUDE.md`, not only log entries.
+
+Two register rows from a concurrent open-issues review (PR #812) touch the same register this audit
+edited; whichever merges second should re-run `scripts/check_work_linkage.py` after the merge.
+
 ---
 
 ## 2. Scope
@@ -355,9 +415,30 @@ Key architectural decisions, each recorded in an ADR:
 | [ADR-022](./adr/adr-022-tiered-rls-scoping.md) | Tiered RLS scoping (Tier-1 family-scoped policies, per-request `set_config`) | The database-enforced backstop for children's PII, downstream of the ADR-021 cutover; **no implementation work is scheduled anywhere** (`UW-A01`) |
 | [ADR-023](./adr/adr-023-story-personalization-slots.md) | Guardian opt-in personalization via render-time slot substitution | A child detail can appear in a book without ever reaching a provider or being persisted in story content; owner decisions closed 2026-07-25, **counsel sign-off on OD-1/OD-5 keeps it Proposed**; Stage A's G1 gate fired STOP at 3.3% sentinel survival, so later stages are void pending a re-plan (`UW-H*`) |
 | [ADR-024](./adr/adr-024-bounded-backtracking-path-replay.md) | Bounded one-hop backtracking and path replay | Accepted 2026-07-26 on owner direction; continuation backtracking stays disabled until the replay origin is server-validated state (`UW-A11`, `UW-A12`) |
+| [ADR-010](./adr/adr-010-modal-review-and-gated-generation.md) | Modal-served moderation reviewer; evidence-gated Modal generation leg (amends ADR-003) | Proposed (2026-07-02); the reviewer backend still raises as deferred (P9-12), the generation leg is cascade leg 3 since the 2026-08-18 ADR-003 amendment |
+| [ADR-011](./adr/adr-011-story-scale-framework.md) | Story-scale framework: band x length x style skeleton baseline | Accepted (2026-07-02); section 6's flat "4-8 decisions per path" constant replaced by derived per-cell windows in the 2026-08-22 section 11 amendment (`UW-C322`) |
+| [ADR-025](./adr/adr-025-additive-storybook-schema-versioning.md) | Additive minor versioning for the Storybook schema | Accepted 2026-08-01; exact-version match becomes an accepted minor range gated on conformance-corpus coverage |
+| [ADR-026](./adr/adr-026-rendered-stop-flow.md) | Rendered-stop flow of consecutive single-choice passages for older bands | Accepted 2026-08-01; presentation-layer only, the story graph is untouched |
+| [ADR-027](./adr/adr-027-in-story-illustration.md) | In-story illustration, 3-5 band pilot | Accepted 2026-08-01; amends ADR-017's out-of-scope clause |
+| [ADR-028](./adr/adr-028-persistent-reader-characters.md) | Persistent reader characters carried across preset books | Accepted 2026-08-06; runtime delivered, no catalog book participates yet (`UW-A46`) |
+| [ADR-029](./adr/adr-029-web-accessibility-conformance.md) | WCAG 2.1 AA target and the two-tier automated accessibility testing strategy | Accepted 2026-08-11 |
+| [ADR-030](./adr/adr-030-engagement-correlation-privacy-review.md) | Privacy review for the engagement-correlation analysis job | Proposed 2026-08-28, revised 2026-08-29; discharges an ADR-018 precondition, awaits owner ratification (`UW-A57`) |
+| [ADR-031](./adr/adr-031-first-party-friction-beacon.md) | Privacy review for the first-party friction beacon | Proposed 2026-08-28; awaits owner ratification (`UW-A58`) |
 
-**ADR status** (updated 2026-07-28; the 2026-07-20 revision missed ADR-020 and ADR-021,
-and ADR-022 through ADR-024 postdate it):
+**ADR status** (updated 2026-09-05 against every file's frontmatter; the 2026-07-28 revision stopped
+at ADR-024 and listed ADR-023 as Proposed one day after it was Accepted):
+
+- **Accepted**: ADR-001 through ADR-007, ADR-009, ADR-011 through ADR-017, ADR-019 through
+  ADR-021, ADR-023 through ADR-029.
+- **Proposed**: ADR-008, ADR-010, ADR-018, ADR-022, ADR-030, ADR-031.
+- ADR-023 was Accepted on 2026-07-29 by owner review standing in for absent counsel; its Stage A
+  G1 gate then fired STOP at 3.3 percent sentinel survival, so Stages B onward are void pending a
+  re-plan (`UW-H*`). Accepted and blocked are both true of it.
+- ADR-022 stays Proposed even though its Tier-1 migration, request-context wiring, and
+  `cyo_api`-role integration suite are merged and the ADR-021 cutover it depends on was verified
+  live on 2026-08-04; the flip waits on the operational verification log entry
+  (`docs/operations/rls-verification-log.md` is still a scaffold).
+- ADR-007 and ADR-021 were flipped from `proposed` to `accepted` on 2026-07-28 (`UW-A40`)
 
 - **Accepted**: ADR-001 through ADR-007, ADR-009, ADR-011 through ADR-017, ADR-019,
   ADR-020, ADR-021, ADR-024.
@@ -402,6 +483,17 @@ catalog_published`, an **admin-curated** transition that makes a story visible i
 public catalog across families (P9-01). Family-scoped publishing is unchanged; the
 guardian-approval invariant applies to every story in both scopes.
 
+**Corrected 2026-09-05 against `publishing/state_machine.py`.** The diagram above is missing two
+transitions that exist: `AUTO_REJECT` (`draft -> needs_revision`, taken by the moderation pipeline on
+a hard block) and `RECALL` (`published -> in_review`, the admin un-publish path added 2026-08-31 with
+its offline-copy eviction caveats). And the paragraph above describes P9-01 as it was planned, not as
+it shipped: there is no `catalog_published` status. Catalog reach is a second, orthogonal axis,
+`storybook.visibility` in `{family, catalog}` (`Visibility` enum, `ck_storybook_visibility`),
+set by `publishing/catalog_publish.py::promote_catalog_story` through the same `approve` action, so
+a catalog book is a `published` book owned by the `CATALOG_FAMILY_ID` sentinel family and assignable
+across families. Ten books carry it in production (`UW-G14`). Any Phase 9 work on P9-01 extends this
+mechanism rather than adding a state.
+
 Source: [Tech Spec](./tech-spec.md) sections "Architecture" and "Data Model".
 
 ---
@@ -417,8 +509,9 @@ Source: [Tech Spec](./tech-spec.md) sections "Architecture" and "Data Model".
 | Frontend framework | React 19 + Vite | vite-plugin-pwa (Workbox) |
 | Player state | XState | Story as a state machine; explicit, testable transitions |
 | Offline client store | IndexedDB (`idb`) | Cache only; Postgres is canonical |
-| Database | PostgreSQL 16, SQLAlchemy, Alembic | Metadata and reading state |
+| Database | PostgreSQL 16, async SQLAlchemy 2.x (ORM only); schema migrations are Supabase CLI SQL files under `supabase/migrations/` (ADR-012) | Metadata and reading state. **Corrected 2026-09-05**: Alembic was retired by ADR-012 and appears in no dependency; this row said "Alembic" until then |
 | Story blob storage | Inline Postgres JSONB (`storybook_version.blob`) at launch per ADR-009 | MinIO (S3 API) / `blob_ref` object-store path deferred; Azure Blob interchangeable if adopted |
+| Cover-art storage | Cloudflare R2 via the S3 API (ADR-017), private bucket, presigned reads | Shipped; the public custom domain that bypassed the approval gate was unbound 2026-07-30 (`UW-M07`). Row added 2026-09-05 |
 | Cache/queue | Redis | Background generation queue |
 | Condition evaluator | In-house Python + TypeScript (ADR-006) | Whitelisted 10-operator JSONLogic subset |
 | Graph analysis | networkx | Reachability, cycle detection, termination |
@@ -427,9 +520,9 @@ Source: [Tech Spec](./tech-spec.md) sections "Architecture" and "Data Model".
 | LLM fallback | OpenRouter (`anthropic/claude-sonnet-4.6`), then Modal **when configured**; `mock` default in CI. The Ollama/P40 leg was retired 2026-08-18 | Same interface; direct Anthropic SDK now shipped, not deferred |
 | Moderation | Provider moderation API + independent LLM-reviewer | |
 | Auth | Supabase Auth (OIDC), guardians only ([ADR-009](./adr/adr-009-supabase-platform.md)) | Current app auth (pulled forward into C4a-1); children are backend-scoped profile sessions, never IdP identities. The homelab/family-tier deployment still uses Authentik (OIDC) per [ADR-004](./adr/adr-004-homelab-first-deployment.md) |
-| Ingress | Pangolin (zero-trust) | HTTPS; child sessions scoped to reader/library; homelab/family tier |
+| Ingress | Pangolin (zero-trust) fronting the homelab; nginx inside `docker-host` reverse-proxies `/api` for the live R1 deploy (`frontend/nginx.conf`) | HTTPS; child sessions scoped to reader/library. The two ingress paths are not yet reconciled into one documented topology (ADR-004 technical debt), noted 2026-09-05 |
 | Observability | Sentry + structured JSON logging | Correlation IDs |
-| CI/CD | Centralized GitHub Actions | CodeQL, Trivy, CycloneDX SBOM, Cosign |
+| CI/CD | Centralized GitHub Actions | Bandit and OSV-Scanner (Python), in-repo Semgrep ruleset plus `eslint-plugin-security` (frontend), Trivy, CycloneDX SBOM, Cosign. CodeQL default-setup scanning was disabled 2026-08-03 (corrected here 2026-09-05) |
 | Testing (Python) | pytest, Hypothesis | Property-based for evaluator totality |
 | Testing (frontend) | Vitest, fast-check, Playwright | fast-check for evaluator conformance |
 | Linting/format | Ruff (88 chars, PyStrict-aligned); ESLint + Prettier | |
@@ -446,7 +539,7 @@ Source: [Tech Spec](./tech-spec.md) sections "Architecture" and "Data Model".
 | Child sessions | Backend-minted scoped JWTs | role=child, single profile, offline-friendly lifetime |
 | Payments | Apple IAP (StoreKit 2) via RevenueCat, or direct App Store Server API | Decide at Phase 8 start (P8-04); server-side entitlements either way |
 | Entitlements | Postgres (subscription state + credit ledger) | Enforced in library and generation APIs, never trusted from the client |
-| Database (public tier) | Supabase Postgres | Async SQLAlchemy + Alembic unchanged; direct/session-mode connection for asyncpg |
+| Database (public tier) | Supabase Postgres (production project live; gated CLI migration deploy in `supabase-production.yml`; nightly encrypted backups in `supabase-backup.yml`) | Async SQLAlchemy unchanged, Supabase CLI migrations (ADR-012); direct/session-mode connection for asyncpg |
 | Story blobs (public tier) | Inline JSONB (`storybook_version.blob`), as today | No object-storage code exists yet; `blob_ref` is reserved; adopt Supabase Storage (S3-compatible API) only when catalog size warrants externalizing blobs |
 | Queue (public tier) | Supabase Queues (pgmq), Upstash Redis as pre-approved fallback | Time-boxed evaluation at Phase 9 start (P9-03) |
 | Scheduled jobs | pg_cron | ADR-007 raw-output retention purge and maintenance |
@@ -927,6 +1020,18 @@ exist), the remaining nightly/staging test ladder, and the live-model adversaria
 open, plus two newly surfaced gaps (H1 age-band assignment bypass, H2 unmoderated cover
 images) - see roadmap.md for detail.
 
+**Corrected 2026-09-05 against code.** Of the items the paragraph above lists as open: Sentry is
+fully wired and tested on client and server (PR #746); the admin audit view is built and routed;
+H1 is closed with a regression test and H2 is closed with the R2 domain unbound (`UW-M07`); the
+nightly, staging, and production E2E ladders all run on `schedule:` triggers; weekly `perf.yml`
+and `lighthouse-weekly.yml` budgets exist; daily encrypted backups run. What is genuinely still
+open in this phase: the restore drill has never been recorded (`docs/operations/restore-drill-log.md`
+is an unfilled scaffold), no capacity baseline records the latency targets below as met, the
+adversarial safety run has been executed three times and is RED on class A (`UW-C361`; the plan
+called it "not yet run"), and the moderation review-model successor work (`UW-C02`, `UW-C04`). The
+`_extract_subject` stub is reachable only under `environment == "local"` and a non-local process
+also fails at startup without OIDC config, so "guarded only by unset OIDC variables" overstated it.
+
 **Objective**: Production readiness on the homelab (or Azure Container Apps as the cloud
 alternative). See [ADR-004](./adr/adr-004-homelab-first-deployment.md).
 
@@ -990,9 +1095,9 @@ in the phase named):
 | Dev auth stub (`_extract_subject` + import-time guard in `api/deps.py`) | ✅ Done (2026-07-02, pulled forward into C4a-1). Retired from all non-local paths; stub survives only under `environment == "local"` for tests and local dev | 6 (P6-01) |
 | `localStorage` bearer token in `frontend/src/hooks/useApi.ts` | Confirmed still not done as of 2026-07-20: `useApi.ts` still calls `localStorage.setItem/getItem/removeItem` directly. A 401-retry-with-refresh path was since added (P6-06 partial), but the storage-abstraction replacement itself, and the CSP `connect-src` update, remain open | 6 (P6-06) |
 | Homelab Ollama leg as a production generation fallback (`ollama_base_url`, `ollama_auth`, `ollama_ca_bundle` in prod config) | ✅ Resolved ahead of schedule (2026-08-18): the leg is **removed entirely**, not demoted, and Modal takes leg 3 (ADR-003 amendment). P9-11 below is satisfied by deletion rather than by configuration | 9 (P9-11) |
-| `redis_url`, `generation/queue.py` (RQ), and the commented Redis service in `docker-compose.yml` | Removed if the pgmq evaluation passes; retained unchanged if the Upstash fallback is taken | 9 (P9-03) |
+| `redis_url`, `generation/queue.py` (RQ), and the active Redis service in `docker-compose.yml` (it is not commented out; corrected 2026-09-05) | Removed if the pgmq evaluation passes; retained unchanged if the Upstash fallback is taken. No pgmq reference exists anywhere yet | 9 (P9-03) |
 | `utils/financial.py` (unused template scaffolding; no imports anywhere) | Remove in a standalone chore before Phase 8 so the entitlements/credits work (integer credits, Apple handles money) is not built near dead Decimal helpers; log template feedback per the repo requirement | pre-8 chore |
-| `docker-compose.prod.yml` as the production deployment definition | Superseded by the P9-03 container-host infra-as-code; compose files remain for local dev | 9 (P9-03) |
+| `docker-compose.prod.yml` as the production deployment definition | Superseded for the database tier ahead of schedule: production runs on the Supabase project deployed by `supabase-production.yml` with nightly backups from `supabase-backup.yml` (noted 2026-09-05). Remains the reference for the compute host until P9-03 decides it; compose files remain for local dev | 9 (P9-03) |
 
 ---
 
@@ -1031,6 +1136,19 @@ model, authorization matrix, and IDOR test suite are reused; what changes is how
 | P6-08 | Parental gate (frontend) | ✅ **Done, confirmed 2026-07-20** (this table previously said not started). `frontend/src/auth/AdultGate.tsx` (432 lines) implements a full re-auth gate (locked/unlocked/oauth-bypass phases, classified password-retry errors), tested in `AdultGate.test.tsx`. **Apple readiness audit, same day**: the "oauth-bypass" phase is not a neutral state - a guardian who signed in via Google OAuth (no password) passes the gate on a console-only warning with no re-authentication challenge (`AdultGate.tsx:128-142, 183-192`, self-documented as a known follow-up in the code). This weakens the "an adult is present right now" guarantee Apple's parental-gate expectation assumes and should close before submission, not just before Kids Category review. |
 | P6-09 | Auth negative-test suite | ✅ **Now fully done, confirmed 2026-07-20**: the previously-missing case (child token on a guardian endpoint) is covered - `tests/integration/test_child_sessions.py::test_child_token_rejected_on_guardian_endpoint` and `test_onboarding_api.py::test_child_session_token_cannot_onboard` both exist, since P6-04 (their blocking dependency) is now built. |
 | P6-10 | Cross-tenant IDOR extension | Not independently re-verified in the 2026-07-20 audit beyond a child-token case in `test_authz_matrix.py`; status vs. the original "not started" claim for the broader third-stranger-family suite remains unconfirmed either way |
+
+**Corrected 2026-09-05 against code.** P6-10's broader suite exists: `tests/integration/test_authz_matrix.py`
+carries a section titled "P6-10: third, stranger-family IDOR extension" with a `Stranger` fixture
+exercised in both directions over guardian and child-token route sets (added 2026-08-23). The RLS
+backstop this phase's manifest gap called "a documented no-op" is armed for Tier-1 tables: the
+ADR-021 cutover was verified live on 2026-08-04 (`UW-A03`), the Tier-1 scoping migration and the
+per-request `app.family_id` context in `api/deps.py` are merged, and `test_rls_tier1_enforcement.py`
+runs as the real `cyo_api` role. P6-06 stands as written: `frontend/src/hooks/useApi.ts` still calls
+`localStorage` directly at three sites, `tokenStorageKey.ts` and `guardianToken.ts` are a shared key
+constant and a presence check rather than an abstraction, and the served frontend carries no CSP.
+P6-05 (native Apple/Google) has no code. The 90 percent coverage gate below is enforced at the
+component level (`codecov.yml`'s `safety-critical` component bundles `api/deps.py` with four
+directories), not on the token paths specifically.
 
 **Salvaged design notes** (from the withdrawn first-release trust-boundary exploration; folded
 here as guidance, not as a competing ADR):
@@ -1105,6 +1223,34 @@ marked pending formal counsel confirmation rather than "closed." D2 (audience
 classification) remains fully open with no decision text added. The ADR's own status
 line is still "Proposed" and stays that way until D2 closes and counsel confirms D1/D3.
 
+**Corrected 2026-09-05 against code and `docs/compliance/`.** Row by row: **P7-02** is built end to
+end, not "unverified": `api/onboarding.py::_record_consent` persists the consent envelope, and a
+complete Kids Web Services verification subsystem exists (`consent/kws_client.py`, `consent/service.py`,
+`api/kws_webhook.py`, `api/kws_redirect.py`, five migrations, `docs/operations/kws-test-runbook.md`,
+`kws-delivery-health.yml`); the open item is that `kws_verification_required` defaults to `False`, so
+production enforcement is off pending counsel and the flag flip. **P7-03**: a public, unauthenticated
+`/privacy` route (`frontend/src/legal/PrivacyPolicyPage.tsx`) is live, linked from the landing page
+and registered with KWS; still open is that `GuardianConsentPage.tsx` names the notice without
+linking it, and `docs/compliance/privacy-notice.md` stays `status: draft`. **P7-04**: accurate as
+written, and the manifest adds what this row omits: `DELETE /api/v1/me/family` has no UI entry point
+(`PrivacyPage.tsx` says so in its own comments), cover images in R2 are never deleted on erasure, and
+the Supabase Auth identity outlives the account. **P7-05** is delivered (`GET /api/v1/me/export`,
+`api/me.py`) and had no status here at all. **P7-06**: the "no Sentry wired anywhere" sentence is
+false since 2026-08-23; `@sentry/react` is initialised in `frontend/src/observability.ts` behind
+`VITE_SENTRY_DSN` with a PII scrub hook, so the SDK inventory and nutrition label must list it; the
+dead `VITE_ANALYTICS_ID` placeholder is still present. **P7-09**: reading-state expiry and
+blocked-request text redaction run as `pg_cron` jobs (`20260720150000_add_retention_purge_jobs.sql`)
+and `docs/compliance/data-retention-policy.md` exists in draft; open is publication and sign-off, not
+enforcement. **P7-11**: the bucket was found publicly served on 2026-07-28 and fixed 2026-07-30
+(`UW-M07`); status is private, confirmed. **P7-12** and **P7-13**: accurate as written. **ADR-018**:
+D2 has an owner decision (child-directed, 2026-08-06) pending counsel only, so "no decision text" is
+stale; D4 through D9 (added 2026-08-01 to 2026-08-08: artifact ownership, corpus constraint, data
+inventory, the infosec program as a continuing 16 CFR 312.8 duty, the internal-operations exception,
+state law) exist and are unmentioned here; D7 in particular says the published infosec program has
+never run one of its cadences, which is the precise sense in which P7-13 stays open. Compliance
+artifacts this section never cites: `dpia.md`, `records-of-processing-activities.md`,
+`counsel-engagement-brief.md`, `child-origin-dataflow-matrix.md`, `cross-family-disclosure-map.md`.
+
 **Objective**: Meet the obligations that make a child-directed public app lawful and
 App-Store-reviewable: COPPA/GDPR-K consent, privacy disclosures, account deletion, and the
 Kids Category constraints (App Store Guidelines 1.3, 5.1.4, 5.1.1(v)). The existing
@@ -1159,7 +1305,11 @@ P6-01 identities). Blocks Phase 9 submission via P7-08.
 
 **Branch**: `feat/phase-8-ios-monetization`
 **Milestone**: M8 - Sandbox subscription lifecycle green end to end
-**Status**: ⏸️ Not started
+**Status**: ⏸️ Not started (re-confirmed 2026-09-05: no Capacitor, StoreKit, RevenueCat,
+`family_entitlement`, or `generation_credit_ledger` code or migration exists). One adjacent piece
+exists: per-job provider cost accounting (`generation_job.cost_usd`, token counts, `cost_complete`;
+`20260811160000_add_generation_job_provider_accounting.sql`), which P8-03's credit ledger can
+consume. The family-level spend ledger (`UW-J20`) does not exist.
 
 **Objective**: Package the PWA as a reviewable native app and build the revenue machinery:
 a Capacitor shell that passes the Guideline 4.2 minimum-functionality bar, plus a
@@ -1213,7 +1363,17 @@ account). Blocks Phase 9 submission.
 
 **Branch**: `feat/phase-9-public-launch`
 **Milestone**: M9 - App Store approval and public launch
-**Status**: ⏸️ Not started
+**Status**: 🟡 Partially delivered, corrected 2026-09-05 from "Not started". Shipped ahead of this
+phase: the catalog mechanism as `storybook.visibility='catalog'` (see Section 3's correction; ten
+books carry it in production, `UW-G14`), which changes P9-01 from "add a state" to "extend the
+mechanism"; per-family monthly story quotas (`Family.monthly_story_quota`, enforced in
+`story_requests/service.py`), part of P9-05; `_require_real_reviewer_outside_local` in `core/config.py`,
+which refuses `review_provider="mock"` in every non-local environment (stricter than P9-04's
+"production" framing) with an explicit opt-out for catalog-seeding runs; the production Supabase
+project with its gated migration pipeline and nightly encrypted backups (much of P9-03 and P9-06's
+Supabase half). Not started: the compute-host decision and the pgmq port (P9-03), the Modal reviewer
+(P9-12 still raises as deferred in `moderation/review_provider.py`), the load test and
+`capacity-baseline.md` (P9-13), the curated starter library (P9-02), and submission.
 
 **Objective**: Give the public app something worth subscribing to (a curated catalog),
 somewhere real to run (hosted infrastructure), guardrails against cost abuse, and a
@@ -1344,7 +1504,7 @@ These gates apply to every phase. Phase-specific gates are listed in each phase 
 | Formatting | Ruff format | `uv run ruff format --check .` |
 | Type checking | BasedPyright strict: zero errors | `uv run basedpyright src/` |
 | Frontend linting | ESLint + Prettier clean | CI step |
-| Security: SAST | No high or critical | Bandit, CodeQL, SonarCloud |
+| Security: SAST | No high or critical | Bandit, OSV-Scanner, in-repo Semgrep (frontend), SonarCloud; CodeQL disabled 2026-08-03 |
 | Security: dependencies | No high or critical | `uv run pip-audit`; OSV-Scanner |
 | Security: containers | No high or critical | Trivy |
 | Secret scanning | Clean | detect-secrets |
@@ -1511,9 +1671,23 @@ Source: [Roadmap: Milestones](./roadmap.md#milestones);
 | ADR-017: AI cover art | Generated cover-art subsystem and review posture | [docs/planning/adr/adr-017-ai-cover-art.md](./adr/adr-017-ai-cover-art.md) |
 | ADR-018: Children's-privacy compliance | COPPA/GDPR-K consent mechanism, audience, geography (Proposed, counsel pending) | [docs/planning/adr/adr-018-childrens-privacy-compliance.md](./adr/adr-018-childrens-privacy-compliance.md) |
 | ADR-019: Parameterized skeletons with theme contracts | WS-2 content-diversity workstream | [docs/planning/adr/adr-019-parameterized-skeletons-theme-contracts.md](./adr/adr-019-parameterized-skeletons-theme-contracts.md) |
+| ADR-020: Mutation-derived skeletons and catalog growth | Grows the skeleton catalog by mutating existing shells under a promotion gate and provenance sidecar (WS-5/WS-8) | [docs/planning/adr/adr-020-mutation-derived-skeletons-and-catalog-growth.md](./adr/adr-020-mutation-derived-skeletons-and-catalog-growth.md) |
+| ADR-021: Service-account roles, enforced RLS, and in-repo worker deployment | Least-privilege `cyo_api`/`cyo_worker` roles replacing the owner connection; production cutover verified 2026-08-04 | [docs/planning/adr/adr-021-service-account-rls-and-worker-deployment.md](./adr/adr-021-service-account-rls-and-worker-deployment.md) |
+| ADR-022: Tiered RLS scoping | Fail-closed per-family RLS predicate on the Tier-1 children's-PII tables (Proposed; implemented and tested, verification log pending) | [docs/planning/adr/adr-022-tiered-rls-scoping.md](./adr/adr-022-tiered-rls-scoping.md) |
+| ADR-023: Guardian opt-in story personalization | Render-time slot substitution so a child detail never reaches a provider (Accepted 2026-07-29; Stage A G1 gate fired STOP, later stages void pending re-plan) | [docs/planning/adr/adr-023-story-personalization-slots.md](./adr/adr-023-story-personalization-slots.md) |
+| ADR-024: Bounded backtracking by forward path replay | Back button implemented by replaying the recorded path forward | [docs/planning/adr/adr-024-bounded-backtracking-path-replay.md](./adr/adr-024-bounded-backtracking-path-replay.md) |
+| ADR-025: Additive minor versioning for the Storybook schema | Accepted minor-version range gated by conformance-corpus coverage | [docs/planning/adr/adr-025-additive-storybook-schema-versioning.md](./adr/adr-025-additive-storybook-schema-versioning.md) |
+| ADR-026: Rendered-stop flow of linear passages | Flows consecutive single-choice nodes into one rendered stop for older bands | [docs/planning/adr/adr-026-rendered-stop-flow.md](./adr/adr-026-rendered-stop-flow.md) |
+| ADR-027: In-story illustration (3-5 pilot) | Per-node illustration at band 3-5, amending ADR-017 | [docs/planning/adr/adr-027-in-story-illustration.md](./adr/adr-027-in-story-illustration.md) |
+| ADR-028: Persistent reader characters | A reader-created character carried across preset books via a seeded VarState | [docs/planning/adr/adr-028-persistent-reader-characters.md](./adr/adr-028-persistent-reader-characters.md) |
+| ADR-029: Web accessibility conformance | WCAG 2.1 AA target and the two-tier automated testing strategy | [docs/planning/adr/adr-029-web-accessibility-conformance.md](./adr/adr-029-web-accessibility-conformance.md) |
+| ADR-030: Engagement-correlation privacy review | Discharges the ADR-018 precondition for the engagement-correlation job (Proposed) | [docs/planning/adr/adr-030-engagement-correlation-privacy-review.md](./adr/adr-030-engagement-correlation-privacy-review.md) |
+| ADR-031: First-party friction beacon privacy review | Discharges the ADR-018 precondition for the client friction beacon (Proposed) | [docs/planning/adr/adr-031-first-party-friction-beacon.md](./adr/adr-031-first-party-friction-beacon.md) |
+| Plan manifest | Machine-readable spine: phase vocabulary, rung mapping, two-axis `shipped`/`usable` status that the roadmap's phase table must match | [docs/planning/plan-manifest.toml](./plan-manifest.toml) |
+| Implementation session playbook | How an autonomous implementation session orients, chooses work, fans out agents, verifies, records, and hands off | [docs/planning/implementation-session-playbook.md](./implementation-session-playbook.md) |
 | Privacy and provider data-handling model | Data classification behind the consent, label, and deletion work in Phase 7 | [docs/planning/privacy-model.md](./privacy-model.md) |
 | COPPA compliance audit | Engineering audit against 16 CFR Part 312; findings mapped to Phase 7 items P7-02..P7-13 | [docs/compliance/coppa-compliance-audit.md](../compliance/coppa-compliance-audit.md) |
-| Capability Register | Top-down K/G/A/S capability map with delivery status; the scope checkoff sheet (v1.7 as of 2026-07-20) | [docs/planning/capability-register.md](./capability-register.md) |
+| Capability Register | Top-down K/G/A/S capability map with delivery status; the scope checkoff sheet (v1.10 as of 2026-08-08; 71 rows) | [docs/planning/capability-register.md](./capability-register.md) |
 | R1 Deferred-Debt Register | Consolidated register of consciously accepted debt and open GitHub issues | [docs/planning/r1-deferred-debt-register.md](./r1-deferred-debt-register.md) |
 | Unscheduled Work Register | Every directed-but-unscheduled item found by the 2026-07-28 sweep (UW-* IDs), each with a proposed phase; the placeholder mechanism for work that has no phase home yet | [docs/planning/unscheduled-work-register.md](./unscheduled-work-register.md) |
 | Story-flexibility plan (WS-0/1/2/4/7) | Content-diversity workstream: metrics/harness, leaf diversity, parameterized catalog (ADR-019), selection, request interpretation (K19) | [docs/planning/story-flexibility-plan.md](./story-flexibility-plan.md) |
@@ -1522,7 +1696,15 @@ Source: [Roadmap: Milestones](./roadmap.md#milestones);
 
 ---
 
-**Last Updated**: 2026-07-20 (v2.8: comprehensive plan audit closing a 10-day, ~20-release
+**Last Updated**: 2026-09-05 (v2.9: six-agent code-verification audit closing a seven-week gap
+since v2.8, during which roughly 68 releases (v0.20.0 through v0.88.0) merged. Corrected: the
+current-status table rows for Phases 5 through 9 (Phase 9 from "Not started" to partially
+delivered); dated correction notes in the Phase 5, 6, 7, 8, and 9 sections; the Section 3 state
+machine (RECALL, AUTO_REJECT, `visibility` instead of `catalog_published`); the ADR table and
+status list extended to ADR-031 with ADR-023 corrected to Accepted; the stack table (Alembic,
+CodeQL, ingress, cover storage, Supabase production); the deprecation register; the SAST gate row;
+Section 12 extended with twelve ADRs, the plan manifest, and the implementation session playbook;
+a timeline check recording the R2 overrun. v2.8: comprehensive plan audit closing a 10-day, ~20-release
 gap since v2.7 - see the "2026-07-20 plan audit" note in Section 1 for full methodology.
 Corrected: Phases 4b/4c/4d marked delivered instead of not-started; Phase 5 marked partially
 delivered with two newly surfaced safety gaps (H1/H2); Phase 6 corrected item-by-item

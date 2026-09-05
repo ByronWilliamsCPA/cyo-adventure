@@ -50,8 +50,11 @@ which the stage parser maps to the fail-safe verdict (Stage 1 -> FLAG, soft stag
 -> PASS). A mock run therefore flags every executable item by fail-safe, since every
 executable probe routes to Stage 1; a mock run measures nothing about real
 classifier discrimination.
-**No live-model adversarial run has been executed.** The behavioral catch-rates below are targets for a future
-credentialed run, not results. Treating a mock run as evidence would manufacture
+**No live-model adversarial run had been executed when this section was written.** Superseded by
+the measured-run log below: `safety-eval.yml` has run against a live review model on 2026-08-24 (twice)
+and weekly since, and those runs are results, RED on class A as of 2026-08-30. The behavioral catch-rates
+below were targets for that first credentialed run and are now the acceptance bar the weekly run is
+scored against (sentence corrected 2026-09-05). Treating a mock run as evidence would manufacture
 exactly the false confidence this document exists to remove.
 
 #### Attempted run log

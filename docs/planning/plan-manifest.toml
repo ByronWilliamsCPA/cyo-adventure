@@ -51,7 +51,7 @@
 #     a partial phase is a smell.
 
 schema_version = 1
-updated = "2026-08-01"
+updated = "2026-09-05"
 
 # ---------------------------------------------------------------------------------------
 # Validation provenance
@@ -87,6 +87,13 @@ result = "no status pair changed; nine of fourteen phases had incorrect gap list
 # #VERIFY: scripts/check_work_linkage.py checks structure, not locators. Before trusting a
 # locator after main has moved, re-resolve it by SYMBOL (grep the marker text), not by line.
 locator_basis = "resolved against main at v0.59.0 on 2026-08-02; all 36 path:line refs in range"
+# Re-validated 2026-09-05 (v0.88.0) by six Sonnet code-verification agents, one slice each, planning
+# docs admitted only as the allegations to falsify. Status pairs changed for ONE phase: 9 moves from
+# no/no to partial/no because the catalog mechanism, family quotas, non-local live-review enforcement,
+# and the production Supabase pipeline all exist. Gap lists changed for Phases 5, 6, 7 and 9, in the
+# same direction as 2026-08-01: closures the documents had not recorded. Path:line locators below were
+# NOT re-resolved in this pass; treat them as symbol hints and re-grep before citing.
+revalidated = "2026-09-05"
 
 # ---------------------------------------------------------------------------------------
 # Status vocabulary
@@ -414,8 +421,8 @@ validated = "2026-08-01"
 # not good enough: the manifest listed an open CHILD-SAFETY gap whose fix is in the code,
 # tagged with that gap's own identifier.
 gaps = [
-  "Performance pass not done. Confirmed still open: no locust, k6, artillery or other load harness exists, and the one perf test (tests/perf/test_evaluator_perf.py:12-14) says in its own docstring that the real load test is out of scope.",
-  "Sentry backups and restore drill not done. Confirmed still open: Sentry error tracking is wired, but no database backup or restore-drill artifact exists in scripts/ or .github/workflows/.",
+  "Performance pass partly done, re-checked 2026-09-05: a weekly complexity-budget regression tier (.github/workflows/perf.yml over tests/perf/) and a weekly Lighthouse budget run (lighthouse-weekly.yml: LCP, TBT, CLS, bundle size) exist and run. No load harness (locust, k6, artillery) exists and no docs/planning/capacity-baseline.md records the Phase 5 latency targets as met, so the numeric targets remain unverified.",
+  "Restore drill not done, re-checked 2026-09-05: Sentry is wired on client and server (frontend/src/observability.ts, core/observability.py, both tested) and daily encrypted backups run (.github/workflows/supabase-backup.yml, scripts/backup_database.py), but docs/operations/restore-drill-log.md is an unfilled attestation scaffold: no restore has ever been recorded.",
   "Safety gap H2 is HALF closed, not open. The mandatory human-approval gate on covers is built and wired (covers/service.py:307-378 approve_cover, surfaced in frontend/src/admin/ReviewDetailPage.tsx), so no cover reaches a child unreviewed. What remains absent is the AUTOMATED image-safety classifier, explicitly marked out of scope at covers/service.py:206-217. Only that half is open.",
   "RESIDUAL of the former H1 gap, restated accurately: the band-ceiling check is deliberately fail-open on unparseable data on either side. A legacy blob with no metadata.age_band, or a profile whose stored age_band string does not parse, has no ceiling to compare against and passes. That is a documented, reasoned choice (api/assignments.py:285-296), and it is the live residual; the bypass the old gap text described no longer exists.",
   "Offline revocation has an accepted mid-read window: a book pulled while a child is actively reading it is not revoked until the next library fetch or reload. Documented at frontend/src/offline/revocation.ts:16-25, previously in code only and not in this list.",
@@ -449,9 +456,13 @@ validated = "2026-08-01"
 gaps = [
   "Native iOS auth path (remainder of P6-05) is unstarted; web OAuth is done. Confirmed: no ios/ directory, no Capacitor dependency, no Podfile anywhere in the repo.",
   "P6-06 is understated. All three token families (guardian, device grant, child session) sit in plaintext localStorage with no storage abstraction, and the browser-served frontend carries NO Content-Security-Policy at all: frontend/nginx.conf sets four other security headers and no CSP, while the only CSP in the repo (middleware/security.py:113-124) lands on backend JSON responses, which are never rendered as documents and therefore cannot be protected by one.",
-  "Postgres RLS is a documented no-op for the running backend, and this list never said so. The backend connects as the table-owning role, which Postgres unconditionally exempts from every policy; the migration says as much itself (20260724120000_scoped_rls_tier1_family_scoping.sql:35-41, \"NO-OP ... until the ADR-021 least-privilege cutover\"). Cross-tenant isolation therefore rests entirely on Python-layer checks with no database backstop. Even after the cutover, reading_state, completion and rating tables would not be family-scoped.",
-  "Cross-tenant IDOR coverage (P6-10) remains only partly re-verified. A 2026-08-01 sweep traced 35 authorize_profile/authorize_family call sites and found no concrete IDOR, but the API surface is 100 routes and the sweep did not cover all of them.",
+  "Tier-1 RLS is armed but not yet operationally attested, re-checked 2026-09-05. The ADR-021 cutover was verified live on 2026-08-04 (register row UW-A03: cyo_api holds every production connection, rolbypassrls=false), so the 2026-08-01 gap text calling RLS a no-op no longer holds; tests/integration/test_rls_tier1_enforcement.py runs as the real cyo_api role. Still open: docs/operations/rls-verification-log.md carries no dated production entry, ADR-022 stays Proposed, and reading_state, completion and rating remain Tier 2 by the migration's own scoping note.",
 ]
+# CLOSED 2026-09-05: "Cross-tenant IDOR coverage (P6-10) remains only partly re-verified."
+# tests/integration/test_authz_matrix.py gained a section titled "P6-10: third, stranger-family IDOR
+# extension" on 2026-08-23, with a Stranger fixture exercised in both directions across the guardian
+# and child-token route sets. The 2026-08-01 text (35 call sites traced, 100 routes not all covered)
+# described the state before that suite existed.
 
 [phases."7"]
 name = "Kids compliance and account lifecycle"
@@ -460,6 +471,15 @@ shipped = "partial"
 usable = "no"
 summary = "PII-egress hardening and the telemetry audit are done. Account deletion is built on the backend but not reachable by a guardian, and is incomplete in three respects. The compliance checklist that gates submission is not done."
 validated = "2026-08-01"
+# Re-checked 2026-09-05: two items the summary and gaps did not credit are delivered. GET
+# /api/v1/me/export (api/me.py) is the P7-05 guardian data export, complete with redaction notes;
+# and P7-09's enforcement is live (reading_state/completion/rating purge at 90 days and blocked
+# story_request text redaction at 30 days, both pg_cron jobs in
+# supabase/migrations/20260720150000_add_retention_purge_jobs.sql) with the per-category policy
+# drafted in docs/compliance/data-retention-policy.md (status: draft, sign-off pending). The cover
+# bucket exposure P7-11 worried about was real (2026-07-28) and fixed (2026-07-30, UW-M07).
+# usable stays "no": deletion still has no UI entry point and the compliance checklist that gates
+# submission does not exist.
 # PII-egress hardening and the telemetry audit survive inspection well. generation/pii.py:229
 # assert_prompt_pii_safe is a single chokepoint called from generation, story requests, node
 # edit, the worker, moderation and covers; personalization values, the highest-risk field,
@@ -473,7 +493,9 @@ gaps = [
   "Whole-family account deletion has NO UI entry point. DELETE /v1/me/family exists (api/me.py:359), is tested, and is in the generated client, but nothing under frontend/src outside src/client/ calls it, so a guardian cannot delete their account through the product. frontend/src/guardian/PrivacyPage.tsx:93-99 admits this in its own comments. For a kids product this is a compliance-relevant hole, not a polish item.",
   "Cover images in R2/S3 object storage are never deleted on any erasure path. covers/storage.py:189 delete_cover exists but its only real caller is cover REGENERATION (covers/service.py:164); no deletion path invokes it and no orphan-collection job exists. A deleted family's cover art survives in object storage indefinitely.",
   "The Supabase Auth identity is never deleted. Account erasure removes application rows via the database cascade but no Supabase Admin API call exists anywhere in the backend and no migration touches auth.users, so the login identity and email outlive the account.",
-  "P7-03 privacy policy not published and not linked in-app, and worse than previously stated: the legal Privacy Notice is presented in the COPPA parental-consent flow as something the guardian electronically agrees to, with no clickable link to it anywhere (frontend/src/auth/GuardianConsentPage.tsx:103,131). The separate guardian trust page (PrivacyPage.tsx) exists and is linked in nav, but it is not the legal notice.",
+  "P7-03 half closed, re-checked 2026-09-05: a public, unauthenticated /privacy route exists (frontend/src/legal/PrivacyPolicyPage.tsx at routes.ts PRIVACY_PATH), is linked from the landing page and registered as the KWS privacy-policy URL. Still open: the COPPA consent flow names the Privacy Notice without linking it (frontend/src/auth/GuardianConsentPage.tsx), and docs/compliance/privacy-notice.md, the fuller legal text, stays status: draft.",
+  "P7-06's inventory is out of date, found 2026-09-05: @sentry/react is initialised in frontend/src/observability.ts (DSN-gated, PII scrub hook), so the kid-context SDK audit and the privacy nutrition label must list it; the dead VITE_ANALYTICS_ID placeholder (.env.example, vite-env.d.ts) is still present.",
+  "P7-02 production enforcement is off, found 2026-09-05: the consent envelope and the full KWS verification subsystem (consent/, api/kws_webhook.py, api/kws_redirect.py, five migrations, kws-delivery-health.yml) are built and wired to the KWS Test environment, but kws_verification_required defaults to False (core/config.py), so no production guardian is verified. The flip waits on counsel (ADR-018 D1) and a production KWS environment.",
   "P7-08 compliance checklist has a template but no owner sign-off. This gates R3 submission. NOT CODE-VERIFIABLE, organizational.",
   "P7-01 Apple Developer Program enrollment not started; EU DSA trader status undecided. NOT CODE-VERIFIABLE, organizational.",
   "P7-12 processor agreements: a checklist exists, no DPAs are signed. NOT CODE-VERIFIABLE, organizational.",
@@ -494,18 +516,24 @@ gaps = [
 [phases."9"]
 name = "Public catalog, hosted infra, launch"
 track = 2
-shipped = "no"
+shipped = "partial"
 usable = "no"
-summary = "Published-catalog state and curated starter library are genuinely unstarted. Hosted infrastructure and observability are partly built already; the phase name bundles them with work that has not begun."
-validated = "2026-08-01"
+summary = "Catalog visibility, family quotas, non-local live-review enforcement, and the production Supabase pipeline with nightly backups are shipped. Curated starter library, compute-host decision, pgmq port, Modal reviewer, load test, and submission are not."
+validated = "2026-09-05"
+# 2026-09-05: shipped moves from "no" to "partial". The 2026-08-01 text said the phase's defining
+# deliverable, a public catalog, did not exist. It does, under a different name: storybook.visibility
+# in {family, catalog} (publishing/state_machine.py Visibility, db/models.py ck_storybook_visibility),
+# promoted by publishing/catalog_publish.py through the ordinary approve action, with ten books
+# carrying visibility='catalog' in production per register row UW-G14 (2026-08-25 recount). usable
+# stays "no": no outside family can install, subscribe, or read it, and nothing has been submitted.
 # shipped/usable stay no/no because the phase's defining deliverable, a public catalog, does
 # not exist. But the previous summary implied nothing in this phase existed, and that was
 # wrong: production and staging deploy pipelines, a scheduled production E2E ladder, and
 # Sentry are all live. Recorded so the phase is not over-estimated as remaining work.
 gaps = [
-  "No catalog_published, published_catalog or is_public state exists anywhere in src/, frontend/src/ or supabase/migrations/. Re-confirmed 2026-08-01, zero hits. Ring 3 (the anonymized global aggregate) is explicitly not built, per api/recommendations.py:9.",
-  "No curated starter library exists.",
-  "No infrastructure cost cap exists. Note the ambiguity this phase name creates: a per-family monthly STORY quota does exist and is enforced (story_requests/service.py:251 enforce_family_quota), but that is a guardian-facing spend-consent control, not an infra cost cap. The two are bundled under one phrase.",
+  "The catalog exists as a visibility column, not the planned catalog_published state (re-checked 2026-09-05; the 2026-08-01 zero-hit grep for catalog_published was a naming artifact). What is still missing for P9-01 is an HTTP path for the admin promotion (publishing/catalog_publish.py is a CLI) and the curation surface (register A9). Ring 3 (the anonymized global aggregate) is explicitly not built, per api/recommendations.py.",
+  "No curated starter library exists: ten catalog books are live, but they are the family-tier imports of 2026-07-21, not a per-band launch set chosen for outside families (P9-02).",
+  "No infrastructure cost cap exists. A per-family monthly STORY quota is enforced (story_requests/service.py enforce_family_quota) and per-job provider cost accounting exists since 2026-08-11 (generation_job.cost_usd, migration 20260811160000), but neither is a global spend cap with an alarm and circuit breaker (P9-05), and the family-level spend ledger (UW-J20) does not exist.",
   "No Prometheus, Grafana, OpenTelemetry or /metrics endpoint. Sentry error tracking is wired and tested, so observability is partial rather than absent.",
 ]
 # ALREADY BUILT, contrary to the previous summary: production and staging Supabase migration
