@@ -692,6 +692,236 @@ def test_check_linkage_skips_phase_checks_for_a_phase_less_cluster(
 
 
 # ---------------------------------------------------------------------------
+# A.8-A.10 header column schema, Issue/Issues cell shape, phase token in a non-Phase column
+# ---------------------------------------------------------------------------
+
+# Every header schema the real register uses, so the closed column set is pinned to the
+# conventions in the document rather than to the four columns the row checks happened to read.
+_REAL_REGISTER_HEADER_SCHEMAS = (
+    ["ID", "Item", "Phase", "Status"],
+    ["ID", "Item", "ADR", "Phase", "Status"],
+    ["ID", "Issues", "Theme", "Phase", "Status"],
+    ["ID", "Item", "Source", "Phase", "Status"],
+    ["ID", "Item", "Issue", "Status"],
+    ["ID", "Item", "Owner", "Status"],
+)
+
+
+@pytest.mark.parametrize("header_cells", _REAL_REGISTER_HEADER_SCHEMAS)
+def test_check_cluster_header_accepts_every_real_register_schema(
+    header_cells: list[str],
+) -> None:
+    """Each of the six header shapes the register actually uses is made of known columns."""
+    assert _MODULE._check_cluster_header("A", header_cells) == []
+
+
+def test_check_cluster_header_rejects_an_unknown_column() -> None:
+    """A header column outside the closed set is reported by cluster, header, and name."""
+    problems = _MODULE._check_cluster_header("L", ["ID", "Item", "Isue", "Status"])
+    assert len(problems) == 1
+    assert "cluster L header '| ID | Item | Isue | Status |'" in problems[0]
+    assert "column 'Isue' is not one of the known register columns" in problems[0]
+
+
+def test_check_cluster_header_reports_each_unknown_column_once() -> None:
+    """Two invented columns produce two problems, not one merged or one dropped."""
+    problems = _MODULE._check_cluster_header("A", ["ID", "Item", "Notes", "Phaze"])
+    assert len(problems) == 2
+    assert "column 'Notes'" in problems[0]
+    assert "column 'Phaze'" in problems[1]
+
+
+@pytest.mark.parametrize(
+    "cell",
+    [
+        "#460",
+        "#187, #172",
+        "#249, #250, #251, #253, #254",
+        "#249 #250",
+        "(no issue)",
+        "[#558](https://github.com/ByronWilliamsCPA/cyo-adventure/issues/558)",
+        "[#609](https://github.com/ByronWilliamsCPA/cyo-adventure/pull/609)",
+        "#460, [#461](https://github.com/ByronWilliamsCPA/cyo-adventure/issues/461)",
+    ],
+)
+def test_check_row_issue_cell_accepts_every_register_convention(cell: str) -> None:
+    """Bare refs, comma or space separated lists, repo links, and the sentinel all pass."""
+    assert _MODULE._check_row_issue_cell("D", 1, "UW-D01", "Issues", cell) == []
+
+
+@pytest.mark.parametrize(
+    "cell",
+    [
+        "",
+        "460",
+        "issue 460",
+        "#460;#461",
+        "#460, and #461",
+        "(no issues)",
+        "[#460](https://example.com/issues/460)",
+        "[#460](https://github.com/ByronWilliamsCPA/other-repo/issues/460)",
+        "https://github.com/ByronWilliamsCPA/cyo-adventure/issues/460",
+    ],
+)
+def test_check_row_issue_cell_rejects_a_malformed_cell(cell: str) -> None:
+    """Anything that is not the sentinel or a list of well-formed references is reported."""
+    problems = _MODULE._check_row_issue_cell("L", 7, "UW-L03", "Issue", cell)
+    assert len(problems) == 1
+    assert problems[0].startswith("UW-L03 (cluster L line 7): Issue ")
+    assert "neither '(no issue)' nor a list of issue references" in problems[0]
+
+
+@pytest.mark.parametrize(
+    ("column", "cell"),
+    [
+        ("Source", "5"),
+        ("Owner", "`4b`"),
+        ("ADR", "R1"),
+        ("Theme", "CI hygiene"),
+        ("Issue", "issue:460"),
+        ("Issues", " content "),
+    ],
+)
+def test_check_row_non_phase_cell_rejects_a_bare_phase_token(
+    column: str, cell: str
+) -> None:
+    """A phase-vocabulary token as a non-Phase cell's whole content is reported by column."""
+    problems = _MODULE._check_row_non_phase_cell(
+        "G", 3, "UW-G02", column, cell, _SAMPLE_PHASE_VOCABULARY
+    )
+    assert len(problems) == 1
+    assert problems[0].startswith(f"UW-G02 (cluster G line 3): {column} ")
+    assert "is a phase token" in problems[0]
+
+
+@pytest.mark.parametrize(
+    ("column", "cell"),
+    [
+        ("Source", "ws0 phase2"),
+        ("Source", "code"),
+        ("Theme", "Phase 5 tracks the capability; the failing run is uncited."),
+        ("Owner", "project owner"),
+        ("ADR", "022"),
+        ("ADR", "001, 004"),
+        ("Issue", "#460"),
+        ("Issue", ""),
+    ],
+)
+def test_check_row_non_phase_cell_accepts_prose_and_non_phase_values(
+    column: str, cell: str
+) -> None:
+    """Item-like prose that mentions a phase word, and the real third-column values, pass."""
+    assert (
+        _MODULE._check_row_non_phase_cell(
+            "A", 1, "UW-A01", column, cell, _SAMPLE_PHASE_VOCABULARY
+        )
+        == []
+    )
+
+
+def test_check_linkage_reports_a_phase_token_in_an_issue_cell(tmp_path: Path) -> None:
+    """A phase written into cluster L's Issue column is rejected end to end, naming the row."""
+    register = _register(
+        "## Cluster L: live defects\n\n"
+        "| ID | Item | Issue | Status |\n"
+        "| --- | --- | --- | --- |\n"
+        "| UW-L01 | A bug | 5 | unscheduled |\n"
+    )
+    register_path = _write(tmp_path / "register.md", register)
+    problems = _MODULE.check_linkage(
+        register_path,
+        _write(tmp_path / "roadmap.md", _VALID_ROADMAP),
+        _write(tmp_path / "debt.md", ""),
+        _write(tmp_path / "lessons.md", ""),
+        _write_no_open_capability_register(tmp_path),
+    )
+    assert any(
+        p.startswith("UW-L01 (cluster L line") and "Issue '5' is a phase token" in p
+        for p in problems
+    )
+
+
+def test_check_linkage_reports_an_unknown_header_column(tmp_path: Path) -> None:
+    """A cluster header carrying an invented column fails, naming cluster and column."""
+    register = _register(
+        "## Cluster L: live defects\n\n"
+        "| ID | Item | Isue | Status |\n"
+        "| --- | --- | --- | --- |\n"
+        "| UW-L01 | A bug | #460 | unscheduled |\n"
+    )
+    register_path = _write(tmp_path / "register.md", register)
+    problems = _MODULE.check_linkage(
+        register_path,
+        _write(tmp_path / "roadmap.md", _VALID_ROADMAP),
+        _write(tmp_path / "debt.md", ""),
+        _write(tmp_path / "lessons.md", ""),
+        _write_no_open_capability_register(tmp_path),
+    )
+    assert len(problems) == 1
+    assert "cluster L header '| ID | Item | Isue | Status |'" in problems[0]
+    assert "column 'Isue' is not one of the known register columns" in problems[0]
+
+
+def test_check_linkage_reports_a_malformed_issues_cell(tmp_path: Path) -> None:
+    """A cluster D Issues cell that is prose rather than references fails, naming the row."""
+    register = _register(
+        "## Cluster D: open issues\n\n"
+        "| ID | Issues | Theme | Phase | Status |\n"
+        "| --- | --- | --- | --- | --- |\n"
+        "| UW-D01 | issue 460 | Device-auth hardening | 5 | unscheduled |\n"
+    )
+    register_path = _write(tmp_path / "register.md", register)
+    problems = _MODULE.check_linkage(
+        register_path,
+        _write(tmp_path / "roadmap.md", _VALID_ROADMAP),
+        _write(tmp_path / "debt.md", ""),
+        _write(tmp_path / "lessons.md", ""),
+        _write_no_open_capability_register(tmp_path),
+    )
+    assert len(problems) == 1
+    assert problems[0].startswith("UW-D01 (cluster D line")
+    assert "Issues 'issue 460' is neither '(no issue)'" in problems[0]
+
+
+def test_check_linkage_accepts_every_real_header_schema_with_well_formed_cells(
+    tmp_path: Path,
+) -> None:
+    """One cluster per real header schema, each with convention-conforming cells, is clean."""
+    register = _register(
+        "## Cluster A: ADR follow-ons\n\n"
+        "| ID | Item | ADR | Phase | Status |\n"
+        "| --- | --- | --- | --- | --- |\n"
+        "| UW-A01 | Tier-1 RLS scoping | 022 | 5 | unscheduled |\n",
+        "## Cluster D: open issues\n\n"
+        "| ID | Issues | Theme | Phase | Status |\n"
+        "| --- | --- | --- | --- | --- |\n"
+        "| UW-D01 | #249, #250 | Device-auth hardening | 5 | unscheduled |\n"
+        "| UW-D02 | (no issue) | Standing problem in phase 5 alerting | 4b | decision |\n",
+        "## Cluster G: content\n\n"
+        "| ID | Item | Source | Phase | Status |\n"
+        "| --- | --- | --- | --- | --- |\n"
+        "| UW-G01 | Slot the skeletons | ws0 phase2 | content | unscheduled |\n",
+        "## Cluster L: live defects\n\n"
+        "| ID | Item | Issue | Status |\n"
+        "| --- | --- | --- | --- |\n"
+        "| UW-L01 | A bug | [#609](https://github.com/ByronWilliamsCPA/cyo-adventure/pull/609) | done |\n",
+        "## Cluster M: external and owner-gated\n\n"
+        "| ID | Item | Owner | Status |\n"
+        "| --- | --- | --- | --- |\n"
+        "| UW-M01 | Sign the DPA | project owner | decision |\n",
+    )
+    register_path = _write(tmp_path / "register.md", register)
+    problems = _MODULE.check_linkage(
+        register_path,
+        _write(tmp_path / "roadmap.md", _VALID_ROADMAP),
+        _write(tmp_path / "debt.md", ""),
+        _write(tmp_path / "lessons.md", ""),
+        _write_no_open_capability_register(tmp_path),
+    )
+    assert problems == []
+
+
+# ---------------------------------------------------------------------------
 # B. vocabulary drift guard
 # ---------------------------------------------------------------------------
 
