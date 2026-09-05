@@ -992,7 +992,15 @@ also_copy = [
     # Nested FILES: each needs `frontend/src/` above to have created
     # `mutants/frontend/` first (copy2 makes no parent directories).
     "frontend/package.json",  # test_a11y_weekly_i7_flag_contract.py and others
+    # All four Playwright configs: test_ci_failure_action_contract.py runs the
+    # Node harness frontend/scripts/test/artifact-upload-safety.test.mjs, which
+    # globs `frontend/playwright*.config.ts` and asserts it found four. A read
+    # made from inside a Node harness is invisible to the AST walker in
+    # test_mutmut_also_copy_contract.py, so these are listed by hand.
     "frontend/playwright.config.ts",  # test_playwright_output_dir_isolation.py
+    "frontend/playwright.e2e-staging.config.ts",
+    "frontend/playwright.e2e-staging-sweep.config.ts",
+    "frontend/playwright.e2e-prod.config.ts",
     "frontend/scripts/",  # test_ci_failure_action_contract.py reads the .mjs harnesses
     "supabase/",
     "out/",

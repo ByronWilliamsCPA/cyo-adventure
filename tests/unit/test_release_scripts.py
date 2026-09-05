@@ -497,6 +497,13 @@ class TestReleaseTagSync:
         # annotation when the runner reads it from stdout.
         assert "::error::" in capsys.readouterr().out
 
+    # mutation_deselect: reads the real pyproject.toml version and the real
+    # git tag list to check the guard's format assumptions against this
+    # repository. Under mutmut `parents[...]` is the generated `mutants/` copy,
+    # which has no pyproject.toml and is not a git worktree, so the test fails
+    # for a reason unrelated to any mutated source (same reasoning as
+    # test_check_no_em_dash.py's tree guard).
+    @pytest.mark.mutation_deselect
     def test_real_repo_matches_the_guard_format_assumptions(self) -> None:
         """The live repo must satisfy the guard's format assumptions.
 
