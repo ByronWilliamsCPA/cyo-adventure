@@ -88,6 +88,79 @@ Note the split from the section above: **template** issues go to `docs/template_
 
 ---
 
+## Implementation Session Protocol (CRITICAL)
+
+The full reasoning and worked procedure live in
+[docs/planning/implementation-session-playbook.md](docs/planning/implementation-session-playbook.md);
+these are the rules. They exist because the lessons log records the same dozen failures being
+re-learned session after session (`AL-726`, `AL-746`, `AL-747`, `AL-762`, `AL-763`, `AL-764`,
+`AL-765` among them), and because a high-capability session is wasted if it spends its judgment
+on work a verifier could have done.
+
+**Orient before choosing work.**
+
+1. Read the open `ci-failure`, `e2e-alert`, and `[health-rollup]` issues first, then pull the
+   latest failing run's log for anything over the escalation bar. A scheduled workflow that has
+   never executed looks healthy everywhere except there.
+2. Read the registers before the master documents: `unscheduled-work-register.md` clusters L and
+   M, the tail of `authoring-lessons-log.md`, then `roadmap.md` and `PROJECT-PLAN.md`. Treat every
+   dated status claim in a master document as an allegation to verify against code.
+3. State what this environment cannot do (no Postgres, Docker, provider keys, Supabase
+   authorisation, or production access in a cloud session) and never describe prepared work as
+   executed.
+
+**Rank work by what its absence costs today**: red or never-run signals first, safety-gate
+integrity second, the owner-named blocker third, the plan fourth. Keep owner-gated steps in one
+list from the moment you find them and land the engineering side without waiting on them.
+
+**Fan out, with these invariants.**
+
+- Every agent brief names the files it may edit and the files other agents own. Two tasks that
+  need one file are serialised.
+- Agents never `commit`, `stash`, `checkout`, `restore`, or run `pre-commit run --all-files`
+  (`AL-746`: a peer's stash-and-pop destroyed unstaged hunks). Agents run hooks only on their own
+  files. The supervisor commits.
+- Agents never edit `unscheduled-work-register.md` or `authoring-lessons-log.md`; they propose
+  rows in their report and the supervisor writes them so ids are allocated once.
+- Verification of plan claims against code, mechanical edits with a clear spec, and inventory
+  work go to Sonnet agents (`Explore` for read-only). Root cause on the safety gate, provider
+  semantics, and the synthesis of agent reports stay with the supervisor.
+- Run two or three frontier-model agents at a time, not five: the account rate limit killed four
+  mid-task on 2026-09-05. A dead agent's partial work is in `git status`; the resumed brief names
+  those files and asks for them to be judged, not redone.
+
+**Verification bar.**
+
+- Reproduce the environment that failed before declaring a fix (the copied `mutants/` tree, the
+  CI-only drift guard, the cwd the script ran from). One `-x` failure is one cause; run without
+  `-x` once to see the list (`AL-765`).
+- A check nothing invokes is not a gate. When you add or find one, add the test that fails if no
+  workflow, hook, or nox session runs it (`AL-726`). A `#CRITICAL` comment describing a property
+  of the fleet is the specification for a check, not a substitute for one (`AL-764`).
+- Verify derived behaviour by calling the function that derives it, never by grepping for a
+  symbol (`AL-747`). Never transcribe a count into prose; cite the generated page or date the
+  number and name what re-derives it (`AL-551`).
+- Falsify a new test against the pre-fix tree before trusting it (`AL-757`). A lesson quantifying
+  over a class of sites earns `applied` only when the class was enumerated (`AL-763`).
+- Merged is not deployed. Production state is the deployed image revision; say "merged, not
+  confirmed deployed" until it is read.
+- Any posture change on the moderation or provider path is followed by a review of every fixture
+  and spec that pinned the old posture (`AL-769`).
+- Treat a task brief, a register row, a prior `done`, and a delegated agent's report as claims:
+  re-read the file or re-derive the value before acting, and spot-check one claim per agent against
+  the tree before relying on the rest (`AL-125`, `AL-423`, `AL-733`).
+- Never resolve a path, glob, or config default relative to the process cwd; anchor to a known
+  root and run the check once from a different directory (`AL-439`, `AL-761`). Any ratio or
+  DISTINCT count names both populations or the parent key inline (`AL-750`, `AL-752`).
+
+**Record and report.** Code, register or lesson rows, and any plan correction land in the same
+commit series; `scripts/check_lessons_log.py` and `scripts/check_work_linkage.py` run before each
+commit. Commit in reviewable units, signed, Conventional Commits, pushed after each unit. The final
+message carries what landed with its proof, what could not be verified here and what will verify
+it, the owner action list with commands, and the lessons recorded.
+
+---
+
 ## Project Overview
 
 **Name**: CYO Adventure
@@ -399,14 +472,21 @@ Ruff configuration includes PyStrict-aligned rules for ultra-strict code quality
 
 ### Agent Assignment Patterns
 
+The `mcp__zen__*` agents an earlier revision named here are not configured in this repository;
+the working pattern is the Agent tool with an explicit model and a file-ownership brief (see the
+Implementation Session Protocol above and the playbook it links).
+
 ```text
-- Security tasks       -> Security Agent (mcp__zen__secaudit)
-- Code reviews         -> Code Review Agent (mcp__zen__codereview)
-- Testing              -> Test Engineer Agent (mcp__zen__testgen)
-- Documentation        -> Documentation Agent (mcp__zen__docgen)
-- Debugging            -> Debug Agent (mcp__zen__debug)
-- Analysis             -> Analysis Agent (mcp__zen__analyze)
-- Refactoring          -> Refactor Agent (mcp__zen__refactor)
+- Verify a plan or register claim against code  -> Explore agent, model sonnet, read-only,
+                                                    report ACCURATE / STALE / CANNOT VERIFY
+                                                    with file:line evidence
+- Mechanical change with a clear spec            -> general-purpose agent, model sonnet,
+                                                    disjoint files named in the brief
+- Root cause on the safety gate or a provider    -> supervisor (frontier model), or a
+                                                    frontier agent with the full brief
+- Security review of a diff                      -> .claude/agents/security-auditor.md
+- Code review before commit                      -> .claude/agents/code-reviewer.md
+- Test generation                                -> .claude/agents/test-engineer.md
 ```
 
 ---
@@ -1256,10 +1336,15 @@ Use the right model for the task to balance quality and cost:
 
 | Task type | Model | When |
 | --- | --- | --- |
-| Frontier reasoning, hardest problems | Fable 5 | Long-horizon autonomous runs, large migrations, problems where Opus stalls |
-| Complex reasoning, planning, architecture | Opus 4.8 | Multi-step decisions, ADRs, deep code review |
-| Standard development work | Sonnet 4.6 (default) | Most coding, editing, PR descriptions |
-| Read-only exploration | Haiku 4.5 | File scanning, structure mapping, quick lookups |
+| Frontier reasoning, hardest problems | Fable 5.1 | Supervising a multi-agent session, root cause on the safety gate, long-horizon autonomous runs, problems where Opus stalls |
+| Complex reasoning, planning, architecture | Opus | Multi-step decisions, ADRs, deep code review |
+| Standard development work | Sonnet (default for delegated work) | Most coding, editing, PR descriptions, and every claim-verification or inventory fan-out from a frontier supervisor |
+| Read-only exploration | Haiku | File scanning, structure mapping, quick lookups |
+
+A frontier-model session should spend its own turns on judgment and delegate everything with a
+checkable specification: verifying plan claims against code, inventories, mechanical edits. Six
+Sonnet verifiers ran the 2026-09-05 plan audit in parallel while the supervisor wrote the
+corrections; that split is the intended shape.
 
 Path-scoped rules for model assignment in subagents would live in
 `.claude/rules/supervisor.md` if that directory existed in this project (it
@@ -1279,5 +1364,5 @@ does not currently); the table above is the operative guidance for now.
 
 ---
 
-**Last Updated**: 2026-08-11
+**Last Updated**: 2026-09-05
 **Template Version**: 0.1.0

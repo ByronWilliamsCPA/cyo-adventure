@@ -2,10 +2,13 @@
 
 Standards and patterns for Python development in this project.
 
+> Corrected 2026-09-05: this file had drifted from the tree (Black, Python 3.12, a 100 percent
+> critical-path target). `pyproject.toml` and `tests/CLAUDE.md` are authoritative where they differ.
+
 ## Code Style
 
 ### Formatting
-- **Formatter**: Black (88 character line length)
+- **Formatter**: Ruff format (88 character line length); Black is not used
 - **Import Sorting**: Ruff isort rules
 - **Docstrings**: Google style
 
@@ -23,7 +26,7 @@ Standards and patterns for Python development in this project.
 ### Type Checking Configuration
 ```toml
 [tool.basedpyright]
-pythonVersion = "3.12"
+pythonVersion = "3.14"
 typeCheckingMode = "strict"
 strictListInference = true
 strictDictionaryInference = true
@@ -75,13 +78,12 @@ tests/
 ### Coverage Requirements
 - **Minimum**: 80%
 - **Branch Coverage**: Enabled
-- **Critical Paths**: 100%
+- **Critical Paths**: 90% (the `safety-critical` Codecov component: `moderation/**`, `middleware/**`, `core/**`, `api/deps.py`, `publishing/**`; patch 95%)
 
 ### Test Naming
 ```python
-def test_function_name_when_condition_then_expected_result():
-    """Descriptive test names following Given-When-Then pattern."""
-    pass
+def test_login_with_expired_token_raises_auth_error():
+    """`test_<unit>_<scenario>_<expected_outcome>`, per tests/CLAUDE.md."""
 ```
 
 ## Documentation

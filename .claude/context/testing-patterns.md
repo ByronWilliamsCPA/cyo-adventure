@@ -51,11 +51,18 @@ def test_custom_user(user_factory):
 ```python
 @pytest.fixture
 async def async_client():
-    async with AsyncClient(app=app, base_url="http://test") as client:
+    # httpx >= 0.28 removed the `app=` shortcut; wrap the ASGI app explicitly.
+    async with AsyncClient(
+        transport=ASGITransport(app=app), base_url="http://test"
+    ) as client:
         yield client
 ```
 
 ## Mocking
+
+> The examples below use `pytest-mock`'s `mocker` fixture. It is installed but no test in this
+> repository uses it yet; the current convention is `unittest.mock` (see `tests/CLAUDE.md`, which
+> also records the `spec=` traps). Prefer the convention over these examples.
 
 ### Mock External Services
 ```python
@@ -136,7 +143,8 @@ def test_complex_operation():
 ## Common Commands
 
 ```bash
-# Run all tests
+# Run all tests (addopts already applies -n auto and coverage; drop them for a
+# quick targeted run with `-o addopts= -p no:cacheprovider`)
 uv run pytest
 
 # Run specific category

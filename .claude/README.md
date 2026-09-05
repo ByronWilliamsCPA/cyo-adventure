@@ -6,23 +6,21 @@ This directory contains Claude Code configuration and standards for this project
 
 ```
 .claude/
-├── README.md           # This file
-├── claude.md           # Project-specific Claude guidelines
-├── context/            # Project-specific context files
-│   ├── python-standards.md   # Project Python conventions
-│   └── testing-patterns.md   # Project testing patterns
-└── standard/           # Standard Claude configuration (git subtree)
-    ├── claude.md       # Base guidelines and standards
-    ├── commands/       # Custom slash commands
-    ├── skills/         # Reusable skills
-    ├── agents/         # Specialized agents
-    └── standards/      # Development standards
-        ├── git-workflow.md   # Git branching, commits, PRs
-        ├── git-worktree.md   # Git worktree workflows
-        ├── linting.md        # Multi-language linting
-        ├── python.md         # Python development standards
-        └── security.md       # Security requirements
+├── README.md              # This file
+├── settings.json          # Project permission allowlist (uv, ruff, pytest, git, gh, ...)
+├── settings.local.json.example
+├── agents/                # code-reviewer, security-auditor, test-engineer, merge-standards
+├── commands/              # /plan, /pr, /quality, /security, /testing, /merge-standards
+├── context/               # python-standards.md, testing-patterns.md (project conventions)
+└── skills/                # commit-prepare, cyo-author, git, naive-ux-check, pr-prepare,
+                           # project-planning, quality, security, testing
 ```
+
+> Corrected 2026-09-05. Earlier revisions of this file described a `standard/` git subtree and a
+> `.claude/claude.md` override that do not exist in this repository; the project's instructions
+> live in the root `CLAUDE.md` (including the Implementation Session Protocol) and in
+> `tests/CLAUDE.md`. `scripts/update-claude-standards.sh` still targets the subtree layout and
+> should be treated as template scaffolding until the subtree is actually added.
 
 ## Standard vs Project-Specific Configuration
 
@@ -113,4 +111,4 @@ git subtree add --prefix .claude/standard \
 
 ---
 
-**Last Updated**: 2026-06-21
+**Last Updated**: 2026-09-05
