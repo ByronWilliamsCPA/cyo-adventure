@@ -979,6 +979,15 @@ class TestConfiguredModels:
         with pytest.raises(ConfigurationError, match="cap cannot bind"):
             _ensure_models_are_priced()
 
+    # mutation_deselect: drives `main()` (or the gitignore guard) against paths
+    # under `_REPO_ROOT`, which under mutmut is the generated `mutants/` copy.
+    # `mutants/` is itself gitignored, so `git check-ignore` answers "ignored"
+    # for every path beneath it and `ensure_persistable` refuses to start before
+    # the behaviour under test is reached; the assertion then fails for a reason
+    # that has nothing to do with the code being mutated. These pin properties
+    # of the real worktree's ignore rules, so the copy is the wrong place to run
+    # them (same reasoning as test_check_no_em_dash.py's tree guard).
+    @pytest.mark.mutation_deselect
     def test_an_unpriced_model_stops_the_run_before_the_corpus_is_walked(
         self, monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
     ) -> None:
@@ -1285,6 +1294,15 @@ class TestWriteTrackedAggregate:
         assert written.name == f"summary-{run_id}.json"
 
 
+# mutation_deselect: drives `main()` (or the gitignore guard) against paths
+# under `_REPO_ROOT`, which under mutmut is the generated `mutants/` copy.
+# `mutants/` is itself gitignored, so `git check-ignore` answers "ignored"
+# for every path beneath it and `ensure_persistable` refuses to start before
+# the behaviour under test is reached; the assertion then fails for a reason
+# that has nothing to do with the code being mutated. These pin properties
+# of the real worktree's ignore rules, so the copy is the wrong place to run
+# them (same reasoning as test_check_no_em_dash.py's tree guard).
+@pytest.mark.mutation_deselect
 class TestEnsureGitignoredDestination:
     """Pins the discovered defect: ``out/reports/`` looks gitignored and is not.
 
@@ -1309,6 +1327,15 @@ class TestEnsureGitignoredDestination:
         )
 
 
+# mutation_deselect: drives `main()` (or the gitignore guard) against paths
+# under `_REPO_ROOT`, which under mutmut is the generated `mutants/` copy.
+# `mutants/` is itself gitignored, so `git check-ignore` answers "ignored"
+# for every path beneath it and `ensure_persistable` refuses to start before
+# the behaviour under test is reached; the assertion then fails for a reason
+# that has nothing to do with the code being mutated. These pin properties
+# of the real worktree's ignore rules, so the copy is the wrong place to run
+# them (same reasoning as test_check_no_em_dash.py's tree guard).
+@pytest.mark.mutation_deselect
 class TestMainSharesOneRunIdBetweenBothWriters:
     """``write_report``'s docstring promises both writers share one stamp.
 

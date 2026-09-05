@@ -55,7 +55,18 @@ import subprocess
 from pathlib import Path
 from typing import Any
 
+import pytest
 from ruamel.yaml import YAML
+
+# mutation_deselect: every test here derives its population from
+# `git ls-files frontend` run against `parents[2]`, which under mutmut is the
+# generated `mutants/` copy, not a git worktree. `git ls-files` there returns
+# nothing, `test_npm_lint_scope_is_not_vacuous` fires (correctly: a parity
+# check over zero files proves nothing), and mutmut's `-x` aborts the whole
+# run before scoring a mutant. These tests assert a property of the real
+# repository and mutate no source under `only_mutate`, so the copy is the wrong
+# place to run them (same reasoning as test_check_no_em_dash.py's tree guard).
+pytestmark = pytest.mark.mutation_deselect
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 FRONTEND_DIR = REPO_ROOT / "frontend"

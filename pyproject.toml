@@ -948,6 +948,18 @@ also_copy = [
     #     | sort -u | while read -r m; do [ -e "$m" ] && echo "$m"; done
     # (`tests/` itself is copied by mutmut and needs no entry.)
     #
+    # ENFORCED since 2026-09-05 by tests/unit/test_mutmut_also_copy_contract.py,
+    # which runs this derivation over the unit suite's ASTs (root-anchored
+    # `/`-chains, their module-level aliases, and repo-root imports) and fails
+    # naming the missing entry. The two grep one-liners below are kept as the
+    # human-readable statement of the rule; the test is what keeps it true.
+    # The same test pins the ordering rule for nested FILE entries: mutmut
+    # copies a file with `shutil.copy2`, which creates no parent directory, so
+    # `frontend/package.json` must follow `frontend/src/` (whose copytree
+    # creates `mutants/frontend/`). It missed a THIRD time on 2026-08-30, on
+    # `.claude/skills/naive-ux-check/` (10 of 10 scheduled runs red, never
+    # green), which is why the derivation moved from this comment into a test.
+    #
     # That command finds IMPORTS only, and an import is not the only way a unit
     # test depends on a repo-root path. `.github/` was missed for exactly that
     # reason: `test_ci_gate_contract.py` and `test_pr_validation_gate_contract.py`
@@ -977,9 +989,23 @@ also_copy = [
     "docs/",
     "data/",
     "frontend/src/",
+    # Nested FILES: each needs `frontend/src/` above to have created
+    # `mutants/frontend/` first (copy2 makes no parent directories).
+    "frontend/package.json",  # test_a11y_weekly_i7_flag_contract.py and others
+    "frontend/playwright.config.ts",  # test_playwright_output_dir_isolation.py
+    "frontend/scripts/",  # test_ci_failure_action_contract.py reads the .mjs harnesses
     "supabase/",
     "out/",
     "CHANGELOG.md",
+    # .claude/skills/naive-ux-check/ -> test_naive_ux_scenarios.py loads render.py
+    #   by path at import time; the collection-time FileNotFoundError that killed
+    #   every scheduled run through 2026-08-30. The one skill directory, not
+    #   `.claude/`, which also holds settings and unrelated skills.
+    ".claude/skills/naive-ux-check/",
+    ".pre-commit-config.yaml",  # test_frontend_eslint_scope_parity.py
+    ".trivy/",  # test_trivy_ignore_policy.py
+    ".trivyignore.yaml",  # test_trivy_ignore_policy.py
+    "trivy.yaml",  # test_trivy_ignore_policy.py
 ]
 
 # Bandit Security Configuration
