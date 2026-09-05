@@ -302,8 +302,9 @@ repos:
         entry: uv run --no-sync basedpyright src/
         language: system
         pass_filenames: false
-        # pre-push: matches the repo's heavy-lint-at-pre-push design (qlty-full
-        # also runs BasedPyright). Pre-existing middleware type debt is deferred
+        # pre-push: matches the repo's heavy-lint-at-pre-push design. This hook
+        # and CI are the only BasedPyright gates: .qlty/qlty.toml enables no
+        # plugins (issue #622). Pre-existing middleware type debt is deferred
         # to pre-push and CI rather than gating every commit.
         stages: [pre-push]
 
@@ -335,9 +336,10 @@ repos:
     hooks:
       - id: yamllint
         args: [--strict]
-        # pre-push: aligns with the repo's heavy-lint-at-pre-push philosophy
-        # (qlty-full already runs yamllint). Avoids gating every commit on
-        # --strict warnings across the generated workflow files.
+        # pre-push: aligns with the repo's heavy-lint-at-pre-push philosophy.
+        # This hook is the ONLY yamllint gate: .qlty/qlty.toml enables no
+        # plugins, so qlty runs no linters (issue #622). Avoids gating every
+        # commit on --strict warnings across the generated workflow files.
         stages: [pre-push]
 
   # ============================================================================
@@ -536,10 +538,12 @@ repos:
     rev: a4d5d37e66ebcd6b3705204a1d6dbb56dea66338  # v0.49.0  # pragma: allowlist secret
     hooks:
       - id: markdownlint
-        # pre-push: aligns with the repo's heavy-lint-at-pre-push philosophy
-        # (qlty-full already runs markdownlint). Pre-existing template-doc debt
-        # is tracked in docs/template_feedback.md; gating commits on it is out
-        # of scope for the compliance pass.
+        # pre-push: aligns with the repo's heavy-lint-at-pre-push philosophy.
+        # This hook is the ONLY markdownlint gate: .qlty/qlty.toml enables no
+        # plugins, so qlty runs no linters and "qlty check" reporting no issues
+        # on a markdown file proves nothing (issue #622). Pre-existing
+        # template-doc debt is tracked in docs/template_feedback.md; gating
+        # commits on it is out of scope for the compliance pass.
         stages: [pre-push]
 
   # ============================================================================
