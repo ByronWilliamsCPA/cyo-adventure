@@ -237,15 +237,17 @@ jobs:
       # `npm run test:e2e:real`) avoids tripping the backend's per-IP rate
       # limiter, which two parallel workers sharing the loopback IP would do.
       # #CRITICAL: timing: this job runs Playwright against playwright.config.ts
-      # THREE TIMES (this step, then "E2E (Playwright, full-pipeline tier)",
-      # then "E2E (Playwright, usersim-real tier)" below; task B3a added the
-      # third), and that config's `json` reporter writes to a single path
+      # FOUR TIMES (this step, then "E2E (Playwright, full-pipeline tier)",
+      # then "E2E (Playwright, full-pipeline negative tier)", then "E2E
+      # (Playwright, usersim-real tier)" below; task B3a added the usersim
+      # one, the issue #290 remediation added the negative one), and that
+      # config's `json` reporter writes to a single path
       # unless overridden (see playwright.config.ts). A shared fixed path
       # would let a later run's report silently overwrite an earlier one's
       # before either is read, so the alert would end up naming only the
       # last-run project's failures on a run where an earlier step is what
       # actually failed, and would look correct while doing it (task A7-i).
-      # `PLAYWRIGHT_JSON_REPORT_PATH` below gives each of the three its own
+      # `PLAYWRIGHT_JSON_REPORT_PATH` below gives each of the four its own
       # file rather than relying on step-scheduling to keep runs from
       # colliding. That matters concretely today: real-backend failing skips
       # full-pipeline entirely (the default `if:`-less step gate), but
@@ -253,8 +255,9 @@ jobs:
       # so still runs in that case, meaning its report is written in the same
       # job as a real-backend failure. Distinct paths are what make that
       # safe; a shared path would not be.
-      # #VERIFY: `real-backend.json`, `real-backend-pipeline.json`, and
-      # `usersim-real.json` below must stay distinct paths.
+      # #VERIFY: `real-backend.json`, `real-backend-pipeline.json`,
+      # `real-backend-pipeline-negative.json`, and `usersim-real.json` below
+      # must stay distinct paths.
       - name: E2E (Playwright, real-backend tier)
         working-directory: ./frontend
         id: playwright_real
@@ -269,9 +272,12 @@ jobs:
           PLAYWRIGHT_JSON_REPORT_PATH: playwright-json-report/real-backend.json
         run: npm run test:e2e:real
 
-      # Full-pipeline tier (G1, Phase 7.1): the ONLY real-backend spec that
-      # drives the real RQ generation worker, so the worker is started here,
-      # not at job setup. It must be started immediately before this step, not
+      # Full-pipeline tier (G1, Phase 7.1): the real-backend specs that drive
+      # the real RQ generation worker run here, so the worker is started here,
+      # not at job setup. This worker serves the default `safe` canned fixture
+      # (core/config.py::Settings.mock_story_fixture); the BLOCKING direction
+      # needs a differently configured worker and gets its own pair of steps
+      # further down. It must be started immediately before this step, not
       # earlier: the worker's Redis connection uses socket_timeout=2
       # (generation/queue.py) and the blocking dequeue idle-dies after roughly
       # the worker TTL (~7 min) with "Redis connection timeout, quitting", so a
@@ -315,6 +321,95 @@ jobs:
           CYO_ADVENTURE_DATABASE_URL: postgresql+asyncpg://cyo_adventure:password@localhost:5432/cyo_adventure
           PLAYWRIGHT_JSON_REPORT_PATH: playwright-json-report/real-backend-pipeline.json
         run: npm run test:e2e:real:pipeline
+
+      # Full-pipeline tier, BLOCKING direction (review finding S-5, issue
+      # #290): full-pipeline-negative-real.spec.ts needs the worker to serve
+      # the structurally invalid canned fixture
+      # (CYO_ADVENTURE_MOCK_STORY_FIXTURE=invalid). That selector is read once
+      # per worker process from settings, not per job, and the positive tier
+      # above needs the default `safe` fixture from the same "generation"
+      # queue, so the two directions cannot share one worker. For 37
+      # consecutive nightlies the negative spec ran under the safe-fixture
+      # worker and reported "expected a HARD-BLOCK terminal status, got
+      # passed", which was the wiring, not the gate. The worker is therefore
+      # restarted between the two pipeline steps with the invalid fixture.
+      #
+      # #CRITICAL: concurrency: the safe-fixture worker MUST be fully gone
+      # before the invalid-fixture one starts. `uv run` does not exec its
+      # child here (the job's orphan sweep lists `uv` and `python3` as two
+      # pids), so killing only worker.pid leaves a python3 worker alive on the
+      # queue, and two workers racing for the negative spec's job would make
+      # its outcome depend on which one dequeued first. Every process matching
+      # the module path is signalled, the step waits for all of them to exit,
+      # and it FAILS if any survive, because a silently surviving safe worker
+      # is exactly the non-deterministic state this split exists to remove.
+      # RQ handles SIGTERM as a warm shutdown (finish the in-flight job, then
+      # exit); by this point the positive tier's jobs are terminal, so the
+      # wait is short. SIGKILL is the fallback, never the first choice, so a
+      # job row is not stranded mid-transaction.
+      # #VERIFY: the `pgrep` assertion at the end of this step; the negative
+      # spec's own block assertion names the env var if the wrong fixture is
+      # somehow still being served.
+      - name: Stop generation worker (safe fixture)
+        if: ${{ !cancelled() }}
+        run: |
+          pattern='cyo_adventure.generation.worker_main'
+          kill "$(cat worker.pid)" 2>/dev/null || true
+          pkill -TERM -f "$pattern" || true
+          for _ in $(seq 1 30); do
+            if ! pgrep -f "$pattern" > /dev/null; then break; fi
+            sleep 1
+          done
+          if pgrep -f "$pattern" > /dev/null; then
+            echo "safe-fixture worker did not exit on SIGTERM within 30s; sending SIGKILL"
+            pkill -KILL -f "$pattern" || true
+            sleep 2
+          fi
+          if pgrep -af "$pattern"; then
+            echo "::error::a generation worker is still running; refusing to start the invalid-fixture worker beside it"
+            exit 1
+          fi
+
+      # Same shape as "Start generation worker (background)" above, with the
+      # one deliberate difference: CYO_ADVENTURE_MOCK_STORY_FIXTURE=invalid,
+      # which flips build_provider's mock branch (generation/provider.py) to
+      # serve `_INVALID_STORY`, a non-ending node with no choices that the
+      # deterministic validator gate rejects at ERROR severity on every repair
+      # attempt. This is a dev/test-only selector: it has no effect on any
+      # non-mock provider, and the mock provider is never selectable outside
+      # ENVIRONMENT=local (generation/allowlist.py). Own log file, uploaded
+      # separately below, so a negative-tier post-mortem is not interleaved
+      # with the positive tier's.
+      # #CRITICAL: timing: same idle-death constraint as the first worker
+      # (socket_timeout=2, ~7 min TTL); it is started immediately before the
+      # step that enqueues for it, and the Playwright build in between fits
+      # inside that budget.
+      - name: Start generation worker (invalid fixture, background)
+        if: ${{ !cancelled() }}
+        env:
+          ENVIRONMENT: local
+          CYO_ADVENTURE_DATABASE_URL: postgresql+asyncpg://cyo_adventure:password@localhost:5432/cyo_adventure
+          CYO_ADVENTURE_REDIS_URL: redis://localhost:6379/0
+          CYO_ADVENTURE_MOCK_STORY_FIXTURE: invalid
+        run: |
+          uv run python -m cyo_adventure.generation.worker_main > worker-negative.log 2>&1 &
+          echo $! > worker-negative.pid
+          sleep 3
+
+      # Runs on `!cancelled()` like the usersim-real step below, for the same
+      # reason: the stack is fully up by now, and a positive-tier failure says
+      # nothing about whether the gate blocks. Its own report path and its own
+      # outputDir (playwright.config.ts `real-backend-pipeline-negative`) keep
+      # it from clobbering a sibling's evidence.
+      - name: E2E (Playwright, full-pipeline negative tier)
+        if: ${{ !cancelled() }}
+        working-directory: ./frontend
+        id: playwright_pipeline_negative
+        env:
+          E2E_BACKEND_URL: http://localhost:8000
+          CYO_ADVENTURE_DATABASE_URL: postgresql+asyncpg://cyo_adventure:password@localhost:5432/cyo_adventure
+          PLAYWRIGHT_JSON_REPORT_PATH: playwright-json-report/real-backend-pipeline-negative.json
+        run: npm run test:e2e:real:pipeline:negative
 
       # usersim-real tier (task B3a): the same seeded random walk as the
       # usersim.yml scheduled workflow's mocked `usersim` project
@@ -396,6 +491,14 @@ jobs:
           path: worker.log
           retention-days: 7
 
+      - name: Upload negative-tier worker log
+        if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: e2e-real-nightly-worker-negative-log
+          path: worker-negative.log
+          retention-days: 7
+
       - name: Upload backend log
         if: ${{ !cancelled() }}
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
@@ -455,6 +558,20 @@ jobs:
             echo 'EXTRACT_PIPELINE_SPECS_EOF'
           } >> "$GITHUB_OUTPUT"
 
+      # Same extraction, against the full-pipeline negative step's own report.
+      # That step runs on `!cancelled()`, so its report exists whenever the
+      # job got as far as the Playwright steps at all.
+      - name: Extract failing specs from the full-pipeline negative report
+        if: ${{ failure() }}
+        id: extract_pipeline_negative_specs
+        working-directory: ./frontend
+        run: |
+          {
+            echo 'result<<EXTRACT_PIPELINE_NEGATIVE_SPECS_EOF'
+            node scripts/extract-failing-specs.mjs playwright-json-report/real-backend-pipeline-negative.json
+            echo 'EXTRACT_PIPELINE_NEGATIVE_SPECS_EOF'
+          } >> "$GITHUB_OUTPUT"
+
       # Same extraction, against the usersim-real step's own report (task
       # B3a). Unlike full-pipeline above, the usersim-real step itself carries
       # `if: ${{ !cancelled() }}` (see that step's own #CRITICAL comment), so
@@ -500,9 +617,11 @@ jobs:
         env:
           PLAYWRIGHT_REAL_OUTCOME: ${{ steps.playwright_real.outcome }}
           PLAYWRIGHT_PIPELINE_OUTCOME: ${{ steps.playwright_pipeline.outcome }}
+          PLAYWRIGHT_PIPELINE_NEGATIVE_OUTCOME: ${{ steps.playwright_pipeline_negative.outcome }}
           PLAYWRIGHT_USERSIM_REAL_OUTCOME: ${{ steps.playwright_usersim_real.outcome }}
           FAILING_SPECS: ${{ steps.extract_specs.outputs.result }}
           PIPELINE_FAILING_SPECS: ${{ steps.extract_pipeline_specs.outputs.result }}
+          PIPELINE_NEGATIVE_FAILING_SPECS: ${{ steps.extract_pipeline_negative_specs.outputs.result }}
           USERSIM_REAL_FAILING_SPECS: ${{ steps.extract_usersim_real_specs.outputs.result }}
         with:
           result-encoding: string
@@ -523,13 +642,19 @@ jobs:
             // failure" case correctly regardless.
             const realOutcome = process.env.PLAYWRIGHT_REAL_OUTCOME || 'did not run'
             const pipelineOutcome = process.env.PLAYWRIGHT_PIPELINE_OUTCOME || 'did not run'
+            const pipelineNegativeOutcome =
+              process.env.PLAYWRIGHT_PIPELINE_NEGATIVE_OUTCOME || 'did not run'
             const usersimRealOutcome = process.env.PLAYWRIGHT_USERSIM_REAL_OUTCOME || 'did not run'
             const realFailed = realOutcome === 'failure'
             const pipelineFailed = pipelineOutcome === 'failure'
+            const pipelineNegativeFailed = pipelineNegativeOutcome === 'failure'
             const usersimRealFailed = usersimRealOutcome === 'failure'
             const failingSpecs = process.env.FAILING_SPECS || 'No failing-spec detail is available for this run.'
             const pipelineFailingSpecs =
               process.env.PIPELINE_FAILING_SPECS || 'No failing-spec detail is available for this run.'
+            const pipelineNegativeFailingSpecs =
+              process.env.PIPELINE_NEGATIVE_FAILING_SPECS ||
+              'No failing-spec detail is available for this run.'
             const usersimRealFailingSpecs =
               process.env.USERSIM_REAL_FAILING_SPECS || 'No failing-spec detail is available for this run.'
 
@@ -537,8 +662,9 @@ jobs:
               'The scheduled `E2E (real backend, nightly)` workflow',
               '(`.github/workflows/e2e-real-nightly.yml`) failed.',
               '',
-              'This tier runs the `real-backend` and `full-pipeline` Playwright',
-              'projects (frontend/e2e-real/, zero route mocks), plus the',
+              'This tier runs the `real-backend`, `full-pipeline`, and',
+              '`full-pipeline-negative` Playwright projects (frontend/e2e-real/,',
+              'zero route mocks), plus the',
               '`usersim-real` seeded random walk (frontend/e2e-usersim/,',
               'walk-real.spec.ts), against a throwaway Postgres-backed uvicorn',
               'built fresh each run; a failure here means either a real',
@@ -549,6 +675,7 @@ jobs:
               'or the migration/seed setup broke.',
               '',
               `Step outcomes: real-backend: ${realOutcome} / full-pipeline: ${pipelineOutcome} / ` +
+                `full-pipeline-negative: ${pipelineNegativeOutcome} / ` +
                 `usersim-real: ${usersimRealOutcome}`,
               '',
             ]
@@ -559,6 +686,17 @@ jobs:
 
             if (pipelineFailed) {
               lines.push('The `full-pipeline` Playwright run failed.', '', pipelineFailingSpecs, '')
+            }
+
+            if (pipelineNegativeFailed) {
+              lines.push(
+                'The `full-pipeline-negative` Playwright run failed. If its block',
+                'assertion reports "got passed", check the "Stop generation worker"',
+                'step: a surviving safe-fixture worker, not the gate, is the usual cause.',
+                '',
+                pipelineNegativeFailingSpecs,
+                '',
+              )
             }
 
             if (usersimRealFailed) {
@@ -572,11 +710,12 @@ jobs:
               )
             }
 
-            if (!realFailed && !pipelineFailed && !usersimRealFailed) {
+            if (!realFailed && !pipelineFailed && !pipelineNegativeFailed && !usersimRealFailed) {
               lines.push(
                 'None of the tracked Playwright steps (real-backend, full-pipeline,',
-                'usersim-real) reported failure; check the run log for a setup step',
-                'outside those three (migrations, seeding, backend/worker startup).',
+                'full-pipeline-negative, usersim-real) reported failure; check the run',
+                'log for a setup step outside those four (migrations, seeding,',
+                'backend/worker startup or the worker restart between pipeline tiers).',
                 '',
               )
             }

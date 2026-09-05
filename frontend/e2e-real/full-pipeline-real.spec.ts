@@ -4,25 +4,56 @@ import type { DeviceGrant } from '../src/auth/deviceGrant'
 
 import { authorizeDevice, BACKEND, requireBackend, revokeDevice } from './real-stack'
 
-import { seedGuardianSession } from '../e2e/support/auth'
-
 /**
  * Phase 7.1 (G1, docs/planning/handoff-test-coverage-robustness-2026-07-22.md):
- * the full request -> generate -> gate -> moderate -> approve -> publish ->
- * read pipeline, driven through a REAL RQ worker rather than seeded data.
+ * the full request -> generate -> gate -> moderate pipeline, driven through a
+ * REAL RQ worker rather than seeded data, and then the ADR-005 containment
+ * that follows from what the real moderation stage decides about the result.
  * `scripts/seed_dev_data.py` only ever seeds already-published/already-in-review
- * stories; no other e2e-real spec makes the real generation worker do anything.
- * This spec is the one that does: it calls the guardian-only concept/generate
- * endpoints directly (there is no UI for the bare concept intake, only for the
- * story-request flow that wraps it), polls the real `generation_job` row until
- * the real worker (already running against Redis, per the task brief) drives
- * it to a terminal status, then drives the real admin approve UI and the real
- * kid reader against whatever the worker actually produced.
+ * stories; this spec and its two siblings in the `real-backend-pipeline`
+ * projects are the ones that make the real generation worker do anything. It
+ * calls the guardian-only concept/generate endpoints directly (there is no UI
+ * for the bare concept intake, only for the story-request flow that wraps it),
+ * polls the real `generation_job` row until the real worker (already running
+ * against Redis, per the task brief) drives it to a terminal status, then reads
+ * back what the worker and the moderation pipeline actually persisted.
  *
  * The mock generation provider (generation/providers -- ENVIRONMENT=local)
  * ignores the submitted brief and always returns the same canned story titled
- * "The Forest Path" (generation/provider.py `_CANNED_STORY`), so every
+ * "The Forest Path" (generation/provider.py `_CANNED_STORY`), so every title
  * assertion below is pinned to that title, not to the brief this spec sends.
+ *
+ * WHAT THE REAL STACK DECIDES ABOUT A MOCK-MODERATED BOOK (issue #290 root
+ * cause, re-pinned 2026-09-05). The nightly stack runs with the default
+ * `review_provider="mock"` (core/config.py), and the mock review backend
+ * answers every call with the literal "{}" (moderation/review_provider.py::
+ * build_review_provider). Stage 1 records every node as an unparseable
+ * fail-safe FLAG with `concern="reviewer_unavailable"` (moderation/stages.py),
+ * which `ModerationReport.has_coverage_gap` reads as "no reviewer saw these
+ * nodes"; `blocks_release` is therefore true and run_moderation_pipeline calls
+ * `auto_reject`, not `submit` (moderation/pipeline.py, PR #776 "stop an
+ * unreviewed story passing as soft-flagged"). Independently, PR #769 stamps
+ * every mock-reviewed report `reviewer_independent: false` in EVERY
+ * environment, which `moderation_report_unusable` treats as unapprovable with
+ * no override path (publishing/service.py::_assert_report_permits_approval).
+ * Both are deliberate: a book nobody reviewed must never reach a child. So a
+ * worker-generated book on this stack lands, deterministically, in
+ * `needs_revision` with a stored (unusable) report, is absent from the
+ * in_review-only admin queue, cannot be approved, and cannot be assigned.
+ *
+ * This file used to assert the pre-#769/#776 world (in_review -> approve ->
+ * publish -> kid reads) and failed on every nightly since those PRs landed,
+ * first at the queue lookup ("was not in the real review queue"). The approve
+ * -> publish -> kid-read legs are still proven end to end against the real
+ * stack, on the seeded review story whose report carries a genuinely
+ * independent reviewer, by approval-flow.spec.ts and kid-reads.spec.ts in the
+ * `real-backend` project. What THIS file now proves is the other half of the
+ * crown-jewel property: the real worker produces a real book, the real
+ * moderation stage holds it back, and every downstream surface honours that
+ * hold. Driving a worker-generated book all the way to a child again needs a
+ * real (non-mock) reviewer in the nightly, which is a secrets/cost decision
+ * recorded in the unscheduled work register, not something a spec can
+ * paper over.
  *
  * Serial: each test depends on real database state a prior test in this file
  * produced (the concept/job/storybook ids are generated fresh per run, so
@@ -61,6 +92,11 @@ const CONCEPT_BRIEF = {
 }
 
 const CANNED_TITLE = 'The Forest Path'
+
+// A published seeded book the kid library always shows (scripts/seed_dev_data.py,
+// also the book kid-reads.spec.ts opens). Used only as a "the shelf has
+// finished loading" marker before asserting the held-back book is absent.
+const SEEDED_PUBLISHED_TITLE = 'The Tide Pool Mystery'
 
 // #CRITICAL: timing dependencies: the mock provider still runs the full
 // staged pipeline (validator gate, moderation) through a real RQ worker
@@ -168,13 +204,21 @@ async function pollGenerationJob(jobId: string): Promise<JobPollResult> {
   )
 }
 
+interface ReviewSurface {
+  status: string
+  screened: boolean
+  report_unusable: boolean
+  blob: { title?: string }
+  summary: { reviewer_independent: boolean; hard_block: boolean } | null
+}
+
 let storybookId = ''
 
 test.beforeEach(async () => {
   await requireBackend()
 })
 
-test('a guardian creates a concept and the real worker generates a story to in_review', async () => {
+test('a guardian creates a concept and the real worker generates a story the real moderation stage holds back', async () => {
   // Raised from the file's default 30s: this test waits on a real worker
   // process across several real HTTP round trips, not just one poll.
   test.setTimeout(90_000)
@@ -183,58 +227,82 @@ test('a guardian creates a concept and the real worker generates a story to in_r
   const jobId = await enqueueGeneration(conceptId)
   const result = await pollGenerationJob(jobId)
 
+  // The GATE passed: the canned story is structurally clean, so the job is
+  // "passed" and a real Storybook row was persisted under the worker's
+  // per-job id (generation/worker.py::_persist_and_moderate).
   expect(result.status, `generation job ${jobId} ended in an unexpected terminal status`).toBe(
     'passed'
   )
   expect(result.storybookId).toBe(`s_${jobId}`)
   storybookId = result.storybookId as string
 
-  const queueRes = await apiFetch('/api/v1/review-queue', ADMIN_BEARER)
-  expect(queueRes.ok, `GET /review-queue failed (HTTP ${queueRes.status})`).toBe(true)
-  const queue = (await queueRes.json()) as {
-    items: Array<{ storybook_id: string; title: string; status: string; screened: boolean }>
-  }
-  const item = queue.items.find((candidate) => candidate.storybook_id === storybookId)
-  expect(item, `generated storybook ${storybookId} was not in the real review queue`).toBeTruthy()
-  expect(item?.title).toBe(CANNED_TITLE)
-  expect(item?.status).toBe('in_review')
-  expect(item?.screened).toBe(true)
-
+  // The MODERATION stage then ran on that row and, with the mock reviewer,
+  // auto-rejected it (see the header). Read the persisted state back through
+  // the admin review surface, which serves any lifecycle status.
   const reviewRes = await apiFetch(`/api/v1/storybooks/${storybookId}/review`, ADMIN_BEARER)
   expect(
     reviewRes.ok,
     `GET /storybooks/${storybookId}/review failed (HTTP ${reviewRes.status})`
   ).toBe(true)
-  const review = (await reviewRes.json()) as {
-    status: string
-    screened: boolean
-    blob: { title?: string }
-  }
-  expect(review.status).toBe('in_review')
-  expect(review.screened).toBe(true)
+  const review = (await reviewRes.json()) as ReviewSurface
   expect(review.blob.title).toBe(CANNED_TITLE)
+  // `screened` is "a moderation report exists": the pipeline ran and stored
+  // its verdict, it did not skip the book.
+  expect(review.screened).toBe(true)
+  expect(
+    review.status,
+    'a mock-moderated book must be auto-rejected to needs_revision, never submitted to in_review ' +
+      '(moderation/pipeline.py routes on blocks_release; a "{}" mock review is a coverage gap)'
+  ).toBe('needs_revision')
+  // The stored report is self-identifying as mock-moderated (PR #769): that
+  // is the arm moderation_report_unusable trips on, and what makes the book
+  // permanently unapprovable below.
+  expect(review.summary?.reviewer_independent).toBe(false)
+  expect(review.report_unusable).toBe(true)
+
+  // The admin review queue lists in_review only, so the held-back book must
+  // not be offered for approval there...
+  const queueRes = await apiFetch('/api/v1/review-queue', ADMIN_BEARER)
+  expect(queueRes.ok, `GET /review-queue failed (HTTP ${queueRes.status})`).toBe(true)
+  const queue = (await queueRes.json()) as { items: Array<{ storybook_id: string }> }
+  expect(
+    queue.items.find((candidate) => candidate.storybook_id === storybookId),
+    `auto-rejected storybook ${storybookId} must NOT appear in the in_review-only review queue`
+  ).toBeUndefined()
+
+  // ...but it is not lost either: the admin master library lists every
+  // lifecycle status, so an operator can still find and re-open it.
+  const libraryRes = await apiFetch('/api/v1/admin/storybooks?status=needs_revision', ADMIN_BEARER)
+  expect(libraryRes.ok, `GET /admin/storybooks failed (HTTP ${libraryRes.status})`).toBe(true)
+  const library = (await libraryRes.json()) as {
+    items: Array<{ storybook_id: string; title: string; status: string }>
+  }
+  const shelved = library.items.find((candidate) => candidate.storybook_id === storybookId)
+  expect(shelved, `storybook ${storybookId} missing from the admin library`).toBeTruthy()
+  expect(shelved?.title).toBe(CANNED_TITLE)
+  expect(shelved?.status).toBe('needs_revision')
 })
 
-test('the admin approves and publishes the generated story through the real API', async ({
-  page,
-  context,
-}) => {
+test('the held-back story cannot be approved through the real API', async () => {
   expect(storybookId, 'no storybook id carried over from the generation step').toBeTruthy()
 
-  await seedGuardianSession(context, 'dev-admin')
-  await page.goto(`/admin/review/${storybookId}`)
-  await expect(page.getByRole('heading', { name: CANNED_TITLE })).toBeVisible()
+  // Two independent gates refuse this, and the state machine is the first one
+  // reached: approve is legal only from in_review (publishing/state_machine.py),
+  // and a needs_revision book 409s with StateTransitionError. Even a book that
+  // somehow reached in_review with this report would then be refused by
+  // _assert_report_permits_approval (unusable report, no override path).
+  const approveRes = await apiFetch(`/api/v1/storybooks/${storybookId}/approve`, ADMIN_BEARER, {
+    method: 'POST',
+    body: JSON.stringify({ visibility: 'family' }),
+  })
+  expect(approveRes.status, 'approve must be refused for a needs_revision book').toBe(409)
 
-  await page.getByRole('button', { name: /^Approve$/ }).click()
-  await page.getByRole('button', { name: 'Confirm approve' }).click()
-  await expect(page).toHaveURL(/\/admin$/)
-
-  // Persisted, not optimistic: read back the real row rather than trusting
-  // the UI's own redirect.
+  // Persisted, not inferred from the refusal: the row is still needs_revision
+  // and still has no published version.
   const reviewRes = await apiFetch(`/api/v1/storybooks/${storybookId}/review`, ADMIN_BEARER)
   expect(reviewRes.ok).toBe(true)
   const review = (await reviewRes.json()) as { status: string }
-  expect(review.status).toBe('published')
+  expect(review.status).toBe('needs_revision')
 })
 
 let deviceGrant: DeviceGrant | null = null
@@ -247,7 +315,7 @@ test.afterEach(async () => {
   }
 })
 
-test('the published story reaches the seeded child once assigned, and reads to an ending', async ({
+test('the held-back story never reaches the seeded child: assignment is refused and the shelf omits it', async ({
   page,
   context,
 }) => {
@@ -261,6 +329,9 @@ test('the published story reaches the seeded child once assigned, and reads to a
   const devReader = profiles.profiles.find((profile) => profile.display_name === 'Dev Reader')
   expect(devReader, 'seeded "Dev Reader" child profile not found').toBeTruthy()
 
+  // ADR-005: only a published book can be assigned (api/assignments.py raises
+  // BusinessLogicError -> 400 for anything else). A guardian cannot route an
+  // unreviewed book onto a child's shelf by assigning it directly.
   const assignRes = await apiFetch(
     `/api/v1/storybooks/${storybookId}/assignments`,
     GUARDIAN_BEARER,
@@ -270,12 +341,14 @@ test('the published story reaches the seeded child once assigned, and reads to a
     }
   )
   expect(
-    assignRes.ok,
-    `assignment failed (HTTP ${assignRes.status}): ${await assignRes.text()}`
-  ).toBe(true)
+    assignRes.status,
+    'assigning a needs_revision book must be refused (only published books are assignable)'
+  ).toBe(400)
 
-  // The kid surface is gated by DeviceAuthorizedRoute (ADR-014); mint and
-  // inject a real grant before the child bearer, exactly like kid-reads.spec.ts.
+  // The real kid shelf, through the real UI: the seeded published book is
+  // there (proves the shelf loaded), the held-back one is not. The kid surface
+  // is gated by DeviceAuthorizedRoute (ADR-014); mint and inject a real grant
+  // before the child bearer, exactly like kid-reads.spec.ts.
   deviceGrant = await authorizeDevice(context)
   await context.addInitScript(() => {
     window.localStorage.setItem('auth_token', 'dev-child')
@@ -284,14 +357,6 @@ test('the published story reaches the seeded child once assigned, and reads to a
   await page.goto('/kids')
   await page.getByText('Dev Reader').click()
   await expect(page).toHaveURL(/\/library\//)
-
-  await page.getByRole('link', { name: CANNED_TITLE }).click()
-  await expect(page).toHaveURL(/\/read\//)
-  await expect(page.getByTestId('reader')).toBeVisible()
-
-  for (let i = 0; i < 40; i += 1) {
-    if (await page.getByTestId('ending-screen').count()) break
-    await page.locator('[data-testid^="choice-"]').first().click()
-  }
-  await expect(page.getByTestId('ending-screen')).toBeVisible()
+  await expect(page.getByRole('link', { name: SEEDED_PUBLISHED_TITLE })).toBeVisible()
+  await expect(page.getByRole('link', { name: CANNED_TITLE })).toHaveCount(0)
 })

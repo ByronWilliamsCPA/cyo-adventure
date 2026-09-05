@@ -163,8 +163,18 @@ relate to the Supabase project constraints.
   story through the *real* RQ generation worker rather than seeded data:
   a guardian `POST /api/v1/concepts` + `/generate`, a real `generation_job`
   polled until the worker (mock provider, but the full staged validator +
-  moderation gate) lands it at `in_review`, then the real admin approve/publish
-  UI, then the seeded child reads the produced story to an ending. Runs in its
+  moderation gate) reaches a terminal status, then the ADR-005 containment the
+  real moderation stage imposes on the result. **Re-pinned 2026-09-05 (issue
+  #290)**: with the nightly's default `review_provider="mock"` the review
+  backend answers `{}`, every node is recorded as a `reviewer_unavailable`
+  fail-safe, and the pipeline auto-rejects (PR #776) a report that PR #769 has
+  also stamped `reviewer_independent: false`, so the book lands in
+  `needs_revision`, is absent from the in_review-only admin queue, cannot be
+  approved (409), cannot be assigned (400), and never appears on the kid shelf.
+  That is what the spec now asserts; the approve-to-read leg is proven on the
+  seeded `s_bridge_builder` by `connections-enforcement-real.spec.ts` instead.
+  Whether the nightly should get a real reviewer so one book crosses the whole
+  path again is register row `UW-C481`. Runs in its
   own `real-backend-pipeline` Playwright project (`npm run test:e2e:real:pipeline`)
   because it is the only real-backend spec that additionally requires a running
   `python -m cyo_adventure.generation.worker_main`; the deterministic Phase 4.2
@@ -192,10 +202,15 @@ relate to the Supabase project constraints.
   backend produces a passing run and fails this spec's block assertion with an
   explicit "is MOCK_STORY_FIXTURE=invalid set?" message rather than a silent
   pass. Spans every backend stage between request and gate, so it is registered
-  here rather than under a single journey. **Authored, not yet executed**: the
-  remediation session that wrote it had no local backend, so only `tsc -b`,
-  ESLint, and `playwright --list` verified it; run it against a real stack (with
-  the env vars above and a running worker) before trusting it as proven.
+  here rather than under a single journey. **Wired 2026-09-05 (issue #290)**:
+  `mock_story_fixture` is a per-worker-process setting, so this spec has its
+  own Playwright project, `real-backend-pipeline-negative`
+  (`npm run test:e2e:real:pipeline:negative`), and `e2e-real-nightly.yml` runs
+  it only after stopping the safe-fixture worker, asserting with `pgrep` that
+  none survives, and starting a second worker with the variable set. For the
+  37 nightlies before that it ran under the positive tier's worker and failed
+  on "got passed", which was the wiring rather than the gate. First real-stack
+  execution is the nightly after this lands.
 - **Per-PR real-stack smoke (G4, Phase 7.4)**: `frontend/e2e-real/kid-reads.spec.ts`,
   run on the PR path via the `real-backend-pr-smoke` Playwright project
   (`npm run test:e2e:real:pr-smoke`, workflow `.github/workflows/e2e-real-pr-smoke.yml`).

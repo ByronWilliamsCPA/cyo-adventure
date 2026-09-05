@@ -55,7 +55,8 @@ const JSON_REPORT_PATH =
  * which only protects the JSON report file, not `test-results/`. A job that
  * runs this config more than once in sequence (`accessibility-compliance-
  * weekly.yml`: `chromium` then `usersim-a11y`; `e2e-real-nightly.yml`:
- * `real-backend`, then `real-backend-pipeline`, then `usersim-real`, the last
+ * `real-backend`, then `real-backend-pipeline`, then
+ * `real-backend-pipeline-negative`, then `usersim-real`, the last
  * of which runs on `!cancelled()` regardless of the earlier two's outcome)
  * would otherwise have a later invocation silently wipe an earlier failing
  * invocation's evidence before the job's own "upload on failure" step ever
@@ -246,12 +247,53 @@ export default defineConfig({
       // #VERIFY: the nightly job must start the worker before invoking this.
       name: 'real-backend-pipeline',
       testDir: './e2e-real',
-      testMatch:
-        /(full-pipeline-real|full-pipeline-negative-real|connections-enforcement-real)\.spec\.ts/,
+      // full-pipeline-negative-real.spec.ts is deliberately NOT matched here
+      // even though it is just as worker-dependent: see the
+      // `real-backend-pipeline-negative` project below for why the two
+      // directions cannot share one worker process.
+      testMatch: /(full-pipeline-real|connections-enforcement-real)\.spec\.ts/,
       // See the JSON_REPORT_PATH header comment above (Important 1): isolates
       // this project's trace/screenshot output from the other Playwright
       // invocations e2e-real-nightly.yml runs in the same job.
       outputDir: 'test-results/real-backend-pipeline',
+      dependencies: ['real-backend-setup'],
+      fullyParallel: false,
+      retries: process.env.CI ? 1 : 0,
+      use: { ...devices['Desktop Chrome'] },
+    },
+    {
+      // Full-pipeline tier, the BLOCKING direction (review finding S-5):
+      // full-pipeline-negative-real.spec.ts drives the same real request ->
+      // generate -> gate path as `real-backend-pipeline` above, but needs the
+      // worker to serve the structurally invalid canned fixture
+      // (CYO_ADVENTURE_MOCK_STORY_FIXTURE=invalid, core/config.py::
+      // Settings.mock_story_fixture). That selector is a process-wide worker
+      // setting, not a per-job one, and the positive specs need the default
+      // `safe` fixture from the SAME queue, so one worker process cannot serve
+      // both directions: for 37 consecutive nightlies (issue #290) this spec
+      // ran under the positive tier's worker and failed with "expected a
+      // HARD-BLOCK terminal status, got passed", an accurate report of a
+      // condition the job's own wiring guaranteed. It therefore runs as its
+      // own project, which .github/workflows/e2e-real-nightly.yml invokes
+      // only AFTER stopping the positive worker and starting a second one
+      // with the invalid fixture (npm run test:e2e:real:pipeline:negative).
+      // Same reset dependency as its siblings, so a blocked run never sees a
+      // stale worker-generated storybook from the positive tier.
+      // #CRITICAL: external-resources: meaningless without a worker that was
+      // started with CYO_ADVENTURE_MOCK_STORY_FIXTURE=invalid; against a
+      // default worker the spec fails at its block assertion with an explicit
+      // "is MOCK_STORY_FIXTURE=invalid set?" message, never a silent pass.
+      // #VERIFY: e2e-real-nightly.yml's "Stop generation worker" step asserts
+      // no worker_main process survives before the invalid-fixture worker
+      // starts; two workers on the queue would make this project's outcome a
+      // race.
+      name: 'real-backend-pipeline-negative',
+      testDir: './e2e-real',
+      testMatch: /full-pipeline-negative-real\.spec\.ts/,
+      // Own outputDir (tests/unit/test_playwright_output_dir_isolation.py):
+      // this project is its own workflow step in the nightly job, so it must
+      // not be able to wipe a sibling invocation's failure evidence.
+      outputDir: 'test-results/real-backend-pipeline-negative',
       dependencies: ['real-backend-setup'],
       fullyParallel: false,
       retries: process.env.CI ? 1 : 0,

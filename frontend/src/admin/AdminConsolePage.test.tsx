@@ -12,6 +12,24 @@ vi.mock('../hooks/useApi', () => ({
   useApi: () => fakeApi,
 }))
 
+// The page reads the signed-in principal's base role to decide whether the
+// guardian-only GET /v1/generation-jobs may be requested at all. Default to a
+// dual-role adult (guardian base role holding the admin capability) so the
+// pre-existing matrix below, which stubs that endpoint, keeps exercising it;
+// the admin-only cases override this per test.
+const DUAL_ROLE_PRINCIPAL = {
+  subject: 'sub-1',
+  role: 'guardian' as const,
+  isAdmin: true,
+  familyId: 'fam-1',
+  profileIds: [],
+}
+const ADMIN_ONLY_PRINCIPAL = { ...DUAL_ROLE_PRINCIPAL, role: 'admin' as const }
+const mockUseAuth = vi.fn()
+vi.mock('../auth/useAuth', () => ({
+  useAuth: (): unknown => mockUseAuth(),
+}))
+
 const FLAGGED = {
   storybook_id: 'flag-1',
   title: 'Scary Tale',
@@ -115,9 +133,53 @@ beforeEach(() => {
   mockGet.mockReset()
   mockQueue([FLAGGED, READY])
   mockPost.mockReset()
+  mockUseAuth.mockReset()
+  mockUseAuth.mockReturnValue({ principal: DUAL_ROLE_PRINCIPAL })
 })
 
 describe('AdminConsolePage', () => {
+  // Issue #290 / #74: GET /v1/generation-jobs is guardian-only and 403s for an
+  // admin-only adult. The browser logs every refused request as a
+  // console.error even when the caller swallows it, which is what failed the
+  // usersim-real walk's clean-console invariant (I1) on the admin persona.
+  // The page therefore must not issue the request when the principal's base
+  // role is not guardian; the review queue itself still loads.
+  it('never requests the guardian-only generation-jobs endpoint for an admin-only principal', async () => {
+    mockUseAuth.mockReturnValue({ principal: ADMIN_ONLY_PRINCIPAL })
+    renderPage()
+    expect(await screen.findByText('Scary Tale')).toBeInTheDocument()
+    const requested = mockGet.mock.calls.map((call: unknown[]) => call[0])
+    expect(requested).toContain('/v1/review-queue')
+    expect(requested).not.toContain('/v1/generation-jobs')
+    // Not the "nothing is generating" claim, which the page cannot know for an
+    // admin who has no family to list, and not the degraded copy either.
+    expect(
+      screen.getByText(
+        'Stories still generating are listed in each family\u2019s guardian console.'
+      )
+    ).toBeInTheDocument()
+    expect(screen.queryByText('No stories are generating right now.')).not.toBeInTheDocument()
+  })
+
+  it('requests the family generation jobs for a dual-role guardian admin', async () => {
+    renderPage()
+    expect(await screen.findByText('Scary Tale')).toBeInTheDocument()
+    const requested = mockGet.mock.calls.map((call: unknown[]) => call[0])
+    expect(requested).toContain('/v1/generation-jobs')
+    expect(screen.getByText('No stories are generating right now.')).toBeInTheDocument()
+  })
+
+  it('skips the generation-jobs request on Refresh too for an admin-only principal', async () => {
+    mockUseAuth.mockReturnValue({ principal: ADMIN_ONLY_PRINCIPAL })
+    renderPage()
+    expect(await screen.findByText('Scary Tale')).toBeInTheDocument()
+    mockGet.mockClear()
+    await userEvent.click(screen.getByRole('button', { name: 'Refresh' }))
+    await waitFor(() => expect(mockGet).toHaveBeenCalled())
+    const requested = mockGet.mock.calls.map((call: unknown[]) => call[0])
+    expect(requested).toEqual(['/v1/review-queue'])
+  })
+
   it('lists flagged and ready stories with severity pills', async () => {
     renderPage()
     expect(await screen.findByText('Scary Tale')).toBeInTheDocument()

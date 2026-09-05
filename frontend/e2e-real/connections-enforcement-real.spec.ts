@@ -25,17 +25,28 @@ import { BACKEND, requireBackend } from './real-stack'
  * state, then once through the real rendered UI at full consent.
  *
  * Setup, entirely through the real API (zero route mocks anywhere here):
- * - A fresh CATALOG-visible storybook, created via the real concept ->
- *   generate -> approve(visibility=catalog) pipeline (mirrors
- *   full-pipeline-real.spec.ts; the mock provider still runs the full staged
- *   pipeline through a real RQ worker). A catalog book is required because
- *   ring 2 needs BOTH families to be able to assign/see the SAME book
- *   (api/recommendations.py::_visible_books: same family OR catalog), and no
- *   seeded dev story is catalog-visible -- approving one is the only real
- *   HTTP path that sets it. Consequently this file shares
- *   full-pipeline-real.spec.ts's `real-backend-pipeline` project (it needs a
- *   live RQ worker too), not the plain `real-backend` one; see
- *   playwright.config.ts's testMatch for that project.
+ * - A CATALOG-visible storybook, produced by approving the seeded in_review
+ *   story `s_bridge_builder` ("The Bridge Builder", scripts/seed_dev_data.py
+ *   `_REVIEW_STORY`) with `visibility: "catalog"` through the real approve
+ *   endpoint. A catalog book is required because ring 2 needs BOTH families
+ *   to be able to assign/see the SAME book (api/recommendations.py::
+ *   _visible_books: same family OR catalog), and no seeded dev story is
+ *   catalog-visible -- approving one is the only real HTTP path that sets it.
+ *   Until 2026-09-05 this file generated a fresh book through the real RQ
+ *   worker first and approved THAT; that stopped being possible when PRs
+ *   #769/#776 made a mock-moderated book auto-reject to needs_revision with a
+ *   permanently unapprovable report (see full-pipeline-real.spec.ts's header
+ *   for the full account), which is why this spec 409ed on approve on every
+ *   nightly since (issue #290). The seeded review story's report carries a
+ *   genuinely independent reviewer, so it is the one real book on this stack
+ *   an admin can approve. The `real-backend-setup` dependency (playwright
+ *   .config.ts) reverts it to in_review / visibility=family before every
+ *   invocation of this project (scripts/reset_e2e_real_state.py), so this
+ *   approve is idempotent across runs and cannot collide with
+ *   approval-flow.spec.ts, which approves the same story in the separate
+ *   `real-backend` invocation. This file stays in the `real-backend-pipeline`
+ *   project only because that is where it has always lived and its sibling
+ *   there needs the worker; this spec itself no longer drives the worker.
  * - Two brand-new guardian families, JIT-provisioned via
  *   POST /api/v1/onboarding with fresh, never-seen bearer subjects
  *   (ENVIRONMENT=local trusts the bearer as the verified subject; see
@@ -70,38 +81,17 @@ import { BACKEND, requireBackend } from './real-stack'
 
 test.describe.configure({ mode: 'serial' })
 
-// api/deps.py::Principal.is_guardian is `role == Role.GUARDIAN` exactly;
-// dev-admin's role is "admin", so it cannot create concepts or generate
-// (is_guardian is False for it) -- only dev-guardian may drive that part of
-// the pipeline. dev-admin is used everywhere admin authority is genuinely
-// required (approve, admin/family-connections, admin/users).
-const GUARDIAN_BEARER = 'dev-guardian'
+// dev-admin is used everywhere admin authority is genuinely required
+// (approve, admin/family-connections, admin/users); the two JIT-provisioned
+// guardians below drive everything family-scoped with their own bearers.
 const ADMIN_BEARER = 'dev-admin'
 
-// The mock provider ignores the brief's content (generation/provider.py's
-// _CANNED_STORY), so only its shape/validity matters; copied from
-// full-pipeline-real.spec.ts's CONCEPT_BRIEF.
-const CONCEPT_BRIEF = {
-  title: 'E2E connections-enforcement probe (ignored by the mock provider)',
-  premise: 'A young hero explores a quiet harbor town at low tide.',
-  protagonist: { name: 'Robin', age: 9, role: 'young explorer' },
-  point_of_view: 'second',
-  age_band: '8-11',
-  reading_level_target: 4.0,
-  tier: 1,
-  tone: 'adventurous',
-  themes_allowed: ['friendship', 'curiosity'],
-  content_nogo: [],
-  target_node_count: 5,
-  ending_count: 2,
-  structure_pattern: 'branch_and_bottleneck',
-  desired_variables: [],
-  special_constraints: [],
-}
-const CANNED_TITLE = 'The Forest Path'
-
-const POLL_DEADLINE_MS = 30_000
-const POLL_INTERVAL_MS = 1_000
+// The seeded in_review story this spec approves to catalog visibility
+// (scripts/seed_dev_data.py `_REVIEW_STORY` -> `s_bridge_builder`, title from
+// its blob). scripts/reset_e2e_real_state.py pins both the id and the
+// in_review/visibility=family baseline this spec starts from.
+const SEEDED_REVIEW_STORY_ID = 's_bridge_builder'
+const SEEDED_REVIEW_TITLE = 'The Bridge Builder'
 
 async function apiFetch(path: string, bearer: string, init: RequestInit = {}): Promise<Response> {
   return fetch(`${BACKEND}${path}`, {
@@ -113,68 +103,6 @@ async function apiFetch(path: string, bearer: string, init: RequestInit = {}): P
     },
     signal: AbortSignal.timeout(10_000),
   })
-}
-
-async function createConcept(): Promise<string> {
-  const res = await apiFetch('/api/v1/concepts', GUARDIAN_BEARER, {
-    method: 'POST',
-    body: JSON.stringify({ brief: CONCEPT_BRIEF }),
-  })
-  if (!res.ok) {
-    throw new Error(`POST /concepts failed (HTTP ${res.status}): ${await res.text()}`)
-  }
-  const body = (await res.json()) as { concept_id: string }
-  return body.concept_id
-}
-
-async function enqueueGeneration(conceptId: string): Promise<string> {
-  // Mirrors full-pipeline-real.spec.ts's retry-on-409: MAX_ACTIVE_JOBS_PER_FAMILY
-  // is a per-family throttle, and that other spec's own concept for the same
-  // seeded family may still be "active" when this one enqueues moments later.
-  const maxAttempts = 4
-  let lastStatus = 0
-  let lastBody = ''
-  for (let attempt = 1; attempt <= maxAttempts; attempt += 1) {
-    const res = await apiFetch(`/api/v1/concepts/${conceptId}/generate`, GUARDIAN_BEARER, {
-      method: 'POST',
-    })
-    if (res.ok) {
-      const body = (await res.json()) as { job_id: string }
-      return body.job_id
-    }
-    lastStatus = res.status
-    lastBody = await res.text()
-    if (res.status === 409 && attempt < maxAttempts) {
-      await new Promise((resolve) => setTimeout(resolve, 3_000))
-      continue
-    }
-    break
-  }
-  throw new Error(`POST /concepts/${conceptId}/generate failed (HTTP ${lastStatus}): ${lastBody}`)
-}
-
-async function pollGenerationJob(jobId: string): Promise<string> {
-  const deadline = Date.now() + POLL_DEADLINE_MS
-  let lastStatus = 'queued'
-  let storybookId: string | null = null
-  while (Date.now() < deadline) {
-    const res = await apiFetch(`/api/v1/generation-jobs/${jobId}`, GUARDIAN_BEARER)
-    expect(res.ok, `GET /generation-jobs/${jobId} failed (HTTP ${res.status})`).toBe(true)
-    const body = (await res.json()) as { status: string; storybook_id: string | null }
-    lastStatus = body.status
-    storybookId = body.storybook_id
-    if (lastStatus !== 'queued' && lastStatus !== 'running') break
-    await new Promise((resolve) => setTimeout(resolve, POLL_INTERVAL_MS))
-  }
-  expect(
-    lastStatus,
-    `generation job ${jobId} ended in "${lastStatus}", not "passed" (or the real RQ ` +
-      'generation worker is not consuming the "generation" queue; it should already ' +
-      'be running per the task brief -- do not start a fresh one from this spec, ' +
-      'report this as the real blocker)'
-  ).toBe('passed')
-  expect(storybookId, 'a passed job must carry a storybook id').toBeTruthy()
-  return storybookId as string
 }
 
 interface OnboardResult {
@@ -266,23 +194,30 @@ let sharerProfileId: string
 const sharerDisplayName = `E2E Cousin ${Date.now()}`
 let connectionId = ''
 
-test('a fresh catalog-visible storybook is generated and approved through the real pipeline', async () => {
-  // Raised from the default 30s: this drives a real worker across several
-  // real HTTP round trips (mirrors full-pipeline-real.spec.ts).
-  test.setTimeout(90_000)
+test('the seeded in-review storybook is approved to catalog visibility through the real API', async () => {
+  // The reset dependency guarantees the baseline; assert it rather than
+  // assume it, so a reset regression reads as its own failure here instead
+  // of as a mysterious 409 on the approve below.
+  const beforeRes = await apiFetch(
+    `/api/v1/storybooks/${SEEDED_REVIEW_STORY_ID}/review`,
+    ADMIN_BEARER
+  )
+  expect(beforeRes.ok, `GET /review failed (HTTP ${beforeRes.status})`).toBe(true)
+  const before = (await beforeRes.json()) as { status: string; blob: { title?: string } }
+  expect(before.status, 'reset_e2e_real_state.py should have left the seeded story in_review').toBe(
+    'in_review'
+  )
+  expect(before.blob.title).toBe(SEEDED_REVIEW_TITLE)
 
-  const conceptId = await createConcept()
-  const jobId = await enqueueGeneration(conceptId)
-  storybookId = await pollGenerationJob(jobId)
-
+  storybookId = SEEDED_REVIEW_STORY_ID
   const approveRes = await apiFetch(`/api/v1/storybooks/${storybookId}/approve`, ADMIN_BEARER, {
     method: 'POST',
     body: JSON.stringify({ visibility: 'catalog' }),
   })
-  expect(
-    approveRes.ok,
-    `POST /approve failed (HTTP ${approveRes.status}): ${await approveRes.text()}`
-  ).toBe(true)
+  // Drain the body only on the error path (a Response stream is single-use).
+  if (!approveRes.ok) {
+    throw new Error(`POST /approve failed (HTTP ${approveRes.status}): ${await approveRes.text()}`)
+  }
   const approved = (await approveRes.json()) as { visibility: string }
   expect(approved.visibility).toBe('catalog')
 })
@@ -353,7 +288,7 @@ test('once BOTH guardians have consented, the viewer sees the real ring-2 recomm
   expect(items).toHaveLength(1)
   expect(items[0]).toMatchObject({
     storybook_id: storybookId,
-    title: CANNED_TITLE,
+    title: SEEDED_REVIEW_TITLE,
     recommender_name: sharerDisplayName,
     rating: 5,
     ring: 'connection',

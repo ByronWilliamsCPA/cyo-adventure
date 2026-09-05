@@ -24,10 +24,19 @@ import { BACKEND, requireBackend } from './real-stack'
  * canned "The Forest Path" story), so running this spec against a default
  * backend would see a PASSING run and fail at the block assertion below.
  *
- * AUTHORED-NOT-EXECUTED: this file has no local backend to run against in the
- * remediation session; it is committed as the executable spec for the next
- * real-backend run that sets the env var above. It reuses the exact helper
- * shapes proven by full-pipeline-real.spec.ts.
+ * HOW IT IS WIRED (issue #290 remediation, 2026-09-05): `mock_story_fixture`
+ * is a per-worker-process setting, and the positive specs need the default
+ * `safe` fixture from the same "generation" queue, so one worker cannot serve
+ * both directions. For 37 consecutive nightlies this spec ran under the
+ * positive tier's safe-fixture worker and failed with "expected a HARD-BLOCK
+ * terminal status, got passed", which was the wiring rather than the gate. It
+ * therefore has its own Playwright project, `real-backend-pipeline-negative`
+ * (npm run test:e2e:real:pipeline:negative), which
+ * .github/workflows/e2e-real-nightly.yml runs only after stopping the safe
+ * worker (and asserting none survives) and starting a second worker with
+ * CYO_ADVENTURE_MOCK_STORY_FIXTURE=invalid. Locally: start the worker with
+ * that variable exported, then run the npm script above. It reuses the exact
+ * helper shapes proven by full-pipeline-real.spec.ts.
  *
  * Serial: the concept/job ids are generated fresh per run and cannot be
  * hardcoded, so the steps thread state through a module-scoped variable.

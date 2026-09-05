@@ -11,6 +11,7 @@ import { queueItemCounts, tierBreakdownLabel } from '../guardian/findingCounts'
 import { formatRelativeTime } from '../guardian/intakeApi'
 import { pluralize } from '../guardian/storyReadThrough'
 import { ageBandLabel } from '../guardian/storyRequestOptions'
+import { useAuth } from '../auth/useAuth'
 import { classifyApiError } from '../hooks/classifyApiError'
 import { useApi } from '../hooks/useApi'
 import { usePageTitle } from '../hooks/usePageTitle'
@@ -18,6 +19,7 @@ import {
   makeReviewApi,
   type ReviewQueueItem,
   type StillProcessingItem,
+  type StillProcessingResult,
 } from '../guardian/reviewApi'
 
 type LoadState =
@@ -274,7 +276,25 @@ function QueueRow({
 export function AdminConsolePage() {
   usePageTitle('Admin Console')
   const api = useApi()
+  const { principal } = useAuth()
   const reviewApi = useMemo(() => makeReviewApi(api), [api])
+  // #CRITICAL: security: GET /v1/generation-jobs is guardian-only and
+  // family-scoped (authorization-matrix.md; api/generation.py::
+  // list_generation_jobs raises AuthorizationError for any non-guardian
+  // principal, admins included). reviewApi.stillProcessing() already swallows
+  // that 403 into an empty list, but the browser still records the refused
+  // request as a console.error ("Failed to load resource: 403"), which is
+  // what failed the usersim-real walk's clean-console invariant (I1) for the
+  // admin persona on every nightly run (issue #290; the same collision issue
+  // #74 documents). The role is known before the request is made, so an
+  // admin-only adult must not issue it at all; only a principal whose base
+  // role is guardian (a dual-role adult, who has a family of their own) can
+  // legitimately list generation jobs, and for them the list is their own
+  // family's, exactly what the guardian console shows.
+  // #VERIFY: AdminConsolePage.test.tsx "never requests the guardian-only
+  // generation-jobs endpoint for an admin-only principal" and "requests the
+  // family generation jobs for a dual-role guardian admin".
+  const canListFamilyJobs = principal?.role === 'guardian'
   const [state, setState] = useState<LoadState>({ kind: 'loading' })
   const [refreshing, setRefreshing] = useState(false)
   const [refreshFailed, setRefreshFailed] = useState(false)
@@ -284,10 +304,12 @@ export function AdminConsolePage() {
   const fetchQueue = useCallback(async () => {
     const [items, stillProcessing] = await Promise.all([
       reviewApi.queue(),
-      reviewApi.stillProcessing(),
+      canListFamilyJobs
+        ? reviewApi.stillProcessing()
+        : Promise.resolve<StillProcessingResult>({ jobs: [], degraded: false }),
     ])
     return { items, processing: stillProcessing.jobs, processingDegraded: stillProcessing.degraded }
-  }, [reviewApi])
+  }, [reviewApi, canListFamilyJobs])
 
   useEffect(() => {
     let cancelled = false
@@ -482,7 +504,9 @@ export function AdminConsolePage() {
                         <p className="console__muted cyo-text-muted">
                           {state.processingDegraded
                             ? 'Could not load what is generating right now. Refresh to try again.'
-                            : 'No stories are generating right now.'}
+                            : canListFamilyJobs
+                              ? 'No stories are generating right now.'
+                              : 'Stories still generating are listed in each family\u2019s guardian console.'}
                         </p>
                       ) : (
                         <ul className="console-list">
