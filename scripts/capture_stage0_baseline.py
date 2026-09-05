@@ -402,6 +402,15 @@ async def _score_perspective(
     # keyed URL would leak the credential into this script's error output and
     # into the artifact's *_error fields.
     # #VERIFY: PERSPECTIVE_URL is key-free; the header is the only carrier.
+    # #CRITICAL: security: doNotStore MUST stay True. Google defines omitting
+    # the field as consent to store the comment for "future research and
+    # community model building"; its own docs say to set it when the text is
+    # private or written by someone under 13. The passages this script sends
+    # are catalog prose, not child free-text (the live Stage-0 path that once
+    # sent child text to Perspective is retired), but the flag is kept so a
+    # future caller cannot inherit a retaining default by copying this
+    # payload (issue #659). It is not noise; do not drop it in a refactor.
+    # #VERIFY: test_capture_stage0_baseline asserts the posted JSON carries it.
     response = await client.post(
         PERSPECTIVE_URL,
         headers={"x-goog-api-key": key},
@@ -409,6 +418,7 @@ async def _score_perspective(
             "comment": {"text": text},
             "languages": ["en"],
             "requestedAttributes": {name: {} for name in PERSPECTIVE_ATTRIBUTES},
+            "doNotStore": True,
         },
         timeout=_TIMEOUT,
     )

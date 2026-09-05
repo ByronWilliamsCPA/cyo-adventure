@@ -188,7 +188,7 @@ export async function acceptGuardianConsentIfPresent(page: Page): Promise<void> 
 
 /**
  * Completes the AdultGate re-auth challenge if `page.goto()` landed on it.
- * See e2e-prod/support/auth.ts's unlockParentalGateIfPresent for the ADR-014
+ * See e2e-prod/support/auth.ts's unlockAdultGateIfPresent for the ADR-014
  * warm/cold-gate rationale this mirrors.
  */
 export async function unlockParentalGateIfPresent(

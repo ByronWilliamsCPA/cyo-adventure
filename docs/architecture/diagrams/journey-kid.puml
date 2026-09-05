@@ -57,6 +57,9 @@ else (no)
   :Guardian signs in and
   authorizes this device;
   note right: /guardian/login?intent=authorize-device  •  shipped\nADR-014 -- mints a 90-day device grant, then\ndrops back here; a returning authorized device\nnever sees this step again
+  :Guardian is signed out
+  as the device comes back to me;
+  note right: LoginPage authorize-device effect  •  shipped\nADR-014 Phase 5 -- right after the mint, signOut() sheds the\nguardian's Supabase session and bearer so this now-kid device\nnever carries a guardian credential a child could read the\nwhole family library with; the console's "Hand device to a\nchild" button runs the same sign-out, and the adult gate is\nparked on the way down (DeviceAuthorizedRoute)
 endif
 :Tap my avatar
 (2-column picker,

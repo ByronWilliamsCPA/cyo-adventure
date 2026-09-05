@@ -297,70 +297,11 @@ jobs:
         if: steps.version.outputs.released == 'true'
         env:
           NEXT: ${{ steps.version.outputs.next }}
-        run: |
-          set -euo pipefail
-          # #CRITICAL data-integrity: the version bump and the changelog splice
-          # ARE the release. If PSR silently no-ops (a config or template
-          # regression, an upstream default change) the GraphQL commit would
-          # still open a PR that tags and publishes an empty or wrong release,
-          # exactly the kind of silent stall this pipeline exists to prevent
-          # (cf. PR #241). Assert every artifact here, before the commit is
-          # built, so a malformed release fails loudly instead of shipping.
-          # #VERIFY each assertion below fails the job rather than continuing.
-          FAIL=0
-          ACTUAL="$(uv version --short)"
-          if [ "${ACTUAL}" != "${NEXT}" ]; then
-            echo "::error::pyproject version is '${ACTUAL}', expected '${NEXT}'."
-            FAIL=1
-          fi
-          if ! grep -qF "## [${NEXT}] - " CHANGELOG.md; then
-            echo "::error::CHANGELOG.md has no '## [${NEXT}] - ' section heading."
-            FAIL=1
-          fi
-          # #ASSUME data-integrity: a heading alone is not a release; the
-          # section must carry actual entries. An empty section means the
-          # commit filter dropped everything, so fail rather than publish a
-          # heading with no notes. #VERIFY awk captures the body between this
-          # version's heading and the next '## ' heading, and grep proves it
-          # holds a non-whitespace line.
-          SECTION_BODY="$(
-            awk -v h="## [${NEXT}] - " '
-              index($0, h) == 1 { in_sec = 1; next }
-              in_sec && /^## / { exit }
-              in_sec { print }
-            ' CHANGELOG.md
-          )"
-          if ! printf '%s' "${SECTION_BODY}" | grep -q '[^[:space:]]'; then
-            echo "::error::CHANGELOG.md section '[${NEXT}]' has a heading but no entries."
-            FAIL=1
-          fi
-          # The paired heading + footer assertions jointly guarantee the
-          # just-injected footer link resolves to a real section: both key off
-          # ${NEXT}, so a footer with no section (or a section with no footer)
-          # fails here, before the commit that tags and publishes is built.
-          if ! grep -qF "[${NEXT}]: " CHANGELOG.md; then
-            echo "::error::CHANGELOG.md has no '[${NEXT}]: ' compare-link footer."
-            FAIL=1
-          fi
-          if ! grep -qF '<!-- version list -->' CHANGELOG.md; then
-            echo "::error::CHANGELOG.md lost its '<!-- version list -->' insertion marker."
-            FAIL=1
-          fi
-          # mode="update" splices; it must never truncate. Guard against a
-          # regression that regenerates (init mode) and drops prior history.
-          OLD_LINES="$(git show HEAD:CHANGELOG.md | wc -l)"
-          NEW_LINES="$(wc -l < CHANGELOG.md)"
-          if [ "${NEW_LINES}" -lt "${OLD_LINES}" ]; then
-            echo "::error::CHANGELOG.md shrank from ${OLD_LINES} to" \
-              "${NEW_LINES} lines; prior history may have been lost."
-            FAIL=1
-          fi
-          if ! grep -qF '[0.1.0]: ' CHANGELOG.md; then
-            echo "::error::CHANGELOG.md lost its history tail ('[0.1.0]:' link)."
-            FAIL=1
-          fi
-          [ "${FAIL}" -eq 0 ] || exit 1
-          echo "Release artifacts verified for v${NEXT}."
+        # One source of truth shared with the publish job (issue #364); the
+        # assertions and their RAD tags live in the script. The baseline for
+        # the did-not-shrink check is HEAD because the bump and splice above
+        # are still uncommitted edits against it.
+        run: scripts/verify_release_artifacts.sh "${NEXT}" --baseline-ref HEAD
 
       - name: Open release PR
         if: steps.version.outputs.released == 'true' && !inputs.dry_run
@@ -879,6 +820,24 @@ jobs:
 
       - name: Checkout repository
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          # Depth 2 so HEAD~1 (the parent of the squash-merged release commit)
+          # exists as the CHANGELOG.md baseline for the did-not-shrink check in
+          # the verify step below. The default depth of 1 has no parent.
+          fetch-depth: 2
+
+      - name: Verify release artifacts
+        # #CRITICAL data-integrity: re-run the same assertions the propose job
+        # made (issue #364). The merged commit is what gets tagged, and it is
+        # not the tree propose verified: a merge-queue rebase or an edit on the
+        # release branch can change it. A mismatch here fails the job before
+        # any tag or GitHub Release exists, so nothing half-published is left
+        # behind. #VERIFY this step precedes "Create tag and GitHub Release"
+        # and has no continue-on-error.
+        run: |
+          set -euo pipefail
+          VERSION="$(grep -m1 -Po '^version = "\K[^"]+' pyproject.toml)"
+          scripts/verify_release_artifacts.sh "${VERSION}" --baseline-ref HEAD~1
 
       - name: Create tag and GitHub Release
         env:

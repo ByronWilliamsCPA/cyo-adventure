@@ -158,7 +158,7 @@ async def test_mint_forbids_unknown_body_field(client: AsyncClient, seed: Seed) 
 
 
 @pytest.mark.asyncio
-async def test_mint_persists_matching_jti(
+async def test_mint_persists_row_matching_response_id(
     client: AsyncClient,
     seed: Seed,
     sessions: async_sessionmaker[AsyncSession],
@@ -399,6 +399,38 @@ async def test_device_token_cannot_mint_another_device_grant(
     token = await _mint_device_token(client, seed)
     resp = await client.post("/api/v1/device-grants", json={}, headers=auth(token))
     assert resp.status_code == 403, resp.text
+
+
+@pytest.mark.asyncio
+async def test_device_token_cannot_list_or_revoke_device_grants(
+    client: AsyncClient, seed: Seed
+) -> None:
+    """A device principal is rejected on both list and revoke (403).
+
+    A minted device grant lives on a kid device; were it able to enumerate or
+    revoke the family's other grants, one handed-off tablet could map the
+    household's devices or lock every sibling device out.
+    """
+    grant_id = await _mint_grant(client, seed.guardian_token)
+    token = await _mint_device_token(client, seed)
+
+    list_resp = await client.get("/api/v1/device-grants", headers=auth(token))
+    assert list_resp.status_code == 403, list_resp.text
+
+    # #CRITICAL: security: the DELETE targets a REAL grant id in the device's
+    # own family, so a 403 (not a 404) proves the role gate fires before the
+    # family-scoped lookup, and the grant must still be untouched afterwards.
+    # #VERIFY: the guardian's list below still shows the grant as active.
+    revoke_resp = await client.delete(
+        f"/api/v1/device-grants/{grant_id}", headers=auth(token)
+    )
+    assert revoke_resp.status_code == 403, revoke_resp.text
+
+    still_active = await client.get(
+        "/api/v1/device-grants", headers=auth(seed.guardian_token)
+    )
+    assert still_active.status_code == 200, still_active.text
+    assert grant_id in [item["id"] for item in still_active.json()]
 
 
 @pytest.mark.asyncio

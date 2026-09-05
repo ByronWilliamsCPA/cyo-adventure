@@ -2,7 +2,7 @@ import type { Page } from '@playwright/test'
 import { expect, test } from '@playwright/test'
 
 import { GUARDIAN_CONSOLE_PATH, GUARDIAN_LOGIN_PATH } from '../src/routes'
-import { signInAsProdTestAdmin, unlockParentalGateIfPresent } from './support/auth'
+import { signInAsProdTestAdmin, unlockAdultGateIfPresent } from './support/auth'
 import { expectConsoleHeading } from './support/diagnostics'
 import { gotoResilient } from '../e2e-support/rate-limit'
 import { LOGIN_HEADLINE } from '../src/guardian/loginHeadline'
@@ -77,7 +77,7 @@ test.describe('guardian auth and profile management (read-only)', () => {
 
   test('the profiles page renders exactly one profile for the isolated test family', async () => {
     await gotoResilient(sharedPage, '/guardian/profiles')
-    await unlockParentalGateIfPresent(sharedPage)
+    await unlockAdultGateIfPresent(sharedPage)
     // Positive control: a page that failed to render (error boundary,
     // ErrorBanner, or a stuck loading state) also shows zero profile cards, so
     // the heading must be visible before the count below means anything.
@@ -105,7 +105,7 @@ test.describe('guardian auth and profile management (read-only)', () => {
 
   test('signing out sends the guardian console back to sign-in', async () => {
     await gotoResilient(sharedPage, '/guardian/profiles')
-    await unlockParentalGateIfPresent(sharedPage)
+    await unlockAdultGateIfPresent(sharedPage)
     await sharedPage.getByRole('button', { name: 'Sign out' }).click()
     // AuthContext.signOut clears the session client-side; ProtectedRoute
     // reacts to the resulting status change and redirects via React Router,

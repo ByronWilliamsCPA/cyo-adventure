@@ -24,6 +24,20 @@ Within the unscheduled-work register itself, for every cluster table (``## Clust
 6. A ``Phase`` value is never empty on a row whose ``Status`` still needs a phase home (every
    status except ``done``, whose evidence is a PR reference rather than a future phase).
 7. Ids are unique across the whole register, not just within one cluster.
+8. Every column name in a cluster's header row is one of the closed set of known register
+   columns (ID, Item, Issues, Issue, Theme, Source, ADR, Owner, Phase, Status). Before this
+   check, only the four columns the row checks read were ever looked at, so a cluster whose
+   header carried a typo'd or invented column name shipped an unchecked column and nobody was
+   told.
+9. Where an ``Issue`` or ``Issues`` column exists (clusters L and D), each cell is either the
+   literal ``(no issue)`` or one or more issue references separated by commas and/or
+   whitespace, each a bare ``#N`` or a markdown link to this repository's
+   ``issues/N`` or ``pull/N`` URL. Nothing is resolved against GitHub; this is a shape check.
+10. No cell in a non-``Phase`` column (Issue, Issues, Source, ADR, Owner, Theme) holds a phase
+    token as its whole content, after stripping backticks and whitespace. A phase written in the
+    wrong column passes the ``Phase`` check on its own row and then reads as a source or owner
+    to every consumer; the exact-token match keeps Item-like prose that merely mentions a phase
+    word out of scope.
 
 Vocabulary drift: ``docs/planning/plan-manifest.toml`` (the "plan manifest") is the source of
 truth for the phase vocabulary, the phase-to-rung mapping, the two-axis (``shipped``/``usable``)
@@ -368,6 +382,49 @@ _EXTERNAL_RE = re.compile(r"^external:.+$")
 _ISSUE_RE = re.compile(r"^issue:\d+$")
 
 _CLUSTER_HEADING_RE = re.compile(r"^## Cluster ([A-N]):")
+
+# The closed set of column names a cluster table header may carry. Six of the register's header
+# schemas carry a column other than ID/Item/Phase/Status, and until this set existed those
+# columns were never named anywhere in the checker, so a header could gain a misspelled or
+# invented column and the run stayed green with that column unvalidated.
+_KNOWN_REGISTER_COLUMNS = frozenset(
+    {
+        "ID",
+        "Item",
+        "Issues",
+        "Issue",
+        "Theme",
+        "Source",
+        "ADR",
+        "Owner",
+        "Phase",
+        "Status",
+    }
+)
+# The two column names whose cells hold GitHub issue references (cluster D uses the plural,
+# cluster L the singular).
+_ISSUE_COLUMNS = frozenset({"Issues", "Issue"})
+# Columns whose whole-cell content must never be a phase token. ``Item`` is deliberately absent:
+# it is free prose and the exact-token match below would still be correct on it, but a one-word
+# Item is not a shape this register uses and the check's purpose is the third-column slot.
+_PHASE_FORBIDDEN_COLUMNS = frozenset(
+    {"Issues", "Issue", "Source", "ADR", "Owner", "Theme"}
+)
+# The literal an Issue/Issues cell carries when a row has no GitHub issue behind it.
+_NO_ISSUE_SENTINEL = "(no issue)"
+# One issue reference: a bare ``#N`` or a markdown link to this repository's issue or pull URL.
+# The link text is any non-empty run without a closing bracket, so ``[#558](...)`` and a
+# worded link both pass; the URL path is fixed to this repository so a link to some other
+# tracker cannot masquerade as an issue reference.
+_ISSUE_REFERENCE_PATTERN = (
+    r"(?:#\d+|\[[^\]]+\]\(https://github\.com/ByronWilliamsCPA/cyo-adventure/"
+    r"(?:issues|pull)/\d+\))"
+)
+# A whole Issue/Issues cell: one reference, then zero or more further references each preceded
+# by a comma and/or whitespace run. Anchored on both ends so a stray word fails the cell.
+_ISSUE_CELL_RE = re.compile(
+    rf"^{_ISSUE_REFERENCE_PATTERN}(?:[\s,]+{_ISSUE_REFERENCE_PATTERN})*$"
+)
 
 # Debt, AL, and capability id row/citation patterns used to live here as hardcoded module-level
 # constants (_DEBT_ROW_ID_RE, _DEBT_ID_RE, _AL_ROW_ID_RE, _AL_ID_RE, _CAP_ROW_ID_RE, _CAP_ID_RE).
@@ -738,6 +795,97 @@ def _check_row_phase(
         ]
 
     return []
+
+
+def _check_cluster_header(letter: str, header_cells: list[str]) -> list[str]:
+    """Return a problem per header column outside the closed set of known register columns.
+
+    Args:
+        letter: The cluster letter, for message text.
+        header_cells: The cluster table's header cells.
+
+    Returns:
+        list[str]: One problem per unknown column name, in header order; empty when every
+            column is known.
+    """
+    header = "| " + " | ".join(header_cells) + " |"
+    known = ", ".join(sorted(_KNOWN_REGISTER_COLUMNS))
+    return [
+        (
+            f"cluster {letter} header '{header}': column '{column}' is not one of the known "
+            f"register columns: {known}"
+        )
+        for column in header_cells
+        if column not in _KNOWN_REGISTER_COLUMNS
+    ]
+
+
+def _check_row_issue_cell(
+    cluster: str, number: int, entry_id: str, column: str, cell: str
+) -> list[str]:
+    """Return a problem if an ``Issue``/``Issues`` cell is not a well-formed reference list.
+
+    A cell is accepted when it is exactly ``(no issue)``, or when it is one or more references
+    separated by commas and/or whitespace, each either ``#N`` or a markdown link whose target
+    is this repository's ``issues/N`` or ``pull/N`` URL. The check is offline: it validates
+    the shape of the reference, never whether the issue exists.
+
+    Args:
+        cluster: The cluster letter the row belongs to, for the message.
+        number: The row's 1-based line number.
+        entry_id: The row's ``ID`` cell value, for the message.
+        column: The column name (``Issue`` or ``Issues``), for the message.
+        cell: The cell's already-trimmed value.
+
+    Returns:
+        list[str]: One problem, or an empty list when the cell is well formed.
+    """
+    if cell == _NO_ISSUE_SENTINEL or _ISSUE_CELL_RE.match(cell):
+        return []
+    return [
+        (
+            f"{entry_id} (cluster {cluster} line {number}): {column} '{cell}' is neither "
+            f"'{_NO_ISSUE_SENTINEL}' nor a list of issue references (each '#N' or a markdown "
+            f"link to https://github.com/ByronWilliamsCPA/cyo-adventure/issues/N or /pull/N, "
+            f"separated by commas or whitespace)"
+        )
+    ]
+
+
+def _check_row_non_phase_cell(
+    cluster: str,
+    number: int,
+    entry_id: str,
+    column: str,
+    cell: str,
+    phase_vocabulary: frozenset[str],
+) -> list[str]:
+    """Return a problem if a non-``Phase`` column's whole cell is a phase-vocabulary token.
+
+    The cell is stripped of backticks and surrounding whitespace and then compared as an exact
+    token against everything ``_phase_in_vocabulary`` accepts, so a backtick-quoted ``5`` in a
+    ``Source`` column is caught while a sentence that merely mentions a phase word is not.
+
+    Args:
+        cluster: The cluster letter the row belongs to, for the message.
+        number: The row's 1-based line number.
+        entry_id: The row's ``ID`` cell value, for the message.
+        column: The column name the cell was found in, for the message.
+        cell: The cell's already-trimmed value.
+        phase_vocabulary: Every phase token the run's manifest declares.
+
+    Returns:
+        list[str]: One problem, or an empty list when the cell is not a bare phase token.
+    """
+    token = cell.strip().strip("`").strip()
+    if not token or not _phase_in_vocabulary(token, phase_vocabulary):
+        return []
+    return [
+        (
+            f"{entry_id} (cluster {cluster} line {number}): {column} '{cell}' is a phase "
+            f"token; a phase belongs in the Phase column, not in {column}"
+        )
+    ]
 
 
 def _extract_roadmap_product_phases(text: str) -> set[str]:
@@ -1217,19 +1365,21 @@ def _check_register_rows(
 
 
 def _resolve_column_indexes(header_cells: list[str]) -> dict[str, int | None]:
-    """Resolve the ``ID``/``Status``/``Phase``/``Item`` column indexes from a header row.
+    """Resolve every known register column's index from a header row.
 
     Args:
         header_cells: A cluster table's header cells.
 
     Returns:
-        dict[str, int | None]: Each of the four column names mapped to its 0-based index, or
-            None when that cluster's table has no such column (clusters L and M have no
-            ``Phase``).
+        dict[str, int | None]: Each name in ``_KNOWN_REGISTER_COLUMNS`` mapped to its 0-based
+            index, or None when that cluster's table has no such column (clusters L and M have
+            no ``Phase``; only D has ``Issues``, only L has ``Issue``, and so on). A column
+            name the header carries but the closed set does not know is not resolved here; it
+            is reported by ``_check_cluster_header``.
     """
     return {
         name: header_cells.index(name) if name in header_cells else None
-        for name in ("ID", "Status", "Phase", "Item")
+        for name in _KNOWN_REGISTER_COLUMNS
     }
 
 
@@ -1241,7 +1391,11 @@ def _check_one_row(
     phase_vocabulary: frozenset[str],
     id_pattern: re.Pattern[str],
 ) -> tuple[list[str], str | None, str]:
-    """Run the id, status, and phase checks on one already length-checked cluster row.
+    """Run the id, status, phase, issue-cell, and non-phase-cell checks on one cluster row.
+
+    The row has already been length-checked against its header. The issue-cell and
+    non-phase-cell checks only fire for columns the header actually carries, so a cluster with
+    the plain ``ID | Item | Phase | Status`` shape runs exactly the checks it always did.
 
     Args:
         letter: The cluster letter, for message text.
@@ -1279,6 +1433,21 @@ def _check_one_row(
             )
         )
 
+    for column in sorted(_PHASE_FORBIDDEN_COLUMNS):
+        column_idx = indexes[column]
+        if column_idx is None:
+            continue
+        cell = cells[column_idx]
+        if column in _ISSUE_COLUMNS:
+            problems.extend(
+                _check_row_issue_cell(letter, number, entry_id, column, cell)
+            )
+        problems.extend(
+            _check_row_non_phase_cell(
+                letter, number, entry_id, column, cell, phase_vocabulary
+            )
+        )
+
     item_text = cells[item_idx] if item_idx is not None else None
 
     return problems, item_text, entry_id
@@ -1291,7 +1460,11 @@ def _check_cluster_rows(
     phase_vocabulary: frozenset[str],
     id_pattern: re.Pattern[str],
 ) -> tuple[list[str], list[str], list[tuple[str, int]]]:
-    """Run the id, status, and phase checks on one cluster table's data rows.
+    """Check one cluster table's header columns, then run the row checks on its data rows.
+
+    The header is checked against the closed set of known column names first, so an invented
+    column is reported by name rather than silently going unvalidated; the row checks still run
+    on the columns the header does declare correctly.
 
     A row whose column count disagrees with its header is reported and then skipped for the
     per-cell checks, but its id is still collected first: the register-wide uniqueness check runs
@@ -1313,7 +1486,7 @@ def _check_cluster_rows(
     indexes = _resolve_column_indexes(header_cells)
     id_idx = indexes["ID"]
 
-    problems: list[str] = []
+    problems: list[str] = _check_cluster_header(letter, header_cells)
     item_texts: list[str] = []
     row_ids: list[tuple[str, int]] = []
 

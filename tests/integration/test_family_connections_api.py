@@ -11,10 +11,12 @@ from typing import TYPE_CHECKING, cast
 
 import pytest
 
+from ._event_assertions import assert_single_event
 from .conftest import Seed, auth
 
 if TYPE_CHECKING:
     from httpx import AsyncClient
+    from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
 
 pytestmark = [pytest.mark.integration, pytest.mark.asyncio]
 
@@ -72,6 +74,34 @@ async def test_create_list_delete_roundtrip(client: AsyncClient, seed: Seed) -> 
     listing_after = await client.get(_CONNECTIONS, headers=auth(seed.admin_token))
     ids_after = [row["id"] for row in listing_after.json()["connections"]]
     assert connection_id not in ids_after
+
+
+async def test_dual_role_owner_connecting_own_family_is_stamped_admin(
+    client: AsyncClient,
+    sessions: async_sessionmaker[AsyncSession],
+    seed: Seed,
+) -> None:
+    """A dual-role adult connecting their OWN family is audited as admin (#453).
+
+    A connection spans two families, so there is no single own-family
+    relationship for ``acting_role()`` to reflect; the admin-only route stamps
+    the capacity that authorized it. Pins the decision documented at the call
+    site in ``api/family_connections.py``.
+    """
+    target = await _other_family_id(client, seed)
+    create = await client.post(
+        _CONNECTIONS,
+        headers=auth(seed.dual_token),
+        json={"family_id": str(seed.family_id), "connected_family_id": target},
+    )
+    assert create.status_code == 201, create.text
+
+    await assert_single_event(
+        sessions,
+        event_type="family_connection_changed",
+        entity_type="family_connection",
+        actor_role="admin",
+    )
 
 
 async def test_directional_not_symmetric(client: AsyncClient, seed: Seed) -> None:

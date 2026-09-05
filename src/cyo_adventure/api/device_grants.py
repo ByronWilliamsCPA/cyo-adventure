@@ -99,7 +99,7 @@ async def create_device_grant(
     # jti must agree, since revocation is enforced by looking up this jti;
     # generating it once here and using it for both the mint and the insert
     # keeps them from ever drifting apart.
-    # #VERIFY: test_device_grants.py::test_mint_persists_matching_jti.
+    # #VERIFY: test_device_grants.py::test_mint_persists_row_matching_response_id.
     jti = uuid.uuid4()
     token, expires_at = mint_device_grant_token(
         family_id=family_id,
@@ -110,8 +110,8 @@ async def create_device_grant(
     # with (mint_device_grant_token returns it) so the row's expires_at and the
     # JWT's exp cannot drift; the active-device list relies on this column to
     # exclude expired-but-unrevoked ghosts (#252).
-    # #VERIFY: test_device_grants.py::test_mint_persists_matching_jti asserts the
-    # persisted expires_at is non-null and in the future.
+    # #VERIFY: test_device_grants.py::test_mint_persists_row_matching_response_id
+    # asserts the persisted expires_at is non-null and in the future.
     grant = DeviceGrant(
         family_id=family_id,
         authorized_by=ctx.principal.user_id,

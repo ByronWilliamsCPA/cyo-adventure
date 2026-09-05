@@ -50,11 +50,16 @@ jobs:
         run: supabase link --project-ref "$SUPABASE_PROJECT_ID"
 
       # #CRITICAL: security: this deploys supabase/config.toml's [auth] policy to
-      # the LIVE project that real guardians sign in to. `config push` is a
-      # DEFAULTING writer: for any table it sends, keys omitted from config.toml
-      # are filled with the CLI's own defaults and asserted on the remote, so
-      # deleting a key from [auth] silently reverts that setting to the Supabase
-      # default rather than leaving it alone. Two specific traps, both verified
+      # the LIVE project that real guardians sign in to. `config push` diffs
+      # first and writes nothing when the remote already matches (a genuine
+      # no-op run logs "Remote <surface> config is up to date."; confirmed
+      # empirically on run 30972610902 across all four live surfaces), but for
+      # any table it DOES send it writes with defaults: keys omitted from
+      # config.toml are filled with the CLI's own defaults and asserted on the
+      # remote, so deleting a key from [auth] silently reverts that setting to
+      # the Supabase default rather than leaving it alone (see the corrected
+      # model in docs/superpowers/specs/2026-07-10-supabase-environments-pipeline-design.md
+      # and docs/guides/supabase-environments.md; issue #622). Two specific traps, both verified
       # against the live API on 2026-08-04 and documented in config.toml:
       #   - Google OAuth is the guardian login path and is deliberately NOT
       #     declared in config.toml. Adding a [auth.external.google] block

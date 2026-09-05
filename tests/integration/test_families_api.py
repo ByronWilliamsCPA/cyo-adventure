@@ -13,6 +13,7 @@ import pytest
 
 from cyo_adventure.db.models import CATALOG_FAMILY_ID, Family, User
 
+from ._event_assertions import assert_single_event
 from .conftest import Seed, auth
 
 if TYPE_CHECKING:
@@ -119,6 +120,34 @@ async def test_rename_family(client: AsyncClient, seed: Seed) -> None:
     body = resp.json()
     assert body["name"] == "Renamed Family"
     assert body["status"] == "active"
+
+
+async def test_dual_role_owner_updating_own_family_is_stamped_admin(
+    client: AsyncClient,
+    sessions: async_sessionmaker[AsyncSession],
+    seed: Seed,
+) -> None:
+    """A dual-role adult renaming their OWN family is audited as admin (#453).
+
+    Family management is an admin-only power (a guardian cannot reach the
+    route at all), so unlike the publish/submit paths the stamp deliberately
+    reflects the capacity that authorized the action rather than the owner's
+    guardian base persona. This pins that decision so a future
+    ``acting_role()`` sweep does not silently flip it.
+    """
+    resp = await client.patch(
+        f"{_FAMILIES}/{seed.family_id}",
+        headers=auth(seed.dual_token),
+        json={"name": "Renamed By Owner"},
+    )
+    assert resp.status_code == 200, resp.text
+
+    await assert_single_event(
+        sessions,
+        event_type="family_managed",
+        entity_type="family",
+        actor_role="admin",
+    )
 
 
 async def test_deactivate_family_cascades_to_members_and_blocks_login(
