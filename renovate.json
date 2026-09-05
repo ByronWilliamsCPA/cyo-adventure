@@ -52,9 +52,9 @@
       "automerge": false
     },
     {
-      "description": "Auto-merge GitHub Actions minor/patch updates",
+      "description": "Auto-merge GitHub Actions minor/patch/digest updates. Digest is included deliberately (issue #552): the grouped Actions PR also carries digest-only members (a SHA re-pin of an unchanged tag, or a workflow `services: image:` digest bump), and Renovate disables auto-merge for the whole group when any member is not automergeable, so without digest here no grouped Actions PR could ever auto-merge",
       "matchManagers": ["github-actions"],
-      "matchUpdateTypes": ["minor", "patch"],
+      "matchUpdateTypes": ["minor", "patch", "digest"],
       "automerge": true,
       "automergeType": "pr",
       "automergeStrategy": "squash"
@@ -66,8 +66,8 @@
       "commitMessageTopic": "GitHub Actions"
     },
     {
-      "description": "Security updates - high priority",
-      "matchDatasources": ["pypi", "github-actions"],
+      "description": "Security updates - high priority. Datasource ids, not manager ids: GitHub Actions resolve via github-tags / github-releases, and the former `github-actions` entry here was a manager id that matched nothing (issue #552)",
+      "matchDatasources": ["pypi", "github-tags", "github-releases"],
       "labels": ["security", "dependencies"],
       "automerge": false,
       "schedule": ["at any time"]
@@ -117,6 +117,7 @@
     "automerge": false,
     "labels": ["dependencies", "lock-file-maintenance"]
   },
+  "minimumReleaseAge": "3 days",
   "separateMajorMinor": true,
   "separateMinorPatch": false,
   "prConcurrentLimit": 5,
