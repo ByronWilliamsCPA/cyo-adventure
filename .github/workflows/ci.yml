@@ -579,6 +579,112 @@ jobs:
       - name: In-cell clone audit (A8)
         run: uv run python scripts/check_incell_clones.py --check
 
+  # Every guard a filled book must clear, in one command (UW-C453 / AL-726).
+  # scripts/run_guard_battery.py registers several guards gating=True and was
+  # invoked by no workflow, hook or nox session, so a "gating" guard gated
+  # nothing and a green battery was a claim nobody had made. This job is the
+  # invoker. `--corpus` enumerates one (skeleton, narrative contract, filled)
+  # tuple per committed out/<slug>.filled.json from the tree; `--check` makes
+  # a gating failure exit non-zero.
+  #
+  # ADVISORY, by measurement rather than by policy: on 2026-09-05 the corpus
+  # was red on 31 of 31 books (check_fill_integrity on every one, because every
+  # skeleton gained metadata.narrative_person in #746 after the fills were
+  # written; plus prose-craft, label-template, PL-28 and promise-discharge
+  # failures on subsets). Gating today would block every PR on defects no PR
+  # introduced, so the battery step runs under continue-on-error and the
+  # per-book, per-guard table is posted to the step summary, where the
+  # corpus's true state is visible on every PR instead of in nobody's shell
+  # history. It is NOT in ci-gate's needs: (recorded in UNGATED_JOBS in
+  # tests/unit/test_ci_gate_contract.py). Promotion criteria: the corpus is
+  # green, then drop continue-on-error, add this job to ci-gate's needs: with
+  # a `false` skip allowance (it has no job-level if:), and add it to the
+  # release loop. tests/unit/test_guard_battery_wiring.py pins that some
+  # workflow runs the script with --corpus and --check, so deleting this job or
+  # dropping the flag fails the unit suite (the gap AL-726 describes: the
+  # tests protected the registrations, and nothing protected the runner).
+  #
+  # Runtime is interpreter start-up, not analysis: each guard is a subprocess
+  # that imports cyo_adventure (about 2.7s), so a book costs about 11s and the
+  # 31-book corpus about 5 minutes sequentially; `--jobs` (default min(4, cpus))
+  # runs books concurrently. Runs on merge_group and release commits too, since
+  # nothing about the trigger changes the corpus; it needs no secrets and no
+  # network beyond `uv sync`.
+  guard-battery:
+    name: Guard Battery (advisory)
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: read
+    steps:
+      - name: Harden the runner
+        # deferral: 2026-09-18
+        uses: step-security/harden-runner@bf7454d06d71f1098171f2acdf0cd4708d7b5920 # v2.20.0
+        with:
+          egress-policy: audit
+
+      - name: Checkout repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Set up Python
+        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: "3.14"
+
+      - name: Install UV
+        uses: astral-sh/setup-uv@c771a70e6277c0a99b617c7a806ffedaca235ff9 # v9.0.0
+        with:
+          enable-cache: true
+
+      # The guards import cyo_adventure, which pulls SQLAlchemy in transitively
+      # (validator -> diversity -> history), so the `api` extra is required to
+      # import the package at all; same reason as the `diversity` job above.
+      - name: Install backend (api extra)
+        run: uv sync --extra api
+
+      # continue-on-error is the advisory mechanism, on the STEP so the step
+      # itself shows red while the job does not block. `--check` stays: without
+      # it the battery exits 0 unconditionally and this step could never fail,
+      # which is exactly the "a guard that cannot fail in the gating
+      # denominator" defect of AL-293. The full output is kept for the summary.
+      - name: Guard battery over the committed fill corpus
+        id: battery
+        continue-on-error: true
+        run: |
+          set -o pipefail
+          uv run python scripts/run_guard_battery.py --corpus --check 2>&1 \
+            | tee guard-battery.txt
+
+      # Always runs, so a red battery is legible from the checks UI without
+      # opening the log: the per-book and per-guard tallies land in the step
+      # summary and a ::warning:: names the failing guards.
+      - name: Publish the battery table
+        if: always()
+        env:
+          BATTERY_OUTCOME: ${{ steps.battery.outcome }}
+        run: |
+          set -euo pipefail
+          if [ ! -s guard-battery.txt ]; then
+            echo "::error::guard-battery.txt is missing or empty; the battery did not run, and an unrun advisory is indistinguishable from a passing one."
+            exit 1
+          fi
+          {
+            echo "## Guard Battery (advisory, UW-C453)"
+            echo ""
+            echo "Step outcome: \`${BATTERY_OUTCOME}\`. Not a required check; see UNGATED_JOBS in"
+            echo "tests/unit/test_ci_gate_contract.py for the promotion criteria."
+            echo ""
+            echo '```'
+            sed -n '/^=== corpus summary/,$p' guard-battery.txt
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
+          if [ "$BATTERY_OUTCOME" != "success" ]; then
+            failing="$(sed -n 's/^FAIL guard battery: //p' guard-battery.txt | tail -1)"
+            echo "::warning::Guard battery is red over the committed fill corpus (advisory, not blocking): ${failing:-see the step summary}"
+          fi
+
   # The ER diagram is documentation that gets read as if it were the schema, so
   # a silent disagreement with the ORM is worse than having no diagram at all.
   # Deliberately NOT folded into docs.yml: that workflow is path-filtered on

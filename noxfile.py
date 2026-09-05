@@ -407,6 +407,22 @@ def diversity_eval(session: nox.Session) -> None:
 
 
 @nox.session(python="3.14")
+def guard_battery(session: nox.Session) -> None:
+    """Run the story guard battery over every committed fill (UW-C453).
+
+    Mirrors the ``guard-battery`` job in ci.yml: one battery per
+    ``out/<slug>.filled.json`` against the skeleton (and narrative contract,
+    where one exists) that ``scripts/run_guard_battery.py --corpus`` resolves
+    from ``skeletons/``. ``--check`` makes a gating failure exit non-zero, so
+    this session is red whenever the committed corpus is. The ``api`` extra is
+    required because the guards import ``cyo_adventure``, which pulls in
+    SQLAlchemy transitively (see the ``diversity`` job comment in ci.yml).
+    """
+    session.install("-e", ".[api]")
+    session.run("python", "scripts/run_guard_battery.py", "--corpus", "--check")
+
+
+@nox.session(python="3.14")
 def mutate(session: nox.Session) -> None:
     """Run mutation testing to verify test quality.
 

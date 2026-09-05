@@ -343,6 +343,25 @@ UNGATED_JOBS: dict[str, str] = {
         "but blocks nothing. Recorded rather than omitted, so the gap is "
         "visible in the test that would otherwise imply full coverage"
     ),
+    # #ASSUME: data-integrity: advisory by measurement, not by policy. On
+    # 2026-09-05 `run_guard_battery.py --corpus --check` was red on 31 of 31
+    # committed fills (check_fill_integrity on every one: every skeleton
+    # gained metadata.narrative_person in #746 after the fills were written),
+    # so gating it would block every PR on defects no PR introduced. The job
+    # runs the full battery with --check under continue-on-error and posts
+    # the per-book table to the step summary, so the corpus's true state is
+    # visible on every PR instead of in nobody's shell history (UW-C453).
+    # #VERIFY: once the corpus is green, promote: drop continue-on-error, add
+    # guard-battery to ci-gate's needs: with a `false` skip allowance (it has
+    # no job-level if:), add it to the release loop, and delete this entry.
+    # tests/unit/test_guard_battery_wiring.py pins that the step still runs
+    # with --check, so advisory cannot quietly become "cannot fail".
+    "guard-battery": (
+        "advisory until the committed fill corpus is green: red on 31 of 31 "
+        "books on 2026-09-05, so gating it would block every PR on defects "
+        "no PR introduced. Visible per PR via the step summary; see "
+        "UW-C453 for the promotion criteria"
+    ),
 }
 
 
