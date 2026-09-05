@@ -171,6 +171,53 @@
   cursor: progress;
 }
 
+/* UW-J33: a provider button locked behind the adult affirmation. It keeps
+   the same dimmed treatment as :disabled so "cannot act yet" looks the same
+   whichever reason applies, but stays in the tab order (aria-disabled, not
+   the disabled attribute) so the aria-describedby reason is reachable. The
+   hover rule is neutralised so the button does not promise a click it will
+   refuse. The reason is never colour alone: the visible hint paragraph
+   below the checkbox carries it in text. */
+.guardian-login__provider[aria-disabled='true'],
+.guardian-login__provider[aria-disabled='true']:hover {
+  opacity: 0.6;
+  cursor: not-allowed;
+  background: var(--color-amber-deep, #c17b2a);
+  border-color: var(--color-amber-deep, #c17b2a);
+}
+
+/* The affirmation block between the lede and the provider buttons. Left
+   aligned inside a centred card so the checkbox and its text read as a form
+   row, not as centred prose. */
+.guardian-login__affirmation {
+  margin: var(--space-4, 1rem) 0 0;
+  text-align: left;
+}
+
+.guardian-login__affirmation .cyo-field--checkbox {
+  align-items: flex-start;
+  gap: 0.6rem;
+}
+
+/* A 44px-adjacent hit area comes from the wrapping label; the box itself is
+   sized up from the browser default so it is legible at arm's length. */
+.guardian-login__affirmation input[type='checkbox'] {
+  width: 1.25rem;
+  height: 1.25rem;
+  flex-shrink: 0;
+  margin: 0.15rem 0 0;
+  accent-color: var(--color-amber-deep, #c17b2a);
+}
+
+/* Same ink-secondary as the other supporting notes (AA on parchment-dark,
+   see .guardian-login__signup-note), tighter margin because it belongs to
+   the checkbox directly above it. */
+.guardian-login__affirmation-hint {
+  margin: 0.35rem 0 0 1.85rem;
+  font-size: var(--text-sm, 0.9375rem);
+  color: var(--color-ink-secondary, #5a3e28);
+}
+
 /* --color-ink-secondary, not --color-ink-muted: .guardian-login's background
    is --color-parchment-dark, where ink-muted only clears 3.72:1 against the
    4.5:1 AA minimum (2026-07-16 accessibility audit, e2e/a11y.spec.ts). */

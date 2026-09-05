@@ -8,6 +8,7 @@ import type { AuthContextValue } from '../auth/authContext'
 import { getDeviceGrant, setDeviceGrant } from '../auth/deviceGrant'
 import type { Principal } from '../auth/types'
 import { DEVICE_MINT_WATCHDOG_MS, LoginPage, SIGN_IN_WATCHDOG_MS } from './LoginPage'
+import { ADULT_AFFIRMATION_HINT, ADULT_AFFIRMATION_LABEL } from './adultAffirmation'
 import { LOGIN_HEADLINE } from './loginHeadline'
 
 const mockSignInWithOAuth = vi.fn()
@@ -83,6 +84,11 @@ function loginUi(initialEntries: InitialEntry[] = ['/guardian/login']) {
 
 function renderLogin(initialEntries?: InitialEntry[]) {
   return render(loginUi(initialEntries))
+}
+
+/** Tick the UW-J33 adult affirmation that unlocks the OAuth buttons. */
+function affirmAdult() {
+  fireEvent.click(screen.getByLabelText(ADULT_AFFIRMATION_LABEL))
 }
 
 // deepcode ignore NoHardcodedPasswords: test-only helper parameter; callers
@@ -432,6 +438,7 @@ describe('LoginPage OAuth buttons (startSignIn)', () => {
   it('calls signInWithOAuth with "google" when the Google button is clicked', async () => {
     mockSignInWithOAuth.mockResolvedValue(undefined)
     renderLogin()
+    affirmAdult()
     fireEvent.click(screen.getByRole('button', { name: /Continue with Google/ }))
     await waitFor(() => expect(mockSignInWithOAuth).toHaveBeenCalledWith('google'))
     expect(screen.queryByRole('alert')).not.toBeInTheDocument()
@@ -442,6 +449,7 @@ describe('LoginPage OAuth buttons (startSignIn)', () => {
     try {
       mockSignInWithOAuth.mockResolvedValue(undefined)
       renderLogin()
+      affirmAdult()
       fireEvent.click(screen.getByRole('button', { name: /Continue with Apple/ }))
       await waitFor(() => expect(mockSignInWithOAuth).toHaveBeenCalledWith('apple'))
     } finally {
@@ -452,9 +460,124 @@ describe('LoginPage OAuth buttons (startSignIn)', () => {
   it('shows a sign-in error banner when signInWithOAuth rejects', async () => {
     mockSignInWithOAuth.mockRejectedValue(new Error('provider unreachable'))
     renderLogin()
+    affirmAdult()
     fireEvent.click(screen.getByRole('button', { name: /Continue with Google/ }))
     const alert = await screen.findByRole('alert')
     expect(alert).toHaveTextContent(/sign-in didn't start/i)
+  })
+})
+
+// UW-J33: nothing used to stand between a visitor of any age and the OAuth
+// button that provisions a family and a guardian row on first sign-in. The
+// affirmation is the plain pre-account check the register asks for; these
+// cases pin that it actually gates the handler, not only the button's look.
+describe('LoginPage adult affirmation (UW-J33)', () => {
+  function googleButton() {
+    return screen.getByRole('button', { name: /Continue with Google/ })
+  }
+
+  it('renders the affirmation as a labelled checkbox that starts unticked', () => {
+    renderLogin()
+    const box = screen.getByLabelText(ADULT_AFFIRMATION_LABEL)
+    expect(box).toHaveAttribute('type', 'checkbox')
+    expect(box).not.toBeChecked()
+  })
+
+  it('keeps the Google button inert, with the reason exposed to assistive tech, until affirmed', () => {
+    renderLogin()
+    const button = googleButton()
+    // aria-disabled rather than the disabled attribute: the button stays in
+    // the tab order so a screen-reader user can reach it and hear WHY it will
+    // not act, via aria-describedby pointing at the visible hint text.
+    expect(button).toHaveAttribute('aria-disabled', 'true')
+    expect(button).toHaveAccessibleDescription(ADULT_AFFIRMATION_HINT)
+    expect(screen.getByText(ADULT_AFFIRMATION_HINT)).toBeVisible()
+  })
+
+  it('does not call signInWithOAuth when clicked unaffirmed, and moves focus to the checkbox', async () => {
+    mockSignInWithOAuth.mockResolvedValue(undefined)
+    renderLogin()
+    fireEvent.click(googleButton())
+    // Give any wrongly-fired async handler a tick to land before asserting.
+    await act(async () => {
+      await Promise.resolve()
+    })
+    expect(mockSignInWithOAuth).not.toHaveBeenCalled()
+    expect(screen.queryByRole('alert')).not.toBeInTheDocument()
+    expect(screen.getByLabelText(ADULT_AFFIRMATION_LABEL)).toHaveFocus()
+  })
+
+  it('affirming enables the Google button and lets the click reach signInWithOAuth', async () => {
+    mockSignInWithOAuth.mockResolvedValue(undefined)
+    renderLogin()
+    affirmAdult()
+    const button = googleButton()
+    expect(button).toHaveAttribute('aria-disabled', 'false')
+    expect(button).not.toHaveAttribute('aria-describedby')
+    expect(screen.queryByText(ADULT_AFFIRMATION_HINT)).not.toBeInTheDocument()
+    fireEvent.click(button)
+    await waitFor(() => expect(mockSignInWithOAuth).toHaveBeenCalledWith('google'))
+  })
+
+  it('unticking the box locks the button again and the handler stays silent', async () => {
+    mockSignInWithOAuth.mockResolvedValue(undefined)
+    renderLogin()
+    affirmAdult()
+    affirmAdult()
+    expect(screen.getByLabelText(ADULT_AFFIRMATION_LABEL)).not.toBeChecked()
+    expect(googleButton()).toHaveAttribute('aria-disabled', 'true')
+    expect(googleButton()).toHaveAccessibleDescription(ADULT_AFFIRMATION_HINT)
+    fireEvent.click(googleButton())
+    await act(async () => {
+      await Promise.resolve()
+    })
+    expect(mockSignInWithOAuth).not.toHaveBeenCalled()
+  })
+
+  it('gates the Apple button by the same affirmation when that provider is enabled', async () => {
+    vi.stubEnv('VITE_ENABLE_APPLE_OAUTH', 'true')
+    try {
+      mockSignInWithOAuth.mockResolvedValue(undefined)
+      renderLogin()
+      const apple = screen.getByRole('button', { name: /Continue with Apple/ })
+      expect(apple).toHaveAttribute('aria-disabled', 'true')
+      expect(apple).toHaveAccessibleDescription(ADULT_AFFIRMATION_HINT)
+      fireEvent.click(apple)
+      await act(async () => {
+        await Promise.resolve()
+      })
+      expect(mockSignInWithOAuth).not.toHaveBeenCalled()
+      affirmAdult()
+      fireEvent.click(apple)
+      await waitFor(() => expect(mockSignInWithOAuth).toHaveBeenCalledWith('apple'))
+    } finally {
+      vi.unstubAllEnvs()
+    }
+  })
+
+  it('still shows the affirmation under the authorize-device intent', () => {
+    // The Kids-door visitor is a child sent to fetch a grown-up, but the
+    // Google button on that variant provisions accounts exactly the same
+    // way, so the gate must not be dropped with the signup note.
+    renderLogin(['/guardian/login?intent=authorize-device'])
+    expect(screen.getByLabelText(ADULT_AFFIRMATION_LABEL)).toBeInTheDocument()
+    expect(googleButton()).toHaveAttribute('aria-disabled', 'true')
+  })
+
+  it('does not gate the email/password form (a returning-account path that cannot create an account)', async () => {
+    // Pins the scope decision documented on `adultAffirmed` in LoginPage.tsx:
+    // the password form has no signUp path, so a minor cannot reach
+    // onboarding through it without an operator-provisioned credential, and
+    // gating it would only tax returning guardians. If a password signup path
+    // is ever added, this test is the one to flip.
+    mockSignInWithPassword.mockResolvedValue(undefined)
+    renderLogin()
+    fillCredentials('parent@example.com', 'test-password')
+    const submit = screen.getByRole('button', { name: 'Sign in' })
+    expect(submit).not.toBeDisabled()
+    expect(submit).not.toHaveAttribute('aria-disabled', 'true')
+    fireEvent.click(submit)
+    await waitFor(() => expect(mockSignInWithPassword).toHaveBeenCalledTimes(1))
   })
 })
 

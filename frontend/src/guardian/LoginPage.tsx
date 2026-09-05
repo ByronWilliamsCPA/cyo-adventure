@@ -1,5 +1,5 @@
 import { isAuthApiError } from '@supabase/supabase-js'
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useId, useRef, useState } from 'react'
 import type { RefObject } from 'react'
 import { Link, Navigate, useLocation, useNavigate } from 'react-router'
 
@@ -24,6 +24,7 @@ import {
   GUARDIAN_VERIFICATION_PATH,
   KID_PICKER_PATH,
 } from '../routes'
+import { ADULT_AFFIRMATION_HINT, ADULT_AFFIRMATION_LABEL } from './adultAffirmation'
 import './guardian.css'
 import { LOGIN_HEADLINE } from './loginHeadline'
 import { ResetPasswordRequestForm } from './ResetPasswordRequestForm'
@@ -119,7 +120,9 @@ function isInvalidCredentials(err: unknown): boolean {
  * Only the OAuth path can CREATE an account (Supabase provisions the user on
  * first successful authorization); the email/password form authenticates
  * existing accounts only. That asymmetry is why the signup affordance sits
- * under the provider buttons rather than next to the form.
+ * under the provider buttons rather than next to the form, and why the adult
+ * affirmation below gates the provider buttons and not the form (see
+ * `adultAffirmed` for the full reasoning).
  */
 export function LoginPage() {
   const {
@@ -133,6 +136,37 @@ export function LoginPage() {
     signOut,
   } = useAuth()
   const [signInError, setSignInError] = useState(false)
+  // UW-J33: a plain adult affirmation ahead of the OAuth buttons. Until it is
+  // ticked the provider buttons are inert (aria-disabled, and startSignIn
+  // refuses to run), because completing OAuth is what provisions a family and
+  // a guardian row server-side (AuthContext -> POST /v1/onboarding) and until
+  // now nothing on the way there ever asked the visitor's age.
+  //
+  // Session-only React state, on purpose: this is an affirmation, not the
+  // COPPA consent record (GuardianConsentPage writes that, post-login), and
+  // it is not verification (UW-J25), so nothing is persisted or sent.
+  //
+  // Scope decision: the OAuth buttons are gated, the password form is not.
+  // The Google button serves new and returning OAuth users alike and is the
+  // ONLY self-signup path there is, so it must gate for everyone who uses it.
+  // The password form cannot create a Supabase user (there is no signUp call
+  // anywhere in the app), so a minor cannot reach the onboarding endpoint
+  // through it without a credential an operator provisioned for a known
+  // adult; gating it would add a click for every returning guardian and
+  // every staging/prod login helper while closing nothing the register row
+  // names. Revisit if a password signup path is ever added.
+  //
+  // #ASSUME: security: this is a client-side affirmation only; the backend
+  // still provisions any subject that arrives with a valid Supabase session.
+  // It is the pre-account check UW-J33 asks for, not an authorization
+  // boundary, and it must never be described as one.
+  // #VERIFY: LoginPage.test.tsx "adult affirmation (UW-J33)" cases, and
+  // e2e/guardian-auth.spec.ts "the Google button stays inert until the adult
+  // affirmation is ticked".
+  const [adultAffirmed, setAdultAffirmed] = useState(false)
+  const adultAffirmationId = useId()
+  const adultAffirmationHintId = useId()
+  const adultAffirmationRef = useRef<HTMLInputElement | null>(null)
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [formError, setFormError] = useState<'credentials' | 'connection' | null>(null)
@@ -319,6 +353,14 @@ export function LoginPage() {
   // #VERIFY: App.test.tsx covers the login error message on OAuth failure.
   async function startSignIn(provider: 'google' | 'apple') {
     setSignInError(false)
+    // The buttons stay focusable (aria-disabled, not the disabled attribute)
+    // so a keyboard or screen-reader user can still reach them and hear the
+    // aria-describedby reason; a click while unaffirmed therefore lands here
+    // and is turned into a nudge: focus the checkbox they need to tick.
+    if (!adultAffirmed) {
+      adultAffirmationRef.current?.focus()
+      return
+    }
     try {
       await signInWithOAuth(provider)
     } catch {
@@ -448,9 +490,36 @@ export function LoginPage() {
           That password reset link is invalid or has expired. Request a new one below.
         </ErrorBanner>
       ) : null}
+      {/* UW-J33: the affirmation sits directly ahead of the buttons it
+          unlocks, in reading and tab order, so the reason a button is inert
+          is met before the button is. A real <label> wraps the input (the
+          consent page's checkbox pattern), so the box is announced by its
+          text and the whole line is a click target. */}
+      <div className="guardian-login__affirmation">
+        <label
+          className="cyo-field cyo-field--checkbox guardian-login__field"
+          htmlFor={adultAffirmationId}
+        >
+          <input
+            ref={adultAffirmationRef}
+            id={adultAffirmationId}
+            type="checkbox"
+            checked={adultAffirmed}
+            onChange={(event) => setAdultAffirmed(event.target.checked)}
+          />
+          <span>{ADULT_AFFIRMATION_LABEL}</span>
+        </label>
+        {!adultAffirmed ? (
+          <p id={adultAffirmationHintId} className="guardian-login__affirmation-hint">
+            {ADULT_AFFIRMATION_HINT}
+          </p>
+        ) : null}
+      </div>
       <button
         type="button"
         className="guardian-login__provider"
+        aria-disabled={!adultAffirmed}
+        aria-describedby={adultAffirmed ? undefined : adultAffirmationHintId}
         onClick={() => void startSignIn('google')}
       >
         Continue with Google
@@ -459,6 +528,8 @@ export function LoginPage() {
         <button
           type="button"
           className="guardian-login__provider"
+          aria-disabled={!adultAffirmed}
+          aria-describedby={adultAffirmed ? undefined : adultAffirmationHintId}
           onClick={() => void startSignIn('apple')}
         >
           Continue with Apple

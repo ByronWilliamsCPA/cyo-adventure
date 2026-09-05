@@ -1,5 +1,6 @@
 import { expect, test } from '@playwright/test'
 
+import { ADULT_AFFIRMATION_HINT, ADULT_AFFIRMATION_LABEL } from '../src/guardian/adultAffirmation'
 import {
   SUPABASE_SESSION_KEY,
   makeGuardianSession,
@@ -126,4 +127,40 @@ test('sign-out returns to the login page and re-locks the console', async ({ pag
   await page.goto('/guardian')
   await expect(page).toHaveURL(/\/guardian\/login$/)
   await expect(page.getByRole('heading', { name: 'Family console' })).not.toBeVisible()
+})
+
+test('the Google button stays inert until the adult affirmation is ticked (UW-J33)', async ({
+  page,
+}) => {
+  // The OAuth button is the only self-signup path, and completing it is what
+  // provisions a family and a guardian row server-side, so it must not act
+  // before the visitor affirms they are an adult. The button is aria-disabled
+  // rather than disabled so it stays reachable by keyboard and its reason is
+  // exposed through aria-describedby; a click while locked must go nowhere
+  // (no Supabase authorize redirect) and hand focus to the checkbox instead.
+  await page.goto('/guardian/login')
+  const affirmation = page.getByLabel(ADULT_AFFIRMATION_LABEL)
+  const google = page.getByRole('button', { name: 'Continue with Google' })
+
+  await expect(affirmation).not.toBeChecked()
+  await expect(google).toHaveAttribute('aria-disabled', 'true')
+  await expect(google).toHaveAccessibleDescription(ADULT_AFFIRMATION_HINT)
+  await expect(page.getByText(ADULT_AFFIRMATION_HINT)).toBeVisible()
+
+  // `force` skips Playwright's actionability check, which treats an
+  // `aria-disabled="true"` button as not enabled and would wait for it
+  // forever. A real pointer or keyboard user CAN activate the button (that is
+  // the point of aria-disabled over disabled), so the click must land and the
+  // component's own refusal, not Playwright's, is what this step exercises.
+  await google.click({ force: true })
+  await expect(page).toHaveURL(/\/guardian\/login$/)
+  await expect(affirmation).toBeFocused()
+
+  await affirmation.check()
+  await expect(google).toHaveAttribute('aria-disabled', 'false')
+  await expect(page.getByText(ADULT_AFFIRMATION_HINT)).not.toBeVisible()
+
+  // Unticking relocks it: the affirmation is live state, not a one-way latch.
+  await affirmation.uncheck()
+  await expect(google).toHaveAttribute('aria-disabled', 'true')
 })
