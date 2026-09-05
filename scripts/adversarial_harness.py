@@ -573,6 +573,13 @@ class CorpusReport:
             production does and therefore what this gate measures.
         repeats: The requested draw count for in-scope items (1 for a classic
             single-draw run).
+        sampling_temperature: The temperature the review leg actually sent, or
+            ``None`` when it sent no ``temperature`` field and the backend's
+            default applied. Read off the built leg, never off a constant: the
+            2026-08-24 artifacts were taken at the vendor default and the
+            2026-08-30 artifact at 0.0 after #776 pinned the production
+            reviewer, and nothing in the artifact said so because the
+            ``sampling`` note was a hardcoded sentence rather than a record.
 
     ``is_evidence`` is deliberately not a stored field: this harness's entire
     purpose is to never let a mock run masquerade as evidence, so that fact is
@@ -586,6 +593,7 @@ class CorpusReport:
     review_model: str | None = None
     provider_order: tuple[str, ...] = ()
     repeats: int = 1
+    sampling_temperature: float | None = None
 
     @property
     def is_evidence(self) -> bool:
@@ -634,6 +642,37 @@ def _catch_rate(status_counts: Mapping[str, int]) -> float | None:
     if total == 0:
         return None
     return caught / total
+
+
+def _sampling_temperature_of(provider: object) -> float | None:
+    """Return the temperature the review leg will send, or ``None`` for default.
+
+    Args:
+        provider: The review provider the run is about to draw from, before any
+            per-item :class:`PiiGuardedProvider` wrapping.
+
+    Returns:
+        The leg's ``temperature`` when it exposes a numeric one (an
+        ``OpenRouterProvider`` built by ``build_review_provider`` exposes
+        ``REVIEW_TEMPERATURE``), otherwise ``None``: the mock reviewer and any
+        leg that sends no ``temperature`` field both leave the backend default
+        in force, and the artifact must say so rather than guess.
+
+    #CRITICAL: data-integrity: the artifact's sampling record must describe the
+    leg that produced the verdicts, not a belief about it. Between the
+    2026-08-24 and 2026-08-30 safety-eval runs the review leg went from sending
+    no temperature to sending 0.0 (#776, ``REVIEW_TEMPERATURE``) and the
+    archived ``sampling`` note kept asserting the provider exposed none, so a
+    reader diffing the two artifacts saw two runs of one configuration when
+    they were two configurations. Reading the value off the leg makes the
+    next such change visible in the artifact by construction.
+    #VERIFY: tests/unit/test_adversarial_majority_scoring.py::
+    TestMeasurementRecord.
+    """
+    temperature = cast("object", getattr(provider, "temperature", None))
+    if isinstance(temperature, bool) or not isinstance(temperature, (int, float)):
+        return None
+    return float(temperature)
 
 
 def _validate_repeats(repeats: int) -> None:
@@ -777,6 +816,7 @@ async def run_corpus(
         review_model=review_model,
         provider_order=provider_order,
         repeats=repeats,
+        sampling_temperature=_sampling_temperature_of(review_provider),
     )
 
 
@@ -1777,6 +1817,14 @@ def _print_report(report: CorpusReport) -> None:
         "Backend pin: "
         + (", ".join(report.provider_order) if report.provider_order else "none")
     )
+    print(
+        "Sampling temperature: "
+        + (
+            "backend default (none sent)"
+            if report.sampling_temperature is None
+            else f"{report.sampling_temperature:g} (sent by the review leg)"
+        )
+    )
     if report.repeats > 1:
         print(
             f"Draws per in-scope item: {report.repeats} "
@@ -1867,6 +1915,46 @@ def _item_json(outcome: ItemOutcome) -> dict[str, object]:
     return item
 
 
+def _sampling_note(report: CorpusReport) -> str:
+    """Describe the sampling surface a run measured, derived from the record.
+
+    Args:
+        report: The run whose ``sampling_temperature`` and ``provider_order``
+            the note describes.
+
+    Returns:
+        One sentence a reader of the archived artifact can rely on. It is
+        computed from the recorded fields rather than written once, so it can
+        never again assert that no temperature is sent while one is.
+    """
+    if report.sampling_temperature is None:
+        temperature_clause = (
+            "The review leg sent no temperature, top_p or seed, so sampling is "
+            "left at the backend default"
+        )
+    else:
+        temperature_clause = (
+            f"The review leg sent temperature={report.sampling_temperature:g}, "
+            "the same value the production reviewer runs at "
+            "(moderation.review_provider.REVIEW_TEMPERATURE); no top_p or seed "
+            "is sent"
+        )
+    routing_clause = (
+        "the review model carries no entry in core.pricing.ENDPOINT_PINS, so "
+        "backend routing is left to the provider"
+        if not report.provider_order
+        else "backend routing is pinned to "
+        + ", ".join(report.provider_order)
+        + " via core.pricing.ENDPOINT_PINS"
+    )
+    return (
+        f"{temperature_clause}, and {routing_clause}. Both are the settings "
+        "production runs at; the draw count absorbs whatever variance remains "
+        "instead of suppressing it, because a configuration the deployed gate "
+        "never uses would measure nothing about the gate."
+    )
+
+
 def _write_results(out_path: Path, report: CorpusReport) -> None:
     """Write the run results as JSON (metadata plus per-item outcomes).
 
@@ -1883,14 +1971,8 @@ def _write_results(out_path: Path, report: CorpusReport) -> None:
             "provider_order": list(report.provider_order),
             "repeats": report.repeats,
             "min_draws_per_control": report.min_draws_per_control,
-            "sampling": (
-                "Unpinned. The provider exposes no temperature, top_p or seed, "
-                "and the review model carries no entry in core.pricing."
-                "ENDPOINT_PINS, so both sampling and backend routing are left "
-                "at the settings production runs. The draw count absorbs that "
-                "variance instead of suppressing it; pinning would measure a "
-                "configuration the deployed gate never uses."
-            ),
+            "temperature": report.sampling_temperature,
+            "sampling": _sampling_note(report),
         },
         "per_class": report.per_class,
         "catch_rate": {

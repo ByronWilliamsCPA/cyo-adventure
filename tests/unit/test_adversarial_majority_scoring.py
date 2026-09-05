@@ -15,6 +15,9 @@ module's own tests skip without credentials, so nothing else would execute them.
 
 from __future__ import annotations
 
+import json
+from typing import TYPE_CHECKING, cast
+
 import pytest
 
 from cyo_adventure.core.exceptions import ValidationError
@@ -24,14 +27,22 @@ from scripts.adversarial_harness import (
     ItemOutcome,
     _collapse_draws,
     _majority_status,
+    _sampling_temperature_of,
     _validate_repeats,
+    _write_results,
     repeat_scope,
+    run_corpus,
     wilson_interval,
 )
 from tests.llm_eval.test_adversarial_safety_eval import (
     _EVAL_REPEATS,
     _adverse_tally,
 )
+
+if TYPE_CHECKING:
+    from pathlib import Path
+
+    from cyo_adventure.generation.usage import Completion
 
 
 def _outcome(item_id: str, status: str, note: str = "n") -> ItemOutcome:
@@ -303,3 +314,154 @@ class TestLiveGateScoringContract:
     ) -> None:
         """Class B is outside repeat scope, so its tally must not imply draws."""
         assert _adverse_tally(_outcome("B1", "missed")) == "1 of 1 draw"
+
+
+class _LegWithTemperature:
+    """A review leg that, like ``OpenRouterProvider``, exposes what it sends."""
+
+    def __init__(self, temperature: float | None) -> None:
+        self.temperature = temperature
+
+    async def complete(
+        self, *, system: str, prompt: str, max_tokens: int
+    ) -> Completion:
+        """Never reached: the corpus these tests run holds no executable item."""
+        raise AssertionError("a non-executable corpus must make no review call")
+
+
+class _LegWithoutTemperature:
+    """A review leg that declares nothing about its sampling (the mock shape)."""
+
+    async def complete(
+        self, *, system: str, prompt: str, max_tokens: int
+    ) -> Completion:
+        """Never reached: the corpus these tests run holds no executable item."""
+        raise AssertionError("a non-executable corpus must make no review call")
+
+
+# One non-executable item, so run_corpus records its measurement surface without
+# drawing from the leg; what these tests check is the record, not the verdicts.
+_UNEXECUTABLE_CORPUS = [
+    {"id": "D1-import-bypass", "taxonomy_class": "D", "executable": False}
+]
+
+
+def _measurement_block(out: Path) -> dict[str, object]:
+    """Read the ``measurement`` block back off a written artifact."""
+    payload = cast("dict[str, object]", json.loads(out.read_text(encoding="utf-8")))
+    return cast("dict[str, object]", payload["measurement"])
+
+
+class TestMeasurementRecord:
+    """The artifact's sampling block is a record of the leg, not a sentence.
+
+    Between the 2026-08-24 and 2026-08-30 safety-eval runs the production
+    review leg started sending ``temperature=0.0`` (#776), so the two archived
+    artifacts were taken at two different sampling configurations while both
+    carried an identical hardcoded ``sampling`` note asserting the provider
+    exposed no temperature at all. The next reader diffing two artifacts must
+    be able to see such a change in the artifact itself.
+    """
+
+    def test_reads_the_temperature_the_leg_will_send(self) -> None:
+        """A numeric ``temperature`` attribute on the leg is what gets recorded."""
+        assert _sampling_temperature_of(_LegWithTemperature(0.0)) == 0.0
+        assert _sampling_temperature_of(_LegWithTemperature(0.7)) == 0.7
+
+    def test_a_leg_that_sends_no_temperature_records_none(self) -> None:
+        """``None`` means the backend default applied; it is not a zero."""
+        assert _sampling_temperature_of(_LegWithTemperature(None)) is None
+        assert _sampling_temperature_of(_LegWithoutTemperature()) is None
+
+    def test_a_non_numeric_temperature_attribute_is_not_mistaken_for_one(
+        self,
+    ) -> None:
+        """A bool or a string on the attribute must not be archived as a float."""
+        boolean_leg = _LegWithTemperature(temperature=True)  # pyright: ignore[reportArgumentType]
+        string_leg = _LegWithTemperature(temperature="0.0")  # pyright: ignore[reportArgumentType]
+        assert _sampling_temperature_of(boolean_leg) is None
+        assert _sampling_temperature_of(string_leg) is None
+
+    @pytest.mark.asyncio
+    async def test_run_corpus_records_the_leg_it_actually_drew_from(self) -> None:
+        """The report carries the leg's temperature, read at run time."""
+        report = await run_corpus(
+            _UNEXECUTABLE_CORPUS,
+            _LegWithTemperature(0.0),
+            review_provider_name="openrouter",
+            review_model="deepseek/deepseek-v4-flash",
+        )
+        assert report.sampling_temperature == 0.0
+
+    @pytest.mark.asyncio
+    async def test_run_corpus_records_none_for_a_default_temperature_leg(
+        self,
+    ) -> None:
+        """A leg sending no temperature is recorded as such, not defaulted."""
+        report = await run_corpus(
+            _UNEXECUTABLE_CORPUS,
+            _LegWithoutTemperature(),
+            review_provider_name="mock",
+        )
+        assert report.sampling_temperature is None
+
+    def test_the_artifact_names_a_pinned_temperature(self, tmp_path: Path) -> None:
+        """The written measurement block carries the value and a note that agrees.
+
+        The 2026-08-30 artifact was taken at 0.0 and its note said the provider
+        exposed no temperature. That contradiction is the defect; this pins
+        that the note is derived from the recorded value.
+        """
+        report = CorpusReport(
+            review_provider="openrouter",
+            outcomes=[],
+            per_class={},
+            review_model="deepseek/deepseek-v4-flash",
+            repeats=3,
+            sampling_temperature=0.0,
+        )
+        out = tmp_path / "results.json"
+        _write_results(out, report)
+        measurement = _measurement_block(out)
+        assert measurement["temperature"] == 0.0
+        note = str(measurement["sampling"])
+        assert "temperature=0" in note
+        assert "no temperature" not in note
+
+    def test_the_artifact_says_when_the_backend_default_applied(
+        self, tmp_path: Path
+    ) -> None:
+        """The 2026-08-24 shape: nothing sent, and the note must say exactly that."""
+        report = CorpusReport(
+            review_provider="openrouter",
+            outcomes=[],
+            per_class={},
+            review_model="deepseek/deepseek-v4-flash",
+            repeats=3,
+            sampling_temperature=None,
+        )
+        out = tmp_path / "results.json"
+        _write_results(out, report)
+        measurement = _measurement_block(out)
+        assert measurement["temperature"] is None
+        note = str(measurement["sampling"])
+        assert "sent no temperature" in note
+        assert "backend default" in note
+
+    def test_the_note_reports_a_backend_pin_when_one_is_in_force(
+        self, tmp_path: Path
+    ) -> None:
+        """Routing is the other half of the sampling surface and is derived too."""
+        report = CorpusReport(
+            review_provider="openrouter",
+            outcomes=[],
+            per_class={},
+            review_model="deepseek/deepseek-v4-pro",
+            provider_order=("azure/us",),
+            sampling_temperature=0.0,
+        )
+        out = tmp_path / "results.json"
+        _write_results(out, report)
+        note = str(_measurement_block(out)["sampling"])
+        assert "pinned to azure/us" in note
+        assert "no entry in core.pricing.ENDPOINT_PINS" not in note
