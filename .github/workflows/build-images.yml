@@ -1,0 +1,704 @@
+# =============================================================================
+# CYO Adventure Build - Build and Publish the Backend + Frontend Images
+# =============================================================================
+# This workflow builds and publishes the homelab-cyo-adventure-backend and
+# homelab-cyo-adventure-frontend images directly from this repo's own
+# Dockerfiles (backend: repo root; frontend: frontend/). It replaces
+# ByronWilliamsCPA/homelab-infra's cyo-adventure-build.yml `build` job, which
+# used to check this repo out cross-repo via a repository_dispatch relay
+# (this repo's trigger-image-build.yml, now deleted) so the private
+# homelab-infra repo could build public source it did not itself hold.
+# Moving the build here removes that relay and moves the build minutes onto
+# this repo's free public-repo Actions quota; homelab-infra's
+# `stack-config-check` job (which guards the deploy compose files, not this
+# repo's source) stays behind in homelab-infra, unchanged.
+#
+# #ASSUME this repo's `main` branch is always the version worth publishing
+# for the homelab deploy (there is no tagged-release convention here yet).
+# #VERIFY revisit once this repo has its own release/tagging process; pin to
+# a tag or digest input instead of always tracking main's tip.
+#
+# Trigger note: push to main (paths-ignore below skips doc-only merges,
+# matching the list the deleted trigger-image-build.yml used to gate its
+# cross-repo dispatch on), workflow_dispatch for on-demand or dry-run builds
+# (`push: false` builds and smoke-tests without publishing anything), and a
+# weekly schedule kept as defense in depth in case a push-triggered run is
+# ever missed (for example GitHub's 300-changed-file path-filter cap on a
+# mega-merge). A silent failure of that weekly safety net means the homelab
+# images go stale with nobody told, so the `alert`/`resolve` jobs below adopt
+# this repo's shared `ci-failure-issue` tracking-issue action, matching the
+# rest of the scheduled-workflow fleet
+# (.github/workflows/scheduled-health-rollup.yml).
+#
+# Security note: the only user-controlled input is workflow_dispatch's
+# `push` boolean, which is only ever read in an `if:` condition, never
+# GitHub-expression-interpolated into a `run:` shell string. No PR
+# title/body/commit-message content is read anywhere below; this workflow
+# has no pull_request trigger.
+# =============================================================================
+
+name: Build Images
+
+on:
+  push:
+    branches: [main]
+    # Doc-only merges don't change image content; skip the build.
+    paths-ignore:
+      - 'docs/**'
+      - '**.md'
+      - '.claude/**'
+      - 'mkdocs.yml'
+
+  workflow_dispatch:
+    inputs:
+      push:
+        description: 'Push image to registry (false for a build/smoke-test-only dry run)'
+        required: false
+        default: true
+        type: boolean
+
+  schedule:
+    - cron: '0 6 * * 1' # weekly Monday 06:00 UTC, safety net if a push-triggered run is ever missed
+
+concurrency:
+  group: build-images-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+env:
+  GHCR_REGISTRY: ghcr.io
+  GHCR_NAMESPACE: byronwilliamscpa
+
+permissions:
+  contents: read
+
+jobs:
+  # ===========================================================================
+  # Build: backend (FastAPI) and frontend (nginx + built React app)
+  # ===========================================================================
+  build:
+    name: Build ${{ matrix.component.name }}
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+      # #CRITICAL security: id-token: write is what makes `cosign sign --yes`
+      # work keylessly below: it grants this job an OIDC token that Fulcio
+      # exchanges for a short-lived signing cert bound to this exact
+      # repo+workflow+ref, so there is no static signing key to leak or
+      # rotate. Dropping this permission does not fail loudly here: cosign
+      # falls back to looking for a local key file and errors there instead,
+      # which reads like an unrelated cosign misconfiguration rather than
+      # "someone trimmed this permissions block".
+      # #VERIFY after any edit to this permissions block, confirm a real
+      # run's "Sign image with Cosign" step log shows a Fulcio certificate
+      # request, not a missing-key-file error.
+      id-token: write      # OIDC for keyless signing
+      attestations: write  # For provenance attestations
+      # actions: read is required by step-security/harden-runner, which calls
+      # GET /repos/.../actions/runs/{run_id} for telemetry. Without it that
+      # call returns 403 "Resource not accessible by integration" and logs a
+      # warning on every Harden Runner step.
+      actions: read
+
+    strategy:
+      fail-fast: false
+      matrix:
+        component:
+          - name: backend
+            image: homelab-cyo-adventure-backend
+            channel: default
+            context: .
+            dockerfile: Dockerfile
+            cache-scope: cyo-adventure-backend
+            build-args: |
+              BUILD_ENV=production
+          - name: frontend
+            image: homelab-cyo-adventure-frontend
+            channel: default
+            context: frontend
+            dockerfile: frontend/Dockerfile
+            target: production
+            # Shared cache-scope with frontend-staging below: same Dockerfile,
+            # differing only in two VITE_* build args, so BuildKit's gha
+            # cache dedupes the dependency-install layers across both legs
+            # instead of building them twice under separate scopes (the two
+            # legs had separate scopes when this build ran in homelab-infra).
+            cache-scope: cyo-adventure-frontend
+            # VITE_SUPABASE_* are baked into the bundle at build time (repo
+            # variables, not secrets: the anon key and project URL are
+            # public by design, since Vite ships them in the browser
+            # bundle). This default channel points at the PRODUCTION
+            # Supabase project.
+            build-args: |
+              VITE_API_URL=/api
+              VITE_SUPABASE_URL=${{ vars.CYO_VITE_SUPABASE_URL }}
+              VITE_SUPABASE_ANON_KEY=${{ vars.CYO_VITE_SUPABASE_ANON_KEY }}
+          # Staging-flavored frontend: SAME image repo as `frontend`, but
+          # baked with the STAGING Supabase project's VITE vars and
+          # published under the :staging tag channel (see the meta step).
+          # Vite bakes VITE_* in at build time, so a separate image is the
+          # only way to point the bundle at a different Supabase project
+          # than production.
+          - name: frontend-staging
+            image: homelab-cyo-adventure-frontend
+            channel: staging
+            context: frontend
+            dockerfile: frontend/Dockerfile
+            target: production
+            cache-scope: cyo-adventure-frontend
+            build-args: |
+              VITE_API_URL=/api
+              VITE_SUPABASE_URL=${{ vars.CYO_VITE_SUPABASE_URL_STAGING }}
+              VITE_SUPABASE_ANON_KEY=${{ vars.CYO_VITE_SUPABASE_ANON_KEY_STAGING }}
+
+    steps:
+      - name: Harden Runner
+        uses: step-security/harden-runner@9af89fc71515a100421586dfdb3dc9c984fbf411 # v2.19.4
+        with:
+          egress-policy: audit
+
+      - name: Checkout
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7
+
+      - name: Resolve source commit
+        id: source
+        run: echo "sha=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@96fe6ef7f33517b61c61be40b68a1882f3264fb8  # v4.2.0
+        with:
+          platforms: arm64
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@bb05f3f5519dd87d3ba754cc423b652a5edd6d2c  # v4.2.0
+
+      - name: Login to GHCR
+        uses: docker/login-action@c99871dec2022cc055c062a10cc1a1310835ceb4  # v4.3.0
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Install Cosign
+        uses: sigstore/cosign-installer@6f9f17788090df1f26f669e9d70d6ae9567deba6  # v4.1.2
+
+      # #CRITICAL security: :latest, the date tag, cosign signing, and the SBOM
+      # attestation are gated on `github.ref == 'refs/heads/main'` (via
+      # IS_MAIN below), replacing homelab-infra's `publish_grade` output.
+      # That output existed only because a repository_dispatch payload's
+      # client_payload.ref could name an arbitrary commit while github.ref
+      # stayed refs/heads/main regardless of what was actually being built.
+      # This workflow has no such cross-repo relay: it checks out this repo
+      # directly at whatever ref/SHA triggered it, so on a push-to-main
+      # event github.sha IS the commit on main by construction and
+      # github.ref is an unambiguous signal.
+      # #ASSUME workflow_dispatch's default "Run workflow from" branch is
+      # main, but a caller can pick a different branch in the GitHub UI; on
+      # that path github.ref correctly evaluates false here and the build
+      # only gets a sha- tag, no :latest, no signing.
+      # #VERIFY if this workflow is ever renamed, moved to another repo, or
+      # the default branch is ever renamed away from `main`, update the
+      # literal 'refs/heads/main' comparison below; it is not derived from
+      # github.event.repository.default_branch.
+      - name: Generate image metadata
+        id: meta
+        env:
+          COMPONENT: ${{ matrix.component.name }}
+          IMAGE_COMPONENT: ${{ matrix.component.image }}
+          CHANNEL: ${{ matrix.component.channel }}
+          SOURCE_SHA: ${{ steps.source.outputs.sha }}
+          IS_MAIN: ${{ github.ref == 'refs/heads/main' }}
+        run: |
+          IMAGE="${{ env.GHCR_REGISTRY }}/${{ env.GHCR_NAMESPACE }}/${IMAGE_COMPONENT}"
+          SHA_SHORT="${SOURCE_SHA:0:7}"
+          DATE_TAG=$(date +%Y%m%d)
+
+          # The staging channel publishes the staging-baked frontend under
+          # :staging tags, deliberately DISTINCT from the default channel's
+          # :latest, so a staging build (different Supabase project) can
+          # never move the production frontend's :latest. Both channels
+          # share the one homelab-cyo-adventure-frontend image repo; only
+          # the tags differ, and the -staging suffix on the immutable sha
+          # tag keeps the two channels' per-commit builds from colliding on
+          # the same tag.
+          if [ "${CHANNEL}" == "staging" ]; then
+            SHA_TAG="sha-${SHA_SHORT}-staging"
+            TAGS="${IMAGE}:${SHA_TAG}"
+            if [ "${IS_MAIN}" == "true" ]; then
+              TAGS="${TAGS},${IMAGE}:staging,${IMAGE}:staging-${DATE_TAG}"
+            fi
+          else
+            SHA_TAG="sha-${SHA_SHORT}"
+            TAGS="${IMAGE}:${SHA_TAG}"
+            if [ "${IS_MAIN}" == "true" ]; then
+              TAGS="${TAGS},${IMAGE}:latest,${IMAGE}:${DATE_TAG}"
+            fi
+          fi
+
+          {
+            echo "image=${IMAGE}"
+            echo "tags=${TAGS}"
+            echo "sha_tag=${SHA_TAG}"
+          } >> "$GITHUB_OUTPUT"
+
+      # =======================================================================
+      # Smoke test: build an amd64-only local image and prove it actually
+      # boots BEFORE the multi-arch build-and-push publishes anything. The
+      # 2026-07-06 incident shipped a worker that import-crashed on every RQ
+      # job (missing OIDC env) because nothing between "image builds" and
+      # "Portainer redeploys :latest" ever started a container. Runs against
+      # the same context/args, so the gha cache makes the second build cheap.
+      # =======================================================================
+      - name: Build amd64 image for smoke test
+        uses: docker/build-push-action@53b7df96c91f9c12dcc8a07bcb9ccacbed38856a  # v7.3.0
+        with:
+          context: ${{ matrix.component.context }}
+          file: ${{ matrix.component.dockerfile }}
+          target: ${{ matrix.component.target || '' }}
+          build-args: ${{ matrix.component.build-args }}
+          platforms: linux/amd64
+          push: false
+          load: true
+          tags: cyo-smoke-${{ matrix.component.name }}:ci
+          cache-from: type=gha,scope=${{ matrix.component.cache-scope }}
+          cache-to: type=gha,mode=max,scope=${{ matrix.component.cache-scope }}
+
+      - name: Smoke test image
+        env:
+          COMPONENT: ${{ matrix.component.name }}
+        # #CRITICAL: external-resources: every check below runs the real
+        # container the deploy will pull. The env values are prod-SHAPED
+        # (ENVIRONMENT=production plus dummy OIDC/DSN on .invalid hosts, which
+        # can never resolve per RFC 2606, and a runtime-generated child
+        # session secret), exercising the Settings() fail-fast validators
+        # without touching any real service. /health/live is a process-only
+        # probe and generation/queue.py connects to Redis lazily, so neither
+        # needs a database or Redis to answer.
+        # #VERIFY: if a future Settings validator adds a new mandatory
+        # non-local variable, extend SMOKE_ENV here; the boot check will fail
+        # loudly (not silently skip) when that happens.
+        # None of the values below are real credentials: the DSN is a dummy
+        # passwordless user on an RFC 2606 .invalid host, and the child
+        # session secret is generated fresh each run (never a static value
+        # that could be mistaken for a real key if copy-pasted elsewhere).
+        run: |  # pragma: allowlist secret
+          set -euo pipefail
+          cleanup() { docker rm -f cyo-smoke >/dev/null 2>&1 || true; }
+          trap cleanup EXIT
+
+          if [ "${COMPONENT}" = "backend" ]; then
+            # Generated per run rather than a committed literal: a fixed
+            # placeholder long/unique enough to clear the Settings
+            # validator's weak-secret deny-list could be mistaken for a
+            # real key if ever copy-pasted into a non-local deployment.
+            CHILD_SESSION_SECRET_SMOKE="$(openssl rand -hex 32)"
+            # Distinct from CHILD_SESSION_SECRET_SMOKE: config.py's
+            # _require_device_grant_secret_outside_local rejects a reuse of the
+            # child-session secret, so the smoke env must generate its own.
+            DEVICE_GRANT_SECRET_SMOKE="$(openssl rand -hex 32)"
+            SMOKE_ENV=(
+              -e ENVIRONMENT=production
+              # Not a credential: dummy passwordless user on an RFC 2606 .invalid
+              # host that can never resolve; only satisfies the non-local
+              # Settings validator.  pragma: allowlist secret
+              -e DATABASE_URL=postgresql+asyncpg://smoke@db.invalid:5432/smoke
+              -e OIDC_ISSUER=https://smoke.invalid/auth/v1
+              -e OIDC_JWKS_URL=https://smoke.invalid/auth/v1/.well-known/jwks.json
+              # Not a credential: satisfies the non-local Settings validator
+              # added for G1/P6-04 child sessions (core/config.py's
+              # _require_child_session_secret_outside_local).
+              -e CHILD_SESSION_SECRET="${CHILD_SESSION_SECRET_SMOKE}"
+              # Not a credential: satisfies the non-local Settings validator
+              # added for ADR-014 device grants (core/config.py's
+              # _require_device_grant_secret_outside_local).
+              -e DEVICE_GRANT_SECRET="${DEVICE_GRANT_SECRET_SMOKE}"
+              # Prod-shaped reviewer config (cyo-adventure moderation redesign
+              # Stage A, cyo PR #521): _require_real_reviewer_outside_local
+              # refuses review_provider=mock outside environment=local, and
+              # _require_classifier_when_reviewing requires OPENAI_API_KEY for
+              # any non-mock provider. openrouter matches what both deploy
+              # compose files pin.
+              -e CYO_ADVENTURE_REVIEW_PROVIDER=openrouter
+              # Not a credential: obviously-invalid placeholder that only
+              # satisfies the presence check; no smoke check ever makes a
+              # review call.  pragma: allowlist secret
+              -e OPENAI_API_KEY=sk-smoke-invalid
+            )
+
+            echo "::group::backend API boots and answers /health/live"
+            docker run -d --name cyo-smoke -p 18000:8000 \
+              "${SMOKE_ENV[@]}" cyo-smoke-backend:ci
+            ok=""
+            for _ in $(seq 1 30); do
+              if curl -fsS http://localhost:18000/health/live >/dev/null 2>&1; then
+                ok=1; break
+              fi
+              sleep 2
+            done
+            if [ -z "${ok}" ]; then
+              echo "backend never answered /health/live; container logs:"
+              docker logs cyo-smoke || true
+              exit 1
+            fi
+            echo "::endgroup::"
+
+            echo "::group::worker module imports under a prod-shaped env"
+            docker run --rm "${SMOKE_ENV[@]}" cyo-smoke-backend:ci \
+              python -c "import cyo_adventure.generation.worker"
+            echo "::endgroup::"
+
+            echo "::group::rq console script is on PATH for the worker command"
+            docker run --rm "${SMOKE_ENV[@]}" cyo-smoke-backend:ci \
+              python -c "import shutil,sys; sys.exit(0 if shutil.which('rq') else 1)"
+            echo "::endgroup::"
+
+            echo "::group::config guard still refuses to start without OIDC"
+            GUARD_ENV=(
+              -e ENVIRONMENT=production
+              # Same dummy DSN as SMOKE_ENV above.  pragma: allowlist secret
+              -e DATABASE_URL=postgresql+asyncpg://smoke@db.invalid:5432/smoke
+              # Same runtime-generated secret as SMOKE_ENV above: without it,
+              # Settings() would fail on the missing child-session secret
+              # instead of the missing OIDC pair, so this guard would no
+              # longer isolate the OIDC failure mode it is named for.
+              -e CHILD_SESSION_SECRET="${CHILD_SESSION_SECRET_SMOKE}"
+              # Same reason for the device-grant secret (ADR-014): without it,
+              # Settings() would fail on the missing device-grant secret rather
+              # than the missing OIDC pair this guard is named for.
+              -e DEVICE_GRANT_SECRET="${DEVICE_GRANT_SECRET_SMOKE}"
+              # Same reason for the reviewer config: without it, Settings()
+              # would fail on the mock-reviewer guard rather than the missing
+              # OIDC pair this guard is named for.  pragma: allowlist secret
+              -e CYO_ADVENTURE_REVIEW_PROVIDER=openrouter
+              -e OPENAI_API_KEY=sk-smoke-invalid
+            )
+            if docker run --rm "${GUARD_ENV[@]}" cyo-smoke-backend:ci \
+              python -c "import cyo_adventure.core.config" 2>/dev/null; then
+              echo "Settings() accepted a production env with no OIDC config;"
+              echo "the fail-fast guard from the 2026-07-06 incident is gone."
+              exit 1
+            fi
+            echo "::endgroup::"
+
+            echo "::group::config guard still refuses a mock reviewer in production"
+            # Every mandatory non-local variable EXCEPT the reviewer config,
+            # so review_provider falls back to its default of "mock" and
+            # core/config.py's _require_real_reviewer_outside_local (cyo
+            # PR #521) is the only validator left to fire. Mirrors the OIDC
+            # guard above: the mock reviewer runs no real safety review over
+            # children's content, so a production boot with it must fail.
+            REVIEW_GUARD_ENV=(
+              -e ENVIRONMENT=production
+              # Same dummy DSN as SMOKE_ENV above.  pragma: allowlist secret
+              -e DATABASE_URL=postgresql+asyncpg://smoke@db.invalid:5432/smoke
+              -e OIDC_ISSUER=https://smoke.invalid/auth/v1
+              -e OIDC_JWKS_URL=https://smoke.invalid/auth/v1/.well-known/jwks.json
+              -e CHILD_SESSION_SECRET="${CHILD_SESSION_SECRET_SMOKE}"
+              -e DEVICE_GRANT_SECRET="${DEVICE_GRANT_SECRET_SMOKE}"
+            )
+            if docker run --rm "${REVIEW_GUARD_ENV[@]}" cyo-smoke-backend:ci \
+              python -c "import cyo_adventure.core.config" 2>/dev/null; then
+              echo "Settings() accepted a production env with a mock reviewer;"
+              echo "the fail-fast guard from cyo-adventure PR #521 is gone."
+              exit 1
+            fi
+            echo "::endgroup::"
+          elif [ "${COMPONENT}" = "frontend" ] || [ "${COMPONENT}" = "frontend-staging" ]; then
+            echo "::group::frontend nginx serves the app shell"
+            # Use the per-component smoke image (cyo-smoke-frontend:ci or
+            # cyo-smoke-frontend-staging:ci) so the staging leg boots its own
+            # staging-baked bundle, not the production frontend's.
+            docker run -d --name cyo-smoke -p 18080:80 "cyo-smoke-${COMPONENT}:ci"
+            ok=""
+            for _ in $(seq 1 15); do
+              if curl -fsS http://localhost:18080/ | grep -qi '<title'; then
+                ok=1; break
+              fi
+              sleep 2
+            done
+            if [ -z "${ok}" ]; then
+              echo "frontend never served an app shell with a <title>; logs:"
+              docker logs cyo-smoke || true
+              exit 1
+            fi
+            echo "::endgroup::"
+          else
+            # Fail loudly if a new matrix component is added without a smoke
+            # branch, rather than silently running the frontend checks against
+            # an image that is not the frontend.
+            echo "no smoke-test branch for component '${COMPONENT}'; add one above"
+            exit 1
+          fi
+
+      - name: Build and push image
+        id: build
+        uses: docker/build-push-action@53b7df96c91f9c12dcc8a07bcb9ccacbed38856a  # v7.3.0
+        with:
+          context: ${{ matrix.component.context }}
+          file: ${{ matrix.component.dockerfile }}
+          target: ${{ matrix.component.target || '' }}
+          build-args: ${{ matrix.component.build-args }}
+          platforms: linux/amd64,linux/arm64
+          push: ${{ github.event_name != 'workflow_dispatch' || inputs.push == true }}
+          tags: ${{ steps.meta.outputs.tags }}
+          cache-from: type=gha,scope=${{ matrix.component.cache-scope }}
+          cache-to: type=gha,mode=max,scope=${{ matrix.component.cache-scope }}
+          provenance: mode=max
+          sbom: true
+          labels: |
+            org.opencontainers.image.title=homelab-cyo-adventure-${{ matrix.component.name }}
+            org.opencontainers.image.description=CYO Adventure ${{ matrix.component.name }} image (see revision/source labels for build provenance)
+            org.opencontainers.image.source=https://github.com/${{ github.repository }}
+            org.opencontainers.image.revision=${{ steps.source.outputs.sha }}
+            org.opencontainers.image.vendor=Homelab Infrastructure
+
+      - name: Generate SBOM with Syft
+        id: sbom
+        # PUSHED is required (not just a non-empty digest): a build-only run
+        # (workflow_dispatch with push:false) can still populate the digest
+        # output from the local build result, but there is nothing pullable
+        # in the registry yet for syft/trivy to reference below.
+        if: steps.build.outputs.digest != '' && (github.event_name != 'workflow_dispatch' || inputs.push == true)
+        env:
+          COMPONENT: ${{ matrix.component.name }}
+          IMAGE_REF: ${{ steps.meta.outputs.image }}:${{ steps.meta.outputs.sha_tag }}
+        # #CRITICAL external-resource: the earlier "Login to GHCR" step only
+        # authenticates the runner host's own docker config; a fresh
+        # `docker run --rm anchore/syft ...` container does not inherit it and
+        # pulls the just-pushed image with no credentials at all, failing
+        # UNAUTHORIZED even though the image built and pushed successfully.
+        # Confirmed via syft's own docs (github.com/anchore/syft/wiki/
+        # private-registry-authentication): mounting config.json to an
+        # arbitrary path and pointing DOCKER_CONFIG at its parent directory
+        # is the documented pattern; syft does not reliably pick up a config
+        # mounted straight at /root/.docker/config.json (tried first, still
+        # failed UNAUTHORIZED against a real run). Reusing the existing GHCR
+        # login this way, rather than granting a broader credential, is why
+        # images do NOT need to be made public for SBOM/scan steps to work.
+        run: |
+          docker run --rm \
+            -v "${HOME}/.docker/config.json:/config/config.json:ro" \
+            -e DOCKER_CONFIG=/config \
+            anchore/syft:v1.44.0 "${IMAGE_REF}" -o cyclonedx-json > "sbom-${COMPONENT}.json"
+          echo "sbom_file=sbom-${COMPONENT}.json" >> "$GITHUB_OUTPUT"
+
+      - name: Sign image with Cosign
+        # Gated on github.ref == 'refs/heads/main' (see the #CRITICAL note on
+        # the "Generate image metadata" step above), not the old
+        # `publish_grade` output; this workflow has no cross-repo dispatch
+        # payload left to disambiguate.
+        #
+        # #CRITICAL security: the keyless signing IDENTITY embedded in the
+        # Fulcio cert (and checked by any future `cosign verify
+        # --certificate-identity=...`) CHANGES with this move: it used to be
+        # https://github.com/ByronWilliamsCPA/homelab-infra/.github/workflows/cyo-adventure-build.yml@refs/heads/main
+        # and is now
+        # https://github.com/ByronWilliamsCPA/cyo-adventure/.github/workflows/build-images.yml@refs/heads/main
+        # Nothing verifies signatures today, so nothing breaks on this move,
+        # but any verifier written in the future MUST be pinned to the new
+        # identity string above, not the old homelab-infra one.
+        # #VERIFY before writing a `cosign verify` step or policy anywhere,
+        # confirm the --certificate-identity value against a real signed tag
+        # from this workflow (`cosign verify --certificate-identity-regexp
+        # 'cyo-adventure/\.github/workflows/build-images\.yml' ...`).
+        if: >-
+          github.ref == 'refs/heads/main' &&
+          steps.build.outputs.digest != '' &&
+          (github.event_name != 'workflow_dispatch' || inputs.push == true)
+        env:
+          COSIGN_EXPERIMENTAL: "true"
+          IMAGE_DIGEST_REF: ${{ steps.meta.outputs.image }}@${{ steps.build.outputs.digest }}
+        run: |
+          cosign sign --yes "${IMAGE_DIGEST_REF}"
+
+      - name: Attest SBOM to image
+        # Same github.ref == 'refs/heads/main' gate as signing above.
+        if: >-
+          github.ref == 'refs/heads/main' &&
+          steps.build.outputs.digest != '' &&
+          steps.sbom.outputs.sbom_file != '' &&
+          (github.event_name != 'workflow_dispatch' || inputs.push == true)
+        env:
+          IMAGE_DIGEST_REF: ${{ steps.meta.outputs.image }}@${{ steps.build.outputs.digest }}
+          SBOM_FILE: ${{ steps.sbom.outputs.sbom_file }}
+        run: |
+          cosign attest --yes \
+            --predicate "${SBOM_FILE}" \
+            --type cyclonedx \
+            "${IMAGE_DIGEST_REF}"
+        continue-on-error: true
+
+      - name: Security scan with Trivy
+        if: steps.build.outputs.digest != '' && (github.event_name != 'workflow_dispatch' || inputs.push == true)
+        env:
+          COMPONENT: ${{ matrix.component.name }}
+          IMAGE_REF: ${{ steps.meta.outputs.image }}:${{ steps.meta.outputs.sha_tag }}
+          # #CRITICAL external-resource: same GHCR-auth gap as the Syft step
+          # above; the mounted docker.sock lets Trivy talk to the host
+          # daemon, but pulling `${IMAGE_REF}` from ghcr.io is a separate
+          # registry fetch that still needs its own credentials. Trivy
+          # documents TRIVY_USERNAME/TRIVY_PASSWORD directly (unlike syft,
+          # which needs a config.json mount), so use those instead of
+          # replicating syft's DOCKER_CONFIG mount pattern here.
+          TRIVY_USERNAME: ${{ github.actor }}
+          TRIVY_PASSWORD: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          mkdir -p "${{ runner.temp }}/trivy-cache"
+          docker run --rm -v /var/run/docker.sock:/var/run/docker.sock \
+            -v "${{ runner.temp }}/trivy-cache:/root/.cache/trivy" \
+            -e TRIVY_USERNAME -e TRIVY_PASSWORD \
+            aquasec/trivy:0.70.0 image --severity HIGH,CRITICAL --exit-code 0 \
+            --format table "${IMAGE_REF}" | tee "trivy-${COMPONENT}.txt"
+          docker run --rm -v /var/run/docker.sock:/var/run/docker.sock -v "$(pwd):/output" \
+            -v "${{ runner.temp }}/trivy-cache:/root/.cache/trivy" \
+            -e TRIVY_USERNAME -e TRIVY_PASSWORD \
+            aquasec/trivy:0.70.0 image --severity HIGH,CRITICAL --format sarif \
+            --output "/output/trivy-${COMPONENT}.sarif" "${IMAGE_REF}" || true
+
+      # This repo has no GitHub Advanced Security code-scanning configured for
+      # this workflow's images, so publish the Trivy HIGH/CRITICAL findings as
+      # a downloadable build artifact instead of a SARIF upload. The scan
+      # itself runs above with --exit-code 0, so findings are reported, not
+      # gating; the table is also printed inline to the build log.
+      - name: Upload Trivy scan results
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a  # v7.0.1
+        if: steps.build.outputs.digest != '' && (github.event_name != 'workflow_dispatch' || inputs.push == true)
+        with:
+          name: trivy-scan-${{ matrix.component.name }}
+          path: |
+            trivy-${{ matrix.component.name }}.txt
+            trivy-${{ matrix.component.name }}.sarif
+          if-no-files-found: warn
+          retention-days: 30
+
+      - name: Build summary
+        if: always()
+        env:
+          IMAGE: ${{ steps.meta.outputs.image }}
+          DIGEST: ${{ steps.build.outputs.digest }}
+          COMPONENT: ${{ matrix.component.name }}
+          SOURCE_SHA: ${{ steps.source.outputs.sha }}
+        run: |
+          {
+            echo "## CYO Adventure Build: ${COMPONENT}"
+            echo ""
+            echo "| Property | Value |"
+            echo "|----------|-------|"
+            echo "| Source | \`${{ github.repository }}@${SOURCE_SHA}\` |"
+            echo "| Image | \`${IMAGE}\` |"
+            echo "| Digest | \`${DIGEST:-N/A}\` |"
+          } >> "$GITHUB_STEP_SUMMARY"
+
+  # ===========================================================================
+  # Alert on failure: file/update the pinned ci-failure tracking issue so a
+  # missed weekly safety-net build is not silent. This is deliberately a
+  # separate job from `build` above, not an extra step inside it: `build` is a
+  # 3-leg matrix (backend, frontend, frontend-staging) with `fail-fast:
+  # false`, and the shared action's own header, plus
+  # tests/unit/test_ci_failure_action_contract.py::
+  # TestTheActionsOwnPreconditionsHold::test_no_call_site_sits_in_a_multi_leg_matrix_job,
+  # forbid calling it from inside a matrix job with more than one leg: two
+  # failing legs racing the action's find-then-create lookup on the same
+  # marker could both miss the open issue and file two. Routing through a
+  # single downstream job instead follows kws-delivery-health.yml's
+  # probe + alert split.
+  # ===========================================================================
+  alert:
+    name: Alert on failure
+    needs: build
+    if: failure()
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    # #CRITICAL security: issues: write is isolated to this job and never
+    # granted to `build` above, which already holds packages: write,
+    # id-token: write, and attestations: write for the GHCR push and keyless
+    # signing. Keeping the tracking-issue scope out of that job means a
+    # compromised build step cannot also manipulate repository issues.
+    # #VERIFY any future step added to this job beyond the checkout and the
+    # ci-failure-issue call below must not need a broader scope than
+    # issues: write; split it into its own job instead of widening this one.
+    permissions:
+      issues: write
+    steps:
+      - name: Harden Runner
+        uses: step-security/harden-runner@bf7454d06d71f1098171f2acdf0cd4708d7b5920 # v2.20.0
+        with:
+          egress-policy: audit
+
+      - name: Check out the shared alerting action
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          # Only the composite action is needed. A local `uses: ./...` requires a
+          # checkout, and this job previously had none.
+          sparse-checkout: .github/actions/ci-failure-issue
+          sparse-checkout-cone-mode: false
+          persist-credentials: false
+
+      - name: Compose the issue body
+        id: compose
+        uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9.0.0
+        with:
+          result-encoding: string
+          script: |
+            const runUrl = `${context.serverUrl}/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`
+            const today = new Date().toISOString().slice(0, 10)
+
+            return [
+                  'The scheduled `Build Images` workflow (`.github/workflows/build-images.yml`) did not complete: at least one matrix leg (backend, frontend, frontend-staging) failed or was cancelled.',
+                  '',
+                  'This is the weekly Monday 06:00 UTC safety net, kept as defense in depth',
+                  'in case a push-triggered run is ever missed. A failure here means the',
+                  'homelab deploy images can silently go stale between real pushes to main.',
+                  '',
+                  'Read the run log for which matrix leg(s) failed and at which step (smoke',
+                  'test, multi-arch build/push, cosign signing, or the Trivy scan); each leg',
+                  'runs independently, so one leg failing does not imply the others did.',
+                  '',
+                  `First failing run: ${runUrl}`,
+                  `Date: ${today}`,
+                  '',
+                  'This issue accumulates one comment per failing run and closes itself',
+                  'once a scheduled run succeeds; the next failure opens a fresh issue.',
+                ].join('\n')
+
+      - name: File or comment on the pinned issue
+        uses: ./.github/actions/ci-failure-issue
+        with:
+          marker: '[build-images]'
+          summary: scheduled weekly image build failing
+          body: ${{ steps.compose.outputs.result }}
+          comment-body: The scheduled weekly image build did not complete again.
+
+  # ===========================================================================
+  # Resolve: close the pinned tracking issue on a green scheduled run.
+  # ===========================================================================
+  resolve:
+    name: Resolve the tracking issue
+    needs: build
+    # `github.event_name == 'schedule'`, matching supabase-backup.yml and
+    # kws-delivery-health.yml: a green PUSH or workflow_dispatch run proves
+    # only that one trigger path is healthy, not that the schedule itself
+    # still runs, so it must not close an issue opened about a dead cron.
+    if: needs.build.result == 'success' && github.event_name == 'schedule'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      issues: write
+    steps:
+      - name: Harden Runner
+        uses: step-security/harden-runner@bf7454d06d71f1098171f2acdf0cd4708d7b5920 # v2.20.0
+        with:
+          egress-policy: audit
+
+      - name: Check out the shared alerting action
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          sparse-checkout: .github/actions/ci-failure-issue
+          sparse-checkout-cone-mode: false
+          persist-credentials: false
+
+      - name: Close the pinned issue
+        uses: ./.github/actions/ci-failure-issue
+        with:
+          marker: '[build-images]'
+          mode: resolve

@@ -222,7 +222,7 @@ jobs:
             // Hardcoded, and deliberately so: unlike workflow discovery above,
             // "does this workflow already file its own tracking issue on
             // failure, and under what marker" cannot be derived from a
-            // generic pattern. Twenty-one scheduled workflows share this
+            // generic pattern. Twenty-two scheduled workflows share this
             // through one composite action, `.github/actions/ci-failure-issue/`
             // (introduced by PR #771, merged to main 2026-08-27), which
             // matches by a `marker` title-prefix and defaults to the
@@ -244,9 +244,9 @@ jobs:
             // .github/workflows/test/health-rollup.test.mjs is consequently
             // empty, and that test now FAILS on a non-empty set rather than
             // passing vacuously on an empty one.
-            // Only the following eight of the twenty-nine scheduled
+            // Only the following eight of the thirty scheduled
             // workflows in this repo (excluding this file, as of
-            // 2026-09-04) genuinely file no tracking issue of any kind on
+            // 2026-09-05) genuinely file no tracking issue of any kind on
             // failure: container-security.yml,
             // dependency-provenance-weekly.yml, fips-compatibility.yml,
             // python-compatibility.yml, scorecard.yml, security-analysis.yml,
@@ -255,6 +255,7 @@ jobs:
             // or drops the shared action.
             const KNOWN_ALERTS = {
               'accessibility-compliance-weekly.yml': { label: 'e2e-alert', titlePrefix: '[a11y-weekly]' },
+              'build-images.yml': { label: 'ci-failure', titlePrefix: '[build-images]' },
               'cifuzzy.yml': { label: 'ci-failure', titlePrefix: '[fuzzing]' },
               'dast-baseline-weekly.yml': { label: 'ci-failure', titlePrefix: '[dast-baseline]' },
               'e2e-prod.yml': { label: 'e2e-alert', titlePrefix: '[e2e-prod]' },
