@@ -9,6 +9,11 @@ tags:
   - evaluation
 ---
 
+> **Superseded reference (2026-09-04):** `cross-device-e2e.yml` no longer exists. Its job moved into
+> `ci.yml` as the `cross-device-e2e` job and is now a required check via `ci-gate`, rather than the
+> informational standalone workflow described below. The references that follow are preserved as
+> written on 2026-08-27 for the audit trail; read them as historical, not as current state.
+
 Companion to
 [user-side-testing-module-proposal-2026-08-27.md](user-side-testing-module-proposal-2026-08-27.md), which holds
 the full process inventory and the external-recommendation comparison. This document adds what a review of the

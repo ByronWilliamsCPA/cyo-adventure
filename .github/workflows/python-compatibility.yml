@@ -50,18 +50,40 @@ jobs:
       matrix:
         python-version: ['3.11', '3.12', '3.13', '3.14']
         os: [ubuntu-latest]
+        # macOS covers the POSIX-but-not-Linux assumptions a contributor on a
+        # Mac would hit (BSD userland, a case-insensitive filesystem). There
+        # is deliberately no windows-latest leg: this backend is deployed only
+        # as `dhi-python:3.14-debian13`, so "does the DEPLOYED Python service
+        # run on Windows" is a question with no consumer. It was removed on
+        # 2026-09-04, when the leg had been red on every `main` run since
+        # 2026-08-29; it was green for the 19 runs before that, so this was a
+        # recurring regression rather than a permanent state. Four of its five
+        # failures were platform expressiveness: two `0o600` mode assertions,
+        # and two `TestGateDecisions` cases that die in `bash -c` argv
+        # handling (mechanism suspected, never proven). The fifth,
+        # `test_the_floor_is_reachable_and_tight`, is neither; it looks like
+        # the host-path-separator class #805 fixed in a sibling test via
+        # `.as_posix()`, i.e. a fixable defect rather than a Windows limit.
+        # #ASSUME: data-integrity: dropping this leg leaves `scripts/`
+        # portability unexercised, including the Windows-only code #749 added
+        # (`scripts/w7_battery.py::_alive_windows` and its kernel32 ctypes
+        # declarations). #749's two regression tests fail on Linux too, so
+        # those specific defects stay covered; new ones would not be.
+        # #VERIFY: re-add a windows-latest leg, or delete the Windows-only
+        # branches in `scripts/`, if `scripts/` portability regresses. What
+        # users actually need is the FRONTEND working from Windows, which is a
+        # browser-engine question answered by ci.yml's `cross-device-e2e` job
+        # and by e2e-real-os.yml, not by running the interpreter there.
         include:
           - os: macos-latest
-            python-version: '3.14'
-          - os: windows-latest
             python-version: '3.14'
 
     permissions:
       contents: read
     steps:
       # harden-runner only enforces egress policy on Linux runners; it
-      # silently no-ops on macOS/Windows. Gate it explicitly so the
-      # limitation is visible in the workflow rather than implicit.
+      # silently no-ops on macOS. Gate it explicitly so the limitation is
+      # visible in the workflow rather than implicit.
       - name: Harden the runner
         if: runner.os == 'Linux'
         uses: step-security/harden-runner@bf7454d06d71f1098171f2acdf0cd4708d7b5920 # v2.20.0
@@ -84,18 +106,22 @@ jobs:
           uv sync --all-extras
 
       - name: Run tests
-        # Force bash on all platforms; Windows runners default to PowerShell,
-        # which cannot parse the backslash line-continuations below (ParserError).
+        # Force bash on all platforms. Kept after the windows-latest leg was
+        # removed on 2026-09-04: `shell: bash` is what makes the backslash
+        # line-continuations below portable, so re-adding Windows or any other
+        # non-POSIX-default leg without it would fail with a ParserError.
         #
         # No -x. This matrix exists to find platform-specific breakage, and
-        # once a platform is broken it tends to accumulate: the Windows leg
-        # failed seventeen runs in a row, from #719 on 2026-08-16 through
-        # 2026-08-24. For the first twelve there was one defect (os.kill on
+        # once a platform is broken it tends to accumulate. The historical
+        # case: the since-removed Windows leg failed seventeen runs in a row,
+        # from #719 on 2026-08-16 through 2026-08-24. For the first twelve
+        # there was one defect (os.kill on
         # Windows) and -x named it every time. #740 then added a second,
         # independent one (a host path separator in the census), and from that
         # point -x could only ever report whichever of the two random ordering
         # reached first: fixing the named one would have revealed the next, one
-        # red run at a time. That is the cost this removes.
+        # red run at a time. That is the cost this removes, and it applies to
+        # the surviving macOS leg identically.
         # A leg that runs to completion costs the same wall clock it already
         # spends when green and names every failure in one run. It does make
         # the failing path longer than the passing one, which is why the job

@@ -1,0 +1,257 @@
+# Frontend e2e on a real user operating system.
+#
+# Every other Playwright tier in this repository runs on `ubuntu-latest`,
+# including the ones that emulate an iPhone or an iPad. Emulation via
+# Playwright's `devices[...]` descriptors sets a viewport, a user-agent and a
+# touch profile; it does NOT change which operating system the browser engine
+# was built against. That distinction is the whole reason this workflow exists:
+#
+#   * `webkit` on Linux is the WebKit engine built for a Linux graphics and
+#     media stack. It is not Safari. It has different font rasterisation, no
+#     proprietary codecs, and its own service-worker and storage-eviction
+#     behaviour. For an app whose reader depends on IndexedDB-backed offline
+#     downloads, a service worker that answers navigations, and read-aloud
+#     audio, those are exactly the subsystems most likely to diverge, and the
+#     ubuntu `webkit-kid` tier cannot see the divergence by construction.
+#   * `chromium` on Windows is where the majority of adult guardians actually
+#     open the guardian console. Font metrics, scrollbar sizing and the
+#     download/file-picker path differ from Linux chromium.
+#
+# Scope, deliberately narrow: this is a real-OS smoke tier, not a second full
+# matrix. Each leg runs one existing project against the mocked backend. It
+# authenticates against nothing, injects no repository secret beyond the
+# default token used for issue alerting, and touches no shared environment.
+#
+# Advisory, not a merge gate. It runs on a schedule rather than on
+# `pull_request` for two reasons: a real-OS runner is materially slower than
+# ubuntu, and per-PR reliability of these two legs is unproven. The per-PR
+# browser-engine gate is ci.yml's `cross-device-e2e` job (chromium + firefox +
+# webkit on ubuntu), which became a required check on 2026-09-04. Promote a leg
+# here only once its own flakiness rate is known, the same posture
+# `cross-device-e2e.yml` went through before that promotion.
+#
+# It alerts through the shared `ci-failure-issue` composite so a red run is not
+# silent: an advisory tier nobody is told about is indistinguishable from one
+# that is passing. `mode: resolve` on a green run closes the issue again, so a
+# recovered leg does not leave a stale alert open.
+name: E2E (real user OS)
+
+on:
+  # Daily, 16:00 UTC. No other cron in this directory fires in the 16:00
+  # hour; the nearest neighbours are webkit-kid at 15:00 and
+  # kws-delivery-health at 17:00, so this run never starts alongside another
+  # scheduled job. Deliberately not an exhaustive list of the directory's
+  # crons: an enumeration here has no oracle and goes stale silently
+  # (`UW-C435`).
+  schedule:
+    - cron: '0 16 * * *'
+  workflow_dispatch: {}
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  real-os:
+    name: Playwright (${{ matrix.label }})
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 25
+    # No `issues: write` here. Alerting lives in the separate `alert` and
+    # `resolve` jobs below, matching supabase-backup.yml: a matrix job cannot
+    # own its own alert without either racing its sibling for the same issue
+    # or, worse, having the green leg's resolve close the issue the red leg
+    # just opened. The fleet rollup also allows exactly ONE marker per
+    # workflow file (KNOWN_ALERTS in scheduled-health-rollup.yml is keyed by
+    # filename, and health-rollup.test.mjs asserts every call site in a file
+    # agrees on marker and label), so a per-leg marker is not representable
+    # there at all: it would report this tier UNTRACKED while its issue sat
+    # open.
+    permissions:
+      contents: read
+    strategy:
+      # Neither leg tells you anything about the other: a WebKit-on-macOS
+      # regression and a chromium-on-Windows regression have no shared cause,
+      # so cancelling the second when the first fails would discard a real
+      # result.
+      fail-fast: false
+      matrix:
+        include:
+          # The kid reading journey (reader, library, offline, read-aloud) on
+          # real Safari-backed WebKit. Same project as the ubuntu webkit-kid
+          # tier, so a failure here that passes there IS the macOS delta.
+          - os: macos-latest
+            label: macos-webkit
+            browser: webkit
+            script: 'test:e2e:webkit-kid'
+          # The mocked chromium suite, the same project ci.yml's required
+          # frontend-e2e job runs on ubuntu, so the same reasoning applies:
+          # red here plus green there localises the fault to Windows.
+          - os: windows-latest
+            label: windows-chromium
+            browser: chromium
+            script: 'test:e2e'
+    defaults:
+      run:
+        working-directory: ./frontend
+    steps:
+      # No harden-runner step on this job, unlike every other job in this
+      # repo. Do not restore the rationale this file first carried ("enforces
+      # egress policy on Linux only and silently no-ops elsewhere"): that
+      # constraint describes BLOCK mode, and all 85 harden-runner call sites
+      # in this repo use `egress-policy: audit`, which GitHub-hosted macOS
+      # and Windows runners do support. Audit-mode monitoring is available
+      # here; it is simply not wired up yet, and cannot be exercised before
+      # this workflow reaches the default branch.
+      # #ASSUME: security: omitting it leaves `npm ci` and
+      # `npx playwright install`, the two highest supply-chain-exposure steps
+      # in this file, with no runtime egress monitoring on the two least
+      # observed runners in the fleet.
+      # #VERIFY: add `step-security/harden-runner` with
+      # `egress-policy: audit` to this job once one scheduled run has proved
+      # the tier green; the alert and resolve jobs below already pin
+      # v2.20.0 and can be copied verbatim.
+      - name: Checkout repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Setup Node.js
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: '22'
+          cache: 'npm'
+          cache-dependency-path: frontend/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      # `matrix.browser` and `matrix.script` are interpolated directly into
+      # `run:` rather than passed through `env:`. They are author-controlled
+      # literals defined in the matrix above, not event-supplied data, so the
+      # workflow-injection risk that rule guards against does not apply; and
+      # the indirection would actively break here, because this matrix spans
+      # bash (macOS) and PowerShell (Windows), which disagree on how an
+      # environment variable is spelled (`$BROWSER` vs `$env:BROWSER`).
+      #
+      # No `--with-deps`, and no browser cache. `--with-deps` is the apt-get
+      # wrapper for Linux runners and has nothing to install on macOS or
+      # Windows; the cache is skipped because ms-playwright lives at a
+      # different path per platform and a once-a-day download is not worth a
+      # per-OS cache key that silently misses.
+      - name: Install the Playwright browser for this leg
+        run: npx playwright install ${{ matrix.browser }}
+
+      - name: E2E (Playwright, real-OS tier)
+        env:
+          # The projects this runs live in the SHARED default
+          # frontend/playwright.config.ts, whose json reporter defaults to one
+          # fixed filename. An explicit per-leg path keeps two projects from
+          # overwriting each other should this job ever run more than one; see
+          # that config's header comment and webkit-kid.yml for the confirmed
+          # real-world shape of that collision.
+          PLAYWRIGHT_JSON_REPORT_PATH: playwright-json-report/real-os-${{ matrix.label }}.json
+        run: npm run ${{ matrix.script }}
+
+      # Deliberately no `upload-artifact` step. THIS REPOSITORY IS PUBLIC, and
+      # a Playwright output directory carries `error-context.md` regardless of
+      # the `trace`/`screenshot`/`video` settings. Five workflows already
+      # publish `frontend/test-results/` wholesale and `UW-C433` tracks
+      # narrowing them; a sixth would widen a known gap for a tier whose
+      # failures are legible in the job log. The
+      # `frontend/scripts/test/artifact-upload-safety.test.mjs` tripwire pins
+      # that set and would fail if this workflow joined it.
+
+  # One alert for the whole matrix, so the tier has exactly one marker and one
+  # tracking issue. `needs.real-os.result` is the matrix aggregate: it is
+  # `failure` when ANY leg failed, which is the right trigger, since the issue
+  # says "a real-OS leg is red" and the run log says which.
+  #
+  # Schedule-gated for the same reason `resolve` is: a `workflow_dispatch` on
+  # a branch is not evidence about the health of this tier on `main`, so it
+  # must not file a tracking issue that only a later green SCHEDULED run can
+  # close. `cancelled()` is kept because a run aborted mid-flight leaves the
+  # tier's health unknown, and `concurrency.cancel-in-progress` is false, so
+  # a cancellation is never self-inflicted.
+  alert:
+    name: Alert on a failed real-OS leg
+    needs: real-os
+    if: (failure() || cancelled()) && github.event_name == 'schedule'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: read
+      issues: write
+    steps:
+      - name: Harden the runner
+        uses: step-security/harden-runner@bf7454d06d71f1098171f2acdf0cd4708d7b5920 # v2.20.0
+        with:
+          egress-policy: audit
+
+      - name: Checkout repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: File or update the failure alert
+        uses: ./.github/actions/ci-failure-issue
+        with:
+          marker: '[real-os-e2e]'
+          label: e2e-alert
+          mode: open
+          summary: scheduled real-OS e2e leg failing
+          body: >-
+            The scheduled `E2E (real user OS)` workflow
+            (`.github/workflows/e2e-real-os.yml`) has a failing leg. Open the
+            run to see which: `macos-webkit` (the kid journey on real
+            Safari-backed WebKit) or `windows-chromium` (the mocked chromium
+            suite on Windows).
+
+
+            This tier exists to catch what an emulated device on a Linux runner
+            cannot: a browser engine built against a real user operating
+            system. A failure here whose ubuntu counterpart is green
+            (`cross-device-e2e` in ci.yml for chromium/firefox/webkit,
+            `webkit-kid.yml` for the same kid-journey project) localises the
+            fault to that operating system rather than to the app logic. If the
+            ubuntu counterpart is red too, fix that first: this is then a
+            symptom, not the cause.
+
+
+            It runs the mocked tier only, with no backend, no shared
+            environment and no repository secret, so a failure is a genuine
+            signal rather than an environment outage. Start from the failing
+            spec names in the run log; this tier uploads no artifact by design,
+            because the repository is public.
+          comment-body: >-
+            A real-OS leg failed again on a later scheduled run. See that run's
+            log for which leg and which specs.
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+
+  # Closes the alert once every leg is green again, so the issue tracks the
+  # current state instead of accumulating one open item per historical
+  # failure. Scheduled runs only: a `workflow_dispatch` on a branch is not
+  # evidence that the tier is healthy on `main`.
+  resolve:
+    name: Resolve the real-OS alert when green
+    needs: real-os
+    if: needs.real-os.result == 'success' && github.event_name == 'schedule'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: read
+      issues: write
+    steps:
+      - name: Harden the runner
+        uses: step-security/harden-runner@bf7454d06d71f1098171f2acdf0cd4708d7b5920 # v2.20.0
+        with:
+          egress-policy: audit
+
+      - name: Checkout repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Resolve the failure alert
+        uses: ./.github/actions/ci-failure-issue
+        with:
+          marker: '[real-os-e2e]'
+          label: e2e-alert
+          mode: resolve
+          github-token: ${{ secrets.GITHUB_TOKEN }}

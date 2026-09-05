@@ -297,12 +297,12 @@ jobs:
     # local-only (needs Postgres + a seeded uvicorn); run it per
     # frontend/README.md before opening a PR. The cross-device/cross-browser
     # tier (firefox + webkit device profiles, e2e/cross-device.spec.ts) runs
-    # in its own dedicated, non-blocking workflow (cross-device-e2e.yml)
-    # rather than here: `playwright install --with-deps firefox webkit`
-    # apt-installs a much larger dependency set (gstreamer, libavcodec, etc.)
-    # than chromium alone, which pushed the old combined job's 15-minute
-    # timeout -- it was killed mid-apt-install, before a single test ran, the
-    # first time this was tried inline.
+    # in the sibling `cross-device-e2e` job below, not as a step here:
+    # `playwright install --with-deps firefox webkit` apt-installs a much
+    # larger dependency set (gstreamer, libavcodec, etc.) than chromium alone,
+    # which pushed the old combined job's 15-minute timeout -- it was killed
+    # mid-apt-install, before a single test ran, the first time this was tried
+    # inline.
     needs: detect-release-pr
     if: github.event_name != 'merge_group' && needs.detect-release-pr.outputs.release_pr != 'true'
     defaults:
@@ -353,6 +353,114 @@ jobs:
 
       - name: E2E (Playwright, mocked tier)
         run: npm run test:e2e
+
+  # Promoted from the standalone, informational cross-device-e2e.yml on
+  # 2026-09-04, which had always said it should become a required check "once
+  # its flakiness rate is known to be acceptable". It now runs here so
+  # `ci-gate` can `needs:` it: a job in another workflow cannot be fanned into
+  # this gate, and the alternative (naming the standalone workflow as its own
+  # required context in the ruleset) deadlocks any PR that its `paths:` filter
+  # excludes, because a check that never starts reports nothing to satisfy.
+  #
+  # That is also why this job carries no path filter while the old workflow
+  # did. A required check must run on every PR the gate judges, so docs-only
+  # and backend-only PRs now pay for a firefox+webkit install they previously
+  # skipped. That cost is the price of gating the coverage, and it is paid in
+  # parallel with the rest of the suite rather than in series.
+  #
+  # It keeps its own job (not a step in `frontend` or `frontend-e2e`) for the
+  # original reason: `playwright install --with-deps firefox webkit` apt-
+  # installs a far larger dependency set (gstreamer, libavcodec) than chromium
+  # alone, and doing it inline killed the combined job mid-apt-install, before
+  # a single test ran, on its 15-minute timeout.
+  cross-device-e2e:
+    name: E2E (cross-device/cross-browser)
+    runs-on: ubuntu-latest
+    # Generous relative to the ~2min a chromium-only install/run takes:
+    # firefox + webkit's apt dependency set is large and this budget must
+    # absorb a slow mirror day, not just the happy path.
+    timeout-minutes: 25
+    # #CRITICAL: data-integrity: this `if:` must stay character-identical to
+    # frontend-e2e's. A contract test derives each gated job's allowance from the exact
+    # string `github.event_name != 'merge_group'`, so a paraphrase here fails
+    # that test rather than reaching CI. (The gate script itself reads only
+    # `EVENT_NAME` and takes a hardcoded literal per job; the string-exactness
+    # lives in pytest, which is why the #VERIFY below is the authority.)
+    # #VERIFY: tests/unit/test_ci_gate_contract.py::TestSkipAllowanceMatchesJobCondition
+    # asserts the allowance against this expression and fails on any other
+    # shape that mentions merge_group.
+    needs: detect-release-pr
+    if: github.event_name != 'merge_group' && needs.detect-release-pr.outputs.release_pr != 'true'
+    defaults:
+      run:
+        working-directory: ./frontend
+    permissions:
+      contents: read
+    steps:
+      - name: Harden the runner
+        # deferral: 2026-09-18
+        uses: step-security/harden-runner@bf7454d06d71f1098171f2acdf0cd4708d7b5920 # v2.20.0
+        with:
+          egress-policy: audit
+
+      - name: Checkout repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Setup Node.js
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: '22'
+          cache: 'npm'
+          cache-dependency-path: frontend/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      # Mirrors frontend-e2e's cache above, with a distinct three-engine key
+      # so a chromium-only entry can never be restored here. This job carries
+      # no `paths:` filter (ci.yml has none), so without a cache a docs-only
+      # or backend-only PR pays a chromium+firefox+webkit download on every
+      # run. On a hit, `install-deps` is a fast apt check: the apt libraries
+      # are not preserved across ephemeral runners, but the browsers are.
+      - name: Cache Playwright browsers
+        id: playwright-cache
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-cross-device-${{ runner.os }}-${{ hashFiles('frontend/package-lock.json') }}
+
+      - name: Install Playwright browsers (chromium + firefox + webkit)
+        if: steps.playwright-cache.outputs.cache-hit != 'true'
+        run: npx playwright install --with-deps chromium firefox webkit
+
+      - name: Install Playwright OS dependencies (browser cache hit)
+        if: steps.playwright-cache.outputs.cache-hit == 'true'
+        run: npx playwright install-deps chromium firefox webkit
+
+      # Pixel 7 (chromium) + iPad gen 7 / iPhone 14 (webkit) + Desktop
+      # Firefox, each running e2e/cross-device.spec.ts's structural
+      # (no-pixel-diff) checks. See the cross-device-*/cross-browser-*
+      # projects in playwright.config.ts.
+      - name: E2E (Playwright, cross-device/cross-browser tier)
+        run: npm run test:e2e:cross-device
+
+      # The `Upload Playwright trace on failure` step that stood here in
+      # cross-device-e2e.yml did NOT survive the move, and must not be
+      # re-added. `frontend/scripts/test/artifact-upload-safety.test.mjs`'s
+      # hard rule is file-scoped, not job-scoped: ci.yml injects
+      # `CODECOV_TOKEN` and `QLTY_COVERAGE_TOKEN` in its coverage jobs, so any
+      # wholesale `frontend/test-results/` upload anywhere in this file trips
+      # the rule that closed the e2e-prod/e2e-staging credential exposure.
+      # Restoring the step under an exception would be the wrong trade twice
+      # over: THIS REPOSITORY IS PUBLIC, and a Playwright output directory
+      # carries `error-context.md` whatever the `trace` setting says.
+      #
+      # The cost is real and accepted: a blocking job now reports failures
+      # through its log (Playwright's reporter names the failing spec and
+      # prints the assertion) rather than through a downloadable trace. To
+      # reproduce one, run `npm run test:e2e:cross-device` locally.
+      # #VERIFY: that test's "the set of wholesale uploads has not widened"
+      # case pins the ledger at five and fails if this file joins it.
 
   design-system:
     name: Design System (Node 22)
@@ -1071,9 +1179,9 @@ jobs:
           workflow_count="$(find .github/workflows -maxdepth 1 \
             \( -name '*.yml' -o -name '*.yaml' \) -type f | wc -l)"
           if [ "${workflow_count}" -lt 30 ]; then
-            echo "::error::found only ${workflow_count} workflow files to lint;" \
-              "the repo has 46 (measured 2026-09-03). A shrunken input set" \
-              "reads exactly like a clean one."
+            echo "::error::found only ${workflow_count} workflow files to lint," \
+              "below the floor of 30 this check enforces. A shrunken input" \
+              "set reads exactly like a clean one."
             exit 1
           fi
 
@@ -1419,6 +1527,7 @@ jobs:
         ci,
         frontend,
         frontend-e2e,
+        cross-device-e2e,
         design-system,
         contract,
         schema-docs,
@@ -1459,6 +1568,7 @@ jobs:
           CI_RESULT: ${{ needs.ci.result }}
           FRONTEND_RESULT: ${{ needs.frontend.result }}
           FRONTEND_E2E_RESULT: ${{ needs.frontend-e2e.result }}
+          CROSS_DEVICE_E2E_RESULT: ${{ needs.cross-device-e2e.result }}
           DESIGN_SYSTEM_RESULT: ${{ needs.design-system.result }}
           CONTRACT_RESULT: ${{ needs.contract.result }}
           SCHEMA_DOCS_RESULT: ${{ needs.schema-docs.result }}
@@ -1592,7 +1702,8 @@ jobs:
             exit 0
           fi
 
-          # frontend, frontend-e2e, design-system and contract all carry
+          # frontend, frontend-e2e, cross-device-e2e, design-system and
+          # contract all carry
           # `if: github.event_name != 'merge_group' && ...`, so merge_group is
           # the one and only event on which their skip is by design. ci and
           # schema-docs have no such exclusion, so for them a skip is always a
@@ -1623,6 +1734,7 @@ jobs:
           check_job "Workflow Lint (actionlint)" "$WORKFLOW_LINT_RESULT" false
           check_job "Frontend (Node 22)" "$FRONTEND_RESULT" "$merge_queue_skip_ok"
           check_job "Frontend E2E (Playwright, mocked tier)" "$FRONTEND_E2E_RESULT" "$merge_queue_skip_ok"
+          check_job "E2E (cross-device/cross-browser)" "$CROSS_DEVICE_E2E_RESULT" "$merge_queue_skip_ok"
           check_job "Design System (Node 22)" "$DESIGN_SYSTEM_RESULT" "$merge_queue_skip_ok"
           check_job "OpenAPI Contract Drift" "$CONTRACT_RESULT" "$merge_queue_skip_ok"
 
