@@ -12,7 +12,7 @@ component: Development-Tools
 source: "Direct review of src/cyo_adventure/api, src/cyo_adventure/db/models.py, src/cyo_adventure/events, frontend/src/offline, frontend/src/player at commit 65883a1 (2026-08-08), synthesizing docs/planning/privacy-model.md (v0.3), docs/planning/adr/adr-016-recommendation-sharing-social-boundary.md, docs/planning/adr/adr-017-ai-cover-art.md, docs/planning/adr/adr-018-childrens-privacy-compliance.md (amended 2026-08-01), and docs/compliance/records-of-processing-activities.md, processor-dpa-checklist.md, coppa-compliance-audit.md (commit c9dbfa9, 2026-07-10), coppa-gdpr-remediation-plan.md, gdpr-compliance-review.md"
 ---
 
-> **Status**: Draft | **Version**: 2.0 | **Compiled**: 2026-08-08 | **Updated**: 2026-08-09
+> **Status**: Draft | **Version**: 2.1 | **Compiled**: 2026-08-08 | **Updated**: 2026-09-05 (Perspective leg retired; see the dated callouts)
 > **Code reviewed at**: commit `65883a1` on the feature branch for the original authoring; re-verified
 > at the merge of `main` (13 commits, including PR #643 and PR #649) for this revision, 2026-08-09
 > **Scope**: `src/cyo_adventure/api/`, `src/cyo_adventure/db/models.py`, `src/cyo_adventure/events/`,
@@ -97,7 +97,7 @@ ten rows, where it would carry no differentiating information.
 | 3 | Resuming / saving progress (incl. offline sync) | No | Behavioral / identifier | No | None | Internal only |
 | 4 | Rating a story | No | Behavioral / identifier | No | None | Internal only |
 | 5 | Flagging content | No (closed enum only) | Behavioral / identifier | No | None | Internal only |
-| 6 | Typing a story wish (child-initiated request) | **Yes**, one of two free-text fields | **Yes, potentially direct** | **Yes** | OpenAI Moderation, Google Perspective, OpenRouter (+ sub-processors) / Anthropic (direct, no sub-processors) | **Open blocker (1b); Perspective finding confirmed adverse (C1)** |
+| 6 | Typing a story wish (child-initiated request) | **Yes**, one of two free-text fields | **Yes, potentially direct** | **Yes** | OpenAI Moderation, OpenRouter (+ sub-processors) / Anthropic (direct, no sub-processors); Google Perspective until 2026-08-26 (leg retired, PR #764) | **Open blocker (1b); Perspective finding (C1) historical as of 2026-08-26** |
 | 7 | Reaching an ending (completion) | No | Behavioral / identifier | No | None | Internal only |
 | 8 | Active reading time (background flush) | No | Behavioral / identifier | No | None | Internal only |
 | 9 | Appearing in a cousin's feed (ring-2 recommendation, derived from #4) | No | Display name + rating, cross-household | No (CYO-to-CYO, not a vendor) | None | Consent-gated, dual-guardian |
@@ -175,7 +175,19 @@ repeated per event in Section 3.
 
 ### Google Perspective (Stage-0 toxicity classifier)
 
-- **Purpose**: toxicity/safety scoring, parallel to OpenAI Moderation, same two call sites (intake
+> **Update 2026-09-05 (issue #659)**: this leg no longer exists in the live gate. PR #764
+> (`b2273a7`, merged 2026-08-26) retired Perspective as a Stage-0 signal source:
+> `moderation/classifiers.py` no longer defines `_run_perspective`, `run_classifiers` takes no
+> `perspective_key`, and neither `story_requests/screening.py` nor `api/node_edit.py` can send a
+> child's text to Google. The only remaining caller of Perspective's endpoint is the offline
+> calibration script `scripts/capture_stage0_baseline.py`, which sends catalog prose (never child
+> free-text) and now sets `doNotStore: true`, pinned by
+> `tests/unit/test_capture_stage0_baseline.py::test_perspective_request_opts_out_of_storage`.
+> The finding below is therefore **historical**: it describes what was disclosed to Google before
+> 2026-08-26 and remains relevant to data-subject requests covering that period, not to current
+> flows. Section 6's D5 entry is corrected in the same way.
+
+- **Purpose** (historical): toxicity/safety scoring, parallel to OpenAI Moderation, same two call sites (intake
   screening, per-node moderation).
 - **What it receives**: same content pattern as OpenAI Moderation, including the child's own raw
   wish text at the screening call site. Separately flagged for a sunset/replacement effort
@@ -490,11 +502,13 @@ Citations are `file:line` against the current backend/frontend tree.
 4. **Third-party recipients**:
    - **Screening (before storage is trusted safe)**: a local, deterministic PII guard runs first
      against the family's registered child names; a match hard-blocks and nothing leaves CYO
-     (`screening.py:76-95`). If clean, the raw text goes to **OpenAI Moderation** and
-     **Google Perspective** as plain content, with no identifiers attached to the call. **See
-     Section 2's Google Perspective entry**: this leg is now a confirmed, not merely unconfirmed,
-     disclosure for that vendor specifically (no `doNotStore` set; content usable for the vendor's
-     own research/model-building).
+     (`screening.py:76-95`). If clean, the raw text goes to **OpenAI Moderation** as plain
+     content, with no identifiers attached to the call. Until 2026-08-26 it also went to
+     **Google Perspective**; **see Section 2's Google Perspective entry**: that leg was a
+     confirmed, not merely unconfirmed, disclosure for that vendor specifically (no `doNotStore`
+     set; content usable for the vendor's own research/model-building) and was retired by PR #764.
+     The Perspective analysis in items 5, 7, and 8 below is retained as the historical record for
+     that period.
    - **Generation (only after guardian/admin approval, but built from the child's words)**: the wish
      becomes `ConceptBrief.premise`; a fictional protagonist name is substituted for any real one,
      and the brief is re-checked against the PII guard before it reaches **OpenRouter** (whose
@@ -836,8 +850,11 @@ data is excluded from any training/evaluation corpus by design, so the obligatio
 that premise directly for one vendor: the classifier request sets no `doNotStore` field, and
 Google's own Perspective documentation states stored comments are used "for future research and
 community model building purposes," precisely the outcome D5's working position assumed did not
-happen. The code-level fix (setting `doNotStore: true`) is tracked as **issue #659**; this entry's
-job is to stop asserting a training-exclusion premise the code does not implement. Note the scope
+happen. **Update 2026-09-05**: the live Perspective leg was retired by PR #764 (2026-08-26), and
+the one remaining offline caller (`scripts/capture_stage0_baseline.py`, catalog prose only) sets
+`doNotStore: true`; issue #659 closes with that change. The training-exclusion premise now holds for
+current flows, but not retroactively for wish text sent to Google before 2026-08-26, which is what
+this entry continues to record. Note the scope
 limit when reasoning about remedies: 312.5(a)(2)'s consent-segregation right runs to **disclosures
 to third parties**, so it is the right hook for the Perspective leg but is not a general opt-out of
 an operator's own internal training, which is governed instead by the 312.2 internal-operations
