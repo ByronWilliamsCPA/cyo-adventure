@@ -1005,6 +1005,7 @@ also_copy = [
     "supabase/",
     "out/",
     "CHANGELOG.md",
+    "noxfile.py",  # test_guard_battery_wiring.py asserts the nox session names the battery
     # .claude/skills/naive-ux-check/ -> test_naive_ux_scenarios.py loads render.py
     #   by path at import time; the collection-time FileNotFoundError that killed
     #   every scheduled run through 2026-08-30. The one skill directory, not
