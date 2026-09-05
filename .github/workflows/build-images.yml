@@ -24,7 +24,11 @@
 # (`push: false` builds and smoke-tests without publishing anything), and a
 # weekly schedule kept as defense in depth in case a push-triggered run is
 # ever missed (for example GitHub's 300-changed-file path-filter cap on a
-# mega-merge).
+# mega-merge). A silent failure of that weekly safety net means the homelab
+# images go stale with nobody told, so the `alert`/`resolve` jobs below adopt
+# this repo's shared `ci-failure-issue` tracking-issue action, matching the
+# rest of the scheduled-workflow fleet
+# (.github/workflows/scheduled-health-rollup.yml).
 #
 # Security note: the only user-controlled input is workflow_dispatch's
 # `push` boolean, which is only ever read in an `if:` condition, never
@@ -584,3 +588,117 @@ jobs:
             echo "| Image | \`${IMAGE}\` |"
             echo "| Digest | \`${DIGEST:-N/A}\` |"
           } >> "$GITHUB_STEP_SUMMARY"
+
+  # ===========================================================================
+  # Alert on failure: file/update the pinned ci-failure tracking issue so a
+  # missed weekly safety-net build is not silent. This is deliberately a
+  # separate job from `build` above, not an extra step inside it: `build` is a
+  # 3-leg matrix (backend, frontend, frontend-staging) with `fail-fast:
+  # false`, and the shared action's own header, plus
+  # tests/unit/test_ci_failure_action_contract.py::
+  # TestTheActionsOwnPreconditionsHold::test_no_call_site_sits_in_a_multi_leg_matrix_job,
+  # forbid calling it from inside a matrix job with more than one leg: two
+  # failing legs racing the action's find-then-create lookup on the same
+  # marker could both miss the open issue and file two. Routing through a
+  # single downstream job instead follows kws-delivery-health.yml's
+  # probe + alert split.
+  # ===========================================================================
+  alert:
+    name: Alert on failure
+    needs: build
+    if: failure()
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    # #CRITICAL security: issues: write is isolated to this job and never
+    # granted to `build` above, which already holds packages: write,
+    # id-token: write, and attestations: write for the GHCR push and keyless
+    # signing. Keeping the tracking-issue scope out of that job means a
+    # compromised build step cannot also manipulate repository issues.
+    # #VERIFY any future step added to this job beyond the checkout and the
+    # ci-failure-issue call below must not need a broader scope than
+    # issues: write; split it into its own job instead of widening this one.
+    permissions:
+      issues: write
+    steps:
+      - name: Harden Runner
+        uses: step-security/harden-runner@bf7454d06d71f1098171f2acdf0cd4708d7b5920 # v2.20.0
+        with:
+          egress-policy: audit
+
+      - name: Check out the shared alerting action
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          # Only the composite action is needed. A local `uses: ./...` requires a
+          # checkout, and this job previously had none.
+          sparse-checkout: .github/actions/ci-failure-issue
+          sparse-checkout-cone-mode: false
+          persist-credentials: false
+
+      - name: Compose the issue body
+        id: compose
+        uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9.0.0
+        with:
+          result-encoding: string
+          script: |
+            const runUrl = `${context.serverUrl}/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`
+            const today = new Date().toISOString().slice(0, 10)
+
+            return [
+                  'The scheduled `Build Images` workflow (`.github/workflows/build-images.yml`) did not complete: at least one matrix leg (backend, frontend, frontend-staging) failed or was cancelled.',
+                  '',
+                  'This is the weekly Monday 06:00 UTC safety net, kept as defense in depth',
+                  'in case a push-triggered run is ever missed. A failure here means the',
+                  'homelab deploy images can silently go stale between real pushes to main.',
+                  '',
+                  'Read the run log for which matrix leg(s) failed and at which step (smoke',
+                  'test, multi-arch build/push, cosign signing, or the Trivy scan); each leg',
+                  'runs independently, so one leg failing does not imply the others did.',
+                  '',
+                  `First failing run: ${runUrl}`,
+                  `Date: ${today}`,
+                  '',
+                  'This issue accumulates one comment per failing run and closes itself',
+                  'once a scheduled run succeeds; the next failure opens a fresh issue.',
+                ].join('\n')
+
+      - name: File or comment on the pinned issue
+        uses: ./.github/actions/ci-failure-issue
+        with:
+          marker: '[build-images]'
+          summary: scheduled weekly image build failing
+          body: ${{ steps.compose.outputs.result }}
+          comment-body: The scheduled weekly image build did not complete again.
+
+  # ===========================================================================
+  # Resolve: close the pinned tracking issue on a green scheduled run.
+  # ===========================================================================
+  resolve:
+    name: Resolve the tracking issue
+    needs: build
+    # `github.event_name == 'schedule'`, matching supabase-backup.yml and
+    # kws-delivery-health.yml: a green PUSH or workflow_dispatch run proves
+    # only that one trigger path is healthy, not that the schedule itself
+    # still runs, so it must not close an issue opened about a dead cron.
+    if: needs.build.result == 'success' && github.event_name == 'schedule'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      issues: write
+    steps:
+      - name: Harden Runner
+        uses: step-security/harden-runner@bf7454d06d71f1098171f2acdf0cd4708d7b5920 # v2.20.0
+        with:
+          egress-policy: audit
+
+      - name: Check out the shared alerting action
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          sparse-checkout: .github/actions/ci-failure-issue
+          sparse-checkout-cone-mode: false
+          persist-credentials: false
+
+      - name: Close the pinned issue
+        uses: ./.github/actions/ci-failure-issue
+        with:
+          marker: '[build-images]'
+          mode: resolve
