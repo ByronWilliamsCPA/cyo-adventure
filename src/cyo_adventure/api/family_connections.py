@@ -180,6 +180,15 @@ async def create_family_connection(
     await ctx.session.refresh(row, ["created_at"])
     await record_event(
         ctx.session,
+        # Admin-only endpoint: stamp the capacity that authorized the action,
+        # not a dual-role caller's guardian base persona. A connection always
+        # spans two families, so there is no single own-family relationship
+        # for Principal.acting_role() to reflect even when one side is the
+        # caller's own family; this is the flags.py precedent and the
+        # deliberate exception to publishing/service.py's acting_role() rule
+        # (#453).
+        # #VERIFY: tests/integration/test_family_connections_api.py::
+        # test_dual_role_owner_connecting_own_family_is_stamped_admin.
         Actor.from_principal(ctx.principal, acting_role=ADMIN_ACTOR_ROLE),
         entity_type="family_connection",
         entity_id=str(row.id),
@@ -276,6 +285,8 @@ async def delete_family_connection(connection_id: str, ctx: Context) -> None:
     await ctx.session.flush()
     await record_event(
         ctx.session,
+        # Admin-only endpoint; same two-family reasoning as
+        # create_family_connection above (#453).
         Actor.from_principal(ctx.principal, acting_role=ADMIN_ACTOR_ROLE),
         entity_type="family_connection",
         entity_id=connection_id,
