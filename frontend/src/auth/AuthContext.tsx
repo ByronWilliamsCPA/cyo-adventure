@@ -1,4 +1,4 @@
-import type { Session } from '@supabase/supabase-js'
+import type { AuthChangeEvent, Session } from '@supabase/supabase-js'
 import { isAxiosError } from 'axios'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import type { ReactNode } from 'react'
@@ -202,7 +202,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   // #VERIFY: AuthContext.test.tsx "warms the adult gate on a SIGNED_IN
   // event, but not on session restore or token refresh".
   const syncPrincipal = useCallback(
-    async (session: Session | null, event?: string) => {
+    async (session: Session | null, event?: AuthChangeEvent) => {
       // #CRITICAL: security: consume the early-sign-in capture BEFORE any early
       // return below. Every exit from syncPrincipal has to spend it, or it
       // outlives the resolution it belonged to: a guardian who lands on the

@@ -1,7 +1,7 @@
 import type { Page } from '@playwright/test'
 import { expect, test } from '@playwright/test'
 
-import { signInAsProdTestAdmin, unlockParentalGateIfPresent } from './support/auth'
+import { signInAsProdTestAdmin, unlockAdultGateIfPresent } from './support/auth'
 import { removeDeviceFromConsole } from '../e2e-support/device-grant-ui'
 import { gotoResilient, paceNavigation } from '../e2e-support/rate-limit'
 
@@ -106,7 +106,7 @@ test.describe('kid access via a real device grant', () => {
 
   test('the guardian authorizes this device for kid access', async () => {
     await gotoResilient(sharedPage, '/guardian')
-    await unlockParentalGateIfPresent(sharedPage)
+    await unlockAdultGateIfPresent(sharedPage)
 
     // First run shows "Set up this device for your kids"; a prior interrupted
     // run that left a grant shows "Re-authorize this device" instead. Either
@@ -181,7 +181,7 @@ test.describe('kid access via a real device grant', () => {
     // Crossing into /kids parked the AdultGate (DeviceAuthorizedRoute calls
     // parkAdultGate), so this navigation lands cold and needs a re-unlock.
     await gotoResilient(sharedPage, '/guardian')
-    await unlockParentalGateIfPresent(sharedPage)
+    await unlockAdultGateIfPresent(sharedPage)
 
     await removeDeviceFromConsole(sharedPage)
     const stored = await sharedPage.evaluate(
