@@ -4384,7 +4384,7 @@
 
   <h1>Python Compatibility</h1>
 
-<p>This project requires <strong>Python 3.11+</strong> (<code>requires-python = "&gt;=3.11"</code> in <code>pyproject.toml</code>, no upper bound). Python 3.12 is the primary local development target. CI coverage is split across two workflows with different scope: <code>ci.yml</code> runs the full quality gate (tests, lint, type checking) on <strong>Python 3.12 only</strong>; <code>python-compatibility.yml</code> runs a pytest-only compatibility check on Python 3.11-3.13 (Ubuntu), plus Python 3.12 on macOS and Windows. Python 3.10 and 3.14 appear only in the local <code>nox -s test</code> / <code>lint</code> / <code>typecheck</code> matrix (3.10-3.14); <strong>no GitHub Actions workflow invokes <code>nox</code></strong>, so those two versions have no CI coverage, and 3.10 in particular falls below the project's <code>requires-python</code> floor (see the note under <a href="#python-310-support-backports-needed">Python 3.10 Support</a> below).</p>
+<p>This project requires <strong>Python 3.11+</strong> (<code>requires-python = "&gt;=3.11"</code> in <code>pyproject.toml</code>, no upper bound). Python 3.14 is the primary local development and runtime target, matching the production image (<code>dhi-python:3.14-debian13</code>). CI coverage is split across two workflows with different scope: <code>ci.yml</code> runs the full quality gate (tests, lint, type checking) on <strong>Python 3.14</strong>, with the <code>Diversity Regression Gate</code> job as the lone exception (still pinned to 3.12); <code>python-compatibility.yml</code> runs a pytest-only compatibility check on Python 3.11-3.14 (Ubuntu), plus Python 3.14 on macOS. There is deliberately no Windows leg, removed on 2026-09-04; see <a href="#cicd-matrix">CI/CD Matrix</a> below for why. <strong>No GitHub Actions workflow invokes <code>nox</code></strong>, but the local <code>nox -s test</code> / <code>lint</code> / <code>typecheck</code> matrix covers the same 3.11-3.14 range, so no supported version is exercised only locally. Python 3.10 appears in neither, because it falls below the project's <code>requires-python</code> floor (see the note under <a href="#python-310-support-backports-needed">Python 3.10 Support</a> below).</p>
 <h2 id="version-support-matrix">Version Support Matrix<a class="headerlink" href="#version-support-matrix" title="Permanent link">&para;</a></h2>
 <table>
 <thead>
@@ -4400,7 +4400,7 @@
 <tr>
 <td>3.10</td>
 <td>❌ Not supported</td>
-<td>⚠️ Listed in <code>noxfile.py</code>'s <code>test</code>/<code>lint</code>/<code>typecheck</code> matrix</td>
+<td>❌ Not in any <code>noxfile.py</code> matrix</td>
 <td>❌ None</td>
 <td>Below <code>requires-python = "&gt;=3.11"</code>; not installable via <code>uv sync</code></td>
 </tr>
@@ -4415,22 +4415,22 @@
 <td>3.12</td>
 <td>✅ Supported</td>
 <td>✅ test/lint/typecheck</td>
-<td>✅ Full quality gate (<code>ci.yml</code>) + <code>python-compatibility.yml</code> (Ubuntu, macOS, Windows)</td>
-<td>Primary/default local dev target; only version covered by the main CI gate</td>
+<td>✅ <code>python-compatibility.yml</code> (Ubuntu only) + <code>ci.yml</code>'s <code>Diversity Regression Gate</code></td>
+<td>The one job still pinned off 3.14</td>
 </tr>
 <tr>
 <td>3.13</td>
 <td>✅ Supported</td>
 <td>✅ test/lint/typecheck</td>
 <td>✅ <code>python-compatibility.yml</code> (Ubuntu only)</td>
-<td>Latest stable, PEP 594 removals</td>
+<td>PEP 594 removals</td>
 </tr>
 <tr>
 <td>3.14</td>
-<td>⚠️ Locally tested only</td>
+<td>✅ Supported</td>
 <td>✅ test/lint/typecheck</td>
-<td>❌ None</td>
-<td>Not covered by any GitHub Actions workflow</td>
+<td>✅ Full quality gate (<code>ci.yml</code>) + <code>python-compatibility.yml</code> (Ubuntu, macOS)</td>
+<td>Primary local and runtime target; the version the production image runs</td>
 </tr>
 <tr>
 <td>3.15+</td>
@@ -4808,7 +4808,7 @@ this project's current dependency set.</p>
 <h3 id="ruff-linter-formatter">Ruff (Linter &amp; Formatter)<a class="headerlink" href="#ruff-linter-formatter" title="Permanent link">&para;</a></h3>
 <p>Configured to target the selected Python version:</p>
 <div class="language-toml highlight"><pre><span></span><code><span id="__span-15-1"><a id="__codelineno-15-1" name="__codelineno-15-1" href="#__codelineno-15-1"></a><span class="k">[tool.ruff]</span>
-</span><span id="__span-15-2"><a id="__codelineno-15-2" name="__codelineno-15-2" href="#__codelineno-15-2"></a><span class="n">target-version</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;py312&quot;</span><span class="w">  </span><span class="c1"># py311, py312, or py313</span>
+</span><span id="__span-15-2"><a id="__codelineno-15-2" name="__codelineno-15-2" href="#__codelineno-15-2"></a><span class="n">target-version</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;py311&quot;</span><span class="w">  </span><span class="c1"># py311 through py314</span>
 </span></code></pre></div>
 <p>This ensures Ruff:</p>
 <ul>
@@ -4819,7 +4819,7 @@ this project's current dependency set.</p>
 <h3 id="basedpyright-type-checker">BasedPyright (Type Checker)<a class="headerlink" href="#basedpyright-type-checker" title="Permanent link">&para;</a></h3>
 <p>Configured to match your Python version:</p>
 <div class="language-toml highlight"><pre><span></span><code><span id="__span-16-1"><a id="__codelineno-16-1" name="__codelineno-16-1" href="#__codelineno-16-1"></a><span class="k">[tool.basedpyright]</span>
-</span><span id="__span-16-2"><a id="__codelineno-16-2" name="__codelineno-16-2" href="#__codelineno-16-2"></a><span class="n">pythonVersion</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;3.12&quot;</span><span class="w">  </span><span class="c1"># 3.11, 3.12, or 3.13</span>
+</span><span id="__span-16-2"><a id="__codelineno-16-2" name="__codelineno-16-2" href="#__codelineno-16-2"></a><span class="n">pythonVersion</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;3.11&quot;</span><span class="w">  </span><span class="c1"># 3.11 through 3.14</span>
 </span><span id="__span-16-3"><a id="__codelineno-16-3" name="__codelineno-16-3" href="#__codelineno-16-3"></a><span class="n">typeCheckingMode</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;strict&quot;</span>
 </span></code></pre></div>
 <p>This ensures BasedPyright:</p>
@@ -4830,12 +4830,13 @@ this project's current dependency set.</p>
 </ul>
 <h2 id="testing-across-versions">Testing Across Versions<a class="headerlink" href="#testing-across-versions" title="Permanent link">&para;</a></h2>
 <h3 id="nox-sessions">Nox Sessions<a class="headerlink" href="#nox-sessions" title="Permanent link">&para;</a></h3>
-<p><code>nox</code>'s <code>test</code>, <code>lint</code>, and <code>typecheck</code> sessions run a wide local matrix
-(3.10, 3.11, 3.12, 3.13, 3.14). This is a <strong>local-only parity check</strong>: no
-GitHub Actions workflow invokes <code>nox</code>, so running these sessions is the only
-way to exercise 3.10 or 3.14 at all, and the only way to run lint/typecheck
-against anything other than 3.12.</p>
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-17-1"><a id="__codelineno-17-1" name="__codelineno-17-1" href="#__codelineno-17-1"></a><span class="c1"># Run tests locally across the nox matrix (3.10, 3.11, 3.12, 3.13, 3.14)</span>
+<p><code>nox</code>'s <code>test</code>, <code>lint</code>, and <code>typecheck</code> sessions run the full supported
+matrix locally (3.11, 3.12, 3.13, 3.14). This is a <strong>local-only parity
+check</strong>: no GitHub Actions workflow invokes <code>nox</code>. The versions themselves
+are all covered in CI by <code>python-compatibility.yml</code>, so what these sessions
+uniquely give you is lint and type checking against something other than
+3.14, which CI never does.</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-17-1"><a id="__codelineno-17-1" name="__codelineno-17-1" href="#__codelineno-17-1"></a><span class="c1"># Run tests locally across the nox matrix (3.11, 3.12, 3.13, 3.14)</span>
 </span><span id="__span-17-2"><a id="__codelineno-17-2" name="__codelineno-17-2" href="#__codelineno-17-2"></a>nox<span class="w"> </span>-s<span class="w"> </span><span class="nb">test</span>
 </span><span id="__span-17-3"><a id="__codelineno-17-3" name="__codelineno-17-3" href="#__codelineno-17-3"></a>
 </span><span id="__span-17-4"><a id="__codelineno-17-4" name="__codelineno-17-4" href="#__codelineno-17-4"></a><span class="c1"># Run linting locally across the nox matrix</span>
@@ -4845,28 +4846,43 @@ against anything other than 3.12.</p>
 </span><span id="__span-17-8"><a id="__codelineno-17-8" name="__codelineno-17-8" href="#__codelineno-17-8"></a>nox<span class="w"> </span>-s<span class="w"> </span>typecheck
 </span></code></pre></div>
 <h3 id="cicd-matrix">CI/CD Matrix<a class="headerlink" href="#cicd-matrix" title="Permanent link">&para;</a></h3>
-<p>CI coverage is split across two separate workflows, neither of which matches
-the local <code>nox</code> matrix exactly:</p>
+<p>CI coverage is split across two separate workflows. Between them they cover
+the same 3.11-3.14 range as the local <code>nox</code> matrix, but neither does so
+alone, and only <code>nox</code> runs lint and type checking off 3.14:</p>
 <p><strong><code>ci.yml</code></strong> (the main quality gate: tests, lint, type checking) runs on
-Python 3.12 only:</p>
-<div class="language-yaml highlight"><pre><span></span><code><span id="__span-18-1"><a id="__codelineno-18-1" name="__codelineno-18-1" href="#__codelineno-18-1"></a><span class="nt">env</span><span class="p">:</span>
-</span><span id="__span-18-2"><a id="__codelineno-18-2" name="__codelineno-18-2" href="#__codelineno-18-2"></a><span class="w">  </span><span class="nt">python-version</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;3.12&quot;</span>
+Python 3.14, matching the production image (<code>dhi-python:3.14-debian13</code>):</p>
+<div class="language-yaml highlight"><pre><span></span><code><span id="__span-18-1"><a id="__codelineno-18-1" name="__codelineno-18-1" href="#__codelineno-18-1"></a><span class="c1"># ci.yml has no top-level `env:` block; the version is set per consumer,</span>
+</span><span id="__span-18-2"><a id="__codelineno-18-2" name="__codelineno-18-2" href="#__codelineno-18-2"></a><span class="c1"># once in the reusable-workflow call and once per `actions/setup-python`.</span>
+</span><span id="__span-18-3"><a id="__codelineno-18-3" name="__codelineno-18-3" href="#__codelineno-18-3"></a><span class="nt">jobs</span><span class="p">:</span>
+</span><span id="__span-18-4"><a id="__codelineno-18-4" name="__codelineno-18-4" href="#__codelineno-18-4"></a><span class="w">  </span><span class="nt">ci</span><span class="p">:</span>
+</span><span id="__span-18-5"><a id="__codelineno-18-5" name="__codelineno-18-5" href="#__codelineno-18-5"></a><span class="w">    </span><span class="nt">uses</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">./.github/workflows/python-ci.yml</span>
+</span><span id="__span-18-6"><a id="__codelineno-18-6" name="__codelineno-18-6" href="#__codelineno-18-6"></a><span class="w">    </span><span class="nt">with</span><span class="p">:</span>
+</span><span id="__span-18-7"><a id="__codelineno-18-7" name="__codelineno-18-7" href="#__codelineno-18-7"></a><span class="w">      </span><span class="nt">python-version</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;3.14&quot;</span>
 </span></code></pre></div>
+<p>The one exception is the <code>Diversity Regression Gate</code> job, still pinned to
+3.12.</p>
 <p><strong><code>python-compatibility.yml</code></strong> (a pytest-only compatibility check, no lint or
-type checking) runs a matrix of 3.11-3.13 on Ubuntu, plus 3.12 on macOS and
-Windows:</p>
+type checking) runs a matrix of 3.11-3.14 on Ubuntu, plus 3.14 on macOS.
+There is deliberately no Windows leg; it was removed on 2026-09-04 because
+this backend deploys only as a Linux container image, so "does the Python
+service run on Windows" is a question with no consumer. What users actually
+need is the frontend working from Windows, which is a browser-engine
+question answered by <code>ci.yml</code>'s <code>cross-device-e2e</code> job and by
+<code>e2e-real-os.yml</code>, not by running the interpreter there. The matrix:</p>
 <div class="language-yaml highlight"><pre><span></span><code><span id="__span-19-1"><a id="__codelineno-19-1" name="__codelineno-19-1" href="#__codelineno-19-1"></a><span class="nt">strategy</span><span class="p">:</span>
 </span><span id="__span-19-2"><a id="__codelineno-19-2" name="__codelineno-19-2" href="#__codelineno-19-2"></a><span class="w">  </span><span class="nt">matrix</span><span class="p">:</span>
-</span><span id="__span-19-3"><a id="__codelineno-19-3" name="__codelineno-19-3" href="#__codelineno-19-3"></a><span class="w">    </span><span class="nt">python-version</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">&#39;3.11&#39;</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">&#39;3.12&#39;</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">&#39;3.13&#39;</span><span class="p p-Indicator">]</span>
+</span><span id="__span-19-3"><a id="__codelineno-19-3" name="__codelineno-19-3" href="#__codelineno-19-3"></a><span class="w">    </span><span class="nt">python-version</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">&#39;3.11&#39;</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">&#39;3.12&#39;</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">&#39;3.13&#39;</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">&#39;3.14&#39;</span><span class="p p-Indicator">]</span>
 </span><span id="__span-19-4"><a id="__codelineno-19-4" name="__codelineno-19-4" href="#__codelineno-19-4"></a><span class="w">    </span><span class="nt">os</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">ubuntu-latest</span><span class="p p-Indicator">]</span>
 </span><span id="__span-19-5"><a id="__codelineno-19-5" name="__codelineno-19-5" href="#__codelineno-19-5"></a><span class="w">    </span><span class="nt">include</span><span class="p">:</span>
 </span><span id="__span-19-6"><a id="__codelineno-19-6" name="__codelineno-19-6" href="#__codelineno-19-6"></a><span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">os</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">macos-latest</span>
-</span><span id="__span-19-7"><a id="__codelineno-19-7" name="__codelineno-19-7" href="#__codelineno-19-7"></a><span class="w">        </span><span class="nt">python-version</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;3.12&#39;</span>
-</span><span id="__span-19-8"><a id="__codelineno-19-8" name="__codelineno-19-8" href="#__codelineno-19-8"></a><span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">os</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">windows-latest</span>
-</span><span id="__span-19-9"><a id="__codelineno-19-9" name="__codelineno-19-9" href="#__codelineno-19-9"></a><span class="w">        </span><span class="nt">python-version</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;3.12&#39;</span>
+</span><span id="__span-19-7"><a id="__codelineno-19-7" name="__codelineno-19-7" href="#__codelineno-19-7"></a><span class="w">        </span><span class="nt">python-version</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;3.14&#39;</span>
 </span></code></pre></div>
-<p>Neither workflow covers Python 3.10 or 3.14; those two versions are exercised
-only by the local <code>nox</code> matrix described above.</p>
+<p>That range is the span CI actually tests, and it matches the local <code>nox</code>
+matrix described above, so no tested version is exercised only locally.
+<code>requires-python = "&gt;=3.11"</code> sets the floor but declares no ceiling, so
+3.15 and later are not excluded by package metadata; they are simply
+untested until a leg is added. Python 3.10 is covered by neither matrix,
+because it sits below the declared floor.</p>
 <h2 id="migration-guide">Migration Guide<a class="headerlink" href="#migration-guide" title="Permanent link">&para;</a></h2>
 <h3 id="migrating-to-python-310">Migrating to Python 3.10+<a class="headerlink" href="#migrating-to-python-310" title="Permanent link">&para;</a></h3>
 <blockquote>
@@ -5003,7 +5019,7 @@ projects following the same path).</p>
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="August 2, 2026 00:28:46 UTC">August 2, 2026</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="September 5, 2026 00:34:39 UTC">September 5, 2026</span>
   </span>
 
     
