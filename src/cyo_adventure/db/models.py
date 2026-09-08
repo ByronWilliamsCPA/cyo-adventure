@@ -1602,7 +1602,7 @@ class StorybookVersion(CreatedAtMixin, Base):
             name="ck_storybook_version_cover_status",
         ),
         CheckConstraint(
-            "cover_review_verdict IN ('pass', 'flag')",
+            "cover_review_verdict IS NULL OR cover_review_verdict IN ('pass', 'flag')",
             name="ck_storybook_version_cover_review_verdict",
         ),
     )
