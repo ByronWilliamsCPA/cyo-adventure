@@ -17,6 +17,7 @@ always receives plain JSON.
 
 from __future__ import annotations
 
+import base64
 import json
 import time
 from typing import TYPE_CHECKING, Final, Literal, cast
@@ -327,6 +328,117 @@ class OpenRouterProvider:
             {"role": "system", "content": system_content},
             {"role": "user", "content": user},
         ]
+
+    def _build_image_messages(
+        self, system: str, user: str, image_bytes: bytes, image_mime: str
+    ) -> list[dict[str, object]]:
+        """Build the chat messages for a review call carrying one image.
+
+        OpenRouter's chat-completions endpoint accepts the same multimodal
+        content-array shape OpenAI's vision models use: a list of typed
+        blocks under the user message's ``content``, mixing ``text`` and
+        ``image_url`` (a data URI, since the image lives only in memory
+        here, never at a fetchable URL). The system block stays a plain
+        string: prompt caching (``_build_messages`` above) is a
+        generation-pipeline concern for the large, static story schema
+        block; a review system prompt is short and sent once per call, so
+        caching it buys nothing.
+
+        Args:
+            system: System-role instructions.
+            user: User-role text content.
+            image_bytes: The raw image bytes to embed.
+            image_mime: The image's MIME type (e.g. ``"image/png"``).
+
+        Returns:
+            The OpenRouter ``messages`` array.
+        """
+        encoded = base64.b64encode(image_bytes).decode("ascii")
+        return [
+            {"role": "system", "content": system},
+            {
+                "role": "user",
+                "content": [
+                    {"type": "text", "text": user},
+                    {
+                        "type": "image_url",
+                        "image_url": {"url": f"data:{image_mime};base64,{encoded}"},
+                    },
+                ],
+            },
+        ]
+
+    async def complete_with_image(
+        self,
+        *,
+        system: str,
+        prompt: str,
+        image_bytes: bytes,
+        image_mime: str,
+        max_tokens: int,
+    ) -> Completion:
+        """Return the model completion for a system+user+image input.
+
+        Mirrors ``complete()`` exactly except for the multimodal message
+        body: same retry policy, same status classification, same response
+        extraction, so a cover-review call gets identical transient-retry
+        and leg-fatal behavior to every text review call. Deliberately does
+        NOT replicate ``complete()``'s content-filter-stop counter
+        (``_CONTENT_FILTER_MARKER`` / ``_MAX_CONTENT_FILTER_STOPS``): that
+        policy (UW-C329) is specific to story generation retrying the same
+        (skeleton, brief) pair, a failure mode this call has no evidence of
+        sharing; it can be added here later if a similar pattern is
+        observed for cover review.
+
+        Args:
+            system: System-role instructions.
+            prompt: User-role text content.
+            image_bytes: The raw image bytes to review.
+            image_mime: The image's MIME type (e.g. ``"image/png"``).
+            max_tokens: Upper bound on response length in tokens.
+
+        Returns:
+            The completion text plus the token usage the response reported.
+
+        Raises:
+            ProviderError: On a leg-fatal failure (mapped immediately) or
+                after exhausting transient retries.
+        """
+        body: dict[str, object] = {
+            "model": self._model,
+            "messages": self._build_image_messages(
+                system, prompt, image_bytes, image_mime
+            ),
+            "max_tokens": max_tokens,
+        }
+        if self._effort != "off":
+            body["reasoning"] = {"effort": self._effort}
+        if self._provider_order:
+            body["provider"] = {
+                "order": list(self._provider_order),
+                "allow_fallbacks": False,
+            }
+        if self._temperature is not None:
+            body["temperature"] = self._temperature
+        if self._report_vendor_cost:
+            body["usage"] = {"include": True}
+        headers = {
+            "Authorization": f"Bearer {self._api_key}",
+            "Content-Type": "application/json",
+            "X-Title": "cyo-adventure",
+        }
+        url = f"{self._base_url}/chat/completions"
+
+        async def attempt() -> Completion:
+            return await self._attempt(url, body, headers)
+
+        return await run_with_retries(
+            attempt,
+            provider="openrouter",
+            model=self._model,
+            max_retries=self._max_retries,
+            backoff_base_seconds=self._backoff_base_seconds,
+        )
 
     async def complete(
         self, *, system: str, prompt: str, max_tokens: int

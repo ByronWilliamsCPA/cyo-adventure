@@ -540,6 +540,52 @@ class TestOpenRouterProvider:
         assert result.text == '{"schema_version": "1.0"}'
         assert json.loads(result.text) == {"schema_version": "1.0"}
 
+    @pytest.mark.asyncio
+    async def test_complete_with_image_sends_multimodal_content_array(self) -> None:
+        """The user message carries a text block and a base64 data-URI image block."""
+        captured: dict[str, object] = {}
+
+        def handler(request: httpx.Request) -> httpx.Response:
+            captured.update(json.loads(request.content))
+            return httpx.Response(200, json=_openrouter_ok_body('{"verdict": "pass"}'))
+
+        provider = _openrouter(handler)
+        result = await provider.complete_with_image(
+            system="SYSTEM",
+            prompt="USER TEXT",
+            image_bytes=b"\x89PNGtest",
+            image_mime="image/png",
+            max_tokens=100,
+        )
+        assert result.text == '{"verdict": "pass"}'
+        messages = captured["messages"]
+        assert isinstance(messages, list)
+        assert messages[0] == {"role": "system", "content": "SYSTEM"}
+        user_content = messages[1]["content"]
+        assert isinstance(user_content, list)
+        assert user_content[0] == {"type": "text", "text": "USER TEXT"}
+        image_block = user_content[1]
+        assert image_block["type"] == "image_url"
+        assert image_block["image_url"]["url"].startswith("data:image/png;base64,")
+
+    @pytest.mark.asyncio
+    async def test_complete_with_image_404_is_leg_fatal(self) -> None:
+        """Status classification is shared with complete(): a 404 is leg-fatal."""
+
+        def handler(_request: httpx.Request) -> httpx.Response:
+            return httpx.Response(404, json={"error": {"message": "no such model"}})
+
+        provider = _openrouter(handler)
+        with pytest.raises(ProviderError) as exc_info:
+            await provider.complete_with_image(
+                system="s",
+                prompt="u",
+                image_bytes=b"x",
+                image_mime="image/png",
+                max_tokens=100,
+            )
+        assert exc_info.value.leg_fatal is True
+
 
 class TestStripCodeFences:
     """Unit tests for the shared fence-stripping helper."""
