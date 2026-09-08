@@ -606,6 +606,8 @@ function ReviewDetailPageInner() {
     coverBusy,
     coverTimedOut,
     coverApproveError,
+    coverReviewVerdict,
+    coverReviewNotes,
     generateCover,
     approveCover,
   } = useCoverGeneration({
@@ -903,6 +905,16 @@ function ReviewDetailPageInner() {
               }
               className="review-cover-preview__image"
             />
+          ) : null}
+          {coverReviewVerdict === 'flag' ? (
+            <p className="review-cover-preview__ai-note" role="status">
+              AI review flagged this cover: {coverReviewNotes || 'no reason given'}. Look closely
+              before approving.
+            </p>
+          ) : coverReviewVerdict === 'pass' ? (
+            <p className="review-cover-preview__ai-note cyo-text-muted">
+              AI review found no issues with this cover.
+            </p>
           ) : null}
           {coverStatus === 'pending_review' ? (
             <div className="review-cover-preview__actions">

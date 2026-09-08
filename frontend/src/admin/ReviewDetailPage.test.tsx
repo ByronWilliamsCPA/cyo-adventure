@@ -1401,6 +1401,63 @@ describe('ReviewDetailPage', () => {
     expect(screen.queryByRole('img', { name: /Generated cover for/i })).not.toBeInTheDocument()
   })
 
+  it('renders the AI reviewer verdict and notes for a flagged cover', async () => {
+    mockGet.mockImplementation((url: string) =>
+      typeof url === 'string' && url.endsWith('/cover')
+        ? Promise.resolve({
+            data: {
+              cover_status: 'pending_review',
+              cover_url: 'https://x/pending.webp',
+              cover_review_verdict: 'flag',
+              cover_review_notes: 'visible text in the sky',
+              cover_review_attempts: 2,
+            },
+          })
+        : Promise.resolve({ data: SURFACE })
+    )
+    renderAt('s1')
+    await screen.findByRole('button', { name: /Approve cover/i })
+    expect(screen.getByText(/visible text in the sky/i)).toBeInTheDocument()
+  })
+
+  it('renders a clean-pass note and no notes text for a passing cover', async () => {
+    mockGet.mockImplementation((url: string) =>
+      typeof url === 'string' && url.endsWith('/cover')
+        ? Promise.resolve({
+            data: {
+              cover_status: 'pending_review',
+              cover_url: 'https://x/pending.webp',
+              cover_review_verdict: 'pass',
+              cover_review_notes: '',
+              cover_review_attempts: 1,
+            },
+          })
+        : Promise.resolve({ data: SURFACE })
+    )
+    renderAt('s1')
+    await screen.findByRole('button', { name: /Approve cover/i })
+    expect(screen.getByText(/AI review found no issues/i)).toBeInTheDocument()
+  })
+
+  it('renders no AI-review note for a cover that predates the feature', async () => {
+    mockGet.mockImplementation((url: string) =>
+      typeof url === 'string' && url.endsWith('/cover')
+        ? Promise.resolve({
+            data: {
+              cover_status: 'pending_review',
+              cover_url: 'https://x/pending.webp',
+              cover_review_verdict: null,
+              cover_review_notes: null,
+              cover_review_attempts: 0,
+            },
+          })
+        : Promise.resolve({ data: SURFACE })
+    )
+    renderAt('s1')
+    await screen.findByRole('button', { name: /Approve cover/i })
+    expect(screen.queryByText(/AI review/i)).not.toBeInTheDocument()
+  })
+
   it('renders the cover approval above the fold, below the verdict strip and safety alerts', async () => {
     // #ASSUME: UI state: the whole point of this block's placement is that a
     // reviewer sees an outstanding cover decision without scrolling past every
