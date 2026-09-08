@@ -993,17 +993,21 @@ class Settings(BaseSettings):
     # docs/superpowers/specs/2026-09-08-cover-ai-review-design.md Design
     # section 2: an OpenRouter vision-capable model that judges a generated
     # cover against its own generation prompt. Deliberately a different
-    # vendor/model family from cover_model (gemini-3-pro-image, called via
-    # the direct Google SDK in covers/provider.py, not through OpenRouter).
-    # Task 5 will wire up build_cover_review_provider's independence check
-    # (moderation/review_provider.py), which will hold trivially because
-    # these are different vendors entirely.
-    # #ASSUME: external-resources: no live-pricing or availability probe
-    # backs this default; picked for being inexpensive, fast, and
-    # vision-capable at planning time (2026-09-08).
-    # #VERIFY: override via COVER_REVIEW_MODEL if this slug is retired or a
-    # materially better vision-capable option becomes available.
-    cover_review_model: str = "google/gemini-2.5-flash"
+    # vendor from cover_model (gemini-3-pro-image, called via the direct
+    # Google SDK in covers/provider.py, not through OpenRouter): OpenAI
+    # rather than Google, so build_cover_review_provider's independence
+    # check (moderation/review_provider.py) holds on the vendor that
+    # actually generated the image being reviewed, not just on the
+    # transport (direct SDK vs OpenRouter) the two calls happen to use.
+    # #ASSUME: external-resources: picked 2026-09-08 from published
+    # per-image OpenRouter pricing and prior in-repo vision-comprehension
+    # probe results (tests/unit/test_comprehension_probe.py), not a live
+    # reliability probe against this reviewer's own JSON-verdict prompt.
+    # #VERIFY: override via COVER_REVIEW_MODEL if this slug is retired, its
+    # JSON-verdict reliability proves poor in practice (review.py fails
+    # open and silently on a malformed response), or a materially better
+    # vision-capable option becomes available.
+    cover_review_model: str = "openai/gpt-4.1-mini"
 
     # --- Notification push transport (S9/G10 SSE stream) ---
     # How often api/notifications.py's stream endpoint re-queries

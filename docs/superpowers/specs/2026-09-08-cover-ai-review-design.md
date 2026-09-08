@@ -135,11 +135,14 @@ trivially true today since they're different vendors entirely, but keeping
 the check live catches a future misconfiguration rather than assuming it away.
 
 A new setting, `cover_review_model`, names the OpenRouter vision-capable
-model slug. **Open question, not resolved by this design**: which slug to
-pin. Recommend picking this the same way the existing `review_provider`
-model was chosen (an OpenRouter auto-routed vision-capable model, not a
-hardcoded vendor-specific id) and confirming the choice during
-implementation planning rather than blocking this spec on it.
+model slug. **Resolved during implementation (2026-09-08, follow-up commit
+after the initial 12-task build)**: `openai/gpt-4.1-mini`, chosen for a
+genuinely different vendor from `cover_model` (OpenAI rather than Google),
+published per-image OpenRouter pricing, and vision-comprehension results
+already exercised by this repo's own probe
+(`tests/unit/test_comprehension_probe.py`). No live reliability probe against
+this reviewer's own JSON-verdict prompt backs the choice; see `core/config.py`
+and "Known limitations / open questions" below.
 
 ### 3. Retry loop in `covers/service.py::generate_cover`
 
@@ -252,9 +255,14 @@ No new queue, route, or dashboard component.
 
 ## Known limitations / open questions
 
-- `cover_review_model` (the OpenRouter vision-capable model slug) is not
-  pinned by this design; needs an explicit decision during implementation
-  planning.
+- `cover_review_model` is pinned to `openai/gpt-4.1-mini` (see above); the
+  pick is not backed by a live reliability probe against this reviewer's own
+  JSON-verdict prompt, only by published pricing and an existing
+  vision-comprehension probe. `covers/review.py::review_cover` fails open and
+  silently (no log line) on a malformed/unparseable verdict, so a reviewer
+  model's plain-JSON reliability matters as much as its vision accuracy;
+  revisit if that silent-failure path is ever instrumented and shows this
+  model underperforming.
 - `MAX_COVER_REVIEW_ATTEMPTS = 2` is a starting default, not a measured
   figure; revisit after seeing real flag rates in the review notes.
 - **Cost**: worst case this roughly doubles per-cover cost (up to 2 image
