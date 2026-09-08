@@ -317,6 +317,14 @@ def build_cover_review_provider(settings: Settings) -> tuple[ImageReviewProvider
         ConfigurationError: When ``review_provider`` is the deferred
             ``"modal"``, or when the OpenRouter credential is missing.
     """
+    # #CRITICAL: security: a model reviewing its own cover-art output is not an
+    # independent check; a misconfigured cover_review_model matching cover_model
+    # must surface as not-independent, never silently pass.
+    # #VERIFY: test_openrouter_cover_review_same_model_as_generator_is_not_independent.
+    # #CRITICAL: external-resource: the openrouter leg is a network-backed HTTP
+    # client; a missing credential raises ConfigurationError at build time rather
+    # than failing mid-pipeline.
+    # #VERIFY: build_openrouter_leg raises on absent credentials.
     backend = settings.review_provider
 
     if backend == "mock":
