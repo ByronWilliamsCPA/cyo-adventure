@@ -83,6 +83,14 @@ async def test_review_cover_unexpected_verdict_value_fails_open() -> None:
 
 
 @pytest.mark.asyncio
+async def test_review_cover_non_dict_json_response_fails_open() -> None:
+    provider = _FakeReviewProvider(response='["not", "a", "dict"]')
+    verdict, notes = await review_cover(b"IMG", "a cat in a forest", provider)
+    assert verdict is None
+    assert notes is None
+
+
+@pytest.mark.asyncio
 async def test_review_cover_provider_error_fails_open() -> None:
     """A ProviderError (timeout, non-2xx, exhausted retries) fails open.
 
