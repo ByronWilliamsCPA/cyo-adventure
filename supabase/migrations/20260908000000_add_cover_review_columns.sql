@@ -16,9 +16,14 @@
 -- well-defined attempt count of zero reviews run, so a default is correct
 -- rather than a third "unknown" state.
 --
--- Written to be idempotent ("add column if not exists"), mirroring
--- 20260730000000_add_cover_object_salt.sql, so it is a no-op if applied a
--- second time.
+-- Written to be idempotent: the ADD COLUMN clauses use IF NOT EXISTS
+-- (mirroring 20260730000000_add_cover_object_salt.sql), and the CHECK
+-- constraint below uses this project's DROP CONSTRAINT IF EXISTS + ADD
+-- CONSTRAINT pattern (20260801050000_add_child_profile_gamification_settings.sql,
+-- 20260802000000_add_user_residence_country_and_adulthood_attestation.sql,
+-- 20260823120000_add_submitted_to_pipeline_event.sql,
+-- 20260809100000_add_notification_digest_ready_to_pipeline_event.sql), so
+-- the whole file is a no-op if applied a second time.
 --
 -- #CRITICAL: timing: apply this migration BEFORE deploying the image that
 -- writes these columns (covers/service.py::generate_cover). Against a
@@ -42,6 +47,12 @@ COMMENT ON COLUMN "public"."storybook_version"."cover_review_notes" IS
 COMMENT ON COLUMN "public"."storybook_version"."cover_review_attempts" IS
     'How many generate+review cycles covers.service.generate_cover ran for the current cover (0 for a row predating this feature, up to MAX_COVER_REVIEW_ATTEMPTS otherwise).';
 
+-- DROP-then-ADD keeps re-application idempotent, matching this project's
+-- house pattern for idempotent CHECK-constraint migrations (see the header
+-- comment above); an explicit "IS NULL OR" clause rather than relying on
+-- implicit SQL NULL semantics for the IN() comparison.
+ALTER TABLE "public"."storybook_version"
+    DROP CONSTRAINT IF EXISTS "ck_storybook_version_cover_review_verdict";
 ALTER TABLE "public"."storybook_version"
     ADD CONSTRAINT "ck_storybook_version_cover_review_verdict"
-    CHECK ("cover_review_verdict" IN ('pass', 'flag'));
+    CHECK ("cover_review_verdict" IS NULL OR "cover_review_verdict" IN ('pass', 'flag'));
