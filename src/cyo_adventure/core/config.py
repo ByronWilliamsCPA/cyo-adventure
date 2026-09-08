@@ -990,6 +990,20 @@ class Settings(BaseSettings):
     cover_quality: int = 80
     cover_max_bytes: int = 256_000
     cover_job_timeout_seconds: int = 180
+    # docs/superpowers/specs/2026-09-08-cover-ai-review-design.md Design
+    # section 2: an OpenRouter vision-capable model that judges a generated
+    # cover against its own generation prompt. Deliberately a different
+    # vendor/model family from cover_model (gemini-3-pro-image, called via
+    # the direct Google SDK in covers/provider.py, not through OpenRouter at
+    # all), so build_cover_review_provider's independence check
+    # (moderation/review_provider.py) holds trivially today; it stays a live
+    # check rather than an assumption, to catch a future misconfiguration.
+    # #ASSUME: external-resources: no live-pricing or availability probe
+    # backs this default; picked for being inexpensive, fast, and
+    # vision-capable at planning time (2026-09-08).
+    # #VERIFY: override via COVER_REVIEW_MODEL if this slug is retired or a
+    # materially better vision-capable option becomes available.
+    cover_review_model: str = "google/gemini-2.5-flash"
 
     # --- Notification push transport (S9/G10 SSE stream) ---
     # How often api/notifications.py's stream endpoint re-queries

@@ -15,6 +15,7 @@ def test_defaults() -> None:
     assert s.cover_max_width == 800
     assert s.cover_max_bytes == 256_000
     assert s.covers_backup_dir is None
+    assert s.cover_review_model == "google/gemini-2.5-flash"
 
 
 def test_env_overrides(monkeypatch: pytest.MonkeyPatch) -> None:
