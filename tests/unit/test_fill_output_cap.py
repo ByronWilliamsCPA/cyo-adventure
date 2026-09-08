@@ -103,18 +103,23 @@ def test_every_configured_default_model_has_a_cap() -> None:
     if someone also edited the tuple. Five of the eight `*_model` fields were
     outside it, including `review_openrouter_model`.
 
-    Only `cover_model` is exempt, and because no vendor fill ceiling exists to
-    look up rather than for convenience: it is an image model, and this table
-    governs fill output tokens. The two `ollama` fields that were exempt
-    alongside it are gone with the 2026-08-18 Ollama retirement. They were
-    locally served, so the ceiling was the deployment's runtime configuration,
-    and no configured default has that property any more.
+    `cover_model` and `cover_review_model` are exempt, and because no vendor
+    fill ceiling exists to look up rather than for convenience: neither is
+    part of the skeleton-fill pipeline this table governs.  `cover_model`
+    generates an image; `cover_review_model` (docs/superpowers/specs/
+    2026-09-08-cover-ai-review-design.md) judges one already generated,
+    calling `complete_with_image` with its own fixed
+    `covers/review.py::_MAX_REVIEW_TOKENS`, never through
+    `resolve_output_cap`. The two `ollama` fields that were exempt
+    alongside `cover_model` are gone with the 2026-08-18 Ollama retirement.
+    They were locally served, so the ceiling was the deployment's runtime
+    configuration, and no configured default has that property any more.
 
     `modal_model` needs no exemption. It defaults to None rather than to a
     model id, so the isinstance guard below skips it; a deployment that pins a
     real Modal model supplies its own cap through the same table.
     """
-    exempt = {"cover_model"}
+    exempt = {"cover_model", "cover_review_model"}
     fields = tuple(name for name in Settings.model_fields if name.endswith("_model"))
     assert set(exempt) <= set(fields), (
         f"exempt names no longer in Settings: {set(exempt) - set(fields)}"
