@@ -3522,8 +3522,8 @@ PII-scrubbed data, per the same standard applied to <code>pipeline_event</code> 
 </tr>
 <tr>
 <td>Google Perspective</td>
-<td>Same as OpenAI Moderation</td>
-<td>DPA/SCC execution tracked (Phase 5a); PII egress guard applied as of #304</td>
+<td><strong>Live classifier leg retired 2026-08-26</strong> (PR #764, issue #659): it no longer receives generated prose or child-typed request text. The only residual receipt is catalog prose from the offline calibration script <code>scripts/capture_stage0_baseline.py</code>, which sets <code>doNotStore: true</code></td>
+<td>Kept on this table under the removal rule below, not removed: <code>PERSPECTIVE_API_KEY</code> (inert, <code>core/config.py</code>) and <code>PERSPECTIVE_URL</code> (<code>moderation/classifiers.py</code>) still reference it, so it is not fully decommissioned. DPA/SCC execution (Phase 5a) stays open for prose and child text disclosed before 2026-08-26; PII egress guard applied as of #304</td>
 </tr>
 <tr>
 <td>Google Gemini (nano banana cover art)</td>
@@ -3613,7 +3613,7 @@ is what feeds a closed incident back into this program.</p>
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="July 28, 2026 21:05:21 UTC">July 28, 2026</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="September 8, 2026 17:00:45 UTC">September 8, 2026</span>
   </span>
 
     

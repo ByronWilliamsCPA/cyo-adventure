@@ -3702,7 +3702,7 @@
   <h1>Child-Origin Dataflow Matrix</h1>
 
 <blockquote>
-<p><strong>Status</strong>: Draft | <strong>Version</strong>: 2.0 | <strong>Compiled</strong>: 2026-08-08 | <strong>Updated</strong>: 2026-08-09
+<p><strong>Status</strong>: Draft | <strong>Version</strong>: 2.1 | <strong>Compiled</strong>: 2026-08-08 | <strong>Updated</strong>: 2026-09-05 (Perspective leg retired; see the dated callouts)
 <strong>Code reviewed at</strong>: commit <code>65883a1</code> on the feature branch for the original authoring; re-verified
 at the merge of <code>main</code> (13 commits, including PR #643 and PR #649) for this revision, 2026-08-09
 <strong>Scope</strong>: <code>src/cyo_adventure/api/</code>, <code>src/cyo_adventure/db/models.py</code>, <code>src/cyo_adventure/events/</code>,
@@ -3836,8 +3836,8 @@ ten rows, where it would carry no differentiating information.</p>
 <td><strong>Yes</strong>, one of two free-text fields</td>
 <td><strong>Yes, potentially direct</strong></td>
 <td><strong>Yes</strong></td>
-<td>OpenAI Moderation, Google Perspective, OpenRouter (+ sub-processors) / Anthropic (direct, no sub-processors)</td>
-<td><strong>Open blocker (1b); Perspective finding confirmed adverse (C1)</strong></td>
+<td>OpenAI Moderation, OpenRouter (+ sub-processors) / Anthropic (direct, no sub-processors); Google Perspective until 2026-08-26 (leg retired, PR #764)</td>
+<td><strong>Open blocker (1b); Perspective finding (C1) historical as of 2026-08-26</strong></td>
 </tr>
 <tr>
 <td>7</td>
@@ -3943,8 +3943,21 @@ repeated per event in Section 3.</p>
 <li><strong>Status</strong>: DPA not executed; COPPA PI on the wish leg.</li>
 </ul>
 <h3 id="google-perspective-stage-0-toxicity-classifier">Google Perspective (Stage-0 toxicity classifier)<a class="headerlink" href="#google-perspective-stage-0-toxicity-classifier" title="Permanent link">&para;</a></h3>
+<blockquote>
+<p><strong>Update 2026-09-05 (issue #659)</strong>: this leg no longer exists in the live gate. PR #764
+(<code>b2273a7</code>, merged 2026-08-26) retired Perspective as a Stage-0 signal source:
+<code>moderation/classifiers.py</code> no longer defines <code>_run_perspective</code>, <code>run_classifiers</code> takes no
+<code>perspective_key</code>, and neither <code>story_requests/screening.py</code> nor <code>api/node_edit.py</code> can send a
+child's text to Google. The only remaining caller of Perspective's endpoint is the offline
+calibration script <code>scripts/capture_stage0_baseline.py</code>, which sends catalog prose (never child
+free-text) and now sets <code>doNotStore: true</code>, pinned by
+<code>tests/unit/test_capture_stage0_baseline.py::test_perspective_request_opts_out_of_storage</code>.
+The finding below is therefore <strong>historical</strong>: it describes what was disclosed to Google before
+2026-08-26 and remains relevant to data-subject requests covering that period, not to current
+flows. Section 6's D5 entry is corrected in the same way.</p>
+</blockquote>
 <ul>
-<li><strong>Purpose</strong>: toxicity/safety scoring, parallel to OpenAI Moderation, same two call sites (intake
+<li><strong>Purpose</strong> (historical): toxicity/safety scoring, parallel to OpenAI Moderation, same two call sites (intake
   screening, per-node moderation).</li>
 <li><strong>What it receives</strong>: same content pattern as OpenAI Moderation, including the child's own raw
   wish text at the screening call site. Separately flagged for a sunset/replacement effort
@@ -3966,15 +3979,21 @@ repeated per event in Section 3.</p>
   and 312.4&copy;(1)/(d)'s notice content, not merely a service-provider call. Under GDPR, storing
   content "for future research" for Google's own purposes is inconsistent with acting solely as a
   processor on CYO's documented instructions.</li>
-<li><strong>Code fix is out of scope for this document</strong> (set <code>doNotStore: true</code> in the request body) and is
-  tracked as <strong>issue #659</strong>, which also asks for a unit test asserting the flag is present in the
-  posted request body (asserting on the response would prove nothing about what was sent) and a RAD
-  marker at the call site, so a later refactor cannot drop the field as apparent noise. This entry's
-  job is to describe current behavior accurately, not to resolve it. See
+<li><strong>Code fix</strong> was out of scope for this document (set <code>doNotStore: true</code> in the request body) and
+  was tracked as <strong>issue #659</strong>, which also asked for a unit test asserting the flag is present in
+  the posted request body (asserting on the response would prove nothing about what was sent) and a
+  RAD marker at the call site, so a later refactor cannot drop the field as apparent noise. See
   <a href="#d5-ai-training-consent-segregation">D5</a> and Event 6's consent-consequence field, both of which
   this finding directly contradicts as previously written.</li>
-<li><strong>Status</strong>: confirmed adverse default (no <code>doNotStore</code>), tracked as #659; DPA coverage separately
-  unconfirmed; COPPA PI on the wish leg.</li>
+<li><strong>Resolution of #659 (2026-09-05)</strong>: closed by removal plus a narrowed flag, not by adding
+  <code>doNotStore</code> to the live path. PR #764 retired the live leg on 2026-08-26, so there is no longer
+  a request body to fix; the surviving offline caller sets the flag, carries the RAD marker
+  (<code>scripts/capture_stage0_baseline.py::_score_perspective</code>), and is pinned by
+  <code>tests/unit/test_capture_stage0_baseline.py</code>, which asserts on the <strong>posted</strong> JSON as the issue
+  required.</li>
+<li><strong>Status</strong>: <strong>historical.</strong> Confirmed adverse default (no <code>doNotStore</code>) for wish text sent to
+  Google before 2026-08-26; no live disclosure to Perspective after that date. DPA coverage for the
+  pre-retirement period separately unconfirmed; COPPA PI on the wish leg for that period.</li>
 </ul>
 <h3 id="openrouter-aws-bedrock-azure-vertex-sub-processors-generation-leg-routed">OpenRouter (+ AWS Bedrock / Azure / Vertex sub-processors), generation leg (routed)<a class="headerlink" href="#openrouter-aws-bedrock-azure-vertex-sub-processors-generation-leg-routed" title="Permanent link">&para;</a></h3>
 <ul>
@@ -4256,11 +4275,13 @@ Citations are <code>file:line</code> against the current backend/frontend tree.<
 <li><strong>Third-party recipients</strong>:</li>
 <li><strong>Screening (before storage is trusted safe)</strong>: a local, deterministic PII guard runs first
      against the family's registered child names; a match hard-blocks and nothing leaves CYO
-     (<code>screening.py:76-95</code>). If clean, the raw text goes to <strong>OpenAI Moderation</strong> and
-     <strong>Google Perspective</strong> as plain content, with no identifiers attached to the call. <strong>See
-     Section 2's Google Perspective entry</strong>: this leg is now a confirmed, not merely unconfirmed,
-     disclosure for that vendor specifically (no <code>doNotStore</code> set; content usable for the vendor's
-     own research/model-building).</li>
+     (<code>screening.py:76-95</code>). If clean, the raw text goes to <strong>OpenAI Moderation</strong> as plain
+     content, with no identifiers attached to the call. Until 2026-08-26 it also went to
+     <strong>Google Perspective</strong>; <strong>see Section 2's Google Perspective entry</strong>: that leg was a
+     confirmed, not merely unconfirmed, disclosure for that vendor specifically (no <code>doNotStore</code>
+     set; content usable for the vendor's own research/model-building) and was retired by PR #764.
+     The Perspective analysis in items 5, 7, and 8 below is retained as the historical record for
+     that period.</li>
 <li><strong>Generation (only after guardian/admin approval, but built from the child's words)</strong>: the wish
      becomes <code>ConceptBrief.premise</code>; a fictional protagonist name is substituted for any real one,
      and the brief is re-checked against the PII guard before it reaches <strong>OpenRouter</strong> (whose
@@ -4578,8 +4599,11 @@ data is excluded from any training/evaluation corpus by design, so the obligatio
 that premise directly for one vendor: the classifier request sets no <code>doNotStore</code> field, and
 Google's own Perspective documentation states stored comments are used "for future research and
 community model building purposes," precisely the outcome D5's working position assumed did not
-happen. The code-level fix (setting <code>doNotStore: true</code>) is tracked as <strong>issue #659</strong>; this entry's
-job is to stop asserting a training-exclusion premise the code does not implement. Note the scope
+happen. <strong>Update 2026-09-05</strong>: the live Perspective leg was retired by PR #764 (2026-08-26), and
+the one remaining offline caller (<code>scripts/capture_stage0_baseline.py</code>, catalog prose only) sets
+<code>doNotStore: true</code>; issue #659 closes with that change. The training-exclusion premise now holds for
+current flows, but not retroactively for wish text sent to Google before 2026-08-26, which is what
+this entry continues to record. Note the scope
 limit when reasoning about remedies: 312.5(a)(2)'s consent-segregation right runs to <strong>disclosures
 to third parties</strong>, so it is the right hook for the Perspective leg but is not a general opt-out of
 an operator's own internal training, which is governed instead by the 312.2 internal-operations
@@ -4670,7 +4694,7 @@ leaves the family regardless of this mechanism.</p>
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="August 10, 2026 18:04:11 UTC">August 10, 2026</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="September 8, 2026 17:00:45 UTC">September 8, 2026</span>
   </span>
 
     

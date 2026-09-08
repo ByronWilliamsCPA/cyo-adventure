@@ -3659,27 +3659,36 @@ story prose</strong> runs through external moderation classifiers as the first-l
 precisely so that safety does not depend on a parent reading every path in detail. The
 human gates (guardian oversight, admin approval per ADR-005) sit on top of this floor, not
 in place of it.</p>
-<p>Current mechanism (<code>moderation/classifiers.py</code>, wired in <code>moderation/pipeline.py</code>): when
-keys are configured, every generated node's prose is sent per-node to the <strong>OpenAI
-Moderation API</strong> and <strong>Google Perspective API</strong> during Stage 0 of the moderation pipeline.
-The same classifiers screen child-typed story-request text at intake
-(<code>story_requests/screening.py</code>). Both services are therefore standing data-handling
-counterparties for two data categories:</p>
+<p>Current mechanism (<code>moderation/classifiers.py</code>, wired in <code>moderation/pipeline.py</code>): when a
+key is configured, every generated node's prose is sent per-node to the <strong>OpenAI
+Moderation API</strong> during Stage 0 of the moderation pipeline. The same classifier screens
+child-typed story-request text at intake (<code>story_requests/screening.py</code>). It is therefore a
+standing data-handling counterparty for two data categories:</p>
+<blockquote>
+<p><strong>Corrected 2026-09-05 (issue #659)</strong>: a second classifier, the <strong>Google Perspective API</strong>,
+ran alongside OpenAI Moderation on both call sites until PR #764 (<code>b2273a7</code>, merged
+2026-08-26) retired it. <code>classifiers.py</code> no longer defines <code>_run_perspective</code> and
+<code>run_classifiers</code> takes no <code>perspective_key</code>, so neither call site can reach Google. The only
+remaining caller is the offline calibration script <code>scripts/capture_stage0_baseline.py</code>, which
+sends catalog prose rather than child text and sets <code>doNotStore: true</code>. Everything below that
+names Perspective describes the pre-2026-08-26 arrangement.</p>
+</blockquote>
 <ul>
 <li><strong>Generated story prose</strong> (family-linked content produced by the pipeline; the PII guard
   keeps real child detail out of the prompts that produce it).</li>
 <li><strong>Child-typed request text</strong> (child-provided free text, screened before storage).</li>
 </ul>
-<p>Consequences for the provider data-handling review (Blocker 1 below): OpenAI and Google
-(Perspective) must be included alongside the generation leg (OpenRouter) and the LLM
-review leg when confirming retention terms. <strong>Since the 2026-07-28 narrowing, this leg is
+<p>Consequences for the provider data-handling review (Blocker 1 below): OpenAI must be
+included alongside the generation leg (OpenRouter) and the LLM review leg when confirming
+retention terms. Google (Perspective) was on that list until the 2026-08-26 retirement and
+now needs confirmation only for the period it was live. <strong>Since the 2026-07-28 narrowing, this leg is
 where Blocker 1's force sits</strong> (Blocker 1b). The distinction is route control, not whether
 typed words egress at all: a child's own typed words reach the generation leg too, verbatim,
 because <code>ConceptBrief.premise</code> is <code>request.request_text</code> unaltered
 (<code>story_requests/brief.py:197</code>) and the brief is fenced into the generation prompt. What is
-different here is that the classifier leg calls OpenAI Moderation and Google Perspective
-<strong>directly</strong>, so it inherits none of the OpenRouter workspace guardrail that constrains the
-generation route, and ADR-023's proposed render-time substitution does nothing for it either
+different here is that the classifier leg calls OpenAI Moderation (and, before 2026-08-26,
+Google Perspective) <strong>directly</strong>, so it inherits none of the OpenRouter workspace guardrail
+that constrains the generation route, and ADR-023's proposed render-time substitution does nothing for it either
 (it addresses identifiers, not free text). Classifier calls should remain content-only:
 no child identifier, profile id, or family id accompanies the text, and failures are
 logged by node id only.</p>
@@ -3829,9 +3838,9 @@ it still needs is the same terms confirmation every counterparty needs, plus the
 its posture is inherited from the generation-route guardrail and moves with it.</p>
 <p><strong>Required action</strong>: confirm the applicable retention path for each classifier counterparty
 and the review provider, and record the outcome (provider, route, contract reference or API
-tier, effective date) here. Note that the Perspective counterparty is separately in flux
-under the Stage-0 Perspective sunset work; that changes who is on this list, not whether the
-confirmation is needed.</p>
+tier, effective date) here. The Perspective sunset has since landed (PR #764, 2026-08-26,
+issue #659), so Perspective is off this list prospectively; that changed who is on the list, not
+whether the confirmation is needed for the counterparties that remain.</p>
 <p><strong>Status</strong>: OPEN. This is the standing Blocker 1 referenced by
 <a href="../adr/adr-018-childrens-privacy-compliance/">ADR-018</a> item 6.</p>
 <hr />
@@ -3935,7 +3944,7 @@ counsel:</p>
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="August 30, 2026 19:32:47 UTC">August 30, 2026</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="September 8, 2026 17:00:45 UTC">September 8, 2026</span>
   </span>
 
     

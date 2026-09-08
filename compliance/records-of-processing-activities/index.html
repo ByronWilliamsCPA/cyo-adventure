@@ -3516,7 +3516,7 @@ undecided, rather than asserting a basis has been chosen.</p>
 <td>Generated story prose, moderation classifier verdicts and scores</td>
 <td>Child (subject of the story)</td>
 <td>Legitimate interest / legal obligation (child-safety); basis not formally recorded (Phase 2)</td>
-<td>OpenAI Moderation, Google Perspective (Stage-0 classifiers; PII-guarded as of #304)</td>
+<td>OpenAI Moderation (Stage-0 classifier; PII-guarded as of #304). Google Perspective was a second Stage-0 classifier until 2026-08-26, when PR #764 retired it; it receives nothing on any live path now (issue #659)</td>
 <td>Moderation reports: 1-2 years (remediation plan Section 5's retention table, accepted 2026-07-20)</td>
 </tr>
 <tr>
@@ -3617,7 +3617,13 @@ assurance-register row O-125.</p>
 Section 4's oversight table (same list, same status column; see that document for the live
 DPA/SCC execution status rather than duplicating it here):</p>
 <p>Supabase, OpenRouter (+ downstream model providers), Anthropic (direct), OpenAI Moderation,
-Google Perspective, Google Gemini, Cloudflare R2, Sentry, Epic Games (Kids Web Services).</p>
+Google Gemini, Cloudflare R2, Sentry, Epic Games (Kids Web Services).</p>
+<p><strong>Removed 2026-09-05 (issue #659)</strong>: Google Perspective was on this list as a Stage-0 classifier
+recipient until PR #764 (<code>b2273a7</code>, merged 2026-08-26) retired that leg. It receives no personal
+data on any live path now; the only code that still calls it is the offline calibration script
+<code>scripts/capture_stage0_baseline.py</code>, which sends catalog prose (not personal data) and sets
+<code>doNotStore: true</code>. Records of the pre-2026-08-26 disclosure remain in scope for any data-subject
+request covering that period.</p>
 <p>No recipient outside this list receives personal data as of this writing. No data is sold or
 disclosed for the recipient's own independent marketing purposes.</p>
 <p>Epic Games is the newest entry and the only one that is not yet live in production. It is also the
@@ -3822,7 +3828,7 @@ exactly that gap rather than a separate kind of problem.</p>
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="August 14, 2026 19:09:18 UTC">August 14, 2026</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="September 8, 2026 17:00:45 UTC">September 8, 2026</span>
   </span>
 
     
