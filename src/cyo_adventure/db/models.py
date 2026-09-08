@@ -1554,8 +1554,8 @@ class StorybookVersion(CreatedAtMixin, Base):
     # causes above stay behaviorally interchangeable for callers.
     # #VERIFY: tests/integration/test_cover_model.py::
     # test_cover_review_columns_default_null_and_zero.
-    cover_review_verdict: Mapped[str | None] = mapped_column(String, default=None)
-    cover_review_notes: Mapped[str | None] = mapped_column(String, default=None)
+    cover_review_verdict: Mapped[str | None] = mapped_column(Text, default=None)
+    cover_review_notes: Mapped[str | None] = mapped_column(Text, default=None)
     cover_review_attempts: Mapped[int] = mapped_column(
         server_default=text("0"), default=0
     )
