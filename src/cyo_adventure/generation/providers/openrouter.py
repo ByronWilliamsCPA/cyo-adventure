@@ -529,6 +529,18 @@ class OpenRouterProvider:
             self._build_messages(system, prompt), max_tokens
         )
 
+        # #CRITICAL: external-resources: this performs network I/O to a
+        # third-party LLM endpoint. Every attempt is bounded by
+        # ``timeout_seconds``; transient failures are retried with
+        # exponential backoff up to ``max_retries``; leg-fatal failures raise
+        # immediately so the cascade can fail over. This closure additionally
+        # caps identical content-filter stops (UW-C329, below) before
+        # treating the retry as exhausted, unlike ``complete_with_image()``.
+        # #VERIFY: tests assert transient->retry, 404/401->leg_fatal
+        # ProviderError, exhausted transient->ProviderError(leg_fatal=False),
+        # and content-filter stops capping at _MAX_CONTENT_FILTER_STOPS (see
+        # test_providers.py).
+        #
         # Interim `UW-C329` policy (ruled 2026-08-21, section 9.5 of
         # live-structural-round-2026-08-21.md): identical retries cap at TWO
         # for zero-content `content_filter` stops. The filter fires on the
