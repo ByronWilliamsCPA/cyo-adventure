@@ -137,6 +137,29 @@ _STATUSES = frozenset({"unscheduled", "blocked", "decision", "verify", "done"})
 # once confirmed. `done` is the one status whose required evidence is a PR/commit/issue reference
 # rather than a future phase, so an empty Phase on a closed row is not an orphan.
 _STATUSES_REQUIRING_PHASE = _STATUSES - {"done"}
+# The exemption above is only as safe as the evidence it assumes stands in place of a phase.
+# Until this pattern existed nothing checked that a closed row cited anything at all, so a row
+# could take the carve-out (Status `done`, Phase empty) while naming no PR, commit, or issue,
+# and pass both halves: the phase check waived it and no other check asked. This is the
+# substitute, and it enforces exactly what the register's own linkage contract already says a
+# closed row owes ("move the row's Status to `done` and cite the PR"; "`done` (closed, with a
+# PR reference)"; "the row cites a PR, commit, or issue").
+#
+# Deliberately scoped to rows that actually take the carve-out, not to every `done` row. As of
+# 2026-09-05 no row in the register takes it (125 `done` rows, 0 with an empty Phase cell), so
+# this rule adds no cleanup debt and exists to keep the hole closed prospectively. Widening it
+# to all `done` rows would flag 73 existing rows and is a separate decision, tracked rather
+# than smuggled in here.
+#
+# A commit sha must be backtick-quoted, which is the register's own convention for one. A bare
+# `\b[0-9a-f]{7,40}\b` would match ordinary prose words built from hex letters ("defaced",
+# "decade", "deadbeef"), turning the check into one that passes on text that cites nothing.
+_DONE_EVIDENCE_RE = re.compile(
+    r"#\d+"
+    r"|https://github\.com/ByronWilliamsCPA/cyo-adventure/(?:issues|pull)/\d+"
+    r"|issue:\d+"
+    r"|`[0-9a-f]{7,40}`"
+)
 
 _MANIFEST_STATUS_VALUES = frozenset({"yes", "partial", "no"})
 # The top-level manifest tables every downstream integrity check reads, and the rungs those
@@ -740,6 +763,7 @@ def _check_row_phase(
     phase: str,
     status: str,
     phase_vocabulary: frozenset[str],
+    item: str,
 ) -> list[str]:
     """Return problems with a register row's ``Phase`` value.
 
@@ -756,6 +780,8 @@ def _check_row_phase(
         status: The row's ``Status`` cell value, to check the phase does not repeat it and, when
             phase is empty, whether that emptiness is itself the problem.
         phase_vocabulary: Every phase token the run's manifest declares.
+        item: The row's ``Item`` text, read only when a `done` row takes the empty-phase
+            carve-out, to confirm it cites the evidence that carve-out assumes in its place.
 
     Returns:
         list[str]: Problems found; empty when the phase is well formed.
@@ -766,6 +792,16 @@ def _check_row_phase(
                 (
                     f"{entry_id} (cluster {cluster} line {number}): Phase is empty but Status is "
                     f"'{status}', which still needs the phase this row will land in"
+                )
+            ]
+        if not _DONE_EVIDENCE_RE.search(item):
+            return [
+                (
+                    f"{entry_id} (cluster {cluster} line {number}): Status is '{status}' with an "
+                    f"empty Phase, which is allowed only because a closed row's evidence is a "
+                    f"reference instead; the Item cites no PR, commit, or issue "
+                    f"(expected '#N', a github.com/ByronWilliamsCPA/cyo-adventure issues/pull "
+                    f"link, 'issue:N', or a backtick-quoted commit sha)"
                 )
             ]
         return []
@@ -1426,10 +1462,18 @@ def _check_one_row(
     if status_idx is not None:
         problems.extend(_check_row_status(letter, number, entry_id, status))
 
+    item_text = cells[item_idx] if item_idx is not None else None
+
     if phase_idx is not None:
         problems.extend(
             _check_row_phase(
-                letter, number, entry_id, cells[phase_idx], status, phase_vocabulary
+                letter,
+                number,
+                entry_id,
+                cells[phase_idx],
+                status,
+                phase_vocabulary,
+                item_text or "",
             )
         )
 
@@ -1447,8 +1491,6 @@ def _check_one_row(
                 letter, number, entry_id, column, cell, phase_vocabulary
             )
         )
-
-    item_text = cells[item_idx] if item_idx is not None else None
 
     return problems, item_text, entry_id
 

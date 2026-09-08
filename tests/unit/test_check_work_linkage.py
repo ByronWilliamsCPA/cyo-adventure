@@ -515,7 +515,7 @@ def test_check_row_phase_accepts_every_vocabulary_form(phase: str) -> None:
     """
     assert (
         _MODULE._check_row_phase(
-            "A", 1, "UW-A01", phase, "unscheduled", _REAL_PHASE_VOCABULARY
+            "A", 1, "UW-A01", phase, "unscheduled", _REAL_PHASE_VOCABULARY, ""
         )
         == []
     )
@@ -524,7 +524,7 @@ def test_check_row_phase_accepts_every_vocabulary_form(phase: str) -> None:
 def test_check_row_phase_rejects_value_outside_vocabulary() -> None:
     """A phase spelled outside the closed vocabulary fails."""
     problems = _MODULE._check_row_phase(
-        "A", 1, "UW-A01", "42", "unscheduled", _SAMPLE_PHASE_VOCABULARY
+        "A", 1, "UW-A01", "42", "unscheduled", _SAMPLE_PHASE_VOCABULARY, ""
     )
     assert len(problems) == 1
     assert "not in the closed phase vocabulary" in problems[0]
@@ -538,7 +538,7 @@ def test_check_row_phase_rejects_value_outside_vocabulary() -> None:
 def test_check_row_phase_rejects_comma_separated_value() -> None:
     """A Phase column holding more than one value is rejected."""
     problems = _MODULE._check_row_phase(
-        "A", 1, "UW-A01", "4b, 5", "unscheduled", _SAMPLE_PHASE_VOCABULARY
+        "A", 1, "UW-A01", "4b, 5", "unscheduled", _SAMPLE_PHASE_VOCABULARY, ""
     )
     assert len(problems) == 1
     assert "more than one" in problems[0]
@@ -552,7 +552,7 @@ def test_check_row_phase_rejects_comma_separated_value() -> None:
 def test_check_row_phase_rejects_phase_equal_to_a_status() -> None:
     """A Phase column that just repeats a Status word is rejected."""
     problems = _MODULE._check_row_phase(
-        "A", 1, "UW-A01", "blocked", "decision", _SAMPLE_PHASE_VOCABULARY
+        "A", 1, "UW-A01", "blocked", "decision", _SAMPLE_PHASE_VOCABULARY, ""
     )
     assert len(problems) == 1
     assert "repeats a Status value" in problems[0]
@@ -566,7 +566,7 @@ def test_check_row_phase_rejects_phase_equal_to_a_status() -> None:
 def test_check_row_phase_rejects_empty_phase_on_unscheduled_row() -> None:
     """An empty Phase on an unscheduled row is one of the disallowed empty cases."""
     problems = _MODULE._check_row_phase(
-        "A", 1, "UW-A01", "", "unscheduled", _SAMPLE_PHASE_VOCABULARY
+        "A", 1, "UW-A01", "", "unscheduled", _SAMPLE_PHASE_VOCABULARY, ""
     )
     assert len(problems) == 1
     assert "Phase is empty" in problems[0]
@@ -586,18 +586,86 @@ def test_check_row_phase_rejects_empty_phase_on_a_row_that_still_needs_a_phase_h
     evidence is a PR/commit/issue reference rather than a future phase.
     """
     problems = _MODULE._check_row_phase(
-        "A", 1, "UW-A01", "", status, _SAMPLE_PHASE_VOCABULARY
+        "A", 1, "UW-A01", "", status, _SAMPLE_PHASE_VOCABULARY, ""
     )
     assert len(problems) == 1
     assert "Phase is empty" in problems[0]
     assert status in problems[0]
 
 
-def test_check_row_phase_allows_empty_phase_on_a_done_row() -> None:
-    """An empty Phase is fine on a ``done`` row: its required evidence is a PR/commit/issue
-    citation (per the linkage contract), not a future phase to land in."""
+@pytest.mark.parametrize(
+    "item",
+    [
+        "Closed by PR #812.",
+        "Delivered in `4fc65e5b`.",
+        "Tracked as issue:460 and closed.",
+        "Closed: https://github.com/ByronWilliamsCPA/cyo-adventure/pull/636 merged.",
+    ],
+)
+def test_check_row_phase_allows_empty_phase_on_a_done_row_that_cites_evidence(
+    item: str,
+) -> None:
+    """An empty Phase is fine on a ``done`` row *that cites its evidence*.
+
+    The linkage contract makes a closed row's evidence a PR/commit/issue citation rather than a
+    future phase to land in, which is why the phase requirement is waived here. This asserts the
+    waiver on each citation form the register actually uses.
+    """
     assert (
-        _MODULE._check_row_phase("A", 1, "UW-A01", "", "done", _SAMPLE_PHASE_VOCABULARY)
+        _MODULE._check_row_phase(
+            "A", 1, "UW-A01", "", "done", _SAMPLE_PHASE_VOCABULARY, item
+        )
+        == []
+    )
+
+
+@pytest.mark.parametrize(
+    "item",
+    [
+        "Closed after review.",
+        "Closed; the defaced decade of added facade code is gone.",
+        "Closed in 4fc65e5b.",
+        "",
+    ],
+)
+def test_check_row_phase_rejects_a_done_row_that_cites_no_evidence(item: str) -> None:
+    """A ``done`` row taking the empty-Phase waiver must actually cite something.
+
+    This is the compensating control for the waiver above, and it is the case the previous
+    version of this test asserted was *fine*: it called the checker with no Item at all and
+    expected no problems, which pinned the gap open rather than catching it. An exemption is
+    only as safe as the check that replaces it, so the two belong together.
+
+    Two of the fixtures are near-misses on purpose. "the defaced decade of added facade code"
+    is prose built entirely from hex letters, which an unanchored ``[0-9a-f]{7,40}`` sha pattern
+    would accept as a citation; "Closed in 4fc65e5b" is a real sha written without the register's
+    backtick convention, which is the form the pattern deliberately does not credit.
+    """
+    problems = _MODULE._check_row_phase(
+        "A", 1, "UW-A01", "", "done", _SAMPLE_PHASE_VOCABULARY, item
+    )
+    assert len(problems) == 1
+    assert "cites no PR, commit, or issue" in problems[0]
+
+
+def test_check_row_phase_still_allows_a_done_row_with_a_phase_and_no_evidence() -> None:
+    """The evidence rule fires only where the waiver is actually taken.
+
+    A ``done`` row that names a phase has a phase home already, so it never reaches the waiver
+    and is not asked for a citation. Pinning this keeps the rule scoped: 125 ``done`` rows in
+    the register carry a phase, and 73 of them cite nothing, so a rule that fired on all of them
+    would be a 73-row cleanup wearing the costume of a bug fix.
+    """
+    assert (
+        _MODULE._check_row_phase(
+            "A",
+            1,
+            "UW-A01",
+            "5",
+            "done",
+            _SAMPLE_PHASE_VOCABULARY,
+            "Closed after review.",
+        )
         == []
     )
 

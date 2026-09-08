@@ -150,6 +150,34 @@ async def test_dual_role_owner_updating_own_family_is_stamped_admin(
     )
 
 
+async def test_dual_role_admin_creating_a_family_is_stamped_admin(
+    client: AsyncClient,
+    sessions: async_sessionmaker[AsyncSession],
+    seed: Seed,
+) -> None:
+    """Family creation is audited as admin, the capacity that authorized it (#453).
+
+    Creation is the one stamping site with no family in scope at all (the row
+    does not exist until the handler makes it), so ``Principal.acting_role()``
+    has no own-family relationship to reflect even in principle. Pins the
+    ``ADMIN_ACTOR_ROLE`` decision documented at the call site so a later
+    ``acting_role()`` sweep cannot flip it to the caller's guardian base
+    persona unnoticed.
+    """
+    resp = await client.post(
+        _FAMILIES, headers=auth(seed.dual_token), json={"name": "Stamped By Dual Role"}
+    )
+    assert resp.status_code == 201, resp.text
+
+    event = await assert_single_event(
+        sessions,
+        event_type="family_managed",
+        entity_type="family",
+        actor_role="admin",
+    )
+    assert event.payload["action"] == "created"
+
+
 async def test_deactivate_family_cascades_to_members_and_blocks_login(
     client: AsyncClient, seed: Seed
 ) -> None:

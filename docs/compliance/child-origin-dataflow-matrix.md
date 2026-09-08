@@ -209,15 +209,21 @@ repeated per event in Section 3.
   and 312.4(c)(1)/(d)'s notice content, not merely a service-provider call. Under GDPR, storing
   content "for future research" for Google's own purposes is inconsistent with acting solely as a
   processor on CYO's documented instructions.
-- **Code fix is out of scope for this document** (set `doNotStore: true` in the request body) and is
-  tracked as **issue #659**, which also asks for a unit test asserting the flag is present in the
-  posted request body (asserting on the response would prove nothing about what was sent) and a RAD
-  marker at the call site, so a later refactor cannot drop the field as apparent noise. This entry's
-  job is to describe current behavior accurately, not to resolve it. See
+- **Code fix** was out of scope for this document (set `doNotStore: true` in the request body) and
+  was tracked as **issue #659**, which also asked for a unit test asserting the flag is present in
+  the posted request body (asserting on the response would prove nothing about what was sent) and a
+  RAD marker at the call site, so a later refactor cannot drop the field as apparent noise. See
   [D5](#d5-ai-training-consent-segregation) and Event 6's consent-consequence field, both of which
   this finding directly contradicts as previously written.
-- **Status**: confirmed adverse default (no `doNotStore`), tracked as #659; DPA coverage separately
-  unconfirmed; COPPA PI on the wish leg.
+- **Resolution of #659 (2026-09-05)**: closed by removal plus a narrowed flag, not by adding
+  `doNotStore` to the live path. PR #764 retired the live leg on 2026-08-26, so there is no longer
+  a request body to fix; the surviving offline caller sets the flag, carries the RAD marker
+  (`scripts/capture_stage0_baseline.py::_score_perspective`), and is pinned by
+  `tests/unit/test_capture_stage0_baseline.py`, which asserts on the **posted** JSON as the issue
+  required.
+- **Status**: **historical.** Confirmed adverse default (no `doNotStore`) for wish text sent to
+  Google before 2026-08-26; no live disclosure to Perspective after that date. DPA coverage for the
+  pre-retirement period separately unconfirmed; COPPA PI on the wish leg for that period.
 
 ### OpenRouter (+ AWS Bedrock / Azure / Vertex sub-processors), generation leg (routed)
 

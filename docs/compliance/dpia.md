@@ -77,8 +77,9 @@ shipped system, not a blank-slate proposal.
 ### 2.1 Third-party disclosure of a child's free-text story ideas (Medium, mitigated from High)
 
 **Risk**: a child's own typed story wish, or a guardian's request text, is sent to external
-LLM and moderation providers (OpenRouter/downstream models, Anthropic, OpenAI Moderation,
-Google Perspective) as part of generating and safety-screening the story. Free text is the
+LLM and moderation providers (OpenRouter/downstream models, Anthropic, OpenAI Moderation; and
+Google Perspective until PR #764 retired that leg on 2026-08-26, issue #659) as part of
+generating and safety-screening the story. Free text is the
 one place a child could type something identifying (their own name, a friend's name, a home
 detail) that structured fields (display name, age band) never expose.
 

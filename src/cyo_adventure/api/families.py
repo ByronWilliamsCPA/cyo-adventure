@@ -188,10 +188,16 @@ async def create_family(body: FamilyCreateBody, ctx: Context) -> FamilyView:
     await ctx.session.refresh(family, ["created_at"])
     await record_event(
         ctx.session,
-        # Admin-only endpoint with no pre-existing family in scope (the family
-        # is being created), so there is no own-family relationship for
-        # Principal.acting_role() to reflect: stamp the capacity that
-        # authorized the action (#453, audited 2026-09-05).
+        # #CRITICAL: security: pipeline_event is append-only, so a wrong
+        # actor_role is unrecoverable: it becomes the permanent record of who
+        # exercised a cross-family administrative power. Admin-only endpoint
+        # with no pre-existing family in scope (the family is being created),
+        # so there is no own-family relationship for Principal.acting_role()
+        # to reflect: stamp the capacity that authorized the action (#453,
+        # audited 2026-09-05).
+        # #VERIFY: tests/integration/test_families_api.py::
+        # test_dual_role_admin_creating_a_family_is_stamped_admin asserts a
+        # dual-role caller is stamped admin, not guardian.
         Actor.from_principal(ctx.principal, acting_role=ADMIN_ACTOR_ROLE),
         entity_type="family",
         entity_id=str(family.id),
@@ -267,7 +273,9 @@ async def update_family(
     await ctx.session.flush()
     await record_event(
         ctx.session,
-        # Admin-only endpoint: stamp the capacity that authorized the action,
+        # #CRITICAL: security: pipeline_event is append-only, so a wrong
+        # actor_role is unrecoverable. Admin-only endpoint: stamp the capacity
+        # that authorized the action,
         # not a dual-role caller's guardian base persona. Deactivating or
         # renaming a family is a cross-family administrative power even when
         # the target is the caller's own family (a guardian cannot reach this

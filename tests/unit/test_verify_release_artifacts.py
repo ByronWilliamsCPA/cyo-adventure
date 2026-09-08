@@ -113,3 +113,121 @@ def test_verify_script_missing_section_heading_fails_non_zero(tmp_path: Path) ->
 
     assert result.returncode == 1
     assert f"no '## [{_VERSION}] - ' section heading" in result.stdout
+
+
+def test_verify_script_uses_no_gnu_only_grep_flags() -> None:
+    """The macOS matrix leg runs BSD grep, which rejects PCRE mode.
+
+    ``python-compatibility.yml`` runs this suite on ``macos-latest``. A GNU-only
+    pattern flag there makes the extraction return empty and the script report a
+    bogus version mismatch, so guard the whole file rather than one call site.
+    """
+    source = _SCRIPT.read_text(encoding="utf-8")
+
+    offenders = [
+        (number, line)
+        for number, line in enumerate(source.splitlines(), start=1)
+        if "-P " in line or "-Po" in line or "\\K" in line
+    ]
+
+    assert not offenders, f"GNU-only grep usage reintroduced: {offenders}"
+
+
+def test_verify_script_section_with_only_a_subheading_fails(tmp_path: Path) -> None:
+    """A heading with no entries must fail, not publish an empty release.
+
+    ``### Features`` alone is non-whitespace, so a bare whitespace test passes it.
+    """
+    changelog = _CHANGELOG.replace("- Add a thing\n", "")
+    repo = _make_repo(tmp_path, changelog=changelog)
+
+    result = _run(repo, _VERSION)
+
+    assert result.returncode == 1
+    assert f"section '[{_VERSION}]' has a heading but no entries" in result.stdout
+
+
+def test_verify_script_fails_when_a_prior_version_section_is_dropped(
+    tmp_path: Path,
+) -> None:
+    """Losing prior history must fail even when the file grows.
+
+    The check this replaced compared total line counts, so a rewrite that dropped
+    old sections while adding more new lines passed. Keep the replacement honest
+    by asserting on a changelog that is strictly longer than its baseline.
+    """
+    repo = _make_repo(tmp_path)
+    padding = "\n".join(f"- padding entry {index}" for index in range(1, 13))
+    truncated = f"""# Changelog
+
+<!-- version list -->
+
+## [{_VERSION}] - 2026-09-05
+
+### Features
+
+- Add a thing
+{padding}
+
+[{_VERSION}]: {_REPO}/compare/v0.1.0...v{_VERSION}
+[0.1.0]: {_REPO}/releases/tag/v0.1.0
+"""
+    (repo / "CHANGELOG.md").write_text(truncated, encoding="utf-8")
+    baseline_lines = len(_CHANGELOG.splitlines())
+    assert len(truncated.splitlines()) > baseline_lines, (
+        "fixture must be longer than the baseline, or it cannot discriminate "
+        "the heading-set check from the line-count check it replaced"
+    )
+
+    result = _run(repo, _VERSION, "--baseline-ref", "HEAD")
+
+    assert result.returncode == 1
+    assert "lost version section(s)" in result.stdout
+    assert "## [0.1.0]" in result.stdout
+    assert "shrank from" not in result.stdout
+
+
+def test_verify_script_missing_compare_link_footer_fails(tmp_path: Path) -> None:
+    changelog = _CHANGELOG.replace(
+        f"[{_VERSION}]: {_REPO}/compare/v0.1.0...v{_VERSION}\n", ""
+    )
+    repo = _make_repo(tmp_path, changelog=changelog)
+
+    result = _run(repo, _VERSION)
+
+    assert result.returncode == 1
+    assert f"no '[{_VERSION}]: ' compare-link footer" in result.stdout
+
+
+def test_verify_script_missing_version_list_marker_fails(tmp_path: Path) -> None:
+    changelog = _CHANGELOG.replace("<!-- version list -->\n", "")
+    repo = _make_repo(tmp_path, changelog=changelog)
+
+    result = _run(repo, _VERSION)
+
+    assert result.returncode == 1
+    assert "lost its '<!-- version list -->' insertion marker" in result.stdout
+
+
+def test_verify_script_missing_history_tail_fails(tmp_path: Path) -> None:
+    changelog = _CHANGELOG.replace(f"[0.1.0]: {_REPO}/releases/tag/v0.1.0\n", "")
+    repo = _make_repo(tmp_path, changelog=changelog)
+
+    result = _run(repo, _VERSION)
+
+    assert result.returncode == 1
+    assert "lost its history tail" in result.stdout
+
+
+def test_verify_script_missing_pyproject_reports_a_tooling_failure(
+    tmp_path: Path,
+) -> None:
+    """An unreadable pyproject must not masquerade as a version mismatch."""
+    repo = _make_repo(tmp_path)
+    (repo / "pyproject.toml").unlink()
+
+    result = _run(repo, _VERSION)
+
+    assert result.returncode == 1
+    assert "pyproject.toml not found" in result.stdout
+    assert "pyproject version is ''" not in result.stdout

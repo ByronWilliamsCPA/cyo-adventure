@@ -11,7 +11,7 @@ from typing import TYPE_CHECKING, cast
 
 import pytest
 
-from ._event_assertions import assert_single_event
+from ._event_assertions import assert_single_event, fetch_events
 from .conftest import Seed, auth
 
 if TYPE_CHECKING:
@@ -102,6 +102,40 @@ async def test_dual_role_owner_connecting_own_family_is_stamped_admin(
         entity_type="family_connection",
         actor_role="admin",
     )
+
+
+async def test_dual_role_owner_disconnecting_own_family_is_stamped_admin(
+    client: AsyncClient,
+    sessions: async_sessionmaker[AsyncSession],
+    seed: Seed,
+) -> None:
+    """Removing a connection is audited as admin, like creating one (#453).
+
+    Deletion also tombstones attached disclosure consents, so its audit row is
+    the record of who withdrew a cross-family disclosure. Uses ``fetch_events``
+    rather than ``assert_single_event`` because create and delete share the
+    ``family_connection_changed`` type, so the removal is the second row, not
+    the only one; asserting on the last row is what makes this test specific to
+    the delete handler.
+    """
+    target = await _other_family_id(client, seed)
+    create = await client.post(
+        _CONNECTIONS,
+        headers=auth(seed.dual_token),
+        json={"family_id": str(seed.family_id), "connected_family_id": target},
+    )
+    assert create.status_code == 201, create.text
+
+    delete_resp = await client.delete(
+        f"{_CONNECTIONS}/{create.json()['id']}", headers=auth(seed.dual_token)
+    )
+    assert delete_resp.status_code == 204, delete_resp.text
+
+    events = await fetch_events(sessions, "family_connection_changed")
+    assert len(events) == 2, f"expected create + delete, found {len(events)}"
+    removal = events[-1]
+    assert removal.payload["action"] == "removed"
+    assert removal.actor_role == "admin"
 
 
 async def test_directional_not_symmetric(client: AsyncClient, seed: Seed) -> None:

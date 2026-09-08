@@ -21,8 +21,10 @@
 #                   skip the shrink check (e.g. no history is available).
 #
 # Reads pyproject.toml and CHANGELOG.md from the current directory; run it from
-# the repository root. It uses grep rather than `uv version --short` so the
-# publish job does not need uv installed.
+# the repository root. It uses awk and grep rather than `uv version --short` so
+# the publish job does not need uv installed, and keeps every pattern POSIX so
+# the macOS leg of the test matrix, whose BSD grep has no PCRE mode, runs it
+# unchanged.
 #
 # #CRITICAL data-integrity: the version bump and the changelog splice ARE the
 # release. If PSR silently no-ops (a config or template regression, an upstream
@@ -57,7 +59,18 @@ while [ "$#" -gt 0 ]; do
 done
 
 FAIL=0
-ACTUAL="$(grep -m1 -Po '^version = "\K[^"]+' pyproject.toml || true)"
+# #CRITICAL external-resources: this script runs on every CI platform in the
+# matrix, including macOS, whose BSD grep implements no PCRE mode. Keep every
+# pattern POSIX: awk -F'"' takes the first `version = "..."` line and exits,
+# which is what the original GNU-only extraction did, without needing an
+# escape BSD grep cannot parse.
+# #VERIFY tests/unit/test_verify_release_artifacts.py::test_verify_script_uses_no_gnu_only_grep_flags
+# scans this file and fails if a GNU-only grep flag reappears anywhere in it.
+if [ ! -f pyproject.toml ]; then
+  echo "::error::pyproject.toml not found; run this script from the repository root."
+  exit 1
+fi
+ACTUAL="$(awk -F'"' '/^version = "/ { print $2; exit }' pyproject.toml)"
 if [ "${ACTUAL}" != "${NEXT}" ]; then
   echo "::error::pyproject version is '${ACTUAL}', expected '${NEXT}'."
   FAIL=1
@@ -68,9 +81,11 @@ if ! grep -qF "## [${NEXT}] - " CHANGELOG.md; then
 fi
 # #ASSUME data-integrity: a heading alone is not a release; the section must
 # carry actual entries. An empty section means the commit filter dropped
-# everything, so fail rather than publish a heading with no notes.
+# everything, so fail rather than publish a heading with no notes. A bare
+# sub-heading ('### Features' with nothing under it) is an empty section too:
+# it is non-whitespace, so a whitespace test alone would pass it.
 # #VERIFY awk captures the body between this version's heading and the next
-# '## ' heading, and grep proves it holds a non-whitespace line.
+# '## ' heading, and grep requires at least one markdown list item in it.
 SECTION_BODY="$(
   awk -v h="## [${NEXT}] - " '
     index($0, h) == 1 { in_sec = 1; next }
@@ -78,7 +93,7 @@ SECTION_BODY="$(
     in_sec { print }
   ' CHANGELOG.md
 )"
-if ! printf '%s' "${SECTION_BODY}" | grep -q '[^[:space:]]'; then
+if ! printf '%s' "${SECTION_BODY}" | grep -qE '^[[:space:]]*[-*+] [^[:space:]]'; then
   echo "::error::CHANGELOG.md section '[${NEXT}]' has a heading but no entries."
   FAIL=1
 fi
@@ -95,8 +110,29 @@ if ! grep -qF '<!-- version list -->' CHANGELOG.md; then
 fi
 # mode="update" splices; it must never truncate. Guard against a regression
 # that regenerates (init mode) and drops prior history.
+# #ASSUME data-integrity: "prior history is preserved" means every version
+# section the baseline carried is still present. A total line count is only a
+# proxy for that: a rewrite dropping ten old sections while adding twelve new
+# lines grows the file and passes. Compare the version headings themselves, and
+# keep the line-count check as a second signal for entries lost inside a section.
+# #VERIFY tests/unit/test_verify_release_artifacts.py::test_verify_script_fails_when_a_prior_version_section_is_dropped
+# removes one old section, keeps the file longer than the baseline, and asserts
+# the script still fails.
 if [ -n "${BASELINE_REF}" ]; then
-  OLD_LINES="$(git show "${BASELINE_REF}:CHANGELOG.md" | wc -l)"
+  BASELINE_BODY="$(git show "${BASELINE_REF}:CHANGELOG.md")"
+  MISSING=""
+  while IFS= read -r heading; do
+    [ -n "${heading}" ] || continue
+    grep -qF "${heading}" CHANGELOG.md || MISSING="${MISSING} ${heading}"
+  done <<EOF
+$(printf '%s' "${BASELINE_BODY}" | grep -oE '^## \[[^]]+\]' || true)
+EOF
+  if [ -n "${MISSING}" ]; then
+    echo "::error::CHANGELOG.md lost version section(s) present in" \
+      "${BASELINE_REF}:${MISSING}; prior history may have been truncated."
+    FAIL=1
+  fi
+  OLD_LINES="$(printf '%s\n' "${BASELINE_BODY}" | wc -l)"
   NEW_LINES="$(wc -l < CHANGELOG.md)"
   if [ "${NEW_LINES}" -lt "${OLD_LINES}" ]; then
     echo "::error::CHANGELOG.md shrank from ${OLD_LINES} to" \

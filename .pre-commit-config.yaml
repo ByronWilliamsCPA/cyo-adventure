@@ -343,20 +343,20 @@ repos:
         stages: [pre-push]
 
   # ============================================================================
-  # Qlty Unified Quality Checks (Pre-Push)
+  # Qlty Code Smell Analysis (Pre-Push, advisory)
   # ============================================================================
-  # Moved to pre-push to avoid clogging PR reviews with issues
-  # Qlty runs all quality tools in a single pass:
-  # - Ruff (linting + formatting)
-  # - BasedPyright (type checking)
-  # - Gitleaks (secrets detection)
-  # - Markdownlint (markdown linting)
-  # - Yamllint (YAML linting)
-  # - OSV Scanner (dependency vulnerabilities)
-  # - Code smells and complexity analysis
+  # Moved to pre-push to avoid clogging PR reviews with issues.
+  #
+  # What this actually runs: qlty's BUILT-IN smell and complexity detection
+  # only (.qlty/qlty.toml's [smells] block), at `mode = "comment"`, so it
+  # reports without failing. .qlty/qlty.toml enables NO plugins, so qlty runs
+  # no linters here (issue #622). Ruff, BasedPyright, gitleaks/detect-secrets,
+  # markdownlint, yamllint, and the dependency scanners each have their own
+  # hook in this file or their own CI job; none of them runs under qlty. Do
+  # not treat a green qlty run as coverage for any of them.
   #
   # Configure via .qlty/qlty.toml
-  # Install: curl https://qlty.sh | bash && qlty plugins install
+  # Install: curl https://qlty.sh | bash
   - repo: local
     hooks:
       - id: qlty-check
