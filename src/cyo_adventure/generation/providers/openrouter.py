@@ -368,96 +368,24 @@ class OpenRouterProvider:
             },
         ]
 
-    async def complete_with_image(
-        self,
-        *,
-        system: str,
-        prompt: str,
-        image_bytes: bytes,
-        image_mime: str,
-        max_tokens: int,
-    ) -> Completion:
-        """Return the model completion for a system+user+image input.
+    def _build_request_body(
+        self, messages: list[dict[str, object]], max_tokens: int
+    ) -> tuple[dict[str, object], dict[str, str], str]:
+        """Build the request body, headers, and url shared by every call shape.
 
-        Mirrors ``complete()`` exactly except for the multimodal message
-        body: same retry policy, same status classification, same response
-        extraction, so a cover-review call gets identical transient-retry
-        and leg-fatal behavior to every text review call. Deliberately does
-        NOT replicate ``complete()``'s content-filter-stop counter
-        (``_CONTENT_FILTER_MARKER`` / ``_MAX_CONTENT_FILTER_STOPS``): that
-        policy (UW-C329) is specific to story generation retrying the same
-        (skeleton, brief) pair, a failure mode this call has no evidence of
-        sharing; it can be added here later if a similar pattern is
-        observed for cover review.
+        ``complete()`` and ``complete_with_image()`` differ only in how they
+        build ``messages`` (``_build_messages`` vs ``_build_image_messages``);
+        every other part of the outgoing request, the optional-field logic for
+        ``reasoning``/``provider``/``temperature``/``usage``, the auth headers,
+        and the endpoint url, is identical, so both callers build their own
+        ``messages`` and hand them here.
 
         Args:
-            system: System-role instructions.
-            prompt: User-role text content.
-            image_bytes: The raw image bytes to review.
-            image_mime: The image's MIME type (e.g. ``"image/png"``).
+            messages: The OpenRouter ``messages`` array for this call.
             max_tokens: Upper bound on response length in tokens.
 
         Returns:
-            The completion text plus the token usage the response reported.
-
-        Raises:
-            ProviderError: On a leg-fatal failure (mapped immediately) or
-                after exhausting transient retries.
-        """
-        body: dict[str, object] = {
-            "model": self._model,
-            "messages": self._build_image_messages(
-                system, prompt, image_bytes, image_mime
-            ),
-            "max_tokens": max_tokens,
-        }
-        if self._effort != "off":
-            body["reasoning"] = {"effort": self._effort}
-        if self._provider_order:
-            body["provider"] = {
-                "order": list(self._provider_order),
-                "allow_fallbacks": False,
-            }
-        if self._temperature is not None:
-            body["temperature"] = self._temperature
-        if self._report_vendor_cost:
-            body["usage"] = {"include": True}
-        headers = {
-            "Authorization": f"Bearer {self._api_key}",
-            "Content-Type": "application/json",
-            "X-Title": "cyo-adventure",
-        }
-        url = f"{self._base_url}/chat/completions"
-
-        async def attempt() -> Completion:
-            return await self._attempt(url, body, headers)
-
-        return await run_with_retries(
-            attempt,
-            provider="openrouter",
-            model=self._model,
-            max_retries=self._max_retries,
-            backoff_base_seconds=self._backoff_base_seconds,
-        )
-
-    async def complete(
-        self, *, system: str, prompt: str, max_tokens: int
-    ) -> Completion:
-        """Return the model completion for a system+user prompt pair.
-
-        Args:
-            system: System-role instructions (the cacheable static block).
-            prompt: User-role prompt content (the volatile per-job block).
-            max_tokens: Upper bound on response length in tokens.
-
-        Returns:
-            The completion text with any wrapping markdown code fence stripped,
-            plus the token usage the response reported for the successful
-            attempt.
-
-        Raises:
-            ProviderError: On a leg-fatal failure (mapped immediately) or after
-                exhausting transient retries.
+            A ``(body, headers, url)`` tuple ready for ``self._attempt``.
         """
         # #CRITICAL: external-resources: this performs network I/O to a third-party
         # LLM endpoint. Every attempt is bounded by ``timeout_seconds``; transient
@@ -467,7 +395,7 @@ class OpenRouterProvider:
         # and exhausted transient->ProviderError(leg_fatal=False).
         body: dict[str, object] = {
             "model": self._model,
-            "messages": self._build_messages(system, prompt),
+            "messages": messages,
             "max_tokens": max_tokens,
         }
         # Only request reasoning when explicitly opted in. Story generation is
@@ -515,6 +443,91 @@ class OpenRouterProvider:
             "X-Title": "cyo-adventure",
         }
         url = f"{self._base_url}/chat/completions"
+        return body, headers, url
+
+    async def complete_with_image(
+        self,
+        *,
+        system: str,
+        prompt: str,
+        image_bytes: bytes,
+        image_mime: str,
+        max_tokens: int,
+    ) -> Completion:
+        """Return the model completion for a system+user+image input.
+
+        Mirrors ``complete()`` exactly except for the multimodal message
+        body: same retry policy, same status classification, same response
+        extraction, so a cover-review call gets identical transient-retry
+        and leg-fatal behavior to every text review call. Deliberately does
+        NOT replicate ``complete()``'s content-filter-stop counter
+        (``_CONTENT_FILTER_MARKER`` / ``_MAX_CONTENT_FILTER_STOPS``): that
+        policy (UW-C329) is specific to story generation retrying the same
+        (skeleton, brief) pair, a failure mode this call has no evidence of
+        sharing; it can be added here later if a similar pattern is
+        observed for cover review.
+
+        Args:
+            system: System-role instructions.
+            prompt: User-role text content.
+            image_bytes: The raw image bytes to review.
+            image_mime: The image's MIME type (e.g. ``"image/png"``).
+            max_tokens: Upper bound on response length in tokens.
+
+        Returns:
+            The completion text plus the token usage the response reported.
+
+        Raises:
+            ProviderError: On a leg-fatal failure (mapped immediately) or
+                after exhausting transient retries.
+        """
+        body, headers, url = self._build_request_body(
+            self._build_image_messages(system, prompt, image_bytes, image_mime),
+            max_tokens,
+        )
+
+        # #CRITICAL: external-resources: this performs network I/O to a
+        # third-party LLM endpoint for cover-art review. Every attempt is
+        # bounded by ``timeout_seconds``; transient failures are retried with
+        # exponential backoff up to ``max_retries``; leg-fatal failures raise
+        # immediately. Unlike ``complete()``, no content-filter-stop cap
+        # applies here; see the docstring above for why.
+        # #VERIFY: tests assert transient->retry and leg-fatal->immediate
+        # raise for this method, exercising the same ``_attempt``/
+        # ``run_with_retries`` machinery ``complete()`` is already covered by.
+        async def attempt() -> Completion:
+            return await self._attempt(url, body, headers)
+
+        return await run_with_retries(
+            attempt,
+            provider="openrouter",
+            model=self._model,
+            max_retries=self._max_retries,
+            backoff_base_seconds=self._backoff_base_seconds,
+        )
+
+    async def complete(
+        self, *, system: str, prompt: str, max_tokens: int
+    ) -> Completion:
+        """Return the model completion for a system+user prompt pair.
+
+        Args:
+            system: System-role instructions (the cacheable static block).
+            prompt: User-role prompt content (the volatile per-job block).
+            max_tokens: Upper bound on response length in tokens.
+
+        Returns:
+            The completion text with any wrapping markdown code fence stripped,
+            plus the token usage the response reported for the successful
+            attempt.
+
+        Raises:
+            ProviderError: On a leg-fatal failure (mapped immediately) or after
+                exhausting transient retries.
+        """
+        body, headers, url = self._build_request_body(
+            self._build_messages(system, prompt), max_tokens
+        )
 
         # Interim `UW-C329` policy (ruled 2026-08-21, section 9.5 of
         # live-structural-round-2026-08-21.md): identical retries cap at TWO
