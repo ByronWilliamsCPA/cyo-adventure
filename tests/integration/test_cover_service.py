@@ -17,6 +17,7 @@ from cyo_adventure.core.config import Settings
 from cyo_adventure.core.exceptions import (
     AuthorizationError,
     BusinessLogicError,
+    ConfigurationError,
     ResourceNotFoundError,
 )
 from cyo_adventure.covers.errors import CoverGenerationError
@@ -734,6 +735,57 @@ async def test_reviewer_failure_on_first_attempt_is_treated_as_pass(sessions, se
         assert row.cover_review_verdict is None
         assert row.cover_review_attempts == 1
         assert stub.call_count == 1
+
+
+@pytest.mark.asyncio
+async def test_review_provider_configuration_error_degrades_review_to_off(
+    sessions, seed
+):
+    """A missing/misconfigured review provider must not fail cover generation.
+
+    build_review_provider (default: build_cover_review_provider) raises
+    ConfigurationError for a missing OPENROUTER_API_KEY or an unsupported
+    review_provider setting (e.g. "modal", explicitly deferred to slice 2b).
+    Per the spec's fail-open guarantee (Design section 6: "An OpenRouter
+    outage degrades cover review to 'off,' never to 'cover generation
+    broken'"), that must degrade review to off, not propagate into the
+    outer except Exception that marks the whole job "failed".
+    """
+
+    def fake_generate(prompt, settings):
+        return b"PNGSOURCE"
+
+    async def fake_upload(image_bytes, key, settings):
+        return f"https://p.supabase.co/storage/v1/object/public/covers/{key}"
+
+    def raise_configuration_error(settings):
+        msg = "review_provider 'modal' is deferred to slice 2b; use openrouter"
+        raise ConfigurationError(msg)
+
+    async with sessions() as s:
+        await generate_cover(
+            seed.storybook_id,
+            seed.version,
+            session=s,
+            settings=Settings(),
+            generate=fake_generate,
+            optimize=lambda b, **kw: b"WEBP",
+            upload=fake_upload,
+            build_review_provider=raise_configuration_error,
+        )
+    async with sessions() as s:
+        row = await s.get(StorybookVersion, (seed.storybook_id, seed.version))
+        # Cover generation still succeeds and reaches its normal terminal
+        # status, not "failed".
+        assert row.cover_status == "pending_review"
+        assert row.cover_image_url is not None
+        # Review fields are left in their "review did not run" state, the
+        # same state a pre-feature cover or an every-attempt-failed-open
+        # cover's NULL verdict represents (see the migration's
+        # NULL-unification comment).
+        assert row.cover_review_verdict is None
+        assert row.cover_review_notes is None
+        assert row.cover_review_attempts == 0
 
 
 @pytest.mark.asyncio
