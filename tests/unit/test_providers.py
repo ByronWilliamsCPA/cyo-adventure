@@ -25,11 +25,12 @@ from structlog.testing import LogCapture
 
 from cyo_adventure.core.config import Settings
 from cyo_adventure.core.exceptions import (
+    BusinessLogicError,
     ConfigurationError,
     ProviderError,
     ValidationError,
 )
-from cyo_adventure.generation.provider import build_anthropic_leg
+from cyo_adventure.generation.provider import MockProvider, build_anthropic_leg
 from cyo_adventure.generation.providers import (
     AnthropicProvider,
     FallbackProvider,
@@ -142,6 +143,38 @@ def _modal(
         backoff_base_seconds=0,
         client=_client(handler),
     )
+
+
+# ---------------------------------------------------------------------------
+# MockProvider
+# ---------------------------------------------------------------------------
+
+
+class TestMockProviderCompleteWithImage:
+    @pytest.mark.asyncio
+    async def test_returns_next_queued_response_ignoring_the_image(self) -> None:
+        provider = MockProvider(responses=['{"verdict": "flag", "notes": "x"}'])
+        result = await provider.complete_with_image(
+            system="s",
+            prompt="p",
+            image_bytes=b"ignored",
+            image_mime="image/png",
+            max_tokens=10,
+        )
+        assert result.text == '{"verdict": "flag", "notes": "x"}'
+        assert provider.calls == ["p"]
+
+    @pytest.mark.asyncio
+    async def test_raises_when_queue_exhausted(self) -> None:
+        provider = MockProvider(responses=[])
+        with pytest.raises(BusinessLogicError):
+            await provider.complete_with_image(
+                system="s",
+                prompt="p",
+                image_bytes=b"x",
+                image_mime="image/png",
+                max_tokens=10,
+            )
 
 
 # ---------------------------------------------------------------------------
