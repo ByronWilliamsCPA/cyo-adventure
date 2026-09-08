@@ -116,8 +116,13 @@ signature, add a second method to the OpenRouter-backed provider class only:
 
 ```python
 async def complete_with_image(
-    self, *, system: str, prompt: str, image_bytes: bytes,
-    image_mime: str, max_tokens: int,
+    self,
+    *,
+    system: str,
+    prompt: str,
+    image_bytes: bytes,
+    image_mime: str,
+    max_tokens: int,
 ) -> Completion: ...
 ```
 
