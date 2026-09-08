@@ -1324,6 +1324,13 @@ export type ContentSummaryView = {
  * approves a ``pending_review`` cover (H2, ``approve_cover`` endpoint
  * below); they mirror ``ApprovedView.approved_by``/``published_at`` for
  * story text.
+ *
+ * ``cover_review_verdict``/``cover_review_notes``/``cover_review_attempts``
+ * record the independent AI reviewer's outcome for the surviving
+ * generation attempt (docs/superpowers/specs/2026-09-08-cover-ai-review-design.md).
+ * A None verdict means either the cover predates this feature or every
+ * review attempt in its run failed open; ``cover_review_attempts`` is 0 in
+ * both of those cases and 1 or more once the feature has run.
  */
 export type CoverStatusView = {
     /**
@@ -1342,6 +1349,18 @@ export type CoverStatusView = {
      * Cover Approved At
      */
     cover_approved_at?: string | null;
+    /**
+     * Cover Review Verdict
+     */
+    cover_review_verdict?: string | null;
+    /**
+     * Cover Review Notes
+     */
+    cover_review_notes?: string | null;
+    /**
+     * Cover Review Attempts
+     */
+    cover_review_attempts?: number;
 };
 
 /**

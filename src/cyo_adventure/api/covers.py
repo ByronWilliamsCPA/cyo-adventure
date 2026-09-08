@@ -34,12 +34,22 @@ class CoverStatusView(BaseModel):
     approves a ``pending_review`` cover (H2, ``approve_cover`` endpoint
     below); they mirror ``ApprovedView.approved_by``/``published_at`` for
     story text.
+
+    ``cover_review_verdict``/``cover_review_notes``/``cover_review_attempts``
+    record the independent AI reviewer's outcome for the surviving
+    generation attempt (docs/superpowers/specs/2026-09-08-cover-ai-review-design.md).
+    A None verdict means either the cover predates this feature or every
+    review attempt in its run failed open; ``cover_review_attempts`` is 0 in
+    both of those cases and 1 or more once the feature has run.
     """
 
     cover_status: str
     cover_url: str | None = None
     cover_approved_by: str | None = None
     cover_approved_at: datetime | None = None
+    cover_review_verdict: str | None = None
+    cover_review_notes: str | None = None
+    cover_review_attempts: int = 0
 
 
 def _require_admin(principal: CurrentPrincipal) -> None:
@@ -91,6 +101,9 @@ async def _status_view(row: StorybookVersion) -> CoverStatusView:
             str(row.cover_approved_by) if row.cover_approved_by is not None else None
         ),
         cover_approved_at=row.cover_approved_at,
+        cover_review_verdict=row.cover_review_verdict,
+        cover_review_notes=row.cover_review_notes,
+        cover_review_attempts=row.cover_review_attempts,
     )
 
 
