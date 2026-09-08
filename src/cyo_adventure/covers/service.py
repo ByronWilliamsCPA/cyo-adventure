@@ -8,7 +8,7 @@ import time
 from dataclasses import dataclass
 from datetime import UTC, datetime
 from pathlib import Path
-from typing import TYPE_CHECKING, Protocol
+from typing import TYPE_CHECKING, Final, Protocol
 
 import structlog
 from sqlalchemy import select
@@ -21,6 +21,7 @@ from cyo_adventure.core.exceptions import (
 from cyo_adventure.covers.optimize import optimize_cover as _optimize_cover
 from cyo_adventure.covers.prompt import build_cover_prompt
 from cyo_adventure.covers.provider import generate_cover_image
+from cyo_adventure.covers.review import review_cover as _review_cover
 from cyo_adventure.covers.storage import (
     cover_object_key,
     delete_cover,
@@ -33,6 +34,9 @@ from cyo_adventure.db.models import (
     StorybookVersion,
 )
 from cyo_adventure.generation.pii import PiiContext, assert_prompt_pii_safe
+from cyo_adventure.moderation.review_provider import (
+    build_cover_review_provider as _build_cover_review_provider,
+)
 
 if TYPE_CHECKING:
     import uuid
@@ -42,8 +46,16 @@ if TYPE_CHECKING:
 
     from cyo_adventure.api.deps import Principal
     from cyo_adventure.core.config import Settings
+    from cyo_adventure.covers.review import ImageReviewProvider
 
 _logger = structlog.get_logger(__name__)
+
+# One regeneration after an initial flag (2 total attempts), the same
+# "bounded, not unlimited" shape as moderation's own repair loop
+# (moderation/pipeline.py's _MAX_REPAIR_TOKENS-adjacent constants). A
+# starting default, not a measured figure; revisit after seeing real flag
+# rates in cover_review_notes (spec Known limitations).
+MAX_COVER_REVIEW_ATTEMPTS: Final[int] = 2
 
 
 class _OptimizeFn(Protocol):
@@ -162,6 +174,12 @@ async def generate_cover(
     optimize: _OptimizeFn = _optimize_cover,
     upload: Callable[[bytes, str, Settings], Awaitable[str]] = upload_cover,
     delete: Callable[[str, Settings], Awaitable[bool]] = delete_cover,
+    review: Callable[
+        [bytes, str, ImageReviewProvider], Awaitable[tuple[str | None, str | None]]
+    ] = _review_cover,
+    build_review_provider: Callable[
+        [Settings], tuple[ImageReviewProvider, bool]
+    ] = _build_cover_review_provider,
 ) -> None:
     """Generate, optimize, upload, and record a cover for one story version.
 
@@ -252,7 +270,48 @@ async def generate_cover(
         # #VERIFY: test_service.py::test_generate_cover_blocks_on_pii_in_prompt.
         pii = await _pii_context_for_family(session, concept_context.family_id)
         assert_prompt_pii_safe(prompt, forbidden=pii)
-        source = await asyncio.to_thread(generate, prompt, settings)
+        # #CRITICAL: security: build_review_provider (default:
+        # build_cover_review_provider) must never be wrapped in
+        # generation.guarded.PiiGuardedProvider here. That wrapper forwards
+        # only complete(), not complete_with_image(); wrapping the cover
+        # reviewer would raise AttributeError on every review call. The
+        # assert_prompt_pii_safe call above already screens `prompt`, the
+        # only string the reviewer receives (review_cover embeds it
+        # verbatim), so this single guard covers both the generator and the
+        # reviewer -- see docs/superpowers/specs/2026-09-08-cover-ai-review-design.md
+        # Design section 3. A future PiiGuardedProvider wrap here must add
+        # complete_with_image forwarding to that class first.
+        # #VERIFY: tests/integration/test_cover_service.py::
+        # test_generate_cover_blocks_on_registered_child_name_in_prompt,
+        # ::test_generate_cover_blocks_on_email_shaped_content_in_prompt
+        # already cover `prompt` itself being screened before either call is
+        # reached.
+        review_provider, review_independent = build_review_provider(settings)
+        if not review_independent:
+            _logger.warning(
+                "cover_review_not_independent",
+                storybook_id=storybook_id,
+                version=version,
+            )
+        review_verdict: str | None = None
+        review_notes: str | None = None
+        review_attempts = 0
+        source = b""
+        # #CRITICAL: external-resources: bounded, not unlimited (see
+        # MAX_COVER_REVIEW_ATTEMPTS above). Whatever this loop ends with -- a
+        # clean pass, or the last attempt after the cap is exhausted -- is
+        # what gets optimized and uploaded below; the row always reaches
+        # pending_review (never blocked), per the spec's non-goals.
+        # #VERIFY: tests/integration/test_cover_service.py::
+        # test_success_path_sets_pending_review_and_writes_url covers the
+        # single-pass path exercised today; the discriminating multi-attempt
+        # flag-then-pass and flag-every-attempt cases land in the next task.
+        for _ in range(MAX_COVER_REVIEW_ATTEMPTS):
+            review_attempts += 1
+            source = await asyncio.to_thread(generate, prompt, settings)
+            review_verdict, review_notes = await review(source, prompt, review_provider)
+            if review_verdict != "flag":
+                break
         _maybe_backup(source, storybook_id, version, settings)
         optimized = await asyncio.to_thread(
             optimize,
@@ -273,6 +332,9 @@ async def generate_cover(
         public_url = await upload(optimized, key, settings)
         row.cover_object_salt = salt
         row.cover_image_url = f"{public_url}?v={int(time.time())}"
+        row.cover_review_verdict = review_verdict
+        row.cover_review_notes = review_notes
+        row.cover_review_attempts = review_attempts
         row.cover_status = "pending_review"
         await session.commit()
     except Exception:
