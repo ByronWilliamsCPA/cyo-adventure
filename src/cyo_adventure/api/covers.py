@@ -39,8 +39,12 @@ class CoverStatusView(BaseModel):
     record the independent AI reviewer's outcome for the surviving
     generation attempt (docs/superpowers/specs/2026-09-08-cover-ai-review-design.md).
     A None verdict means either the cover predates this feature or every
-    review attempt in its run failed open; ``cover_review_attempts`` is 0 in
-    both of those cases and 1 or more once the feature has run.
+    review attempt in its run failed open. ``cover_review_attempts`` is 0
+    only when the cover predates this feature (no review ever ran); it is 1
+    or more whenever the feature has run at all, including the
+    every-attempt-failed-open case, since a failed-open attempt still counts
+    as an attempt (``covers.service._generate_with_review`` increments it
+    before calling the reviewer, not after a successful verdict).
     """
 
     cover_status: str
