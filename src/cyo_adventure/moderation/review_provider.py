@@ -22,6 +22,7 @@ from cyo_adventure.generation.usage import Completion
 
 if TYPE_CHECKING:
     from cyo_adventure.core.config import Settings
+    from cyo_adventure.covers.review import ImageReviewProvider
     from cyo_adventure.moderation.report import ReviewProvenance
 
 # The mock review backend (the dev/test default) must outlast a full pipeline run.
@@ -282,6 +283,61 @@ def build_review_provider(
     )
 
     independent = backend != generator_provider or review_model != generator_model
+    return provider, independent
+
+
+def build_cover_review_provider(settings: Settings) -> tuple[ImageReviewProvider, bool]:
+    """Build the review provider for cover-art review and report independence.
+
+    A separate function from :func:`build_review_provider` rather than a
+    reuse of it: the cover generator's model is always ``settings.cover_model``
+    (a fixed Settings field, never a per-job override -- covers has no
+    provider-override seam the way story generation does), so the
+    independence comparison here is unconditional rather than taking
+    ``generator_provider``/``generator_model`` parameters. It shares that
+    function's backend switch (``settings.review_provider``) so cover review
+    is live/mocked by the same environment toggle as every other review
+    call, but reads ``settings.cover_review_model`` (a vision-capable model)
+    rather than ``settings.review_openrouter_model`` (a text-only one).
+
+    See docs/superpowers/specs/2026-09-08-cover-ai-review-design.md Design
+    section 2.
+
+    Args:
+        settings: Application settings (``review_provider`` and
+            ``cover_review_model``).
+
+    Returns:
+        ``(provider, independent)``. The returned provider is a
+        :class:`MockProvider` (backend ``"mock"``) or an OpenRouter leg
+        (backend ``"openrouter"``); both implement
+        ``covers.review.ImageReviewProvider``'s ``complete_with_image``.
+
+    Raises:
+        ConfigurationError: When ``review_provider`` is the deferred
+            ``"modal"``, or when the OpenRouter credential is missing.
+    """
+    backend = settings.review_provider
+
+    if backend == "mock":
+        return MockProvider(responses=["{}"] * _MOCK_RESPONSE_BUDGET), True
+
+    if backend == "modal":
+        msg = "review_provider 'modal' is deferred to slice 2b; use openrouter"
+        raise ConfigurationError(msg)
+
+    # build_openrouter_leg's declared return type is GenerationProvider (a
+    # complete()-only Protocol), so BasedPyright cannot see the
+    # complete_with_image() the concrete OpenRouterProvider instance actually
+    # has at runtime. The cast asserts what Task 2 established: OpenRouter is
+    # the one live backend that implements ImageReviewProvider.
+    provider = cast(
+        "ImageReviewProvider",
+        build_openrouter_leg(
+            settings, settings.cover_review_model, temperature=REVIEW_TEMPERATURE
+        ),
+    )
+    independent = settings.cover_review_model != settings.cover_model
     return provider, independent
 
 
