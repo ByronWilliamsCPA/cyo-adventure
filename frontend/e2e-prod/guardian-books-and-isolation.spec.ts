@@ -1,7 +1,7 @@
 import type { Page } from '@playwright/test'
 import { expect, test } from '@playwright/test'
 
-import { signInAsProdTestAdmin, unlockParentalGateIfPresent } from './support/auth'
+import { signInAsProdTestAdmin, unlockAdultGateIfPresent } from './support/auth'
 import { expectConsoleHeading } from './support/diagnostics'
 import { gotoResilient } from '../e2e-support/rate-limit'
 
@@ -129,7 +129,7 @@ test.describe('guardian books, assignment, and cross-family isolation', () => {
 
   test("the books page lists the family's assigned books with a content-review badge each", async () => {
     await gotoResilient(sharedPage, '/guardian/books')
-    await unlockParentalGateIfPresent(sharedPage)
+    await unlockAdultGateIfPresent(sharedPage)
     // Positive control: a failed render (error boundary, ErrorBanner, or a
     // stuck loading state) also shows zero rows, so the heading must be
     // visible before the row count below means anything.
@@ -184,7 +184,7 @@ test.describe('guardian books, assignment, and cross-family isolation', () => {
 
   test('the requests queue and profiles list both prove cross-family isolation', async () => {
     await gotoResilient(sharedPage, '/guardian/requests')
-    await unlockParentalGateIfPresent(sharedPage)
+    await unlockAdultGateIfPresent(sharedPage)
     // Positive control: the page's own heading must render before the
     // zero-count claim below means anything.
     await expect(
@@ -208,7 +208,7 @@ test.describe('guardian books, assignment, and cross-family isolation', () => {
     ).toBeVisible()
 
     await gotoResilient(sharedPage, '/guardian/profiles')
-    await unlockParentalGateIfPresent(sharedPage)
+    await unlockAdultGateIfPresent(sharedPage)
     await expect(sharedPage.getByRole('heading', { name: 'Profiles', level: 1 })).toBeVisible()
     // The real family has 2 child profiles; the E2E Test Family has 1. Seeing
     // 1 here (not 2, and certainly not 3, the sum across every family in the

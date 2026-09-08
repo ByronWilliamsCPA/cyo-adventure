@@ -108,7 +108,7 @@ export async function signInAsProdTestAdmin(page: Page, maxAttempts = 3): Promis
  * The gate re-locks only on TTL expiry, sign-out, or crossing down into the
  * kid surface (which this suite never does).
  */
-export async function unlockParentalGateIfPresent(page: Page): Promise<void> {
+export async function unlockAdultGateIfPresent(page: Page): Promise<void> {
   const gateHeading = page.getByRole('heading', { name: 'Grown-ups only', level: 1 })
   const gated = await gateHeading
     .waitFor({ state: 'visible', timeout: 5_000 })

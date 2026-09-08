@@ -2,21 +2,47 @@ import 'fake-indexeddb/auto'
 
 import { IDBFactory } from 'fake-indexeddb'
 import { render, screen, waitFor } from '@testing-library/react'
-import { MemoryRouter, Route, Routes } from 'react-router'
+import { MemoryRouter, Route, Routes, useLocation } from 'react-router'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 import { AUTHORIZE_DEVICE_INTENT_PARAM, AUTHORIZE_DEVICE_INTENT_VALUE } from '../routes'
-import { _resetDbHandle } from '../offline/db'
+import { _resetDbHandle, getDeviceGrantMirror } from '../offline/db'
 import { DeviceAuthorizedRoute } from './DeviceAuthorizedRoute'
 import * as deviceGrant from './deviceGrant'
 import { setDeviceGrant } from './deviceGrant'
 import { isAdultGateWarm, warmAdultGate } from './parentalGateState'
 
+/**
+ * Stand-in for the guardian login route that also prints the query string it
+ * was reached with, so a test can assert the URL DeviceAuthorizedRoute
+ * actually navigated to rather than the constants it built it from.
+ */
+function LoginProbe() {
+  const { search } = useLocation()
+  return (
+    <>
+      <div>Login page</div>
+      <div data-testid="login-search">{search}</div>
+    </>
+  )
+}
+
+/**
+ * Wait for setDeviceGrant()'s fire-and-forget IndexedDB mirror write to land,
+ * so a test can clear localStorage and exercise the mirror-only path without
+ * racing the write on a bare setTimeout(0) tick.
+ */
+async function waitForMirror(): Promise<void> {
+  await waitFor(async () => {
+    expect(await getDeviceGrantMirror()).toBeDefined()
+  })
+}
+
 function renderGate(initialPath = '/kids') {
   return render(
     <MemoryRouter initialEntries={[initialPath]}>
       <Routes>
-        <Route path="/guardian/login" element={<div>Login page</div>} />
+        <Route path="/guardian/login" element={<LoginProbe />} />
         <Route element={<DeviceAuthorizedRoute />}>
           <Route path="/kids" element={<div>Kid picker</div>} />
         </Route>
@@ -93,8 +119,8 @@ describe('DeviceAuthorizedRoute', () => {
       id: 'grant-1',
     })
     // Simulate a localStorage clear that leaves the IndexedDB mirror intact
-    // (the mirror write is async; give it a tick before clearing).
-    await new Promise((resolve) => setTimeout(resolve, 0))
+    // (the mirror write is async; wait for it to land before clearing).
+    await waitForMirror()
     localStorage.removeItem('device_grant')
 
     renderGate()
@@ -105,11 +131,15 @@ describe('DeviceAuthorizedRoute', () => {
     renderGate()
     const login = await screen.findByText('Login page')
     expect(login).toBeInTheDocument()
-    // The marker is a plain query param on GUARDIAN_LOGIN_PATH; assert the
-    // constants used to build it are the ones exported for a future login
-    // flow to read.
-    expect(AUTHORIZE_DEVICE_INTENT_PARAM).toBe('intent')
-    expect(AUTHORIZE_DEVICE_INTENT_VALUE).toBe('authorize-device')
+    // The marker is a plain query param on GUARDIAN_LOGIN_PATH. Assert the
+    // query string the route ACTUALLY navigated with, read back through
+    // useLocation() on the login route, not the constants it was built from:
+    // LoginPage.tsx reads this exact pair off location.search to decide
+    // whether to run the authorize-device mint, so a drift here would
+    // silently turn the Kids door into a plain guardian login.
+    expect(screen.getByTestId('login-search')).toHaveTextContent(
+      `?${AUTHORIZE_DEVICE_INTENT_PARAM}=${AUTHORIZE_DEVICE_INTENT_VALUE}`
+    )
   })
 
   it('parks the adult gate (ADR-014 Phase 5) once the kid surface authorizes', () => {
@@ -140,7 +170,7 @@ describe('DeviceAuthorizedRoute', () => {
     })
     // Simulate the localStorage-empty, mirror-only recovery path so the
     // 'authorized' status is set asynchronously (not on first render).
-    await new Promise((resolve) => setTimeout(resolve, 0))
+    await waitForMirror()
     localStorage.removeItem('device_grant')
 
     renderGate()

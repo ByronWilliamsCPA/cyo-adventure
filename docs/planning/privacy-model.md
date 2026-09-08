@@ -180,27 +180,35 @@ precisely so that safety does not depend on a parent reading every path in detai
 human gates (guardian oversight, admin approval per ADR-005) sit on top of this floor, not
 in place of it.
 
-Current mechanism (`moderation/classifiers.py`, wired in `moderation/pipeline.py`): when
-keys are configured, every generated node's prose is sent per-node to the **OpenAI
-Moderation API** and **Google Perspective API** during Stage 0 of the moderation pipeline.
-The same classifiers screen child-typed story-request text at intake
-(`story_requests/screening.py`). Both services are therefore standing data-handling
-counterparties for two data categories:
+Current mechanism (`moderation/classifiers.py`, wired in `moderation/pipeline.py`): when a
+key is configured, every generated node's prose is sent per-node to the **OpenAI
+Moderation API** during Stage 0 of the moderation pipeline. The same classifier screens
+child-typed story-request text at intake (`story_requests/screening.py`). It is therefore a
+standing data-handling counterparty for two data categories:
+
+> **Corrected 2026-09-05 (issue #659)**: a second classifier, the **Google Perspective API**,
+> ran alongside OpenAI Moderation on both call sites until PR #764 (`b2273a7`, merged
+> 2026-08-26) retired it. `classifiers.py` no longer defines `_run_perspective` and
+> `run_classifiers` takes no `perspective_key`, so neither call site can reach Google. The only
+> remaining caller is the offline calibration script `scripts/capture_stage0_baseline.py`, which
+> sends catalog prose rather than child text and sets `doNotStore: true`. Everything below that
+> names Perspective describes the pre-2026-08-26 arrangement.
 
 - **Generated story prose** (family-linked content produced by the pipeline; the PII guard
   keeps real child detail out of the prompts that produce it).
 - **Child-typed request text** (child-provided free text, screened before storage).
 
-Consequences for the provider data-handling review (Blocker 1 below): OpenAI and Google
-(Perspective) must be included alongside the generation leg (OpenRouter) and the LLM
-review leg when confirming retention terms. **Since the 2026-07-28 narrowing, this leg is
+Consequences for the provider data-handling review (Blocker 1 below): OpenAI must be
+included alongside the generation leg (OpenRouter) and the LLM review leg when confirming
+retention terms. Google (Perspective) was on that list until the 2026-08-26 retirement and
+now needs confirmation only for the period it was live. **Since the 2026-07-28 narrowing, this leg is
 where Blocker 1's force sits** (Blocker 1b). The distinction is route control, not whether
 typed words egress at all: a child's own typed words reach the generation leg too, verbatim,
 because `ConceptBrief.premise` is `request.request_text` unaltered
 (`story_requests/brief.py:197`) and the brief is fenced into the generation prompt. What is
-different here is that the classifier leg calls OpenAI Moderation and Google Perspective
-**directly**, so it inherits none of the OpenRouter workspace guardrail that constrains the
-generation route, and ADR-023's proposed render-time substitution does nothing for it either
+different here is that the classifier leg calls OpenAI Moderation (and, before 2026-08-26,
+Google Perspective) **directly**, so it inherits none of the OpenRouter workspace guardrail
+that constrains the generation route, and ADR-023's proposed render-time substitution does nothing for it either
 (it addresses identifiers, not free text). Classifier calls should remain content-only:
 no child identifier, profile id, or family id accompanies the text, and failures are
 logged by node id only.
@@ -373,9 +381,9 @@ its posture is inherited from the generation-route guardrail and moves with it.
 
 **Required action**: confirm the applicable retention path for each classifier counterparty
 and the review provider, and record the outcome (provider, route, contract reference or API
-tier, effective date) here. Note that the Perspective counterparty is separately in flux
-under the Stage-0 Perspective sunset work; that changes who is on this list, not whether the
-confirmation is needed.
+tier, effective date) here. The Perspective sunset has since landed (PR #764, 2026-08-26,
+issue #659), so Perspective is off this list prospectively; that changed who is on the list, not
+whether the confirmation is needed for the counterparties that remain.
 
 **Status**: OPEN. This is the standing Blocker 1 referenced by
 [ADR-018](./adr/adr-018-childrens-privacy-compliance.md) item 6.

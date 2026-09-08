@@ -156,11 +156,18 @@ to third parties **at all**, and two independent grounds already foreclose it, n
 involves the admin capability:
 
 1. **Third-party processors.** A child's free-text story wish reaches external classifiers and
-   model providers. The child-origin dataflow matrix establishes at least one confirmed adverse
-   case: the Google Perspective request sets no `doNotStore` field, so the content is usable for
-   the vendor's own model building, which defeats the internal-operations characterization for that
-   vendor specifically (matrix sections at lines 186-207 and 828-833; code fix tracked as issue
-   **#659**). A second, **unverified in this pass**, is that the Anthropic direct leg may sit
+   model providers. The child-origin dataflow matrix established at least one confirmed adverse
+   case: the Google Perspective request set no `doNotStore` field, so the content was usable for
+   the vendor's own model building, which defeated the internal-operations characterization for
+   that vendor specifically (matrix sections at lines 186-207 and 828-833).
+   **Update 2026-09-05 (issue #659)**: that leg is retired. PR #764 (`b2273a7`, merged
+   2026-08-26) removed Perspective as a Stage-0 classifier, so no live path sends child text to
+   Google; the sole surviving caller is the offline calibration script
+   `scripts/capture_stage0_baseline.py`, which sends catalog prose only and sets
+   `doNotStore: true`. This ground is therefore historical, and retiring it does **not** reopen
+   email-plus: the free-text wish still reaches OpenAI Moderation and the generation-leg model
+   providers, so disclosure to third parties still occurs on its own.
+   A second, **unverified in this pass**, is that the Anthropic direct leg may sit
    outside the OpenRouter zero-data-retention guardrail; that claim carries no citation here and is
    tracked as CFD-8 rather than relied on.
 2. **Consumer-to-consumer ring-2 flows.** Section 4 discloses a child's real `display_name` to

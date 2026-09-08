@@ -1,7 +1,7 @@
 import type { Page } from '@playwright/test'
 import { expect, test } from '@playwright/test'
 
-import { signInAsProdTestAdmin, unlockParentalGateIfPresent } from './support/auth'
+import { signInAsProdTestAdmin, unlockAdultGateIfPresent } from './support/auth'
 import { expectConsoleHeading } from './support/diagnostics'
 import { gotoResilient } from '../e2e-support/rate-limit'
 
@@ -71,8 +71,8 @@ test.describe('dual-role account across both adult consoles', () => {
       // sign-in in beforeAll warms it (sessionStorage, 5-min TTL) and that
       // warmth persists across these same-tab navigations, so this is usually
       // a no-op; it stays as a defensive unlock in case a navigation lands cold
-      // (see unlockParentalGateIfPresent's doc comment).
-      await unlockParentalGateIfPresent(sharedPage)
+      // (see unlockAdultGateIfPresent's doc comment).
+      await unlockAdultGateIfPresent(sharedPage)
       await expect(
         sharedPage.getByRole('heading', { name: 'Something went wrong', level: 1 })
       ).not.toBeVisible()

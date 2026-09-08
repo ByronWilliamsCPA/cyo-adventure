@@ -86,10 +86,12 @@ class _FakeClient:
     def __init__(self, bodies: dict[str, object]) -> None:
         self._bodies = bodies
         self.urls: list[str] = []
+        self.payloads: dict[str, object] = {}
 
-    async def post(self, url: str, **_kwargs: object) -> _FakeResponse:
-        """Record the URL and answer with its canned body."""
+    async def post(self, url: str, **kwargs: object) -> _FakeResponse:
+        """Record the URL and its JSON payload, then answer with the canned body."""
         self.urls.append(url)
+        self.payloads[url] = kwargs.get("json")
         return _FakeResponse(self._bodies[url])
 
 
@@ -500,6 +502,25 @@ class TestProviderPayloads:
         assert record.perspective == {}
         assert _summarize([record])["perspective_ok"] == 0
         assert _summarize([record])["perspective_failed"] == 1
+
+    @pytest.mark.unit
+    @pytest.mark.asyncio
+    async def test_perspective_request_opts_out_of_storage(self) -> None:
+        """The posted JSON carries doNotStore=True (issue #659).
+
+        Google reads an omitted ``doNotStore`` as consent to retain the comment
+        for research and model building, so the guarantee has to be asserted on
+        the request body; the response proves nothing about what was sent.
+        """
+        client = _FakeClient(
+            {PERSPECTIVE_URL: _GOOD_PERSPECTIVE, _OPENAI_URL: _GOOD_OPENAI}
+        )
+        await _score_passage(
+            _passage(), perspective_key="k", openai_key="k", client=_as_client(client)
+        )
+        payload = client.payloads[PERSPECTIVE_URL]
+        assert isinstance(payload, dict)
+        assert payload.get("doNotStore") is True
 
     @pytest.mark.unit
     @pytest.mark.asyncio

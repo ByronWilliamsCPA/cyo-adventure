@@ -515,7 +515,7 @@ def test_check_row_phase_accepts_every_vocabulary_form(phase: str) -> None:
     """
     assert (
         _MODULE._check_row_phase(
-            "A", 1, "UW-A01", phase, "unscheduled", _REAL_PHASE_VOCABULARY
+            "A", 1, "UW-A01", phase, "unscheduled", _REAL_PHASE_VOCABULARY, ""
         )
         == []
     )
@@ -524,7 +524,7 @@ def test_check_row_phase_accepts_every_vocabulary_form(phase: str) -> None:
 def test_check_row_phase_rejects_value_outside_vocabulary() -> None:
     """A phase spelled outside the closed vocabulary fails."""
     problems = _MODULE._check_row_phase(
-        "A", 1, "UW-A01", "42", "unscheduled", _SAMPLE_PHASE_VOCABULARY
+        "A", 1, "UW-A01", "42", "unscheduled", _SAMPLE_PHASE_VOCABULARY, ""
     )
     assert len(problems) == 1
     assert "not in the closed phase vocabulary" in problems[0]
@@ -538,7 +538,7 @@ def test_check_row_phase_rejects_value_outside_vocabulary() -> None:
 def test_check_row_phase_rejects_comma_separated_value() -> None:
     """A Phase column holding more than one value is rejected."""
     problems = _MODULE._check_row_phase(
-        "A", 1, "UW-A01", "4b, 5", "unscheduled", _SAMPLE_PHASE_VOCABULARY
+        "A", 1, "UW-A01", "4b, 5", "unscheduled", _SAMPLE_PHASE_VOCABULARY, ""
     )
     assert len(problems) == 1
     assert "more than one" in problems[0]
@@ -552,7 +552,7 @@ def test_check_row_phase_rejects_comma_separated_value() -> None:
 def test_check_row_phase_rejects_phase_equal_to_a_status() -> None:
     """A Phase column that just repeats a Status word is rejected."""
     problems = _MODULE._check_row_phase(
-        "A", 1, "UW-A01", "blocked", "decision", _SAMPLE_PHASE_VOCABULARY
+        "A", 1, "UW-A01", "blocked", "decision", _SAMPLE_PHASE_VOCABULARY, ""
     )
     assert len(problems) == 1
     assert "repeats a Status value" in problems[0]
@@ -566,7 +566,7 @@ def test_check_row_phase_rejects_phase_equal_to_a_status() -> None:
 def test_check_row_phase_rejects_empty_phase_on_unscheduled_row() -> None:
     """An empty Phase on an unscheduled row is one of the disallowed empty cases."""
     problems = _MODULE._check_row_phase(
-        "A", 1, "UW-A01", "", "unscheduled", _SAMPLE_PHASE_VOCABULARY
+        "A", 1, "UW-A01", "", "unscheduled", _SAMPLE_PHASE_VOCABULARY, ""
     )
     assert len(problems) == 1
     assert "Phase is empty" in problems[0]
@@ -586,18 +586,96 @@ def test_check_row_phase_rejects_empty_phase_on_a_row_that_still_needs_a_phase_h
     evidence is a PR/commit/issue reference rather than a future phase.
     """
     problems = _MODULE._check_row_phase(
-        "A", 1, "UW-A01", "", status, _SAMPLE_PHASE_VOCABULARY
+        "A", 1, "UW-A01", "", status, _SAMPLE_PHASE_VOCABULARY, ""
     )
     assert len(problems) == 1
     assert "Phase is empty" in problems[0]
     assert status in problems[0]
 
 
-def test_check_row_phase_allows_empty_phase_on_a_done_row() -> None:
-    """An empty Phase is fine on a ``done`` row: its required evidence is a PR/commit/issue
-    citation (per the linkage contract), not a future phase to land in."""
+@pytest.mark.parametrize(
+    "item",
+    [
+        "Closed by PR #812.",
+        "Delivered in `4fc65e5b`.",
+        "Tracked as issue:460 and closed.",
+        "Closed: https://github.com/ByronWilliamsCPA/cyo-adventure/pull/636 merged.",
+    ],
+)
+def test_check_row_phase_allows_empty_phase_on_a_done_row_that_cites_evidence(
+    item: str,
+) -> None:
+    """An empty Phase is fine on a ``done`` row *that cites its evidence*.
+
+    The linkage contract makes a closed row's evidence a PR/commit/issue citation rather than a
+    future phase to land in, which is why the phase requirement is waived here. This asserts the
+    waiver on each citation form the register actually uses.
+    """
     assert (
-        _MODULE._check_row_phase("A", 1, "UW-A01", "", "done", _SAMPLE_PHASE_VOCABULARY)
+        _MODULE._check_row_phase(
+            "A", 1, "UW-A01", "", "done", _SAMPLE_PHASE_VOCABULARY, item
+        )
+        == []
+    )
+
+
+@pytest.mark.parametrize(
+    "item",
+    [
+        "Closed after review.",
+        "Closed; the defaced decade of added facade code is gone.",
+        "Closed in 4fc65e5b.",
+        "Closed; background at https://example.invalid/#123.",
+        "Closed per https://github.com/ByronWilliamsCPA/cyo-adventure/pull/636-extra.",
+        "Closed; see the sub-issue:12 tracker.",
+        "",
+    ],
+)
+def test_check_row_phase_rejects_a_done_row_that_cites_no_evidence(item: str) -> None:
+    """A ``done`` row taking the empty-Phase waiver must actually cite something.
+
+    This is the compensating control for the waiver above, and it is the case the previous
+    version of this test asserted was *fine*: it called the checker with no Item at all and
+    expected no problems, which pinned the gap open rather than catching it. An exemption is
+    only as safe as the check that replaces it, so the two belong together.
+
+    Most of the fixtures are near-misses on purpose, each one a form an unguarded pattern
+    accepts as a citation while citing nothing of this repo's own work:
+
+    - "the defaced decade of added facade code" is prose built entirely from hex letters, which
+      an unanchored ``[0-9a-f]{7,40}`` sha pattern reads as a sha;
+    - "Closed in 4fc65e5b" is a real sha written without the register's backtick convention,
+      the form the pattern deliberately does not credit;
+    - ``https://example.invalid/#123`` ends in something an unguarded bare ``#N`` pattern accepts, though
+      the fragment belongs to a foreign host;
+    - ``.../pull/636-extra`` is a prefix match on the repository URL form, not a PR link;
+    - "sub-issue:12" embeds the ``issue:N`` form inside a longer word.
+    """
+    problems = _MODULE._check_row_phase(
+        "A", 1, "UW-A01", "", "done", _SAMPLE_PHASE_VOCABULARY, item
+    )
+    assert len(problems) == 1
+    assert "cites no PR, commit, or issue" in problems[0]
+
+
+def test_check_row_phase_still_allows_a_done_row_with_a_phase_and_no_evidence() -> None:
+    """The evidence rule fires only where the waiver is actually taken.
+
+    A ``done`` row that names a phase has a phase home already, so it never reaches the waiver
+    and is not asked for a citation. Pinning this keeps the rule scoped: 125 ``done`` rows in
+    the register carry a phase, and 73 of them cite nothing, so a rule that fired on all of them
+    would be a 73-row cleanup wearing the costume of a bug fix.
+    """
+    assert (
+        _MODULE._check_row_phase(
+            "A",
+            1,
+            "UW-A01",
+            "5",
+            "done",
+            _SAMPLE_PHASE_VOCABULARY,
+            "Closed after review.",
+        )
         == []
     )
 
@@ -679,6 +757,236 @@ def test_check_linkage_skips_phase_checks_for_a_phase_less_cluster(
         "| ID | Item | Issue | Status |\n"
         "| --- | --- | --- | --- |\n"
         "| UW-L01 | A bug | #460 | unscheduled |\n"
+    )
+    register_path = _write(tmp_path / "register.md", register)
+    problems = _MODULE.check_linkage(
+        register_path,
+        _write(tmp_path / "roadmap.md", _VALID_ROADMAP),
+        _write(tmp_path / "debt.md", ""),
+        _write(tmp_path / "lessons.md", ""),
+        _write_no_open_capability_register(tmp_path),
+    )
+    assert problems == []
+
+
+# ---------------------------------------------------------------------------
+# A.8-A.10 header column schema, Issue/Issues cell shape, phase token in a non-Phase column
+# ---------------------------------------------------------------------------
+
+# Every header schema the real register uses, so the closed column set is pinned to the
+# conventions in the document rather than to the four columns the row checks happened to read.
+_REAL_REGISTER_HEADER_SCHEMAS = (
+    ["ID", "Item", "Phase", "Status"],
+    ["ID", "Item", "ADR", "Phase", "Status"],
+    ["ID", "Issues", "Theme", "Phase", "Status"],
+    ["ID", "Item", "Source", "Phase", "Status"],
+    ["ID", "Item", "Issue", "Status"],
+    ["ID", "Item", "Owner", "Status"],
+)
+
+
+@pytest.mark.parametrize("header_cells", _REAL_REGISTER_HEADER_SCHEMAS)
+def test_check_cluster_header_accepts_every_real_register_schema(
+    header_cells: list[str],
+) -> None:
+    """Each of the six header shapes the register actually uses is made of known columns."""
+    assert _MODULE._check_cluster_header("A", header_cells) == []
+
+
+def test_check_cluster_header_rejects_an_unknown_column() -> None:
+    """A header column outside the closed set is reported by cluster, header, and name."""
+    problems = _MODULE._check_cluster_header("L", ["ID", "Item", "Isue", "Status"])
+    assert len(problems) == 1
+    assert "cluster L header '| ID | Item | Isue | Status |'" in problems[0]
+    assert "column 'Isue' is not one of the known register columns" in problems[0]
+
+
+def test_check_cluster_header_reports_each_unknown_column_once() -> None:
+    """Two invented columns produce two problems, not one merged or one dropped."""
+    problems = _MODULE._check_cluster_header("A", ["ID", "Item", "Notes", "Phaze"])
+    assert len(problems) == 2
+    assert "column 'Notes'" in problems[0]
+    assert "column 'Phaze'" in problems[1]
+
+
+@pytest.mark.parametrize(
+    "cell",
+    [
+        "#460",
+        "#187, #172",
+        "#249, #250, #251, #253, #254",
+        "#249 #250",
+        "(no issue)",
+        "[#558](https://github.com/ByronWilliamsCPA/cyo-adventure/issues/558)",
+        "[#609](https://github.com/ByronWilliamsCPA/cyo-adventure/pull/609)",
+        "#460, [#461](https://github.com/ByronWilliamsCPA/cyo-adventure/issues/461)",
+    ],
+)
+def test_check_row_issue_cell_accepts_every_register_convention(cell: str) -> None:
+    """Bare refs, comma or space separated lists, repo links, and the sentinel all pass."""
+    assert _MODULE._check_row_issue_cell("D", 1, "UW-D01", "Issues", cell) == []
+
+
+@pytest.mark.parametrize(
+    "cell",
+    [
+        "",
+        "460",
+        "issue 460",
+        "#460;#461",
+        "#460, and #461",
+        "(no issues)",
+        "[#460](https://example.com/issues/460)",
+        "[#460](https://github.com/ByronWilliamsCPA/other-repo/issues/460)",
+        "https://github.com/ByronWilliamsCPA/cyo-adventure/issues/460",
+    ],
+)
+def test_check_row_issue_cell_rejects_a_malformed_cell(cell: str) -> None:
+    """Anything that is not the sentinel or a list of well-formed references is reported."""
+    problems = _MODULE._check_row_issue_cell("L", 7, "UW-L03", "Issue", cell)
+    assert len(problems) == 1
+    assert problems[0].startswith("UW-L03 (cluster L line 7): Issue ")
+    assert "neither '(no issue)' nor a list of issue references" in problems[0]
+
+
+@pytest.mark.parametrize(
+    ("column", "cell"),
+    [
+        ("Source", "5"),
+        ("Owner", "`4b`"),
+        ("ADR", "R1"),
+        ("Theme", "CI hygiene"),
+        ("Issue", "issue:460"),
+        ("Issues", " content "),
+    ],
+)
+def test_check_row_non_phase_cell_rejects_a_bare_phase_token(
+    column: str, cell: str
+) -> None:
+    """A phase-vocabulary token as a non-Phase cell's whole content is reported by column."""
+    problems = _MODULE._check_row_non_phase_cell(
+        "G", 3, "UW-G02", column, cell, _SAMPLE_PHASE_VOCABULARY
+    )
+    assert len(problems) == 1
+    assert problems[0].startswith(f"UW-G02 (cluster G line 3): {column} ")
+    assert "is a phase token" in problems[0]
+
+
+@pytest.mark.parametrize(
+    ("column", "cell"),
+    [
+        ("Source", "ws0 phase2"),
+        ("Source", "code"),
+        ("Theme", "Phase 5 tracks the capability; the failing run is uncited."),
+        ("Owner", "project owner"),
+        ("ADR", "022"),
+        ("ADR", "001, 004"),
+        ("Issue", "#460"),
+        ("Issue", ""),
+    ],
+)
+def test_check_row_non_phase_cell_accepts_prose_and_non_phase_values(
+    column: str, cell: str
+) -> None:
+    """Item-like prose that mentions a phase word, and the real third-column values, pass."""
+    assert (
+        _MODULE._check_row_non_phase_cell(
+            "A", 1, "UW-A01", column, cell, _SAMPLE_PHASE_VOCABULARY
+        )
+        == []
+    )
+
+
+def test_check_linkage_reports_a_phase_token_in_an_issue_cell(tmp_path: Path) -> None:
+    """A phase written into cluster L's Issue column is rejected end to end, naming the row."""
+    register = _register(
+        "## Cluster L: live defects\n\n"
+        "| ID | Item | Issue | Status |\n"
+        "| --- | --- | --- | --- |\n"
+        "| UW-L01 | A bug | 5 | unscheduled |\n"
+    )
+    register_path = _write(tmp_path / "register.md", register)
+    problems = _MODULE.check_linkage(
+        register_path,
+        _write(tmp_path / "roadmap.md", _VALID_ROADMAP),
+        _write(tmp_path / "debt.md", ""),
+        _write(tmp_path / "lessons.md", ""),
+        _write_no_open_capability_register(tmp_path),
+    )
+    assert any(
+        p.startswith("UW-L01 (cluster L line") and "Issue '5' is a phase token" in p
+        for p in problems
+    )
+
+
+def test_check_linkage_reports_an_unknown_header_column(tmp_path: Path) -> None:
+    """A cluster header carrying an invented column fails, naming cluster and column."""
+    register = _register(
+        "## Cluster L: live defects\n\n"
+        "| ID | Item | Isue | Status |\n"
+        "| --- | --- | --- | --- |\n"
+        "| UW-L01 | A bug | #460 | unscheduled |\n"
+    )
+    register_path = _write(tmp_path / "register.md", register)
+    problems = _MODULE.check_linkage(
+        register_path,
+        _write(tmp_path / "roadmap.md", _VALID_ROADMAP),
+        _write(tmp_path / "debt.md", ""),
+        _write(tmp_path / "lessons.md", ""),
+        _write_no_open_capability_register(tmp_path),
+    )
+    assert len(problems) == 1
+    assert "cluster L header '| ID | Item | Isue | Status |'" in problems[0]
+    assert "column 'Isue' is not one of the known register columns" in problems[0]
+
+
+def test_check_linkage_reports_a_malformed_issues_cell(tmp_path: Path) -> None:
+    """A cluster D Issues cell that is prose rather than references fails, naming the row."""
+    register = _register(
+        "## Cluster D: open issues\n\n"
+        "| ID | Issues | Theme | Phase | Status |\n"
+        "| --- | --- | --- | --- | --- |\n"
+        "| UW-D01 | issue 460 | Device-auth hardening | 5 | unscheduled |\n"
+    )
+    register_path = _write(tmp_path / "register.md", register)
+    problems = _MODULE.check_linkage(
+        register_path,
+        _write(tmp_path / "roadmap.md", _VALID_ROADMAP),
+        _write(tmp_path / "debt.md", ""),
+        _write(tmp_path / "lessons.md", ""),
+        _write_no_open_capability_register(tmp_path),
+    )
+    assert len(problems) == 1
+    assert problems[0].startswith("UW-D01 (cluster D line")
+    assert "Issues 'issue 460' is neither '(no issue)'" in problems[0]
+
+
+def test_check_linkage_accepts_every_real_header_schema_with_well_formed_cells(
+    tmp_path: Path,
+) -> None:
+    """One cluster per real header schema, each with convention-conforming cells, is clean."""
+    register = _register(
+        "## Cluster A: ADR follow-ons\n\n"
+        "| ID | Item | ADR | Phase | Status |\n"
+        "| --- | --- | --- | --- | --- |\n"
+        "| UW-A01 | Tier-1 RLS scoping | 022 | 5 | unscheduled |\n",
+        "## Cluster D: open issues\n\n"
+        "| ID | Issues | Theme | Phase | Status |\n"
+        "| --- | --- | --- | --- | --- |\n"
+        "| UW-D01 | #249, #250 | Device-auth hardening | 5 | unscheduled |\n"
+        "| UW-D02 | (no issue) | Standing problem in phase 5 alerting | 4b | decision |\n",
+        "## Cluster G: content\n\n"
+        "| ID | Item | Source | Phase | Status |\n"
+        "| --- | --- | --- | --- | --- |\n"
+        "| UW-G01 | Slot the skeletons | ws0 phase2 | content | unscheduled |\n",
+        "## Cluster L: live defects\n\n"
+        "| ID | Item | Issue | Status |\n"
+        "| --- | --- | --- | --- |\n"
+        "| UW-L01 | A bug | [#609](https://github.com/ByronWilliamsCPA/cyo-adventure/pull/609) | done |\n",
+        "## Cluster M: external and owner-gated\n\n"
+        "| ID | Item | Owner | Status |\n"
+        "| --- | --- | --- | --- |\n"
+        "| UW-M01 | Sign the DPA | project owner | decision |\n",
     )
     register_path = _write(tmp_path / "register.md", register)
     problems = _MODULE.check_linkage(

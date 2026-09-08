@@ -200,28 +200,34 @@ export async function seedDeviceGrant(
 /**
  * Mock the device-grant CRUD endpoints for the guardian console's "This
  * device" section and the authorize-device login intent (ADR-014). POST
- * returns a DeviceGrantView-shaped body; GET lists the current grants; DELETE
- * revokes. Call before navigating to a page that drives device authorization.
+ * returns a DeviceGrantView body (the only place the token ever crosses the
+ * wire); GET returns a bare DeviceGrantListItem[] (id, label, created_at:
+ * never the token, and no revoked_at, since the list holds only active
+ * grants); DELETE revokes. Both shapes mirror `api/schemas.py` exactly. Call
+ * before navigating to a page that drives device authorization.
  */
 export async function mockDeviceGrants(
   page: Page,
   grant: Partial<DeviceGrantSeed> = {}
 ): Promise<void> {
   const view = { ...DEFAULT_DEVICE_GRANT, ...grant }
-  const body = {
+  const mintBody = {
     id: view.id,
     token: view.token,
-    family_id: view.familyId,
     expires_at: view.expiresAt,
+    family_id: view.familyId,
+    authorized_by: 'user-1',
+  }
+  const listItem = {
+    id: view.id,
     label: 'This device',
     created_at: '2026-07-13T00:00:00Z',
-    revoked_at: null,
   }
   await page.route('**/api/v1/device-grants', (route) => {
     if (route.request().method() === 'POST') {
-      return route.fulfill({ status: 201, json: body })
+      return route.fulfill({ status: 201, json: mintBody })
     }
-    return route.fulfill({ json: { device_grants: [body] } })
+    return route.fulfill({ json: [listItem] })
   })
   await page.route('**/api/v1/device-grants/*', (route) => route.fulfill({ status: 204, body: '' }))
 }

@@ -65,11 +65,15 @@ jobs:
         run: supabase link --project-ref "$SUPABASE_PROJECT_ID"
 
       # #CRITICAL: security: this deploys supabase/config.toml's [auth] policy to
-      # the live project. `config push` is a DEFAULTING writer: for any table it
-      # sends, keys omitted from config.toml are filled with the CLI's own
-      # defaults and asserted on the remote, so an omission means "overwrite with
-      # the default", not "leave alone". Removing a key from [auth] is therefore
-      # a live policy change, not a no-op. Blast radius covers site_url,
+      # the live project. `config push` diffs first and writes nothing when the
+      # remote already matches (a genuine no-op run logs "Remote <surface> config
+      # is up to date."; confirmed on run 30972610902), but for any table it DOES
+      # send it writes with defaults: keys omitted from config.toml are filled
+      # with the CLI's own defaults and asserted on the remote, so an omission
+      # means "overwrite with the default", not "leave alone". Removing a key
+      # from [auth] is therefore a live policy change, not a no-op (issue #622;
+      # the corrected model lives in docs/guides/supabase-environments.md).
+      # Blast radius covers site_url,
       # uri_allow_list, the password floor, MFA, and the email confirmation and
       # throttle settings.
       # #VERIFY: --project-ref is REQUIRED, not redundant with `link`: it is the

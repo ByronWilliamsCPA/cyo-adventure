@@ -404,6 +404,27 @@ def test_device_principal_never_carries_admin_capability() -> None:
     assert principal.is_admin is False
 
 
+@pytest.mark.unit
+def test_device_principal_never_carries_profile_scope() -> None:
+    """Constructing a DEVICE Principal always force-clears profile_ids.
+
+    The structural counterpart to the is_admin invariant (deps.py
+    Principal.__post_init__): a device grant mints a child session and lists
+    a family's profiles but is never itself scoped to a profile, so a
+    mistakenly constructed Principal(role=DEVICE, profile_ids={...}) must
+    lose the scope rather than pass authorize_profile for a profile it was
+    handed in error.
+    """
+    principal = deps.Principal(
+        subject="device:x",
+        user_id=_AUTHORIZED_BY,
+        role=deps.Role.DEVICE,
+        family_id=_FAMILY_ID,
+        profile_ids=frozenset({uuid.uuid4()}),
+    )
+    assert principal.profile_ids == frozenset()
+
+
 # ---------------------------------------------------------------------------
 # require_onboarding_identity refuse-only guard
 # ---------------------------------------------------------------------------

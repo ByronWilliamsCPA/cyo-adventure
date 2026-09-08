@@ -116,8 +116,10 @@ your or your child's information for their own purposes; each acts on our instru
 [COUNSEL: this processor-only claim is asserted for every vendor below, but
 `processor-dpa-checklist.md` shows several DPAs not yet executed and open questions on specific
 vendors (OpenRouter's account-wide Zero Data Retention setting and whether it covers every
-downstream model provider it routes to; which Anthropic terms tier this account is on; whether
-Google Perspective specifically is covered by the Cloud DPA). Please confirm whether this
+downstream model provider it routes to; which Anthropic terms tier this account is on). The
+Google Perspective question that stood here is moot as of 2026-08-26: PR #764 retired that leg,
+so Perspective is no longer a recipient and needs no DPA coverage going forward (issue #659).
+Please confirm whether this
 statement can stand as written, needs to be qualified per vendor, or should be held until the
 checklist closes before this notice is published. **Sharpened 2026-08-12**: for one vendor this is
 no longer an open question but a probable contradiction. Kids Web Services' Parent Verification
@@ -133,7 +135,7 @@ Services row must be lifted out of this paragraph and described separately.]
 |---|---|---|
 | Supabase | Your account and your child's profile data, stored in our database | Hosting and sign-in |
 | OpenRouter and the AI model providers it routes to; Anthropic (direct) | Story prompts, screened to remove real names, contact details, and addresses before sending | Generating your child's stories |
-| OpenAI Moderation, Google Perspective | Generated story text and story-idea text, similarly screened | Safety-checking story content before it reaches your child |
+| OpenAI Moderation | Generated story text and story-idea text, similarly screened | Safety-checking story content before it reaches your child |
 | Google (Gemini) | Cover-art prompts, similarly screened | Generating book cover art |
 | Cloudflare (R2) | Cover art images, accessible only via a short-lived, non-public link | Image storage |
 | Sentry | Error reports, designed to exclude your child's reading content | Fixing bugs |
