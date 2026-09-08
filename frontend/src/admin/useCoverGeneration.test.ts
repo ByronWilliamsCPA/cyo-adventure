@@ -48,6 +48,26 @@ describe('useCoverGeneration', () => {
     expect(result.current.coverStatus).toBe('ready')
   })
 
+  it('seeds the cover review verdict and notes from the server once a version is ready', async () => {
+    const status = vi.fn().mockResolvedValue({
+      cover_status: 'pending_review',
+      cover_url: 'https://x/pending.webp',
+      cover_review_verdict: 'flag',
+      cover_review_notes: 'visible text in the sky',
+    })
+    const coverApi = makeCoverApi({ status })
+    const isMountedRef = { current: true }
+    const { result } = renderHook(() =>
+      useCoverGeneration({ storybookId: 's1', readyVersion: 1, coverApi, isMountedRef })
+    )
+    await act(async () => {
+      await Promise.resolve()
+      await Promise.resolve()
+    })
+    expect(result.current.coverReviewVerdict).toBe('flag')
+    expect(result.current.coverReviewNotes).toBe('visible text in the sky')
+  })
+
   it('keeps the default status when the best-effort seed fetch fails', async () => {
     const status = vi.fn().mockRejectedValue(new Error('network blip'))
     const coverApi = makeCoverApi({ status })

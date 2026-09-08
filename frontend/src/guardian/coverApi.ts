@@ -13,6 +13,14 @@ export interface CoverStatusView {
   // both fields default undefined rather than null. A16 (capability-register.md).
   cover_approved_by?: string | null
   cover_approved_at?: string | null
+  // AI cover reviewer outcome for the surviving generation attempt
+  // (docs/superpowers/specs/2026-09-08-cover-ai-review-design.md). A null
+  // verdict means either this cover predates the feature or every review
+  // attempt in its run failed open; cover_review_attempts is 0 in both of
+  // those cases.
+  cover_review_verdict: 'pass' | 'flag' | null
+  cover_review_notes: string | null
+  cover_review_attempts: number
 }
 
 export interface CoverApi {
