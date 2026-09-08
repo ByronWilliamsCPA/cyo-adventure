@@ -1543,14 +1543,22 @@ class StorybookVersion(CreatedAtMixin, Base):
     cover_approved_at: Mapped[datetime | None] = mapped_column(_TS, default=None)
     # docs/superpowers/specs/2026-09-08-cover-ai-review-design.md Design
     # section 4 / supabase/migrations/20260908000000_add_cover_review_columns.sql.
-    # NULL on cover_review_verdict means either "predates this feature" or
-    # "every review attempt in the run failed open" -- deliberately one
-    # unified NULL rather than a third distinguishing state; see the
-    # migration's own comment for why. Set once by
-    # covers.service.generate_cover, never updated after.
+    # NULL on cover_review_verdict means one of: "predates this feature",
+    # "the review provider could not be built for this generation" (a
+    # ConfigurationError degrade-to-off, see covers.service.
+    # _resolve_review_provider), or "the reviewer ran but its final attempt
+    # returned no usable verdict" (a provider error, an empty/unparseable
+    # response, or a verdict outside pass/flag; see covers.review.
+    # review_cover) -- deliberately unified NULL across these causes rather
+    # than a distinguishing column; see the migration's own comment for
+    # why. (A cover_status == "failed" row is a separate case: the
+    # generation exception handler rolls back before any review field is
+    # written, so these columns stay at their model defaults for a fourth,
+    # unrelated reason.) Set once by covers.service.generate_cover, never
+    # updated after.
     # #ASSUME: data integrity: every reader treats a NULL cover_review_verdict
     # as "not actually judged by the AI reviewer" and never as an implicit
-    # pass; nothing at the ORM boundary enforces that the two NULL-producing
+    # pass; nothing at the ORM boundary enforces that the NULL-producing
     # causes above stay behaviorally interchangeable for callers.
     # #VERIFY: tests/integration/test_cover_model.py::
     # test_cover_review_columns_default_null_and_zero.

@@ -38,9 +38,14 @@ class CoverStatusView(BaseModel):
     ``cover_review_verdict``/``cover_review_notes``/``cover_review_attempts``
     record the independent AI reviewer's outcome for the surviving
     generation attempt (docs/superpowers/specs/2026-09-08-cover-ai-review-design.md).
-    A None verdict always pairs with None notes, and the two states below
-    are the only ones that produce it; ``cover_review_attempts`` is what
-    tells them apart, except where noted:
+    A None verdict always pairs with None notes; the two states below are
+    the ones that produce it for a cover that reached ``pending_review``
+    (a ``cover_status == "failed"`` row is a separate case, not covered by
+    this discussion -- its verdict/notes/attempts are also at their
+    zero-value defaults, but for a third reason: ``generate_cover``'s outer
+    exception handler rolled back before any review field was written).
+    ``cover_review_attempts`` is what tells the two ``pending_review``
+    states apart, except where noted:
 
     - ``cover_review_attempts == 0``: review did not run at all for this
       generation. This is EITHER a cover that predates this feature, OR a
@@ -52,13 +57,19 @@ class CoverStatusView(BaseModel):
       leave verdict/notes/attempts at their zero-value defaults. The only
       signal that separates them is the ``cover_review_provider_unavailable``
       warning log emitted on the degrade-to-off path.
-    - ``cover_review_attempts >= 1``: the reviewer was actually invoked, and
-      every attempt in the bounded loop failed open (the reviewer call
-      itself errored and was treated as a pass rather than blocking
-      publication). A failed-open attempt still increments the counter
-      (``covers.service._generate_with_review`` increments before calling
-      the reviewer, not after a successful verdict), so this count is
-      always >= 1 when the reviewer ran at all.
+    - ``cover_review_attempts >= 1``: the reviewer was invoked and its final
+      attempt returned no usable verdict (a provider error, an empty or
+      unparseable response, or a verdict outside {"pass", "flag"}; see
+      ``covers.review.review_cover``'s ``Returns:`` for the full list),
+      which is treated as a pass rather than blocking publication. This
+      does not mean every attempt failed open: the loop
+      (``covers.service._generate_with_review``, bounded by
+      ``MAX_COVER_REVIEW_ATTEMPTS``) breaks on any verdict other than
+      "flag", so a "flag" on an earlier attempt followed by a fail-open on
+      the last attempt also lands here. A failed-open attempt still
+      increments the counter (the loop increments before calling the
+      reviewer, not after a successful verdict), so this count is always
+      >= 1 when the reviewer ran at all.
     """
 
     cover_status: str

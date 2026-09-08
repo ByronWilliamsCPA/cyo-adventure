@@ -4,12 +4,16 @@
 -- covers/service.py::generate_cover).
 --
 -- Purely additive: all three columns are nullable with no backfill. NULL on
--- cover_review_verdict means one of two things, deliberately unified rather
--- than distinguished by a fourth state: either this cover predates the
--- feature, or every review attempt in its run failed open (a ProviderError
--- or an unparseable response -- see covers/review.py's docstring). Both
--- cases mean the same thing to a reviewing admin: "this cover was not
--- actually judged by the AI reviewer," so one NULL value serves both.
+-- cover_review_verdict means one of several things, deliberately unified
+-- rather than distinguished by an extra state: this cover predates the
+-- feature; the review provider could not be built for this generation (a
+-- ConfigurationError degrade-to-off -- see
+-- covers/service.py::_resolve_review_provider); or the reviewer ran but its
+-- final attempt returned no usable verdict (a ProviderError, an empty or
+-- unparseable response, or a value outside pass/flag -- see
+-- covers/review.py's docstring). All of these mean the same thing to a
+-- reviewing admin: "this cover was not actually judged by the AI reviewer,"
+-- so one NULL value serves all of them.
 --
 -- cover_review_attempts is NOT NULL DEFAULT 0 (not nullable like the other
 -- two): every row, including one that predates this migration, has a
@@ -39,13 +43,13 @@ ALTER TABLE "public"."storybook_version"
     ADD COLUMN IF NOT EXISTS "cover_review_attempts" integer NOT NULL DEFAULT 0;
 
 COMMENT ON COLUMN "public"."storybook_version"."cover_review_verdict" IS
-    'AI cover reviewer''s verdict for the surviving generation attempt: pass, flag, or NULL (predates this feature, or every attempt in the run failed open). Set once by covers.service.generate_cover.';
+    'AI cover reviewer''s verdict for the surviving generation attempt: pass, flag, or NULL (predates this feature, review provider could not be built for this generation, or the reviewer ran but its final attempt returned no usable verdict). Set once by covers.service.generate_cover.';
 
 COMMENT ON COLUMN "public"."storybook_version"."cover_review_notes" IS
     'AI cover reviewer''s short explanation, present only when cover_review_verdict is not NULL. Set once by covers.service.generate_cover.';
 
 COMMENT ON COLUMN "public"."storybook_version"."cover_review_attempts" IS
-    'How many generate+review cycles covers.service.generate_cover ran for the current cover (0 for a row predating this feature, up to MAX_COVER_REVIEW_ATTEMPTS otherwise).';
+    'How many generate+review cycles covers.service.generate_cover ran for the current cover (0 when the cover predates this feature or the review provider could not be built for this generation, up to MAX_COVER_REVIEW_ATTEMPTS when the reviewer ran).';
 
 -- DROP-then-ADD keeps re-application idempotent, matching this project's
 -- house pattern for idempotent CHECK-constraint migrations (see the header

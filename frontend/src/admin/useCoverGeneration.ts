@@ -34,7 +34,10 @@ export interface UseCoverGenerationResult {
    *  generation so the review surface can show an approval-specific message. */
   coverApproveError: boolean
   /** The AI reviewer's verdict/notes for the current cover_url, or null when
-   *  the cover predates the feature or every review attempt failed open. */
+   *  the cover predates the feature, the review provider could not be built
+   *  for this generation (invalid config), or the reviewer ran but its final
+   *  attempt returned no usable verdict (see CoverStatusView in coverApi.ts
+   *  for the full null-verdict state breakdown). */
   coverReviewVerdict: CoverStatusView['cover_review_verdict']
   coverReviewNotes: string | null
   generateCover: () => Promise<void>

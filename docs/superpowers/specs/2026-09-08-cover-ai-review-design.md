@@ -196,7 +196,9 @@ Alembic: the July 2026 cover-feature memory's "one Alembic migration" note
 predates that cutover and should not be copied):
 
 - `cover_review_verdict` (`text`, nullable: `'pass'` / `'flag'` / `NULL` for
-  a cover generated before this feature shipped)
+  a cover generated before this feature shipped, a generation where the
+  review provider could not be built, or a review run whose final attempt
+  returned no usable verdict)
 - `cover_review_notes` (`text`, nullable)
 - `cover_review_attempts` (`integer`, `NOT NULL DEFAULT 0`)
 
