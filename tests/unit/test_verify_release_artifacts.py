@@ -28,11 +28,15 @@ _SCRIPT = (
 _VERSION = "1.2.0"
 _REPO = "https://github.com/ByronWilliamsCPA/cyo-adventure"
 
-# GNU-only PCRE spellings, in every form BSD grep on the macOS runner rejects. `-P[\w]*` covers
-# `-P`, `-Po`, and `-P` followed by a tab rather than a space; the leading lookbehind keeps it
-# from firing on an unrelated token that merely ends in "-P". A plain `"-P" in line` substring
-# test was the first attempt and is too blunt: it also fires on any prose mention of the flag.
-_GNU_ONLY_GREP_RE = re.compile(r"(?<![\w-])-P[\w]*|--perl-regexp|\\K")
+# GNU-only PCRE spellings, in every form BSD grep on the macOS runner rejects. The first
+# alternative matches any short-option cluster containing `P`, which is what `-P`, `-Po`, and
+# `-oP` all are: an earlier version anchored on a literal `-P` and therefore missed `-oP` and
+# `-qoP`, where `P` is not the first letter in the cluster. The leading lookbehind keeps it from
+# firing on an unrelated token that merely ends in a hyphen plus letters, so a date like
+# `2026-09-05` and a word like `non-POSIX` are both ignored. A plain `"-P" in line` substring
+# test was the first attempt and is too blunt in the other direction: it fires on any prose
+# mention of the flag, so documenting why the script avoids `-P` would break this guard.
+_GNU_ONLY_GREP_RE = re.compile(r"(?<![\w-])-[A-Za-z]*P[A-Za-z]*|--perl-regexp|\\K")
 
 _CHANGELOG = f"""# Changelog
 
@@ -253,6 +257,8 @@ def test_gnu_only_grep_detector_catches_every_spelling() -> None:
         "grep\t--perl-regexp 'pattern' file",
         "grep -P\t'pattern' file",
         "printf '%s' \"$x\" | grep -oP '\\K.*'",
+        "grep -oP 'version = .*' pyproject.toml",
+        "grep -qoP 'x' file",
     ]
     for line in caught:
         assert _GNU_ONLY_GREP_RE.search(line), f"missed a GNU-only spelling: {line!r}"
@@ -262,6 +268,8 @@ def test_gnu_only_grep_detector_catches_every_spelling() -> None:
         "grep -qE '^[[:space:]]*[-*+] [^[:space:]]'",
         'grep -qFx "${heading}" CHANGELOG.md',
         "# BSD grep implements no PCRE mode, so keep every pattern POSIX.",
+        "## [0.88.0] - 2026-09-05",
+        "# A non-POSIX extension would break the macOS leg.",
     ]
     for line in ignored:
         assert not _GNU_ONLY_GREP_RE.search(line), f"false positive on: {line!r}"
