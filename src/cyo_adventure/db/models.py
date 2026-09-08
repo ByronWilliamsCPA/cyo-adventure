@@ -1548,6 +1548,12 @@ class StorybookVersion(CreatedAtMixin, Base):
     # unified NULL rather than a third distinguishing state; see the
     # migration's own comment for why. Set once by
     # covers.service.generate_cover, never updated after.
+    # #ASSUME: data integrity: every reader treats a NULL cover_review_verdict
+    # as "not actually judged by the AI reviewer" and never as an implicit
+    # pass; nothing at the ORM boundary enforces that the two NULL-producing
+    # causes above stay behaviorally interchangeable for callers.
+    # #VERIFY: tests/integration/test_cover_model.py::
+    # test_cover_review_columns_default_null_and_zero.
     cover_review_verdict: Mapped[str | None] = mapped_column(String, default=None)
     cover_review_notes: Mapped[str | None] = mapped_column(String, default=None)
     cover_review_attempts: Mapped[int] = mapped_column(
