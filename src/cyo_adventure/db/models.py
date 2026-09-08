@@ -1541,6 +1541,18 @@ class StorybookVersion(CreatedAtMixin, Base):
         ForeignKey(_FK_USER, ondelete=_ONDELETE_SET_NULL), default=None
     )
     cover_approved_at: Mapped[datetime | None] = mapped_column(_TS, default=None)
+    # docs/superpowers/specs/2026-09-08-cover-ai-review-design.md Design
+    # section 4 / supabase/migrations/20260908000000_add_cover_review_columns.sql.
+    # NULL on cover_review_verdict means either "predates this feature" or
+    # "every review attempt in the run failed open" -- deliberately one
+    # unified NULL rather than a third distinguishing state; see the
+    # migration's own comment for why. Set once by
+    # covers.service.generate_cover, never updated after.
+    cover_review_verdict: Mapped[str | None] = mapped_column(String, default=None)
+    cover_review_notes: Mapped[str | None] = mapped_column(String, default=None)
+    cover_review_attempts: Mapped[int] = mapped_column(
+        server_default=text("0"), default=0
+    )
     # ADR-023 P4: does this version's blob carry any sentinel-bound slots at
     # all (safe to publish; says nothing about whose values). Off by default;
     # set by the fill/import path only when the skeleton contract declares
@@ -1582,6 +1594,10 @@ class StorybookVersion(CreatedAtMixin, Base):
         CheckConstraint(
             f"cover_status IN ({_COVER_STATUS_VALUES})",
             name="ck_storybook_version_cover_status",
+        ),
+        CheckConstraint(
+            "cover_review_verdict IN ('pass', 'flag')",
+            name="ck_storybook_version_cover_review_verdict",
         ),
     )
 

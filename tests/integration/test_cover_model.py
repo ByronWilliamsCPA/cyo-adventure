@@ -78,3 +78,15 @@ async def test_cover_approval_columns_default_to_none(
         assert row is not None
         assert row.cover_approved_by is None
         assert row.cover_approved_at is None
+
+
+@pytest.mark.asyncio
+async def test_cover_review_columns_default_null_and_zero(
+    sessions: async_sessionmaker[AsyncSession], seed: Seed
+) -> None:
+    async with sessions() as s:
+        row = await s.get(StorybookVersion, (seed.storybook_id, seed.version))
+        assert row is not None
+        assert row.cover_review_verdict is None
+        assert row.cover_review_notes is None
+        assert row.cover_review_attempts == 0
