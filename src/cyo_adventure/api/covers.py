@@ -38,13 +38,27 @@ class CoverStatusView(BaseModel):
     ``cover_review_verdict``/``cover_review_notes``/``cover_review_attempts``
     record the independent AI reviewer's outcome for the surviving
     generation attempt (docs/superpowers/specs/2026-09-08-cover-ai-review-design.md).
-    A None verdict means either the cover predates this feature or every
-    review attempt in its run failed open. ``cover_review_attempts`` is 0
-    only when the cover predates this feature (no review ever ran); it is 1
-    or more whenever the feature has run at all, including the
-    every-attempt-failed-open case, since a failed-open attempt still counts
-    as an attempt (``covers.service._generate_with_review`` increments it
-    before calling the reviewer, not after a successful verdict).
+    A None verdict always pairs with None notes, and the two states below
+    are the only ones that produce it; ``cover_review_attempts`` is what
+    tells them apart, except where noted:
+
+    - ``cover_review_attempts == 0``: review did not run at all for this
+      generation. This is EITHER a cover that predates this feature, OR a
+      generation where the review provider could not be built (a
+      ``ConfigurationError``: missing ``OPENROUTER_API_KEY`` or an
+      unsupported ``review_provider`` setting; see
+      ``covers.service._resolve_review_provider``). These two cases are
+      **not distinguishable from this response's shape alone** -- both
+      leave verdict/notes/attempts at their zero-value defaults. The only
+      signal that separates them is the ``cover_review_provider_unavailable``
+      warning log emitted on the degrade-to-off path.
+    - ``cover_review_attempts >= 1``: the reviewer was actually invoked, and
+      every attempt in the bounded loop failed open (the reviewer call
+      itself errored and was treated as a pass rather than blocking
+      publication). A failed-open attempt still increments the counter
+      (``covers.service._generate_with_review`` increments before calling
+      the reviewer, not after a successful verdict), so this count is
+      always >= 1 when the reviewer ran at all.
     """
 
     cover_status: str
