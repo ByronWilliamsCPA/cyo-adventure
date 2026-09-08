@@ -10,6 +10,7 @@ in ``tmp_path`` holding a generated-format ``CHANGELOG.md`` and a
 from __future__ import annotations
 
 import os
+import re
 import shutil
 import subprocess
 from pathlib import Path
@@ -26,6 +27,12 @@ _SCRIPT = (
 )
 _VERSION = "1.2.0"
 _REPO = "https://github.com/ByronWilliamsCPA/cyo-adventure"
+
+# GNU-only PCRE spellings, in every form BSD grep on the macOS runner rejects. `-P[\w]*` covers
+# `-P`, `-Po`, and `-P` followed by a tab rather than a space; the leading lookbehind keeps it
+# from firing on an unrelated token that merely ends in "-P". A plain `"-P" in line` substring
+# test was the first attempt and is too blunt: it also fires on any prose mention of the flag.
+_GNU_ONLY_GREP_RE = re.compile(r"(?<![\w-])-P[\w]*|--perl-regexp|\\K")
 
 _CHANGELOG = f"""# Changelog
 
@@ -127,7 +134,7 @@ def test_verify_script_uses_no_gnu_only_grep_flags() -> None:
     offenders = [
         (number, line)
         for number, line in enumerate(source.splitlines(), start=1)
-        if "-P " in line or "-Po" in line or "\\K" in line
+        if _GNU_ONLY_GREP_RE.search(line)
     ]
 
     assert not offenders, f"GNU-only grep usage reintroduced: {offenders}"
@@ -231,3 +238,79 @@ def test_verify_script_missing_pyproject_reports_a_tooling_failure(
     assert result.returncode == 1
     assert "pyproject.toml not found" in result.stdout
     assert "pyproject version is ''" not in result.stdout
+
+
+def test_gnu_only_grep_detector_catches_every_spelling() -> None:
+    """The portability guard must not be narrower than the flag it guards against.
+
+    The first version tested for ``"-P "`` and ``"-Po"`` as substrings, which misses
+    ``--perl-regexp`` and a ``-P`` followed by a tab. A guard that misses a spelling
+    is worse than no guard, because it reports clean while the macOS leg breaks.
+    """
+    caught = [
+        "ACTUAL=$(grep -Po 'version = \"\\K[^\"]+' pyproject.toml)",
+        "grep -P 'pattern' file",
+        "grep\t--perl-regexp 'pattern' file",
+        "grep -P\t'pattern' file",
+        "printf '%s' \"$x\" | grep -oP '\\K.*'",
+    ]
+    for line in caught:
+        assert _GNU_ONLY_GREP_RE.search(line), f"missed a GNU-only spelling: {line!r}"
+
+    ignored = [
+        "awk -F'\"' '/^version = \"/ { print $2; exit }' pyproject.toml",
+        "grep -qE '^[[:space:]]*[-*+] [^[:space:]]'",
+        'grep -qFx "${heading}" CHANGELOG.md',
+        "# BSD grep implements no PCRE mode, so keep every pattern POSIX.",
+    ]
+    for line in ignored:
+        assert not _GNU_ONLY_GREP_RE.search(line), f"false positive on: {line!r}"
+
+
+def test_verify_script_rejects_a_nested_occurrence_of_a_removed_heading(
+    tmp_path: Path,
+) -> None:
+    """A dropped release section is not excused by the heading appearing in prose.
+
+    The substring form of this check (``grep -qF``) accepted any occurrence of the
+    heading text anywhere in the file, so a changelog that deleted the real
+    ``## [0.1.0]`` section but quoted it inside a deeper heading passed. The fixture
+    below is built so the old form would have matched, which is what makes this test
+    discriminating rather than merely another dropped-section case.
+    """
+    repo = _make_repo(tmp_path)
+    padding = "\n".join(f"- padding entry {index}" for index in range(1, 13))
+    nested = f"""# Changelog
+
+<!-- version list -->
+
+## [{_VERSION}] - 2026-09-05
+
+### Features
+
+- Add a thing
+
+### ## [0.1.0] - 2026-06-20
+
+- This heading is quoted inside a level-three heading, not a real release section.
+{padding}
+
+[{_VERSION}]: {_REPO}/compare/v0.1.0...v{_VERSION}
+[0.1.0]: {_REPO}/releases/tag/v0.1.0
+"""
+    (repo / "CHANGELOG.md").write_text(nested, encoding="utf-8")
+
+    assert "## [0.1.0] - 2026-06-20" in nested, (
+        "fixture must contain the heading as a substring, or it cannot show that "
+        "the substring form of this check would have passed"
+    )
+    assert len(nested.splitlines()) > len(_CHANGELOG.splitlines()), (
+        "fixture must be longer than the baseline so the line-count check cannot fire"
+    )
+
+    result = _run(repo, _VERSION, "--baseline-ref", "HEAD")
+
+    assert result.returncode == 1
+    assert "lost version section(s)" in result.stdout
+    assert "## [0.1.0]" in result.stdout
+    assert "shrank from" not in result.stdout

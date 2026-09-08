@@ -625,6 +625,9 @@ def test_check_row_phase_allows_empty_phase_on_a_done_row_that_cites_evidence(
         "Closed after review.",
         "Closed; the defaced decade of added facade code is gone.",
         "Closed in 4fc65e5b.",
+        "Closed; background at https://example.invalid/#123.",
+        "Closed per https://github.com/ByronWilliamsCPA/cyo-adventure/pull/636-extra.",
+        "Closed; see the sub-issue:12 tracker.",
         "",
     ],
 )
@@ -636,10 +639,17 @@ def test_check_row_phase_rejects_a_done_row_that_cites_no_evidence(item: str) ->
     expected no problems, which pinned the gap open rather than catching it. An exemption is
     only as safe as the check that replaces it, so the two belong together.
 
-    Two of the fixtures are near-misses on purpose. "the defaced decade of added facade code"
-    is prose built entirely from hex letters, which an unanchored ``[0-9a-f]{7,40}`` sha pattern
-    would accept as a citation; "Closed in 4fc65e5b" is a real sha written without the register's
-    backtick convention, which is the form the pattern deliberately does not credit.
+    Most of the fixtures are near-misses on purpose, each one a form an unguarded pattern
+    accepts as a citation while citing nothing of this repo's own work:
+
+    - "the defaced decade of added facade code" is prose built entirely from hex letters, which
+      an unanchored ``[0-9a-f]{7,40}`` sha pattern reads as a sha;
+    - "Closed in 4fc65e5b" is a real sha written without the register's backtick convention,
+      the form the pattern deliberately does not credit;
+    - ``https://example.invalid/#123`` ends in something an unguarded bare ``#N`` pattern accepts, though
+      the fragment belongs to a foreign host;
+    - ``.../pull/636-extra`` is a prefix match on the repository URL form, not a PR link;
+    - "sub-issue:12" embeds the ``issue:N`` form inside a longer word.
     """
     problems = _MODULE._check_row_phase(
         "A", 1, "UW-A01", "", "done", _SAMPLE_PHASE_VOCABULARY, item

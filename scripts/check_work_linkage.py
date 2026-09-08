@@ -154,10 +154,14 @@ _STATUSES_REQUIRING_PHASE = _STATUSES - {"done"}
 # A commit sha must be backtick-quoted, which is the register's own convention for one. A bare
 # `\b[0-9a-f]{7,40}\b` would match ordinary prose words built from hex letters ("defaced",
 # "decade", "deadbeef"), turning the check into one that passes on text that cites nothing.
+# Every alternative is boundary-guarded, because an unguarded one matches a prefix sitting
+# inside unrelated text: `https://example.invalid/#123` satisfies a bare `#\d+`, and a link
+# ending `/pull/636-extra` satisfies a bare URL form. Either would let a row that cites nothing
+# of this repo's own work pass, which is the failure this rule exists to prevent.
 _DONE_EVIDENCE_RE = re.compile(
-    r"#\d+"
-    r"|https://github\.com/ByronWilliamsCPA/cyo-adventure/(?:issues|pull)/\d+"
-    r"|issue:\d+"
+    r"(?<![-\w/])#\d+(?![-\w/])"
+    r"|https://github\.com/ByronWilliamsCPA/cyo-adventure/(?:issues|pull)/\d+(?![-\w/])"
+    r"|(?<![-\w])issue:\d+(?![-\w])"
     r"|`[0-9a-f]{7,40}`"
 )
 

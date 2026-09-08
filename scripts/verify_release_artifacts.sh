@@ -115,17 +115,23 @@ fi
 # proxy for that: a rewrite dropping ten old sections while adding twelve new
 # lines grows the file and passes. Compare the version headings themselves, and
 # keep the line-count check as a second signal for entries lost inside a section.
+# Compare WHOLE heading lines with grep -qFx, not substrings. A substring search
+# accepts a nested or quoted occurrence: a file that dropped the real
+# "## [0.1.0] - ..." section but still mentions "### ## [0.1.0]" somewhere would
+# pass while the released section is gone.
 # #VERIFY tests/unit/test_verify_release_artifacts.py::test_verify_script_fails_when_a_prior_version_section_is_dropped
 # removes one old section, keeps the file longer than the baseline, and asserts
 # the script still fails.
+# #VERIFY tests/unit/test_verify_release_artifacts.py::test_verify_script_rejects_a_nested_occurrence_of_a_removed_heading
+# proves the substring form would have passed and the exact form does not.
 if [ -n "${BASELINE_REF}" ]; then
   BASELINE_BODY="$(git show "${BASELINE_REF}:CHANGELOG.md")"
   MISSING=""
   while IFS= read -r heading; do
     [ -n "${heading}" ] || continue
-    grep -qF "${heading}" CHANGELOG.md || MISSING="${MISSING} ${heading}"
+    grep -qFx "${heading}" CHANGELOG.md || MISSING="${MISSING} ${heading}"
   done <<EOF
-$(printf '%s' "${BASELINE_BODY}" | grep -oE '^## \[[^]]+\]' || true)
+$(printf '%s' "${BASELINE_BODY}" | grep -E '^## \[[^]]+\] - ' || true)
 EOF
   if [ -n "${MISSING}" ]; then
     echo "::error::CHANGELOG.md lost version section(s) present in" \
