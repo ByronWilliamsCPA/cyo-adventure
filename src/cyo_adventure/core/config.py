@@ -994,10 +994,10 @@ class Settings(BaseSettings):
     # section 2: an OpenRouter vision-capable model that judges a generated
     # cover against its own generation prompt. Deliberately a different
     # vendor/model family from cover_model (gemini-3-pro-image, called via
-    # the direct Google SDK in covers/provider.py, not through OpenRouter at
-    # all), so build_cover_review_provider's independence check
-    # (moderation/review_provider.py) holds trivially today; it stays a live
-    # check rather than an assumption, to catch a future misconfiguration.
+    # the direct Google SDK in covers/provider.py, not through OpenRouter).
+    # Task 5 will wire up build_cover_review_provider's independence check
+    # (moderation/review_provider.py), which will hold trivially because
+    # these are different vendors entirely.
     # #ASSUME: external-resources: no live-pricing or availability probe
     # backs this default; picked for being inexpensive, fast, and
     # vision-capable at planning time (2026-09-08).
