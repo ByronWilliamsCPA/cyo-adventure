@@ -779,10 +779,13 @@ async def test_review_provider_configuration_error_degrades_review_to_off(
         # status, not "failed".
         assert row.cover_status == "pending_review"
         assert row.cover_image_url is not None
-        # Review fields are left in their "review did not run" state, the
-        # same state a pre-feature cover or an every-attempt-failed-open
-        # cover's NULL verdict represents (see the migration's
-        # NULL-unification comment).
+        # Review fields are left in their "review did not run" state: the
+        # review provider could not be built (a ConfigurationError
+        # degrade-to-off, see covers.service._resolve_review_provider),
+        # which is indistinguishable at this response's shape from a
+        # pre-feature cover's NULL verdict (see the migration's
+        # NULL-unification comment). attempts stays 0 here, which is what
+        # separates this state from a cover whose reviewer actually ran.
         assert row.cover_review_verdict is None
         assert row.cover_review_notes is None
         assert row.cover_review_attempts == 0

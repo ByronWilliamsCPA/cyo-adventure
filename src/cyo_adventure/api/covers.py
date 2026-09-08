@@ -41,9 +41,13 @@ class CoverStatusView(BaseModel):
     A None verdict always pairs with None notes; the two states below are
     the ones that produce it for a cover that reached ``pending_review``
     (a ``cover_status == "failed"`` row is a separate case, not covered by
-    this discussion -- its verdict/notes/attempts are also at their
-    zero-value defaults, but for a third reason: ``generate_cover``'s outer
-    exception handler rolled back before any review field was written).
+    the two states above: its review columns are NOT reliably zero-valued.
+    ``covers.service.generate_cover``'s exception handler rolls back this
+    attempt's own uncommitted writes and marks only ``cover_status`` as
+    failed, so a failed FIRST generation leaves zero-value defaults, but a
+    failed REGENERATION of a cover that previously succeeded leaves the
+    prior successful generation's verdict/notes/attempts still in place,
+    now stale against a failed cover_status.)
     ``cover_review_attempts`` is what tells the two ``pending_review``
     states apart, except where noted:
 

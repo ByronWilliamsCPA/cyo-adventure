@@ -1551,11 +1551,17 @@ class StorybookVersion(CreatedAtMixin, Base):
     # response, or a verdict outside pass/flag; see covers.review.
     # review_cover) -- deliberately unified NULL across these causes rather
     # than a distinguishing column; see the migration's own comment for
-    # why. (A cover_status == "failed" row is a separate case: the
-    # generation exception handler rolls back before any review field is
-    # written, so these columns stay at their model defaults for a fourth,
-    # unrelated reason.) Set once by covers.service.generate_cover, never
-    # updated after.
+    # why. (A cover_status == "failed" row is a separate case, not one of
+    # the NULL-producing states above: its review columns are NOT reliably
+    # at their model defaults. The exception handler rolls back this
+    # attempt's own uncommitted writes and marks only cover_status as
+    # failed, so a failed FIRST generation does leave the defaults, but a
+    # failed REGENERATION of a previously-successful cover leaves that
+    # prior generation's verdict/notes/attempts in place, stale against a
+    # failed cover_status.) Written by covers.service.generate_cover on
+    # every successful generation (including a regeneration overwriting an
+    # earlier value); a failed attempt leaves whatever was last committed
+    # unchanged.
     # #ASSUME: data integrity: every reader treats a NULL cover_review_verdict
     # as "not actually judged by the AI reviewer" and never as an implicit
     # pass; nothing at the ORM boundary enforces that the NULL-producing

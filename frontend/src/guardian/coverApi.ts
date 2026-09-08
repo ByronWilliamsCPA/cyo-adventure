@@ -16,12 +16,16 @@ export interface CoverStatusView {
   // AI cover reviewer outcome for the surviving generation attempt
   // (docs/superpowers/specs/2026-09-08-cover-ai-review-design.md). A null
   // verdict always pairs with null notes; the two states below are the
-  // ones that produce it for a cover that reached pending_review (a
-  // cover_status === 'failed' row is a separate case: generation's outer
-  // error handler rolled back before any review field was written, so
-  // its verdict/notes/attempts are also at their zero-value defaults, for
-  // a third reason). cover_review_attempts tells the two pending_review
-  // states apart, except where noted:
+  // ones that produce it for a cover that reached pending_review
+  // (a cover_status === 'failed' row is a separate case, not one of the
+  //   two below: its review fields are NOT reliably at their zero-value
+  //   defaults. The backend rolls back only this attempt's own uncommitted
+  //   writes on failure, so a failed FIRST generation does leave the
+  //   defaults, but a failed REGENERATION of a previously-successful cover
+  //   leaves that prior generation's verdict/notes/attempts in place,
+  //   stale against a failed cover_status).
+  // cover_review_attempts tells the two pending_review states apart,
+  // except where noted:
   // - attempts === 0: review did not run at all. EITHER this cover
   //   predates the feature OR the review provider could not be built for
   //   this generation (missing OPENROUTER_API_KEY / unsupported
