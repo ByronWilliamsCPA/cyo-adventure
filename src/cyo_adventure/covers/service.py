@@ -304,8 +304,9 @@ async def generate_cover(
         # pending_review (never blocked), per the spec's non-goals.
         # #VERIFY: tests/integration/test_cover_service.py::
         # test_success_path_sets_pending_review_and_writes_url covers the
-        # single-pass path exercised today; the discriminating multi-attempt
-        # flag-then-pass and flag-every-attempt cases land in the next task.
+        # single-pass path; ::test_reviewer_flags_then_passes_uses_the_passing_attempt
+        # and ::test_reviewer_flags_every_attempt_still_reaches_pending_review
+        # cover the discriminating multi-attempt cases.
         for _ in range(MAX_COVER_REVIEW_ATTEMPTS):
             review_attempts += 1
             source = await asyncio.to_thread(generate, prompt, settings)
