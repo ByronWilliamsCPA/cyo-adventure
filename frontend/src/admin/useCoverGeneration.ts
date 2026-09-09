@@ -33,6 +33,20 @@ export interface UseCoverGenerationResult {
   /** Set only after an approveCover() call fails; distinct from coverTimedOut/failed
    *  generation so the review surface can show an approval-specific message. */
   coverApproveError: boolean
+  /** The AI reviewer's verdict/notes for the current cover_url, or null when
+   *  the cover predates the feature, the review provider could not be built
+   *  for this generation (invalid config), or the reviewer ran but its final
+   *  attempt returned no usable verdict (see CoverStatusView in coverApi.ts
+   *  for the full null-verdict state breakdown). */
+  coverReviewVerdict: CoverStatusView['cover_review_verdict']
+  coverReviewNotes: string | null
+  /** How many generate+review cycles the reviewer ran for the current cover;
+   *  0 when it predates this feature or the review provider could not be
+   *  built, up to the server's MAX_COVER_REVIEW_ATTEMPTS cap otherwise. The
+   *  only signal that distinguishes those two attempts=0 causes from each
+   *  other is a backend log, not this field; see CoverStatusView in
+   *  coverApi.ts. */
+  coverReviewAttempts: CoverStatusView['cover_review_attempts']
   generateCover: () => Promise<void>
   approveCover: () => Promise<void>
 }
@@ -51,6 +65,11 @@ export function useCoverGeneration({
   // button with no feedback.
   const [coverTimedOut, setCoverTimedOut] = useState(false)
   const [coverApproveError, setCoverApproveError] = useState(false)
+  const [coverReviewVerdict, setCoverReviewVerdict] =
+    useState<CoverStatusView['cover_review_verdict']>(null)
+  const [coverReviewNotes, setCoverReviewNotes] = useState<string | null>(null)
+  const [coverReviewAttempts, setCoverReviewAttempts] =
+    useState<CoverStatusView['cover_review_attempts']>(0)
 
   // Seed the current server-side cover status once the surface is ready, so an
   // in-flight job (e.g. one started in another tab) is reflected and the
@@ -64,6 +83,9 @@ export function useCoverGeneration({
         if (!cancelled && isMountedRef.current) {
           setCoverStatus(current.cover_status)
           setCoverUrl(current.cover_url)
+          setCoverReviewVerdict(current.cover_review_verdict)
+          setCoverReviewNotes(current.cover_review_notes)
+          setCoverReviewAttempts(current.cover_review_attempts)
         }
       } catch (err) {
         // Best-effort seed; keep the default status on failure.
@@ -92,6 +114,9 @@ export function useCoverGeneration({
       if (!isMountedRef.current) return
       setCoverStatus(started.cover_status)
       setCoverUrl(started.cover_url)
+      setCoverReviewVerdict(started.cover_review_verdict)
+      setCoverReviewNotes(started.cover_review_notes)
+      setCoverReviewAttempts(started.cover_review_attempts)
       let latest = started.cover_status
       for (let i = 0; i < 30; i += 1) {
         await new Promise((resolve) => setTimeout(resolve, 2000))
@@ -101,6 +126,9 @@ export function useCoverGeneration({
         latest = polled.cover_status
         setCoverStatus(latest)
         setCoverUrl(polled.cover_url)
+        setCoverReviewVerdict(polled.cover_review_verdict)
+        setCoverReviewNotes(polled.cover_review_notes)
+        setCoverReviewAttempts(polled.cover_review_attempts)
         if (latest !== 'generating') break
       }
       // Poll cap reached with the job still generating: surface a retry
@@ -135,6 +163,9 @@ export function useCoverGeneration({
       if (!isMountedRef.current) return
       setCoverStatus(approved.cover_status)
       setCoverUrl(approved.cover_url)
+      setCoverReviewVerdict(approved.cover_review_verdict)
+      setCoverReviewNotes(approved.cover_review_notes)
+      setCoverReviewAttempts(approved.cover_review_attempts)
     } catch (err) {
       console.error('cover approval failed:', err instanceof Error ? err.message : err)
       if (isMountedRef.current) setCoverApproveError(true)
@@ -149,6 +180,9 @@ export function useCoverGeneration({
     coverBusy,
     coverTimedOut,
     coverApproveError,
+    coverReviewVerdict,
+    coverReviewNotes,
+    coverReviewAttempts,
     generateCover,
     approveCover,
   }

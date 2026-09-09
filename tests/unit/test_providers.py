@@ -25,11 +25,12 @@ from structlog.testing import LogCapture
 
 from cyo_adventure.core.config import Settings
 from cyo_adventure.core.exceptions import (
+    BusinessLogicError,
     ConfigurationError,
     ProviderError,
     ValidationError,
 )
-from cyo_adventure.generation.provider import build_anthropic_leg
+from cyo_adventure.generation.provider import MockProvider, build_anthropic_leg
 from cyo_adventure.generation.providers import (
     AnthropicProvider,
     FallbackProvider,
@@ -142,6 +143,38 @@ def _modal(
         backoff_base_seconds=0,
         client=_client(handler),
     )
+
+
+# ---------------------------------------------------------------------------
+# MockProvider
+# ---------------------------------------------------------------------------
+
+
+class TestMockProviderCompleteWithImage:
+    @pytest.mark.asyncio
+    async def test_returns_next_queued_response_ignoring_the_image(self) -> None:
+        provider = MockProvider(responses=['{"verdict": "flag", "notes": "x"}'])
+        result = await provider.complete_with_image(
+            system="s",
+            prompt="p",
+            image_bytes=b"ignored",
+            image_mime="image/png",
+            max_tokens=10,
+        )
+        assert result.text == '{"verdict": "flag", "notes": "x"}'
+        assert provider.calls == ["p"]
+
+    @pytest.mark.asyncio
+    async def test_raises_when_queue_exhausted(self) -> None:
+        provider = MockProvider(responses=[])
+        with pytest.raises(BusinessLogicError):
+            await provider.complete_with_image(
+                system="s",
+                prompt="p",
+                image_bytes=b"x",
+                image_mime="image/png",
+                max_tokens=10,
+            )
 
 
 # ---------------------------------------------------------------------------
@@ -485,6 +518,43 @@ class TestOpenRouterProvider:
         assert calls == 2
 
     @pytest.mark.asyncio
+    async def test_decoding_error_is_transient_and_retried(self) -> None:
+        """httpx.DecodingError is a RequestError sibling of TransportError, not
+        a subclass of it; a narrower except clause would let it propagate
+        uncaught past every caller's `except ProviderError`."""
+        calls = 0
+
+        def handler(_request: httpx.Request) -> httpx.Response:
+            nonlocal calls
+            calls += 1
+            if calls < 2:
+                raise httpx.DecodingError("bad content-encoding")
+            return httpx.Response(200, json=_openrouter_ok_body("ok"))
+
+        provider = _openrouter(handler)
+        result = await provider.complete(system="s", prompt="u", max_tokens=100)
+        assert result.text == "ok"
+        assert calls == 2
+
+    @pytest.mark.asyncio
+    async def test_too_many_redirects_is_transient_and_retried(self) -> None:
+        """httpx.TooManyRedirects is the other RequestError sibling excluded by
+        the narrower (TimeoutException, TransportError) tuple this replaces."""
+        calls = 0
+
+        def handler(_request: httpx.Request) -> httpx.Response:
+            nonlocal calls
+            calls += 1
+            if calls < 2:
+                raise httpx.TooManyRedirects("redirect loop")
+            return httpx.Response(200, json=_openrouter_ok_body("ok"))
+
+        provider = _openrouter(handler)
+        result = await provider.complete(system="s", prompt="u", max_tokens=100)
+        assert result.text == "ok"
+        assert calls == 2
+
+    @pytest.mark.asyncio
     async def test_empty_content_raises_transient(self) -> None:
         """A 200 with empty content raises a non-leg-fatal ProviderError."""
 
@@ -539,6 +609,52 @@ class TestOpenRouterProvider:
         result = await provider.complete(system="s", prompt="u", max_tokens=100)
         assert result.text == '{"schema_version": "1.0"}'
         assert json.loads(result.text) == {"schema_version": "1.0"}
+
+    @pytest.mark.asyncio
+    async def test_complete_with_image_sends_multimodal_content_array(self) -> None:
+        """The user message carries a text block and a base64 data-URI image block."""
+        captured: dict[str, object] = {}
+
+        def handler(request: httpx.Request) -> httpx.Response:
+            captured.update(json.loads(request.content))
+            return httpx.Response(200, json=_openrouter_ok_body('{"verdict": "pass"}'))
+
+        provider = _openrouter(handler)
+        result = await provider.complete_with_image(
+            system="SYSTEM",
+            prompt="USER TEXT",
+            image_bytes=b"\x89PNGtest",
+            image_mime="image/png",
+            max_tokens=100,
+        )
+        assert result.text == '{"verdict": "pass"}'
+        messages = captured["messages"]
+        assert isinstance(messages, list)
+        assert messages[0] == {"role": "system", "content": "SYSTEM"}
+        user_content = messages[1]["content"]
+        assert isinstance(user_content, list)
+        assert user_content[0] == {"type": "text", "text": "USER TEXT"}
+        image_block = user_content[1]
+        assert image_block["type"] == "image_url"
+        assert image_block["image_url"]["url"].startswith("data:image/png;base64,")
+
+    @pytest.mark.asyncio
+    async def test_complete_with_image_404_is_leg_fatal(self) -> None:
+        """Status classification is shared with complete(): a 404 is leg-fatal."""
+
+        def handler(_request: httpx.Request) -> httpx.Response:
+            return httpx.Response(404, json={"error": {"message": "no such model"}})
+
+        provider = _openrouter(handler)
+        with pytest.raises(ProviderError) as exc_info:
+            await provider.complete_with_image(
+                system="s",
+                prompt="u",
+                image_bytes=b"x",
+                image_mime="image/png",
+                max_tokens=100,
+            )
+        assert exc_info.value.leg_fatal is True
 
 
 class TestStripCodeFences:

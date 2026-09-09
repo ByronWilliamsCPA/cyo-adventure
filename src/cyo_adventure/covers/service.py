@@ -8,7 +8,7 @@ import time
 from dataclasses import dataclass
 from datetime import UTC, datetime
 from pathlib import Path
-from typing import TYPE_CHECKING, Protocol
+from typing import TYPE_CHECKING, Final, Protocol
 
 import structlog
 from sqlalchemy import select
@@ -16,11 +16,13 @@ from sqlalchemy import select
 from cyo_adventure.core.exceptions import (
     AuthorizationError,
     BusinessLogicError,
+    ConfigurationError,
     ResourceNotFoundError,
 )
 from cyo_adventure.covers.optimize import optimize_cover as _optimize_cover
 from cyo_adventure.covers.prompt import build_cover_prompt
 from cyo_adventure.covers.provider import generate_cover_image
+from cyo_adventure.covers.review import review_cover as _review_cover
 from cyo_adventure.covers.storage import (
     cover_object_key,
     delete_cover,
@@ -33,6 +35,9 @@ from cyo_adventure.db.models import (
     StorybookVersion,
 )
 from cyo_adventure.generation.pii import PiiContext, assert_prompt_pii_safe
+from cyo_adventure.moderation.review_provider import (
+    build_cover_review_provider as _build_cover_review_provider,
+)
 
 if TYPE_CHECKING:
     import uuid
@@ -42,8 +47,16 @@ if TYPE_CHECKING:
 
     from cyo_adventure.api.deps import Principal
     from cyo_adventure.core.config import Settings
+    from cyo_adventure.covers.review import ImageReviewProvider
 
 _logger = structlog.get_logger(__name__)
+
+# One regeneration after an initial flag (2 total attempts), the same
+# "bounded, not unlimited" shape as moderation's own repair loop
+# (moderation/pipeline.py's _MAX_REPAIR_TOKENS-adjacent constants). A
+# starting default, not a measured figure; revisit after seeing real flag
+# rates in cover_review_notes (spec Known limitations).
+MAX_COVER_REVIEW_ATTEMPTS: Final[int] = 2
 
 
 class _OptimizeFn(Protocol):
@@ -131,6 +144,96 @@ async def _pii_context_for_family(
     return PiiContext(child_names=frozenset(rows.all()))
 
 
+def _resolve_review_provider(
+    settings: Settings,
+    build_review_provider: Callable[[Settings], tuple[ImageReviewProvider, bool]],
+    storybook_id: str,
+    version: int,
+) -> ImageReviewProvider | None:
+    """Build the cover review provider, degrading to off on a config problem.
+
+    # #CRITICAL: external-resources: build_review_provider (default:
+    # build_cover_review_provider) raises ConfigurationError for a missing
+    # OPENROUTER_API_KEY or an unsupported review_provider setting (e.g.
+    # "modal", deferred to slice 2b). Per the spec's fail-open guarantee
+    # (Design section 6, "An OpenRouter outage degrades cover review to
+    # 'off,' never to 'cover generation broken'"), that must degrade review
+    # to off, not fail the whole cover generation -- caught narrowly here
+    # rather than inside generate_cover's own outer except Exception, so a
+    # config problem can never masquerade as a generation failure.
+    # #VERIFY: tests/integration/test_cover_service.py::
+    # test_review_provider_configuration_error_degrades_review_to_off.
+
+    Returns:
+        The provider, or None when review is off (config error). Logs
+        ``cover_review_provider_unavailable`` on the degrade-to-off path and
+        ``cover_review_not_independent`` when the provider built but is not
+        independent of the generator model.
+    """
+    try:
+        review_provider, review_independent = build_review_provider(settings)
+    except ConfigurationError:
+        _logger.warning(
+            "cover_review_provider_unavailable",
+            storybook_id=storybook_id,
+            version=version,
+        )
+        return None
+    if not review_independent:
+        _logger.warning(
+            "cover_review_not_independent",
+            storybook_id=storybook_id,
+            version=version,
+        )
+    return review_provider
+
+
+async def _generate_with_review(
+    prompt: str,
+    *,
+    settings: Settings,
+    generate: Callable[[str, Settings], bytes],
+    review: Callable[
+        [bytes, str, ImageReviewProvider], Awaitable[tuple[str | None, str | None]]
+    ],
+    review_provider: ImageReviewProvider | None,
+) -> tuple[bytes, str | None, str | None, int]:
+    """Run the bounded generate+review loop, or a single generate when review is off.
+
+    # #CRITICAL: external-resources: bounded, not unlimited (see
+    # MAX_COVER_REVIEW_ATTEMPTS). Whatever this loop ends with -- a clean
+    # pass, or the last attempt after the cap is exhausted -- is what the
+    # caller optimizes and uploads; the row always reaches pending_review
+    # (never blocked), per the spec's non-goals.
+    # #VERIFY: tests/integration/test_cover_service.py::
+    # test_success_path_sets_pending_review_and_writes_url covers the
+    # single-pass path; ::test_reviewer_flags_then_passes_uses_the_passing_attempt
+    # and ::test_reviewer_flags_every_attempt_still_reaches_pending_review
+    # cover the discriminating multi-attempt cases.
+
+    Returns:
+        ``(source, review_verdict, review_notes, review_attempts)``. When
+        ``review_provider`` is None (review off), a single image is
+        generated and the review_* values stay at their "review did not
+        run" defaults (None, None, 0), matching a cover that predates this
+        feature -- see the migration's NULL-unification comment.
+    """
+    if review_provider is None:
+        source = await asyncio.to_thread(generate, prompt, settings)
+        return source, None, None, 0
+    review_verdict: str | None = None
+    review_notes: str | None = None
+    review_attempts = 0
+    source = b""
+    for _ in range(MAX_COVER_REVIEW_ATTEMPTS):
+        review_attempts += 1
+        source = await asyncio.to_thread(generate, prompt, settings)
+        review_verdict, review_notes = await review(source, prompt, review_provider)
+        if review_verdict != "flag":
+            break
+    return source, review_verdict, review_notes, review_attempts
+
+
 def _maybe_backup(
     source: bytes, storybook_id: str, version: int, settings: Settings
 ) -> None:
@@ -162,6 +265,12 @@ async def generate_cover(
     optimize: _OptimizeFn = _optimize_cover,
     upload: Callable[[bytes, str, Settings], Awaitable[str]] = upload_cover,
     delete: Callable[[str, Settings], Awaitable[bool]] = delete_cover,
+    review: Callable[
+        [bytes, str, ImageReviewProvider], Awaitable[tuple[str | None, str | None]]
+    ] = _review_cover,
+    build_review_provider: Callable[
+        [Settings], tuple[ImageReviewProvider, bool]
+    ] = _build_cover_review_provider,
 ) -> None:
     """Generate, optimize, upload, and record a cover for one story version.
 
@@ -252,7 +361,39 @@ async def generate_cover(
         # #VERIFY: test_service.py::test_generate_cover_blocks_on_pii_in_prompt.
         pii = await _pii_context_for_family(session, concept_context.family_id)
         assert_prompt_pii_safe(prompt, forbidden=pii)
-        source = await asyncio.to_thread(generate, prompt, settings)
+        # #CRITICAL: security: build_review_provider (default:
+        # build_cover_review_provider) must never be wrapped in
+        # generation.guarded.PiiGuardedProvider here. That wrapper forwards
+        # only complete(), not complete_with_image(); wrapping the cover
+        # reviewer would raise AttributeError on every review call. The
+        # assert_prompt_pii_safe call above already screens `prompt`, the
+        # only string the reviewer receives (review_cover embeds it
+        # verbatim), so this single guard covers both the generator and the
+        # reviewer -- see docs/superpowers/specs/2026-09-08-cover-ai-review-design.md
+        # Design section 3. A future PiiGuardedProvider wrap here must add
+        # complete_with_image forwarding to that class first.
+        # #VERIFY: tests/integration/test_cover_service.py::
+        # test_generate_cover_blocks_on_registered_child_name_in_prompt,
+        # ::test_generate_cover_blocks_on_email_shaped_content_in_prompt
+        # already cover `prompt` itself being screened before either call is
+        # reached.
+        # See _resolve_review_provider's docstring for the fail-open
+        # ConfigurationError -> "review off" contract this call implements.
+        review_provider = _resolve_review_provider(
+            settings, build_review_provider, storybook_id, version
+        )
+        (
+            source,
+            review_verdict,
+            review_notes,
+            review_attempts,
+        ) = await _generate_with_review(
+            prompt,
+            settings=settings,
+            generate=generate,
+            review=review,
+            review_provider=review_provider,
+        )
         _maybe_backup(source, storybook_id, version, settings)
         optimized = await asyncio.to_thread(
             optimize,
@@ -273,6 +414,9 @@ async def generate_cover(
         public_url = await upload(optimized, key, settings)
         row.cover_object_salt = salt
         row.cover_image_url = f"{public_url}?v={int(time.time())}"
+        row.cover_review_verdict = review_verdict
+        row.cover_review_notes = review_notes
+        row.cover_review_attempts = review_attempts
         row.cover_status = "pending_review"
         await session.commit()
     except Exception:

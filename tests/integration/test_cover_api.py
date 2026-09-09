@@ -261,6 +261,36 @@ async def test_cover_status_returns_presigned_url_when_pending_review(
     assert _SALT in body["cover_url"]
 
 
+async def test_cover_status_includes_review_fields(
+    client: AsyncClient,
+    sessions: async_sessionmaker[AsyncSession],
+    seed: Seed,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    monkeypatch.setattr(
+        "cyo_adventure.api.covers.generate_presigned_cover_url", _fake_presign
+    )
+    async with sessions() as s:
+        row = await s.get(StorybookVersion, (seed.storybook_id, seed.version))
+        assert row is not None
+        row.cover_status = "pending_review"
+        row.cover_object_salt = _SALT
+        row.cover_review_verdict = "flag"
+        row.cover_review_notes = "visible text in the sky"
+        row.cover_review_attempts = 2
+        await s.commit()
+
+    resp = await client.get(
+        f"/api/v1/storybooks/{seed.storybook_id}/versions/{seed.version}/cover",
+        headers=auth(seed.admin_token),
+    )
+    assert resp.status_code == 200
+    body = resp.json()
+    assert body["cover_review_verdict"] == "flag"
+    assert body["cover_review_notes"] == "visible text in the sky"
+    assert body["cover_review_attempts"] == 2
+
+
 async def test_cover_status_url_uses_the_legacy_key_when_salt_is_null(
     client: AsyncClient,
     sessions: async_sessionmaker[AsyncSession],

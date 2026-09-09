@@ -1324,6 +1324,46 @@ export type ContentSummaryView = {
  * approves a ``pending_review`` cover (H2, ``approve_cover`` endpoint
  * below); they mirror ``ApprovedView.approved_by``/``published_at`` for
  * story text.
+ *
+ * ``cover_review_verdict``/``cover_review_notes``/``cover_review_attempts``
+ * record the independent AI reviewer's outcome for the surviving
+ * generation attempt (docs/superpowers/specs/2026-09-08-cover-ai-review-design.md).
+ * A None verdict always pairs with None notes; the two states below are
+ * the ones that produce it for a cover that reached ``pending_review``
+ * (a ``cover_status == "failed"`` row is a separate case, not covered by
+ * the two states above: its review columns are NOT reliably zero-valued.
+ * ``covers.service.generate_cover``'s exception handler rolls back this
+ * attempt's own uncommitted writes and marks only ``cover_status`` as
+ * failed, so a failed FIRST generation leaves zero-value defaults, but a
+ * failed REGENERATION of a cover that previously succeeded leaves the
+ * prior successful generation's verdict/notes/attempts still in place,
+ * now stale against a failed cover_status.)
+ * ``cover_review_attempts`` is what tells the two ``pending_review``
+ * states apart, except where noted:
+ *
+ * - ``cover_review_attempts == 0``: review did not run at all for this
+ * generation. This is EITHER a cover that predates this feature, OR a
+ * generation where the review provider could not be built (a
+ * ``ConfigurationError``: missing ``OPENROUTER_API_KEY`` or an
+ * unsupported ``review_provider`` setting; see
+ * ``covers.service._resolve_review_provider``). These two cases are
+ * **not distinguishable from this response's shape alone** -- both
+ * leave verdict/notes/attempts at their zero-value defaults. The only
+ * signal that separates them is the ``cover_review_provider_unavailable``
+ * warning log emitted on the degrade-to-off path.
+ * - ``cover_review_attempts >= 1``: the reviewer was invoked and its final
+ * attempt returned no usable verdict (a provider error, an empty or
+ * unparseable response, or a verdict outside {"pass", "flag"}; see
+ * ``covers.review.review_cover``'s ``Returns:`` for the full list),
+ * which is treated as a pass rather than blocking publication. This
+ * does not mean every attempt failed open: the loop
+ * (``covers.service._generate_with_review``, bounded by
+ * ``MAX_COVER_REVIEW_ATTEMPTS``) breaks on any verdict other than
+ * "flag", so a "flag" on an earlier attempt followed by a fail-open on
+ * the last attempt also lands here. A failed-open attempt still
+ * increments the counter (the loop increments before calling the
+ * reviewer, not after a successful verdict), so this count is always
+ * >= 1 when the reviewer ran at all.
  */
 export type CoverStatusView = {
     /**
@@ -1342,6 +1382,18 @@ export type CoverStatusView = {
      * Cover Approved At
      */
     cover_approved_at?: string | null;
+    /**
+     * Cover Review Verdict
+     */
+    cover_review_verdict?: string | null;
+    /**
+     * Cover Review Notes
+     */
+    cover_review_notes?: string | null;
+    /**
+     * Cover Review Attempts
+     */
+    cover_review_attempts?: number;
 };
 
 /**

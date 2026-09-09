@@ -424,6 +424,51 @@ class MockProvider:
         text = response(prompt) if callable(response) else response
         return Completion(text=text, usage=self.token_usage)
 
+    async def complete_with_image(  # NOSONAR(S7503)  # noqa: PLR0913
+        self,
+        *,
+        system: str,  # noqa: ARG002  # NOSONAR(S1172)
+        prompt: str,
+        image_bytes: bytes,  # noqa: ARG002  # NOSONAR(S1172)
+        image_mime: str,  # noqa: ARG002  # NOSONAR(S1172)
+        max_tokens: int,  # noqa: ARG002  # NOSONAR(S1172)
+    ) -> Completion:
+        """Return the next queued response, ignoring the image (mock has no vision).
+
+        Satisfies covers.review.ImageReviewProvider structurally. Shares the
+        exact same ``responses``/``calls`` queue and exhaustion behavior as
+        ``complete()`` above, so a test can queue cover-review verdicts the
+        same way a text-review test queues completions.
+
+        Args:
+            system: Accepted but unused; satisfies the protocol.
+            prompt: User-role prompt; recorded in ``self.calls``.
+            image_bytes: Accepted but unused; the mock has no vision.
+            image_mime: Accepted but unused; satisfies the protocol.
+            max_tokens: Accepted but unused; satisfies the protocol.
+
+        Returns:
+            The next queued response string (or callable result), wrapped
+            with ``self.token_usage``.
+
+        Raises:
+            BusinessLogicError: If the response queue is exhausted.
+        """
+        self.calls.append(prompt)
+        call_number = len(self.calls)
+        n_queued = len(self.responses)
+
+        if call_number > n_queued:
+            msg = (
+                f"MockProvider exhausted: {n_queued} responses queued,"
+                f" call {call_number} received"
+            )
+            raise BusinessLogicError(msg, rule="mock_provider_exhausted")
+
+        response = self.responses[call_number - 1]
+        text = response(prompt) if callable(response) else response
+        return Completion(text=text, usage=self.token_usage)
+
 
 def build_openrouter_leg(
     settings: Settings,

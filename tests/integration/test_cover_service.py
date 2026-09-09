@@ -17,10 +17,15 @@ from cyo_adventure.core.config import Settings
 from cyo_adventure.core.exceptions import (
     AuthorizationError,
     BusinessLogicError,
+    ConfigurationError,
     ResourceNotFoundError,
 )
 from cyo_adventure.covers.errors import CoverGenerationError
-from cyo_adventure.covers.service import approve_cover, generate_cover
+from cyo_adventure.covers.service import (
+    MAX_COVER_REVIEW_ATTEMPTS,
+    approve_cover,
+    generate_cover,
+)
 from cyo_adventure.db.models import Concept, GenerationJob, StorybookVersion
 
 if TYPE_CHECKING:
@@ -377,6 +382,78 @@ async def test_row_deleted_during_failure_handling_skips_status_write(sessions, 
 
 
 @pytest.mark.asyncio
+async def test_failed_regeneration_leaves_prior_review_columns_stale(sessions, seed):
+    """A successful generation's review_verdict/notes/attempts are NOT cleared
+    when a later regeneration attempt fails.
+
+    generate_cover's except handler (module docstring, "A consequence of that
+    salt...") only ever writes cover_status = "failed"; it never touches the
+    review columns. This is deliberate (there is no new verdict to record
+    when generation itself never produced an image to review), but it means a
+    "failed" row can carry a verdict/notes/attempts that describe an earlier,
+    different, successful generation attempt -- api/covers.py::CoverStatusView's
+    docstring calls this out explicitly as a state its own shape cannot
+    distinguish from a currently-accurate verdict.
+    """
+
+    def fake_generate(prompt, settings):
+        return b"PNGSOURCE"
+
+    async def fake_upload(image_bytes, key, settings):
+        return f"https://p.supabase.co/storage/v1/object/public/covers/{key}"
+
+    # Every attempt is flagged (mirrors test_reviewer_flags_every_attempt_
+    # still_reaches_pending_review): _generate_with_review retries a flagged
+    # verdict up to MAX_COVER_REVIEW_ATTEMPTS, so a stub queued with only one
+    # verdict runs out mid-retry and raises IndexError, not what this test is
+    # about.
+    stub = _StubImageReviewProvider(
+        [("flag", "visible text in the sky") for _ in range(MAX_COVER_REVIEW_ATTEMPTS)]
+    )
+
+    async with sessions() as s:
+        await generate_cover(
+            seed.storybook_id,
+            seed.version,
+            session=s,
+            settings=Settings(),
+            generate=fake_generate,
+            optimize=lambda b, **kw: b"WEBP",
+            upload=fake_upload,
+            review=stub.review,
+            build_review_provider=lambda settings: (object(), True),
+        )
+    async with sessions() as s:
+        row = await s.get(StorybookVersion, (seed.storybook_id, seed.version))
+        assert row.cover_status == "pending_review"
+        assert row.cover_review_verdict == "flag"
+        assert row.cover_review_notes == "visible text in the sky"
+        assert row.cover_review_attempts == MAX_COVER_REVIEW_ATTEMPTS
+
+    def boom(prompt, settings):
+        raise CoverGenerationError("provider refused on regeneration")
+
+    async with sessions() as s:
+        await generate_cover(
+            seed.storybook_id,
+            seed.version,
+            session=s,
+            settings=Settings(),
+            generate=boom,
+            optimize=lambda b, **kw: b,
+            upload=fake_upload,
+        )
+    async with sessions() as s:
+        row = await s.get(StorybookVersion, (seed.storybook_id, seed.version))
+        assert row.cover_status == "failed"
+        # Stale, not cleared: these describe the FIRST generation's verdict,
+        # not the second (failed) attempt, which never reached review.
+        assert row.cover_review_verdict == "flag"
+        assert row.cover_review_notes == "visible text in the sky"
+        assert row.cover_review_attempts == MAX_COVER_REVIEW_ATTEMPTS
+
+
+@pytest.mark.asyncio
 async def test_protagonist_name_recovered_from_generation_job_included_in_prompt(
     sessions, seed
 ):
@@ -613,3 +690,198 @@ async def test_backup_failure_is_swallowed_and_job_still_reaches_pending_review(
     async with sessions() as s:
         row = await s.get(StorybookVersion, (seed.storybook_id, seed.version))
         assert row.cover_status == "pending_review"
+
+
+class _StubImageReviewProvider:
+    """Queues (verdict, notes) pairs for review_cover to return, in order."""
+
+    def __init__(self, verdicts: list[tuple[str | None, str | None]]) -> None:
+        self._verdicts = verdicts
+        self.call_count = 0
+
+    async def review(self, image_bytes, prompt, review_provider):
+        result = self._verdicts[self.call_count]
+        self.call_count += 1
+        return result
+
+
+@pytest.mark.asyncio
+async def test_reviewer_flags_then_passes_uses_the_passing_attempt(sessions, seed):
+    """Attempt 1 is flagged, attempt 2 passes: the row holds attempt 2's image."""
+    generated: list[bytes] = []
+
+    def fake_generate(prompt, settings):
+        image = f"PNG_{len(generated)}".encode()
+        generated.append(image)
+        return image
+
+    async def fake_upload(image_bytes, key, settings):
+        return f"https://p.supabase.co/storage/v1/object/public/covers/{key}"
+
+    stub = _StubImageReviewProvider([("flag", "visible text in the sky"), ("pass", "")])
+
+    async with sessions() as s:
+        await generate_cover(
+            seed.storybook_id,
+            seed.version,
+            session=s,
+            settings=Settings(),
+            generate=fake_generate,
+            optimize=lambda b, **kw: b"WEBP",
+            upload=fake_upload,
+            review=stub.review,
+            build_review_provider=lambda settings: (object(), True),
+        )
+    async with sessions() as s:
+        row = await s.get(StorybookVersion, (seed.storybook_id, seed.version))
+        assert row.cover_review_verdict == "pass"
+        assert row.cover_review_notes == ""
+        assert row.cover_review_attempts == 2
+        assert stub.call_count == 2
+        assert len(generated) == 2
+
+
+@pytest.mark.asyncio
+async def test_reviewer_flags_every_attempt_still_reaches_pending_review(
+    sessions, seed
+):
+    """Every attempt flags: the row still reaches pending_review, not failed."""
+
+    def fake_generate(prompt, settings):
+        return b"PNGSOURCE"
+
+    async def fake_upload(image_bytes, key, settings):
+        return f"https://p.supabase.co/storage/v1/object/public/covers/{key}"
+
+    stub = _StubImageReviewProvider(
+        [("flag", "bad text") for _ in range(MAX_COVER_REVIEW_ATTEMPTS)]
+    )
+
+    async with sessions() as s:
+        await generate_cover(
+            seed.storybook_id,
+            seed.version,
+            session=s,
+            settings=Settings(),
+            generate=fake_generate,
+            optimize=lambda b, **kw: b"WEBP",
+            upload=fake_upload,
+            review=stub.review,
+            build_review_provider=lambda settings: (object(), True),
+        )
+    async with sessions() as s:
+        row = await s.get(StorybookVersion, (seed.storybook_id, seed.version))
+        assert row.cover_status == "pending_review"
+        assert row.cover_review_verdict == "flag"
+        assert row.cover_review_notes == "bad text"
+        assert row.cover_review_attempts == MAX_COVER_REVIEW_ATTEMPTS
+
+
+@pytest.mark.asyncio
+async def test_reviewer_failure_on_first_attempt_is_treated_as_pass(sessions, seed):
+    """A None verdict (the reviewer's own fail-open) does not trigger a retry."""
+
+    def fake_generate(prompt, settings):
+        return b"PNGSOURCE"
+
+    async def fake_upload(image_bytes, key, settings):
+        return f"https://p.supabase.co/storage/v1/object/public/covers/{key}"
+
+    stub = _StubImageReviewProvider([(None, None)])
+
+    async with sessions() as s:
+        await generate_cover(
+            seed.storybook_id,
+            seed.version,
+            session=s,
+            settings=Settings(),
+            generate=fake_generate,
+            optimize=lambda b, **kw: b"WEBP",
+            upload=fake_upload,
+            review=stub.review,
+            build_review_provider=lambda settings: (object(), True),
+        )
+    async with sessions() as s:
+        row = await s.get(StorybookVersion, (seed.storybook_id, seed.version))
+        assert row.cover_status == "pending_review"
+        assert row.cover_review_verdict is None
+        assert row.cover_review_attempts == 1
+        assert stub.call_count == 1
+
+
+@pytest.mark.asyncio
+async def test_review_provider_configuration_error_degrades_review_to_off(
+    sessions, seed
+):
+    """A missing/misconfigured review provider must not fail cover generation.
+
+    build_review_provider (default: build_cover_review_provider) raises
+    ConfigurationError for a missing OPENROUTER_API_KEY or an unsupported
+    review_provider setting (e.g. "modal", explicitly deferred to slice 2b).
+    Per the spec's fail-open guarantee (Design section 6: "An OpenRouter
+    outage degrades cover review to 'off,' never to 'cover generation
+    broken'"), that must degrade review to off, not propagate into the
+    outer except Exception that marks the whole job "failed".
+    """
+
+    def fake_generate(prompt, settings):
+        return b"PNGSOURCE"
+
+    async def fake_upload(image_bytes, key, settings):
+        return f"https://p.supabase.co/storage/v1/object/public/covers/{key}"
+
+    def raise_configuration_error(settings):
+        msg = "review_provider 'modal' is deferred to slice 2b; use openrouter"
+        raise ConfigurationError(msg)
+
+    async with sessions() as s:
+        await generate_cover(
+            seed.storybook_id,
+            seed.version,
+            session=s,
+            settings=Settings(),
+            generate=fake_generate,
+            optimize=lambda b, **kw: b"WEBP",
+            upload=fake_upload,
+            build_review_provider=raise_configuration_error,
+        )
+    async with sessions() as s:
+        row = await s.get(StorybookVersion, (seed.storybook_id, seed.version))
+        # Cover generation still succeeds and reaches its normal terminal
+        # status, not "failed".
+        assert row.cover_status == "pending_review"
+        assert row.cover_image_url is not None
+        # Review fields are left in their "review did not run" state: the
+        # review provider could not be built (a ConfigurationError
+        # degrade-to-off, see covers.service._resolve_review_provider),
+        # which is indistinguishable at this response's shape from a
+        # pre-feature cover's NULL verdict (see the migration's
+        # NULL-unification comment). attempts stays 0 here, which is what
+        # separates this state from a cover whose reviewer actually ran.
+        assert row.cover_review_verdict is None
+        assert row.cover_review_notes is None
+        assert row.cover_review_attempts == 0
+
+
+@pytest.mark.asyncio
+async def test_a_pre_existing_ready_cover_with_null_review_columns_is_unaffected(
+    sessions, seed
+):
+    """Backward compatibility: a cover from before this feature reads fine."""
+    async with sessions() as s:
+        row = await s.get(StorybookVersion, (seed.storybook_id, seed.version))
+        assert row is not None
+        row.cover_status = "ready"
+        row.cover_image_url = (
+            "https://p.supabase.co/storage/v1/object/public/covers/x.webp"
+        )
+        # cover_review_verdict/notes stay at their column defaults (NULL);
+        # cover_review_attempts stays at its column default (0).
+        await s.commit()
+
+    async with sessions() as s:
+        row = await s.get(StorybookVersion, (seed.storybook_id, seed.version))
+        assert row.cover_status == "ready"
+        assert row.cover_review_verdict is None
+        assert row.cover_review_notes is None
+        assert row.cover_review_attempts == 0

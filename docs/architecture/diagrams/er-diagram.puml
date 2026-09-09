@@ -212,8 +212,12 @@ entity "storybook_version" as storybook_version #F3E5F5 {
   personalization_eligible : BOOLEAN [ADR-023; default false;\n3 paths write the column: persistence.py:168\n(the only INSERT; StorybookVersion is\nconstructed nowhere else), then node_edit.py:672\nand moderation/pipeline.py:586 as later UPDATEs.\nworker.py, import_story.py and orchestrator.py\nCOMPUTE the value and hand it to persistence.py;\nthey never touch the row]
   pronoun_parameterized : BOOLEAN [ADR-023; default false;\ndeclared, not yet written by any path]
   sentinel_manifest : JSONB NULL [ADR-023; token manifest DERIVED\nfrom the blob after the fill]
+  cover_review_verdict : TEXT NULL [docs/superpowers/specs/\n2026-09-08-cover-ai-review-design.md;\nNULL = not judged (pre-feature, degrade-to-off,\nor no usable verdict); pass|flag only]
+  cover_review_notes : TEXT NULL [reviewer's rationale, or\nthe failure reason when verdict is NULL]
+  cover_review_attempts : INT [default 0]
   --
   CHECK (cover_status in none|generating|pending_review|ready|failed)
+  CHECK (cover_review_verdict in NULL|pass|flag)
 }
 note right of storybook_version
   H2 cover-approval gate
