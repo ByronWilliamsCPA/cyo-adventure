@@ -286,6 +286,24 @@ def build_review_provider(
     return provider, independent
 
 
+# covers/provider.py calls the Google GenAI SDK directly for every cover
+# generation, never through OpenRouter, so the generator's vendor is a fixed
+# repo constant rather than something parsed off `cover_model` (a bare
+# Google model id with no "vendor/model" prefix to read a vendor from).
+_COVER_GENERATOR_VENDOR = "google"
+
+
+def _openrouter_vendor(model_id: str) -> str:
+    """Return the vendor prefix of an OpenRouter "vendor/model" id.
+
+    OpenRouter ids are namespaced as "vendor/model" (e.g. "openai/gpt-4.1-mini").
+    A bare id with no "/" is returned unchanged, so a misconfigured value
+    degrades to a same-string comparison rather than raising.
+    """
+    vendor, _, _ = model_id.partition("/")
+    return vendor
+
+
 def build_cover_review_provider(settings: Settings) -> tuple[ImageReviewProvider, bool]:
     """Build the review provider for cover-art review and report independence.
 
@@ -318,9 +336,12 @@ def build_cover_review_provider(settings: Settings) -> tuple[ImageReviewProvider
             ``"modal"``, or when the OpenRouter credential is missing.
     """
     # #CRITICAL: security: a model reviewing its own cover-art output is not an
-    # independent check; a misconfigured cover_review_model matching cover_model
-    # must surface as not-independent, never silently pass.
-    # #VERIFY: test_openrouter_cover_review_same_model_as_generator_is_not_independent.
+    # independent check; a misconfigured cover_review_model matching cover_model,
+    # OR one that is merely a different model id from the SAME vendor (an
+    # OpenRouter "google/..." id reviewing the Google-SDK-generated cover), must
+    # surface as not-independent, never silently pass on a string mismatch alone.
+    # #VERIFY: test_openrouter_cover_review_same_model_as_generator_is_not_independent,
+    # test_openrouter_cover_review_same_vendor_as_generator_is_not_independent.
     # #CRITICAL: external-resource: the openrouter leg is a network-backed HTTP
     # client; a missing credential raises ConfigurationError at build time rather
     # than failing mid-pipeline.
@@ -345,7 +366,12 @@ def build_cover_review_provider(settings: Settings) -> tuple[ImageReviewProvider
             settings, settings.cover_review_model, temperature=REVIEW_TEMPERATURE
         ),
     )
-    independent = settings.cover_review_model != settings.cover_model
+    same_model_id = settings.cover_review_model == settings.cover_model
+    same_vendor = (
+        _openrouter_vendor(settings.cover_review_model).lower()
+        == _COVER_GENERATOR_VENDOR
+    )
+    independent = not (same_model_id or same_vendor)
     return provider, independent
 
 

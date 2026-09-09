@@ -74,10 +74,26 @@ def test_modal_cover_review_provider_is_deferred() -> None:
         build_cover_review_provider(settings)
 
 
-def test_openrouter_cover_review_is_independent_of_the_generator() -> None:
+def test_openrouter_cover_review_same_vendor_as_generator_is_not_independent() -> None:
+    """A reviewer on a different model id but the SAME vendor as the cover
+    generator (Google, always called via the direct SDK in covers/provider.py)
+    is not independent, even though the OpenRouter-namespaced id string
+    ("google/gemini-2.5-flash") differs from the bare generator id
+    ("gemini-3-pro-image")."""
     settings = Settings(
         review_provider="openrouter",
         cover_review_model="google/gemini-2.5-flash",
+        openrouter_api_key="k",
+        openai_api_key="k",
+    )
+    _provider, independent = build_cover_review_provider(settings)
+    assert independent is False
+
+
+def test_openrouter_cover_review_different_vendor_is_independent() -> None:
+    settings = Settings(
+        review_provider="openrouter",
+        cover_review_model="openai/gpt-4.1-mini",
         openrouter_api_key="k",
         openai_api_key="k",
     )
