@@ -1190,6 +1190,53 @@ class TestValidatorRequireDistinctTokenFamilies:
         assert settings.device_grant_secret is None
 
 
+class TestCoverReviewModelSetting:
+    """Tests for cover_review_model env binding.
+
+    The field declares validation_alias=AliasChoices(prefixed, unprefixed);
+    without it, the unprefixed COVER_REVIEW_MODEL recovery override this
+    field's own #VERIFY comment documents ("override via COVER_REVIEW_MODEL
+    if this slug is retired...") is silently ignored.
+    """
+
+    @pytest.mark.unit
+    def test_defaults_to_gpt41_mini(self) -> None:
+        from cyo_adventure.core.config import Settings
+
+        assert Settings(environment="local").cover_review_model == "openai/gpt-4.1-mini"
+
+    @pytest.mark.unit
+    def test_reads_unprefixed_env(self, monkeypatch: pytest.MonkeyPatch) -> None:
+        """cover_review_model reads the unprefixed COVER_REVIEW_MODEL."""
+        from cyo_adventure.core.config import Settings
+
+        monkeypatch.delenv("CYO_ADVENTURE_COVER_REVIEW_MODEL", raising=False)
+        monkeypatch.setenv("COVER_REVIEW_MODEL", "anthropic/claude-haiku")
+        assert (
+            Settings(environment="local").cover_review_model == "anthropic/claude-haiku"
+        )
+
+    @pytest.mark.unit
+    def test_reads_prefixed_env(self, monkeypatch: pytest.MonkeyPatch) -> None:
+        """The prefixed CYO_ADVENTURE_COVER_REVIEW_MODEL name also binds."""
+        from cyo_adventure.core.config import Settings
+
+        monkeypatch.delenv("COVER_REVIEW_MODEL", raising=False)
+        monkeypatch.setenv("CYO_ADVENTURE_COVER_REVIEW_MODEL", "anthropic/claude-haiku")
+        assert (
+            Settings(environment="local").cover_review_model == "anthropic/claude-haiku"
+        )
+
+    @pytest.mark.unit
+    def test_prefixed_wins_when_both_set(self, monkeypatch: pytest.MonkeyPatch) -> None:
+        """When both names are set, the explicit CYO_ADVENTURE_ prefix wins."""
+        from cyo_adventure.core.config import Settings
+
+        monkeypatch.setenv("COVER_REVIEW_MODEL", "unprefixed/should-lose")
+        monkeypatch.setenv("CYO_ADVENTURE_COVER_REVIEW_MODEL", "prefixed/should-win")
+        assert Settings(environment="local").cover_review_model == "prefixed/should-win"
+
+
 class TestChildSessionTtlSetting:
     """Tests for child_session_ttl_seconds env binding and its ge=1 bound.
 

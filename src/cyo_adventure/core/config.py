@@ -1007,7 +1007,12 @@ class Settings(BaseSettings):
     # JSON-verdict reliability proves poor in practice (review.py fails
     # open and silently on a malformed response), or a materially better
     # vision-capable option becomes available.
-    cover_review_model: str = "openai/gpt-4.1-mini"
+    cover_review_model: str = Field(
+        default="openai/gpt-4.1-mini",
+        validation_alias=AliasChoices(
+            "CYO_ADVENTURE_COVER_REVIEW_MODEL", "COVER_REVIEW_MODEL"
+        ),
+    )
 
     # --- Notification push transport (S9/G10 SSE stream) ---
     # How often api/notifications.py's stream endpoint re-queries
