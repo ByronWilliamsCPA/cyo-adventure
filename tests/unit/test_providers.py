@@ -518,6 +518,43 @@ class TestOpenRouterProvider:
         assert calls == 2
 
     @pytest.mark.asyncio
+    async def test_decoding_error_is_transient_and_retried(self) -> None:
+        """httpx.DecodingError is a RequestError sibling of TransportError, not
+        a subclass of it; a narrower except clause would let it propagate
+        uncaught past every caller's `except ProviderError`."""
+        calls = 0
+
+        def handler(_request: httpx.Request) -> httpx.Response:
+            nonlocal calls
+            calls += 1
+            if calls < 2:
+                raise httpx.DecodingError("bad content-encoding")
+            return httpx.Response(200, json=_openrouter_ok_body("ok"))
+
+        provider = _openrouter(handler)
+        result = await provider.complete(system="s", prompt="u", max_tokens=100)
+        assert result.text == "ok"
+        assert calls == 2
+
+    @pytest.mark.asyncio
+    async def test_too_many_redirects_is_transient_and_retried(self) -> None:
+        """httpx.TooManyRedirects is the other RequestError sibling excluded by
+        the narrower (TimeoutException, TransportError) tuple this replaces."""
+        calls = 0
+
+        def handler(_request: httpx.Request) -> httpx.Response:
+            nonlocal calls
+            calls += 1
+            if calls < 2:
+                raise httpx.TooManyRedirects("redirect loop")
+            return httpx.Response(200, json=_openrouter_ok_body("ok"))
+
+        provider = _openrouter(handler)
+        result = await provider.complete(system="s", prompt="u", max_tokens=100)
+        assert result.text == "ok"
+        assert calls == 2
+
+    @pytest.mark.asyncio
     async def test_empty_content_raises_transient(self) -> None:
         """A 200 with empty content raises a non-leg-fatal ProviderError."""
 

@@ -611,8 +611,15 @@ class OpenRouterProvider:
             else:
                 async with httpx.AsyncClient(timeout=self._timeout_seconds) as client:
                     response = await client.post(url, json=body, headers=headers)
-        except (httpx.TimeoutException, httpx.TransportError) as exc:
-            # Connection refused, DNS failure, read timeout: transient.
+        except httpx.RequestError as exc:
+            # Connection refused, DNS failure, read timeout, response-decoding
+            # failure, too-many-redirects: every httpx.RequestError subclass is
+            # a request that never produced a usable response, so all are
+            # transient here. httpx.TransportError/TimeoutException are the
+            # common cases; httpx.DecodingError and httpx.TooManyRedirects are
+            # RequestError siblings, not TransportError subclasses, and were
+            # excluded by the narrower tuple this replaces, letting them
+            # propagate uncaught past every caller's `except ProviderError`.
             msg = f"openrouter request failed: {type(exc).__name__}"
             raise ProviderError(
                 msg, provider="openrouter", model=self._model, leg_fatal=False
