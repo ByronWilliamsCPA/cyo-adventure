@@ -1458,6 +1458,28 @@ describe('ReviewDetailPage', () => {
     expect(screen.queryByText(/AI review/i)).not.toBeInTheDocument()
   })
 
+  it('renders a fail-open note when the reviewer ran but returned no usable verdict', async () => {
+    // Distinct from the "predates the feature" case above: attempts > 0 means
+    // the reviewer actually ran (see CoverStatusView.cover_review_attempts),
+    // it just never settled on 'pass' or 'flag' before exhausting its retries.
+    mockGet.mockImplementation((url: string) =>
+      typeof url === 'string' && url.endsWith('/cover')
+        ? Promise.resolve({
+            data: {
+              cover_status: 'pending_review',
+              cover_url: 'https://x/pending.webp',
+              cover_review_verdict: null,
+              cover_review_notes: null,
+              cover_review_attempts: 2,
+            },
+          })
+        : Promise.resolve({ data: SURFACE })
+    )
+    renderAt('s1')
+    await screen.findByRole('button', { name: /Approve cover/i })
+    expect(screen.getByText(/did not return a usable verdict/i)).toBeInTheDocument()
+  })
+
   it('renders the cover approval above the fold, below the verdict strip and safety alerts', async () => {
     // #ASSUME: UI state: the whole point of this block's placement is that a
     // reviewer sees an outstanding cover decision without scrolling past every

@@ -608,6 +608,7 @@ function ReviewDetailPageInner() {
     coverApproveError,
     coverReviewVerdict,
     coverReviewNotes,
+    coverReviewAttempts,
     generateCover,
     approveCover,
   } = useCoverGeneration({
@@ -914,6 +915,18 @@ function ReviewDetailPageInner() {
           ) : coverReviewVerdict === 'pass' ? (
             <p className="review-cover-preview__ai-note cyo-text-muted">
               AI review found no issues with this cover.
+            </p>
+          ) : coverReviewAttempts > 0 ? (
+            // A null verdict with attempts > 0 means the reviewer ran but its
+            // final attempt returned no usable verdict (fail-open, treated as
+            // a pass); distinct from attempts === 0 ("review off": the cover
+            // predates this feature, or the review provider could not be
+            // built). Without this branch the two looked identical to an
+            // approving admin, even though the backend already distinguishes
+            // them (CoverStatusView.cover_review_attempts).
+            <p className="review-cover-preview__ai-note cyo-text-muted">
+              AI review ran but did not return a usable verdict for this cover; treat it as
+              unreviewed.
             </p>
           ) : null}
           {coverStatus === 'pending_review' ? (
