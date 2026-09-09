@@ -46,7 +46,7 @@ COMMENT ON COLUMN "public"."storybook_version"."cover_review_verdict" IS
     'AI cover reviewer''s verdict for the surviving generation attempt: pass, flag, or NULL (predates this feature, review provider could not be built for this generation, or the reviewer ran but its final attempt returned no usable verdict). Set once by covers.service.generate_cover.';
 
 COMMENT ON COLUMN "public"."storybook_version"."cover_review_notes" IS
-    'AI cover reviewer''s short explanation, present only when cover_review_verdict is not NULL. Set once by covers.service.generate_cover.';
+    'AI cover reviewer''s short explanation. Usually present when cover_review_verdict is not NULL, but not guaranteed: covers.review.review_cover returns NULL notes whenever the model''s JSON response omitted a usable notes string, even for a pass/flag verdict, so a non-NULL verdict paired with NULL notes is a valid, unenforced state. Set once by covers.service.generate_cover.';
 
 COMMENT ON COLUMN "public"."storybook_version"."cover_review_attempts" IS
     'How many generate+review cycles covers.service.generate_cover ran for the current cover (0 when the cover predates this feature or the review provider could not be built for this generation, up to MAX_COVER_REVIEW_ATTEMPTS when the reviewer ran).';
