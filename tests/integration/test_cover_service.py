@@ -382,6 +382,78 @@ async def test_row_deleted_during_failure_handling_skips_status_write(sessions, 
 
 
 @pytest.mark.asyncio
+async def test_failed_regeneration_leaves_prior_review_columns_stale(sessions, seed):
+    """A successful generation's review_verdict/notes/attempts are NOT cleared
+    when a later regeneration attempt fails.
+
+    generate_cover's except handler (module docstring, "A consequence of that
+    salt...") only ever writes cover_status = "failed"; it never touches the
+    review columns. This is deliberate (there is no new verdict to record
+    when generation itself never produced an image to review), but it means a
+    "failed" row can carry a verdict/notes/attempts that describe an earlier,
+    different, successful generation attempt -- api/covers.py::CoverStatusView's
+    docstring calls this out explicitly as a state its own shape cannot
+    distinguish from a currently-accurate verdict.
+    """
+
+    def fake_generate(prompt, settings):
+        return b"PNGSOURCE"
+
+    async def fake_upload(image_bytes, key, settings):
+        return f"https://p.supabase.co/storage/v1/object/public/covers/{key}"
+
+    # Every attempt is flagged (mirrors test_reviewer_flags_every_attempt_
+    # still_reaches_pending_review): _generate_with_review retries a flagged
+    # verdict up to MAX_COVER_REVIEW_ATTEMPTS, so a stub queued with only one
+    # verdict runs out mid-retry and raises IndexError, not what this test is
+    # about.
+    stub = _StubImageReviewProvider(
+        [("flag", "visible text in the sky") for _ in range(MAX_COVER_REVIEW_ATTEMPTS)]
+    )
+
+    async with sessions() as s:
+        await generate_cover(
+            seed.storybook_id,
+            seed.version,
+            session=s,
+            settings=Settings(),
+            generate=fake_generate,
+            optimize=lambda b, **kw: b"WEBP",
+            upload=fake_upload,
+            review=stub.review,
+            build_review_provider=lambda settings: (object(), True),
+        )
+    async with sessions() as s:
+        row = await s.get(StorybookVersion, (seed.storybook_id, seed.version))
+        assert row.cover_status == "pending_review"
+        assert row.cover_review_verdict == "flag"
+        assert row.cover_review_notes == "visible text in the sky"
+        assert row.cover_review_attempts == MAX_COVER_REVIEW_ATTEMPTS
+
+    def boom(prompt, settings):
+        raise CoverGenerationError("provider refused on regeneration")
+
+    async with sessions() as s:
+        await generate_cover(
+            seed.storybook_id,
+            seed.version,
+            session=s,
+            settings=Settings(),
+            generate=boom,
+            optimize=lambda b, **kw: b,
+            upload=fake_upload,
+        )
+    async with sessions() as s:
+        row = await s.get(StorybookVersion, (seed.storybook_id, seed.version))
+        assert row.cover_status == "failed"
+        # Stale, not cleared: these describe the FIRST generation's verdict,
+        # not the second (failed) attempt, which never reached review.
+        assert row.cover_review_verdict == "flag"
+        assert row.cover_review_notes == "visible text in the sky"
+        assert row.cover_review_attempts == MAX_COVER_REVIEW_ATTEMPTS
+
+
+@pytest.mark.asyncio
 async def test_protagonist_name_recovered_from_generation_job_included_in_prompt(
     sessions, seed
 ):
