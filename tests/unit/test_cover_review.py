@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import json
 from dataclasses import dataclass, field
 
 import pytest
@@ -72,6 +73,29 @@ async def test_review_cover_empty_response_fails_open() -> None:
     verdict, notes = await review_cover(b"IMG", "a cat in a forest", provider)
     assert verdict is None
     assert notes is None
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize("raw", ["Flag", "FLAG", "flag ", " Flag\n"])
+async def test_review_cover_flag_verdict_is_case_and_whitespace_insensitive(
+    raw: str,
+) -> None:
+    """A genuine flag verdict must not silently fall through to fail-open
+    (verdict=None, treated as pass by the caller) just because the model's
+    JSON used different casing or trailing whitespace than the literal
+    "flag" the system prompt requested.
+
+    Built via json.dumps rather than an f-string: the " Flag\\n" case embeds
+    a real newline, which a hand-built f-string would splice into the JSON
+    text unescaped, producing invalid JSON (control characters are illegal
+    unescaped inside a JSON string) and testing the wrong failure path.
+    """
+    provider = _FakeReviewProvider(
+        response=json.dumps({"verdict": raw, "notes": "visible text"})
+    )
+    verdict, notes = await review_cover(b"IMG", "a cat in a forest", provider)
+    assert verdict == "flag"
+    assert notes == "visible text"
 
 
 @pytest.mark.asyncio

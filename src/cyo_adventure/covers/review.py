@@ -96,6 +96,12 @@ async def review_cover(
         f"{generation_prompt}\n\n"
         "Review the attached image against these instructions."
     )
+    # #CRITICAL: external resources: the review call is a network-backed vision-LLM
+    # request with no guaranteed availability; this module's whole design is
+    # fail-open (module docstring), so a provider outage must degrade to
+    # verdict=None (treated as pass upstream), never propagate and fail the
+    # cover generation it is reviewing.
+    # #VERIFY: covers/service.py::generate_cover treats a None verdict as pass.
     try:
         completion = await review_provider.complete_with_image(
             system=_SYSTEM_PROMPT,
@@ -116,7 +122,13 @@ async def review_cover(
         return None, None
     if not isinstance(parsed, dict):
         return None, None
-    verdict = parsed.get("verdict")
+    # #ASSUME: data integrity: `parsed["verdict"]` is untrusted model output, not
+    # a guaranteed literal "pass"/"flag" token; a model that returns "Flag" or
+    # "flag " (case or whitespace noise) must still be recognized as a flag, not
+    # silently fall through to the None-treated-as-pass path below.
+    # #VERIFY: test_review_cover_flag_verdict_is_case_and_whitespace_insensitive.
+    raw_verdict = parsed.get("verdict")
+    verdict = raw_verdict.strip().lower() if isinstance(raw_verdict, str) else None
     if verdict not in ("pass", "flag"):
         return None, None
     notes = parsed.get("notes")
