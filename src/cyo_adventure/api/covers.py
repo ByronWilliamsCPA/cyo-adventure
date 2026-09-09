@@ -38,7 +38,15 @@ class CoverStatusView(BaseModel):
     ``cover_review_verdict``/``cover_review_notes``/``cover_review_attempts``
     record the independent AI reviewer's outcome for the surviving
     generation attempt (docs/superpowers/specs/2026-09-08-cover-ai-review-design.md).
-    A None verdict always pairs with None notes; the two states below are
+    A cover reaching ``pending_review`` most commonly carries a non-None
+    verdict: ``"pass"`` (the reviewer approved it, possibly after an earlier
+    flagged attempt was regenerated), or ``"flag"`` (every attempt up to
+    ``MAX_COVER_REVIEW_ATTEMPTS`` was flagged and the loop still reaches
+    pending_review rather than blocking; see
+    ``covers.service._generate_with_review``). The human-approval gate
+    (``ADR-017``) never auto-blocks on a "flag" verdict; it surfaces the
+    verdict for the approving admin to weigh. A None verdict always pairs
+    with None notes; the two states below are
     the ones that produce it for a cover that reached ``pending_review``
     (a ``cover_status == "failed"`` row is a separate case, not covered by
     the two states above: its review columns are NOT reliably zero-valued.
