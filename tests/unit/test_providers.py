@@ -640,12 +640,21 @@ class TestOpenRouterProvider:
 
     @pytest.mark.asyncio
     async def test_complete_with_image_404_is_leg_fatal(self) -> None:
-        """Status classification is shared with complete(): a 404 is leg-fatal."""
+        """Status classification is shared with complete(): a 404 is leg-fatal.
+
+        Leg-fatal means not retried: unlike the transient-status tests above
+        (which assert calls == 2 after one retry), this asserts the handler
+        was invoked exactly once, protecting the multimodal path the same way
+        TestOpenRouterCompletion's complete() tests protect the text-only one.
+        """
+        calls = 0
 
         def handler(_request: httpx.Request) -> httpx.Response:
+            nonlocal calls
+            calls += 1
             return httpx.Response(404, json={"error": {"message": "no such model"}})
 
-        provider = _openrouter(handler)
+        provider = _openrouter(handler, max_retries=3)
         with pytest.raises(ProviderError) as exc_info:
             await provider.complete_with_image(
                 system="s",
@@ -655,6 +664,7 @@ class TestOpenRouterProvider:
                 max_tokens=100,
             )
         assert exc_info.value.leg_fatal is True
+        assert calls == 1
 
 
 class TestStripCodeFences:
