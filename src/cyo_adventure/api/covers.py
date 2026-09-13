@@ -46,7 +46,13 @@ class CoverStatusView(BaseModel):
     ``covers.service._generate_with_review``). The human-approval gate
     (``ADR-017``) never auto-blocks on a "flag" verdict; it surfaces the
     verdict for the approving admin to weigh. A None verdict always pairs
-    with None notes; the two states below are
+    with None notes, but the reverse does not hold: a non-None verdict can
+    still pair with None notes, because the reviewer's JSON response is
+    untrusted model output and the model is not guaranteed to include a
+    ``notes`` string alongside its verdict (``covers.review.review_cover``
+    returns ``(verdict, None)`` whenever the parsed ``notes`` field is
+    missing or not a string, independent of what ``verdict`` resolved to).
+    The two states below are
     the ones that produce it for a cover that reached ``pending_review``
     (a ``cover_status == "failed"`` row is a separate case, not covered by
     the two states above: its review columns are NOT reliably zero-valued.
