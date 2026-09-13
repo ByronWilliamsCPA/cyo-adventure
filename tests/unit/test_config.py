@@ -1200,9 +1200,13 @@ class TestCoverReviewModelSetting:
     """
 
     @pytest.mark.unit
-    def test_cover_review_model_default_is_gpt41_mini(self) -> None:
+    def test_cover_review_model_default_is_gpt41_mini(
+        self, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
         from cyo_adventure.core.config import Settings
 
+        monkeypatch.delenv("COVER_REVIEW_MODEL", raising=False)
+        monkeypatch.delenv("CYO_ADVENTURE_COVER_REVIEW_MODEL", raising=False)
         assert Settings(environment="local").cover_review_model == "openai/gpt-4.1-mini"
 
     @pytest.mark.unit
