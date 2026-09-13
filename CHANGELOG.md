@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 <!-- version list -->
 
+## [0.88.1] - 2026-09-13
+
+### Bug Fixes
+
+- Resolve seven open issues from the 2026-09-05 open-issues review
+  ([#812](https://github.com/ByronWilliamsCPA/cyo-adventure/pull/812),
+  [`8975f71`](https://github.com/ByronWilliamsCPA/cyo-adventure/commit/8975f71f455c580015e93c53f30e5c6a50d3863f))
+
+
 ## [0.88.0] - 2026-09-04
 
 ### Bug Fixes
@@ -3715,6 +3724,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Safety dependency vulnerability scanning
 - Pre-commit hooks for security validation
 
+[0.88.1]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.88.0...v0.88.1
 [0.88.0]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.87.1...v0.88.0
 [0.87.1]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.87.0...v0.87.1
 [0.87.0]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.86.0...v0.87.0
