@@ -172,11 +172,12 @@ def _resolve_review_provider(
     """
     try:
         review_provider, review_independent = build_review_provider(settings)
-    except ConfigurationError:
+    except ConfigurationError as exc:
         _logger.warning(
             "cover_review_provider_unavailable",
             storybook_id=storybook_id,
             version=version,
+            error=str(exc),
         )
         return None
     if not review_independent:
