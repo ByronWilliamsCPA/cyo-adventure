@@ -17,6 +17,7 @@ always receives plain JSON.
 
 from __future__ import annotations
 
+import base64
 import json
 import time
 from typing import TYPE_CHECKING, Final, Literal, cast
@@ -328,24 +329,63 @@ class OpenRouterProvider:
             {"role": "user", "content": user},
         ]
 
-    async def complete(
-        self, *, system: str, prompt: str, max_tokens: int
-    ) -> Completion:
-        """Return the model completion for a system+user prompt pair.
+    def _build_image_messages(
+        self, system: str, user: str, image_bytes: bytes, image_mime: str
+    ) -> list[dict[str, object]]:
+        """Build the chat messages for a review call carrying one image.
+
+        OpenRouter's chat-completions endpoint accepts the same multimodal
+        content-array shape OpenAI's vision models use: a list of typed
+        blocks under the user message's ``content``, mixing ``text`` and
+        ``image_url`` (a data URI, since the image lives only in memory
+        here, never at a fetchable URL). The system block stays a plain
+        string: prompt caching (``_build_messages`` above) is a
+        generation-pipeline concern for the large, static story schema
+        block; a review system prompt is short and sent once per call, so
+        caching it buys nothing.
 
         Args:
-            system: System-role instructions (the cacheable static block).
-            prompt: User-role prompt content (the volatile per-job block).
+            system: System-role instructions.
+            user: User-role text content.
+            image_bytes: The raw image bytes to embed.
+            image_mime: The image's MIME type (e.g. ``"image/png"``).
+
+        Returns:
+            The OpenRouter ``messages`` array.
+        """
+        encoded = base64.b64encode(image_bytes).decode("ascii")
+        return [
+            {"role": "system", "content": system},
+            {
+                "role": "user",
+                "content": [
+                    {"type": "text", "text": user},
+                    {
+                        "type": "image_url",
+                        "image_url": {"url": f"data:{image_mime};base64,{encoded}"},
+                    },
+                ],
+            },
+        ]
+
+    def _build_request_body(
+        self, messages: list[dict[str, object]], max_tokens: int
+    ) -> tuple[dict[str, object], dict[str, str], str]:
+        """Build the request body, headers, and url shared by every call shape.
+
+        ``complete()`` and ``complete_with_image()`` differ only in how they
+        build ``messages`` (``_build_messages`` vs ``_build_image_messages``);
+        every other part of the outgoing request, the optional-field logic for
+        ``reasoning``/``provider``/``temperature``/``usage``, the auth headers,
+        and the endpoint url, is identical, so both callers build their own
+        ``messages`` and hand them here.
+
+        Args:
+            messages: The OpenRouter ``messages`` array for this call.
             max_tokens: Upper bound on response length in tokens.
 
         Returns:
-            The completion text with any wrapping markdown code fence stripped,
-            plus the token usage the response reported for the successful
-            attempt.
-
-        Raises:
-            ProviderError: On a leg-fatal failure (mapped immediately) or after
-                exhausting transient retries.
+            A ``(body, headers, url)`` tuple ready for ``self._attempt``.
         """
         # #CRITICAL: external-resources: this performs network I/O to a third-party
         # LLM endpoint. Every attempt is bounded by ``timeout_seconds``; transient
@@ -355,7 +395,7 @@ class OpenRouterProvider:
         # and exhausted transient->ProviderError(leg_fatal=False).
         body: dict[str, object] = {
             "model": self._model,
-            "messages": self._build_messages(system, prompt),
+            "messages": messages,
             "max_tokens": max_tokens,
         }
         # Only request reasoning when explicitly opted in. Story generation is
@@ -403,7 +443,104 @@ class OpenRouterProvider:
             "X-Title": "cyo-adventure",
         }
         url = f"{self._base_url}/chat/completions"
+        return body, headers, url
 
+    async def complete_with_image(
+        self,
+        *,
+        system: str,
+        prompt: str,
+        image_bytes: bytes,
+        image_mime: str,
+        max_tokens: int,
+    ) -> Completion:
+        """Return the model completion for a system+user+image input.
+
+        Mirrors ``complete()`` exactly except for the multimodal message
+        body: same retry policy, same status classification, same response
+        extraction, so a cover-review call gets identical transient-retry
+        and leg-fatal behavior to every text review call. Deliberately does
+        NOT replicate ``complete()``'s content-filter-stop counter
+        (``_CONTENT_FILTER_MARKER`` / ``_MAX_CONTENT_FILTER_STOPS``): that
+        policy (UW-C329) is specific to story generation retrying the same
+        (skeleton, brief) pair, a failure mode this call has no evidence of
+        sharing; it can be added here later if a similar pattern is
+        observed for cover review.
+
+        Args:
+            system: System-role instructions.
+            prompt: User-role text content.
+            image_bytes: The raw image bytes to review.
+            image_mime: The image's MIME type (e.g. ``"image/png"``).
+            max_tokens: Upper bound on response length in tokens.
+
+        Returns:
+            The completion text plus the token usage the response reported.
+
+        Raises:
+            ProviderError: On a leg-fatal failure (mapped immediately) or
+                after exhausting transient retries.
+        """
+        body, headers, url = self._build_request_body(
+            self._build_image_messages(system, prompt, image_bytes, image_mime),
+            max_tokens,
+        )
+
+        # #CRITICAL: external-resources: this performs network I/O to a
+        # third-party LLM endpoint for cover-art review. Every attempt is
+        # bounded by ``timeout_seconds``; transient failures are retried with
+        # exponential backoff up to ``max_retries``; leg-fatal failures raise
+        # immediately. Unlike ``complete()``, no content-filter-stop cap
+        # applies here; see the docstring above for why.
+        # #VERIFY: tests assert transient->retry and leg-fatal->immediate
+        # raise for this method, exercising the same ``_attempt``/
+        # ``run_with_retries`` machinery ``complete()`` is already covered by.
+        async def attempt() -> Completion:
+            return await self._attempt(url, body, headers)
+
+        return await run_with_retries(
+            attempt,
+            provider="openrouter",
+            model=self._model,
+            max_retries=self._max_retries,
+            backoff_base_seconds=self._backoff_base_seconds,
+        )
+
+    async def complete(
+        self, *, system: str, prompt: str, max_tokens: int
+    ) -> Completion:
+        """Return the model completion for a system+user prompt pair.
+
+        Args:
+            system: System-role instructions (the cacheable static block).
+            prompt: User-role prompt content (the volatile per-job block).
+            max_tokens: Upper bound on response length in tokens.
+
+        Returns:
+            The completion text with any wrapping markdown code fence stripped,
+            plus the token usage the response reported for the successful
+            attempt.
+
+        Raises:
+            ProviderError: On a leg-fatal failure (mapped immediately) or after
+                exhausting transient retries.
+        """
+        body, headers, url = self._build_request_body(
+            self._build_messages(system, prompt), max_tokens
+        )
+
+        # #CRITICAL: external-resources: this performs network I/O to a
+        # third-party LLM endpoint. Every attempt is bounded by
+        # ``timeout_seconds``; transient failures are retried with
+        # exponential backoff up to ``max_retries``; leg-fatal failures raise
+        # immediately so the cascade can fail over. This closure additionally
+        # caps identical content-filter stops (UW-C329, below) before
+        # treating the retry as exhausted, unlike ``complete_with_image()``.
+        # #VERIFY: tests assert transient->retry, 404/401->leg_fatal
+        # ProviderError, exhausted transient->ProviderError(leg_fatal=False),
+        # and content-filter stops capping at _MAX_CONTENT_FILTER_STOPS (see
+        # test_providers.py).
+        #
         # Interim `UW-C329` policy (ruled 2026-08-21, section 9.5 of
         # live-structural-round-2026-08-21.md): identical retries cap at TWO
         # for zero-content `content_filter` stops. The filter fires on the
@@ -474,8 +611,15 @@ class OpenRouterProvider:
             else:
                 async with httpx.AsyncClient(timeout=self._timeout_seconds) as client:
                     response = await client.post(url, json=body, headers=headers)
-        except (httpx.TimeoutException, httpx.TransportError) as exc:
-            # Connection refused, DNS failure, read timeout: transient.
+        except httpx.RequestError as exc:
+            # Connection refused, DNS failure, read timeout, response-decoding
+            # failure, too-many-redirects: every httpx.RequestError subclass is
+            # a request that never produced a usable response, so all are
+            # transient here. httpx.TransportError/TimeoutException are the
+            # common cases; httpx.DecodingError and httpx.TooManyRedirects are
+            # RequestError siblings, not TransportError subclasses, and were
+            # excluded by the narrower tuple this replaces, letting them
+            # propagate uncaught past every caller's `except ProviderError`.
             msg = f"openrouter request failed: {type(exc).__name__}"
             raise ProviderError(
                 msg, provider="openrouter", model=self._model, leg_fatal=False

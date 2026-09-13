@@ -1251,6 +1251,28 @@
   margin: 0;
 }
 
+/* AI cover reviewer's flag/pass note (ReviewDetailPage.tsx, docs/superpowers/
+   specs/2026-09-08-cover-ai-review-design.md). Base rule covers both
+   variants' layout; ReviewDetailPage.tsx adds cyo-text-muted only to the
+   pass branch, so :not(.cyo-text-muted) below reliably targets the flag
+   branch without a JSX change. The flag variant must read as distinct from
+   pass by more than color alone (WCAG 2.1 AA / ADR-029): a left border,
+   background tint, and bold weight stack alongside the branch's own
+   distinct wording ("AI review flagged this cover: ..." vs "AI review
+   found no issues with this cover.") and its role="status" announcement. */
+.review-cover-preview__ai-note {
+  margin: 0;
+  border-radius: 4px;
+}
+
+.review-cover-preview__ai-note:not(.cyo-text-muted) {
+  padding: 0.5rem 0.75rem;
+  border-left: 4px solid var(--color-warning, #92600a);
+  background: var(--color-warning-light, #fef3cd);
+  color: var(--color-warning, #92600a);
+  font-weight: 600;
+}
+
 .review-actionbar {
   position: sticky;
   bottom: 0;

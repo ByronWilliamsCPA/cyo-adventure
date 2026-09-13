@@ -990,6 +990,29 @@ class Settings(BaseSettings):
     cover_quality: int = 80
     cover_max_bytes: int = 256_000
     cover_job_timeout_seconds: int = 180
+    # docs/superpowers/specs/2026-09-08-cover-ai-review-design.md Design
+    # section 2: an OpenRouter vision-capable model that judges a generated
+    # cover against its own generation prompt. Deliberately a different
+    # vendor from cover_model (gemini-3-pro-image, called via the direct
+    # Google SDK in covers/provider.py, not through OpenRouter): OpenAI
+    # rather than Google, so build_cover_review_provider's independence
+    # check (moderation/review_provider.py) holds on the vendor that
+    # actually generated the image being reviewed, not just on the
+    # transport (direct SDK vs OpenRouter) the two calls happen to use.
+    # #ASSUME: external-resources: picked 2026-09-08 from published
+    # per-image OpenRouter pricing and prior in-repo vision-comprehension
+    # probe results (tests/unit/test_comprehension_probe.py), not a live
+    # reliability probe against this reviewer's own JSON-verdict prompt.
+    # #VERIFY: override via COVER_REVIEW_MODEL if this slug is retired, its
+    # JSON-verdict reliability proves poor in practice (review.py fails
+    # open and silently on a malformed response), or a materially better
+    # vision-capable option becomes available.
+    cover_review_model: str = Field(
+        default="openai/gpt-4.1-mini",
+        validation_alias=AliasChoices(
+            "CYO_ADVENTURE_COVER_REVIEW_MODEL", "COVER_REVIEW_MODEL"
+        ),
+    )
 
     # --- Notification push transport (S9/G10 SSE stream) ---
     # How often api/notifications.py's stream endpoint re-queries

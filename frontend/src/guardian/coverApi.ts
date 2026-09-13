@@ -13,6 +13,35 @@ export interface CoverStatusView {
   // both fields default undefined rather than null. A16 (capability-register.md).
   cover_approved_by?: string | null
   cover_approved_at?: string | null
+  // AI cover reviewer outcome for the surviving generation attempt
+  // (docs/superpowers/specs/2026-09-08-cover-ai-review-design.md). A null
+  // verdict always pairs with null notes; the two states below are the
+  // ones that produce it for a cover that reached pending_review
+  // (a cover_status === 'failed' row is a separate case, not one of the
+  //   two below: its review fields are NOT reliably at their zero-value
+  //   defaults. The backend rolls back only this attempt's own uncommitted
+  //   writes on failure, so a failed FIRST generation does leave the
+  //   defaults, but a failed REGENERATION of a previously-successful cover
+  //   leaves that prior generation's verdict/notes/attempts in place,
+  //   stale against a failed cover_status).
+  // cover_review_attempts tells the two pending_review states apart,
+  // except where noted:
+  // - attempts === 0: review did not run at all. EITHER this cover
+  //   predates the feature OR the review provider could not be built for
+  //   this generation (missing OPENROUTER_API_KEY / unsupported
+  //   review_provider setting). These are NOT distinguishable from this
+  //   response alone; only a server-side warning log tells them apart.
+  // - attempts >= 1: the reviewer ran, and its final attempt returned no
+  //   usable verdict (a provider error, an empty/unparseable response, or
+  //   a verdict outside pass/flag), which is treated as a pass rather than
+  //   blocking publication. This does not mean every attempt failed open:
+  //   the bounded loop breaks on any verdict other than "flag", so a
+  //   "flag" on an earlier attempt followed by a fail-open on the last
+  //   attempt also lands here. A failed-open attempt still increments the
+  //   counter, so this is always >= 1 when the reviewer ran at all.
+  cover_review_verdict: 'pass' | 'flag' | null
+  cover_review_notes: string | null
+  cover_review_attempts: number
 }
 
 export interface CoverApi {
