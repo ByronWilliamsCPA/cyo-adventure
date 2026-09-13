@@ -396,12 +396,6 @@ async def test_failed_regeneration_leaves_prior_review_columns_stale(sessions, s
     distinguish from a currently-accurate verdict.
     """
 
-    def fake_generate(prompt, settings):
-        return b"PNGSOURCE"
-
-    async def fake_upload(image_bytes, key, settings):
-        return f"https://p.supabase.co/storage/v1/object/public/covers/{key}"
-
     # Every attempt is flagged (mirrors test_reviewer_flags_every_attempt_
     # still_reaches_pending_review): _generate_with_review retries a flagged
     # verdict up to MAX_COVER_REVIEW_ATTEMPTS, so a stub queued with only one
@@ -417,9 +411,9 @@ async def test_failed_regeneration_leaves_prior_review_columns_stale(sessions, s
             seed.version,
             session=s,
             settings=Settings(),
-            generate=fake_generate,
+            generate=_fake_generate,
             optimize=lambda b, **kw: b"WEBP",
-            upload=fake_upload,
+            upload=_fake_upload,
             review=stub.review,
             build_review_provider=lambda settings: (object(), True),
         )
@@ -441,7 +435,7 @@ async def test_failed_regeneration_leaves_prior_review_columns_stale(sessions, s
             settings=Settings(),
             generate=boom,
             optimize=lambda b, **kw: b,
-            upload=fake_upload,
+            upload=_fake_upload,
         )
     async with sessions() as s:
         row = await s.get(StorybookVersion, (seed.storybook_id, seed.version))
