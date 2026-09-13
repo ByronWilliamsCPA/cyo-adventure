@@ -213,8 +213,8 @@ entity "storybook_version" as storybook_version #F3E5F5 {
   pronoun_parameterized : BOOLEAN [ADR-023; default false;\ndeclared, not yet written by any path]
   sentinel_manifest : JSONB NULL [ADR-023; token manifest DERIVED\nfrom the blob after the fill]
   cover_review_verdict : TEXT NULL [docs/superpowers/specs/\n2026-09-08-cover-ai-review-design.md;\nNULL = not judged (pre-feature, degrade-to-off,\nor no usable verdict); pass|flag only]
-  cover_review_notes : TEXT NULL [reviewer's rationale, or\nthe failure reason when verdict is NULL]
-  cover_review_attempts : INT [default 0]
+  cover_review_notes : TEXT NULL [reviewer's rationale; not guaranteed even\nwhen verdict is non-NULL (model's JSON may\nomit a usable notes string)]
+  cover_review_attempts : INT NOT NULL [default 0]
   --
   CHECK (cover_status in none|generating|pending_review|ready|failed)
   CHECK (cover_review_verdict in NULL|pass|flag)

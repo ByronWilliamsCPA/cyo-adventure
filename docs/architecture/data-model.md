@@ -225,8 +225,8 @@ erDiagram
         boolean pronoun_parameterized "default false; ADR-023"
         jsonb sentinel_manifest "NULL; ADR-023 derived token manifest"
         text cover_review_verdict "NULL; pass or flag; NULL = not judged"
-        text cover_review_notes "NULL; reviewer rationale or failure reason"
-        int cover_review_attempts "default 0"
+        text cover_review_notes "NULL; reviewer rationale, not guaranteed even when verdict is non-NULL"
+        int cover_review_attempts "NOT NULL DEFAULT 0"
     }
 
     character {
