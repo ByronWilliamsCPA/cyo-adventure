@@ -1200,13 +1200,15 @@ class TestCoverReviewModelSetting:
     """
 
     @pytest.mark.unit
-    def test_defaults_to_gpt41_mini(self) -> None:
+    def test_cover_review_model_default_is_gpt41_mini(self) -> None:
         from cyo_adventure.core.config import Settings
 
         assert Settings(environment="local").cover_review_model == "openai/gpt-4.1-mini"
 
     @pytest.mark.unit
-    def test_reads_unprefixed_env(self, monkeypatch: pytest.MonkeyPatch) -> None:
+    def test_cover_review_model_unprefixed_env_uses_override(
+        self, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
         """cover_review_model reads the unprefixed COVER_REVIEW_MODEL."""
         from cyo_adventure.core.config import Settings
 
@@ -1217,7 +1219,9 @@ class TestCoverReviewModelSetting:
         )
 
     @pytest.mark.unit
-    def test_reads_prefixed_env(self, monkeypatch: pytest.MonkeyPatch) -> None:
+    def test_cover_review_model_prefixed_env_uses_override(
+        self, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
         """The prefixed CYO_ADVENTURE_COVER_REVIEW_MODEL name also binds."""
         from cyo_adventure.core.config import Settings
 
@@ -1228,7 +1232,9 @@ class TestCoverReviewModelSetting:
         )
 
     @pytest.mark.unit
-    def test_prefixed_wins_when_both_set(self, monkeypatch: pytest.MonkeyPatch) -> None:
+    def test_cover_review_model_both_env_vars_prefixed_value_wins(
+        self, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
         """When both names are set, the explicit CYO_ADVENTURE_ prefix wins."""
         from cyo_adventure.core.config import Settings
 
