@@ -528,11 +528,21 @@ jobs:
         # image without rebuilding, confirm steps.build.outputs.digest is
         # still populated from cache; if not, resolve the digest explicitly
         # via `docker buildx imagetools inspect` before scanning by tag.
+        # #CRITICAL external-resource: anchore/syft:v1.44.0 was previously a
+        # mutable tag reference. This container runs with the mounted GHCR
+        # config.json above, so a repointed tag could pull a malicious image
+        # with that credential in scope. Pinned to the resolved digest below
+        # (verified via `crane digest docker.io/anchore/syft:v1.44.0`), tag
+        # kept alongside for readability only; the digest is authoritative.
+        # #VERIFY: if this tag is ever intentionally upgraded, re-resolve the
+        # digest with the same command and update both together, never the
+        # tag alone.
         run: |
           docker run --rm \
             -v "${HOME}/.docker/config.json:/config/config.json:ro" \
             -e DOCKER_CONFIG=/config \
-            anchore/syft:v1.44.0 "${IMAGE_REF}" -o cyclonedx-json > "sbom-${COMPONENT}.json"
+            anchore/syft:v1.44.0@sha256:86fde6445b483d902fe011dd9f68c4987dd94e07da1e9edc004e3c2422650de6 \
+            "${IMAGE_REF}" -o cyclonedx-json > "sbom-${COMPONENT}.json"
           echo "sbom_file=sbom-${COMPONENT}.json" >> "$GITHUB_OUTPUT"
 
       - name: Sign image with Cosign
@@ -602,17 +612,28 @@ jobs:
           # two env vars are always sufficient.
           TRIVY_USERNAME: ${{ github.actor }}
           TRIVY_PASSWORD: ${{ secrets.GITHUB_TOKEN }}
+        # #CRITICAL external-resource: aquasec/trivy:0.70.0 was previously a
+        # mutable tag reference. This container has the host's docker.sock
+        # mounted (not just GHCR credentials), so a repointed tag is a
+        # container-escape-adjacent risk, not just a bad-scan risk. Pinned to
+        # the resolved digest below (verified via
+        # `crane digest docker.io/aquasec/trivy:0.70.0`), tag kept alongside
+        # for readability only; the digest is authoritative.
+        # #VERIFY: if this tag is ever intentionally upgraded, re-resolve the
+        # digest with the same command and update both together, never the
+        # tag alone.
         run: |
           mkdir -p "${{ runner.temp }}/trivy-cache"
+          TRIVY_IMAGE="aquasec/trivy:0.70.0@sha256:be1190afcb28352bfddc4ddeb71470835d16462af68d310f9f4bca710961a41e"
           docker run --rm -v /var/run/docker.sock:/var/run/docker.sock \
             -v "${{ runner.temp }}/trivy-cache:/root/.cache/trivy" \
             -e TRIVY_USERNAME -e TRIVY_PASSWORD \
-            aquasec/trivy:0.70.0 image --severity HIGH,CRITICAL --exit-code 0 \
+            "${TRIVY_IMAGE}" image --severity HIGH,CRITICAL --exit-code 0 \
             --format table "${IMAGE_REF}" | tee "trivy-${COMPONENT}.txt"
           docker run --rm -v /var/run/docker.sock:/var/run/docker.sock -v "$(pwd):/output" \
             -v "${{ runner.temp }}/trivy-cache:/root/.cache/trivy" \
             -e TRIVY_USERNAME -e TRIVY_PASSWORD \
-            aquasec/trivy:0.70.0 image --severity HIGH,CRITICAL --format sarif \
+            "${TRIVY_IMAGE}" image --severity HIGH,CRITICAL --format sarif \
             --output "/output/trivy-${COMPONENT}.sarif" "${IMAGE_REF}" || true
 
       # This repo has no GitHub Advanced Security code-scanning configured for
