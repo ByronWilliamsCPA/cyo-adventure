@@ -673,7 +673,11 @@ jobs:
     # failure must not file the same scheduled-safety-net tracking issue.
     # Non-scheduled failures are already visible in the PR/Actions UI for
     # whoever triggered that run; they don't need a persistent issue.
-    if: failure() && github.event_name == 'schedule'
+    # failure() alone does not cover a cancelled run: GitHub's failure()
+    # and cancelled() are distinct status-check functions, and the issue
+    # body composed below explicitly claims to cover "failed or was
+    # cancelled" legs, so both must be checked here or that claim is false.
+    if: (failure() || cancelled()) && github.event_name == 'schedule'
     runs-on: ubuntu-latest
     timeout-minutes: 10
     # #CRITICAL security: issues: write is isolated to this job and never
