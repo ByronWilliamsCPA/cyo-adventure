@@ -13,21 +13,27 @@
 # `stack-config-check` job (which guards the deploy compose files, not this
 # repo's source) stays behind in homelab-infra, unchanged.
 #
-# #ASSUME this repo's `main` branch is always the version worth publishing
-# for the homelab deploy (there is no tagged-release convention here yet).
-# #VERIFY revisit once this repo has its own release/tagging process; pin to
-# a tag or digest input instead of always tracking main's tip.
+# #ASSUME: external resources: this repo's `main` branch is always the
+# version worth publishing for the homelab deploy (there is no
+# tagged-release convention here yet).
+# #VERIFY: revisit once this repo has its own release/tagging process; pin
+# to a tag or digest input instead of always tracking main's tip.
 #
 # Trigger note: push to main (paths-ignore below skips doc-only merges,
 # matching the list the deleted trigger-image-build.yml used to gate its
 # cross-repo dispatch on), workflow_dispatch for on-demand or dry-run builds
 # (`push: false` builds and smoke-tests without publishing anything), and a
 # weekly schedule kept as defense in depth in case a push-triggered run is
-# ever missed (for example GitHub's 300-changed-file path-filter cap on a
-# mega-merge). A silent failure of that weekly safety net means the homelab
-# images go stale with nobody told, so the `alert`/`resolve` jobs below adopt
-# this repo's shared `ci-failure-issue` tracking-issue action, matching the
-# rest of the scheduled-workflow fleet
+# ever missed.
+#
+# #EDGE: external resources: GitHub evaluates push path filters against at
+# most the first 300 changed files; a mega-merge touching more than 300
+# files can skip this workflow entirely (silent skip, no red run).
+# #VERIFY: the weekly schedule below backstops any push-triggered run
+# skipped this way within a week. A silent failure of that weekly safety
+# net means the homelab images go stale with nobody told, so the
+# `alert`/`resolve` jobs below adopt this repo's shared `ci-failure-issue`
+# tracking-issue action, matching the rest of the scheduled-workflow fleet
 # (.github/workflows/scheduled-health-rollup.yml).
 #
 # Security note: the only user-controlled input is workflow_dispatch's
@@ -62,7 +68,15 @@ on:
 
 concurrency:
   group: build-images-${{ github.event.pull_request.number || github.ref }}
-  cancel-in-progress: true
+  # cancel-in-progress: false (not true): this workflow has no pull_request
+  # trigger, so the group key always collapses to github.ref, meaning every
+  # push/workflow_dispatch/schedule run on main shares ONE group. The build
+  # job is a 3-leg matrix (backend, frontend, frontend-staging); cancelling
+  # an in-flight run mid-matrix can stop one leg after it already pushed a
+  # new :latest/:staging tag while another leg is cancelled first, leaving
+  # the registry with a mismatched set of tags across components. Queuing
+  # instead of cancelling avoids that mixed-publication window.
+  cancel-in-progress: false
 
 env:
   GHCR_REGISTRY: ghcr.io
@@ -153,12 +167,12 @@ jobs:
 
     steps:
       - name: Harden Runner
-        uses: step-security/harden-runner@9af89fc71515a100421586dfdb3dc9c984fbf411 # v2.19.4
+        uses: step-security/harden-runner@bf7454d06d71f1098171f2acdf0cd4708d7b5920 # v2.20.0
         with:
           egress-policy: audit
 
       - name: Checkout
-        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
       - name: Resolve source commit
         id: source
@@ -172,6 +186,22 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@bb05f3f5519dd87d3ba754cc423b652a5edd6d2c  # v4.2.0
 
+      # #CRITICAL external-resources: GITHUB_TOKEN can only push to
+      # ghcr.io/{owner}/{package} if the package doesn't exist yet (it
+      # auto-links to the first pushing repo) or this repo already has
+      # Write access granted under that package's "Manage Actions access"
+      # settings. Both homelab-cyo-adventure-backend and
+      # homelab-cyo-adventure-frontend already exist and are currently
+      # linked to homelab-infra (the repo that used to build them via the
+      # now-deleted cross-repo dispatch), not to this repo. The first push
+      # from this workflow will 403 on the registry push step until a human
+      # with admin on both packages grants cyo-adventure Write access.
+      # #VERIFY: before relying on this workflow's first run against main,
+      # confirm via `gh api /orgs/{org}/packages/container/{package}` (or
+      # the package's GitHub UI settings) that cyo-adventure has Write, not
+      # just Read; a 403 on this step is a clean signal (not a silent
+      # skip), but the alert/resolve tracking issue below won't fire until
+      # the following scheduled run.
       - name: Login to GHCR
         uses: docker/login-action@c99871dec2022cc055c062a10cc1a1310835ceb4  # v4.3.0
         with:
@@ -182,8 +212,8 @@ jobs:
       - name: Install Cosign
         uses: sigstore/cosign-installer@6f9f17788090df1f26f669e9d70d6ae9567deba6  # v4.1.2
 
-      # #CRITICAL security: :latest, the date tag, cosign signing, and the SBOM
-      # attestation are gated on `github.ref == 'refs/heads/main'` (via
+      # #CRITICAL: security: :latest, the date tag, cosign signing, and the
+      # SBOM attestation are gated on `github.ref == 'refs/heads/main'` (via
       # IS_MAIN below), replacing homelab-infra's `publish_grade` output.
       # That output existed only because a repository_dispatch payload's
       # client_payload.ref could name an arbitrary commit while github.ref
@@ -192,11 +222,17 @@ jobs:
       # directly at whatever ref/SHA triggered it, so on a push-to-main
       # event github.sha IS the commit on main by construction and
       # github.ref is an unambiguous signal.
-      # #ASSUME workflow_dispatch's default "Run workflow from" branch is
-      # main, but a caller can pick a different branch in the GitHub UI; on
-      # that path github.ref correctly evaluates false here and the build
-      # only gets a sha- tag, no :latest, no signing.
-      # #VERIFY if this workflow is ever renamed, moved to another repo, or
+      # #VERIFY: if this workflow ever grows a pull_request or a
+      # cross-repo-dispatch-style trigger, re-derive IS_MAIN from something
+      # tied to the actual built commit, not github.ref alone; a trigger
+      # where github.ref can diverge from what was built reopens the exact
+      # ambiguity `publish_grade` used to paper over.
+      # #ASSUME: external resources: workflow_dispatch's default "Run
+      # workflow from" branch is main, but a caller can pick a different
+      # branch in the GitHub UI; on that path github.ref correctly
+      # evaluates false here and the build only gets a sha- tag, no
+      # :latest, no signing.
+      # #VERIFY: if this workflow is ever renamed, moved to another repo, or
       # the default branch is ever renamed away from `main`, update the
       # literal 'refs/heads/main' comparison below; it is not derived from
       # github.event.repository.default_branch.
@@ -372,12 +408,17 @@ jobs:
               -e CYO_ADVENTURE_REVIEW_PROVIDER=openrouter
               -e OPENAI_API_KEY=sk-smoke-invalid
             )
-            if docker run --rm "${GUARD_ENV[@]}" cyo-smoke-backend:ci \
-              python -c "import cyo_adventure.core.config" 2>/dev/null; then
+            # stderr is captured (not discarded) so a failure for the WRONG
+            # reason (an unrelated import crash, not the OIDC guard) is
+            # still visible in the log instead of being indistinguishable
+            # from the guard working as intended.
+            if guard_output=$(docker run --rm "${GUARD_ENV[@]}" cyo-smoke-backend:ci \
+              python -c "import cyo_adventure.core.config" 2>&1); then
               echo "Settings() accepted a production env with no OIDC config;"
               echo "the fail-fast guard from the 2026-07-06 incident is gone."
               exit 1
             fi
+            echo "guard raised (expected): ${guard_output}"
             echo "::endgroup::"
 
             echo "::group::config guard still refuses a mock reviewer in production"
@@ -396,12 +437,15 @@ jobs:
               -e CHILD_SESSION_SECRET="${CHILD_SESSION_SECRET_SMOKE}"
               -e DEVICE_GRANT_SECRET="${DEVICE_GRANT_SECRET_SMOKE}"
             )
-            if docker run --rm "${REVIEW_GUARD_ENV[@]}" cyo-smoke-backend:ci \
-              python -c "import cyo_adventure.core.config" 2>/dev/null; then
+            # Same stderr-capture rationale as the OIDC guard above: keep the
+            # real error visible instead of discarding it to /dev/null.
+            if guard_output=$(docker run --rm "${REVIEW_GUARD_ENV[@]}" cyo-smoke-backend:ci \
+              python -c "import cyo_adventure.core.config" 2>&1); then
               echo "Settings() accepted a production env with a mock reviewer;"
               echo "the fail-fast guard from cyo-adventure PR #521 is gone."
               exit 1
             fi
+            echo "guard raised (expected): ${guard_output}"
             echo "::endgroup::"
           elif [ "${COMPONENT}" = "frontend" ] || [ "${COMPONENT}" = "frontend-staging" ]; then
             echo "::group::frontend nginx serves the app shell"
@@ -461,7 +505,12 @@ jobs:
         if: steps.build.outputs.digest != '' && (github.event_name != 'workflow_dispatch' || inputs.push == true)
         env:
           COMPONENT: ${{ matrix.component.name }}
-          IMAGE_REF: ${{ steps.meta.outputs.image }}:${{ steps.meta.outputs.sha_tag }}
+          # Pinned to the immutable digest, not the sha_tag: a mutable tag
+          # can be repointed between the push above and this pull (another
+          # concurrent run, a manual retag), so scanning by tag can silently
+          # scan the wrong bytes. The digest is the same one steps.build
+          # just produced, so this is guaranteed to be the image just built.
+          IMAGE_REF: ${{ steps.meta.outputs.image }}@${{ steps.build.outputs.digest }}
         # #CRITICAL external-resource: the earlier "Login to GHCR" step only
         # authenticates the runner host's own docker config; a fresh
         # `docker run --rm anchore/syft ...` container does not inherit it and
@@ -475,6 +524,10 @@ jobs:
         # failed UNAUTHORIZED against a real run). Reusing the existing GHCR
         # login this way, rather than granting a broader credential, is why
         # images do NOT need to be made public for SBOM/scan steps to work.
+        # #VERIFY: if a future run ever needs to re-scan a previously built
+        # image without rebuilding, confirm steps.build.outputs.digest is
+        # still populated from cache; if not, resolve the digest explicitly
+        # via `docker buildx imagetools inspect` before scanning by tag.
         run: |
           docker run --rm \
             -v "${HOME}/.docker/config.json:/config/config.json:ro" \
@@ -526,13 +579,16 @@ jobs:
             --predicate "${SBOM_FILE}" \
             --type cyclonedx \
             "${IMAGE_DIGEST_REF}"
-        continue-on-error: true
 
       - name: Security scan with Trivy
         if: steps.build.outputs.digest != '' && (github.event_name != 'workflow_dispatch' || inputs.push == true)
         env:
           COMPONENT: ${{ matrix.component.name }}
-          IMAGE_REF: ${{ steps.meta.outputs.image }}:${{ steps.meta.outputs.sha_tag }}
+          # Pinned to the immutable digest, not the sha_tag: same rationale
+          # as the Syft step above, so Trivy is guaranteed to scan the exact
+          # bytes steps.build just pushed, not whatever a mutable tag
+          # happens to point at by the time this step runs.
+          IMAGE_REF: ${{ steps.meta.outputs.image }}@${{ steps.build.outputs.digest }}
           # #CRITICAL external-resource: same GHCR-auth gap as the Syft step
           # above; the mounted docker.sock lets Trivy talk to the host
           # daemon, but pulling `${IMAGE_REF}` from ghcr.io is a separate
@@ -540,6 +596,10 @@ jobs:
           # documents TRIVY_USERNAME/TRIVY_PASSWORD directly (unlike syft,
           # which needs a config.json mount), so use those instead of
           # replicating syft's DOCKER_CONFIG mount pattern here.
+          # #VERIFY: if Trivy is ever pointed at a registry that requires a
+          # docker config mount instead of TRIVY_USERNAME/PASSWORD, mirror
+          # the Syft step's DOCKER_CONFIG pattern rather than assuming these
+          # two env vars are always sufficient.
           TRIVY_USERNAME: ${{ github.actor }}
           TRIVY_PASSWORD: ${{ secrets.GITHUB_TOKEN }}
         run: |
@@ -606,7 +666,14 @@ jobs:
   alert:
     name: Alert on failure
     needs: build
-    if: failure()
+    # Scoped to schedule only, matching `resolve` below and the rest of the
+    # scheduled-workflow fleet (supabase-backup.yml, kws-delivery-health.yml):
+    # the issue body this job files explicitly describes itself as "the
+    # weekly Monday 06:00 UTC safety net", so a push or workflow_dispatch
+    # failure must not file the same scheduled-safety-net tracking issue.
+    # Non-scheduled failures are already visible in the PR/Actions UI for
+    # whoever triggered that run; they don't need a persistent issue.
+    if: failure() && github.event_name == 'schedule'
     runs-on: ubuntu-latest
     timeout-minutes: 10
     # #CRITICAL security: issues: write is isolated to this job and never
@@ -618,6 +685,12 @@ jobs:
     # ci-failure-issue call below must not need a broader scope than
     # issues: write; split it into its own job instead of widening this one.
     permissions:
+      # contents: read is required by the "Check out the shared alerting
+      # action" step below (actions/checkout): a job-level permissions:
+      # block replaces the workflow-level default for that job rather than
+      # merging with it, so omitting this here would drop the contents:
+      # read the top-level block grants and leave checkout under-permissioned.
+      contents: read
       issues: write
     steps:
       - name: Harden Runner
@@ -683,6 +756,10 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     permissions:
+      # contents: read is required by the checkout step below; see the
+      # matching note on the `alert` job above (job-level permissions:
+      # replaces, rather than merges with, the workflow-level default).
+      contents: read
       issues: write
     steps:
       - name: Harden Runner
