@@ -54,7 +54,7 @@ jobs:
     permissions:
       contents: read
       pull-requests: write
-    uses: ByronWilliamsCPA/.github/.github/workflows/python-sonarcloud.yml@50e3c9783a7f43613651d5c5688d99cb748a8a22  # main
+    uses: ByronWilliamsCPA/.github/.github/workflows/python-sonarcloud.yml@cb0742cf00832b4e640a47dfca222047c2b70c1c  # main
     with:
       sonar-organization: 'byronwilliamscpa'
       sonar-project-key: 'ByronWilliamsCPA_cyo-adventure'

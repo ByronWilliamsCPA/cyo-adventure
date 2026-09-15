@@ -65,7 +65,7 @@ jobs:
       release_pr: ${{ steps.check.outputs.release_pr }}
     steps:
       - name: Harden the runner
-        uses: step-security/harden-runner@bf7454d06d71f1098171f2acdf0cd4708d7b5920 # v2.20.0
+        uses: step-security/harden-runner@e14015d583714f6e62063499dc959a02595150a1 # v2.21.1
         with:
           egress-policy: audit
 
@@ -91,7 +91,7 @@ jobs:
     name: Container Security Scan
     needs: detect-release-pr
     if: needs.detect-release-pr.outputs.release_pr != 'true'
-    uses: ByronWilliamsCPA/.github/.github/workflows/python-container-security.yml@07f56c2821f88d531826cc524211be9387591a09  # v10.1.0
+    uses: ByronWilliamsCPA/.github/.github/workflows/python-container-security.yml@cb0742cf00832b4e640a47dfca222047c2b70c1c  # v10.1.7
     with:
       dockerfile-path: 'Dockerfile'
       build-context: '.'
