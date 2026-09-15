@@ -78,7 +78,7 @@ jobs:
         # #VERIFY: `UW-F32` tracks the real question this exposed, which is that
         # four Postgres majors are in play at once (compose 16, this workflow 18,
         # integration tests 17, production 17.6) with no stated policy.
-        image: postgres:18-alpine@sha256:9a8afca54e7861fd90fab5fdf4c42477a6b1cb7d293595148e674e0a3181de15
+        image: postgres:18-alpine@sha256:d3e1620b530c944afa6e887d22eb899824da68e19c52024bf98f5220c88a65b2
         env:
           POSTGRES_DB: cyo_adventure
           POSTGRES_USER: cyo_adventure
@@ -91,7 +91,7 @@ jobs:
           --health-timeout 5s
           --health-retries 5
       redis:
-        image: redis:8-alpine@sha256:978f0e01593e65eed801f2402944efcd936d43b5027e4908a7897baf88ed6241
+        image: redis:8-alpine@sha256:becdda6c7f4b3fb42e42fd7f120bbf5c54c4caaaf16f26da24e4563d2c1f0576
         ports:
           - 6379:6379
         options: >-
@@ -101,7 +101,7 @@ jobs:
           --health-retries 5
     steps:
       - name: Harden the runner
-        uses: step-security/harden-runner@bf7454d06d71f1098171f2acdf0cd4708d7b5920 # v2.20.0
+        uses: step-security/harden-runner@e14015d583714f6e62063499dc959a02595150a1 # v2.21.1
         with:
           egress-policy: audit
 
