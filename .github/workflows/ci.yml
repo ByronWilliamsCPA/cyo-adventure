@@ -67,7 +67,7 @@ jobs:
     steps:
       - name: Harden the runner
         # deferral: 2026-09-18
-        uses: step-security/harden-runner@bf7454d06d71f1098171f2acdf0cd4708d7b5920 # v2.20.0
+        uses: step-security/harden-runner@e14015d583714f6e62063499dc959a02595150a1 # v2.21.1
         with:
           egress-policy: audit
 
@@ -170,7 +170,7 @@ jobs:
     steps:
       - name: Harden the runner
         # deferral: 2026-09-18
-        uses: step-security/harden-runner@bf7454d06d71f1098171f2acdf0cd4708d7b5920 # v2.20.0
+        uses: step-security/harden-runner@e14015d583714f6e62063499dc959a02595150a1 # v2.21.1
         with:
           egress-policy: audit
 
@@ -262,7 +262,7 @@ jobs:
         run: sed -i 's|^SF:|SF:frontend/|' coverage/lcov.info
 
       - name: Upload frontend coverage
-        uses: codecov/codecov-action@fb8b3582c8e4def4969c97caa2f19720cb33a72f # v7.0.0
+        uses: codecov/codecov-action@0b35c9ecc4f0529d0eb674914510c22f85b196b4 # v7.1.0
         with:
           files: ./frontend/coverage/lcov.info
           # Vitest's v8 provider also writes coverage/coverage-final.json, which
@@ -313,7 +313,7 @@ jobs:
     steps:
       - name: Harden the runner
         # deferral: 2026-09-18
-        uses: step-security/harden-runner@bf7454d06d71f1098171f2acdf0cd4708d7b5920 # v2.20.0
+        uses: step-security/harden-runner@e14015d583714f6e62063499dc959a02595150a1 # v2.21.1
         with:
           egress-policy: audit
 
@@ -399,7 +399,7 @@ jobs:
     steps:
       - name: Harden the runner
         # deferral: 2026-09-18
-        uses: step-security/harden-runner@bf7454d06d71f1098171f2acdf0cd4708d7b5920 # v2.20.0
+        uses: step-security/harden-runner@e14015d583714f6e62063499dc959a02595150a1 # v2.21.1
         with:
           egress-policy: audit
 
@@ -481,7 +481,7 @@ jobs:
     steps:
       - name: Harden the runner
         # deferral: 2026-09-18
-        uses: step-security/harden-runner@bf7454d06d71f1098171f2acdf0cd4708d7b5920 # v2.20.0
+        uses: step-security/harden-runner@e14015d583714f6e62063499dc959a02595150a1 # v2.21.1
         with:
           egress-policy: audit
 
@@ -527,7 +527,7 @@ jobs:
         run: sed -i 's|^SF:|SF:frontend/design-system/|' coverage/lcov.info
 
       - name: Upload design-system coverage
-        uses: codecov/codecov-action@fb8b3582c8e4def4969c97caa2f19720cb33a72f # v7.0.0
+        uses: codecov/codecov-action@0b35c9ecc4f0529d0eb674914510c22f85b196b4 # v7.1.0
         with:
           files: ./frontend/design-system/coverage/lcov.info
           disable_search: true
@@ -571,7 +571,7 @@ jobs:
     steps:
       - name: Harden the runner
         # deferral: 2026-09-18
-        uses: step-security/harden-runner@bf7454d06d71f1098171f2acdf0cd4708d7b5920 # v2.20.0
+        uses: step-security/harden-runner@e14015d583714f6e62063499dc959a02595150a1 # v2.21.1
         with:
           egress-policy: audit
 
@@ -649,7 +649,7 @@ jobs:
     steps:
       - name: Harden the runner
         # deferral: 2026-09-18
-        uses: step-security/harden-runner@bf7454d06d71f1098171f2acdf0cd4708d7b5920 # v2.20.0
+        uses: step-security/harden-runner@e14015d583714f6e62063499dc959a02595150a1 # v2.21.1
         with:
           egress-policy: audit
 
@@ -703,7 +703,7 @@ jobs:
     steps:
       - name: Harden the runner
         # deferral: 2026-09-18
-        uses: step-security/harden-runner@bf7454d06d71f1098171f2acdf0cd4708d7b5920 # v2.20.0
+        uses: step-security/harden-runner@e14015d583714f6e62063499dc959a02595150a1 # v2.21.1
         with:
           egress-policy: audit
 
@@ -771,7 +771,7 @@ jobs:
     steps:
       - name: Harden the runner
         # deferral: 2026-09-18
-        uses: step-security/harden-runner@bf7454d06d71f1098171f2acdf0cd4708d7b5920 # v2.20.0
+        uses: step-security/harden-runner@e14015d583714f6e62063499dc959a02595150a1 # v2.21.1
         with:
           egress-policy: audit
 
@@ -825,7 +825,7 @@ jobs:
     steps:
       - name: Harden the runner
         # deferral: 2026-09-18
-        uses: step-security/harden-runner@bf7454d06d71f1098171f2acdf0cd4708d7b5920 # v2.20.0
+        uses: step-security/harden-runner@e14015d583714f6e62063499dc959a02595150a1 # v2.21.1
         with:
           egress-policy: audit
 
@@ -833,7 +833,7 @@ jobs:
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
       - name: Install uv
-        uses: astral-sh/setup-uv@d0cc045d04ccac9d8b7881df0226f9e82c39688e # v6.0.1
+        uses: astral-sh/setup-uv@d0cc045d04ccac9d8b7881df0226f9e82c39688e # v6.8.0
         with:
           python-version: "3.14"
 
@@ -853,7 +853,7 @@ jobs:
     steps:
       - name: Harden the runner
         # deferral: 2026-09-18
-        uses: step-security/harden-runner@bf7454d06d71f1098171f2acdf0cd4708d7b5920 # v2.20.0
+        uses: step-security/harden-runner@e14015d583714f6e62063499dc959a02595150a1 # v2.21.1
         with:
           egress-policy: audit
 
@@ -968,7 +968,7 @@ jobs:
     steps:
       - name: Harden the runner
         # deferral: 2026-09-18
-        uses: step-security/harden-runner@bf7454d06d71f1098171f2acdf0cd4708d7b5920 # v2.20.0
+        uses: step-security/harden-runner@e14015d583714f6e62063499dc959a02595150a1 # v2.21.1
         with:
           egress-policy: audit
 
@@ -1127,7 +1127,7 @@ jobs:
     steps:
       - name: Harden the runner
         # deferral: 2026-09-18
-        uses: step-security/harden-runner@bf7454d06d71f1098171f2acdf0cd4708d7b5920 # v2.20.0
+        uses: step-security/harden-runner@e14015d583714f6e62063499dc959a02595150a1 # v2.21.1
         with:
           egress-policy: audit
 
@@ -1222,7 +1222,7 @@ jobs:
     steps:
       - name: Harden the runner
         # deferral: 2026-09-18
-        uses: step-security/harden-runner@bf7454d06d71f1098171f2acdf0cd4708d7b5920 # v2.20.0
+        uses: step-security/harden-runner@e14015d583714f6e62063499dc959a02595150a1 # v2.21.1
         with:
           egress-policy: audit
 
@@ -1242,7 +1242,7 @@ jobs:
 
       - name: Upload unit coverage
         if: ${{ hashFiles('coverage-reports/coverage-unit.xml') != '' }}
-        uses: codecov/codecov-action@fb8b3582c8e4def4969c97caa2f19720cb33a72f # v7.0.0
+        uses: codecov/codecov-action@0b35c9ecc4f0529d0eb674914510c22f85b196b4 # v7.1.0
         with:
           files: coverage-reports/coverage-unit.xml
           disable_search: true
@@ -1253,7 +1253,7 @@ jobs:
 
       - name: Upload integration coverage
         if: ${{ hashFiles('coverage-reports/coverage-integration.xml') != '' }}
-        uses: codecov/codecov-action@fb8b3582c8e4def4969c97caa2f19720cb33a72f # v7.0.0
+        uses: codecov/codecov-action@0b35c9ecc4f0529d0eb674914510c22f85b196b4 # v7.1.0
         with:
           files: coverage-reports/coverage-integration.xml
           disable_search: true
@@ -1264,7 +1264,7 @@ jobs:
 
       - name: Upload security coverage
         if: ${{ hashFiles('coverage-reports/coverage-security.xml') != '' }}
-        uses: codecov/codecov-action@fb8b3582c8e4def4969c97caa2f19720cb33a72f # v7.0.0
+        uses: codecov/codecov-action@0b35c9ecc4f0529d0eb674914510c22f85b196b4 # v7.1.0
         with:
           files: coverage-reports/coverage-security.xml
           disable_search: true
@@ -1347,7 +1347,7 @@ jobs:
     steps:
       - name: Harden the runner
         # deferral: 2026-09-18
-        uses: step-security/harden-runner@bf7454d06d71f1098171f2acdf0cd4708d7b5920 # v2.20.0
+        uses: step-security/harden-runner@e14015d583714f6e62063499dc959a02595150a1 # v2.21.1
         with:
           egress-policy: audit
 
@@ -1381,7 +1381,7 @@ jobs:
     steps:
       - name: Harden the runner
         # deferral: 2026-09-18
-        uses: step-security/harden-runner@bf7454d06d71f1098171f2acdf0cd4708d7b5920 # v2.20.0
+        uses: step-security/harden-runner@e14015d583714f6e62063499dc959a02595150a1 # v2.21.1
         with:
           egress-policy: audit
 
@@ -1543,7 +1543,7 @@ jobs:
     steps:
       - name: Harden the runner
         # deferral: 2026-09-18
-        uses: step-security/harden-runner@bf7454d06d71f1098171f2acdf0cd4708d7b5920 # v2.20.0
+        uses: step-security/harden-runner@e14015d583714f6e62063499dc959a02595150a1 # v2.21.1
         with:
           egress-policy: audit
 
