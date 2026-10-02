@@ -15,10 +15,13 @@ tags:
 
 # ADR-032: Self-hosted Supabase-equivalent stack for non-production environments
 
-> **Status**: Accepted (2026-09-21; six decisions ratified by the project owner via
-> AskUserQuestion in the authoring session. Decision 5, stack tier placement, was proposed and
-> went unchallenged rather than being put to a formal question; see Decision point 5 and
-> Follow-on work.)
+> **Status**: Accepted (2026-09-21). Ratification is per decision point, not blanket:
+> Decisions 1, 2, 3 and 6 were ratified by the project owner via AskUserQuestion in the
+> authoring session on 2026-09-21. Decision 5 (stack tier placement) and Decision 4's backup
+> *target* (a separate R2 bucket, revised from the original "reuse production's bucket") were
+> ratified on 2026-10-02 during review, as was the migration path in Decision 2. Decision 4's
+> *script split* (`scripts/backup_database.py` stays production-only) remains an unratified
+> recommendation, tracked as `UW-A62`.
 > **Date**: 2026-09-21
 > **Amends**: [ADR-009](./adr-009-supabase-platform.md) (Decision point 9, "Environments and plan
 > tiers": the free-plan staging Supabase project and the "homelab remains the dev/family-staging
@@ -108,24 +111,55 @@ backup script. Production remains on Supabase Cloud, untouched.**
    running in `homelab-infra`) as the OIDC provider. This was the non-default option among what
    was recommended; taken as the owner's explicit choice (see Options Considered, Dead end 1).
 2. **Network exposure**: a public hostname via the existing Traefik + ZeroSSL setup, not
-   internal-only, because Apple/Google OAuth needs a real redirect URI at sign-in.
+   internal-only, because Apple/Google OAuth needs a real redirect URI at sign-in. The public
+   surface is an explicit allowlist, not the whole stack:
+   - **Public**: only GoTrue, through the Kong gateway's `/auth/v1/` path prefix (sign-in,
+     OAuth `authorize`/`callback`, token refresh, and the JWKS document). The frontend uses
+     `supabase-js` for auth only; nothing in `frontend/src/` calls PostgREST, Realtime,
+     Storage or Functions, so `/rest/v1/`, `/realtime/v1/`, `/storage/v1/` and
+     `/functions/v1/` get no public route. Confirm the prefix list against the current
+     official compose during `UW-A60` before the router is written.
+   - **Internal only, never routed by Traefik**: Postgres, Supavisor, Studio, `postgres-meta`
+     (Kong's `/pg/` route), and any admin or metrics endpoint. Studio, if run at all, is
+     reached over the homelab network or a tunnel, not the public hostname.
+   - **Migrations (ratified 2026-10-02)**: `.github/workflows/supabase-staging.yml` runs
+     `supabase db push` from GitHub-hosted runners today, which against this stack would need
+     Postgres reachable from the internet. Instead, the non-prod migration job runs on a
+     self-hosted GitHub Actions runner on the homelab, so the database never needs a public
+     route. Publishing the pooler behind an IP allowlist was rejected: GitHub's runner ranges
+     are wide and change.
 3. **Object storage**: MinIO is explicitly out of scope for this phase. The stack's `storage-api`
    service still runs (it ships with the official compose), but story blobs remain inline JSONB
    per ADR-009; nothing in this app writes to Supabase Storage today. **Open item**: confirm the
    official compose's default storage backend works filesystem-only with no extra config, since an
    unconfigured `storage-api` that hard-requires S3-compatible config would undercut this
    deferral (see Follow-on work, `UW-A60`).
-4. **Backup**: a new, lightweight `pg_dumpall`-based backup for the new stack, reusing production's
-   R2 target/bucket, with daily-only cadence and short retention, not production's tiered
-   daily/weekly/monthly scheme. `scripts/backup_database.py` stays production-only rather than
-   being parameterized for both targets; the new stack gets an independent backup sidecar built in
-   `homelab-infra` (see Follow-on work, `UW-A62`, since this split was the design session's
-   recommendation and not something the owner separately ratified).
+4. **Backup**: a new, lightweight `pg_dumpall`-based backup for the new stack, with daily-only
+   cadence and short retention, not production's tiered daily/weekly/monthly scheme.
+   - **Target (revised and ratified 2026-10-02)**: a *separate* non-production bucket in the
+     same R2 account, not production's bucket. Sharing the bucket was the original wording and
+     is unsafe for two verified reasons. First, `scripts/backup_database.py` replaces the
+     production bucket's entire lifecycle configuration on each run: it owns only the
+     `expire-daily`/`expire-weekly`/`expire-monthly` rule IDs and reports, then overwrites,
+     anything else, so a non-prod retention rule there would be deleted nightly. Second, R2
+     API tokens are scoped per bucket rather than per key prefix (the production token is
+     deliberately limited to one bucket for exactly this reason), so any non-prod credential
+     able to write the production bucket could also overwrite or delete production backups.
+   - **Isolation requirements for the new bucket**: its own `.cyo-backup-bucket`-style marker
+     object, checked before any write; its own lifecycle rule; an object-scoped API token
+     limited to that bucket only; and an encryption key distinct from production's
+     `BACKUP_ENCRYPTION_KEY`. No non-prod credential is granted any access to the production
+     backup bucket.
+   - **Restore restrictions**: a non-prod restore reads only from the non-prod bucket and
+     writes only to the self-hosted stack's Postgres. Production restores remain governed by
+     `docs/operations/runbook.md` section 6 and are unaffected.
+   - **Script split**: `scripts/backup_database.py` stays production-only rather than being
+     parameterized for both targets; the new stack gets an independent backup sidecar built in
+     `homelab-infra`. This split was the design session's recommendation and is not yet
+     ratified (Follow-on work, `UW-A62`).
 5. **Stack tier placement**: `homelab-infra`'s `stacks/platform/cyo-supabase/`. `stacks/platform/`
-   already exists as a real, if empty, tier folder. This placement was proposed in the design
-   session and went unchallenged rather than being put to a formal decision; lower confidence than
-   points 1-4 and 6, and worth a quick confirmation before `homelab-infra` work starts (see
-   Follow-on work, `UW-A60`).
+   already exists as a real, if empty, tier folder. Proposed in the 2026-09-21 design session and
+   ratified by the owner on 2026-10-02.
 6. **Image sourcing**: mirror the stack's vendor images through `container-images`'s existing
    digest-copy/Trivy/SBOM/drift-check pipeline under a new `source_tier: "vendor"` catalog
    category, rather than pulling directly from Docker Hub in the compose file (the initial
@@ -231,7 +265,13 @@ already exercises rather than building ahead of need.
   decisions are unaffected.
 - ⚠️ A public hostname on the homelab is new attack surface (though the homelab already runs
   publicly reachable services via Traefik). Mitigation: reuses the existing Traefik + ZeroSSL TLS
-  termination and Infisical secrets pattern rather than a bespoke exposure mechanism.
+  termination and Infisical secrets pattern rather than a bespoke exposure mechanism, and
+  publishes only GoTrue's `/auth/v1/` routes; Postgres, Supavisor, Studio and admin endpoints are
+  never routed publicly (Decision point 2).
+- ⚠️ A homelab self-hosted GitHub Actions runner is new infrastructure that executes workflow code
+  with network access to the non-prod database. Mitigation: register it to this repository only,
+  restrict it to the non-prod migration workflow by label, and never schedule it for
+  `pull_request` events from forks.
 - ⚠️ `container-images`' `source_tier` field gains a value (`vendor`) whose supply-chain posture
   differs from `primary`/`distroless` (an unmodified vendor image, not a hardened rebuild); this
   must be documented clearly in that repo so a future reader does not conflate the two meanings.
@@ -259,9 +299,11 @@ already exercises rather than building ahead of need.
    `stacks/platform/cyo-supabase/compose.yaml` adapted from Supabase's official self-hosting
    reference, every image reference pointed at this org's GHCR mirror; new Traefik router/service/
    middleware entries in `services/traefik/dynamic/services.yml` for the chosen hostname (not yet
-   decided, owner's call); secrets provisioned through the existing `scripts/infisical/deploy.sh`
-   pattern, never a committed `.env`; a new backup image via one matrix entry in the existing
-   `dhi-build.yml` pattern (see Follow-on work, `UW-A60`).
+   decided, owner's call), routing only the `/auth/v1/` prefix (Decision point 2); secrets
+   provisioned through the existing `scripts/infisical/deploy.sh` pattern, never a committed
+   `.env`; a new backup image via one matrix entry in the existing `dhi-build.yml` pattern,
+   writing to its own non-prod R2 bucket (Decision point 4); and a self-hosted GitHub Actions
+   runner for the non-prod migration job (see Follow-on work, `UW-A60`).
 3. **CYO_Adventure** (this repo, separate branch, after the stack exists): new Infisical/env
    entries for `DATABASE_URL`, `WORKER_DATABASE_URL` (via the new stack's Supavisor session-mode
    pooler, keeping `CYO_ADVENTURE_DATABASE_DISABLE_PREPARED_CACHE`), `OIDC_ISSUER`/
@@ -269,8 +311,9 @@ already exercises rather than building ahead of need.
    run the existing `supabase/migrations/` unchanged against the new stack's Postgres (this is
    exactly the portability ADR-012's migration mechanism was chosen for); register the new
    callback URL in both the Apple and Google developer consoles (the one step with no config/file
-   equivalent); retarget `.github/workflows/supabase-staging.yml` at the new connection string
-   (see Follow-on work, `UW-A61`).
+   equivalent); move the non-prod leg of `.github/workflows/supabase-staging.yml` onto the
+   homelab self-hosted runner and point it at the new stack with `supabase db push --db-url`,
+   replacing the Cloud-only `supabase link --project-ref` step (see Follow-on work, `UW-A61`).
 
 ### Testing Strategy
 
@@ -294,7 +337,14 @@ already exercises rather than building ahead of need.
       and issues GoTrue JWTs the backend accepts under the existing OIDC verification path.
 - [ ] `supabase/migrations/` applies cleanly against the new stack's Postgres with no manual
       intervention.
-- [ ] A guardian can complete real Apple and Google OAuth sign-in against the new stack.
+- [ ] A guardian can complete real Apple and Google OAuth sign-in against the new stack, using
+      dedicated synthetic test accounts only: one Apple ID and one Google account created for
+      this purpose and owned by the core-maintainer, never a family member's or any real
+      guardian's account. The GoTrue `auth.users` and `auth.identities` rows those sign-ins create
+      are deleted after each validation run (or wiped with the stack on reset), so the
+      provider claims they hold (email, name, provider subject) do not persist in non-prod. This
+      keeps the Regulatory constraint above ("no real guardian or child PII") true for identity
+      records as well as fixture data.
 - [ ] The new stack's backup runs on schedule and a restore has been exercised at least once.
 - [ ] The old combined dev/test Supabase Cloud project is deleted and the account shows one free
       project slot.
@@ -317,16 +367,18 @@ already exercises rather than building ahead of need.
   unverified as of this ADR).
 - **`UW-A60`** (`homelab-infra`, `external:homelab-infra`): build
   `stacks/platform/cyo-supabase/compose.yaml`, wire Traefik dynamic config for the chosen hostname
-  (not yet decided), provision secrets via Infisical, and add the daily `pg_dumpall`-based backup
-  sidecar via `dhi-build.yml`. Two open items to resolve during this work: whether GoTrue hard-
-  requires SMTP configuration to boot even though guardians sign in via Apple/Google OAuth only
-  (unverified), and whether the official compose's default storage backend for `storage-api`
-  works filesystem-only without extra config (Decision point 3). Also confirm the `stacks/platform/`
-  tier placement (Decision point 5) with the owner before or during this work, since it was
-  proposed rather than formally ratified.
+  (not yet decided) with a public router for the `/auth/v1/` prefix only (Decision point 2),
+  provision secrets via Infisical, add the daily `pg_dumpall`-based backup sidecar via
+  `dhi-build.yml` writing to its own non-prod R2 bucket with the isolation requirements in
+  Decision point 4, and stand up the self-hosted GitHub Actions runner for non-prod migrations.
+  Two open items to resolve during this work: whether GoTrue hard-requires SMTP configuration to
+  boot even though guardians sign in via Apple/Google OAuth only (unverified), and whether the
+  official compose's default storage backend for `storage-api` works filesystem-only without
+  extra config (Decision point 3).
 - **`UW-A61`** (CYO_Adventure, `now`, status `blocked` on `UW-A60` landing): wire the app at the
   new stack (env/Infisical entries, run migrations, register the new OAuth redirect URI in both
-  developer consoles, retarget `supabase-staging.yml`). No application code changes; config only.
+  developer consoles, move the non-prod leg of `supabase-staging.yml` onto the self-hosted
+  runner). No application code changes; config and workflow only.
 - **`UW-A62`** (CYO_Adventure, `now`, status `decision`, owner: core-maintainer): ratify that
   `scripts/backup_database.py` stays production-only and the new stack gets its own
   `homelab-infra`-owned backup sidecar (Decision point 4), rather than parameterizing the existing
@@ -334,7 +386,12 @@ already exercises rather than building ahead of need.
   separately confirmed.
 - **`UW-A63`** (CYO_Adventure, `now`, status `blocked` on `UW-A59` through `UW-A62` landing and an
   owner-determined burn-in period elapsing): decommission the old combined dev/test Supabase Cloud
-  project once the new stack has run clean, freeing the second Cloud project slot.
+  project once the new stack has run clean, freeing the second Cloud project slot. Deleting the
+  Cloud project is irreversible, so each of the first four Success Criteria above must be met and
+  recorded with evidence before it happens: the public hostname serves a valid TLS certificate and
+  GoTrue JWTs the backend accepts; `supabase/migrations/` applied clean; Apple and Google OAuth
+  sign-in completed with the synthetic test accounts; and a backup restore exercised from the
+  non-prod bucket.
 
 ## Related
 
