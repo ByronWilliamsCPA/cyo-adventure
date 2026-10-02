@@ -318,13 +318,20 @@ already exercises rather than building ahead of need.
    it deploys Auth settings through the Supabase Cloud Management API, which a self-hosted stack
    does not expose, and it would fail outright once the Cloud project is deleted. It is removed
    from the non-prod leg. The Auth settings it carried (the base `[auth]` block of
-   `supabase/config.toml`, including the Apple/Google provider entries, plus the
-   `[remotes.staging.auth]` overlay's `site_url` and `additional_redirect_urls`) are instead set
-   as GoTrue `GOTRUE_*` environment variables in the `homelab-infra` compose, non-secret values in
-   the compose file and OAuth client secrets via Infisical. A committed mapping from each
-   `config.toml` auth key to its `GOTRUE_*` variable gives an Auth change a known place to land in
-   both environments; without it, an Auth setting changed in `config.toml` would silently reach
-   production only.
+   `supabase/config.toml`, plus the `[remotes.staging.auth]` overlay's `site_url` and
+   `additional_redirect_urls`) are instead set as GoTrue `GOTRUE_*` environment variables in the
+   `homelab-infra` compose, non-secret values in the compose file and OAuth client secrets via
+   Infisical. A committed mapping from each `config.toml` auth key to its `GOTRUE_*` variable
+   gives an Auth change a known place to land in both environments; without it, an Auth setting
+   changed in `config.toml` would silently reach production only.
+   **Google is not in that mapping and needs its own step.** `config.toml` deliberately omits
+   `[auth.external.google]` (see its `#CRITICAL` comment): Google sign-in, the guardian login
+   path, is enabled on staging with a client ID and secret held only in the Supabase Cloud
+   dashboard. Before the Cloud project is deleted, those credentials (or a new non-prod Google
+   OAuth client) must be put in Infisical and wired as `GOTRUE_EXTERNAL_GOOGLE_ENABLED`,
+   `GOTRUE_EXTERNAL_GOOGLE_CLIENT_ID`, `GOTRUE_EXTERNAL_GOOGLE_SECRET` and
+   `GOTRUE_EXTERNAL_GOOGLE_REDIRECT_URI`, with the new callback URL registered in the Google
+   console; otherwise guardian Google sign-in fails on the new stack.
 
 ### Testing Strategy
 
