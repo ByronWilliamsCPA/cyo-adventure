@@ -8,10 +8,14 @@
 # expired acceptance puts its finding back in the gate on its own.
 #
 # Scope: base-image (Debian trixie) OS-package CVEs with no fixed version on the
-# trixie track, EXCEPT `linux-libc-dev`. That package is accepted at package
-# scope in `.trivy/ignore-policy.rego` instead, because the judgment there is a
-# property of the package rather than of any individual CVE; see
-# docs/known-vulnerabilities.md, "linux-libc-dev kernel UAPI headers".
+# trixie track. `linux-libc-dev` was once accepted at package scope in
+# `.trivy/ignore-policy.rego` instead; that policy was removed on 2026-10-02
+# because the base image no longer ships the package. See
+# docs/known-vulnerabilities.md, "Resolution detail: `linux-libc-dev`
+# package-scoped acceptance". If the package returns, full-scope scans (push,
+# schedule, manual) surface its findings unsuppressed, which is intended;
+# pull-request and merge-queue scans still omit any finding without a fixed
+# version, because the workflow sets `ignore-unfixed` for those two events.
 #
 # Two rules govern every entry here, both machine-enforced:
 #
@@ -88,9 +92,10 @@ vulnerabilities:
   # 2.8.3, so their suppressions were retired here in the same pass.
   - id: CVE-2026-66046
     statement: >-
-      libexpat denial of service in Expat through 2.8.3. Reported against
-      2.8.3-1~deb13u1+dhi2 with status `affected` and no Debian fix, so the
-      2026-09-02 base-image digest refresh that cleared 42 other CVEs does not
-      clear this one. No runtime code path parses untrusted XML; the API speaks
-      JSON only.
-    expired_at: 2026-09-17
+      libexpat denial of service in Expat through 2.8.3. Reassessed
+      2026-10-02: the base (digest 86330353, Debian 13.7) ships
+      2.8.3-1~deb13u1+dhi4, still affected, and Debian has triaged trixie as
+      <no-dsa> (Minor issue), so no trixie-track fix is planned. No runtime
+      code path parses untrusted XML; the API speaks JSON only, and the only
+      XML libraries in uv.lock come from extras the image does not install.
+    expired_at: 2026-11-08

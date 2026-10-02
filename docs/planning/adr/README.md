@@ -56,6 +56,7 @@ ADRs document significant architectural decisions along with their context and c
 | [ADR-029](./adr-029-web-accessibility-conformance.md) | Web accessibility conformance target and testing strategy | Accepted | 2026-08-11 |
 | [ADR-030](./adr-030-engagement-correlation-privacy-review.md) | Children's-privacy review of the engagement-correlation analysis job | Proposed | 2026-08-28 |
 | [ADR-031](./adr-031-first-party-friction-beacon.md) | Children's-privacy review of the first-party client friction beacon | Proposed | 2026-08-28 |
+| [ADR-032](./adr-032-non-prod-self-hosted-supabase.md) | Self-hosted Supabase-equivalent stack for non-production environments | Accepted | 2026-09-21 |
 
 ## Creating ADRs
 

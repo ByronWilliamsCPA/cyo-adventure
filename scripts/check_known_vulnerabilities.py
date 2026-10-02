@@ -39,8 +39,10 @@ Checks:
    go red over it while the SCAN still reported zero.
 
 Checks 6 and 7 deliberately do NOT require the reverse. Findings suppressed by
-``.trivy/ignore-policy.rego`` are accepted at package scope and by design carry
-no CVE list; see that file and the "package-scoped acceptance" entry.
+an optional ``.trivy/ignore-policy.rego`` are accepted at package scope and by
+design carry no CVE list. No such policy exists as of 2026-10-02 (the
+``linux-libc-dev`` one was retired when the base image dropped the package), so
+the policy check is a no-op until one is added back.
 
 Usage::
 
