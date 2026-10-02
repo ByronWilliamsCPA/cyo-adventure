@@ -36,7 +36,7 @@ jobs:
     # ByronWilliamsCPA/.github main. `gh api
     # repos/ByronWilliamsCPA/.github/compare/main...<sha> --jq .status` must not
     # return "diverged". Renovate tracks this pin.
-    uses: ByronWilliamsCPA/.github/.github/workflows/claude-baseline-review.yml@7d12f5486ab5c856397ebaa4acd3c99ca385227c  # main
+    uses: ByronWilliamsCPA/.github/.github/workflows/claude-baseline-review.yml@b7c661ec3bfeb04370ce3a9c748bd8c4e93bfe89  # main
     with:
       repo-description: >-
         CYO Adventure (Ariadne): a safety-gated choose-your-own-

@@ -7,6 +7,28 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 <!-- version list -->
 
+## [0.89.2] - 2026-10-02
+
+### Bug Fixes
+
+- **deps**: Bump pyjwt, urllib3, axios and others to clear CVEs
+  ([#846](https://github.com/ByronWilliamsCPA/cyo-adventure/pull/846),
+  [`c3d7f7a`](https://github.com/ByronWilliamsCPA/cyo-adventure/commit/c3d7f7a0f78dbf9a3b3798df5cd70f06dac3b824))
+
+- **renovate**: Exempt lock file maintenance from minimum release age
+  ([#845](https://github.com/ByronWilliamsCPA/cyo-adventure/pull/845),
+  [`e11b293`](https://github.com/ByronWilliamsCPA/cyo-adventure/commit/e11b29353d71021684bc8c862b5f89b3f8a39211))
+
+
+## [0.89.1] - 2026-09-22
+
+### Bug Fixes
+
+- **deps**: Bump jupyter-server to 2.21.1 to clear CVE-2026-86049
+  ([#837](https://github.com/ByronWilliamsCPA/cyo-adventure/pull/837),
+  [`556d357`](https://github.com/ByronWilliamsCPA/cyo-adventure/commit/556d357bc014bd607a42d187697b1ef1dfb6970a))
+
+
 ## [0.89.0] - 2026-09-14
 
 ### Bug Fixes
@@ -3730,6 +3752,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Safety dependency vulnerability scanning
 - Pre-commit hooks for security validation
 
+[0.89.2]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.89.1...v0.89.2
+[0.89.1]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.89.0...v0.89.1
 [0.89.0]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.88.0...v0.89.0
 [0.88.0]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.87.1...v0.88.0
 [0.87.1]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.87.0...v0.87.1
