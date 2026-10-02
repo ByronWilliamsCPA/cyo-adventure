@@ -208,6 +208,42 @@ async def test_persist_records_the_sentinel_manifest() -> None:
 
 @pytest.mark.unit
 @pytest.mark.asyncio
+async def test_persist_records_the_personalization_subject() -> None:
+    """The requesting child reaches the storybook row; this is its only write."""
+    session = _FakeSession()
+    subject = uuid.uuid4()
+    params = StorybookParams(
+        story_id="s_subject",
+        blob={"id": "ignored", "title": "T", "nodes": []},
+        family_id=uuid.uuid4(),
+        provider="mock",
+        personalization_subject_profile_id=subject,
+    )
+    await persist_storybook(session, params)
+
+    books = _added(session, Storybook)
+    assert books[0].personalization_subject_profile_id == subject
+
+
+@pytest.mark.unit
+@pytest.mark.asyncio
+async def test_persist_personalization_subject_defaults_to_none() -> None:
+    """An import or guardian-authored book carries no subject."""
+    session = _FakeSession()
+    params = StorybookParams(
+        story_id="s_no_subject",
+        blob={"id": "ignored", "title": "T", "nodes": []},
+        family_id=uuid.uuid4(),
+        provider="mock",
+    )
+    await persist_storybook(session, params)
+
+    books = _added(session, Storybook)
+    assert books[0].personalization_subject_profile_id is None
+
+
+@pytest.mark.unit
+@pytest.mark.asyncio
 async def test_persist_sentinel_manifest_defaults_to_none() -> None:
     """A path that ran no transform stores NULL, not an empty manifest.
 

@@ -1,15 +1,18 @@
 /**
  * Adapter from the axios instance to the personalization values port (ADR-023 P6).
  *
- * One route serves both rings (design plan 8.3): the client never names a
- * connection or a subject profile, and the server derives both from the caller's
- * own principal and the book. So this module has one function, the reader has one
- * call site, and neither branches on a fact a child session could not determine.
+ * One route serves both rings (design plan 8.3). The client names only the book
+ * and the READING child: ring-1 values follow the reader, so siblings sharing a
+ * book each see themselves. The client never names a connection or a ring-2
+ * subject; the server derives both. So this module has one function, the reader
+ * has one call site, and neither branches on a fact a child session could not
+ * determine.
  *
  * The route is keyed on the book, is never guardian-gated (a kid's tablet has to
  * be able to call it), and answers every predicate failure with an identical
  * empty payload rather than a 403 or a 404. There is therefore nothing here to
- * map onto the error classes `readerApi.ts` defines: any failure at all resolves
+ * map onto the error classes `readerApi.ts` defines: any failure at all (including
+ * the 403 for a profile the caller may not act on) resolves
  * to null, which the resolver treats as "render generic".
  */
 
@@ -21,16 +24,17 @@ import type { ValuesPayload } from '../player/personalization'
  * Build the values fetcher.
  *
  * @param api - The axios instance from `useApi()`.
- * @returns A function taking a storybook id and resolving to its values payload,
- *   or to null on any failure.
+ * @returns A function taking the reading profile id and a storybook id and
+ *   resolving to that reader's values payload, or to null on any failure.
  */
 export function makeFetchPersonalizationValues(
   api: AxiosInstance
-): (storybookId: string) => Promise<ValuesPayload | null> {
-  return async (storybookId: string): Promise<ValuesPayload | null> => {
+): (profileId: string, storybookId: string) => Promise<ValuesPayload | null> {
+  return async (profileId: string, storybookId: string): Promise<ValuesPayload | null> => {
     try {
       const res = await api.get<ValuesPayload>(
-        `/v1/storybooks/${storybookId}/personalization-values`
+        `/v1/storybooks/${storybookId}/personalization-values`,
+        { params: { profile_id: profileId } }
       )
       return res.data
     } catch (error) {

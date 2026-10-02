@@ -1668,6 +1668,9 @@ async def _persist_and_moderate(
             validation_report=dict(outcome.report),
             sentinel_manifest=outcome.sentinel_manifest,
             personalization_eligible=outcome.personalization_eligible,
+            personalization_subject_profile_id=await _resolve_requesting_profile_id(
+                session, ctx.job_row
+            ),
             version=_FIRST_VERSION,
         ),
     )
@@ -1964,6 +1967,43 @@ async def _resolve_name_personalization_enabled(
         resolved_enabled=bool(enabled),
     )
     return bool(enabled)
+
+
+async def _resolve_requesting_profile_id(
+    session: AsyncSession, job_row: GenerationJob
+) -> uuid.UUID | None:
+    """Resolve the child whose request produced this job, if any.
+
+    Recorded on the storybook as its ring-2 personalization subject (ADR-023
+    plan section 8.2). Ring 1 does not depend on it: own-family values follow
+    the reading child at render time.
+
+    Args:
+        session: The worker's owned session.
+        job_row: The job whose ``concept_id`` resolves the request row.
+
+    Returns:
+        The requesting profile's id, or ``None`` for a guardian-authored
+        concept, a request whose profile was deleted (the FK is ``ON DELETE
+        SET NULL``), or an ambiguous duplicate ``concept_id``.
+    """
+    # #ASSUME: data integrity: StoryRequest.concept_id is not unique at the
+    # schema level (see _resolve_name_personalization_enabled), so a duplicate
+    # fails closed to "no subject" rather than raising or picking one.
+    # #VERIFY: tests/unit/test_worker.py::
+    # test_resolve_requesting_profile_id_fails_closed_on_duplicate_concept.
+    statement = select(StoryRequest.profile_id).where(
+        StoryRequest.concept_id == job_row.concept_id,
+        StoryRequest.profile_id.is_not(None),
+    )
+    try:
+        return (await session.execute(statement)).scalar_one_or_none()
+    except MultipleResultsFound:
+        logger.warning(
+            "generation_job.subject_profile_ambiguous_concept",
+            concept_id=str(job_row.concept_id),
+        )
+        return None
 
 
 async def _persist_passed_outcome(

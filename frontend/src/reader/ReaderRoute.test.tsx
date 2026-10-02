@@ -435,6 +435,11 @@ describe('ReaderRoute personalization wiring (C3c)', () => {
           mockGet.mock.calls.some(([url]) => String(url).includes('personalization-values'))
         ).toBe(true)
       })
+      // Values follow the READING child: the route's profileId is the reader.
+      const valuesCall = mockGet.mock.calls.find(([url]) =>
+        String(url).includes('personalization-values')
+      )
+      expect(valuesCall?.[1]).toEqual({ params: { profile_id: 'p_flagon' } })
     } finally {
       vi.unstubAllEnvs()
     }
@@ -625,7 +630,7 @@ describe('ReaderRoute personalization fetcher behavior (C3c)', () => {
   }
 
   it('renders the cached name and keeps the cache entry when the values fetch fails', async () => {
-    await cachePersonalizationValues(sentinelStory.id, cachedPayload)
+    await cachePersonalizationValues('p_cache', sentinelStory.id, cachedPayload)
     mockStoryWithValues('reject')
 
     renderAt(`/read/p_cache/${sentinelStory.id}/1`)
@@ -634,11 +639,11 @@ describe('ReaderRoute personalization fetcher behavior (C3c)', () => {
     // The adapter maps the rejected GET to null; the fetcher falls back to the
     // cached payload, so the child's name still renders offline.
     await waitFor(() => expect(screen.getByTestId('passage-body').textContent).toContain('Maya'))
-    expect(await getCachedPersonalizationValues(sentinelStory.id)).toEqual(cachedPayload)
+    expect(await getCachedPersonalizationValues('p_cache', sentinelStory.id)).toEqual(cachedPayload)
   })
 
   it('deletes the cache entry and renders generic when the server answers with the empty payload', async () => {
-    await cachePersonalizationValues(sentinelStory.id, cachedPayload)
+    await cachePersonalizationValues('p_revoked', sentinelStory.id, cachedPayload)
     mockStoryWithValues(emptyValuesPayload)
 
     renderAt(`/read/p_revoked/${sentinelStory.id}/1`)
@@ -647,7 +652,7 @@ describe('ReaderRoute personalization fetcher behavior (C3c)', () => {
     // The authoritative empty payload is a revocation: the reconcile deletes
     // the entry, and the fetcher resolves null so the generic word renders.
     await waitFor(async () =>
-      expect(await getCachedPersonalizationValues(sentinelStory.id)).toBeUndefined()
+      expect(await getCachedPersonalizationValues('p_revoked', sentinelStory.id)).toBeUndefined()
     )
     await waitFor(() =>
       expect(screen.getByTestId('passage-body').textContent).toContain('Explorer')
@@ -656,7 +661,7 @@ describe('ReaderRoute personalization fetcher behavior (C3c)', () => {
   })
 
   it('does not delete the cache entry when the fetch fails', async () => {
-    await cachePersonalizationValues(sentinelStory.id, cachedPayload)
+    await cachePersonalizationValues('p_keep', sentinelStory.id, cachedPayload)
     mockStoryWithValues('reject')
 
     renderAt(`/read/p_keep/${sentinelStory.id}/1`)
@@ -665,7 +670,22 @@ describe('ReaderRoute personalization fetcher behavior (C3c)', () => {
     // Let the fetcher settle fully before asserting nothing was purged: a
     // failed fetch is "no authoritative answer", never a revocation.
     await new Promise((resolve) => setTimeout(resolve, 100))
-    expect(await getCachedPersonalizationValues(sentinelStory.id)).toEqual(cachedPayload)
+    expect(await getCachedPersonalizationValues('p_keep', sentinelStory.id)).toEqual(cachedPayload)
+  })
+
+  it("never renders a sibling's cached name for another reader of the same book", async () => {
+    // Siblings share a tablet and a book; the cache is keyed per reader, so
+    // p_sibling's offline fallback cannot reach p_owner's payload.
+    await cachePersonalizationValues('p_owner', sentinelStory.id, cachedPayload)
+    mockStoryWithValues('reject')
+
+    renderAt(`/read/p_sibling/${sentinelStory.id}/1`)
+
+    await screen.findByTestId('reader')
+    await waitFor(() =>
+      expect(screen.getByTestId('passage-body').textContent).toContain('Explorer')
+    )
+    expect(screen.getByTestId('passage-body').textContent).not.toContain('Maya')
   })
 })
 
@@ -704,13 +724,13 @@ describe('ReaderRoute flag-off residue purge', () => {
   it('clears cached personalization values on mount when the flag is off', async () => {
     // The flag is unset in src/test/setup.ts, so this is the default (off)
     // path: a payload cached while the flag was on must not stay at rest.
-    await cachePersonalizationValues('s_residue', cachedPayload)
+    await cachePersonalizationValues('p_off', 's_residue', cachedPayload)
 
     renderAt(`/read/p_off/${lantern.id}/${lantern.version}`)
 
     await screen.findByTestId('reader')
     await waitFor(async () =>
-      expect(await getCachedPersonalizationValues('s_residue')).toBeUndefined()
+      expect(await getCachedPersonalizationValues('p_off', 's_residue')).toBeUndefined()
     )
   })
 
@@ -718,13 +738,13 @@ describe('ReaderRoute flag-off residue purge', () => {
     vi.stubEnv('VITE_FEATURE_PERSONALIZATION', 'true')
     // A different book's entry: the route book's own entry is governed by the
     // reconcile, but the residue purge must not fire at all with the flag on.
-    await cachePersonalizationValues('s_other_book', cachedPayload)
+    await cachePersonalizationValues('p_on', 's_other_book', cachedPayload)
 
     renderAt(`/read/p_on/${lantern.id}/${lantern.version}`)
 
     await screen.findByTestId('reader')
     await new Promise((resolve) => setTimeout(resolve, 100))
-    expect(await getCachedPersonalizationValues('s_other_book')).toEqual(cachedPayload)
+    expect(await getCachedPersonalizationValues('p_on', 's_other_book')).toEqual(cachedPayload)
   })
 })
 

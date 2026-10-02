@@ -327,35 +327,60 @@ describe('personalization values store', () => {
     _resetDbHandle()
   })
 
-  it('round-trips a payload keyed by storybook id', async () => {
-    await cachePersonalizationValues('s_demo', valuesPayload)
-    expect(await getCachedPersonalizationValues('s_demo')).toEqual(valuesPayload)
+  it('round-trips a payload keyed by reader and storybook id', async () => {
+    await cachePersonalizationValues('p1', 's_demo', valuesPayload)
+    expect(await getCachedPersonalizationValues('p1', 's_demo')).toEqual(valuesPayload)
   })
 
   it('returns undefined for a book with no cached payload', async () => {
-    expect(await getCachedPersonalizationValues('s_never_cached')).toBeUndefined()
+    expect(await getCachedPersonalizationValues('p1', 's_never_cached')).toBeUndefined()
+  })
+
+  it("never serves one sibling's payload to another reading the same book", async () => {
+    await cachePersonalizationValues('p1', 's_shared', valuesPayload)
+    expect(await getCachedPersonalizationValues('p2', 's_shared')).toBeUndefined()
   })
 
   it('deletes one book payload without touching another', async () => {
-    await cachePersonalizationValues('s_a', valuesPayload)
-    await cachePersonalizationValues('s_b', valuesPayload)
-    await deletePersonalizationValues('s_a')
-    expect(await getCachedPersonalizationValues('s_a')).toBeUndefined()
-    expect(await getCachedPersonalizationValues('s_b')).toEqual(valuesPayload)
+    await cachePersonalizationValues('p1', 's_a', valuesPayload)
+    await cachePersonalizationValues('p1', 's_b', valuesPayload)
+    await deletePersonalizationValues('p1', 's_a')
+    expect(await getCachedPersonalizationValues('p1', 's_a')).toBeUndefined()
+    expect(await getCachedPersonalizationValues('p1', 's_b')).toEqual(valuesPayload)
   })
 
-  it('lists every cached entry with its key, for subject-scoped purges', async () => {
-    await cachePersonalizationValues('s_a', valuesPayload)
-    await cachePersonalizationValues('s_b', {
+  it('lists every cached entry with its reader and book', async () => {
+    await cachePersonalizationValues('p1', 's_a', valuesPayload)
+    await cachePersonalizationValues('p2', 's_b', {
       ...valuesPayload,
       subject_profile_id: 'p_other',
     })
     const entries: PersonalizationValuesEntry[] = await listPersonalizationValues()
-    expect(entries.map((e) => e.storybook_id).sort()).toEqual(['s_a', 's_b'])
+    expect(entries.map((e) => `${e.profile_id}|${e.storybook_id}`).sort()).toEqual([
+      'p1|s_a',
+      'p2|s_b',
+    ])
+  })
+
+  it('lists legacy book-only values entries with a null profile', async () => {
+    // A payload written before the store was re-keyed per reader. Touch the
+    // store through db.ts first so the database exists at its current version.
+    await clearPersonalizationValues()
+    const db = await openDB(DB_NAME)
+    await db.put('personalization_values', valuesPayload, 's_legacy')
+    db.close()
+    _resetDbHandle()
+
+    const entries = await listPersonalizationValues()
+    expect(entries).toEqual([
+      { profile_id: null, storybook_id: 's_legacy', payload: valuesPayload },
+    ])
+    await deletePersonalizationValues(null, 's_legacy')
+    expect(await listPersonalizationValues()).toEqual([])
   })
 
   it('clears every payload at once', async () => {
-    await cachePersonalizationValues('s_a', valuesPayload)
+    await cachePersonalizationValues('p1', 's_a', valuesPayload)
     await clearPersonalizationValues()
     expect(await listPersonalizationValues()).toEqual([])
   })
@@ -377,8 +402,8 @@ describe('personalization values store', () => {
     legacy.close()
     _resetDbHandle()
 
-    await cachePersonalizationValues('s_after_upgrade', valuesPayload)
-    expect(await getCachedPersonalizationValues('s_after_upgrade')).toEqual(valuesPayload)
+    await cachePersonalizationValues('p1', 's_after_upgrade', valuesPayload)
+    expect(await getCachedPersonalizationValues('p1', 's_after_upgrade')).toEqual(valuesPayload)
   })
 
   it('keeps the pre-existing stores reachable across the v4 upgrade', async () => {
@@ -408,8 +433,8 @@ describe('personalization values store', () => {
     expect(await getCachedStorybook(story.id, story.version)).toEqual(story)
     expect(await getReadingState('p_1', story.id)).toEqual(state)
     // And the store the upgrade added works on the same database.
-    await cachePersonalizationValues(story.id, valuesPayload)
-    expect(await getCachedPersonalizationValues(story.id)).toEqual(valuesPayload)
+    await cachePersonalizationValues('p_1', story.id, valuesPayload)
+    expect(await getCachedPersonalizationValues('p_1', story.id)).toEqual(valuesPayload)
   })
 })
 
