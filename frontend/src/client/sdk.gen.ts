@@ -3276,52 +3276,53 @@ export const putPersonalizationReceiveApiV1FamiliesMePersonalizationReceivePut =
 /**
  * Get Personalization Values
  *
- * Resolve the values payload for one book, at whichever ring applies.
+ * Resolve the values payload for one book, as read by one child.
+ *
+ * Personalization follows the READER, not the book: ``profile_id`` names
+ * the child holding the book, and ring-1 values come from that child's own
+ * profile. Two siblings opening the same book each see themselves. The one
+ * exception is ring 2 (plan section 8): a cross-family catalog book carries
+ * ``personalization_subject_profile_id``, the sharer-family child it was
+ * generated for, and when every ring-2 predicate holds the connected
+ * household sees that child instead. If ring 2 does not apply or yields
+ * nothing, the reader's own values are used.
  *
  * No requested-slot-type parameter exists (plan section 6.1): the server
- * returns every slot the subject has enabled and consented for at the
- * applicable ring, and the client discards what it does not need. This is
- * a genuinely new authorization shape (plan section 8.5): the route does
- * NOT authorize on the subject profile via ``authorize_profile``; it
- * authorizes on the connection (a family-level fact) plus the caller's own
- * family membership, so a child session in the viewer family may read a
- * payload about a profile it could never otherwise act on.
+ * returns every slot enabled at the applicable ring, and the client
+ * discards what it does not need.
  *
- * Deliberately NOT guardian-gated, unlike the four configuration routes
- * above it: this is the reader-facing render path, so a child or device
- * session must be able to call it or a personalized book cannot render on
- * a kid's tablet at all. What that costs is made up for by the two checks
- * below, which the configuration routes get from ``_require_guardian``.
+ * Deliberately NOT guardian-gated, unlike the configuration routes above:
+ * this is the reader-facing render path, so a child session must be able
+ * to call it or a personalized book cannot render on a kid's tablet at all.
  *
- * #CRITICAL: security: EVERY empty-payload branch returns the identical
- * shape, never a 404, and always with ``slot_bindings={}``. Raising 404
- * here made the route an existence oracle over the whole storybook table:
- * any authenticated caller could enumerate ids and learn which exist
- * globally, before any family check had run. The bindings half is the same
- * oracle in a subtler coat: bindings are a property of the book's contract,
- * so an empty payload that carried populated bindings for a book with
- * personalizable slots would distinguish "not addressable by you" (empty)
- * from "addressable but no values for you" (populated). Bindings are
- * therefore computed ONLY on the happy path that returns actual values
- * (`_resolve_ring1_view`/`_resolve_ring2_view`); every predicate failure
- * renders `_empty_values_view()`, which hard-codes the empty map. Uniform
- * disclosure is the only way this route can honor its own "never reveal
- * anything about another family" contract, since it has no 403 branch to
- * hide behind either. A side benefit: the contract's synchronous disk read
- * no longer runs for unauthorized or empty-outcome callers at all.
+ * #CRITICAL: security: ``authorize_profile`` runs BEFORE the book is
+ * loaded, so its 403 depends only on the caller and the profile id, never
+ * on the book, and the route stays free of a storybook existence oracle.
+ * After that, EVERY empty-payload branch returns the identical shape with
+ * ``slot_bindings={}`` (see ``_empty_values_view``): a missing book, an
+ * unreachable book, an unassigned book, a non-live reader, and a reader
+ * with nothing enabled are indistinguishable. Ring-2 failure falls back to
+ * the reader's own values, which are the same whatever the reason ring 2
+ * failed, so the fallback reveals nothing about a sharer-side connection,
+ * consent, or subject either.
  * #VERIFY: tests/integration/test_personalization_api.py::
  * test_values_missing_storybook_returns_the_empty_payload,
- * ::test_values_cross_family_private_book_returns_the_empty_payload, and
- * ::test_empty_values_payload_carries_no_slot_bindings; the empty view's
- * fixed shape is pinned by tests/unit/test_personalization_empty_view.py.
+ * ::test_values_unassigned_book_returns_the_empty_payload,
+ * ::test_values_follow_the_reading_sibling, and
+ * ::test_values_rejects_a_profile_outside_the_callers_reach.
  *
  * Args:
  * storybook_id: The book (path).
+ * profile_id: The reading child's profile (query).
  * ctx: The request context (principal + unit-of-work session).
  *
  * Returns:
  * PersonalizationValuesView: The resolved payload, or the universal
- * empty payload (never a 403, never a 404) on any predicate failure.
+ * empty payload on any predicate failure.
+ *
+ * Raises:
+ * ValidationError: If profile_id is not a UUID (422).
+ * AuthorizationError: If the caller may not act on that profile (403).
  */
 export const getPersonalizationValuesApiV1StorybooksStorybookIdPersonalizationValuesGet = <ThrowOnError extends boolean = false>(options: Options<GetPersonalizationValuesApiV1StorybooksStorybookIdPersonalizationValuesGetData, ThrowOnError>): RequestResult<GetPersonalizationValuesApiV1StorybooksStorybookIdPersonalizationValuesGetResponses, GetPersonalizationValuesApiV1StorybooksStorybookIdPersonalizationValuesGetErrors, ThrowOnError> => (options.client ?? client).get<GetPersonalizationValuesApiV1StorybooksStorybookIdPersonalizationValuesGetResponses, GetPersonalizationValuesApiV1StorybooksStorybookIdPersonalizationValuesGetErrors, ThrowOnError>({
     responseType: 'json',

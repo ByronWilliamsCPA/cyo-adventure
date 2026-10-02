@@ -727,7 +727,7 @@ children.
 | series_id | UUID FK NULL | series.id; NULL for a standalone book |
 | book_index | INT NULL | 1-based position within the series; NULL iff series_id is NULL |
 | created_at | TIMESTAMPTZ | |
-| personalization_subject_profile_id | UUID FK NULL | ADR-023: child_profile.id, the one child this story is personalized FOR. `ON DELETE SET NULL`, so deleting the subject leaves the story readable and unpersonalized rather than orphaning the row |
+| personalization_subject_profile_id | UUID FK NULL | ADR-023: child_profile.id of the requesting child, stamped at generation (`generation/worker.py`); NULL for guardian-authored and imported books. Read only by ring 2 (a connected household seeing that child by name); ring-1 values follow the READING child, not this column. `ON DELETE SET NULL`, so deleting the subject leaves the story readable and unpersonalized rather than orphaning the row |
 
 **Status values:** `draft`, `in_review`, `needs_revision`, `published`, `archived`
 (see `publishing/state_machine.py`). There is no `generating`, `auto_check`, or

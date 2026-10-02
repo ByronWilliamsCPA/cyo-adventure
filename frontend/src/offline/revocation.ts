@@ -167,17 +167,20 @@ export async function reconcileOfflineCache(
     }
   }
 
-  // Personalization values ride the same device-wide still-needed set (ADR-023
-  // P6): the store is keyed by book, not profile, exactly like `storybooks`.
-  // Once no known profile lists a book, its cached values payload (a child's
-  // real first name at rest) has no remaining reader, and no other purge path
-  // will ever reach it: the per-book reconcile in ReaderRoute only fires when
-  // THAT book is opened again, which a revoked book never is. Deleting here is
-  // what keeps a revocation from stranding an unreachable values entry forever.
+  // Personalization values (ADR-023 P6) are keyed per reader, so they get the
+  // profile-scoped rule for THIS profile (gone from its fresh shelf, gone from
+  // the device) and the device-wide still-needed rule for every other profile,
+  // whose own next library fetch will apply the precise rule. A values payload
+  // is a child's real first name at rest, and the per-book reconcile in
+  // ReaderRoute only fires when that book is opened again, which a revoked book
+  // never is; deleting here keeps a revocation from stranding it forever.
+  // Legacy book-only entries (written before the per-reader key) are
+  // unreachable by any read and are always deleted.
   const valuesEntries = await listPersonalizationValues()
   for (const entry of valuesEntries) {
-    if (!stillNeeded.has(entry.storybook_id)) {
-      await deletePersonalizationValues(entry.storybook_id)
+    const revokedHere = entry.profile_id === profileId && !freshSet.has(entry.storybook_id)
+    if (entry.profile_id === null || revokedHere || !stillNeeded.has(entry.storybook_id)) {
+      await deletePersonalizationValues(entry.profile_id, entry.storybook_id)
     }
   }
 }
@@ -206,11 +209,13 @@ export async function reconcileOfflineCache(
  * to know WHICH of them happened, and deliberately is not told: distinguishing
  * them is exactly what the route's uniform empty payload refuses to leak.
  *
+ * @param profileId - The reading child whose cache entry this is.
  * @param storybookId - The book whose cache entry this is.
  * @param fresh - The payload the authoritative fetch returned, or null when the
  *   fetch failed or was not attempted.
  */
 export async function reconcilePersonalizationValues(
+  profileId: string,
   storybookId: string,
   fresh: ValuesPayload | null
 ): Promise<void> {
@@ -227,10 +232,10 @@ export async function reconcilePersonalizationValues(
   // produced null" covers this branch; ReaderRoute.tsx's fetcher returns the
   // cache untouched on a null fetch instead of calling this with null.
   if (fresh === null || Object.keys(fresh.values).length === 0) {
-    await deletePersonalizationValues(storybookId)
+    await deletePersonalizationValues(profileId, storybookId)
     return
   }
-  await cachePersonalizationValues(storybookId, fresh)
+  await cachePersonalizationValues(profileId, storybookId, fresh)
 }
 
 /**

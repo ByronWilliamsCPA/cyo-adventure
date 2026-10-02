@@ -3154,6 +3154,62 @@ async def test_resolve_name_personalization_enabled_false_when_concept_ambiguous
     assert result is False
 
 
+@pytest.mark.asyncio
+async def test_resolve_requesting_profile_id_returns_the_request_profile() -> None:
+    """The requesting child's id is recorded as the book's ring-2 subject."""
+    import uuid
+
+    profile_id = uuid.uuid4()
+    session = _UpdateSession(profile_id)
+    job = cast("GenerationJob", SimpleNamespace(concept_id=uuid.uuid4()))
+
+    result = await worker_module._resolve_requesting_profile_id(  # pyright: ignore[reportPrivateUsage]
+        cast("AsyncSession", session), job
+    )
+
+    assert result == profile_id
+    assert len(session.executed) == 1
+
+
+@pytest.mark.asyncio
+async def test_resolve_requesting_profile_id_none_without_a_request() -> None:
+    """A guardian-authored concept (or a deleted requester) has no subject."""
+    import uuid
+
+    session = _UpdateSession(None)
+    job = cast("GenerationJob", SimpleNamespace(concept_id=uuid.uuid4()))
+
+    result = await worker_module._resolve_requesting_profile_id(  # pyright: ignore[reportPrivateUsage]
+        cast("AsyncSession", session), job
+    )
+
+    assert result is None
+
+
+@pytest.mark.asyncio
+async def test_resolve_requesting_profile_id_fails_closed_on_duplicate_concept() -> (
+    None
+):
+    """Two request rows sharing a concept_id record no subject rather than raise."""
+    import uuid
+
+    class _AmbiguousResult:
+        def scalar_one_or_none(self) -> object:
+            raise MultipleResultsFound
+
+    class _AmbiguousSession:
+        async def execute(self, _statement: object) -> _AmbiguousResult:
+            return _AmbiguousResult()
+
+    job = cast("GenerationJob", SimpleNamespace(concept_id=uuid.uuid4()))
+
+    result = await worker_module._resolve_requesting_profile_id(  # pyright: ignore[reportPrivateUsage]
+        cast("AsyncSession", _AmbiguousSession()), job
+    )
+
+    assert result is None
+
+
 # ---------------------------------------------------------------------------
 # WS-7 D7: the bounded alternate-skeleton re-route (design section 6.2) and the
 # CANNOT_CARRY failure surface (design sections 6.1, 6.3, CR-4).

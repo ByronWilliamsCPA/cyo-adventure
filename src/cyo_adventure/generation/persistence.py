@@ -76,6 +76,11 @@ class StorybookParams:
             legs are required: a contract that declares slots but produced no
             manifest (transform skipped) must stay ``False``. Defaults to
             ``False``, matching the column's own default.
+        personalization_subject_profile_id: The requesting child, recorded
+            as the book's ring-2 subject (ADR-023 plan section 8.2), or None
+            for a guardian-authored or imported book with no requester. Ring
+            1 never reads it: own-family values follow the reading child
+            (``api/personalization.py::get_personalization_values``).
         status: Storybook lifecycle status (default ``"draft"``).
         version: Version number (default 1).
     """
@@ -91,6 +96,7 @@ class StorybookParams:
     validation_report: dict[str, object] | None = None
     sentinel_manifest: dict[str, object] | None = None
     personalization_eligible: bool = False
+    personalization_subject_profile_id: uuid.UUID | None = None
     status: str = "draft"
     version: int = _FIRST_VERSION
 
@@ -140,6 +146,7 @@ async def persist_storybook(session: AsyncSession, params: StorybookParams) -> s
         family_id=params.family_id,
         status=params.status,
         created_by=params.created_by,
+        personalization_subject_profile_id=params.personalization_subject_profile_id,
     )
     session.add(storybook_row)
     await session.flush()  # ensure PK exists before the version FK
