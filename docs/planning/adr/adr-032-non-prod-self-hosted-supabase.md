@@ -314,15 +314,30 @@ already exercises rather than building ahead of need.
    equivalent); move the non-prod leg of `.github/workflows/supabase-staging.yml` onto the
    homelab self-hosted runner and point it at the new stack with `supabase db push --db-url`,
    replacing the Cloud-only `supabase link --project-ref` step (see Follow-on work, `UW-A61`).
+   The same workflow's `supabase config push --project-ref` step has no self-hosted equivalent:
+   it deploys Auth settings through the Supabase Cloud Management API, which a self-hosted stack
+   does not expose, and it would fail outright once the Cloud project is deleted. It is removed
+   from the non-prod leg. The Auth settings it carried (the base `[auth]` block of
+   `supabase/config.toml`, including the Apple/Google provider entries, plus the
+   `[remotes.staging.auth]` overlay's `site_url` and `additional_redirect_urls`) are instead set
+   as GoTrue `GOTRUE_*` environment variables in the `homelab-infra` compose, non-secret values in
+   the compose file and OAuth client secrets via Infisical. A committed mapping from each
+   `config.toml` auth key to its `GOTRUE_*` variable gives an Auth change a known place to land in
+   both environments; without it, an Auth setting changed in `config.toml` would silently reach
+   production only.
 
 ### Testing Strategy
 
 - `homelab-infra`: bring the new stack up locally/on the homelab and verify GoTrue issues a valid
   JWT against a real Apple/Google OAuth round trip before this repo is repointed at it.
 - CYO_Adventure: the existing OIDC negative-token suite
-  (`tests/unit/test_oidc_verification.py`) needs no change, since it already tests against
-  Supabase-shaped JWTs generically rather than against the specific Cloud project; re-run it
-  against the new stack's JWKS endpoint as a smoke check.
+  (`tests/unit/test_oidc_verification.py`) needs no change, since it tests Supabase-shaped JWTs
+  generically. It is offline by design (an autouse fixture swaps the JWKS client for a fake and
+  points the URL at `example.invalid`), so it proves nothing about the new stack and is NOT the
+  smoke check. The live check is separate: fetch `/auth/v1/.well-known/jwks.json` from the public
+  hostname and confirm it serves a signing key, then sign in with a synthetic test account and
+  call an authenticated backend endpoint (`GET /api/v1/me`) with the issued token, which proves
+  the backend's `OIDC_ISSUER`/`OIDC_JWKS_URL` configuration accepts the new GoTrue end to end.
 - CYO_Adventure: `supabase/migrations/` applied clean, end to end, against the new stack's fresh
   Postgres is the acceptance test for ADR-012's portability claim actually holding under a new
   target.
@@ -378,7 +393,9 @@ already exercises rather than building ahead of need.
 - **`UW-A61`** (CYO_Adventure, `now`, status `blocked` on `UW-A60` landing): wire the app at the
   new stack (env/Infisical entries, run migrations, register the new OAuth redirect URI in both
   developer consoles, move the non-prod leg of `supabase-staging.yml` onto the self-hosted
-  runner). No application code changes; config and workflow only.
+  runner, and remove its `supabase config push` step in favour of the `GOTRUE_*` environment
+  mapping described in Components Affected, item 3). No application code changes; config and
+  workflow only.
 - **`UW-A62`** (CYO_Adventure, `now`, status `decision`, owner: core-maintainer): ratify that
   `scripts/backup_database.py` stays production-only and the new stack gets its own
   `homelab-infra`-owned backup sidecar (Decision point 4), rather than parameterizing the existing
