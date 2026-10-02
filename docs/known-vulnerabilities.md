@@ -390,8 +390,9 @@ The package-scoped acceptance for `linux-libc-dev` kernel UAPI headers, consolid
    reports no `linux-libc-dev` finding of any kind.
 
 **If it comes back.** A future base image that reintroduces `linux-libc-dev` will surface its
-findings with no suppression in place on full-scope scans (push, schedule and manual runs, which
-also feed the Security tab). Pull-request and merge-queue scans will not show its unfixed
+findings with no suppression in place on full-scope scans (push, schedule and manual runs; read
+their workflow logs, since GitHub Advanced Security is not active on this repo and the SARIF
+upload does not reach the Security tab). Pull-request and merge-queue scans will not show its unfixed
 findings, because `container-security.yml` sets `ignore-unfixed` for those two events; only a
 `linux-libc-dev` CVE with a fixed version gates a merge. Restore the policy from git history
 (`git log --diff-filter=D -- .trivy/ignore-policy.rego`) only after a fresh assessment, with a
