@@ -12,8 +12,10 @@
 # `.trivy/ignore-policy.rego` instead; that policy was removed on 2026-10-02
 # because the base image no longer ships the package. See
 # docs/known-vulnerabilities.md, "Resolution detail: `linux-libc-dev`
-# package-scoped acceptance". If the package returns, its findings surface
-# unsuppressed, which is intended.
+# package-scoped acceptance". If the package returns, full-scope scans (push,
+# schedule, manual) surface its findings unsuppressed, which is intended;
+# pull-request and merge-queue scans still omit any finding without a fixed
+# version, because the workflow sets `ignore-unfixed` for those two events.
 #
 # Two rules govern every entry here, both machine-enforced:
 #
