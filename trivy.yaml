@@ -18,19 +18,17 @@
 # Trivy from elsewhere, this file stops being read and the scan goes RED with
 # every suppressed finding at once, which is a loud failure rather than a
 # silent one.
-# #VERIFY: a scan whose output shows 0 findings while `linux-libc-dev` CVEs
-# exist in the feed proves this file was read.
+# #VERIFY: a scan whose output omits a CVE listed in `.trivyignore.yaml`
+# while that CVE exists in the feed proves this file was read.
 
-# Two-CVE-classes, two mechanisms, deliberately:
-#   ignorefile     - per-CVE acceptances, each with its own `statement`,
-#                    `expired_at` and reachability assessment (perl-base,
-#                    libexpat1, libsqlite3-0, ncurses, libuuid1, gawk).
-#                    Trivy's built-in default is the plain-text
-#                    `.trivyignore` and it does NOT auto-detect the YAML
-#                    variant, so naming it here is what makes local runs
-#                    match CI, where the reusable workflow passes the same
-#                    path via `trivyignores`.
-#   ignore-policy  - the single package-level judgment for linux-libc-dev
-#                    kernel UAPI headers, which no longer needs a CVE list.
+# ignorefile: per-CVE acceptances, each with its own `statement`, `expired_at`
+# and reachability assessment. Trivy's built-in default is the plain-text
+# `.trivyignore` and it does NOT auto-detect the YAML variant, so naming it here
+# is what makes local runs match CI, where the reusable workflow passes the same
+# path via `trivyignores`.
+#
+# There is deliberately no `ignore-policy` any more. The package-scoped Rego
+# rule for `linux-libc-dev` was removed on 2026-10-02 because the base image
+# stopped shipping that package; see docs/known-vulnerabilities.md, "Resolution
+# detail: `linux-libc-dev` package-scoped acceptance".
 ignorefile: .trivyignore.yaml
-ignore-policy: .trivy/ignore-policy.rego
