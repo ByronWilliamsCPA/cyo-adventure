@@ -554,6 +554,36 @@ none of the other eleven share.
      `ck_cpp_value_cardinality`) had to become slot-scoped rather than a flat count of one, because
      this is the first slot type for which zero values is the correct shape, not a defect.
 
+### 12. Amendment (2026-10-02): ring-1 values follow the reading child
+
+Implementation plan sections 8.2 and 8.3 keyed the values route on the book alone and resolved
+every book against one subject, `storybook.personalization_subject_profile_id`. No code ever wrote
+that column, so every book rendered generic. This amendment wires it up and changes what ring 1
+resolves against, by owner decision.
+
+- **Ring 1 follows the reader.** `GET /api/v1/storybooks/{storybook_id}/personalization-values`
+  takes a required `profile_id` query parameter naming the reading child, authorized with
+  `authorize_profile` before the book is loaded. Ring-1 values come from that child's own profile,
+  so two siblings opening the same book each see themselves. The book must be assigned to the
+  reader (the same gate the reading-state routes apply); an unassigned book renders the universal
+  empty payload, not a 404.
+- **Ring 2 keeps a fixed subject.** The column is now stamped at generation with the requesting
+  child (`generation/worker.py::_resolve_requesting_profile_id`), NULL for guardian-authored and
+  imported books. On a cross-family catalog book whose subject passes every section 8.4 predicate,
+  the connected household sees that child; otherwise it falls back to the reader's own ring-1
+  values. The fallback is the same whatever made ring 2 fail, so it discloses nothing about the
+  sharer's connection, consent, or subject.
+- **The route now has a 403 branch,** for a `profile_id` the caller may not act on (a sibling's
+  profile from a child session, another family's child, any profile from a device grant). It
+  depends only on the caller and the profile id, never on the book, so it is not a storybook
+  existence oracle. The route joins the cross-family rows of `tests/integration/test_authz_matrix.py`.
+- **The offline values cache is keyed per reader** (`${profileId}:${storybookId}` in
+  `frontend/src/offline/db.ts`), or one sibling's cached name would render for the other on a
+  shared tablet. Legacy book-only entries are purged on the next library reconcile.
+- **ADR-030's categorical exclusion now bites.** It excludes any storybook with a non-null subject;
+  with the column populated, every request-generated catalog book leaves the engagement-correlation
+  population. That is the rule as written, now operating, not a change to it.
+
 ## Options Considered
 
 ### Option 1: Client-side render-time substitution over stored sentinels ✓
@@ -1118,6 +1148,11 @@ consequents get a home. Every item cites a register row or a phase; nothing here
 - **Standing, not new**: the OD-5 reassessment in "Review Schedule" above re-opens at every
   deployment-phase boundary, and [UW-H03](../unscheduled-work-register.md) carries the `G2` counsel
   gate. Neither is created by the 2026-08-07 amendment; both still govern it.
+
+- **Section 12 (2026-10-02) creates no new open item.** Its consequents are implemented in the
+  same change: the reader-scoped route and its authz-matrix rows, the generation-time subject
+  stamp, and the per-reader offline cache key. The ring-2 consent ceremony still has no guardian
+  UI; that gap predates the amendment and is unchanged by it.
 
 ## Related
 

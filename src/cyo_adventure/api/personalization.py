@@ -19,15 +19,19 @@ Four route groups, per
    family's persistent opt-out (section 8.6). Scoped to the caller's own
    family with no id in the path or body, and evaluated as condition 0 of
    the ring-2 resolution below, ahead of any sharer-side lookup.
-4. ``GET /storybooks/{storybook_id}/personalization-values``: the single
-   route that resolves EITHER ring's values payload, keyed only on the book
-   (section 8.3). The client never names a connection or a subject profile;
-   the server derives both from the caller's own principal and the book's
-   ``personalization_subject_profile_id``. Every failure mode (missing
-   subject, receive-toggle off, unconnected family, revoked consent, a
-   deactivated or processing-restricted subject) renders as the identical
-   empty payload rather than a 403 or a narrower shape, so the route leaks
-   nothing about whether a subject or connection exists (section 8.4).
+4. ``GET /storybooks/{storybook_id}/personalization-values?profile_id=``:
+   the single route that resolves EITHER ring's values payload for one book
+   as read by one child. Ring 1 follows the READER: values come from the
+   ``profile_id`` the reader passes (authorized with ``authorize_profile``),
+   never from a subject fixed on the book, so siblings sharing a book each
+   see themselves. Ring 2 is the exception: a cross-family catalog book's
+   ``personalization_subject_profile_id`` (stamped at generation from the
+   requesting child) is shown to a connected household when every ring-2
+   predicate holds, and the reader's own values apply otherwise. The client
+   never names a connection or a subject. Every failure mode (unassigned
+   book, receive-toggle off, unconnected family, revoked consent, a
+   deactivated or processing-restricted profile) renders as the identical
+   empty payload rather than a 403 or a narrower shape (section 8.4).
 """
 
 from __future__ import annotations
@@ -70,6 +74,7 @@ from cyo_adventure.db.models import (
     FamilyConnection,
     PersonalizationDisclosureConsent,
     Storybook,
+    StorybookAssignment,
 )
 from cyo_adventure.events import Actor, EventType, record_event
 from cyo_adventure.moderation.personalizable_slots import (
@@ -1174,14 +1179,14 @@ async def _resolve_ring1_view(
     subject: ChildProfile,
     storybook_id: str,
 ) -> PersonalizationValuesView:
-    """Resolve the ring-1 (own-family) values view for a live subject.
+    """Resolve the ring-1 (own-family) values view for the reading child.
 
     Split out of ``get_personalization_values`` to keep the route's own
     cyclomatic complexity within the project's lint threshold.
 
     Args:
         session: The request session.
-        subject: The book's personalization subject (already known to be in
+        subject: The reading child's profile (already authorized, and in
             the caller's own family).
         storybook_id: The book, used to resolve its slot bindings, and only
             after values are known to exist (see the route's #CRITICAL note:
@@ -1339,7 +1344,8 @@ def _book_is_reachable(book: Storybook, caller_family_id: uuid.UUID) -> bool:
     """Decide whether `caller_family_id` may address this book at all.
 
     Mirrors the three-way branch in ``api/reading.py::_authorized_storybook``
-    minus its per-profile leg (this route takes no profile): an own-family
+    minus its per-profile leg (the route checks assignment separately, in
+    ``_is_assigned``): an own-family
     book is addressable, a cross-family CATALOG book is addressable (that is
     the recommendation-sharing path ring 2 exists to serve), and a
     cross-family family-visibility book is not.
@@ -1356,97 +1362,159 @@ def _book_is_reachable(book: Storybook, caller_family_id: uuid.UUID) -> bool:
     return book.visibility == Visibility.CATALOG.value
 
 
-@router.get("/storybooks/{storybook_id}/personalization-values")
+async def _is_assigned(
+    session: AsyncSession, storybook_id: str, profile_id: uuid.UUID
+) -> bool:
+    """Return whether the book is assigned to the reading profile.
+
+    Mirrors ``api/reading.py::_require_assignment``, the gate every other
+    reader-facing route applies, but answers a boolean so this route can keep
+    its uniform empty payload instead of a 404.
+
+    Args:
+        session: The request session.
+        storybook_id: The book being opened.
+        profile_id: The already-authorized reading profile.
+
+    Returns:
+        bool: Whether a ``StorybookAssignment`` row exists for the pair.
+    """
+    assigned = await session.scalar(
+        select(StorybookAssignment.storybook_id).where(
+            StorybookAssignment.storybook_id == storybook_id,
+            StorybookAssignment.child_profile_id == profile_id,
+        )
+    )
+    return assigned is not None
+
+
+async def _book_subject_ring2_view(
+    session: AsyncSession, book: Storybook, caller_family_id: uuid.UUID
+) -> PersonalizationValuesView | None:
+    """Resolve the book's fixed ring-2 subject, when one applies.
+
+    Ring 2 is the one place a book keeps a fixed subject: a cross-family book
+    generated for a child in the sharer family, shown by name to a connected
+    household under that child's own consent (plan section 8). Returns
+    ``None`` whenever ring 2 does not apply or yields nothing, so the caller
+    falls back to the reader's own values.
+
+    Args:
+        session: The request session.
+        book: The book being opened (already known to be reachable).
+        caller_family_id: The caller's own family (the viewer side).
+
+    Returns:
+        PersonalizationValuesView | None: A populated ring-2 payload, or
+        ``None`` when the book has no cross-family subject or any ring-2
+        predicate fails.
+    """
+    if book.family_id == caller_family_id:
+        return None
+    if book.personalization_subject_profile_id is None:
+        return None
+    subject = await session.get(ChildProfile, book.personalization_subject_profile_id)
+    if subject is None:
+        # #ASSUME: data-integrity: unreachable while the schema matches the
+        # model. `Storybook.personalization_subject_profile_id` is a FK with
+        # ON DELETE SET NULL, so deleting the profile clears the column and the
+        # guard above returns first. Reaching HERE means the FK is absent from
+        # the deployed schema: a migration defect, not a book without a
+        # subject.
+        # #VERIFY: logged rather than raised; the caller still gets the
+        # reader's own values, and the signal belongs in the operator channel.
+        _logger.warning(
+            "personalization.subject_profile_missing",
+            storybook_id=book.id,
+            subject_profile_id=str(book.personalization_subject_profile_id),
+        )
+        return None
+    if subject.family_id == caller_family_id:
+        # A catalog book from another family whose subject has since moved
+        # into the caller's household is not a ring-2 disclosure; the reader's
+        # own values apply.
+        return None
+    view = await _resolve_ring2_view(session, subject, caller_family_id, book.id)
+    return view if view.values else None
+
+
+@router.get(
+    "/storybooks/{storybook_id}/personalization-values",
+    responses=error_responses(403),
+)
 async def get_personalization_values(
-    storybook_id: str, ctx: Context
+    storybook_id: str, profile_id: str, ctx: Context
 ) -> PersonalizationValuesView:
-    """Resolve the values payload for one book, at whichever ring applies.
+    """Resolve the values payload for one book, as read by one child.
+
+    Personalization follows the READER, not the book: ``profile_id`` names
+    the child holding the book, and ring-1 values come from that child's own
+    profile. Two siblings opening the same book each see themselves. The one
+    exception is ring 2 (plan section 8): a cross-family catalog book carries
+    ``personalization_subject_profile_id``, the sharer-family child it was
+    generated for, and when every ring-2 predicate holds the connected
+    household sees that child instead. If ring 2 does not apply or yields
+    nothing, the reader's own values are used.
 
     No requested-slot-type parameter exists (plan section 6.1): the server
-    returns every slot the subject has enabled and consented for at the
-    applicable ring, and the client discards what it does not need. This is
-    a genuinely new authorization shape (plan section 8.5): the route does
-    NOT authorize on the subject profile via ``authorize_profile``; it
-    authorizes on the connection (a family-level fact) plus the caller's own
-    family membership, so a child session in the viewer family may read a
-    payload about a profile it could never otherwise act on.
+    returns every slot enabled at the applicable ring, and the client
+    discards what it does not need.
 
-    Deliberately NOT guardian-gated, unlike the four configuration routes
-    above it: this is the reader-facing render path, so a child or device
-    session must be able to call it or a personalized book cannot render on
-    a kid's tablet at all. What that costs is made up for by the two checks
-    below, which the configuration routes get from ``_require_guardian``.
+    Deliberately NOT guardian-gated, unlike the configuration routes above:
+    this is the reader-facing render path, so a child session must be able
+    to call it or a personalized book cannot render on a kid's tablet at all.
 
-    #CRITICAL: security: EVERY empty-payload branch returns the identical
-    shape, never a 404, and always with ``slot_bindings={}``. Raising 404
-    here made the route an existence oracle over the whole storybook table:
-    any authenticated caller could enumerate ids and learn which exist
-    globally, before any family check had run. The bindings half is the same
-    oracle in a subtler coat: bindings are a property of the book's contract,
-    so an empty payload that carried populated bindings for a book with
-    personalizable slots would distinguish "not addressable by you" (empty)
-    from "addressable but no values for you" (populated). Bindings are
-    therefore computed ONLY on the happy path that returns actual values
-    (`_resolve_ring1_view`/`_resolve_ring2_view`); every predicate failure
-    renders `_empty_values_view()`, which hard-codes the empty map. Uniform
-    disclosure is the only way this route can honor its own "never reveal
-    anything about another family" contract, since it has no 403 branch to
-    hide behind either. A side benefit: the contract's synchronous disk read
-    no longer runs for unauthorized or empty-outcome callers at all.
+    #CRITICAL: security: ``authorize_profile`` runs BEFORE the book is
+    loaded, so its 403 depends only on the caller and the profile id, never
+    on the book, and the route stays free of a storybook existence oracle.
+    After that, EVERY empty-payload branch returns the identical shape with
+    ``slot_bindings={}`` (see ``_empty_values_view``): a missing book, an
+    unreachable book, an unassigned book, a non-live reader, and a reader
+    with nothing enabled are indistinguishable. Ring-2 failure falls back to
+    the reader's own values, which are the same whatever the reason ring 2
+    failed, so the fallback reveals nothing about a sharer-side connection,
+    consent, or subject either.
     #VERIFY: tests/integration/test_personalization_api.py::
     test_values_missing_storybook_returns_the_empty_payload,
-    ::test_values_cross_family_private_book_returns_the_empty_payload, and
-    ::test_empty_values_payload_carries_no_slot_bindings; the empty view's
-    fixed shape is pinned by tests/unit/test_personalization_empty_view.py.
+    ::test_values_unassigned_book_returns_the_empty_payload,
+    ::test_values_follow_the_reading_sibling, and
+    ::test_values_rejects_a_profile_outside_the_callers_reach.
 
     Args:
         storybook_id: The book (path).
+        profile_id: The reading child's profile (query).
         ctx: The request context (principal + unit-of-work session).
 
     Returns:
         PersonalizationValuesView: The resolved payload, or the universal
-        empty payload (never a 403, never a 404) on any predicate failure.
+        empty payload on any predicate failure.
+
+    Raises:
+        ValidationError: If profile_id is not a UUID (422).
+        AuthorizationError: If the caller may not act on that profile (403).
     """
+    reader_id = parse_uuid(profile_id, "profile_id")
+    authorize_profile(ctx.principal, reader_id)
     book = await ctx.session.get(Storybook, storybook_id)
     if book is None:
         return _empty_values_view()
-    # #CRITICAL: security: without this the route resolved values from ANY
-    # book id, including another family's private book, relying entirely on
-    # the ring-2 consent predicate downstream to keep the payload empty. That
-    # left the cross-family private case governed by a consent check rather
-    # than by the visibility rule every other read path enforces.
+    # #CRITICAL: security: the visibility rule every other read path
+    # enforces, ahead of the assignment check, so a cross-family private book
+    # is refused whatever assignment rows exist.
     if not _book_is_reachable(book, ctx.principal.family_id):
         return _empty_values_view()
-    if book.personalization_subject_profile_id is None:
+    if not await _is_assigned(ctx.session, storybook_id, reader_id):
         return _empty_values_view()
-    subject = await ctx.session.get(
-        ChildProfile, book.personalization_subject_profile_id
-    )
-    if subject is None:
-        # #ASSUME: data-integrity: unreachable while the schema matches the
-        # model. `Storybook.personalization_subject_profile_id` is a FK with
-        # ON DELETE SET NULL, so deleting the profile clears the column rather
-        # than leaving it pointing at nothing; the guard above would then have
-        # returned already. Reaching HERE means the column holds an id with no
-        # row, which can only happen if the FK is absent from the deployed
-        # schema. That is a migration defect, not a story without a subject,
-        # and the two are indistinguishable in the response by design.
-        # #VERIFY: logged rather than raised. The empty payload is still the
-        # correct answer for the caller (this route never discloses why), so
-        # the signal belongs in the operator's channel, not the reader's.
-        _logger.warning(
-            "personalization.subject_profile_missing",
-            storybook_id=storybook_id,
-            subject_profile_id=str(book.personalization_subject_profile_id),
-        )
+    ring2 = await _book_subject_ring2_view(ctx.session, book, ctx.principal.family_id)
+    if ring2 is not None:
+        return ring2
+    reader = await ctx.session.get(ChildProfile, reader_id)
+    if reader is None or reader.family_id != ctx.principal.family_id:
+        # #ASSUME: data-integrity: authorize_profile only admits profiles in
+        # the caller's own family, so this is unreachable unless the profile
+        # was deleted mid-request. Ring 1 is own-family by definition.
         return _empty_values_view()
-
-    caller_family_id = ctx.principal.family_id
-    if subject.family_id == caller_family_id:
-        return await _resolve_ring1_view(ctx.session, subject, storybook_id)
-    return await _resolve_ring2_view(
-        ctx.session, subject, caller_family_id, storybook_id
-    )
+    return await _resolve_ring1_view(ctx.session, reader, storybook_id)
 
 
 # Where each slot's VALUE lives, for purge. Every slot but one stores its

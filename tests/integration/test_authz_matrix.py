@@ -922,18 +922,18 @@ _ROUTE_SPECS: list[RouteSpec] = [
         frozenset({Role.GUARDIAN}),
         json_body=_personalization_receive_body,
     ),
-    # -- personalization.py: the single values-resolution route. A genuinely
-    # new authorization shape (ADR-023 plan section 8.5): it does NOT
-    # authorize on the subject profile at all, only on the caller's own
-    # family membership plus whatever FamilyConnection the server resolves.
-    # There is no role gate, so every role (including a device grant, though
-    # DEVICE has no seed fixture here) passes through to the predicate, which
-    # renders the universal empty payload rather than a 403 on any mismatch.
+    # -- personalization.py: the single values-resolution route. Resolves for
+    # the READING child named by the profile_id query, authorized with
+    # authorize_profile before the book is loaded, so GUARDIAN and CHILD pass
+    # for their own family's profile and every other role is refused. Every
+    # book-side failure past that gate (missing, unreachable, unassigned)
+    # still renders the universal empty payload (ADR-023 plan section 8.4).
     RouteSpec(
         "GET",
         "/api/v1/storybooks/{storybook_id}/personalization-values",
-        ALL_ROLES,
+        frozenset({Role.GUARDIAN, Role.CHILD}),
         path_params=_storybook_path,
+        query_params=_character_list_query,
     ),
     # -- ratings.py: ownership-scoped ----------------------------------------
     RouteSpec(
@@ -1490,6 +1490,9 @@ _CROSS_FAMILY_ROUTE_KEYS: list[tuple[str, str]] = [
     ("PUT", "/api/v1/profiles/{profile_id}/personalization"),
     ("POST", "/api/v1/profiles/{profile_id}/ring2-consent"),
     ("DELETE", "/api/v1/profiles/{profile_id}/ring2-consent/{connection_id}"),
+    # The values route names its reader by profile_id, so a cross-family
+    # guardian naming a family-A child is refused at authorize_profile.
+    ("GET", "/api/v1/storybooks/{storybook_id}/personalization-values"),
     # characters.py (ADR-028): the five non-DELETE routes. GET/POST are
     # profile-addressed (query/body profile_id); PATCH/activate/retire are
     # id-addressed (load-then-authorize, see the module docstring's
@@ -1510,15 +1513,6 @@ _CROSS_FAMILY_ROUTE_KEYS: list[tuple[str, str]] = [
     ("POST", "/api/v1/characters/{character_id}/activate"),
     ("POST", "/api/v1/characters/{character_id}/retire"),
 ]
-
-# GET /storybooks/{id}/personalization-values is deliberately NOT in the list
-# above, and its absence is a decision rather than an oversight: it has no 403
-# or 404 branch at all by design (plan section 8.4 renders every predicate
-# failure as one identical empty payload, precisely so the route cannot be
-# used to probe another family), so the 403-or-404 assertion below cannot
-# express its contract. Its cross-family behavior is pinned instead by
-# test_personalization_api.py::
-# test_values_cross_family_private_book_returns_the_empty_payload.
 
 # Every key referenced above must actually be an authorized (guardian-eligible)
 # route in ROUTE_TABLE, so this section fails loudly instead of silently
@@ -1596,6 +1590,7 @@ _CROSS_FAMILY_CHILD_ROUTE_KEYS: list[tuple[str, str]] = [
     ("POST", "/api/v1/completions"),
     ("GET", "/api/v1/reading-history/{profile_id}"),
     ("GET", "/api/v1/recommendations/{profile_id}"),
+    ("GET", "/api/v1/storybooks/{storybook_id}/personalization-values"),
     # characters.py (ADR-028): GET/POST are profile-addressed (query/body
     # profile_id), exactly like the ratings/library/reading-state routes
     # above, so they slot into the same generic profile_id substitution the
