@@ -3423,7 +3423,7 @@
 <strong>Primary branch</strong>: <code>main</code>
 <strong>2026-10-31 note</strong>: this version reconciles the ~15 weeks since the 2026-07-20 audit (about 270
 non-dependency merges and 125 releases, v0.21.0 through v0.90.0). The headline is that Track 1
-(R1) is feature-complete but its live sign-off is still open, and the scheduled production,
+(R1-alpha) is feature-complete but its live sign-off is still open, and the scheduled production,
 staging, and nightly E2E ladders plus the weekly safety evaluation are red; see "Operational
 health" in the 2026-10-31 callout in Section 1. Phase 7 gained its KWS verifiable-parental-consent
 integration, Phases 8 and 9 are still unstarted.
@@ -3589,7 +3589,7 @@ PR #314. Follow-on enabler refinements from the original ADR-011 work are tracke
 </tr>
 <tr>
 <td>5 Hardening</td>
-<td>🟡 Partially delivered (post-R1; public-tier ops fold into Phase 9). <strong>Delivered since 2026-07-20</strong>: nightly database backup with tiered R2 retention (#585, <code>supabase-backup.yml</code>), a durable <code>security_event</code> audit table plus structured auth-failure and rate-limit events (#599/#600), log-redaction fixes (#581/#592), ADR-021 least-privilege role cutover verified live 2026-08-04 (#597/#608), cover safety gate H2 now has a human approval step (#469) and an AI-assisted review gate (#816, 2026-09-13), WCAG 2.1 AA standard with a per-PR axe gate (#683, ADR-029). <strong>Still open</strong>: the <strong>restore side of the backup is undrilled</strong> (runbook section 6), no load or performance harness (P9-13 is a plan only), bot protection on public forms (#555), alerting on security events (#557), and a green scheduled test ladder (see Operational health below). Earlier replan items (ADR-007 purge, G8/A5 revocation, A13 stamps, A4 re-screen first cut) stay landed</td>
+<td>🟡 Partially delivered (post-R1; public-tier ops fold into Phase 9). <strong>Delivered since 2026-07-20</strong>: nightly backup automation with tiered R2 retention (#585, <code>supabase-backup.yml</code>; artifact usability and inventory attestation not verified), a durable <code>security_event</code> audit table plus structured auth-failure and rate-limit events (#599/#600), log-redaction fixes (#581/#592), ADR-021 least-privilege role cutover verified live 2026-08-04 (#597/#608), cover safety gate H2 is half closed: a human approval step (#469) and an AI-assisted review gate (#816, 2026-09-13) exist, but the automated image-safety classifier is still absent, WCAG 2.1 AA standard with a per-PR axe gate (#683, ADR-029). <strong>Still open</strong>: the automated image-safety classifier for covers (H2), the <strong>restore side of the backup is undrilled</strong> (runbook section 6), no load or performance harness (P9-13 is a plan only), bot protection on public forms (#555), alerting on security events (#557), and a green scheduled test ladder (see Operational health below). Earlier replan items (ADR-007 purge, G8/A5 revocation, A13 stamps, A4 re-screen first cut) stay landed</td>
 </tr>
 <tr>
 <td>6 Public auth + multi-tenancy</td>
@@ -3617,7 +3617,7 @@ PR #314. Follow-on enabler refinements from the original ADR-011 work are tracke
 </tr>
 <tr>
 <td>Generation and catalog growth (post-R1)</td>
-<td>✅ Substantially delivered. WS-5 structure and state variation (#321), WS-8 catalog flywheel (#352), D1 family-lane ruling enforced at every layer (#747), Modal promoted to cascade leg 3 and the Ollama leg retired (#729), Stage D reading-level repair loop (#708), skeleton sourcing programme S-0..S-5 (#736), strict-bar coverage of all 18 offered cells (#730), every production skeleton made fillable (#727). Census (see <a href="../catalog-census/">catalog-census.md</a>): 84 shells, 74 production-eligible and reachable, 15,470 nodes. Prose fill and import to Postgres remain gated on ADR-005 human approval</td>
+<td>✅ Substantially delivered. WS-5 structure and state variation (#321), WS-8 catalog flywheel (#352), D1 family-lane ruling enforced at every layer (#747), Modal promoted to cascade leg 3 and the Ollama leg retired (#729), Stage D reading-level repair loop (#708), skeleton sourcing programme S-0..S-5 (#736), strict-bar coverage of all 18 offered cells (#730), every production skeleton made fillable (#727). Census (see <a href="../catalog-census/">catalog-census.md</a>): 84 shells, 81 declaring <code>production_eligible</code> of which 74 are reachable in an offered cell, 15,470 nodes. Prose fill and import to Postgres remain gated on ADR-005 human approval</td>
 </tr>
 <tr>
 <td>Kid and guardian UX (post-R1)</td>
@@ -3747,7 +3747,7 @@ It is <strong>not</strong> a repeat of the 12-agent code-only validation: <code>
 were last fully validated 2026-08-01, and only the gaps named in the status table above were re-checked
 in code on 2026-10-31. Re-validate the rest before relying on them.</p>
 <ol>
-<li><strong>R1 is feature-complete but not signed off.</strong> The live E2E checklist stood at 10 of 38 steps on
+<li><strong>R1-alpha is feature-complete but not signed off.</strong> The live E2E checklist stood at 10 of 38 steps on
    2026-08-08 (<code>r1-live-e2e-checklist.md</code>); no later sign-off row exists, and the repo holds no evidence
    of a production redeploy after v0.68.0. The production defect behind #639 was fixed in v0.68.2, so
    whether it is cleared in production is unproven from git.</li>
@@ -6088,7 +6088,7 @@ sign-off and pre-submission (P9-10)
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="October 31, 2026 15:50:00 UTC">October 31, 2026</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="October 31, 2026 16:10:45 UTC">October 31, 2026</span>
   </span>
 
     

@@ -5531,16 +5531,18 @@ register against the existing phase estimates is the natural next pass.</p>
 <p><a href="../PROJECT-PLAN/">PROJECT-PLAN.md</a> Section 1 carries the full 2026-10-31 callout and the refreshed status
 table; this section holds only what bears on staging. It is a reconciliation against merged history, the
 open issue list, and targeted code checks, not a new 12-agent validation.</p>
-<p><strong>State</strong>: R1 is feature-complete and unsigned (live checklist 10 of 38 as of 2026-08-08). Track 2 is
+<p><strong>State</strong>: R1-alpha is feature-complete and unsigned (live checklist 10 of 38 as of 2026-08-08). Track 2 is
 unchanged except Phase 7, which gained the KWS verifiable-parental-consent integration against KWS Test
 (ADR-018 D1, #664/#681). Phases 8 and 9 have not started. Four post-R1 workstreams shipped without a
 phase line: moderation redesign, personalization (ADR-023/028), generation and catalog growth, and
 kid/guardian UX; the status table now lists them.</p>
 <p><strong>Proposed sequencing (unratified; the owner decides)</strong>:</p>
 <ol>
-<li><strong>Make the ladders green before adding scope.</strong> Production E2E (#824), staging E2E (#787, including
-   its device-grant leak signal), real-backend nightly (#290), KWS delivery health (#835) and the weekly
-   safety eval (#786) are all red. A red ladder cannot certify R1, so this gates M4.1 sign-off.</li>
+<li><strong>Make the ladders green before adding scope.</strong> Production E2E (#824), real-backend nightly (#290),
+   KWS delivery health (#835) and the weekly safety eval (#786) are red. The 2026-10-31 staging E2E run
+   (#787) was blocked because both logins could not reach the server; <code>leak_check</code> passed and
+   <code>grant_sweep</code> remains unproven. A red or blocked ladder cannot certify R1-alpha, so these gate M4.1
+   sign-off.</li>
 <li><strong>Redeploy and finish the R1 live checklist</strong> (28 steps left). Needs funded provider quota, a
    maintenance window and a second device, all owner-gated.</li>
 <li><strong>Triage the register</strong>: 811 rows, 586 unscheduled. Assign phases to the <code>decision</code>, <code>blocked</code> and
@@ -6429,7 +6431,7 @@ and Tier-2 corpora.</p>
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="October 31, 2026 15:50:00 UTC">October 31, 2026</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="October 31, 2026 16:10:45 UTC">October 31, 2026</span>
   </span>
 
     
