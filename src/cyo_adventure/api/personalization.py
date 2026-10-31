@@ -1382,8 +1382,9 @@ async def _is_assigned(
     # #CRITICAL: security: this read is the assignment gate for the values
     # route. A reader with no assignment row must get the uniform empty payload
     # and never another family's personalization values.
-    # #VERIFY: the integration test named
-    # test_values_unassigned_book_returns_the_empty_payload
+    # #VERIFY: the integration test
+    # test_values_unassigned_book_returns_the_empty_payload asserts the
+    # empty payload for an unassigned book.
     assigned = await session.scalar(
         select(StorybookAssignment.storybook_id).where(
             StorybookAssignment.storybook_id == storybook_id,
