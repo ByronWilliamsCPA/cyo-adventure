@@ -2670,3 +2670,37 @@ class TestEngagementCorrelationAnalysis:
         assert "An empty value counts as unset" in str(unset.value)
         assert "An empty value counts as unset" not in str(inside.value)
         assert "resolves inside" in str(inside.value)
+
+
+class TestMockReviewJudgesSafe:
+    """The E2E-only mock reviewer opt-in must never boot outside local."""
+
+    @pytest.mark.unit
+    def test_defaults_to_off(self) -> None:
+        """The deliberate unjudged-mock posture is the default."""
+        from cyo_adventure.core.config import Settings
+
+        assert Settings().mock_review_judges_safe is False
+
+    @pytest.mark.unit
+    def test_local_environment_may_enable_it(self) -> None:
+        """Local is where the real-backend E2E tier runs."""
+        from cyo_adventure.core.config import Settings
+
+        assert Settings(mock_review_judges_safe=True).mock_review_judges_safe is True
+
+    @pytest.mark.unit
+    def test_non_local_environment_raises(self) -> None:
+        """A deployed process cannot enable a mock reviewer that answers safe."""
+        from cyo_adventure.core.config import Settings
+        from cyo_adventure.core.exceptions import ConfigurationError
+
+        with pytest.raises(ConfigurationError, match="mock_review_judges_safe"):
+            Settings(
+                environment="staging",
+                database_url=_PROD_DB_URL,
+                review_provider="mock",
+                allow_mock_review=True,
+                mock_review_judges_safe=True,
+                **TestValidatorRequireRealReviewerOutsideLocal._OIDC_KWARGS,  # pyright: ignore[reportPrivateUsage]
+            )

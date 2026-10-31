@@ -664,6 +664,16 @@ class Settings(BaseSettings):
     # what let twelve books through (gap G1, and the #CRITICAL block at
     # moderation/pipeline.py's `mock_reviewer` assignment).
     allow_mock_review: bool = False
+    # Opt-in for the real-backend E2E tier only: make the MOCK reviewer answer
+    # safety prompts with a well-formed `safe` verdict per node instead of the
+    # default unparseable "{}". The default is deliberate (#776): an unjudged
+    # story auto-rejects to needs_revision rather than entering the approval
+    # queue looking ordinary. The E2E tier needs a reviewable story to drive the
+    # review/approve path, so it opts in explicitly. This does not make the mock
+    # a real review: the pipeline still stamps every mock report
+    # reviewer_independent=false and unapprovable. Refused outside
+    # environment="local" by `_require_mock_judging_only_in_local`.
+    mock_review_judges_safe: bool = False
 
     # Stage-0 deterministic classifier credentials. OpenAI is optional; a missing
     # key skips that classifier, and an unset key is rejected below when review
@@ -1947,6 +1957,28 @@ class Settings(BaseSettings):
                 "report the mock produces is stamped "
                 "reviewer_independent=false with a structural advisory "
                 "finding regardless of it, in local too."
+            )
+            raise ConfigurationError(msg)
+        return self
+
+    @model_validator(mode="after")
+    def _require_mock_judging_only_in_local(self) -> Settings:
+        """Refuse ``mock_review_judges_safe`` outside ``environment="local"``.
+
+        Raises:
+            ConfigurationError: when the flag is set and ``environment`` is not
+                ``"local"``.
+        """
+        # #CRITICAL: security: a mock reviewer that answers "safe" must never be
+        # reachable in a deployed process, where it would let unjudged content
+        # enter the approval queue.
+        # #VERIFY: tests/unit/test_config.py::
+        # TestMockReviewJudgesSafe::test_non_local_environment_raises.
+        if self.mock_review_judges_safe and self.environment != "local":
+            msg = (
+                "mock_review_judges_safe is set but environment is "
+                f"'{self.environment}', not 'local'. It exists only so the "
+                "real-backend E2E tier can reach in_review."
             )
             raise ConfigurationError(msg)
         return self

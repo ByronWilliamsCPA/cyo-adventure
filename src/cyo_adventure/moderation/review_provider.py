@@ -10,6 +10,8 @@ its own output without that being recorded.
 
 from __future__ import annotations
 
+import json
+import re
 from typing import TYPE_CHECKING, Final, Protocol, cast
 
 from cyo_adventure.core.exceptions import ConfigurationError
@@ -43,6 +45,53 @@ if TYPE_CHECKING:
 # covers that worst case well beyond any realistic node count; mock is never a
 # live backend.
 _MOCK_RESPONSE_BUDGET = 4096
+
+# Matches the "[label] <untrusted_passage>" line stages._review_batch writes for
+# each node in a safety batch prompt. The label there is already sanitized, so
+# echoing it back is exactly what a well-behaved real reviewer does.
+_BATCH_NODE_LABEL_RE = re.compile(r"^\[([^\]\n]*)\] <untrusted_passage>$", re.MULTILINE)
+
+_MOCK_SAFE_VERDICT: dict[str, str] = {
+    "verdict": "safe",
+    "concern": "other",
+    "severity": "low",
+    "reason": "mock reviewer: no model ran",
+}
+
+
+def _mock_review_response(prompt: str) -> str:
+    """Answer a safety-stage review prompt with a well-formed ``safe`` verdict.
+
+    The static ``"{}"`` this replaces parses as an unknown verdict for every
+    node, which the fail-closed review stage (#760, #776) now auto-rejects, so a
+    locally generated story could never reach ``in_review`` and the real-worker
+    E2E tier went red. A mock reviewer has to speak the verdict schema; it does
+    not have to be a real review. Used only when ``mock_review_judges_safe`` is
+    set. The report is still stamped
+    ``reviewer_independent=False`` and unapprovable by
+    ``moderation.pipeline._stamp_mock_reviewer`` whenever this backend is used.
+
+    Args:
+        prompt: The user-role review prompt.
+
+    Returns:
+        A JSON array of per-node verdicts for a safety batch prompt, a single
+        verdict object for a single-node safety prompt, and ``"{}"`` for every
+        other stage (coherence, engagement, fidelity), whose behaviour is
+        unchanged.
+    """
+    # #ASSUME: data-integrity: only the safety stage's prompts start "Age band:".
+    # #VERIFY: test_mock_review_response_* in tests/unit/test_review_provider.py.
+    if not prompt.startswith("Age band:"):
+        return "{}"
+    if "\nNodes:\n" in prompt:
+        labels: list[str] = [
+            match.group(1) for match in _BATCH_NODE_LABEL_RE.finditer(prompt)
+        ]
+        return json.dumps(
+            [{"node_id": label, **_MOCK_SAFE_VERDICT} for label in labels]
+        )
+    return json.dumps(_MOCK_SAFE_VERDICT)
 
 
 class ReviewProvider(Protocol):
@@ -266,7 +315,14 @@ def build_review_provider(
     backend = settings.review_provider
 
     if backend == "mock":
-        return MockProvider(responses=["{}"] * _MOCK_RESPONSE_BUDGET), True
+        # Default: the unparseable "{}" that auto-rejects an unjudged story
+        # (#776). Only the real-backend E2E tier opts into per-node safe
+        # verdicts, and config refuses that outside environment="local".
+        response = _mock_review_response if settings.mock_review_judges_safe else "{}"
+        return (
+            MockProvider(responses=[response] * _MOCK_RESPONSE_BUDGET),
+            True,
+        )
 
     if backend == "modal":
         msg = "review_provider 'modal' is deferred to slice 2b; use openrouter"
