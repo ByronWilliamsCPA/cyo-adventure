@@ -1,4 +1,4 @@
-# Status: Active | Source of truth for phase and rung vocabulary | Updated 2026-08-01
+# Status: Active | Source of truth for phase and rung vocabulary | Updated 2026-10-31
 #
 # plan-manifest.toml
 #
@@ -51,7 +51,7 @@
 #     a partial phase is a smell.
 
 schema_version = 1
-updated = "2026-08-01"
+updated = "2026-10-31"
 
 # ---------------------------------------------------------------------------------------
 # Validation provenance
@@ -76,6 +76,12 @@ updated = "2026-08-01"
 last_validated = "2026-08-01"
 method = "eleven parallel code-only agents, planning docs excluded from their evidence universe"
 result = "no status pair changed; nine of fourteen phases had incorrect gap lists"
+# 2026-10-31 partial re-check: only the Phase 5 backup, Phase 7 privacy-page, Phase 7 deletion/erasure,
+# Phase 8 and Phase 9 claims were re-resolved in code (grep of src, frontend/src, supabase/migrations).
+# No (shipped, usable) pair was changed. Phase 7's KWS parent-verification integration (PR #664, #681)
+# is real but runs against KWS Test only, so it does not move Phase 7 off usable = "no". The other
+# phases' gap lists have NOT been re-validated since 2026-08-01.
+#
 # Re-anchored 2026-08-02 onto a main that had advanced eight commits (through the
 # v0.59.0 release) since the validation base. Five files carrying gap-list locators had
 # changed; the three affected gap claims (Phase 2b generation_provider validator, Phase 3
@@ -415,7 +421,7 @@ validated = "2026-08-01"
 # tagged with that gap's own identifier.
 gaps = [
   "Performance pass not done. Confirmed still open: no locust, k6, artillery or other load harness exists, and the one perf test (tests/perf/test_evaluator_perf.py:12-14) says in its own docstring that the real load test is out of scope.",
-  "Sentry backups and restore drill not done. Confirmed still open: Sentry error tracking is wired, but no database backup or restore-drill artifact exists in scripts/ or .github/workflows/.",
+  "Restore drill not done. The backup half CLOSED since 2026-08-01 (PR #585): scripts/backup_database.py and .github/workflows/supabase-backup.yml run nightly with tiered R2 retention. Re-checked 2026-10-31: docs/operations/runbook.md section 6 documents the restore but says it has not been drilled.",
   "Safety gap H2 is HALF closed, not open. The mandatory human-approval gate on covers is built and wired (covers/service.py:307-378 approve_cover, surfaced in frontend/src/admin/ReviewDetailPage.tsx), so no cover reaches a child unreviewed. What remains absent is the AUTOMATED image-safety classifier, explicitly marked out of scope at covers/service.py:206-217. Only that half is open.",
   "RESIDUAL of the former H1 gap, restated accurately: the band-ceiling check is deliberately fail-open on unparseable data on either side. A legacy blob with no metadata.age_band, or a profile whose stored age_band string does not parse, has no ceiling to compare against and passes. That is a documented, reasoned choice (api/assignments.py:285-296), and it is the live residual; the bypass the old gap text described no longer exists.",
   "Offline revocation has an accepted mid-read window: a book pulled while a child is actively reading it is not revoked until the next library fetch or reload. Documented at frontend/src/offline/revocation.ts:16-25, previously in code only and not in this list.",
@@ -473,7 +479,7 @@ gaps = [
   "Whole-family account deletion has NO UI entry point. DELETE /v1/me/family exists (api/me.py:359), is tested, and is in the generated client, but nothing under frontend/src outside src/client/ calls it, so a guardian cannot delete their account through the product. frontend/src/guardian/PrivacyPage.tsx:93-99 admits this in its own comments. For a kids product this is a compliance-relevant hole, not a polish item.",
   "Cover images in R2/S3 object storage are never deleted on any erasure path. covers/storage.py:189 delete_cover exists but its only real caller is cover REGENERATION (covers/service.py:164); no deletion path invokes it and no orphan-collection job exists. A deleted family's cover art survives in object storage indefinitely.",
   "The Supabase Auth identity is never deleted. Account erasure removes application rows via the database cascade but no Supabase Admin API call exists anywhere in the backend and no migration touches auth.users, so the login identity and email outlive the account.",
-  "P7-03 privacy policy not published and not linked in-app, and worse than previously stated: the legal Privacy Notice is presented in the COPPA parental-consent flow as something the guardian electronically agrees to, with no clickable link to it anywhere (frontend/src/auth/GuardianConsentPage.tsx:103,131). The separate guardian trust page (PrivacyPage.tsx) exists and is linked in nav, but it is not the legal notice.",
+  "P7-03 privacy policy: a public Privacy and Support page now exists (PR #668, frontend/src/legal/), so the not-published half is CLOSED. The consent half is re-checked open 2026-10-31 and was worse than previously stated: the legal Privacy Notice is presented in the COPPA parental-consent flow as something the guardian electronically agrees to, with no clickable link to it anywhere (frontend/src/auth/GuardianConsentPage.tsx:103,131). The separate guardian trust page (PrivacyPage.tsx) exists and is linked in nav, but it is not the legal notice.",
   "P7-08 compliance checklist has a template but no owner sign-off. This gates R3 submission. NOT CODE-VERIFIABLE, organizational.",
   "P7-01 Apple Developer Program enrollment not started; EU DSA trader status undecided. NOT CODE-VERIFIABLE, organizational.",
   "P7-12 processor agreements: a checklist exists, no DPAs are signed. NOT CODE-VERIFIABLE, organizational.",

@@ -26,9 +26,15 @@ source: "Synthesized 2026-06-20 from project-vision.md v1.0, tech-spec.md v1.0,
 
 # Project Plan: CYO Adventure (Ariadne)
 
-> **Status**: Active | **Version**: 2.8 | **Updated**: 2026-07-20
+> **Status**: Active | **Version**: 2.9 | **Updated**: 2026-10-31
 > **Codename**: Ariadne (the thread that guides a reader through the maze of choices)
 > **Primary branch**: `main`
+> **2026-10-31 note**: this version reconciles the ~15 weeks since the 2026-07-20 audit (about 270
+> non-dependency merges and 125 releases, v0.21.0 through v0.90.0). The headline is that Track 1
+> (R1) is feature-complete but its live sign-off is still open, and the scheduled production,
+> staging, and nightly E2E ladders plus the weekly safety evaluation are red; see "Operational
+> health" in the 2026-10-31 callout in Section 1. Phase 7 gained its KWS verifiable-parental-consent
+> integration, Phases 8 and 9 are still unstarted.
 > **2026-07-20 note**: this version closes a 10-day gap during which ~20 releases merged
 > without this document being updated. A 12-agent audit verified every phase-status claim
 > below against actual code; see the "2026-07-20 plan audit" callout in Section 1 for the
@@ -100,7 +106,8 @@ policy teeth). **Updated 2026-07-20**: the "zero production-eligible skeletons" 
 stale. As at that date `main` carried 61 skeleton JSONs (58 flagged `production_eligible: true`) and 23
 filled stories, committed via PR #289 (14-story inventory run), #292 (Wave 4 gamebook
 fills), and #297 (a two-book series stress test); for current catalog totals see
-[catalog-census.md](./catalog-census.md) (`UW-G24`). See
+[catalog-census.md](./catalog-census.md) (`UW-G24`); **updated 2026-10-31**: the generated census reports 84 shells (81 declaring
+`production_eligible`, 74 reachable in an offered cell) and 15,470 nodes, superseding the 61/58 figures here. See
 [story-inventory-initial-run.md](./story-inventory-initial-run.md). None of these 23 are yet
 imported to Postgres or published (ADR-005 human-approval and a running DB/`--family` are
 required for that step), so "zero in the catalog" is still true, "zero in the repo" is not.
@@ -126,7 +133,7 @@ Source: [Project Vision](./project-vision.md) sections 1-3;
 [ADR-008](./adr/adr-008-public-app-store-launch.md) and
 [ADR-009](./adr/adr-009-supabase-platform.md) for the public rungs (R2/R3).
 
-### Current status (2026-07-10)
+### Current status (2026-10-31; rows marked 2026-07-xx were last verified on that date)
 
 | Phase | Status |
 |-------|--------|
@@ -140,11 +147,15 @@ Source: [Project Vision](./project-vision.md) sections 1-3;
 | 4b Editor + Engagement | ✅ Substantially delivered 2026-07-17, PR #270 (verified 2026-07-20; see the audit note below). G6 node editor, K6 tracker, K7 read-aloud, G2 controls UI, G3 permissions, K15 kid flag all shipped. **Corrected 2026-08-09**: K5/K8 test pins are done, not open (`reader-go-back.spec.ts`, `admin-review-cover.spec.ts`, `BookCard.test.tsx`, all present since 2026-08-04). Bookmarks and G15 device/storage view both closed 2026-08-09 (see roadmap.md's Phase 4b Deliverables for detail). Narrow remaining piece: G15's removal path is not wired into automatic client-side eviction |
 | 4c Family Loops (NEW 2026-07-16) | ✅ Delivered | S9 notification infra, G10 alerts, G9 visibility, K12 kid status, G7/G13 budget consent all shipped 2026-07-17 in PR #270 (verified 2026-07-20). The push channel closed 2026-07-29 via authenticated SSE (`api/notifications.py:351-419` resolves the principal and applies the guardian check before streaming any byte). **Closed 2026-08-09**: the server-scheduled digest job (`notifications/digest.py`, `.github/workflows/notification-digest.yml`) that kept capability S9 partial is now built; see roadmap.md's Phase 4c section for detail. **Apple readiness audit 2026-07-20, still open**: G10's `_COMPOSERS` registry (`notifications/registry.py`) alerts a guardian when their child flags a story (`KID_FLAGGED`), but `EventType.FLAG_RESOLVED` (emitted by `resolve_flag` in `api/flags.py:257-265`) has no composer - a guardian who reports content is never told how it was resolved. This narrows Guideline 1.2's "reporting mechanism" gap from "no notification at all" to "one-way notification, no resolution loop"; unrelated to the digest closure above and not addressed by it |
 | 4d Connections (NEW 2026-07-16) | ✅ Substantially delivered 2026-07-17, PR #270 (verified 2026-07-20). G17 dual-guardian consent with an enforced guard at the read path, K17 recommendation surfaces both shipped. Privacy-model erasure coverage for connections not independently re-verified |
-| 5 Hardening | 🟡 Partially delivered (post-R1; public-tier ops fold into Phase 9; 2026-07-16 replan items landed: ADR-007 purge, G8/A5 offline revocation, A13 audit-trail stamps, A4 re-screen first cut, the real-backend S2 conflict spec. Still open: performance pass, Sentry backups/restore drill, admin audit *view*, nightly e2e-real + staging golden journeys, adversarial live-model run, plus two newly surfaced safety gaps H1/G-band-bypass and H2/unmoderated-covers - see roadmap.md) |
-| 6 Public auth + multi-tenancy | 🟡 Partially delivered, ahead of schedule (verified 2026-07-20): P6-01/02/03/04/07/08/09 all built and tested (JWT validation, JIT onboarding, child-session tokens, profile picker+PIN, parental gate, negative-test suite). P6-05 partial (web OAuth done, native Apple/Capacitor path not). P6-06 partial (401-retry done, localStorage->Keychain-ready storage abstraction and CSP `connect-src` update not). P6-10's broader stranger-family IDOR suite not independently re-verified. See the Phase 6 section below for the full item-by-item correction |
-| 7 Kids compliance + account lifecycle | 🟡 Partially delivered (R3). PII-egress hardening (P7-10) shipped 2026-07-19 in PR #304; SECURITY.md correction half of P7-13 also shipped. P7-09's purge mechanism predates this (Phase 5/#270); its policy-doc and reading_state-expiry components remain open, as does all of P7-12 and the infosec-program half of P7-13. See the Phase 7 section below |
-| 8 iOS shell + subscriptions | ⏸️ Not started (R2; confirmed 2026-07-20: zero Capacitor/entitlement code anywhere in the repo) |
-| 9 Public catalog + hosted infra + launch | ⏸️ Not started (R3; confirmed 2026-07-20: no `catalog_published` state anywhere in the repo) |
+| 5 Hardening | 🟡 Partially delivered (post-R1; public-tier ops fold into Phase 9). **Delivered since 2026-07-20**: nightly database backup with tiered R2 retention (#585, `supabase-backup.yml`), a durable `security_event` audit table plus structured auth-failure and rate-limit events (#599/#600), log-redaction fixes (#581/#592), ADR-021 least-privilege role cutover verified live 2026-08-04 (#597/#608), cover safety gate H2 now has a human approval step (#469) and an AI-assisted review gate (#816, 2026-09-13), WCAG 2.1 AA standard with a per-PR axe gate (#683, ADR-029). **Still open**: the **restore side of the backup is undrilled** (runbook section 6), no load or performance harness (P9-13 is a plan only), bot protection on public forms (#555), alerting on security events (#557), and a green scheduled test ladder (see Operational health below). Earlier replan items (ADR-007 purge, G8/A5 revocation, A13 stamps, A4 re-screen first cut) stay landed |
+| 6 Public auth + multi-tenancy | 🟡 Partially delivered, ahead of schedule (verified 2026-07-20): P6-01/02/03/04/07/08/09 all built and tested (JWT validation, JIT onboarding, child-session tokens, profile picker+PIN, parental gate, negative-test suite). P6-05 partial (web OAuth done, native Apple/Capacitor path not). P6-06 partial (401-retry done, localStorage->Keychain-ready storage abstraction and CSP `connect-src` update not). P6-10's broader stranger-family IDOR suite not independently re-verified. See the Phase 6 section below for the full item-by-item correction. **Update 2026-10-31**: Google sign-in loop and sign-out-kills-every-device fixed (#763), guardian adult-gate Google re-auth with idle TTL (#354), residence country and adulthood attestation added to guardian consent (#567), ADR-022 Tier 1 RLS scoping shipped (#391) with two request-context ordering fixes (#560, #641). The native Apple/Capacitor path is still unstarted; ADR-032 (#836, #868) limits the self-hosted non-prod stack's OAuth to Google until Apple is enabled |
+| 7 Kids compliance + account lifecycle | 🟡 Partially delivered (R3). PII-egress hardening (P7-10) shipped 2026-07-19 in PR #304; SECURITY.md correction half of P7-13 also shipped. P7-09's purge mechanism predates this (Phase 5/#270); its policy-doc and reading_state-expiry components remain open, as does all of P7-12 and the infosec-program half of P7-13. See the Phase 7 section below. **Update 2026-10-31**: the ADR-018 D1 KWS parent-verification integration is built (#664), child-profile creation is gated on it (#681, admin path #652), the email handoff is disclosed before it happens (#704), public privacy and support pages are published (#668), and `docs/compliance/` now holds the DPIA, records of processing, breach runbook, retention policy and data-flow maps. **KWS is wired to the Test environment only; a Test verification is not a valid VPC.** Still open (re-checked in code 2026-10-31): no guardian UI calls `DELETE /v1/me/family` (`PrivacyPage.tsx` still says so), cover objects and the Supabase Auth identity survive erasure, the consent screen names the Privacy Notice without linking it, and the owner-side items (P7-01 Apple enrollment, P7-08 sign-off, P7-12 DPAs) are unchanged |
+| 8 iOS shell + subscriptions | ⏸️ Not started (R2; confirmed 2026-07-20: zero Capacitor/entitlement code anywhere in the repo) Re-checked 2026-10-31: still no `ios/` directory or Capacitor dependency; the mobile-web readiness sweep (#393) is preparation only |
+| 9 Public catalog + hosted infra + launch | ⏸️ Not started (R3; confirmed 2026-07-20: no `catalog_published` state anywhere in the repo) Re-checked 2026-10-31: still no `catalog_published` state. Hosted-infra groundwork only: the container image build moved into this repo (#813), and a load-test plan exists (P9-13) with no harness |
+| Moderation redesign (post-R1, 2026-07-30 to 2026-09-13) | ✅ Delivered, with open defects. Structured Stage-1 verdicts and chunked review (#527), Gate 3 batch recall sweep (#541), fail-closed slot contract (#760/#762), a mock reviewer can no longer pass as independent (#769) and an unreviewed story can no longer pass as soft-flagged (#776), unusable reports are unapprovable and severe-finding overrides are audited (#764, breaking), re-moderation entry points (#529/#753), ranked review surface (#528/#797). **Open**: #542 (injection items E2/E3 pass at every batch size), #775, #659 (Perspective requests omit `doNotStore`, so child free text is retained by default), and the weekly safety eval is red (#786: A9 actionable-harm 16+ missed on 3 of 3 draws) |
+| Personalization, ADR-023 and persistent characters, ADR-028 (post-R1) | ✅ Delivered through ring 1. Opt-in personalization with fail-closed sentinel integrity (#418), sentinel leak guards, client resolution and dedication overlay (#489), stored books made personalizable and the catalog retrofitted (#759), ring-1 values resolved for the reading child (#849, 2026-10-31); a reader's character carries across books (#649). ADR-023 D7 vocabulary expansion remains a spec only (#498) |
+| Generation and catalog growth (post-R1) | ✅ Substantially delivered. WS-5 structure and state variation (#321), WS-8 catalog flywheel (#352), D1 family-lane ruling enforced at every layer (#747), Modal promoted to cascade leg 3 and the Ollama leg retired (#729), Stage D reading-level repair loop (#708), skeleton sourcing programme S-0..S-5 (#736), strict-bar coverage of all 18 offered cells (#730), every production skeleton made fillable (#727). Census (see [catalog-census.md](./catalog-census.md)): 84 shells, 74 production-eligible and reachable, 15,470 nodes. Prose fill and import to Postgres remain gated on ADR-005 human approval |
+| Kid and guardian UX (post-R1) | ✅ Delivered. Theme toggle and per-profile reduce-motion (#388/#389), kid-appeal decisions with rendered-stop reader and engagement v1 (#532), persistent guardian escape hatch (#618), K9 New badge (#477), G14 co-parent invite (#475), G15 device list and revoke (#473), notification bell on SSE (#478), redesigned landing funnel with corrected approval claims (#720/#718). **Open**: read-aloud (K7) is off by default with no kid-facing discovery path (#617), and permission or empty states render as one generic retryable error (#137) |
 
 With **Phases 0 through 3 and Phase 4a all merged, the internal web release (R1) is
 feature-complete as of 2026-07-03**: the approval, moderation, and review APIs are
@@ -265,6 +276,42 @@ document:
 
 This sweep deliberately rescheduled nothing and closed nothing. It establishes where work lives, not
 when it happens; sequencing the register against the phase estimates is the next pass.
+
+**2026-10-31 plan update**: reconciles the ~15 weeks since 2026-07-20 against merged history (about 270
+non-dependency merges and 125 releases, v0.21.0 to v0.90.0), the open issue list, and spot checks in code.
+It is **not** a repeat of the 12-agent code-only validation: `plan-manifest.toml`'s per-phase gap lists
+were last fully validated 2026-08-01, and only the gaps named in the status table above were re-checked
+in code on 2026-10-31. Re-validate the rest before relying on them.
+
+1. **R1 is feature-complete but not signed off.** The live E2E checklist stood at 10 of 38 steps on
+   2026-08-08 (`r1-live-e2e-checklist.md`); no later sign-off row exists, and the repo holds no evidence
+   of a production redeploy after v0.68.0. The production defect behind #639 was fixed in v0.68.2, so
+   whether it is cleared in production is unproven from git.
+2. **Operational health is the main finding.** Scheduled alerts open as of 2026-10-31, each still
+   accumulating failure comments: production E2E (#824, three specs failing since mid-September),
+   staging E2E (#787; its `grant_sweep` step alerts that a staging device grant may still be active, but the
+   2026-10-31 run shows both logins failing with "We couldn't reach the server" while `leak_check` passed, so the
+   sweep most likely could not reach staging at all; a human still has to confirm no grant survives, and the
+   staging target and its secrets need checking after ADR-032's move of non-prod off Supabase Cloud), the real-backend nightly (#290, red since 2026-07-18), real-OS E2E (#814),
+   KWS delivery health (#835, parents may be stuck on the wait screen), the weekly adversarial safety
+   evaluation (#786), DAST (#802), mutation testing (#302), link check (#851), and the escalating-streak
+   rollup (#801). The known-vulnerability release gate (#834) was addressed by #848, #861 and #867 on
+   2026-10-31 and the issue stays open until the next scheduled run confirms.
+3. **The unscheduled-work register grew from 217 to 811 rows** (125 done, 586 unscheduled, 56 awaiting a
+   decision, 26 blocked, 18 to verify). The 2026-07-28 audit said sequencing the register against the phase
+   estimates was the next pass; it has not happened, and the register is now growing faster than it is
+   scheduled. Treat that as its own work item.
+4. **Phase 7 moved most.** The KWS integration and consent gate are the first real R3 compliance code, but
+   they run against KWS Test only, and the erasure gaps (no deletion UI, residual cover objects and auth
+   identity) are unchanged.
+5. **Phases 8 and 9 are still unstarted**, and nothing in the repo prepares Phase 8 beyond mobile-web
+   readiness. R2 and R3 estimates in the Timeline table are unchanged and remain unanchored to any start date.
+6. **Owner-gated work is the long pole**: funded provider quota and a second device for the live checklist,
+   Apple Developer Program enrollment (P7-01), counsel engagement for ADR-018, DPAs (P7-12), and the open
+   decisions in the register.
+
+Dependency posture: five Renovate PRs open (#862 to #866, all minor frontend dev tooling), and 83 actionable
+transitive vulnerabilities tracked in #574.
 
 ---
 
