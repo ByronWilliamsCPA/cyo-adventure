@@ -13,7 +13,7 @@ source: "Project Ariadne scoping handoff (architecture rev 3, 2026-06-20)"
 
 # Development Roadmap: CYO Adventure
 
-> **Status**: Active | **Updated**: 2026-07-20 (comprehensive plan audit: verified every
+> **Status**: Active | **Updated**: 2026-10-31 (status reconciliation, see "2026-10-31 Status Update"; prior: 2026-07-20 comprehensive plan audit: verified every
 > phase-status claim below against actual code and closed the gap between this document
 > and roughly 20 releases merged since the 2026-07-16 replan; see the "2026-07-20 plan
 > audit" section)
@@ -368,6 +368,32 @@ the safety-relevant and blocking items inline, and everything else is held by ID
 **Deliberately not done in this pass**: nothing was rescheduled, no phase estimate was revised, and
 no item was closed. The sweep establishes where work lives, not when it happens. Sequencing the
 register against the existing phase estimates is the natural next pass.
+
+## 2026-10-31 Status Update: reconciliation and proposed sequencing
+
+[PROJECT-PLAN.md](./PROJECT-PLAN.md) Section 1 carries the full 2026-10-31 callout and the refreshed status
+table; this section holds only what bears on staging. It is a reconciliation against merged history, the
+open issue list, and targeted code checks, not a new 12-agent validation.
+
+**State**: R1 is feature-complete and unsigned (live checklist 10 of 38 as of 2026-08-08). Track 2 is
+unchanged except Phase 7, which gained the KWS verifiable-parental-consent integration against KWS Test
+(ADR-018 D1, #664/#681). Phases 8 and 9 have not started. Four post-R1 workstreams shipped without a
+phase line: moderation redesign, personalization (ADR-023/028), generation and catalog growth, and
+kid/guardian UX; the status table now lists them.
+
+**Proposed sequencing (unratified; the owner decides)**:
+
+1. **Make the ladders green before adding scope.** Production E2E (#824), staging E2E (#787, including
+   its device-grant leak signal), real-backend nightly (#290), KWS delivery health (#835) and the weekly
+   safety eval (#786) are all red. A red ladder cannot certify R1, so this gates M4.1 sign-off.
+2. **Redeploy and finish the R1 live checklist** (28 steps left). Needs funded provider quota, a
+   maintenance window and a second device, all owner-gated.
+3. **Triage the register**: 811 rows, 586 unscheduled. Assign phases to the `decision`, `blocked` and
+   `verify` rows first (100 rows); they cost an owner ruling, not build time.
+4. **Close the Phase 7 erasure gaps** (deletion UI, cover objects, Supabase Auth identity, consent-screen
+   privacy link) before any R3 submission work, since they are code the compliance checklist depends on.
+5. **Then choose between starting Phase 8 and finishing Phase 7 owner items.** Phase 7 gates R3 and not R2,
+   so TestFlight can proceed first; that choice is an owner decision and is not made here.
 
 ## 2026-08-03: Story structure diversity program (pointer only)
 
