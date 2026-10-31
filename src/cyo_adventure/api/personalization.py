@@ -1511,7 +1511,7 @@ async def get_personalization_values(
     # but deactivated or processing-restricted reader would still receive the
     # sharer's ring-2 values for a cross-family catalog book.
     # #VERIFY: the integration test named
-    # test_values_non_live_reader_gets_empty_payload_for_ring2_book
+    # test_values_non_live_reader_child_token_gets_empty_payload_for_ring2_book
     # #ASSUME: data-integrity: authorize_profile only admits profiles in the
     # caller's own family, so the family mismatch is unreachable unless the
     # profile was deleted mid-request. Ring 1 is own-family by definition.
