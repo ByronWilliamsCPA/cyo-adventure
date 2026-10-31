@@ -23,6 +23,7 @@ import pytest
 from sqlalchemy import select
 
 from cyo_adventure.api import personalization as personalization_api
+from cyo_adventure.core.child_session import mint_child_session_token
 from cyo_adventure.db.models import (
     Character,
     ChildProfile,
@@ -1125,32 +1126,82 @@ async def test_values_ring2_happy_path(
     assert body["slot_bindings"] == expected_slot_bindings
 
 
-@pytest.mark.parametrize("field", ["deactivated_at", "processing_restricted_at"])
-async def test_values_non_live_reader_gets_empty_payload_for_ring2_book(
-    field: str,
-    client: AsyncClient,
-    sessions: async_sessionmaker[AsyncSession],
-) -> None:
-    """A deactivated or restricted reader gets the universal empty payload.
-
-    A child-session token outlives profile deactivation, so ring 2 must not
-    disclose the sharer's values to a reader who is no longer live. The body
-    is identical to every other empty branch (no oracle on why it is empty).
-    """
-    async with sessions() as session:
-        book_id, viewer_token, reader_id = await _build_ring2_scenario(session)
+async def _make_reader_non_live(
+    sessions: async_sessionmaker[AsyncSession], reader_id: uuid.UUID, field: str
+) -> uuid.UUID:
+    """Mark the reader deactivated or restricted; return the reader's family id."""
     async with sessions() as session:
         reader = await session.get(ChildProfile, reader_id)
         assert reader is not None
         setattr(reader, field, datetime.now(UTC))
         await session.commit()
+        return reader.family_id
 
-    resp = await client.get(_values_url(book_id, reader_id), headers=auth(viewer_token))
-    assert resp.status_code == 200, resp.text
-    body = resp.json()
+
+def _assert_universal_empty(body: dict[str, object]) -> None:
     assert body["ring"] is None
     assert body["values"] == {}
     assert body["slot_bindings"] == {}
+
+
+async def test_values_restricted_reader_gets_empty_payload_for_ring2_book(
+    client: AsyncClient,
+    sessions: async_sessionmaker[AsyncSession],
+) -> None:
+    """A processing-restricted reader gets the universal empty payload.
+
+    The guardian principal still lists a restricted profile, so the handler's
+    own liveness check is what withholds the sharer's ring-2 values. The body
+    is identical to every other empty branch (no oracle on why it is empty).
+    """
+    async with sessions() as session:
+        book_id, viewer_token, reader_id = await _build_ring2_scenario(session)
+    await _make_reader_non_live(sessions, reader_id, "processing_restricted_at")
+
+    resp = await client.get(_values_url(book_id, reader_id), headers=auth(viewer_token))
+    assert resp.status_code == 200, resp.text
+    _assert_universal_empty(resp.json())
+
+
+async def test_values_deactivated_reader_refused_at_auth_boundary_for_guardian(
+    client: AsyncClient,
+    sessions: async_sessionmaker[AsyncSession],
+) -> None:
+    """A guardian principal never lists a deactivated profile, so it is a 403.
+
+    `_resolve_profiles` drops deactivated profiles from the guardian's allowed
+    set, which refuses the request before the handler runs. No value is read.
+    """
+    async with sessions() as session:
+        book_id, viewer_token, reader_id = await _build_ring2_scenario(session)
+    await _make_reader_non_live(sessions, reader_id, "deactivated_at")
+
+    resp = await client.get(_values_url(book_id, reader_id), headers=auth(viewer_token))
+    assert resp.status_code == 403, resp.text
+
+
+@pytest.mark.parametrize("field", ["deactivated_at", "processing_restricted_at"])
+async def test_values_non_live_reader_child_token_gets_empty_payload_for_ring2_book(
+    field: str,
+    client: AsyncClient,
+    sessions: async_sessionmaker[AsyncSession],
+) -> None:
+    """A still-valid child-session token cannot read ring-2 values once non-live.
+
+    A child-session token is self-contained and does no database read, so it
+    outlives profile deactivation; the handler's liveness check is the only
+    guard. This is the path the review comment described.
+    """
+    async with sessions() as session:
+        book_id, _viewer_token, reader_id = await _build_ring2_scenario(session)
+    family_id = await _make_reader_non_live(sessions, reader_id, field)
+    token, _expires = mint_child_session_token(
+        profile_id=reader_id, family_id=family_id, user_id=uuid.uuid4()
+    )
+
+    resp = await client.get(_values_url(book_id, reader_id), headers=auth(token))
+    assert resp.status_code == 200, resp.text
+    _assert_universal_empty(resp.json())
 
 
 async def _give_reader_own_values(reader_id: uuid.UUID, session: AsyncSession) -> None:
