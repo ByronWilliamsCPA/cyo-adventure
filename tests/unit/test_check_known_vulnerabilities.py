@@ -36,7 +36,7 @@ asserting that an entry due today still passes), so bumping it silently
 invalidates their arithmetic.
 """
 
-_DOCUMENT_VERIFIED: Final = date(2026, 9, 3)
+_DOCUMENT_VERIFIED: Final = date(2026, 10, 2)
 """Date the shipped `docs/known-vulnerabilities.md` was last verified current.
 
 Deliberately separate from `_TODAY`, which cannot move. A single shared anchor
