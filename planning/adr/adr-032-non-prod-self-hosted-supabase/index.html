@@ -3903,8 +3903,8 @@ already exercises rather than building ahead of need.</p>
    <code>OIDC_JWKS_URL</code> (new GoTrue), <code>VITE_SUPABASE_URL</code>/<code>VITE_SUPABASE_ANON_KEY</code> (new Kong gateway);
    run the existing <code>supabase/migrations/</code> unchanged against the new stack's Postgres (this is
    exactly the portability ADR-012's migration mechanism was chosen for); register the new
-   callback URL in both the Apple and Google developer consoles (the one step with no config/file
-   equivalent); move the non-prod leg of <code>.github/workflows/supabase-staging.yml</code> onto the
+   callback URL in the Google developer console (the one step with no config/file equivalent; the
+   Apple console too, once Apple sign-in is enabled, per the Success Criteria note below); move the non-prod leg of <code>.github/workflows/supabase-staging.yml</code> onto the
    homelab self-hosted runner and point it at the new stack with <code>supabase db push --db-url</code>,
    replacing the Cloud-only <code>supabase link --project-ref</code> step (see Follow-on work, <code>UW-A61</code>).
    The same workflow's <code>supabase config push --project-ref</code> step has no self-hosted equivalent:
@@ -3929,7 +3929,7 @@ already exercises rather than building ahead of need.</p>
 <h3 id="testing-strategy">Testing Strategy<a class="headerlink" href="#testing-strategy" title="Permanent link">&para;</a></h3>
 <ul>
 <li><code>homelab-infra</code>: bring the new stack up locally/on the homelab and verify GoTrue issues a valid
-  JWT against a real Apple/Google OAuth round trip before this repo is repointed at it.</li>
+  JWT against a real Google OAuth round trip before this repo is repointed at it.</li>
 <li>CYO_Adventure: the existing OIDC negative-token suite
   (<code>tests/unit/test_oidc_verification.py</code>) needs no change, since it tests Supabase-shaped JWTs
   generically. It is offline by design (an autouse fixture swaps the JWKS client for a fake and
@@ -3951,14 +3951,22 @@ already exercises rather than building ahead of need.</p>
       and issues GoTrue JWTs the backend accepts under the existing OIDC verification path.</li>
 <li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> <code>supabase/migrations/</code> applies cleanly against the new stack's Postgres with no manual
       intervention.</li>
-<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> A guardian can complete real Apple and Google OAuth sign-in against the new stack, using
-      dedicated synthetic test accounts only: one Apple ID and one Google account created for
-      this purpose and owned by the core-maintainer, never a family member's or any real
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> A guardian can complete real Google OAuth sign-in against the new stack, using
+      dedicated synthetic test accounts only: a Google account created for this purpose and
+      owned by the core-maintainer, never a family member's or any real
       guardian's account. The GoTrue <code>auth.users</code> and <code>auth.identities</code> rows those sign-ins create
       are deleted after each validation run (or wiped with the stack on reset), so the
       provider claims they hold (email, name, provider subject) do not persist in non-prod. This
       keeps the Regulatory constraint above ("no real guardian or child PII") true for identity
-      records as well as fixture data.</li>
+      records as well as fixture data.
+      <strong>Why Google only (corrected 2026-10-31).</strong> This criterion originally required Apple and
+      Google sign-in, but Apple is not enabled on any environment today: <code>supabase/config.toml</code>
+      declares <code>[auth.external.apple]</code> with <code>enabled = false</code>, so there is no Apple path for the
+      new stack to reproduce. Apple remains planned (ADR-009 Decision point 1 configures both
+      providers, and ADR-008 records App Store Guideline 4.8's Sign in with Apple requirement
+      for the public launch). When Apple is enabled, the non-prod stack must gain it at the same
+      time, with its own synthetic Apple ID under the same record-deletion rule, so non-prod keeps
+      mirroring production's auth path.</li>
 <li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> The new stack's backup runs on schedule and a restore has been exercised at least once.</li>
 <li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> The old combined dev/test Supabase Cloud project is deleted and the account shows one free
       project slot.</li>
@@ -4005,8 +4013,8 @@ already exercises rather than building ahead of need.</p>
   project once the new stack has run clean, freeing the second Cloud project slot. Deleting the
   Cloud project is irreversible, so each of the first four Success Criteria above must be met and
   recorded with evidence before it happens: the public hostname serves a valid TLS certificate and
-  GoTrue JWTs the backend accepts; <code>supabase/migrations/</code> applied clean; Apple and Google OAuth
-  sign-in completed with the synthetic test accounts; and a backup restore exercised from the
+  GoTrue JWTs the backend accepts; <code>supabase/migrations/</code> applied clean; Google OAuth sign-in
+  completed with the synthetic test account (plus Apple, if it has been enabled by then); and a backup restore exercised from the
   non-prod bucket.</li>
 </ul>
 <h2 id="related">Related<a class="headerlink" href="#related" title="Permanent link">&para;</a></h2>
@@ -4049,7 +4057,7 @@ already exercises rather than building ahead of need.</p>
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="October 31, 2026 04:32:25 UTC">October 31, 2026</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="October 31, 2026 14:21:54 UTC">October 31, 2026</span>
   </span>
 
     
