@@ -202,6 +202,7 @@ path = [
     "frontend/index.html",  # Vite entry HTML
     "frontend/package.json",  # npm package manifest
     "frontend/package-lock.json",  # npm dependency lockfile
+    "frontend/osv-scanner.toml",  # OSV-Scanner exceptions scoped to the frontend lockfile
     "frontend/tsconfig.json",  # TypeScript base config
     "frontend/tsconfig.app.json",  # TypeScript app config
     "frontend/tsconfig.node.json",  # TypeScript node config
