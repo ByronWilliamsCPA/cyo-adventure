@@ -310,8 +310,8 @@ already exercises rather than building ahead of need.
    `OIDC_JWKS_URL` (new GoTrue), `VITE_SUPABASE_URL`/`VITE_SUPABASE_ANON_KEY` (new Kong gateway);
    run the existing `supabase/migrations/` unchanged against the new stack's Postgres (this is
    exactly the portability ADR-012's migration mechanism was chosen for); register the new
-   callback URL in both the Apple and Google developer consoles (the one step with no config/file
-   equivalent); move the non-prod leg of `.github/workflows/supabase-staging.yml` onto the
+   callback URL in the Google developer console (the one step with no config/file equivalent; the
+   Apple console too, once Apple sign-in is enabled, per the Success Criteria note below); move the non-prod leg of `.github/workflows/supabase-staging.yml` onto the
    homelab self-hosted runner and point it at the new stack with `supabase db push --db-url`,
    replacing the Cloud-only `supabase link --project-ref` step (see Follow-on work, `UW-A61`).
    The same workflow's `supabase config push --project-ref` step has no self-hosted equivalent:
@@ -336,7 +336,7 @@ already exercises rather than building ahead of need.
 ### Testing Strategy
 
 - `homelab-infra`: bring the new stack up locally/on the homelab and verify GoTrue issues a valid
-  JWT against a real Apple/Google OAuth round trip before this repo is repointed at it.
+  JWT against a real Google OAuth round trip before this repo is repointed at it.
 - CYO_Adventure: the existing OIDC negative-token suite
   (`tests/unit/test_oidc_verification.py`) needs no change, since it tests Supabase-shaped JWTs
   generically. It is offline by design (an autouse fixture swaps the JWKS client for a fake and
@@ -359,14 +359,22 @@ already exercises rather than building ahead of need.
       and issues GoTrue JWTs the backend accepts under the existing OIDC verification path.
 - [ ] `supabase/migrations/` applies cleanly against the new stack's Postgres with no manual
       intervention.
-- [ ] A guardian can complete real Apple and Google OAuth sign-in against the new stack, using
-      dedicated synthetic test accounts only: one Apple ID and one Google account created for
-      this purpose and owned by the core-maintainer, never a family member's or any real
+- [ ] A guardian can complete real Google OAuth sign-in against the new stack, using
+      dedicated synthetic test accounts only: a Google account created for this purpose and
+      owned by the core-maintainer, never a family member's or any real
       guardian's account. The GoTrue `auth.users` and `auth.identities` rows those sign-ins create
       are deleted after each validation run (or wiped with the stack on reset), so the
       provider claims they hold (email, name, provider subject) do not persist in non-prod. This
       keeps the Regulatory constraint above ("no real guardian or child PII") true for identity
       records as well as fixture data.
+      **Why Google only (corrected 2026-10-31).** This criterion originally required Apple and
+      Google sign-in, but Apple is not enabled on any environment today: `supabase/config.toml`
+      declares `[auth.external.apple]` with `enabled = false`, so there is no Apple path for the
+      new stack to reproduce. Apple remains planned (ADR-009 Decision point 1 configures both
+      providers, and ADR-008 records App Store Guideline 4.8's Sign in with Apple requirement
+      for the public launch). When Apple is enabled, the non-prod stack must gain it at the same
+      time, with its own synthetic Apple ID under the same record-deletion rule, so non-prod keeps
+      mirroring production's auth path.
 - [ ] The new stack's backup runs on schedule and a restore has been exercised at least once.
 - [ ] The old combined dev/test Supabase Cloud project is deleted and the account shows one free
       project slot.
@@ -413,8 +421,8 @@ already exercises rather than building ahead of need.
   project once the new stack has run clean, freeing the second Cloud project slot. Deleting the
   Cloud project is irreversible, so each of the first four Success Criteria above must be met and
   recorded with evidence before it happens: the public hostname serves a valid TLS certificate and
-  GoTrue JWTs the backend accepts; `supabase/migrations/` applied clean; Apple and Google OAuth
-  sign-in completed with the synthetic test accounts; and a backup restore exercised from the
+  GoTrue JWTs the backend accepts; `supabase/migrations/` applied clean; Google OAuth sign-in
+  completed with the synthetic test account (plus Apple, if it has been enabled by then); and a backup restore exercised from the
   non-prod bucket.
 
 ## Related
