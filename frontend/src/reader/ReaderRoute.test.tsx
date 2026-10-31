@@ -425,6 +425,28 @@ describe('ReaderRoute personalization wiring (C3c)', () => {
     ).toEqual([])
   })
 
+  it('does not fetch personalization values when the route has no reader profile', async () => {
+    vi.stubEnv('VITE_FEATURE_PERSONALIZATION', 'true')
+    try {
+      render(
+        <ToastProvider>
+          <MemoryRouter initialEntries={[`/read/${lantern.id}/${lantern.version}`]}>
+            <Routes>
+              <Route path="/read/:storybookId/:version" element={<ReaderRoute />} />
+            </Routes>
+          </MemoryRouter>
+        </ToastProvider>
+      )
+      await new Promise((resolve) => setTimeout(resolve, 100))
+      expect(screen.queryByTestId('reader')).toBeNull()
+      expect(
+        mockGet.mock.calls.filter(([url]) => String(url).includes('personalization-values'))
+      ).toEqual([])
+    } finally {
+      vi.unstubAllEnvs()
+    }
+  })
+
   it('fetches personalization values when the flag is on', async () => {
     vi.stubEnv('VITE_FEATURE_PERSONALIZATION', 'true')
     try {
