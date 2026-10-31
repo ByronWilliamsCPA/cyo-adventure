@@ -126,119 +126,30 @@ and no package manager, so there is no project-side upgrade path.
 
 ---
 
-## CVE-2026-11822, CVE-2026-11824 | libsqlite3-0 | High
-
-| Field | Value |
-|-------|-------|
-| **CVE ID** | CVE-2026-11822, CVE-2026-11824 |
-| **Package** | libsqlite3-0 (Debian binary package from the `sqlite3` source package) |
-| **Affected Version** | 3.46.1-7+deb13u1+dhi2, as shipped by the pinned base image (SQLite before 3.53.2) |
-| **Fixed Version** | No fix available on the trixie track; both recorded `affected` (re-verified on the Debian tracker 2026-09-03) |
-| **Severity** | **High (both), as of the 2026-09-03 reassessment.** Recorded Medium on 2026-08-17; the Trivy/Aqua feed has since raised both |
-| **CVSS Score** | Not carried in the advisory records consulted |
-| **Discovered** | 2026-08-10 |
-| **Last Reassessed** | 2026-09-03 |
-| **Reassessment Due** | 2026-11-08 |
-| **Blocking Release** | No |
-
-### Description
-
-Memory corruption in SQLite before 3.53.2 (CVE-2026-11822) and a heap-based
-buffer overflow in the same range (CVE-2026-11824). Exploitation requires
-SQLite to parse attacker-controlled SQL or a crafted database file.
-
-### Impact on This Project
-
-The application never shells out. `grep -rn "subprocess\|os.system" src/`
-returns nothing across the whole package, so no runtime code path can invoke
-another program at all, let alone one of these. The container runs a single
-uvicorn process as `USER 1000:1000`.
-
-This project does not use SQLite. Persistence is PostgreSQL over async
-SQLAlchemy with `asyncpg` (`core/database.py`); `grep -rn -i sqlite src/`
-returns a single hit, a comment in `generation/worker_main.py` about a test
-limitation, and no import. CPython's stdlib `sqlite3` module links this library
-but is never imported by the application, so the vulnerable parser is never
-handed input.
-
-**These two suppressions are live, and the note that said otherwise was wrong
-by 2026-09-03.** From 2026-08-17 this entry read "these two suppressions are
-currently inert", on the reasoning that both CVEs were Medium while the
-Container Security workflow is called with `severity-threshold: CRITICAL,HIGH`.
-That was true when written. It is not true now: Trivy 0.70.0's current feed
-rates both **High**, so they are inside the threshold, they are reported, and
-these two entries are the only thing keeping the scan green over them.
-
-The correction is worth stating rather than quietly editing, because the
-original reasoning was sound and still produced a stale claim. A severity is a
-feed value that moves; an entry that argues from one needs a date attached and a
-re-read at reassessment, which is what caught it. Keeping the entry "in case the
-threshold widens" turned out to be the right call for the wrong reason: what
-widened was the severity, not the threshold.
-
-Two further `libsqlite3-0` CVEs appeared in the same feed and are **not**
-accepted here: CVE-2026-50812 and CVE-2026-50813, both Medium, both with no
-Debian fix. They stay below the scan threshold and are recorded only so a future
-reader knows they were seen rather than missed.
-
-### Remediation Plan
-
-- [ ] Monitor for a trixie-track `sqlite3` at 3.53.2 or later; on arrival, let
-  it flow in via a base-image digest refresh and delete both entries.
-- [ ] Re-verify fix status against the Debian security tracker from a networked
-  session (issue #711 item 1).
-- [ ] Reassess by 2026-11-08.
-
-### Why Not Fixed Yet
-
-Debian records no fixed version on the trixie track for either CVE; both are
-recorded `affected`, not `fix_deferred`, so Debian has neither shipped a fix nor
-ruled one out. The package is provided by the
-hardened base image (`ghcr.io/byronwilliamscpa/dhi-python:3.14-debian13`), not
-by this project's dependency set, and the DHI runtime image ships no shell and
-no package manager, so it cannot upgrade itself even once a fix exists upstream.
-
-**Provenance of this assessment (updated 2026-09-03).** Fix status was
-originally read from Trivy's own Debian advisory records, which is the same data
-source the Container Security workflow scans against and therefore not
-independent corroboration; the entry recorded that gap honestly and left a
-Debian-tracker check outstanding, because that host was unreachable from this
-project's cloud sessions (issue #711, item 1).
-
-**That check has now been done.** `security-tracker.debian.org` is reachable
-again, and both CVEs were fetched individually on 2026-09-03:
-`sqlite3` is `3.46.1-7+deb13u1` and **vulnerable on the trixie track for both**,
-with no fixed version and no DSA. The Trivy reading was correct. The outstanding
-corroboration item is discharged for this entry.
-
-### References
-
-- [Debian security tracker: sqlite3](https://security-tracker.debian.org/tracker/source-package/sqlite3)
-- Suppressed without documentation in commit `d1907a8`; documented 2026-08-17
-
----
-
 ## CVE-2025-69720 | ncurses (libncursesw6, libtinfo6, ncurses-base, ncurses-bin) | High
 
 | Field | Value |
 |-------|-------|
 | **CVE ID** | CVE-2025-69720 |
 | **Package** | ncurses family (Debian binary packages from the `ncurses` source package) |
-| **Affected Version** | As shipped by the pinned base image (Debian 13 "trixie", DHI mirror build) |
-| **Fixed Version** | No fix available on the trixie track; recorded `affected` |
-| **Severity** | High |
+| **Affected Version** | 6.5+20250216-2+dhi4 (all four binary packages), as shipped by the pinned base image (digest `sha256:d3f085aa`, Debian 13.7) |
+| **Fixed Version** | No fix on the trixie track. Debian tags it `<no-dsa>` (Minor issue); fixed only in forky and sid (6.6+20260608-2) |
+| **Severity** | High (per Trivy/Aqua feed) |
 | **CVSS Score** | Not carried in the advisory records consulted |
 | **Discovered** | 2026-08-10 |
-| **Last Reassessed** | 2026-09-03 |
-| **Reassessment Due** | 2026-11-08 |
+| **Last Reassessed** | 2026-10-31 |
+| **Reassessment Due** | 2027-01-29 |
 | **Blocking Release** | No |
 
 ### Description
 
-A buffer overflow in ncurses that may lead to arbitrary code execution.
-Exploitation requires an ncurses-linked program to process attacker-controlled
-terminal description data (a crafted `terminfo` entry, typically reached via
-`TERM` or `TERMINFO` pointing at attacker-supplied content).
+A stack-based buffer overflow in `analyze_string` in `progs/infocmp.c`: the
+`infocmp` command-line tool in ncurses before 6.5-20251213 overflows when it
+compares or prints a crafted terminal description. Exploitation requires running
+`infocmp` against attacker-controlled terminfo data. (Corrected 2026-10-31: this
+entry previously described a generic ncurses library overflow reachable from any
+ncurses-linked program. The Debian tracker's description scopes it to the
+`infocmp` tool, and Debian's bullseye note calls it a "Crash in CLI tool".)
 
 ### Impact on This Project
 
@@ -260,9 +171,36 @@ attacker-influenced `TERM` or `TERMINFO`.
 - [ ] Monitor the Debian security tracker for a fixed `ncurses` on the trixie
   track; on arrival, let it flow in via a base-image digest refresh and delete
   the entry.
-- [ ] Re-verify fix status against the Debian security tracker from a networked
-  session (issue #711 item 1).
-- [ ] Reassess by 2026-11-08.
+- [ ] Reassess by 2027-01-29: confirm nothing in the image can execute
+  `/usr/bin/infocmp`, and re-read the Debian tracker for a trixie fix.
+
+### Reassessment 2026-10-31
+
+Due 2026-11-08; reassessed against current sources rather than renewed on the old
+evidence. Each item below was checked on 2026-10-31.
+
+1. **Fix status, from the Debian security tracker.** `ncurses` on trixie is still
+   `vulnerable` at 6.5+20250216-2, now triaged `[trixie] - ncurses <no-dsa>
+   (Minor issue)`, so no trixie security update is planned. The fix is in forky
+   and sid (6.6+20260608-2) only.
+2. **What the pinned image ships.** Read from the package database in the layers
+   of the digest on `main` (`sha256:d3f085aa`, Debian 13.7, #853):
+   `libncursesw6`, `libtinfo6`, `ncurses-base` and `ncurses-bin`, all at
+   `6.5+20250216-2+dhi4`. **The vulnerable tool is present:** `ncurses-bin`'s
+   file list includes `/usr/bin/infocmp` (alongside `tic`, `tput`, `toe` and
+   friends). The previous text implied nothing ncurses-related was executable; that
+   was imprecise, and the verdict now rests on the binary being unreachable rather
+   than absent.
+3. **Reachability.** Still none. Running `infocmp` needs something to execute
+   it: nothing under `src/` imports `subprocess` or calls `os.system`, the runtime
+   image ships no shell, and the container's only process is uvicorn as
+   `USER 1000:1000` with no controlling terminal and no attacker-influenced
+   `TERM` or `TERMINFO`.
+
+**Verdict:** `Blocking Release | No` stands. **Evidence that would change it:** any
+runtime path that spawns a subprocess, a shell added to the base image, or a
+trixie-track `ncurses` fix (at which point a digest refresh, not a renewal, is the
+action). A base image that dropped `ncurses-bin` would also retire this entry.
 
 ### Why Not Fixed Yet
 
@@ -322,6 +260,8 @@ discharged for this entry.
 | CVE-2026-53615   | libuuid1       | 2026-09-03    | Fixed by base util-linux 2.41.5-0+deb13u1+dhi2 (#798). |
 | 61 kernel CVEs   | linux-libc-dev | 2026-10-02    | Not applicable: package absent from base. See below.   |
 | CVE-2026-66046   | libexpat1      | 2026-10-31    | Fixed by base expat 2.9.0-1~deb13u1+dhi0 (DSA-6566-1). |
+| CVE-2026-11822   | libsqlite3-0   | 2026-10-31    | Fixed in trixie sqlite3 3.46.1-7+deb13u2, which base ships. |
+| CVE-2026-11824   | libsqlite3-0   | 2026-10-31    | Fixed in trixie sqlite3 3.46.1-7+deb13u2, which base ships. |
 
 The four `linux-libc-dev` rows were all cleared by a base-image digest refresh rather than
 by a suppression. They are the precedent for the `not input.FixedVersion` guard in
@@ -332,6 +272,17 @@ below) deliberately did not cover that case. Their original per-CVE entries were
 
 Aliases: PYSEC-2022-42969 is CVE-2022-42969 and GHSA-w596-4wvx-j9j6 (duplicate OSV record
 PYSEC-2022-43183); PYSEC-2026-89 is CVE-2025-69534 and GHSA-5wmx-573v-2qwq.
+
+### Resolution detail: CVE-2026-11822 and CVE-2026-11824 (`libsqlite3-0`, 2026-10-31)
+
+Both were accepted on 2026-08-10 while Debian recorded the trixie track `affected`, and were due
+for reassessment on 2026-11-08. At that reassessment, on 2026-10-31, the Debian security tracker
+lists trixie as **fixed in `sqlite3 3.46.1-7+deb13u2`** for both (the FTS5 out-of-bounds read and
+heap overflow from SQLite before 3.53.2). The pinned base image (`sha256:d3f085aa`, Debian 13.7)
+ships `libsqlite3-0 3.46.1-7+deb13u2+dhi1`, read from the image's package database, which is that
+fixed build. Both `.trivyignore.yaml` suppressions are deleted rather than renewed, so the scan
+again vouches for the package directly. Reachability was never the basis for keeping them once a
+fix shipped; it was also nil (no `sqlite3` import in `src/`).
 
 ### Resolution detail: CVE-2026-66046 and the 2026-10-31 base-image refresh
 
@@ -580,3 +531,4 @@ re-verified rather than carried forward:
 | 2026-09-03  | Claude Code    | Reassessed all seven active entries against sources that were unreachable when they were written; `security-tracker.debian.org` is available from cloud sessions again, which discharges the standing corroboration caveat on the `libsqlite3-0`, `ncurses` and `perl-base` entries and closes issue #711 item 1. Retired 16 of the 20 per-CVE suppressions. Fifteen were already dead against the pinned digest: the six Expat CVEs (fixed in trixie-security by `expat 2.8.2-1~deb13u1`, DSA-6404-1, and the base has shipped `2.8.2-1~deb13u1+dhi0` for weeks) plus nine naming `gawk` and `perl-base`, neither of which is in the image at all. Evidence read out of the GHCR layers and a Trivy 0.70.0 run over the extracted filesystem, not out of a scan report, since a suppressed finding and an absent one are indistinguishable from the outside. Corrected two claims that had gone stale: `libsqlite3-0` CVE-2026-11822/11824 are now High, not Medium, so the entry's "currently inert" note was wrong and those two suppressions are load-bearing; and CVE-2026-53615 (`libuuid1`) is no longer unfixed, `util-linux 2.41.5-0+deb13u1` is on trixie-security and in the base image's current build. Its `Reassessment Due` was deliberately left at 2026-09-06 rather than extended, because the remedy was the digest refresh then open as PR #798 and a fixable finding should not buy another quarter of silence. PR #798 has since merged, so that sixteenth suppression is retired here and its entry moved to Resolved, discharging the plan it recorded. Re-verified on 2026-09-03 by reading the shipped package version out of the merged digest (`sha256:d66d6403`) rather than from a scan verdict: `libuuid1` is at 2.41.5, and `gawk` and `perl-base` are absent from all 118 packages. The same digest clears 38 fixable HIGH `linux-libc-dev` findings and 6 fixable HIGH findings in `libuuid1` and OpenSSL that no entry covers. CVE-2026-66046 (`libexpat1`) is the one Expat CVE the refresh does NOT clear: the image ships `libexpat1` 2.8.3, inside its affected range, so its suppression is retained. |
 | 2026-10-02  | Claude Code    | Reassessed the two entries overdue since 2026-09-17 (release gate closed). CVE-2026-66046: re-accepted to 2026-11-08 on fresh evidence (Debian now `<no-dsa>` Minor on trixie; image ships `libexpat1 2.8.3-1~deb13u1+dhi4`; no runtime XML parsing); `libexpat1-dev` dropped from the entry because the base no longer ships it. `linux-libc-dev`: resolved, package absent from base digest `sha256:86330353`; removed `.trivy/ignore-policy.rego`, its `trivy.yaml` line, and its test. Not covered here: CVE-2026-75804 / CVE-2026-84782 (OpenSSL, fixed in trixie-security `3.5.7-1~deb13u3` by DSA-6531-1) are fixable and await a mirror rebuild plus digest refresh, not a suppression. |
 | 2026-10-31  | Claude Code    | Base-image refresh to `sha256:d3f085aa` (#853). Resolved CVE-2026-66046: Debian fixed it on trixie-security in expat 2.9.0-1~deb13u1 (DSA-6566-1) and the image ships that build; suppression deleted. The refresh also cleared the unsuppressed OpenSSL CVE-2026-75804/84782 (DSA-6531-1). Added CVE-2026-76642/78408/78409/78410 (util-linux, reported against `libuuid1`): `<no-dsa>` Minor on trixie, fixed only in forky/sid; not reachable because `libuuid1` is the image's only util-linux package and nothing shells out. |
+| 2026-10-31  | Claude Code    | Reassessed the three entries due 2026-11-08. CVE-2026-11822 and CVE-2026-11824 (`libsqlite3-0`): resolved, Debian now lists trixie fixed in sqlite3 3.46.1-7+deb13u2 and the base ships that build; suppressions deleted. CVE-2025-69720 (ncurses): re-accepted to 2027-01-29, Debian `<no-dsa>` Minor on trixie; description corrected to the `infocmp` CLI overflow it actually is, and the entry now records that `/usr/bin/infocmp` is present in the image but unreachable (no shell, no subprocess). |
