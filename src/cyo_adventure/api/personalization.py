@@ -1505,15 +1505,25 @@ async def get_personalization_values(
         return _empty_values_view()
     if not await _is_assigned(ctx.session, storybook_id, reader_id):
         return _empty_values_view()
+    reader = await ctx.session.get(ChildProfile, reader_id)
+    # #CRITICAL: security: reader liveness gates BOTH rings. A child-session
+    # token outlives profile deactivation, so without this check an assigned
+    # but deactivated or processing-restricted reader would still receive the
+    # sharer's ring-2 values for a cross-family catalog book.
+    # #VERIFY: the integration test named
+    # test_values_non_live_reader_gets_empty_payload_for_ring2_book
+    # #ASSUME: data-integrity: authorize_profile only admits profiles in the
+    # caller's own family, so the family mismatch is unreachable unless the
+    # profile was deleted mid-request. Ring 1 is own-family by definition.
+    if (
+        reader is None
+        or reader.family_id != ctx.principal.family_id
+        or not _is_live(reader)
+    ):
+        return _empty_values_view()
     ring2 = await _book_subject_ring2_view(ctx.session, book, ctx.principal.family_id)
     if ring2 is not None:
         return ring2
-    reader = await ctx.session.get(ChildProfile, reader_id)
-    if reader is None or reader.family_id != ctx.principal.family_id:
-        # #ASSUME: data-integrity: authorize_profile only admits profiles in
-        # the caller's own family, so this is unreachable unless the profile
-        # was deleted mid-request. Ring 1 is own-family by definition.
-        return _empty_values_view()
     return await _resolve_ring1_view(ctx.session, reader, storybook_id)
 
 

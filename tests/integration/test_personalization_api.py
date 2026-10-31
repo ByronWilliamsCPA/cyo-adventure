@@ -1125,6 +1125,34 @@ async def test_values_ring2_happy_path(
     assert body["slot_bindings"] == expected_slot_bindings
 
 
+@pytest.mark.parametrize("field", ["deactivated_at", "processing_restricted_at"])
+async def test_values_non_live_reader_gets_empty_payload_for_ring2_book(
+    field: str,
+    client: AsyncClient,
+    sessions: async_sessionmaker[AsyncSession],
+) -> None:
+    """A deactivated or restricted reader gets the universal empty payload.
+
+    A child-session token outlives profile deactivation, so ring 2 must not
+    disclose the sharer's values to a reader who is no longer live. The body
+    is identical to every other empty branch (no oracle on why it is empty).
+    """
+    async with sessions() as session:
+        book_id, viewer_token, reader_id = await _build_ring2_scenario(session)
+    async with sessions() as session:
+        reader = await session.get(ChildProfile, reader_id)
+        assert reader is not None
+        setattr(reader, field, datetime.now(UTC))
+        await session.commit()
+
+    resp = await client.get(_values_url(book_id, reader_id), headers=auth(viewer_token))
+    assert resp.status_code == 200, resp.text
+    body = resp.json()
+    assert body["ring"] is None
+    assert body["values"] == {}
+    assert body["slot_bindings"] == {}
+
+
 async def _give_reader_own_values(reader_id: uuid.UUID, session: AsyncSession) -> None:
     """Opt a viewer-family reader into ring-1 personalization of their own."""
     reader = await session.get(ChildProfile, reader_id)
