@@ -4255,6 +4255,41 @@ validator treats a missing entry there as a build failure.</p>
 <td>5</td>
 <td>decision</td>
 </tr>
+<tr>
+<td>UW-A59</td>
+<td><strong><a href="../adr/adr-032-non-prod-self-hosted-supabase/">ADR-032</a> Phase 1, container-images leg</strong>: extend <code>scripts/validate_catalog_schema.py</code>'s <code>ALLOWED_SOURCE_TIERS</code> with <code>"vendor"</code> (currently <code>{"primary", "distroless"}</code>, both meaning "hardened base image," which a vendor mirror is not), document the distinction in that repo's README, and add <code>catalog/images.yaml</code> entries with <code>disposition: mirror_only</code> for the Supabase stack's images. The exact image list is unverified as of the ADR: confirm against Supabase's current <code>docker/docker-compose.yml</code> before writing entries, since the starting guess (<code>postgres, gotrue, postgrest, realtime, storage-api, studio, supavisor, kong</code>) may be missing <code>vector</code>, <code>imgproxy</code>, or <code>postgres-meta</code>. Branch fresh off up-to-date <code>main</code>, not the stale-looking <code>feat/mirror-drift-check</code> (its drift-check feature already merged via PR #49).</td>
+<td>032</td>
+<td>external:container-images</td>
+<td>unscheduled</td>
+</tr>
+<tr>
+<td>UW-A60</td>
+<td><strong><a href="../adr/adr-032-non-prod-self-hosted-supabase/">ADR-032</a> Phase 1, homelab-infra leg</strong>: build <code>stacks/platform/cyo-supabase/compose.yaml</code> from Supabase's official self-hosting reference, every image reference pointed at the <code>container-images</code>-mirrored GHCR path (<code>UW-A59</code>); add Traefik dynamic-config entries for a public hostname (not yet decided, owner's call) with a public router for Kong's <code>/auth/v1/</code> prefix ONLY; Postgres, Supavisor, Studio, <code>postgres-meta</code> and admin endpoints get no public route (ADR-032 Decision point 2); provision secrets (JWT signing secret, <code>ANON_KEY</code>, <code>SERVICE_ROLE_KEY</code>, Postgres superuser password) via the existing <code>scripts/infisical/deploy.sh</code> pattern, never a committed <code>.env</code>; add a daily <code>pg_dumpall</code>-based backup sidecar via one new <code>dhi-build.yml</code> matrix entry, writing to a SEPARATE non-prod R2 bucket in the same account with its own marker object, its own lifecycle rule scoped to that bucket, an object-scoped token limited to that bucket, and its own encryption key, with no access of any kind to the production backup bucket (ADR-032 Decision point 4, revised and ratified 2026-10-02: the production script replaces its bucket's whole lifecycle configuration nightly, and R2 tokens cannot be scoped below a bucket); stand up a homelab self-hosted GitHub Actions runner, registered to this repository only, for the non-prod migration job (ADR-032 Decision point 2, ratified 2026-10-02). Tier placement <code>stacks/platform/</code> was ratified by the owner on 2026-10-02 (Decision point 5). Two open items to resolve during this work: (a) whether GoTrue hard-requires SMTP configuration to boot given guardians sign in via Apple/Google OAuth only, unverified; (b) whether the official compose's default <code>storage-api</code> backend works filesystem-only with no extra config (ADR-032 Decision point 3).</td>
+<td>032</td>
+<td>external:homelab-infra</td>
+<td>unscheduled</td>
+</tr>
+<tr>
+<td>UW-A61</td>
+<td><strong><a href="../adr/adr-032-non-prod-self-hosted-supabase/">ADR-032</a> Phase 1, CYO_Adventure wiring leg</strong>: point this repo at the new stack once it exists: new Infisical/env entries for <code>DATABASE_URL</code>, <code>WORKER_DATABASE_URL</code> (new stack's Supavisor session-mode pooler, keeping <code>CYO_ADVENTURE_DATABASE_DISABLE_PREPARED_CACHE</code>), <code>OIDC_ISSUER</code>/<code>OIDC_JWKS_URL</code> (new GoTrue), <code>VITE_SUPABASE_URL</code>/<code>VITE_SUPABASE_ANON_KEY</code> (new Kong gateway); run <code>supabase/migrations/</code> unchanged against the new stack's Postgres; register the new OAuth callback URL in both the Apple and Google developer consoles (the one step with no config/file equivalent); move the non-prod leg of <code>.github/workflows/supabase-staging.yml</code> onto the homelab self-hosted runner from <code>UW-A60</code> and replace its Cloud-only <code>supabase link --project-ref</code> step with <code>supabase db push --db-url</code> against the new stack, so Postgres is never published to the internet. Remove the same workflow's <code>supabase config push --project-ref</code> step from the non-prod leg: it deploys Auth settings through the Cloud Management API, which self-hosted GoTrue does not expose, and it would fail once the Cloud project is deleted. Carry the base <code>[auth]</code> block of <code>supabase/config.toml</code> and the <code>[remotes.staging.auth]</code> overlay (<code>site_url</code>, <code>additional_redirect_urls</code>) into GoTrue <code>GOTRUE_*</code> environment variables in the <code>UW-A60</code> compose instead, with a committed key-to-variable mapping so an Auth change in <code>config.toml</code> does not silently reach production only. Google needs a separate explicit step, because <code>config.toml</code> deliberately omits <code>[auth.external.google]</code> and the staging Google client ID and secret exist only in the Supabase Cloud dashboard: move them (or a new non-prod Google OAuth client) into Infisical and wire <code>GOTRUE_EXTERNAL_GOOGLE_*</code> before the Cloud project is deleted (<code>UW-A63</code>), or guardian Google sign-in fails on the new stack. Prove the wiring with a live check, not the offline OIDC unit suite: fetch <code>/auth/v1/.well-known/jwks.json</code> from the public hostname, then sign in a synthetic account and call <code>GET /api/v1/me</code> with the issued token. No application code changes, config and workflow only. <strong>Blocked on <code>UW-A60</code></strong>: the new stack must be reachable and issuing valid GoTrue JWTs before this repo can be repointed at it.</td>
+<td>032</td>
+<td>now</td>
+<td>blocked</td>
+</tr>
+<tr>
+<td>UW-A62</td>
+<td><strong><a href="../adr/adr-032-non-prod-self-hosted-supabase/">ADR-032</a> Phase 1, backup-script decision</strong>: ratify that <code>scripts/backup_database.py</code> stays production-only (IPv6/pooler-tuned, <code>supabase db dump</code>-based) and the new self-hosted stack gets its own independent <code>homelab-infra</code>-owned <code>pg_dumpall</code> backup sidecar (<code>UW-A60</code>), rather than parameterizing the existing script for both targets. This was the ADR-032 authoring session's recommendation, not something the owner separately ratified. <strong>Owner to rule: core-maintainer.</strong></td>
+<td>032</td>
+<td>now</td>
+<td>decision</td>
+</tr>
+<tr>
+<td>UW-A63</td>
+<td><strong><a href="../adr/adr-032-non-prod-self-hosted-supabase/">ADR-032</a> Phase 1, decommission</strong>: delete the old combined dev/test Supabase Cloud project once the new self-hosted stack has run the same workload clean for an owner-determined burn-in period, freeing the second Supabase Cloud project slot for a different project (the actual goal of ADR-032). <strong>Blocked on <code>UW-A59</code> through <code>UW-A62</code></strong> landing and the burn-in period elapsing; no burn-in duration has been set yet. Deletion is irreversible, so it is further gated on ADR-032's validation criteria each being met and recorded with evidence first: valid TLS on the public hostname and GoTrue JWTs accepted by the backend; <code>supabase/migrations/</code> applied clean; Apple and Google OAuth sign-in completed with the dedicated synthetic test accounts; and a backup restore exercised from the non-prod bucket.</td>
+<td>032</td>
+<td>now</td>
+<td>blocked</td>
+</tr>
 </tbody>
 </table>
 <h2 id="cluster-b-debt-register-phase-linkage">Cluster B: debt-register phase linkage<a class="headerlink" href="#cluster-b-debt-register-phase-linkage" title="Permanent link">&para;</a></h2>
@@ -9170,7 +9205,7 @@ have to re-derive them.</p>
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="September 8, 2026 17:00:45 UTC">September 8, 2026</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="October 31, 2026 04:32:25 UTC">October 31, 2026</span>
   </span>
 
     
