@@ -50,12 +50,13 @@ vulnerabilities:
   # see docs/known-vulnerabilities.md, "Resolution detail: the six Expat CVEs,
   # `gawk` and `perl-base`".
   #
-  # Expat itself is still here: CVE-2026-66046 (High, no Debian fix) is reported
-  # against libexpat1 on both the pinned and the refreshed digest. Its
-  # suppression was written in PR #798; this change keeps that block and retires
-  # only its six siblings.
+  # CVE-2026-66046, the seventh Expat CVE, outlived that pass and was retired on
+  # 2026-10-31 by the base-image refresh to digest d3f085aa, which ships
+  # `expat 2.9.0-1~deb13u1+dhi0`, the trixie-security fix (DSA-6566-1). See
+  # docs/known-vulnerabilities.md, "Resolution detail: CVE-2026-66046 and the
+  # 2026-10-31 base-image refresh".
   #
-  # #ASSUME: security: the four below still describe findings that EXIST in the
+  # #ASSUME: security: the seven below still describe findings that EXIST in the
   # image and are UNFIXED upstream. Both halves were checked on 2026-09-03, and
   # both are the kind of fact that goes stale silently.
   # #VERIFY: at each reassessment, confirm the package is still in
@@ -86,16 +87,40 @@ vulnerabilities:
       terminal; nothing links or calls ncurses.
     expired_at: 2026-11-08
 
-  # --- libexpat1, libexpat1-dev; no Debian fix on the trixie track ---
-  # The only Expat CVE that survived the digest refresh. The six that did not
-  # were fixed in `expat 2.8.2-1~deb13u1` (DSA-6404-1) and the image now ships
-  # 2.8.3, so their suppressions were retired here in the same pass.
-  - id: CVE-2026-66046
+  # --- libuuid1 (util-linux source package); no Debian fix on the trixie track ---
+  # All four are mount/nsenter defects that Debian tracks against the util-linux
+  # source package, so Trivy reports them on libuuid1, the image's only
+  # util-linux binary package. None of the vulnerable tools ships in the image.
+  # Each entry is pinned to libuuid1 by PURL: without `purls`, Trivy applies an
+  # ignore to every package, so a future image that added libmount1 or
+  # util-linux (which this assessment does NOT cover) would have its findings
+  # for these CVEs hidden too. Versionless, per Trivy's documented example.
+  - id: CVE-2026-76642
+    purls:
+      - "pkg:deb/debian/libuuid1"
     statement: >-
-      libexpat denial of service in Expat through 2.8.3. Reassessed
-      2026-10-02: the base (digest 86330353, Debian 13.7) ships
-      2.8.3-1~deb13u1+dhi4, still affected, and Debian has triaged trixie as
-      <no-dsa> (Minor issue), so no trixie-track fix is planned. No runtime
-      code path parses untrusted XML; the API speaks JSON only, and the only
-      XML libraries in uv.lock come from extras the image does not install.
-    expired_at: 2026-11-08
+      util-linux mount helper post-hook privilege issue. Reported against
+      libuuid1 2.41.5-0+deb13u1+dhi3; Debian trixie is <no-dsa> (Minor). The
+      image contains no mount/libmount and nothing shells out.
+    expired_at: 2027-01-29
+  - id: CVE-2026-78408
+    purls:
+      - "pkg:deb/debian/libuuid1"
+    statement: >-
+      util-linux nsenter --join-cgroup descriptor leak. Same package, Debian
+      status and non-reachability as CVE-2026-76642; no nsenter in the image.
+    expired_at: 2027-01-29
+  - id: CVE-2026-78409
+    purls:
+      - "pkg:deb/debian/libuuid1"
+    statement: >-
+      util-linux X-mount.subdir symlink escape. Same package, Debian status and
+      non-reachability as CVE-2026-76642.
+    expired_at: 2027-01-29
+  - id: CVE-2026-78410
+    purls:
+      - "pkg:deb/debian/libuuid1"
+    statement: >-
+      util-linux restricted bind-mount source race. Same package, Debian status
+      and non-reachability as CVE-2026-76642.
+    expired_at: 2027-01-29
