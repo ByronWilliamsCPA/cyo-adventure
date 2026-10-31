@@ -181,6 +181,13 @@ async def import_filled_story(
     if not isinstance(story_id, str) or not story_id:
         msg = "filled story has no string id"
         raise ValidationError(msg)
+    # #CRITICAL: data integrity: the client's offline caches key per-reader
+    # entries as "<profile_id>:<storybook_id>" and split on the first ':', so a
+    # storybook id containing ':' would be ambiguous with a reader key.
+    # #VERIFY: the unit test named test_import_rejects_story_id_containing_colon
+    if ":" in story_id:
+        msg = "filled story id must not contain ':'"
+        raise ValidationError(msg)
 
     # #CRITICAL: data integrity: this is the import/resume path's ONLY
     # computation of personalization_eligible; the reader (api/library.py,
