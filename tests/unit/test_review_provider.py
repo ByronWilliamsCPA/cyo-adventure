@@ -66,10 +66,10 @@ _MOCK_NODES: list[tuple[str, str]] = [
 ]
 
 
-def _mock_review_provider() -> ReviewProvider:
+def _mock_review_provider(*, judges_safe: bool = True) -> ReviewProvider:
     """Build the mock review backend exactly as the pipeline does."""
     provider, _independent = build_review_provider(
-        Settings(review_provider="mock"),
+        Settings(review_provider="mock", mock_review_judges_safe=judges_safe),
         generator_provider="mock",
         generator_model=None,
     )
@@ -124,3 +124,21 @@ def test_mock_review_response_batch_echoes_each_label_once() -> None:
     entries = cast("list[dict[str, str]]", json.loads(_mock_review_response(prompt)))  # pyright: ignore[reportAny]
     assert [e["node_id"] for e in entries] == ["a", "b"]
     assert {e["verdict"] for e in entries} == {"safe"}
+
+
+@pytest.mark.asyncio
+async def test_default_mock_reviewer_still_leaves_every_node_unjudged() -> None:
+    """Without the opt-in the mock keeps the deliberate #776 posture.
+
+    Every node fail-safes, so a story reviewed only by the default mock is
+    auto-rejected rather than entering the approval queue looking ordinary.
+    """
+    findings = await run_safety_stage(
+        provider=_mock_review_provider(judges_safe=False),
+        nodes=_MOCK_NODES,
+        age_band="8-11",
+        max_tokens=256,
+        batch_size=3,
+    )
+    assert findings
+    assert not any(f.verdict is Verdict.PASS for f in findings)

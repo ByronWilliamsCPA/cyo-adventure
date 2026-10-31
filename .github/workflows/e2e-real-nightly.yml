@@ -197,6 +197,10 @@ jobs:
       - name: Start backend (uvicorn, background)
         env:
           ENVIRONMENT: local
+          # Opt this tier's mock reviewer into per-node safe verdicts so a generated
+          # story reaches in_review; the default mock auto-rejects (#776). Refused
+          # outside environment=local by Settings.
+          CYO_ADVENTURE_MOCK_REVIEW_JUDGES_SAFE: "1"
           CYO_ADVENTURE_DATABASE_URL: postgresql+asyncpg://cyo_adventure:password@localhost:5432/cyo_adventure
           CYO_ADVENTURE_REDIS_URL: redis://localhost:6379/0
           DEVICE_GRANT_SECRET: nightly-e2e-real-device-grant-secret
@@ -291,6 +295,10 @@ jobs:
       - name: Start generation worker (background)
         env:
           ENVIRONMENT: local
+          # Opt this tier's mock reviewer into per-node safe verdicts so a generated
+          # story reaches in_review; the default mock auto-rejects (#776). Refused
+          # outside environment=local by Settings.
+          CYO_ADVENTURE_MOCK_REVIEW_JUDGES_SAFE: "1"
           CYO_ADVENTURE_DATABASE_URL: postgresql+asyncpg://cyo_adventure:password@localhost:5432/cyo_adventure
           CYO_ADVENTURE_REDIS_URL: redis://localhost:6379/0
         run: |

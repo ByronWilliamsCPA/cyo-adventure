@@ -66,7 +66,8 @@ def _mock_review_response(prompt: str) -> str:
     node, which the fail-closed review stage (#760, #776) now auto-rejects, so a
     locally generated story could never reach ``in_review`` and the real-worker
     E2E tier went red. A mock reviewer has to speak the verdict schema; it does
-    not have to be a real review. The report is still stamped
+    not have to be a real review. Used only when ``mock_review_judges_safe`` is
+    set. The report is still stamped
     ``reviewer_independent=False`` and unapprovable by
     ``moderation.pipeline._stamp_mock_reviewer`` whenever this backend is used.
 
@@ -314,8 +315,12 @@ def build_review_provider(
     backend = settings.review_provider
 
     if backend == "mock":
+        # Default: the unparseable "{}" that auto-rejects an unjudged story
+        # (#776). Only the real-backend E2E tier opts into per-node safe
+        # verdicts, and config refuses that outside environment="local".
+        response = _mock_review_response if settings.mock_review_judges_safe else "{}"
         return (
-            MockProvider(responses=[_mock_review_response] * _MOCK_RESPONSE_BUDGET),
+            MockProvider(responses=[response] * _MOCK_RESPONSE_BUDGET),
             True,
         )
 
