@@ -20,6 +20,12 @@ audience: product-owner, engineering
 > [UW-M13](./unscheduled-work-register.md#cluster-m-external-and-owner-gated). Nothing here
 > authorizes implementation; it records the idea, the analysis, and the preconditions so the work
 > can start cleanly once R1/MVP is live.
+>
+> **Capability-register IDs served** (see [capability-register.md](./capability-register.md)): K6 and K21
+> (endings found as a replay motivator and a collectible), K8 (picture support at lower bands), A16
+> (cover art reviewed on the approval surface before it reaches a child), and A6 (the admin's recorded
+> approval is the only path from generated content to a child). No new capability row is proposed until
+> the owner decision in UW-M13 is made.
 
 ## TL;DR
 
@@ -44,15 +50,17 @@ invested in**. Every recommendation below leans on that and away from page count
 - **A physical reminder of the app.** It sits on the fridge or goes to school.
 - **Word-of-mouth to parents.** A small, unobtrusive "Made with CYO Adventure" line and a QR code
   to the parent landing page turn every printout into a referral, aimed at the adult who sees it.
-- **Replay driver.** One page per *ending* ("Did you find all three endings? Color each one when
-  you do.") directly rewards alternate-path reading, which is the replay behavior UW-N10's
-  value-rate metric already wants to measure.
+- **Replay driver.** A closing line on the last page ("This adventure has more endings. How many
+  can you find?") points back at alternate-path reading, which is the replay behavior UW-N10's
+  value-rate metric already wants to measure. A page for *every* ending is a Tier 2 feature, not
+  Tier 1 (see the page-budget rule in the build sketch).
 
 ### Why it should be free (part of the base offering)
 
 - Unit cost is small: 2-4 images per story at public image-model rates of a few cents each, plus
-  retries, lands well under a dollar per story (#ASSUME: financial: verify current per-image
-  pricing for the cover provider before quoting a number).
+  retries, lands well under a dollar per story.
+  #ASSUME: financial: per-image pricing for the cover provider is a few cents.
+  #VERIFY: re-check current per-image pricing for the cover provider before quoting any number.
 - No commerce exists yet (UW-N01 is Phase 8 work), and a separate charge for four pages adds
   payment friction and App Store in-app-purchase handling for almost no revenue.
 - Its job is retention and acquisition. Pricing it works against both.
@@ -116,7 +124,9 @@ pattern that sinks AI coloring books on Amazon.
 - **No copyright moat.** US Copyright Office guidance treats purely AI-generated images as
   unprotectable, so anyone can copy the pages. Human-authored story text and the brand/trademark
   are what is defensible. That is another reason to sell the *story's* coloring book rather than
-  generic art. (#ASSUME: legal: counsel review via UW-M03 before publishing.)
+  generic art.
+  #ASSUME: legal: the copyright position above is accurate for our use.
+  #VERIFY: counsel review via UW-M03 before publishing.
 - **Catalog content only, never family requests.** Stories from family requests can contain a
   child's real name, friends' names, or details a guardian supplied (privacy model, ADR-023). They
   must never reach a public storefront, and the terms of service would need to grant publishing
@@ -143,22 +153,33 @@ vendor, so it is only a note here.
 
 The covers pipeline already has most of the substrate: prompt construction with injection guards
 (`covers/prompt.py`), provider (`covers/provider.py`), WebP optimization, private R2 storage with
-presigned URLs (`covers/storage.py`), an RQ worker, and admin review (`covers/review.py`).
+presigned URLs (`covers/storage.py`), an RQ worker, an automated vision-model check of each
+generated cover against its prompt (`covers/review.py`, no human involved), and the human approval
+step (`POST /storybooks/{storybook_id}/versions/{version}/cover/approve` in `api/covers.py`, shown on
+the admin review surface). The coloring pages reuse the human step; the automated check is a separate
+pre-filter that would need a line-art variant.
 
-1. **Scene selection (pure).** From the story graph pick the start node, one or two pivotal choice
-   nodes, and each ending (capped per band). Deterministic, so a regeneration picks the same scenes.
+1. **Scene selection (pure).** Page budget: Tier 1 is capped at 4 pages regardless of ending count.
+   From the story graph pick the start node, one pivotal choice node, and up to two endings chosen by
+   a deterministic rule (most distinct by path, then node id), never "every ending": a story such as
+   `the-teddy-bears-picnic` has 11 endings and would blow the cap. Tier 2 raises the cap to the 24-40
+   page book and is the only place with one page per ending. Deterministic, so a regeneration picks
+   the same scenes.
 2. **Prompt (pure).** A `coloring/prompt.py` sibling of `build_cover_prompt`: same guard preamble
    and quote-delimited untrusted story text, plus a line-art clause ("black outlines on white, no
    shading, no gray fill, closed shapes") and band-scaled complexity (3-5: thick lines, few large
    regions; 10-13: finer detail).
 3. **Character consistency.** Pass the approved cover image as a reference input so the protagonist
    looks the same on every page. The cover provider's model accepts image inputs
-   (#ASSUME: external: confirm reference-image support and pricing on the provider in use).
+   #ASSUME: external: the cover provider's model accepts image inputs at acceptable cost.
+   #VERIFY: confirm reference-image support and pricing on the provider in use before building.
 4. **Post-process and gate.** Grayscale, threshold to pure black and white, despeckle. Reject and
    regenerate a page whose ink coverage is outside a band-specific range (mostly-black fills or
    near-empty pages) or that still contains mid-gray. This catches the most common failure,
    models that "shade" a coloring page.
-5. **Review.** Pages appear next to the cover in the admin review detail; approve as a set.
+5. **Review.** Pages appear next to the cover on the admin review surface; a human approves them as a
+   set through the same approval step as the cover. The automated vision check in `covers/review.py`
+   would run first as a pre-filter only and never replaces that approval.
 6. **PDF assembly.** Letter and A4 variants, one image per page with generous margins, title and
    caption text set by the PDF library (never rendered by the image model), footer branding, and a
    QR code to a static landing URL. For Tier 2 add KDP trim and bleed settings.
@@ -184,6 +205,8 @@ profile, run offline for selected catalog titles.
 ## Open owner decisions
 
 - Is Tier 1 part of the base offering for every story, or only catalog stories at first?
+- Confirm the page budget: Tier 1 capped at 4 pages with at most two ending pages, and one page per
+  ending reserved for Tier 2 books.
 - Branding: how prominent may the footer and QR code be on a child's printout?
 - Tier 2 go/no-go after the single-title test, and which flagship titles go first.
 - Whether to engage counsel (UW-M03) on AI disclosure, copyright, and KDP terms before the first
