@@ -22,10 +22,14 @@ audience: product-owner, engineering
 > can start cleanly once R1/MVP is live.
 >
 > **Capability-register IDs served** (see [capability-register.md](./capability-register.md)): K6 and K21
-> (endings found as a replay motivator and a collectible), K8 (picture support at lower bands), A16
-> (cover art reviewed on the approval surface before it reaches a child), and A6 (the admin's recorded
-> approval is the only path from generated content to a child). No new capability row is proposed until
-> the owner decision in UW-M13 is made.
+> (endings found as a replay motivator and a collectible). K8 (picture support at lower bands) is
+> conditional: printable pages extend picture support beyond covers, so it stays pending the owner
+> decision in UW-M13.
+>
+> **Control dependencies, not served capabilities:** A6 (the admin's recorded approval is the only path
+> from generated content to a child) and the A16 cover-art workflow (cover art reviewed on the approval
+> surface before it reaches a child), which this plan reuses but does not serve. No new capability row
+> is proposed until the owner decision in UW-M13 is made.
 
 ## TL;DR
 
@@ -33,7 +37,7 @@ Three products hide inside one idea, and they deserve different verdicts:
 
 | Tier | Product | Verdict |
 | ---- | ------- | ------- |
-| 1 | A free 2-4 page "Color Your Adventure" PDF for every published story | **Build, post-MVP.** Cheap, reuses `covers/`, real engagement and word-of-mouth value. Do not charge for it. |
+| 1 | A free 2-4 page "Color Your Adventure" PDF for published stories (eligibility set by the UW-M13 owner decision) | **Build, post-MVP.** Cheap, reuses `covers/`, real engagement and word-of-mouth value. Do not charge for it. Until UW-M13 is decided, personalized-story PDFs are excluded; a family-requested story's pack could only ever go to the owning family. |
 | 2 | A 24-40 page coloring book for a few flagship *catalog* stories, sold as a web download and on KDP | **Test manually first.** Value is mostly funnel and brand, not margin. One hand-assembled run before any automation. |
 | 3 | A generic 100-page AI coloring book, or a 100-page book per family-requested story | **Skip.** Commodity market, poor fit for story length, and personalized content must never go to a public storefront. |
 
@@ -178,14 +182,19 @@ pre-filter that would need a line-art variant.
    near-empty pages) or that still contains mid-gray. This catches the most common failure,
    models that "shade" a coloring page.
 5. **Review.** Pages appear next to the cover on the admin review surface; a human approves them as a
-   set through the same approval step as the cover. The automated vision check in `covers/review.py`
-   would run first as a pre-filter only and never replaces that approval.
+   set. The automated vision check in `covers/review.py` would run first as a pre-filter only and never
+   replaces that approval. **Implementation precondition:** the existing cover approve route
+   (`POST /storybooks/{storybook_id}/versions/{version}/cover/approve`, `api/covers.py`) carries no page
+   identifier, so it cannot record approval per page. The build must add a per-page (or per-pack)
+   approval record, whether by a new status, payload, or endpoint, and a rule that a page with no
+   recorded approval is never served to a child. Do not reuse the cover route as-is.
 6. **PDF assembly.** Letter and A4 variants, one image per page with generous margins, title and
    caption text set by the PDF library (never rendered by the image model), footer branding, and a
    QR code to a static landing URL. For Tier 2 add KDP trim and bleed settings.
 7. **Storage and delivery.** A `coloring_pack` row keyed to `storybook_version`, stored privately in
-   R2 and served by presigned URL like covers (note UW-M07: the cover bucket's public exposure must
-   be fixed first, not copied).
+   R2 and served by presigned URL like covers. UW-M07 is closed (the cover bucket's public domain was
+   disconnected and re-verified on 2026-07-30), so this is a design rule to keep, not open work: the
+   pack bucket must never be given a public domain.
 
 A full catalog coloring book (Tier 2) is the same pipeline with a larger scene cap and the KDP PDF
 profile, run offline for selected catalog titles.
@@ -193,7 +202,8 @@ profile, run offline for selected catalog titles.
 ## Preconditions and sequencing
 
 1. MVP live; covers pipeline stable in production.
-2. UW-M07 resolved (private cover bucket), so the new artifact does not inherit the exposure.
+2. UW-M07 (private cover bucket) is already closed; confirm the pack storage follows the same
+   private, presigned-only design so the new artifact does not reintroduce the exposure.
 3. Tier 1 pilot on a handful of catalog stories with human review only; measure download rate and
    whether coloring-pack downloads correlate with replay.
 4. UW-N08 (automated image moderation) before Tier 1 goes catalog-wide.
