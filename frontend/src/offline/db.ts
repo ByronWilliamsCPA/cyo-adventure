@@ -21,11 +21,13 @@
  *   from "this profile lost it, but a sibling still has it".
  * - `library_lists`: the last-good library list per profile (UX-K1 offline
  *   shelf).
- * - `personalization_values`: the resolved ADR-023 values payload for one book,
- *   keyed by `storybook_id`. Keyed by book rather than by subject profile because
- *   the reader only ever holds a book id: the subject profile id lives inside the
- *   payload and is unknowable offline. A subject-scoped purge therefore scans this
- *   store's bounded key set (see offline/revocation.ts). Never merged into
+ * - `personalization_values`: the resolved ADR-023 values payload for one book
+ *   as read by one child, keyed by `${profileId}:${storybookId}`. Keyed per
+ *   reader because the server resolves values for the READING child (siblings
+ *   sharing a book each see themselves), so a book-only key would hand one
+ *   sibling's cached name to the other on a shared tablet. Entries written
+ *   before that change carry a bare `storybookId` key; they can no longer be
+ *   read and are purged by offline/revocation.ts. Never merged into
  *   `storybooks`, which is deliberately device-wide and profile-independent.
  * - `reading_time_days` (W3.3): a per-(profile, reader-local date) active-reading-
  *   seconds bucket, keyed by `${profileId}:${date}`. `seconds` is the running
@@ -86,8 +88,14 @@ export interface ProfileShelfSnapshot {
   storybook_ids: string[]
 }
 
-/** One cached values payload, paired with the book it was resolved for. */
+/**
+ * One cached values payload, paired with the reader and book it was resolved for.
+ *
+ * `profile_id` is null for a legacy entry keyed by book alone, written before
+ * the store was re-keyed per reader.
+ */
 export interface PersonalizationValuesEntry {
+  profile_id: string | null
   storybook_id: string
   payload: ValuesPayload
 }
@@ -291,36 +299,49 @@ export async function getCachedLibraryList(
   return db.get('library_lists', profileId)
 }
 
-/** Cache the resolved values payload for one book (ADR-023 P6). */
+function valuesKey(profileId: string, storybookId: string): string {
+  return stateKey(profileId, storybookId)
+}
+
+/** Cache the resolved values payload for one book as read by one child (ADR-023 P6). */
 export async function cachePersonalizationValues(
+  profileId: string,
   storybookId: string,
   payload: ValuesPayload
 ): Promise<void> {
   const db = await getDb()
-  await db.put('personalization_values', payload, storybookId)
+  await db.put('personalization_values', payload, valuesKey(profileId, storybookId))
 }
 
-/** Read the cached values payload for one book, or undefined if none. */
+/** Read the cached values payload for one reader and book, or undefined if none. */
 export async function getCachedPersonalizationValues(
+  profileId: string,
   storybookId: string
 ): Promise<ValuesPayload | undefined> {
   const db = await getDb()
-  return db.get('personalization_values', storybookId)
-}
-
-/** Drop one book's cached values payload. */
-export async function deletePersonalizationValues(storybookId: string): Promise<void> {
-  const db = await getDb()
-  await db.delete('personalization_values', storybookId)
+  return db.get('personalization_values', valuesKey(profileId, storybookId))
 }
 
 /**
- * List every cached values payload with its book id.
+ * Drop one cached values payload.
  *
- * The bounded read a subject-scoped purge needs: the store's key is the book, so
- * "forget everything about this child" has to look inside each payload. Bounded
- * by the number of books downloaded on one device, the same assumption
- * `listCachedStorybookIds` already makes.
+ * @param profileId - The reader, or null to drop a legacy book-only entry.
+ * @param storybookId - The book.
+ */
+export async function deletePersonalizationValues(
+  profileId: string | null,
+  storybookId: string
+): Promise<void> {
+  const db = await getDb()
+  const key = profileId === null ? storybookId : valuesKey(profileId, storybookId)
+  await db.delete('personalization_values', key)
+}
+
+/**
+ * List every cached values payload with its reader and book.
+ *
+ * Bounded by the number of books downloaded on one device times its profiles,
+ * the same assumption `listCachedStorybookIds` already makes.
  */
 export async function listPersonalizationValues(): Promise<PersonalizationValuesEntry[]> {
   const db = await getDb()
@@ -328,7 +349,17 @@ export async function listPersonalizationValues(): Promise<PersonalizationValues
   const entries: PersonalizationValuesEntry[] = []
   for (const key of keys) {
     const payload = await db.get('personalization_values', key)
-    if (payload !== undefined) entries.push({ storybook_id: key, payload })
+    if (payload === undefined) continue
+    // #ASSUME: data-integrity: profile ids are UUIDs and storybook ids carry no
+    // ':', so the first ':' splits a reader key and its absence marks a legacy
+    // book-only key.
+    // #VERIFY: db.test.ts "lists legacy book-only values entries with a null profile".
+    const sep = key.indexOf(':')
+    entries.push(
+      sep === -1
+        ? { profile_id: null, storybook_id: key, payload }
+        : { profile_id: key.slice(0, sep), storybook_id: key.slice(sep + 1), payload }
+    )
   }
   return entries
 }

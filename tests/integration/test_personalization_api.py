@@ -23,6 +23,7 @@ import pytest
 from sqlalchemy import select
 
 from cyo_adventure.api import personalization as personalization_api
+from cyo_adventure.core.child_session import mint_child_session_token
 from cyo_adventure.db.models import (
     Character,
     ChildProfile,
@@ -31,6 +32,7 @@ from cyo_adventure.db.models import (
     FamilyConnection,
     PersonalizationDisclosureConsent,
     Storybook,
+    StorybookAssignment,
     User,
 )
 from cyo_adventure.storybook.sentinels import SENTINEL_RE
@@ -115,6 +117,43 @@ async def _storybook(
     session.add(row)
     await session.flush()
     return row
+
+
+async def _assign(
+    session: AsyncSession, book: Storybook, profile_id: uuid.UUID
+) -> uuid.UUID:
+    """Assign ``book`` to ``profile_id`` and return the profile id.
+
+    The values route resolves for the READING child and, like every other
+    reader-facing route, only for a book assigned to that child.
+    """
+    session.add(StorybookAssignment(child_profile_id=profile_id, storybook_id=book.id))
+    await session.flush()
+    return profile_id
+
+
+async def _assign_new_reader(
+    session: AsyncSession, book: Storybook, family_id: uuid.UUID
+) -> uuid.UUID:
+    """Create a reader with no personalization in ``family_id`` and assign it.
+
+    Used on the ring-2 side: the viewer family's child who opens the sharer's
+    book. Having no values of their own, they get the empty payload whenever
+    ring 2 fails, which is what the ring-2 failure cases assert.
+    """
+    reader = ChildProfile(
+        family_id=family_id, display_name="Viewer Reader", age_band="10-13"
+    )
+    session.add(reader)
+    await session.flush()
+    return await _assign(session, book, reader.id)
+
+
+def _values_url(book_id: str, profile_id: uuid.UUID) -> str:
+    """Build the values route URL for one book as read by one child."""
+    return (
+        f"/api/v1/storybooks/{book_id}/personalization-values?profile_id={profile_id}"
+    )
 
 
 # ---------------------------------------------------------------------------
@@ -559,7 +598,7 @@ async def test_values_missing_storybook_returns_the_empty_payload(
     can honor its own "leak nothing about another family" contract.
     """
     resp = await client.get(
-        "/api/v1/storybooks/does-not-exist/personalization-values",
+        _values_url("does-not-exist", seed.child_profile_id),
         headers=auth(seed.guardian_token),
     )
     assert resp.status_code == 200, resp.text
@@ -605,21 +644,24 @@ async def test_values_cross_family_private_book_returns_the_empty_payload(
         # Cross-family AND non-catalog: the one combination no read path in
         # the app allows, whatever the consent state says.
         book = await _storybook(session, sharer.id, subject.id, visibility="family")
+        reader_id = await _assign_new_reader(session, book, viewer.id)
         await session.commit()
         book_id = book.id
 
     resp = await client.get(
-        f"/api/v1/storybooks/{book_id}/personalization-values",
+        _values_url(book_id, reader_id),
         headers=auth("unrelated-viewer-guardian"),
     )
     assert resp.status_code == 200, resp.text
     assert resp.json()["values"] == {}
 
 
-async def test_values_no_subject_returns_empty(client: AsyncClient, seed: Seed) -> None:
-    """seed.storybook_id has no personalization_subject_profile_id set."""
+async def test_values_reader_without_personalization_returns_empty(
+    client: AsyncClient, seed: Seed
+) -> None:
+    """The seeded child reads an assigned book but has no values enabled."""
     resp = await client.get(
-        f"/api/v1/storybooks/{seed.storybook_id}/personalization-values",
+        _values_url(seed.storybook_id, seed.child_profile_id),
         headers=auth(seed.guardian_token),
     )
     assert resp.status_code == 200, resp.text
@@ -640,7 +682,7 @@ async def test_values_payload_carries_the_sentinel_pattern(
     is present on EVERY response, including this one.
     """
     resp = await client.get(
-        "/api/v1/storybooks/does-not-exist/personalization-values",
+        _values_url("does-not-exist", seed.child_profile_id),
         headers=auth(seed.guardian_token),
     )
 
@@ -653,7 +695,7 @@ async def test_empty_values_payload_carries_no_slot_bindings(
 ) -> None:
     """An empty payload stays uniform: an empty map, never a null or a partial one."""
     resp = await client.get(
-        "/api/v1/storybooks/does-not-exist/personalization-values",
+        _values_url("does-not-exist", seed.child_profile_id),
         headers=auth(seed.guardian_token),
     )
 
@@ -687,11 +729,12 @@ async def test_values_ring1_happy_path(
         await _guardian(session, fam.id, "ring1-guardian")
         await session.flush()
         book = await _storybook(session, fam.id, subject.id)
+        reader_id = await _assign(session, book, subject.id)
         await session.commit()
         book_id = book.id
 
     resp = await client.get(
-        f"/api/v1/storybooks/{book_id}/personalization-values",
+        _values_url(book_id, reader_id),
         headers=auth("ring1-guardian"),
     )
     assert resp.status_code == 200, resp.text
@@ -706,6 +749,162 @@ async def test_values_ring1_happy_path(
     # covered directly by tests/unit/test_personalizable_slots.py).
     expected_slot_bindings: dict[str, str] = {}
     assert body["slot_bindings"] == expected_slot_bindings
+
+
+async def _two_sibling_family(
+    session: AsyncSession, tag: str
+) -> tuple[Storybook, ChildProfile, ChildProfile]:
+    """Seed two opted-in siblings sharing one book requested by the first.
+
+    Returns:
+        (book, requester, sibling): the book's subject column names the
+        requester, and it is assigned to both children.
+    """
+    fam = Family(name=f"Siblings {tag}")
+    session.add(fam)
+    await session.flush()
+    requester = ChildProfile(
+        family_id=fam.id,
+        display_name="Requester Kid",
+        age_band="10-13",
+        real_name_ring1_enabled=True,
+    )
+    sibling = ChildProfile(
+        family_id=fam.id,
+        display_name="Sibling Kid",
+        age_band="10-13",
+        real_name_ring1_enabled=True,
+    )
+    session.add_all([requester, sibling])
+    await session.flush()
+    session.add_all(
+        [
+            ChildProfilePersonalization(
+                child_profile_id=requester.id,
+                slot_type="pet_name",
+                value_text="RequesterPet",
+                ring1_enabled=True,
+            ),
+            ChildProfilePersonalization(
+                child_profile_id=sibling.id,
+                slot_type="pet_name",
+                value_text="SiblingPet",
+                ring1_enabled=True,
+            ),
+        ]
+    )
+    await _guardian(session, fam.id, f"siblings-guardian-{tag}")
+    for kid in (requester, sibling):
+        session.add(
+            User(
+                family_id=fam.id,
+                role="child",
+                authn_subject=f"siblings-child-{tag}-{kid.display_name}",
+                child_profile_id=kid.id,
+            )
+        )
+    book = await _storybook(session, fam.id, requester.id)
+    await _assign(session, book, requester.id)
+    await _assign(session, book, sibling.id)
+    return book, requester, sibling
+
+
+async def test_values_follow_the_reading_sibling(
+    client: AsyncClient, sessions: async_sessionmaker[AsyncSession]
+) -> None:
+    """Each child sees themselves, whoever the book was generated for.
+
+    The book's subject column names the requester; it must not decide whose
+    values render on ring 1. Both the guardian (who may name either child)
+    and each child's own session are exercised.
+    """
+    async with sessions() as session:
+        book, requester, sibling = await _two_sibling_family(session, "follow")
+        await session.commit()
+        book_id, requester_id, sibling_id = book.id, requester.id, sibling.id
+
+    for token, reader_id, name, pet in (
+        ("siblings-guardian-follow", requester_id, "Requester Kid", "RequesterPet"),
+        ("siblings-guardian-follow", sibling_id, "Sibling Kid", "SiblingPet"),
+        ("siblings-child-follow-Sibling Kid", sibling_id, "Sibling Kid", "SiblingPet"),
+    ):
+        resp = await client.get(_values_url(book_id, reader_id), headers=auth(token))
+        assert resp.status_code == 200, resp.text
+        body = resp.json()
+        assert body["ring"] == 1
+        assert body["subject_profile_id"] == str(reader_id)
+        assert body["values"]["protagonist_first_name"] == name
+        assert body["values"]["pet_name"] == pet
+
+
+async def test_values_rejects_a_profile_outside_the_callers_reach(
+    client: AsyncClient, sessions: async_sessionmaker[AsyncSession], seed: Seed
+) -> None:
+    """A caller can only resolve values for a reader it may act on.
+
+    A child session naming its sibling, and a guardian naming another
+    family's child, are both 403s: never the other child's values.
+    """
+    async with sessions() as session:
+        book, requester, _sibling = await _two_sibling_family(session, "reach")
+        await session.commit()
+        book_id, requester_id = book.id, requester.id
+
+    sibling_naming_requester = await client.get(
+        _values_url(book_id, requester_id),
+        headers=auth("siblings-child-reach-Sibling Kid"),
+    )
+    assert sibling_naming_requester.status_code == 403, sibling_naming_requester.text
+
+    other_family = await client.get(
+        _values_url(book_id, requester_id), headers=auth(seed.guardian_token)
+    )
+    assert other_family.status_code == 403, other_family.text
+
+
+async def test_values_unassigned_book_returns_the_empty_payload(
+    client: AsyncClient, sessions: async_sessionmaker[AsyncSession]
+) -> None:
+    """An own-family book not assigned to the reader renders generic.
+
+    Mirrors the M1 assignment gate on the reading-state routes, rendered as
+    the universal empty payload rather than a 404.
+    """
+    async with sessions() as session:
+        fam = Family(name="Unassigned Family")
+        session.add(fam)
+        await session.flush()
+        reader = ChildProfile(
+            family_id=fam.id,
+            display_name="Unassigned Reader",
+            age_band="10-13",
+            real_name_ring1_enabled=True,
+        )
+        session.add(reader)
+        await session.flush()
+        await _guardian(session, fam.id, "unassigned-guardian")
+        book = await _storybook(session, fam.id, reader.id)
+        await session.commit()
+        book_id, reader_id = book.id, reader.id
+
+    resp = await client.get(
+        _values_url(book_id, reader_id), headers=auth("unassigned-guardian")
+    )
+    assert resp.status_code == 200, resp.text
+    body = resp.json()
+    assert body["ring"] is None
+    assert body["values"] == {}
+    assert body["slot_bindings"] == {}
+
+
+async def test_values_malformed_profile_id_is_a_422(
+    client: AsyncClient, seed: Seed
+) -> None:
+    resp = await client.get(
+        "/api/v1/storybooks/does-not-exist/personalization-values?profile_id=nope",
+        headers=auth(seed.guardian_token),
+    )
+    assert resp.status_code == 422, resp.text
 
 
 @pytest.mark.parametrize(
@@ -768,11 +967,12 @@ async def test_ring1_sibling_name_is_dropped_when_the_sibling_is_not_live(
         await _guardian(session, fam.id, "ring1-liveness-guardian")
         await session.flush()
         book = await _storybook(session, fam.id, subject.id)
+        reader_id = await _assign(session, book, subject.id)
         await session.commit()
         book_id = book.id
 
     resp = await client.get(
-        f"/api/v1/storybooks/{book_id}/personalization-values",
+        _values_url(book_id, reader_id),
         headers=auth("ring1-liveness-guardian"),
     )
     assert resp.status_code == 200, resp.text
@@ -802,12 +1002,13 @@ async def test_values_unconnected_family_empty(
         await session.flush()
         await _guardian(session, viewer.id, "unconnected-viewer-guardian")
         book = await _storybook(session, sharer.id, subject.id, visibility="catalog")
+        reader_id = await _assign_new_reader(session, book, viewer.id)
         # Deliberately no FamilyConnection at all between viewer and sharer.
         await session.commit()
         book_id = book.id
 
     resp = await client.get(
-        f"/api/v1/storybooks/{book_id}/personalization-values",
+        _values_url(book_id, reader_id),
         headers=auth("unconnected-viewer-guardian"),
     )
     assert resp.status_code == 200, resp.text
@@ -832,8 +1033,13 @@ async def _build_ring2_scenario(
     subject_restricted: bool = False,
     viewer_receive_enabled: bool = True,
     ring2_enabled_on_slot: bool = True,
-) -> tuple[str, str]:
-    """Build a full ring-2 scenario; returns (storybook_id, viewer_guardian_token)."""
+) -> tuple[str, str, uuid.UUID]:
+    """Build a full ring-2 scenario.
+
+    Returns:
+        (storybook_id, viewer_guardian_token, viewer_reader_profile_id): the
+        reader is a viewer-family child with no values of their own.
+    """
     # Names and authn_subjects only need to be unique, not meaningful, but they
     # DO need to be unique per call rather than per session object. `id(session)`
     # was the memory address of the session, which CPython reuses once a closed
@@ -892,18 +1098,19 @@ async def _build_ring2_scenario(
             )
         )
     book = await _storybook(session, sharer.id, subject.id, visibility="catalog")
+    reader_id = await _assign_new_reader(session, book, viewer.id)
     await session.commit()
-    return book.id, viewer_guardian.authn_subject
+    return book.id, viewer_guardian.authn_subject, reader_id
 
 
 async def test_values_ring2_happy_path(
     client: AsyncClient, sessions: async_sessionmaker[AsyncSession]
 ) -> None:
     async with sessions() as session:
-        book_id, viewer_token = await _build_ring2_scenario(session)
+        book_id, viewer_token, reader_id = await _build_ring2_scenario(session)
 
     resp = await client.get(
-        f"/api/v1/storybooks/{book_id}/personalization-values",
+        _values_url(book_id, reader_id),
         headers=auth(viewer_token),
     )
     assert resp.status_code == 200, resp.text
@@ -919,16 +1126,152 @@ async def test_values_ring2_happy_path(
     assert body["slot_bindings"] == expected_slot_bindings
 
 
+async def _make_reader_non_live(
+    sessions: async_sessionmaker[AsyncSession], reader_id: uuid.UUID, field: str
+) -> uuid.UUID:
+    """Mark the reader deactivated or restricted; return the reader's family id."""
+    async with sessions() as session:
+        reader = await session.get(ChildProfile, reader_id)
+        assert reader is not None
+        setattr(reader, field, datetime.now(UTC))
+        await session.commit()
+        return reader.family_id
+
+
+def _assert_universal_empty(body: dict[str, object]) -> None:
+    assert body["ring"] is None
+    assert body["values"] == {}
+    assert body["slot_bindings"] == {}
+
+
+async def test_values_restricted_reader_gets_empty_payload_for_ring2_book(
+    client: AsyncClient,
+    sessions: async_sessionmaker[AsyncSession],
+) -> None:
+    """A processing-restricted reader gets the universal empty payload.
+
+    The guardian principal still lists a restricted profile, so the handler's
+    own liveness check is what withholds the sharer's ring-2 values. The body
+    is identical to every other empty branch (no oracle on why it is empty).
+    """
+    async with sessions() as session:
+        book_id, viewer_token, reader_id = await _build_ring2_scenario(session)
+    await _make_reader_non_live(sessions, reader_id, "processing_restricted_at")
+
+    resp = await client.get(_values_url(book_id, reader_id), headers=auth(viewer_token))
+    assert resp.status_code == 200, resp.text
+    _assert_universal_empty(resp.json())
+
+
+async def test_values_deactivated_reader_refused_at_auth_boundary_for_guardian(
+    client: AsyncClient,
+    sessions: async_sessionmaker[AsyncSession],
+) -> None:
+    """A guardian principal never lists a deactivated profile, so it is a 403.
+
+    `_resolve_profiles` drops deactivated profiles from the guardian's allowed
+    set, which refuses the request before the handler runs. No value is read.
+    """
+    async with sessions() as session:
+        book_id, viewer_token, reader_id = await _build_ring2_scenario(session)
+    await _make_reader_non_live(sessions, reader_id, "deactivated_at")
+
+    resp = await client.get(_values_url(book_id, reader_id), headers=auth(viewer_token))
+    assert resp.status_code == 403, resp.text
+
+
+@pytest.mark.parametrize("field", ["deactivated_at", "processing_restricted_at"])
+async def test_values_non_live_reader_child_token_gets_empty_payload_for_ring2_book(
+    field: str,
+    client: AsyncClient,
+    sessions: async_sessionmaker[AsyncSession],
+) -> None:
+    """A still-valid child-session token cannot read ring-2 values once non-live.
+
+    A child-session token is self-contained and does no database read, so it
+    outlives profile deactivation; the handler's liveness check is the only
+    guard. This is the path the review comment described.
+    """
+    async with sessions() as session:
+        book_id, _viewer_token, reader_id = await _build_ring2_scenario(session)
+    family_id = await _make_reader_non_live(sessions, reader_id, field)
+    token, _expires = mint_child_session_token(
+        profile_id=reader_id, family_id=family_id, user_id=uuid.uuid4()
+    )
+
+    resp = await client.get(_values_url(book_id, reader_id), headers=auth(token))
+    assert resp.status_code == 200, resp.text
+    _assert_universal_empty(resp.json())
+
+
+async def _give_reader_own_values(reader_id: uuid.UUID, session: AsyncSession) -> None:
+    """Opt a viewer-family reader into ring-1 personalization of their own."""
+    reader = await session.get(ChildProfile, reader_id)
+    assert reader is not None
+    reader.real_name_ring1_enabled = True
+    session.add(
+        ChildProfilePersonalization(
+            child_profile_id=reader_id,
+            slot_type="pet_name",
+            value_text="ReaderOwnPet",
+            ring1_enabled=True,
+        )
+    )
+    await session.commit()
+
+
+async def test_values_ring2_failure_falls_back_to_the_readers_own_values(
+    client: AsyncClient, sessions: async_sessionmaker[AsyncSession]
+) -> None:
+    """Without ring-2 consent, a cross-family book shows the reader themselves.
+
+    The fallback is identical whatever made ring 2 fail, so it reveals
+    nothing about the sharer's connection, consent, or subject.
+    """
+    async with sessions() as session:
+        book_id, viewer_token, reader_id = await _build_ring2_scenario(
+            session, consent_covers=None
+        )
+    async with sessions() as session:
+        await _give_reader_own_values(reader_id, session)
+
+    resp = await client.get(_values_url(book_id, reader_id), headers=auth(viewer_token))
+    assert resp.status_code == 200, resp.text
+    body = resp.json()
+    assert body["ring"] == 1
+    assert body["subject_profile_id"] == str(reader_id)
+    assert body["values"] == {
+        "protagonist_first_name": "Viewer Reader",
+        "pet_name": "ReaderOwnPet",
+    }
+
+
+async def test_values_ring2_subject_takes_precedence_over_the_reader(
+    client: AsyncClient, sessions: async_sessionmaker[AsyncSession]
+) -> None:
+    """With ring-2 consent in place, the connected household sees the subject."""
+    async with sessions() as session:
+        book_id, viewer_token, reader_id = await _build_ring2_scenario(session)
+    async with sessions() as session:
+        await _give_reader_own_values(reader_id, session)
+
+    resp = await client.get(_values_url(book_id, reader_id), headers=auth(viewer_token))
+    assert resp.status_code == 200, resp.text
+    body = resp.json()
+    assert body["ring"] == 2
+    assert body["values"] == {"pet_name": "Ring2Pet"}
+
+
 async def test_values_ring2_not_dual_consented_empty(
     client: AsyncClient, sessions: async_sessionmaker[AsyncSession]
 ) -> None:
     async with sessions() as session:
-        book_id, viewer_token = await _build_ring2_scenario(
+        book_id, viewer_token, reader_id = await _build_ring2_scenario(
             session, dual_consented=False
         )
 
     resp = await client.get(
-        f"/api/v1/storybooks/{book_id}/personalization-values",
+        _values_url(book_id, reader_id),
         headers=auth(viewer_token),
     )
     assert resp.status_code == 200, resp.text
@@ -939,12 +1282,12 @@ async def test_values_ring2_revoked_consent_empty(
     client: AsyncClient, sessions: async_sessionmaker[AsyncSession]
 ) -> None:
     async with sessions() as session:
-        book_id, viewer_token = await _build_ring2_scenario(
+        book_id, viewer_token, reader_id = await _build_ring2_scenario(
             session, consent_revoked=True
         )
 
     resp = await client.get(
-        f"/api/v1/storybooks/{book_id}/personalization-values",
+        _values_url(book_id, reader_id),
         headers=auth(viewer_token),
     )
     assert resp.status_code == 200, resp.text
@@ -955,12 +1298,12 @@ async def test_values_ring2_missing_consent_row_empty(
     client: AsyncClient, sessions: async_sessionmaker[AsyncSession]
 ) -> None:
     async with sessions() as session:
-        book_id, viewer_token = await _build_ring2_scenario(
+        book_id, viewer_token, reader_id = await _build_ring2_scenario(
             session, consent_covers=None
         )
 
     resp = await client.get(
-        f"/api/v1/storybooks/{book_id}/personalization-values",
+        _values_url(book_id, reader_id),
         headers=auth(viewer_token),
     )
     assert resp.status_code == 200, resp.text
@@ -971,12 +1314,12 @@ async def test_values_ring2_flag_off_empty(
     client: AsyncClient, sessions: async_sessionmaker[AsyncSession]
 ) -> None:
     async with sessions() as session:
-        book_id, viewer_token = await _build_ring2_scenario(
+        book_id, viewer_token, reader_id = await _build_ring2_scenario(
             session, ring2_enabled_on_slot=False
         )
 
     resp = await client.get(
-        f"/api/v1/storybooks/{book_id}/personalization-values",
+        _values_url(book_id, reader_id),
         headers=auth(viewer_token),
     )
     assert resp.status_code == 200, resp.text
@@ -987,12 +1330,12 @@ async def test_values_ring2_deactivated_subject_empty(
     client: AsyncClient, sessions: async_sessionmaker[AsyncSession]
 ) -> None:
     async with sessions() as session:
-        book_id, viewer_token = await _build_ring2_scenario(
+        book_id, viewer_token, reader_id = await _build_ring2_scenario(
             session, subject_deactivated=True
         )
 
     resp = await client.get(
-        f"/api/v1/storybooks/{book_id}/personalization-values",
+        _values_url(book_id, reader_id),
         headers=auth(viewer_token),
     )
     assert resp.status_code == 200, resp.text
@@ -1003,12 +1346,12 @@ async def test_values_ring2_processing_restricted_subject_empty(
     client: AsyncClient, sessions: async_sessionmaker[AsyncSession]
 ) -> None:
     async with sessions() as session:
-        book_id, viewer_token = await _build_ring2_scenario(
+        book_id, viewer_token, reader_id = await _build_ring2_scenario(
             session, subject_restricted=True
         )
 
     resp = await client.get(
-        f"/api/v1/storybooks/{book_id}/personalization-values",
+        _values_url(book_id, reader_id),
         headers=auth(viewer_token),
     )
     assert resp.status_code == 200, resp.text
@@ -1043,36 +1386,34 @@ async def test_values_ring2_restricted_subject_is_refused_before_any_value_read(
     monkeypatch.setattr(personalization_api, "_ring2_values", _must_not_run)
 
     async with sessions() as session:
-        book_id, viewer_token = await _build_ring2_scenario(
+        book_id, viewer_token, reader_id = await _build_ring2_scenario(
             session, subject_restricted=True
         )
     resp = await client.get(
-        f"/api/v1/storybooks/{book_id}/personalization-values",
+        _values_url(book_id, reader_id),
         headers=auth(viewer_token),
     )
     assert resp.status_code == 200, resp.text
     assert resp.json()["values"] == {}
 
     async with sessions() as session:
-        live_book_id, live_token = await _build_ring2_scenario(session)
+        live_book_id, live_token, live_reader_id = await _build_ring2_scenario(session)
     live_headers = auth(live_token)
+    live_url = _values_url(live_book_id, live_reader_id)
     with pytest.raises(AssertionError, match="processing-restricted subject"):
-        await client.get(
-            f"/api/v1/storybooks/{live_book_id}/personalization-values",
-            headers=live_headers,
-        )
+        await client.get(live_url, headers=live_headers)
 
 
 async def test_values_ring2_receive_toggle_off_empty(
     client: AsyncClient, sessions: async_sessionmaker[AsyncSession]
 ) -> None:
     async with sessions() as session:
-        book_id, viewer_token = await _build_ring2_scenario(
+        book_id, viewer_token, reader_id = await _build_ring2_scenario(
             session, viewer_receive_enabled=False
         )
 
     resp = await client.get(
-        f"/api/v1/storybooks/{book_id}/personalization-values",
+        _values_url(book_id, reader_id),
         headers=auth(viewer_token),
     )
     assert resp.status_code == 200, resp.text
@@ -1094,10 +1435,10 @@ async def test_receive_toggle_off_empties_the_ring2_payload(
     documented opt-out was unreachable in practice.
     """
     async with sessions() as session:
-        book_id, viewer_token = await _build_ring2_scenario(session)
+        book_id, viewer_token, reader_id = await _build_ring2_scenario(session)
 
     before = await client.get(
-        f"/api/v1/storybooks/{book_id}/personalization-values",
+        _values_url(book_id, reader_id),
         headers=auth(viewer_token),
     )
     assert before.status_code == 200, before.text
@@ -1114,7 +1455,7 @@ async def test_receive_toggle_off_empties_the_ring2_payload(
     assert off.json() == {"enabled": False}
 
     after = await client.get(
-        f"/api/v1/storybooks/{book_id}/personalization-values",
+        _values_url(book_id, reader_id),
         headers=auth(viewer_token),
     )
     assert after.status_code == 200, after.text
@@ -1126,7 +1467,7 @@ async def test_receive_toggle_off_empties_the_ring2_payload(
     )
     assert back_on.status_code == 200, back_on.text
     restored = await client.get(
-        f"/api/v1/storybooks/{book_id}/personalization-values",
+        _values_url(book_id, reader_id),
         headers=auth(viewer_token),
     )
     assert restored.json()["values"] == {"pet_name": "Ring2Pet"}
@@ -1222,11 +1563,12 @@ async def test_values_child_session_in_viewer_family_succeeds(
             )
         )
         book = await _storybook(session, sharer.id, subject.id, visibility="catalog")
+        reader_id = await _assign(session, book, viewer_profile.id)
         await session.commit()
         book_id = book.id
 
     resp = await client.get(
-        f"/api/v1/storybooks/{book_id}/personalization-values",
+        _values_url(book_id, reader_id),
         headers=auth("viewer-child-token"),
     )
     assert resp.status_code == 200, resp.text
@@ -1288,11 +1630,12 @@ async def test_values_pronoun_and_dedication_never_disclosed_ring2(
             )
         )
         book = await _storybook(session, sharer.id, subject.id, visibility="catalog")
+        reader_id = await _assign_new_reader(session, book, viewer.id)
         await session.commit()
         book_id = book.id
 
     resp = await client.get(
-        f"/api/v1/storybooks/{book_id}/personalization-values",
+        _values_url(book_id, reader_id),
         headers=auth("viewer-guardian-dedication"),
     )
     assert resp.status_code == 200, resp.text
@@ -1360,11 +1703,12 @@ async def test_values_sibling_disclosed_under_own_consent(
             )
         )
         book = await _storybook(session, sharer.id, subject_a.id, visibility="catalog")
+        reader_id = await _assign_new_reader(session, book, viewer.id)
         await session.commit()
         book_id = book.id
 
     resp = await client.get(
-        f"/api/v1/storybooks/{book_id}/personalization-values",
+        _values_url(book_id, reader_id),
         headers=auth("viewer-guardian-sibling"),
     )
     assert resp.status_code == 200, resp.text
@@ -1433,11 +1777,12 @@ async def test_values_sibling_outside_the_sharer_family_is_omitted(
                 )
             )
         book = await _storybook(session, sharer.id, subject_a.id, visibility="catalog")
+        reader_id = await _assign_new_reader(session, book, viewer.id)
         await session.commit()
         book_id = book.id
 
     resp = await client.get(
-        f"/api/v1/storybooks/{book_id}/personalization-values",
+        _values_url(book_id, reader_id),
         headers=auth("viewer-guardian-outside"),
     )
     assert resp.status_code == 200, resp.text
@@ -1505,11 +1850,12 @@ async def test_values_sibling_omitted_when_sibling_lacks_own_consent(
             )
         )
         book = await _storybook(session, sharer.id, subject_a.id, visibility="catalog")
+        reader_id = await _assign_new_reader(session, book, viewer.id)
         await session.commit()
         book_id = book.id
 
     resp = await client.get(
-        f"/api/v1/storybooks/{book_id}/personalization-values",
+        _values_url(book_id, reader_id),
         headers=auth("viewer-guardian-sibling2"),
     )
     assert resp.status_code == 200, resp.text
@@ -1574,11 +1920,12 @@ async def test_values_sibling_ring2_empty_when_the_subject_did_not_opt_in(
             )
         )
         book = await _storybook(session, sharer.id, subject_a.id, visibility="catalog")
+        reader_id = await _assign_new_reader(session, book, viewer.id)
         await session.commit()
         book_id = book.id
 
     resp = await client.get(
-        f"/api/v1/storybooks/{book_id}/personalization-values",
+        _values_url(book_id, reader_id),
         headers=auth("viewer-guardian-optout"),
     )
     assert resp.status_code == 200, resp.text
@@ -1623,11 +1970,12 @@ async def test_values_sibling_ring2_empty_when_neither_opted_in(
         session.add(connection)
         await session.flush()
         book = await _storybook(session, sharer.id, subject_a.id, visibility="catalog")
+        reader_id = await _assign_new_reader(session, book, viewer.id)
         await session.commit()
         book_id = book.id
 
     resp = await client.get(
-        f"/api/v1/storybooks/{book_id}/personalization-values",
+        _values_url(book_id, reader_id),
         headers=auth("viewer-guardian-neither"),
     )
     assert resp.status_code == 200, resp.text
@@ -1726,11 +2074,12 @@ async def test_values_sibling_ring2_omitted_when_the_sibling_is_not_live(
             )
         )
         book = await _storybook(session, sharer.id, subject_a.id, visibility="catalog")
+        reader_id = await _assign_new_reader(session, book, viewer.id)
         await session.commit()
         book_id = book.id
 
     resp = await client.get(
-        f"/api/v1/storybooks/{book_id}/personalization-values",
+        _values_url(book_id, reader_id),
         headers=auth("viewer-guardian-ring2liveness"),
     )
     assert resp.status_code == 200, resp.text
@@ -1741,31 +2090,30 @@ async def test_values_sibling_ring2_omitted_when_the_sibling_is_not_live(
     )
 
 
-async def test_values_device_principal_in_unrelated_family_empty(
+async def test_values_device_principal_is_refused_for_any_reader(
     client: AsyncClient,
     sessions: async_sessionmaker[AsyncSession],
     stranger: Stranger,
 ) -> None:
-    """A DEVICE principal gets the empty payload, never a 403.
+    """A DEVICE principal cannot name a reader, so it gets a 403.
 
-    This route has no guardian gate (its own docstring's rationale: a kid's
-    tablet must be able to render a personalized book), so a DEVICE-role
-    token minted for a family with no connection to the sharer must land on
-    the same unconnected-family empty payload as any other principal type,
-    not on an authorization error.
+    The route now resolves for the reading child, authorized with
+    ``authorize_profile`` BEFORE the book is loaded. A device grant carries
+    no profile authority (``Principal.profile_ids`` is force-cleared), so it
+    is refused whatever book it names, and the refusal does not depend on
+    the book at all: a real book and a nonexistent one answer identically.
     """
     async with sessions() as session:
-        book_id, _viewer_token = await _build_ring2_scenario(session)
+        book_id, _viewer_token, reader_id = await _build_ring2_scenario(session)
 
     device_token = await mint_device_token(client, stranger.guardian_token)
-    resp = await client.get(
-        f"/api/v1/storybooks/{book_id}/personalization-values",
-        headers=auth(device_token),
+    real = await client.get(_values_url(book_id, reader_id), headers=auth(device_token))
+    missing = await client.get(
+        _values_url("does-not-exist", reader_id), headers=auth(device_token)
     )
-    assert resp.status_code == 200, resp.text
-    body = resp.json()
-    assert body["ring"] is None
-    assert body["values"] == {}
+    assert real.status_code == 403, real.text
+    assert missing.status_code == 403, missing.text
+    assert real.json() == missing.json()
 
 
 async def test_values_child_session_in_unrelated_family_empty(
@@ -1773,24 +2121,28 @@ async def test_values_child_session_in_unrelated_family_empty(
     sessions: async_sessionmaker[AsyncSession],
     stranger: Stranger,
 ) -> None:
-    """A child session in a family with no connection gets the empty payload.
+    """A child outside any connection to the sharer gets nothing.
 
-    ``test_values_child_session_in_viewer_family_succeeds`` above proves a
-    child IN the viewer family can read a full ring-2 payload; this proves
-    the flip side, a child session outside any connection to the sharer,
-    lands on the same empty payload a guardian would, never a 403.
+    Naming its own profile, the book is not assigned to it, so the payload is
+    the universal empty one. Naming the viewer family's reader instead is a
+    profile it cannot act on, so it is a 403, never that reader's values.
     """
     async with sessions() as session:
-        book_id, _viewer_token = await _build_ring2_scenario(session)
+        book_id, _viewer_token, reader_id = await _build_ring2_scenario(session)
 
-    resp = await client.get(
-        f"/api/v1/storybooks/{book_id}/personalization-values",
+    own = await client.get(
+        _values_url(book_id, stranger.child_profile_id),
         headers=auth(stranger.child_token),
     )
-    assert resp.status_code == 200, resp.text
-    body = resp.json()
+    assert own.status_code == 200, own.text
+    body = own.json()
     assert body["ring"] is None
     assert body["values"] == {}
+
+    foreign = await client.get(
+        _values_url(book_id, reader_id), headers=auth(stranger.child_token)
+    )
+    assert foreign.status_code == 403, foreign.text
 
 
 async def test_values_empty_after_the_subject_profile_is_deleted(
@@ -1803,10 +2155,10 @@ async def test_values_empty_after_the_subject_profile_is_deleted(
     erasure request reaches every book that named them.
     """
     async with sessions() as session:
-        book_id, viewer_token = await _build_ring2_scenario(session)
+        book_id, viewer_token, reader_id = await _build_ring2_scenario(session)
 
     before = await client.get(
-        f"/api/v1/storybooks/{book_id}/personalization-values",
+        _values_url(book_id, reader_id),
         headers=auth(viewer_token),
     )
     assert before.status_code == 200, before.text
@@ -1823,7 +2175,7 @@ async def test_values_empty_after_the_subject_profile_is_deleted(
         await session.commit()
 
     after = await client.get(
-        f"/api/v1/storybooks/{book_id}/personalization-values",
+        _values_url(book_id, reader_id),
         headers=auth(viewer_token),
     )
     assert after.status_code == 200, after.text
@@ -1907,11 +2259,12 @@ async def test_values_sibling_slot_gone_after_the_sibling_profile_is_deleted(
             )
         )
         book = await _storybook(session, sharer.id, subject_a.id, visibility="catalog")
+        reader_id = await _assign_new_reader(session, book, viewer.id)
         await session.commit()
         book_id = book.id
 
     before = await client.get(
-        f"/api/v1/storybooks/{book_id}/personalization-values",
+        _values_url(book_id, reader_id),
         headers=auth("viewer-guardian-sibdeletion"),
     )
     assert before.status_code == 200, before.text
@@ -1924,7 +2277,7 @@ async def test_values_sibling_slot_gone_after_the_sibling_profile_is_deleted(
         await session.commit()
 
     after = await client.get(
-        f"/api/v1/storybooks/{book_id}/personalization-values",
+        _values_url(book_id, reader_id),
         headers=auth("viewer-guardian-sibdeletion"),
     )
     assert after.status_code == 200, after.text
@@ -1976,7 +2329,7 @@ async def _character_name_fixture(
     character_name: str | None,
     ring1_enabled: bool = True,
     age_band: str = "10-13",
-) -> str:
+) -> tuple[str, uuid.UUID]:
     """Seed a family whose subject profile has the character_name slot toggled.
 
     Args:
@@ -1990,7 +2343,8 @@ async def _character_name_fixture(
         age_band: The subject profile's band, which selects the denylist floor.
 
     Returns:
-        str: The storybook id to resolve values for.
+        tuple[str, uuid.UUID]: The storybook id and the reading profile (the
+        subject, to whom the book is assigned).
     """
     async with sessions() as session:
         fam = Family(name=f"{label} Family")
@@ -2032,8 +2386,9 @@ async def _character_name_fixture(
         await _guardian(session, fam.id, guardian_subject)
         await session.flush()
         book = await _storybook(session, fam.id, subject.id)
+        reader_id = await _assign(session, book, subject.id)
         await session.commit()
-        return book.id
+        return book.id, reader_id
 
 
 async def test_ring1_character_name_resolves_from_the_active_character(
@@ -2044,7 +2399,7 @@ async def test_ring1_character_name_resolves_from_the_active_character(
     The value is synthesized here, not read from a value column: the
     consent row for this slot carries the toggle and nothing else.
     """
-    book_id = await _character_name_fixture(
+    book_id, reader_id = await _character_name_fixture(
         sessions,
         label="CharName On",
         guardian_subject="charname-on-guardian",
@@ -2052,7 +2407,7 @@ async def test_ring1_character_name_resolves_from_the_active_character(
     )
 
     resp = await client.get(
-        f"/api/v1/storybooks/{book_id}/personalization-values",
+        _values_url(book_id, reader_id),
         headers=auth("charname-on-guardian"),
     )
     assert resp.status_code == 200, resp.text
@@ -2071,7 +2426,7 @@ async def test_ring1_character_name_absent_when_the_toggle_is_off(
     the slot repopulates. So the toggle must be load-bearing even though an
     active character still exists.
     """
-    book_id = await _character_name_fixture(
+    book_id, reader_id = await _character_name_fixture(
         sessions,
         label="CharName Off",
         guardian_subject="charname-off-guardian",
@@ -2080,7 +2435,7 @@ async def test_ring1_character_name_absent_when_the_toggle_is_off(
     )
 
     resp = await client.get(
-        f"/api/v1/storybooks/{book_id}/personalization-values",
+        _values_url(book_id, reader_id),
         headers=auth("charname-off-guardian"),
     )
     assert resp.status_code == 200, resp.text
@@ -2097,7 +2452,7 @@ async def test_ring1_character_name_absent_when_no_character_is_active(
     A profile can hold the consent row before the child has ever made a
     character, and a retired-only profile is the same state.
     """
-    book_id = await _character_name_fixture(
+    book_id, reader_id = await _character_name_fixture(
         sessions,
         label="CharName None",
         guardian_subject="charname-none-guardian",
@@ -2105,7 +2460,7 @@ async def test_ring1_character_name_absent_when_no_character_is_active(
     )
 
     resp = await client.get(
-        f"/api/v1/storybooks/{book_id}/personalization-values",
+        _values_url(book_id, reader_id),
         headers=auth("charname-none-guardian"),
     )
     assert resp.status_code == 200, resp.text
@@ -2122,7 +2477,7 @@ async def test_ring1_character_name_survives_a_rename(
     The slot has no stored value, so a rename must be visible on the very
     next resolve without touching the consent row.
     """
-    book_id = await _character_name_fixture(
+    book_id, reader_id = await _character_name_fixture(
         sessions,
         label="CharName Rename",
         guardian_subject="charname-rename-guardian",
@@ -2132,7 +2487,7 @@ async def test_ring1_character_name_survives_a_rename(
     )
 
     first = await client.get(
-        f"/api/v1/storybooks/{book_id}/personalization-values",
+        _values_url(book_id, reader_id),
         headers=auth("charname-rename-guardian"),
     )
     assert first.json()["values"]["character_name"] == "EmberBeforeRename"
@@ -2146,7 +2501,7 @@ async def test_ring1_character_name_survives_a_rename(
         await session.commit()
 
     second = await client.get(
-        f"/api/v1/storybooks/{book_id}/personalization-values",
+        _values_url(book_id, reader_id),
         headers=auth("charname-rename-guardian"),
     )
     assert second.status_code == 200, second.text
@@ -2189,7 +2544,7 @@ async def test_ring1_character_name_is_dropped_when_the_name_is_unsafe(
     """
     label = f"CharName Unsafe {age_band}"
     subject_token = f"charname-unsafe-{age_band}-{len(unsafe_name)}-guardian"
-    book_id = await _character_name_fixture(
+    book_id, reader_id = await _character_name_fixture(
         sessions,
         label=label,
         guardian_subject=subject_token,
@@ -2198,7 +2553,7 @@ async def test_ring1_character_name_is_dropped_when_the_name_is_unsafe(
     )
 
     resp = await client.get(
-        f"/api/v1/storybooks/{book_id}/personalization-values",
+        _values_url(book_id, reader_id),
         headers=auth(subject_token),
     )
     assert resp.status_code == 200, resp.text

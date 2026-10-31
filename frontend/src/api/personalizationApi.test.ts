@@ -28,8 +28,10 @@ describe('makeFetchPersonalizationValues', () => {
     const get = vi.fn().mockResolvedValue({ data: payload })
     const fetch = makeFetchPersonalizationValues({ get } as never)
 
-    await expect(fetch('s_demo')).resolves.toEqual(payload)
-    expect(get).toHaveBeenCalledWith('/v1/storybooks/s_demo/personalization-values')
+    await expect(fetch('p1', 's_demo')).resolves.toEqual(payload)
+    expect(get).toHaveBeenCalledWith('/v1/storybooks/s_demo/personalization-values', {
+      params: { profile_id: 'p1' },
+    })
     expect(warnSpy).not.toHaveBeenCalled()
   })
 
@@ -37,7 +39,7 @@ describe('makeFetchPersonalizationValues', () => {
     const get = vi.fn().mockRejectedValue(new Error('boom'))
     const fetch = makeFetchPersonalizationValues({ get } as never)
 
-    await expect(fetch('s_demo')).resolves.toBeNull()
+    await expect(fetch('p1', 's_demo')).resolves.toBeNull()
     expect(warnSpy).toHaveBeenCalledTimes(1)
     const [message, detail] = warnSpy.mock.calls[0] as [string, Record<string, unknown>]
     expect(message).toContain('values fetch failed')
@@ -48,7 +50,7 @@ describe('makeFetchPersonalizationValues', () => {
     const get = vi.fn().mockRejectedValue({ isAxiosError: true, response: undefined })
     const fetch = makeFetchPersonalizationValues({ get } as never)
 
-    await expect(fetch('s_demo')).resolves.toBeNull()
+    await expect(fetch('p1', 's_demo')).resolves.toBeNull()
     expect(warnSpy).toHaveBeenCalledTimes(1)
     expect(warnSpy.mock.calls[0][1]).toEqual({ storybookId: 's_demo', kind: 'network' })
   })
@@ -59,7 +61,7 @@ describe('makeFetchPersonalizationValues', () => {
       .mockRejectedValue({ isAxiosError: true, response: { status: 500, data: payload } })
     const fetch = makeFetchPersonalizationValues({ get } as never)
 
-    await expect(fetch('s_demo')).resolves.toBeNull()
+    await expect(fetch('p1', 's_demo')).resolves.toBeNull()
     expect(warnSpy).toHaveBeenCalledTimes(1)
     expect(warnSpy.mock.calls[0][1]).toEqual({ storybookId: 's_demo', kind: 500 })
     // Value-free: never slot values, resolved text, or payload contents.

@@ -1,5 +1,6 @@
 import 'fake-indexeddb/auto'
 
+import { openDB } from 'idb'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 import type { ValuesPayload } from '../player/personalization'
@@ -8,15 +9,21 @@ import {
   _resetDbHandle,
   cachePersonalizationValues,
   cacheStorybook,
+  clearPersonalizationValues,
   enqueueWrite,
   getCachedPersonalizationValues,
   getCachedStorybook,
   getReadingState,
+  listPersonalizationValues,
   listQueue,
   putReadingState,
   type QueuedWrite,
 } from './db'
 import { reconcileOfflineCache, reconcilePersonalizationValues } from './revocation'
+
+// db.ts keeps DB_NAME private; mirrored here (as db.test.ts does) so a legacy
+// book-only values entry can be written directly.
+const DB_NAME = 'cyo-reader'
 
 function payloadFor(subjectId: string): ValuesPayload {
   return {
@@ -242,32 +249,48 @@ describe('reconcileOfflineCache', () => {
   it('deletes the personalization values entry for a revoked book (no orphan at rest)', async () => {
     // The per-book reconcile in ReaderRoute only fires when the book is opened
     // again, which a revoked book never is; this pass is the only path that
-    // can ever reach the entry once the book leaves every known shelf.
+    // can ever reach the entry once the book leaves the reader's shelf.
     await cacheStorybook(makeStory('s_revoked'))
-    await cachePersonalizationValues('s_revoked', payloadFor('p_subject'))
+    await cachePersonalizationValues('p1', 's_revoked', payloadFor('p1'))
 
     await reconcileOfflineCache('p1', [])
 
-    expect(await getCachedPersonalizationValues('s_revoked')).toBeUndefined()
+    expect(await getCachedPersonalizationValues('p1', 's_revoked')).toBeUndefined()
   })
 
   it('keeps the personalization values entry for a still-assigned book', async () => {
-    await cachePersonalizationValues('s_kept', payloadFor('p_subject'))
+    await cachePersonalizationValues('p1', 's_kept', payloadFor('p1'))
 
     await reconcileOfflineCache('p1', ['s_kept'])
 
-    expect(await getCachedPersonalizationValues('s_kept')).toBeDefined()
+    expect(await getCachedPersonalizationValues('p1', 's_kept')).toBeDefined()
   })
 
-  it("keeps the values entry while a sibling profile's shelf still lists the book", async () => {
-    await cachePersonalizationValues('s_shared', payloadFor('p_subject'))
+  it("drops this reader's entry but keeps a sibling's when only this reader lost the book", async () => {
+    await cachePersonalizationValues('p1', 's_shared', payloadFor('p1'))
+    await cachePersonalizationValues('p2', 's_shared', payloadFor('p2'))
     // p2 reconciled earlier and still has s_shared on its shelf.
     await reconcileOfflineCache('p2', ['s_shared'])
 
-    // p1 no longer has s_shared assigned; the device-wide entry survives.
+    // p1 no longer has s_shared assigned: its own entry goes, p2's stays.
     await reconcileOfflineCache('p1', [])
 
-    expect(await getCachedPersonalizationValues('s_shared')).toBeDefined()
+    expect(await getCachedPersonalizationValues('p1', 's_shared')).toBeUndefined()
+    expect(await getCachedPersonalizationValues('p2', 's_shared')).toBeDefined()
+  })
+
+  it('always deletes a legacy book-only values entry', async () => {
+    // Written before the store was re-keyed per reader. Touch the store through
+    // db.ts first so the database exists at its current version.
+    await clearPersonalizationValues()
+    const db = await openDB(DB_NAME)
+    await db.put('personalization_values', payloadFor('p1'), 's_kept')
+    db.close()
+    _resetDbHandle()
+
+    await reconcileOfflineCache('p1', ['s_kept'])
+
+    expect(await listPersonalizationValues()).toEqual([])
   })
 
   it('a first-ever reconcile call establishes the shelf snapshot without needing a prior baseline', async () => {
@@ -309,27 +332,27 @@ describe('reconcileOfflineCache', () => {
 
 describe('reconcilePersonalizationValues', () => {
   it('deletes the cached payload when the fresh one is empty (revoked)', async () => {
-    await cachePersonalizationValues('s_a', payloadFor('p_target'))
+    await cachePersonalizationValues('p1', 's_a', payloadFor('p_target'))
 
-    await reconcilePersonalizationValues('s_a', emptyPayload())
+    await reconcilePersonalizationValues('p1', 's_a', emptyPayload())
 
-    expect(await getCachedPersonalizationValues('s_a')).toBeUndefined()
+    expect(await getCachedPersonalizationValues('p1', 's_a')).toBeUndefined()
   })
 
   it('replaces the cached payload when the policy version changed', async () => {
-    await cachePersonalizationValues('s_a', payloadFor('p_target'))
+    await cachePersonalizationValues('p1', 's_a', payloadFor('p_target'))
     const rotated = { ...payloadFor('p_target'), policy_version: 'v2' }
 
-    await reconcilePersonalizationValues('s_a', rotated)
+    await reconcilePersonalizationValues('p1', 's_a', rotated)
 
-    expect(await getCachedPersonalizationValues('s_a')).toEqual(rotated)
+    expect(await getCachedPersonalizationValues('p1', 's_a')).toEqual(rotated)
   })
 
   it('deletes rather than caches when the fetch produced null', async () => {
-    await cachePersonalizationValues('s_a', payloadFor('p_target'))
+    await cachePersonalizationValues('p1', 's_a', payloadFor('p_target'))
 
-    await reconcilePersonalizationValues('s_a', null)
+    await reconcilePersonalizationValues('p1', 's_a', null)
 
-    expect(await getCachedPersonalizationValues('s_a')).toBeUndefined()
+    expect(await getCachedPersonalizationValues('p1', 's_a')).toBeUndefined()
   })
 })

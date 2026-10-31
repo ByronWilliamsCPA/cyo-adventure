@@ -572,6 +572,33 @@ async def test_import_id_check_fires_when_gate_passes_without_id() -> None:
     assert session.added == []
 
 
+@pytest.mark.unit
+@pytest.mark.asyncio
+async def test_import_rejects_story_id_containing_colon() -> None:
+    """A ':' in the story id is ambiguous with the client's reader cache key."""
+    from unittest.mock import patch
+
+    from cyo_adventure.validator.gate import GateResult
+    from cyo_adventure.validator.report import ValidationReport
+
+    session = _FakeSession()
+    blob = _filled_story()
+    blob["id"] = "profile:book"
+
+    fake_result = GateResult(
+        report=ValidationReport(), blocked=False, safety_flagged=False
+    )
+    with patch(
+        "cyo_adventure.generation.import_story.run_fill_gate",
+        return_value=fake_result,
+    ):
+        request = ImportRequest(blob=blob, family_id=uuid.uuid4())
+        with pytest.raises(ValidationError, match="must not contain ':'"):
+            await import_filled_story(session, request)
+
+    assert session.added == []
+
+
 def test_resume_missing_skeleton_file_is_clean_error(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:

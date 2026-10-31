@@ -9821,7 +9821,12 @@ export type GetPersonalizationValuesApiV1StorybooksStorybookIdPersonalizationVal
          */
         storybook_id: string;
     };
-    query?: never;
+    query: {
+        /**
+         * Profile Id
+         */
+        profile_id: string;
+    };
     url: '/api/v1/storybooks/{storybook_id}/personalization-values';
 };
 

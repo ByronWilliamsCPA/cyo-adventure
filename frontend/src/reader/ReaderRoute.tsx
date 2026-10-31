@@ -167,6 +167,9 @@ export function ReaderRoute() {
   // structural default rather than a branch someone can accidentally invert.
   const fetchPersonalizationValues = useMemo(() => {
     if (!isPersonalizationEnabled()) return undefined
+    // No reader, no values: the route resolves for the reading child, and the
+    // render below already refuses a route without a profileId.
+    if (profileId === undefined) return undefined
     const fetchValues = makeFetchPersonalizationValues(api)
     return async (storybookId: string) => {
       // ADR-023 Task D8 (closes Stage C open question 2): when the library
@@ -204,11 +207,11 @@ export function ReaderRoute() {
       // answered. (fetchValues never rejects; the adapter maps every failure
       // to null.)
       const [cached, fresh] = await Promise.all([
-        getCachedPersonalizationValues(storybookId).catch((err: unknown) => {
+        getCachedPersonalizationValues(profileId, storybookId).catch((err: unknown) => {
           console.warn('personalization: cached values read failed; continuing without cache:', err)
           return undefined
         }),
-        fetchValues(storybookId),
+        fetchValues(profileId, storybookId),
       ])
       if (fresh === null) {
         // No authoritative answer: keep rendering from cache for THIS read, and
@@ -218,7 +221,7 @@ export function ReaderRoute() {
         return cached ?? null
       }
       try {
-        await reconcilePersonalizationValues(storybookId, fresh)
+        await reconcilePersonalizationValues(profileId, storybookId, fresh)
       } catch (err) {
         // A failed revocation delete must be observable (the revoked payload is
         // still at rest), but must not change what the child sees: the fresh
@@ -227,7 +230,7 @@ export function ReaderRoute() {
       }
       return Object.keys(fresh.values).length === 0 ? null : fresh
     }
-  }, [api, personalizationEligible])
+  }, [api, personalizationEligible, profileId])
   // Flag-off residue purge (ADR-023 rollout): a build with
   // VITE_FEATURE_PERSONALIZATION off must not leave previously cached values
   // payloads at rest until sign-out. With the flag off the fetcher above never
