@@ -289,8 +289,10 @@ in code on 2026-10-31. Re-validate the rest before relying on them.
    whether it is cleared in production is unproven from git.
 2. **Operational health is the main finding.** Scheduled alerts open as of 2026-10-31, each still
    accumulating failure comments: production E2E (#824, three specs failing since mid-September),
-   staging E2E (#787, whose `grant_sweep` step reports that a staging device grant may still be active,
-   a security signal), the real-backend nightly (#290, red since 2026-07-18), real-OS E2E (#814),
+   staging E2E (#787; its `grant_sweep` step alerts that a staging device grant may still be active, but the
+   2026-10-31 run shows both logins failing with "We couldn't reach the server" while `leak_check` passed, so the
+   sweep most likely could not reach staging at all; a human still has to confirm no grant survives, and the
+   staging target and its secrets need checking after ADR-032's move of non-prod off Supabase Cloud), the real-backend nightly (#290, red since 2026-07-18), real-OS E2E (#814),
    KWS delivery health (#835, parents may be stuck on the wait screen), the weekly adversarial safety
    evaluation (#786), DAST (#802), mutation testing (#302), link check (#851), and the escalating-streak
    rollup (#801). The known-vulnerability release gate (#834) was addressed by #848, #861 and #867 on
