@@ -91,23 +91,35 @@ vulnerabilities:
   # All four are mount/nsenter defects that Debian tracks against the util-linux
   # source package, so Trivy reports them on libuuid1, the image's only
   # util-linux binary package. None of the vulnerable tools ships in the image.
+  # Each entry is pinned to libuuid1 by PURL: without `purls`, Trivy applies an
+  # ignore to every package, so a future image that added libmount1 or
+  # util-linux (which this assessment does NOT cover) would have its findings
+  # for these CVEs hidden too. Versionless, per Trivy's documented example.
   - id: CVE-2026-76642
+    purls:
+      - "pkg:deb/debian/libuuid1"
     statement: >-
       util-linux mount helper post-hook privilege issue. Reported against
       libuuid1 2.41.5-0+deb13u1+dhi3; Debian trixie is <no-dsa> (Minor). The
       image contains no mount/libmount and nothing shells out.
     expired_at: 2027-01-29
   - id: CVE-2026-78408
+    purls:
+      - "pkg:deb/debian/libuuid1"
     statement: >-
       util-linux nsenter --join-cgroup descriptor leak. Same package, Debian
       status and non-reachability as CVE-2026-76642; no nsenter in the image.
     expired_at: 2027-01-29
   - id: CVE-2026-78409
+    purls:
+      - "pkg:deb/debian/libuuid1"
     statement: >-
       util-linux X-mount.subdir symlink escape. Same package, Debian status and
       non-reachability as CVE-2026-76642.
     expired_at: 2027-01-29
   - id: CVE-2026-78410
+    purls:
+      - "pkg:deb/debian/libuuid1"
     statement: >-
       util-linux restricted bind-mount source race. Same package, Debian status
       and non-reachability as CVE-2026-76642.
