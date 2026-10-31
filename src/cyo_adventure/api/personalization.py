@@ -1379,6 +1379,11 @@ async def _is_assigned(
     Returns:
         bool: Whether a ``StorybookAssignment`` row exists for the pair.
     """
+    # #CRITICAL: security: this read is the assignment gate for the values
+    # route. A reader with no assignment row must get the uniform empty payload
+    # and never another family's personalization values.
+    # #VERIFY: tests/integration/test_personalization_api.py::
+    # test_values_unassigned_book_returns_the_empty_payload
     assigned = await session.scalar(
         select(StorybookAssignment.storybook_id).where(
             StorybookAssignment.storybook_id == storybook_id,
