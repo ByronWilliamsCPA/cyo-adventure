@@ -49,39 +49,6 @@
 # Add your project's vulnerability exceptions below this line
 
 # No project-specific exceptions currently active.
-
-# Build-time-only frontend transitives with no non-breaking fix (2026-10-31).
-# Each is reachable only through eslint or workbox-build (vite-plugin-pwa), which
-# run on a developer or CI machine against repo-controlled input. None of them is
-# bundled into the shipped app or loaded by the FastAPI service.
-#
-# #ASSUME: security: these packages never process attacker-controlled input.
-# #VERIFY: `npm ls minimatch glob deepmerge --prefix frontend` shows only the
-# eslint, typescript-eslint, and workbox-build parents. Revisit by ignoreUntil;
-# drop each entry as soon as upstream ships a fix inside the declared range.
-
-[[IgnoredVulns]]
-id = "GHSA-g3hv-75wg-m249"
-ignoreUntil = 2026-12-01
-reason = """minimatch ReDoS via globparts amplification. Fixed only in 11.0.1, a major bump \
-that eslint 10, typescript-estree and workbox-build 7 do not accept (they pin 3.x, 5.x, \
-10.x). Reached only from lint and service-worker build tooling with repo-controlled glob \
-patterns, never at runtime."""
-
-[[IgnoredVulns]]
-id = "GHSA-3g3m-2fjr-6pw4"
-ignoreUntil = 2026-12-01
-reason = """glob AbortSignal cancellation bypass. Fixed only in 14.0.2; glob 11.1.0 is a \
-direct dependency of workbox-build 7.4.1, which runs once at build time to generate the \
-precache manifest. No cancellation signal is used and nothing ships to users."""
-
-[[IgnoredVulns]]
-id = "GHSA-gcqx-w48m-w2h4"
-ignoreUntil = 2026-12-01
-reason = """deepmerge mergeObject() prototype poisoning; 4.3.1 is the last release and no fix \
-exists. Pulled in by @rollup/plugin-node-resolve inside workbox-build, merging only the \
-repo's own static build options at build time."""
-
 # CVE-2022-42969, PYSEC-2022-42969, and GHSA-w596-4wvx-j9j6 were removed on the
 # stated grounds that "the interrogate/py transitive dependency that triggered
 # them is no longer present in the dependency tree". That premise is FALSE, and
