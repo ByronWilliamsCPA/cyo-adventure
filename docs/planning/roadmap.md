@@ -392,7 +392,7 @@ kid/guardian UX; the status table now lists them.
    maintenance window and a second device, all owner-gated.
 3. **Triage the register**: 811 rows, 586 unscheduled. Assign phases to the `decision`, `blocked` and
    `verify` rows first (100 rows); they cost an owner ruling, not build time.
-4. **Close the Phase 7 erasure gaps** (deletion UI, cover objects, Supabase Auth identity, consent-screen
+4. **Close the Phase 7 erasure gaps** (**done in code 2026-11-01**, provisioning `SUPABASE_SERVICE_ROLE_KEY` is the open owner step; deletion UI, cover objects, Supabase Auth identity, consent-screen
    privacy link) before any R3 submission work, since they are code the compliance checklist depends on.
 5. **Then choose between starting Phase 8 and finishing Phase 7 owner items.** Phase 7 gates R3 and not R2,
    so TestFlight can proceed first; that choice is an owner decision and is not made here.

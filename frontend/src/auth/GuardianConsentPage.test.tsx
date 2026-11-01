@@ -158,3 +158,20 @@ describe('GuardianConsentPage', () => {
     expect(screen.getByRole('button', { name: /agree and continue/i })).toBeEnabled()
   })
 })
+
+describe('GuardianConsentPage privacy notice link', () => {
+  it('links the Privacy Notice it asks the parent to sign, in a new tab', () => {
+    // The screen has a parent sign agreement to "our Privacy Notice" with a
+    // typed name; before this link existed that document was not reachable from
+    // it. Both mentions must link, to the public notice, without dropping the
+    // form the parent is partway through.
+    renderWithRouter()
+    const links = screen.getAllByRole('link', { name: /privacy notice/i })
+    expect(links).toHaveLength(2)
+    for (const link of links) {
+      expect(link).toHaveAttribute('href', '/privacy')
+      expect(link).toHaveAttribute('target', '_blank')
+      expect(link).toHaveAttribute('rel', expect.stringContaining('noopener'))
+    }
+  })
+})
