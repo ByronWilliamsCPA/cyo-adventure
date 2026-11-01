@@ -464,7 +464,7 @@ name = "Kids compliance and account lifecycle"
 track = 2
 shipped = "partial"
 usable = "no"
-summary = "PII-egress hardening and the telemetry audit are done. Account deletion is built on the backend but not reachable by a guardian, and is incomplete in three respects. The compliance checklist that gates submission is not done."
+summary = "PII-egress hardening and the telemetry audit are done. A guardian can delete the family account from the privacy page, and the delete now also purges R2 covers and Supabase Auth identities after commit; that external purge is best-effort with no automatic retry and needs SUPABASE_SERVICE_ROLE_KEY. The compliance checklist that gates submission is not done."
 validated = "2026-08-01"
 # PII-egress hardening and the telemetry audit survive inspection well. generation/pii.py:229
 # assert_prompt_pii_safe is a single chokepoint called from generation, story requests, node
@@ -473,8 +473,11 @@ validated = "2026-08-01"
 # send_default_pii hardcoded off, Replay and Tracing never wired rather than merely sampled to
 # zero, and a scrub hook stripping user, request and breadcrumb data.
 #
-# Account deletion is where the previous summary was wrong. The endpoint and its cascade are
-# real and tested, but "done" was not accurate.
+# Account deletion is where the 2026-08-01 summary was wrong, and where the 2026-11-01 closure
+# needs a caveat. The endpoint and its cascade were real and tested, but "done" was not accurate:
+# no UI reached it and R2 covers and Supabase identities survived it. Both are now closed in code
+# (see the CLOSED note below), but the external purge is best-effort after the commit, so
+# "deleted" is only fully true where SUPABASE_SERVICE_ROLE_KEY is provisioned.
 gaps = [
   "Family deletion's external purge is only as good as its operator setup and cannot reach the past. The Supabase Auth identity is deleted only when SUPABASE_SERVICE_ROLE_KEY is set on the backend (unset, the application rows go and the login identity and its email stay, with erasure_auth_identity_unconfigured logged), so provisioning that key in production is an open owner step. Both external purges are best-effort after the commit; a failure is logged as erasure_external_purge_incomplete with the identifiers needed to finish by hand (runbook 5.6), not retried automatically. Deletions made before 2026-11-01 left their R2 covers and auth identities behind and are not in any log.",
   "P7-08 compliance checklist has a template but no owner sign-off. This gates R3 submission. NOT CODE-VERIFIABLE, organizational.",

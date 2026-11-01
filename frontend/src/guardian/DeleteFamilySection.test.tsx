@@ -62,7 +62,10 @@ describe('DeleteFamilySection', () => {
     // best-effort. The dialog must say they follow, not that they are done.
     expect(dialog).toHaveTextContent(/cover images/i)
     expect(dialog).toHaveTextContent(/separate step/i)
-    expect(dialog).toHaveTextContent(/can take longer to finish/i)
+    // There is no automatic retry, so the dialog must not imply the cleanup resumes.
+    expect(dialog).toHaveTextContent(/no automatic retry/i)
+    expect(dialog).toHaveTextContent(/can remain until we remove them by hand/i)
+    expect(dialog).not.toHaveTextContent(/take longer/i)
     expect(dialog).not.toHaveTextContent(/permanently deletes:[^]*cover/i)
   })
 

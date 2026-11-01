@@ -118,9 +118,10 @@ export function DeleteFamilySection() {
             #VERIFY: DeleteFamilySection.test.tsx pins this sentence.
           */}
           <p>
-            Straight afterwards we also remove your family&apos;s cover images, and each
+            Straight afterwards we try to remove your family&apos;s cover images, and each
             adult&apos;s sign-in record including their email address, from our storage and login
-            service. That is a separate step, so if it is interrupted it can take longer to finish.
+            service. That is a separate step with no automatic retry, so if it fails or is
+            unavailable those records can remain until we remove them by hand.
           </p>
           <p>
             Anyone you have connected with loses the connection.{' '}
