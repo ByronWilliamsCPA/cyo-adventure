@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import asyncio
 import uuid
 from types import SimpleNamespace
 from typing import TYPE_CHECKING, cast
@@ -10,6 +11,7 @@ import httpx
 import pytest
 from pydantic import SecretStr
 
+from cyo_adventure import erasure
 from cyo_adventure.erasure import (
     ErasureTargets,
     build_purge_callback,
@@ -111,7 +113,12 @@ async def test_delete_auth_identity_refuses_a_non_uuid_subject(subject: str) -> 
 @pytest.mark.asyncio
 @pytest.mark.parametrize(
     "overrides",
-    [{"supabase_service_role_key": None}, {"oidc_issuer": None}],
+    [
+        {"supabase_service_role_key": None},
+        {"supabase_service_role_key": SecretStr("")},
+        {"supabase_service_role_key": SecretStr("   ")},
+        {"oidc_issuer": None},
+    ],
 )
 async def test_delete_auth_identity_is_a_noop_when_unconfigured(
     overrides: dict[str, object],
@@ -184,3 +191,71 @@ async def test_purge_callback_keeps_going_after_one_delete_fails() -> None:
     await purge()
     assert covers == list(targets.cover_keys)
     assert identities == list(targets.auth_subjects)
+
+
+@pytest.mark.asyncio
+async def test_purge_callback_survives_a_deleter_that_raises() -> None:
+    """A raising cover deleter neither stops other covers nor the identities."""
+    covers: list[str] = []
+    identities: list[str] = []
+
+    async def cover(key: str, _settings: Settings) -> bool:
+        covers.append(key)
+        if key == "s1/1-aaa.webp":
+            msg = "disk error building the client"
+            raise OSError(msg)
+        return True
+
+    async def identity(subject: str, _settings: Settings) -> bool:
+        identities.append(subject)
+        return True
+
+    targets = _targets()
+    purge = build_purge_callback(
+        targets, _settings(), delete_cover_fn=cover, delete_identity_fn=identity
+    )
+    await purge()
+    assert covers == list(targets.cover_keys)
+    assert identities == list(targets.auth_subjects)
+
+
+class _SpyLogger:
+    """Records the structured log calls the purge makes."""
+
+    def __init__(self) -> None:
+        self.events: list[tuple[str, dict[str, object]]] = []
+
+    def _record(self, event: str, **fields: object) -> None:
+        self.events.append((event, fields))
+
+    error = exception = info = warning = _record
+
+
+@pytest.mark.asyncio
+async def test_purge_callback_logs_every_target_when_cancelled(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Cancellation mid-purge re-raises after naming every target for recovery."""
+    spy = _SpyLogger()
+    monkeypatch.setattr(erasure, "logger", spy)
+
+    async def cover(_key: str, _settings: Settings) -> bool:
+        raise asyncio.CancelledError
+
+    async def identity(_subject: str, _settings: Settings) -> bool:
+        return True
+
+    targets = _targets()
+    purge = build_purge_callback(
+        targets, _settings(), delete_cover_fn=cover, delete_identity_fn=identity
+    )
+    with pytest.raises(asyncio.CancelledError):
+        await purge()
+
+    ((event, fields),) = [
+        e for e in spy.events if e[0] == "erasure_external_purge_incomplete"
+    ]
+    assert event == "erasure_external_purge_incomplete"
+    assert fields["reason"] == "cancelled"
+    assert fields["failed_cover_keys"] == list(targets.cover_keys)
+    assert fields["failed_auth_subjects"] == list(targets.auth_subjects)

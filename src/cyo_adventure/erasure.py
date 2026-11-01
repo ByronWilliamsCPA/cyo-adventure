@@ -20,6 +20,7 @@ would only invite a retry that finds nothing.
 
 from __future__ import annotations
 
+import asyncio
 import uuid
 from dataclasses import dataclass
 from typing import TYPE_CHECKING, Final
@@ -147,7 +148,12 @@ async def delete_auth_identity(
         False when it could not be deleted. Never raises.
     """
     key = settings.supabase_service_role_key
-    if key is None or not settings.oidc_issuer:
+    # An empty value is "unset", not a credential: a compose-style
+    # ``${SUPABASE_SERVICE_ROLE_KEY:-}`` injects "" and pydantic stores
+    # ``SecretStr("")``, which would otherwise be sent as ``Bearer `` and be
+    # rejected for every subject, hiding the missing-key diagnosis runbook 5.6
+    # relies on.
+    if key is None or not key.get_secret_value().strip() or not settings.oidc_issuer:
         logger.warning("erasure_auth_identity_unconfigured")
         return False
     try:
@@ -177,6 +183,42 @@ async def delete_auth_identity(
     return False
 
 
+async def _attempt(
+    delete_fn: Callable[[str, Settings], Awaitable[bool]],
+    target: str,
+    settings: Settings,
+    *,
+    kind: str,
+) -> bool:
+    """Run one deleter; an unexpected exception counts as a failed delete.
+
+    # #CRITICAL: data-integrity: the deleters report expected failures as
+    # ``False``, but ``delete_cover`` catches only boto errors, so an ``OSError``
+    # from client construction can still escape. Left to propagate it would end
+    # the whole purge, skipping every remaining cover AND every identity (the
+    # privacy-critical part), and the generic after-commit log names no target.
+    # #VERIFY: tests/unit/test_erasure.py::
+    # test_purge_callback_survives_a_deleter_that_raises.
+
+    Args:
+        delete_fn: The cover or identity deleter.
+        target: The R2 key or Supabase user id to delete.
+        settings: App settings for the deleter.
+        kind: ``"cover"`` or ``"auth_identity"``, for the log line.
+
+    Returns:
+        bool: True when the deleter reported success, False on a reported
+        failure or an exception.
+    """
+    try:
+        return await delete_fn(target, settings)
+    except Exception:  # NOSONAR(S2221)
+        # The target is logged because the rows that named it are already gone:
+        # this line is the only record an operator has to finish the delete.
+        logger.exception("erasure_external_delete_raised", kind=kind, target=target)
+        return False
+
+
 def build_purge_callback(
     targets: ErasureTargets,
     settings: Settings,
@@ -199,21 +241,40 @@ def build_purge_callback(
     """
 
     async def purge() -> None:
-        failed_covers = [
-            key
-            for key in targets.cover_keys
-            if not await delete_cover_fn(key, settings)
-        ]
-        failed_subjects = [
-            subject
-            for subject in targets.auth_subjects
-            if not await delete_identity_fn(subject, settings)
-        ]
+        try:
+            failed_covers = [
+                key
+                for key in targets.cover_keys
+                if not await _attempt(delete_cover_fn, key, settings, kind="cover")
+            ]
+            failed_subjects = [
+                subject
+                for subject in targets.auth_subjects
+                if not await _attempt(
+                    delete_identity_fn, subject, settings, kind="auth_identity"
+                )
+            ]
+        except asyncio.CancelledError:
+            # A deploy or shutdown cancelled the loop mid-purge. We cannot know
+            # which deletes finished, so name every target: a delete that
+            # already happened is idempotent to repeat by hand, a lost one is not
+            # recoverable from anywhere else.
+            # #CRITICAL: security: the identities hold the guardians' emails.
+            # #VERIFY: tests/unit/test_erasure.py::
+            # test_purge_callback_logs_every_target_when_cancelled.
+            logger.exception(
+                "erasure_external_purge_incomplete",
+                family_id=str(targets.family_id),
+                failed_cover_keys=list(targets.cover_keys),
+                failed_auth_subjects=list(targets.auth_subjects),
+                reason="cancelled",
+            )
+            raise
         if failed_covers or failed_subjects:
             # #CRITICAL: security: a surviving auth identity keeps the
             # guardian's email after an erasure they were told succeeded.
             # #VERIFY: these identifiers are what an operator needs to finish
-            # the job by hand (docs/operations/runbook.md, erasure follow-up).
+            # the job by hand (docs/operations/runbook.md, 5.6).
             logger.error(
                 "erasure_external_purge_incomplete",
                 family_id=str(targets.family_id),

@@ -814,9 +814,12 @@ async def test_delete_my_family_queues_external_erasure_for_covers_and_identity(
     resp = await client.delete("/api/v1/me/family", headers=auth(seed.guardian_token))
     assert resp.status_code == 204, resp.text
 
-    # The purge runs as a fire-and-forget task after the commit.
+    # The purge runs as a fire-and-forget task after the commit; wait for ALL
+    # of its work, not the first item, so this does not depend on the fakes
+    # never suspending.
+    expected_subject_count = 3
     for _ in range(100):
-        if deleted_covers and deleted_subjects:
+        if deleted_covers and len(deleted_subjects) >= expected_subject_count:
             break
         await asyncio.sleep(0.02)
 

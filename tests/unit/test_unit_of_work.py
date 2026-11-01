@@ -23,6 +23,7 @@ from httpx import ASGITransport, AsyncClient
 from sqlalchemy.exc import IntegrityError
 
 from cyo_adventure.api import deps
+from cyo_adventure.middleware import unit_of_work as uow_module
 from cyo_adventure.middleware.unit_of_work import (
     _INTERNAL_ERROR_BODY,
     UNIT_OF_WORK_STATE_KEY,
@@ -444,9 +445,10 @@ async def test_cancelled_request_closes_without_settling() -> None:
 
 
 async def _drain_after_commit() -> None:
-    """Let the fire-and-forget after-commit task run to completion."""
-    for _ in range(5):
-        await asyncio.sleep(0)
+    """Wait for the retained fire-and-forget after-commit tasks to finish."""
+    pending = list(uow_module._after_commit_tasks)
+    if pending:
+        await asyncio.gather(*pending, return_exceptions=True)
 
 
 @pytest.mark.asyncio

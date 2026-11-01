@@ -104,12 +104,24 @@ export function DeleteFamilySection() {
             </>
           }
         >
-          <p>This permanently deletes:</p>
+          <p>This permanently deletes, right away:</p>
           <ul>
             <li>every child profile, with reading history, ratings, and saved places</li>
-            <li>every story, request, and assignment your family owns, including cover art</li>
-            <li>the sign-in for every adult in this family, including any co-parent</li>
+            <li>every story, request, and assignment your family owns</li>
+            <li>every adult&apos;s account in this family, including any co-parent</li>
           </ul>
+          {/*
+            #CRITICAL: security: the cover images and the sign-in records live
+            outside our database and are removed in a separate step after the
+            delete commits (erasure.py). That step is best-effort, so this page
+            must not promise it is finished, only that it follows.
+            #VERIFY: DeleteFamilySection.test.tsx pins this sentence.
+          */}
+          <p>
+            Straight afterwards we also remove your family&apos;s cover images, and each
+            adult&apos;s sign-in record including their email address, from our storage and login
+            service. That is a separate step, so if it is interrupted it can take longer to finish.
+          </p>
           <p>
             Anyone you have connected with loses the connection.{' '}
             <strong>This cannot be undone.</strong>

@@ -51,14 +51,19 @@ describe('DeleteFamilySection', () => {
     expect(confirmButton()).toBeEnabled()
   })
 
-  it('names what is lost, including co-parent sign-ins and cover art', () => {
+  it('names what is lost, including a co-parent, without over-promising the external cleanup', () => {
     render(<DeleteFamilySection />)
     openDialog()
     const dialog = screen.getByRole('dialog')
     expect(dialog).toHaveTextContent(/every child profile/i)
-    expect(dialog).toHaveTextContent(/cover art/i)
     expect(dialog).toHaveTextContent(/including any co-parent/i)
     expect(dialog).toHaveTextContent(/cannot be undone/i)
+    // Cover images and sign-in records are removed after the delete commits,
+    // best-effort. The dialog must say they follow, not that they are done.
+    expect(dialog).toHaveTextContent(/cover images/i)
+    expect(dialog).toHaveTextContent(/separate step/i)
+    expect(dialog).toHaveTextContent(/can take longer to finish/i)
+    expect(dialog).not.toHaveTextContent(/permanently deletes:[^]*cover/i)
   })
 
   it('cancelling closes the dialog without deleting anything', () => {
