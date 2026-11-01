@@ -7,6 +7,33 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 <!-- version list -->
 
+## [0.91.0] - 2026-11-01
+
+### Bug Fixes
+
+- **deps**: Refresh vulnerable Python and npm dependencies
+  ([#860](https://github.com/ByronWilliamsCPA/cyo-adventure/pull/860),
+  [`83688ff`](https://github.com/ByronWilliamsCPA/cyo-adventure/commit/83688ff76b5eac80b51dea11ff1626f32af74dc8))
+
+- **moderation**: Let the real-backend E2E tier opt into a safe-verdict mock reviewer
+  ([#869](https://github.com/ByronWilliamsCPA/cyo-adventure/pull/869),
+  [`dca47cf`](https://github.com/ByronWilliamsCPA/cyo-adventure/commit/dca47cf4232a0cbedca446ab856fc648a8bda7d7))
+
+- **security**: Reassess the two overdue known-vulnerability entries
+  ([#848](https://github.com/ByronWilliamsCPA/cyo-adventure/pull/848),
+  [`ff272fc`](https://github.com/ByronWilliamsCPA/cyo-adventure/commit/ff272fcf21bd558a1e782b0b9329020e7457120b))
+
+- **security**: Retire the expat CVE and accept four util-linux CVEs after the base refresh
+  ([#867](https://github.com/ByronWilliamsCPA/cyo-adventure/pull/867),
+  [`3887a68`](https://github.com/ByronWilliamsCPA/cyo-adventure/commit/3887a6872595fa0b37ceb9e785d288fbee0338a7))
+
+### Features
+
+- **personalization**: Resolve ring-1 values for the reading child
+  ([#849](https://github.com/ByronWilliamsCPA/cyo-adventure/pull/849),
+  [`5e798e0`](https://github.com/ByronWilliamsCPA/cyo-adventure/commit/5e798e08ef333a7b4cea196834c035c31f179a62))
+
+
 ## [0.90.0] - 2026-10-03
 
 ### Chores
@@ -3761,6 +3788,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Safety dependency vulnerability scanning
 - Pre-commit hooks for security validation
 
+[0.91.0]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.90.0...v0.91.0
 [0.90.0]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.89.2...v0.90.0
 [0.89.2]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.89.1...v0.89.2
 [0.89.1]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.89.0...v0.89.1
