@@ -613,6 +613,19 @@ pin both the load-bearing claims and the claims deliberately withheld.
   need no session and the router leaves both paths ungated, neither of which is the same claim
   as the deployed URL actually answering, which is what the new spec adds.
 
+## Guardian: delete the family account (G12, GDPR Article 17 / COPPA 312.10)
+
+A guardian erases the whole family account from the bottom of the privacy page
+(`/guardian/privacy`). It is irreversible and takes every adult in the family
+with it, so the risk is both a delete that fires too easily and a delete that
+leaves data behind: the database cascade cannot reach the R2 cover objects or
+the Supabase Auth identities, which are purged after the commit.
+
+- Component: `frontend/src/guardian/DeleteFamilySection.test.tsx` (nothing is sent on open, on cancel, or while the typed `DELETE` does not match; the confirmation does not carry over into a reopened dialog; the dialog names the lost data including a co-parent's sign-in and cover art; success calls `DELETE /v1/me/family` and signs out; a failed sign-out after a successful delete does not strand an error; a failed delete shows an error and does not sign out), and `frontend/src/guardian/PrivacyPage.test.tsx` (the deletion bullet links to a control that is actually on the page)
+- Unit: `tests/unit/test_erasure.py` (the admin-API call goes under the OIDC issuer with the service-role key; 404 counts as already gone; a rejected delete or a network error is reported as failed, never raised; a non-UUID subject is refused and nothing is sent; nothing is sent when the key or issuer is unset; the purge keeps going after one delete fails) and `tests/unit/test_unit_of_work.py` (an after-commit callback runs only after a successful commit and is dropped on rollback or a failed commit; one failing callback does not skip the next)
+- Integration: `tests/integration/test_deletion_drill.py::test_delete_my_family_queues_external_erasure_for_covers_and_identity` (against real Postgres: the purge names exactly this family's cover keys and its adult subjects, and neither a child login row nor a pending-invite placeholder)
+- **Gap**: no E2E coverage at any tier, and the real R2 and Supabase calls are never exercised: both are faked at the seam. A deployed deletion, including the service-role key being accepted by the admin API, is an owner-run check (runbook 5.6).
+
 ## Guardian: invite a co-parent (self-serve)
 
 The guardian's own way to add a second adult to the family, from the guardian
