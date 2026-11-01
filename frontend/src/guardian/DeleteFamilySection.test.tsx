@@ -100,6 +100,24 @@ describe('DeleteFamilySection', () => {
     expect(screen.queryByRole('alert')).not.toBeInTheDocument()
   })
 
+  it('cannot be dismissed with Escape while the delete is in flight', async () => {
+    // A pending delete cannot be cancelled server-side, so closing the dialog
+    // mid-request would hide the only place the outcome (or an error) shows.
+    let finish: (value: unknown) => void = () => undefined
+    mockDelete.mockReturnValue(new Promise((resolve) => (finish = resolve)))
+    render(<DeleteFamilySection />)
+    openDialog()
+    typeConfirmation('DELETE')
+    fireEvent.click(confirmButton())
+    await screen.findByRole('button', { name: /deleting/i })
+
+    fireEvent.keyDown(document, { key: 'Escape' })
+    expect(screen.getByRole('dialog')).toBeInTheDocument()
+
+    finish({ status: 204 })
+    await waitFor(() => expect(mockSignOut).toHaveBeenCalledTimes(1))
+  })
+
   it('shows an error and does not sign out when the delete fails', async () => {
     mockDelete.mockRejectedValue(new Error('server error'))
     render(<DeleteFamilySection />)
