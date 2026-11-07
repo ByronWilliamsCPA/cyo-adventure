@@ -106,6 +106,19 @@ export default defineConfig({
     url: 'http://localhost:4173',
     reuseExistingServer: !process.env.CI,
     timeout: 120_000,
+    // Playwright's default for webServer.stdout is 'ignore', and `tsc -b` (the
+    // first half of `npm run build`) writes its diagnostics to STDOUT, so a
+    // type or build failure surfaces only as "Process from config.webServer was
+    // not able to start. Exit code: 2" with no cause. e2e-real-os.yml sat red
+    // on every scheduled run for exactly that reason (#814). Setting
+    // PW_WEBSERVER_STDOUT=pipe prints the build output in the job log; unset,
+    // this is the default ('ignore') and every other tier behaves as before.
+    // #ASSUME: security: the piped output is the build's own log. The build env
+    // below holds only dummy, non-credential values, so nothing secret is
+    // printed; the repo is public, so keep it that way.
+    // #VERIFY: scripts/test or CI log review if a real secret is ever added to
+    // this env block.
+    stdout: process.env.PW_WEBSERVER_STDOUT === 'pipe' ? 'pipe' : 'ignore',
     // The guardian lazy chunk (supabaseClient.ts) throws at module load unless
     // these are defined at build time; with dummy values it renders the login
     // flow (and thus the unauthenticated redirect) instead of the missing-env

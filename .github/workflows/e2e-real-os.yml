@@ -151,6 +151,11 @@ jobs:
           # that config's header comment and webkit-kid.yml for the confirmed
           # real-world shape of that collision.
           PLAYWRIGHT_JSON_REPORT_PATH: playwright-json-report/real-os-${{ matrix.label }}.json
+          # Print the webServer's build output. Both legs died in the
+          # webServer with "Exit code: 2" and no visible cause on every run
+          # since 2026-09-05 (#814), because Playwright ignores the server's
+          # stdout by default and `tsc -b` reports on stdout.
+          PW_WEBSERVER_STDOUT: pipe
         run: npm run ${{ matrix.script }}
 
       # Deliberately no `upload-artifact` step. THIS REPOSITORY IS PUBLIC, and
