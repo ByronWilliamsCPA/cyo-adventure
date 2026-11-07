@@ -15,15 +15,21 @@ import tseslint from 'typescript-eslint'
 // are structurally unable to be right here, so they are disabled with the
 // evidence rather than suppressed 68 times at the call sites.
 //
-// The other 12 rules stay at 'error'. Two of them (detect-unsafe-regex,
+// The other 13 rules stay at 'error'. Two of them (detect-unsafe-regex,
 // detect-non-literal-regexp) do fire, and are handled where they fire: by one
 // inline disable carrying a measurement, and by the test-file override below.
-// The remaining 10 find nothing today and cost nothing to keep armed.
+// The remaining 11 find nothing today and cost nothing to keep armed.
+//
+// detect-invisible-characters arrived in 4.1.0 (the 15th rule, after the 14
+// measured above). Measured 2026-11-07: zero findings across the tree, and
+// proven live by mutation (U+3164 in a string, an identifier and a comment
+// each fail lint). It flags only U+3164 and U+FFA0, the Hangul fillers that
+// render as blanks; it does not cover zero-width spaces such as U+200B.
 //
 // Read this as a statement about the tool, not about the code: a lint-grade
 // pattern matcher found zero real defects in ~80k lines. It is a floor under
 // the SAST gap, not a substitute for a dataflow engine.
-// eslint-plugin-security 4.0.1 ships 14 rules; 2 are disabled below, so 12 are
+// eslint-plugin-security 4.2.1 ships 15 rules; 2 are disabled below, so 13 are
 // armed. The count is asserted rather than assumed because the derivation reads
 // the plugin's shape at load time: a 5.x that moves the preset to
 // `configs.flat.recommended` throws loudly, but an intermediate release that
@@ -31,7 +37,7 @@ import tseslint from 'typescript-eslint'
 // would stay green having run no security rules. That is the same "a clean scan
 // and no scan look identical" failure the Semgrep canary exists to prevent, and
 // it deserves the same treatment on this side.
-const SECURITY_RULES_EXPECTED = 12
+const SECURITY_RULES_EXPECTED = 13
 
 function securityRulesAtError() {
   const preset = security.configs?.recommended?.rules
@@ -119,7 +125,7 @@ export default tseslint.config(
       // frontend/ at all.
       //
       // Severity is pinned to 'error' DELIBERATELY and must stay that way.
-      // eslint-plugin-security ships all 14 of its rules at 'warn'. Spreading
+      // eslint-plugin-security ships all 15 of its rules at 'warn'. Spreading
       // the plugin's recommended config would have added a security scanner
       // whose findings could not fail a build. `npm run lint` now also carries
       // --max-warnings=0, matching the pre-commit hook, so a warning is fatal
