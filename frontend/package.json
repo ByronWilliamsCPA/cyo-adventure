@@ -65,7 +65,7 @@
     "eslint-plugin-security": "4.2.1",
     "fake-indexeddb": "6.2.7",
     "fast-check": "4.10.2",
-    "globals": "17.8.0",
+    "globals": "17.14.0",
     "jsdom": "30.0.1",
     "prettier": "3.9.10",
     "typescript": "6.0.3",
