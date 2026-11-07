@@ -56,36 +56,21 @@ vulnerabilities:
   # docs/known-vulnerabilities.md, "Resolution detail: CVE-2026-66046 and the
   # 2026-10-31 base-image refresh".
   #
-  # #ASSUME: security: the seven below still describe findings that EXIST in the
+  # #ASSUME: security: the five below still describe findings that EXIST in the
   # image and are UNFIXED upstream. Both halves were checked on 2026-09-03, and
   # both are the kind of fact that goes stale silently.
   # #VERIFY: at each reassessment, confirm the package is still in
   # `var/lib/dpkg/status.d/` of the pinned base image and that the Debian tracker
   # still shows no trixie-track fix. Do not infer either from a green scan.
 
-  # --- libsqlite3-0 (sqlite3 source package); no Debian fix on the trixie track ---
-  # Both were Medium when this file was written, and were described here as
-  # suppressing nothing because the workflow is called with CRITICAL,HIGH. That
-  # is no longer true: Trivy 0.70.0's feed rates BOTH HIGH as of 2026-09-03, so
-  # these two entries are inside the threshold and are load-bearing.
-  - id: CVE-2026-11822
-    statement: >-
-      SQLite < 3.53.2 memory corruption. This project uses PostgreSQL via
-      asyncpg and never imports sqlite3, so the parser is handed no input.
-    expired_at: 2026-11-08
-  - id: CVE-2026-11824
-    statement: >-
-      SQLite < 3.53.2 heap buffer overflow. Same non-reachability as
-      CVE-2026-11822.
-    expired_at: 2026-11-08
-
   # --- ncurses family; no Debian fix on the trixie track ---
   - id: CVE-2025-69720
     statement: >-
-      ncurses buffer overflow reachable only through attacker-controlled
-      terminfo data. The runtime image has no shell, no TUI and no controlling
-      terminal; nothing links or calls ncurses.
-    expired_at: 2026-11-08
+      Stack overflow in the infocmp CLI tool (progs/infocmp.c). Reassessed
+      2026-10-31: /usr/bin/infocmp ships in ncurses-bin 6.5+20250216-2+dhi4 but
+      nothing can execute it (no shell in the image, no subprocess in src/);
+      Debian trixie is <no-dsa> (Minor), fixed only in forky/sid.
+    expired_at: 2027-01-29
 
   # --- libuuid1 (util-linux source package); no Debian fix on the trixie track ---
   # All four are mount/nsenter defects that Debian tracks against the util-linux
