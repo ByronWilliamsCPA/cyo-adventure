@@ -172,7 +172,7 @@ test.describe('moderation dashboard', () => {
     // Applying a suggestion changes live surfacing behavior, so it too is
     // gated behind a confirm dialog (main's 2026-07-16 UX pass); the upsert
     // fires only from "Confirm apply", not the row button itself.
-    await page.getByRole('button', { name: 'Apply: raise violence (5-8) to flag' }).click()
+    await page.getByRole('button', { name: 'Apply: raise to flag for violence (5-8)' }).click()
     await page.getByRole('button', { name: 'Confirm apply' }).click()
 
     await expect.poll(() => upsertPosted).toBe(true)

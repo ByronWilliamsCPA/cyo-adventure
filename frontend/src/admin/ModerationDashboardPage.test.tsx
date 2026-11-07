@@ -258,7 +258,9 @@ describe('ModerationDashboardPage', () => {
     })
     render(<ModerationDashboardPage />)
     await screen.findByText(/raise to block/i)
-    await user.click(screen.getByRole('button', { name: 'Apply: raise violence (8-11) to block' }))
+    await user.click(
+      screen.getByRole('button', { name: 'Apply: raise to block for violence (8-11)' })
+    )
 
     // Nothing fires until the echoed change is confirmed: category, age band,
     // and current -> suggested verdict.
@@ -284,7 +286,9 @@ describe('ModerationDashboardPage', () => {
     mockGetByPath()
     render(<ModerationDashboardPage />)
     await screen.findByText(/raise to block/i)
-    await user.click(screen.getByRole('button', { name: 'Apply: raise violence (8-11) to block' }))
+    await user.click(
+      screen.getByRole('button', { name: 'Apply: raise to block for violence (8-11)' })
+    )
     await user.click(screen.getByRole('button', { name: 'Cancel' }))
 
     expect(mockPut).not.toHaveBeenCalled()
@@ -318,7 +322,7 @@ describe('ModerationDashboardPage', () => {
     })
     render(<ModerationDashboardPage />)
     const applyButton = await screen.findByRole('button', {
-      name: 'Apply: raise violence (8-11) to block',
+      name: 'Apply: raise to block for violence (8-11)',
     })
     await user.click(applyButton)
     await user.click(screen.getByRole('button', { name: 'Confirm apply' }))
@@ -363,10 +367,10 @@ describe('ModerationDashboardPage', () => {
     )
     render(<ModerationDashboardPage />)
     const buttonA = await screen.findByRole('button', {
-      name: 'Apply: raise violence (8-11) to block',
+      name: 'Apply: raise to block for violence (8-11)',
     })
     const buttonB = screen.getByRole('button', {
-      name: 'Apply: raise toxicity (5-8) to flag',
+      name: 'Apply: raise to flag for toxicity (5-8)',
     })
 
     await user.click(buttonA)
@@ -395,10 +399,10 @@ describe('ModerationDashboardPage', () => {
     })
     await waitFor(() => {
       expect(
-        screen.getByRole('button', { name: 'Apply: raise violence (8-11) to block' })
+        screen.getByRole('button', { name: 'Apply: raise to block for violence (8-11)' })
       ).toBeEnabled()
       expect(
-        screen.getByRole('button', { name: 'Apply: raise toxicity (5-8) to flag' })
+        screen.getByRole('button', { name: 'Apply: raise to flag for toxicity (5-8)' })
       ).toBeEnabled()
     })
   })
@@ -437,10 +441,10 @@ describe('ModerationDashboardPage', () => {
     // unique accessible name; category + age_band must disambiguate them.
     expect(await screen.findAllByText(/raise to block/i)).toHaveLength(2)
     const buttonViolence = screen.getByRole('button', {
-      name: 'Apply: raise violence (8-11) to block',
+      name: 'Apply: raise to block for violence (8-11)',
     })
     const buttonGraphicInjury = screen.getByRole('button', {
-      name: 'Apply: raise graphic-injury (12-15) to block',
+      name: 'Apply: raise to block for graphic-injury (12-15)',
     })
     expect(buttonViolence).toBeInTheDocument()
     expect(buttonGraphicInjury).toBeInTheDocument()
@@ -471,7 +475,7 @@ describe('ModerationDashboardPage', () => {
     mockPut.mockRejectedValue(new Error('boom'))
     render(<ModerationDashboardPage />)
     const applyButton = await screen.findByRole('button', {
-      name: 'Apply: raise violence (8-11) to block',
+      name: 'Apply: raise to block for violence (8-11)',
     })
     await user.click(applyButton)
     await user.click(screen.getByRole('button', { name: 'Confirm apply' }))
@@ -486,7 +490,7 @@ describe('ModerationDashboardPage', () => {
     // must be clickable again after the failed apply.
     await waitFor(() => {
       expect(
-        screen.getByRole('button', { name: 'Apply: raise violence (8-11) to block' })
+        screen.getByRole('button', { name: 'Apply: raise to block for violence (8-11)' })
       ).toBeEnabled()
     })
     // No refresh was attempted after a failed apply.
@@ -514,7 +518,7 @@ describe('ModerationDashboardPage', () => {
     })
     render(<ModerationDashboardPage />)
     const applyButton = await screen.findByRole('button', {
-      name: 'Apply: raise violence (8-11) to block',
+      name: 'Apply: raise to block for violence (8-11)',
     })
     await user.click(applyButton)
     await user.click(screen.getByRole('button', { name: 'Confirm apply' }))

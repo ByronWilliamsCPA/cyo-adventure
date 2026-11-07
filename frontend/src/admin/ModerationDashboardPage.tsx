@@ -230,6 +230,18 @@ export function ModerationDashboardPage() {
               // Same JSON.stringify encoding as applySuggestion's in-flight
               // guard key, so the disabled lookup below always matches.
               const key = JSON.stringify([suggestion.age_band, suggestion.category])
+              // WCAG 2.5.3 Label in Name (level A): the accessible name must
+              // CONTAIN the visible text, so a voice-control user who says what
+              // they see ("Apply: raise to flag") hits this button. The
+              // category and band disambiguate the otherwise identical buttons
+              // and are appended AFTER the visible text, never spliced into it.
+              // axe-core 4.14's label-content-name-mismatch rule enforces this.
+              // #ASSUME: security: none; presentation only. The confirm dialog,
+              // not this label, is what guards the upsert.
+              // #VERIFY: e2e/a11y.spec.ts's moderation-dashboard (populated) case.
+              const visibleLabel = applying.has(key)
+                ? 'Applying…'
+                : `Apply: raise to ${suggestion.suggested_min_verdict}`
               return (
                 <li key={key}>
                   <strong>
@@ -252,12 +264,10 @@ export function ModerationDashboardPage() {
                     variant="primary"
                     className="moderation-dashboard__button"
                     disabled={applying.has(key)}
-                    aria-label={`Apply: raise ${suggestion.category} (${suggestion.age_band}) to ${suggestion.suggested_min_verdict}`}
+                    aria-label={`${visibleLabel} for ${suggestion.category} (${suggestion.age_band})`}
                     onClick={() => setConfirming(suggestion)}
                   >
-                    {applying.has(key)
-                      ? 'Applying…'
-                      : `Apply: raise to ${suggestion.suggested_min_verdict}`}
+                    {visibleLabel}
                   </Button>
                 </li>
               )
