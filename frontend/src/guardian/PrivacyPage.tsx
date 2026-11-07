@@ -1,6 +1,7 @@
 import { Link } from 'react-router'
 
 import { usePageTitle } from '../hooks/usePageTitle'
+import { DeleteFamilySection } from './DeleteFamilySection'
 
 /**
  * Guardian-facing plain-language account of how family data is handled
@@ -92,13 +93,14 @@ import { usePageTitle } from '../hooks/usePageTitle'
  *   remain family-owned content". Only api/me.py::delete_my_family erases the
  *   request text. This is a GDPR Article 17 / COPPA 312.10 statement, so the
  *   two routes must never be collapsed into one sentence.
- * - "There is no button for this yet" -> DELETE /v1/me/family exists
- *   (api/me.py:265) and is in the generated client as
- *   deleteMyFamilyApiV1MeFamilyDelete, but nothing under frontend/src outside
- *   src/client/ calls it, and capability-register G12 is still partial. Every
- *   other bullet in that list links to a live surface; this one says plainly
- *   that it does not, rather than promising a control a parent cannot find.
- *   When the deletion UI ships, replace the sentence with the link.
+ * - "Delete your family account" -> DeleteFamilySection (this page, bottom)
+ *   calls DELETE /v1/me/family (api/me.py::delete_my_family), which cascades
+ *   every family-owned row and, after the commit, purges the family's cover
+ *   objects from R2 and the guardians' Supabase Auth identities
+ *   (erasure.py). This used to say "there is no button for this yet"; that
+ *   sentence was the honest statement while no UI called the endpoint, and it
+ *   was replaced by the link when the UI shipped. The two erasure routes (a
+ *   child profile vs the whole family) stay separate sentences on purpose.
  *
  * Note on personalization: ADR-023 render-time slot substitution is Proposed
  * and NOT built ("Nothing in this ADR exists in code today"), so this page
@@ -295,9 +297,8 @@ export function PrivacyPage() {
           <Link to="/guardian/profiles">Profiles</Link>.
         </li>
         <li>
-          Deleting your whole family account and everything in it. There is no button for this in
-          the app yet, so for now it is done by asking us; the legal privacy notice is where the
-          contact details live.
+          Deleting your whole family account and everything in it, from{' '}
+          <a href="#delete-family">Delete your family account</a> at the bottom of this page.
         </li>
       </ul>
 
@@ -308,6 +309,7 @@ export function PrivacyPage() {
         does not match what you see in the app, treat that as a bug worth reporting rather than fine
         print you have missed.
       </p>
+      <DeleteFamilySection />
     </section>
   )
 }

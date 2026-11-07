@@ -102,6 +102,7 @@ already in the feature-flag table below.
 | `CYO_ADVENTURE_REVIEW_PROVIDER` | backend, worker | _(unfilled)_ | _(unfilled)_ | _(unfilled)_ |
 | `OIDC_ISSUER` | backend | _(unfilled)_ | _(unfilled)_ | _(unfilled)_ |
 | `OIDC_JWKS_URL` | backend | _(unfilled)_ | _(unfilled)_ | _(unfilled)_ |
+| `SUPABASE_SERVICE_ROLE_KEY` | backend only | _(unfilled)_ | _(unfilled)_ | _(unfilled)_ |
 | `OIDC_AUDIENCE` | backend | _(unfilled)_ | _(unfilled)_ | _(unfilled)_ |
 | `OIDC_ALLOWED_ALGS` | backend | _(unfilled)_ | _(unfilled)_ | _(unfilled)_ |
 | `CHILD_SESSION_SECRET` | backend | _(unfilled)_ | _(unfilled)_ | _(unfilled)_ |

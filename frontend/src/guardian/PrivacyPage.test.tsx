@@ -1,8 +1,13 @@
 import { render, screen } from '@testing-library/react'
 import { MemoryRouter, Route, Routes } from 'react-router'
-import { describe, expect, it } from 'vitest'
+import { describe, expect, it, vi } from 'vitest'
 
 import { PrivacyPage } from './PrivacyPage'
+
+// The page embeds the family-deletion control, which needs an API client and a
+// session; neither is under test here (DeleteFamilySection.test.tsx covers them).
+vi.mock('../hooks/useApi', () => ({ useApi: () => ({ delete: vi.fn() }) }))
+vi.mock('../auth/useAuth', () => ({ useAuth: () => ({ signOut: vi.fn() }) }))
 
 function renderPage() {
   return render(
@@ -117,13 +122,17 @@ describe('PrivacyPage', () => {
     expect(screen.getByRole('link', { name: /books/i })).toHaveAttribute('href', '/guardian/books')
   })
 
-  it('does not promise a family-deletion control the app has no surface for', () => {
-    // DELETE /v1/me/family exists and is in the generated client, but nothing
-    // under frontend/src outside src/client/ calls it, and capability-register
-    // G12 is still partial. Every other bullet links to a live surface; this
-    // one must keep saying it does not, until the deletion UI ships.
+  it('links to a family-deletion control that actually exists on the page', () => {
+    // DELETE /v1/me/family used to have no UI, and this page said so. It now
+    // has one (DeleteFamilySection), so the bullet must link to it and the
+    // control it names must be present, or the link would promise a button a
+    // parent cannot find.
     renderPage()
-    expect(screen.getByText(/no button for this in the app yet/i)).toBeInTheDocument()
+    const link = screen.getByRole('link', { name: /delete your family account/i })
+    expect(link).toHaveAttribute('href', '#delete-family')
+    expect(screen.queryByText(/no button for this in the app yet/i)).not.toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'Delete family account' })).toBeInTheDocument()
+    expect(document.getElementById('delete-family')).not.toBeNull()
   })
 
   it('keeps the deliberate-nots list announced as a list', () => {

@@ -23,11 +23,13 @@ from httpx import ASGITransport, AsyncClient
 from sqlalchemy.exc import IntegrityError
 
 from cyo_adventure.api import deps
+from cyo_adventure.middleware import unit_of_work as uow_module
 from cyo_adventure.middleware.unit_of_work import (
     _INTERNAL_ERROR_BODY,
     UNIT_OF_WORK_STATE_KEY,
     RequestUnitOfWork,
     UnitOfWorkMiddleware,
+    register_after_commit,
 )
 
 if TYPE_CHECKING:
@@ -42,6 +44,8 @@ class _RecordingSession:
     def __init__(self, log: list[str]) -> None:
         """Record into ``log``, which the caller shares with the send probe."""
         self.log = log
+        # Mirrors AsyncSession.info, where after-commit callbacks are queued.
+        self.info: dict[str, Any] = {}
 
     async def commit(self) -> None:
         """Record a commit."""
@@ -433,3 +437,104 @@ async def test_cancelled_request_closes_without_settling() -> None:
             raise asyncio.CancelledError
 
     assert log == ["close"]
+
+
+# ---------------------------------------------------------------------------
+# After-commit callbacks (external side effects of an erasure)
+# ---------------------------------------------------------------------------
+
+
+async def _drain_after_commit() -> None:
+    """Wait for the retained fire-and-forget after-commit tasks to finish."""
+    pending = list(uow_module._after_commit_tasks)
+    if pending:
+        await asyncio.gather(*pending, return_exceptions=True)
+
+
+@pytest.mark.asyncio
+async def test_after_commit_callback_runs_only_after_the_commit() -> None:
+    """A queued callback observes the commit already in the log."""
+    log: list[str] = []
+    session: Any = _RecordingSession(log)
+    uow = RequestUnitOfWork(session)
+
+    async def callback() -> None:
+        log.append("callback")
+
+    register_after_commit(session, callback)
+    assert log == []
+    await uow.commit()
+    await _drain_after_commit()
+    assert log == ["commit", "callback"]
+
+
+@pytest.mark.asyncio
+async def test_after_commit_callback_is_dropped_on_rollback() -> None:
+    """A rolled-back unit of work never runs its queued external side effects."""
+    log: list[str] = []
+    session: Any = _RecordingSession(log)
+    uow = RequestUnitOfWork(session)
+
+    async def callback() -> None:
+        log.append("callback")
+
+    register_after_commit(session, callback)
+    await uow.rollback()
+    await _drain_after_commit()
+    assert log == ["rollback"]
+
+
+@pytest.mark.asyncio
+async def test_after_commit_callback_is_dropped_when_the_commit_fails() -> None:
+    """A failed commit leaves the callback unrun; the following rollback drops it."""
+    log: list[str] = []
+    session: Any = _FailingSession(log)
+    uow = RequestUnitOfWork(session)
+
+    async def callback() -> None:
+        log.append("callback")
+
+    register_after_commit(session, callback)
+    with pytest.raises(IntegrityError):
+        await uow.commit()
+    await uow.rollback()
+    await _drain_after_commit()
+    assert "callback" not in log
+
+
+@pytest.mark.asyncio
+async def test_a_failing_after_commit_callback_does_not_skip_the_next() -> None:
+    """One callback raising is contained and the queue keeps going."""
+    log: list[str] = []
+    session: Any = _RecordingSession(log)
+    uow = RequestUnitOfWork(session)
+
+    async def boom() -> None:
+        msg = "external call failed"
+        raise RuntimeError(msg)
+
+    async def after() -> None:
+        log.append("after")
+
+    register_after_commit(session, boom)
+    register_after_commit(session, after)
+    await uow.commit()
+    await _drain_after_commit()
+    assert log == ["commit", "after"]
+
+
+@pytest.mark.asyncio
+async def test_a_second_commit_does_not_rerun_after_commit_callbacks() -> None:
+    """Settle-once also means the callbacks are consumed by the first commit."""
+    log: list[str] = []
+    session: Any = _RecordingSession(log)
+    uow = RequestUnitOfWork(session)
+
+    async def callback() -> None:
+        log.append("callback")
+
+    register_after_commit(session, callback)
+    await uow.commit()
+    await uow.commit()
+    await _drain_after_commit()
+    assert log.count("callback") == 1

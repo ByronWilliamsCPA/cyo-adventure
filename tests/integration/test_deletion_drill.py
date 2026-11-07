@@ -13,6 +13,7 @@ constraint.
 
 from __future__ import annotations
 
+import asyncio
 import uuid
 from datetime import UTC, date, datetime, timedelta
 from typing import TYPE_CHECKING
@@ -20,6 +21,8 @@ from typing import TYPE_CHECKING
 import pytest
 from sqlalchemy import select
 
+from cyo_adventure.api import me as me_api
+from cyo_adventure.covers.storage import cover_object_key
 from cyo_adventure.db.models import (
     ChildProfile,
     ChildProfilePersonalization,
@@ -40,11 +43,14 @@ from cyo_adventure.db.models import (
     StoryRequest,
     User,
 )
+from cyo_adventure.erasure import ErasureTargets, build_purge_callback
 from tests.integration.conftest import Seed, auth
 
 if TYPE_CHECKING:
     from httpx import AsyncClient
     from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
+
+    from cyo_adventure.core.config import Settings
 
 pytestmark = [pytest.mark.integration, pytest.mark.asyncio]
 
@@ -754,3 +760,70 @@ async def test_deleting_a_verification_keeps_the_consent_record(
         guardian = await s.get(User, guardian_id)
         assert guardian is not None, "the consent record must outlive its evidence"
         assert guardian.consent_verification_id is None
+
+
+async def test_delete_my_family_queues_external_erasure_for_covers_and_identity(
+    client: AsyncClient,
+    sessions: async_sessionmaker[AsyncSession],
+    seed: Seed,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """The family's R2 covers and adult Supabase identities are purged after commit.
+
+    Both live outside Postgres, so the cascade alone leaves them behind
+    (PROJECT-PLAN Phase 7 erasure gaps). The purge must name exactly this
+    family's cover objects (never another family's), every real adult login,
+    and neither a child login row nor a pending invite's placeholder subject.
+    """
+    deleted_covers: list[str] = []
+    deleted_subjects: list[str] = []
+
+    async def fake_delete_cover(key: str, _settings: object) -> bool:
+        deleted_covers.append(key)
+        return True
+
+    async def fake_delete_identity(subject: str, _settings: object) -> bool:
+        deleted_subjects.append(subject)
+        return True
+
+    def build_with_fakes(targets: ErasureTargets, settings: Settings):
+        return build_purge_callback(
+            targets,
+            settings,
+            delete_cover_fn=fake_delete_cover,
+            delete_identity_fn=fake_delete_identity,
+        )
+
+    monkeypatch.setattr(me_api, "build_purge_callback", build_with_fakes)
+
+    async with sessions() as s:
+        version = await s.get(StorybookVersion, (seed.storybook_id, seed.version))
+        assert version is not None
+        version.cover_status = "ready"
+        version.cover_object_salt = "abc123"
+        s.add(
+            User(
+                family_id=seed.family_id,
+                role="guardian",
+                authn_subject="pending-invite:not-a-real-login",
+                status="pending_guardian_invite",
+            )
+        )
+        await s.commit()
+
+    resp = await client.delete("/api/v1/me/family", headers=auth(seed.guardian_token))
+    assert resp.status_code == 204, resp.text
+
+    # The purge runs as a fire-and-forget task after the commit; wait for ALL
+    # of its work, not the first item, so this does not depend on the fakes
+    # never suspending.
+    expected_subject_count = 3
+    for _ in range(100):
+        if deleted_covers and len(deleted_subjects) >= expected_subject_count:
+            break
+        await asyncio.sleep(0.02)
+
+    assert deleted_covers == [
+        cover_object_key(seed.storybook_id, seed.version, "abc123")
+    ]
+    assert sorted(deleted_subjects) == ["admin-a", "dual-a", "guardian-a"]

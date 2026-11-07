@@ -40,7 +40,9 @@ from cyo_adventure.db.models import (
     StoryRequest,
     User,
 )
+from cyo_adventure.erasure import build_purge_callback, collect_external_targets
 from cyo_adventure.events import Actor, EventType, record_event
+from cyo_adventure.middleware.unit_of_work import register_after_commit
 
 if TYPE_CHECKING:
     import uuid
@@ -452,6 +454,16 @@ async def delete_my_family(ctx: Context) -> None:
     if family_id == CATALOG_FAMILY_ID:
         msg = "the catalog family cannot be deleted"
         raise BusinessLogicError(msg)
+    # #CRITICAL: data-integrity: what lives outside Postgres (cover objects in
+    # R2, the guardians' Supabase Auth identities) is named only by rows this
+    # delete cascades away, so it is read NOW and purged after the commit. The
+    # purge is queued, not run: the transaction can still roll back, and an
+    # external delete cannot.
+    # #VERIFY: tests/integration/test_deletion_drill.py::
+    # test_delete_my_family_queues_external_erasure_for_covers_and_identity and
+    # tests/unit/test_unit_of_work.py's after-commit tests.
+    external_targets = await collect_external_targets(ctx.session, family_id)
+    register_after_commit(ctx.session, build_purge_callback(external_targets, settings))
     # #CRITICAL: data-integrity: reopen (not delete) every kid_flag this
     # family's users resolved on ANY family's flag, before the cascade delete
     # below, so ck_kid_flag_resolved_pairing never sees resolved_by go null

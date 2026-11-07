@@ -31,13 +31,16 @@ on a response that no rollback preceded.
 
 from __future__ import annotations
 
+import asyncio
 import json
-from typing import TYPE_CHECKING, Final
+from typing import TYPE_CHECKING, Final, cast
 
 import structlog
 from sqlalchemy.exc import SQLAlchemyError
 
 if TYPE_CHECKING:
+    from collections.abc import Awaitable, Callable
+
     from sqlalchemy.ext.asyncio import AsyncSession
     from starlette.types import ASGIApp, Message, Receive, Scope, Send
 
@@ -55,12 +58,69 @@ logger = structlog.get_logger(__name__)
 # reads it straight off the scope, with no second Request object involved.
 UNIT_OF_WORK_STATE_KEY: Final[str] = "cyo_unit_of_work"
 
+# Key under which a handler queues work for AFTER the unit of work commits, on
+# the session's own ``info`` dict (see :func:`register_after_commit`).
+AFTER_COMMIT_SESSION_KEY: Final[str] = "cyo_after_commit"
+
+# Strong references to the fire-and-forget tasks that run after-commit
+# callbacks. The event loop keeps only a weak reference to a task, so an
+# unreferenced one can be garbage-collected mid-flight.
+_after_commit_tasks: set[asyncio.Task[None]] = set()
+
 # Mirrors ``app._INTERNAL_ERROR``, duplicated rather than imported because
 # ``app`` imports this module. tests/unit/test_unit_of_work.py asserts the two
 # stay identical, so the duplication cannot drift unnoticed.
 _INTERNAL_ERROR_BODY: Final[bytes] = json.dumps(
     {"error": "InternalError", "message": "internal error"}
 ).encode()
+
+
+def _session_info(session: AsyncSession) -> dict[str, object]:
+    """Return ``session.info`` typed, since SQLAlchemy declares it ``dict[Any, Any]``."""
+    return cast("dict[str, object]", session.info)  # pyright: ignore[reportAny]
+
+
+def register_after_commit(
+    session: AsyncSession, callback: Callable[[], Awaitable[None]]
+) -> None:
+    """Queue ``callback`` to run once this session's unit of work has committed.
+
+    For side effects that live outside the database and cannot be rolled back
+    with it (deleting an object from R2, deleting a Supabase Auth user). Running
+    them inside the handler would act on data whose delete may yet be rolled
+    back; running them here means they happen only after the commit succeeded.
+
+    The callback runs as a background task after the commit, never inside the
+    request, so a slow or failing external call cannot delay or fail the
+    response. It must close over everything it needs (it gets no session), and
+    it is discarded without running if the unit of work rolls back.
+
+    # #CRITICAL: data-integrity: an external delete queued here is irreversible.
+    # It must only ever be queued for data the same transaction deletes.
+    # #VERIFY: tests/unit/test_unit_of_work.py asserts callbacks run only after
+    # a successful commit and are dropped on rollback.
+
+    Args:
+        session: The request-scoped session whose commit gates the callback.
+        callback: A no-argument coroutine function to run after the commit.
+    """
+    callbacks = cast(
+        "list[Callable[[], Awaitable[None]]]",
+        _session_info(session).setdefault(AFTER_COMMIT_SESSION_KEY, []),
+    )
+    callbacks.append(callback)
+
+
+async def _run_after_commit(callbacks: list[Callable[[], Awaitable[None]]]) -> None:
+    """Run each queued callback in order, logging and containing any failure."""
+    for callback in callbacks:
+        try:
+            await callback()
+        except Exception:  # NOSONAR(S2221)
+            # A callback is a best-effort side effect of a request that has
+            # already committed and answered. Nothing upstream can act on its
+            # failure, and one failing must not skip the ones queued after it.
+            logger.exception("after_commit_callback_failed")  # pyright: ignore[reportAny]
 
 
 class RequestUnitOfWork:
@@ -102,6 +162,16 @@ class RequestUnitOfWork:
             return
         await self.session.commit()
         self._settled = True
+        # Only after the commit has succeeded: a failed commit raises above and
+        # leaves the callbacks queued for rollback() to discard.
+        callbacks = cast(
+            "list[Callable[[], Awaitable[None]]]",
+            _session_info(self.session).pop(AFTER_COMMIT_SESSION_KEY, []),
+        )
+        if callbacks:
+            task = asyncio.create_task(_run_after_commit(callbacks))
+            _after_commit_tasks.add(task)
+            task.add_done_callback(_after_commit_tasks.discard)
 
     async def rollback(self) -> None:
         """Roll back unless already settled.
@@ -121,6 +191,8 @@ class RequestUnitOfWork:
         """
         if self._settled:
             return
+        # Queued external side effects belong to the work being undone.
+        _session_info(self.session).pop(AFTER_COMMIT_SESSION_KEY, None)
         await self.session.rollback()
         self._settled = True
 

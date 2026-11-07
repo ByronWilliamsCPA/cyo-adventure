@@ -1,10 +1,11 @@
 import { useId, useState } from 'react'
-import { Navigate } from 'react-router'
+import { Link, Navigate } from 'react-router'
 
 import { Button } from '@ds/components/Button'
 import '../guardian/guardian.css'
 import { classifyApiError } from '../hooks/classifyApiError'
 import { usePageTitle } from '../hooks/usePageTitle'
+import { PRIVACY_PATH } from '../routes'
 import {
   ADMIN_CONSOLE_PATH,
   GUARDIAN_AWAITING_APPROVAL_PATH,
@@ -31,6 +32,29 @@ const SUBMIT_ERROR = 'That did not go through. Please try again.'
 function readDraftedCountry(): string {
   const drafted = readResidenceDraft()
   return RESIDENCE_COUNTRIES.some((option) => option.code === drafted) ? drafted : ''
+}
+
+/**
+ * The legal Privacy Notice, linked from the consent screen.
+ *
+ * The screen asks a parent to agree to this document with a typed signature, so
+ * the document has to be reachable from it. It opens in a new tab so a parent
+ * who stops to read it does not lose the name and country already entered, and
+ * its accessible name says so. `PRIVACY_PATH` is a public route outside every
+ * auth gate (see routes.ts), so following it never bounces a signed-in guardian
+ * to login mid-consent.
+ */
+function PrivacyNoticeLink() {
+  return (
+    <Link
+      to={PRIVACY_PATH}
+      target="_blank"
+      rel="noopener noreferrer"
+      aria-label="Privacy Notice (opens in a new tab)"
+    >
+      Privacy Notice
+    </Link>
+  )
 }
 
 /**
@@ -159,7 +183,7 @@ export function GuardianConsentPage() {
       <p className="console__notice cyo-text-muted">
         Because CYO Adventure creates profiles and stories for children, we need your confirmation
         that you are this child&apos;s parent or legal guardian and that you agree to how we handle
-        their information, described in our Privacy Notice.
+        their information, described in our <PrivacyNoticeLink />.
       </p>
       <form className="guardian-login__form" onSubmit={(event) => void submit(event)}>
         <label className="guardian-login__field" htmlFor={nameId}>
@@ -187,7 +211,7 @@ export function GuardianConsentPage() {
           />
           <span>
             I am this child&apos;s parent or legal guardian, and typing my name above is my
-            electronic signature agreeing to CYO Adventure&apos;s Privacy Notice.
+            electronic signature agreeing to CYO Adventure&apos;s <PrivacyNoticeLink />.
           </span>
         </label>
         <label className="guardian-login__field" htmlFor={countryId}>

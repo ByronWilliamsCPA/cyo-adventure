@@ -725,6 +725,28 @@ them in order:
    ADR-014) has not expired or been revoked, and that the reading client actually synced after the
    assignment (IndexedDB offline cache, `frontend/src/offline/`).
 
+### 5.6 A family deletion left data behind (`erasure_external_purge_incomplete`)
+
+`DELETE /v1/me/family` removes every database row by cascade, then, only after the transaction has
+committed, purges what lives outside Postgres: the family's cover images in R2 and its adults'
+Supabase Auth identities (`erasure.py`). Both purges are best-effort. If one fails, the family is
+already gone and the guardian was told so, so the failure is logged rather than raised.
+
+Alert on the error log event `erasure_external_purge_incomplete`. It carries
+`failed_cover_keys` (R2 object keys) and `failed_auth_subjects` (Supabase user ids), which are the
+only record of what is left, because the rows that named them no longer exist. To finish the job:
+
+1. **Covers**: delete each listed key from the covers bucket (`R2_BUCKET`).
+2. **Auth identities**: delete each listed user in the Supabase dashboard (Authentication, Users),
+   or `DELETE <OIDC_ISSUER>/admin/users/<id>` with the service-role key. A 404 means it is already
+   gone.
+3. If the cause was `erasure_auth_identity_unconfigured`, `SUPABASE_SERVICE_ROLE_KEY` is not set on
+   the backend; set it (Section 8) so later deletions purge identities automatically.
+
+Deletions made before this purge existed (before 2026-11-01) left their cover objects and auth
+identities behind and are not in any log. Reconcile `auth.users` against `public."user"` and the
+covers bucket against `storybook_version` to find them.
+
 ## 6. Backup and restore
 
 **Partially closed** (issue #558 / `UW-D27`). A scheduled backup exists and has been observed
@@ -1188,6 +1210,9 @@ it, not a replacement for it.
   non-local tier).
 - `CYO_ADVENTURE_DATABASE_DISABLE_PREPARED_CACHE`: disables prepared-statement caching for the
   Supavisor transaction-pooler connection mode (ADR-009).
+- `SUPABASE_SERVICE_ROLE_KEY`: Supabase service-role key, used only by `erasure.py` to delete a
+  deleted family's Supabase Auth identities. Backend only: it bypasses every Supabase access
+  control, so never give it to the worker or the frontend, and never log it.
 - `CYO_ADVENTURE_REDIS_URL` (`REDIS_URL` alias in compose): RQ queue and rate-limiter Redis
   connection. Needed by the backend and the worker.
 - `ANTHROPIC_API_KEY`: direct Anthropic generation leg. Backend and worker (see the note below).

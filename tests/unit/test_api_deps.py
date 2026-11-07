@@ -36,6 +36,8 @@ class _FakeSession:
         self.committed = False
         self.rolled_back = False
         self.closed = False
+        # Mirrors AsyncSession.info, where after-commit callbacks are queued.
+        self.info: dict[str, object] = {}
 
     async def commit(self) -> None:
         self.committed = True

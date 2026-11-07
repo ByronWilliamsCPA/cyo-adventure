@@ -712,6 +712,17 @@ class Settings(BaseSettings):
         default=TokenAudience.GUARDIAN_OIDC.value, validation_alias="OIDC_AUDIENCE"
     )
     oidc_jwks_url: str | None = Field(default=None, validation_alias="OIDC_JWKS_URL")
+    # Supabase service-role key, used ONLY by erasure (erasure.py) to delete a
+    # guardian's Supabase Auth identity through the GoTrue admin API when their
+    # family account is deleted. It bypasses every Supabase access control, so it
+    # is a SecretStr (never in a repr or a log line), is read nowhere else, and
+    # is optional: unset, erasure still removes the application rows and logs
+    # that the auth identity was NOT deleted, rather than failing the request.
+    # #CRITICAL: security: do not widen this key's use beyond identity deletion.
+    # #VERIFY: grep for supabase_service_role_key; the only reader is erasure.py.
+    supabase_service_role_key: SecretStr | None = Field(
+        default=None, validation_alias="SUPABASE_SERVICE_ROLE_KEY"
+    )
     # Signature-algorithm allowlist for bearer-token verification (ADR-013:
     # hybrid PQC readiness). Config-driven rather than hardcoded in
     # api/deps.py so a future post-quantum JOSE algorithm (e.g. ML-DSA, once
