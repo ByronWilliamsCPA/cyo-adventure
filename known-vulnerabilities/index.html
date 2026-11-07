@@ -3398,15 +3398,15 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#cve-2026-11822-cve-2026-11824-libsqlite3-0-high" class="md-nav__link">
+  <a href="#cve-2025-69720-ncurses-libncursesw6-libtinfo6-ncurses-base-ncurses-bin-high" class="md-nav__link">
     <span class="md-ellipsis">
       
-        CVE-2026-11822, CVE-2026-11824 | libsqlite3-0 | High
+        CVE-2025-69720 | ncurses (libncursesw6, libtinfo6, ncurses-base, ncurses-bin) | High
       
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="CVE-2026-11822, CVE-2026-11824 | libsqlite3-0 | High">
+    <nav class="md-nav" aria-label="CVE-2025-69720 | ncurses (libncursesw6, libtinfo6, ncurses-base, ncurses-bin) | High">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
@@ -3443,6 +3443,17 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#reassessment-2026-10-31" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Reassessment 2026-10-31
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#why-not-fixed-yet_1" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -3470,78 +3481,6 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#cve-2025-69720-ncurses-libncursesw6-libtinfo6-ncurses-base-ncurses-bin-high" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        CVE-2025-69720 | ncurses (libncursesw6, libtinfo6, ncurses-base, ncurses-bin) | High
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="CVE-2025-69720 | ncurses (libncursesw6, libtinfo6, ncurses-base, ncurses-bin) | High">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#description_2" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Description
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#impact-on-this-project_2" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Impact on This Project
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#remediation-plan_2" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Remediation Plan
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#why-not-fixed-yet_2" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Why Not Fixed Yet
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#references_2" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        References
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
   <a href="#resolved-entries" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -3552,6 +3491,17 @@
   
     <nav class="md-nav" aria-label="Resolved Entries">
       <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#resolution-detail-cve-2026-11822-and-cve-2026-11824-libsqlite3-0-2026-10-31" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Resolution detail: CVE-2026-11822 and CVE-2026-11824 (libsqlite3-0, 2026-10-31)
+      
+    </span>
+  </a>
+  
+</li>
         
           <li class="md-nav__item">
   <a href="#resolution-detail-cve-2026-66046-and-the-2026-10-31-base-image-refresh" class="md-nav__link">
@@ -3795,121 +3745,6 @@ and no package manager, so there is no project-side upgrade path.</p>
 <li><a href="https://security-tracker.debian.org/tracker/source-package/util-linux">Debian security tracker: util-linux</a></li>
 </ul>
 <hr />
-<h2 id="cve-2026-11822-cve-2026-11824-libsqlite3-0-high">CVE-2026-11822, CVE-2026-11824 | libsqlite3-0 | High<a class="headerlink" href="#cve-2026-11822-cve-2026-11824-libsqlite3-0-high" title="Permanent link">&para;</a></h2>
-<table>
-<thead>
-<tr>
-<th>Field</th>
-<th>Value</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><strong>CVE ID</strong></td>
-<td>CVE-2026-11822, CVE-2026-11824</td>
-</tr>
-<tr>
-<td><strong>Package</strong></td>
-<td>libsqlite3-0 (Debian binary package from the <code>sqlite3</code> source package)</td>
-</tr>
-<tr>
-<td><strong>Affected Version</strong></td>
-<td>3.46.1-7+deb13u1+dhi2, as shipped by the pinned base image (SQLite before 3.53.2)</td>
-</tr>
-<tr>
-<td><strong>Fixed Version</strong></td>
-<td>No fix available on the trixie track; both recorded <code>affected</code> (re-verified on the Debian tracker 2026-09-03)</td>
-</tr>
-<tr>
-<td><strong>Severity</strong></td>
-<td><strong>High (both), as of the 2026-09-03 reassessment.</strong> Recorded Medium on 2026-08-17; the Trivy/Aqua feed has since raised both</td>
-</tr>
-<tr>
-<td><strong>CVSS Score</strong></td>
-<td>Not carried in the advisory records consulted</td>
-</tr>
-<tr>
-<td><strong>Discovered</strong></td>
-<td>2026-08-10</td>
-</tr>
-<tr>
-<td><strong>Last Reassessed</strong></td>
-<td>2026-09-03</td>
-</tr>
-<tr>
-<td><strong>Reassessment Due</strong></td>
-<td>2026-11-08</td>
-</tr>
-<tr>
-<td><strong>Blocking Release</strong></td>
-<td>No</td>
-</tr>
-</tbody>
-</table>
-<h3 id="description_1">Description<a class="headerlink" href="#description_1" title="Permanent link">&para;</a></h3>
-<p>Memory corruption in SQLite before 3.53.2 (CVE-2026-11822) and a heap-based
-buffer overflow in the same range (CVE-2026-11824). Exploitation requires
-SQLite to parse attacker-controlled SQL or a crafted database file.</p>
-<h3 id="impact-on-this-project_1">Impact on This Project<a class="headerlink" href="#impact-on-this-project_1" title="Permanent link">&para;</a></h3>
-<p>The application never shells out. <code>grep -rn "subprocess\|os.system" src/</code>
-returns nothing across the whole package, so no runtime code path can invoke
-another program at all, let alone one of these. The container runs a single
-uvicorn process as <code>USER 1000:1000</code>.</p>
-<p>This project does not use SQLite. Persistence is PostgreSQL over async
-SQLAlchemy with <code>asyncpg</code> (<code>core/database.py</code>); <code>grep -rn -i sqlite src/</code>
-returns a single hit, a comment in <code>generation/worker_main.py</code> about a test
-limitation, and no import. CPython's stdlib <code>sqlite3</code> module links this library
-but is never imported by the application, so the vulnerable parser is never
-handed input.</p>
-<p><strong>These two suppressions are live, and the note that said otherwise was wrong
-by 2026-09-03.</strong> From 2026-08-17 this entry read "these two suppressions are
-currently inert", on the reasoning that both CVEs were Medium while the
-Container Security workflow is called with <code>severity-threshold: CRITICAL,HIGH</code>.
-That was true when written. It is not true now: Trivy 0.70.0's current feed
-rates both <strong>High</strong>, so they are inside the threshold, they are reported, and
-these two entries are the only thing keeping the scan green over them.</p>
-<p>The correction is worth stating rather than quietly editing, because the
-original reasoning was sound and still produced a stale claim. A severity is a
-feed value that moves; an entry that argues from one needs a date attached and a
-re-read at reassessment, which is what caught it. Keeping the entry "in case the
-threshold widens" turned out to be the right call for the wrong reason: what
-widened was the severity, not the threshold.</p>
-<p>Two further <code>libsqlite3-0</code> CVEs appeared in the same feed and are <strong>not</strong>
-accepted here: CVE-2026-50812 and CVE-2026-50813, both Medium, both with no
-Debian fix. They stay below the scan threshold and are recorded only so a future
-reader knows they were seen rather than missed.</p>
-<h3 id="remediation-plan_1">Remediation Plan<a class="headerlink" href="#remediation-plan_1" title="Permanent link">&para;</a></h3>
-<ul class="task-list">
-<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> Monitor for a trixie-track <code>sqlite3</code> at 3.53.2 or later; on arrival, let
-  it flow in via a base-image digest refresh and delete both entries.</li>
-<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> Re-verify fix status against the Debian security tracker from a networked
-  session (issue #711 item 1).</li>
-<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> Reassess by 2026-11-08.</li>
-</ul>
-<h3 id="why-not-fixed-yet_1">Why Not Fixed Yet<a class="headerlink" href="#why-not-fixed-yet_1" title="Permanent link">&para;</a></h3>
-<p>Debian records no fixed version on the trixie track for either CVE; both are
-recorded <code>affected</code>, not <code>fix_deferred</code>, so Debian has neither shipped a fix nor
-ruled one out. The package is provided by the
-hardened base image (<code>ghcr.io/byronwilliamscpa/dhi-python:3.14-debian13</code>), not
-by this project's dependency set, and the DHI runtime image ships no shell and
-no package manager, so it cannot upgrade itself even once a fix exists upstream.</p>
-<p><strong>Provenance of this assessment (updated 2026-09-03).</strong> Fix status was
-originally read from Trivy's own Debian advisory records, which is the same data
-source the Container Security workflow scans against and therefore not
-independent corroboration; the entry recorded that gap honestly and left a
-Debian-tracker check outstanding, because that host was unreachable from this
-project's cloud sessions (issue #711, item 1).</p>
-<p><strong>That check has now been done.</strong> <code>security-tracker.debian.org</code> is reachable
-again, and both CVEs were fetched individually on 2026-09-03:
-<code>sqlite3</code> is <code>3.46.1-7+deb13u1</code> and <strong>vulnerable on the trixie track for both</strong>,
-with no fixed version and no DSA. The Trivy reading was correct. The outstanding
-corroboration item is discharged for this entry.</p>
-<h3 id="references_1">References<a class="headerlink" href="#references_1" title="Permanent link">&para;</a></h3>
-<ul>
-<li><a href="https://security-tracker.debian.org/tracker/source-package/sqlite3">Debian security tracker: sqlite3</a></li>
-<li>Suppressed without documentation in commit <code>d1907a8</code>; documented 2026-08-17</li>
-</ul>
-<hr />
 <h2 id="cve-2025-69720-ncurses-libncursesw6-libtinfo6-ncurses-base-ncurses-bin-high">CVE-2025-69720 | ncurses (libncursesw6, libtinfo6, ncurses-base, ncurses-bin) | High<a class="headerlink" href="#cve-2025-69720-ncurses-libncursesw6-libtinfo6-ncurses-base-ncurses-bin-high" title="Permanent link">&para;</a></h2>
 <table>
 <thead>
@@ -3929,15 +3764,15 @@ corroboration item is discharged for this entry.</p>
 </tr>
 <tr>
 <td><strong>Affected Version</strong></td>
-<td>As shipped by the pinned base image (Debian 13 "trixie", DHI mirror build)</td>
+<td>6.5+20250216-2+dhi4 (all four binary packages), as shipped by the pinned base image (digest <code>sha256:d3f085aa</code>, Debian 13.7)</td>
 </tr>
 <tr>
 <td><strong>Fixed Version</strong></td>
-<td>No fix available on the trixie track; recorded <code>affected</code></td>
+<td>No fix on the trixie track. Debian tags it <code>&lt;no-dsa&gt;</code> (Minor issue); fixed only in forky and sid (6.6+20260608-2)</td>
 </tr>
 <tr>
 <td><strong>Severity</strong></td>
-<td>High</td>
+<td>High (per Trivy/Aqua feed)</td>
 </tr>
 <tr>
 <td><strong>CVSS Score</strong></td>
@@ -3949,11 +3784,11 @@ corroboration item is discharged for this entry.</p>
 </tr>
 <tr>
 <td><strong>Last Reassessed</strong></td>
-<td>2026-09-03</td>
+<td>2026-10-31</td>
 </tr>
 <tr>
 <td><strong>Reassessment Due</strong></td>
-<td>2026-11-08</td>
+<td>2027-01-29</td>
 </tr>
 <tr>
 <td><strong>Blocking Release</strong></td>
@@ -3961,12 +3796,15 @@ corroboration item is discharged for this entry.</p>
 </tr>
 </tbody>
 </table>
-<h3 id="description_2">Description<a class="headerlink" href="#description_2" title="Permanent link">&para;</a></h3>
-<p>A buffer overflow in ncurses that may lead to arbitrary code execution.
-Exploitation requires an ncurses-linked program to process attacker-controlled
-terminal description data (a crafted <code>terminfo</code> entry, typically reached via
-<code>TERM</code> or <code>TERMINFO</code> pointing at attacker-supplied content).</p>
-<h3 id="impact-on-this-project_2">Impact on This Project<a class="headerlink" href="#impact-on-this-project_2" title="Permanent link">&para;</a></h3>
+<h3 id="description_1">Description<a class="headerlink" href="#description_1" title="Permanent link">&para;</a></h3>
+<p>A stack-based buffer overflow in <code>analyze_string</code> in <code>progs/infocmp.c</code>: the
+<code>infocmp</code> command-line tool in ncurses before 6.5-20251213 overflows when it
+compares or prints a crafted terminal description. Exploitation requires running
+<code>infocmp</code> against attacker-controlled terminfo data. (Corrected 2026-10-31: this
+entry previously described a generic ncurses library overflow reachable from any
+ncurses-linked program. The Debian tracker's description scopes it to the
+<code>infocmp</code> tool, and Debian's bullseye note calls it a "Crash in CLI tool".)</p>
+<h3 id="impact-on-this-project_1">Impact on This Project<a class="headerlink" href="#impact-on-this-project_1" title="Permanent link">&para;</a></h3>
 <p>The application never shells out. <code>grep -rn "subprocess\|os.system" src/</code>
 returns nothing across the whole package, so no runtime code path can invoke
 another program at all, let alone one of these. The container runs a single
@@ -3978,16 +3816,41 @@ Dockerfile uses a numeric <code>USER 1000:1000</code> and why the compose files 
 override the command rather than relying on shell expansion. The container's
 only process is uvicorn serving HTTP, with no controlling terminal and no
 attacker-influenced <code>TERM</code> or <code>TERMINFO</code>.</p>
-<h3 id="remediation-plan_2">Remediation Plan<a class="headerlink" href="#remediation-plan_2" title="Permanent link">&para;</a></h3>
+<h3 id="remediation-plan_1">Remediation Plan<a class="headerlink" href="#remediation-plan_1" title="Permanent link">&para;</a></h3>
 <ul class="task-list">
 <li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> Monitor the Debian security tracker for a fixed <code>ncurses</code> on the trixie
   track; on arrival, let it flow in via a base-image digest refresh and delete
   the entry.</li>
-<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> Re-verify fix status against the Debian security tracker from a networked
-  session (issue #711 item 1).</li>
-<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> Reassess by 2026-11-08.</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> Reassess by 2027-01-29: confirm nothing in the image can execute
+  <code>/usr/bin/infocmp</code>, and re-read the Debian tracker for a trixie fix.</li>
 </ul>
-<h3 id="why-not-fixed-yet_2">Why Not Fixed Yet<a class="headerlink" href="#why-not-fixed-yet_2" title="Permanent link">&para;</a></h3>
+<h3 id="reassessment-2026-10-31">Reassessment 2026-10-31<a class="headerlink" href="#reassessment-2026-10-31" title="Permanent link">&para;</a></h3>
+<p>Due 2026-11-08; reassessed against current sources rather than renewed on the old
+evidence. Each item below was checked on 2026-10-31.</p>
+<ol>
+<li><strong>Fix status, from the Debian security tracker.</strong> <code>ncurses</code> on trixie is still
+   <code>vulnerable</code> at 6.5+20250216-2, now triaged <code>[trixie] - ncurses &lt;no-dsa&gt;
+   (Minor issue)</code>, so no trixie security update is planned. The fix is in forky
+   and sid (6.6+20260608-2) only.</li>
+<li><strong>What the pinned image ships.</strong> Read from the package database in the layers
+   of the digest on <code>main</code> (<code>sha256:d3f085aa</code>, Debian 13.7, #853):
+   <code>libncursesw6</code>, <code>libtinfo6</code>, <code>ncurses-base</code> and <code>ncurses-bin</code>, all at
+   <code>6.5+20250216-2+dhi4</code>. <strong>The vulnerable tool is present:</strong> <code>ncurses-bin</code>'s
+   file list includes <code>/usr/bin/infocmp</code> (alongside <code>tic</code>, <code>tput</code>, <code>toe</code> and
+   friends). The previous text implied nothing ncurses-related was executable; that
+   was imprecise, and the verdict now rests on the binary being unreachable rather
+   than absent.</li>
+<li><strong>Reachability.</strong> Still none. Running <code>infocmp</code> needs something to execute
+   it: nothing under <code>src/</code> imports <code>subprocess</code> or calls <code>os.system</code>, the runtime
+   image ships no shell, and the container's only process is uvicorn as
+   <code>USER 1000:1000</code> with no controlling terminal and no attacker-influenced
+   <code>TERM</code> or <code>TERMINFO</code>.</li>
+</ol>
+<p><strong>Verdict:</strong> <code>Blocking Release | No</code> stands. <strong>Evidence that would change it:</strong> any
+runtime path that spawns a subprocess, a shell added to the base image, or a
+trixie-track <code>ncurses</code> fix (at which point a digest refresh, not a renewal, is the
+action). A base image that dropped <code>ncurses-bin</code> would also retire this entry.</p>
+<h3 id="why-not-fixed-yet_1">Why Not Fixed Yet<a class="headerlink" href="#why-not-fixed-yet_1" title="Permanent link">&para;</a></h3>
 <p>Debian records no fixed version on the trixie track for this CVE, which is
 recorded <code>affected</code>, not <code>fix_deferred</code>, so Debian has neither shipped a fix nor
 ruled one out. The package is provided by the
@@ -4008,7 +3871,7 @@ correct. Trivy 0.70.0 reports the finding four times over, once for each of
 <code>6.5+20250216-2+dhi4</code>; the single suppression covers all four because it matches
 on CVE id rather than binary package. The outstanding corroboration item is
 discharged for this entry.</p>
-<h3 id="references_2">References<a class="headerlink" href="#references_2" title="Permanent link">&para;</a></h3>
+<h3 id="references_1">References<a class="headerlink" href="#references_1" title="Permanent link">&para;</a></h3>
 <ul>
 <li><a href="https://security-tracker.debian.org/tracker/source-package/ncurses">Debian security tracker: ncurses</a></li>
 <li>Suppressed without documentation in commit <code>d1907a8</code>; documented 2026-08-17</li>
@@ -4168,6 +4031,18 @@ discharged for this entry.</p>
 <td>2026-10-31</td>
 <td>Fixed by base expat 2.9.0-1~deb13u1+dhi0 (DSA-6566-1).</td>
 </tr>
+<tr>
+<td>CVE-2026-11822</td>
+<td>libsqlite3-0</td>
+<td>2026-10-31</td>
+<td>Fixed in trixie sqlite3 3.46.1-7+deb13u2, which base ships.</td>
+</tr>
+<tr>
+<td>CVE-2026-11824</td>
+<td>libsqlite3-0</td>
+<td>2026-10-31</td>
+<td>Fixed in trixie sqlite3 3.46.1-7+deb13u2, which base ships.</td>
+</tr>
 </tbody>
 </table>
 <p>The four <code>linux-libc-dev</code> rows were all cleared by a base-image digest refresh rather than
@@ -4178,6 +4053,15 @@ below) deliberately did not cover that case. Their original per-CVE entries were
 2026-08-16 and remain in git history.</p>
 <p>Aliases: PYSEC-2022-42969 is CVE-2022-42969 and GHSA-w596-4wvx-j9j6 (duplicate OSV record
 PYSEC-2022-43183); PYSEC-2026-89 is CVE-2025-69534 and GHSA-5wmx-573v-2qwq.</p>
+<h3 id="resolution-detail-cve-2026-11822-and-cve-2026-11824-libsqlite3-0-2026-10-31">Resolution detail: CVE-2026-11822 and CVE-2026-11824 (<code>libsqlite3-0</code>, 2026-10-31)<a class="headerlink" href="#resolution-detail-cve-2026-11822-and-cve-2026-11824-libsqlite3-0-2026-10-31" title="Permanent link">&para;</a></h3>
+<p>Both were accepted on 2026-08-10 while Debian recorded the trixie track <code>affected</code>, and were due
+for reassessment on 2026-11-08. At that reassessment, on 2026-10-31, the Debian security tracker
+lists trixie as <strong>fixed in <code>sqlite3 3.46.1-7+deb13u2</code></strong> for both (the FTS5 out-of-bounds read and
+heap overflow from SQLite before 3.53.2). The pinned base image (<code>sha256:d3f085aa</code>, Debian 13.7)
+ships <code>libsqlite3-0 3.46.1-7+deb13u2+dhi1</code>, read from the image's package database, which is that
+fixed build. Both <code>.trivyignore.yaml</code> suppressions are deleted rather than renewed, so the scan
+again vouches for the package directly. Reachability was never the basis for keeping them once a
+fix shipped; it was also nil (no <code>sqlite3</code> import in <code>src/</code>).</p>
 <h3 id="resolution-detail-cve-2026-66046-and-the-2026-10-31-base-image-refresh">Resolution detail: CVE-2026-66046 and the 2026-10-31 base-image refresh<a class="headerlink" href="#resolution-detail-cve-2026-66046-and-the-2026-10-31-base-image-refresh" title="Permanent link">&para;</a></h3>
 <p>CVE-2026-66046 (Expat through 2.8.3, denial of service) was accepted on 2026-09-02 and
 re-accepted on 2026-10-02 while Debian had triaged it <code>&lt;no-dsa&gt;</code> on trixie. Debian has since
@@ -4478,6 +4362,11 @@ re-verified rather than carried forward:</p>
 <td>Claude Code</td>
 <td>Base-image refresh to <code>sha256:d3f085aa</code> (#853). Resolved CVE-2026-66046: Debian fixed it on trixie-security in expat 2.9.0-1~deb13u1 (DSA-6566-1) and the image ships that build; suppression deleted. The refresh also cleared the unsuppressed OpenSSL CVE-2026-75804/84782 (DSA-6531-1). Added CVE-2026-76642/78408/78409/78410 (util-linux, reported against <code>libuuid1</code>): <code>&lt;no-dsa&gt;</code> Minor on trixie, fixed only in forky/sid; not reachable because <code>libuuid1</code> is the image's only util-linux package and nothing shells out.</td>
 </tr>
+<tr>
+<td>2026-10-31</td>
+<td>Claude Code</td>
+<td>Reassessed the three entries due 2026-11-08. CVE-2026-11822 and CVE-2026-11824 (<code>libsqlite3-0</code>): resolved, Debian now lists trixie fixed in sqlite3 3.46.1-7+deb13u2 and the base ships that build; suppressions deleted. CVE-2025-69720 (ncurses): re-accepted to 2027-01-29, Debian <code>&lt;no-dsa&gt;</code> Minor on trixie; description corrected to the <code>infocmp</code> CLI overflow it actually is, and the entry now records that <code>/usr/bin/infocmp</code> is present in the image but unreachable (no shell, no subprocess).</td>
+</tr>
 </tbody>
 </table>
 
@@ -4502,7 +4391,7 @@ re-verified rather than carried forward:</p>
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="October 31, 2026 14:21:53 UTC">October 31, 2026</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="November 7, 2026 09:08:37 UTC">November 7, 2026</span>
   </span>
 
     

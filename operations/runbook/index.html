@@ -1181,6 +1181,17 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#56-a-family-deletion-left-data-behind-erasure_external_purge_incomplete" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.6 A family deletion left data behind (erasure_external_purge_incomplete)
+      
+    </span>
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -3883,6 +3894,17 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#56-a-family-deletion-left-data-behind-erasure_external_purge_incomplete" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.6 A family deletion left data behind (erasure_external_purge_incomplete)
+      
+    </span>
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -4719,6 +4741,25 @@ them in order:</p>
    ADR-014) has not expired or been revoked, and that the reading client actually synced after the
    assignment (IndexedDB offline cache, <code>frontend/src/offline/</code>).</li>
 </ol>
+<h3 id="56-a-family-deletion-left-data-behind-erasure_external_purge_incomplete">5.6 A family deletion left data behind (<code>erasure_external_purge_incomplete</code>)<a class="headerlink" href="#56-a-family-deletion-left-data-behind-erasure_external_purge_incomplete" title="Permanent link">&para;</a></h3>
+<p><code>DELETE /v1/me/family</code> removes every database row by cascade, then, only after the transaction has
+committed, purges what lives outside Postgres: the family's cover images in R2 and its adults'
+Supabase Auth identities (<code>erasure.py</code>). Both purges are best-effort. If one fails, the family is
+already gone and the guardian was told so, so the failure is logged rather than raised.</p>
+<p>Alert on the error log event <code>erasure_external_purge_incomplete</code>. It carries
+<code>failed_cover_keys</code> (R2 object keys) and <code>failed_auth_subjects</code> (Supabase user ids), which are the
+only record of what is left, because the rows that named them no longer exist. To finish the job:</p>
+<ol>
+<li><strong>Covers</strong>: delete each listed key from the covers bucket (<code>R2_BUCKET</code>).</li>
+<li><strong>Auth identities</strong>: delete each listed user in the Supabase dashboard (Authentication, Users),
+   or <code>DELETE &lt;OIDC_ISSUER&gt;/admin/users/&lt;id&gt;</code> with the service-role key. A 404 means it is already
+   gone.</li>
+<li>If the cause was <code>erasure_auth_identity_unconfigured</code>, <code>SUPABASE_SERVICE_ROLE_KEY</code> is not set on
+   the backend; set it (Section 8) so later deletions purge identities automatically.</li>
+</ol>
+<p>Deletions made before this purge existed (before 2026-11-01) left their cover objects and auth
+identities behind and are not in any log. Reconcile <code>auth.users</code> against <code>public."user"</code> and the
+covers bucket against <code>storybook_version</code> to find them.</p>
 <h2 id="6-backup-and-restore">6. Backup and restore<a class="headerlink" href="#6-backup-and-restore" title="Permanent link">&para;</a></h2>
 <p><strong>Partially closed</strong> (issue #558 / <code>UW-D27</code>). A scheduled backup exists and has been observed
 to complete (2026-08-27); the restore side is documented below but <strong>not yet drilled against a
@@ -5161,6 +5202,9 @@ it, not a replacement for it.</p>
   non-local tier).</li>
 <li><code>CYO_ADVENTURE_DATABASE_DISABLE_PREPARED_CACHE</code>: disables prepared-statement caching for the
   Supavisor transaction-pooler connection mode (ADR-009).</li>
+<li><code>SUPABASE_SERVICE_ROLE_KEY</code>: Supabase service-role key, used only by <code>erasure.py</code> to delete a
+  deleted family's Supabase Auth identities. Backend only: it bypasses every Supabase access
+  control, so never give it to the worker or the frontend, and never log it.</li>
 <li><code>CYO_ADVENTURE_REDIS_URL</code> (<code>REDIS_URL</code> alias in compose): RQ queue and rate-limiter Redis
   connection. Needed by the backend and the worker.</li>
 <li><code>ANTHROPIC_API_KEY</code>: direct Anthropic generation leg. Backend and worker (see the note below).</li>
@@ -5578,7 +5622,7 @@ because that test is currently the only thing that would notice.</p>
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="August 30, 2026 19:32:47 UTC">August 30, 2026</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="November 7, 2026 09:08:45 UTC">November 7, 2026</span>
   </span>
 
     

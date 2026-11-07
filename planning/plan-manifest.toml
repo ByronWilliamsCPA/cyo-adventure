@@ -1,4 +1,4 @@
-# Status: Active | Source of truth for phase and rung vocabulary | Updated 2026-10-31
+# Status: Active | Source of truth for phase and rung vocabulary | Updated 2026-11-01
 #
 # plan-manifest.toml
 #
@@ -51,7 +51,7 @@
 #     a partial phase is a smell.
 
 schema_version = 1
-updated = "2026-10-31"
+updated = "2026-11-01"
 
 # ---------------------------------------------------------------------------------------
 # Validation provenance
@@ -464,7 +464,7 @@ name = "Kids compliance and account lifecycle"
 track = 2
 shipped = "partial"
 usable = "no"
-summary = "PII-egress hardening and the telemetry audit are done. Account deletion is built on the backend but not reachable by a guardian, and is incomplete in three respects. The compliance checklist that gates submission is not done."
+summary = "PII-egress hardening and the telemetry audit are done. A guardian can delete the family account from the privacy page, and the delete now also purges R2 covers and Supabase Auth identities after commit; that external purge is best-effort with no automatic retry and needs SUPABASE_SERVICE_ROLE_KEY. The compliance checklist that gates submission is not done."
 validated = "2026-08-01"
 # PII-egress hardening and the telemetry audit survive inspection well. generation/pii.py:229
 # assert_prompt_pii_safe is a single chokepoint called from generation, story requests, node
@@ -473,18 +473,34 @@ validated = "2026-08-01"
 # send_default_pii hardcoded off, Replay and Tracing never wired rather than merely sampled to
 # zero, and a scrub hook stripping user, request and breadcrumb data.
 #
-# Account deletion is where the previous summary was wrong. The endpoint and its cascade are
-# real and tested, but "done" was not accurate.
+# Account deletion is where the 2026-08-01 summary was wrong, and where the 2026-11-01 closure
+# needs a caveat. The endpoint and its cascade were real and tested, but "done" was not accurate:
+# no UI reached it and R2 covers and Supabase identities survived it. Both are now closed in code
+# (see the CLOSED note below), but the external purge is best-effort after the commit, so
+# "deleted" is only fully true where SUPABASE_SERVICE_ROLE_KEY is provisioned.
 gaps = [
-  "Whole-family account deletion has NO UI entry point. DELETE /v1/me/family exists (api/me.py:359), is tested, and is in the generated client, but nothing under frontend/src outside src/client/ calls it, so a guardian cannot delete their account through the product. frontend/src/guardian/PrivacyPage.tsx:93-99 admits this in its own comments. For a kids product this is a compliance-relevant hole, not a polish item.",
-  "Cover images in R2/S3 object storage are never deleted on any erasure path. covers/storage.py:189 delete_cover exists but its only real caller is cover REGENERATION (covers/service.py:164); no deletion path invokes it and no orphan-collection job exists. A deleted family's cover art survives in object storage indefinitely.",
-  "The Supabase Auth identity is never deleted. Account erasure removes application rows via the database cascade but no Supabase Admin API call exists anywhere in the backend and no migration touches auth.users, so the login identity and email outlive the account.",
-  "P7-03 privacy policy: a public Privacy and Support page now exists (PR #668, frontend/src/legal/), so the not-published half is CLOSED. The consent half is re-checked open 2026-10-31 and was worse than previously stated: the legal Privacy Notice is presented in the COPPA parental-consent flow as something the guardian electronically agrees to, with no clickable link to it anywhere (frontend/src/auth/GuardianConsentPage.tsx:103,131). The separate guardian trust page (PrivacyPage.tsx) exists and is linked in nav, but it is not the legal notice.",
+  "Family deletion's external purge is only as good as its operator setup and cannot reach the past. The Supabase Auth identity is deleted only when SUPABASE_SERVICE_ROLE_KEY is set on the backend (unset, the application rows go and the login identity and its email stay, with erasure_auth_identity_unconfigured logged), so provisioning that key in production is an open owner step. Both external purges are best-effort after the commit; a failure is logged as erasure_external_purge_incomplete with the identifiers needed to finish by hand (runbook 5.6), not retried automatically. Deletions made before 2026-11-01 left their R2 covers and auth identities behind and are not in any log.",
   "P7-08 compliance checklist has a template but no owner sign-off. This gates R3 submission. NOT CODE-VERIFIABLE, organizational.",
   "P7-01 Apple Developer Program enrollment not started; EU DSA trader status undecided. NOT CODE-VERIFIABLE, organizational.",
   "P7-12 processor agreements: a checklist exists, no DPAs are signed. NOT CODE-VERIFIABLE, organizational.",
   "P7-07 age-rating questionnaire prep not started. NOT CODE-VERIFIABLE, organizational.",
 ]
+
+# CLOSED 2026-11-01 (code; PR for branch feat/erasure-gaps), retained so the closure is auditable:
+#   - "Whole-family account deletion has NO UI entry point" is CLOSED.
+#     frontend/src/guardian/DeleteFamilySection.tsx (mounted on PrivacyPage.tsx) calls
+#     DELETE /v1/me/family behind a typed DELETE confirmation and signs the guardian out.
+#   - "Cover images in R2/S3 are never deleted on any erasure path" is CLOSED for new
+#     deletions. api/me.py::delete_my_family collects the family's cover keys before the cascade
+#     (erasure.py::collect_external_targets) and purges them after the commit through
+#     middleware/unit_of_work.py::register_after_commit. Proven against real Postgres by
+#     tests/integration/test_deletion_drill.py::
+#     test_delete_my_family_queues_external_erasure_for_covers_and_identity.
+#   - "The Supabase Auth identity is never deleted" is CLOSED in code, conditional on the
+#     SUPABASE_SERVICE_ROLE_KEY secret (see the open item above).
+#   - "The consent screen names the Privacy Notice without linking it" is CLOSED.
+#     frontend/src/auth/GuardianConsentPage.tsx links /privacy at both mentions; a public
+#     Privacy and Support page also exists (PR #668).
 
 [phases."8"]
 name = "iOS shell and subscriptions"
