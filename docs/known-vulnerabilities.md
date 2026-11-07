@@ -126,6 +126,141 @@ and no package manager, so there is no project-side upgrade path.
 
 ---
 
+## CVE-2026-113351, CVE-2026-115506, CVE-2026-117610, CVE-2026-118370 | libexpat1 | High
+
+| Field | Value |
+|-------|-------|
+| **CVE ID** | CVE-2026-113351, CVE-2026-115506, CVE-2026-117610, CVE-2026-118370 |
+| **Package** | libexpat1 (Debian binary package from the `expat` source package) |
+| **Affected Version** | 2.9.0-1~deb13u1+dhi0, as shipped by the pinned base image (digest `sha256:d3f085aa`, Debian 13.7) |
+| **Fixed Version** | No fix on the trixie track (trixie and trixie-security both `vulnerable` at 2.9.0-1~deb13u1); fixed only in sid (2.10.0-1). Debian tags CVE-2026-113351 and CVE-2026-115506 `<no-dsa>` (Minor issue); the other two are not yet triaged for trixie |
+| **Severity** | High (per Trivy/Aqua feed) |
+| **CVSS Score** | Not carried in the Trivy/Aqua feed as of 2026-11-07 |
+| **Discovered** | 2026-11-04 |
+| **Last Reassessed** | 2026-11-07 |
+| **Reassessment Due** | 2027-02-05 |
+| **Blocking Release** | No |
+
+### Description
+
+Four defects in libexpat through 2.9.0: unbounded memory tracking across
+`XML_ParserReset` (CVE-2026-113351, denial of service); billion-laughs entity
+amplification detected too late in `accountingDiffTolerated()` (CVE-2026-115506,
+denial of service); a NULL dereference in `externalEntityInitProcessor2()` on an
+empty non-final first chunk of an external-entity subparser (CVE-2026-117610,
+crash); and a signed integer overflow in `storeAtts()` reached by a
+multi-gigabyte start tag carrying more than 2^30 attributes (CVE-2026-118370,
+crash or heap corruption). All four entered the feed between the 2026-11-01 and
+2026-11-04 scans of `main`.
+
+### Impact on This Project
+
+**Reachable, narrowly, through one trusted endpoint.** Checked on 2026-11-07:
+
+1. **There is a runtime XML parser.** `boto3` is a runtime dependency
+   (`--extra api`), used by `covers/storage.py` for Cloudflare R2. R2 speaks the
+   S3 protocol, and botocore 1.43.56 parses its XML responses with
+   `xml.etree.ElementTree.XMLParser` (`botocore/parsers.py`,
+   `_parse_xml_string_to_dom`), which is Expat. **This corrects the earlier
+   claim, made for CVE-2026-66046 on 2026-10-02, that nothing at runtime parses
+   XML.** That claim checked `src/` and the XML libraries in `uv.lock` but
+   missed stdlib XML used inside a runtime dependency.
+2. **Who controls that input.** Only Cloudflare R2's responses to requests this
+   service makes, over TLS to the account's R2 endpoint. No request a user,
+   guardian or child sends reaches an XML parser. An attacker would have to
+   control Cloudflare's responses or defeat TLS.
+3. **Per CVE, through ElementTree:** CVE-2026-113351 needs `XML_ParserReset`,
+   which `pyexpat` does not call; CVE-2026-117610 needs an external-entity
+   subparser, which ElementTree never creates. Neither is reachable through this
+   path. CVE-2026-118370 needs a multi-gigabyte response with more than 2^30
+   attributes on one tag. CVE-2026-115506 needs a crafted entity-amplification
+   document. Both of those would have to come from R2 itself.
+4. **No other runtime XML.** Scanning the 68 packages in the `--extra api`
+   runtime set for XML parser imports finds only `networkx` (GEXF/GraphML
+   readers, which the application does not call) and Pillow's XMP reader, which
+   requires `defusedxml` and refuses to run without it; `defusedxml` is not in
+   the runtime set.
+
+**Decision (owner, 2026-11-07):** accept with the R2 path documented. The
+suppression is scoped to `libexpat1` by PURL.
+
+### Remediation Plan
+
+- [ ] Let a trixie-track `expat` at 2.10.0 or later flow in through a base-image
+  digest refresh, then delete these four entries.
+- [ ] Reassess by 2027-02-05: re-read the Debian tracker, and re-check that no
+  runtime path other than botocore's R2 responses feeds Expat.
+
+### Why Not Fixed Yet
+
+Debian has shipped no fix for trixie; the fixes are in sid only. The package
+comes from the hardened base image, which ships no shell and no package manager,
+so there is no project-side upgrade path. Replacing botocore's parser is not a
+proportionate alternative for input that only Cloudflare controls.
+
+### References
+
+- Debian security tracker: [CVE-2026-113351](https://security-tracker.debian.org/tracker/CVE-2026-113351),
+  [CVE-2026-115506](https://security-tracker.debian.org/tracker/CVE-2026-115506),
+  [CVE-2026-117610](https://security-tracker.debian.org/tracker/CVE-2026-117610),
+  [CVE-2026-118370](https://security-tracker.debian.org/tracker/CVE-2026-118370)
+- First reported by the scheduled Container Security scan of `main` on 2026-11-04
+
+---
+
+## CVE-2026-119373, CVE-2026-119374, CVE-2026-119379 | libsqlite3-0 | High
+
+| Field | Value |
+|-------|-------|
+| **CVE ID** | CVE-2026-119373, CVE-2026-119374, CVE-2026-119379 |
+| **Package** | libsqlite3-0 (Debian binary package from the `sqlite3` source package) |
+| **Affected Version** | 3.46.1-7+deb13u2+dhi1, as shipped by the pinned base image (digest `sha256:d3f085aa`, Debian 13.7) |
+| **Fixed Version** | No fix on the trixie track. Debian tags all three `<no-dsa>` (Minor issue); fixed only in sid (3.54.1-2) |
+| **Severity** | High (per Trivy/Aqua feed) |
+| **CVSS Score** | Not carried in the Trivy/Aqua feed as of 2026-11-07 |
+| **Discovered** | 2026-11-04 |
+| **Last Reassessed** | 2026-11-07 |
+| **Reassessment Due** | 2027-02-05 |
+| **Blocking Release** | No |
+
+### Description
+
+Heap overflows in SQLite before 3.54.0: two in the FTS5 full-text extension
+(`fts5MergeRowidLists()` with `detail=none` prefix doclists, CVE-2026-119373;
+`fts5DoSecureDelete()` with crafted footer key offsets, CVE-2026-119374) and one
+in the session extension's `sqlite3changeset_apply()` with crafted changesets
+(CVE-2026-119379). All need SQLite to open an attacker-supplied database or apply
+an attacker-supplied changeset.
+
+### Impact on This Project
+
+Not reachable. Checked on 2026-11-07: nothing under `src/` imports `sqlite3`,
+and none of the 68 packages in the `--extra api` runtime set imports it either
+(scanned for `import sqlite3` / `from sqlite3`). Persistence is PostgreSQL over
+`asyncpg`. CPython's `_sqlite3` module links this library but is never loaded,
+so no database or changeset is ever handed to it.
+
+### Remediation Plan
+
+- [ ] Let a trixie-track `sqlite3` at 3.54.0 or later flow in through a
+  base-image digest refresh, then delete these three entries.
+- [ ] Reassess by 2027-02-05: re-read the Debian tracker and repeat the runtime
+  `sqlite3` import scan.
+
+### Why Not Fixed Yet
+
+Debian has triaged all three as `<no-dsa>` (Minor issue) on trixie, so no
+security update is planned; the fixes ship in sid only. The package comes from
+the hardened base image, which has no package manager.
+
+### References
+
+- Debian security tracker: [CVE-2026-119373](https://security-tracker.debian.org/tracker/CVE-2026-119373),
+  [CVE-2026-119374](https://security-tracker.debian.org/tracker/CVE-2026-119374),
+  [CVE-2026-119379](https://security-tracker.debian.org/tracker/CVE-2026-119379)
+
+---
+
 ## CVE-2025-69720 | ncurses (libncursesw6, libtinfo6, ncurses-base, ncurses-bin) | High
 
 | Field | Value |
@@ -532,3 +667,4 @@ re-verified rather than carried forward:
 | 2026-10-02  | Claude Code    | Reassessed the two entries overdue since 2026-09-17 (release gate closed). CVE-2026-66046: re-accepted to 2026-11-08 on fresh evidence (Debian now `<no-dsa>` Minor on trixie; image ships `libexpat1 2.8.3-1~deb13u1+dhi4`; no runtime XML parsing); `libexpat1-dev` dropped from the entry because the base no longer ships it. `linux-libc-dev`: resolved, package absent from base digest `sha256:86330353`; removed `.trivy/ignore-policy.rego`, its `trivy.yaml` line, and its test. Not covered here: CVE-2026-75804 / CVE-2026-84782 (OpenSSL, fixed in trixie-security `3.5.7-1~deb13u3` by DSA-6531-1) are fixable and await a mirror rebuild plus digest refresh, not a suppression. |
 | 2026-10-31  | Claude Code    | Base-image refresh to `sha256:d3f085aa` (#853). Resolved CVE-2026-66046: Debian fixed it on trixie-security in expat 2.9.0-1~deb13u1 (DSA-6566-1) and the image ships that build; suppression deleted. The refresh also cleared the unsuppressed OpenSSL CVE-2026-75804/84782 (DSA-6531-1). Added CVE-2026-76642/78408/78409/78410 (util-linux, reported against `libuuid1`): `<no-dsa>` Minor on trixie, fixed only in forky/sid; not reachable because `libuuid1` is the image's only util-linux package and nothing shells out. |
 | 2026-10-31  | Claude Code    | Reassessed the three entries due 2026-11-08. CVE-2026-11822 and CVE-2026-11824 (`libsqlite3-0`): resolved, Debian now lists trixie fixed in sqlite3 3.46.1-7+deb13u2 and the base ships that build; suppressions deleted. CVE-2025-69720 (ncurses): re-accepted to 2027-01-29, Debian `<no-dsa>` Minor on trixie; description corrected to the `infocmp` CLI overflow it actually is, and the entry now records that `/usr/bin/infocmp` is present in the image but unreachable (no shell, no subprocess). |
+| 2026-11-07  | Claude Code    | Assessed nine HIGHs that entered the feed between the 2026-11-01 and 2026-11-04 scans of `main`. Accepted CVE-2026-113351/115506/117610/118370 (libexpat1) to 2027-02-05 on an owner decision: reachable only through botocore parsing Cloudflare R2's TLS-verified S3 responses; this corrects the 2026-10-02 claim that nothing at runtime parses XML. Accepted CVE-2026-119373/119374/119379 (libsqlite3-0) to 2027-02-05: no `sqlite3` import in `src/` or in any of the 68 runtime packages. Did NOT accept CVE-2026-85091 or CVE-2026-76844 (zlib1g): Debian fixed both on trixie-security (DSA-6613-1, 1:1.3.dfsg+really1.3.1-1+deb13u1), so per the fixable-findings rule they wait for a base-image refresh; neither the pinned image nor the mirror's current `sha256:f217d02a` carries the fix yet. |
