@@ -56,7 +56,7 @@ vulnerabilities:
   # docs/known-vulnerabilities.md, "Resolution detail: CVE-2026-66046 and the
   # 2026-10-31 base-image refresh".
   #
-  # #ASSUME: security: the five below still describe findings that EXIST in the
+  # #ASSUME: security: the twelve below still describe findings that EXIST in the
   # image and are UNFIXED upstream. Both halves were checked on 2026-09-03, and
   # both are the kind of fact that goes stale silently.
   # #VERIFY: at each reassessment, confirm the package is still in
@@ -109,3 +109,62 @@ vulnerabilities:
       util-linux restricted bind-mount source race. Same package, Debian status
       and non-reachability as CVE-2026-76642.
     expired_at: 2027-01-29
+
+  # --- libexpat1 (expat source package); no Debian fix on the trixie track ---
+  # Reachable only through botocore parsing Cloudflare R2's TLS-verified S3
+  # responses; see docs/known-vulnerabilities.md for the per-CVE analysis and
+  # the owner decision of 2026-11-07. Pinned to libexpat1 by PURL.
+  - id: CVE-2026-113351
+    purls:
+      - "pkg:deb/debian/libexpat1"
+    statement: >-
+      Expat XML_ParserReset memory-tracking DoS. Not reachable via
+      ElementTree (pyexpat never calls XML_ParserReset). Debian trixie
+      <no-dsa> (Minor); fixed only in sid 2.10.0.
+    expired_at: 2027-02-05
+  - id: CVE-2026-115506
+    purls:
+      - "pkg:deb/debian/libexpat1"
+    statement: >-
+      Expat late billion-laughs detection DoS. Only runtime XML input is
+      Cloudflare R2's S3 responses parsed by botocore over TLS; owner
+      accepted 2026-11-07. Debian trixie <no-dsa> (Minor).
+    expired_at: 2027-02-05
+  - id: CVE-2026-117610
+    purls:
+      - "pkg:deb/debian/libexpat1"
+    statement: >-
+      Expat external-entity subparser NULL dereference. Not reachable via
+      ElementTree, which never creates an external-entity subparser.
+    expired_at: 2027-02-05
+  - id: CVE-2026-118370
+    purls:
+      - "pkg:deb/debian/libexpat1"
+    statement: >-
+      Expat storeAtts integer overflow needing a multi-GB tag with over 2^30
+      attributes. Only runtime XML input is R2's S3 responses via botocore
+      over TLS; owner accepted 2026-11-07.
+    expired_at: 2027-02-05
+
+  # --- libsqlite3-0 (sqlite3 source package); no Debian fix on the trixie track ---
+  - id: CVE-2026-119373
+    purls:
+      - "pkg:deb/debian/libsqlite3-0"
+    statement: >-
+      SQLite FTS5 heap overflow. Nothing in src/ or the 68 runtime packages
+      imports sqlite3; Debian trixie <no-dsa> (Minor), fixed only in sid.
+    expired_at: 2027-02-05
+  - id: CVE-2026-119374
+    purls:
+      - "pkg:deb/debian/libsqlite3-0"
+    statement: >-
+      SQLite FTS5 secure-delete heap overflow. Same non-reachability and
+      Debian status as CVE-2026-119373.
+    expired_at: 2027-02-05
+  - id: CVE-2026-119379
+    purls:
+      - "pkg:deb/debian/libsqlite3-0"
+    statement: >-
+      SQLite session-changeset heap overflow. Same non-reachability and
+      Debian status as CVE-2026-119373.
+    expired_at: 2027-02-05
