@@ -7,6 +7,33 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 <!-- version list -->
 
+## [0.92.0] - 2026-11-08
+
+### Bug Fixes
+
+- **a11y**: Fix label-in-name on moderation buttons, bump axe to 4.14.0
+  ([#876](https://github.com/ByronWilliamsCPA/cyo-adventure/pull/876),
+  [`dfee7e3`](https://github.com/ByronWilliamsCPA/cyo-adventure/commit/dfee7e35cbf81a86662030c8956cf1ef5fa94b4f))
+
+- **deps**: Override minimatch and glob to patched majors
+  ([#888](https://github.com/ByronWilliamsCPA/cyo-adventure/pull/888),
+  [`5243423`](https://github.com/ByronWilliamsCPA/cyo-adventure/commit/5243423f01a9d890189876d37fc5c7e5aaf5ea2f))
+
+- **security**: Assess the nine HIGHs new to main's scan since 2026-11-04
+  ([#877](https://github.com/ByronWilliamsCPA/cyo-adventure/pull/877),
+  [`21a590f`](https://github.com/ByronWilliamsCPA/cyo-adventure/commit/21a590fd38a8376e989ffec6f35fa37a17976a6d))
+
+- **security**: Reassess the libsqlite3 and ncurses entries due 2026-11-08
+  ([#871](https://github.com/ByronWilliamsCPA/cyo-adventure/pull/871),
+  [`f47df34`](https://github.com/ByronWilliamsCPA/cyo-adventure/commit/f47df34838350842aa6ffb1e5b7fa42af071aa15))
+
+### Features
+
+- **privacy**: Close the Phase 7 erasure gaps
+  ([#874](https://github.com/ByronWilliamsCPA/cyo-adventure/pull/874),
+  [`8cd1a65`](https://github.com/ByronWilliamsCPA/cyo-adventure/commit/8cd1a65f6b2ba1c8e9a7eae38a4e207dd0c6dee7))
+
+
 ## [0.91.0] - 2026-11-01
 
 ### Bug Fixes
@@ -3788,6 +3815,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Safety dependency vulnerability scanning
 - Pre-commit hooks for security validation
 
+[0.92.0]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.91.0...v0.92.0
 [0.91.0]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.90.0...v0.91.0
 [0.90.0]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.89.2...v0.90.0
 [0.89.2]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.89.1...v0.89.2
