@@ -51,7 +51,7 @@ jobs:
     services:
       db:
         # postgres:18-alpine, pinned by digest, matching e2e-real-nightly.yml.
-        image: postgres:18-alpine@sha256:123b17998ccaf47e53b502e8c6a1e79afd8f579c6f3eec83c563da026f957395
+        image: postgres:18-alpine@sha256:1018733457011bf88d81db98cf43aac6d5150afc18787dbe204771fedf80ff95
         env:
           POSTGRES_DB: cyo_adventure
           POSTGRES_USER: cyo_adventure
@@ -67,7 +67,7 @@ jobs:
         # Redis is defensive here (RateLimitMiddleware falls back to an
         # in-memory counter without it); see the nightly's Redis note. Kept for
         # parity and to remove the per-request fallback latency.
-        image: redis:8-alpine@sha256:71885d8cc6e42f2bc0aa2eb853bfc4be200b5108a46ac50e117ae1df0531fb80
+        image: redis:8-alpine@sha256:7958cfbb9d152f87dadfbc89f1b0b15938f0b81ff8982feb327476f4911935c3
         ports:
           - 6379:6379
         options: >-
@@ -77,7 +77,7 @@ jobs:
           --health-retries 5
     steps:
       - name: Harden the runner
-        uses: step-security/harden-runner@46b06cea07f9e64621fdf066ba77ac6915163d43 # v2.22.3
+        uses: step-security/harden-runner@1d88384fd173af6ecb012dfd0264a306b711241a # v2.22.4
         with:
           egress-policy: audit
 
