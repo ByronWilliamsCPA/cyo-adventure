@@ -37,7 +37,7 @@
     "@vitest/coverage-v8": "4.1.12",
     "jsdom": "30.0.1",
     "typescript": "6.0.3",
-    "vite": "8.2.4",
+    "vite": "8.3.8",
     "vitest": "4.1.12"
   }
 }
