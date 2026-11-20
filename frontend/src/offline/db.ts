@@ -5,7 +5,9 @@
  * - `storybooks`: downloaded immutable story blobs, keyed by `id@version`.
  * - `reading_states`: the latest known reading state per profile+story.
  * - `offline_queue`: reading-state writes made while offline, replayed in order
- *   on reconnect (each carries an `event_id` so the server can dedupe replays).
+ *   on reconnect (each carries an `event_id` so the server can dedupe replays),
+ *   plus reading-trail batches awaiting the network, a separate record shape
+ *   told apart by `kind` (see `QueuedTrailBatch`).
  * - `device_grant`: a durable mirror of the device grant (ADR-014 Phase 3), a
  *   singleton row keyed by {@link DEVICE_GRANT_KEY}. `localStorage` is the
  *   primary store (auth/deviceGrant.ts); this mirror only exists so a
@@ -48,6 +50,7 @@
 import { type DBSchema, type IDBPDatabase, openDB } from 'idb'
 
 import type { DeviceGrant } from '../auth/deviceGrant'
+import type { ReadingTrailBatchBody } from '../client/types.gen'
 import type { LibraryItemView } from '../library/libraryApi'
 import type { ValuesPayload } from '../player/personalization'
 import type { ReadingState, Storybook } from '../player/types'
@@ -80,6 +83,37 @@ export interface QueuedWrite {
   // Optional so records written before this field existed still load; they
   // predate the multi-writer path and sort by queued_at alone.
   seq?: number
+}
+
+/**
+ * One reading-trail batch waiting for the network (privacy-model.md "Reading
+ * trail"). It shares the `offline_queue` store with reading-state writes so
+ * there is one offline queue and one replay path (`replayQueue` in
+ * offline/sync.ts drains both), but it is a different record shape, told apart
+ * by `kind`. `listQueue` returns reading-state writes only, so nothing that
+ * reasons about reading-state ordering (overtakesQueue, the conflict latch,
+ * revocation) ever sees a trail batch.
+ *
+ * #ASSUME: data-integrity: trail batches need no ordering. The server merges
+ * by each step's client-assigned `seq` and ignores a seq it already holds, so
+ * replaying them in any order, or twice, is the same as once.
+ * #VERIFY: offline/readingTrailSync.test.ts "drains queued trail batches and
+ * keeps them on an offline failure".
+ */
+export interface QueuedTrailBatch {
+  /** The store's key path; minted per batch, never reused. */
+  event_id: string
+  kind: 'reading_trail'
+  profile_id: string
+  storybook_id: string
+  body: ReadingTrailBatchBody
+  queued_at: number
+}
+
+type OfflineQueueRecord = QueuedWrite | QueuedTrailBatch
+
+function isTrailBatch(record: OfflineQueueRecord): record is QueuedTrailBatch {
+  return 'kind' in record && record.kind === 'reading_trail'
 }
 
 /** A profile's last known authoritative shelf (offline-copy revocation). */
@@ -149,7 +183,7 @@ export interface BadgeSeenEntry {
 interface ReaderDB extends DBSchema {
   storybooks: { key: string; value: Storybook }
   reading_states: { key: string; value: ReadingState }
-  offline_queue: { key: string; value: QueuedWrite }
+  offline_queue: { key: string; value: OfflineQueueRecord }
   device_grant: { key: string; value: DeviceGrant }
   // The last-good library list per profile, so an offline kid still sees a
   // bookshelf (UX-K1) rather than a dead-end "Try again" that can never
@@ -564,11 +598,28 @@ export async function enqueueWrite(item: QueuedWrite): Promise<void> {
   await db.put('offline_queue', { ...item, seq: item.seq ?? queueSeq })
 }
 
-/** List queued writes in insertion order (oldest first). */
+/** List queued reading-state writes in insertion order (oldest first).
+ * Reading-trail batches share the store and are excluded here; see
+ * {@link listTrailBatches}. */
 export async function listQueue(): Promise<QueuedWrite[]> {
   const db = await getDb()
   const items = await db.getAll('offline_queue')
-  return items.sort((a, b) => a.queued_at - b.queued_at || (a.seq ?? 0) - (b.seq ?? 0))
+  return items
+    .filter((item): item is QueuedWrite => !isTrailBatch(item))
+    .sort((a, b) => a.queued_at - b.queued_at || (a.seq ?? 0) - (b.seq ?? 0))
+}
+
+/** Queue one reading-trail batch for the next replay. */
+export async function enqueueTrailBatch(item: QueuedTrailBatch): Promise<void> {
+  const db = await getDb()
+  await db.put('offline_queue', item)
+}
+
+/** List queued reading-trail batches, oldest first. */
+export async function listTrailBatches(): Promise<QueuedTrailBatch[]> {
+  const db = await getDb()
+  const items = await db.getAll('offline_queue')
+  return items.filter(isTrailBatch).sort((a, b) => a.queued_at - b.queued_at)
 }
 
 /** Remove a queued write once the server has accepted it. */

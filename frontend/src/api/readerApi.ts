@@ -17,6 +17,7 @@ import type {
   ReadingStateResultView,
   SeriesNextView,
 } from '../client/types.gen'
+import { makeReadingTrailApi } from '../offline/readingTrailSync'
 import { OfflineError, type PutResponse, type SaveBody, type SyncApi } from '../offline/sync'
 import type { ReadingState, Storybook } from '../player/types'
 
@@ -28,6 +29,9 @@ type ConflictBody = ConflictView
 
 export function makeSyncApi(api: AxiosInstance): SyncApi {
   return {
+    // Lets replayQueue drain queued reading-trail batches on the same lock and
+    // trigger as reading-state writes (privacy-model.md "Reading trail").
+    readingTrail: makeReadingTrailApi(api),
     async putReadingState(
       profileId: string,
       storybookId: string,

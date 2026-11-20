@@ -16,9 +16,14 @@ import {
   enqueueWrite,
   getReadingState,
   listQueue,
+  listTrailBatches,
   putReadingState,
 } from './db'
-import type { ReadingStateView } from '../client/types.gen'
+import type {
+  ReadingStateView,
+  ReadingTrailBatchBody,
+  ReadingTrailIngestView,
+} from '../client/types.gen'
 import type { ReadingState } from '../player/types'
 
 export interface SaveBody extends ReadingState {
@@ -89,9 +94,28 @@ export class LocalWriteError extends Error {
   }
 }
 
+/**
+ * The reading-trail network port (privacy-model.md "Reading trail";
+ * implemented by offline/readingTrailSync.ts::makeReadingTrailApi). It throws
+ * OfflineError for anything worth retrying later (no network, 5xx, 429), and
+ * anything else for a permanent rejection.
+ */
+export interface ReadingTrailApi {
+  postBatch(
+    profileId: string,
+    storybookId: string,
+    body: ReadingTrailBatchBody,
+    options?: { keepalive?: boolean }
+  ): Promise<ReadingTrailIngestView>
+}
+
 /** The network port the sync layer depends on (the generated client adapts to this). */
 export interface SyncApi {
   putReadingState(profileId: string, storybookId: string, body: SaveBody): Promise<PutResponse>
+  /** Optional: when present, replayQueue also drains queued reading-trail
+   * batches. Absent (most tests, any caller without the wiring), queued trail
+   * batches simply wait. */
+  readingTrail?: ReadingTrailApi
 }
 
 export type SaveResult =
@@ -431,6 +455,46 @@ function queueKey(item: QueuedWrite): string {
 // conflict is reconciled.
 
 export async function replayQueue(api: SyncApi): Promise<ReplayOutcome> {
+  const outcome = await replayReadingStates(api)
+  if (api.readingTrail !== undefined) {
+    await drainTrailBatches(api.readingTrail)
+  }
+  return outcome
+}
+
+/**
+ * Send every queued reading-trail batch. Best-effort and silent by design:
+ * it never throws, and it contributes nothing to ReplayOutcome, so a trail
+ * batch can never raise the "All caught up" toast or the failed-replay banner
+ * a child would see.
+ *
+ * #CRITICAL: data-integrity: recording must never hurt reading. This runs
+ * after the reading-state drain has finished, on the same lock, so it can
+ * neither reorder nor delay a reading-state write; every failure here,
+ * including IndexedDB faults, is swallowed.
+ * #VERIFY: readingTrailSync.test.ts "drains queued trail batches and keeps
+ * them on an offline failure" and "replayQueue reports nothing for trail
+ * batches".
+ */
+export async function drainTrailBatches(api: ReadingTrailApi): Promise<void> {
+  try {
+    for (const item of await listTrailBatches()) {
+      try {
+        await api.postBatch(item.profile_id, item.storybook_id, item.body)
+      } catch (error) {
+        // Still offline (or a retryable server failure): keep this and the
+        // rest for the next drain. Anything else is a permanent rejection of
+        // this batch, so it is dropped rather than left to wedge the queue.
+        if (error instanceof OfflineError) return
+      }
+      await dequeue(item.event_id)
+    }
+  } catch {
+    // An unreadable or unwritable queue: nothing to do until the next drain.
+  }
+}
+
+async function replayReadingStates(api: SyncApi): Promise<ReplayOutcome> {
   const outcome: ReplayOutcome = { replayed: 0, conflicts: [], failed: [] }
   // Latest server revision applied per story during this replay, so subsequent
   // same-base writes rebase onto it rather than 409 against a stale base.

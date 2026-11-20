@@ -31,6 +31,7 @@ import {
   startContinuation,
 } from './engine'
 import type { ContinuationSeed } from './series'
+import { emitReaderTransition } from './transitions'
 import type { ReadingState, Storybook, VarState } from './types'
 
 // An inert placeholder ReadingState, used when start()/startContinuation()
@@ -191,7 +192,15 @@ export const readerMachine = setup({
       /* v8 ignore next */
       if (event.type !== 'CHOOSE') return {}
       try {
-        return { reading: choose(context.story, context.reading, event.choiceId), error: false }
+        const next = choose(context.story, context.reading, event.choiceId)
+        // Observation only (reading-trail capture); never throws, see transitions.ts.
+        emitReaderTransition(context.story, {
+          type: 'choose',
+          from: context.reading.current_node,
+          choiceId: event.choiceId,
+          to: next,
+        })
+        return { reading: next, error: false }
       } catch (err) {
         console.error('reader: choice transition failed', err)
         return { error: true }
@@ -202,9 +211,17 @@ export const readerMachine = setup({
       // The canGoBack guard makes null unreachable in practice; keeping the
       // no-op branch means a raw BACK can never corrupt the reading state.
       /* v8 ignore next */
-      return previous === null ? {} : { reading: previous }
+      if (previous === null) return {}
+      emitReaderTransition(context.story, { type: 'back', to: previous })
+      return { reading: previous }
     }),
-    reset: assign(({ context }) => safeStart(context.story, context.continuation, context.seed)),
+    reset: assign(({ context }) => {
+      const restarted = safeStart(context.story, context.continuation, context.seed)
+      if (!restarted.error) {
+        emitReaderTransition(context.story, { type: 'restart', to: restarted.reading })
+      }
+      return restarted
+    }),
     applySaveBookmark: assign(({ context, event }) => {
       /* v8 ignore next */
       if (event.type !== 'SAVE_BOOKMARK') return {}
@@ -225,7 +242,9 @@ export const readerMachine = setup({
       // or a cross-device race) is a no-op, never a crash -- the same
       // fail-closed contract as applyBack above.
       /* v8 ignore next */
-      return next === null ? {} : { reading: next }
+      if (next === null) return {}
+      emitReaderTransition(context.story, { type: 'jump', to: next })
+      return { reading: next }
     }),
     applyDeleteBookmark: assign(({ context, event }) => {
       /* v8 ignore next */

@@ -36,6 +36,7 @@ import {
   putReadingState,
 } from '../offline/db'
 import { makeReadingTimeApi } from '../offline/readingTimeSync'
+import { makeReadingTrailApi } from '../offline/readingTrailSync'
 import {
   LocalWriteError,
   OfflineError,
@@ -57,6 +58,7 @@ import {
 } from './characterSeed'
 import { DownloadNeeded } from './DownloadNeeded'
 import { Reader } from './Reader'
+import { useReadingTrail } from './useReadingTrail'
 
 export interface ReaderPageProps {
   api: SyncApi
@@ -250,6 +252,10 @@ export function ReaderPage({
   const rawApi = useApi()
   const readingTimeApi = useMemo(() => makeReadingTimeApi(rawApi), [rawApi])
   const progressApi = useMemo(() => makeProgressApi(rawApi, profileId), [rawApi, profileId])
+  // Reading-trail capture (privacy-model.md "Reading trail"): best-effort,
+  // never awaited, and a no-op server-side unless the owner enabled it.
+  const readingTrailApi = useMemo(() => makeReadingTrailApi(rawApi), [rawApi])
+  const trail = useReadingTrail({ api: readingTrailApi, profileId, storybookId, version })
 
   // Guardian per-profile "pause time capture" toggle (W3.4), resolved
   // best-effort on mount. Starts false (capture on) so a slow or failing
@@ -558,8 +564,11 @@ export function ReaderPage({
       if (stale()) return
       character = active ?? NO_CHARACTER_BINDING
     }
+    // Before the Reader exists: its first commit can already emit transitions.
+    trail.begin(cached, initialReading)
     setPageState({ phase: 'reading', story: cached, initialReading, character })
   }, [
+    trail,
     fetchStory,
     fetchServerState,
     fetchActiveCharacter,
@@ -770,8 +779,9 @@ export function ReaderPage({
   const handleProgress = useCallback(
     (reading: ReadingState) => {
       void persist(reading)
+      trail.observe(reading)
     },
-    [persist]
+    [persist, trail]
   )
 
   // #CRITICAL: data-integrity: persist() is fired-and-forgotten on every
@@ -796,6 +806,7 @@ export function ReaderPage({
   // #VERIFY: keep LEAVE_SAVE_WAIT_MS below any change that would make Leave
   // feel unresponsive, and re-read this if readerApi's timeout changes.
   const handleLeave = useCallback(() => {
+    trail.leave()
     void (async () => {
       // Second tap after the warning was surfaced: always leave. The banner
       // was shown; holding the child hostage to a failing save helps nobody.
@@ -818,7 +829,7 @@ export function ReaderPage({
       }
       void navigate(`/library/${profileId}`)
     })()
-  }, [navigate, profileId])
+  }, [navigate, profileId, trail])
 
   // W0.3 (design review 2026-08-01 section 3.4): the completion POST's own
   // response carries {is_new, found, total}, so EndingsProgress can render
