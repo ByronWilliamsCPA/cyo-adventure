@@ -20,7 +20,7 @@ one is calibrated for, so that "did this book pass" has a single answer.
 | `check_graph_structure` | is it a well-formed story graph | yes |
 | `check_fill_integrity` | did the fill change anything structural | yes |
 | `run_story_gate` | safety, band profile, schema | yes |
-| `check_prose_craft` | tense stability, told emotion, moral tags | yes |
+| `check_prose_craft` | tense stability, told emotion, moral tags, and reader agency (merge seams, option recaps, label defects, give-up and early setback endings) | yes |
 | `check_reading_level` | is the whole book too hard for its band | yes |
 | `check_label_template` | is the book identifiable from its labels alone | yes |
 | `check_promise_discharge` | does a choice promise what nothing delivers | yes |

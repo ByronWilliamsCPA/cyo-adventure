@@ -1489,9 +1489,10 @@ The admin-only `POST /api/v1/storybooks/{storybook_id}/archive` endpoint
 (`api/approval.py::archive_storybook`) is the kill switch: it moves a `published` book to
 `archived` via the state machine (`publishing/state_machine.py`). This is a global,
 cross-family action (`archive_storybook` does not scope by family; an admin can archive any
-story). There is currently **no dedicated admin-console button** for this in
-`frontend/src/admin/`; today it is invoked via the API directly (or a future console affordance),
-same caveat as the authoring-plan step noted in the authoring guide.
+story). The admin console has an **Archive** button for this on `/admin/review/:id`
+(`frontend/src/admin/ReviewDetailPage.tsx`), shown for published books; it calls the same endpoint
+through a confirmation dialog, so the API is the fallback rather than the only route. Corrected
+2026-11-20: this section previously claimed no console button existed.
 
 What archiving actually does today, and what it does not:
 
