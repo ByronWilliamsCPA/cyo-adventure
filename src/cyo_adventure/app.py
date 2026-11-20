@@ -663,7 +663,7 @@ async def _lifespan(_app: FastAPI) -> AsyncGenerator[None]:
     # first request, not discovered as a 500. It runs as a background task
     # and is never awaited here: a slow or unreachable database must not
     # delay or block boot, and the check itself can never fail startup.
-    # #VERIFY: tests/unit/test_health.py::TestPrimeSchemaParityLifespan asserts
+    # #VERIFY: tests/unit/test_health_schema_parity.py::TestPrimeSchemaParityLifespan asserts
     # the task is started and cancelled cleanly on shutdown.
     schema_task = asyncio.create_task(
         health.prime_schema_parity(), name="schema-parity-startup"

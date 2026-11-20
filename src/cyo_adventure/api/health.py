@@ -736,7 +736,7 @@ async def _measure_schema_parity() -> SchemaComparison:
     sharing readiness()'s, because it runs at most once per TTL (and at
     startup, outside any probe) and its failure must never disturb the gating
     ``database`` check.
-    #VERIFY: tests/unit/test_health.py::TestCheckSchemaParity drives the
+    #VERIFY: tests/unit/test_health_schema_parity.py::TestCheckSchemaParity drives the
     failure path; tests/integration/test_schema_parity_check.py runs this
     exact query against a fully migrated Postgres.
 
@@ -852,7 +852,7 @@ async def check_schema_parity() -> ReadinessCheck:
     every kid's reading offline. The alert channel is the ERROR log line plus
     ``frontend/e2e-prod/health-probe.spec.ts``, which fails the daily
     production E2E naming this check.
-    #VERIFY: tests/unit/test_health.py::TestCheckSchemaParity asserts a
+    #VERIFY: tests/unit/test_health_schema_parity.py::TestCheckSchemaParity asserts a
     degraded schema leaves the HTTP status 200 and sets the top-level
     status to "degraded"; the response carries counts only.
 
@@ -899,7 +899,7 @@ async def prime_schema_parity() -> None:
 
     #ASSUME: timing dependencies: the result is cached for the monitor's TTL,
     so the first readiness poll after boot reuses it instead of re-querying.
-    #VERIFY: tests/unit/test_health.py::TestCheckSchemaParity.
+    #VERIFY: tests/unit/test_health_schema_parity.py::TestCheckSchemaParity.
     """
     await check_schema_parity()
 

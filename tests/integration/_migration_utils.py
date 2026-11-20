@@ -13,11 +13,15 @@ from __future__ import annotations
 import re
 import secrets
 from pathlib import Path
+from typing import TYPE_CHECKING
 
 import asyncpg
 from sqlalchemy import make_url, text
 from sqlalchemy.ext.asyncio import create_async_engine
 from sqlalchemy.pool import NullPool
+
+if TYPE_CHECKING:
+    from collections.abc import Sequence
 
 MIGRATIONS = sorted(
     (Path(__file__).resolve().parents[2] / "supabase" / "migrations").glob("*.sql")
@@ -33,7 +37,9 @@ MIGRATIONS = sorted(
 _SAFE_IDENTIFIER_RE = re.compile(r"^[A-Za-z_][A-Za-z0-9_]*$")
 
 
-async def create_migrated_database(pg_url: str, db_name: str) -> str:
+async def create_migrated_database(
+    pg_url: str, db_name: str, migrations: Sequence[Path] | None = None
+) -> str:
     """Create a fresh sibling database and apply every supabase/migrations/*.sql file.
 
     Mirrors a real Supabase Postgres cluster's migration application: files
@@ -48,6 +54,9 @@ async def create_migrated_database(pg_url: str, db_name: str) -> str:
         db_name: The name of the fresh database to create. Must match
             ``_SAFE_IDENTIFIER_RE``; this is interpolated into
             ``CREATE``/``DROP DATABASE`` DDL, which cannot be parameterized.
+        migrations: The files to apply, in order; defaults to the full chain.
+            A prefix of the chain models a database left behind by an
+            unapplied deploy (tests/integration/test_schema_parity_check.py).
 
     Returns:
         str: A SQLAlchemy ``postgresql+asyncpg://`` URL for the newly created
@@ -99,7 +108,7 @@ async def create_migrated_database(pg_url: str, db_name: str) -> str:
     root = base.rsplit("/", 1)[0]
     raw = await asyncpg.connect(f"{root}/{db_name}")
     try:
-        for path in MIGRATIONS:
+        for path in MIGRATIONS if migrations is None else migrations:
             await raw.execute(path.read_text())
     finally:
         await raw.close()
