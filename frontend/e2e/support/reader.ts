@@ -16,8 +16,14 @@ export async function openReader(page: Page): Promise<void> {
   const titlePage = page.getByTestId('title-page')
   const reading = page.getByTestId('reader').or(page.getByTestId('ending-screen'))
   await expect(titlePage.or(reading)).toBeVisible()
-  if (await titlePage.isVisible()) {
-    await page.getByTestId('start-reading').click()
-  }
-  await expect(reading).toBeVisible()
+  // Retried as a unit: the title page can be replaced underneath the tap (a
+  // mount-time save that 409s adopts the server row and remounts the reader
+  // straight onto that position), so a single click could wait on a Start
+  // button that no longer exists.
+  await expect(async () => {
+    if (await titlePage.isVisible()) {
+      await page.getByTestId('start-reading').click({ timeout: 1000 })
+    }
+    await expect(reading).toBeVisible({ timeout: 1000 })
+  }).toPass()
 }

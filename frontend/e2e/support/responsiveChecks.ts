@@ -3,6 +3,7 @@ import type { Page } from '@playwright/test'
 
 import { mockEmptyConsole, mockMe, seedDeviceGrant, seedGuardianSession } from './auth'
 import { loadLanternStory } from './fixtures'
+import { openReader } from './reader'
 
 /**
  * The seven per-page structural checks shared by responsive.spec.ts (one
@@ -188,7 +189,7 @@ export function defineResponsiveChecks(): void {
       return route.fulfill({ status: 200, json: { current_node: 'n_entrance', state_revision: 1 } })
     })
     await page.goto('/read/child-a/s_lantern_cave/1')
-    await expect(page.getByTestId('reader')).toBeVisible()
+    await openReader(page)
     await assertNoHorizontalOverflow(page, 'reader')
   })
 
