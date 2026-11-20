@@ -34,6 +34,7 @@ erDiagram
     character ||--o{ character_book_completion : "credited to"
     child_profile ||--o{ completion : "completes"
     child_profile ||--o{ reading_activity_day : "reads on days"
+    child_profile ||--o{ reading_trail : "reads through"
     storybook |o--o{ story_request : "resulting storybook"
     storybook_version ||--o{ completion : "pins version"
     child_profile ||--o{ rating : "rates"
@@ -271,6 +272,18 @@ erDiagram
         int active_seconds "CHECK >= 0; K23 day-grain only"
         varchar(120) last_flush_id "NULL; single-slot idempotency"
         timestamptz updated_at
+    }
+
+    reading_trail {
+        uuid id PK "client-minted read id"
+        uuid child_profile_id FK "composite FK with family_id -> child_profile; ON DELETE CASCADE"
+        uuid family_id FK "denormalized from profile; Tier 1 RLS"
+        varchar(120) storybook_id FK "composite FK to storybook_version; ON DELETE CASCADE"
+        int version FK "composite FK to storybook_version"
+        date started_on "server day-grain; 30-day purge"
+        jsonb steps "seq, kind, node_id, choice_id, elapsed_s"
+        int step_count "CHECK 0-2000"
+        varchar(120) ending_id "NULL; last ending reached"
     }
 
     rating {

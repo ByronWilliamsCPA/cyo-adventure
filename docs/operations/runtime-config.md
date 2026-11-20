@@ -144,12 +144,27 @@ by the count given above.
 | `CYO_ADVENTURE_GENERATION_PROVIDER` | backend, worker | _(unfilled)_ | _(unfilled)_ | _(unfilled)_ |
 | `MODAL_MODEL` | backend, worker | _(unfilled)_ | _(unfilled)_ | _(unfilled)_ |
 | `CYO_ADVENTURE_SENTRY_TRACES_SAMPLE_RATE` | backend | _(unfilled)_ | _(unfilled)_ | _(unfilled)_ |
+| `READING_TRAIL_ENABLED` | backend | _(unfilled)_ | _(unfilled)_ | _(unfilled)_ |
 
 `ENVIRONMENT` earns its row because several authorization and publishing behaviours branch on it
 (`api/deps.py`, `publishing/service.py`, `moderation/pipeline.py`), so its deployed value is a
 security-relevant fact rather than a label. `CYO_ADVENTURE_ALLOW_MOCK_REVIEW` deliberately has no
 row: the field is declared in `config.py` but read nowhere in the package, so setting it changes
 nothing today. Recording it as a live setting would assert an effect the code does not have.
+
+`READING_TRAIL_ENABLED` (`Settings.reading_trail_enabled`, default `false`; an empty value also
+reads as `false`) is the kill switch for per-read reading-trail capture
+(`POST /api/v1/reading-trail/{profile_id}/{storybook_id}`; privacy-model.md "Reading trail").
+Off, the route still authenticates and authorizes, then stores nothing and answers
+`recorded: false`, which stops the client recorder for the rest of that reader session. On, it
+writes child-linked behavioural rows to `reading_trail`. Turning it on is an explicit
+per-environment owner decision: it must stay off on the public tier until the privacy notice and
+the verifiable-parental-consent disclosure (ADR-018) name this processing activity. The 30-day
+retention purge is a `pg_cron` job in
+`supabase/migrations/20261120120000_add_reading_trail.sql`, not a setting, and runs whatever this
+flag says. The owner report reads the database URL from `READING_TRAIL_REPORT_DATABASE_URL` in
+the operator's own shell (`scripts/report_reading_trail.py`); that variable is never set on a
+deployed container.
 
 ### Frontend build-time configuration
 

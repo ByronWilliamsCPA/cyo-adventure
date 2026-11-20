@@ -13,7 +13,7 @@ source: "docs/planning/tech-spec.md sections Privacy controls, Data Protection, 
 
 # Privacy and Provider Data-Handling Model
 
-> **Status**: Active | **Version**: 0.3 | **Updated**: 2026-07-29
+> **Status**: Active | **Version**: 0.4 | **Updated**: 2026-11-20
 
 ## Overview
 
@@ -43,6 +43,8 @@ child. The following are classified as child-linked:
 - `reading_state` rows: `current_node`, `var_state`, `path`, `save_slots`, keyed by
   `child_profile_id`.
 - `completion` rows: `ending_id`, `found_at`, keyed by `child_profile_id`.
+- `reading_trail` rows: one per read-through, the ordered steps of that read, keyed by
+  `child_profile_id` (see [Reading Trail](#reading-trail) below for exactly what a step holds).
 - Raw LLM generation outputs stored in `generation_job.report` (a Postgres JSONB
   column), if they were generated in a context where a concept brief containing profile
   attributes was used. Per ADR-007 as amended 2026-07-16, `GET /generation-jobs/{id}`
@@ -237,7 +239,8 @@ A full deletion subsystem is a later deliverable. The requirement at Phase 0 is 
 data model does not make deletion impossible. The following rules apply:
 
 - Child-linked data must be kept in known, enumerable places: `child_profile` rows in
-  Postgres, `reading_state` rows in Postgres, `completion` rows in Postgres, and raw
+  Postgres, `reading_state` rows in Postgres, `completion` rows in Postgres, `reading_trail`
+  rows in Postgres, and raw
   generation outputs in the `generation_job.report` JSONB column in Postgres.
 - Child-linked data must not be scattered through structured logs, Sentry breadcrumbs, or
   application-level caches that are not enumerated in the data model.
@@ -246,6 +249,61 @@ data model does not make deletion impossible. The following rules apply:
 - When a child profile is deleted, the owning service must be able to identify and purge
   all associated `reading_state` and `completion` rows. Cascades must be defined in the
   Alembic schema.
+
+---
+
+## Reading Trail
+
+Added 2026-11-20, owner-approved, for the first family reading sessions. It records what happens
+during a read so the owner can see which books and which choices work: reads started, choices
+taken, endings reached, and where a read was abandoned. It follows the Proposed
+[reader-path engagement design](./reader-path-engagement-design.md) where that design decided
+(child-linked rows on a short retention, client-minted read id, first-party only, no new
+child-identified read surface) and the T5 pick-rate technique in the
+[2026-08-15 technique review](./story-quality-technique-review-2026-08-15.md). It does not build
+that design's de-identified `node_engagement` rollup or its admin aggregate routes.
+
+**What is stored, and nothing else.** One `reading_trail` row per read-through: the profile, its
+family (denormalized only so the row can carry the Tier 1 RLS policy), the storybook and version,
+a read id the client mints, the server's calendar **date** of first receipt (`started_on`), the
+ending id when one was reached, and an ordered list of steps. A step is exactly
+`{seq, kind, node_id, choice_id, elapsed_s}`: an ordinal, one of a closed set of kinds (start,
+resume, choice, auto, back, end, jump, restart, leave), a node id and for a choice a choice id
+taken from the book's own blob (the server rejects any id the version does not contain), and
+whole seconds since the read began on the reader's device. There is no free text, no device id,
+no IP address, no user agent, no location, and no per-step wall-clock time.
+
+**Why elapsed seconds rather than timestamps.** The owner's questions ("abandoned after two
+minutes on node X" versus "finished") need only durations inside a read. Per-step wall-clock
+times would add when a child reads (bedtime, school hours), which is more identifying and answers
+nothing asked, and a full-precision timestamp joins to every other record the server holds at
+that instant (ADR-031's reasoning). The single calendar fact is a server-stamped date, the same
+day grain as `reading_activity_day`.
+
+**Gated and first-party.** Capture is off unless `READING_TRAIL_ENABLED` is set for an
+environment ([runtime config](../operations/runtime-config.md)); off, the server stores nothing.
+Rows live only in this app's own Postgres. Nothing is sent to an analytics service, a log
+aggregator, or an LLM provider, and the ingest route logs a step count only, never trail content.
+There is no read route: children never read trails back, guardians see them only through the
+family export, and the owner reads aggregates through an admin script
+(`scripts/report_reading_trail.py`) whose output falls under ADR-030 Decision 6's egress rule (it
+stays on the machine that produced it).
+
+**Scoped like reading state, stricter at the database.** The ingest route runs the same gate as
+the reading-state save (the profile must be the caller's, the book readable by it and assigned to
+it, the version approved and the book published) and refuses a read id already bound to another
+profile or book. The table carries the ADR-022 Tier 1 `family_scoped` policy, which
+`reading_state` cannot (it has no `family_id`).
+
+**Retention and erasure.** Rows are deleted 30 days after `started_on` by the
+`purge_expired_reading_trails` pg_cron job, with no exemption set (the reader-path design's
+proposed window on ADR-007's precedent; the clock rule and the no-exemption rule are ADR-031
+Decision 7's). Deleting a profile or a family deletes its trails by cascade, proven by the
+deletion drill, and the family export (`GET /api/v1/me/export`) includes them.
+
+**Public tier.** This is a new processing activity, not an extension of reading-state saves. It
+must stay off on the public tier until the published privacy notice and the verifiable-parental-
+consent disclosure name it (ADR-018); the flag carries a `#CRITICAL: security` marker saying so.
 
 ---
 

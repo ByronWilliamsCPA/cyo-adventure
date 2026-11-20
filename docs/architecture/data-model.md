@@ -53,6 +53,7 @@ erDiagram
     character ||--o{ character_book_completion : "credited to"
     child_profile ||--o{ completion : "completes"
     child_profile ||--o{ reading_activity_day : "reads on days"
+    child_profile ||--o{ reading_trail : "reads through"
     storybook |o--o{ story_request : "resulting storybook"
     storybook_version ||--o{ completion : "pins version"
     child_profile ||--o{ rating : "rates"
@@ -292,6 +293,18 @@ erDiagram
         timestamptz updated_at
     }
 
+    reading_trail {
+        uuid id PK "client-minted read id"
+        uuid child_profile_id FK "composite FK with family_id -> child_profile; ON DELETE CASCADE"
+        uuid family_id FK "denormalized from profile; Tier 1 RLS"
+        varchar(120) storybook_id FK "composite FK to storybook_version; ON DELETE CASCADE"
+        int version FK "composite FK to storybook_version"
+        date started_on "server day-grain; 30-day purge"
+        jsonb steps "seq, kind, node_id, choice_id, elapsed_s"
+        int step_count "CHECK 0-2000"
+        varchar(120) ending_id "NULL; last ending reached"
+    }
+
     rating {
         uuid child_profile_id PK, FK
         varchar(120) storybook_id PK, FK
@@ -478,7 +491,7 @@ erDiagram
 
 ## Table Reference
 
-Twenty-nine of the 31 tables are described below. `reading_activity_day` and
+Thirty of the 32 tables are described below. `reading_activity_day` and
 `security_event` appear in both ER diagrams but have no section yet; that is known drift,
 not a claim that they are undocumented by design.
 
@@ -870,6 +883,29 @@ primary key `(child_profile_id, storybook_id, version, ending_id)`.
 | version | INT PK | |
 | ending_id | VARCHAR(120) PK | Stable ending id from Storybook |
 | found_at | TIMESTAMPTZ | Server default |
+
+### `reading_trail`
+
+One read-through of one storybook version by one child, so the owner can see which books and
+which choices work (privacy-model.md "Reading trail"). Written only by
+`POST /api/v1/reading-trail/{profile_id}/{storybook_id}` (`api/reading.py::ingest_reading_trail`),
+and only when `READING_TRAIL_ENABLED` is on; there is no read route. The owner reads it with
+`scripts/report_reading_trail.py`. ADR-022 Tier 1 (`family_scoped` policy), like `character`.
+
+| Column | Type | Notes |
+| -------- | ------ | ------- |
+| id | UUID PK | Client-minted read id; the idempotency key for offline replay. Refused if already bound to a different profile, book, or version |
+| child_profile_id | UUID FK | Composite FK `(child_profile_id, family_id)` to `child_profile (id, family_id)`, ON DELETE CASCADE |
+| family_id | UUID FK | Denormalized from the profile for the flat Tier 1 RLS predicate |
+| storybook_id | VARCHAR(120) FK | Composite FK `(storybook_id, version)` to `storybook_version`, ON DELETE CASCADE |
+| version | INT FK | Any approved version of a still-published book |
+| started_on | DATE | Server UTC date of first receipt; the only calendar fact stored. Purged 30 days later by the `purge_expired_reading_trails` pg_cron job, no exemptions |
+| steps | JSONB | Ordered `{seq, kind, node_id, choice_id, elapsed_s}`; `kind` is one of start, resume, choice, auto, back, end, jump, restart, leave (`reading_trail/steps.py`). Every id is checked against the version blob; merged by `seq`, first write wins |
+| step_count | INT | `len(steps)`; CHECK `ck_reading_trail_step_count` (0 to 2000) |
+| ending_id | VARCHAR(120) NULL | Ending of the last `end` step, server-derived from the blob |
+
+Indexes: `(child_profile_id, started_on)` (profile cascade, daily read cap),
+`(storybook_id, version)` (version cascade, report), `(started_on)` (purge).
 
 ### `rating`
 
