@@ -24,7 +24,7 @@ import sys
 import time
 from contextlib import asynccontextmanager
 from datetime import UTC, datetime, timedelta
-from typing import TYPE_CHECKING, Literal
+from typing import TYPE_CHECKING, Literal, cast
 
 from fastapi import APIRouter, HTTPException, status
 from pydantic import BaseModel, Field
@@ -34,11 +34,20 @@ from sqlalchemy import text
 from cyo_adventure import __version__
 from cyo_adventure.core.config import settings
 from cyo_adventure.core.rls_posture import measure_role_posture
+from cyo_adventure.core.schema_parity import (
+    CATALOG_QUERY_SQL,
+    SchemaComparison,
+    SchemaParityMonitor,
+    SchemaParityResult,
+    build_live_catalog,
+    compare_schema,
+)
 from cyo_adventure.utils.logging import get_logger
 
 if TYPE_CHECKING:
     from collections.abc import AsyncGenerator
 
+    from sqlalchemy.engine import Result
     from sqlalchemy.ext.asyncio import AsyncSession
 
 logger = get_logger(__name__)
@@ -714,6 +723,187 @@ async def check_generation_cascade() -> ReadinessCheck:
     )
 
 
+# How many missing names one log line carries. The count is always exact; the
+# list is capped so a fresh database (every table missing) cannot emit a
+# multi-kilobyte line every five minutes.
+_SCHEMA_LOG_NAME_CAP = 50
+
+
+async def _measure_schema_parity() -> SchemaComparison:
+    """Read the live catalog once and compare it to ``Base.metadata``.
+
+    #ASSUME: external resources: this opens its own short session rather than
+    sharing readiness()'s, because it runs at most once per TTL (and at
+    startup, outside any probe) and its failure must never disturb the gating
+    ``database`` check.
+    #VERIFY: tests/unit/test_health.py::TestCheckSchemaParity drives the
+    failure path; tests/integration/test_schema_parity_check.py runs this
+    exact query against a fully migrated Postgres.
+
+    Returns:
+        SchemaComparison: The ORM-versus-database comparison.
+    """
+    # Imported here to avoid circular imports, matching the other checks. The
+    # models import is load-bearing: without it Base.metadata may be empty and
+    # the comparison would pass vacuously.
+    import cyo_adventure.db.models  # noqa: F401  # pyright: ignore[reportUnusedImport]
+    from cyo_adventure.core.database import Base, get_session
+
+    async with get_session() as session:
+        result = await session.execute(text(CATALOG_QUERY_SQL))
+        # #ASSUME: data-integrity: CATALOG_QUERY_SQL selects exactly
+        # (name, name, boolean, text); the cast only names that shape.
+        # #VERIFY: tests/integration/test_schema_parity_check.py.
+        typed = cast("Result[tuple[str, str, bool, str]]", result)
+        rows = list(typed.tuples().all())
+    return compare_schema(Base.metadata, build_live_catalog(rows))
+
+
+_schema_monitor = SchemaParityMonitor(measure=_measure_schema_parity)
+# The state most recently written to the log, so an unchanged healthy verdict
+# is logged once rather than on every TTL refresh. A "behind" verdict is
+# re-logged on every refresh on purpose: it is an incident, not a status.
+_schema_log_state: dict[str, str | None] = {"last": None}
+
+
+def _log_schema_result(result: SchemaParityResult) -> None:
+    """Emit the structured log line for a freshly measured parity result.
+
+    All lines are WARNING or ERROR so they survive the production
+    ``LOG_LEVEL=WARNING`` default (docs/operations/security-events.md section
+    4); an ``info`` line would turn a healthy verdict back into silence, which
+    is indistinguishable from the check never having run.
+
+    Args:
+        result: The measurement that was just taken.
+    """
+    comparison = result.comparison
+    if result.state == "behind" and comparison is not None:
+        logger.error(
+            "schema_parity.database_behind",
+            detail=(
+                "the ORM maps tables or columns this database lacks; queries "
+                "touching them will fail. Apply pending migrations "
+                "(docs/operations/runbook.md section 2.5) and run "
+                "scripts/check_schema_parity.py"
+            ),
+            missing_table_count=len(comparison.missing_tables),
+            missing_column_count=comparison.missing_column_count,
+            missing_tables=list(comparison.missing_tables[:_SCHEMA_LOG_NAME_CAP]),
+            missing_columns=[
+                f"{t}.{c}" for t, c in comparison.missing_columns[:_SCHEMA_LOG_NAME_CAP]
+            ],
+        )
+        _schema_log_state["last"] = result.state
+        return
+    if result.state == _schema_log_state["last"]:
+        return
+    _schema_log_state["last"] = result.state
+    if result.state == "unknown":
+        logger.warning(
+            "schema_parity.unknown",
+            error_type=result.error_type,
+        )
+    elif comparison is not None and comparison.ahead:
+        logger.warning(
+            "schema_parity.database_ahead",
+            detail="database has tables or columns this app does not map; tolerable",
+            extra_table_count=len(comparison.extra_tables),
+            extra_column_count=len(comparison.extra_columns),
+        )
+    elif comparison is not None:
+        logger.warning(
+            "schema_parity.in_parity",
+            orm_tables=comparison.orm_tables,
+            orm_columns=comparison.orm_columns,
+        )
+
+
+async def check_schema_parity() -> ReadinessCheck:
+    """Report whether the live schema still has everything the ORM maps.
+
+    The 2026-08-24 incident (register row UW-C363, lesson AL-605): production
+    ran 18 migrations behind the deployed image and 500'd on every
+    authenticated adult request while this endpoint returned 200, because the
+    ``database`` check proves connectivity and nothing proved the schema.
+
+    Cost: the comparison runs at most once per
+    ``SchemaParityMonitor.ttl_seconds`` (five minutes) no matter how often
+    readiness is polled, and once at startup from the app lifespan. It reads
+    catalog metadata only (``pg_catalog``), never a data row, and adds nothing
+    to any request path.
+
+    Direction: only ``behind`` (an ORM table or column absent from the
+    database) reports ``state="degraded"``. A database AHEAD of the app (an
+    older image on a newer schema, which reads fine) reports ``"ok"``, so a
+    schema deploy that precedes an image pull never raises this.
+
+    #CRITICAL: external resources: deliberately NON-GATING (absent from
+    ``_CRITICAL_READINESS_CHECKS``), so drift turns the body's top-level
+    ``status`` to ``"degraded"`` and this check red, but the HTTP status stays
+    200. Readiness routes no traffic in this deployment (the production
+    healthcheck and the Dockerfile HEALTHCHECK poll ``/health/live``; nginx
+    proxies regardless), so a 503 would remove nothing from rotation. What a
+    503 WOULD do is blind the monitors that read this body: the scheduled
+    ``kws-delivery-health.yml`` curls with ``-f`` and would record
+    "unreachable" instead of the KWS verdict, and the e2e wait loops would
+    time out instead of reporting. And under any future orchestrator that
+    honours readiness, one missing column on an admin-only table would take
+    every kid's reading offline. The alert channel is the ERROR log line plus
+    ``frontend/e2e-prod/health-probe.spec.ts``, which fails the daily
+    production E2E naming this check.
+    #VERIFY: tests/unit/test_health.py::TestCheckSchemaParity asserts a
+    degraded schema leaves the HTTP status 200 and sets the top-level
+    status to "degraded"; the response carries counts only.
+
+    #CRITICAL: security: the response carries counts, never table or column
+    names; ``/health/ready`` is unauthenticated. The names go to the log.
+    #VERIFY: TestCheckSchemaParity asserts no missing name appears in the
+    serialized check.
+
+    Returns:
+        ReadinessCheck: ``ok``, ``degraded`` (behind), or ``unknown`` (the
+        catalog query failed, so nothing was measured).
+    """
+    result, fresh = await _schema_monitor.current()
+    if fresh:
+        _log_schema_result(result)
+    comparison = result.comparison
+    if result.state == "behind" and comparison is not None:
+        return ReadinessCheck(
+            name="schema",
+            status=False,
+            state="degraded",
+            error=(
+                f"database is behind the application: "
+                f"{len(comparison.missing_tables)} table(s) and "
+                f"{comparison.missing_column_count} column(s) the ORM maps are "
+                f"missing; see the schema_parity.database_behind log line"
+            ),
+        )
+    if result.state == "unknown":
+        return ReadinessCheck(
+            name="schema",
+            status=False,
+            state="unknown",
+            error=_CHECK_FAILED_MESSAGE,
+        )
+    return ReadinessCheck(name="schema", status=True, state="ok")
+
+
+async def prime_schema_parity() -> None:
+    """Measure schema parity once at startup so drift is logged before traffic.
+
+    Called as a background task from the app lifespan, so a slow or
+    unreachable database never delays or blocks boot.
+
+    #ASSUME: timing dependencies: the result is cached for the monitor's TTL,
+    so the first readiness poll after boot reuses it instead of re-querying.
+    #VERIFY: tests/unit/test_health.py::TestCheckSchemaParity.
+    """
+    await check_schema_parity()
+
+
 @router.get(
     "/ready",
     responses={
@@ -738,6 +928,9 @@ async def readiness() -> ReadinessStatus:
       readiness; see check_kws_verification's docstring, ADR-018 D1).
     - Generation-cascade vendor span (reported, does not gate readiness; a
       configuration-posture check, see check_generation_cascade's docstring).
+    - Schema parity (reported, does not gate readiness; a database behind the
+      deployed ORM sets the top-level status to "degraded" instead; see
+      check_schema_parity's docstring).
     - External service health: intentionally absent; see the comment in the
       body for why there is no generic external check.
 
@@ -795,6 +988,7 @@ async def readiness() -> ReadinessStatus:
     checks["generation_queue"] = await check_generation_queue()
     checks["kws_verification"] = await check_kws_verification()
     checks["generation_cascade"] = await check_generation_cascade()
+    checks["schema"] = await check_schema_parity()
 
     # There is deliberately NO generic external-service check here, and no
     # placeholder waiting to be uncommented. LLM/story-generation providers are
@@ -830,8 +1024,12 @@ async def readiness() -> ReadinessStatus:
             },
         )
 
+    # A database behind the deployed code is reported in the body's top-level
+    # status without flipping the HTTP code; see check_schema_parity's
+    # #CRITICAL note for why drift is non-gating.
+    overall = "degraded" if checks["schema"].state == "degraded" else "ok"
     return ReadinessStatus(
-        status="ok",
+        status=overall,
         uptime_seconds=time.time() - _START_TIME,
         checks=checks,
     )

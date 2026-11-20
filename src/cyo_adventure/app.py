@@ -8,6 +8,8 @@ generated frontend client.
 
 from __future__ import annotations
 
+import asyncio
+import contextlib
 from contextlib import asynccontextmanager
 from typing import TYPE_CHECKING, Any, cast
 
@@ -656,7 +658,23 @@ async def _lifespan(_app: FastAPI) -> AsyncGenerator[None]:
         json_logs=settings.json_logs,
         include_timestamp=settings.include_timestamp,
     )
-    yield
+    # #CRITICAL: external resources: schema drift (UW-C363) is measured once at
+    # startup so a database behind this image is logged at ERROR before the
+    # first request, not discovered as a 500. It runs as a background task
+    # and is never awaited here: a slow or unreachable database must not
+    # delay or block boot, and the check itself can never fail startup.
+    # #VERIFY: tests/unit/test_health.py::TestPrimeSchemaParityLifespan asserts
+    # the task is started and cancelled cleanly on shutdown.
+    schema_task = asyncio.create_task(
+        health.prime_schema_parity(), name="schema-parity-startup"
+    )
+    try:
+        yield
+    finally:
+        if not schema_task.done():
+            schema_task.cancel()
+        with contextlib.suppress(asyncio.CancelledError, Exception):
+            await schema_task
 
 
 def create_app() -> FastAPI:
