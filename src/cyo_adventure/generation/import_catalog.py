@@ -19,8 +19,20 @@ It never publishes (ADR-005 mandatory human approval); promotion to
 ``published``/``catalog`` visibility is a separate, explicitly-invoked step
 (see ``publishing/catalog_publish.py``).
 
+Revised editions. The importer is idempotent by story id: a story that already
+exists is ``skipped_existing`` and is never updated, and ``persist_storybook``
+only ever INSERTs. A book whose prose or structure was revised after its first
+import therefore cannot reach an environment that already holds the first
+edition by re-running the plain batch. ``--only`` and ``--edition`` exist for
+that case: they import the named books as NEW stories whose id is the blob id
+plus ``__<edition>``, leaving the first edition untouched beside them. The
+operator then retires the superseded edition by hand (send it back if it is
+``in_review``, archive it if it is ``published``).
+
 Usage:
     uv run python -m cyo_adventure.generation.import_catalog
+    uv run python -m cyo_adventure.generation.import_catalog \
+        --only the-hollow-lighthouse --only the-midnight-museum --edition r2
 """
 
 from __future__ import annotations
@@ -28,8 +40,9 @@ from __future__ import annotations
 import argparse
 import asyncio
 import json
+import re
 import sys
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 from pathlib import Path
 from typing import TYPE_CHECKING, Literal, cast
 
@@ -803,6 +816,104 @@ async def import_catalog(
     return outcomes
 
 
+_FILLED_SUFFIX = ".filled.json"
+
+# An edition label becomes part of a storybook primary key and of every offline
+# cache key derived from it, so it is held to a small, boring alphabet: no ":"
+# (import_story.py refuses it, the client splits reader keys on the first one),
+# no "_" (so "__" stays an unambiguous separator), no upper case, no path or
+# shell metacharacters.
+_EDITION_PATTERN = re.compile(r"^[a-z0-9][a-z0-9-]{0,15}$")
+
+
+def entry_slug(entry: CatalogEntry) -> str:
+    """Return the selector ``--only`` matches an entry by.
+
+    The slug is the filled file's name without ``.filled.json``, because that
+    is unique per manifest row. ``skeleton_slug`` is not: the Cave of Echoes
+    entry and its two pilot re-theme variants share one skeleton.
+
+    Args:
+        entry: The manifest entry.
+
+    Returns:
+        The entry's file-name slug, for example ``the-hollow-lighthouse`` or
+        ``the-cave-of-echoes.dino-dig``.
+    """
+    return Path(entry.path).name.removesuffix(_FILLED_SUFFIX)
+
+
+def select_entries(
+    entries: tuple[CatalogEntry, ...],
+    *,
+    only: tuple[str, ...] = (),
+    edition: str | None = None,
+) -> tuple[CatalogEntry, ...]:
+    """Narrow the manifest to the named books and, optionally, re-edition them.
+
+    Args:
+        entries: The manifest to select from.
+        only: File-name slugs (see :func:`entry_slug`) to keep. Empty keeps
+            every entry.
+        edition: When set, each selected entry is imported under its blob id
+            plus ``__<edition>`` instead of the blob id itself.
+
+    Returns:
+        The selected entries, in manifest order.
+
+    Raises:
+        ValidationError: If a slug in ``only`` names no entry, if ``edition``
+            is malformed or given without ``only``, or if a selected entry
+            already carries an ``id_suffix``.
+    """
+    known = {entry_slug(entry): entry for entry in entries}
+    unknown = sorted(set(only) - known.keys())
+    if unknown:
+        msg = (
+            f"--only names no catalog entry: {', '.join(unknown)}. "
+            f"Known slugs: {', '.join(sorted(known))}"
+        )
+        raise ValidationError(msg)
+    wanted = set(only)
+    selected = tuple(
+        entry for entry in entries if not wanted or entry_slug(entry) in wanted
+    )
+    if edition is None:
+        return selected
+
+    # #CRITICAL: data integrity: an edition import INSERTs a second storybook
+    # beside the first edition; nothing here updates, supersedes, or retires
+    # the row that already exists. Without --only it would duplicate the whole
+    # catalog into the review queue, one new child-facing candidate per book,
+    # so a blanket edition is refused rather than trusted to be intentional.
+    # #VERIFY: tests/unit/test_import_catalog.py::TestSelectEntries::
+    # test_edition_without_only_is_refused
+    if not only:
+        msg = (
+            "--edition requires at least one --only: it creates a new story "
+            "beside each existing one and must name the books it applies to"
+        )
+        raise ValidationError(msg)
+    if _EDITION_PATTERN.fullmatch(edition) is None:
+        msg = (
+            "--edition must be 1 to 16 characters of lower-case letters, "
+            "digits, or '-', starting with a letter or digit"
+        )
+        raise ValidationError(msg)
+    # #ASSUME: data integrity: an entry that already has an id_suffix is a
+    # pilot re-theme variant whose suffix IS its identity; stacking a second
+    # suffix on it would mint an id nothing else in the repo can name.
+    # #VERIFY: TestSelectEntries::test_edition_refuses_an_already_suffixed_entry
+    suffixed = [entry_slug(entry) for entry in selected if entry.id_suffix is not None]
+    if suffixed:
+        msg = (
+            "--edition cannot be applied to entries that already carry an id "
+            f"suffix: {', '.join(suffixed)}"
+        )
+        raise ValidationError(msg)
+    return tuple(replace(entry, id_suffix=edition) for entry in selected)
+
+
 def _print_summary(outcomes: list[ImportOutcome]) -> int:
     """Write the grouped outcome summary to stdout.
 
@@ -851,6 +962,27 @@ def build_arg_parser() -> argparse.ArgumentParser:
         default=_PROMPT_VERSION,
         help="Prompt/skill version to record on each import.",
     )
+    parser.add_argument(
+        "--only",
+        action="append",
+        default=[],
+        metavar="SLUG",
+        help=(
+            "Import only this book (the filled file's name without "
+            "'.filled.json', for example the-hollow-lighthouse). Repeatable."
+        ),
+    )
+    parser.add_argument(
+        "--edition",
+        default=None,
+        metavar="LABEL",
+        help=(
+            "Import the --only books as NEW stories with id '<blob id>__LABEL' "
+            "(for example r2), beside any first edition already present. "
+            "Requires --only. The first edition is not changed; retire it by "
+            "hand afterwards."
+        ),
+    )
     return parser
 
 
@@ -862,13 +994,21 @@ def main(argv: list[str] | None = None) -> int:
 
     Returns:
         Exit code: 0 if every entry imported cleanly or was already present,
-        1 if any entry was gate-blocked or errored.
+        1 if any entry was gate-blocked or errored, 2 if the selection
+        arguments were invalid (nothing is imported in that case).
     """
     args = build_arg_parser().parse_args(argv)
     model: str = args.model
     prompt_version: str = args.prompt_version
+    only: list[str] = args.only
+    edition: str | None = args.edition
+    try:
+        entries = select_entries(CATALOG_ENTRIES, only=tuple(only), edition=edition)
+    except ValidationError as exc:
+        sys.stderr.write(f"error: {exc}\n")
+        return 2
     config = ImportConfig(model=model, prompt_version=prompt_version)
-    outcomes = asyncio.run(import_catalog(get_session, config))
+    outcomes = asyncio.run(import_catalog(get_session, config, entries=entries))
     return _print_summary(outcomes)
 
 

@@ -35,6 +35,9 @@ from cyo_adventure.generation.import_catalog import (
     _prepare_blob,
     _print_summary,
     build_arg_parser,
+    entry_slug,
+    main,
+    select_entries,
 )
 from cyo_adventure.storybook.models import SCHEMA_MAJOR, SCHEMA_MINOR, SCHEMA_VERSION
 from cyo_adventure.validator.gate import run_gate
@@ -710,6 +713,166 @@ class TestBuildArgParser:
         )
         assert args.model == "custom-model"
         assert args.prompt_version == "v2"
+
+    def test_only_is_repeatable_and_edition_is_optional(self) -> None:
+        args = build_arg_parser().parse_args(
+            ["--only", "book-a", "--only", "book-b", "--edition", "r2"]
+        )
+        assert args.only == ["book-a", "book-b"]
+        assert args.edition == "r2"
+
+    def test_selection_defaults_import_the_whole_manifest(self) -> None:
+        args = build_arg_parser().parse_args([])
+        assert args.only == []
+        assert args.edition is None
+
+
+def _entries() -> tuple[CatalogEntry, ...]:
+    """Three manifest rows: two plain books and one already-suffixed variant."""
+    return (
+        CatalogEntry("Alpha", "out/alpha.filled.json", "8-11", "alpha"),
+        CatalogEntry("Beta", "out/beta.filled.json", "10-13", "beta"),
+        CatalogEntry(
+            "Alpha (re-theme)",
+            "out/pilot/fills/alpha.moon-base.filled.json",
+            "8-11",
+            "alpha",
+            id_suffix="moon-base",
+        ),
+    )
+
+
+@pytest.mark.unit
+class TestEntrySlug:
+    def test_is_the_filled_file_name_without_its_suffix(self) -> None:
+        plain, _, variant = _entries()
+        assert entry_slug(plain) == "alpha"
+        assert entry_slug(variant) == "alpha.moon-base"
+
+    def test_is_unique_across_the_real_manifest(self) -> None:
+        # --only selects by this slug, so two rows sharing one would make a
+        # selection ambiguous. skeleton_slug is NOT unique (the Cave of Echoes
+        # entry and its two pilot variants share one), which is why it is not
+        # the selector.
+        slugs = [entry_slug(entry) for entry in CATALOG_ENTRIES]
+        assert len(slugs) == len(set(slugs))
+
+
+@pytest.mark.unit
+class TestSelectEntries:
+    def test_no_selection_keeps_every_entry_unchanged(self) -> None:
+        entries = _entries()
+        assert select_entries(entries) == entries
+
+    def test_only_keeps_the_named_books_in_manifest_order(self) -> None:
+        entries = _entries()
+        selected = select_entries(entries, only=("beta", "alpha"))
+        assert [entry.title for entry in selected] == ["Alpha", "Beta"]
+
+    def test_only_tells_a_book_from_its_variant(self) -> None:
+        selected = select_entries(_entries(), only=("alpha.moon-base",))
+        assert [entry.title for entry in selected] == ["Alpha (re-theme)"]
+
+    def test_unknown_slug_is_refused_and_names_the_known_ones(self) -> None:
+        with pytest.raises(ValidationError) as excinfo:
+            select_entries(_entries(), only=("alpha", "gamma"))
+        message = str(excinfo.value)
+        assert "gamma" in message
+        assert "alpha.moon-base" in message
+
+    def test_edition_sets_the_id_suffix_of_each_selected_book(self) -> None:
+        selected = select_entries(_entries(), only=("alpha", "beta"), edition="r2")
+        assert [entry.id_suffix for entry in selected] == ["r2", "r2"]
+        # Everything else about the row is carried over untouched.
+        assert [entry.path for entry in selected] == [
+            "out/alpha.filled.json",
+            "out/beta.filled.json",
+        ]
+
+    def test_edition_does_not_mutate_the_manifest(self) -> None:
+        entries = _entries()
+        select_entries(entries, only=("alpha",), edition="r2")
+        assert entries[0].id_suffix is None
+
+    def test_edition_without_only_is_refused(self) -> None:
+        # A blanket edition would duplicate the whole catalog into the review
+        # queue, one new child-facing candidate per book.
+        with pytest.raises(ValidationError, match="requires at least one --only"):
+            select_entries(_entries(), edition="r2")
+
+    def test_edition_refuses_an_already_suffixed_entry(self) -> None:
+        with pytest.raises(ValidationError, match=r"alpha\.moon-base"):
+            select_entries(_entries(), only=("alpha.moon-base",), edition="r2")
+
+    @pytest.mark.parametrize(
+        "label",
+        ["", "R2", "r_2", "r:2", "-r2", "r2 ", "../r2", "r" * 17],
+    )
+    def test_malformed_edition_labels_are_refused(self, label: str) -> None:
+        with pytest.raises(ValidationError, match="--edition must be"):
+            select_entries(_entries(), only=("alpha",), edition=label)
+
+    @pytest.mark.parametrize("label", ["r2", "2", "second-pass", "r" * 16])
+    def test_well_formed_edition_labels_are_accepted(self, label: str) -> None:
+        (selected,) = select_entries(_entries(), only=("alpha",), edition=label)
+        assert selected.id_suffix == label
+
+    def test_an_edition_reaches_the_story_id_the_importer_checks(
+        self, tmp_path: Path
+    ) -> None:
+        # The whole point of --edition: the id the idempotency check and the
+        # INSERT see is the blob id plus the label, so a revised book lands
+        # beside its first edition instead of being skipped as existing.
+        (tmp_path / "out").mkdir()
+        (tmp_path / "out" / "alpha.filled.json").write_text(
+            json.dumps(_minimal_current_blob()), encoding="utf-8"
+        )
+        (entry,) = select_entries(_entries(), only=("alpha",), edition="r2")
+
+        result = _prepare_blob(tmp_path, entry)
+
+        assert not isinstance(result, ImportOutcome)
+        story_id, blob = result
+        assert story_id == "sk_unit_test_current__r2"
+        assert blob["id"] == "sk_unit_test_current__r2"
+
+
+@pytest.mark.unit
+class TestMainSelection:
+    def test_invalid_selection_exits_two_and_imports_nothing(
+        self, monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
+    ) -> None:
+        batch = AsyncMock(return_value=[])
+        monkeypatch.setattr(import_catalog_module, "import_catalog", batch)
+
+        code = main(["--edition", "r2"])
+
+        assert code == 2
+        batch.assert_not_called()
+        assert "--edition requires at least one --only" in capsys.readouterr().err
+
+    def test_selected_entries_are_what_the_batch_imports(
+        self, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        batch = AsyncMock(return_value=[])
+        monkeypatch.setattr(import_catalog_module, "import_catalog", batch)
+
+        code = main(["--only", "the-hollow-lighthouse", "--edition", "r2"])
+
+        assert code == 0
+        (entry,) = batch.call_args.kwargs["entries"]
+        assert entry.path == "out/the-hollow-lighthouse.filled.json"
+        assert entry.id_suffix == "r2"
+
+    def test_plain_invocation_still_imports_the_whole_manifest(
+        self, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        batch = AsyncMock(return_value=[])
+        monkeypatch.setattr(import_catalog_module, "import_catalog", batch)
+
+        assert main([]) == 0
+
+        assert batch.call_args.kwargs["entries"] == CATALOG_ENTRIES
 
 
 def _persist_entry() -> CatalogEntry:
