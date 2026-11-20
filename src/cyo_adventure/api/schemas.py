@@ -10,6 +10,7 @@ from __future__ import annotations
 import json
 import re
 import unicodedata
+import uuid
 from datetime import date, datetime
 from typing import Annotated, Literal
 
@@ -31,6 +32,7 @@ from cyo_adventure.api.residence_countries import ASSIGNED_RESIDENCE_COUNTRY_COD
 from cyo_adventure.consent import VerificationStatus
 from cyo_adventure.db.models import (
     _PERSONALIZATION_RING2_SLOT_TYPE_VALUES,
+    READING_TRAIL_MAX_STEPS,
     RING_GOAL_DAYS_MAX,
     RING_GOAL_DAYS_MIN,
 )
@@ -40,6 +42,14 @@ from cyo_adventure.publishing.reason_codes import (
     RecallReasonCodeLiteral,
     SendBackReasonCodeLiteral,
 )
+from cyo_adventure.reading_trail.steps import (
+    MAX_ELAPSED_SECONDS as TRAIL_MAX_ELAPSED_SECONDS,
+)
+from cyo_adventure.reading_trail.steps import MAX_ID_LENGTH as TRAIL_MAX_ID_LENGTH
+from cyo_adventure.reading_trail.steps import (
+    MAX_STEPS_PER_BATCH as TRAIL_MAX_STEPS_PER_BATCH,
+)
+from cyo_adventure.reading_trail.steps import StepKind
 from cyo_adventure.storybook.character_vocabulary import ARCHETYPE_ROSTER
 from cyo_adventure.storybook.evaluator import VarState
 from cyo_adventure.storybook.models import (
@@ -133,6 +143,71 @@ class ReadingStateBody(BaseModel):
             )
             raise ValueError(msg)
         return self
+
+
+# Reading trail (privacy-model.md "Reading trail"). Identifier strings are
+# bounded like the String(120) node/choice columns elsewhere and may not contain
+# whitespace. That is a cheap pre-filter only: the authoritative guard is the
+# route checking every id against the pinned version's own blob, which is what
+# keeps free text out. The storybook schema itself allows any non-empty id, so
+# nothing stricter is imposed here (93,892 committed ids all pass this shape).
+_TrailId = Annotated[
+    str,
+    StringConstraints(min_length=1, max_length=TRAIL_MAX_ID_LENGTH, pattern=r"^\S+$"),
+]
+
+
+class ReadingTrailStepBody(BaseModel):
+    """One recorded step of a read (see ``reading_trail/steps.py`` for kinds).
+
+    The client assigns ``seq`` (0 for the opening step, then increasing);
+    ``elapsed_s`` is whole seconds since the read began on the reader's own
+    clock. There is no wall-clock field, by design.
+    """
+
+    model_config = ConfigDict(extra="forbid")
+
+    seq: int = Field(ge=0, lt=READING_TRAIL_MAX_STEPS)
+    kind: StepKind
+    node_id: _TrailId
+    choice_id: _TrailId | None = None
+    elapsed_s: int = Field(ge=0, le=TRAIL_MAX_ELAPSED_SECONDS)
+
+
+class ReadingTrailBatchBody(BaseModel):
+    """A batch of steps for one read, safe to replay (POST body).
+
+    ``read_id`` is minted by the client when a read starts (and again on a
+    restart), so an offline replay of the same batch addresses the same read;
+    the server ignores any step whose ``seq`` it already holds.
+    """
+
+    model_config = ConfigDict(extra="forbid")
+
+    # #ASSUME: security: read_id is client-minted, so it is an idempotency key,
+    # never an authority. The route refuses a read_id already bound to a
+    # different profile, storybook, or version, so a guessed or reused id
+    # cannot append to someone else's trail.
+    # #VERIFY: tests/integration/test_reading_trail.py::
+    # test_read_id_bound_to_another_profile_rejected.
+    read_id: uuid.UUID
+    version: int = Field(ge=1)
+    steps: list[ReadingTrailStepBody] = Field(
+        min_length=1, max_length=TRAIL_MAX_STEPS_PER_BATCH
+    )
+
+
+class ReadingTrailIngestView(BaseModel):
+    """The ingest answer: whether this environment records trails at all.
+
+    ``recorded`` is ``False`` when capture is switched off
+    (``Settings.reading_trail_enabled``); nothing was stored and the client
+    stops sending for the rest of the reader session. ``stored_steps`` is the
+    read's total step count after the merge (``0`` when not recorded).
+    """
+
+    recorded: bool
+    stored_steps: int = Field(ge=0, le=READING_TRAIL_MAX_STEPS)
 
 
 class ReadingStateView(BaseModel):
@@ -2526,7 +2601,8 @@ class FamilyExportView(BaseModel):
             rows, plus the two ``real_name_ring1_enabled``/
             ``real_name_ring2_enabled`` booleans on the profile itself), and
             ``disclosure_consents`` (``PersonalizationDisclosureConsent``
-            rows, including tombstoned ones) lists.
+            rows, including tombstoned ones), and ``reading_trails``
+            (``ReadingTrail`` rows, steps included) lists.
         story_requests: Every story request tied to the family.
     """
 

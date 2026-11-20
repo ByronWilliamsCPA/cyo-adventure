@@ -1840,6 +1840,95 @@ class ReadingActivityDay(UpdatedAtMixin, Base):
     last_flush_id: Mapped[str | None] = mapped_column(String(64), default=None)
 
 
+# Upper bound on the steps one read may accumulate, enforced by the API (the
+# merge refuses to grow past it) and by ck_reading_trail_step_count at rest.
+READING_TRAIL_MAX_STEPS = 2000
+
+
+class ReadingTrail(Base):
+    """One read-through of one storybook version by one child (reading trail).
+
+    Child-linked, first-party, short-lived behavioural data
+    (privacy-model.md "Reading trail"). The row id is the client-minted read
+    id, so an offline replay of the same batch addresses the same row, and
+    ``steps`` is merged by each step's client-assigned ``seq``: a step whose
+    ``seq`` is already stored is ignored, which is what makes a replay a
+    no-op (``reading_trail/steps.py::merge_steps``).
+
+    Each element of ``steps`` is exactly
+    ``{"seq", "kind", "node_id", "choice_id", "elapsed_s"}``: an ordinal, a
+    closed step kind, a node id and (for a choice) a choice id from the pinned
+    version's own blob, and whole seconds since the read began on the
+    reader's clock. There is deliberately no wall-clock time per step, no
+    device id, no IP, no user agent, and no free text: ``started_on`` is the
+    only calendar fact, at day grain and stamped by the server, matching
+    ``ReadingActivityDay``'s posture.
+
+    ``family_id`` is denormalized from the owning profile so the table can
+    carry the ADR-022 Tier 1 ``family_scoped`` RLS policy (a flat predicate,
+    no join), exactly like ``Character``; the composite foreign key to
+    ``child_profile (id, family_id)`` keeps the denormalized value honest.
+
+    #CRITICAL: data-integrity: both foreign keys CASCADE. A trail is purged
+    with its profile (and so with its family) and with the storybook version
+    it is pinned to; a profile deletion that left a route history behind is
+    exactly what the deletion-readiness commitment (S10, ADR-018) forbids.
+    #VERIFY: tests/integration/test_deletion_drill.py::
+    test_delete_profile_removes_child_linked_rows and
+    ::test_delete_my_family_removes_everything both seed a trail and assert it
+    is gone.
+
+    #CRITICAL: security: retention is 30 days from ``started_on``, enforced by
+    the ``purge_expired_reading_trails`` pg_cron job in
+    supabase/migrations/20261120120000_add_reading_trail.sql with no
+    exemption set (ADR-031 Decision 7's rule, applied to this data class).
+    #VERIFY: tests/integration/test_reading_trail.py::
+    test_purge_function_deletes_only_expired_trails runs the migrated purge
+    function against a migrated database.
+    """
+
+    __tablename__ = "reading_trail"
+    __table_args__ = (
+        ForeignKeyConstraint(
+            ["child_profile_id", "family_id"],
+            [_FK_CHILD_PROFILE, _FK_CHILD_PROFILE_FAMILY_ID],
+            ondelete="CASCADE",
+            name="fk_reading_trail_profile_family",
+        ),
+        ForeignKeyConstraint(
+            ["storybook_id", "version"],
+            [_FK_STORYBOOK_VERSION_STORYBOOK_ID, _FK_STORYBOOK_VERSION_VERSION],
+            ondelete="CASCADE",
+            name="fk_reading_trail_storybook_version",
+        ),
+        CheckConstraint(
+            f"step_count >= 0 AND step_count <= {READING_TRAIL_MAX_STEPS}",
+            name="ck_reading_trail_step_count",
+        ),
+        # Serves the profile-side FK cascade and the per-profile daily read
+        # cap's count; Postgres never indexes the referencing side of an FK.
+        Index(
+            "ix_reading_trail_child_profile_id_started_on",
+            "child_profile_id",
+            "started_on",
+        ),
+        # Serves the storybook-version FK cascade and the per-book report.
+        Index("ix_reading_trail_storybook_id_version", "storybook_id", "version"),
+        # Serves the retention purge's range predicate.
+        Index("ix_reading_trail_started_on", "started_on"),
+    )
+
+    id: Mapped[uuid.UUID] = mapped_column(primary_key=True)
+    child_profile_id: Mapped[uuid.UUID] = mapped_column()
+    family_id: Mapped[uuid.UUID] = mapped_column()
+    storybook_id: Mapped[str] = mapped_column(String(120))
+    version: Mapped[int] = mapped_column()
+    started_on: Mapped[date] = mapped_column(Date)
+    steps: Mapped[list[dict[str, object]]] = mapped_column(JSONB, default=list)
+    step_count: Mapped[int] = mapped_column(default=0, server_default=text("0"))
+    ending_id: Mapped[str | None] = mapped_column(String(120), default=None)
+
+
 class Concept(UUIDPrimaryKeyMixin, CreatedAtMixin, Base):
     """A generation concept brief: the intake form for a story request.
 

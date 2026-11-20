@@ -318,6 +318,14 @@ def _reading_state_body(seed: Seed) -> dict[str, Any]:
     }
 
 
+def _reading_trail_body(seed: Seed) -> dict[str, Any]:
+    return {
+        "read_id": "00000000-0000-4000-8000-000000000001",
+        "version": seed.version,
+        "steps": [{"seq": 0, "kind": "start", "node_id": "n_open", "elapsed_s": 0}],
+    }
+
+
 def _story_request_body(seed: Seed) -> dict[str, Any]:
     return {
         "profile_id": str(seed.child_profile_id),
@@ -1029,6 +1037,16 @@ _ROUTE_SPECS: list[RouteSpec] = [
         json_body=_reading_state_body,
     ),
     RouteSpec(
+        # Reading trail ingest: the same authorize_profile gate as the
+        # reading-state PUT, run before the capture flag is read, so the role
+        # matrix holds whether capture is on or off in this environment.
+        "POST",
+        "/api/v1/reading-trail/{profile_id}/{storybook_id}",
+        frozenset({Role.GUARDIAN, Role.CHILD}),
+        path_params=_reading_state_path,
+        json_body=_reading_trail_body,
+    ),
+    RouteSpec(
         # Same gate as reading-state GET: authorize_profile then the
         # _load_readable_storybook read gate on the CURRENT book, both before
         # any series row is read (api/reading.py::get_series_next).
@@ -1470,6 +1488,7 @@ _CROSS_FAMILY_ROUTE_KEYS: list[tuple[str, str]] = [
     ("PATCH", "/api/v1/profiles/{profile_id}"),
     ("GET", "/api/v1/reading-state/{profile_id}/{storybook_id}"),
     ("PUT", "/api/v1/reading-state/{profile_id}/{storybook_id}"),
+    ("POST", "/api/v1/reading-trail/{profile_id}/{storybook_id}"),
     ("GET", "/api/v1/series-next/{profile_id}/{storybook_id}"),
     ("POST", "/api/v1/completions"),
     ("GET", "/api/v1/storybooks/{storybook_id}/assignments"),
@@ -1586,6 +1605,7 @@ _CROSS_FAMILY_CHILD_ROUTE_KEYS: list[tuple[str, str]] = [
     ("GET", "/api/v1/library"),
     ("GET", "/api/v1/reading-state/{profile_id}/{storybook_id}"),
     ("PUT", "/api/v1/reading-state/{profile_id}/{storybook_id}"),
+    ("POST", "/api/v1/reading-trail/{profile_id}/{storybook_id}"),
     ("GET", "/api/v1/series-next/{profile_id}/{storybook_id}"),
     ("POST", "/api/v1/completions"),
     ("GET", "/api/v1/reading-history/{profile_id}"),

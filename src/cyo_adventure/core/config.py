@@ -1488,6 +1488,31 @@ class Settings(BaseSettings):
     # ::test_gate_max_concurrency_at_the_connection_pool_ceiling_rejected.
     gate_max_concurrency: int = Field(default=4, ge=1, le=39)
 
+    # --- Reading trail: per-read step capture (privacy-model.md "Reading trail") ---
+    #
+    # The kill switch for POST /api/v1/reading-trail/{profile_id}/{storybook_id}.
+    # Off, the route still authenticates and authorizes the caller (so the flag
+    # is never an authorization oracle) and then returns ``recorded: false``
+    # without touching the reading_trail table at all: no validation query, no
+    # insert, no update. The client recorder reads that answer and stops sending
+    # for the rest of the reader session.
+    #
+    # #CRITICAL: security: default False, and it must stay off on the public tier
+    # until the published privacy notice and the verifiable-parental-consent
+    # disclosure (ADR-018) name per-choice reading capture as a processing
+    # activity. A guardian's consent covers the product functions disclosed to
+    # them; a per-choice route history is a new activity, not an extension of
+    # reading-state saves. Turning it on is an explicit per-environment owner
+    # decision, today scoped to the family tier.
+    # #VERIFY: tests/unit/test_reading_trail_steps.py::
+    # test_reading_trail_capture_is_off_by_default, and
+    # tests/integration/test_reading_trail.py::
+    # test_disabled_flag_stores_nothing asserts a disabled environment writes
+    # zero rows even for a fully valid batch.
+    reading_trail_enabled: bool = Field(
+        default=False, validation_alias="READING_TRAIL_ENABLED"
+    )
+
     # --- ADR-030: the engagement-correlation analysis job ---
     #
     # The kill switch. Off, the job does not read the database, does not
@@ -1520,7 +1545,11 @@ class Settings(BaseSettings):
         validation_alias="ANALYSIS_ENGAGEMENT_CORRELATION_OUTPUT_DIR",
     )
 
-    @field_validator("analysis_engagement_correlation_enabled", mode="before")
+    @field_validator(
+        "analysis_engagement_correlation_enabled",
+        "reading_trail_enabled",
+        mode="before",
+    )
     @classmethod
     def _empty_engagement_flag_is_off(cls, value: object) -> object:
         """Read an empty override of the kill switch as "off", not as an error.

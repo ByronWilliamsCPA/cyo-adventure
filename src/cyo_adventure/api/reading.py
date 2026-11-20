@@ -16,6 +16,7 @@ from typing import TYPE_CHECKING
 from fastapi import APIRouter
 from fastapi.responses import JSONResponse
 from sqlalchemy import func, select
+from sqlalchemy.dialects.postgresql import insert as pg_insert
 
 from cyo_adventure.api.deps import (
     Context,
@@ -32,6 +33,8 @@ from cyo_adventure.api.schemas import (
     ReadingStateBody,
     ReadingStateResultView,
     ReadingStateView,
+    ReadingTrailBatchBody,
+    ReadingTrailIngestView,
     SeriesNextBook,
     SeriesNextView,
     error_responses,
@@ -39,6 +42,7 @@ from cyo_adventure.api.schemas import (
 from cyo_adventure.api.sentinel_log import strip_and_log
 from cyo_adventure.characters.progression import record_progression
 from cyo_adventure.characters.seeding import character_seed
+from cyo_adventure.core.config import settings
 from cyo_adventure.core.exceptions import (
     AuthorizationError,
     ResourceNotFoundError,
@@ -47,8 +51,10 @@ from cyo_adventure.core.exceptions import (
 from cyo_adventure.db.models import (
     Character,
     CharacterAttribute,
+    ChildProfile,
     Completion,
     ReadingState,
+    ReadingTrail,
     Series,
     Storybook,
     StorybookAssignment,
@@ -56,6 +62,13 @@ from cyo_adventure.db.models import (
 )
 from cyo_adventure.player.replay import validate_reading_state
 from cyo_adventure.publishing.state_machine import Visibility
+from cyo_adventure.reading_trail import (
+    StoryIndex,
+    TrailStep,
+    ending_of,
+    merge_steps,
+    validate_steps,
+)
 from cyo_adventure.utils.logging import get_logger
 from cyo_adventure.validator.series import SATISFYING_ENDING_KINDS
 
@@ -1274,3 +1287,211 @@ async def list_completions(profile_id: str, ctx: Context) -> CompletionListView:
         )
     )
     return CompletionListView(completions=[_completion_view(row) for row in rows.all()])
+
+
+# Upper bound on new reads one profile may open per server day. A real reader
+# opens a handful; this exists so a buggy or hostile client minting a fresh
+# read id per request cannot grow the table without limit (each read is
+# separately capped at READING_TRAIL_MAX_STEPS by the merge).
+READING_TRAIL_MAX_READS_PER_DAY = 200
+
+
+@router.post("/reading-trail/{profile_id}/{storybook_id}")
+async def ingest_reading_trail(
+    profile_id: str,
+    storybook_id: str,
+    body: ReadingTrailBatchBody,
+    ctx: Context,
+) -> ReadingTrailIngestView:
+    """Record a batch of steps for one read (privacy-model.md "Reading trail").
+
+    Safe for offline replay: the client mints ``read_id`` and every step's
+    ``seq``, the server ignores a step whose ``seq`` it already holds, so
+    replaying a batch is a no-op. Authentication and profile scoping are the
+    same gate as the reading-state save (``authorize_profile``, then
+    ``_load_readable_storybook`` and the assignment check). Recording is
+    best-effort from the reader's point of view: the client never blocks on,
+    retries visibly, or surfaces this route's failures.
+
+    Args:
+        profile_id: The child profile reading (authoritative; the body carries
+            no profile id).
+        storybook_id: The story being read.
+        body: The batch.
+        ctx: The request context.
+
+    Returns:
+        ReadingTrailIngestView: ``recorded: false`` when capture is switched
+            off for this environment (nothing stored), otherwise the read's
+            total stored step count.
+
+    Raises:
+        AuthorizationError: If the profile is not the caller's, or the story is
+            not readable by it (403).
+        ResourceNotFoundError: If the story, its assignment, or an approved
+            published version ``body.version`` does not exist (404).
+        ValidationError: If a step is inconsistent with the pinned version, the
+            read id belongs to a different read, a cap is exceeded, or
+            ``profile_id`` is not a UUID (422).
+    """
+    # #CRITICAL: security: identical gate to put_reading_state, in the same
+    # order, before anything else runs: a child session may write only its own
+    # profile's trail, and only for a book that profile may read.
+    # #VERIFY: tests/integration/test_reading_trail.py::
+    # test_other_family_child_cannot_write_trail,
+    # ::test_unassigned_story_trail_rejected.
+    parsed = _parse_uuid(profile_id, "profile_id")
+    authorize_profile(ctx.principal, parsed)
+    # #CRITICAL: security: the kill switch is read after authorization (so the
+    # flag is never an oracle for whether a profile exists) and before any
+    # read of the trail table, so a disabled environment stores nothing.
+    # #VERIFY: tests/integration/test_reading_trail.py::
+    # test_disabled_flag_stores_nothing.
+    if not settings.reading_trail_enabled:
+        return ReadingTrailIngestView(recorded=False, stored_steps=0)
+    book = await _load_readable_storybook(ctx, storybook_id, parsed)
+    if not _acts_as_admin(ctx, book):
+        await _require_assignment(ctx, storybook_id, parsed)
+    version_row = await ctx.session.get(StorybookVersion, (book.id, body.version))
+    # #ASSUME: security: a trail may pin to any APPROVED version of a book
+    # that is still published, not only the current one: a child mid-read on a
+    # since-superseded version keeps reading it (put_reading_state's update
+    # path allows exactly that), and their trail must be recordable too. A
+    # never-approved version, or a book no longer published, is a book no
+    # child should be reading, so it is refused.
+    # #VERIFY: tests/integration/test_reading_trail.py::
+    # test_unapproved_version_rejected.
+    if (
+        version_row is None
+        or version_row.approved_by is None
+        or book.status != _PUBLISHED
+    ):
+        msg = f"version {body.version} of storybook '{book.id}' not found"
+        raise ResourceNotFoundError(msg)
+    index = StoryIndex.from_blob(version_row.blob)
+    steps = [
+        TrailStep(
+            seq=step.seq,
+            kind=step.kind,
+            node_id=step.node_id,
+            choice_id=step.choice_id,
+            elapsed_s=step.elapsed_s,
+        )
+        for step in body.steps
+    ]
+    validate_steps(index, steps)
+    row = await _locked_trail(ctx, body.read_id)
+    if row is None:
+        row = await _open_trail(ctx, body, parsed, storybook_id)
+    # #CRITICAL: security: the read id is client-minted, so it is matched
+    # against the authenticated profile and the path's book and version before
+    # anything is appended; a reused or guessed id cannot extend another read.
+    # The message is deliberately the same whichever field mismatched.
+    # #VERIFY: tests/integration/test_reading_trail.py::
+    # test_read_id_bound_to_another_profile_rejected.
+    if (
+        row.child_profile_id != parsed
+        or row.storybook_id != storybook_id
+        or row.version != body.version
+    ):
+        msg = "read_id belongs to a different read"
+        raise ValidationError(msg, field="read_id")
+    merged = merge_steps(row.steps, steps)
+    row.steps = merged
+    row.step_count = len(merged)
+    row.ending_id = ending_of(index, merged)
+    # Counts only: trail content (node ids, choices, timings) never goes to a
+    # log line (privacy-model.md "Reading trail", first-party only).
+    _logger.debug("reading_trail_batch_merged", stored_steps=row.step_count)
+    return ReadingTrailIngestView(recorded=True, stored_steps=row.step_count)
+
+
+async def _locked_trail(ctx: Context, read_id: uuid.UUID) -> ReadingTrail | None:
+    """Load a trail row under a row lock, or ``None`` if it does not exist.
+
+    Args:
+        ctx: The request context.
+        read_id: The client-minted read id (the row's primary key).
+
+    Returns:
+        ReadingTrail | None: The locked row.
+    """
+    # #CRITICAL: concurrency: FOR UPDATE serializes two batches for the same
+    # read (an online flush racing an offline replay) across the
+    # read-merge-write below, so neither can overwrite the other's steps.
+    # #VERIFY: tests/integration/test_reading_trail.py::
+    # test_overlapping_batches_merge_without_loss.
+    return await ctx.session.scalar(
+        select(ReadingTrail).where(ReadingTrail.id == read_id).with_for_update()
+    )
+
+
+async def _open_trail(
+    ctx: Context,
+    body: ReadingTrailBatchBody,
+    profile_id: uuid.UUID,
+    storybook_id: str,
+) -> ReadingTrail:
+    """Create the row for a new read and return it locked.
+
+    Args:
+        ctx: The request context.
+        body: The batch opening the read.
+        profile_id: The authenticated profile.
+        storybook_id: The story.
+
+    Returns:
+        ReadingTrail: The (possibly concurrently created) row, locked.
+
+    Raises:
+        ResourceNotFoundError: If the profile row is gone.
+        ValidationError: If the profile has opened too many reads today.
+    """
+    profile = await ctx.session.get(ChildProfile, profile_id)
+    if profile is None:
+        msg = f"profile '{profile_id}' not found"
+        raise ResourceNotFoundError(msg)
+    today = datetime.now(UTC).date()
+    # #EDGE: concurrency: the daily cap is a count-then-insert, so two
+    # simultaneous first batches can each pass it and land one read over the
+    # cap. Acceptable: it is a runaway-client bound, not a quota anyone relies
+    # on, and the per-read step cap still holds.
+    # #VERIFY: tests/integration/test_reading_trail.py::
+    # test_daily_read_cap_enforced.
+    opened_today = await ctx.session.scalar(
+        select(func.count())
+        .select_from(ReadingTrail)
+        .where(
+            ReadingTrail.child_profile_id == profile_id,
+            ReadingTrail.started_on == today,
+        )
+    )
+    if (opened_today or 0) >= READING_TRAIL_MAX_READS_PER_DAY:
+        msg = "too many reads opened today for this profile"
+        raise ValidationError(msg, field="read_id")
+    # #CRITICAL: concurrency: two first batches for the same new read can race
+    # here. ON CONFLICT DO NOTHING lets the loser fall through to the locked
+    # re-select (the PK insert blocks it until the winner commits), instead of
+    # failing on a duplicate key.
+    # #VERIFY: tests/integration/test_reading_trail.py::
+    # test_replaying_the_opening_batch_is_a_no_op.
+    await ctx.session.execute(
+        pg_insert(ReadingTrail)
+        .values(
+            id=body.read_id,
+            child_profile_id=profile_id,
+            family_id=profile.family_id,
+            storybook_id=storybook_id,
+            version=body.version,
+            started_on=today,
+            steps=[],
+            step_count=0,
+            ending_id=None,
+        )
+        .on_conflict_do_nothing(index_elements=[ReadingTrail.id])
+    )
+    row = await _locked_trail(ctx, body.read_id)
+    if row is None:  # pragma: no cover - the insert above guarantees a row
+        msg = "reading trail could not be opened"
+        raise ResourceNotFoundError(msg)
+    return row

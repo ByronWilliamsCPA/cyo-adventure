@@ -37,6 +37,7 @@ from cyo_adventure.db.models import (
     Rating,
     ReadingActivityDay,
     ReadingState,
+    ReadingTrail,
     Storybook,
     StorybookAssignment,
     StorybookVersion,
@@ -130,6 +131,29 @@ async def _populate_child_linked_rows(
                 storybook_id=seed.storybook_id,
             )
         )
+        # Reading trail (privacy-model.md "Reading trail"): per-read route
+        # history, the most granular child-linked behavioural table. It
+        # CASCADEs through the composite (child_profile_id, family_id) FK.
+        s.add(
+            ReadingTrail(
+                id=uuid.uuid4(),
+                child_profile_id=seed.child_profile_id,
+                family_id=seed.family_id,
+                storybook_id=seed.storybook_id,
+                version=seed.version,
+                started_on=date(2026, 1, 1),
+                steps=[
+                    {
+                        "seq": 0,
+                        "kind": "start",
+                        "node_id": "n_open",
+                        "choice_id": None,
+                        "elapsed_s": 0,
+                    }
+                ],
+                step_count=1,
+            )
+        )
         await s.commit()
 
 
@@ -176,6 +200,7 @@ async def test_delete_profile_removes_child_linked_rows(
     story requests.
     """
     await _populate_child_linked_rows(sessions, seed)
+    other_trail_id = uuid.uuid4()
     async with sessions() as s:
         s.add(
             StoryRequest(
@@ -184,6 +209,20 @@ async def test_delete_profile_removes_child_linked_rows(
                 request_text="a story about dragons",
                 status="approved",
                 age_band="10-13",
+            )
+        )
+        other = await s.get(ChildProfile, seed.other_child_profile_id)
+        assert other is not None
+        s.add(
+            ReadingTrail(
+                id=other_trail_id,
+                child_profile_id=seed.other_child_profile_id,
+                family_id=other.family_id,
+                storybook_id=seed.storybook_id,
+                version=seed.version,
+                started_on=date(2026, 1, 1),
+                steps=[],
+                step_count=0,
             )
         )
         await s.commit()
@@ -263,6 +302,17 @@ async def test_delete_profile_removes_child_linked_rows(
                 )
             )
         ) is None
+        # Reading trail: the profile's route history CASCADEs with it ...
+        assert (
+            await s.scalar(
+                select(ReadingTrail).where(
+                    ReadingTrail.child_profile_id == seed.child_profile_id
+                )
+            )
+        ) is None
+        # ... and nothing more: another family's trail on the same version
+        # survives this profile's erasure.
+        assert (await s.get(ReadingTrail, other_trail_id)) is not None
         # The story request survives, de-linked rather than deleted: it is
         # family-owned content, not exclusively the child's.
         request = await s.scalar(
@@ -384,6 +434,12 @@ async def test_delete_my_family_removes_everything(
         assert (
             await s.scalar(
                 select(DeviceDownload).where(DeviceDownload.family_id == seed.family_id)
+            )
+        ) is None
+        # Reading trail: cascades transitively through the deleted profile.
+        assert (
+            await s.scalar(
+                select(ReadingTrail).where(ReadingTrail.family_id == seed.family_id)
             )
         ) is None
 

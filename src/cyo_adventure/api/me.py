@@ -36,6 +36,7 @@ from cyo_adventure.db.models import (
     PersonalizationDisclosureConsent,
     Rating,
     ReadingState,
+    ReadingTrail,
     StorybookAssignment,
     StoryRequest,
     User,
@@ -187,6 +188,7 @@ async def _assemble_family_export(
         list
     )
     consents_by_profile: dict[uuid.UUID, list[dict[str, object]]] = defaultdict(list)
+    trails_by_profile: dict[uuid.UUID, list[dict[str, object]]] = defaultdict(list)
     if profile_ids:
         state_rows = await ctx.session.scalars(
             select(ReadingState).where(ReadingState.child_profile_id.in_(profile_ids))
@@ -295,6 +297,28 @@ async def _assemble_family_export(
                     "created_at": consent.created_at.isoformat(),
                 }
             )
+        # #CRITICAL: security: the reading trail is child-linked behavioural
+        # data (privacy-model.md "Reading trail"), so the guardian's access
+        # right covers it like every other child table: the export carries
+        # each read whole, steps included, exactly as stored.
+        # #VERIFY: tests/integration/test_reading_trail.py::
+        # test_family_export_includes_reading_trails.
+        trail_rows = await ctx.session.scalars(
+            select(ReadingTrail)
+            .where(ReadingTrail.child_profile_id.in_(profile_ids))
+            .order_by(ReadingTrail.started_on.asc(), ReadingTrail.id.asc())
+        )
+        for trail in trail_rows:
+            trails_by_profile[trail.child_profile_id].append(
+                {
+                    "read_id": str(trail.id),
+                    "storybook_id": trail.storybook_id,
+                    "version": trail.version,
+                    "started_on": trail.started_on.isoformat(),
+                    "ending_id": trail.ending_id,
+                    "steps": list(trail.steps),
+                }
+            )
     request_rows = await ctx.session.scalars(
         select(StoryRequest)
         .where(StoryRequest.family_id == family_id)
@@ -337,6 +361,7 @@ async def _assemble_family_export(
                     "assignments": assignments_by_profile[row.id],
                     "personalization": personalization_by_profile[row.id],
                     "disclosure_consents": consents_by_profile[row.id],
+                    "reading_trails": trails_by_profile[row.id],
                 },
             )
             for row in profile_rows

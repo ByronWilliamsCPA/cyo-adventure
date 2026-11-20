@@ -1813,7 +1813,8 @@ export type FamilyCreateBody = {
  * rows, plus the two ``real_name_ring1_enabled``/
  * ``real_name_ring2_enabled`` booleans on the profile itself), and
  * ``disclosure_consents`` (``PersonalizationDisclosureConsent``
- * rows, including tombstoned ones) lists.
+ * rows, including tombstoned ones), and ``reading_trails``
+ * (``ReadingTrail`` rows, steps included) lists.
  * story_requests: Every story request tied to the family.
  */
 export type FamilyExportView = {
@@ -4129,6 +4130,80 @@ export type ReadingTimeFlushBody = {
 };
 
 /**
+ * ReadingTrailBatchBody
+ *
+ * A batch of steps for one read, safe to replay (POST body).
+ *
+ * ``read_id`` is minted by the client when a read starts (and again on a
+ * restart), so an offline replay of the same batch addresses the same read;
+ * the server ignores any step whose ``seq`` it already holds.
+ */
+export type ReadingTrailBatchBody = {
+    /**
+     * Read Id
+     */
+    read_id: string;
+    /**
+     * Version
+     */
+    version: number;
+    /**
+     * Steps
+     */
+    steps: Array<ReadingTrailStepBody>;
+};
+
+/**
+ * ReadingTrailIngestView
+ *
+ * The ingest answer: whether this environment records trails at all.
+ *
+ * ``recorded`` is ``False`` when capture is switched off
+ * (``Settings.reading_trail_enabled``); nothing was stored and the client
+ * stops sending for the rest of the reader session. ``stored_steps`` is the
+ * read's total step count after the merge (``0`` when not recorded).
+ */
+export type ReadingTrailIngestView = {
+    /**
+     * Recorded
+     */
+    recorded: boolean;
+    /**
+     * Stored Steps
+     */
+    stored_steps: number;
+};
+
+/**
+ * ReadingTrailStepBody
+ *
+ * One recorded step of a read (see ``reading_trail/steps.py`` for kinds).
+ *
+ * The client assigns ``seq`` (0 for the opening step, then increasing);
+ * ``elapsed_s`` is whole seconds since the read began on the reader's own
+ * clock. There is no wall-clock field, by design.
+ */
+export type ReadingTrailStepBody = {
+    /**
+     * Seq
+     */
+    seq: number;
+    kind: StepKind;
+    /**
+     * Node Id
+     */
+    node_id: string;
+    /**
+     * Choice Id
+     */
+    choice_id?: string | null;
+    /**
+     * Elapsed S
+     */
+    elapsed_s: number;
+};
+
+/**
  * RecallRequest
  *
  * Body for the recall endpoint (`RS-C1`).
@@ -4756,6 +4831,13 @@ export type SeriesNextView = {
  * Which stage or classifier produced a finding.
  */
 export type Source = 'openai' | 'perspective' | 'llm_safety' | 'llm_readability' | 'llm_coherence' | 'llm_engagement' | 'pipeline';
+
+/**
+ * StepKind
+ *
+ * The closed step vocabulary (see the module docstring for meanings).
+ */
+export type StepKind = 'start' | 'resume' | 'choice' | 'auto' | 'back' | 'end' | 'jump' | 'restart' | 'leave';
 
 /**
  * StoryRequestApproveBody
@@ -5864,6 +5946,52 @@ export type ListCompletionsApiV1CompletionsProfileIdGetResponses = {
 };
 
 export type ListCompletionsApiV1CompletionsProfileIdGetResponse = ListCompletionsApiV1CompletionsProfileIdGetResponses[keyof ListCompletionsApiV1CompletionsProfileIdGetResponses];
+
+export type IngestReadingTrailApiV1ReadingTrailProfileIdStorybookIdPostData = {
+    body: ReadingTrailBatchBody;
+    path: {
+        /**
+         * Profile Id
+         */
+        profile_id: string;
+        /**
+         * Storybook Id
+         */
+        storybook_id: string;
+    };
+    query?: never;
+    url: '/api/v1/reading-trail/{profile_id}/{storybook_id}';
+};
+
+export type IngestReadingTrailApiV1ReadingTrailProfileIdStorybookIdPostErrors = {
+    /**
+     * Missing, malformed, expired, or unknown bearer token.
+     */
+    401: ErrorResponse;
+    /**
+     * Authenticated, but not permitted to act on this resource.
+     */
+    403: ErrorResponse;
+    /**
+     * The referenced resource does not exist.
+     */
+    404: ErrorResponse;
+    /**
+     * Validation Error
+     */
+    422: HttpValidationError;
+};
+
+export type IngestReadingTrailApiV1ReadingTrailProfileIdStorybookIdPostError = IngestReadingTrailApiV1ReadingTrailProfileIdStorybookIdPostErrors[keyof IngestReadingTrailApiV1ReadingTrailProfileIdStorybookIdPostErrors];
+
+export type IngestReadingTrailApiV1ReadingTrailProfileIdStorybookIdPostResponses = {
+    /**
+     * Successful Response
+     */
+    200: ReadingTrailIngestView;
+};
+
+export type IngestReadingTrailApiV1ReadingTrailProfileIdStorybookIdPostResponse = IngestReadingTrailApiV1ReadingTrailProfileIdStorybookIdPostResponses[keyof IngestReadingTrailApiV1ReadingTrailProfileIdStorybookIdPostResponses];
 
 export type GetReadingHistoryApiV1ReadingHistoryProfileIdGetData = {
     body?: never;
