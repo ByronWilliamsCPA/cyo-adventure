@@ -7,6 +7,11 @@ on:
   pull_request:
     paths:
       - "supabase/**"
+      # The parity step below compares the CLI-built schema with the ORM, so a
+      # model change or a change to the checker itself re-runs it too.
+      - "src/cyo_adventure/db/**"
+      - "src/cyo_adventure/core/schema_parity.py"
+      - "scripts/check_schema_parity.py"
 
 permissions:
   contents: read
@@ -35,3 +40,30 @@ jobs:
           supabase db start
           supabase migration up
           supabase migration list --local
+
+      - name: Set up Python
+        uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7.1.0
+        with:
+          python-version: "3.14"
+
+      - name: Install UV
+        uses: astral-sh/setup-uv@68559e99cc807c1eb7e9238fd43a15bba460eec2 # v10.3.3
+        with:
+          enable-cache: true
+
+      - name: Install backend (api extra)
+        run: uv sync --extra api
+
+      # #ASSUME: external resources: this is the only place the parity script
+      # meets a supabase_migrations.schema_migrations table written by the
+      # real CLI (the integration tests create that table themselves), so it
+      # is what proves the script reads the CLI's bookkeeping correctly. A
+      # freshly migrated stack must come out IN PARITY on both halves: every
+      # file recorded as applied, every ORM column present, zero warnings.
+      # #VERIFY: a non-zero exit fails this job; --json output is printed in
+      # the log for diagnosis. The URL is the CLI's documented local default
+      # (no secret: this stack exists only inside the runner).
+      - name: Schema parity against the CLI-built stack
+        env:
+          SCHEMA_PARITY_DATABASE_URL: postgresql://postgres:postgres@127.0.0.1:54322/postgres
+        run: uv run python scripts/check_schema_parity.py --json --fail-on-ahead

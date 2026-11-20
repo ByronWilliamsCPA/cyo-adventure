@@ -177,3 +177,22 @@ jobs:
           else
             supabase db push
           fi
+
+      # Evidence of what this run left applied, in the run log, so "was
+      # production migrated, and to what head?" has an answer without anyone
+      # holding a database credential (register row UW-C363 records that no
+      # production apply was recorded for three migrations). Read-only, and it
+      # reuses the link and SUPABASE_DB_PASSWORD the push already used, so it
+      # needs no new secret or permission. Runs even when the push failed, to
+      # show how far a partial apply got.
+      # This lists migration HISTORY only. The ORM-versus-live-schema half of
+      # the parity check needs a database URL this workflow does not hold, so
+      # it stays a documented manual step: scripts/check_schema_parity.py, per
+      # docs/operations/runbook.md section 2.5 "Post-deploy verification".
+      # #VERIFY: every row should show the same version under Local and
+      # Remote; a Local-only row is a migration this push did not apply
+      # (production runs without --include-all, so an out-of-order file is
+      # skipped and stays Local-only).
+      - name: Record applied migration history
+        if: ${{ !cancelled() }}
+        run: supabase migration list --linked
