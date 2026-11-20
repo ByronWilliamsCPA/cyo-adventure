@@ -4,19 +4,16 @@
 # these cannot live in the repo-root osv-scanner.toml (an ignore there matches only
 # uv.lock and is reported as unused).
 #
-# Build-time-only transitive with no upstream fix (2026-11-07). deepmerge is reachable
-# only through workbox-build (vite-plugin-pwa), which runs on a developer or CI machine
-# against repo-controlled input. It is not bundled into the shipped app. The minimatch
-# (GHSA-g3hv-75wg-m249) and glob (GHSA-3g3m-2fjr-6pw4) advisories that used to be listed
-# here are fixed by the package.json overrides (minimatch 11.0.x, glob 14.0.x).
+# No active [[IgnoredVulns]] entries. The three that used to live here are gone:
+#   - minimatch (GHSA-g3hv-75wg-m249) and glob (GHSA-3g3m-2fjr-6pw4) are fixed by the
+#     package.json overrides (minimatch 11.0.x, glob 14.0.x).
+#   - deepmerge (GHSA-gcqx-w48m-w2h4, prototype poisoning in mergeObject) was WITHDRAWN
+#     upstream on 2026-11-16. osv-scanner stopped reporting it and then failed the
+#     Security Analysis job with "unused ignores", so the entry was removed. deepmerge
+#     4.3.1 is still in the lockfile (build-time only, via workbox-build).
 #
-# #ASSUME: security: these packages never process attacker-controlled input.
-# #VERIFY: `npm ls deepmerge` shows only the workbox-build parent. Revisit by ignoreUntil; drop each entry as soon as upstream
-# ships a fix inside the declared range.
-
-[[IgnoredVulns]]
-id = "GHSA-gcqx-w48m-w2h4"
-ignoreUntil = 2026-12-01
-reason = """deepmerge mergeObject() prototype poisoning; 4.3.1 is the last release and no fix \
-exists. Pulled in by @rollup/plugin-node-resolve inside workbox-build, merging only the \
-repo's own static build options at build time."""
+# #ASSUME: security: a withdrawn advisory stays withdrawn. If OSV ever un-withdraws it,
+# osv-scanner reports it again and this file needs a real suppression block (build-time
+# only transitive of vite-plugin-pwa/workbox-build, repo-controlled input).
+# #VERIFY: the security-analysis.yml `osv-scanner` job is the standing check; `npm ls
+# deepmerge` should still show only the workbox-build parent.
