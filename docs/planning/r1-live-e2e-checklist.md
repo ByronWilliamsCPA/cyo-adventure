@@ -19,6 +19,89 @@ source: "Originated as Task 4.1 of the R1 gap-closure plan (merged, doc archived
   docs/architecture/user-journeys.md; PR #112 smoke tier (frontend/e2e-real/) as the pre-deploy harness"
 ---
 
+## Status at a glance (updated 2026-11-20)
+
+Two step populations live in this document, counted separately so that the "10 of 38" other documents cite
+stays meaningful. The original 38 steps (Sections 0 to 6) are unchanged in wording, order, and tick state; where
+one is now wrong or superseded it carries a dated note in place. The 2026-11 additions have their own identifiers
+(letter plus number, for example `A3`) and their own count.
+
+| Population | Steps | Ticked | Last run | Where |
+| --- | --- | --- | --- | --- |
+| Original R1 checklist | 38 | 10 | 2026-08-08, revision `631c0d8a` (v0.68.0) | Sections 0 to 6 |
+| 2026-11 additions | 41 | 0 | not yet run; written against `main` at v0.92.0 | [2026-11 additions](#2026-11-additions) |
+| First family session (catalog only) | 53 required, 2 optional | 0 | not yet run | [run list](#first-family-session-catalog-only) |
+
+**How to cite an original step.** The original 38 boxes carry no numbers, and they are not renumbered here. Cite
+them by section and position: `0.3` is the third box in Section 0, `1a.2` the second box in Section 1a, `5.4`
+the fourth box in Section 5. No box is ever inserted into an original section, so those positions are stable.
+
+## First family session (catalog only)
+
+Added 2026-11-20. This is the run list for the first session with real readers: the owner's four children,
+roughly ages 9 to 15, each on their own device, reading **catalog books only**. It is self-contained: work it
+top to bottom, and follow each step reference to its full text for the expected result and evidence.
+
+**Owner decisions that shape this path (2026-11-20).**
+
+- **Catalog only.** No on-demand generation and no kid story requests in this session. Sections 2 and 4 (intake,
+  generation, send-back, the kid request loop, and their funded generation quota) are **deferred** for this path,
+  with one exception: step `4.1` (the guardian-to-kid hand-off) exercises no generation and is included. Sections
+  2 and 4 remain valid for a later sign-off.
+- **Deploy parity comes before anything else.** Production image pulls involve a manual step, and migrations are
+  applied separately by dispatching `supabase-production.yml`, so the app and the schema can drift apart. They
+  have before (register row `UW-C363`: 18 migrations behind, every authenticated adult request 500ing, fixed by
+  hand 2026-08-24), and the daily `e2e-prod` run has failed since 2026-09-14 on the guardian books page and the
+  kid library, which is consistent with drift. Block 1 settles that first.
+- **Review quota is still needed, generation quota is not.** Re-moderating a book (step `D2`'s sequencing for the
+  two `UW-L08` books, and step `D4`'s five revised books) makes real reviewer and classifier calls, so the
+  configured review provider and `OPENAI_API_KEY` must have working quota even though nothing is generated.
+
+**Roles.** "Operator" is the owner at a workstation with repository access and a shell on the docker host.
+"Admin" is the owner signed in with the admin-capable account. "Guardian" is the owner signed in with the
+guardian account (the admin-capable account is also a guardian and can do these steps; see the Accounts note
+below). "Child" is each reader on their own device.
+
+| Block | Who | Steps, in order | Evidence to record | Rough time |
+| --- | --- | --- | --- | --- |
+| 1. Deploy parity | Operator | `A1` to `A10`, then re-confirm `0.3` and `0.6` | Revisions, pending-migration list, workflow run id, parity verdict, `e2e-prod` run id | 60 to 120 min |
+| 2. Configuration and consent posture | Operator | `B1` to `B6` | Env preflight output, readiness JSON excerpt, flag values | 15 min |
+| 3. Catalog readiness | Admin | re-confirm `1a.1`, then `C3`, `D1` to `D7`, `E1` (`E2` optional) | Census table, `UW-L08` ruling, approved book list with bands, covers approved | 60 to 120 min, plus re-moderation run time |
+| 4. Family setup | Guardian | `C1` (`C2` optional), `1.3`, `1.4`, `F1` to `F4`, `3.1`, `3.2`, `F6` | Profile list with bands, assignments per child | 45 min |
+| 5. Devices | Guardian, then child | per device: `G1`, `F5`, `4.1` | Device list on `/guardian/devices` | 10 min per device |
+| 6. The session | Child, owner observing | `G2`, `5.1`, `5.2`, `5.3`, `5.4`, `5.5`, then `H1` to `H4` if deployed | Observation notes (guide below), progress view screenshots | 45 to 90 min |
+| 7. Close-out | Operator, Guardian | `J1`, `6.1`, sign-off row | Sign-off row, notes filed | 20 min |
+
+Count: 14 original steps (`0.3`, `0.6`, `1a.1`, `1.3`, `1.4`, `3.1`, `3.2`, `4.1`, `5.1` to `5.5`, `6.1`; three of
+them already ticked and only re-confirmed) plus 39 additions, 53 in all; `C2` and `E2` are optional and not
+counted. Steps marked "applies once deployed" (`B6`, `D4`, `H1` to `H4`) are skipped, not failed, if the deployed
+revision predates them; record which.
+
+**Do not do in this session:** run any Section 2 or Section 4 step other than `4.1`; set
+`KWS_VERIFICATION_REQUIRED=true` (step `B4`); type the confirmation word on the family-deletion dialog (step
+`J1`); approve any book on the hold-back list (step `D3`).
+
+### Observation guide for the session
+
+The owner's notes are the primary data from a first session; the app's own records are secondary. Watch, do not
+help, and write down what you see with a timestamp and the child's name or initial.
+
+- **Hesitation at real forks.** Where a child pauses before choosing, rereads, or asks what a choice means. Note
+  the book and roughly where. A fork nobody hesitates at may not be a real choice.
+- **Reaction at endings.** Surprise, disappointment, laughter, "that's it?", or a shrug. Note whether the ending
+  felt earned or abrupt to them, in their words if they say anything.
+- **Whether they replay.** Unprompted rereads, going back to try another branch, or moving straight to a new
+  book. Note which, and after which ending.
+- **What pulls them out of the story.** A word they stumble on, a slow load, a confusing button, the device
+  itself, a sibling. Note anything in the app's chrome (buttons, dialogs, offline banners) they had to ask about.
+- **Comfort with content.** Any moment a child seems uneasy, and in which book. Report it on the guardian surface
+  afterward rather than interrupting.
+
+Ask each child two questions afterward, separately, and write down the answers verbatim:
+
+1. "What was the best moment in the story you read, and why?"
+2. "Was there a time you wanted to do something the story didn't let you do?"
+
 ## How to use this checklist
 
 Run top to bottom against `https://cyo.williamshome.family` after every deploy. The PR #112 real-backend
@@ -111,6 +194,12 @@ describe block aborts at its first failure, so a green *tier* is not the same as
 executed *step*, and any step ticked from this tier must cite a test that actually
 ran rather than a suite that passed.
 
+**Note 2026-11-20.** The tier has failed daily since 2026-09-14, on the guardian books page and the kid library.
+v0.89.0, released that day, maps three new `storybook_version` columns from migration
+`20260908000000_add_cover_review_columns`, which has no recorded production apply, and both failing pages read
+that table, so the failure is consistent with schema drift. That is a hypothesis, not a diagnosis: the
+deploy-parity gate (steps `A1` to `A10`) is what settles it, and `A10` re-runs this tier afterward.
+
 ### Known blockers (resolve before running this checklist end to end)
 
 - **API keys must be funded before Sections 2 and 4.** Both OpenRouter
@@ -120,11 +209,26 @@ ran rather than a suite that passed.
   generation job stalls at the moderation step with no obvious error in the
   UI, so check worker logs for 429s if a job hangs there.
 
+  **Note 2026-11-20.** Generation quota is not a prerequisite of the
+  [catalog-only first family session](#first-family-session-catalog-only),
+  which defers Sections 2 and 4. Review quota still is: re-moderating a
+  catalog book calls the configured review provider and the OpenAI
+  classifier (steps `D2` and `D4`). The OpenRouter key exposed in August
+  (`UW-M09`) has since been rotated and is not an open prerequisite.
+- **Deploy parity (added 2026-11-20).** Run the [deploy-parity gate](#a-deploy-parity-gate)
+  before any other section. Since 2026-09-14 the daily `e2e-prod` run has
+  failed on the guardian books page and the kid library, which is consistent
+  with the app image running ahead of the production schema (`UW-C363`
+  describes the same shape from August).
+
 ## 0. Infrastructure probes
 
 - [x] `https://cyo.williamshome.family` resolves through Pangolin to docker-host:443 with a valid TLS cert
       (2026-08-04: HTTP 200, OpenSSL verify result 0, wildcard `CN=*.williamshome.family` issued by
       ZeroSSL RSA DV SSL CA 2, valid 2026-06-23 to 2026-09-21)
+      **Note 2026-11-20: the evidence above has expired.** The certificate it records was valid only to
+      2026-09-21, so the tick describes a past state, not the current one. Re-verify with step `A1`
+      before relying on it; the tick is kept because the 2026-08-04 observation was true when made.
 - [x] Frontend loads (React shell renders, no console errors about missing Supabase config; this proves the
       image was built with `VITE_SUPABASE_URL` / `VITE_SUPABASE_ANON_KEY` build args). Verified 2026-08-04
       by fetching all 75 served chunks: `assets/supabaseClient-UGD8VVQK.js` carries both the
@@ -178,6 +282,12 @@ ran rather than a suite that passed.
       project: 49 files in `supabase/migrations/` and 49 applied versions, an exact set match in both
       directions (nothing pending, nothing applied that is missing locally), newest
       `20260804070000_add_security_event_table`.
+      **Note 2026-11-20: superseded as a standing check by steps `A4` to `A8`.** The tick records a true
+      2026-08-04 state that did not last: by 2026-08-24 production was 18 migrations behind (`UW-C363`),
+      and `--linked` in the wording above points at whichever project the checkout is linked to, which
+      the runbook records as staging. The repository now holds 70 migration files; the last recorded
+      production apply reached `20260823160000` (67), and `20260831120000`, `20260831130000` and
+      `20260908000000_add_cover_review_columns` have landed since with no recorded production apply.
 - [x] Backups confirmed: the local `db-backup` container is healthy (`docker ps` on docker-host)
       AND a fresh `.dump` file is present under
       `/mnt/unraid/appdata/cyo-adventure/backups`. As of 2026-07-07 this container runs a daily
@@ -187,10 +297,17 @@ ran rather than a suite that passed.
       `cyo-adventure-db-backup` up 3h (healthy); newest dump `cyo_adventure_20260804_185541.dump`
       (1,189,372 bytes) written the same day, with an unbroken daily series behind it and `.last_success`
       also stamped that day.
+      **Note 2026-11-20:** this evidence is from 2026-08-04; re-confirm it in Block 1 of the catalog-only
+      path, because step `A5`'s pre-flight leans on knowing a recent restore point exists. It covers the
+      local `pg_dump` container only. The separate `supabase-backup.yml` R2 workflow is a different
+      mechanism with its own recorded credential gap (`UW-C363` item (c), runbook section 6).
 - [ ] Worker survives a restart (`docker compose restart worker`; queued/in-flight jobs resume or
       re-queue rather than being lost). NOT RUN on 2026-08-04: this is the only Section 0 step that
       mutates production, so it was deliberately left for an authorized maintenance window rather than
       bounced during an unattended verification pass.
+      **Note 2026-11-20:** not part of the catalog-only path. Recreating the containers in step `A2`
+      restarts the worker too, but that is not this step's claim (in-flight jobs survive), so it does not
+      tick it.
 
 ## 1. Guardian sign-in and profiles
 
@@ -208,11 +325,19 @@ ran rather than a suite that passed.
       `guardian-profiles.spec.ts:89`, but it did not execute: its serial describe block aborted at the
       preceding test, which failed on issue [#639](https://github.com/ByronWilliamsCPA/cyo-adventure/issues/639).
       The create/edit half mutates the live family and stays manual regardless.
+      **Note 2026-11-20:** the #639 defect named above was fixed in code by PR #641 (released in v0.68.2),
+      so once production serves a later revision the serial block should no longer abort there. Step `F2`
+      (four profiles with correct age bands) performs the create/edit half of this step.
 - [ ] Sign out and back in; session resumes. **NOT RUN on 2026-08-08**, same serial-block abort as
       above. Nothing suggests it is broken; it simply never executed. Note that
       `guardian-profiles.spec.ts:104` covers only the sign-out half (it asserts the return to the login
       screen); nothing automated asserts that signing back in resumes the session, so even a green tier
       would leave the second half of this step manual.
+      **Note 2026-11-20:** v0.84.0 (#763) changed guardian sign-out from Supabase's default `global`
+      scope to `local`, so signing out on one device no longer revokes the adult's sessions on every other
+      device. When running this step with the adult signed in on two devices, confirm that signing out on
+      one leaves the other signed in. The same release fixed a Google sign-in loop; password sign-in was
+      never affected.
 
 ## 1a. Admin sign-in and review queue access
 
@@ -251,6 +376,11 @@ the Accounts section above.
 
 **All 7 steps NOT RUN on 2026-08-08, for a stated reason rather than by omission.** Every step here spends live provider quota (OpenRouter generation plus the OpenAI Stage-0 classifier) and writes real content into the real family, and it needs an interactive sign-in as both `c1f33430` and `21985c35`. None of that is available to an unattended pass, and none of it is engineering work: it is an owner decision to authorize the spend and the writes. Tracked under `UW-F17`. Also re-read the Known blockers note above before starting: classifier quota exhaustion surfaces as a job that stalls at the moderation step with no error in the UI, so a hang here is a 429 in the worker logs until proven otherwise.
 
+**Deferred for the catalog-only first family session (owner decision, 2026-11-20).** None of these 7 steps is a
+prerequisite for that session; they remain valid for a later sign-off. Two notes for when they do run: the
+send-back in step `2.7` now requires a structured reason code as well as free text (v0.75.0), and approving a
+story whose report carries a block or high finding requires a written override reason (see step `D5`).
+
 - [ ] Submit a story request via Intake; job status shows "Generating..."
 - [ ] RQ worker picks up the job (worker logs show the generation; OpenRouter + classifier calls succeed)
 - [ ] Story lands in the review queue; queue orders Flagged, then Ready, then processing
@@ -264,6 +394,14 @@ the Accounts section above.
 
 **All 3 steps NOT RUN on 2026-08-08.** They depend on Section 2 having produced a published book in the real family, so they inherit its provider-quota and interactive-session gates. The read-only halves closest to these steps *are* covered daily by `guardian-books-and-isolation.spec.ts` (the books page lists assigned books with a content-review badge each, and the assign dialog surfaces only redacted content-review tags), and both passed against live production on 2026-08-07. That is not a tick, because these steps assert the *act* of assigning in the real family, which is mutating.
 
+**Note 2026-11-20: steps `3.1` and `3.2` no longer depend on Section 2.** Approved catalog books
+(`visibility='catalog'`) appear on every family's `/guardian/books` page with a "Catalog" pill, and the same
+Assign dialog applies, so the catalog-only path runs both. Two rules worth knowing before assigning: a child sees
+a catalog book only when an assignment row exists for that profile, and the library additionally hides any book
+banded above the profile's age band even if assigned (`src/cyo_adventure/api/library.py`). Step `3.3` stays
+deferred: its "Assign more" entry point is on the intake page, which belongs to the generation path; the dialog
+behind it is the same one `3.1` exercises.
+
 - [ ] Books page lists published books with content badges; assign to a child from there
 - [ ] Assign dialog shows redacted content-review tags (category/verdict/message only; no raw
       moderation payloads anywhere in guardian-facing responses)
@@ -272,6 +410,11 @@ the Accounts section above.
 ## 4. Kid request-a-story loop (the completed R1 journey)
 
 **All 8 steps NOT RUN on 2026-08-08**, same two gates as Section 2 (provider quota plus an interactive session), with one addition worth stating: several steps here are deliberately destructive of quota by design, notably submitting 5 pending requests to observe the 6th return the 409 cap message. The device-grant leg that this journey opens with *is* exercised daily against live production by `kid-device-grant.spec.ts` (authorize, open the kid library, revoke), all three green on 2026-08-07, so the mechanism is not the risk here. The untested part is the request-to-published journey itself.
+
+**Deferred for the catalog-only first family session (owner decision, 2026-11-20), except step `4.1`.** Step
+`4.1` (guardian console hands off to the kid picker, picking a profile lands on that child's library) exercises
+no generation and is part of Block 5 of that path; the console button is "Hand device to a child", which signs
+the adult out. The other 7 steps remain valid for a later sign-off.
 
 - [ ] From the guardian console, hand off to the kid surface; the profile picker appears and selecting a
       profile lands on that child's library
@@ -289,12 +432,28 @@ the Accounts section above.
 
 **All 5 steps NOT RUN on 2026-08-08.** These need an assigned book from Sections 2 to 4, so they carry those gates, plus one this pass cannot satisfy by any means: a **second physical device** and a **real offline transition**. Airplane mode is not simulable in a way that would make the offline step's pass meaningful, since the point is the browser's own network-loss handling and the service worker's cached state, not a mocked failure. This is the one section that stays manual permanently rather than pending automation.
 
+**Note 2026-11-20: runnable on the catalog-only path.** An assigned catalog book (steps `D5`, `3.1`) satisfies
+the "assigned book" precondition, so Sections 2 to 4 are no longer needed first. Two changes since these steps
+were written:
+
+- **Refresh every device before testing (step `G1`).** v0.86.0 changed the reading-state contract: a profile with
+  no saved progress now gets `200` with `{"state": null}` instead of `404`. A PWA still running an older cached
+  bundle can misread that, so a failure on a stale device is not evidence about the deployed build.
+- **Offline debt to watch for.** `UW-F39` (an offline read of a flowed stop syncing one transition short while
+  the app said "All caught up") was closed by #761 in v0.84.0; a recurrence is a regression, so note it. `UW-C09`
+  is still open and includes "reconnect teleport": reconnecting mid-read can move the reader backwards. If a child
+  reports being sent back to an earlier page, record the book, the device, and whether the device had just come
+  back online.
+
 - [ ] Open an assigned book; reader plays through choices to an ending
 - [ ] Completion is recorded (guardian progress view reflects it)
 - [ ] Close mid-story, reopen on a second device/browser; progress resumes from the server
 - [ ] Offline read works (airplane mode after load); progress syncs on reconnect
       (KNOWN DEBT: offline completions are fire-and-forget; see the deferred-debt register)
 - [ ] Rate a finished book
+      **Note 2026-11-20:** today the rating control is the star row on the book's card in the kid library.
+      A rating prompt on the ending screen is landing in the same batch as this update; once deployed,
+      step `H3` covers it and either surface settles this step.
 
 ## 6. Cross-family isolation spot check
 
@@ -320,6 +479,18 @@ it the first genuine third-family cross-family subject this checklist has ever h
 `UW-L05` because it is the same provenance question: guardian accounts are created by an empty
 `POST /v1/onboarding` with no signup form, so both rows sit on the path a partially-failed or
 unattended JIT provisioning would leave behind.
+
+**Correction 2026-11-20: `0ca7a109` is not an orphan.** It is the system catalog family, by design:
+`src/cyo_adventure/db/models.py` defines `CATALOG_FAMILY_ID = 0ca7a109-0000-4000-8000-000000000000`
+(`CATALOG_FAMILY_NAME = "Catalog (system)"`, the prefix a mnemonic for "catalog"), seeded by migration, owning
+every catalog-origin storybook. It has no users because nobody signs into it, and it has no profiles,
+assignments, grants, requests, or reading states because those belong to real families. The inventory queries
+above counted those tables and not `storybook`, which is why it read as empty. So the "orphan" label in the table
+and the atomicity concern `UW-L05` raises do not apply to it; `adb9e257` remains the one unexplained row. Two
+further cautions: the family and profile counts here have moved more than once and other documents now disagree
+with this table (some cite three family rows), so re-query before relying on any of them; and "onboarding has no
+signup form" is no longer the whole story, since a self-signup now lands in a fresh family at
+`status='awaiting_approval'` until an admin approves it (step `C2`).
 
 **A drift trap this creates, worth fixing before it bites.** `guardian-books-and-isolation.spec.ts:212`
 carries a comment justifying its `toHaveCount(1)`. All three numbers in it are now wrong, not just the
@@ -352,6 +523,10 @@ the two unexplained families that caused the drift.
       identically. #VERIFY: an emptiness assertion over a Tier 1 table needs a non-empty companion
       assertion in the same test, over a table subject to the same policy; a rendered-heading control
       proves the page loaded, never that the scoping mechanism ran.
+      **Note 2026-11-20:** the #639 fix (PR #641) was released in v0.68.2, so the do-not-tick condition
+      above is satisfiable once production serves a later revision. Tick this step only from an `e2e-prod`
+      run that executed `guardian-books-and-isolation.spec.ts` green after the deploy-parity gate (step
+      `A10`); that spec has failed daily since 2026-09-14, so a pre-gate run is not evidence either way.
 - [ ] Kid surfaces never expose guardian-only fields. The concrete contract (`api/review_surface.py`)
       is that guardian-facing responses are story-level and node-id-free: they carry `flagged_count`,
       `node_count`, and merged concern rows, and never `flagged_passages` or raw node `prose`.
@@ -360,12 +535,277 @@ the two unexplained families that caused the drift.
       automated, because the test family has 0 story requests, so the assertion would pass vacuously.
       Creating one costs LLM spend, which is why this is still a manual step.
 
+## 2026-11 additions
+
+Added 2026-11-20 against `main` at v0.92.0, to cover roughly 24 releases of surfaces the original 38 steps
+predate and to make the [catalog-only first family session](#first-family-session-catalog-only) runnable. **41
+steps, 0 ticked.** These are counted separately from the original 38 and never folded into "N of 38".
+
+Each step is one action with its expected result and the evidence to record. Steps marked **applies once
+deployed** describe work landing in the same batch as this update (`B6`, `D4`, `H1` to `H4`); if the deployed
+revision predates it, skip the step and write "not deployed" against it rather than failing it.
+
+### A. Deploy parity gate
+
+Run this block before every session and after every image pull. It is ordered: do not start a later step while
+an earlier one is red. The migration mechanics live in [the operations runbook](../operations/runbook.md),
+section 2.5 ("Applying pending migrations to production"); this block names the checks and the evidence, and
+defers to the runbook for the commands.
+
+- [ ] **A1.** Check the TLS certificate the public host serves now:
+
+      ```bash
+      host=cyo.williamshome.family
+      openssl s_client -connect "$host:443" -servername "$host" </dev/null 2>/dev/null \
+        | openssl x509 -noout -dates -issuer
+      ```
+
+      Expected: `notAfter` in the future, verify result 0. Evidence: issuer and validity window. Step `0.1`'s
+      recorded certificate expired 2026-09-21.
+- [ ] **A2.** On the docker host, read the revision label of the running backend, worker, and frontend containers:
+
+      ```bash
+      docker inspect --format '{{ index .Config.Labels "org.opencontainers.image.revision" }}' \
+        cyo-adventure-backend cyo-adventure-worker cyo-adventure-frontend
+      ```
+
+      Expected: all three print the same SHA, and it is the release you mean to test (v0.92.0 or later). If not,
+      pull and recreate the containers (the manual homelab step) and read the labels again. Evidence: the SHA, the
+      release it maps to, and both image digests. `org.opencontainers.image.version` reads `0.1.0` and tracks
+      nothing; use the revision only.
+- [ ] **A3.** Run `uv run python scripts/check_env_boots.py` against a copy of the production backend env file,
+      and again against the worker's (see its `--help` for how to pass the file). It loads `Settings` exactly as
+      the app does and reports every boot-time validation failure without printing values. Expected: no failures.
+      Evidence: the summary line for each file. Do this before recreating a container on a changed env file; a
+      config error stops uvicorn importing the app at all, and has taken the frontend down with it before.
+- [ ] **A4.** List pending migrations with the "Detect drift" commands in runbook section 2.5 (applied set on
+      production via `--db-url`, never `--linked`, compared with `git ls-tree` at the ref you will deploy).
+      Expected at time of writing: at least `20260831120000_seed_moderation_threshold_grid`,
+      `20260831130000_add_storybook_recalled_to_pipeline_event` and `20260908000000_add_cover_review_columns`
+      pending, unless applied since. Evidence: the pending list, verbatim.
+- [ ] **A5.** Complete runbook section 2.5's Pre-flight: a dump or a written targeted-snapshot rationale, staging
+      green on the **same migration set** (not merely an ancestor commit), and the pending set read rather than
+      counted. Expected: all three satisfied. Evidence: where the dump is (or the rationale), and the "same
+      migration set" line.
+- [ ] **A6.** Dispatch `gh workflow run supabase-production.yml --ref "$REF"` and approve it as the `production`
+      environment's reviewer. Expected: the run succeeds. Evidence: the run id. Skip only if `A4` listed nothing.
+- [ ] **A7.** Run all four Post-deploy verification checks in runbook section 2.5. For this pending set that
+      includes: `storybook_recalled` present in `ck_pipeline_event_event_type` (a constraint-widening migration);
+      `moderation_threshold` now holding rows (the seed is behaviour-preserving: every row has `min_score` NULL
+      and `min_verdict` `flag`); the three `cover_review_*` columns present on `storybook_version`; and an
+      authenticated `GET /api/v1/me` answering 200. Evidence: each result.
+- [ ] **A8.** Run `uv run python scripts/check_schema_parity.py` against production (read-only; compares applied
+      migrations and ORM-mapped columns against the live database). Expected: `IN PARITY`. `DATABASE BEHIND`
+      means go back to `A4`; `DATABASE AHEAD` means the image is older than the schema, so go back to `A2`.
+      Evidence: the verdict line.
+- [ ] **A9.** Fetch `/api/v1/health/ready` from outside the LAN (or read the `health-probe.spec.ts` result from
+      `A10`). Expected: 200 `application/json`, and every entry in `checks` (`database`, `database_privilege`,
+      `cache`, `generation_queue`, `generation_cascade`, `kws_verification`) reports `status: true`. Evidence:
+      the JSON. Readiness is a connectivity probe and cannot see schema drift, which is why it comes after `A8`.
+- [ ] **A10.** Dispatch the `e2e-prod` workflow (`workflow_dispatch`) and wait for it. Expected: every spec green,
+      including every spec that has been red since 2026-09-14 (the alert issue is #824; the guardian books page
+      in `guardian-books-and-isolation.spec.ts` and the kid library in `kid-device-grant.spec.ts` among them).
+      Evidence: the run id. If `A8` said `IN PARITY` and these are still red, stop: the cause is not
+      drift, and the session should not proceed until it is understood.
+
+### B. Configuration and consent posture
+
+Read these from the production env files `A3` checked, plus the readiness JSON from `A9`. Record values as
+"set"/"unset" or the literal non-secret value; never copy a secret into notes.
+
+- [ ] **B1.** Confirm `ENVIRONMENT=production` is set explicitly in the backend and worker env files. Expected:
+      present and `production`. A deployed process with OIDC config and no `ENVIRONMENT` refuses to boot rather
+      than defaulting to `local` (`src/cyo_adventure/core/config.py`, `_require_explicit_environment_when_deployed`),
+      so `A3` would already have failed; this step records the value.
+- [ ] **B2.** Confirm a real moderation reviewer: `CYO_ADVENTURE_REVIEW_PROVIDER` is `openrouter` or `modal` (the
+      default is `mock`), and `CYO_ADVENTURE_ALLOW_MOCK_REVIEW` and `CYO_ADVENTURE_MOCK_REVIEW_JUDGES_SAFE` are
+      unset. Expected: as stated. The allow-mock hatch makes a mock reviewer bootable outside local; it must never
+      be set in production, because everything re-moderated in steps `D2` and `D4` would then carry mock reports
+      that cannot clear the review gate.
+- [ ] **B3.** Confirm `OPENAI_API_KEY` is set and its account has quota. Expected: set (boot refuses a non-mock
+      reviewer without it; `PERSPECTIVE_API_KEY` no longer satisfies the rule). Evidence: "set", plus the date
+      you checked the provider's billing page.
+- [ ] **B4.** Confirm parent verification is off and unconfigured: the readiness JSON's `kws_verification` check
+      reports `state: "unconfigured"` (which it does exactly when `KWS_VERIFICATION_REQUIRED` is false), and the
+      four KWS credentials (`KWS_ORGANIZATION_ID`, `KWS_API_ORIGIN`, `KWS_CLIENT_ID`, `KWS_API_KEY`) are all
+      blank. Expected: as stated. **Do not turn verification on for this session.** The owner and any guardian
+      who consented with the typed-name attestation would lose child-profile creation until they re-verify, and
+      a new adult would be held on a verification screen that cannot send an email while KWS is unconfigured
+      ([KWS consent-gate handoff](handoff-kws-consent-gate-2026-08-10.md), section 5 item 4). Setting some but
+      not all four credentials refuses to boot by design.
+- [ ] **B5.** Confirm the frontend image was built without `VITE_FEATURE_PERSONALIZATION`. Expected: no such build
+      argument in the homelab frontend build. `frontend/Dockerfile` declares no such `ARG`, so it is off unless
+      the out-of-repo build injects it, and `frontend/src/env.ts` records that it must not be enabled where a
+      real family can reach it until its gating task has merged. Evidence: the build arguments you checked.
+- [ ] **B6.** *Applies once deployed.* Decide whether the reading-trail capture (choices taken, endings reached,
+      where a read was abandoned) is on for this session, set its server setting accordingly, and record the
+      decision. Expected: the setting matches your decision. If it is on, the data is about your own children;
+      check that `/guardian/privacy` describes it before the session.
+
+### C. Adult accounts
+
+- [ ] **C1.** Sign in as the guardian account. Expected: you land on `/guardian`. If you land on
+      `/guardian/consent` instead, complete the typed-name attestation (your name, residence country, and the
+      adulthood confirmation); profile creation is refused until the signed-in guardian has a recorded consent
+      (`src/cyo_adventure/api/profiles.py`, `_require_consent`). Evidence: which page you landed on.
+- [ ] **C2.** *Optional.* Add a second adult (for example a spouse) **by invitation, not by self-signup.** Either
+      invite them from `/admin/users` ("Invite a guardian or admin", choosing the real family), which binds them
+      as active on first sign-in, or from the guardian console's "Invite a co-parent", which lands them at
+      `awaiting_approval` until you approve them. To approve, open `/admin/users`, find their row (status
+      `awaiting_approval`), and press its **Reactivate** button, which is how that transition is labelled.
+      Expected: they reach `/guardian` after their own consent step and see the family's profiles. A self-signup
+      instead creates a **separate, new family** held at `awaiting_approval`, which is not what you want.
+- [ ] **C3.** Open `/admin/users` and read the Users and Families tabs. Expected: no account you do not recognise
+      at `awaiting_approval` or `active`. Do not approve an account you cannot identify; `adb9e257` (Section 6)
+      is still unexplained. Evidence: the count of adults and families, and any row you could not identify.
+
+### D. Catalog readiness
+
+Catalog books are owned by the system catalog family and reach a child only when an admin approves them with
+catalog visibility **and** a guardian assigns them. The review surface is `/admin/review/<storybook-id>`, reached
+from the queue at `/admin` (books `in_review`) or from `/admin/library` (any status). Work it with the
+[reviewer SOP](../operations/reviewer-sop.md) open.
+
+- [ ] **D1.** Take a census. Open `/admin/library`, filter **Published**, then **In review**, and record each book's
+      title, age band, and status. Optional read-only cross-check against production (latest version of every
+      catalog-family book):
+
+      ```sql
+      select s.id, s.status, s.visibility,
+             v.blob->>'title' as title, v.blob->'metadata'->>'age_band' as band,
+             v.approved_by is not null as approved, v.cover_status
+      from storybook s
+      join storybook_version v on v.storybook_id = s.id
+       and v.version = (select max(x.version) from storybook_version x where x.storybook_id = s.id)
+      where s.family_id = '0ca7a109-0000-4000-8000-000000000000'
+      order by s.status, band;
+      ```
+
+      Expected (2026-08-31 census, re-derive rather than trust): 13 published, all in younger bands; 13 in review,
+      skewed older ([review-screen remediation plan](review-screen-remediation-plan-2026-08-31.md), section 2.2).
+      Evidence: the table.
+- [ ] **D2.** Rule on the two published books with severe findings, register row `UW-L08`: `sk_vault_of_nine_iron`
+      (block/high, drowning) and `sk_ninth_hand` (flag/high, suicidal intent). Open each in `/admin/review/<id>`
+      and read the findings. The ratified sequence is to re-moderate each first
+      (`scripts/remoderate_books.py --book-id <id> --execute`, run as an operator role, spending review quota)
+      and decide on the fresh report. Decide per book: keep, recall to review (from `/admin/outstanding-decisions`
+      if listed there; recoverable, assignments survive), or archive (the Archive button on the review page;
+      absorbing). Expected: a written decision per book. **Minimum before children browse:** neither book is
+      assigned to any child, which by itself keeps it off every shelf. Evidence: the decision and date.
+- [ ] **D3.** Check the hold-back list. Expected: none of these is published or assigned, and none is approved in
+      this session: `the-clocktower-cipher`, `the-sunken-signal` and `the-lost-mitten` (MVP/Test-tier fills that
+      gate rule PL-28 refuses); `the-sunken-temple` and `the-harrowstone-keep` (held per owner ruling OG1); and,
+      for this session only, the high-failure gamebooks `the-sunspire-ascent` and `the-thornwood-trial`.
+      Production ids may differ from these file slugs; match by title. Evidence: "none present", or the book and
+      its state.
+- [ ] **D4.** *Applies once deployed.* Five catalog books received an editorial revision and must be re-imported
+      and re-moderated before approval: *The Signal in the Static* (13-16), *The Hollow Lighthouse* (10-13), *The
+      Midnight Museum* (10-13), *The Sky-Ship Stowaway* (8-11), *The Cave of Echoes* (8-11). Follow the revision's
+      own import instructions. Expected: each shows a new latest version at `in_review` with a fresh moderation
+      report whose reviewer is not the mock. Evidence: book, new version number, report date.
+- [ ] **D5.** Approve each book you intend to offer. In `/admin/review/<id>`, read the summary and findings, press
+      **Approve**, and in the confirm dialog choose **"Catalog (every family)"** under "Who can see this book?".
+      Expected: the book is Published with catalog visibility. Three traps: the dialog **defaults to "This family
+      only"**, which publishes a catalog-owned book to the catalog family alone so no child can read it; when the
+      report carries a block or high finding, **Confirm approve** stays disabled until you type an override reason
+      of at least 10 characters (logged for audit, not stored on the story); and if Approve is disabled with a
+      "moderation unavailable" hint, the report is unusable and the book must be re-moderated first. For the first
+      session, prefer holding a book back over writing an override you would not defend. Evidence: each approved
+      book, and any override reason you wrote.
+- [ ] **D6.** Check band coverage. For each child's intended age band (step `F2`), count published catalog books at
+      or below that band. Expected: enough choice per child for a session (your call; two or three each is a
+      reasonable floor), with the 13-16 band in particular not empty, since the published set skewed younger.
+      Evidence: count per band.
+- [ ] **D7.** Sign in as the guardian and open `/guardian/books`. Expected: every book approved in `D5` is listed
+      with a "Catalog" pill and the right age band, and nothing from `D2` or `D3` is offered. Evidence: the list.
+
+### E. Covers
+
+- [ ] **E1.** For each book you will assign, open `/admin/review/<id>` (published books via `/admin/library`). If a
+      "Generated cover" block shows a cover pending review, look at it, read any AI-review note, and press
+      **Approve cover**. Expected: "Cover approved.", and the cover appears on the child's library card; only an
+      approved cover ever reaches a child. Approving a book does not approve its cover; they are separate gates.
+      As of the 2026-08-31 census no cover had been approved in production, and two published books had a cover
+      waiting. Evidence: books whose covers you approved. A book with no cover still reads normally.
+- [ ] **E2.** *Optional.* Generate a cover for a book that has none with **Generate cover** on the same page.
+      Expected: it moves to pending review, then `E1` applies. This needs `GEMINI_API_KEY` and the `R2_*` settings
+      configured (otherwise the request fails with "cover generation is not configured") and runs on the worker.
+
+### F. Profiles and devices
+
+- [ ] **F1.** Open `/guardian/profiles` and count the real family's child profiles. Expected: a number you can
+      reconcile; this document recorded 3 on 2026-08-08 and a later count has been cited as 2. Evidence: the count
+      and names.
+- [ ] **F2.** Make sure each of the four children has exactly one profile ("Add child", or "Edit" an existing one)
+      with an age band that fits them. The bands are `3-5`, `5-8`, `8-11`, `10-13`, `13-16` and `16+`; for ages 9
+      to 15 the candidates are `8-11`, `10-13` and `13-16`. The band is a ceiling: a child never sees a book banded
+      above it, even when assigned. Expected: four profiles, bands recorded. This performs step `1.3`'s
+      create/edit half.
+- [ ] **F3.** For each profile, choose whether to set a picker PIN (Edit, "Picker PIN", 4 to 8 digits; the field
+      exists only when editing, not when creating). Expected: your choice applied. Recommended for siblings who
+      share devices, since an authorized device's picker offers every profile in the family.
+- [ ] **F4.** Leave "Read-aloud" unchecked on each profile unless a child asks for it (it is per profile and off by
+      default). Expected: as chosen. Evidence: which profiles, if any, have it on.
+- [ ] **F5.** On each child's device: sign in as the guardian, press **"Set up this device for your kids"** on the
+      console, then continue with step `4.1`. Expected: the device appears on `/guardian/devices`. Evidence: the
+      device count and labels there. Revoking a device stops new reading sessions at once, but a session already
+      running continues until it expires on its own.
+- [ ] **F6.** Before handing over, use **Preview** next to each profile on `/guardian/profiles`. Expected: the shelf
+      shows exactly the books assigned to that child in `3.1`, nothing banded above their profile, and nothing from
+      `D2` or `D3`. Evidence: titles per child.
+
+### G. Reading on real devices
+
+- [ ] **G1.** Refresh the app on every device that has opened it before: close every tab and the installed app
+      completely, then reopen it (the service worker updates on the next full load). Expected: the app loads, and
+      opening a book the child has never read starts at the beginning with no error. Why it matters: v0.86.0
+      changed "no saved progress" from a `404` to `200` with `{"state": null}`, and a device still running an
+      older cached bundle is testing the old client, not the deployed one.
+- [ ] **G2.** Each of the four children, on their own device, picks their profile and opens a book of their
+      choosing from their shelf. Expected: all four are reading at the same time without errors. Evidence: per
+      child, device, first book opened, and anything that went wrong. This is the end state the catalog-only path
+      exists to reach.
+
+### H. Reader features landing in the 2026-11 batch
+
+All four steps **apply once deployed**. Behaviour is described generically because these steps were written
+before the code landed; correct the wording against the shipped UI the first time you run them.
+
+- [ ] **H1.** Open a book with an approved cover. Expected: a title page showing the cover and title appears before
+      the first passage, and continuing from it starts the story.
+- [ ] **H2.** Reach an ending and use **"Try a different choice"**. Expected: the reader returns to an earlier fork
+      and lets the child choose differently, and the guardian progress view stays consistent with what was read.
+- [ ] **H3.** Reach an ending. Expected: a rating prompt appears on the ending screen, and the rating given there
+      shows on the book's library card. This settles step `5.5` as well.
+- [ ] **H4.** With the reading-trail setting on (step `B6`), complete one read and abandon another midway. Expected:
+      the choices taken, the ending reached, and where the abandoned read stopped are all recorded in the surface
+      the feature exposes; with the setting off, nothing is recorded. Evidence: what you saw and where.
+
+### J. Privacy and erasure (non-destructive)
+
+- [ ] **J1.** **Smoke check only; this must not delete the real family.** Signed in as the guardian, open
+      `/guardian/privacy`, scroll to "Delete your family account", press **Delete family account**, confirm that
+      **Delete everything** is disabled until the confirmation word is typed, then press **Cancel**. Expected:
+      dialog opens, destructive button disabled, Cancel closes it. **Never type the confirmation word on this
+      account.** A real erasure run belongs against the E2E test family or staging, never in this checklist.
+
 ## Sign-off
 
 | Run date | Image tags (backend/frontend) | Result | Notes |
 | --- | --- | --- | --- |
 | 2026-08-04 | both at revision `f1b561b6` (v0.63.0); backend `@sha256:de9a9f6a`, frontend `@sha256:4d608898` | PARTIAL, 5 of 38 steps | Section 0 only. Sections 1 to 6 not run. Detail below. |
 | 2026-08-08 | both at revision `631c0d8a` (v0.68.0); backend `@sha256:6a92ab44`, frontend `@sha256:7d7bd249` | **PARTIAL, 10 of 38 steps, and a live P1 defect found** | Sections 0, 1, 1a advanced from CI evidence. `UW-L04` confirmed deployed. Section 1a's open routing question resolved from code. Guardian profile resolution is broken in production: [#639](https://github.com/ByronWilliamsCPA/cyo-adventure/issues/639) / `UW-L07`. Detail below. |
+| *(catalog-only first family session, not yet run)* | | | |
+
+**Template for the catalog-only session row (added 2026-11-20).** Fill the blank row above rather than adding a
+new one, and keep the two counts separate: the original population as "N of 38" and the additions as "M of 41".
+
+- **Run date:** the session date.
+- **Image tags:** backend, worker and frontend revision from step `A2`, plus both digests.
+- **Result:** "N of 38, M of 41", the parity verdict from `A8`, and the `e2e-prod` run id from `A10`.
+- **Notes:** the `UW-L08` ruling from `D2`; books approved in `D5` with bands; covers approved in `E1`; which
+  "applies once deployed" steps were skipped as not deployed; anything a child hit that the observation guide
+  recorded; and a link to a dated detail section below, written in the same shape as the two above.
 
 ### 2026-08-04 partial run
 
