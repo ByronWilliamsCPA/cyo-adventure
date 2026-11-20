@@ -2,6 +2,7 @@ import { expect, test } from '@playwright/test'
 
 import { seedDeviceGrant } from './support/auth'
 import { loadLanternStory } from './support/fixtures'
+import { openReader } from './support/reader'
 
 /**
  * Coverage for the K15 "Tell a grown-up" flag button in the reader chrome.
@@ -150,7 +151,7 @@ test('submitting a reason posts the structured flag and shows the kid-language c
   })
 
   await page.goto(READER_PATH)
-  await expect(page.getByTestId('reader')).toBeVisible()
+  await openReader(page)
 
   await page.getByRole('button', { name: 'Tell a grown-up' }).click()
   const dialog = page.getByRole('dialog', { name: 'Tell a grown-up' })
@@ -175,7 +176,7 @@ test('a 409 cap response shows the gentle "told us a lot already" message', asyn
   )
 
   await page.goto(READER_PATH)
-  await expect(page.getByTestId('reader')).toBeVisible()
+  await openReader(page)
 
   await page.getByRole('button', { name: 'Tell a grown-up' }).click()
   await page
@@ -199,7 +200,7 @@ test('a failed flag submit still reassures the child and never dead-ends them', 
   )
 
   await page.goto(READER_PATH)
-  await expect(page.getByTestId('reader')).toBeVisible()
+  await openReader(page)
 
   await page.getByRole('button', { name: 'Tell a grown-up' }).click()
   await page
@@ -224,6 +225,6 @@ test('the flag button is hidden without a valid child session', async ({ page, c
     window.localStorage.removeItem('child_session')
   })
   await page.goto(READER_PATH)
-  await expect(page.getByTestId('reader')).toBeVisible()
+  await openReader(page)
   await expect(page.getByRole('button', { name: 'Tell a grown-up' })).toHaveCount(0)
 })

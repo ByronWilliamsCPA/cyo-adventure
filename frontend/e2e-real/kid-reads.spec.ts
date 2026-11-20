@@ -3,6 +3,7 @@ import { expect, test } from '@playwright/test'
 import type { DeviceGrant } from '../src/auth/deviceGrant'
 
 import { authorizeDevice, requireBackend, revokeDevice } from './real-stack'
+import { openReader } from '../e2e/support/reader'
 
 /**
  * Real-API kid journey: picker -> library -> read to an ending. No route
@@ -44,7 +45,7 @@ test('the seeded child reads a real story to an ending', async ({ page }) => {
   // smoke isolated from that spec regardless of shelf ordering.
   await page.getByRole('link', { name: 'The Tide Pool Mystery' }).click()
   await expect(page).toHaveURL(/\/read\//)
-  await expect(page.getByTestId('reader')).toBeVisible()
+  await openReader(page)
 
   // A blind choice-walk that only checks it reaches an ending would pass even
   // if the backend served blank, identical, or garbled passages. Assert the

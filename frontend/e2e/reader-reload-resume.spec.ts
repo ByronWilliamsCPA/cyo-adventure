@@ -3,6 +3,7 @@ import { expect, test } from '@playwright/test'
 import { seedDeviceGrant } from './support/auth'
 
 import { loadLanternStory } from './support/fixtures'
+import { openReader } from './support/reader'
 
 const lantern = loadLanternStory()
 
@@ -39,7 +40,7 @@ test('reloading the same device resumes at the same node, not the start', async 
   })
 
   await page.goto(READER_PATH)
-  await expect(page.getByTestId('reader')).toBeVisible()
+  await openReader(page)
   await expect(page.getByTestId('passage-body')).toHaveText('A lantern lies near the entrance.')
 
   await page.getByTestId('choice-c_take_lantern').click()

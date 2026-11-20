@@ -9,6 +9,7 @@ import {
   resetRealState,
   revokeDevice,
 } from './real-stack'
+import { openReader } from '../e2e/support/reader'
 
 /**
  * Real-API K5 kid go-back path: Reader.tsx's "Go back" control (data-testid
@@ -190,7 +191,7 @@ test('going back after two real choices reverts the current node and the persist
 
   await page.getByRole('link', { name: 'The Tide Pool Mystery' }).click()
   await expect(page).toHaveURL(/\/read\//)
-  await expect(page.getByTestId('reader')).toBeVisible()
+  await openReader(page)
   await mountSave
 
   // n_start -> n_pools. c_rock (one of n_pools's own choices) is a marker

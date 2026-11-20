@@ -9,6 +9,7 @@ import {
   resetRealState,
   revokeDevice,
 } from './real-stack'
+import { openReader } from '../e2e/support/reader'
 
 /**
  * Real-API G3 structural gap (Phase 7.3,
@@ -309,7 +310,7 @@ test.describe.serial('G3: offline reading reaches the same branch as the real ba
     await expect(page).toHaveURL(/\/library\//)
     await page.getByRole('link', { name: 'The Clockwork Garden' }).click()
     await expect(page).toHaveURL(/\/read\//)
-    await expect(page.getByTestId('reader')).toBeVisible()
+    await openReader(page)
     await mountSave
 
     // n_start -> n_hedge -> n_clearing (courage 0 -> 1 -> 2), waiting for each
@@ -387,7 +388,7 @@ test.describe.serial('G3: offline reading reaches the same branch as the real ba
     await expect(page).toHaveURL(/\/library\//)
     await page.getByRole('link', { name: 'The Clockwork Garden' }).click()
     await expect(page).toHaveURL(/\/read\//)
-    await expect(page.getByTestId('reader')).toBeVisible()
+    await openReader(page)
     await mountSave
 
     await context.setOffline(true)

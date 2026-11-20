@@ -6,6 +6,7 @@ import { mockEmptyConsole, mockMe, seedDeviceGrant, seedGuardianSession } from '
 import { AXE_TAGS, isConformance } from './support/axeTags'
 import { loadLanternStory } from './support/fixtures'
 import { LOGIN_HEADLINE } from '../src/guardian/loginHeadline'
+import { openReader } from './support/reader'
 
 /**
  * Automated accessibility smoke, WCAG 2.1 A/AA rules via axe-core, across
@@ -264,7 +265,7 @@ test('the reader page has no detectable accessibility violations', async ({ page
     return route.fulfill({ status: 200, json: { current_node: 'n_entrance', state_revision: 1 } })
   })
   await page.goto('/read/child-a/s_lantern_cave/1')
-  await expect(page.getByTestId('reader')).toBeVisible()
+  await openReader(page)
   await assertNoViolations(page)
 })
 

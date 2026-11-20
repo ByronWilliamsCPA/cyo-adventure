@@ -9,6 +9,7 @@ import {
   resetRealState,
   revokeDevice,
 } from './real-stack'
+import { openReader } from '../e2e/support/reader'
 
 /**
  * Real-backend CONTRACT-SMOKE (Phase 7.2, G2,
@@ -221,7 +222,7 @@ test.describe('reading-state PUT contract', () => {
     await expect(page).toHaveURL(/\/library\//)
     await page.getByRole('link', { name: 'The Tide Pool Mystery' }).click()
     await expect(page).toHaveURL(/\/read\//)
-    await expect(page.getByTestId('reader')).toBeVisible()
+    await openReader(page)
 
     const firstRes = await firstSave
     const firstBody = (await firstRes.json()) as Record<string, unknown>

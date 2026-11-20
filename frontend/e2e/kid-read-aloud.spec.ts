@@ -2,6 +2,7 @@ import { expect, test } from '@playwright/test'
 
 import { seedDeviceGrant } from './support/auth'
 import { loadLanternStory } from './support/fixtures'
+import { openReader } from './support/reader'
 
 /**
  * Coverage for K7 (Phase 4b read-aloud): the reader's speaker toggle only
@@ -138,7 +139,7 @@ async function pickProfileIntoReader(page: import('@playwright/test').Page) {
   await expect(page).toHaveURL(`/library/${READER_PROFILE_ID}`)
   await page.getByRole('link', { name: /the lantern cave/i }).click()
   await expect(page).toHaveURL(new RegExp(`/read/${READER_PROFILE_ID}/s_lantern_cave/1$`))
-  await expect(page.getByTestId('reader')).toBeVisible()
+  await openReader(page)
 }
 
 test('shows the read-aloud toggle for a tts_enabled profile picked through the picker, and it starts/stops speaking', async ({

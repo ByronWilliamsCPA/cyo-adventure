@@ -9,6 +9,7 @@ import {
   resetRealState,
   revokeDevice,
 } from './real-stack'
+import { openReader } from '../e2e/support/reader'
 
 /**
  * Real-API K7 kid read-aloud path: Reader.tsx's read-aloud toggle
@@ -158,7 +159,7 @@ test('a kid toggles real read-aloud on and off once the real tts_enabled flag is
 
   await page.getByRole('link', { name: 'The Tide Pool Mystery' }).click()
   await expect(page).toHaveURL(/\/read\//)
-  await expect(page.getByTestId('reader')).toBeVisible()
+  await openReader(page)
 
   // The passage actually available for narration is real content: the toggle
   // speaks whatever PassageText currently renders (Reader.tsx's

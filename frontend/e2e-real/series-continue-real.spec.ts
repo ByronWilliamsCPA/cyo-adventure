@@ -3,6 +3,7 @@ import { expect, test } from '@playwright/test'
 import type { DeviceGrant } from '../src/auth/deviceGrant'
 
 import { authorizeDevice, requireBackend, resetRealState, revokeDevice } from './real-stack'
+import { openReader } from '../e2e/support/reader'
 
 /**
  * Real-API series continuation: the seeded dev reader plays "Ember Trail 1"
@@ -51,7 +52,7 @@ test('the seeded child continues a real series into book 2', async ({ page }) =>
   // /read/<profileId>/s_dev_ember_1/1 navigation is not possible here.
   await page.getByRole('link', { name: 'Ember Trail 1' }).click()
   await expect(page).toHaveURL(/\/read\//)
-  await expect(page.getByTestId('reader')).toBeVisible()
+  await openReader(page)
 
   // TWO clicks, not five. This series is band 10-13, a flowed band (ADR-026,
   // FLOWED_BANDS in reader/readerProgress.ts), so a single-choice node never
@@ -129,7 +130,7 @@ test('book 2 played fresh, without a carried courage, hides the gated choice', a
   // is genuinely gated, not unconditionally rendered.
   await page.getByRole('link', { name: 'Ember Trail 2' }).click()
   await expect(page).toHaveURL(/\/read\/[^/]+\/s_dev_ember_2\//)
-  await expect(page.getByTestId('reader')).toBeVisible()
+  await openReader(page)
   // Book 2's own entry prose, per _BOOK_PROSE[1]; see the note in the test
   // above for why this is not book 1's "the trail begins."
   await expect(page.getByTestId('passage-body')).toContainText(

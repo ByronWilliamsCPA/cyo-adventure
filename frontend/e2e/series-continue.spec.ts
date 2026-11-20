@@ -1,6 +1,7 @@
 import { expect, test } from '@playwright/test'
 
 import { seedDeviceGrant } from './support/auth'
+import { openReader } from './support/reader'
 
 const SERIES_ID = 'ser-e2e-1'
 
@@ -135,7 +136,7 @@ test.beforeEach(async ({ page, context }) => {
 
 test('continues a series into the next book with carried state', async ({ page }) => {
   await page.goto('/read/child-a/s_ember_1/1')
-  await expect(page.getByTestId('reader')).toBeVisible()
+  await openReader(page)
   await page.getByTestId('choice-c_brave').click()
   await expect(page.getByTestId('ending-screen')).toBeVisible()
 
@@ -145,6 +146,9 @@ test('continues a series into the next book with carried state', async ({ page }
 
   // The continuation navigates to book 2's route...
   await expect(page).toHaveURL(/\/read\/child-a\/s_ember_2\/1/)
+  // ...opens book 2 fresh, so its own title page comes first...
+  await expect(page.getByRole('heading', { level: 1, name: 'Ember Trail 2' })).toBeVisible()
+  await openReader(page)
   // ...and opens at its series ENTRY node (n_b2_start), which now diverges from
   // book 2's default start_node (n_b2_intro): the entry-node body shows and the
   // prologue never does, so this proves a real transition to the entry node

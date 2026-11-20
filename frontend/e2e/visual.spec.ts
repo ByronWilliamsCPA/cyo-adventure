@@ -2,6 +2,7 @@ import { expect, test } from '@playwright/test'
 
 import { mockEmptyConsole, mockMe, seedDeviceGrant, seedGuardianSession } from './support/auth'
 import { loadLanternStory } from './support/fixtures'
+import { openReader } from './support/reader'
 
 /**
  * Visual regression baselines across every top-level shell and modal
@@ -163,7 +164,7 @@ test('the reader page matches its visual baseline', async ({ page, context }) =>
   })
 
   await page.goto('/read/child-a/s_lantern_cave/1')
-  await expect(page.getByTestId('reader')).toBeVisible()
+  await openReader(page)
 
   await expect(page).toHaveScreenshot('reader-page.png', { animations: 'disabled' })
 })

@@ -3,6 +3,7 @@ import { expect, test } from '@playwright/test'
 import { seedGuardianSession } from '../e2e/support/auth'
 
 import { authorizeDevice, requireBackend, resetRealState, revokeDevice } from './real-stack'
+import { openReader } from '../e2e/support/reader'
 
 /**
  * Real G9 guardian reading-history path. The seeded child reads a real
@@ -53,7 +54,7 @@ test('the seeded child reads a real story to an ending', async ({ page, context 
 
     await page.getByRole('link', { name: 'The Clockwork Garden' }).click()
     await expect(page).toHaveURL(/\/read\//)
-    await expect(page.getByTestId('reader')).toBeVisible()
+    await openReader(page)
 
     for (let i = 0; i < 40; i += 1) {
       if (await page.getByTestId('ending-screen').count()) break

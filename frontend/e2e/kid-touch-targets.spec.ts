@@ -2,6 +2,7 @@ import { expect, test } from '@playwright/test'
 
 import { seedDeviceGrant } from './support/auth'
 import { loadLanternStory } from './support/fixtures'
+import { openReader } from './support/reader'
 
 /**
  * WCAG 2.5.5 tap-target floor for the KID reader's choice buttons. Kids are
@@ -39,7 +40,7 @@ test('kid reader choice buttons meet the 44x44 tap floor at a phone viewport', a
   })
 
   await page.goto(READER_PATH)
-  await expect(page.getByTestId('reader')).toBeVisible()
+  await openReader(page)
 
   // The entrance node offers at least the take/ignore-lantern choices; measure
   // every rendered choice button, not a single one.

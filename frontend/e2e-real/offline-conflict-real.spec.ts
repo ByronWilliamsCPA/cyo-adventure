@@ -3,6 +3,7 @@ import { expect, test, type BrowserContext, type Page } from '@playwright/test'
 import type { DeviceGrant } from '../src/auth/deviceGrant'
 
 import { authorizeDevice, requireBackend, revokeDevice } from './real-stack'
+import { openReader } from '../e2e/support/reader'
 
 /**
  * Real-API S2 conflict race (register S2, "Conflict resolution"): two
@@ -85,7 +86,7 @@ async function openClockworkGarden(page: Page): Promise<void> {
   await expect(page).toHaveURL(/\/library\//)
   await page.getByRole('link', { name: STORYBOOK_TITLE }).click()
   await expect(page).toHaveURL(/\/read\//)
-  await expect(page.getByTestId('reader')).toBeVisible()
+  await openReader(page)
 }
 
 /**

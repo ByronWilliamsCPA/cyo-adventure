@@ -9,6 +9,7 @@ import {
   resetRealState,
   revokeDevice,
 } from './real-stack'
+import { openReader } from '../e2e/support/reader'
 
 /**
  * Real-API K15 kid flag path: the reader's "Tell a grown-up" affordance
@@ -104,7 +105,7 @@ test('a kid tells a grown-up through the real flag path and it lands in the admi
 
   await page.getByRole('link', { name: 'The Tide Pool Mystery' }).click()
   await expect(page).toHaveURL(/\/read\//)
-  await expect(page.getByTestId('reader')).toBeVisible()
+  await openReader(page)
 
   await page.getByRole('button', { name: 'Tell a grown-up' }).click()
   await expect(page.getByText('What happened?')).toBeVisible()

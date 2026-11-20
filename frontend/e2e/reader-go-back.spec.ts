@@ -3,6 +3,7 @@ import { expect, test } from '@playwright/test'
 import { seedDeviceGrant } from './support/auth'
 
 import { loadLanternStory } from './support/fixtures'
+import { openReader } from './support/reader'
 
 /**
  * Coverage for K5 (Replay + Go Back undo, register capability). Ratified
@@ -80,7 +81,7 @@ test.beforeEach(async ({ page, context }) => {
 
 test('Go back is absent at the start node', async ({ page }) => {
   await page.goto(READER_PATH)
-  await expect(page.getByTestId('reader')).toBeVisible()
+  await openReader(page)
   await expect(page.getByTestId('passage-body')).toContainText('A lantern lies near the entrance.')
   await expect(page.getByTestId('go-back')).toHaveCount(0)
 })
@@ -89,7 +90,7 @@ test('Go back undoes the last choice and replays state faithfully, not by corrup
   page,
 }) => {
   await page.goto(READER_PATH)
-  await expect(page.getByTestId('reader')).toBeVisible()
+  await openReader(page)
 
   // Two choices forward, the first sets has_lantern (state), the second is
   // gated on that state: c_dark_passage is only offered because the lantern

@@ -2,6 +2,7 @@ import { expect, test } from '@playwright/test'
 
 import { seedDeviceGrant } from '../support/auth'
 import { loadLanternStory } from '../support/fixtures'
+import { openReader } from '../support/reader'
 
 const lantern = loadLanternStory()
 
@@ -331,7 +332,7 @@ test.describe('hardware back button', () => {
     await expect(page).toHaveURL('/library/p1')
     await page.getByRole('link', { name: /the lantern cave/i }).click()
     await expect(page).toHaveURL(/\/read\/p1\/s_lantern_cave\/1$/)
-    await expect(page.getByTestId('reader')).toBeVisible()
+    await openReader(page)
     await page.getByTestId('choice-c_take_lantern').click()
     await expect(page.getByTestId('passage-body')).toContainText('The cave splits.')
 
@@ -348,7 +349,7 @@ test.describe('hardware back button', () => {
     await page.goForward()
     await expect(page).toHaveURL(/\/read\/p1\/s_lantern_cave\/1$/)
     await page.reload()
-    await expect(page.getByTestId('reader')).toBeVisible()
+    await openReader(page)
     await expect(page.locator('.reader-error')).toHaveCount(0)
   })
 })
@@ -406,7 +407,7 @@ test.describe('refresh mid-reader', () => {
     })
 
     await page.goto(READER_PATH)
-    await expect(page.getByTestId('reader')).toBeVisible()
+    await openReader(page)
 
     // Deterministically wait for the reading-state save to land before
     // refreshing, rather than waitForLoadState('networkidle') (which Playwright
@@ -420,7 +421,7 @@ test.describe('refresh mid-reader', () => {
     await savePersisted
     await page.reload()
 
-    await expect(page.getByTestId('reader')).toBeVisible()
+    await openReader(page)
     // The gated dark-passage choice requires has_lantern: true, which only
     // holds if the refreshed reader resumed past the entrance, not reset to it.
     await expect(page.getByTestId('choice-c_dark_passage')).toBeVisible()

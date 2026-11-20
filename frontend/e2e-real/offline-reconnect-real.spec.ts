@@ -1,6 +1,7 @@
 import { expect, test, type Page } from '@playwright/test'
 
 import { authorizeDevice, BACKEND, requireBackend, revokeDevice } from './real-stack'
+import { openReader } from '../e2e/support/reader'
 
 /**
  * Real-API offline-queue replay-on-reconnect, driven through an actual
@@ -184,7 +185,7 @@ async function openClockworkGarden(page: Page, profileName: string): Promise<voi
   await expect(page).toHaveURL(/\/library\//)
   await page.getByRole('link', { name: STORYBOOK_TITLE }).click()
   await expect(page).toHaveURL(/\/read\//)
-  await expect(page.getByTestId('reader')).toBeVisible()
+  await openReader(page)
 }
 
 test.describe.serial('Offline queue replay-on-reconnect via a real network toggle', () => {

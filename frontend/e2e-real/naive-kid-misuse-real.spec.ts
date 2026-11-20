@@ -3,6 +3,7 @@ import { expect, test } from '@playwright/test'
 import type { DeviceGrant } from '../src/auth/deviceGrant'
 
 import { authorizeDevice, BACKEND, requireBackend, revokeDevice } from './real-stack'
+import { openReader } from '../e2e/support/reader'
 
 /**
  * Real-API naive-child misuse: the button-mashing a small child actually does,
@@ -206,8 +207,9 @@ test('mashing reader choices never corrupts state or dead-ends', async ({ page }
   // reader before a single choice is tapped.
   // #VERIFY: wait for whichever surface the restore lands on, and if it is the
   // ending screen, "Read again" (data-testid="restart") returns to a fresh
-  // reading passage so the mash starts from a real choice node.
-  await expect(page.getByTestId('reader').or(page.getByTestId('ending-screen'))).toBeVisible()
+  // reading passage so the mash starts from a real choice node. A fresh read
+  // opens on the title page first; openReader taps Start in that case.
+  await openReader(page)
   if (await page.getByTestId('ending-screen').count()) {
     await page.getByTestId('restart').click()
   }

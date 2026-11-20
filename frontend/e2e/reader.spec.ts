@@ -3,6 +3,7 @@ import { expect, test } from '@playwright/test'
 import { seedDeviceGrant } from './support/auth'
 
 import { loadLanternStory } from './support/fixtures'
+import { openReader } from './support/reader'
 
 const lantern = loadLanternStory()
 
@@ -58,7 +59,7 @@ test.beforeEach(async ({ page, context }) => {
 
 test('plays a downloaded story to an ending (US-101)', async ({ page }) => {
   await page.goto(READER_PATH)
-  await expect(page.getByTestId('reader')).toBeVisible()
+  await openReader(page)
   await page.getByTestId('choice-c_take_lantern').click()
   await page.getByTestId('choice-c_dark_passage').click()
   await expect(page.getByTestId('ending-screen')).toBeVisible()
@@ -67,7 +68,7 @@ test('plays a downloaded story to an ending (US-101)', async ({ page }) => {
 
 test('plays to an ending with the network disabled', async ({ page, context }) => {
   await page.goto(READER_PATH)
-  await expect(page.getByTestId('reader')).toBeVisible()
+  await openReader(page)
   // The story is loaded; disable the network and finish reading offline.
   await context.setOffline(true)
   await page.getByTestId('choice-c_ignore_lantern').click()
@@ -78,7 +79,7 @@ test('plays to an ending with the network disabled', async ({ page, context }) =
 
 test('state-gated choice is hidden until its condition holds (US-102)', async ({ page }) => {
   await page.goto(READER_PATH)
-  await expect(page.getByTestId('reader')).toBeVisible()
+  await openReader(page)
   await page.getByTestId('choice-c_ignore_lantern').click()
   // Without the lantern, the dark passage is not offered.
   await expect(page.getByTestId('choice-c_dark_passage')).toHaveCount(0)
@@ -104,7 +105,7 @@ test('a missing story shows not-found, not the offline copy', async ({ page }) =
 test('the reader column has no horizontal scroll at 390px', async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 })
   await page.goto(READER_PATH)
-  await expect(page.getByTestId('reader')).toBeVisible()
+  await openReader(page)
   const overflow = await page.evaluate(
     () => document.documentElement.scrollWidth > document.documentElement.clientWidth
   )
@@ -117,7 +118,7 @@ test('the reader chrome does not overflow at 320px with the offline badge shown'
 }) => {
   await page.setViewportSize({ width: 320, height: 640 })
   await page.goto(READER_PATH)
-  await expect(page.getByTestId('reader')).toBeVisible()
+  await openReader(page)
   // Force the connection badge into the chrome (a realistic mobile combo).
   await context.setOffline(true)
   await expect(page.getByText('No internet')).toBeVisible()
@@ -129,7 +130,7 @@ test('the reader chrome does not overflow at 320px with the offline badge shown'
 
 test('choice buttons meet the 44px tap target', async ({ page }) => {
   await page.goto(READER_PATH)
-  await expect(page.getByTestId('reader')).toBeVisible()
+  await openReader(page)
   const box = await page.getByTestId('choice-c_take_lantern').boundingBox()
   expect(box?.height ?? 0).toBeGreaterThanOrEqual(44)
 })
@@ -151,7 +152,7 @@ test('records a completion when the story reaches an ending', async ({ page }) =
     })
   })
   await page.goto(READER_PATH)
-  await expect(page.getByTestId('reader')).toBeVisible()
+  await openReader(page)
   await page.getByTestId('choice-c_take_lantern').click()
   await page.getByTestId('choice-c_dark_passage').click()
   await expect(page.getByTestId('ending-screen')).toBeVisible()
@@ -193,7 +194,7 @@ test('shows the endings tracker on the ending screen once reading-history resolv
     })
   )
   await page.goto(READER_PATH)
-  await expect(page.getByTestId('reader')).toBeVisible()
+  await openReader(page)
   await page.getByTestId('choice-c_take_lantern').click()
   await page.getByTestId('choice-c_dark_passage').click()
   await expect(page.getByTestId('ending-screen')).toBeVisible()
@@ -213,7 +214,7 @@ test('Back to my books on the ending screen returns to the kid library (P-3)', a
   await page.route('**/api/v1/library*', (route) => route.fulfill({ json: { stories: [] } }))
 
   await page.goto(READER_PATH)
-  await expect(page.getByTestId('reader')).toBeVisible()
+  await openReader(page)
   await page.getByTestId('choice-c_take_lantern').click()
   await page.getByTestId('choice-c_dark_passage').click()
   await expect(page.getByTestId('ending-screen')).toBeVisible()
@@ -242,8 +243,84 @@ test('resumes from server state when the local cache is empty (cross-device)', a
     return route.fulfill({ status: 200, json: READING_ROW })
   })
   await page.goto(READER_PATH)
-  await expect(page.getByTestId('reader')).toBeVisible()
+  await openReader(page)
   // Resumed at the cave fork holding the lantern, so the gated dark-passage
   // choice is offered without first taking the lantern.
   await expect(page.getByTestId('choice-c_dark_passage')).toBeVisible()
+})
+
+test('a fresh read opens on the title page, and Start lands on page one', async ({ page }) => {
+  await page.goto(READER_PATH)
+  await expect(page.getByRole('heading', { level: 1, name: 'The Lantern Cave' })).toBeVisible()
+  await expect(page.getByTestId('passage-body')).toHaveCount(0)
+  await page.getByTestId('start-reading').click()
+  await expect(page.getByTestId('passage-body')).toBeFocused()
+  await expect(page.getByTestId('passage-body')).toContainText('A lantern lies near the entrance.')
+})
+
+test('a read resumed mid-book skips the title page', async ({ page }) => {
+  await page.route('**/api/v1/reading-state/**', (route) => {
+    if (route.request().method() === 'GET') {
+      return route.fulfill({
+        status: 200,
+        json: {
+          state: {
+            current_node: 'n_cave_fork',
+            var_state: { has_lantern: true },
+            path: ['n_entrance', 'n_cave_fork'],
+            visit_set: ['n_entrance', 'n_cave_fork'],
+            version: 1,
+            state_revision: 2,
+            save_slots: {},
+          },
+        },
+      })
+    }
+    return route.fulfill({ status: 200, json: READING_ROW })
+  })
+  await page.goto(READER_PATH)
+  await expect(page.getByTestId('passage-body')).toContainText('The cave splits.')
+  await expect(page.getByTestId('title-page')).toHaveCount(0)
+})
+
+test('Try a different choice returns to the last real decision', async ({ page }) => {
+  await page.goto(READER_PATH)
+  await openReader(page)
+  // Without the lantern, the cave fork offers one visible choice, so the last
+  // real decision is the entrance, not the fork.
+  await page.getByTestId('choice-c_ignore_lantern').click()
+  await page.getByTestId('choice-c_bright_tunnel').click()
+  await expect(page.getByTestId('ending-screen')).toBeVisible()
+  await expect(page.getByTestId('ending-book')).toContainText('The Lantern Cave')
+  await page.getByTestId('try-different-choice').click()
+  await expect(page.getByTestId('rewind-note')).toBeFocused()
+  await expect(page.getByTestId('rewind-note')).toContainText('Last time you picked')
+  await page.getByTestId('choice-c_take_lantern').click()
+  await page.getByTestId('choice-c_dark_passage').click()
+  await expect(page.getByTestId('ending-id')).toHaveText('e_treasure_found')
+})
+
+test('the ending screen saves a star rating', async ({ page }) => {
+  const posted: unknown[] = []
+  await page.route('**/api/v1/ratings', (route) => {
+    const body = route.request().postDataJSON() as { storybook_id: string; value: number }
+    posted.push(body)
+    return route.fulfill({
+      status: 200,
+      json: {
+        child_profile_id: 'child-a',
+        storybook_id: body.storybook_id,
+        value: body.value,
+        rated_at: new Date().toISOString(),
+      },
+    })
+  })
+  await page.goto(READER_PATH)
+  await openReader(page)
+  await page.getByTestId('choice-c_take_lantern').click()
+  await page.getByTestId('choice-c_dark_passage').click()
+  const four = page.getByRole('button', { name: 'Rate 4 stars' })
+  await four.click()
+  await expect(four).toHaveAttribute('aria-pressed', 'true')
+  expect(posted).toEqual([expect.objectContaining({ storybook_id: 's_lantern_cave', value: 4 })])
 })

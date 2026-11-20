@@ -11,6 +11,7 @@ import {
 } from './real-stack'
 
 import { seedGuardianSession } from '../e2e/support/auth'
+import { openReader } from '../e2e/support/reader'
 
 /**
  * Phase 7.1 (G1, docs/planning/handoff-test-coverage-robustness-2026-07-22.md):
@@ -308,7 +309,7 @@ test('the published story reaches the seeded child once assigned, and reads to a
 
   await page.getByRole('link', { name: CANNED_TITLE }).click()
   await expect(page).toHaveURL(/\/read\//)
-  await expect(page.getByTestId('reader')).toBeVisible()
+  await openReader(page)
 
   for (let i = 0; i < 40; i += 1) {
     if (await page.getByTestId('ending-screen').count()) break

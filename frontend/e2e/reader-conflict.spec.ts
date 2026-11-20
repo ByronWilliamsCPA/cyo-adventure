@@ -3,6 +3,7 @@ import { expect, test } from '@playwright/test'
 import { seedDeviceGrant } from './support/auth'
 
 import { loadLanternStory } from './support/fixtures'
+import { openReader } from './support/reader'
 
 const lantern = loadLanternStory()
 
@@ -66,7 +67,7 @@ test('a 409 on save silently adopts the server position and re-saves it', async 
   })
 
   await page.goto(READER_PATH)
-  await expect(page.getByTestId('reader')).toBeVisible()
+  await openReader(page)
 
   // Newest-write-wins: the reader silently adopts the server row and re-saves
   // it at the server's revision (5), with no dialog shown to the child.
@@ -88,7 +89,7 @@ test('a 409 on save moves the reader to the server position, no dialog', async (
   })
 
   await page.goto(READER_PATH)
-  await expect(page.getByTestId('reader')).toBeVisible()
+  await openReader(page)
 
   // The reader remounts seeded from the adopted server row: the cave fork.
   // No dialog and no "which place do you want to keep?" prompt ever appear.
@@ -165,7 +166,7 @@ test('an offline choice queued for replay is silently resolved on reconnect', as
   })
 
   await page.goto(READER_PATH)
-  await expect(page.getByTestId('reader')).toBeVisible()
+  await openReader(page)
 
   mode = 'offline'
   await page.getByTestId('choice-c_take_lantern').click()
@@ -214,7 +215,7 @@ test('an offline choice queued for replay is silently resolved on reconnect', as
   // discarded (ReaderRoute.tsx's #ASSUME "newest-write-wins... the child is
   // never shown a ... dialog"), and the success toast is suppressed because a
   // conflict, not a clean replay, occurred.
-  await expect(page.getByTestId('reader')).toBeVisible()
+  await openReader(page)
   await expect(page.getByTestId('passage-body')).toContainText('The cave splits.')
   await expect(page.locator('.reader-error')).toHaveCount(0)
   await expect(page.getByTestId('conflict-dialog')).toHaveCount(0)
