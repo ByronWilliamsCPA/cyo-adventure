@@ -256,3 +256,47 @@ class TestPrimeSchemaParityLifespan:
             TestClient(create_app()),
         ):
             pass
+
+
+class TestSchemaLogEvents:
+    @pytest.mark.parametrize(
+        ("state", "comparison", "event"),
+        [
+            ("ok", _AHEAD, "schema_parity.database_ahead"),
+            ("unknown", None, "schema_parity.unknown"),
+        ],
+    )
+    def test_non_behind_outcomes_log_once_at_warning(
+        self, state: str, comparison: SchemaComparison | None, event: str
+    ) -> None:
+        from cyo_adventure.api import health
+        from cyo_adventure.core.schema_parity import SchemaParityResult
+
+        result = SchemaParityResult(
+            state=state,
+            measured_at=0.0,
+            comparison=comparison,
+            error_type="OSError" if comparison is None else None,
+        )
+        with patch.object(health, "logger") as logger:
+            health._log_schema_result(result)
+            health._log_schema_result(result)
+
+        assert logger.warning.call_count == 1
+        assert logger.warning.call_args.args[0] == event
+        logger.error.assert_not_called()
+
+
+class TestPrimeSchemaParity:
+    @pytest.mark.asyncio
+    async def test_prime_measures_and_caches(self) -> None:
+        from cyo_adventure.api import health
+
+        monitor, measure = _monitor_returning(_PARITY)
+        with patch.object(health, "_schema_monitor", monitor):
+            await health.prime_schema_parity()
+            await health.prime_schema_parity()
+
+        assert measure.await_count == 1
+        assert monitor.cached is not None
+        assert monitor.cached.state == "ok"
