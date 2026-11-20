@@ -1238,12 +1238,22 @@ def test_the_fifteen_word_bound_sits_in_an_empty_gap_in_the_corpus() -> None:
     on a crowded axis: it is a line drawn through empty space, which is why
     `AL-568` could rule without an allowlist. This test pins the two edges of
     that gap, since a regression that matters would have to move one of them.
+
+    Re-measured 2026-11-20 after four books were revised by hand (the hollow
+    lighthouse, the midnight museum, the signal in the static, the sky-ship
+    stowaway), over all 114 pairs involving a revised book. The worst control
+    is still the lighthouse and museum pair, now at 10 words (one clause, "did
+    not say so, she put it in her pocket", written independently in each book)
+    and still 0% coverage; every other such pair is at 7 or below. The gap is
+    now 10 to 98, and the 15-word bound clears the worst control by 1.5x rather
+    than 1.87x. If a future control reaches 13 or more, revisit the bound
+    rather than this pin.
     """
     control = shared_run_profile(*(_fill_text(n) for n in _CONTROL_PAIR))
     defect = shared_run_profile(*(_fill_text(n) for n in _DEFECT_PAIR))
 
     # The worst control the corpus offers still clears the bound with room.
-    assert control.longest == 8
+    assert control.longest == 10
     assert control.coverage == 0.0
     assert control.longest < SERIES_MAX_SHARED_RUN_WORDS
 
@@ -1254,9 +1264,10 @@ def test_the_fifteen_word_bound_sits_in_an_empty_gap_in_the_corpus() -> None:
     assert round(defect.coverage, 4) == 0.1863
 
     # The property that makes the bound cheap: it is not near anything. It
-    # clears the worst control by 1.87x and undercuts the defect by 6.53x, so
-    # neither edge of the gap is within rounding distance of the constant.
-    assert SERIES_MAX_SHARED_RUN_WORDS / control.longest >= 1.8
+    # clears the worst control by 1.5x (1.87x before the 2026-11-20 revisions)
+    # and undercuts the defect by 6.53x, so neither edge of the gap is within
+    # rounding distance of the constant.
+    assert SERIES_MAX_SHARED_RUN_WORDS / control.longest >= 1.5
     assert defect.longest / SERIES_MAX_SHARED_RUN_WORDS >= 6.5
 
 
