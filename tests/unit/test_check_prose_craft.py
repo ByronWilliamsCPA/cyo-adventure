@@ -600,3 +600,95 @@ def test_a_declared_third_gamebook_is_flagged_as_contradictory(
         _person_story(_SECOND_BODIES, person="third", style="gamebook"),
     )
     assert main([path, "--check"]) == 1
+
+
+# --------------------------------------------------------------------------
+# Reader agency (validator/agency.py): report-only unless a budget is passed
+# --------------------------------------------------------------------------
+
+
+def _seam_book() -> dict[str, Any]:
+    """Return a clean past-tense book with one merge seam and one meta label."""
+    nodes = [
+        {
+            "id": "start",
+            "body": _PAST_BODY,
+            "is_ending": False,
+            "choices": [
+                {"id": "c1", "label": "Sit with what this means.", "target": "a"},
+                {"id": "c2", "label": "Climb the ladder.", "target": "b"},
+            ],
+        },
+        {
+            "id": "a",
+            "body": _PAST_BODY + " The lantern burned low.",
+            "is_ending": False,
+            "choices": [{"id": "c3", "label": "Go on.", "target": "m"}],
+        },
+        {
+            "id": "b",
+            "body": _PAST_BODY + " The bell rang once.",
+            "is_ending": False,
+            "choices": [{"id": "c4", "label": "Go on.", "target": "m"}],
+        },
+        {
+            "id": "m",
+            "body": "Whichever way Nia had come, every path had led her here. "
+            + _PAST_BODY,
+            "is_ending": True,
+            "ending": {"id": "e_m", "kind": "success", "valence": "positive"},
+            "choices": [],
+        },
+    ]
+    return {"id": "s", "start_node": "start", "metadata": {}, "nodes": nodes}
+
+
+@pytest.mark.unit
+def test_agency_checks_are_info_and_never_fail_check_by_default(
+    tmp_path: Path, capsys: pytest.CaptureFixture[str]
+) -> None:
+    """Every existing caller passes --check with no agency flag; nothing changes."""
+    path = _write(tmp_path, "seam.json", _seam_book())
+    assert main([path, "--check"]) == 0
+    out = capsys.readouterr().out
+    assert "  info merge seams: 1 of 1 merge nodes" in out
+    assert "       m [whichever ...]: Whichever way Nia had come" in out
+    assert "  info meta labels: 1 (report only)" in out
+    assert "  agency: 1 merge nodes, 1 of them tell the reader" in out
+
+
+@pytest.mark.unit
+@pytest.mark.parametrize(
+    ("flag", "budget", "code"),
+    [
+        ("--max-merge-seams", "0", 1),
+        ("--max-merge-seams", "1", 0),
+        ("--max-meta-labels", "0", 1),
+        ("--max-second-person-labels", "0", 0),
+    ],
+)
+def test_agency_budget_flags_opt_in_to_check(
+    tmp_path: Path, flag: str, budget: str, code: int
+) -> None:
+    path = _write(tmp_path, "seam.json", _seam_book())
+    assert main([path, "--check", flag, budget]) == code
+    # Without --check a budget breach still reports and exits 0.
+    assert main([path, flag, budget]) == 0
+
+
+@pytest.mark.unit
+def test_json_output_carries_every_measure_and_the_same_exit_code(
+    tmp_path: Path, capsys: pytest.CaptureFixture[str]
+) -> None:
+    path = _write(tmp_path, "seam.json", _seam_book())
+    assert main([path, "--json", "--check", "--max-merge-seams", "0"]) == 1
+    doc = json.loads(capsys.readouterr().out)
+    (book,) = doc["books"]
+    assert book["book"] == "seam.json"
+    assert book["breached"] is True
+    assert book["tense"]["breached"] is False
+    agency = book["agency"]
+    assert agency["merge_seams"] == ["m"]
+    assert agency["meta_labels"] == [["start", "c1", "Sit with what this means."]]
+    assert agency["variables"] == 0
+    assert agency["headline"].startswith("1 merge nodes")
