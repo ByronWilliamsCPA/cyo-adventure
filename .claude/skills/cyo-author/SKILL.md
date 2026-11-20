@@ -111,6 +111,18 @@ Invoke when given a skeleton file under `skeletons/<band>/<slug>.json` (or any
      document deliberately does not restate the values: a restated safety constant drifts,
      and the restatement that used to sit here omitted a band the code forbids (AL-493).
 
+   - keeps the reader's choices real (the reader-agency rules). Read
+     `.claude/skills/cyo-author/reference/story-agency-revision.md` before the first fill
+     of a session; during a fill, rules R1, R2 and R4 to R7 apply and the structure stays
+     frozen. In short: a merge node (reached from two or more nodes; list them with
+     `cyo_adventure.validator.agency.inbound_sources`) opens in the scene and states only
+     what every inbound route established; a decision node ends on the stakes, not on a
+     recap of its buttons; labels are concrete actions in the book's person; every setback
+     gives something back and closes on what the hero glimpsed, never on giving up; other
+     characters speak, with a speaker's short lines joined so the reading level holds;
+     and where the skeleton declares `variables`, the plant and the payoff are written so
+     the reader feels them.
+
    Replace the entire `<<FILL ...>>` string with the prose. Leave no `<<FILL` markers.
 
 3a. **If `metadata.topology` is `loop_and_grow` at the 3-5 or 5-8 band**, the loop is a
@@ -168,7 +180,11 @@ Invoke when given a skeleton file under `skeletons/<band>/<slug>.json` (or any
    - **give-up endings / early setbacks**: a negative ending should not close on the hero
      walking home or quitting, and a setback within three decisions deserves a second look.
 
-   The `agency:` line summarizes the book in one sentence. For a revision, run
+   The `agency:` line summarizes the book in one sentence. To revise a filled book that
+   fails these checks (adding plants, payoffs, arrival nodes and dialogue under the
+   revision invariants), follow `.claude/skills/cyo-author/reference/story-agency-revision.md`
+   end to end; it carries the proven callback pattern and the before/after method. For a
+   revision, run
    `--max-merge-seams 0 --max-meta-labels 0 --max-jargon-labels 0
    --max-second-person-labels 0` to hold the precise checks at zero; add `--json` to compare
    before and after.
@@ -189,7 +205,8 @@ Invoke when given a skeleton file under `skeletons/<band>/<slug>.json` (or any
 
 ## Hard rules
 
-- Structure is immutable; you only write prose.
+- Structure is immutable during a fill; you only write prose. (A revision of an already filled
+  book follows the invariants in `reference/story-agency-revision.md` instead.)
 - No `<<FILL` markers may remain.
 - Respect the band fail-state policy: forbidden ending kinds per band are whatever
   `band_profile.py::_PROFILES` says they are, not what any summary here once said (AL-493).
