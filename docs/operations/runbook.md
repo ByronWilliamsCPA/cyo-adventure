@@ -189,6 +189,12 @@ PGSSLMODE=disable supabase db push --db-url "$DATABASE_URL"
 Migrations are forward-only: there are no downgrade scripts. Recovery from a bad migration is a
 corrective roll-forward migration, rehearsed on staging first (ADR-012, Consequences).
 
+For production, the order of env preflight, migration apply, image deploy, and parity check is in
+[Section 2.5, Deploy order](#deploy-order). A PR that changes `db/models.py` without a matching
+migration fails CI in `tests/integration/test_schema_parity.py` (migrations versus ORM on a scratch
+database), and `supabase-ci.yml` runs `scripts/check_schema_parity.py` against the stack the Supabase
+CLI itself just migrated.
+
 **After any push that includes a `CREATE INDEX CONCURRENTLY`, check the index is valid.** This is
 the one migration outcome that reports success and silently delivers nothing. A concurrent build
 that fails partway leaves an `INVALID` index behind: Postgres will not use it for reads, but it is
@@ -214,19 +220,91 @@ psql "$DATABASE_URL" -c 'drop index concurrently if exists "public"."<index_name
 
 ### 2.5 Applying pending migrations to production (drift recovery)
 
-Production's schema deploy is decoupled from its app deploy, and nothing compares the two. The app
-image auto-deploys on merge; `supabase-production.yml` is `workflow_dispatch` only and gated behind
-the `production` GitHub Environment's required reviewer. A run of merged-but-unapplied migrations can
-therefore accumulate silently for weeks while the deployed app declares ORM columns and tables the
-live database does not have.
+Production's schema deploy is decoupled from its app deploy, and nothing ties the two together. Pulling
+a new image onto the host is a manual step; `supabase-production.yml` is `workflow_dispatch` only and
+gated behind the `production` GitHub Environment's required reviewer. Drift can therefore happen in
+**either direction**: a new image on an old schema (reads that touch the new columns 500), or a new
+schema under an old image (usually harmless). A run of merged-but-unapplied migrations accumulated
+silently for weeks before 2026-08-24 (register row `UW-C363`).
 
-**The readiness probe cannot tell you this.** `/api/v1/health/ready`'s `database` check opens a
-connection and returns `status: true`; it never inspects the schema. SQLAlchemy validates nothing at
-import or at startup either, so a mapped column that does not exist is a runtime error on the first
-query that touches it, not a boot failure. The observable symptom is a 500 on real traffic against a
-service whose health endpoint is green.
+#### Deploy order
 
-**Detect drift before you need to.** Compare the applied head against the repo:
+Every production deploy, whether it carries migrations or not, runs these four steps in this order:
+
+1. **Preflight the env file.** An env file that booted the running release may not boot the next one:
+   each release can add boot-time rules in `core/config.py`, and on 2026-08-12 a partial KWS
+   configuration made the backend refuse to start. From a checkout of the ref you are deploying:
+
+   ```bash
+   uv run python scripts/check_env_boots.py /path/to/production.env --integrations
+   ```
+
+   It loads the file in isolation (your shell's variables are not mixed in), reports **every** rule
+   the file breaks in one pass, naming the variable and the rule but never a value, and lists which
+   optional integrations (KWS, service-role key, cover art, R2, Modal, ...) are configured, by name.
+   `BOOTS` and exit 0 is the pass; `WOULD REFUSE TO BOOT` and exit 1 lists what to fix. Variables set
+   under `environment:` in the homelab-infra compose file are not in the env file; if the stack
+   relies on any, export them and run the script with no file argument instead.
+
+2. **Apply migrations** through the workflow ([Dispatch](#dispatch) below), after the pre-flight
+   checks in this section.
+
+3. **Deploy the image.**
+
+4. **Run the parity check** ([Post-deploy verification](#post-deploy-verification) below).
+
+Migrations go before the image because this schema is forward-only and additive (ADR-012): a new
+schema under the old image is DATABASE AHEAD, which reads fine because SQL never selects a column it
+was not asked for, while a new image on the old schema is DATABASE BEHIND, which 500s. The exception
+is a migration that drops or renames something the **running** image still maps; that turns the
+window between steps 2 and 3 into a BEHIND window for the old image. Pre-flight step 3 ("read the
+pending set") is where you catch it: a `DROP COLUMN`, `DROP TABLE`, or `RENAME` against an ORM-mapped
+object needs a two-release plan (stop mapping it, then drop it), not this order.
+
+**The readiness probe now reports drift, but it does not fail on it.** `/api/v1/health/ready` carries
+a `schema` check (Section 3) that compares the ORM with the live catalog: when the database is behind,
+`checks.schema.state` is `"degraded"`, the body's top-level `status` is `"degraded"`, and the backend
+logs `schema_parity.database_behind` at ERROR with the missing table and column names. The HTTP status
+stays 200 by design (Section 3 explains why), so a monitor that reads only the status code still
+sees green. Before this check existed, the `database` check was the only one, and it proves
+connectivity, not schema: SQLAlchemy validates nothing at import or startup, so the 2026-08-24 symptom
+was a 500 on real traffic behind a green probe.
+
+**Detect drift before you need to.** From a checkout of the ref you are deploying (or have deployed):
+
+```bash
+# The URL goes in an environment variable, never on the command line, and is never
+# printed. SUPABASE_DB_URL is the production Supavisor session-mode pooler string on
+# port 5432 (Section 6). Do not use a --linked workflow here: this checkout is
+# linked to STAGING (Pre-flight step 1 records why).
+SCHEMA_PARITY_DATABASE_URL="$SUPABASE_DB_URL" uv run python scripts/check_schema_parity.py
+```
+
+It reports both halves separately and ends in one verdict:
+
+| Verdict | Exit | Meaning |
+|---------|------|---------|
+| `IN PARITY` | 0 | every repo migration is applied and every ORM table and column exists |
+| `DATABASE BEHIND` | 1 | migrations are pending, or the ORM maps tables or columns the database lacks: the app would fail |
+| `DATABASE AHEAD` | 0 (4 with `--fail-on-ahead`) | the database has applied migrations or columns this checkout does not know: an older image on a newer schema |
+| `INCOMPLETE` | 3 | the migration history could not be read (the role lacks access); the ORM half is still reported |
+| error | 2 | no URL, cannot connect, or a query failed (the exception class is shown, never its message) |
+
+The report lists names only (migration files, `table.column`), never a data row or connection detail,
+so it is safe to paste into an issue. Pending migrations that sort **before** the applied head are
+called out separately: production pushes without `--include-all`, so those are skipped and stay
+pending after a green run. Nullability and type differences are listed as warnings that never change
+the verdict. `--json` emits the same report for a workflow.
+
+**Which role.** The script only reads `pg_catalog` (visible to every role) and
+`supabase_migrations.schema_migrations`, inside a `READ ONLY` transaction with a 30-second statement
+timeout. Any login role that can `SELECT` that one table is sufficient; no write privilege is needed.
+The `postgres` session-pooler string from Section 6 works. A least-privilege role without access to
+the `supabase_migrations` schema (the ADR-021 `cyo_api` role is likely one) gets `INCOMPLETE`; pass
+`--schema-only` with such a role to check the ORM half alone.
+
+The CLI form below is the same migration-history comparison without the ORM half, and remains useful
+when you have the Supabase CLI but not this checkout's Python environment:
 
 ```bash
 # The ref you are about to deploy. Measure everything against THIS, not against
@@ -347,8 +425,15 @@ first instead of interrupting a half-applied push.
 
 A green workflow run is not evidence the schema is correct. Run all four checks:
 
-1. **Applied head matches the repo.** Re-run the two commands under "Detect drift" above and confirm
-   the pending set is now empty.
+1. **The database is in parity with the deployed ref.** Run `scripts/check_schema_parity.py` as
+   under "Detect drift" above, from a checkout of the ref whose image you deployed. `IN PARITY` is
+   the pass. `DATABASE BEHIND` means the push did not deliver everything the image needs: read the
+   pending list (an out-of-order file is the usual cause) and the missing columns. The deploy
+   workflow's last step, `Record applied migration history`, prints `supabase migration list` for
+   the same run, so the run log carries the applied history even when no operator ran this; it
+   cannot do the ORM half because the workflow holds no database URL, which is why this step is
+   manual. Within five minutes of the image starting, `checks.schema` on `/api/v1/health/ready` should
+   read `"ok"` too.
 
 2. **Every concurrently-built index is valid.** Run the `indisvalid` query in
    [Section 2.4](#24-schema-migrations). An empty result is the pass. This matters whenever the pushed
@@ -419,7 +504,9 @@ un-prefixed `/health/live`, which is exactly why the alias must not be retired u
 moved and been redeployed.
 
 **`GET /api/v1/health/ready`** (readiness: can it serve traffic): runs `SELECT 1` against the
-database (`check_database`). Returns `503` with per-check detail if the database is unreachable.
+database (`check_database`). Returns `503` with per-check detail if the database is unreachable. Every
+other check below is reported in the body without gating the status code; read `status` and `checks`,
+not only the HTTP code (a database behind the deployed schema is `200` with `status: "degraded"`).
 
 **`GET /api/v1/health/startup`** (startup probe): identical to `/api/v1/health/live` today; no
 migration-completion check is wired in.
@@ -469,6 +556,37 @@ generation pipeline must not pull API pods out of the load-balancer rotation for
 never touch generation at all. Treat a nonzero `checks.generation_queue` count as a page-worthy
 signal on its own dashboard/alert, not as a 503; see Section 5.1 for the diagnosis and remediation
 steps this check is meant to trigger.
+
+**`check_schema_parity()` (schema drift, `UW-C363`)** is wired into `/api/v1/health/ready` as
+`checks.schema` and reports whether the live database still has every table and column the deployed
+ORM maps (`Base.metadata` versus `pg_catalog`, so the answer does not depend on the API role's grants).
+It is measured once at startup (a background task from the app lifespan, so a slow database never
+delays boot) and then at most once every five minutes however often readiness is polled; it reads
+catalog metadata only and adds nothing to any request path. States:
+
+- `"ok"`: nothing the ORM maps is missing. A database **ahead** of the app (extra tables or columns,
+  an older image on a newer schema) is still `"ok"`: that reads fine, so it never fires.
+- `"degraded"` (`status: false`): the database is **behind**. The body's top-level `status` becomes
+  `"degraded"`, the `error` gives counts only (the endpoint is unauthenticated, so no table or column
+  names), and the log line `schema_parity.database_behind` (ERROR) carries the names. It is re-logged
+  on every five-minute refresh while it persists. Fix it with Section 2.5.
+- `"unknown"` (`status: false`): the catalog query failed, so nothing was measured; retried after a
+  minute. The log line `schema_parity.unknown` carries the exception class.
+
+A healthy verdict logs `schema_parity.in_parity` (or `schema_parity.database_ahead`) once, at WARNING
+so it survives the production `LOG_LEVEL=WARNING`; silence would be indistinguishable from the check
+never having run.
+
+**Deliberately, `schema` never flips the HTTP status to 503.** Nothing in this deployment routes on
+readiness (the production healthcheck and the Dockerfile `HEALTHCHECK` poll `/health/live`, and nginx
+proxies regardless), so a 503 would take no traffic away. What it would do is blind the monitors that
+read this body: `kws-delivery-health.yml` curls with `-f` and would record "unreachable" instead of
+the KWS verdict, and the e2e wait loops would time out instead of reporting. Under any future
+orchestrator that honours readiness, one missing column on an admin-only table would also take every
+child's reading offline. The alert channel is instead the daily production E2E:
+`frontend/e2e-prod/health-probe.spec.ts` fails when `checks.schema.state` is `"degraded"`, under the
+`[e2e-prod]` alert marker (Section 7). If you later decide drift should gate, add `"schema"` to
+`_CRITICAL_READINESS_CHECKS` in `api/health.py`; read that check's `#CRITICAL` note first.
 
 **`check_database_privilege()` (ADR-021 cutover observability)** is wired into `/api/v1/health/ready` as
 `checks.database_privilege` and reports whether the API's connected role can bypass row-level
@@ -981,6 +1099,14 @@ may hold several `uses: ./.github/actions/ci-failure-issue` steps, and the file-
 count files. `tests/unit/test_ci_failure_action_contract.py`
 enforces the invariants the commands above only report on: markers stay unique and mutually
 non-prefixing, both labels stay in use, and no workflow re-inlines the lookup.
+
+**Schema drift** (the database behind the deployed image, `UW-C363`) has no workflow of its own.
+It surfaces three ways: the daily `[e2e-prod]` run fails in `health-probe.spec.ts` on
+`checks.schema.state == "degraded"`; `/api/v1/health/ready` returns `status: "degraded"` (still HTTP
+200); and the backend logs `schema_parity.database_behind` at ERROR. Confirm and diagnose with
+`scripts/check_schema_parity.py` (Section 2.5). A scheduled comparator that would announce a pending
+migration before any image is pulled still needs a production database credential in CI (lesson
+`AL-606`) and is not built.
 
 Six workflows use `e2e-alert` (verify with `grep -rl 'label: e2e-alert' .github/workflows/`). The
 two E2E tiers exercising a real backend are:
