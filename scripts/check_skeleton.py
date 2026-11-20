@@ -35,7 +35,11 @@ variables) and, when a shell has merge nodes but declares no variables, an
 ``advisory agency:`` line, because no fill can make an early choice matter
 after a merge that carries no state. Report-only in every mode, including
 ``--strict``; ``check_promotion_bundle.py`` runs this script in-process, so the
-line also reaches the skeleton-promotion workflow log.
+line also reaches the skeleton-promotion workflow log. The advisory itself is
+report-only; ``--strict`` alone enforces ADR-011 section 12 (see
+``stateless_shell_violation``), with the committed stateless corpus
+grandfathered from ``scripts/stateless_shell_grandfather.txt``. Neither the
+promotion workflow nor ``check_promotion_bundle.py`` passes ``--strict``.
 
 Exits 1 on a gate block, any brief mismatch, or (with ``--strict``) any
 escalated advisory or a walk-floor breach.
@@ -434,6 +438,79 @@ def agency_lines(story: dict[str, Any]) -> list[str]:
             "and branch on it after (report-only)"
         )
     return lines
+
+
+# Bands where ADR-011 section 12 requires declared state for a skeleton with a
+# merge node. 3-5 and 5-8 stay Tier 1 by design.
+_STATE_REQUIRED_BANDS = frozenset({"8-11", "10-13", "13-16", "16+"})
+_GRANDFATHER_PATH = Path(__file__).with_name("stateless_shell_grandfather.txt")
+
+
+def load_stateless_grandfather(path: Path = _GRANDFATHER_PATH) -> frozenset[str]:
+    """Load the committed ``<band>/<story id>`` list of grandfathered shells.
+
+    The list is the 30 production shells at 8-11 and up that were committed
+    with a merge node and no variables on 2026-11-20. It is generated once and
+    only ever shrinks: a shell leaves it by gaining state.
+
+    #CRITICAL: data-integrity: a missing or unreadable list must fail closed
+    (empty set), never open, so a deleted file cannot exempt a new shell.
+    #VERIFY: tests/unit/test_check_skeleton.py::
+    test_grandfather_list_is_complete_for_the_committed_corpus.
+
+    Args:
+        path: The newline-delimited list file.
+
+    Returns:
+        The set of ``band/id`` keys; empty when the file cannot be read.
+    """
+    try:
+        text = path.read_text(encoding="utf-8")
+    except OSError:
+        return frozenset()
+    return frozenset(line.strip() for line in text.splitlines() if line.strip())
+
+
+def stateless_shell_violation(
+    story: dict[str, Any],
+    metadata: dict[str, Any],
+    grandfathered: frozenset[str],
+) -> str | None:
+    """Return the ADR-011 section 12 failure for a stateless merge shell, if any.
+
+    Applies only to a production-eligible skeleton at 8-11 or older that has a
+    merge node and declares no variable. A pure tree (no merge node) is exempt,
+    as is a shell on the grandfather list (the committed corpus).
+
+    #ASSUME: data-integrity: the grandfather key is the shell's own ``id`` plus
+    ``metadata.age_band``; a newly drafted skeleton that reuses a committed id
+    in the same band would inherit the exemption.
+    #VERIFY: promotion review sees the id in the diff; the unique-id check
+    rejects a duplicate id at import.
+
+    Args:
+        story: The decoded skeleton dict.
+        metadata: Its ``metadata`` mapping.
+        grandfathered: Keys from :func:`load_stateless_grandfather`.
+
+    Returns:
+        A failure message, or None when the shell passes or is exempt.
+    """
+    band = str(metadata.get("age_band", ""))
+    if not metadata.get("production_eligible") or band not in _STATE_REQUIRED_BANDS:
+        return None
+    merges = merge_node_count(story)
+    if merges == 0 or state_counts(story).variables > 0:
+        return None
+    if f"{band}/{story.get('id')}" in grandfathered:
+        return None
+    return (
+        f"strict agency: {merges} merge nodes and no declared variables at "
+        f"{band}; ADR-011 section 12 requires 2 (short) or 3 (medium/long) "
+        "boolean variables, at most 4, planted early and paid off later, with "
+        "one payoff that changes which ending is reachable "
+        "(scripts/add_consequence.py applies this to a shell)"
+    )
 
 
 def _fill_budget_lines(story: dict[str, Any], path: Path | None) -> list[str]:
@@ -916,6 +993,12 @@ def main(argv: list[str] | None = None) -> int:
                         f"{min_nodes} (gate treats as warning)\n"
                     )
     failed |= _check_brief(metadata, args)
+    if args.strict:
+        violation = stateless_shell_violation(
+            skeleton, metadata, load_stateless_grandfather()
+        )
+        if violation is not None:
+            failed |= _fail(violation)
 
     sys.stdout.write(
         f"stats: nodes={node_count} endings={ending_count} fill_nodes={fill_count} "

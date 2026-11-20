@@ -341,3 +341,91 @@ def test_agency_advisory_never_changes_the_exit_code(
     captured = capsys.readouterr()
     assert captured.err == strict_err_before
     assert "agency" not in captured.err
+
+
+# ---------------------------------------------------------------------------
+# ADR-011 section 12: --strict requires declared state at 8-11+ with a merge
+# ---------------------------------------------------------------------------
+
+_PROD_META = {"age_band": "10-13", "production_eligible": True}
+
+
+def _strict_violation(
+    story: dict, meta: dict, grandfathered: frozenset[str] = frozenset()
+) -> str | None:
+    return check_skeleton.stateless_shell_violation(story, meta, grandfathered)
+
+
+@pytest.mark.unit
+def test_strict_agency_fails_a_stateless_merge_shell() -> None:
+    story = _diamond([])
+    story["id"] = "sk_new"
+    message = _strict_violation(story, _PROD_META)
+    assert message is not None
+    assert "1 merge nodes and no declared variables at 10-13" in message
+
+
+@pytest.mark.unit
+def test_strict_agency_passes_when_state_is_declared() -> None:
+    story = _diamond([{"name": "has_key", "type": "bool", "initial": False}])
+    assert _strict_violation(story, _PROD_META) is None
+
+
+@pytest.mark.unit
+def test_strict_agency_exempts_pure_trees_young_bands_and_seeds() -> None:
+    tree = _walk_story(
+        [
+            _walk_choice_node("a", ["b", "c"]),
+            _walk_ending("b", "positive"),
+            _walk_ending("c", "negative"),
+        ]
+    )
+    assert _strict_violation(tree, _PROD_META) is None
+    story = _diamond([])
+    assert _strict_violation(story, {**_PROD_META, "age_band": "5-8"}) is None
+    assert (
+        _strict_violation(story, {**_PROD_META, "production_eligible": False}) is None
+    )
+
+
+@pytest.mark.unit
+def test_strict_agency_grandfathers_listed_shells() -> None:
+    story = _diamond([])
+    story["id"] = "sk_old"
+    assert _strict_violation(story, _PROD_META, frozenset({"10-13/sk_old"})) is None
+    assert _strict_violation(story, _PROD_META, frozenset({"13-16/sk_old"})) is not None
+
+
+@pytest.mark.unit
+def test_grandfather_list_is_complete_for_the_committed_corpus() -> None:
+    """Every committed stateless merge shell is listed, so no CI run can regress."""
+    import json
+
+    grandfathered = check_skeleton.load_stateless_grandfather()
+    assert grandfathered
+    for path in sorted((_REPO_ROOT / "skeletons").glob("*/*.json")):
+        if path.name.count(".") != 1:
+            continue
+        story = json.loads(path.read_text(encoding="utf-8"))
+        meta = story["metadata"]
+        assert _strict_violation(story, meta, grandfathered) is None, path.name
+
+
+@pytest.mark.unit
+def test_missing_grandfather_list_fails_closed(tmp_path: Path) -> None:
+    assert (
+        check_skeleton.load_stateless_grandfather(tmp_path / "nope.txt") == frozenset()
+    )
+
+
+@pytest.mark.unit
+def test_strict_agency_blocks_only_under_strict(
+    capsys: pytest.CaptureFixture[str], monkeypatch: pytest.MonkeyPatch
+) -> None:
+    monkeypatch.setattr(
+        check_skeleton, "stateless_shell_violation", lambda *_: "strict agency: x"
+    )
+    assert check_skeleton.main([str(_DEMO_SHELL), "--allow-mvp"]) == 0
+    capsys.readouterr()
+    assert check_skeleton.main([str(_DEMO_SHELL), "--allow-mvp", "--strict"]) == 1
+    assert "FAIL strict agency: x" in capsys.readouterr().err
