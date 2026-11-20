@@ -313,6 +313,7 @@ class TestPlaywrightOutputDirIsolation:
             "chromium",
             "real-backend",
             "real-backend-pipeline",
+            "real-backend-pipeline-negative",
             "usersim-real",
             "usersim-a11y",
             "real-backend-setup",

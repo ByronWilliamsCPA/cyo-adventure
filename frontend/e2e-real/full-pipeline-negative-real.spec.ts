@@ -24,10 +24,14 @@ import { BACKEND, requireBackend } from './real-stack'
  * canned "The Forest Path" story), so running this spec against a default
  * backend would see a PASSING run and fail at the block assertion below.
  *
- * AUTHORED-NOT-EXECUTED: this file has no local backend to run against in the
- * remediation session; it is committed as the executable spec for the next
- * real-backend run that sets the env var above. It reuses the exact helper
- * shapes proven by full-pipeline-real.spec.ts.
+ * The fixture is read by the WORKER process, so this spec runs in its own
+ * `real-backend-pipeline-negative` Playwright project
+ * (npm run test:e2e:real:pipeline-negative), which e2e-real-nightly.yml runs
+ * after replacing the safe-fixture worker with an invalid-fixture one. It was
+ * committed (#429) as "authored, not executed" and never passed in CI until
+ * that split: it first ran before any worker existed, then shared the
+ * full-pipeline project's safe-fixture worker. First executed green against a
+ * local real stack on 2026-11-20.
  *
  * Serial: the concept/job ids are generated fresh per run and cannot be
  * hardcoded, so the steps thread state through a module-scoped variable.

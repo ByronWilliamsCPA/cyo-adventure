@@ -259,12 +259,39 @@ export default defineConfig({
       // #VERIFY: the nightly job must start the worker before invoking this.
       name: 'real-backend-pipeline',
       testDir: './e2e-real',
-      testMatch:
-        /(full-pipeline-real|full-pipeline-negative-real|connections-enforcement-real)\.spec\.ts/,
+      // full-pipeline-negative-real.spec.ts is deliberately NOT here: it needs
+      // a worker started with CYO_ADVENTURE_MOCK_STORY_FIXTURE=invalid, while
+      // the two specs here need the default "safe" fixture. The fixture is
+      // read by the worker process, so one worker can never serve both; when
+      // the negative spec shared this project it got the safe story, saw
+      // "passed", and failed on every nightly run. It has its own project
+      // below, run by its own step against its own worker.
+      testMatch: /(full-pipeline-real|connections-enforcement-real)\.spec\.ts/,
       // See the JSON_REPORT_PATH header comment above (Important 1): isolates
       // this project's trace/screenshot output from the other Playwright
       // invocations e2e-real-nightly.yml runs in the same job.
       outputDir: 'test-results/real-backend-pipeline',
+      dependencies: ['real-backend-setup'],
+      fullyParallel: false,
+      retries: process.env.CI ? 1 : 0,
+      use: { ...devices['Desktop Chrome'] },
+    },
+    {
+      // Negative full-pipeline tier (S-5): the hard-block path, driven through
+      // a real RQ worker launched with CYO_ADVENTURE_MOCK_STORY_FIXTURE=invalid
+      // (see full-pipeline-negative-real.spec.ts's header). Split from
+      // `real-backend-pipeline` because the fixture is per-worker-process, not
+      // per-request. Run via npm run test:e2e:real:pipeline-negative.
+      // #CRITICAL: external-resources: meaningless unless the live worker was
+      // started with the invalid fixture; against a safe-fixture worker the
+      // spec fails with its own "is the backend running with
+      // CYO_ADVENTURE_MOCK_STORY_FIXTURE=invalid?" message.
+      // #VERIFY: e2e-real-nightly.yml restarts the worker with that env
+      // immediately before invoking this project.
+      name: 'real-backend-pipeline-negative',
+      testDir: './e2e-real',
+      testMatch: /full-pipeline-negative-real\.spec\.ts/,
+      outputDir: 'test-results/real-backend-pipeline-negative',
       dependencies: ['real-backend-setup'],
       fullyParallel: false,
       retries: process.env.CI ? 1 : 0,

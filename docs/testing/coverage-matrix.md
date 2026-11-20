@@ -170,8 +170,13 @@ relate to the Supabase project constraints.
   story through the *real* RQ generation worker rather than seeded data:
   a guardian `POST /api/v1/concepts` + `/generate`, a real `generation_job`
   polled until the worker (mock provider, but the full staged validator +
-  moderation gate) lands it at `in_review`, then the real admin approve/publish
-  UI, then the seeded child reads the produced story to an ending. Runs in its
+  moderation gate) lands it at `in_review`, then asserts the mock-reviewed
+  report is refused at approval (UI Approve disabled, API 400
+  `approve_with_unusable_moderation`, the intended posture for any mock-reviewed
+  story), stands an explicitly labelled `e2e-fixture` report in for the real
+  reviewer (`scripts/reset_e2e_real_state.py --stamp-fixture-moderation`), then
+  drives the real admin approve/publish UI, then the seeded child reads the
+  produced story to an ending. Runs in its
   own `real-backend-pipeline` Playwright project (`npm run test:e2e:real:pipeline`)
   because it is the only real-backend spec that additionally requires a running
   `python -m cyo_adventure.generation.worker_main`; the deterministic Phase 4.2
@@ -192,17 +197,19 @@ relate to the Supabase project constraints.
   `GET /api/v1/review-queue` (so a blocked story can never be approved,
   published, or assigned to a child). Requires the backend to run with
   `ENVIRONMENT=local`, `CYO_ADVENTURE_GENERATION_PROVIDER=mock`, and
-  `CYO_ADVENTURE_MOCK_STORY_FIXTURE=invalid`; that last var (added for S-5,
+  `CYO_ADVENTURE_MOCK_STORY_FIXTURE=invalid` on the WORKER, which is why it
+  runs in its own `real-backend-pipeline-negative` project
+  (`npm run test:e2e:real:pipeline-negative`) against a separately started
+  worker rather than beside the spec above; that last var (added for S-5,
   see `core/config.py::Settings.mock_story_fixture`) serves the structurally
   broken `_INVALID_STORY` fixture the validator's topology check rejects at
   ERROR severity on every repair attempt. It defaults to `safe`, so a default
   backend produces a passing run and fails this spec's block assertion with an
   explicit "is MOCK_STORY_FIXTURE=invalid set?" message rather than a silent
   pass. Spans every backend stage between request and gate, so it is registered
-  here rather than under a single journey. **Authored, not yet executed**: the
-  remediation session that wrote it had no local backend, so only `tsc -b`,
-  ESLint, and `playwright --list` verified it; run it against a real stack (with
-  the env vars above and a running worker) before trusting it as proven.
+  here rather than under a single journey. Authored without a backend (#429)
+  and red on every nightly until 2026-11-20, when it was first executed green
+  against a local real stack with an invalid-fixture worker.
 - **Per-PR real-stack smoke (G4, Phase 7.4)**: `frontend/e2e-real/kid-reads.spec.ts`,
   run on the PR path via the `real-backend-pr-smoke` Playwright project
   (`npm run test:e2e:real:pr-smoke`, workflow `.github/workflows/e2e-real-pr-smoke.yml`).
