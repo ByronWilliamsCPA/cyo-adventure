@@ -11,7 +11,7 @@
    "target": 5.5,
    "tolerance": 1.5
   },
-  "tier": 1,
+  "tier": 2,
   "themes": [
    "record keeping",
    "evidence",
@@ -30,7 +30,26 @@
   "narrative_style": "prose",
   "production_eligible": true
  },
- "variables": [],
+ "variables": [
+  {
+   "name": "did_ask_whether_notebooks",
+   "type": "bool",
+   "initial": false,
+   "description": "Set when the reader chooses \"Ask whether the notebooks have seen this before\" at n01d0; pays off at n08d3 and n10d3."
+  },
+  {
+   "name": "did_go_down_read",
+   "type": "bool",
+   "initial": false,
+   "description": "Set when the reader chooses \"Go down and read the notice on the gate\" at n01d0; pays off at n06d3."
+  },
+  {
+   "name": "did_find_who_wrote",
+   "type": "bool",
+   "initial": false,
+   "description": "Set when the reader chooses \"Find out who wrote the survey\" at n03d0; pays off at n11d5 and n11d1."
+  }
+ ],
  "start_node": "n00c0",
  "nodes": [
   {
@@ -47,13 +66,20 @@
   },
   {
    "id": "n01d0",
-   "body": "<<FILL role=setup words=100 beats='Ada is in the shed writing the day up in a ruled notebook, the way she has every evening since before you were born, and she does not look surprised, which is worse than if she had'>>",
+   "body": "<<FILL role=setup words=100 beats='Ada is in the shed writing the day up in a ruled notebook, the way she has every evening since before you were born, and she does not look surprised, which is worse than if she had; PLANT SITE: these options are no longer cosmetic: \"Ask whether the notebooks have seen this before\" plants did_ask_whether_notebooks (pays off at n08d3 and n10d3); \"Go down and read the notice on the gate\" plants did_go_down_read (pays off at n06d3). Stage every option as appealing, with none the obviously right answer.'>>",
    "is_ending": false,
    "choices": [
     {
      "id": "c_n01d0_0",
      "label": "Ask whether the notebooks have seen this before.",
-     "target": "n02c0"
+     "target": "n02c0",
+     "effects": [
+      {
+       "op": "set",
+       "var": "did_ask_whether_notebooks",
+       "value": true
+      }
+     ]
     },
     {
      "id": "c_n01d0_1",
@@ -63,13 +89,20 @@
     {
      "id": "c_n01d0_2",
      "label": "Go down and read the notice on the gate.",
-     "target": "n02c2"
+     "target": "n02c2",
+     "effects": [
+      {
+       "op": "set",
+       "var": "did_go_down_read",
+       "value": true
+      }
+     ]
     }
    ]
   },
   {
    "id": "n02c0",
-   "body": "<<FILL role=bridge words=36 beats='Ada turns back through decades of her own handwriting looking for another October like this one and does not find it, and the shed smells of paraffin and bruised fruit'>>",
+   "body": "<<FILL role=bridge words=36 beats='Ada turns back through decades of her own handwriting looking for another October like this one and does not find it, and the shed smells of paraffin and bruised fruit; PLANT (did_ask_whether_notebooks): the hero has just made this choice, and something concrete comes of it that a reader will remember: an object kept, a person helped, or a fact learned, named plainly in the prose. Invent it so that it would plausibly help much later, when the hero tries \"Say something about Faulks you cannot support\" (node n08d3) or \"Read the survey data when it arrives\" (node n10d3): there it changes how that moment goes.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -93,7 +126,7 @@
   },
   {
    "id": "n02c2",
-   "body": "<<FILL role=bridge words=36 beats='a laminated notice has appeared on the orchard gate since morning, zip tied at four corners by somebody who expected it to be there a while'>>",
+   "body": "<<FILL role=bridge words=36 beats='a laminated notice has appeared on the orchard gate since morning, zip tied at four corners by somebody who expected it to be there a while; PLANT (did_go_down_read): the hero has just made this choice, and something concrete comes of it that a reader will remember: an object kept, a person helped, or a fact learned, named plainly in the prose. Invent it so that it would plausibly help much later, when the hero tries \"Take the four lines a year approach\" (node n06d3): there it changes how that moment goes.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -105,13 +138,20 @@
   },
   {
    "id": "n03d0",
-   "body": "<<FILL role=rising words=112 beats='six shelves of notebooks, 1911 to this evening, nine different hands and no index of any kind, and everything anyone knows about this hill is in there somewhere'>>",
+   "body": "<<FILL role=rising words=112 beats='six shelves of notebooks, 1911 to this evening, nine different hands and no index of any kind, and everything anyone knows about this hill is in there somewhere; PLANT SITE: these options are no longer cosmetic: \"Find out who wrote the survey\" plants did_find_who_wrote (pays off at n11d5 and n11d1). The other options must keep their own appeal, so this is a real trade-off.'>>",
    "is_ending": false,
    "choices": [
     {
      "id": "c_n03d0_0",
      "label": "Find out who wrote the survey.",
-     "target": "n04d0"
+     "target": "cq_plant_did_find_who_wrote",
+     "effects": [
+      {
+       "op": "set",
+       "var": "did_find_who_wrote",
+       "value": true
+      }
+     ]
     },
     {
      "id": "c_n03d0_1",
@@ -122,6 +162,18 @@
      "id": "c_n03d0_2",
      "label": "Ask what a hundred years of weather notes are worth.",
      "target": "n04d2"
+    }
+   ]
+  },
+  {
+   "id": "cq_plant_did_find_who_wrote",
+   "body": "<<FILL role=plant words=50 beats='Arrival beat for this choice, two or three sentences that show it happening and then lead straight into the next scene. PLANT (did_find_who_wrote): the hero has just made this choice, and something concrete comes of it that a reader will remember: an object kept, a person helped, or a fact learned, named plainly in the prose. Invent it so that it would plausibly help much later, when the hero tries \"Let the deadline decide for you\" (node n11d5) or \"Decide what to say to Halvor\" (node n11d1): there it changes how that moment goes.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_cq_plant_did_find_who_wrote",
+     "label": "Find out who wrote the survey.",
+     "target": "n04d0"
     }
    ]
   },
@@ -171,7 +223,7 @@
   },
   {
    "id": "n04d0",
-   "body": "<<FILL role=rising words=100 beats='the survey is signed D. Faulks and dated in August, a month when a century old orchard looks like nothing much except long grass and shade'>>",
+   "body": "<<FILL role=rising words=100 beats='the survey is signed D. Faulks and dated in August, a month when a century old orchard looks like nothing much except long grass and shade; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Ask whether the notebooks have seen this before\"; \"Find out who wrote the survey\"; \"Go down and read the notice on the gate\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -297,7 +349,7 @@
   },
   {
    "id": "n05d0",
-   "body": "<<FILL role=rising words=106 beats='objections close in six weeks and the form asks for evidence of scientific interest, which is the exact phrase the survey used to say there is none'>>",
+   "body": "<<FILL role=rising words=106 beats='objections close in six weeks and the form asks for evidence of scientific interest, which is the exact phrase the survey used to say there is none; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Ask whether the notebooks have seen this before\"; \"Find out who wrote the survey\"; \"Go down and read the notice on the gate\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -319,7 +371,7 @@
   },
   {
    "id": "n05d1",
-   "body": "<<FILL role=rising words=106 beats='the four visits are logged to the half hour and not one of them lasted long enough to walk the whole orchard, let alone open a hive'>>",
+   "body": "<<FILL role=rising words=106 beats='the four visits are logged to the half hour and not one of them lasted long enough to walk the whole orchard, let alone open a hive; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Ask whether the notebooks have seen this before\"; \"Find out who wrote the survey\"; \"Go down and read the notice on the gate\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -341,7 +393,7 @@
   },
   {
    "id": "n05d2",
-   "body": "<<FILL role=rising words=106 beats='the city archive keeps a Tuesday desk and the archivist there has seen a great many shoeboxes and is not impressed by any of them yet'>>",
+   "body": "<<FILL role=rising words=106 beats='the city archive keeps a Tuesday desk and the archivist there has seen a great many shoeboxes and is not impressed by any of them yet; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Ask whether the notebooks have seen this before\"; \"Find out who wrote the survey\"; \"Go down and read the notice on the gate\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -363,7 +415,7 @@
   },
   {
    "id": "n05d3",
-   "body": "<<FILL role=rising words=106 beats='the university lists a Dr Ines Abara under long term monitoring, a phrase that turns out to mean precisely the thing your six shelves are'>>",
+   "body": "<<FILL role=rising words=106 beats='the university lists a Dr Ines Abara under long term monitoring, a phrase that turns out to mean precisely the thing your six shelves are; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Some readers earlier chose \"Ask whether the notebooks have seen this before\" and some did not, so the body must not depend on it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -385,7 +437,7 @@
   },
   {
    "id": "n05d4",
-   "body": "<<FILL role=rising words=106 beats='the plan is eighty two homes and a spine road, and the road runs straight along the row the big Bramley stands in'>>",
+   "body": "<<FILL role=rising words=106 beats='the plan is eighty two homes and a spine road, and the road runs straight along the row the big Bramley stands in; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Some readers earlier chose \"Ask whether the notebooks have seen this before\" and some did not, so the body must not depend on it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -407,7 +459,7 @@
   },
   {
    "id": "n05d5",
-   "body": "<<FILL role=rising words=106 beats='Tobe runs the school weather club, owns a laptop that works, and thinks a hundred years of bloom dates is the finest thing he has ever been offered'>>",
+   "body": "<<FILL role=rising words=106 beats='Tobe runs the school weather club, owns a laptop that works, and thinks a hundred years of bloom dates is the finest thing he has ever been offered; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Ask whether the notebooks have seen this before\"; \"Go down and read the notice on the gate\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -429,7 +481,7 @@
   },
   {
    "id": "e05_0",
-   "body": "<<FILL role=discovery words=106 beats='you put the notebooks back on the shelf and the objection window closes without you in it, and what you are left with is a photograph of a notice and a clear idea of what you did not do'>>",
+   "body": "<<FILL role=discovery words=106 beats='you put the notebooks back on the shelf and the objection window closes without you in it, and what you are left with is a photograph of a notice and a clear idea of what you did not do; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Ask whether the notebooks have seen this before\"; \"Go down and read the notice on the gate\"), so the body must not depend on any of it.'>>",
    "is_ending": true,
    "ending": {
     "id": "e05_0",
@@ -440,7 +492,7 @@
   },
   {
    "id": "n06d0",
-   "body": "<<FILL role=rising words=112 beats='Tobe counts sample pages and multiplies, and the answer is somewhere near forty thousand daily lines, which is a number that makes the kitchen go quiet'>>",
+   "body": "<<FILL role=rising words=112 beats='Tobe counts sample pages and multiplies, and the answer is somewhere near forty thousand daily lines, which is a number that makes the kitchen go quiet; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Ask whether the notebooks have seen this before\"; \"Find out who wrote the survey\"; \"Go down and read the notice on the gate\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -462,7 +514,7 @@
   },
   {
    "id": "n06d1",
-   "body": "<<FILL role=rising words=112 beats='not all of it has to be typed up, because the argument needs bloom dates and frost dates, which is four lines a year and a hundred and fourteen years'>>",
+   "body": "<<FILL role=rising words=112 beats='not all of it has to be typed up, because the argument needs bloom dates and frost dates, which is four lines a year and a hundred and fourteen years; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Ask whether the notebooks have seen this before\"; \"Find out who wrote the survey\"; \"Go down and read the notice on the gate\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -484,7 +536,7 @@
   },
   {
    "id": "n06d2",
-   "body": "<<FILL role=rising words=112 beats='the 1920s hand slopes so far that a three and a five are the same shape, and getting one wrong by two would put a bloom date in the wrong week'>>",
+   "body": "<<FILL role=rising words=112 beats='the 1920s hand slopes so far that a three and a five are the same shape, and getting one wrong by two would put a bloom date in the wrong week; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Ask whether the notebooks have seen this before\"; \"Find out who wrote the survey\"; \"Go down and read the notice on the gate\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -506,7 +558,7 @@
   },
   {
    "id": "n06d3",
-   "body": "<<FILL role=rising words=112 beats='Ada has never let a notebook leave the shed, the archive will not accept anything it cannot see in person, and both of those positions are reasonable'>>",
+   "body": "<<FILL role=rising words=112 beats='Ada has never let a notebook leave the shed, the archive will not accept anything it cannot see in person, and both of those positions are reasonable; PAYOFF SITE (did_go_down_read): readers arrive here both having and not having chosen \"Go down and read the notice on the gate\" earlier, so this body must be true either way and must not say which. The option \"Take the four lines a year approach\" plays out differently for the two: with that earlier choice the reader first sees a payoff scene. MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Ask whether the notebooks have seen this before\"; \"Find out who wrote the survey\"; \"Go down and read the notice on the gate\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -521,6 +573,39 @@
     },
     {
      "id": "c_n06d3_2",
+     "label": "Take the four lines a year approach.",
+     "target": "n07d0",
+     "condition": {
+      "==": [
+       {
+        "var": "did_go_down_read"
+       },
+       false
+      ]
+     }
+    },
+    {
+     "id": "c_n06d3_2_cq_did_go_down_read",
+     "label": "Take the four lines a year approach.",
+     "target": "cq_payoff_did_go_down_read",
+     "condition": {
+      "==": [
+       {
+        "var": "did_go_down_read"
+       },
+       true
+      ]
+     }
+    }
+   ]
+  },
+  {
+   "id": "cq_payoff_did_go_down_read",
+   "body": "<<FILL role=payoff words=50 beats='PAYOFF (did_go_down_read): only a reader who earlier chose \"Go down and read the notice on the gate\" (node n01d0) reaches this scene. The hero tries \"Take the four lines a year approach\". The thing that came of that earlier choice changes how it goes: show it returning concretely in a few sentences, a moment only this reader gets. Then lead into the next scene (node n07d0), which every reader who makes this move reaches, without contradicting it.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_cq_payoff_did_go_down_read",
      "label": "Take the four lines a year approach.",
      "target": "n07d0"
     }
@@ -667,7 +752,7 @@
   },
   {
    "id": "n07d0",
-   "body": "<<FILL role=rising words=100 beats='first bloom, full bloom, last frost, first picking, which is four dates a year, so a century becomes four hundred and fifty six numbers instead of forty thousand'>>",
+   "body": "<<FILL role=rising words=100 beats='first bloom, full bloom, last frost, first picking, which is four dates a year, so a century becomes four hundred and fifty six numbers instead of forty thousand; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Ask whether the notebooks have seen this before\"; \"Find out who wrote the survey\"; \"Go down and read the notice on the gate\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -689,7 +774,7 @@
   },
   {
    "id": "n07d1",
-   "body": "<<FILL role=rising words=100 beats='one row of trees all the way back is fewer numbers and a much easier argument to explain out loud to somebody who is in a hurry'>>",
+   "body": "<<FILL role=rising words=100 beats='one row of trees all the way back is fewer numbers and a much easier argument to explain out loud to somebody who is in a hurry; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Ask whether the notebooks have seen this before\"; \"Find out who wrote the survey\"; \"Go down and read the notice on the gate\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -711,7 +796,7 @@
   },
   {
    "id": "n07d2",
-   "body": "<<FILL role=rising words=100 beats='Mrs Cassar has thirty years of her own and is willing, though she wants it understood that her early counts were done differently'>>",
+   "body": "<<FILL role=rising words=100 beats='Mrs Cassar has thirty years of her own and is willing, though she wants it understood that her early counts were done differently; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Ask whether the notebooks have seen this before\"; \"Find out who wrote the survey\"; \"Go down and read the notice on the gate\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -733,7 +818,7 @@
   },
   {
    "id": "n07d3",
-   "body": "<<FILL role=rising words=100 beats='the archivist offers a shelf in a room with a stable temperature, a receipt, and the right for Ada to see them any weekday she likes'>>",
+   "body": "<<FILL role=rising words=100 beats='the archivist offers a shelf in a room with a stable temperature, a receipt, and the right for Ada to see them any weekday she likes; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Ask whether the notebooks have seen this before\"; \"Find out who wrote the survey\"; \"Go down and read the notice on the gate\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -755,7 +840,7 @@
   },
   {
    "id": "n07d4",
-   "body": "<<FILL role=rising words=100 beats='Abara is careful: a long unbroken local series is genuinely rare, but only if somebody can show how it was measured and by whom'>>",
+   "body": "<<FILL role=rising words=100 beats='Abara is careful: a long unbroken local series is genuinely rare, but only if somebody can show how it was measured and by whom; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Ask whether the notebooks have seen this before\"; \"Find out who wrote the survey\"; \"Go down and read the notice on the gate\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -777,7 +862,7 @@
   },
   {
    "id": "n07d5",
-   "body": "<<FILL role=rising words=100 beats='Tobe puts the bloom dates on one axis and the years on the other, and the shape that comes out is not subtle, and nobody says anything for a while'>>",
+   "body": "<<FILL role=rising words=100 beats='Tobe puts the bloom dates on one axis and the years on the other, and the shape that comes out is not subtle, and nobody says anything for a while; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Ask whether the notebooks have seen this before\"; \"Find out who wrote the survey\"; \"Go down and read the notice on the gate\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -799,7 +884,7 @@
   },
   {
    "id": "n07d6",
-   "body": "<<FILL role=rising words=100 beats='thirty pairs of hands could type a century in a fortnight, and thirty pairs of hands could also put a hundred small errors into it'>>",
+   "body": "<<FILL role=rising words=100 beats='thirty pairs of hands could type a century in a fortnight, and thirty pairs of hands could also put a hundred small errors into it; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Ask whether the notebooks have seen this before\"; \"Find out who wrote the survey\"; \"Go down and read the notice on the gate\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -821,7 +906,7 @@
   },
   {
    "id": "n07d7",
-   "body": "<<FILL role=rising words=100 beats='if a single date is out by a fortnight the whole chart is arguable, Faulks will only need one, and everybody in the kitchen knows it'>>",
+   "body": "<<FILL role=rising words=100 beats='if a single date is out by a fortnight the whole chart is arguable, Faulks will only need one, and everybody in the kitchen knows it; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Ask whether the notebooks have seen this before\"; \"Find out who wrote the survey\"; \"Go down and read the notice on the gate\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -843,7 +928,7 @@
   },
   {
    "id": "n07d8",
-   "body": "<<FILL role=rising words=100 beats='Ada says she has never once thought of the notebooks as an argument, and that she is not sure she likes them becoming one'>>",
+   "body": "<<FILL role=rising words=100 beats='Ada says she has never once thought of the notebooks as an argument, and that she is not sure she likes them becoming one; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Ask whether the notebooks have seen this before\"; \"Find out who wrote the survey\"; \"Go down and read the notice on the gate\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -865,7 +950,7 @@
   },
   {
    "id": "e07_0",
-   "body": "<<FILL role=discovery words=100 beats='the notebooks go into a temperature stable room and are safe forever, nobody makes the argument, and the orchard is surveyed again in August by the same method'>>",
+   "body": "<<FILL role=discovery words=100 beats='the notebooks go into a temperature stable room and are safe forever, nobody makes the argument, and the orchard is surveyed again in August by the same method; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Ask whether the notebooks have seen this before\"; \"Find out who wrote the survey\"; \"Go down and read the notice on the gate\"), so the body must not depend on any of it.'>>",
    "is_ending": true,
    "ending": {
     "id": "e07_0",
@@ -876,7 +961,7 @@
   },
   {
    "id": "e07_1",
-   "body": "<<FILL role=setback words=100 beats='the chart goes round the neighbourhood in an evening and comes back with a correction attached that you cannot answer, and after that people read the next thing you send more slowly'>>",
+   "body": "<<FILL role=setback words=100 beats='the chart goes round the neighbourhood in an evening and comes back with a correction attached that you cannot answer, and after that people read the next thing you send more slowly; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Ask whether the notebooks have seen this before\"; \"Find out who wrote the survey\"; \"Go down and read the notice on the gate\"), so the body must not depend on any of it.'>>",
    "is_ending": true,
    "ending": {
     "id": "e07_1",
@@ -887,7 +972,7 @@
   },
   {
    "id": "n08d0",
-   "body": "<<FILL role=rising words=106 beats='every page is typed twice by different people and the two versions are compared by machine, which finds eleven disagreements in the first hundred pages'>>",
+   "body": "<<FILL role=rising words=106 beats='every page is typed twice by different people and the two versions are compared by machine, which finds eleven disagreements in the first hundred pages; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Ask whether the notebooks have seen this before\"; \"Find out who wrote the survey\"; \"Go down and read the notice on the gate\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -909,7 +994,7 @@
   },
   {
    "id": "n08d1",
-   "body": "<<FILL role=rising words=106 beats='anything genuinely ambiguous is marked rather than guessed, and the marked ones are kept in their own list where anybody can see them'>>",
+   "body": "<<FILL role=rising words=106 beats='anything genuinely ambiguous is marked rather than guessed, and the marked ones are kept in their own list where anybody can see them; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Ask whether the notebooks have seen this before\"; \"Find out who wrote the survey\"; \"Go down and read the notice on the gate\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -931,7 +1016,7 @@
   },
   {
    "id": "n08d2",
-   "body": "<<FILL role=rising words=106 beats='Mrs Cassar arrives with two carrier bags of hive records and one condition, which is that nobody pretends her counts are more precise than they are'>>",
+   "body": "<<FILL role=rising words=106 beats='Mrs Cassar arrives with two carrier bags of hive records and one condition, which is that nobody pretends her counts are more precise than they are; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Ask whether the notebooks have seen this before\"; \"Find out who wrote the survey\"; \"Go down and read the notice on the gate\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -953,7 +1038,7 @@
   },
   {
    "id": "n08d3",
-   "body": "<<FILL role=rising words=106 beats='Abara walks the rows for two hours in the rain and says almost nothing, then asks whether anybody has ever measured the frost pocket by the pond'>>",
+   "body": "<<FILL role=rising words=106 beats='Abara walks the rows for two hours in the rain and says almost nothing, then asks whether anybody has ever measured the frost pocket by the pond; PAYOFF SITE (did_ask_whether_notebooks): readers arrive here both having and not having chosen \"Ask whether the notebooks have seen this before\" earlier, so this body must be true either way and must not say which. The option \"Say something about Faulks you cannot support\" plays out differently for the two: without that earlier choice it leads to the setback (e09_1); with it, to a recovery. MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Ask whether the notebooks have seen this before\"; \"Find out who wrote the survey\"; \"Go down and read the notice on the gate\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -964,7 +1049,28 @@
     {
      "id": "c_n08d3_1",
      "label": "Say something about Faulks you cannot support.",
-     "target": "e09_1"
+     "target": "e09_1",
+     "condition": {
+      "==": [
+       {
+        "var": "did_ask_whether_notebooks"
+       },
+       false
+      ]
+     }
+    },
+    {
+     "id": "c_n08d3_1_cq_did_ask_whether_notebooks",
+     "label": "Say something about Faulks you cannot support.",
+     "target": "cq_payoff_did_ask_whether_notebooks",
+     "condition": {
+      "==": [
+       {
+        "var": "did_ask_whether_notebooks"
+       },
+       true
+      ]
+     }
     },
     {
      "id": "c_n08d3_2",
@@ -974,8 +1080,20 @@
    ]
   },
   {
+   "id": "cq_payoff_did_ask_whether_notebooks",
+   "body": "<<FILL role=payoff words=38 beats='PAYOFF (did_ask_whether_notebooks): only a reader who earlier chose \"Ask whether the notebooks have seen this before\" (node n01d0) reaches this scene. The hero tries \"Say something about Faulks you cannot support\". For a reader without that earlier choice the same move ends the story early (e09_1). Here the thing that came of it turns the moment around: show it returning concretely and making the difference. End with the hero moving on to \"Ask Raval exactly what she can accept\", leading into the next scene (node n09d0), which other readers also reach, without contradicting it.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_cq_payoff_did_ask_whether_notebooks",
+     "label": "Ask Raval exactly what she can accept.",
+     "target": "n09d0"
+    }
+   ]
+  },
+  {
    "id": "n08d4",
-   "body": "<<FILL role=rising words=106 beats='the Thursday hall fills with thirty people typing, the noise is enormous, and by four in the afternoon the 1930s are finished'>>",
+   "body": "<<FILL role=rising words=106 beats='the Thursday hall fills with thirty people typing, the noise is enormous, and by four in the afternoon the 1930s are finished; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Ask whether the notebooks have seen this before\"; \"Find out who wrote the survey\"; \"Go down and read the notice on the gate\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -997,7 +1115,7 @@
   },
   {
    "id": "n08d5",
-   "body": "<<FILL role=rising words=106 beats='two volumes are gone and somebody must have taken them somewhere in 1919, and the shed is not the only building on this hill'>>",
+   "body": "<<FILL role=rising words=106 beats='two volumes are gone and somebody must have taken them somewhere in 1919, and the shed is not the only building on this hill; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Ask whether the notebooks have seen this before\"; \"Find out who wrote the survey\"; \"Go down and read the notice on the gate\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -1019,7 +1137,7 @@
   },
   {
    "id": "n08d6",
-   "body": "<<FILL role=rising words=106 beats='Raval is the ecology officer, has eleven sites on her desk this month, and tells you plainly that a shed full of notebooks is not evidence yet'>>",
+   "body": "<<FILL role=rising words=106 beats='Raval is the ecology officer, has eleven sites on her desk this month, and tells you plainly that a shed full of notebooks is not evidence yet; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Ask whether the notebooks have seen this before\"; \"Find out who wrote the survey\"; \"Go down and read the notice on the gate\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -1041,7 +1159,7 @@
   },
   {
    "id": "n08c0",
-   "body": "<<FILL role=bridge words=36 beats='the chart comes off the school printer in colour and is pinned to the shed door, where it stays until the rain gets at the bottom corner'>>",
+   "body": "<<FILL role=bridge words=36 beats='the chart comes off the school printer in colour and is pinned to the shed door, where it stays until the rain gets at the bottom corner; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Ask whether the notebooks have seen this before\"; \"Find out who wrote the survey\"; \"Go down and read the notice on the gate\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -1053,7 +1171,7 @@
   },
   {
    "id": "n08c1",
-   "body": "<<FILL role=bridge words=36 beats='at half past six the low ground by the pond is white and the top of the hill is not, and the line between them is as clear as a drawn edge'>>",
+   "body": "<<FILL role=bridge words=36 beats='at half past six the low ground by the pond is white and the top of the hill is not, and the line between them is as clear as a drawn edge; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Ask whether the notebooks have seen this before\"; \"Find out who wrote the survey\"; \"Go down and read the notice on the gate\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -1065,7 +1183,7 @@
   },
   {
    "id": "n08c2",
-   "body": "<<FILL role=bridge words=36 beats='the nine hands sort into four periods, and the changeovers all fall in the same three months of three different years, which is somebody dying or leaving'>>",
+   "body": "<<FILL role=bridge words=36 beats='the nine hands sort into four periods, and the changeovers all fall in the same three months of three different years, which is somebody dying or leaving; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Ask whether the notebooks have seen this before\"; \"Find out who wrote the survey\"; \"Go down and read the notice on the gate\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -1077,7 +1195,7 @@
   },
   {
    "id": "n08c3",
-   "body": "<<FILL role=bridge words=36 beats='you wait forty minutes on a chair in a corridor with a poster about recycling, and by the end of it you have written down what you want to say'>>",
+   "body": "<<FILL role=bridge words=36 beats='you wait forty minutes on a chair in a corridor with a poster about recycling, and by the end of it you have written down what you want to say; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Ask whether the notebooks have seen this before\"; \"Find out who wrote the survey\"; \"Go down and read the notice on the gate\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -1147,7 +1265,7 @@
   },
   {
    "id": "n09d0",
-   "body": "<<FILL role=rising words=112 beats='Raval says she can accept a dataset with a stated method, a named custodian and a way for anyone to check it, and that almost nobody ever brings one'>>",
+   "body": "<<FILL role=rising words=112 beats='Raval says she can accept a dataset with a stated method, a named custodian and a way for anyone to check it, and that almost nobody ever brings one; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Ask whether the notebooks have seen this before\"; \"Find out who wrote the survey\"; \"Go down and read the notice on the gate\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -1169,7 +1287,7 @@
   },
   {
    "id": "n09d1",
-   "body": "<<FILL role=rising words=112 beats='Abara will write two pages on cold air drainage if somebody measures the pocket properly for six weeks, which means a thermometer and somebody at dawn'>>",
+   "body": "<<FILL role=rising words=112 beats='Abara will write two pages on cold air drainage if somebody measures the pocket properly for six weeks, which means a thermometer and somebody at dawn; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Ask whether the notebooks have seen this before\"; \"Find out who wrote the survey\"; \"Go down and read the notice on the gate\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -1191,7 +1309,7 @@
   },
   {
    "id": "n09d2",
-   "body": "<<FILL role=rising words=112 beats='the archivist will state on paper where every volume has been since the day it arrived, which sounds dull and turns out to matter enormously'>>",
+   "body": "<<FILL role=rising words=112 beats='the archivist will state on paper where every volume has been since the day it arrived, which sounds dull and turns out to matter enormously; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Ask whether the notebooks have seen this before\"; \"Find out who wrote the survey\"; \"Go down and read the notice on the gate\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -1213,7 +1331,7 @@
   },
   {
    "id": "n09d3",
-   "body": "<<FILL role=rising words=112 beats='she can say exactly when she changed frames and when she changed how she counted, which turns thirty ragged years into three clean ones'>>",
+   "body": "<<FILL role=rising words=112 beats='she can say exactly when she changed frames and when she changed how she counted, which turns thirty ragged years into three clean ones; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Ask whether the notebooks have seen this before\"; \"Find out who wrote the survey\"; \"Go down and read the notice on the gate\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -1235,7 +1353,7 @@
   },
   {
    "id": "n09d4",
-   "body": "<<FILL role=rising words=112 beats='Tobe writes out the objections he would make if he were Faulks, and the list is four items long, and every item on it is fair'>>",
+   "body": "<<FILL role=rising words=112 beats='Tobe writes out the objections he would make if he were Faulks, and the list is four items long, and every item on it is fair; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Ask whether the notebooks have seen this before\"; \"Find out who wrote the survey\"; \"Go down and read the notice on the gate\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -1257,7 +1375,7 @@
   },
   {
    "id": "n09d5",
-   "body": "<<FILL role=rising words=112 beats='the local paper would take a picture of Ada with the notebooks, which would be lovely and would also put the shed on the front page'>>",
+   "body": "<<FILL role=rising words=112 beats='the local paper would take a picture of Ada with the notebooks, which would be lovely and would also put the shed on the front page; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Ask whether the notebooks have seen this before\"; \"Find out who wrote the survey\"; \"Go down and read the notice on the gate\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -1279,7 +1397,7 @@
   },
   {
    "id": "n09d6",
-   "body": "<<FILL role=rising words=112 beats='you can request the data underneath the eleven words and they must give it, and it will take twenty working days'>>",
+   "body": "<<FILL role=rising words=112 beats='you can request the data underneath the eleven words and they must give it, and it will take twenty working days; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Ask whether the notebooks have seen this before\"; \"Find out who wrote the survey\"; \"Go down and read the notice on the gate\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -1301,7 +1419,7 @@
   },
   {
    "id": "n09d7",
-   "body": "<<FILL role=rising words=112 beats='Ada says her grandmother never spoke about the war years on the hill except once, and that once was about a horse'>>",
+   "body": "<<FILL role=rising words=112 beats='Ada says her grandmother never spoke about the war years on the hill except once, and that once was about a horse; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Ask whether the notebooks have seen this before\"; \"Find out who wrote the survey\"; \"Go down and read the notice on the gate\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -1323,7 +1441,7 @@
   },
   {
    "id": "n09d8",
-   "body": "<<FILL role=rising words=112 beats='the hall is booked for the term if somebody responsible signs for it, and the only somebody available is you'>>",
+   "body": "<<FILL role=rising words=112 beats='the hall is booked for the term if somebody responsible signs for it, and the only somebody available is you; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Ask whether the notebooks have seen this before\"; \"Find out who wrote the survey\"; \"Go down and read the notice on the gate\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -1345,7 +1463,7 @@
   },
   {
    "id": "e09_0",
-   "body": "<<FILL role=discovery words=112 beats='the photograph of Ada with an open notebook runs on page five and is genuinely lovely, and the objection deadline passes while everybody is admiring it'>>",
+   "body": "<<FILL role=discovery words=112 beats='the photograph of Ada with an open notebook runs on page five and is genuinely lovely, and the objection deadline passes while everybody is admiring it; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Ask whether the notebooks have seen this before\"; \"Find out who wrote the survey\"; \"Go down and read the notice on the gate\"), so the body must not depend on any of it.'>>",
    "is_ending": true,
    "ending": {
     "id": "e09_0",
@@ -1356,7 +1474,7 @@
   },
   {
    "id": "e09_1",
-   "body": "<<FILL role=setback words=112 beats='you say in front of witnesses that the survey was written to order, which you believe and cannot show, and after that every honest thing you say arrives with that attached'>>",
+   "body": "<<FILL role=setback words=112 beats='you say in front of witnesses that the survey was written to order, which you believe and cannot show, and after that every honest thing you say arrives with that attached; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Ask whether the notebooks have seen this before\"; \"Find out who wrote the survey\"; \"Go down and read the notice on the gate\"), so the body must not depend on any of it.'>>",
    "is_ending": true,
    "ending": {
     "id": "e09_1",
@@ -1367,7 +1485,7 @@
   },
   {
    "id": "n10d0",
-   "body": "<<FILL role=rising words=100 beats='two thermometers, one in the pocket and one at the top of the hill, read at dawn every day for six weeks by whoever is nearest'>>",
+   "body": "<<FILL role=rising words=100 beats='two thermometers, one in the pocket and one at the top of the hill, read at dawn every day for six weeks by whoever is nearest; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Ask whether the notebooks have seen this before\"; \"Find out who wrote the survey\"; \"Go down and read the notice on the gate\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -1389,7 +1507,7 @@
   },
   {
    "id": "n10d1",
-   "body": "<<FILL role=rising words=100 beats='the request goes in on a form with a reference number and an acknowledgement arrives the same afternoon, which is the first time any of this has felt official'>>",
+   "body": "<<FILL role=rising words=100 beats='the request goes in on a form with a reference number and an acknowledgement arrives the same afternoon, which is the first time any of this has felt official; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Ask whether the notebooks have seen this before\"; \"Find out who wrote the survey\"; \"Go down and read the notice on the gate\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -1411,7 +1529,7 @@
   },
   {
    "id": "n10d2",
-   "body": "<<FILL role=rising words=100 beats='somebody has to write down how the notebooks were kept, transcribed, checked and stored, and it turns out to be the hardest writing anybody does'>>",
+   "body": "<<FILL role=rising words=100 beats='somebody has to write down how the notebooks were kept, transcribed, checked and stored, and it turns out to be the hardest writing anybody does; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Ask whether the notebooks have seen this before\"; \"Find out who wrote the survey\"; \"Go down and read the notice on the gate\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -1433,7 +1551,7 @@
   },
   {
    "id": "n10d3",
-   "body": "<<FILL role=rising words=100 beats='four of the nine writers have living family in the city, and a letter to each of them is either a kindness or an intrusion depending on the letter'>>",
+   "body": "<<FILL role=rising words=100 beats='four of the nine writers have living family in the city, and a letter to each of them is either a kindness or an intrusion depending on the letter; PAYOFF SITE (did_ask_whether_notebooks): readers arrive here both having and not having chosen \"Ask whether the notebooks have seen this before\" earlier, so this body must be true either way and must not say which. The option \"Read the survey data when it arrives\" plays out differently for the two: with that earlier choice the reader first sees a payoff scene. MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Ask whether the notebooks have seen this before\"; \"Find out who wrote the survey\"; \"Go down and read the notice on the gate\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -1449,13 +1567,46 @@
     {
      "id": "c_n10d3_2",
      "label": "Read the survey data when it arrives.",
+     "target": "n11d0",
+     "condition": {
+      "==": [
+       {
+        "var": "did_ask_whether_notebooks"
+       },
+       false
+      ]
+     }
+    },
+    {
+     "id": "c_n10d3_2_cq_did_ask_whether_notebooks",
+     "label": "Read the survey data when it arrives.",
+     "target": "cq_payoff_did_ask_whether_notebooks_site2",
+     "condition": {
+      "==": [
+       {
+        "var": "did_ask_whether_notebooks"
+       },
+       true
+      ]
+     }
+    }
+   ]
+  },
+  {
+   "id": "cq_payoff_did_ask_whether_notebooks_site2",
+   "body": "<<FILL role=payoff words=44 beats='PAYOFF (did_ask_whether_notebooks): only a reader who earlier chose \"Ask whether the notebooks have seen this before\" (node n01d0) reaches this scene. The hero tries \"Read the survey data when it arrives\". The thing that came of that earlier choice changes how it goes: show it returning concretely in a few sentences, a moment only this reader gets. Then lead into the next scene (node n11d0), which every reader who makes this move reaches, without contradicting it.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_cq_payoff_did_ask_whether_notebooks_site2",
+     "label": "Read the survey data when it arrives.",
      "target": "n11d0"
     }
    ]
   },
   {
    "id": "n10d4",
-   "body": "<<FILL role=rising words=100 beats='the parish records are in the same archive and the Tuesday desk is patient, and somewhere in there is why two volumes left this hill'>>",
+   "body": "<<FILL role=rising words=100 beats='the parish records are in the same archive and the Tuesday desk is patient, and somewhere in there is why two volumes left this hill; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Ask whether the notebooks have seen this before\"; \"Find out who wrote the survey\"; \"Go down and read the notice on the gate\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -1477,7 +1628,7 @@
   },
   {
    "id": "n10d5",
-   "body": "<<FILL role=rising words=100 beats='the paper will run it whenever you say, and running it early makes noise, and noise is useful exactly once'>>",
+   "body": "<<FILL role=rising words=100 beats='the paper will run it whenever you say, and running it early makes noise, and noise is useful exactly once; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Ask whether the notebooks have seen this before\"; \"Find out who wrote the survey\"; \"Go down and read the notice on the gate\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -1499,7 +1650,7 @@
   },
   {
    "id": "n10d6",
-   "body": "<<FILL role=rising words=100 beats='the form has one line for a name, Ada is eighty one, and the objection will be answered in writing by people who are paid to answer things'>>",
+   "body": "<<FILL role=rising words=100 beats='the form has one line for a name, Ada is eighty one, and the objection will be answered in writing by people who are paid to answer things; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Ask whether the notebooks have seen this before\"; \"Find out who wrote the survey\"; \"Go down and read the notice on the gate\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -1521,7 +1672,7 @@
   },
   {
    "id": "n10c0",
-   "body": "<<FILL role=bridge words=36 beats='the dawn readings are the least interesting work anybody does and the most difficult to keep doing, and Tobe does nineteen of the forty two'>>",
+   "body": "<<FILL role=bridge words=36 beats='the dawn readings are the least interesting work anybody does and the most difficult to keep doing, and Tobe does nineteen of the forty two; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Ask whether the notebooks have seen this before\"; \"Find out who wrote the survey\"; \"Go down and read the notice on the gate\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -1533,7 +1684,7 @@
   },
   {
    "id": "n10c1",
-   "body": "<<FILL role=bridge words=36 beats='twenty working days is four weeks, the objection window is six, and the arithmetic of that sits on the kitchen table like a third person'>>",
+   "body": "<<FILL role=bridge words=36 beats='twenty working days is four weeks, the objection window is six, and the arithmetic of that sits on the kitchen table like a third person; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Ask whether the notebooks have seen this before\"; \"Find out who wrote the survey\"; \"Go down and read the notice on the gate\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -1545,7 +1696,7 @@
   },
   {
    "id": "n10c2",
-   "body": "<<FILL role=bridge words=36 beats='the first draft is three pages of everything you did in the order you did it, which Abara reads and returns with one word written on it, and the word is why'>>",
+   "body": "<<FILL role=bridge words=36 beats='the first draft is three pages of everything you did in the order you did it, which Abara reads and returns with one word written on it, and the word is why; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Ask whether the notebooks have seen this before\"; \"Find out who wrote the survey\"; \"Go down and read the notice on the gate\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -1557,7 +1708,7 @@
   },
   {
    "id": "n10c3",
-   "body": "<<FILL role=bridge words=36 beats='the four letters go into the postbox at the bottom of the hill on a Tuesday and you feel worse about it than you expected to'>>",
+   "body": "<<FILL role=bridge words=36 beats='the four letters go into the postbox at the bottom of the hill on a Tuesday and you feel worse about it than you expected to; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Ask whether the notebooks have seen this before\"; \"Find out who wrote the survey\"; \"Go down and read the notice on the gate\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -1627,7 +1778,7 @@
   },
   {
    "id": "n11d0",
-   "body": "<<FILL role=rising words=106 beats='the underlying data is thin: four visits, one transect, a species list of twenty two, and a note that the site was dry at the time of survey'>>",
+   "body": "<<FILL role=rising words=106 beats='the underlying data is thin: four visits, one transect, a species list of twenty two, and a note that the site was dry at the time of survey; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Ask whether the notebooks have seen this before\"; \"Find out who wrote the survey\"; \"Go down and read the notice on the gate\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -1649,13 +1800,34 @@
   },
   {
    "id": "n11d1",
-   "body": "<<FILL role=rising words=106 beats='the four visits fall inside the driest eleven days of that August, which Tobe can show from public records in about nine minutes'>>",
+   "body": "<<FILL role=rising words=106 beats='the four visits fall inside the driest eleven days of that August, which Tobe can show from public records in about nine minutes; PAYOFF SITE (did_find_who_wrote): readers arrive here both having and not having chosen \"Find out who wrote the survey\" earlier, so this body must be true either way and must not say which. The option \"Decide what to say to Halvor\" plays out differently for the two: with that earlier choice the reader first sees a payoff scene. MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Ask whether the notebooks have seen this before\"; \"Find out who wrote the survey\"; \"Go down and read the notice on the gate\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
      "id": "c_n11d1_0",
      "label": "Decide what to say to Halvor.",
-     "target": "n12d3"
+     "target": "n12d3",
+     "condition": {
+      "==": [
+       {
+        "var": "did_find_who_wrote"
+       },
+       false
+      ]
+     }
+    },
+    {
+     "id": "c_n11d1_0_cq_did_find_who_wrote",
+     "label": "Decide what to say to Halvor.",
+     "target": "cq_payoff_did_find_who_wrote_site2",
+     "condition": {
+      "==": [
+       {
+        "var": "did_find_who_wrote"
+       },
+       true
+      ]
+     }
     },
     {
      "id": "c_n11d1_1",
@@ -1670,8 +1842,20 @@
    ]
   },
   {
+   "id": "cq_payoff_did_find_who_wrote_site2",
+   "body": "<<FILL role=payoff words=38 beats='PAYOFF (did_find_who_wrote): only a reader who earlier chose \"Find out who wrote the survey\" (node n03d0) reaches this scene. The hero tries \"Decide what to say to Halvor\". The thing that came of that earlier choice changes how it goes: show it returning concretely in a few sentences, a moment only this reader gets. Then lead into the next scene (node n12d3), which every reader who makes this move reaches, without contradicting it.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_cq_payoff_did_find_who_wrote_site2",
+     "label": "Decide what to say to Halvor.",
+     "target": "n12d3"
+    }
+   ]
+  },
+  {
    "id": "n11d2",
-   "body": "<<FILL role=rising words=106 beats='Ada reads the list of twenty two and adds fourteen from memory, then says she will not swear to any of them without going and looking'>>",
+   "body": "<<FILL role=rising words=106 beats='Ada reads the list of twenty two and adds fourteen from memory, then says she will not swear to any of them without going and looking; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Ask whether the notebooks have seen this before\"; \"Find out who wrote the survey\"; \"Go down and read the notice on the gate\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -1693,7 +1877,7 @@
   },
   {
    "id": "n11d3",
-   "body": "<<FILL role=rising words=106 beats='the parish box holds a receipt for two orchard books lent to the agricultural committee in 1917 and never entered as returned'>>",
+   "body": "<<FILL role=rising words=106 beats='the parish box holds a receipt for two orchard books lent to the agricultural committee in 1917 and never entered as returned; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Ask whether the notebooks have seen this before\"; \"Find out who wrote the survey\"; \"Go down and read the notice on the gate\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -1715,7 +1899,7 @@
   },
   {
    "id": "n11d4",
-   "body": "<<FILL role=rising words=106 beats='if they were never returned they are in a building that still exists, and the agricultural committee became three things and then one thing'>>",
+   "body": "<<FILL role=rising words=106 beats='if they were never returned they are in a building that still exists, and the agricultural committee became three things and then one thing; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Ask whether the notebooks have seen this before\"; \"Find out who wrote the survey\"; \"Go down and read the notice on the gate\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -1737,13 +1921,34 @@
   },
   {
    "id": "n11d5",
-   "body": "<<FILL role=rising words=106 beats='each of the four objections Tobe wrote gets a paragraph and a piece of evidence, and two of them are easy and two of them are not'>>",
+   "body": "<<FILL role=rising words=106 beats='each of the four objections Tobe wrote gets a paragraph and a piece of evidence, and two of them are easy and two of them are not; PAYOFF SITE (did_find_who_wrote): readers arrive here both having and not having chosen \"Find out who wrote the survey\" earlier, so this body must be true either way and must not say which. The option \"Let the deadline decide for you\" plays out differently for the two: without that earlier choice it leads to the setback (e12_1); with it, to a recovery. MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Ask whether the notebooks have seen this before\"; \"Find out who wrote the survey\"; \"Go down and read the notice on the gate\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
      "id": "c_n11d5_0",
      "label": "Let the deadline decide for you.",
-     "target": "e12_1"
+     "target": "e12_1",
+     "condition": {
+      "==": [
+       {
+        "var": "did_find_who_wrote"
+       },
+       false
+      ]
+     }
+    },
+    {
+     "id": "c_n11d5_0_cq_did_find_who_wrote",
+     "label": "Let the deadline decide for you.",
+     "target": "cq_payoff_did_find_who_wrote",
+     "condition": {
+      "==": [
+       {
+        "var": "did_find_who_wrote"
+       },
+       true
+      ]
+     }
     },
     {
      "id": "c_n11d5_1",
@@ -1758,8 +1963,20 @@
    ]
   },
   {
+   "id": "cq_payoff_did_find_who_wrote",
+   "body": "<<FILL role=payoff words=38 beats='PAYOFF (did_find_who_wrote): only a reader who earlier chose \"Find out who wrote the survey\" (node n03d0) reaches this scene. The hero tries \"Let the deadline decide for you\". For a reader without that earlier choice the same move ends the story early (e12_1). Here the thing that came of it turns the moment around: show it returning concretely and making the difference. End with the hero moving on to \"Show that the survey was done in a drought\", leading into the next scene (node n12d0), which other readers also reach, without contradicting it.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_cq_payoff_did_find_who_wrote",
+     "label": "Show that the survey was done in a drought.",
+     "target": "n12d0"
+    }
+   ]
+  },
+  {
    "id": "n11d6",
-   "body": "<<FILL role=rising words=106 beats='Abara will read it once, properly, and say whether she would put her name near it, and she is not a person who does that lightly'>>",
+   "body": "<<FILL role=rising words=106 beats='Abara will read it once, properly, and say whether she would put her name near it, and she is not a person who does that lightly; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Ask whether the notebooks have seen this before\"; \"Find out who wrote the survey\"; \"Go down and read the notice on the gate\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -1781,7 +1998,7 @@
   },
   {
    "id": "n11d7",
-   "body": "<<FILL role=rising words=106 beats='Raval is not supposed to help an objector and is allowed to explain her own criteria, and the difference between those two things is very narrow'>>",
+   "body": "<<FILL role=rising words=106 beats='Raval is not supposed to help an objector and is allowed to explain her own criteria, and the difference between those two things is very narrow; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Ask whether the notebooks have seen this before\"; \"Find out who wrote the survey\"; \"Go down and read the notice on the gate\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -1803,7 +2020,7 @@
   },
   {
    "id": "n11d8",
-   "body": "<<FILL role=rising words=106 beats='Halvor is polite, buys you a coffee you do not drink, and asks a reasonable question, which is what would make you stop'>>",
+   "body": "<<FILL role=rising words=106 beats='Halvor is polite, buys you a coffee you do not drink, and asks a reasonable question, which is what would make you stop; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Ask whether the notebooks have seen this before\"; \"Find out who wrote the survey\"; \"Go down and read the notice on the gate\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -1825,7 +2042,7 @@
   },
   {
    "id": "e11_0",
-   "body": "<<FILL role=discovery words=106 beats='the developer offers a preserved corner, an interpretation board and a plaque with the name of Ada on it, and the row with the Bramley is not in the preserved corner'>>",
+   "body": "<<FILL role=discovery words=106 beats='the developer offers a preserved corner, an interpretation board and a plaque with the name of Ada on it, and the row with the Bramley is not in the preserved corner; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Ask whether the notebooks have seen this before\"; \"Find out who wrote the survey\"; \"Go down and read the notice on the gate\"), so the body must not depend on any of it.'>>",
    "is_ending": true,
    "ending": {
     "id": "e11_0",
@@ -1836,7 +2053,7 @@
   },
   {
    "id": "e11_1",
-   "body": "<<FILL role=setback words=106 beats='you write the thing about Faulks that you have wanted to write for a month, and it is published, and from that morning the argument is about you'>>",
+   "body": "<<FILL role=setback words=106 beats='you write the thing about Faulks that you have wanted to write for a month, and it is published, and from that morning the argument is about you; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Ask whether the notebooks have seen this before\"; \"Find out who wrote the survey\"; \"Go down and read the notice on the gate\"), so the body must not depend on any of it.'>>",
    "is_ending": true,
    "ending": {
     "id": "e11_1",
@@ -1847,7 +2064,7 @@
   },
   {
    "id": "n12d0",
-   "body": "<<FILL role=rising words=112 beats='the four visits, the rainfall record and the method section together say the site was surveyed in the one fortnight of the year it looks like nothing'>>",
+   "body": "<<FILL role=rising words=112 beats='the four visits, the rainfall record and the method section together say the site was surveyed in the one fortnight of the year it looks like nothing; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Ask whether the notebooks have seen this before\"; \"Find out who wrote the survey\"; \"Go down and read the notice on the gate\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -1869,7 +2086,7 @@
   },
   {
    "id": "n12d1",
-   "body": "<<FILL role=rising words=112 beats='the successor body keeps a basement in the old market building, and the basement has a card index that stops in 1961'>>",
+   "body": "<<FILL role=rising words=112 beats='the successor body keeps a basement in the old market building, and the basement has a card index that stops in 1961; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Ask whether the notebooks have seen this before\"; \"Find out who wrote the survey\"; \"Go down and read the notice on the gate\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -1891,7 +2108,7 @@
   },
   {
    "id": "n12d2",
-   "body": "<<FILL role=rising words=112 beats='a proper list needs somebody qualified walking the rows in May, and it is November, and that fact cannot be argued with'>>",
+   "body": "<<FILL role=rising words=112 beats='a proper list needs somebody qualified walking the rows in May, and it is November, and that fact cannot be argued with; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Ask whether the notebooks have seen this before\"; \"Find out who wrote the survey\"; \"Go down and read the notice on the gate\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -1913,7 +2130,7 @@
   },
   {
    "id": "n12d3",
-   "body": "<<FILL role=rising words=112 beats='the honest answer to what would make you stop is that nothing would, and saying that out loud closes a door you may want later'>>",
+   "body": "<<FILL role=rising words=112 beats='the honest answer to what would make you stop is that nothing would, and saying that out loud closes a door you may want later; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Ask whether the notebooks have seen this before\"; \"Find out who wrote the survey\"; \"Go down and read the notice on the gate\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -1935,7 +2152,7 @@
   },
   {
    "id": "n12d4",
-   "body": "<<FILL role=rising words=112 beats='six weeks of dawn readings is a real dataset and a short one, and Abara will say so in exactly those words if she is asked'>>",
+   "body": "<<FILL role=rising words=112 beats='six weeks of dawn readings is a real dataset and a short one, and Abara will say so in exactly those words if she is asked; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Ask whether the notebooks have seen this before\"; \"Find out who wrote the survey\"; \"Go down and read the notice on the gate\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -1957,7 +2174,7 @@
   },
   {
    "id": "n12d5",
-   "body": "<<FILL role=rising words=112 beats='Ada in a room of forty people is either the strongest thing you have or a thing you should not have asked of her'>>",
+   "body": "<<FILL role=rising words=112 beats='Ada in a room of forty people is either the strongest thing you have or a thing you should not have asked of her; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Ask whether the notebooks have seen this before\"; \"Find out who wrote the survey\"; \"Go down and read the notice on the gate\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -1979,7 +2196,7 @@
   },
   {
    "id": "n12d6",
-   "body": "<<FILL role=rising words=112 beats='release it early and it can be answered, release it late and it cannot be checked, and there is no date that is not a decision'>>",
+   "body": "<<FILL role=rising words=112 beats='release it early and it can be answered, release it late and it cannot be checked, and there is no date that is not a decision; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Ask whether the notebooks have seen this before\"; \"Find out who wrote the survey\"; \"Go down and read the notice on the gate\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -2001,7 +2218,7 @@
   },
   {
    "id": "n12c0",
-   "body": "<<FILL role=bridge words=36 beats='the basement smells of cold paper, the card index drawers stick, and the light is on a timer that runs out every four minutes'>>",
+   "body": "<<FILL role=bridge words=36 beats='the basement smells of cold paper, the card index drawers stick, and the light is on a timer that runs out every four minutes; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Ask whether the notebooks have seen this before\"; \"Find out who wrote the survey\"; \"Go down and read the notice on the gate\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -2013,7 +2230,7 @@
   },
   {
    "id": "n12c1",
-   "body": "<<FILL role=bridge words=36 beats='the rainfall record for that August is public, ordinary and completely damning, and you read it twice because it seems too easy'>>",
+   "body": "<<FILL role=bridge words=36 beats='the rainfall record for that August is public, ordinary and completely damning, and you read it twice because it seems too easy; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Ask whether the notebooks have seen this before\"; \"Find out who wrote the survey\"; \"Go down and read the notice on the gate\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -2025,7 +2242,7 @@
   },
   {
    "id": "n12c2",
-   "body": "<<FILL role=bridge words=36 beats='you walk the rows in November with the species list and tick the ones you can be certain of, and the number you can be certain of is nine'>>",
+   "body": "<<FILL role=bridge words=36 beats='you walk the rows in November with the species list and tick the ones you can be certain of, and the number you can be certain of is nine; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Ask whether the notebooks have seen this before\"; \"Find out who wrote the survey\"; \"Go down and read the notice on the gate\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -2037,7 +2254,7 @@
   },
   {
    "id": "n12c3",
-   "body": "<<FILL role=bridge words=36 beats='the coffee goes cold on the table between you and Halvor, neither of you mentions it, and he pays for it on the way out'>>",
+   "body": "<<FILL role=bridge words=36 beats='the coffee goes cold on the table between you and Halvor, neither of you mentions it, and he pays for it on the way out; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Ask whether the notebooks have seen this before\"; \"Find out who wrote the survey\"; \"Go down and read the notice on the gate\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -2096,7 +2313,7 @@
   },
   {
    "id": "e12_1",
-   "body": "<<FILL role=setback words=112 beats='you do not choose a release date so the deadline chooses one, and what goes in is the version that happened to be finished on the Friday'>>",
+   "body": "<<FILL role=setback words=112 beats='you do not choose a release date so the deadline chooses one, and what goes in is the version that happened to be finished on the Friday; SETBACK HINT (did_find_who_wrote): every reader who reaches this ending did NOT choose \"Find out who wrote the survey\" earlier. Let the ending glimpse what would have helped, so the reader has a concrete reason to try again; do not scold.'>>",
    "is_ending": true,
    "ending": {
     "id": "e12_1",
@@ -2107,7 +2324,7 @@
   },
   {
    "id": "n13d0",
-   "body": "<<FILL role=rising words=100 beats='the objection goes in with a hundred and fourteen years, a stated method, a custody note, nine species you would swear to, and a covering page of eleven words'>>",
+   "body": "<<FILL role=rising words=100 beats='the objection goes in with a hundred and fourteen years, a stated method, a custody note, nine species you would swear to, and a covering page of eleven words; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Ask whether the notebooks have seen this before\"; \"Find out who wrote the survey\"; \"Go down and read the notice on the gate\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -2129,7 +2346,7 @@
   },
   {
    "id": "n13d1",
-   "body": "<<FILL role=rising words=100 beats='a name that is not a person is harder to answer unkindly, and setting one up takes an afternoon and three signatures'>>",
+   "body": "<<FILL role=rising words=100 beats='a name that is not a person is harder to answer unkindly, and setting one up takes an afternoon and three signatures; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Ask whether the notebooks have seen this before\"; \"Find out who wrote the survey\"; \"Go down and read the notice on the gate\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -2151,7 +2368,7 @@
   },
   {
    "id": "n13d2",
-   "body": "<<FILL role=rising words=100 beats='a public hearing means neighbours in the room and a note taker, and it means Faulks answering out loud rather than in writing'>>",
+   "body": "<<FILL role=rising words=100 beats='a public hearing means neighbours in the room and a note taker, and it means Faulks answering out loud rather than in writing; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Ask whether the notebooks have seen this before\"; \"Find out who wrote the survey\"; \"Go down and read the notice on the gate\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -2173,7 +2390,7 @@
   },
   {
    "id": "n13d3",
-   "body": "<<FILL role=rising words=100 beats='handing it over before the hearing is either fair dealing or a wasted advantage, and Ada thinks it is the first and Tobe thinks it is the second'>>",
+   "body": "<<FILL role=rising words=100 beats='handing it over before the hearing is either fair dealing or a wasted advantage, and Ada thinks it is the first and Tobe thinks it is the second; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Ask whether the notebooks have seen this before\"; \"Find out who wrote the survey\"; \"Go down and read the notice on the gate\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -2195,7 +2412,7 @@
   },
   {
    "id": "n13d4",
-   "body": "<<FILL role=rising words=100 beats='the two war volumes go in with the receipt that explains them, and the gap on the shelf becomes the most convincing part of the whole thing'>>",
+   "body": "<<FILL role=rising words=100 beats='the two war volumes go in with the receipt that explains them, and the gap on the shelf becomes the most convincing part of the whole thing; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Ask whether the notebooks have seen this before\"; \"Find out who wrote the survey\"; \"Go down and read the notice on the gate\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -2217,7 +2434,7 @@
   },
   {
    "id": "n13d5",
-   "body": "<<FILL role=rising words=100 beats='Abara will come and will say only what she can defend, which is less than you want and more than anybody else in the room will have'>>",
+   "body": "<<FILL role=rising words=100 beats='Abara will come and will say only what she can defend, which is less than you want and more than anybody else in the room will have; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Ask whether the notebooks have seen this before\"; \"Find out who wrote the survey\"; \"Go down and read the notice on the gate\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -2239,7 +2456,7 @@
   },
   {
    "id": "n13d6",
-   "body": "<<FILL role=rising words=100 beats='she will bring thirty years of counts and a frame in a case, and she wants it minuted that her early years are approximate'>>",
+   "body": "<<FILL role=rising words=100 beats='she will bring thirty years of counts and a frame in a case, and she wants it minuted that her early years are approximate; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Ask whether the notebooks have seen this before\"; \"Find out who wrote the survey\"; \"Go down and read the notice on the gate\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -2261,7 +2478,7 @@
   },
   {
    "id": "n13d7",
-   "body": "<<FILL role=rising words=100 beats='one page, chosen by her, read out at the hearing, which is either the cheapest trick in the room or the only true thing in it'>>",
+   "body": "<<FILL role=rising words=100 beats='one page, chosen by her, read out at the hearing, which is either the cheapest trick in the room or the only true thing in it; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Ask whether the notebooks have seen this before\"; \"Find out who wrote the survey\"; \"Go down and read the notice on the gate\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -2283,7 +2500,7 @@
   },
   {
    "id": "e13_0",
-   "body": "<<FILL role=success words=100 beats='the objection is accepted for consideration on its evidence, the officer report cites the series by name, and the survey is ordered to be redone in May'>>",
+   "body": "<<FILL role=success words=100 beats='the objection is accepted for consideration on its evidence, the officer report cites the series by name, and the survey is ordered to be redone in May; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Ask whether the notebooks have seen this before\"; \"Find out who wrote the survey\"; \"Go down and read the notice on the gate\"), so the body must not depend on any of it.'>>",
    "is_ending": true,
    "ending": {
     "id": "e13_0",
@@ -2294,7 +2511,7 @@
   },
   {
    "id": "e13_1",
-   "body": "<<FILL role=completion words=100 beats='the transcription is completed and lodged, checked twice and open to anybody, and whatever the hearing decides the hundred and fourteen years now exist outside the shed'>>",
+   "body": "<<FILL role=completion words=100 beats='the transcription is completed and lodged, checked twice and open to anybody, and whatever the hearing decides the hundred and fourteen years now exist outside the shed; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Ask whether the notebooks have seen this before\"; \"Find out who wrote the survey\"; \"Go down and read the notice on the gate\"), so the body must not depend on any of it.'>>",
    "is_ending": true,
    "ending": {
     "id": "e13_1",
@@ -2305,7 +2522,7 @@
   },
   {
    "id": "e13_2",
-   "body": "<<FILL role=discovery words=100 beats='reading it end to end you understand for the first time that the notebooks were never about the orchard, but about people turning up, in order, for a hundred and fourteen years'>>",
+   "body": "<<FILL role=discovery words=100 beats='reading it end to end you understand for the first time that the notebooks were never about the orchard, but about people turning up, in order, for a hundred and fourteen years; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Ask whether the notebooks have seen this before\"; \"Find out who wrote the survey\"; \"Go down and read the notice on the gate\"), so the body must not depend on any of it.'>>",
    "is_ending": true,
    "ending": {
     "id": "e13_2",
@@ -2316,7 +2533,7 @@
   },
   {
    "id": "n14d0",
-   "body": "<<FILL role=rising words=106 beats='the first question from the panel is why the survey should not stand, and the rainfall record answers it in about ninety seconds'>>",
+   "body": "<<FILL role=rising words=106 beats='the first question from the panel is why the survey should not stand, and the rainfall record answers it in about ninety seconds; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Ask whether the notebooks have seen this before\"; \"Find out who wrote the survey\"; \"Go down and read the notice on the gate\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -2338,7 +2555,7 @@
   },
   {
    "id": "n14d1",
-   "body": "<<FILL role=rising words=106 beats='somebody uses the word amateur about the notebooks, and the answer is the custody note, the double typing and the marked uncertainties'>>",
+   "body": "<<FILL role=rising words=106 beats='somebody uses the word amateur about the notebooks, and the answer is the custody note, the double typing and the marked uncertainties; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Ask whether the notebooks have seen this before\"; \"Find out who wrote the survey\"; \"Go down and read the notice on the gate\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -2360,7 +2577,7 @@
   },
   {
    "id": "n14d2",
-   "body": "<<FILL role=rising words=106 beats='six weeks of frost pocket readings is short and you say so before anybody else can, and then say what it does and does not show'>>",
+   "body": "<<FILL role=rising words=106 beats='six weeks of frost pocket readings is short and you say so before anybody else can, and then say what it does and does not show; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Ask whether the notebooks have seen this before\"; \"Find out who wrote the survey\"; \"Go down and read the notice on the gate\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -2382,7 +2599,7 @@
   },
   {
    "id": "n14d3",
-   "body": "<<FILL role=rising words=106 beats='Faulks explains his method, which is a standard method correctly applied in the wrong fortnight, and he does not enjoy saying so'>>",
+   "body": "<<FILL role=rising words=106 beats='Faulks explains his method, which is a standard method correctly applied in the wrong fortnight, and he does not enjoy saying so; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Ask whether the notebooks have seen this before\"; \"Find out who wrote the survey\"; \"Go down and read the notice on the gate\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -2404,7 +2621,7 @@
   },
   {
    "id": "n14d4",
-   "body": "<<FILL role=rising words=106 beats='Ada reads a page from March 1947 about ice on the water butt and eleven days of nothing, and the room is completely silent afterwards'>>",
+   "body": "<<FILL role=rising words=106 beats='Ada reads a page from March 1947 about ice on the water butt and eleven days of nothing, and the room is completely silent afterwards; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Ask whether the notebooks have seen this before\"; \"Find out who wrote the survey\"; \"Go down and read the notice on the gate\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -2426,7 +2643,7 @@
   },
   {
    "id": "n14d5",
-   "body": "<<FILL role=rising words=106 beats='you offer the file to the panel, the developer and the public on the same day, which costs you the advantage and buys something else'>>",
+   "body": "<<FILL role=rising words=106 beats='you offer the file to the panel, the developer and the public on the same day, which costs you the advantage and buys something else; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Ask whether the notebooks have seen this before\"; \"Find out who wrote the survey\"; \"Go down and read the notice on the gate\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -2448,7 +2665,7 @@
   },
   {
    "id": "n14c0",
-   "body": "<<FILL role=bridge words=36 beats='the hearing runs an hour late and you sit through a drainage item and a fence dispute, and by the end of them your hands are steady'>>",
+   "body": "<<FILL role=bridge words=36 beats='the hearing runs an hour late and you sit through a drainage item and a fence dispute, and by the end of them your hands are steady; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Ask whether the notebooks have seen this before\"; \"Find out who wrote the survey\"; \"Go down and read the notice on the gate\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -2460,7 +2677,7 @@
   },
   {
    "id": "n14c1",
-   "body": "<<FILL role=bridge words=36 beats='the two charts go on the easel side by side and stay there all afternoon, and people look at them during the other items'>>",
+   "body": "<<FILL role=bridge words=36 beats='the two charts go on the easel side by side and stay there all afternoon, and people look at them during the other items; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Ask whether the notebooks have seen this before\"; \"Find out who wrote the survey\"; \"Go down and read the notice on the gate\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -2472,7 +2689,7 @@
   },
   {
    "id": "n14c2",
-   "body": "<<FILL role=bridge words=36 beats='the note taker writes down the phrase long unbroken local series, and Tobe nudges you, and you both look straight ahead'>>",
+   "body": "<<FILL role=bridge words=36 beats='the note taker writes down the phrase long unbroken local series, and Tobe nudges you, and you both look straight ahead; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Ask whether the notebooks have seen this before\"; \"Find out who wrote the survey\"; \"Go down and read the notice on the gate\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -2484,7 +2701,7 @@
   },
   {
    "id": "n14c3",
-   "body": "<<FILL role=bridge words=36 beats='the frame in its case goes along the table and every single person on the panel picks it up, including the one who has said nothing'>>",
+   "body": "<<FILL role=bridge words=36 beats='the frame in its case goes along the table and every single person on the panel picks it up, including the one who has said nothing; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Ask whether the notebooks have seen this before\"; \"Find out who wrote the survey\"; \"Go down and read the notice on the gate\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -2542,7 +2759,7 @@
   },
   {
    "id": "n15d0",
-   "body": "<<FILL role=rising words=112 beats='the report runs to forty pages, the orchard is in eight of them, and the phrase of no particular scientific interest does not appear anywhere'>>",
+   "body": "<<FILL role=rising words=112 beats='the report runs to forty pages, the orchard is in eight of them, and the phrase of no particular scientific interest does not appear anywhere; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Ask whether the notebooks have seen this before\"; \"Find out who wrote the survey\"; \"Go down and read the notice on the gate\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -2564,7 +2781,7 @@
   },
   {
    "id": "n15d1",
-   "body": "<<FILL role=rising words=112 beats='a resurvey in May, a frost pocket study over a full winter, and the series lodged with the archive as a condition of any permission'>>",
+   "body": "<<FILL role=rising words=112 beats='a resurvey in May, a frost pocket study over a full winter, and the series lodged with the archive as a condition of any permission; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Ask whether the notebooks have seen this before\"; \"Find out who wrote the survey\"; \"Go down and read the notice on the gate\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -2586,7 +2803,7 @@
   },
   {
    "id": "n15d2",
-   "body": "<<FILL role=rising words=112 beats='the road can be moved forty metres east at a cost, and the row with the Bramley either survives that decision or does not'>>",
+   "body": "<<FILL role=rising words=112 beats='the road can be moved forty metres east at a cost, and the row with the Bramley either survives that decision or does not; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Ask whether the notebooks have seen this before\"; \"Find out who wrote the survey\"; \"Go down and read the notice on the gate\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -2608,7 +2825,7 @@
   },
   {
    "id": "n15d3",
-   "body": "<<FILL role=rising words=112 beats='the archive, the trust or the shed, and each of those three answers is a different promise to somebody who is not in the room'>>",
+   "body": "<<FILL role=rising words=112 beats='the archive, the trust or the shed, and each of those three answers is a different promise to somebody who is not in the room; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Ask whether the notebooks have seen this before\"; \"Find out who wrote the survey\"; \"Go down and read the notice on the gate\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -2630,7 +2847,7 @@
   },
   {
    "id": "n15d4",
-   "body": "<<FILL role=rising words=112 beats='thirty people typed the 1930s in a school hall and are owed an honest account of what it did and did not achieve'>>",
+   "body": "<<FILL role=rising words=112 beats='thirty people typed the 1930s in a school hall and are owed an honest account of what it did and did not achieve; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Ask whether the notebooks have seen this before\"; \"Find out who wrote the survey\"; \"Go down and read the notice on the gate\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -2652,7 +2869,7 @@
   },
   {
    "id": "n15d5",
-   "body": "<<FILL role=rising words=112 beats='the readings only mean anything if they continue, and continuing is a decision somebody has to make every single morning'>>",
+   "body": "<<FILL role=rising words=112 beats='the readings only mean anything if they continue, and continuing is a decision somebody has to make every single morning; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Ask whether the notebooks have seen this before\"; \"Find out who wrote the survey\"; \"Go down and read the notice on the gate\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -2674,7 +2891,7 @@
   },
   {
    "id": "n15d6",
-   "body": "<<FILL role=rising words=112 beats='Halvor asks the same question again in the corridor and this time the honest answer is different, and you have to work out how different'>>",
+   "body": "<<FILL role=rising words=112 beats='Halvor asks the same question again in the corridor and this time the honest answer is different, and you have to work out how different; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Ask whether the notebooks have seen this before\"; \"Find out who wrote the survey\"; \"Go down and read the notice on the gate\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -2696,7 +2913,7 @@
   },
   {
    "id": "e15_0",
-   "body": "<<FILL role=completion words=112 beats='the notebooks go into the stable room with a deed of gift, a public catalogue entry and a standing right for Ada to read any of them, and the record outlives everybody in the argument'>>",
+   "body": "<<FILL role=completion words=112 beats='the notebooks go into the stable room with a deed of gift, a public catalogue entry and a standing right for Ada to read any of them, and the record outlives everybody in the argument; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Ask whether the notebooks have seen this before\"; \"Find out who wrote the survey\"; \"Go down and read the notice on the gate\"), so the body must not depend on any of it.'>>",
    "is_ending": true,
    "ending": {
     "id": "e15_0",
@@ -2707,7 +2924,7 @@
   },
   {
    "id": "e15_1",
-   "body": "<<FILL role=success words=112 beats='the road goes forty metres east, the Bramley row stands, and the condition about the winter frost study is written into the permission in full'>>",
+   "body": "<<FILL role=success words=112 beats='the road goes forty metres east, the Bramley row stands, and the condition about the winter frost study is written into the permission in full; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Ask whether the notebooks have seen this before\"; \"Find out who wrote the survey\"; \"Go down and read the notice on the gate\"), so the body must not depend on any of it.'>>",
    "is_ending": true,
    "ending": {
     "id": "e15_1",
@@ -2718,7 +2935,7 @@
   },
   {
    "id": "e15_2",
-   "body": "<<FILL role=discovery words=112 beats='Abara says the honest answer is that one October bloom proves nothing and a hundred and fourteen years of dates proves a great deal, and that the tree was not a signal but a question'>>",
+   "body": "<<FILL role=discovery words=112 beats='Abara says the honest answer is that one October bloom proves nothing and a hundred and fourteen years of dates proves a great deal, and that the tree was not a signal but a question; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Ask whether the notebooks have seen this before\"; \"Find out who wrote the survey\"; \"Go down and read the notice on the gate\"), so the body must not depend on any of it.'>>",
    "is_ending": true,
    "ending": {
     "id": "e15_2",
@@ -2729,7 +2946,7 @@
   },
   {
    "id": "n16d0",
-   "body": "<<FILL role=rising words=100 beats='a full winter of dawn readings needs a rota of nine people, a spare thermometer, and somebody who will do December'>>",
+   "body": "<<FILL role=rising words=100 beats='a full winter of dawn readings needs a rota of nine people, a spare thermometer, and somebody who will do December; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Ask whether the notebooks have seen this before\"; \"Find out who wrote the survey\"; \"Go down and read the notice on the gate\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -2751,7 +2968,7 @@
   },
   {
    "id": "n16d1",
-   "body": "<<FILL role=rising words=100 beats='the nine hands can be taught in an afternoon to anybody patient, and the teaching turns out to be the part Ada enjoys most'>>",
+   "body": "<<FILL role=rising words=100 beats='the nine hands can be taught in an afternoon to anybody patient, and the teaching turns out to be the part Ada enjoys most; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Ask whether the notebooks have seen this before\"; \"Find out who wrote the survey\"; \"Go down and read the notice on the gate\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -2773,7 +2990,7 @@
   },
   {
    "id": "n16d2",
-   "body": "<<FILL role=rising words=100 beats='a trust with three signatures and no purpose is a form, and deciding what it exists to do takes four meetings and one argument'>>",
+   "body": "<<FILL role=rising words=100 beats='a trust with three signatures and no purpose is a form, and deciding what it exists to do takes four meetings and one argument; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Ask whether the notebooks have seen this before\"; \"Find out who wrote the survey\"; \"Go down and read the notice on the gate\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -2795,7 +3012,7 @@
   },
   {
    "id": "n16d3",
-   "body": "<<FILL role=rising words=100 beats='somebody has to write the day up every evening, and it has to be a person, and it has to be a person who will still be doing it in March'>>",
+   "body": "<<FILL role=rising words=100 beats='somebody has to write the day up every evening, and it has to be a person, and it has to be a person who will still be doing it in March; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Ask whether the notebooks have seen this before\"; \"Find out who wrote the survey\"; \"Go down and read the notice on the gate\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -2817,7 +3034,7 @@
   },
   {
    "id": "n16c0",
-   "body": "<<FILL role=bridge words=36 beats='the second thermometer costs eleven pounds and is the single most consequential purchase anybody makes that year'>>",
+   "body": "<<FILL role=bridge words=36 beats='the second thermometer costs eleven pounds and is the single most consequential purchase anybody makes that year; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Ask whether the notebooks have seen this before\"; \"Find out who wrote the survey\"; \"Go down and read the notice on the gate\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -2829,7 +3046,7 @@
   },
   {
    "id": "n16c1",
-   "body": "<<FILL role=bridge words=36 beats='the rota goes up where the chart was, and by January two names have been crossed out and four have been added'>>",
+   "body": "<<FILL role=bridge words=36 beats='the rota goes up where the chart was, and by January two names have been crossed out and four have been added; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Ask whether the notebooks have seen this before\"; \"Find out who wrote the survey\"; \"Go down and read the notice on the gate\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -2841,7 +3058,7 @@
   },
   {
    "id": "n16c2",
-   "body": "<<FILL role=bridge words=36 beats='the two war volumes are the same as all the others, which is weather, ladders, wasps, and one line in September about the horse'>>",
+   "body": "<<FILL role=bridge words=36 beats='the two war volumes are the same as all the others, which is weather, ladders, wasps, and one line in September about the horse; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Ask whether the notebooks have seen this before\"; \"Find out who wrote the survey\"; \"Go down and read the notice on the gate\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -2853,7 +3070,7 @@
   },
   {
    "id": "n16c3",
-   "body": "<<FILL role=bridge words=36 beats='the May survey takes nine days and four people and finds sixty one species, one of which nobody has ever recorded on this hill before'>>",
+   "body": "<<FILL role=bridge words=36 beats='the May survey takes nine days and four people and finds sixty one species, one of which nobody has ever recorded on this hill before; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Ask whether the notebooks have seen this before\"; \"Find out who wrote the survey\"; \"Go down and read the notice on the gate\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -2865,7 +3082,7 @@
   },
   {
    "id": "e16_0",
-   "body": "<<FILL role=completion words=100 beats='you write the day up in a new notebook in your own hand, badly, and Ada watches and says nothing, and the record goes on being a record'>>",
+   "body": "<<FILL role=completion words=100 beats='you write the day up in a new notebook in your own hand, badly, and Ada watches and says nothing, and the record goes on being a record; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Ask whether the notebooks have seen this before\"; \"Find out who wrote the survey\"; \"Go down and read the notice on the gate\"), so the body must not depend on any of it.'>>",
    "is_ending": true,
    "ending": {
     "id": "e16_0",
@@ -2876,7 +3093,7 @@
   },
   {
    "id": "e16_1",
-   "body": "<<FILL role=setback words=100 beats='the December readings stop for eleven days over Christmas, and the winter series has a hole in it that no amount of care afterwards can fill'>>",
+   "body": "<<FILL role=setback words=100 beats='the December readings stop for eleven days over Christmas, and the winter series has a hole in it that no amount of care afterwards can fill; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Ask whether the notebooks have seen this before\"; \"Find out who wrote the survey\"; \"Go down and read the notice on the gate\"), so the body must not depend on any of it.'>>",
    "is_ending": true,
    "ending": {
     "id": "e16_1",
@@ -2887,7 +3104,7 @@
   },
   {
    "id": "n17d0",
-   "body": "<<FILL role=rising words=106 beats='sixty one species, a frost pocket described in its own paragraph, and a recommendation that the orchard be monitored rather than cleared'>>",
+   "body": "<<FILL role=rising words=106 beats='sixty one species, a frost pocket described in its own paragraph, and a recommendation that the orchard be monitored rather than cleared; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Ask whether the notebooks have seen this before\"; \"Find out who wrote the survey\"; \"Go down and read the notice on the gate\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -2909,7 +3126,7 @@
   },
   {
    "id": "n17d1",
-   "body": "<<FILL role=rising words=106 beats='four months, two friendships strained, one letter you should not have sent, and a grandmother who is tireder than she was in October'>>",
+   "body": "<<FILL role=rising words=106 beats='four months, two friendships strained, one letter you should not have sent, and a grandmother who is tireder than she was in October; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Ask whether the notebooks have seen this before\"; \"Find out who wrote the survey\"; \"Go down and read the notice on the gate\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -2931,7 +3148,7 @@
   },
   {
    "id": "n17d2",
-   "body": "<<FILL role=rising words=106 beats='almost all of it, in the same order, except the thing you said about Faulks, which you would not say'>>",
+   "body": "<<FILL role=rising words=106 beats='almost all of it, in the same order, except the thing you said about Faulks, which you would not say; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Ask whether the notebooks have seen this before\"; \"Find out who wrote the survey\"; \"Go down and read the notice on the gate\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -2953,7 +3170,7 @@
   },
   {
    "id": "n17d3",
-   "body": "<<FILL role=rising words=106 beats='in April the whole row blossoms at once the way it is supposed to, and the big tree at the top is neither early nor late'>>",
+   "body": "<<FILL role=rising words=106 beats='in April the whole row blossoms at once the way it is supposed to, and the big tree at the top is neither early nor late; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Ask whether the notebooks have seen this before\"; \"Find out who wrote the survey\"; \"Go down and read the notice on the gate\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -2975,7 +3192,7 @@
   },
   {
    "id": "e17_0",
-   "body": "<<FILL role=success words=106 beats='the orchard is monitored, the series is public and growing, and the thing that protected it in the end was not one October morning but a hundred and fourteen ordinary evenings'>>",
+   "body": "<<FILL role=success words=106 beats='the orchard is monitored, the series is public and growing, and the thing that protected it in the end was not one October morning but a hundred and fourteen ordinary evenings; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Ask whether the notebooks have seen this before\"; \"Find out who wrote the survey\"; \"Go down and read the notice on the gate\"), so the body must not depend on any of it.'>>",
    "is_ending": true,
    "ending": {
     "id": "e17_0",
@@ -2986,7 +3203,7 @@
   },
   {
    "id": "e17_1",
-   "body": "<<FILL role=discovery words=106 beats='you understand at last that a record is not proof and never was, and that it is only the reason a person can be believed when they finally say something'>>",
+   "body": "<<FILL role=discovery words=106 beats='you understand at last that a record is not proof and never was, and that it is only the reason a person can be believed when they finally say something; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Ask whether the notebooks have seen this before\"; \"Find out who wrote the survey\"; \"Go down and read the notice on the gate\"), so the body must not depend on any of it.'>>",
    "is_ending": true,
    "ending": {
     "id": "e17_1",
@@ -2997,7 +3214,7 @@
   },
   {
    "id": "e18_0",
-   "body": "<<FILL role=completion words=112 beats='the last thing you do is index the six shelves, which nobody has ever done, and the index takes a year and becomes the most useful object on the hill'>>",
+   "body": "<<FILL role=completion words=112 beats='the last thing you do is index the six shelves, which nobody has ever done, and the index takes a year and becomes the most useful object on the hill; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Ask whether the notebooks have seen this before\"; \"Find out who wrote the survey\"; \"Go down and read the notice on the gate\"), so the body must not depend on any of it.'>>",
    "is_ending": true,
    "ending": {
     "id": "e18_0",
@@ -3008,7 +3225,7 @@
   },
   {
    "id": "e18_1",
-   "body": "<<FILL role=success words=112 beats='the next October the Bramley does not bloom, the road runs forty metres east, and the picking is ordinary and enormous and takes nine days'>>",
+   "body": "<<FILL role=success words=112 beats='the next October the Bramley does not bloom, the road runs forty metres east, and the picking is ordinary and enormous and takes nine days; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Ask whether the notebooks have seen this before\"; \"Find out who wrote the survey\"; \"Go down and read the notice on the gate\"), so the body must not depend on any of it.'>>",
    "is_ending": true,
    "ending": {
     "id": "e18_1",
@@ -3019,7 +3236,7 @@
   },
   {
    "id": "e18_2",
-   "body": "<<FILL role=discovery words=112 beats='the eleven words are still in the back of your exercise book, and they are the reason there is now a hundred and fifteen years of anything'>>",
+   "body": "<<FILL role=discovery words=112 beats='the eleven words are still in the back of your exercise book, and they are the reason there is now a hundred and fifteen years of anything; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Ask whether the notebooks have seen this before\"; \"Find out who wrote the survey\"; \"Go down and read the notice on the gate\"), so the body must not depend on any of it.'>>",
    "is_ending": true,
    "ending": {
     "id": "e18_2",
@@ -3030,7 +3247,7 @@
   },
   {
    "id": "e18_3",
-   "body": "<<FILL role=setback words=112 beats='the notebooks are safe and catalogued and nobody adds to them, and in twenty years the series is a closed thing that people study rather than a thing that is kept'>>",
+   "body": "<<FILL role=setback words=112 beats='the notebooks are safe and catalogued and nobody adds to them, and in twenty years the series is a closed thing that people study rather than a thing that is kept; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Ask whether the notebooks have seen this before\"; \"Find out who wrote the survey\"; \"Go down and read the notice on the gate\"), so the body must not depend on any of it.'>>",
    "is_ending": true,
    "ending": {
     "id": "e18_3",

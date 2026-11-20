@@ -238,6 +238,8 @@ state gf_play #FFF9C4
 gf_play : choice · 96w
 state gf_trick #FFF9C4
 gf_trick : choice · 94w
+state cq_payoff_did_find_sign_s #ECEFF1
+cq_payoff_did_find_sign_s : payoff · 25w
 state gf_deal #D1C4E9
 gf_deal : rising · 100w
 state gf_lift #FFF9C4
@@ -295,6 +297,8 @@ state ob_crank #FFF9C4
 ob_crank : choice · 92w
 state ob_roof #FFF9C4
 ob_roof : choice · 98w
+state cq_plant_did_find_sign_s #ECEFF1
+cq_plant_did_find_sign_s : plant · 41w
 state ob_moon #D1C4E9
 ob_moon : rising · 90w
 state ob_sign #FFF9C4
@@ -305,6 +309,8 @@ state ob_turret #FFF9C4
 ob_turret : choice · 92w
 state ob_pennants #FFF9C4
 ob_pennants : choice · 94w
+state cq_payoff_did_go_back_down #ECEFF1
+cq_payoff_did_go_back_down : payoff · 39w
 state ob_chest #FFF9C4
 ob_chest : choice · 96w
 state ob_whistle #FFF9C4
@@ -350,6 +356,8 @@ state fin_ready #FFF9C4
 fin_ready : choice · 98w
 state fin_summon #FFF9C4
 fin_summon : choice · 106w
+state cq_payoff_did_see_fin_chandelier #ECEFF1
+cq_payoff_did_see_fin_chandelier : payoff · 25w
 state fs_gong #D1C4E9
 fs_gong : rising · 92w
 state fs_bell #D1C4E9
@@ -366,6 +374,8 @@ state fin_evening #D1C4E9
 fin_evening : rising · 118w
 state fin_midnight #FFF9C4
 fin_midnight : choice · 124w
+state cq_payoff_did_follow_warm_bread #ECEFF1
+cq_payoff_did_follow_warm_bread : payoff · 31w
 state fr_rest #FFF9C4
 fr_rest : choice · 104w
 state fr_stay #FFF9C4
@@ -587,6 +597,8 @@ gf_play --> gf_trick : Attempt the legendary triple-bank shot.
 gf_play --> gf_deal : Call it a draw and talk about the big ni...
 gf_trick --> gf_deal : While they are glowing, talk about the b...
 gf_trick --> e_gf_rounds : Play just one more round.
+gf_trick --> cq_payoff_did_find_sign_s : Play just one more round.
+cq_payoff_did_find_sign_s --> gf_deal : While they are glowing, talk about the b...
 gf_deal --> gf_promise : Seal it and get their send-off.
 gf_lift --> gf_three : Press three and follow the noise.
 gf_lift --> gf_nine : Press nine for the quiet top floor.
@@ -630,9 +642,10 @@ ob_orrery --> e_ob_orrery : Wind it again and again, learning the pa...
 ob_orrery --> ob_roof : Take the pattern out to the roof walk.
 ob_crank --> e_ob_ride : Crank harder and ride the spinning dome ...
 ob_crank --> ob_scope : Steady it and look at the freed sky thro...
-ob_roof --> ob_sign : Find the sign's {R_SWITCHBOX}.
+ob_roof --> cq_plant_did_find_sign_s : Find the sign's {R_SWITCHBOX}.
 ob_roof --> ob_moon : Follow the worn scuff marks along the bo...
 ob_roof --> ob_turret : Walk to the {R_TURRET} at the end.
+cq_plant_did_find_sign_s --> ob_sign : Find the sign's {R_SWITCHBOX}.
 ob_moon --> ob_turret : Dance the square once, then walk to the ...
 ob_moon --> ob_sign : Go find the sign's {R_SWITCHBOX}.
 ob_sign --> ob_flip : Flip OCCASIONS, just to see.
@@ -643,6 +656,8 @@ ob_turret --> ob_pennants : String a short practice line of pennants...
 ob_turret --> ob_chest : Open the {R_CHEST}.
 ob_pennants --> ob_chest : Open the {R_CHEST} next.
 ob_pennants --> e_ob_banner : Rig the grand banner marked 100 as well,...
+ob_pennants --> cq_payoff_did_go_back_down : Rig the grand banner marked 100 as well,...
+cq_payoff_did_go_back_down --> ob_chest : Open the {R_CHEST} next.
 ob_chest --> ob_whistle : Try one soft blast on the {R_WHISTLE}.
 ob_chest --> e_ob_camp : Set the five chairs in their worn dents ...
 ob_whistle --> ob_promise : Hang the whistle ready and square away t...
@@ -666,8 +681,10 @@ fp_table2 --> fin_ready : Step back and see what the evening still...
 fin_ready --> fin_hall : See to another corner of the hall.
 fin_ready --> fin_summon : It is ready enough. Sound the call.
 fin_summon --> fs_gong : Strike the great {FIN_GONG}.
+fin_summon --> cq_payoff_did_see_fin_chandelier : Strike the great {FIN_GONG}.
 fin_summon --> fs_bell : Pull the {FIN_BELLWIRE} that rings at {M...
 fin_summon --> fs_waltz : Let the waltz play with every door open.
+cq_payoff_did_see_fin_chandelier --> fs_gong : Strike the great {FIN_GONG}.
 fs_gong --> fin_gather : Stand by the open doors and watch the da...
 fs_bell --> fin_gather : Stand by the open doors and watch the da...
 fs_waltz --> fin_gather : Stand by the open doors and watch the da...
@@ -676,8 +693,10 @@ fin_pearl --> fin_reunion : Walk her up to the {FINALE_ZONE} doors.
 fin_reunion --> fin_evening : Let the evening finally begin.
 fin_evening --> fin_midnight : Meet the family at the clock as it readi...
 fin_midnight --> fr_rest : Wish them rest, and one sweet goodnight ...
+fin_midnight --> cq_payoff_did_follow_warm_bread : Wish them rest, and one sweet goodnight ...
 fin_midnight --> fr_stay : Ask them to stay and help wake the {THRE...
 fin_midnight --> fr_each : Say the choice belongs to each of them a...
+cq_payoff_did_follow_warm_bread --> fr_rest : Wish them rest, and one sweet goodnight ...
 fr_rest --> e_rest_stars : Settle under the blanket and watch for t...
 fr_rest --> e_rest_waltz : Dance one last waltz on the roof walk fi...
 fr_stay --> e_stay_secret : Keep the ghost family the hotel's warm s...
@@ -718,9 +737,9 @@ e_each_door --> [*]
 
 legend right
   The Hundred-Door Hotel
-  Band 8-11 · Tier 1 · ~12 min
+  Band 8-11 · Tier 2 · ~12 min
   Topology: open_map
-  176 nodes · 31 endings (6+ / 24n / 1-)
+  181 nodes · 31 endings (6+ / 24n / 1-)
   Production-eligible
   Scale: long · prose
 endlegend

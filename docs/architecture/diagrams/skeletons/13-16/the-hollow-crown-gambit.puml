@@ -199,6 +199,8 @@ state d01_1 #BBDEFB
 d01_1 : setup · 68w
 state d01_2 #BBDEFB
 d01_2 : setup · 61w
+state cq_plant_did_send_word_messengers #ECEFF1
+cq_plant_did_send_word_messengers : plant · 32w
 state d01_3 #BBDEFB
 d01_3 : setup · 76w
 state d01_4 #BBDEFB
@@ -353,12 +355,18 @@ state d12_3 #D1C4E9
 d12_3 : rising · 74w
 state d12_4 #D1C4E9
 d12_4 : rising · 66w
+state cq_payoff_did_cross_wax_table #ECEFF1
+cq_payoff_did_cross_wax_table : payoff · 44w
 state d12_5 #D1C4E9
 d12_5 : rising · 58w
+state cq_payoff_did_take_copy_room #ECEFF1
+cq_payoff_did_take_copy_room : payoff · 44w
 state d12_6 #D1C4E9
 d12_6 : rising · 72w
 state d13_0 #D1C4E9
 d13_0 : rising · 62w
+state cq_payoff_did_cross_wax_table_site2 #ECEFF1
+cq_payoff_did_cross_wax_table_site2 : payoff · 44w
 state d13_1 #D1C4E9
 d13_1 : rising · 68w
 state d13_2 #D1C4E9
@@ -371,6 +379,8 @@ state d13_5 #D1C4E9
 d13_5 : rising · 64w
 state d13_6 #D1C4E9
 d13_6 : rising · 70w
+state cq_payoff_did_send_word_messengers_site2 #ECEFF1
+cq_payoff_did_send_word_messengers_site2 : payoff · 44w
 state d14_0 #D1C4E9
 d14_0 : rising · 60w
 state d14_1 #D1C4E9
@@ -383,6 +393,8 @@ state d14_4 #D1C4E9
 d14_4 : rising · 72w
 state d14_5 #D1C4E9
 d14_5 : rising · 62w
+state cq_payoff_did_send_word_messengers #ECEFF1
+cq_payoff_did_send_word_messengers : payoff · 44w
 state d14_6 #D1C4E9
 d14_6 : rising · 68w
 state d15_0 #D1C4E9
@@ -391,10 +403,16 @@ state d15_1 #D1C4E9
 d15_1 : rising · 76w
 state d15_2 #D1C4E9
 d15_2 : rising · 65w
+state cq_payoff_did_follow_clerk_undercroft_site2 #ECEFF1
+cq_payoff_did_follow_clerk_undercroft_site2 : payoff · 44w
 state d15_3 #D1C4E9
 d15_3 : rising · 64w
+state cq_payoff_did_take_copy_room_site2 #ECEFF1
+cq_payoff_did_take_copy_room_site2 : payoff · 44w
 state d15_4 #D1C4E9
 d15_4 : rising · 70w
+state cq_payoff_did_follow_clerk_undercroft #ECEFF1
+cq_payoff_did_follow_clerk_undercroft : payoff · 44w
 state d15_5 #D1C4E9
 d15_5 : rising · 60w
 state d15_6 #D1C4E9
@@ -954,9 +972,10 @@ d01_0 --> d02_2 : Ask for the messengers bench
 d01_1 --> d02_1 : Ask for the wax table
 d01_1 --> d02_2 : Wait at the messengers bench
 d01_1 --> c01_1_2 : Send word to the undercroft stair
-d01_2 --> d02_2 : Send word to the messengers bench
+d01_2 --> cq_plant_did_send_word_messengers : Send word to the messengers bench
 d01_2 --> c01_2_1 : Follow the clerk to the undercroft stair
 d01_2 --> c01_2_2 : Hold at the seal press
+cq_plant_did_send_word_messengers --> d02_2 : Send word to the messengers bench
 d01_3 --> d02_3 : Hold at the undercroft stair
 d01_3 --> c01_3_1 : Make for the seal press
 d01_3 --> c01_3_2 : Go quietly to the clerks gallery
@@ -1202,17 +1221,23 @@ d12_3 --> e_000 : Force the matter at the toll bar
 d12_3 --> e_001 : Show the roll at the river steps
 d12_3 --> e_000 : Break cover at the cloth rows
 d12_4 --> d13_4 : Follow the clerk to the moneychangers
+d12_4 --> cq_payoff_did_cross_wax_table : Follow the clerk to the moneychangers
 d12_4 --> e_001 : Show the roll at the river steps
 d12_4 --> e_000 : Break cover at the cloth rows
+cq_payoff_did_cross_wax_table --> d13_4 : Follow the clerk to the moneychangers
 d12_5 --> d13_5 : Make for the toll bar
 d12_5 --> e_001 : Break cover at the cloth rows
+d12_5 --> cq_payoff_did_take_copy_room : Break cover at the cloth rows
 d12_5 --> e_000 : Stake everything on the horse lines
+cq_payoff_did_take_copy_room --> d13_5 : Make for the toll bar
 d12_6 --> d13_6 : Take the river steps
 d12_6 --> e_001 : Stake everything on the horse lines
 d12_6 --> c12_6_2 : Slip through to the horse lines
 d13_0 --> d14_0 : Present yourself at the cloth rows
+d13_0 --> cq_payoff_did_cross_wax_table_site2 : Present yourself at the cloth rows
 d13_0 --> e_002 : Break cover at the pie stalls
 d13_0 --> e_003 : Stake everything on the mummers stage
+cq_payoff_did_cross_wax_table_site2 --> d14_0 : Present yourself at the cloth rows
 d13_1 --> d14_1 : Ask for the horse lines
 d13_1 --> c13_1_1 : Wait at the pie stalls
 d13_1 --> c13_1_2 : Send word to the mummers stage
@@ -1230,8 +1255,10 @@ d13_5 --> d14_5 : Cross to the toll bar
 d13_5 --> e_002 : Read it aloud at the cloth rows
 d13_5 --> e_003 : Force the matter at the horse lines
 d13_6 --> d14_6 : Present yourself at the river steps
+d13_6 --> cq_payoff_did_send_word_messengers_site2 : Present yourself at the river steps
 d13_6 --> e_002 : Force the matter at the horse lines
 d13_6 --> e_003 : Show the roll at the pie stalls
+cq_payoff_did_send_word_messengers_site2 --> d14_6 : Present yourself at the river steps
 d14_0 --> d15_0 : Wait at the cloth rows
 d14_0 --> e_004 : Read it aloud at the pie stalls
 d14_0 --> e_005 : Force the matter at the mummers stage
@@ -1250,7 +1277,9 @@ d14_4 --> d15_5 : Present yourself at the toll bar
 d14_4 --> e_004 : Push past the guard at the cloth rows
 d14_5 --> d15_5 : Work your way round to the toll bar
 d14_5 --> e_005 : Push past the guard at the cloth rows
+d14_5 --> cq_payoff_did_send_word_messengers : Push past the guard at the cloth rows
 d14_5 --> e_004 : Name the claimant at the horse lines
+cq_payoff_did_send_word_messengers --> d15_5 : Work your way round to the toll bar
 d14_6 --> d15_6 : Wait at the river steps
 d14_6 --> e_005 : Name the claimant at the horse lines
 d14_6 --> e_004 : Go over the wardens head at the pie stal...
@@ -1263,14 +1292,20 @@ d15_1 --> d16_1 : Go quietly to the index desk
 d15_1 --> e_006 : Name the claimant at the mummers stage
 d15_1 --> e_007 : Go over the wardens head at the moneycha...
 d15_2 --> d16_2 : Cross to the sealed presses
+d15_2 --> cq_payoff_did_follow_clerk_undercroft_site2 : Cross to the sealed presses
 d15_2 --> c15_2_1 : Slip through to the burned shelf
 d15_2 --> c15_2_2 : Present yourself at the copyists cell
+cq_payoff_did_follow_clerk_undercroft_site2 --> d16_2 : Cross to the sealed presses
 d15_3 --> d16_3 : Present yourself at the burned shelf
+d15_3 --> cq_payoff_did_take_copy_room_site2 : Present yourself at the burned shelf
 d15_3 --> c15_3_1 : Work your way round to the copyists cell
 d15_3 --> c15_3_2 : Ask for the lamp room
+cq_payoff_did_take_copy_room_site2 --> d16_3 : Present yourself at the burned shelf
 d15_4 --> d16_4 : Ask for the copyists cell
+d15_4 --> cq_payoff_did_follow_clerk_undercroft : Ask for the copyists cell
 d15_4 --> c15_4_1 : Wait at the lamp room
 d15_4 --> d16_6 : Send word to the vault stair
+cq_payoff_did_follow_clerk_undercroft --> d16_4 : Ask for the copyists cell
 d15_5 --> d16_5 : Send word to the lamp room
 d15_5 --> d16_6 : Follow the clerk to the vault stair
 d15_5 --> d16_0 : Hold at the roll racks
@@ -1851,9 +1886,9 @@ e_057 --> [*]
 
 legend right
   The Hollow Crown Gambit
-  Band 13-16 · Tier 1 · ~11 min
+  Band 13-16 · Tier 2 · ~11 min
   Topology: branch_and_bottleneck
-  434 nodes · 58 endings (8+ / 10n / 40-)
+  443 nodes · 58 endings (8+ / 10n / 40-)
   Production-eligible
   Scale: long · gamebook
 endlegend

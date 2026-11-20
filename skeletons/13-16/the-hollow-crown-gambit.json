@@ -11,7 +11,7 @@
    "target": 7.0,
    "tolerance": 1.5
   },
-  "tier": 1,
+  "tier": 2,
   "themes": [
    "succession",
    "evidence",
@@ -30,7 +30,32 @@
   "narrative_style": "gamebook",
   "production_eligible": true
  },
- "variables": [],
+ "variables": [
+  {
+   "name": "did_take_copy_room",
+   "type": "bool",
+   "initial": false,
+   "description": "Set when the reader chooses \"Take the copy room\" at n_night; pays off at d12_5 and d15_3."
+  },
+  {
+   "name": "did_cross_wax_table",
+   "type": "bool",
+   "initial": false,
+   "description": "Set when the reader chooses \"Cross to the wax table\" at n_night; pays off at d12_4 and d13_0."
+  },
+  {
+   "name": "did_send_word_messengers",
+   "type": "bool",
+   "initial": false,
+   "description": "Set when the reader chooses \"Send word to the messengers bench\" at d01_2; pays off at d14_5 and d13_6."
+  },
+  {
+   "name": "did_follow_clerk_undercroft",
+   "type": "bool",
+   "initial": false,
+   "description": "Set when the reader chooses \"Follow the clerk to the undercroft stair\" at d01_2; pays off at d15_4 and d15_2."
+  }
+ ],
  "start_node": "n_open",
  "nodes": [
   {
@@ -59,18 +84,32 @@
   },
   {
    "id": "n_night",
-   "body": "<<FILL role=rising words=56 beats='the Chancery at two in the morning, three ways out of the copy room, and a roll that is now either evidence or theft depending on who reaches the Assize first'>>",
+   "body": "<<FILL role=rising words=56 beats='the Chancery at two in the morning, three ways out of the copy room, and a roll that is now either evidence or theft depending on who reaches the Assize first; PLANT SITE: these options are no longer cosmetic: \"Take the copy room\" plants did_take_copy_room (pays off at d12_5 and d15_3); \"Cross to the wax table\" plants did_cross_wax_table (pays off at d12_4 and d13_0). Stage every option as appealing, with none the obviously right answer.'>>",
    "is_ending": false,
    "choices": [
     {
      "id": "ch_n_night_0",
      "label": "Take the copy room",
-     "target": "d00_0"
+     "target": "d00_0",
+     "effects": [
+      {
+       "op": "set",
+       "var": "did_take_copy_room",
+       "value": true
+      }
+     ]
     },
     {
      "id": "ch_n_night_1",
      "label": "Cross to the wax table",
-     "target": "d00_1"
+     "target": "d00_1",
+     "effects": [
+      {
+       "op": "set",
+       "var": "did_cross_wax_table",
+       "value": true
+      }
+     ]
     },
     {
      "id": "ch_n_night_2",
@@ -81,7 +120,7 @@
   },
   {
    "id": "e_000",
-   "body": "<<FILL role=setback words=76 beats='at the Winter Fair, the argument stops half finished and never gets finished'>>",
+   "body": "<<FILL role=setback words=76 beats='at the Winter Fair, the argument stops half finished and never gets finished; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Cross to the wax table\"; \"Follow the clerk to the undercroft stair\"; \"Send word to the messengers bench\"; \"Take the copy room\"), so the body must not depend on any of it.'>>",
    "is_ending": true,
    "ending": {
     "id": "e_000",
@@ -92,7 +131,7 @@
   },
   {
    "id": "e_001",
-   "body": "<<FILL role=capture words=82 beats='at the Winter Fair, you are escorted off the ground by two men who apologise the whole way'>>",
+   "body": "<<FILL role=capture words=82 beats='at the Winter Fair, you are escorted off the ground by two men who apologise the whole way; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Cross to the wax table\"; \"Follow the clerk to the undercroft stair\"; \"Send word to the messengers bench\"; \"Take the copy room\"), so the body must not depend on any of it.'>>",
    "is_ending": true,
    "ending": {
     "id": "e_001",
@@ -103,7 +142,7 @@
   },
   {
    "id": "e_002",
-   "body": "<<FILL role=discovery words=70 beats='at the Winter Fair, it is not a forgery. It is a true document that was never meant to survive'>>",
+   "body": "<<FILL role=discovery words=70 beats='at the Winter Fair, it is not a forgery. It is a true document that was never meant to survive; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Cross to the wax table\"; \"Follow the clerk to the undercroft stair\"; \"Send word to the messengers bench\"; \"Take the copy room\"), so the body must not depend on any of it.'>>",
    "is_ending": true,
    "ending": {
     "id": "e_002",
@@ -114,7 +153,7 @@
   },
   {
    "id": "e_003",
-   "body": "<<FILL role=death words=80 beats='at the Winter Fair, the current under the toll bar is faster in winter and it is winter'>>",
+   "body": "<<FILL role=death words=80 beats='at the Winter Fair, the current under the toll bar is faster in winter and it is winter; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Cross to the wax table\"; \"Follow the clerk to the undercroft stair\"; \"Send word to the messengers bench\"; \"Take the copy room\"), so the body must not depend on any of it.'>>",
    "is_ending": true,
    "ending": {
     "id": "e_003",
@@ -125,7 +164,7 @@
   },
   {
    "id": "e_004",
-   "body": "<<FILL role=death words=72 beats='at the Winter Fair, the cloth rows come down in the crush and nobody sees where you went'>>",
+   "body": "<<FILL role=death words=72 beats='at the Winter Fair, the cloth rows come down in the crush and nobody sees where you went; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Cross to the wax table\"; \"Follow the clerk to the undercroft stair\"; \"Send word to the messengers bench\"; \"Take the copy room\"), so the body must not depend on any of it.'>>",
    "is_ending": true,
    "ending": {
     "id": "e_004",
@@ -136,7 +175,7 @@
   },
   {
    "id": "e_005",
-   "body": "<<FILL role=setback words=86 beats='at the Winter Fair, it fails on a technicality you could have fixed in an afternoon'>>",
+   "body": "<<FILL role=setback words=86 beats='at the Winter Fair, it fails on a technicality you could have fixed in an afternoon; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Cross to the wax table\"; \"Follow the clerk to the undercroft stair\"; \"Send word to the messengers bench\"; \"Take the copy room\"), so the body must not depend on any of it.'>>",
    "is_ending": true,
    "ending": {
     "id": "e_005",
@@ -147,7 +186,7 @@
   },
   {
    "id": "e_006",
-   "body": "<<FILL role=setback words=74 beats='at the Winter Fair, a case with no witness is a story, and stories are not entered'>>",
+   "body": "<<FILL role=setback words=74 beats='at the Winter Fair, a case with no witness is a story, and stories are not entered; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Cross to the wax table\"; \"Follow the clerk to the undercroft stair\"; \"Send word to the messengers bench\"; \"Take the copy room\"), so the body must not depend on any of it.'>>",
    "is_ending": true,
    "ending": {
     "id": "e_006",
@@ -158,7 +197,7 @@
   },
   {
    "id": "e_007",
-   "body": "<<FILL role=capture words=68 beats='at the Winter Fair, the toll bar comes down with you on the wrong side of it and men on both'>>",
+   "body": "<<FILL role=capture words=68 beats='at the Winter Fair, the toll bar comes down with you on the wrong side of it and men on both; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Cross to the wax table\"; \"Follow the clerk to the undercroft stair\"; \"Send word to the messengers bench\"; \"Take the copy room\"), so the body must not depend on any of it.'>>",
    "is_ending": true,
    "ending": {
     "id": "e_007",
@@ -169,7 +208,7 @@
   },
   {
    "id": "e_008",
-   "body": "<<FILL role=setback words=76 beats='at the Archive Vaults, your name comes off the roll of sworn clerks and stays off'>>",
+   "body": "<<FILL role=setback words=76 beats='at the Archive Vaults, your name comes off the roll of sworn clerks and stays off; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Cross to the wax table\"; \"Follow the clerk to the undercroft stair\"; \"Send word to the messengers bench\"; \"Take the copy room\"), so the body must not depend on any of it.'>>",
    "is_ending": true,
    "ending": {
     "id": "e_008",
@@ -180,7 +219,7 @@
   },
   {
    "id": "e_009",
-   "body": "<<FILL role=capture words=82 beats='at the Archive Vaults, the charge is theft of a roll and the roll is the evidence'>>",
+   "body": "<<FILL role=capture words=82 beats='at the Archive Vaults, the charge is theft of a roll and the roll is the evidence; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Cross to the wax table\"; \"Follow the clerk to the undercroft stair\"; \"Send word to the messengers bench\"; \"Take the copy room\"), so the body must not depend on any of it.'>>",
    "is_ending": true,
    "ending": {
     "id": "e_009",
@@ -191,7 +230,7 @@
   },
   {
    "id": "e_010",
-   "body": "<<FILL role=discovery words=70 beats='at the Archive Vaults, what the burned shelf held turns out to be the reason it was burned'>>",
+   "body": "<<FILL role=discovery words=70 beats='at the Archive Vaults, what the burned shelf held turns out to be the reason it was burned; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Cross to the wax table\"; \"Follow the clerk to the undercroft stair\"; \"Send word to the messengers bench\"; \"Take the copy room\"), so the body must not depend on any of it.'>>",
    "is_ending": true,
    "ending": {
     "id": "e_010",
@@ -202,7 +241,7 @@
   },
   {
    "id": "e_011",
-   "body": "<<FILL role=death words=80 beats='at the Archive Vaults, the lamp room burns and takes the vault stair with it'>>",
+   "body": "<<FILL role=death words=80 beats='at the Archive Vaults, the lamp room burns and takes the vault stair with it; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Cross to the wax table\"; \"Follow the clerk to the undercroft stair\"; \"Send word to the messengers bench\"; \"Take the copy room\"), so the body must not depend on any of it.'>>",
    "is_ending": true,
    "ending": {
     "id": "e_011",
@@ -213,7 +252,7 @@
   },
   {
    "id": "e_012",
-   "body": "<<FILL role=death words=72 beats='at the Archive Vaults, the fire starts in the archive and the archive is all paper'>>",
+   "body": "<<FILL role=death words=72 beats='at the Archive Vaults, the fire starts in the archive and the archive is all paper; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Cross to the wax table\"; \"Follow the clerk to the undercroft stair\"; \"Send word to the messengers bench\"; \"Take the copy room\"), so the body must not depend on any of it.'>>",
    "is_ending": true,
    "ending": {
     "id": "e_012",
@@ -224,7 +263,7 @@
   },
   {
    "id": "e_013",
-   "body": "<<FILL role=setback words=86 beats='at the Archive Vaults, the index says there is no such roll, and the index is the thing people check'>>",
+   "body": "<<FILL role=setback words=86 beats='at the Archive Vaults, the index says there is no such roll, and the index is the thing people check; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Cross to the wax table\"; \"Follow the clerk to the undercroft stair\"; \"Send word to the messengers bench\"; \"Take the copy room\"), so the body must not depend on any of it.'>>",
    "is_ending": true,
    "ending": {
     "id": "e_013",
@@ -235,7 +274,7 @@
   },
   {
    "id": "e_014",
-   "body": "<<FILL role=setback words=74 beats='at the Archive Vaults, you get it in one day after midwinter and one day is the whole distance'>>",
+   "body": "<<FILL role=setback words=74 beats='at the Archive Vaults, you get it in one day after midwinter and one day is the whole distance; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Cross to the wax table\"; \"Follow the clerk to the undercroft stair\"; \"Send word to the messengers bench\"; \"Take the copy room\"), so the body must not depend on any of it.'>>",
    "is_ending": true,
    "ending": {
     "id": "e_014",
@@ -246,7 +285,7 @@
   },
   {
    "id": "e_015",
-   "body": "<<FILL role=capture words=68 beats='at the Archive Vaults, they take you on the vault stair with the roll still inside your coat'>>",
+   "body": "<<FILL role=capture words=68 beats='at the Archive Vaults, they take you on the vault stair with the roll still inside your coat; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Cross to the wax table\"; \"Follow the clerk to the undercroft stair\"; \"Send word to the messengers bench\"; \"Take the copy room\"), so the body must not depend on any of it.'>>",
    "is_ending": true,
    "ending": {
     "id": "e_015",
@@ -257,7 +296,7 @@
   },
   {
    "id": "e_016",
-   "body": "<<FILL role=setback words=76 beats='at the Sept of Bells, it is filed correctly, which is how it is lost'>>",
+   "body": "<<FILL role=setback words=76 beats='at the Sept of Bells, it is filed correctly, which is how it is lost; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Cross to the wax table\"; \"Follow the clerk to the undercroft stair\"; \"Send word to the messengers bench\"; \"Take the copy room\"), so the body must not depend on any of it.'>>",
    "is_ending": true,
    "ending": {
     "id": "e_016",
@@ -268,7 +307,7 @@
   },
   {
    "id": "e_017",
-   "body": "<<FILL role=capture words=82 beats='at the Sept of Bells, the sacristy has a lock on the outside and a novice set to sit with you'>>",
+   "body": "<<FILL role=capture words=82 beats='at the Sept of Bells, the sacristy has a lock on the outside and a novice set to sit with you; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Cross to the wax table\"; \"Follow the clerk to the undercroft stair\"; \"Send word to the messengers bench\"; \"Take the copy room\"), so the body must not depend on any of it.'>>",
    "is_ending": true,
    "ending": {
     "id": "e_017",
@@ -279,7 +318,7 @@
   },
   {
    "id": "e_018",
-   "body": "<<FILL role=discovery words=70 beats='at the Sept of Bells, the debt runs back further than the queen and further than the crown'>>",
+   "body": "<<FILL role=discovery words=70 beats='at the Sept of Bells, the debt runs back further than the queen and further than the crown; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Cross to the wax table\"; \"Follow the clerk to the undercroft stair\"; \"Send word to the messengers bench\"; \"Take the copy room\"), so the body must not depend on any of it.'>>",
    "is_ending": true,
    "ending": {
     "id": "e_018",
@@ -290,7 +329,7 @@
   },
   {
    "id": "e_019",
-   "body": "<<FILL role=death words=80 beats='at the Sept of Bells, the bell loft has no rail on the inner side and never has'>>",
+   "body": "<<FILL role=death words=80 beats='at the Sept of Bells, the bell loft has no rail on the inner side and never has; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Cross to the wax table\"; \"Follow the clerk to the undercroft stair\"; \"Send word to the messengers bench\"; \"Take the copy room\"), so the body must not depend on any of it.'>>",
    "is_ending": true,
    "ending": {
     "id": "e_019",
@@ -301,7 +340,7 @@
   },
   {
    "id": "e_020",
-   "body": "<<FILL role=death words=72 beats='at the Sept of Bells, the crypt door closes and the crypt has one door'>>",
+   "body": "<<FILL role=death words=72 beats='at the Sept of Bells, the crypt door closes and the crypt has one door; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Cross to the wax table\"; \"Follow the clerk to the undercroft stair\"; \"Send word to the messengers bench\"; \"Take the copy room\"), so the body must not depend on any of it.'>>",
    "is_ending": true,
    "ending": {
     "id": "e_020",
@@ -312,7 +351,7 @@
   },
   {
    "id": "e_021",
-   "body": "<<FILL role=setback words=86 beats='at the Sept of Bells, you make the whole case standing up and nobody in the chapter house moves'>>",
+   "body": "<<FILL role=setback words=86 beats='at the Sept of Bells, you make the whole case standing up and nobody in the chapter house moves; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Cross to the wax table\"; \"Follow the clerk to the undercroft stair\"; \"Send word to the messengers bench\"; \"Take the copy room\"), so the body must not depend on any of it.'>>",
    "is_ending": true,
    "ending": {
     "id": "e_021",
@@ -323,7 +362,7 @@
   },
   {
    "id": "e_022",
-   "body": "<<FILL role=setback words=74 beats='at the Sept of Bells, the bells go, the room empties around you, and your sentence is never finished'>>",
+   "body": "<<FILL role=setback words=74 beats='at the Sept of Bells, the bells go, the room empties around you, and your sentence is never finished; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Cross to the wax table\"; \"Follow the clerk to the undercroft stair\"; \"Send word to the messengers bench\"; \"Take the copy room\"), so the body must not depend on any of it.'>>",
    "is_ending": true,
    "ending": {
     "id": "e_022",
@@ -334,7 +373,7 @@
   },
   {
    "id": "e_023",
-   "body": "<<FILL role=capture words=68 beats='at the Sept of Bells, the almoner withdraws sanctuary at the chapter house door, politely'>>",
+   "body": "<<FILL role=capture words=68 beats='at the Sept of Bells, the almoner withdraws sanctuary at the chapter house door, politely; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Cross to the wax table\"; \"Follow the clerk to the undercroft stair\"; \"Send word to the messengers bench\"; \"Take the copy room\"), so the body must not depend on any of it.'>>",
    "is_ending": true,
    "ending": {
     "id": "e_023",
@@ -345,7 +384,7 @@
   },
   {
    "id": "e_024",
-   "body": "<<FILL role=setback words=76 beats='at the Assize Hall, you say the right words in the wrong room and they are worth nothing there'>>",
+   "body": "<<FILL role=setback words=76 beats='at the Assize Hall, you say the right words in the wrong room and they are worth nothing there; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Cross to the wax table\"; \"Follow the clerk to the undercroft stair\"; \"Send word to the messengers bench\"; \"Take the copy room\"), so the body must not depend on any of it.'>>",
    "is_ending": true,
    "ending": {
     "id": "e_024",
@@ -356,7 +395,7 @@
   },
   {
    "id": "e_025",
-   "body": "<<FILL role=capture words=82 beats='at the Assize Hall, the sergeants post closes the corridor at both ends at once'>>",
+   "body": "<<FILL role=capture words=82 beats='at the Assize Hall, the sergeants post closes the corridor at both ends at once; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Cross to the wax table\"; \"Follow the clerk to the undercroft stair\"; \"Send word to the messengers bench\"; \"Take the copy room\"), so the body must not depend on any of it.'>>",
    "is_ending": true,
    "ending": {
     "id": "e_025",
@@ -367,7 +406,7 @@
   },
   {
    "id": "e_026",
-   "body": "<<FILL role=discovery words=70 beats='at the Assize Hall, Warden Ammet tells you why, and it makes the last eleven days worse'>>",
+   "body": "<<FILL role=discovery words=70 beats='at the Assize Hall, Warden Ammet tells you why, and it makes the last eleven days worse; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Cross to the wax table\"; \"Follow the clerk to the undercroft stair\"; \"Send word to the messengers bench\"; \"Take the copy room\"), so the body must not depend on any of it.'>>",
    "is_ending": true,
    "ending": {
     "id": "e_026",
@@ -378,7 +417,7 @@
   },
   {
    "id": "e_027",
-   "body": "<<FILL role=death words=80 beats='at the Assize Hall, the bells ring the hours and one of the hours is yours'>>",
+   "body": "<<FILL role=death words=80 beats='at the Assize Hall, the bells ring the hours and one of the hours is yours; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Cross to the wax table\"; \"Follow the clerk to the undercroft stair\"; \"Send word to the messengers bench\"; \"Take the copy room\"), so the body must not depend on any of it.'>>",
    "is_ending": true,
    "ending": {
     "id": "e_027",
@@ -389,7 +428,7 @@
   },
   {
    "id": "e_028",
-   "body": "<<FILL role=death words=72 beats='at the Assize Hall, they find you at the foot of the gallery stair in the morning, and the roll is gone'>>",
+   "body": "<<FILL role=death words=72 beats='at the Assize Hall, they find you at the foot of the gallery stair in the morning, and the roll is gone; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Cross to the wax table\"; \"Follow the clerk to the undercroft stair\"; \"Send word to the messengers bench\"; \"Take the copy room\"), so the body must not depend on any of it.'>>",
    "is_ending": true,
    "ending": {
     "id": "e_028",
@@ -400,7 +439,7 @@
   },
   {
    "id": "e_029",
-   "body": "<<FILL role=setback words=86 beats='at the Assize Hall, you are heard in full, politely, and not believed for a moment'>>",
+   "body": "<<FILL role=setback words=86 beats='at the Assize Hall, you are heard in full, politely, and not believed for a moment; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Cross to the wax table\"; \"Follow the clerk to the undercroft stair\"; \"Send word to the messengers bench\"; \"Take the copy room\"), so the body must not depend on any of it.'>>",
    "is_ending": true,
    "ending": {
     "id": "e_029",
@@ -411,7 +450,7 @@
   },
   {
    "id": "e_030",
-   "body": "<<FILL role=setback words=74 beats='at the Assize Hall, you are holding a copy of a copy and everyone can tell'>>",
+   "body": "<<FILL role=setback words=74 beats='at the Assize Hall, you are holding a copy of a copy and everyone can tell; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Cross to the wax table\"; \"Follow the clerk to the undercroft stair\"; \"Send word to the messengers bench\"; \"Take the copy room\"), so the body must not depend on any of it.'>>",
    "is_ending": true,
    "ending": {
     "id": "e_030",
@@ -422,7 +461,7 @@
   },
   {
    "id": "e_031",
-   "body": "<<FILL role=capture words=68 beats='at the Assize Hall, they arrest you in front of the jury, which is the point of doing it there'>>",
+   "body": "<<FILL role=capture words=68 beats='at the Assize Hall, they arrest you in front of the jury, which is the point of doing it there; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Cross to the wax table\"; \"Follow the clerk to the undercroft stair\"; \"Send word to the messengers bench\"; \"Take the copy room\"), so the body must not depend on any of it.'>>",
    "is_ending": true,
    "ending": {
     "id": "e_031",
@@ -433,7 +472,7 @@
   },
   {
    "id": "e_032",
-   "body": "<<FILL role=discovery words=76 beats='at the Crown Chamber, the roll was never a secret. Half the room has read it and each of them decided separately not to say so'>>",
+   "body": "<<FILL role=discovery words=76 beats='at the Crown Chamber, the roll was never a secret. Half the room has read it and each of them decided separately not to say so; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Cross to the wax table\"; \"Follow the clerk to the undercroft stair\"; \"Send word to the messengers bench\"; \"Take the copy room\"), so the body must not depend on any of it.'>>",
    "is_ending": true,
    "ending": {
     "id": "e_032",
@@ -444,7 +483,7 @@
   },
   {
    "id": "e_033",
-   "body": "<<FILL role=setback words=82 beats='at the Crown Chamber, nobody in the room will swear for you, including the people who could'>>",
+   "body": "<<FILL role=setback words=82 beats='at the Crown Chamber, nobody in the room will swear for you, including the people who could; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Cross to the wax table\"; \"Follow the clerk to the undercroft stair\"; \"Send word to the messengers bench\"; \"Take the copy room\"), so the body must not depend on any of it.'>>",
    "is_ending": true,
    "ending": {
     "id": "e_033",
@@ -455,7 +494,7 @@
   },
   {
    "id": "e_034",
-   "body": "<<FILL role=completion words=70 beats='at the Crown Chamber, midwinter comes and goes and the kingdom has an heir, which is duller and better than what was coming'>>",
+   "body": "<<FILL role=completion words=70 beats='at the Crown Chamber, midwinter comes and goes and the kingdom has an heir, which is duller and better than what was coming; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Cross to the wax table\"; \"Follow the clerk to the undercroft stair\"; \"Send word to the messengers bench\"; \"Take the copy room\"), so the body must not depend on any of it.'>>",
    "is_ending": true,
    "ending": {
     "id": "e_034",
@@ -466,7 +505,7 @@
   },
   {
    "id": "e_035",
-   "body": "<<FILL role=death words=80 beats='at the Crown Chamber, nothing is recorded and nothing is recovered, which was the aim'>>",
+   "body": "<<FILL role=death words=80 beats='at the Crown Chamber, nothing is recorded and nothing is recovered, which was the aim; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Cross to the wax table\"; \"Follow the clerk to the undercroft stair\"; \"Send word to the messengers bench\"; \"Take the copy room\"), so the body must not depend on any of it.'>>",
    "is_ending": true,
    "ending": {
     "id": "e_035",
@@ -477,7 +516,7 @@
   },
   {
    "id": "e_036",
-   "body": "<<FILL role=setback words=72 beats='at the Crown Chamber, you go back to the copy room and the building closes over the whole business like water'>>",
+   "body": "<<FILL role=setback words=72 beats='at the Crown Chamber, you go back to the copy room and the building closes over the whole business like water; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Cross to the wax table\"; \"Follow the clerk to the undercroft stair\"; \"Send word to the messengers bench\"; \"Take the copy room\"), so the body must not depend on any of it.'>>",
    "is_ending": true,
    "ending": {
     "id": "e_036",
@@ -488,7 +527,7 @@
   },
   {
    "id": "e_037",
-   "body": "<<FILL role=capture words=86 beats='at the Crown Chamber, you are named as a forger by a man who knows exactly that you are not'>>",
+   "body": "<<FILL role=capture words=86 beats='at the Crown Chamber, you are named as a forger by a man who knows exactly that you are not; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Cross to the wax table\"; \"Follow the clerk to the undercroft stair\"; \"Send word to the messengers bench\"; \"Take the copy room\"), so the body must not depend on any of it.'>>",
    "is_ending": true,
    "ending": {
     "id": "e_037",
@@ -499,7 +538,7 @@
   },
   {
    "id": "e_038",
-   "body": "<<FILL role=success words=74 beats='at the Crown Chamber, the roll goes in before the sergeant calls the room, and once it is in it cannot be taken out again'>>",
+   "body": "<<FILL role=success words=74 beats='at the Crown Chamber, the roll goes in before the sergeant calls the room, and once it is in it cannot be taken out again; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Cross to the wax table\"; \"Follow the clerk to the undercroft stair\"; \"Send word to the messengers bench\"; \"Take the copy room\"), so the body must not depend on any of it.'>>",
    "is_ending": true,
    "ending": {
     "id": "e_038",
@@ -719,7 +758,7 @@
   },
   {
    "id": "d00_0",
-   "body": "<<FILL role=setup words=64 beats='the queen has been dead eleven days and nobody has said the word succession out loud yet; you are at the copy room; you are sixteen and the most junior sworn clerk in the building'>>",
+   "body": "<<FILL role=setup words=64 beats='the queen has been dead eleven days and nobody has said the word succession out loud yet; you are at the copy room; you are sixteen and the most junior sworn clerk in the building; PLANT (did_take_copy_room): the hero has just made this choice, and something concrete comes of it that a reader will remember: an object kept, a person helped, or a fact learned, named plainly in the prose. Invent it so that it would plausibly help much later, when the hero tries \"Break cover at the cloth rows\" (node d12_5) or \"Present yourself at the burned shelf\" (node d15_3): there it changes how that moment goes.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -746,7 +785,7 @@
   },
   {
    "id": "d00_1",
-   "body": "<<FILL role=setup words=70 beats='the queen has been dead eleven days and nobody has said the word succession out loud yet; you are at the wax table; the roll is a copy, and a copy is only worth the seal on it'>>",
+   "body": "<<FILL role=setup words=70 beats='the queen has been dead eleven days and nobody has said the word succession out loud yet; you are at the wax table; the roll is a copy, and a copy is only worth the seal on it; PLANT (did_cross_wax_table): the hero has just made this choice, and something concrete comes of it that a reader will remember: an object kept, a person helped, or a fact learned, named plainly in the prose. Invent it so that it would plausibly help much later, when the hero tries \"Follow the clerk to the moneychangers\" (node d12_4) or \"Present yourself at the cloth rows\" (node d13_0): there it changes how that moment goes.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -812,7 +851,7 @@
   },
   {
    "id": "d01_1",
-   "body": "<<FILL role=setup words=68 beats='the roll you copied last night names a claimant nobody has mentioned since the spring; you are at the wax table; the fastest route through this building is the one that gets noticed'>>",
+   "body": "<<FILL role=setup words=68 beats='the roll you copied last night names a claimant nobody has mentioned since the spring; you are at the wax table; the fastest route through this building is the one that gets noticed; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Cross to the wax table\"; \"Take the copy room\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -834,18 +873,32 @@
   },
   {
    "id": "d01_2",
-   "body": "<<FILL role=setup words=61 beats='the roll you copied last night names a claimant nobody has mentioned since the spring; you are at the messengers bench; there is an honest way to do this and it is slower by a day'>>",
+   "body": "<<FILL role=setup words=61 beats='the roll you copied last night names a claimant nobody has mentioned since the spring; you are at the messengers bench; there is an honest way to do this and it is slower by a day; PLANT SITE: these options are no longer cosmetic: \"Send word to the messengers bench\" plants did_send_word_messengers (pays off at d14_5 and d13_6); \"Follow the clerk to the undercroft stair\" plants did_follow_clerk_undercroft (pays off at d15_4 and d15_2). Stage every option as appealing, with none the obviously right answer. MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Cross to the wax table\"; \"Take the copy room\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
      "id": "ch_d01_2_0",
      "label": "Send word to the messengers bench",
-     "target": "d02_2"
+     "target": "cq_plant_did_send_word_messengers",
+     "effects": [
+      {
+       "op": "set",
+       "var": "did_send_word_messengers",
+       "value": true
+      }
+     ]
     },
     {
      "id": "ch_d01_2_1",
      "label": "Follow the clerk to the undercroft stair",
-     "target": "c01_2_1"
+     "target": "c01_2_1",
+     "effects": [
+      {
+       "op": "set",
+       "var": "did_follow_clerk_undercroft",
+       "value": true
+      }
+     ]
     },
     {
      "id": "ch_d01_2_2",
@@ -855,8 +908,20 @@
    ]
   },
   {
+   "id": "cq_plant_did_send_word_messengers",
+   "body": "<<FILL role=plant words=32 beats='Arrival beat for this choice, two or three sentences that show it happening and then lead straight into the next scene. PLANT (did_send_word_messengers): the hero has just made this choice, and something concrete comes of it that a reader will remember: an object kept, a person helped, or a fact learned, named plainly in the prose. Invent it so that it would plausibly help much later, when the hero tries \"Push past the guard at the cloth rows\" (node d14_5) or \"Present yourself at the river steps\" (node d13_6): there it changes how that moment goes.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_cq_plant_did_send_word_messengers",
+     "label": "Send word to the messengers bench",
+     "target": "d02_2"
+    }
+   ]
+  },
+  {
    "id": "d01_3",
-   "body": "<<FILL role=setup words=76 beats='the roll you copied last night names a claimant nobody has mentioned since the spring; you are at the undercroft stair; somebody is paying for your mistakes to be findable'>>",
+   "body": "<<FILL role=setup words=76 beats='the roll you copied last night names a claimant nobody has mentioned since the spring; you are at the undercroft stair; somebody is paying for your mistakes to be findable; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Cross to the wax table\"; \"Take the copy room\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -905,7 +970,7 @@
   },
   {
    "id": "d02_0",
-   "body": "<<FILL role=rising words=60 beats='two of the three claimants have already put a man in this building; you are at the copy room; the person helping you has not told you why'>>",
+   "body": "<<FILL role=rising words=60 beats='two of the three claimants have already put a man in this building; you are at the copy room; the person helping you has not told you why; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Some readers earlier chose \"Take the copy room\" and some did not, so the body must not depend on it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -927,7 +992,7 @@
   },
   {
    "id": "d02_1",
-   "body": "<<FILL role=rising words=74 beats='two of the three claimants have already put a man in this building; you are at the wax table; the midwinter date is fixed and nothing moves it'>>",
+   "body": "<<FILL role=rising words=74 beats='two of the three claimants have already put a man in this building; you are at the wax table; the midwinter date is fixed and nothing moves it; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Cross to the wax table\"; \"Take the copy room\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -949,7 +1014,7 @@
   },
   {
    "id": "d02_2",
-   "body": "<<FILL role=rising words=66 beats='two of the three claimants have already put a man in this building; you are at the messengers bench; you can be believed or you can be quick'>>",
+   "body": "<<FILL role=rising words=66 beats='two of the three claimants have already put a man in this building; you are at the messengers bench; you can be believed or you can be quick; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Cross to the wax table\"; \"Send word to the messengers bench\"; \"Take the copy room\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -971,7 +1036,7 @@
   },
   {
    "id": "d02_3",
-   "body": "<<FILL role=rising words=58 beats='two of the three claimants have already put a man in this building; you are at the undercroft stair; you know the archive better than anyone here and it is your only advantage'>>",
+   "body": "<<FILL role=rising words=58 beats='two of the three claimants have already put a man in this building; you are at the undercroft stair; you know the archive better than anyone here and it is your only advantage; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Cross to the wax table\"; \"Follow the clerk to the undercroft stair\"; \"Take the copy room\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -998,7 +1063,7 @@
   },
   {
    "id": "d02_4",
-   "body": "<<FILL role=rising words=72 beats='two of the three claimants have already put a man in this building; you are at the seal press; you have one letter of introduction and it is not in your name'>>",
+   "body": "<<FILL role=rising words=72 beats='two of the three claimants have already put a man in this building; you are at the seal press; you have one letter of introduction and it is not in your name; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Cross to the wax table\"; \"Take the copy room\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -1020,7 +1085,7 @@
   },
   {
    "id": "d02_5",
-   "body": "<<FILL role=rising words=62 beats='two of the three claimants have already put a man in this building; you are at the clerks gallery; the guard on this door changes at the half hour'>>",
+   "body": "<<FILL role=rising words=62 beats='two of the three claimants have already put a man in this building; you are at the clerks gallery; the guard on this door changes at the half hour; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Cross to the wax table\"; \"Take the copy room\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -1064,7 +1129,7 @@
   },
   {
    "id": "d03_0",
-   "body": "<<FILL role=rising words=61 beats='the Chancery is being tidied, which in this building means emptied; you are at the copy room; the third claimant has done nothing at all, which is the frightening part'>>",
+   "body": "<<FILL role=rising words=61 beats='the Chancery is being tidied, which in this building means emptied; you are at the copy room; the third claimant has done nothing at all, which is the frightening part; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Cross to the wax table\"; \"Take the copy room\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -1086,7 +1151,7 @@
   },
   {
    "id": "d03_1",
-   "body": "<<FILL role=rising words=76 beats='the Chancery is being tidied, which in this building means emptied; you are at the wax table; you are being useful to somebody and you cannot work out to whom'>>",
+   "body": "<<FILL role=rising words=76 beats='the Chancery is being tidied, which in this building means emptied; you are at the wax table; you are being useful to somebody and you cannot work out to whom; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Cross to the wax table\"; \"Take the copy room\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -1108,7 +1173,7 @@
   },
   {
    "id": "d03_2",
-   "body": "<<FILL role=rising words=65 beats='the Chancery is being tidied, which in this building means emptied; you are at the messengers bench; the roll is heavier than a document that size should be'>>",
+   "body": "<<FILL role=rising words=65 beats='the Chancery is being tidied, which in this building means emptied; you are at the messengers bench; the roll is heavier than a document that size should be; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Cross to the wax table\"; \"Send word to the messengers bench\"; \"Take the copy room\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -1135,7 +1200,7 @@
   },
   {
    "id": "d03_3",
-   "body": "<<FILL role=rising words=64 beats='the Chancery is being tidied, which in this building means emptied; you are at the undercroft stair; you have not slept properly since the bells rang for the queen'>>",
+   "body": "<<FILL role=rising words=64 beats='the Chancery is being tidied, which in this building means emptied; you are at the undercroft stair; you have not slept properly since the bells rang for the queen; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Cross to the wax table\"; \"Follow the clerk to the undercroft stair\"; \"Send word to the messengers bench\"; \"Take the copy room\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -1157,7 +1222,7 @@
   },
   {
    "id": "d03_4",
-   "body": "<<FILL role=rising words=70 beats='the Chancery is being tidied, which in this building means emptied; you are at the seal press; there is a version of today where you simply go back to the copy room'>>",
+   "body": "<<FILL role=rising words=70 beats='the Chancery is being tidied, which in this building means emptied; you are at the seal press; there is a version of today where you simply go back to the copy room; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Cross to the wax table\"; \"Follow the clerk to the undercroft stair\"; \"Send word to the messengers bench\"; \"Take the copy room\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -1179,7 +1244,7 @@
   },
   {
    "id": "d03_5",
-   "body": "<<FILL role=rising words=60 beats='the Chancery is being tidied, which in this building means emptied; you are at the clerks gallery; the regent remembers faces and has already seen yours once'>>",
+   "body": "<<FILL role=rising words=60 beats='the Chancery is being tidied, which in this building means emptied; you are at the clerks gallery; the regent remembers faces and has already seen yours once; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Cross to the wax table\"; \"Follow the clerk to the undercroft stair\"; \"Take the copy room\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -1201,7 +1266,7 @@
   },
   {
    "id": "d03_6",
-   "body": "<<FILL role=rising words=74 beats='the Chancery is being tidied, which in this building means emptied; you are at the night desk; the truth here is not in doubt, only the order it gets said in'>>",
+   "body": "<<FILL role=rising words=74 beats='the Chancery is being tidied, which in this building means emptied; you are at the night desk; the truth here is not in doubt, only the order it gets said in; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Cross to the wax table\"; \"Follow the clerk to the undercroft stair\"; \"Take the copy room\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -1223,7 +1288,7 @@
   },
   {
    "id": "d04_0",
-   "body": "<<FILL role=rising words=66 beats='downstairs the Lower Court is sitting on forty cases it means to clear by Thursday; you are at the petitions queue; you are sixteen and the most junior sworn clerk in the building'>>",
+   "body": "<<FILL role=rising words=66 beats='downstairs the Lower Court is sitting on forty cases it means to clear by Thursday; you are at the petitions queue; you are sixteen and the most junior sworn clerk in the building; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Cross to the wax table\"; \"Follow the clerk to the undercroft stair\"; \"Take the copy room\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -1245,7 +1310,7 @@
   },
   {
    "id": "d04_1",
-   "body": "<<FILL role=rising words=58 beats='downstairs the Lower Court is sitting on forty cases it means to clear by Thursday; you are at the bailiffs door; the roll is a copy, and a copy is only worth the seal on it'>>",
+   "body": "<<FILL role=rising words=58 beats='downstairs the Lower Court is sitting on forty cases it means to clear by Thursday; you are at the bailiffs door; the roll is a copy, and a copy is only worth the seal on it; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Cross to the wax table\"; \"Follow the clerk to the undercroft stair\"; \"Take the copy room\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -1272,7 +1337,7 @@
   },
   {
    "id": "d04_2",
-   "body": "<<FILL role=rising words=72 beats='downstairs the Lower Court is sitting on forty cases it means to clear by Thursday; you are at the witness pen; Warden Ammet trusted you with the keys and has not asked for them back'>>",
+   "body": "<<FILL role=rising words=72 beats='downstairs the Lower Court is sitting on forty cases it means to clear by Thursday; you are at the witness pen; Warden Ammet trusted you with the keys and has not asked for them back; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Cross to the wax table\"; \"Send word to the messengers bench\"; \"Take the copy room\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -1294,7 +1359,7 @@
   },
   {
    "id": "d04_3",
-   "body": "<<FILL role=rising words=62 beats='downstairs the Lower Court is sitting on forty cases it means to clear by Thursday; you are at the fee table; whatever you do here goes into a record somebody else will read'>>",
+   "body": "<<FILL role=rising words=62 beats='downstairs the Lower Court is sitting on forty cases it means to clear by Thursday; you are at the fee table; whatever you do here goes into a record somebody else will read; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Cross to the wax table\"; \"Follow the clerk to the undercroft stair\"; \"Send word to the messengers bench\"; \"Take the copy room\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -1316,7 +1381,7 @@
   },
   {
    "id": "d04_4",
-   "body": "<<FILL role=rising words=68 beats='downstairs the Lower Court is sitting on forty cases it means to clear by Thursday; you are at the advocates hall; you can prove one thing today and only one'>>",
+   "body": "<<FILL role=rising words=68 beats='downstairs the Lower Court is sitting on forty cases it means to clear by Thursday; you are at the advocates hall; you can prove one thing today and only one; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Cross to the wax table\"; \"Follow the clerk to the undercroft stair\"; \"Send word to the messengers bench\"; \"Take the copy room\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -1338,7 +1403,7 @@
   },
   {
    "id": "d04_5",
-   "body": "<<FILL role=rising words=61 beats='downstairs the Lower Court is sitting on forty cases it means to clear by Thursday; you are at the sheriffs rota; the claimant you favour is not the claimant the roll names'>>",
+   "body": "<<FILL role=rising words=61 beats='downstairs the Lower Court is sitting on forty cases it means to clear by Thursday; you are at the sheriffs rota; the claimant you favour is not the claimant the roll names; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Cross to the wax table\"; \"Follow the clerk to the undercroft stair\"; \"Send word to the messengers bench\"; \"Take the copy room\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -1360,7 +1425,7 @@
   },
   {
    "id": "d04_6",
-   "body": "<<FILL role=rising words=76 beats='downstairs the Lower Court is sitting on forty cases it means to clear by Thursday; you are at the debtors gate; you have no rank to hide behind and no family to be owed a favour'>>",
+   "body": "<<FILL role=rising words=76 beats='downstairs the Lower Court is sitting on forty cases it means to clear by Thursday; you are at the debtors gate; you have no rank to hide behind and no family to be owed a favour; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Cross to the wax table\"; \"Follow the clerk to the undercroft stair\"; \"Send word to the messengers bench\"; \"Take the copy room\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -1387,7 +1452,7 @@
   },
   {
    "id": "d05_0",
-   "body": "<<FILL role=rising words=65 beats='an advocate you have never met knows your name and uses it twice; you are at the petitions queue; if you are wrong about this, you are wrong in front of everyone'>>",
+   "body": "<<FILL role=rising words=65 beats='an advocate you have never met knows your name and uses it twice; you are at the petitions queue; if you are wrong about this, you are wrong in front of everyone; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Cross to the wax table\"; \"Follow the clerk to the undercroft stair\"; \"Send word to the messengers bench\"; \"Take the copy room\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -1414,7 +1479,7 @@
   },
   {
    "id": "d05_1",
-   "body": "<<FILL role=rising words=64 beats='an advocate you have never met knows your name and uses it twice; you are at the bailiffs door; the fastest route through this building is the one that gets noticed'>>",
+   "body": "<<FILL role=rising words=64 beats='an advocate you have never met knows your name and uses it twice; you are at the bailiffs door; the fastest route through this building is the one that gets noticed; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Cross to the wax table\"; \"Follow the clerk to the undercroft stair\"; \"Send word to the messengers bench\"; \"Take the copy room\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -1436,7 +1501,7 @@
   },
   {
    "id": "d05_2",
-   "body": "<<FILL role=rising words=70 beats='an advocate you have never met knows your name and uses it twice; you are at the witness pen; there is an honest way to do this and it is slower by a day'>>",
+   "body": "<<FILL role=rising words=70 beats='an advocate you have never met knows your name and uses it twice; you are at the witness pen; there is an honest way to do this and it is slower by a day; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Cross to the wax table\"; \"Follow the clerk to the undercroft stair\"; \"Send word to the messengers bench\"; \"Take the copy room\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -1458,7 +1523,7 @@
   },
   {
    "id": "d05_3",
-   "body": "<<FILL role=rising words=60 beats='an advocate you have never met knows your name and uses it twice; you are at the fee table; somebody is paying for your mistakes to be findable'>>",
+   "body": "<<FILL role=rising words=60 beats='an advocate you have never met knows your name and uses it twice; you are at the fee table; somebody is paying for your mistakes to be findable; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Cross to the wax table\"; \"Follow the clerk to the undercroft stair\"; \"Send word to the messengers bench\"; \"Take the copy room\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -1480,7 +1545,7 @@
   },
   {
    "id": "d05_4",
-   "body": "<<FILL role=rising words=74 beats='an advocate you have never met knows your name and uses it twice; you are at the advocates hall; the seal press only takes an impression once'>>",
+   "body": "<<FILL role=rising words=74 beats='an advocate you have never met knows your name and uses it twice; you are at the advocates hall; the seal press only takes an impression once; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Cross to the wax table\"; \"Follow the clerk to the undercroft stair\"; \"Send word to the messengers bench\"; \"Take the copy room\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -1502,7 +1567,7 @@
   },
   {
    "id": "d05_5",
-   "body": "<<FILL role=rising words=66 beats='an advocate you have never met knows your name and uses it twice; you are at the sheriffs rota; you have been careful for eleven days and careful is running out'>>",
+   "body": "<<FILL role=rising words=66 beats='an advocate you have never met knows your name and uses it twice; you are at the sheriffs rota; you have been careful for eleven days and careful is running out; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Cross to the wax table\"; \"Follow the clerk to the undercroft stair\"; \"Send word to the messengers bench\"; \"Take the copy room\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -1529,7 +1594,7 @@
   },
   {
    "id": "d05_6",
-   "body": "<<FILL role=rising words=58 beats='an advocate you have never met knows your name and uses it twice; you are at the debtors gate; a name spoken in the wrong room becomes a warrant by evening'>>",
+   "body": "<<FILL role=rising words=58 beats='an advocate you have never met knows your name and uses it twice; you are at the debtors gate; a name spoken in the wrong room becomes a warrant by evening; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Cross to the wax table\"; \"Follow the clerk to the undercroft stair\"; \"Send word to the messengers bench\"; \"Take the copy room\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -1551,7 +1616,7 @@
   },
   {
    "id": "d06_0",
-   "body": "<<FILL role=rising words=72 beats='the fee table is taking money it has no right to take and writing receipts; you are at the petitions queue; the person helping you has not told you why'>>",
+   "body": "<<FILL role=rising words=72 beats='the fee table is taking money it has no right to take and writing receipts; you are at the petitions queue; the person helping you has not told you why; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Cross to the wax table\"; \"Follow the clerk to the undercroft stair\"; \"Send word to the messengers bench\"; \"Take the copy room\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -1573,7 +1638,7 @@
   },
   {
    "id": "d06_1",
-   "body": "<<FILL role=rising words=62 beats='the fee table is taking money it has no right to take and writing receipts; you are at the bailiffs door; the midwinter date is fixed and nothing moves it'>>",
+   "body": "<<FILL role=rising words=62 beats='the fee table is taking money it has no right to take and writing receipts; you are at the bailiffs door; the midwinter date is fixed and nothing moves it; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Cross to the wax table\"; \"Follow the clerk to the undercroft stair\"; \"Send word to the messengers bench\"; \"Take the copy room\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -1595,7 +1660,7 @@
   },
   {
    "id": "d06_2",
-   "body": "<<FILL role=rising words=68 beats='the fee table is taking money it has no right to take and writing receipts; you are at the witness pen; you can be believed or you can be quick'>>",
+   "body": "<<FILL role=rising words=68 beats='the fee table is taking money it has no right to take and writing receipts; you are at the witness pen; you can be believed or you can be quick; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Cross to the wax table\"; \"Follow the clerk to the undercroft stair\"; \"Send word to the messengers bench\"; \"Take the copy room\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -1617,7 +1682,7 @@
   },
   {
    "id": "d06_3",
-   "body": "<<FILL role=rising words=61 beats='the fee table is taking money it has no right to take and writing receipts; you are at the fee table; you know the archive better than anyone here and it is your only advantage'>>",
+   "body": "<<FILL role=rising words=61 beats='the fee table is taking money it has no right to take and writing receipts; you are at the fee table; you know the archive better than anyone here and it is your only advantage; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Cross to the wax table\"; \"Follow the clerk to the undercroft stair\"; \"Send word to the messengers bench\"; \"Take the copy room\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -1639,7 +1704,7 @@
   },
   {
    "id": "d06_4",
-   "body": "<<FILL role=rising words=76 beats='the fee table is taking money it has no right to take and writing receipts; you are at the advocates hall; you have one letter of introduction and it is not in your name'>>",
+   "body": "<<FILL role=rising words=76 beats='the fee table is taking money it has no right to take and writing receipts; you are at the advocates hall; you have one letter of introduction and it is not in your name; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Cross to the wax table\"; \"Follow the clerk to the undercroft stair\"; \"Send word to the messengers bench\"; \"Take the copy room\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -1666,7 +1731,7 @@
   },
   {
    "id": "d06_5",
-   "body": "<<FILL role=rising words=65 beats='the fee table is taking money it has no right to take and writing receipts; you are at the sheriffs rota; the guard on this door changes at the half hour'>>",
+   "body": "<<FILL role=rising words=65 beats='the fee table is taking money it has no right to take and writing receipts; you are at the sheriffs rota; the guard on this door changes at the half hour; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Cross to the wax table\"; \"Follow the clerk to the undercroft stair\"; \"Send word to the messengers bench\"; \"Take the copy room\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -1688,7 +1753,7 @@
   },
   {
    "id": "d06_6",
-   "body": "<<FILL role=rising words=64 beats='the fee table is taking money it has no right to take and writing receipts; you are at the debtors gate; your hands are ink-stained and everyone in the room can see it'>>",
+   "body": "<<FILL role=rising words=64 beats='the fee table is taking money it has no right to take and writing receipts; you are at the debtors gate; your hands are ink-stained and everyone in the room can see it; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Cross to the wax table\"; \"Follow the clerk to the undercroft stair\"; \"Send word to the messengers bench\"; \"Take the copy room\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -1710,7 +1775,7 @@
   },
   {
    "id": "d07_0",
-   "body": "<<FILL role=rising words=70 beats='somebody has begun asking the bailiffs who signed out the night desk keys; you are at the petitions queue; the third claimant has done nothing at all, which is the frightening part'>>",
+   "body": "<<FILL role=rising words=70 beats='somebody has begun asking the bailiffs who signed out the night desk keys; you are at the petitions queue; the third claimant has done nothing at all, which is the frightening part; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Cross to the wax table\"; \"Follow the clerk to the undercroft stair\"; \"Send word to the messengers bench\"; \"Take the copy room\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -1732,7 +1797,7 @@
   },
   {
    "id": "d07_1",
-   "body": "<<FILL role=rising words=60 beats='somebody has begun asking the bailiffs who signed out the night desk keys; you are at the bailiffs door; you are being useful to somebody and you cannot work out to whom'>>",
+   "body": "<<FILL role=rising words=60 beats='somebody has begun asking the bailiffs who signed out the night desk keys; you are at the bailiffs door; you are being useful to somebody and you cannot work out to whom; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Cross to the wax table\"; \"Follow the clerk to the undercroft stair\"; \"Send word to the messengers bench\"; \"Take the copy room\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -1754,7 +1819,7 @@
   },
   {
    "id": "d07_2",
-   "body": "<<FILL role=rising words=74 beats='somebody has begun asking the bailiffs who signed out the night desk keys; you are at the witness pen; the roll is heavier than a document that size should be'>>",
+   "body": "<<FILL role=rising words=74 beats='somebody has begun asking the bailiffs who signed out the night desk keys; you are at the witness pen; the roll is heavier than a document that size should be; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Cross to the wax table\"; \"Follow the clerk to the undercroft stair\"; \"Send word to the messengers bench\"; \"Take the copy room\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -1776,7 +1841,7 @@
   },
   {
    "id": "d07_3",
-   "body": "<<FILL role=rising words=66 beats='somebody has begun asking the bailiffs who signed out the night desk keys; you are at the fee table; you have not slept properly since the bells rang for the queen'>>",
+   "body": "<<FILL role=rising words=66 beats='somebody has begun asking the bailiffs who signed out the night desk keys; you are at the fee table; you have not slept properly since the bells rang for the queen; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Cross to the wax table\"; \"Follow the clerk to the undercroft stair\"; \"Send word to the messengers bench\"; \"Take the copy room\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -1803,7 +1868,7 @@
   },
   {
    "id": "d07_4",
-   "body": "<<FILL role=rising words=58 beats='somebody has begun asking the bailiffs who signed out the night desk keys; you are at the advocates hall; there is a version of today where you simply go back to the copy room'>>",
+   "body": "<<FILL role=rising words=58 beats='somebody has begun asking the bailiffs who signed out the night desk keys; you are at the advocates hall; there is a version of today where you simply go back to the copy room; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Cross to the wax table\"; \"Follow the clerk to the undercroft stair\"; \"Send word to the messengers bench\"; \"Take the copy room\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -1825,7 +1890,7 @@
   },
   {
    "id": "d07_5",
-   "body": "<<FILL role=rising words=72 beats='somebody has begun asking the bailiffs who signed out the night desk keys; you are at the sheriffs rota; the regent remembers faces and has already seen yours once'>>",
+   "body": "<<FILL role=rising words=72 beats='somebody has begun asking the bailiffs who signed out the night desk keys; you are at the sheriffs rota; the regent remembers faces and has already seen yours once; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Cross to the wax table\"; \"Follow the clerk to the undercroft stair\"; \"Send word to the messengers bench\"; \"Take the copy room\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -1847,7 +1912,7 @@
   },
   {
    "id": "d07_6",
-   "body": "<<FILL role=rising words=62 beats='somebody has begun asking the bailiffs who signed out the night desk keys; you are at the debtors gate; the truth here is not in doubt, only the order it gets said in'>>",
+   "body": "<<FILL role=rising words=62 beats='somebody has begun asking the bailiffs who signed out the night desk keys; you are at the debtors gate; the truth here is not in doubt, only the order it gets said in; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Cross to the wax table\"; \"Follow the clerk to the undercroft stair\"; \"Send word to the messengers bench\"; \"Take the copy room\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -1869,7 +1934,7 @@
   },
   {
    "id": "d08_0",
-   "body": "<<FILL role=rising words=68 beats='the Mint has stopped striking, which has never happened in your lifetime; you are at the die room; you are sixteen and the most junior sworn clerk in the building'>>",
+   "body": "<<FILL role=rising words=68 beats='the Mint has stopped striking, which has never happened in your lifetime; you are at the die room; you are sixteen and the most junior sworn clerk in the building; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Cross to the wax table\"; \"Follow the clerk to the undercroft stair\"; \"Send word to the messengers bench\"; \"Take the copy room\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -1891,7 +1956,7 @@
   },
   {
    "id": "d08_1",
-   "body": "<<FILL role=rising words=61 beats='the Mint has stopped striking, which has never happened in your lifetime; you are at the assay bench; the roll is a copy, and a copy is only worth the seal on it'>>",
+   "body": "<<FILL role=rising words=61 beats='the Mint has stopped striking, which has never happened in your lifetime; you are at the assay bench; the roll is a copy, and a copy is only worth the seal on it; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Cross to the wax table\"; \"Follow the clerk to the undercroft stair\"; \"Send word to the messengers bench\"; \"Take the copy room\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -1913,7 +1978,7 @@
   },
   {
    "id": "d08_2",
-   "body": "<<FILL role=rising words=76 beats='the Mint has stopped striking, which has never happened in your lifetime; you are at the bullion stair; Warden Ammet trusted you with the keys and has not asked for them back'>>",
+   "body": "<<FILL role=rising words=76 beats='the Mint has stopped striking, which has never happened in your lifetime; you are at the bullion stair; Warden Ammet trusted you with the keys and has not asked for them back; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Cross to the wax table\"; \"Follow the clerk to the undercroft stair\"; \"Send word to the messengers bench\"; \"Take the copy room\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -1940,7 +2005,7 @@
   },
   {
    "id": "d08_3",
-   "body": "<<FILL role=rising words=65 beats='the Mint has stopped striking, which has never happened in your lifetime; you are at the pyx chest; whatever you do here goes into a record somebody else will read'>>",
+   "body": "<<FILL role=rising words=65 beats='the Mint has stopped striking, which has never happened in your lifetime; you are at the pyx chest; whatever you do here goes into a record somebody else will read; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Cross to the wax table\"; \"Follow the clerk to the undercroft stair\"; \"Send word to the messengers bench\"; \"Take the copy room\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -1962,7 +2027,7 @@
   },
   {
    "id": "d08_4",
-   "body": "<<FILL role=rising words=64 beats='the Mint has stopped striking, which has never happened in your lifetime; you are at the strike floor; you can prove one thing today and only one'>>",
+   "body": "<<FILL role=rising words=64 beats='the Mint has stopped striking, which has never happened in your lifetime; you are at the strike floor; you can prove one thing today and only one; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Cross to the wax table\"; \"Follow the clerk to the undercroft stair\"; \"Send word to the messengers bench\"; \"Take the copy room\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -1984,7 +2049,7 @@
   },
   {
    "id": "d08_5",
-   "body": "<<FILL role=rising words=70 beats='the Mint has stopped striking, which has never happened in your lifetime; you are at the porters yard; the claimant you favour is not the claimant the roll names'>>",
+   "body": "<<FILL role=rising words=70 beats='the Mint has stopped striking, which has never happened in your lifetime; you are at the porters yard; the claimant you favour is not the claimant the roll names; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Cross to the wax table\"; \"Follow the clerk to the undercroft stair\"; \"Send word to the messengers bench\"; \"Take the copy room\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -2006,7 +2071,7 @@
   },
   {
    "id": "d08_6",
-   "body": "<<FILL role=rising words=60 beats='the Mint has stopped striking, which has never happened in your lifetime; you are at the captain of the guard; you have no rank to hide behind and no family to be owed a favour'>>",
+   "body": "<<FILL role=rising words=60 beats='the Mint has stopped striking, which has never happened in your lifetime; you are at the captain of the guard; you have no rank to hide behind and no family to be owed a favour; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Cross to the wax table\"; \"Follow the clerk to the undercroft stair\"; \"Send word to the messengers bench\"; \"Take the copy room\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -2028,7 +2093,7 @@
   },
   {
    "id": "d09_0",
-   "body": "<<FILL role=rising words=74 beats='a die with the wrong face on it is worth more than the metal it stamps; you are at the die room; if you are wrong about this, you are wrong in front of everyone'>>",
+   "body": "<<FILL role=rising words=74 beats='a die with the wrong face on it is worth more than the metal it stamps; you are at the die room; if you are wrong about this, you are wrong in front of everyone; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Cross to the wax table\"; \"Follow the clerk to the undercroft stair\"; \"Send word to the messengers bench\"; \"Take the copy room\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -2050,7 +2115,7 @@
   },
   {
    "id": "d09_1",
-   "body": "<<FILL role=rising words=66 beats='a die with the wrong face on it is worth more than the metal it stamps; you are at the assay bench; the fastest route through this building is the one that gets noticed'>>",
+   "body": "<<FILL role=rising words=66 beats='a die with the wrong face on it is worth more than the metal it stamps; you are at the assay bench; the fastest route through this building is the one that gets noticed; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Cross to the wax table\"; \"Follow the clerk to the undercroft stair\"; \"Send word to the messengers bench\"; \"Take the copy room\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -2077,7 +2142,7 @@
   },
   {
    "id": "d09_2",
-   "body": "<<FILL role=rising words=58 beats='a die with the wrong face on it is worth more than the metal it stamps; you are at the bullion stair; there is an honest way to do this and it is slower by a day'>>",
+   "body": "<<FILL role=rising words=58 beats='a die with the wrong face on it is worth more than the metal it stamps; you are at the bullion stair; there is an honest way to do this and it is slower by a day; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Cross to the wax table\"; \"Follow the clerk to the undercroft stair\"; \"Send word to the messengers bench\"; \"Take the copy room\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -2099,7 +2164,7 @@
   },
   {
    "id": "d09_3",
-   "body": "<<FILL role=rising words=72 beats='a die with the wrong face on it is worth more than the metal it stamps; you are at the pyx chest; somebody is paying for your mistakes to be findable'>>",
+   "body": "<<FILL role=rising words=72 beats='a die with the wrong face on it is worth more than the metal it stamps; you are at the pyx chest; somebody is paying for your mistakes to be findable; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Cross to the wax table\"; \"Follow the clerk to the undercroft stair\"; \"Send word to the messengers bench\"; \"Take the copy room\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -2121,7 +2186,7 @@
   },
   {
    "id": "d09_4",
-   "body": "<<FILL role=rising words=62 beats='a die with the wrong face on it is worth more than the metal it stamps; you are at the strike floor; the seal press only takes an impression once'>>",
+   "body": "<<FILL role=rising words=62 beats='a die with the wrong face on it is worth more than the metal it stamps; you are at the strike floor; the seal press only takes an impression once; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Cross to the wax table\"; \"Follow the clerk to the undercroft stair\"; \"Send word to the messengers bench\"; \"Take the copy room\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -2143,7 +2208,7 @@
   },
   {
    "id": "d09_5",
-   "body": "<<FILL role=rising words=68 beats='a die with the wrong face on it is worth more than the metal it stamps; you are at the porters yard; you have been careful for eleven days and careful is running out'>>",
+   "body": "<<FILL role=rising words=68 beats='a die with the wrong face on it is worth more than the metal it stamps; you are at the porters yard; you have been careful for eleven days and careful is running out; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Cross to the wax table\"; \"Follow the clerk to the undercroft stair\"; \"Send word to the messengers bench\"; \"Take the copy room\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -2165,7 +2230,7 @@
   },
   {
    "id": "d09_6",
-   "body": "<<FILL role=rising words=61 beats='a die with the wrong face on it is worth more than the metal it stamps; you are at the captain of the guard; a name spoken in the wrong room becomes a warrant by evening'>>",
+   "body": "<<FILL role=rising words=61 beats='a die with the wrong face on it is worth more than the metal it stamps; you are at the captain of the guard; a name spoken in the wrong room becomes a warrant by evening; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Cross to the wax table\"; \"Follow the clerk to the undercroft stair\"; \"Send word to the messengers bench\"; \"Take the copy room\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -2192,7 +2257,7 @@
   },
   {
    "id": "d10_0",
-   "body": "<<FILL role=rising words=76 beats='the assay bench is short one weight and nobody wants to be the one to say so; you are at the die room; the person helping you has not told you why'>>",
+   "body": "<<FILL role=rising words=76 beats='the assay bench is short one weight and nobody wants to be the one to say so; you are at the die room; the person helping you has not told you why; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Cross to the wax table\"; \"Follow the clerk to the undercroft stair\"; \"Send word to the messengers bench\"; \"Take the copy room\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -2219,7 +2284,7 @@
   },
   {
    "id": "d10_1",
-   "body": "<<FILL role=rising words=65 beats='the assay bench is short one weight and nobody wants to be the one to say so; you are at the assay bench; the midwinter date is fixed and nothing moves it'>>",
+   "body": "<<FILL role=rising words=65 beats='the assay bench is short one weight and nobody wants to be the one to say so; you are at the assay bench; the midwinter date is fixed and nothing moves it; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Cross to the wax table\"; \"Follow the clerk to the undercroft stair\"; \"Send word to the messengers bench\"; \"Take the copy room\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -2241,7 +2306,7 @@
   },
   {
    "id": "d10_2",
-   "body": "<<FILL role=rising words=64 beats='the assay bench is short one weight and nobody wants to be the one to say so; you are at the bullion stair; you can be believed or you can be quick'>>",
+   "body": "<<FILL role=rising words=64 beats='the assay bench is short one weight and nobody wants to be the one to say so; you are at the bullion stair; you can be believed or you can be quick; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Cross to the wax table\"; \"Follow the clerk to the undercroft stair\"; \"Send word to the messengers bench\"; \"Take the copy room\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -2263,7 +2328,7 @@
   },
   {
    "id": "d10_3",
-   "body": "<<FILL role=rising words=70 beats='the assay bench is short one weight and nobody wants to be the one to say so; you are at the pyx chest; you know the archive better than anyone here and it is your only advantage'>>",
+   "body": "<<FILL role=rising words=70 beats='the assay bench is short one weight and nobody wants to be the one to say so; you are at the pyx chest; you know the archive better than anyone here and it is your only advantage; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Cross to the wax table\"; \"Follow the clerk to the undercroft stair\"; \"Send word to the messengers bench\"; \"Take the copy room\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -2285,7 +2350,7 @@
   },
   {
    "id": "d10_4",
-   "body": "<<FILL role=rising words=60 beats='the assay bench is short one weight and nobody wants to be the one to say so; you are at the strike floor; you have one letter of introduction and it is not in your name'>>",
+   "body": "<<FILL role=rising words=60 beats='the assay bench is short one weight and nobody wants to be the one to say so; you are at the strike floor; you have one letter of introduction and it is not in your name; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Cross to the wax table\"; \"Follow the clerk to the undercroft stair\"; \"Send word to the messengers bench\"; \"Take the copy room\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -2307,7 +2372,7 @@
   },
   {
    "id": "d10_5",
-   "body": "<<FILL role=rising words=74 beats='the assay bench is short one weight and nobody wants to be the one to say so; you are at the porters yard; the guard on this door changes at the half hour'>>",
+   "body": "<<FILL role=rising words=74 beats='the assay bench is short one weight and nobody wants to be the one to say so; you are at the porters yard; the guard on this door changes at the half hour; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Cross to the wax table\"; \"Follow the clerk to the undercroft stair\"; \"Send word to the messengers bench\"; \"Take the copy room\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -2334,7 +2399,7 @@
   },
   {
    "id": "d10_6",
-   "body": "<<FILL role=rising words=66 beats='the assay bench is short one weight and nobody wants to be the one to say so; you are at the captain of the guard; your hands are ink-stained and everyone in the room can see it'>>",
+   "body": "<<FILL role=rising words=66 beats='the assay bench is short one weight and nobody wants to be the one to say so; you are at the captain of the guard; your hands are ink-stained and everyone in the room can see it; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Cross to the wax table\"; \"Follow the clerk to the undercroft stair\"; \"Send word to the messengers bench\"; \"Take the copy room\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -2356,7 +2421,7 @@
   },
   {
    "id": "d11_0",
-   "body": "<<FILL role=rising words=58 beats='the porters yard is full of carts that arrived empty; you are at the die room; the third claimant has done nothing at all, which is the frightening part'>>",
+   "body": "<<FILL role=rising words=58 beats='the porters yard is full of carts that arrived empty; you are at the die room; the third claimant has done nothing at all, which is the frightening part; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Cross to the wax table\"; \"Follow the clerk to the undercroft stair\"; \"Send word to the messengers bench\"; \"Take the copy room\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -2378,7 +2443,7 @@
   },
   {
    "id": "d11_1",
-   "body": "<<FILL role=rising words=72 beats='the porters yard is full of carts that arrived empty; you are at the assay bench; you are being useful to somebody and you cannot work out to whom'>>",
+   "body": "<<FILL role=rising words=72 beats='the porters yard is full of carts that arrived empty; you are at the assay bench; you are being useful to somebody and you cannot work out to whom; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Cross to the wax table\"; \"Follow the clerk to the undercroft stair\"; \"Send word to the messengers bench\"; \"Take the copy room\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -2400,7 +2465,7 @@
   },
   {
    "id": "d11_2",
-   "body": "<<FILL role=rising words=62 beats='the porters yard is full of carts that arrived empty; you are at the bullion stair; the roll is heavier than a document that size should be'>>",
+   "body": "<<FILL role=rising words=62 beats='the porters yard is full of carts that arrived empty; you are at the bullion stair; the roll is heavier than a document that size should be; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Cross to the wax table\"; \"Follow the clerk to the undercroft stair\"; \"Send word to the messengers bench\"; \"Take the copy room\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -2422,7 +2487,7 @@
   },
   {
    "id": "d11_3",
-   "body": "<<FILL role=rising words=68 beats='the porters yard is full of carts that arrived empty; you are at the pyx chest; you have not slept properly since the bells rang for the queen'>>",
+   "body": "<<FILL role=rising words=68 beats='the porters yard is full of carts that arrived empty; you are at the pyx chest; you have not slept properly since the bells rang for the queen; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Cross to the wax table\"; \"Follow the clerk to the undercroft stair\"; \"Send word to the messengers bench\"; \"Take the copy room\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -2444,7 +2509,7 @@
   },
   {
    "id": "d11_4",
-   "body": "<<FILL role=rising words=61 beats='the porters yard is full of carts that arrived empty; you are at the strike floor; there is a version of today where you simply go back to the copy room'>>",
+   "body": "<<FILL role=rising words=61 beats='the porters yard is full of carts that arrived empty; you are at the strike floor; there is a version of today where you simply go back to the copy room; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Cross to the wax table\"; \"Follow the clerk to the undercroft stair\"; \"Send word to the messengers bench\"; \"Take the copy room\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -2471,7 +2536,7 @@
   },
   {
    "id": "d11_5",
-   "body": "<<FILL role=rising words=76 beats='the porters yard is full of carts that arrived empty; you are at the porters yard; the regent remembers faces and has already seen yours once'>>",
+   "body": "<<FILL role=rising words=76 beats='the porters yard is full of carts that arrived empty; you are at the porters yard; the regent remembers faces and has already seen yours once; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Cross to the wax table\"; \"Follow the clerk to the undercroft stair\"; \"Send word to the messengers bench\"; \"Take the copy room\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -2493,7 +2558,7 @@
   },
   {
    "id": "d11_6",
-   "body": "<<FILL role=rising words=65 beats='the porters yard is full of carts that arrived empty; you are at the captain of the guard; the truth here is not in doubt, only the order it gets said in'>>",
+   "body": "<<FILL role=rising words=65 beats='the porters yard is full of carts that arrived empty; you are at the captain of the guard; the truth here is not in doubt, only the order it gets said in; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Cross to the wax table\"; \"Follow the clerk to the undercroft stair\"; \"Send word to the messengers bench\"; \"Take the copy room\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -2515,7 +2580,7 @@
   },
   {
    "id": "d12_0",
-   "body": "<<FILL role=rising words=64 beats='the Winter Fair opens and the whole city walks through it once; you are at the cloth rows; you are sixteen and the most junior sworn clerk in the building'>>",
+   "body": "<<FILL role=rising words=64 beats='the Winter Fair opens and the whole city walks through it once; you are at the cloth rows; you are sixteen and the most junior sworn clerk in the building; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Cross to the wax table\"; \"Follow the clerk to the undercroft stair\"; \"Send word to the messengers bench\"; \"Take the copy room\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -2537,7 +2602,7 @@
   },
   {
    "id": "d12_1",
-   "body": "<<FILL role=rising words=70 beats='the Winter Fair opens and the whole city walks through it once; you are at the horse lines; the roll is a copy, and a copy is only worth the seal on it'>>",
+   "body": "<<FILL role=rising words=70 beats='the Winter Fair opens and the whole city walks through it once; you are at the horse lines; the roll is a copy, and a copy is only worth the seal on it; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Cross to the wax table\"; \"Follow the clerk to the undercroft stair\"; \"Send word to the messengers bench\"; \"Take the copy room\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -2559,7 +2624,7 @@
   },
   {
    "id": "d12_2",
-   "body": "<<FILL role=rising words=60 beats='the Winter Fair opens and the whole city walks through it once; you are at the pie stalls; Warden Ammet trusted you with the keys and has not asked for them back'>>",
+   "body": "<<FILL role=rising words=60 beats='the Winter Fair opens and the whole city walks through it once; you are at the pie stalls; Warden Ammet trusted you with the keys and has not asked for them back; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Cross to the wax table\"; \"Follow the clerk to the undercroft stair\"; \"Send word to the messengers bench\"; \"Take the copy room\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -2581,7 +2646,7 @@
   },
   {
    "id": "d12_3",
-   "body": "<<FILL role=rising words=74 beats='the Winter Fair opens and the whole city walks through it once; you are at the mummers stage; whatever you do here goes into a record somebody else will read'>>",
+   "body": "<<FILL role=rising words=74 beats='the Winter Fair opens and the whole city walks through it once; you are at the mummers stage; whatever you do here goes into a record somebody else will read; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Cross to the wax table\"; \"Follow the clerk to the undercroft stair\"; \"Send word to the messengers bench\"; \"Take the copy room\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -2608,13 +2673,34 @@
   },
   {
    "id": "d12_4",
-   "body": "<<FILL role=rising words=66 beats='the Winter Fair opens and the whole city walks through it once; you are at the moneychangers; you can prove one thing today and only one'>>",
+   "body": "<<FILL role=rising words=66 beats='the Winter Fair opens and the whole city walks through it once; you are at the moneychangers; you can prove one thing today and only one; PAYOFF SITE (did_cross_wax_table): readers arrive here both having and not having chosen \"Cross to the wax table\" earlier, so this body must be true either way and must not say which. The option \"Follow the clerk to the moneychangers\" plays out differently for the two: with that earlier choice the reader first sees a payoff scene. MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Cross to the wax table\"; \"Follow the clerk to the undercroft stair\"; \"Send word to the messengers bench\"; \"Take the copy room\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
      "id": "ch_d12_4_0",
      "label": "Follow the clerk to the moneychangers",
-     "target": "d13_4"
+     "target": "d13_4",
+     "condition": {
+      "==": [
+       {
+        "var": "did_cross_wax_table"
+       },
+       false
+      ]
+     }
+    },
+    {
+     "id": "ch_d12_4_0_cq_did_cross_wax_table",
+     "label": "Follow the clerk to the moneychangers",
+     "target": "cq_payoff_did_cross_wax_table",
+     "condition": {
+      "==": [
+       {
+        "var": "did_cross_wax_table"
+       },
+       true
+      ]
+     }
     },
     {
      "id": "ch_d12_4_1",
@@ -2629,8 +2715,20 @@
    ]
   },
   {
+   "id": "cq_payoff_did_cross_wax_table",
+   "body": "<<FILL role=payoff words=44 beats='PAYOFF (did_cross_wax_table): only a reader who earlier chose \"Cross to the wax table\" (node n_night) reaches this scene. The hero tries \"Follow the clerk to the moneychangers\". The thing that came of that earlier choice changes how it goes: show it returning concretely in a few sentences, a moment only this reader gets. Then lead into the next scene (node d13_4), which every reader who makes this move reaches, without contradicting it.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_cq_payoff_did_cross_wax_table",
+     "label": "Follow the clerk to the moneychangers",
+     "target": "d13_4"
+    }
+   ]
+  },
+  {
    "id": "d12_5",
-   "body": "<<FILL role=rising words=58 beats='the Winter Fair opens and the whole city walks through it once; you are at the toll bar; the claimant you favour is not the claimant the roll names'>>",
+   "body": "<<FILL role=rising words=58 beats='the Winter Fair opens and the whole city walks through it once; you are at the toll bar; the claimant you favour is not the claimant the roll names; PAYOFF SITE (did_take_copy_room): readers arrive here both having and not having chosen \"Take the copy room\" earlier, so this body must be true either way and must not say which. The option \"Break cover at the cloth rows\" plays out differently for the two: without that earlier choice it leads to the setback (e_001); with it, to a recovery. MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Cross to the wax table\"; \"Follow the clerk to the undercroft stair\"; \"Send word to the messengers bench\"; \"Take the copy room\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -2641,7 +2739,28 @@
     {
      "id": "ch_d12_5_1",
      "label": "Break cover at the cloth rows",
-     "target": "e_001"
+     "target": "e_001",
+     "condition": {
+      "==": [
+       {
+        "var": "did_take_copy_room"
+       },
+       false
+      ]
+     }
+    },
+    {
+     "id": "ch_d12_5_1_cq_did_take_copy_room",
+     "label": "Break cover at the cloth rows",
+     "target": "cq_payoff_did_take_copy_room",
+     "condition": {
+      "==": [
+       {
+        "var": "did_take_copy_room"
+       },
+       true
+      ]
+     }
     },
     {
      "id": "ch_d12_5_2",
@@ -2651,8 +2770,20 @@
    ]
   },
   {
+   "id": "cq_payoff_did_take_copy_room",
+   "body": "<<FILL role=payoff words=44 beats='PAYOFF (did_take_copy_room): only a reader who earlier chose \"Take the copy room\" (node n_night) reaches this scene. The hero tries \"Break cover at the cloth rows\". For a reader without that earlier choice the same move ends the story early (e_001). Here the thing that came of it turns the moment around: show it returning concretely and making the difference. End with the hero moving on to \"Make for the toll bar\", leading into the next scene (node d13_5), which other readers also reach, without contradicting it.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_cq_payoff_did_take_copy_room",
+     "label": "Make for the toll bar",
+     "target": "d13_5"
+    }
+   ]
+  },
+  {
    "id": "d12_6",
-   "body": "<<FILL role=rising words=72 beats='the Winter Fair opens and the whole city walks through it once; you are at the river steps; you have no rank to hide behind and no family to be owed a favour'>>",
+   "body": "<<FILL role=rising words=72 beats='the Winter Fair opens and the whole city walks through it once; you are at the river steps; you have no rank to hide behind and no family to be owed a favour; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Cross to the wax table\"; \"Follow the clerk to the undercroft stair\"; \"Send word to the messengers bench\"; \"Take the copy room\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -2674,13 +2805,34 @@
   },
   {
    "id": "d13_0",
-   "body": "<<FILL role=rising words=62 beats='in a crowd this size the only safe place is the middle; you are at the cloth rows; if you are wrong about this, you are wrong in front of everyone'>>",
+   "body": "<<FILL role=rising words=62 beats='in a crowd this size the only safe place is the middle; you are at the cloth rows; if you are wrong about this, you are wrong in front of everyone; PAYOFF SITE (did_cross_wax_table): readers arrive here both having and not having chosen \"Cross to the wax table\" earlier, so this body must be true either way and must not say which. The option \"Present yourself at the cloth rows\" plays out differently for the two: with that earlier choice the reader first sees a payoff scene.'>>",
    "is_ending": false,
    "choices": [
     {
      "id": "ch_d13_0_0",
      "label": "Present yourself at the cloth rows",
-     "target": "d14_0"
+     "target": "d14_0",
+     "condition": {
+      "==": [
+       {
+        "var": "did_cross_wax_table"
+       },
+       false
+      ]
+     }
+    },
+    {
+     "id": "ch_d13_0_0_cq_did_cross_wax_table",
+     "label": "Present yourself at the cloth rows",
+     "target": "cq_payoff_did_cross_wax_table_site2",
+     "condition": {
+      "==": [
+       {
+        "var": "did_cross_wax_table"
+       },
+       true
+      ]
+     }
     },
     {
      "id": "ch_d13_0_1",
@@ -2695,8 +2847,20 @@
    ]
   },
   {
+   "id": "cq_payoff_did_cross_wax_table_site2",
+   "body": "<<FILL role=payoff words=44 beats='PAYOFF (did_cross_wax_table): only a reader who earlier chose \"Cross to the wax table\" (node n_night) reaches this scene. The hero tries \"Present yourself at the cloth rows\". The thing that came of that earlier choice changes how it goes: show it returning concretely in a few sentences, a moment only this reader gets. Then lead into the next scene (node d14_0), which every reader who makes this move reaches, without contradicting it.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_cq_payoff_did_cross_wax_table_site2",
+     "label": "Present yourself at the cloth rows",
+     "target": "d14_0"
+    }
+   ]
+  },
+  {
    "id": "d13_1",
-   "body": "<<FILL role=rising words=68 beats='in a crowd this size the only safe place is the middle; you are at the horse lines; the fastest route through this building is the one that gets noticed'>>",
+   "body": "<<FILL role=rising words=68 beats='in a crowd this size the only safe place is the middle; you are at the horse lines; the fastest route through this building is the one that gets noticed; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Cross to the wax table\"; \"Follow the clerk to the undercroft stair\"; \"Send word to the messengers bench\"; \"Take the copy room\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -2718,7 +2882,7 @@
   },
   {
    "id": "d13_2",
-   "body": "<<FILL role=rising words=61 beats='in a crowd this size the only safe place is the middle; you are at the pie stalls; there is an honest way to do this and it is slower by a day'>>",
+   "body": "<<FILL role=rising words=61 beats='in a crowd this size the only safe place is the middle; you are at the pie stalls; there is an honest way to do this and it is slower by a day; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Cross to the wax table\"; \"Follow the clerk to the undercroft stair\"; \"Send word to the messengers bench\"; \"Take the copy room\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -2745,7 +2909,7 @@
   },
   {
    "id": "d13_3",
-   "body": "<<FILL role=rising words=76 beats='in a crowd this size the only safe place is the middle; you are at the mummers stage; somebody is paying for your mistakes to be findable'>>",
+   "body": "<<FILL role=rising words=76 beats='in a crowd this size the only safe place is the middle; you are at the mummers stage; somebody is paying for your mistakes to be findable; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Cross to the wax table\"; \"Follow the clerk to the undercroft stair\"; \"Send word to the messengers bench\"; \"Take the copy room\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -2767,7 +2931,7 @@
   },
   {
    "id": "d13_4",
-   "body": "<<FILL role=rising words=65 beats='in a crowd this size the only safe place is the middle; you are at the moneychangers; the seal press only takes an impression once'>>",
+   "body": "<<FILL role=rising words=65 beats='in a crowd this size the only safe place is the middle; you are at the moneychangers; the seal press only takes an impression once; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Cross to the wax table\"; \"Follow the clerk to the undercroft stair\"; \"Send word to the messengers bench\"; \"Take the copy room\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -2789,7 +2953,7 @@
   },
   {
    "id": "d13_5",
-   "body": "<<FILL role=rising words=64 beats='in a crowd this size the only safe place is the middle; you are at the toll bar; you have been careful for eleven days and careful is running out'>>",
+   "body": "<<FILL role=rising words=64 beats='in a crowd this size the only safe place is the middle; you are at the toll bar; you have been careful for eleven days and careful is running out; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Cross to the wax table\"; \"Follow the clerk to the undercroft stair\"; \"Send word to the messengers bench\"; \"Take the copy room\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -2811,13 +2975,34 @@
   },
   {
    "id": "d13_6",
-   "body": "<<FILL role=rising words=70 beats='in a crowd this size the only safe place is the middle; you are at the river steps; a name spoken in the wrong room becomes a warrant by evening'>>",
+   "body": "<<FILL role=rising words=70 beats='in a crowd this size the only safe place is the middle; you are at the river steps; a name spoken in the wrong room becomes a warrant by evening; PAYOFF SITE (did_send_word_messengers): readers arrive here both having and not having chosen \"Send word to the messengers bench\" earlier, so this body must be true either way and must not say which. The option \"Present yourself at the river steps\" plays out differently for the two: with that earlier choice the reader first sees a payoff scene.'>>",
    "is_ending": false,
    "choices": [
     {
      "id": "ch_d13_6_0",
      "label": "Present yourself at the river steps",
-     "target": "d14_6"
+     "target": "d14_6",
+     "condition": {
+      "==": [
+       {
+        "var": "did_send_word_messengers"
+       },
+       false
+      ]
+     }
+    },
+    {
+     "id": "ch_d13_6_0_cq_did_send_word_messengers",
+     "label": "Present yourself at the river steps",
+     "target": "cq_payoff_did_send_word_messengers_site2",
+     "condition": {
+      "==": [
+       {
+        "var": "did_send_word_messengers"
+       },
+       true
+      ]
+     }
     },
     {
      "id": "ch_d13_6_1",
@@ -2832,8 +3017,20 @@
    ]
   },
   {
+   "id": "cq_payoff_did_send_word_messengers_site2",
+   "body": "<<FILL role=payoff words=44 beats='PAYOFF (did_send_word_messengers): only a reader who earlier chose \"Send word to the messengers bench\" (node d01_2) reaches this scene. The hero tries \"Present yourself at the river steps\". The thing that came of that earlier choice changes how it goes: show it returning concretely in a few sentences, a moment only this reader gets. Then lead into the next scene (node d14_6), which every reader who makes this move reaches, without contradicting it.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_cq_payoff_did_send_word_messengers_site2",
+     "label": "Present yourself at the river steps",
+     "target": "d14_6"
+    }
+   ]
+  },
+  {
    "id": "d14_0",
-   "body": "<<FILL role=rising words=60 beats='the mummers are playing a succession they were paid to play; you are at the cloth rows; the person helping you has not told you why'>>",
+   "body": "<<FILL role=rising words=60 beats='the mummers are playing a succession they were paid to play; you are at the cloth rows; the person helping you has not told you why; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Cross to the wax table\"; \"Follow the clerk to the undercroft stair\"; \"Send word to the messengers bench\"; \"Take the copy room\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -2882,7 +3079,7 @@
   },
   {
    "id": "d14_2",
-   "body": "<<FILL role=rising words=66 beats='the mummers are playing a succession they were paid to play; you are at the pie stalls; you can be believed or you can be quick'>>",
+   "body": "<<FILL role=rising words=66 beats='the mummers are playing a succession they were paid to play; you are at the pie stalls; you can be believed or you can be quick; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Cross to the wax table\"; \"Follow the clerk to the undercroft stair\"; \"Send word to the messengers bench\"; \"Take the copy room\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -2904,7 +3101,7 @@
   },
   {
    "id": "d14_3",
-   "body": "<<FILL role=rising words=58 beats='the mummers are playing a succession they were paid to play; you are at the mummers stage; you know the archive better than anyone here and it is your only advantage'>>",
+   "body": "<<FILL role=rising words=58 beats='the mummers are playing a succession they were paid to play; you are at the mummers stage; you know the archive better than anyone here and it is your only advantage; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Cross to the wax table\"; \"Follow the clerk to the undercroft stair\"; \"Send word to the messengers bench\"; \"Take the copy room\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -2926,7 +3123,7 @@
   },
   {
    "id": "d14_4",
-   "body": "<<FILL role=rising words=72 beats='the mummers are playing a succession they were paid to play; you are at the moneychangers; you have one letter of introduction and it is not in your name'>>",
+   "body": "<<FILL role=rising words=72 beats='the mummers are playing a succession they were paid to play; you are at the moneychangers; you have one letter of introduction and it is not in your name; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Cross to the wax table\"; \"Follow the clerk to the undercroft stair\"; \"Send word to the messengers bench\"; \"Take the copy room\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -2948,7 +3145,7 @@
   },
   {
    "id": "d14_5",
-   "body": "<<FILL role=rising words=62 beats='the mummers are playing a succession they were paid to play; you are at the toll bar; the guard on this door changes at the half hour'>>",
+   "body": "<<FILL role=rising words=62 beats='the mummers are playing a succession they were paid to play; you are at the toll bar; the guard on this door changes at the half hour; PAYOFF SITE (did_send_word_messengers): readers arrive here both having and not having chosen \"Send word to the messengers bench\" earlier, so this body must be true either way and must not say which. The option \"Push past the guard at the cloth rows\" plays out differently for the two: without that earlier choice it leads to the setback (e_005); with it, to a recovery. MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Cross to the wax table\"; \"Follow the clerk to the undercroft stair\"; \"Send word to the messengers bench\"; \"Take the copy room\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -2959,7 +3156,28 @@
     {
      "id": "ch_d14_5_1",
      "label": "Push past the guard at the cloth rows",
-     "target": "e_005"
+     "target": "e_005",
+     "condition": {
+      "==": [
+       {
+        "var": "did_send_word_messengers"
+       },
+       false
+      ]
+     }
+    },
+    {
+     "id": "ch_d14_5_1_cq_did_send_word_messengers",
+     "label": "Push past the guard at the cloth rows",
+     "target": "cq_payoff_did_send_word_messengers",
+     "condition": {
+      "==": [
+       {
+        "var": "did_send_word_messengers"
+       },
+       true
+      ]
+     }
     },
     {
      "id": "ch_d14_5_2",
@@ -2969,8 +3187,20 @@
    ]
   },
   {
+   "id": "cq_payoff_did_send_word_messengers",
+   "body": "<<FILL role=payoff words=44 beats='PAYOFF (did_send_word_messengers): only a reader who earlier chose \"Send word to the messengers bench\" (node d01_2) reaches this scene. The hero tries \"Push past the guard at the cloth rows\". For a reader without that earlier choice the same move ends the story early (e_005). Here the thing that came of it turns the moment around: show it returning concretely and making the difference. End with the hero moving on to \"Work your way round to the toll bar\", leading into the next scene (node d15_5), which other readers also reach, without contradicting it.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_cq_payoff_did_send_word_messengers",
+     "label": "Work your way round to the toll bar",
+     "target": "d15_5"
+    }
+   ]
+  },
+  {
    "id": "d14_6",
-   "body": "<<FILL role=rising words=68 beats='the mummers are playing a succession they were paid to play; you are at the river steps; your hands are ink-stained and everyone in the room can see it'>>",
+   "body": "<<FILL role=rising words=68 beats='the mummers are playing a succession they were paid to play; you are at the river steps; your hands are ink-stained and everyone in the room can see it; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Cross to the wax table\"; \"Follow the clerk to the undercroft stair\"; \"Send word to the messengers bench\"; \"Take the copy room\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -3046,13 +3276,34 @@
   },
   {
    "id": "d15_2",
-   "body": "<<FILL role=rising words=65 beats='the toll bar closes at dusk and after that the river is the only way back; you are at the pie stalls; the roll is heavier than a document that size should be'>>",
+   "body": "<<FILL role=rising words=65 beats='the toll bar closes at dusk and after that the river is the only way back; you are at the pie stalls; the roll is heavier than a document that size should be; PAYOFF SITE (did_follow_clerk_undercroft): readers arrive here both having and not having chosen \"Follow the clerk to the undercroft stair\" earlier, so this body must be true either way and must not say which. The option \"Cross to the sealed presses\" plays out differently for the two: with that earlier choice the reader first sees a payoff scene. MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Cross to the wax table\"; \"Follow the clerk to the undercroft stair\"; \"Send word to the messengers bench\"; \"Take the copy room\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
      "id": "ch_d15_2_0",
      "label": "Cross to the sealed presses",
-     "target": "d16_2"
+     "target": "d16_2",
+     "condition": {
+      "==": [
+       {
+        "var": "did_follow_clerk_undercroft"
+       },
+       false
+      ]
+     }
+    },
+    {
+     "id": "ch_d15_2_0_cq_did_follow_clerk_undercroft",
+     "label": "Cross to the sealed presses",
+     "target": "cq_payoff_did_follow_clerk_undercroft_site2",
+     "condition": {
+      "==": [
+       {
+        "var": "did_follow_clerk_undercroft"
+       },
+       true
+      ]
+     }
     },
     {
      "id": "ch_d15_2_1",
@@ -3067,14 +3318,47 @@
    ]
   },
   {
+   "id": "cq_payoff_did_follow_clerk_undercroft_site2",
+   "body": "<<FILL role=payoff words=44 beats='PAYOFF (did_follow_clerk_undercroft): only a reader who earlier chose \"Follow the clerk to the undercroft stair\" (node d01_2) reaches this scene. The hero tries \"Cross to the sealed presses\". The thing that came of that earlier choice changes how it goes: show it returning concretely in a few sentences, a moment only this reader gets. Then lead into the next scene (node d16_2), which every reader who makes this move reaches, without contradicting it.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_cq_payoff_did_follow_clerk_undercroft_site2",
+     "label": "Cross to the sealed presses",
+     "target": "d16_2"
+    }
+   ]
+  },
+  {
    "id": "d15_3",
-   "body": "<<FILL role=rising words=64 beats='the toll bar closes at dusk and after that the river is the only way back; you are at the mummers stage; you have not slept properly since the bells rang for the queen'>>",
+   "body": "<<FILL role=rising words=64 beats='the toll bar closes at dusk and after that the river is the only way back; you are at the mummers stage; you have not slept properly since the bells rang for the queen; PAYOFF SITE (did_take_copy_room): readers arrive here both having and not having chosen \"Take the copy room\" earlier, so this body must be true either way and must not say which. The option \"Present yourself at the burned shelf\" plays out differently for the two: with that earlier choice the reader first sees a payoff scene. MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Cross to the wax table\"; \"Follow the clerk to the undercroft stair\"; \"Send word to the messengers bench\"; \"Take the copy room\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
      "id": "ch_d15_3_0",
      "label": "Present yourself at the burned shelf",
-     "target": "d16_3"
+     "target": "d16_3",
+     "condition": {
+      "==": [
+       {
+        "var": "did_take_copy_room"
+       },
+       false
+      ]
+     }
+    },
+    {
+     "id": "ch_d15_3_0_cq_did_take_copy_room",
+     "label": "Present yourself at the burned shelf",
+     "target": "cq_payoff_did_take_copy_room_site2",
+     "condition": {
+      "==": [
+       {
+        "var": "did_take_copy_room"
+       },
+       true
+      ]
+     }
     },
     {
      "id": "ch_d15_3_1",
@@ -3089,14 +3373,47 @@
    ]
   },
   {
+   "id": "cq_payoff_did_take_copy_room_site2",
+   "body": "<<FILL role=payoff words=44 beats='PAYOFF (did_take_copy_room): only a reader who earlier chose \"Take the copy room\" (node n_night) reaches this scene. The hero tries \"Present yourself at the burned shelf\". The thing that came of that earlier choice changes how it goes: show it returning concretely in a few sentences, a moment only this reader gets. Then lead into the next scene (node d16_3), which every reader who makes this move reaches, without contradicting it.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_cq_payoff_did_take_copy_room_site2",
+     "label": "Present yourself at the burned shelf",
+     "target": "d16_3"
+    }
+   ]
+  },
+  {
    "id": "d15_4",
-   "body": "<<FILL role=rising words=70 beats='the toll bar closes at dusk and after that the river is the only way back; you are at the moneychangers; there is a version of today where you simply go back to the copy room'>>",
+   "body": "<<FILL role=rising words=70 beats='the toll bar closes at dusk and after that the river is the only way back; you are at the moneychangers; there is a version of today where you simply go back to the copy room; PAYOFF SITE (did_follow_clerk_undercroft): readers arrive here both having and not having chosen \"Follow the clerk to the undercroft stair\" earlier, so this body must be true either way and must not say which. The option \"Ask for the copyists cell\" plays out differently for the two: with that earlier choice the reader first sees a payoff scene. MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Cross to the wax table\"; \"Follow the clerk to the undercroft stair\"; \"Send word to the messengers bench\"; \"Take the copy room\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
      "id": "ch_d15_4_0",
      "label": "Ask for the copyists cell",
-     "target": "d16_4"
+     "target": "d16_4",
+     "condition": {
+      "==": [
+       {
+        "var": "did_follow_clerk_undercroft"
+       },
+       false
+      ]
+     }
+    },
+    {
+     "id": "ch_d15_4_0_cq_did_follow_clerk_undercroft",
+     "label": "Ask for the copyists cell",
+     "target": "cq_payoff_did_follow_clerk_undercroft",
+     "condition": {
+      "==": [
+       {
+        "var": "did_follow_clerk_undercroft"
+       },
+       true
+      ]
+     }
     },
     {
      "id": "ch_d15_4_1",
@@ -3111,8 +3428,20 @@
    ]
   },
   {
+   "id": "cq_payoff_did_follow_clerk_undercroft",
+   "body": "<<FILL role=payoff words=44 beats='PAYOFF (did_follow_clerk_undercroft): only a reader who earlier chose \"Follow the clerk to the undercroft stair\" (node d01_2) reaches this scene. The hero tries \"Ask for the copyists cell\". The thing that came of that earlier choice changes how it goes: show it returning concretely in a few sentences, a moment only this reader gets. Then lead into the next scene (node d16_4), which every reader who makes this move reaches, without contradicting it.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_cq_payoff_did_follow_clerk_undercroft",
+     "label": "Ask for the copyists cell",
+     "target": "d16_4"
+    }
+   ]
+  },
+  {
    "id": "d15_5",
-   "body": "<<FILL role=rising words=60 beats='the toll bar closes at dusk and after that the river is the only way back; you are at the toll bar; the regent remembers faces and has already seen yours once'>>",
+   "body": "<<FILL role=rising words=60 beats='the toll bar closes at dusk and after that the river is the only way back; you are at the toll bar; the regent remembers faces and has already seen yours once; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Cross to the wax table\"; \"Follow the clerk to the undercroft stair\"; \"Send word to the messengers bench\"; \"Take the copy room\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -3161,7 +3490,7 @@
   },
   {
    "id": "d16_0",
-   "body": "<<FILL role=rising words=66 beats='the Archive holds three copies of everything and two of them have been corrected; you are at the roll racks; you are sixteen and the most junior sworn clerk in the building'>>",
+   "body": "<<FILL role=rising words=66 beats='the Archive holds three copies of everything and two of them have been corrected; you are at the roll racks; you are sixteen and the most junior sworn clerk in the building; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Cross to the wax table\"; \"Follow the clerk to the undercroft stair\"; \"Send word to the messengers bench\"; \"Take the copy room\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -3205,7 +3534,7 @@
   },
   {
    "id": "d16_2",
-   "body": "<<FILL role=rising words=72 beats='the Archive holds three copies of everything and two of them have been corrected; you are at the sealed presses; Warden Ammet trusted you with the keys and has not asked for them back'>>",
+   "body": "<<FILL role=rising words=72 beats='the Archive holds three copies of everything and two of them have been corrected; you are at the sealed presses; Warden Ammet trusted you with the keys and has not asked for them back; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Cross to the wax table\"; \"Follow the clerk to the undercroft stair\"; \"Send word to the messengers bench\"; \"Take the copy room\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -3227,7 +3556,7 @@
   },
   {
    "id": "d16_3",
-   "body": "<<FILL role=rising words=62 beats='the Archive holds three copies of everything and two of them have been corrected; you are at the burned shelf; whatever you do here goes into a record somebody else will read'>>",
+   "body": "<<FILL role=rising words=62 beats='the Archive holds three copies of everything and two of them have been corrected; you are at the burned shelf; whatever you do here goes into a record somebody else will read; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Cross to the wax table\"; \"Follow the clerk to the undercroft stair\"; \"Send word to the messengers bench\"; \"Take the copy room\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -3249,7 +3578,7 @@
   },
   {
    "id": "d16_4",
-   "body": "<<FILL role=rising words=68 beats='the Archive holds three copies of everything and two of them have been corrected; you are at the copyists cell; you can prove one thing today and only one'>>",
+   "body": "<<FILL role=rising words=68 beats='the Archive holds three copies of everything and two of them have been corrected; you are at the copyists cell; you can prove one thing today and only one; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Cross to the wax table\"; \"Follow the clerk to the undercroft stair\"; \"Send word to the messengers bench\"; \"Take the copy room\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -3276,7 +3605,7 @@
   },
   {
    "id": "d16_5",
-   "body": "<<FILL role=rising words=61 beats='the Archive holds three copies of everything and two of them have been corrected; you are at the lamp room; the claimant you favour is not the claimant the roll names'>>",
+   "body": "<<FILL role=rising words=61 beats='the Archive holds three copies of everything and two of them have been corrected; you are at the lamp room; the claimant you favour is not the claimant the roll names; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Cross to the wax table\"; \"Follow the clerk to the undercroft stair\"; \"Send word to the messengers bench\"; \"Take the copy room\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -3298,7 +3627,7 @@
   },
   {
    "id": "d16_6",
-   "body": "<<FILL role=rising words=76 beats='the Archive holds three copies of everything and two of them have been corrected; you are at the vault stair; you have no rank to hide behind and no family to be owed a favour'>>",
+   "body": "<<FILL role=rising words=76 beats='the Archive holds three copies of everything and two of them have been corrected; you are at the vault stair; you have no rank to hide behind and no family to be owed a favour; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Cross to the wax table\"; \"Follow the clerk to the undercroft stair\"; \"Send word to the messengers bench\"; \"Take the copy room\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -3320,7 +3649,7 @@
   },
   {
    "id": "d17_0",
-   "body": "<<FILL role=rising words=65 beats='the index desk has a hand you recognise in the margin; you are at the roll racks; if you are wrong about this, you are wrong in front of everyone'>>",
+   "body": "<<FILL role=rising words=65 beats='the index desk has a hand you recognise in the margin; you are at the roll racks; if you are wrong about this, you are wrong in front of everyone; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Cross to the wax table\"; \"Follow the clerk to the undercroft stair\"; \"Send word to the messengers bench\"; \"Take the copy room\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -3342,7 +3671,7 @@
   },
   {
    "id": "d17_1",
-   "body": "<<FILL role=rising words=64 beats='the index desk has a hand you recognise in the margin; you are at the index desk; the fastest route through this building is the one that gets noticed'>>",
+   "body": "<<FILL role=rising words=64 beats='the index desk has a hand you recognise in the margin; you are at the index desk; the fastest route through this building is the one that gets noticed; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Cross to the wax table\"; \"Follow the clerk to the undercroft stair\"; \"Send word to the messengers bench\"; \"Take the copy room\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -3364,7 +3693,7 @@
   },
   {
    "id": "d17_2",
-   "body": "<<FILL role=rising words=70 beats='the index desk has a hand you recognise in the margin; you are at the sealed presses; there is an honest way to do this and it is slower by a day'>>",
+   "body": "<<FILL role=rising words=70 beats='the index desk has a hand you recognise in the margin; you are at the sealed presses; there is an honest way to do this and it is slower by a day; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Cross to the wax table\"; \"Follow the clerk to the undercroft stair\"; \"Send word to the messengers bench\"; \"Take the copy room\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -3457,7 +3786,7 @@
   },
   {
    "id": "d17_6",
-   "body": "<<FILL role=rising words=58 beats='the index desk has a hand you recognise in the margin; you are at the vault stair; a name spoken in the wrong room becomes a warrant by evening'>>",
+   "body": "<<FILL role=rising words=58 beats='the index desk has a hand you recognise in the margin; you are at the vault stair; a name spoken in the wrong room becomes a warrant by evening; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Cross to the wax table\"; \"Follow the clerk to the undercroft stair\"; \"Send word to the messengers bench\"; \"Take the copy room\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -3501,7 +3830,7 @@
   },
   {
    "id": "d18_1",
-   "body": "<<FILL role=rising words=62 beats='the burned shelf was burned recently and badly; you are at the index desk; the midwinter date is fixed and nothing moves it'>>",
+   "body": "<<FILL role=rising words=62 beats='the burned shelf was burned recently and badly; you are at the index desk; the midwinter date is fixed and nothing moves it; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Cross to the wax table\"; \"Follow the clerk to the undercroft stair\"; \"Send word to the messengers bench\"; \"Take the copy room\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -3523,7 +3852,7 @@
   },
   {
    "id": "d18_2",
-   "body": "<<FILL role=rising words=68 beats='the burned shelf was burned recently and badly; you are at the sealed presses; you can be believed or you can be quick'>>",
+   "body": "<<FILL role=rising words=68 beats='the burned shelf was burned recently and badly; you are at the sealed presses; you can be believed or you can be quick; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Cross to the wax table\"; \"Follow the clerk to the undercroft stair\"; \"Send word to the messengers bench\"; \"Take the copy room\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -3550,7 +3879,7 @@
   },
   {
    "id": "d18_3",
-   "body": "<<FILL role=rising words=61 beats='the burned shelf was burned recently and badly; you are at the burned shelf; you know the archive better than anyone here and it is your only advantage'>>",
+   "body": "<<FILL role=rising words=61 beats='the burned shelf was burned recently and badly; you are at the burned shelf; you know the archive better than anyone here and it is your only advantage; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Cross to the wax table\"; \"Follow the clerk to the undercroft stair\"; \"Send word to the messengers bench\"; \"Take the copy room\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -3572,7 +3901,7 @@
   },
   {
    "id": "d18_4",
-   "body": "<<FILL role=rising words=76 beats='the burned shelf was burned recently and badly; you are at the copyists cell; you have one letter of introduction and it is not in your name'>>",
+   "body": "<<FILL role=rising words=76 beats='the burned shelf was burned recently and badly; you are at the copyists cell; you have one letter of introduction and it is not in your name; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Cross to the wax table\"; \"Follow the clerk to the undercroft stair\"; \"Send word to the messengers bench\"; \"Take the copy room\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -3687,7 +4016,7 @@
   },
   {
    "id": "d19_2",
-   "body": "<<FILL role=rising words=74 beats='there is a lamp lit in the vault at an hour when there should not be; you are at the sealed presses; the roll is heavier than a document that size should be'>>",
+   "body": "<<FILL role=rising words=74 beats='there is a lamp lit in the vault at an hour when there should not be; you are at the sealed presses; the roll is heavier than a document that size should be; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Cross to the wax table\"; \"Follow the clerk to the undercroft stair\"; \"Send word to the messengers bench\"; \"Take the copy room\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -3709,7 +4038,7 @@
   },
   {
    "id": "d19_3",
-   "body": "<<FILL role=rising words=66 beats='there is a lamp lit in the vault at an hour when there should not be; you are at the burned shelf; you have not slept properly since the bells rang for the queen'>>",
+   "body": "<<FILL role=rising words=66 beats='there is a lamp lit in the vault at an hour when there should not be; you are at the burned shelf; you have not slept properly since the bells rang for the queen; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Cross to the wax table\"; \"Follow the clerk to the undercroft stair\"; \"Send word to the messengers bench\"; \"Take the copy room\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -3731,7 +4060,7 @@
   },
   {
    "id": "d19_4",
-   "body": "<<FILL role=rising words=58 beats='there is a lamp lit in the vault at an hour when there should not be; you are at the copyists cell; there is a version of today where you simply go back to the copy room'>>",
+   "body": "<<FILL role=rising words=58 beats='there is a lamp lit in the vault at an hour when there should not be; you are at the copyists cell; there is a version of today where you simply go back to the copy room; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Cross to the wax table\"; \"Follow the clerk to the undercroft stair\"; \"Send word to the messengers bench\"; \"Take the copy room\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -3753,7 +4082,7 @@
   },
   {
    "id": "d19_5",
-   "body": "<<FILL role=rising words=72 beats='there is a lamp lit in the vault at an hour when there should not be; you are at the lamp room; the regent remembers faces and has already seen yours once'>>",
+   "body": "<<FILL role=rising words=72 beats='there is a lamp lit in the vault at an hour when there should not be; you are at the lamp room; the regent remembers faces and has already seen yours once; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Cross to the wax table\"; \"Follow the clerk to the undercroft stair\"; \"Send word to the messengers bench\"; \"Take the copy room\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -3851,7 +4180,7 @@
   },
   {
    "id": "d20_2",
-   "body": "<<FILL role=rising words=76 beats='the Sept rings the hours and the whole court sets its lies by them; you are at the crypt door; Warden Ammet trusted you with the keys and has not asked for them back'>>",
+   "body": "<<FILL role=rising words=76 beats='the Sept rings the hours and the whole court sets its lies by them; you are at the crypt door; Warden Ammet trusted you with the keys and has not asked for them back; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Cross to the wax table\"; \"Follow the clerk to the undercroft stair\"; \"Send word to the messengers bench\"; \"Take the copy room\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -3873,7 +4202,7 @@
   },
   {
    "id": "d20_3",
-   "body": "<<FILL role=rising words=65 beats='the Sept rings the hours and the whole court sets its lies by them; you are at the chapter house; whatever you do here goes into a record somebody else will read'>>",
+   "body": "<<FILL role=rising words=65 beats='the Sept rings the hours and the whole court sets its lies by them; you are at the chapter house; whatever you do here goes into a record somebody else will read; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Cross to the wax table\"; \"Follow the clerk to the undercroft stair\"; \"Send word to the messengers bench\"; \"Take the copy room\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -3895,7 +4224,7 @@
   },
   {
    "id": "d20_4",
-   "body": "<<FILL role=rising words=64 beats='the Sept rings the hours and the whole court sets its lies by them; you are at the choir screen; you can prove one thing today and only one'>>",
+   "body": "<<FILL role=rising words=64 beats='the Sept rings the hours and the whole court sets its lies by them; you are at the choir screen; you can prove one thing today and only one; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Cross to the wax table\"; \"Follow the clerk to the undercroft stair\"; \"Send word to the messengers bench\"; \"Take the copy room\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -3917,7 +4246,7 @@
   },
   {
    "id": "d20_5",
-   "body": "<<FILL role=rising words=70 beats='the Sept rings the hours and the whole court sets its lies by them; you are at the sacristy; the claimant you favour is not the claimant the roll names'>>",
+   "body": "<<FILL role=rising words=70 beats='the Sept rings the hours and the whole court sets its lies by them; you are at the sacristy; the claimant you favour is not the claimant the roll names; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Cross to the wax table\"; \"Follow the clerk to the undercroft stair\"; \"Send word to the messengers bench\"; \"Take the copy room\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -4032,7 +4361,7 @@
   },
   {
    "id": "d21_3",
-   "body": "<<FILL role=rising words=72 beats='sanctuary is real here and it lasts exactly as long as the almoner allows; you are at the chapter house; somebody is paying for your mistakes to be findable'>>",
+   "body": "<<FILL role=rising words=72 beats='sanctuary is real here and it lasts exactly as long as the almoner allows; you are at the chapter house; somebody is paying for your mistakes to be findable; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Cross to the wax table\"; \"Follow the clerk to the undercroft stair\"; \"Send word to the messengers bench\"; \"Take the copy room\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -4054,7 +4383,7 @@
   },
   {
    "id": "d21_4",
-   "body": "<<FILL role=rising words=62 beats='sanctuary is real here and it lasts exactly as long as the almoner allows; you are at the choir screen; the seal press only takes an impression once'>>",
+   "body": "<<FILL role=rising words=62 beats='sanctuary is real here and it lasts exactly as long as the almoner allows; you are at the choir screen; the seal press only takes an impression once; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Cross to the wax table\"; \"Follow the clerk to the undercroft stair\"; \"Send word to the messengers bench\"; \"Take the copy room\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -4081,7 +4410,7 @@
   },
   {
    "id": "d21_5",
-   "body": "<<FILL role=rising words=68 beats='sanctuary is real here and it lasts exactly as long as the almoner allows; you are at the sacristy; you have been careful for eleven days and careful is running out'>>",
+   "body": "<<FILL role=rising words=68 beats='sanctuary is real here and it lasts exactly as long as the almoner allows; you are at the sacristy; you have been careful for eleven days and careful is running out; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Cross to the wax table\"; \"Follow the clerk to the undercroft stair\"; \"Send word to the messengers bench\"; \"Take the copy room\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -4103,7 +4432,7 @@
   },
   {
    "id": "d21_6",
-   "body": "<<FILL role=rising words=61 beats='sanctuary is real here and it lasts exactly as long as the almoner allows; you are at the pilgrims yard; a name spoken in the wrong room becomes a warrant by evening'>>",
+   "body": "<<FILL role=rising words=61 beats='sanctuary is real here and it lasts exactly as long as the almoner allows; you are at the pilgrims yard; a name spoken in the wrong room becomes a warrant by evening; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Cross to the wax table\"; \"Follow the clerk to the undercroft stair\"; \"Send word to the messengers bench\"; \"Take the copy room\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -4125,7 +4454,7 @@
   },
   {
    "id": "d22_0",
-   "body": "<<FILL role=rising words=76 beats='the crypt is the only room in the city with one door and no window; you are at the bell loft; the person helping you has not told you why'>>",
+   "body": "<<FILL role=rising words=76 beats='the crypt is the only room in the city with one door and no window; you are at the bell loft; the person helping you has not told you why; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Cross to the wax table\"; \"Follow the clerk to the undercroft stair\"; \"Send word to the messengers bench\"; \"Take the copy room\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -4147,7 +4476,7 @@
   },
   {
    "id": "d22_1",
-   "body": "<<FILL role=rising words=65 beats='the crypt is the only room in the city with one door and no window; you are at the almonry; the midwinter date is fixed and nothing moves it'>>",
+   "body": "<<FILL role=rising words=65 beats='the crypt is the only room in the city with one door and no window; you are at the almonry; the midwinter date is fixed and nothing moves it; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Cross to the wax table\"; \"Follow the clerk to the undercroft stair\"; \"Send word to the messengers bench\"; \"Take the copy room\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -4169,7 +4498,7 @@
   },
   {
    "id": "d22_2",
-   "body": "<<FILL role=rising words=64 beats='the crypt is the only room in the city with one door and no window; you are at the crypt door; you can be believed or you can be quick'>>",
+   "body": "<<FILL role=rising words=64 beats='the crypt is the only room in the city with one door and no window; you are at the crypt door; you can be believed or you can be quick; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Cross to the wax table\"; \"Follow the clerk to the undercroft stair\"; \"Send word to the messengers bench\"; \"Take the copy room\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -4262,7 +4591,7 @@
   },
   {
    "id": "d22_6",
-   "body": "<<FILL role=rising words=66 beats='the crypt is the only room in the city with one door and no window; you are at the pilgrims yard; your hands are ink-stained and everyone in the room can see it'>>",
+   "body": "<<FILL role=rising words=66 beats='the crypt is the only room in the city with one door and no window; you are at the pilgrims yard; your hands are ink-stained and everyone in the room can see it; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Cross to the wax table\"; \"Follow the clerk to the undercroft stair\"; \"Send word to the messengers bench\"; \"Take the copy room\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -4306,7 +4635,7 @@
   },
   {
    "id": "d23_1",
-   "body": "<<FILL role=rising words=72 beats='the bells stop mid-peal and the silence tells you more than the ringing did; you are at the almonry; you are being useful to somebody and you cannot work out to whom'>>",
+   "body": "<<FILL role=rising words=72 beats='the bells stop mid-peal and the silence tells you more than the ringing did; you are at the almonry; you are being useful to somebody and you cannot work out to whom; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Cross to the wax table\"; \"Follow the clerk to the undercroft stair\"; \"Send word to the messengers bench\"; \"Take the copy room\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -4328,7 +4657,7 @@
   },
   {
    "id": "d23_2",
-   "body": "<<FILL role=rising words=62 beats='the bells stop mid-peal and the silence tells you more than the ringing did; you are at the crypt door; the roll is heavier than a document that size should be'>>",
+   "body": "<<FILL role=rising words=62 beats='the bells stop mid-peal and the silence tells you more than the ringing did; you are at the crypt door; the roll is heavier than a document that size should be; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Cross to the wax table\"; \"Follow the clerk to the undercroft stair\"; \"Send word to the messengers bench\"; \"Take the copy room\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -4355,7 +4684,7 @@
   },
   {
    "id": "d23_3",
-   "body": "<<FILL role=rising words=68 beats='the bells stop mid-peal and the silence tells you more than the ringing did; you are at the chapter house; you have not slept properly since the bells rang for the queen'>>",
+   "body": "<<FILL role=rising words=68 beats='the bells stop mid-peal and the silence tells you more than the ringing did; you are at the chapter house; you have not slept properly since the bells rang for the queen; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Cross to the wax table\"; \"Follow the clerk to the undercroft stair\"; \"Send word to the messengers bench\"; \"Take the copy room\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -4377,7 +4706,7 @@
   },
   {
    "id": "d23_4",
-   "body": "<<FILL role=rising words=61 beats='the bells stop mid-peal and the silence tells you more than the ringing did; you are at the choir screen; there is a version of today where you simply go back to the copy room'>>",
+   "body": "<<FILL role=rising words=61 beats='the bells stop mid-peal and the silence tells you more than the ringing did; you are at the choir screen; there is a version of today where you simply go back to the copy room; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Cross to the wax table\"; \"Follow the clerk to the undercroft stair\"; \"Send word to the messengers bench\"; \"Take the copy room\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -4492,7 +4821,7 @@
   },
   {
    "id": "d24_2",
-   "body": "<<FILL role=rising words=60 beats='the Assize convenes at midwinter and the clerks are already sworn; you are at the gallery stair; Warden Ammet trusted you with the keys and has not asked for them back'>>",
+   "body": "<<FILL role=rising words=60 beats='the Assize convenes at midwinter and the clerks are already sworn; you are at the gallery stair; Warden Ammet trusted you with the keys and has not asked for them back; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Cross to the wax table\"; \"Follow the clerk to the undercroft stair\"; \"Send word to the messengers bench\"; \"Take the copy room\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -4514,7 +4843,7 @@
   },
   {
    "id": "d24_3",
-   "body": "<<FILL role=rising words=74 beats='the Assize convenes at midwinter and the clerks are already sworn; you are at the sergeants post; whatever you do here goes into a record somebody else will read'>>",
+   "body": "<<FILL role=rising words=74 beats='the Assize convenes at midwinter and the clerks are already sworn; you are at the sergeants post; whatever you do here goes into a record somebody else will read; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Cross to the wax table\"; \"Follow the clerk to the undercroft stair\"; \"Send word to the messengers bench\"; \"Take the copy room\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -4536,7 +4865,7 @@
   },
   {
    "id": "d24_4",
-   "body": "<<FILL role=rising words=66 beats='the Assize convenes at midwinter and the clerks are already sworn; you are at the evidence chest; you can prove one thing today and only one'>>",
+   "body": "<<FILL role=rising words=66 beats='the Assize convenes at midwinter and the clerks are already sworn; you are at the evidence chest; you can prove one thing today and only one; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Cross to the wax table\"; \"Follow the clerk to the undercroft stair\"; \"Send word to the messengers bench\"; \"Take the copy room\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -4558,7 +4887,7 @@
   },
   {
    "id": "d24_5",
-   "body": "<<FILL role=rising words=58 beats='the Assize convenes at midwinter and the clerks are already sworn; you are at the side chamber; the claimant you favour is not the claimant the roll names'>>",
+   "body": "<<FILL role=rising words=58 beats='the Assize convenes at midwinter and the clerks are already sworn; you are at the side chamber; the claimant you favour is not the claimant the roll names; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Cross to the wax table\"; \"Follow the clerk to the undercroft stair\"; \"Send word to the messengers bench\"; \"Take the copy room\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -4634,7 +4963,7 @@
   },
   {
    "id": "d25_1",
-   "body": "<<FILL role=rising words=68 beats='evidence entered before the sergeant calls the room cannot be withdrawn; you are at the jury bar; the fastest route through this building is the one that gets noticed'>>",
+   "body": "<<FILL role=rising words=68 beats='evidence entered before the sergeant calls the room cannot be withdrawn; you are at the jury bar; the fastest route through this building is the one that gets noticed; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Cross to the wax table\"; \"Follow the clerk to the undercroft stair\"; \"Send word to the messengers bench\"; \"Take the copy room\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -4656,7 +4985,7 @@
   },
   {
    "id": "d25_2",
-   "body": "<<FILL role=rising words=61 beats='evidence entered before the sergeant calls the room cannot be withdrawn; you are at the gallery stair; there is an honest way to do this and it is slower by a day'>>",
+   "body": "<<FILL role=rising words=61 beats='evidence entered before the sergeant calls the room cannot be withdrawn; you are at the gallery stair; there is an honest way to do this and it is slower by a day; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Cross to the wax table\"; \"Follow the clerk to the undercroft stair\"; \"Send word to the messengers bench\"; \"Take the copy room\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -4678,7 +5007,7 @@
   },
   {
    "id": "d25_3",
-   "body": "<<FILL role=rising words=76 beats='evidence entered before the sergeant calls the room cannot be withdrawn; you are at the sergeants post; somebody is paying for your mistakes to be findable'>>",
+   "body": "<<FILL role=rising words=76 beats='evidence entered before the sergeant calls the room cannot be withdrawn; you are at the sergeants post; somebody is paying for your mistakes to be findable; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Cross to the wax table\"; \"Follow the clerk to the undercroft stair\"; \"Send word to the messengers bench\"; \"Take the copy room\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -4700,7 +5029,7 @@
   },
   {
    "id": "d25_4",
-   "body": "<<FILL role=rising words=65 beats='evidence entered before the sergeant calls the room cannot be withdrawn; you are at the evidence chest; the seal press only takes an impression once'>>",
+   "body": "<<FILL role=rising words=65 beats='evidence entered before the sergeant calls the room cannot be withdrawn; you are at the evidence chest; the seal press only takes an impression once; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Cross to the wax table\"; \"Follow the clerk to the undercroft stair\"; \"Send word to the messengers bench\"; \"Take the copy room\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -4815,7 +5144,7 @@
   },
   {
    "id": "d26_2",
-   "body": "<<FILL role=rising words=66 beats='the gallery is full of people who paid to be in it; you are at the gallery stair; you can be believed or you can be quick'>>",
+   "body": "<<FILL role=rising words=66 beats='the gallery is full of people who paid to be in it; you are at the gallery stair; you can be believed or you can be quick; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Cross to the wax table\"; \"Follow the clerk to the undercroft stair\"; \"Send word to the messengers bench\"; \"Take the copy room\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -4837,7 +5166,7 @@
   },
   {
    "id": "d26_3",
-   "body": "<<FILL role=rising words=58 beats='the gallery is full of people who paid to be in it; you are at the sergeants post; you know the archive better than anyone here and it is your only advantage'>>",
+   "body": "<<FILL role=rising words=58 beats='the gallery is full of people who paid to be in it; you are at the sergeants post; you know the archive better than anyone here and it is your only advantage; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Cross to the wax table\"; \"Follow the clerk to the undercroft stair\"; \"Send word to the messengers bench\"; \"Take the copy room\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -4859,7 +5188,7 @@
   },
   {
    "id": "d26_4",
-   "body": "<<FILL role=rising words=72 beats='the gallery is full of people who paid to be in it; you are at the evidence chest; you have one letter of introduction and it is not in your name'>>",
+   "body": "<<FILL role=rising words=72 beats='the gallery is full of people who paid to be in it; you are at the evidence chest; you have one letter of introduction and it is not in your name; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Cross to the wax table\"; \"Follow the clerk to the undercroft stair\"; \"Send word to the messengers bench\"; \"Take the copy room\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -4886,7 +5215,7 @@
   },
   {
    "id": "d26_5",
-   "body": "<<FILL role=rising words=62 beats='the gallery is full of people who paid to be in it; you are at the side chamber; the guard on this door changes at the half hour'>>",
+   "body": "<<FILL role=rising words=62 beats='the gallery is full of people who paid to be in it; you are at the side chamber; the guard on this door changes at the half hour; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Cross to the wax table\"; \"Follow the clerk to the undercroft stair\"; \"Send word to the messengers bench\"; \"Take the copy room\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -4908,7 +5237,7 @@
   },
   {
    "id": "d26_6",
-   "body": "<<FILL role=rising words=68 beats='the gallery is full of people who paid to be in it; you are at the great door; your hands are ink-stained and everyone in the room can see it'>>",
+   "body": "<<FILL role=rising words=68 beats='the gallery is full of people who paid to be in it; you are at the great door; your hands are ink-stained and everyone in the room can see it; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Cross to the wax table\"; \"Follow the clerk to the undercroft stair\"; \"Send word to the messengers bench\"; \"Take the copy room\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -4930,7 +5259,7 @@
   },
   {
    "id": "d27_0",
-   "body": "<<FILL role=rising words=61 beats='the jury bar has been reordered overnight and the order is the argument; you are at the clerks table; the third claimant has done nothing at all, which is the frightening part'>>",
+   "body": "<<FILL role=rising words=61 beats='the jury bar has been reordered overnight and the order is the argument; you are at the clerks table; the third claimant has done nothing at all, which is the frightening part; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Cross to the wax table\"; \"Follow the clerk to the undercroft stair\"; \"Send word to the messengers bench\"; \"Take the copy room\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -4952,7 +5281,7 @@
   },
   {
    "id": "d27_1",
-   "body": "<<FILL role=rising words=76 beats='the jury bar has been reordered overnight and the order is the argument; you are at the jury bar; you are being useful to somebody and you cannot work out to whom'>>",
+   "body": "<<FILL role=rising words=76 beats='the jury bar has been reordered overnight and the order is the argument; you are at the jury bar; you are being useful to somebody and you cannot work out to whom; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Cross to the wax table\"; \"Follow the clerk to the undercroft stair\"; \"Send word to the messengers bench\"; \"Take the copy room\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -4974,7 +5303,7 @@
   },
   {
    "id": "d27_2",
-   "body": "<<FILL role=rising words=65 beats='the jury bar has been reordered overnight and the order is the argument; you are at the gallery stair; the roll is heavier than a document that size should be'>>",
+   "body": "<<FILL role=rising words=65 beats='the jury bar has been reordered overnight and the order is the argument; you are at the gallery stair; the roll is heavier than a document that size should be; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Cross to the wax table\"; \"Follow the clerk to the undercroft stair\"; \"Send word to the messengers bench\"; \"Take the copy room\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -5067,7 +5396,7 @@
   },
   {
    "id": "d27_6",
-   "body": "<<FILL role=rising words=74 beats='the jury bar has been reordered overnight and the order is the argument; you are at the great door; the truth here is not in doubt, only the order it gets said in'>>",
+   "body": "<<FILL role=rising words=74 beats='the jury bar has been reordered overnight and the order is the argument; you are at the great door; the truth here is not in doubt, only the order it gets said in; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Cross to the wax table\"; \"Follow the clerk to the undercroft stair\"; \"Send word to the messengers bench\"; \"Take the copy room\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -5111,7 +5440,7 @@
   },
   {
    "id": "d28_1",
-   "body": "<<FILL role=rising words=58 beats='the Crown Chamber has been kept warm for eleven days for nobody; you are at the guard line; the roll is a copy, and a copy is only worth the seal on it'>>",
+   "body": "<<FILL role=rising words=58 beats='the Crown Chamber has been kept warm for eleven days for nobody; you are at the guard line; the roll is a copy, and a copy is only worth the seal on it; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Cross to the wax table\"; \"Follow the clerk to the undercroft stair\"; \"Send word to the messengers bench\"; \"Take the copy room\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -5133,7 +5462,7 @@
   },
   {
    "id": "d28_2",
-   "body": "<<FILL role=rising words=72 beats='the Crown Chamber has been kept warm for eleven days for nobody; you are at the council table; Warden Ammet trusted you with the keys and has not asked for them back'>>",
+   "body": "<<FILL role=rising words=72 beats='the Crown Chamber has been kept warm for eleven days for nobody; you are at the council table; Warden Ammet trusted you with the keys and has not asked for them back; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Cross to the wax table\"; \"Follow the clerk to the undercroft stair\"; \"Send word to the messengers bench\"; \"Take the copy room\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -5160,7 +5489,7 @@
   },
   {
    "id": "d28_3",
-   "body": "<<FILL role=rising words=62 beats='the Crown Chamber has been kept warm for eleven days for nobody; you are at the regents seat; whatever you do here goes into a record somebody else will read'>>",
+   "body": "<<FILL role=rising words=62 beats='the Crown Chamber has been kept warm for eleven days for nobody; you are at the regents seat; whatever you do here goes into a record somebody else will read; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Cross to the wax table\"; \"Follow the clerk to the undercroft stair\"; \"Send word to the messengers bench\"; \"Take the copy room\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -5182,7 +5511,7 @@
   },
   {
    "id": "d28_4",
-   "body": "<<FILL role=rising words=68 beats='the Crown Chamber has been kept warm for eleven days for nobody; you are at the crown case; you can prove one thing today and only one'>>",
+   "body": "<<FILL role=rising words=68 beats='the Crown Chamber has been kept warm for eleven days for nobody; you are at the crown case; you can prove one thing today and only one; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Cross to the wax table\"; \"Follow the clerk to the undercroft stair\"; \"Send word to the messengers bench\"; \"Take the copy room\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -5297,7 +5626,7 @@
   },
   {
    "id": "d29_2",
-   "body": "<<FILL role=climax words=70 beats='the regent will hear one document read and only one; you are at the council table; there is an honest way to do this and it is slower by a day'>>",
+   "body": "<<FILL role=climax words=70 beats='the regent will hear one document read and only one; you are at the council table; there is an honest way to do this and it is slower by a day; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Cross to the wax table\"; \"Follow the clerk to the undercroft stair\"; \"Send word to the messengers bench\"; \"Take the copy room\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -5319,7 +5648,7 @@
   },
   {
    "id": "d29_3",
-   "body": "<<FILL role=climax words=60 beats='the regent will hear one document read and only one; you are at the regents seat; somebody is paying for your mistakes to be findable'>>",
+   "body": "<<FILL role=climax words=60 beats='the regent will hear one document read and only one; you are at the regents seat; somebody is paying for your mistakes to be findable; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Cross to the wax table\"; \"Follow the clerk to the undercroft stair\"; \"Send word to the messengers bench\"; \"Take the copy room\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -5341,7 +5670,7 @@
   },
   {
    "id": "d29_4",
-   "body": "<<FILL role=climax words=74 beats='the regent will hear one document read and only one; you are at the crown case; the seal press only takes an impression once'>>",
+   "body": "<<FILL role=climax words=74 beats='the regent will hear one document read and only one; you are at the crown case; the seal press only takes an impression once; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Cross to the wax table\"; \"Follow the clerk to the undercroft stair\"; \"Send word to the messengers bench\"; \"Take the copy room\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -5363,7 +5692,7 @@
   },
   {
    "id": "d29_5",
-   "body": "<<FILL role=climax words=66 beats='the regent will hear one document read and only one; you are at the herald post; you have been careful for eleven days and careful is running out'>>",
+   "body": "<<FILL role=climax words=66 beats='the regent will hear one document read and only one; you are at the herald post; you have been careful for eleven days and careful is running out; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Cross to the wax table\"; \"Follow the clerk to the undercroft stair\"; \"Send word to the messengers bench\"; \"Take the copy room\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -5439,7 +5768,7 @@
   },
   {
    "id": "d30_1",
-   "body": "<<FILL role=climax words=62 beats='every officer in the room has already decided and is waiting to be seen to decide; you are at the guard line; the midwinter date is fixed and nothing moves it'>>",
+   "body": "<<FILL role=climax words=62 beats='every officer in the room has already decided and is waiting to be seen to decide; you are at the guard line; the midwinter date is fixed and nothing moves it; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Cross to the wax table\"; \"Follow the clerk to the undercroft stair\"; \"Send word to the messengers bench\"; \"Take the copy room\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -5461,7 +5790,7 @@
   },
   {
    "id": "d30_2",
-   "body": "<<FILL role=climax words=68 beats='every officer in the room has already decided and is waiting to be seen to decide; you are at the council table; you can be believed or you can be quick'>>",
+   "body": "<<FILL role=climax words=68 beats='every officer in the room has already decided and is waiting to be seen to decide; you are at the council table; you can be believed or you can be quick; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Cross to the wax table\"; \"Follow the clerk to the undercroft stair\"; \"Send word to the messengers bench\"; \"Take the copy room\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -5483,7 +5812,7 @@
   },
   {
    "id": "d30_3",
-   "body": "<<FILL role=climax words=61 beats='every officer in the room has already decided and is waiting to be seen to decide; you are at the regents seat; you know the archive better than anyone here and it is your only advantage'>>",
+   "body": "<<FILL role=climax words=61 beats='every officer in the room has already decided and is waiting to be seen to decide; you are at the regents seat; you know the archive better than anyone here and it is your only advantage; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Cross to the wax table\"; \"Follow the clerk to the undercroft stair\"; \"Send word to the messengers bench\"; \"Take the copy room\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -5505,7 +5834,7 @@
   },
   {
    "id": "d30_4",
-   "body": "<<FILL role=climax words=76 beats='every officer in the room has already decided and is waiting to be seen to decide; you are at the crown case; you have one letter of introduction and it is not in your name'>>",
+   "body": "<<FILL role=climax words=76 beats='every officer in the room has already decided and is waiting to be seen to decide; you are at the crown case; you have one letter of introduction and it is not in your name; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Cross to the wax table\"; \"Follow the clerk to the undercroft stair\"; \"Send word to the messengers bench\"; \"Take the copy room\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -5620,7 +5949,7 @@
   },
   {
    "id": "d31_2",
-   "body": "<<FILL role=climax words=74 beats='the crown case is open and the roll in your hand is the last thing missing; you are at the council table; the roll is heavier than a document that size should be'>>",
+   "body": "<<FILL role=climax words=74 beats='the crown case is open and the roll in your hand is the last thing missing; you are at the council table; the roll is heavier than a document that size should be; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Cross to the wax table\"; \"Follow the clerk to the undercroft stair\"; \"Send word to the messengers bench\"; \"Take the copy room\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -5642,7 +5971,7 @@
   },
   {
    "id": "d31_3",
-   "body": "<<FILL role=climax words=66 beats='the crown case is open and the roll in your hand is the last thing missing; you are at the regents seat; you have not slept properly since the bells rang for the queen'>>",
+   "body": "<<FILL role=climax words=66 beats='the crown case is open and the roll in your hand is the last thing missing; you are at the regents seat; you have not slept properly since the bells rang for the queen; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Cross to the wax table\"; \"Follow the clerk to the undercroft stair\"; \"Send word to the messengers bench\"; \"Take the copy room\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -5664,7 +5993,7 @@
   },
   {
    "id": "d31_4",
-   "body": "<<FILL role=climax words=58 beats='the crown case is open and the roll in your hand is the last thing missing; you are at the crown case; there is a version of today where you simply go back to the copy room'>>",
+   "body": "<<FILL role=climax words=58 beats='the crown case is open and the roll in your hand is the last thing missing; you are at the crown case; there is a version of today where you simply go back to the copy room; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Cross to the wax table\"; \"Follow the clerk to the undercroft stair\"; \"Send word to the messengers bench\"; \"Take the copy room\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -5686,7 +6015,7 @@
   },
   {
    "id": "d31_5",
-   "body": "<<FILL role=climax words=72 beats='the crown case is open and the roll in your hand is the last thing missing; you are at the herald post; the regent remembers faces and has already seen yours once'>>",
+   "body": "<<FILL role=climax words=72 beats='the crown case is open and the roll in your hand is the last thing missing; you are at the herald post; the regent remembers faces and has already seen yours once; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Cross to the wax table\"; \"Follow the clerk to the undercroft stair\"; \"Send word to the messengers bench\"; \"Take the copy room\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -5802,7 +6131,7 @@
   },
   {
    "id": "c01_2_1",
-   "body": "<<FILL role=rising words=56 beats='a back way through the stores that costs you ten minutes and no witnesses, from the messengers bench on toward the undercroft stair'>>",
+   "body": "<<FILL role=rising words=56 beats='a back way through the stores that costs you ten minutes and no witnesses, from the messengers bench on toward the undercroft stair; PLANT (did_follow_clerk_undercroft): the hero has just made this choice, and something concrete comes of it that a reader will remember: an object kept, a person helped, or a fact learned, named plainly in the prose. Invent it so that it would plausibly help much later, when the hero tries \"Ask for the copyists cell\" (node d15_4) or \"Cross to the sealed presses\" (node d15_2): there it changes how that moment goes.'>>",
    "is_ending": false,
    "choices": [
     {

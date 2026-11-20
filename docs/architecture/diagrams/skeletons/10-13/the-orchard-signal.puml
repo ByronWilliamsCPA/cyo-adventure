@@ -19,6 +19,8 @@ state n02c2 #ECEFF1
 n02c2 : bridge · 36w
 state n03d0 #D1C4E9
 n03d0 : rising · 112w
+state cq_plant_did_find_who_wrote #ECEFF1
+cq_plant_did_find_who_wrote : plant · 50w
 state n03d1 #D1C4E9
 n03d1 : rising · 112w
 state n03d2 #D1C4E9
@@ -62,6 +64,8 @@ state n06d2 #D1C4E9
 n06d2 : rising · 112w
 state n06d3 #D1C4E9
 n06d3 : rising · 112w
+state cq_payoff_did_go_down_read #ECEFF1
+cq_payoff_did_go_down_read : payoff · 50w
 state n06d4 #D1C4E9
 n06d4 : rising · 112w
 state n06d5 #D1C4E9
@@ -115,6 +119,8 @@ state n08d2 #D1C4E9
 n08d2 : rising · 106w
 state n08d3 #D1C4E9
 n08d3 : rising · 106w
+state cq_payoff_did_ask_whether_notebooks #ECEFF1
+cq_payoff_did_ask_whether_notebooks : payoff · 38w
 state n08d4 #D1C4E9
 n08d4 : rising · 106w
 state n08d5 #D1C4E9
@@ -173,6 +179,8 @@ state n10d2 #D1C4E9
 n10d2 : rising · 100w
 state n10d3 #D1C4E9
 n10d3 : rising · 100w
+state cq_payoff_did_ask_whether_notebooks_site2 #ECEFF1
+cq_payoff_did_ask_whether_notebooks_site2 : payoff · 44w
 state n10d4 #D1C4E9
 n10d4 : rising · 100w
 state n10d5 #D1C4E9
@@ -203,6 +211,8 @@ state n11d0 #D1C4E9
 n11d0 : rising · 106w
 state n11d1 #D1C4E9
 n11d1 : rising · 106w
+state cq_payoff_did_find_who_wrote_site2 #ECEFF1
+cq_payoff_did_find_who_wrote_site2 : payoff · 38w
 state n11d2 #D1C4E9
 n11d2 : rising · 106w
 state n11d3 #D1C4E9
@@ -211,6 +221,8 @@ state n11d4 #D1C4E9
 n11d4 : rising · 106w
 state n11d5 #D1C4E9
 n11d5 : rising · 106w
+state cq_payoff_did_find_who_wrote #ECEFF1
+cq_payoff_did_find_who_wrote : payoff · 38w
 state n11d6 #D1C4E9
 n11d6 : rising · 106w
 state n11d7 #D1C4E9
@@ -390,9 +402,10 @@ n01d0 --> n02c2 : Go down and read the notice on the gate.
 n02c0 --> n03d0 : Begin with what the record already holds...
 n02c1 --> n03d1 : Begin with what the bees are doing.
 n02c2 --> n03d2 : Begin with the notice itself.
-n03d0 --> n04d0 : Find out who wrote the survey.
+n03d0 --> cq_plant_did_find_who_wrote : Find out who wrote the survey.
 n03d0 --> n04d1 : Find out what the survey left out.
 n03d0 --> n04d2 : Ask what a hundred years of weather note...
+cq_plant_did_find_who_wrote --> n04d0 : Find out who wrote the survey.
 n03d1 --> n04c0 : Copy the sentence out and take it home.
 n03d1 --> n04c1 : Stay in the shed until the light goes.
 n03d1 --> n04c2 : Walk the rows and count the trees.
@@ -443,6 +456,8 @@ n06d2 --> n07d8 : Ask Ada what she wants out of this.
 n06d3 --> e07_0 : Hand the whole thing to the archive and ...
 n06d3 --> e07_1 : Send the chart out before it is checked.
 n06d3 --> n07d0 : Take the four lines a year approach.
+n06d3 --> cq_payoff_did_go_down_read : Take the four lines a year approach.
+cq_payoff_did_go_down_read --> n07d0 : Take the four lines a year approach.
 n06d4 --> n07d1 : Take the whole record but only for the B...
 n06d4 --> n07d2 : Take the hive counts as well.
 n06d4 --> n07d3 : Ask the archive to hold the originals.
@@ -494,7 +509,9 @@ n08d2 --> n09d7 : Ask Ada about 1917.
 n08d2 --> n09d8 : Ask the school to keep the Thursday hall...
 n08d3 --> e09_0 : Take the newspaper offer and stop there.
 n08d3 --> e09_1 : Say something about Faulks you cannot su...
+n08d3 --> cq_payoff_did_ask_whether_notebooks : Say something about Faulks you cannot su...
 n08d3 --> n09d0 : Ask Raval exactly what she can accept.
+cq_payoff_did_ask_whether_notebooks --> n09d0 : Ask Raval exactly what she can accept.
 n08d4 --> n09d1 : Ask Abara to write about the frost pocke...
 n08d4 --> n09d2 : Ask the archive to write a custody note.
 n08d4 --> n09d3 : Ask Mrs Cassar to date her method change...
@@ -550,6 +567,8 @@ n10d2 --> n11d8 : Ask Halvor from the developer what he wa...
 n10d3 --> e11_0 : Accept the offer of a plaque.
 n10d3 --> e11_1 : Go after Faulks personally.
 n10d3 --> n11d0 : Read the survey data when it arrives.
+n10d3 --> cq_payoff_did_ask_whether_notebooks_site2 : Read the survey data when it arrives.
+cq_payoff_did_ask_whether_notebooks_site2 --> n11d0 : Read the survey data when it arrives.
 n10d4 --> n11d1 : Compare the survey dates to the weather.
 n10d4 --> n11d2 : Compare the species list to Ada.
 n10d4 --> n11d3 : Find out where the 1917 volumes went.
@@ -570,8 +589,10 @@ n11d0 --> n12d0 : Show that the survey was done in a droug...
 n11d0 --> n12d1 : Go to the agricultural committee buildin...
 n11d0 --> n12d2 : Get the species list checked properly.
 n11d1 --> n12d3 : Decide what to say to Halvor.
+n11d1 --> cq_payoff_did_find_who_wrote_site2 : Decide what to say to Halvor.
 n11d1 --> n12d4 : Decide how hard to push the frost pocket...
 n11d1 --> n12d5 : Decide whether Ada should speak.
+cq_payoff_did_find_who_wrote_site2 --> n12d3 : Decide what to say to Halvor.
 n11d2 --> n12d6 : Decide when to release the dossier.
 n11d2 --> n12c0 : Go down into the basement.
 n11d2 --> n12c1 : Read the rainfall record twice.
@@ -582,8 +603,10 @@ n11d4 --> n12c5 : Number every page of the dossier.
 n11d4 --> n12c6 : Find the two volumes in a box.
 n11d4 --> e12_0 : Keep the found volumes to yourself.
 n11d5 --> e12_1 : Let the deadline decide for you.
+n11d5 --> cq_payoff_did_find_who_wrote : Let the deadline decide for you.
 n11d5 --> n12d0 : Show that the survey was done in a droug...
 n11d5 --> n12d1 : Go to the agricultural committee buildin...
+cq_payoff_did_find_who_wrote --> n12d0 : Show that the survey was done in a droug...
 n11d6 --> n12d2 : Get the species list checked properly.
 n11d6 --> n12d3 : Decide what to say to Halvor.
 n11d6 --> n12d4 : Decide how hard to push the frost pocket...
@@ -751,9 +774,9 @@ e18_3 --> [*]
 
 legend right
   The Orchard Signal
-  Band 10-13 · Tier 1 · ~7 min
+  Band 10-13 · Tier 2 · ~7 min
   Topology: branch_and_bottleneck
-  173 nodes · 30 endings (9+ / 15n / 6-)
+  179 nodes · 30 endings (9+ / 15n / 6-)
   Production-eligible
   Scale: medium · prose
 endlegend

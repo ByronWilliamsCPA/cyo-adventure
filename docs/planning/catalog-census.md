@@ -12,8 +12,8 @@ and then went stale in place (`AL-551`, `UW-G24`).
 | Quantity | Value |
 | --- | ---: |
 | Shells (sidecars excluded) | 84 |
-| Nodes | 15,470 |
-| Commissioned words | 1,426,348 |
+| Nodes | 15,514 |
+| Commissioned words | 1,428,220 |
 | Shells declaring `production_eligible` | 81 |
 | ...of those, reachable in an offered cell | 74 |
 
@@ -23,9 +23,9 @@ and then went stale in place (`AL-551`, `UW-G24`).
 | --- | ---: | ---: | ---: | ---: |
 | 3-5 | 11 | 275 | 11,627 | 11 / 21 / 44 |
 | 5-8 | 9 | 426 | 30,687 | 31 / 50 / 62 |
-| 8-11 | 12 | 1,483 | 146,254 | 61 / 123 / 193 |
-| 10-13 | 15 | 2,273 | 222,845 | 26 / 149 / 254 |
-| 13-16 | 19 | 5,526 | 448,658 | 124 / 267 / 551 |
+| 8-11 | 12 | 1,495 | 146,630 | 61 / 124 / 193 |
+| 10-13 | 15 | 2,287 | 223,442 | 26 / 149 / 262 |
+| 13-16 | 19 | 5,544 | 449,557 | 124 / 267 / 551 |
 | 16+ | 18 | 5,487 | 566,277 | 33 / 244 / 677 |
 
 ## Cell coverage

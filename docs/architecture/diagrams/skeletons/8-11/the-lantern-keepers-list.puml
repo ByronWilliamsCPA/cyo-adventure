@@ -84,6 +84,8 @@ state gt_oil #D1C4E9
 gt_oil : rising · 100w
 state gt_hands #D1C4E9
 gt_hands : rising · 100w
+state cq_plant_did_knock_doors_that #ECEFF1
+cq_plant_did_knock_doors_that : plant · 35w
 state gt_walk #D1C4E9
 gt_walk : rising · 100w
 state gt_wind #D1C4E9
@@ -94,8 +96,12 @@ state gt_bottom #D1C4E9
 gt_bottom : rising · 100w
 state oil_can #D1C4E9
 oil_can : rising · 100w
+state cq_payoff_did_start_sheepfold_turn_site2 #ECEFF1
+cq_payoff_did_start_sheepfold_turn_site2 : payoff · 30w
 state oil_bench #D1C4E9
 oil_bench : rising · 100w
+state cq_payoff_did_start_sheepfold_turn #ECEFF1
+cq_payoff_did_start_sheepfold_turn : payoff · 30w
 state oil_wick #D1C4E9
 oil_wick : rising · 100w
 state pp_doors #D1C4E9
@@ -155,6 +161,8 @@ state pp_rota #D1C4E9
 pp_rota : rising · 100w
 state pp_runner #D1C4E9
 pp_runner : rising · 100w
+state cq_payoff_did_knock_doors_that #ECEFF1
+cq_payoff_did_knock_doors_that : payoff · 30w
 state pp_kettle #D1C4E9
 pp_kettle : rising · 100w
 state pp_trewin #D1C4E9
@@ -179,6 +187,8 @@ state pp_top #D1C4E9
 pp_top : rising · 105w
 state pp_keep #D1C4E9
 pp_keep : rising · 105w
+state cq_payoff_did_knock_doors_that_site2 #ECEFF1
+cq_payoff_did_knock_doors_that_site2 : payoff · 25w
 state pp_pair #D1C4E9
 pp_pair : rising · 105w
 state pp_count #D1C4E9
@@ -206,10 +216,14 @@ state fn_signal #FFE0B2
 fn_signal : climax · 110w
 state fn_count #FFE0B2
 fn_count : climax · 110w
+state cq_payoff_did_start_beacon_steps_site2 #ECEFF1
+cq_payoff_did_start_beacon_steps_site2 : payoff · 25w
 state fn_torch #FFE0B2
 fn_torch : climax · 110w
 state fn_up #FFE0B2
 fn_up : climax · 110w
+state cq_payoff_did_start_beacon_steps #ECEFF1
+cq_payoff_did_start_beacon_steps : payoff · 40w
 state fn_hall #FFE0B2
 fn_hall : climax · 110w
 state fn_ovens #FFE0B2
@@ -378,9 +392,10 @@ og_spare --> gt_walk : Walk the whole route once, end to end.
 gt_oil --> oil_can : Track down the rest of the paraffin.
 gt_oil --> oil_bench : Set up somewhere to fill them.
 gt_oil --> oil_wick : Go through the wicks before filling anyt...
-gt_hands --> pp_doors : Knock on the doors that used to say yes.
+gt_hands --> cq_plant_did_knock_doors_that : Knock on the doors that used to say yes.
 gt_hands --> pp_gate : Catch people at the school gate.
 gt_hands --> pp_shop : Put the word out through the shop.
+cq_plant_did_knock_doors_that --> pp_doors : Knock on the doors that used to say yes.
 gt_walk --> pa_survey : Walk the route with the list and a penci...
 gt_walk --> pa_gaps : Find the dark gaps between lanterns.
 gt_walk --> pa_ground : Look at what the rain has made of the gr...
@@ -395,10 +410,14 @@ gt_bottom --> pa_gaps : Find the dark gaps between lanterns.
 gt_bottom --> pa_ground : Look at what the rain has made of the gr...
 oil_can --> oil_school : Go to the school for the missing can.
 oil_can --> oil_ration : Ration what there is across the route.
+oil_can --> cq_payoff_did_start_sheepfold_turn_site2 : Ration what there is across the route.
 oil_can --> oil_burn : Burn one for twenty minutes and watch it...
+cq_payoff_did_start_sheepfold_turn_site2 --> oil_ration : Ration what there is across the route.
 oil_bench --> oil_borrow : Ask the village for anything that burns.
+oil_bench --> cq_payoff_did_start_sheepfold_turn : Ask the village for anything that burns.
 oil_bench --> oil_spill : Fill fast and get the crates moving.
 oil_bench --> oil_school : Go to the school for the missing can.
+cq_payoff_did_start_sheepfold_turn --> oil_borrow : Ask the village for anything that burns.
 oil_wick --> oil_ration : Ration what there is across the route.
 oil_wick --> oil_burn : Burn one for twenty minutes and watch it...
 oil_wick --> oil_borrow : Ask the village for anything that burns.
@@ -473,7 +492,9 @@ pp_rota --> pp_keep : Keep the top half with the team that kno...
 pp_rota --> pp_pair : Send two people up for the signal.
 pp_runner --> pp_count : Get everyone off the hill by six.
 pp_runner --> pp_village : Let the village finish it however it lik...
+pp_runner --> cq_payoff_did_knock_doors_that : Let the village finish it however it lik...
 pp_runner --> pp_top : Have somebody check the top pair.
+cq_payoff_did_knock_doors_that --> pp_count : Get everyone off the hill by six.
 pp_kettle --> pp_keep : Keep the top half with the team that kno...
 pp_kettle --> pp_pair : Send two people up for the signal.
 pp_kettle --> pp_count : Get everyone off the hill by six.
@@ -508,8 +529,10 @@ pp_top --> fn_torch : Fetch the head torches from the hall.
 pp_top --> fn_up : Go up the ridge to meet them.
 pp_top --> fn_hall : Get the hall ready for fourteen cold peo...
 pp_keep --> fn_ovens : Ask Mr Ovens for the quad bike.
+pp_keep --> cq_payoff_did_knock_doors_that_site2 : Ask Mr Ovens for the quad bike.
 pp_keep --> fn_taper : Take a taper to the shoulder.
 pp_keep --> fn_hold : Hold the plan and trust the route.
+cq_payoff_did_knock_doors_that_site2 --> fn_ovens : Ask Mr Ovens for the quad bike.
 pp_pair --> fn_wait : Wait at the top of the steps.
 pp_pair --> fn_signal : Get the phone up to the signal.
 pp_pair --> fn_count : Walk the route counting what is lit.
@@ -535,14 +558,18 @@ fn_signal --> fx_relay : Set a relay along the lit stretch.
 fn_signal --> fx_watch : Keep the signal watch at the top step.
 fn_signal --> fx_ankle : Get help to the walker with the ankle.
 fn_count --> fx_gate : Wait at the sheepfold gate with a light.
+fn_count --> cq_payoff_did_start_beacon_steps_site2 : Wait at the sheepfold gate with a light.
 fn_count --> fx_tally : Finish the tally and write it down.
 fn_count --> fx_round : Go round once more with the taper.
+cq_payoff_did_start_beacon_steps_site2 --> fx_gate : Wait at the sheepfold gate with a light.
 fn_torch --> fx_hold_end : Stand where you are and let the ridge do...
 fn_torch --> fx_early_end : Get them down before the weather closes ...
 fn_torch --> fx_count_end : Count them in and check the tally.
 fn_up --> fx_list_end : Rewrite the list while it is all still f...
 fn_up --> fx_wind_end : Stay on the shoulder and watch what the ...
 fn_up --> fx_short_end : Give the turn the last two lanterns.
+fn_up --> cq_payoff_did_start_beacon_steps : Give the turn the last two lanterns.
+cq_payoff_did_start_beacon_steps --> fx_list_end : Rewrite the list while it is all still f...
 fn_hall --> fx_leeward : Move the six to the leeward side.
 fn_hall --> fx_bag : Send a pair up with the spare bag.
 fn_hall --> fx_corner : Put a lamp at the orchard corner.
@@ -609,9 +636,9 @@ z_shoulder --> [*]
 
 legend right
   The Lantern Keepers' List
-  Band 8-11 · Tier 1 · ~10 min
+  Band 8-11 · Tier 2 · ~10 min
   Topology: branch_and_bottleneck
-  125 nodes · 24 endings (10+ / 12n / 2-)
+  132 nodes · 24 endings (10+ / 12n / 2-)
   Production-eligible
   Scale: medium · prose
 endlegend

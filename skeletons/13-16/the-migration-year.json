@@ -11,7 +11,7 @@
    "target": 7.0,
    "tolerance": 1.5
   },
-  "tier": 1,
+  "tier": 2,
   "themes": [
    "belonging",
    "family under pressure",
@@ -31,7 +31,32 @@
   "narrative_style": "prose",
   "production_eligible": true
  },
- "variables": [],
+ "variables": [
+  {
+   "name": "did_say_yes_start",
+   "type": "bool",
+   "initial": false,
+   "description": "Set when the reader chooses \"Say yes and start packing\" at d01_0; pays off at d12_4 and d11_5."
+  },
+  {
+   "name": "did_say_are_staying",
+   "type": "bool",
+   "initial": false,
+   "description": "Set when the reader chooses \"Say you are staying with Mamgu\" at d01_0; pays off at d11_0 and d11_7."
+  },
+  {
+   "name": "did_take_notebook_ferry",
+   "type": "bool",
+   "initial": false,
+   "description": "Set when the reader chooses \"Take the notebook out on the ferry\" at d03_0; pays off at d15_2 and d14_0."
+  },
+  {
+   "name": "did_ring_bea_night",
+   "type": "bool",
+   "initial": false,
+   "description": "Set when the reader chooses \"Ring Bea on the first night\" at d03_0; pays off at d11_6."
+  }
+ ],
  "start_node": "n_open",
  "nodes": [
   {
@@ -48,18 +73,32 @@
   },
   {
    "id": "d01_0",
-   "body": "<<FILL role=setup words=137 beats='the map on the table with three rings on it, Hull and Rotterdam and a village outside Bangor; the dates already fixed by other people, the school forms already printed, and Bea upstairs not coming down for any of it'>>",
+   "body": "<<FILL role=setup words=137 beats='the map on the table with three rings on it, Hull and Rotterdam and a village outside Bangor; the dates already fixed by other people, the school forms already printed, and Bea upstairs not coming down for any of it; PLANT SITE: these options are no longer cosmetic: \"Say yes and start packing\" plants did_say_yes_start (pays off at d12_4 and d11_5); \"Say you are staying with Mamgu\" plants did_say_are_staying (pays off at d11_0 and d11_7). Stage every option as appealing, with none the obviously right answer.'>>",
    "is_ending": false,
    "choices": [
     {
      "id": "c_d01_0_0",
      "label": "Say yes and start packing.",
-     "target": "d02_0"
+     "target": "d02_0",
+     "effects": [
+      {
+       "op": "set",
+       "var": "did_say_yes_start",
+       "value": true
+      }
+     ]
     },
     {
      "id": "c_d01_0_1",
      "label": "Say you are staying with Mamgu.",
-     "target": "d02_1"
+     "target": "d02_1",
+     "effects": [
+      {
+       "op": "set",
+       "var": "did_say_are_staying",
+       "value": true
+      }
+     ]
     },
     {
      "id": "c_d01_0_2",
@@ -70,7 +109,7 @@
   },
   {
    "id": "d02_0",
-   "body": "<<FILL role=choice words=154 beats='Rhian takes the yes as far as her bedroom door and then stands in it for a while; a year of a life fits into four boxes and a rucksack if you are ruthless, and she is not ruthless yet'>>",
+   "body": "<<FILL role=choice words=154 beats='Rhian takes the yes as far as her bedroom door and then stands in it for a while; a year of a life fits into four boxes and a rucksack if you are ruthless, and she is not ruthless yet; PLANT (did_say_yes_start): the hero has just made this choice, and something concrete comes of it that a reader will remember: an object kept, a person helped, or a fact learned, named plainly in the prose. Invent it so that it would plausibly help much later, when the hero tries \"Keep your father's secret\" (node d12_4) or \"Deal with the fourth school\" (node d11_5): there it changes how that moment goes.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -92,7 +131,7 @@
   },
   {
    "id": "d02_1",
-   "body": "<<FILL role=choice words=137 beats='the argument is short and Rhian loses it in the first minute; what surprises her is that Bea takes their parents' side, quietly, in the hall afterwards'>>",
+   "body": "<<FILL role=choice words=137 beats='the argument is short and Rhian loses it in the first minute; what surprises her is that Bea takes their parents' side, quietly, in the hall afterwards; PLANT (did_say_are_staying): the hero has just made this choice, and something concrete comes of it that a reader will remember: an object kept, a person helped, or a fact learned, named plainly in the prose. Invent it so that it would plausibly help much later, when the hero tries \"Leave Rotterdam\" (node d11_0) or \"Walk out on to the flats\" (node d11_7): there it changes how that moment goes.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -136,13 +175,20 @@
   },
   {
    "id": "d03_0",
-   "body": "<<FILL role=rising words=125 beats='fifty-seven years of arrivals: whooper swans in 1968, a hoopoe in a Caldy garden in 1983, the year the swifts came late; Mamgu writes the date of Rhian's leaving into it as though it were a species'>>",
+   "body": "<<FILL role=rising words=125 beats='fifty-seven years of arrivals: whooper swans in 1968, a hoopoe in a Caldy garden in 1983, the year the swifts came late; Mamgu writes the date of Rhian's leaving into it as though it were a species; PLANT SITE: these options are no longer cosmetic: \"Take the notebook out on the ferry\" plants did_take_notebook_ferry (pays off at d15_2 and d14_0); \"Ring Bea on the first night\" plants did_ring_bea_night (pays off at d11_6). Stage every option as appealing, with none the obviously right answer. MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Say you are staying with Mamgu\"; \"Say yes and start packing\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
      "id": "c_d03_0_0",
      "label": "Take the notebook out on the ferry.",
-     "target": "d04_0"
+     "target": "cq_plant_did_take_notebook_ferry",
+     "effects": [
+      {
+       "op": "set",
+       "var": "did_take_notebook_ferry",
+       "value": true
+      }
+     ]
     },
     {
      "id": "c_d03_0_1",
@@ -152,13 +198,44 @@
     {
      "id": "c_d03_0_2",
      "label": "Ring Bea on the first night.",
+     "target": "cq_plant_did_ring_bea_night",
+     "effects": [
+      {
+       "op": "set",
+       "var": "did_ring_bea_night",
+       "value": true
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "cq_plant_did_ring_bea_night",
+   "body": "<<FILL role=plant words=46 beats='Arrival beat for this choice, two or three sentences that show it happening and then lead straight into the next scene. PLANT (did_ring_bea_night): the hero has just made this choice, and something concrete comes of it that a reader will remember: an object kept, a person helped, or a fact learned, named plainly in the prose. Invent it so that it would plausibly help much later, when the hero tries \"Go and see Mamgu on the first day\" (node d11_6): there it changes how that moment goes.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_cq_plant_did_ring_bea_night",
+     "label": "Ring Bea on the first night.",
      "target": "d04_2"
     }
    ]
   },
   {
+   "id": "cq_plant_did_take_notebook_ferry",
+   "body": "<<FILL role=plant words=58 beats='Arrival beat for this choice, two or three sentences that show it happening and then lead straight into the next scene. PLANT (did_take_notebook_ferry): the hero has just made this choice, and something concrete comes of it that a reader will remember: an object kept, a person helped, or a fact learned, named plainly in the prose. Invent it so that it would plausibly help much later, when the hero tries \"Let the second volume stay empty\" (node d15_2) or \"Take the notebook and start a second volume\" (node d14_0): there it changes how that moment goes.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_cq_plant_did_take_notebook_ferry",
+     "label": "Take the notebook out on the ferry.",
+     "target": "d04_0"
+    }
+   ]
+  },
+  {
    "id": "d03_1",
-   "body": "<<FILL role=rising words=154 beats='the notebook, the boots, three books and the cheap binoculars with the sticky focus; everything else goes into Mamgu's back bedroom under a sheet, which is not the same as being kept'>>",
+   "body": "<<FILL role=rising words=154 beats='the notebook, the boots, three books and the cheap binoculars with the sticky focus; everything else goes into Mamgu's back bedroom under a sheet, which is not the same as being kept; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Some readers earlier chose \"Say yes and start packing\" and some did not, so the body must not depend on it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -180,7 +257,7 @@
   },
   {
    "id": "d03_2",
-   "body": "<<FILL role=rising words=137 beats='Bea has a bus pass, an exam timetable and a room she has painted twice; she says the word lucky and Rhian says it back, and neither of them means the same thing by it'>>",
+   "body": "<<FILL role=rising words=137 beats='Bea has a bus pass, an exam timetable and a room she has painted twice; she says the word lucky and Rhian says it back, and neither of them means the same thing by it; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Some readers earlier chose \"Say yes and start packing\" and some did not, so the body must not depend on it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -207,7 +284,7 @@
   },
   {
    "id": "d03_3",
-   "body": "<<FILL role=rising words=120 beats='Gethin takes Rhian into the maintenance shop on the last day; twenty-two years of his handwriting on the whiteboard, and a man from the agency photographing the plant for the sale particulars'>>",
+   "body": "<<FILL role=rising words=120 beats='Gethin takes Rhian into the maintenance shop on the last day; twenty-two years of his handwriting on the whiteboard, and a man from the agency photographing the plant for the sale particulars; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Some readers earlier chose \"Say you are staying with Mamgu\" and some did not, so the body must not depend on it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -251,7 +328,7 @@
   },
   {
    "id": "d04_0",
-   "body": "<<FILL role=rising words=142 beats='first entry of the year, written badly on a moving boat: gannets off the point, a single skua, and the coast of the place she is from getting smaller in a way that is embarrassing to be moved by'>>",
+   "body": "<<FILL role=rising words=142 beats='first entry of the year, written badly on a moving boat: gannets off the point, a single skua, and the coast of the place she is from getting smaller in a way that is embarrassing to be moved by; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Say you are staying with Mamgu\"; \"Say yes and start packing\"; \"Take the notebook out on the ferry\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -273,7 +350,7 @@
   },
   {
    "id": "d04_1",
-   "body": "<<FILL role=rising words=125 beats='two bedrooms above a shuttered unit in the Fruit Market, damp in the corner of the kitchen, and a window that looks straight at a brick wall with a gull standing on it'>>",
+   "body": "<<FILL role=rising words=125 beats='two bedrooms above a shuttered unit in the Fruit Market, damp in the corner of the kitchen, and a window that looks straight at a brick wall with a gull standing on it; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Say you are staying with Mamgu\"; \"Say yes and start packing\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -295,7 +372,7 @@
   },
   {
    "id": "d04_2",
-   "body": "<<FILL role=rising words=154 beats='the call lasts four minutes and is entirely about a bus; both of them understand that this is what they are going to do instead of saying anything, and that it will get harder'>>",
+   "body": "<<FILL role=rising words=154 beats='the call lasts four minutes and is entirely about a bus; both of them understand that this is what they are going to do instead of saying anything, and that it will get harder; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Ring Bea on the first night\"; \"Say you are staying with Mamgu\"; \"Say yes and start packing\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -317,7 +394,7 @@
   },
   {
    "id": "d04_3",
-   "body": "<<FILL role=rising words=137 beats='Nia has a lab, a lanyard and eleven months of soil cores; she is happier than Rhian has seen her in two years, and the guilt of noticing that sits in Rhian for weeks'>>",
+   "body": "<<FILL role=rising words=137 beats='Nia has a lab, a lanyard and eleven months of soil cores; she is happier than Rhian has seen her in two years, and the guilt of noticing that sits in Rhian for weeks; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Say you are staying with Mamgu\"; \"Say yes and start packing\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -339,7 +416,7 @@
   },
   {
    "id": "d04_4",
-   "body": "<<FILL role=rising words=120 beats='Gethin has a fitter's ticket, thirty years of it, and no posting until February; he cleans the flat twice a day and applies for things he does not want'>>",
+   "body": "<<FILL role=rising words=120 beats='Gethin has a fitter's ticket, thirty years of it, and no posting until February; he cleans the flat twice a day and applies for things he does not want; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Say you are staying with Mamgu\"; \"Say yes and start packing\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -366,7 +443,7 @@
   },
   {
    "id": "d04_5",
-   "body": "<<FILL role=rising words=149 beats='the old town, the bridge over the Hull with the tide going out fast and brown, nine miles and no plan, and a peregrine on the gasholder that she writes down before she has a pen that works'>>",
+   "body": "<<FILL role=rising words=149 beats='the old town, the bridge over the Hull with the tide going out fast and brown, nine miles and no plan, and a peregrine on the gasholder that she writes down before she has a pen that works; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Say you are staying with Mamgu\"; \"Say yes and start packing\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -388,7 +465,7 @@
   },
   {
    "id": "d05_0",
-   "body": "<<FILL role=rising words=159 beats='a form room of thirty who have known each other since they were four; Mrs Vardy the head of year is kind in a brisk administrative way and pairs Rhian with Tobi Aleshinloye, because Tobi is the one who will actually do it'>>",
+   "body": "<<FILL role=rising words=159 beats='a form room of thirty who have known each other since they were four; Mrs Vardy the head of year is kind in a brisk administrative way and pairs Rhian with Tobi Aleshinloye, because Tobi is the one who will actually do it; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Ring Bea on the first night\"; \"Say you are staying with Mamgu\"; \"Say yes and start packing\"; \"Take the notebook out on the ferry\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -410,7 +487,7 @@
   },
   {
    "id": "d05_1",
-   "body": "<<FILL role=rising words=142 beats='Rhian decides to arrive as a person with no history, and finds within eight days that this is exhausting and that nobody has asked anyway'>>",
+   "body": "<<FILL role=rising words=142 beats='Rhian decides to arrive as a person with no history, and finds within eight days that this is exhausting and that nobody has asked anyway; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Ring Bea on the first night\"; \"Say you are staying with Mamgu\"; \"Say yes and start packing\"; \"Take the notebook out on the ferry\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -437,7 +514,7 @@
   },
   {
    "id": "d05_2",
-   "body": "<<FILL role=rising words=125 beats='the Humber is twenty minutes on foot, the colour of milky tea, and moves like something with an opinion; there is a hide at the end of a footpath and a man with a telescope who does not mind company'>>",
+   "body": "<<FILL role=rising words=125 beats='the Humber is twenty minutes on foot, the colour of milky tea, and moves like something with an opinion; there is a hide at the end of a footpath and a man with a telescope who does not mind company; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Say you are staying with Mamgu\"; \"Say yes and start packing\"; \"Take the notebook out on the ferry\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -459,7 +536,7 @@
   },
   {
    "id": "d05_3",
-   "body": "<<FILL role=rising words=154 beats='a boy in the year above sees the binoculars in her bag and says the obvious thing, and Tobi says something back that ends it, and Rhian does not have to say anything at all'>>",
+   "body": "<<FILL role=rising words=154 beats='a boy in the year above sees the binoculars in her bag and says the obvious thing, and Tobi says something back that ends it, and Rhian does not have to say anything at all; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Say you are staying with Mamgu\"; \"Say yes and start packing\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -481,7 +558,7 @@
   },
   {
    "id": "d05_4",
-   "body": "<<FILL role=rising words=137 beats='Mamgu wants the list, not the feelings; Rhian reads out four species and a date and Mamgu says good girl, and then asks, unexpectedly, how her mother is'>>",
+   "body": "<<FILL role=rising words=137 beats='Mamgu wants the list, not the feelings; Rhian reads out four species and a date and Mamgu says good girl, and then asks, unexpectedly, how her mother is; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Say you are staying with Mamgu\"; \"Say yes and start packing\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -503,7 +580,7 @@
   },
   {
    "id": "d05_5",
-   "body": "<<FILL role=rising words=120 beats='Rhian starts doing the washing up before he can, which is meant kindly and lands as an accusation, and it takes them three weeks to work out what it was'>>",
+   "body": "<<FILL role=rising words=120 beats='Rhian starts doing the washing up before he can, which is meant kindly and lands as an accusation, and it takes them three weeks to work out what it was; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Say you are staying with Mamgu\"; \"Say yes and start packing\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -525,7 +602,7 @@
   },
   {
    "id": "d05_6",
-   "body": "<<FILL role=rising words=149 beats='the market, the chip shop with vinegar in a bucket, the way to the estuary without paying for a bus; Tobi does all of it as a job at first, and about the fourth Saturday stops doing it as a job'>>",
+   "body": "<<FILL role=rising words=149 beats='the market, the chip shop with vinegar in a bucket, the way to the estuary without paying for a bus; Tobi does all of it as a job at first, and about the fourth Saturday stops doing it as a job; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Ring Bea on the first night\"; \"Say you are staying with Mamgu\"; \"Say yes and start packing\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -552,7 +629,7 @@
   },
   {
    "id": "d06_0",
-   "body": "<<FILL role=rising words=130 beats='six adults and a fifteen year old on a Saturday morning; Rhian holds a redwing on the second week, writes down the ring number and the wing length, and does not think about Caldy for four hours'>>",
+   "body": "<<FILL role=rising words=130 beats='six adults and a fifteen year old on a Saturday morning; Rhian holds a redwing on the second week, writes down the ring number and the wing length, and does not think about Caldy for four hours; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Ring Bea on the first night\"; \"Say you are staying with Mamgu\"; \"Say yes and start packing\"; \"Take the notebook out on the ferry\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -574,7 +651,7 @@
   },
   {
    "id": "d06_1",
-   "body": "<<FILL role=rising words=159 beats='three cities, eleven months, a sister who stayed; Tobi listens the whole way through and then says the useful thing, which is that Rhian has been describing it as something happening to her'>>",
+   "body": "<<FILL role=rising words=159 beats='three cities, eleven months, a sister who stayed; Tobi listens the whole way through and then says the useful thing, which is that Rhian has been describing it as something happening to her; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Ring Bea on the first night\"; \"Say you are staying with Mamgu\"; \"Say yes and start packing\"; \"Take the notebook out on the ferry\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -596,7 +673,7 @@
   },
   {
    "id": "d06_2",
-   "body": "<<FILL role=rising words=142 beats='the syllabus is not the same syllabus and nobody has time to notice; Rhian is four topics adrift in chemistry by half term and says nothing to anyone at home'>>",
+   "body": "<<FILL role=rising words=142 beats='the syllabus is not the same syllabus and nobody has time to notice; Rhian is four topics adrift in chemistry by half term and says nothing to anyone at home; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Ring Bea on the first night\"; \"Say you are staying with Mamgu\"; \"Say yes and start packing\"; \"Take the notebook out on the ferry\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -618,7 +695,7 @@
   },
   {
    "id": "d06_3",
-   "body": "<<FILL role=rising words=125 beats='nights at a cold store on the docks for less than half what he earned; he takes it because it is work, and he stops applying for the things he does want'>>",
+   "body": "<<FILL role=rising words=125 beats='nights at a cold store on the docks for less than half what he earned; he takes it because it is work, and he stops applying for the things he does want; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Ring Bea on the first night\"; \"Say you are staying with Mamgu\"; \"Say yes and start packing\"; \"Take the notebook out on the ferry\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -645,7 +722,7 @@
   },
   {
    "id": "d06_4",
-   "body": "<<FILL role=rising words=154 beats='the party happens on a Saturday four hundred miles away and Rhian is sent eleven photographs of it at half past one in the morning'>>",
+   "body": "<<FILL role=rising words=154 beats='the party happens on a Saturday four hundred miles away and Rhian is sent eleven photographs of it at half past one in the morning; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Ring Bea on the first night\"; \"Say you are staying with Mamgu\"; \"Say yes and start packing\"; \"Take the notebook out on the ferry\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -667,7 +744,7 @@
   },
   {
    "id": "d06_5",
-   "body": "<<FILL role=rising words=137 beats='the notebook fills faster here than it ever did at home; knot in thousands over the mudflats, and Rhian understands for the first time that a place she does not like can still be full of things worth writing down'>>",
+   "body": "<<FILL role=rising words=137 beats='the notebook fills faster here than it ever did at home; knot in thousands over the mudflats, and Rhian understands for the first time that a place she does not like can still be full of things worth writing down; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Ring Bea on the first night\"; \"Say you are staying with Mamgu\"; \"Say yes and start packing\"; \"Take the notebook out on the ferry\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -689,7 +766,7 @@
   },
   {
    "id": "d06_6",
-   "body": "<<FILL role=rising words=120 beats='Nia buys a lamp and a rug in the same week and Gethin says nothing about either, and the argument that follows is not about the rug'>>",
+   "body": "<<FILL role=rising words=120 beats='Nia buys a lamp and a rug in the same week and Gethin says nothing about either, and the argument that follows is not about the rug; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Ring Bea on the first night\"; \"Say you are staying with Mamgu\"; \"Say yes and start packing\"; \"Take the notebook out on the ferry\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -711,7 +788,7 @@
   },
   {
    "id": "d06_7",
-   "body": "<<FILL role=rising words=149 beats='the trains are ninety pounds and the answer is not no, it is not this month, which Rhian understands and takes badly anyway'>>",
+   "body": "<<FILL role=rising words=149 beats='the trains are ninety pounds and the answer is not no, it is not this month, which Rhian understands and takes badly anyway; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Say you are staying with Mamgu\"; \"Say yes and start packing\"; \"Take the notebook out on the ferry\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -733,7 +810,7 @@
   },
   {
    "id": "d07_0",
-   "body": "<<FILL role=rising words=147 beats='Mrs Vardy is unsurprised, produces a plan inside ten minutes, and asks the question nobody at home has asked, which is whether anyone had checked what Rhian was walking into'>>",
+   "body": "<<FILL role=rising words=147 beats='Mrs Vardy is unsurprised, produces a plan inside ten minutes, and asks the question nobody at home has asked, which is whether anyone had checked what Rhian was walking into; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Ring Bea on the first night\"; \"Say you are staying with Mamgu\"; \"Say yes and start packing\"; \"Take the notebook out on the ferry\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -760,7 +837,7 @@
   },
   {
    "id": "d07_1",
-   "body": "<<FILL role=rising words=130 beats='a four in the morning start on the estuary in November, mist nets and a thermos, and a woodcock in the hand that weighs nothing and looks at her steadily'>>",
+   "body": "<<FILL role=rising words=130 beats='a four in the morning start on the estuary in November, mist nets and a thermos, and a woodcock in the hand that weighs nothing and looks at her steadily; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Ring Bea on the first night\"; \"Say you are staying with Mamgu\"; \"Say yes and start packing\"; \"Take the notebook out on the ferry\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -782,7 +859,7 @@
   },
   {
    "id": "d07_2",
-   "body": "<<FILL role=rising words=159 beats='Gethin talks about the works for the first time since September, not about losing it but about what it was, and Rhian realises she has never once asked him what he actually did all day'>>",
+   "body": "<<FILL role=rising words=159 beats='Gethin talks about the works for the first time since September, not about losing it but about what it was, and Rhian realises she has never once asked him what he actually did all day; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Ring Bea on the first night\"; \"Say you are staying with Mamgu\"; \"Say yes and start packing\"; \"Take the notebook out on the ferry\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -804,7 +881,7 @@
   },
   {
    "id": "d07_3",
-   "body": "<<FILL role=rising words=142 beats='about a lamp, then about a school, then about whose year this is; Nia says a true thing badly and does not take it back, and Rhian does not want her to'>>",
+   "body": "<<FILL role=rising words=142 beats='about a lamp, then about a school, then about whose year this is; Nia says a true thing badly and does not take it back, and Rhian does not want her to; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Ring Bea on the first night\"; \"Say you are staying with Mamgu\"; \"Say yes and start packing\"; \"Take the notebook out on the ferry\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -826,7 +903,7 @@
   },
   {
    "id": "d07_4",
-   "body": "<<FILL role=rising words=125 beats='fifty-seven years of other people's handwriting and four months of Rhian's; Tobi reads it properly, front to back, and asks who is going to write in it after Mamgu'>>",
+   "body": "<<FILL role=rising words=125 beats='fifty-seven years of other people's handwriting and four months of Rhian's; Tobi reads it properly, front to back, and asks who is going to write in it after Mamgu; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Ring Bea on the first night\"; \"Say you are staying with Mamgu\"; \"Say yes and start packing\"; \"Take the notebook out on the ferry\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -848,7 +925,7 @@
   },
   {
    "id": "d07_5",
-   "body": "<<FILL role=rising words=154 beats='the reserve in freezing fog, four birds all morning, and the best conversation of the autumn with a retired dockworker about the difference between moving and being moved'>>",
+   "body": "<<FILL role=rising words=154 beats='the reserve in freezing fog, four birds all morning, and the best conversation of the autumn with a retired dockworker about the difference between moving and being moved; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Ring Bea on the first night\"; \"Say you are staying with Mamgu\"; \"Say yes and start packing\"; \"Take the notebook out on the ferry\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -875,7 +952,7 @@
   },
   {
    "id": "d07_6",
-   "body": "<<FILL role=rising words=137 beats='a feather, a tide table and a bad drawing of the Humber, posted on a Tuesday; Bea sends back a photograph of the sheet over Rhian's furniture with a caption that is meant to be funny'>>",
+   "body": "<<FILL role=rising words=137 beats='a feather, a tide table and a bad drawing of the Humber, posted on a Tuesday; Bea sends back a photograph of the sheet over Rhian's furniture with a caption that is meant to be funny; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Ring Bea on the first night\"; \"Say you are staying with Mamgu\"; \"Say yes and start packing\"; \"Take the notebook out on the ferry\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -897,7 +974,7 @@
   },
   {
    "id": "d07_7",
-   "body": "<<FILL role=rising words=120 beats='residence forms, a school intake test, a language nobody in the family has, and a February date that is now eight weeks away and has stopped being theoretical'>>",
+   "body": "<<FILL role=rising words=120 beats='residence forms, a school intake test, a language nobody in the family has, and a February date that is now eight weeks away and has stopped being theoretical; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Ring Bea on the first night\"; \"Say you are staying with Mamgu\"; \"Say yes and start packing\"; \"Take the notebook out on the ferry\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -919,7 +996,7 @@
   },
   {
    "id": "d07_8",
-   "body": "<<FILL role=branch words=149 beats='they can afford two of the three of them going back to Caldy, or all three staying in Hull, and the arithmetic is laid out on the kitchen table like a school problem'>>",
+   "body": "<<FILL role=branch words=149 beats='they can afford two of the three of them going back to Caldy, or all three staying in Hull, and the arithmetic is laid out on the kitchen table like a school problem; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Ring Bea on the first night\"; \"Say you are staying with Mamgu\"; \"Say yes and start packing\"; \"Take the notebook out on the ferry\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -941,7 +1018,7 @@
   },
   {
    "id": "d08_0",
-   "body": "<<FILL role=rising words=164 beats='four days, Mamgu's house, Bea in the doorway; everything is exactly as it was, which is the problem, because Rhian is not, and finds herself performing the version of herself that fits the kitchen'>>",
+   "body": "<<FILL role=rising words=164 beats='four days, Mamgu's house, Bea in the doorway; everything is exactly as it was, which is the problem, because Rhian is not, and finds herself performing the version of herself that fits the kitchen; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Ring Bea on the first night\"; \"Say you are staying with Mamgu\"; \"Say yes and start packing\"; \"Take the notebook out on the ferry\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -963,7 +1040,7 @@
   },
   {
    "id": "d08_1",
-   "body": "<<FILL role=rising words=147 beats='four months and sixty-one species; Mamgu reads it slowly with a finger under the line and says that Rhian's handwriting has changed, which is the only comment she makes and is not about handwriting'>>",
+   "body": "<<FILL role=rising words=147 beats='four months and sixty-one species; Mamgu reads it slowly with a finger under the line and says that Rhian's handwriting has changed, which is the only comment she makes and is not about handwriting; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Ring Bea on the first night\"; \"Say you are staying with Mamgu\"; \"Say yes and start packing\"; \"Take the notebook out on the ferry\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -985,7 +1062,7 @@
   },
   {
    "id": "d08_2",
-   "body": "<<FILL role=rising words=130 beats='whether she is glad she stayed; Bea takes it seriously and answers on the third try, and the answer is yes, and also that she did not know it would be permanent'>>",
+   "body": "<<FILL role=rising words=130 beats='whether she is glad she stayed; Bea takes it seriously and answers on the third try, and the answer is yes, and also that she did not know it would be permanent; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Ring Bea on the first night\"; \"Say you are staying with Mamgu\"; \"Say yes and start packing\"; \"Take the notebook out on the ferry\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -1012,7 +1089,7 @@
   },
   {
    "id": "d08_3",
-   "body": "<<FILL role=rising words=159 beats='fenced, drained and half demolished; Gethin does not get out of the car and Rhian does, and stands at the fence for ten minutes on Boxing Day'>>",
+   "body": "<<FILL role=rising words=159 beats='fenced, drained and half demolished; Gethin does not get out of the car and Rhian does, and stands at the fence for ten minutes on Boxing Day; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Ring Bea on the first night\"; \"Say you are staying with Mamgu\"; \"Say yes and start packing\"; \"Take the notebook out on the ferry\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -1034,7 +1111,7 @@
   },
   {
    "id": "d08_4",
-   "body": "<<FILL role=rising words=142 beats='six weeks left; Rhian starts saying no to things she would have said yes to, and Tobi notices in three days and calls it what it is'>>",
+   "body": "<<FILL role=rising words=142 beats='six weeks left; Rhian starts saying no to things she would have said yes to, and Tobi notices in three days and calls it what it is; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Ring Bea on the first night\"; \"Say you are staying with Mamgu\"; \"Say yes and start packing\"; \"Take the notebook out on the ferry\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -1056,7 +1133,7 @@
   },
   {
    "id": "d08_5",
-   "body": "<<FILL role=rising words=125 beats='Mrs Vardy's plan, four extra hours a week, and a January test that Rhian passes by two marks and treats as a personal triumph nobody else can see'>>",
+   "body": "<<FILL role=rising words=125 beats='Mrs Vardy's plan, four extra hours a week, and a January test that Rhian passes by two marks and treats as a personal triumph nobody else can see; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Ring Bea on the first night\"; \"Say you are staying with Mamgu\"; \"Say yes and start packing\"; \"Take the notebook out on the ferry\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -1078,7 +1155,7 @@
   },
   {
    "id": "d08_6",
-   "body": "<<FILL role=rising words=154 beats='a hen harrier over the rough ground on the last Saturday of January; every adult in the group turns and goes quiet, and Rhian writes it down with her hands shaking'>>",
+   "body": "<<FILL role=rising words=154 beats='a hen harrier over the rough ground on the last Saturday of January; every adult in the group turns and goes quiet, and Rhian writes it down with her hands shaking; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Ring Bea on the first night\"; \"Say you are staying with Mamgu\"; \"Say yes and start packing\"; \"Take the notebook out on the ferry\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -1100,7 +1177,7 @@
   },
   {
    "id": "d08_7",
-   "body": "<<FILL role=rising words=137 beats='not possible, obviously, and asking it out loud is still the first time Rhian has admitted that she wants to be somewhere rather than simply not wanting to leave it'>>",
+   "body": "<<FILL role=rising words=137 beats='not possible, obviously, and asking it out loud is still the first time Rhian has admitted that she wants to be somewhere rather than simply not wanting to leave it; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Ring Bea on the first night\"; \"Say you are staying with Mamgu\"; \"Say yes and start packing\"; \"Take the notebook out on the ferry\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -1127,7 +1204,7 @@
   },
   {
    "id": "d09_0",
-   "body": "<<FILL role=rising words=135 beats='the flat empty in ninety minutes, the gull still on the wall, and Tobi at the station in a coat that is not warm enough, saying the thing people say and meaning it'>>",
+   "body": "<<FILL role=rising words=135 beats='the flat empty in ninety minutes, the gull still on the wall, and Tobi at the station in a coat that is not warm enough, saying the thing people say and meaning it; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Ring Bea on the first night\"; \"Say you are staying with Mamgu\"; \"Say yes and start packing\"; \"Take the notebook out on the ferry\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -1149,7 +1226,7 @@
   },
   {
    "id": "d09_1",
-   "body": "<<FILL role=rising words=164 beats='a fourth floor in Delfshaven with a lift that works, more light than the Hull flat had in four months, and a city that starts at eight and does not apologise for anything'>>",
+   "body": "<<FILL role=rising words=164 beats='a fourth floor in Delfshaven with a lift that works, more light than the Hull flat had in four months, and a city that starts at eight and does not apologise for anything; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Ring Bea on the first night\"; \"Say you are staying with Mamgu\"; \"Say yes and start packing\"; \"Take the notebook out on the ferry\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -1171,7 +1248,7 @@
   },
   {
    "id": "d09_2",
-   "body": "<<FILL role=rising words=147 beats='the Dutch is not there and cannot be faked; Meneer Bakhuis is entirely calm about it, puts Rhian into a language programme for a term, and tells her, accurately, that this will be the hardest eleven weeks of her life'>>",
+   "body": "<<FILL role=rising words=147 beats='the Dutch is not there and cannot be faked; Meneer Bakhuis is entirely calm about it, puts Rhian into a language programme for a term, and tells her, accurately, that this will be the hardest eleven weeks of her life; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Ring Bea on the first night\"; \"Say you are staying with Mamgu\"; \"Say yes and start packing\"; \"Take the notebook out on the ferry\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -1193,7 +1270,7 @@
   },
   {
    "id": "d09_3",
-   "body": "<<FILL role=rising words=130 beats='Sanne de Kok is sixteen, speaks four languages badly on purpose, and knocks on the door on the second evening to ask whether the English girl wants to see something'>>",
+   "body": "<<FILL role=rising words=130 beats='Sanne de Kok is sixteen, speaks four languages badly on purpose, and knocks on the door on the second evening to ask whether the English girl wants to see something; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Ring Bea on the first night\"; \"Say you are staying with Mamgu\"; \"Say yes and start packing\"; \"Take the notebook out on the ferry\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -1215,7 +1292,7 @@
   },
   {
    "id": "d09_4",
-   "body": "<<FILL role=rising words=159 beats='a maintenance contract in the port, real hours and real money, and a man who is entirely different at dinner from the man who cleaned the Hull flat twice a day'>>",
+   "body": "<<FILL role=rising words=159 beats='a maintenance contract in the port, real hours and real money, and a man who is entirely different at dinner from the man who cleaned the Hull flat twice a day; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Ring Bea on the first night\"; \"Say you are staying with Mamgu\"; \"Say yes and start packing\"; \"Take the notebook out on the ferry\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -1242,7 +1319,7 @@
   },
   {
    "id": "d09_5",
-   "body": "<<FILL role=rising words=142 beats='the Kralingse Plas, the Maas, the dredged ponds out past the ring road; different birds, a different light, and a notebook page that looks nothing like the Humber pages'>>",
+   "body": "<<FILL role=rising words=142 beats='the Kralingse Plas, the Maas, the dredged ponds out past the ring road; different birds, a different light, and a notebook page that looks nothing like the Humber pages; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Ring Bea on the first night\"; \"Say you are staying with Mamgu\"; \"Say yes and start packing\"; \"Take the notebook out on the ferry\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -1264,7 +1341,7 @@
   },
   {
    "id": "d09_6",
-   "body": "<<FILL role=rising words=125 beats='Rhian and Tobi message every day for eleven days, then every other day, and then, without either of them deciding it, not'>>",
+   "body": "<<FILL role=rising words=125 beats='Rhian and Tobi message every day for eleven days, then every other day, and then, without either of them deciding it, not; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Ring Bea on the first night\"; \"Say you are staying with Mamgu\"; \"Say yes and start packing\"; \"Take the notebook out on the ferry\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -1286,7 +1363,7 @@
   },
   {
    "id": "d09_7",
-   "body": "<<FILL role=branch words=154 beats='eleven weeks, four hours a day, in a room with a Syrian boy, two Polish sisters and a Somali woman of fifty; Rhian is the only one for whom this is temporary, and she works out inside a fortnight what that means'>>",
+   "body": "<<FILL role=branch words=154 beats='eleven weeks, four hours a day, in a room with a Syrian boy, two Polish sisters and a Somali woman of fifty; Rhian is the only one for whom this is temporary, and she works out inside a fortnight what that means; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Ring Bea on the first night\"; \"Say you are staying with Mamgu\"; \"Say yes and start packing\"; \"Take the notebook out on the ferry\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -1308,7 +1385,7 @@
   },
   {
    "id": "d10_0",
-   "body": "<<FILL role=rising words=152 beats='the Maas at night, the bridge, a chip shop with a queue at eleven; Sanne asks nothing about Wales or Hull for three weeks, which is either tact or indifference and turns out to be tact'>>",
+   "body": "<<FILL role=rising words=152 beats='the Maas at night, the bridge, a chip shop with a queue at eleven; Sanne asks nothing about Wales or Hull for three weeks, which is either tact or indifference and turns out to be tact; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Ring Bea on the first night\"; \"Say you are staying with Mamgu\"; \"Say yes and start packing\"; \"Take the notebook out on the ferry\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -1330,7 +1407,7 @@
   },
   {
    "id": "d10_1",
-   "body": "<<FILL role=rising words=135 beats='verbs on the tram, verbs in the lift, verbs on the ceiling above the bed; Halimo, the Somali woman, is the fastest in the room and tells Rhian that shame is the only thing that actually slows anybody down'>>",
+   "body": "<<FILL role=rising words=135 beats='verbs on the tram, verbs in the lift, verbs on the ceiling above the bed; Halimo, the Somali woman, is the fastest in the room and tells Rhian that shame is the only thing that actually slows anybody down; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Ring Bea on the first night\"; \"Say you are staying with Mamgu\"; \"Say yes and start packing\"; \"Take the notebook out on the ferry\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -1357,7 +1434,7 @@
   },
   {
    "id": "d10_2",
-   "body": "<<FILL role=rising words=164 beats='the list is shorter this month and Mamgu says so; then she asks Rhian to describe the light, which nobody has ever asked her before'>>",
+   "body": "<<FILL role=rising words=164 beats='the list is shorter this month and Mamgu says so; then she asks Rhian to describe the light, which nobody has ever asked her before; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Ring Bea on the first night\"; \"Say you are staying with Mamgu\"; \"Say yes and start packing\"; \"Take the notebook out on the ferry\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -1379,7 +1456,7 @@
   },
   {
    "id": "d10_3",
-   "body": "<<FILL role=rising words=147 beats='four hundred miles and no time difference at all, and still every call lands at the wrong moment; Bea is revising and frightened and does not want a sister who is having a year'>>",
+   "body": "<<FILL role=rising words=147 beats='four hundred miles and no time difference at all, and still every call lands at the wrong moment; Bea is revising and frightened and does not want a sister who is having a year; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Ring Bea on the first night\"; \"Say you are staying with Mamgu\"; \"Say yes and start packing\"; \"Take the notebook out on the ferry\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -1401,7 +1478,7 @@
   },
   {
    "id": "d10_4",
-   "body": "<<FILL role=rising words=130 beats='spoonbills, which Rhian has never seen, six of them, absurd; she stands in the wind for forty minutes and comes home with the first Rotterdam page she is proud of'>>",
+   "body": "<<FILL role=rising words=130 beats='spoonbills, which Rhian has never seen, six of them, absurd; she stands in the wind for forty minutes and comes home with the first Rotterdam page she is proud of; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Ring Bea on the first night\"; \"Say you are staying with Mamgu\"; \"Say yes and start packing\"; \"Take the notebook out on the ferry\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -1423,7 +1500,7 @@
   },
   {
    "id": "d10_5",
-   "body": "<<FILL role=rising words=159 beats='both of them working, both of them tired, both easier with each other than at any point since the works shut; Rhian notices it and does not know where to put it'>>",
+   "body": "<<FILL role=rising words=159 beats='both of them working, both of them tired, both easier with each other than at any point since the works shut; Rhian notices it and does not know where to put it; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Ring Bea on the first night\"; \"Say you are staying with Mamgu\"; \"Say yes and start packing\"; \"Take the notebook out on the ferry\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -1445,7 +1522,7 @@
   },
   {
    "id": "d10_6",
-   "body": "<<FILL role=rising words=142 beats='Halimo looks at the 1968 pages for a long time and says that her grandmother kept something similar, and that it is in a house that is not there any more'>>",
+   "body": "<<FILL role=rising words=142 beats='Halimo looks at the 1968 pages for a long time and says that her grandmother kept something similar, and that it is in a house that is not there any more; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Ring Bea on the first night\"; \"Say you are staying with Mamgu\"; \"Say yes and start packing\"; \"Take the notebook out on the ferry\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -1472,7 +1549,7 @@
   },
   {
    "id": "d10_7",
-   "body": "<<FILL role=rising words=125 beats='nine words at a market stall in April, correctly; the man answers at full speed and Rhian understands about a third of it and grins the whole way home'>>",
+   "body": "<<FILL role=rising words=125 beats='nine words at a market stall in April, correctly; the man answers at full speed and Rhian understands about a third of it and grins the whole way home; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Ring Bea on the first night\"; \"Say you are staying with Mamgu\"; \"Say yes and start packing\"; \"Take the notebook out on the ferry\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -1494,7 +1571,7 @@
   },
   {
    "id": "d10_8",
-   "body": "<<FILL role=rising words=154 beats='nobody at the kitchen table has an answer; Nia's contract ends, Gethin's does not, and the village outside Bangor was always the last posting and never a destination'>>",
+   "body": "<<FILL role=rising words=154 beats='nobody at the kitchen table has an answer; Nia's contract ends, Gethin's does not, and the village outside Bangor was always the last posting and never a destination; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Ring Bea on the first night\"; \"Say you are staying with Mamgu\"; \"Say yes and start packing\"; \"Take the notebook out on the ferry\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -1516,13 +1593,34 @@
   },
   {
    "id": "d11_0",
-   "body": "<<FILL role=rising words=123 beats='eleven weeks, a certificate that is a piece of A4, and a test Rhian passes in the middle of the group; Bakhuis shakes her hand and puts her into a class of thirty who have to slow down for her and mostly do'>>",
+   "body": "<<FILL role=rising words=123 beats='eleven weeks, a certificate that is a piece of A4, and a test Rhian passes in the middle of the group; Bakhuis shakes her hand and puts her into a class of thirty who have to slow down for her and mostly do; PAYOFF SITE (did_say_are_staying): readers arrive here both having and not having chosen \"Say you are staying with Mamgu\" earlier, so this body must be true either way and must not say which. The option \"Leave Rotterdam\" plays out differently for the two: with that earlier choice the reader first sees a payoff scene. MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Ring Bea on the first night\"; \"Say you are staying with Mamgu\"; \"Say yes and start packing\"; \"Take the notebook out on the ferry\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
      "id": "c_d11_0_0",
      "label": "Leave Rotterdam.",
-     "target": "d12_0"
+     "target": "d12_0",
+     "condition": {
+      "==": [
+       {
+        "var": "did_say_are_staying"
+       },
+       false
+      ]
+     }
+    },
+    {
+     "id": "c_d11_0_0_cq_did_say_are_staying",
+     "label": "Leave Rotterdam.",
+     "target": "cq_payoff_did_say_are_staying",
+     "condition": {
+      "==": [
+       {
+        "var": "did_say_are_staying"
+       },
+       true
+      ]
+     }
     },
     {
      "id": "c_d11_0_1",
@@ -1537,8 +1635,20 @@
    ]
   },
   {
+   "id": "cq_payoff_did_say_are_staying",
+   "body": "<<FILL role=payoff words=60 beats='PAYOFF (did_say_are_staying): only a reader who earlier chose \"Say you are staying with Mamgu\" (node d01_0) reaches this scene. The hero tries \"Leave Rotterdam\". The thing that came of that earlier choice changes how it goes: show it returning concretely in a few sentences, a moment only this reader gets. Then lead into the next scene (node d12_0), which every reader who makes this move reaches, without contradicting it.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_cq_payoff_did_say_are_staying",
+     "label": "Leave Rotterdam.",
+     "target": "d12_0"
+    }
+   ]
+  },
+  {
    "id": "d11_1",
-   "body": "<<FILL role=rising words=152 beats='a corridor in Dutch, a maths lesson she can follow because numbers do not care, and a history lesson she cannot follow at all and sits through anyway'>>",
+   "body": "<<FILL role=rising words=152 beats='a corridor in Dutch, a maths lesson she can follow because numbers do not care, and a history lesson she cannot follow at all and sits through anyway; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Ring Bea on the first night\"; \"Say you are staying with Mamgu\"; \"Say yes and start packing\"; \"Take the notebook out on the ferry\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -1560,7 +1670,7 @@
   },
   {
    "id": "d11_2",
-   "body": "<<FILL role=rising words=135 beats='Rhian works out that being the person who does not know is a role with some freedom in it, and starts asking the questions the Dutch fifteen year olds are too embarrassed to ask'>>",
+   "body": "<<FILL role=rising words=135 beats='Rhian works out that being the person who does not know is a role with some freedom in it, and starts asking the questions the Dutch fifteen year olds are too embarrassed to ask; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Ring Bea on the first night\"; \"Say you are staying with Mamgu\"; \"Say yes and start packing\"; \"Take the notebook out on the ferry\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -1582,7 +1692,7 @@
   },
   {
    "id": "d11_3",
-   "body": "<<FILL role=rising words=164 beats='Sanne is bored for twenty minutes and then is not; she is the one who spots the bittern, and refuses ever afterwards to be described as somebody who does not care about birds'>>",
+   "body": "<<FILL role=rising words=164 beats='Sanne is bored for twenty minutes and then is not; she is the one who spots the bittern, and refuses ever afterwards to be described as somebody who does not care about birds; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Ring Bea on the first night\"; \"Say you are staying with Mamgu\"; \"Say yes and start packing\"; \"Take the notebook out on the ferry\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -1609,7 +1719,7 @@
   },
   {
    "id": "d11_4",
-   "body": "<<FILL role=rising words=147 beats='photocopies in an envelope with a Dutch stamp; Mamgu writes back on paper for the first time in years and encloses a cutting about a hoopoe in Caldy in 1983'>>",
+   "body": "<<FILL role=rising words=147 beats='photocopies in an envelope with a Dutch stamp; Mamgu writes back on paper for the first time in years and encloses a cutting about a hoopoe in Caldy in 1983; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Ring Bea on the first night\"; \"Say you are staying with Mamgu\"; \"Say yes and start packing\"; \"Take the notebook out on the ferry\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -1631,13 +1741,34 @@
   },
   {
    "id": "d11_5",
-   "body": "<<FILL role=rising words=130 beats='the postings end in June and the village outside Bangor starts in July, and Rhian catches herself dreading a place that is twelve miles from where she was born'>>",
+   "body": "<<FILL role=rising words=130 beats='the postings end in June and the village outside Bangor starts in July, and Rhian catches herself dreading a place that is twelve miles from where she was born; PAYOFF SITE (did_say_yes_start): readers arrive here both having and not having chosen \"Say yes and start packing\" earlier, so this body must be true either way and must not say which. The option \"Deal with the fourth school\" plays out differently for the two: with that earlier choice the reader first sees a payoff scene. MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Ring Bea on the first night\"; \"Say you are staying with Mamgu\"; \"Say yes and start packing\"; \"Take the notebook out on the ferry\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
      "id": "c_d11_5_0",
      "label": "Deal with the fourth school.",
-     "target": "d12_6"
+     "target": "d12_6",
+     "condition": {
+      "==": [
+       {
+        "var": "did_say_yes_start"
+       },
+       false
+      ]
+     }
+    },
+    {
+     "id": "c_d11_5_0_cq_did_say_yes_start",
+     "label": "Deal with the fourth school.",
+     "target": "cq_payoff_did_say_yes_start_site2",
+     "condition": {
+      "==": [
+       {
+        "var": "did_say_yes_start"
+       },
+       true
+      ]
+     }
     },
     {
      "id": "c_d11_5_1",
@@ -1652,8 +1783,20 @@
    ]
   },
   {
+   "id": "cq_payoff_did_say_yes_start_site2",
+   "body": "<<FILL role=payoff words=70 beats='PAYOFF (did_say_yes_start): only a reader who earlier chose \"Say yes and start packing\" (node d01_0) reaches this scene. The hero tries \"Deal with the fourth school\". The thing that came of that earlier choice changes how it goes: show it returning concretely in a few sentences, a moment only this reader gets. Then lead into the next scene (node d12_6), which every reader who makes this move reaches, without contradicting it.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_cq_payoff_did_say_yes_start_site2",
+     "label": "Deal with the fourth school.",
+     "target": "d12_6"
+    }
+   ]
+  },
+  {
    "id": "d11_6",
-   "body": "<<FILL role=rising words=159 beats='Nia's contract, the mortgage they no longer have, the school in Bangor, and the fact that Rhian will be doing her examination year in a fourth school'>>",
+   "body": "<<FILL role=rising words=159 beats='Nia's contract, the mortgage they no longer have, the school in Bangor, and the fact that Rhian will be doing her examination year in a fourth school; PAYOFF SITE (did_ring_bea_night): readers arrive here both having and not having chosen \"Ring Bea on the first night\" earlier, so this body must be true either way and must not say which. The option \"Go and see Mamgu on the first day\" plays out differently for the two: with that earlier choice the reader first sees a payoff scene. MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Ring Bea on the first night\"; \"Say you are staying with Mamgu\"; \"Say yes and start packing\"; \"Take the notebook out on the ferry\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -1664,7 +1807,28 @@
     {
      "id": "c_d11_6_1",
      "label": "Go and see Mamgu on the first day.",
-     "target": "d12_2"
+     "target": "d12_2",
+     "condition": {
+      "==": [
+       {
+        "var": "did_ring_bea_night"
+       },
+       false
+      ]
+     }
+    },
+    {
+     "id": "c_d11_6_1_cq_did_ring_bea_night",
+     "label": "Go and see Mamgu on the first day.",
+     "target": "cq_payoff_did_ring_bea_night",
+     "condition": {
+      "==": [
+       {
+        "var": "did_ring_bea_night"
+       },
+       true
+      ]
+     }
     },
     {
      "id": "c_d11_6_2",
@@ -1674,8 +1838,20 @@
    ]
   },
   {
+   "id": "cq_payoff_did_ring_bea_night",
+   "body": "<<FILL role=payoff words=48 beats='PAYOFF (did_ring_bea_night): only a reader who earlier chose \"Ring Bea on the first night\" (node d03_0) reaches this scene. The hero tries \"Go and see Mamgu on the first day\". The thing that came of that earlier choice changes how it goes: show it returning concretely in a few sentences, a moment only this reader gets. Then lead into the next scene (node d12_2), which every reader who makes this move reaches, without contradicting it.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_cq_payoff_did_ring_bea_night",
+     "label": "Go and see Mamgu on the first day.",
+     "target": "d12_2"
+    }
+   ]
+  },
+  {
    "id": "d11_7",
-   "body": "<<FILL role=rising words=142 beats='a June evening on the Plas with swifts over the water in numbers she cannot count and does not try to; the last page of the middle of the year'>>",
+   "body": "<<FILL role=rising words=142 beats='a June evening on the Plas with swifts over the water in numbers she cannot count and does not try to; the last page of the middle of the year; PAYOFF SITE (did_say_are_staying): readers arrive here both having and not having chosen \"Say you are staying with Mamgu\" earlier, so this body must be true either way and must not say which. The option \"Walk out on to the flats\" plays out differently for the two: with that earlier choice the reader first sees a payoff scene. MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Ring Bea on the first night\"; \"Say you are staying with Mamgu\"; \"Say yes and start packing\"; \"Take the notebook out on the ferry\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -1686,7 +1862,28 @@
     {
      "id": "c_d11_7_1",
      "label": "Walk out on to the flats.",
-     "target": "d12_5"
+     "target": "d12_5",
+     "condition": {
+      "==": [
+       {
+        "var": "did_say_are_staying"
+       },
+       false
+      ]
+     }
+    },
+    {
+     "id": "c_d11_7_1_cq_did_say_are_staying",
+     "label": "Walk out on to the flats.",
+     "target": "cq_payoff_did_say_are_staying_site2",
+     "condition": {
+      "==": [
+       {
+        "var": "did_say_are_staying"
+       },
+       true
+      ]
+     }
     },
     {
      "id": "c_d11_7_2",
@@ -1696,8 +1893,20 @@
    ]
   },
   {
+   "id": "cq_payoff_did_say_are_staying_site2",
+   "body": "<<FILL role=payoff words=53 beats='PAYOFF (did_say_are_staying): only a reader who earlier chose \"Say you are staying with Mamgu\" (node d01_0) reaches this scene. The hero tries \"Walk out on to the flats\". The thing that came of that earlier choice changes how it goes: show it returning concretely in a few sentences, a moment only this reader gets. Then lead into the next scene (node d12_5), which every reader who makes this move reaches, without contradicting it.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_cq_payoff_did_say_are_staying_site2",
+     "label": "Walk out on to the flats.",
+     "target": "d12_5"
+    }
+   ]
+  },
+  {
    "id": "d12_0",
-   "body": "<<FILL role=rising words=140 beats='Sanne on the platform with a paper bag of stroopwafels and an address; the flat empty, the light in it still better than anywhere else that year, and Rhian crying on a train for the second time in eleven months'>>",
+   "body": "<<FILL role=rising words=140 beats='Sanne on the platform with a paper bag of stroopwafels and an address; the flat empty, the light in it still better than anywhere else that year, and Rhian crying on a train for the second time in eleven months; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Ring Bea on the first night\"; \"Say you are staying with Mamgu\"; \"Say yes and start packing\"; \"Take the notebook out on the ferry\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -1724,7 +1933,7 @@
   },
   {
    "id": "d12_1",
-   "body": "<<FILL role=rising words=123 beats='a rented cottage twelve miles from Caldy, a lane, a farm at the end of it, and Welsh spoken in the shop by people who switch to English for her, which is worse than if they had not'>>",
+   "body": "<<FILL role=rising words=123 beats='a rented cottage twelve miles from Caldy, a lane, a farm at the end of it, and Welsh spoken in the shop by people who switch to English for her, which is worse than if they had not; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Ring Bea on the first night\"; \"Say you are staying with Mamgu\"; \"Say yes and start packing\"; \"Take the notebook out on the ferry\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -1746,7 +1955,7 @@
   },
   {
    "id": "d12_2",
-   "body": "<<FILL role=rising words=152 beats='twenty minutes on two buses; Mamgu has the notebook drawer open when Rhian arrives, which means she has been waiting, which she will not admit'>>",
+   "body": "<<FILL role=rising words=152 beats='twenty minutes on two buses; Mamgu has the notebook drawer open when Rhian arrives, which means she has been waiting, which she will not admit; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Ring Bea on the first night\"; \"Say you are staying with Mamgu\"; \"Say yes and start packing\"; \"Take the notebook out on the ferry\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -1768,7 +1977,7 @@
   },
   {
    "id": "d12_3",
-   "body": "<<FILL role=rising words=135 beats='results in August, a place in Cardiff, a boyfriend nobody mentioned in eleven months of calls; Bea is kind and busy and has become a person Rhian would have to get to know'>>",
+   "body": "<<FILL role=rising words=135 beats='results in August, a place in Cardiff, a boyfriend nobody mentioned in eleven months of calls; Bea is kind and busy and has become a person Rhian would have to get to know; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Ring Bea on the first night\"; \"Say you are staying with Mamgu\"; \"Say yes and start packing\"; \"Take the notebook out on the ferry\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -1790,7 +1999,7 @@
   },
   {
    "id": "d12_4",
-   "body": "<<FILL role=rising words=164 beats='Carys Lloyd-Rees, a cousin of a cousin, fifteen, who has never lived anywhere else; she asks Rhian which of the three places was best and is annoyed when the answer takes four minutes'>>",
+   "body": "<<FILL role=rising words=164 beats='Carys Lloyd-Rees, a cousin of a cousin, fifteen, who has never lived anywhere else; she asks Rhian which of the three places was best and is annoyed when the answer takes four minutes; PAYOFF SITE (did_say_yes_start): readers arrive here both having and not having chosen \"Say yes and start packing\" earlier, so this body must be true either way and must not say which. The option \"Keep your father's secret\" plays out differently for the two: without that earlier choice it leads to the setback (e12_0); with it, to a recovery. MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Ring Bea on the first night\"; \"Say you are staying with Mamgu\"; \"Say yes and start packing\"; \"Take the notebook out on the ferry\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -1806,13 +2015,46 @@
     {
      "id": "c_d12_4_2",
      "label": "Keep your father's secret.",
-     "target": "e12_0"
+     "target": "e12_0",
+     "condition": {
+      "==": [
+       {
+        "var": "did_say_yes_start"
+       },
+       false
+      ]
+     }
+    },
+    {
+     "id": "c_d12_4_2_cq_did_say_yes_start",
+     "label": "Keep your father's secret.",
+     "target": "cq_payoff_did_say_yes_start",
+     "condition": {
+      "==": [
+       {
+        "var": "did_say_yes_start"
+       },
+       true
+      ]
+     }
+    }
+   ]
+  },
+  {
+   "id": "cq_payoff_did_say_yes_start",
+   "body": "<<FILL role=payoff words=77 beats='PAYOFF (did_say_yes_start): only a reader who earlier chose \"Say yes and start packing\" (node d01_0) reaches this scene. The hero tries \"Keep your father's secret\". For a reader without that earlier choice the same move ends the story early (e12_0). Here the thing that came of it turns the moment around: show it returning concretely and making the difference. End with the hero moving on to \"Take Mamgu out to see the birds\", leading into the next scene (node d13_2), which other readers also reach, without contradicting it.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_cq_payoff_did_say_yes_start",
+     "label": "Take Mamgu out to see the birds.",
+     "target": "d13_2"
     }
    ]
   },
   {
    "id": "d12_5",
-   "body": "<<FILL role=rising words=147 beats='Traeth Lafan at low tide, two miles of sand and a tide that comes in faster than a person walks; oystercatchers in thousands, and the same species she watched on the Humber in November'>>",
+   "body": "<<FILL role=rising words=147 beats='Traeth Lafan at low tide, two miles of sand and a tide that comes in faster than a person walks; oystercatchers in thousands, and the same species she watched on the Humber in November; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Ring Bea on the first night\"; \"Say you are staying with Mamgu\"; \"Say yes and start packing\"; \"Take the notebook out on the ferry\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -1839,7 +2081,7 @@
   },
   {
    "id": "d12_6",
-   "body": "<<FILL role=rising words=130 beats='the examination year, a fourth syllabus, and a school where everybody has known everybody since primary; Rhian is now extremely good at the first fortnight and knows it'>>",
+   "body": "<<FILL role=rising words=130 beats='the examination year, a fourth syllabus, and a school where everybody has known everybody since primary; Rhian is now extremely good at the first fortnight and knows it; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Ring Bea on the first night\"; \"Say you are staying with Mamgu\"; \"Say yes and start packing\"; \"Take the notebook out on the ferry\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -1861,7 +2103,7 @@
   },
   {
    "id": "d12_7",
-   "body": "<<FILL role=branch words=159 beats='Gethin's contract runs to Christmas and then is not renewed, and he knows it; he tells her straight because she has earned it, and asks her not to tell her mother yet'>>",
+   "body": "<<FILL role=branch words=159 beats='Gethin's contract runs to Christmas and then is not renewed, and he knows it; he tells her straight because she has earned it, and asks her not to tell her mother yet; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Ring Bea on the first night\"; \"Say you are staying with Mamgu\"; \"Say yes and start packing\"; \"Take the notebook out on the ferry\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -1883,7 +2125,7 @@
   },
   {
    "id": "d13_0",
-   "body": "<<FILL role=rising words=157 beats='Rhian does it badly on a Sunday and the row is enormous and clears something; Nia says that she has spent eleven months assuming Rhian was the one being carried'>>",
+   "body": "<<FILL role=rising words=157 beats='Rhian does it badly on a Sunday and the row is enormous and clears something; Nia says that she has spent eleven months assuming Rhian was the one being carried; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Ring Bea on the first night\"; \"Say you are staying with Mamgu\"; \"Say yes and start packing\"; \"Take the notebook out on the ferry\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -1905,7 +2147,7 @@
   },
   {
    "id": "d13_1",
-   "body": "<<FILL role=rising words=140 beats='Carys knows the sand and the channels and the point at which you turn back, which Rhian does not; there is a genuinely frightening twenty minutes and neither of them tells anyone about it'>>",
+   "body": "<<FILL role=rising words=140 beats='Carys knows the sand and the channels and the point at which you turn back, which Rhian does not; there is a genuinely frightening twenty minutes and neither of them tells anyone about it; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Ring Bea on the first night\"; \"Say you are staying with Mamgu\"; \"Say yes and start packing\"; \"Take the notebook out on the ferry\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -1927,7 +2169,7 @@
   },
   {
    "id": "d13_2",
-   "body": "<<FILL role=rising words=123 beats='she has not been on the flats in six years; the walk takes an hour to cover four hundred metres, and neither of them mentions that this is probably the last time'>>",
+   "body": "<<FILL role=rising words=123 beats='she has not been on the flats in six years; the walk takes an hour to cover four hundred metres, and neither of them mentions that this is probably the last time; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Ring Bea on the first night\"; \"Say you are staying with Mamgu\"; \"Say yes and start packing\"; \"Take the notebook out on the ferry\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -1954,7 +2196,7 @@
   },
   {
    "id": "d13_3",
-   "body": "<<FILL role=rising words=152 beats='September, a fourth uniform, a form room where a boy asks whether she is the one who has been abroad, and Rhian hears herself say yes in a voice she does not entirely recognise'>>",
+   "body": "<<FILL role=rising words=152 beats='September, a fourth uniform, a form room where a boy asks whether she is the one who has been abroad, and Rhian hears herself say yes in a voice she does not entirely recognise; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Ring Bea on the first night\"; \"Say you are staying with Mamgu\"; \"Say yes and start packing\"; \"Take the notebook out on the ferry\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -1976,7 +2218,7 @@
   },
   {
    "id": "d13_4",
-   "body": "<<FILL role=rising words=135 beats='a real letter on paper, because a message would be too easy to leave unanswered; it takes four evenings and posts on a Friday and is the best thing Rhian writes all year'>>",
+   "body": "<<FILL role=rising words=135 beats='a real letter on paper, because a message would be too easy to leave unanswered; it takes four evenings and posts on a Friday and is the best thing Rhian writes all year; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Ring Bea on the first night\"; \"Say you are staying with Mamgu\"; \"Say yes and start packing\"; \"Take the notebook out on the ferry\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -1998,7 +2240,7 @@
   },
   {
    "id": "d13_5",
-   "body": "<<FILL role=rising words=164 beats='twelve miles from the house she was born in, and she does not know a single person under twenty in this village; the question stops being rhetorical some time in early September'>>",
+   "body": "<<FILL role=rising words=164 beats='twelve miles from the house she was born in, and she does not know a single person under twenty in this village; the question stops being rhetorical some time in early September; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Ring Bea on the first night\"; \"Say you are staying with Mamgu\"; \"Say yes and start packing\"; \"Take the notebook out on the ferry\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -2020,7 +2262,7 @@
   },
   {
    "id": "d13_6",
-   "body": "<<FILL role=rising words=147 beats='Gethin's contract ending, Nia's grant application, and a family conversation about the spring held with the door shut, which Rhian is for the first time invited into'>>",
+   "body": "<<FILL role=rising words=147 beats='Gethin's contract ending, Nia's grant application, and a family conversation about the spring held with the door shut, which Rhian is for the first time invited into; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Ring Bea on the first night\"; \"Say you are staying with Mamgu\"; \"Say yes and start packing\"; \"Take the notebook out on the ferry\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -2042,7 +2284,7 @@
   },
   {
    "id": "d13_7",
-   "body": "<<FILL role=rising words=130 beats='the July gap sits in it like a missing tooth; Rhian writes the missing weeks in from memory, marks them as reconstructed, and Mamgu approves of the honesty of that more than of the entries'>>",
+   "body": "<<FILL role=rising words=130 beats='the July gap sits in it like a missing tooth; Rhian writes the missing weeks in from memory, marks them as reconstructed, and Mamgu approves of the honesty of that more than of the entries; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Ring Bea on the first night\"; \"Say you are staying with Mamgu\"; \"Say yes and start packing\"; \"Take the notebook out on the ferry\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -2069,7 +2311,7 @@
   },
   {
    "id": "d13_8",
-   "body": "<<FILL role=rising words=159 beats='the difference arrives on a Tuesday, when Carys tells Rhian something about her own family that she did not have to tell anyone'>>",
+   "body": "<<FILL role=rising words=159 beats='the difference arrives on a Tuesday, when Carys tells Rhian something about her own family that she did not have to tell anyone; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Ring Bea on the first night\"; \"Say you are staying with Mamgu\"; \"Say yes and start packing\"; \"Take the notebook out on the ferry\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -2091,13 +2333,34 @@
   },
   {
    "id": "d14_0",
-   "body": "<<FILL role=revelation words=128 beats='she answers for two hours, which she has never done; a boat, a job in a laundry, a landlady who would not say her name properly, and a notebook started because it was the only thing that was hers'>>",
+   "body": "<<FILL role=revelation words=128 beats='she answers for two hours, which she has never done; a boat, a job in a laundry, a landlady who would not say her name properly, and a notebook started because it was the only thing that was hers; PAYOFF SITE (did_take_notebook_ferry): readers arrive here both having and not having chosen \"Take the notebook out on the ferry\" earlier, so this body must be true either way and must not say which. The option \"Take the notebook and start a second volume\" plays out differently for the two: with that earlier choice the reader first sees a payoff scene. MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Ring Bea on the first night\"; \"Say you are staying with Mamgu\"; \"Say yes and start packing\"; \"Take the notebook out on the ferry\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
      "id": "c_d14_0_0",
      "label": "Take the notebook and start a second volume.",
-     "target": "d15_0"
+     "target": "d15_0",
+     "condition": {
+      "==": [
+       {
+        "var": "did_take_notebook_ferry"
+       },
+       false
+      ]
+     }
+    },
+    {
+     "id": "c_d14_0_0_cq_did_take_notebook_ferry",
+     "label": "Take the notebook and start a second volume.",
+     "target": "cq_payoff_did_take_notebook_ferry_site2",
+     "condition": {
+      "==": [
+       {
+        "var": "did_take_notebook_ferry"
+       },
+       true
+      ]
+     }
     },
     {
      "id": "c_d14_0_1",
@@ -2112,8 +2375,20 @@
    ]
   },
   {
+   "id": "cq_payoff_did_take_notebook_ferry_site2",
+   "body": "<<FILL role=payoff words=55 beats='PAYOFF (did_take_notebook_ferry): only a reader who earlier chose \"Take the notebook out on the ferry\" (node d03_0) reaches this scene. The hero tries \"Take the notebook and start a second volume\". The thing that came of that earlier choice changes how it goes: show it returning concretely in a few sentences, a moment only this reader gets. Then lead into the next scene (node d15_0), which every reader who makes this move reaches, without contradicting it.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_cq_payoff_did_take_notebook_ferry_site2",
+     "label": "Take the notebook and start a second volume.",
+     "target": "d15_0"
+    }
+   ]
+  },
+  {
    "id": "d14_1",
-   "body": "<<FILL role=rising words=157 beats='Rhian tries to explain three cities to somebody who has never moved, and fails, and in failing works out for herself what the year has actually been'>>",
+   "body": "<<FILL role=rising words=157 beats='Rhian tries to explain three cities to somebody who has never moved, and fails, and in failing works out for herself what the year has actually been; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Ring Bea on the first night\"; \"Say you are staying with Mamgu\"; \"Say yes and start packing\"; \"Take the notebook out on the ferry\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -2135,7 +2410,7 @@
   },
   {
    "id": "d14_2",
-   "body": "<<FILL role=rising words=140 beats='four syllabuses in eleven months and a set of gaps only Rhian can see; she maps them out on the back of a tide table and gives a copy to her form tutor'>>",
+   "body": "<<FILL role=rising words=140 beats='four syllabuses in eleven months and a set of gaps only Rhian can see; she maps them out on the back of a tide table and gives a copy to her form tutor; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Ring Bea on the first night\"; \"Say you are staying with Mamgu\"; \"Say yes and start packing\"; \"Take the notebook out on the ferry\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -2157,7 +2432,7 @@
   },
   {
    "id": "d14_3",
-   "body": "<<FILL role=rising words=123 beats='Cardiff is two hours away and Bea comes back one weekend in October; the two of them walk the flats, and the conversation is the first all year that is not about logistics'>>",
+   "body": "<<FILL role=rising words=123 beats='Cardiff is two hours away and Bea comes back one weekend in October; the two of them walk the flats, and the conversation is the first all year that is not about logistics; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Ring Bea on the first night\"; \"Say you are staying with Mamgu\"; \"Say yes and start packing\"; \"Take the notebook out on the ferry\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -2179,7 +2454,7 @@
   },
   {
    "id": "d14_4",
-   "body": "<<FILL role=rising words=152 beats='it comes back in nine days, four pages, and it turns out that Tobi's year has also had a shape and that Rhian never once asked about it'>>",
+   "body": "<<FILL role=rising words=152 beats='it comes back in nine days, four pages, and it turns out that Tobi's year has also had a shape and that Rhian never once asked about it; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Ring Bea on the first night\"; \"Say you are staying with Mamgu\"; \"Say yes and start packing\"; \"Take the notebook out on the ferry\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -2206,7 +2481,7 @@
   },
   {
    "id": "d14_5",
-   "body": "<<FILL role=rising words=135 beats='Mamgu wants to give it to her outright and Rhian does not want to be given it, because being given it means something about Mamgu that neither of them will say'>>",
+   "body": "<<FILL role=rising words=135 beats='Mamgu wants to give it to her outright and Rhian does not want to be given it, because being given it means something about Mamgu that neither of them will say; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Ring Bea on the first night\"; \"Say you are staying with Mamgu\"; \"Say yes and start packing\"; \"Take the notebook out on the ferry\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -2228,7 +2503,7 @@
   },
   {
    "id": "d14_6",
-   "body": "<<FILL role=rising words=164 beats='three options on the table, none of them Caldy; Rhian is asked for her view and gives it and is listened to, which is new'>>",
+   "body": "<<FILL role=rising words=164 beats='three options on the table, none of them Caldy; Rhian is asked for her view and gives it and is listened to, which is new; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Ring Bea on the first night\"; \"Say you are staying with Mamgu\"; \"Say yes and start packing\"; \"Take the notebook out on the ferry\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -2250,7 +2525,7 @@
   },
   {
    "id": "d14_7",
-   "body": "<<FILL role=rising words=147 beats='the water comes in over two miles of sand at the speed of a bicycle, and every bird in the bay moves at once, and Rhian stands still for it'>>",
+   "body": "<<FILL role=rising words=147 beats='the water comes in over two miles of sand at the speed of a bicycle, and every bird in the bay moves at once, and Rhian stands still for it; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Ring Bea on the first night\"; \"Say you are staying with Mamgu\"; \"Say yes and start packing\"; \"Take the notebook out on the ferry\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -2272,7 +2547,7 @@
   },
   {
    "id": "d15_0",
-   "body": "<<FILL role=rising words=145 beats='Mamgu's book closed at the end of the migration year and a new one begun the same evening in Rhian's hand, with the first entry written on the flats in October'>>",
+   "body": "<<FILL role=rising words=145 beats='Mamgu's book closed at the end of the migration year and a new one begun the same evening in Rhian's hand, with the first entry written on the flats in October; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Ring Bea on the first night\"; \"Say you are staying with Mamgu\"; \"Say yes and start packing\"; \"Take the notebook out on the ferry\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -2294,7 +2569,7 @@
   },
   {
    "id": "d15_1",
-   "body": "<<FILL role=rising words=128 beats='Rhian writes it out for a college application she does not have to make yet, and the writing of it is what makes the year hers rather than something done to her'>>",
+   "body": "<<FILL role=rising words=128 beats='Rhian writes it out for a college application she does not have to make yet, and the writing of it is what makes the year hers rather than something done to her; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Ring Bea on the first night\"; \"Say you are staying with Mamgu\"; \"Say yes and start packing\"; \"Take the notebook out on the ferry\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -2321,7 +2596,7 @@
   },
   {
    "id": "d15_2",
-   "body": "<<FILL role=rising words=157 beats='the local group needs somebody to cover Traeth Lafan on the second Sunday of each month and nobody has managed it since 2019, and Rhian says yes before she has thought about it'>>",
+   "body": "<<FILL role=rising words=157 beats='the local group needs somebody to cover Traeth Lafan on the second Sunday of each month and nobody has managed it since 2019, and Rhian says yes before she has thought about it; PAYOFF SITE (did_take_notebook_ferry): readers arrive here both having and not having chosen \"Take the notebook out on the ferry\" earlier, so this body must be true either way and must not say which. The option \"Let the second volume stay empty\" plays out differently for the two: without that earlier choice it leads to the setback (e15_1); with it, to a recovery. MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Ring Bea on the first night\"; \"Say you are staying with Mamgu\"; \"Say yes and start packing\"; \"Take the notebook out on the ferry\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -2337,13 +2612,46 @@
     {
      "id": "c_d15_2_2",
      "label": "Let the second volume stay empty.",
-     "target": "e15_1"
+     "target": "e15_1",
+     "condition": {
+      "==": [
+       {
+        "var": "did_take_notebook_ferry"
+       },
+       false
+      ]
+     }
+    },
+    {
+     "id": "c_d15_2_2_cq_did_take_notebook_ferry",
+     "label": "Let the second volume stay empty.",
+     "target": "cq_payoff_did_take_notebook_ferry",
+     "condition": {
+      "==": [
+       {
+        "var": "did_take_notebook_ferry"
+       },
+       true
+      ]
+     }
+    }
+   ]
+  },
+  {
+   "id": "cq_payoff_did_take_notebook_ferry",
+   "body": "<<FILL role=payoff words=48 beats='PAYOFF (did_take_notebook_ferry): only a reader who earlier chose \"Take the notebook out on the ferry\" (node d03_0) reaches this scene. The hero tries \"Let the second volume stay empty\". For a reader without that earlier choice the same move ends the story early (e15_1). Here the thing that came of it turns the moment around: show it returning concretely and making the difference. End with the hero moving on to \"Tell Carys about the move\", leading into the next scene (node d16_6), which other readers also reach, without contradicting it.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_cq_payoff_did_take_notebook_ferry",
+     "label": "Tell Carys about the move.",
+     "target": "d16_6"
     }
    ]
   },
   {
    "id": "d15_3",
-   "body": "<<FILL role=rising words=140 beats='the family decides in the kitchen with the door open this time; Rhian argues for one of the three options and loses, and losing an argument she was actually in turns out to be entirely different'>>",
+   "body": "<<FILL role=rising words=140 beats='the family decides in the kitchen with the door open this time; Rhian argues for one of the three options and loses, and losing an argument she was actually in turns out to be entirely different; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Ring Bea on the first night\"; \"Say you are staying with Mamgu\"; \"Say yes and start packing\"; \"Take the notebook out on the ferry\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -2365,7 +2673,7 @@
   },
   {
    "id": "d15_4",
-   "body": "<<FILL role=rising words=123 beats='flattened now, hoardings, a sign about two hundred and forty homes; Gethin comes this time and gets out of the car'>>",
+   "body": "<<FILL role=rising words=123 beats='flattened now, hoardings, a sign about two hundred and forty homes; Gethin comes this time and gets out of the car; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Ring Bea on the first night\"; \"Say you are staying with Mamgu\"; \"Say yes and start packing\"; \"Take the notebook out on the ferry\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -2387,7 +2695,7 @@
   },
   {
    "id": "d15_5",
-   "body": "<<FILL role=rising words=152 beats='a Saturday at Mamgu's with too much food; Carys and Mamgu get on in the way that skips two generations, and Rhian watches her two worlds fail entirely to need her as an interpreter'>>",
+   "body": "<<FILL role=rising words=152 beats='a Saturday at Mamgu's with too much food; Carys and Mamgu get on in the way that skips two generations, and Rhian watches her two worlds fail entirely to need her as an interpreter; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Ring Bea on the first night\"; \"Say you are staying with Mamgu\"; \"Say yes and start packing\"; \"Take the notebook out on the ferry\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -2409,7 +2717,7 @@
   },
   {
    "id": "d15_6",
-   "body": "<<FILL role=rising words=135 beats='a letter a month, both ways, all winter; it is slower and better than the messaging ever was and neither of them says so out loud'>>",
+   "body": "<<FILL role=rising words=135 beats='a letter a month, both ways, all winter; it is slower and better than the messaging ever was and neither of them says so out loud; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Ring Bea on the first night\"; \"Say you are staying with Mamgu\"; \"Say yes and start packing\"; \"Take the notebook out on the ferry\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -2436,7 +2744,7 @@
   },
   {
    "id": "d15_7",
-   "body": "<<FILL role=rising words=164 beats='the Friday in September when the works shut comes round again, and nobody in the cottage mentions it, and Rhian writes the date in the notebook with nothing beside it'>>",
+   "body": "<<FILL role=rising words=164 beats='the Friday in September when the works shut comes round again, and nobody in the cottage mentions it, and Rhian writes the date in the notebook with nothing beside it; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Ring Bea on the first night\"; \"Say you are staying with Mamgu\"; \"Say yes and start packing\"; \"Take the notebook out on the ferry\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -2458,7 +2766,7 @@
   },
   {
    "id": "d16_0",
-   "body": "<<FILL role=rising words=162 beats='rain across two miles of sand and a count of eleven thousand oystercatchers done in ninety minutes on wet paper; Rhian gets home, writes it up, and is entirely happy'>>",
+   "body": "<<FILL role=rising words=162 beats='rain across two miles of sand and a count of eleven thousand oystercatchers done in ninety minutes on wet paper; Rhian gets home, writes it up, and is entirely happy; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Ring Bea on the first night\"; \"Say you are staying with Mamgu\"; \"Say yes and start packing\"; \"Take the notebook out on the ferry\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -2480,7 +2788,7 @@
   },
   {
    "id": "d16_1",
-   "body": "<<FILL role=rising words=145 beats='the decision is made and the date is set and it is a fourth city in eighteen months; Rhian says out loud, for the first time, that she is not going to pretend this one is fine'>>",
+   "body": "<<FILL role=rising words=145 beats='the decision is made and the date is set and it is a fourth city in eighteen months; Rhian says out loud, for the first time, that she is not going to pretend this one is fine; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Ring Bea on the first night\"; \"Say you are staying with Mamgu\"; \"Say yes and start packing\"; \"Take the notebook out on the ferry\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -2502,7 +2810,7 @@
   },
   {
    "id": "d16_2",
-   "body": "<<FILL role=rising words=128 beats='Gethin has followed the work and Nia has followed the funding and Bea has stayed and Rhian has gone, and nobody has ever put those four facts in the same sentence before'>>",
+   "body": "<<FILL role=rising words=128 beats='Gethin has followed the work and Nia has followed the funding and Bea has stayed and Rhian has gone, and nobody has ever put those four facts in the same sentence before; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Ring Bea on the first night\"; \"Say you are staying with Mamgu\"; \"Say yes and start packing\"; \"Take the notebook out on the ferry\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -2524,7 +2832,7 @@
   },
   {
    "id": "d16_3",
-   "body": "<<FILL role=rising words=157 beats='the mocks in January, and Rhian does better than the gaps predict and worse than she wanted, and the difference between those two numbers is the whole story of the year'>>",
+   "body": "<<FILL role=rising words=157 beats='the mocks in January, and Rhian does better than the gaps predict and worse than she wanted, and the difference between those two numbers is the whole story of the year; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Ring Bea on the first night\"; \"Say you are staying with Mamgu\"; \"Say yes and start packing\"; \"Take the notebook out on the ferry\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -2551,7 +2859,7 @@
   },
   {
    "id": "d16_4",
-   "body": "<<FILL role=rising words=140 beats='she checks the arithmetic, disputes one species and is right about it, and asks to be taken out to the flats again in the spring, which is a plan and therefore a promise'>>",
+   "body": "<<FILL role=rising words=140 beats='she checks the arithmetic, disputes one species and is right about it, and asks to be taken out to the flats again in the spring, which is a plan and therefore a promise; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Ring Bea on the first night\"; \"Say you are staying with Mamgu\"; \"Say yes and start packing\"; \"Take the notebook out on the ferry\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -2573,7 +2881,7 @@
   },
   {
    "id": "d16_5",
-   "body": "<<FILL role=rising words=123 beats='a call from Delfshaven at eleven at night; Sanne has been to England once and hated it, and wants to know why Rhian has never once said which of the three she liked'>>",
+   "body": "<<FILL role=rising words=123 beats='a call from Delfshaven at eleven at night; Sanne has been to England once and hated it, and wants to know why Rhian has never once said which of the three she liked; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Ring Bea on the first night\"; \"Say you are staying with Mamgu\"; \"Say yes and start packing\"; \"Take the notebook out on the ferry\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -2595,7 +2903,7 @@
   },
   {
    "id": "d16_6",
-   "body": "<<FILL role=rising words=152 beats='Carys is angry on Rhian's behalf in a way Rhian has not allowed herself to be, and hearing it out loud from somebody else is what finally makes it real'>>",
+   "body": "<<FILL role=rising words=152 beats='Carys is angry on Rhian's behalf in a way Rhian has not allowed herself to be, and hearing it out loud from somebody else is what finally makes it real; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Ring Bea on the first night\"; \"Say you are staying with Mamgu\"; \"Say yes and start packing\"; \"Take the notebook out on the ferry\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -2617,7 +2925,7 @@
   },
   {
    "id": "d16_7",
-   "body": "<<FILL role=rising words=135 beats='fifty-seven years and one, laid out on Mamgu's table: two women, four countries, eleven house moves and about nine hundred species, and a pattern that is not about birds at all'>>",
+   "body": "<<FILL role=rising words=135 beats='fifty-seven years and one, laid out on Mamgu's table: two women, four countries, eleven house moves and about nine hundred species, and a pattern that is not about birds at all; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Ring Bea on the first night\"; \"Say you are staying with Mamgu\"; \"Say yes and start packing\"; \"Take the notebook out on the ferry\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -2639,7 +2947,7 @@
   },
   {
    "id": "d16_8",
-   "body": "<<FILL role=branch words=164 beats='not to stop moving; Rhian works out over about a week that what she wants is to be told in advance and asked, and that this is a smaller and much more possible thing'>>",
+   "body": "<<FILL role=branch words=164 beats='not to stop moving; Rhian works out over about a week that what she wants is to be told in advance and asked, and that this is a smaller and much more possible thing; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Ring Bea on the first night\"; \"Say you are staying with Mamgu\"; \"Say yes and start packing\"; \"Take the notebook out on the ferry\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -2666,7 +2974,7 @@
   },
   {
    "id": "d17_0",
-   "body": "<<FILL role=rising words=133 beats='March, the flats, a folding chair carried a quarter of a mile, and a hundred and forty minutes in which Mamgu names eleven species and gets nine of them right'>>",
+   "body": "<<FILL role=rising words=133 beats='March, the flats, a folding chair carried a quarter of a mile, and a hundred and forty minutes in which Mamgu names eleven species and gets nine of them right; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Ring Bea on the first night\"; \"Say you are staying with Mamgu\"; \"Say yes and start packing\"; \"Take the notebook out on the ferry\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -2693,7 +3001,7 @@
   },
   {
    "id": "d17_1",
-   "body": "<<FILL role=rising words=162 beats='the anniversary of the ferry; Rhian rules a line under twelve months in the second volume and counts up what is actually on the pages of it'>>",
+   "body": "<<FILL role=rising words=162 beats='the anniversary of the ferry; Rhian rules a line under twelve months in the second volume and counts up what is actually on the pages of it; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Ring Bea on the first night\"; \"Say you are staying with Mamgu\"; \"Say yes and start packing\"; \"Take the notebook out on the ferry\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -2715,7 +3023,7 @@
   },
   {
    "id": "d17_2",
-   "body": "<<FILL role=rising words=145 beats='examinations in the fourth school, a form tutor who has actually read the tide table map, and results in August that are, given everything, unarguable'>>",
+   "body": "<<FILL role=rising words=145 beats='examinations in the fourth school, a form tutor who has actually read the tide table map, and results in August that are, given everything, unarguable; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Ring Bea on the first night\"; \"Say you are staying with Mamgu\"; \"Say yes and start packing\"; \"Take the notebook out on the ferry\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -2737,7 +3045,7 @@
   },
   {
    "id": "d17_3",
-   "body": "<<FILL role=rising words=128 beats='somebody has to do the second Sunday when Rhian moves; she trains a boy from the year below over three months and finds that handing something on is a skill nobody teaches you'>>",
+   "body": "<<FILL role=rising words=128 beats='somebody has to do the second Sunday when Rhian moves; she trains a boy from the year below over three months and finds that handing something on is a skill nobody teaches you; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Ring Bea on the first night\"; \"Say you are staying with Mamgu\"; \"Say yes and start packing\"; \"Take the notebook out on the ferry\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -2759,7 +3067,7 @@
   },
   {
    "id": "d17_4",
-   "body": "<<FILL role=rising words=157 beats='Cardiff in April, one afternoon, and Bea says the thing she has not said in eighteen months, which is that staying was not the safe option and that nobody ever asked her about it'>>",
+   "body": "<<FILL role=rising words=157 beats='Cardiff in April, one afternoon, and Bea says the thing she has not said in eighteen months, which is that staying was not the safe option and that nobody ever asked her about it; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Ring Bea on the first night\"; \"Say you are staying with Mamgu\"; \"Say yes and start packing\"; \"Take the notebook out on the ferry\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -2781,7 +3089,7 @@
   },
   {
    "id": "d17_5",
-   "body": "<<FILL role=rising words=140 beats='not last as in ending; last as in the one that arranges the visit, four days in July, the first time either of them will have chosen the place'>>",
+   "body": "<<FILL role=rising words=140 beats='not last as in ending; last as in the one that arranges the visit, four days in July, the first time either of them will have chosen the place; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Ring Bea on the first night\"; \"Say you are staying with Mamgu\"; \"Say yes and start packing\"; \"Take the notebook out on the ferry\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -2808,7 +3116,7 @@
   },
   {
    "id": "d17_6",
-   "body": "<<FILL role=rising words=123 beats='two volumes, one drawer in Caldy and one rucksack; Rhian works out where they ought to live, and it is not, in the end, with her'>>",
+   "body": "<<FILL role=rising words=123 beats='two volumes, one drawer in Caldy and one rucksack; Rhian works out where they ought to live, and it is not, in the end, with her; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Ring Bea on the first night\"; \"Say you are staying with Mamgu\"; \"Say yes and start packing\"; \"Take the notebook out on the ferry\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -2830,7 +3138,7 @@
   },
   {
    "id": "d17_7",
-   "body": "<<FILL role=rising words=152 beats='a lane, a farm, a shop where they still switch to English, and Carys at the gate saying that she is going to come and see the fourth place whether Rhian likes it or not'>>",
+   "body": "<<FILL role=rising words=152 beats='a lane, a farm, a shop where they still switch to English, and Carys at the gate saying that she is going to come and see the fourth place whether Rhian likes it or not; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Ring Bea on the first night\"; \"Say you are staying with Mamgu\"; \"Say yes and start packing\"; \"Take the notebook out on the ferry\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -2852,7 +3160,7 @@
   },
   {
    "id": "d18_0",
-   "body": "<<FILL role=rising words=150 beats='the rucksack, the boots, the binoculars with the sticky focus, and a book with fourteen months in it and a great deal of space left'>>",
+   "body": "<<FILL role=rising words=150 beats='the rucksack, the boots, the binoculars with the sticky focus, and a book with fourteen months in it and a great deal of space left; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Ring Bea on the first night\"; \"Say you are staying with Mamgu\"; \"Say yes and start packing\"; \"Take the notebook out on the ferry\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -2874,7 +3182,7 @@
   },
   {
    "id": "d18_1",
-   "body": "<<FILL role=rising words=133 beats='four days in July, the flats, Mamgu's kitchen, and two people finding out whether a friendship built in one winter in one city travels'>>",
+   "body": "<<FILL role=rising words=133 beats='four days in July, the flats, Mamgu's kitchen, and two people finding out whether a friendship built in one winter in one city travels; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Ring Bea on the first night\"; \"Say you are staying with Mamgu\"; \"Say yes and start packing\"; \"Take the notebook out on the ferry\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -2896,7 +3204,7 @@
   },
   {
    "id": "d18_2",
-   "body": "<<FILL role=rising words=162 beats='the visit is booked before Rhian leaves, which is the difference between a goodbye and an arrangement, and Rhian has learned that difference the hard way'>>",
+   "body": "<<FILL role=rising words=162 beats='the visit is booked before Rhian leaves, which is the difference between a goodbye and an arrangement, and Rhian has learned that difference the hard way; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Ring Bea on the first night\"; \"Say you are staying with Mamgu\"; \"Say yes and start packing\"; \"Take the notebook out on the ferry\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -2923,7 +3231,7 @@
   },
   {
    "id": "d18_3",
-   "body": "<<FILL role=rising words=145 beats='August, a brown envelope, four syllabuses reconciled into a set of grades that open the doors Rhian wants open; Gethin reads them twice and puts them in his wallet'>>",
+   "body": "<<FILL role=rising words=145 beats='August, a brown envelope, four syllabuses reconciled into a set of grades that open the doors Rhian wants open; Gethin reads them twice and puts them in his wallet; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Ring Bea on the first night\"; \"Say you are staying with Mamgu\"; \"Say yes and start packing\"; \"Take the notebook out on the ferry\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -2945,7 +3253,7 @@
   },
   {
    "id": "d18_4",
-   "body": "<<FILL role=rising words=128 beats='Nia says that she has spent two years thinking she was dragging her family behind her, and has only just worked out that this is not what happened'>>",
+   "body": "<<FILL role=rising words=128 beats='Nia says that she has spent two years thinking she was dragging her family behind her, and has only just worked out that this is not what happened; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Ring Bea on the first night\"; \"Say you are staying with Mamgu\"; \"Say yes and start packing\"; \"Take the notebook out on the ferry\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -2967,7 +3275,7 @@
   },
   {
    "id": "d18_5",
-   "body": "<<FILL role=rising words=157 beats='a September count in fog, the boy from the year below on the tally, Rhian on the telescope, and a handover that takes ninety minutes and lifts eighteen years off her mind'>>",
+   "body": "<<FILL role=rising words=157 beats='a September count in fog, the boy from the year below on the tally, Rhian on the telescope, and a handover that takes ninety minutes and lifts eighteen years off her mind; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Ring Bea on the first night\"; \"Say you are staying with Mamgu\"; \"Say yes and start packing\"; \"Take the notebook out on the ferry\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -2989,7 +3297,7 @@
   },
   {
    "id": "d18_6",
-   "body": "<<FILL role=rising words=140 beats='a city, a flat, a school and a river she has never seen, and for the first time Rhian looks it up on purpose and finds out what comes down that estuary in October'>>",
+   "body": "<<FILL role=rising words=140 beats='a city, a flat, a school and a river she has never seen, and for the first time Rhian looks it up on purpose and finds out what comes down that estuary in October; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Ring Bea on the first night\"; \"Say you are staying with Mamgu\"; \"Say yes and start packing\"; \"Take the notebook out on the ferry\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -3011,7 +3319,7 @@
   },
   {
    "id": "d18_7",
-   "body": "<<FILL role=rising words=123 beats='that the notebook was never really about birds; Mamgu agrees instantly and is faintly insulted to have been thought subtle'>>",
+   "body": "<<FILL role=rising words=123 beats='that the notebook was never really about birds; Mamgu agrees instantly and is faintly insulted to have been thought subtle; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Ring Bea on the first night\"; \"Say you are staying with Mamgu\"; \"Say yes and start packing\"; \"Take the notebook out on the ferry\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -3038,7 +3346,7 @@
   },
   {
    "id": "d18_8",
-   "body": "<<FILL role=rising words=152 beats='twenty-two minutes now, and Rhian notices the twenty-two minutes and does not know whether it is a skill or a wound'>>",
+   "body": "<<FILL role=rising words=152 beats='twenty-two minutes now, and Rhian notices the twenty-two minutes and does not know whether it is a skill or a wound; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Ring Bea on the first night\"; \"Say you are staying with Mamgu\"; \"Say yes and start packing\"; \"Take the notebook out on the ferry\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -3060,7 +3368,7 @@
   },
   {
    "id": "d19_0",
-   "body": "<<FILL role=rising words=121 beats='a river she has read about, a school she has looked up, a room she chose the side of; the first day is not easier, and it is, for the first time, hers'>>",
+   "body": "<<FILL role=rising words=121 beats='a river she has read about, a school she has looked up, a room she chose the side of; the first day is not easier, and it is, for the first time, hers; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Ring Bea on the first night\"; \"Say you are staying with Mamgu\"; \"Say yes and start packing\"; \"Take the notebook out on the ferry\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -3082,7 +3390,7 @@
   },
   {
    "id": "d19_1",
-   "body": "<<FILL role=rising words=150 beats='October, an estuary nobody in the family has ever seen, and Rhian at a railing with the notebook open, doing the thing Mamgu did in 1968 for the same reason'>>",
+   "body": "<<FILL role=rising words=150 beats='October, an estuary nobody in the family has ever seen, and Rhian at a railing with the notebook open, doing the thing Mamgu did in 1968 for the same reason; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Ring Bea on the first night\"; \"Say you are staying with Mamgu\"; \"Say yes and start packing\"; \"Take the notebook out on the ferry\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -3104,7 +3412,7 @@
   },
   {
    "id": "d19_2",
-   "body": "<<FILL role=rising words=133 beats='she finds the local group inside a fortnight because she now knows exactly how to; the man on the telephone is astonished that a sixteen year old has rung him first'>>",
+   "body": "<<FILL role=rising words=133 beats='she finds the local group inside a fortnight because she now knows exactly how to; the man on the telephone is astonished that a sixteen year old has rung him first; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Ring Bea on the first night\"; \"Say you are staying with Mamgu\"; \"Say yes and start packing\"; \"Take the notebook out on the ferry\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -3126,7 +3434,7 @@
   },
   {
    "id": "d19_3",
-   "body": "<<FILL role=rising words=162 beats='Tobi, Sanne and Carys, in three cities, and Rhian works out the actual cost of that in evenings and pays it'>>",
+   "body": "<<FILL role=rising words=162 beats='Tobi, Sanne and Carys, in three cities, and Rhian works out the actual cost of that in evenings and pays it; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Ring Bea on the first night\"; \"Say you are staying with Mamgu\"; \"Say yes and start packing\"; \"Take the notebook out on the ferry\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -3148,7 +3456,7 @@
   },
   {
    "id": "d19_4",
-   "body": "<<FILL role=rising words=145 beats='over a table, without a row, with the map still folded in the drawer; the conversation is twenty minutes long and eighteen months late and worth every minute of both'>>",
+   "body": "<<FILL role=rising words=145 beats='over a table, without a row, with the map still folded in the drawer; the conversation is twenty minutes long and eighteen months late and worth every minute of both; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Ring Bea on the first night\"; \"Say you are staying with Mamgu\"; \"Say yes and start packing\"; \"Take the notebook out on the ferry\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -3175,7 +3483,7 @@
   },
   {
    "id": "d19_5",
-   "body": "<<FILL role=rising words=128 beats='a train, two buses and a kitchen full of people; Mamgu asks for the list first and the feelings afterwards, in that order, as she always has'>>",
+   "body": "<<FILL role=rising words=128 beats='a train, two buses and a kitchen full of people; Mamgu asks for the list first and the feelings afterwards, in that order, as she always has; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Ring Bea on the first night\"; \"Say you are staying with Mamgu\"; \"Say yes and start packing\"; \"Take the notebook out on the ferry\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -3197,7 +3505,7 @@
   },
   {
    "id": "d19_6",
-   "body": "<<FILL role=rising words=157 beats='Nia's grant runs three years and there is a chance of staying somewhere long enough to be from it, and Rhian finds that she does not want that as simply as she expected to'>>",
+   "body": "<<FILL role=rising words=157 beats='Nia's grant runs three years and there is a chance of staying somewhere long enough to be from it, and Rhian finds that she does not want that as simply as she expected to; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Ring Bea on the first night\"; \"Say you are staying with Mamgu\"; \"Say yes and start packing\"; \"Take the notebook out on the ferry\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -3219,7 +3527,7 @@
   },
   {
    "id": "d19_7",
-   "body": "<<FILL role=rising words=140 beats='the anniversary entry with nothing beside it, and Rhian goes back and fills it in a year late, in a different hand, with what actually happened that day'>>",
+   "body": "<<FILL role=rising words=140 beats='the anniversary entry with nothing beside it, and Rhian goes back and fills it in a year late, in a different hand, with what actually happened that day; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Ring Bea on the first night\"; \"Say you are staying with Mamgu\"; \"Say yes and start packing\"; \"Take the notebook out on the ferry\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -3241,7 +3549,7 @@
   },
   {
    "id": "d20_0",
-   "body": "<<FILL role=climax words=138 beats='a fourth river, brent geese coming down it in skeins, and a girl with a notebook who has done this in four places now and knows exactly what she is looking at'>>",
+   "body": "<<FILL role=climax words=138 beats='a fourth river, brent geese coming down it in skeins, and a girl with a notebook who has done this in four places now and knows exactly what she is looking at; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Ring Bea on the first night\"; \"Say you are staying with Mamgu\"; \"Say yes and start packing\"; \"Take the notebook out on the ferry\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -3263,7 +3571,7 @@
   },
   {
    "id": "d20_1",
-   "body": "<<FILL role=climax words=121 beats='which of them was best; Rhian finally has an answer, and it is not one of the four places'>>",
+   "body": "<<FILL role=climax words=121 beats='which of them was best; Rhian finally has an answer, and it is not one of the four places; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Ring Bea on the first night\"; \"Say you are staying with Mamgu\"; \"Say yes and start packing\"; \"Take the notebook out on the ferry\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -3285,7 +3593,7 @@
   },
   {
    "id": "d20_2",
-   "body": "<<FILL role=resolution words=150 beats='eleven months, three cities, four schools, one sister who stayed and one grandmother who did all of this first and alone'>>",
+   "body": "<<FILL role=resolution words=150 beats='eleven months, three cities, four schools, one sister who stayed and one grandmother who did all of this first and alone; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Ring Bea on the first night\"; \"Say you are staying with Mamgu\"; \"Say yes and start packing\"; \"Take the notebook out on the ferry\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -3307,7 +3615,7 @@
   },
   {
    "id": "d20_3",
-   "body": "<<FILL role=resolution words=133 beats='not a record of birds and not a record of places, but a record of arriving, which is a thing a person can get better at'>>",
+   "body": "<<FILL role=resolution words=133 beats='not a record of birds and not a record of places, but a record of arriving, which is a thing a person can get better at; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Ring Bea on the first night\"; \"Say you are staying with Mamgu\"; \"Say yes and start packing\"; \"Take the notebook out on the ferry\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -3329,7 +3637,7 @@
   },
   {
    "id": "d20_4",
-   "body": "<<FILL role=resolution words=162 beats='somebody who is good at the first fortnight, who knows how to find the water in any town, and who has had to learn on purpose the thing most people are simply given'>>",
+   "body": "<<FILL role=resolution words=162 beats='somebody who is good at the first fortnight, who knows how to find the water in any town, and who has had to learn on purpose the thing most people are simply given; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Ring Bea on the first night\"; \"Say you are staying with Mamgu\"; \"Say yes and start packing\"; \"Take the notebook out on the ferry\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -3351,7 +3659,7 @@
   },
   {
    "id": "d20_5",
-   "body": "<<FILL role=resolution words=145 beats='the grant, the third year, the possibility of staying put, and a sixteen year old with an actual opinion about it for the first time'>>",
+   "body": "<<FILL role=resolution words=145 beats='the grant, the third year, the possibility of staying put, and a sixteen year old with an actual opinion about it for the first time; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Ring Bea on the first night\"; \"Say you are staying with Mamgu\"; \"Say yes and start packing\"; \"Take the notebook out on the ferry\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -3373,7 +3681,7 @@
   },
   {
    "id": "e06_0",
-   "body": "<<FILL role=setback words=120 beats='Rhian goes anyway on the money Mamgu sent her for Christmas, and the weekend is wonderful for a day and a half and then wrong; the house has arranged itself around her absence, Bea has a life with a shape in it, and the return journey is the loneliest eight hours of the year'>>",
+   "body": "<<FILL role=setback words=120 beats='Rhian goes anyway on the money Mamgu sent her for Christmas, and the weekend is wonderful for a day and a half and then wrong; the house has arranged itself around her absence, Bea has a life with a shape in it, and the return journey is the loneliest eight hours of the year; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Ring Bea on the first night\"; \"Say you are staying with Mamgu\"; \"Say yes and start packing\"; \"Take the notebook out on the ferry\"), so the body must not depend on any of it.'>>",
    "is_ending": true,
    "ending": {
     "id": "e06_0",
@@ -3384,7 +3692,7 @@
   },
   {
    "id": "e07_0",
-   "body": "<<FILL role=discovery words=143 beats='the three of them in two rooms over a shuttered unit, a chicken in a too-small oven and a video call at four; it is not a disaster and it is not nothing, and Rhian learns that year that a thing can be survivable and still count'>>",
+   "body": "<<FILL role=discovery words=143 beats='the three of them in two rooms over a shuttered unit, a chicken in a too-small oven and a video call at four; it is not a disaster and it is not nothing, and Rhian learns that year that a thing can be survivable and still count; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Ring Bea on the first night\"; \"Say you are staying with Mamgu\"; \"Say yes and start packing\"; \"Take the notebook out on the ferry\"), so the body must not depend on any of it.'>>",
    "is_ending": true,
    "ending": {
     "id": "e07_0",
@@ -3395,7 +3703,7 @@
   },
   {
    "id": "e08_0",
-   "body": "<<FILL role=setback words=125 beats='Tobi's mother says yes before Rhian has finished the sentence and Nia says no that evening, gently and completely; the last fortnight in Hull is spent not talking about it, and Rhian carries the shape of that yes for years'>>",
+   "body": "<<FILL role=setback words=125 beats='Tobi's mother says yes before Rhian has finished the sentence and Nia says no that evening, gently and completely; the last fortnight in Hull is spent not talking about it, and Rhian carries the shape of that yes for years; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Ring Bea on the first night\"; \"Say you are staying with Mamgu\"; \"Say yes and start packing\"; \"Take the notebook out on the ferry\"), so the body must not depend on any of it.'>>",
    "is_ending": true,
    "ending": {
     "id": "e08_0",
@@ -3406,7 +3714,7 @@
   },
   {
    "id": "e09_0",
-   "body": "<<FILL role=setback words=148 beats='Rhian does the term by correspondence and never learns more than fifty words; she leaves Rotterdam in June having lived four months at a distance of about two metres from everything that was actually there'>>",
+   "body": "<<FILL role=setback words=148 beats='Rhian does the term by correspondence and never learns more than fifty words; she leaves Rotterdam in June having lived four months at a distance of about two metres from everything that was actually there; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Ring Bea on the first night\"; \"Say you are staying with Mamgu\"; \"Say yes and start packing\"; \"Take the notebook out on the ferry\"), so the body must not depend on any of it.'>>",
    "is_ending": true,
    "ending": {
     "id": "e09_0",
@@ -3417,7 +3725,7 @@
   },
   {
    "id": "e09_1",
-   "body": "<<FILL role=discovery words=130 beats='Rhian spends an evening ruling off the Humber pages, listing the sixty-one species and the ring numbers and the dockworker's name, and understands that a place you have left can be finished rather than lost'>>",
+   "body": "<<FILL role=discovery words=130 beats='Rhian spends an evening ruling off the Humber pages, listing the sixty-one species and the ring numbers and the dockworker's name, and understands that a place you have left can be finished rather than lost; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Ring Bea on the first night\"; \"Say you are staying with Mamgu\"; \"Say yes and start packing\"; \"Take the notebook out on the ferry\"), so the body must not depend on any of it.'>>",
    "is_ending": true,
    "ending": {
     "id": "e09_1",
@@ -3428,7 +3736,7 @@
   },
   {
    "id": "e10_0",
-   "body": "<<FILL role=discovery words=153 beats='Rhian flies back for two weeks in May and does nothing except make tea, test vocabulary and be in the house; she misses the spoonbills and the end of the language programme, and it is the only thing all year that nobody has to explain to her afterwards'>>",
+   "body": "<<FILL role=discovery words=153 beats='Rhian flies back for two weeks in May and does nothing except make tea, test vocabulary and be in the house; she misses the spoonbills and the end of the language programme, and it is the only thing all year that nobody has to explain to her afterwards; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Ring Bea on the first night\"; \"Say you are staying with Mamgu\"; \"Say yes and start packing\"; \"Take the notebook out on the ferry\"), so the body must not depend on any of it.'>>",
    "is_ending": true,
    "ending": {
     "id": "e10_0",
@@ -3439,7 +3747,7 @@
   },
   {
    "id": "e10_1",
-   "body": "<<FILL role=setback words=135 beats='the last one goes unanswered for a week, then a month, and then it is simply a thing that happened in a winter; Rhian understands that she has begun doing the thing she was most afraid of having done to her'>>",
+   "body": "<<FILL role=setback words=135 beats='the last one goes unanswered for a week, then a month, and then it is simply a thing that happened in a winter; Rhian understands that she has begun doing the thing she was most afraid of having done to her; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Ring Bea on the first night\"; \"Say you are staying with Mamgu\"; \"Say yes and start packing\"; \"Take the notebook out on the ferry\"), so the body must not depend on any of it.'>>",
    "is_ending": true,
    "ending": {
     "id": "e10_1",
@@ -3450,7 +3758,7 @@
   },
   {
    "id": "e11_0",
-   "body": "<<FILL role=setback words=158 beats='Rhian puts it to both parents properly, with reasons; they take it seriously, and they cannot do it, and the not being able to is worse than a refusal would have been'>>",
+   "body": "<<FILL role=setback words=158 beats='Rhian puts it to both parents properly, with reasons; they take it seriously, and they cannot do it, and the not being able to is worse than a refusal would have been; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Ring Bea on the first night\"; \"Say you are staying with Mamgu\"; \"Say yes and start packing\"; \"Take the notebook out on the ferry\"), so the body must not depend on any of it.'>>",
    "is_ending": true,
    "ending": {
     "id": "e11_0",
@@ -3461,7 +3769,7 @@
   },
   {
    "id": "e12_0",
-   "body": "<<FILL role=setback words=140 beats='Rhian holds it for six weeks and it changes every conversation in the cottage; when Nia finds out she is angry with Gethin and hurt by Rhian, and the hurt is the part that lasts'>>",
+   "body": "<<FILL role=setback words=140 beats='Rhian holds it for six weeks and it changes every conversation in the cottage; when Nia finds out she is angry with Gethin and hurt by Rhian, and the hurt is the part that lasts; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Ring Bea on the first night\"; \"Say you are staying with Mamgu\"; \"Say yes and start packing\"; \"Take the notebook out on the ferry\"), so the body must not depend on any of it.'>>",
    "is_ending": true,
    "ending": {
     "id": "e12_0",
@@ -3472,7 +3780,7 @@
   },
   {
    "id": "e12_1",
-   "body": "<<FILL role=discovery words=122 beats='Rhian puts it in a drawer in the cottage and does not open it for the rest of the summer, and finds that the year keeps happening whether or not she records it, which is a smaller comfort than she expected'>>",
+   "body": "<<FILL role=discovery words=122 beats='Rhian puts it in a drawer in the cottage and does not open it for the rest of the summer, and finds that the year keeps happening whether or not she records it, which is a smaller comfort than she expected; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Ring Bea on the first night\"; \"Say you are staying with Mamgu\"; \"Say yes and start packing\"; \"Take the notebook out on the ferry\"), so the body must not depend on any of it.'>>",
    "is_ending": true,
    "ending": {
     "id": "e12_1",
@@ -3483,7 +3791,7 @@
   },
   {
    "id": "e13_0",
-   "body": "<<FILL role=setback words=145 beats='it is arranged in a week and it works; Rhian spends her examination year in the house she has always known, and the family finishes the migration year in two places instead of one and calls that a solution'>>",
+   "body": "<<FILL role=setback words=145 beats='it is arranged in a week and it works; Rhian spends her examination year in the house she has always known, and the family finishes the migration year in two places instead of one and calls that a solution; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Ring Bea on the first night\"; \"Say you are staying with Mamgu\"; \"Say yes and start packing\"; \"Take the notebook out on the ferry\"), so the body must not depend on any of it.'>>",
    "is_ending": true,
    "ending": {
     "id": "e13_0",
@@ -3494,7 +3802,7 @@
   },
   {
    "id": "e13_1",
-   "body": "<<FILL role=discovery words=127 beats='Mamgu came to Caldy in 1968 from a village she has not seen since, and the first pages are a stranger writing down what flew over an unfamiliar estuary; Rhian has been reading her own year in the wrong handwriting all along'>>",
+   "body": "<<FILL role=discovery words=127 beats='Mamgu came to Caldy in 1968 from a village she has not seen since, and the first pages are a stranger writing down what flew over an unfamiliar estuary; Rhian has been reading her own year in the wrong handwriting all along; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Ring Bea on the first night\"; \"Say you are staying with Mamgu\"; \"Say yes and start packing\"; \"Take the notebook out on the ferry\"), so the body must not depend on any of it.'>>",
    "is_ending": true,
    "ending": {
     "id": "e13_1",
@@ -3505,7 +3813,7 @@
   },
   {
    "id": "e14_0",
-   "body": "<<FILL role=discovery words=150 beats='Rhian tells Mamgu to keep it and to keep writing in it, and both of them know exactly what is being said and neither says it; the notebook stays in the drawer in Caldy and the year goes unfinished on paper'>>",
+   "body": "<<FILL role=discovery words=150 beats='Rhian tells Mamgu to keep it and to keep writing in it, and both of them know exactly what is being said and neither says it; the notebook stays in the drawer in Caldy and the year goes unfinished on paper; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Ring Bea on the first night\"; \"Say you are staying with Mamgu\"; \"Say yes and start packing\"; \"Take the notebook out on the ferry\"), so the body must not depend on any of it.'>>",
    "is_ending": true,
    "ending": {
     "id": "e14_0",
@@ -3516,7 +3824,7 @@
   },
   {
    "id": "e15_0",
-   "body": "<<FILL role=discovery words=132 beats='Rhian covers Traeth Lafan for a year and then another, and the year of moving becomes the thing that got her here rather than the thing that happened to her; the counts are still lodged under her name'>>",
+   "body": "<<FILL role=discovery words=132 beats='Rhian covers Traeth Lafan for a year and then another, and the year of moving becomes the thing that got her here rather than the thing that happened to her; the counts are still lodged under her name; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Ring Bea on the first night\"; \"Say you are staying with Mamgu\"; \"Say yes and start packing\"; \"Take the notebook out on the ferry\"), so the body must not depend on any of it.'>>",
    "is_ending": true,
    "ending": {
     "id": "e15_0",
@@ -3527,7 +3835,7 @@
   },
   {
    "id": "e15_1",
-   "body": "<<FILL role=setback words=155 beats='the new notebook gets an October date and a heading and nothing else; Rhian carries it through the spring move and the one after it and never writes in it, and the fifty-seven years stop where Mamgu stopped'>>",
+   "body": "<<FILL role=setback words=155 beats='the new notebook gets an October date and a heading and nothing else; Rhian carries it through the spring move and the one after it and never writes in it, and the fifty-seven years stop where Mamgu stopped; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Ring Bea on the first night\"; \"Say you are staying with Mamgu\"; \"Say yes and start packing\"; \"Take the notebook out on the ferry\"), so the body must not depend on any of it.'>>",
    "is_ending": true,
    "ending": {
     "id": "e15_1",
@@ -3538,7 +3846,7 @@
   },
   {
    "id": "e16_0",
-   "body": "<<FILL role=discovery words=137 beats='Rhian puts it to her parents in one sentence and it is granted immediately and without argument, and the shock of how easy it was is the last thing the year has to teach her'>>",
+   "body": "<<FILL role=discovery words=137 beats='Rhian puts it to her parents in one sentence and it is granted immediately and without argument, and the shock of how easy it was is the last thing the year has to teach her; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Ring Bea on the first night\"; \"Say you are staying with Mamgu\"; \"Say yes and start packing\"; \"Take the notebook out on the ferry\"), so the body must not depend on any of it.'>>",
    "is_ending": true,
    "ending": {
     "id": "e16_0",
@@ -3549,7 +3857,7 @@
   },
   {
    "id": "e16_1",
-   "body": "<<FILL role=setback words=160 beats='Rhian packs in March without a word and arrives in the fourth place having decided in advance that it does not count; it is two years before she can walk through it and see anything at all'>>",
+   "body": "<<FILL role=setback words=160 beats='Rhian packs in March without a word and arrives in the fourth place having decided in advance that it does not count; it is two years before she can walk through it and see anything at all; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Ring Bea on the first night\"; \"Say you are staying with Mamgu\"; \"Say yes and start packing\"; \"Take the notebook out on the ferry\"), so the body must not depend on any of it.'>>",
    "is_ending": true,
    "ending": {
     "id": "e16_1",
@@ -3560,7 +3868,7 @@
   },
   {
    "id": "e17_0",
-   "body": "<<FILL role=discovery words=142 beats='both volumes go into the drawer they came out of and Rhian moves with nothing to write in; she tells herself it is safekeeping, and is not sure, then or later, that it was'>>",
+   "body": "<<FILL role=discovery words=142 beats='both volumes go into the drawer they came out of and Rhian moves with nothing to write in; she tells herself it is safekeeping, and is not sure, then or later, that it was; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Ring Bea on the first night\"; \"Say you are staying with Mamgu\"; \"Say yes and start packing\"; \"Take the notebook out on the ferry\"), so the body must not depend on any of it.'>>",
    "is_ending": true,
    "ending": {
     "id": "e17_0",
@@ -3571,7 +3879,7 @@
   },
   {
    "id": "e17_1",
-   "body": "<<FILL role=setback words=124 beats='Rhian arrives in the fourth city having decided that recording a place is what makes leaving it hurt; she is right about that, and the eighteen months that follow are the emptiest of her life'>>",
+   "body": "<<FILL role=setback words=124 beats='Rhian arrives in the fourth city having decided that recording a place is what makes leaving it hurt; she is right about that, and the eighteen months that follow are the emptiest of her life; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Ring Bea on the first night\"; \"Say you are staying with Mamgu\"; \"Say yes and start packing\"; \"Take the notebook out on the ferry\"), so the body must not depend on any of it.'>>",
    "is_ending": true,
    "ending": {
     "id": "e17_1",
@@ -3582,7 +3890,7 @@
   },
   {
    "id": "e18_0",
-   "body": "<<FILL role=setback words=147 beats='Rhian packs the notebooks, the tide tables, the Rotterdam certificate and Tobi's four letters into one box and puts it in Mamgu's back bedroom under the sheet with everything else, and does not open it for six years'>>",
+   "body": "<<FILL role=setback words=147 beats='Rhian packs the notebooks, the tide tables, the Rotterdam certificate and Tobi's four letters into one box and puts it in Mamgu's back bedroom under the sheet with everything else, and does not open it for six years; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Ring Bea on the first night\"; \"Say you are staying with Mamgu\"; \"Say yes and start packing\"; \"Take the notebook out on the ferry\"), so the body must not depend on any of it.'>>",
    "is_ending": true,
    "ending": {
     "id": "e18_0",
@@ -3593,7 +3901,7 @@
   },
   {
    "id": "e19_0",
-   "body": "<<FILL role=discovery words=129 beats='Rhian posts it at the end of the fourth autumn so that both volumes sit together, and starts a third; it is the first thing all year she does purely because of what it will mean to somebody else'>>",
+   "body": "<<FILL role=discovery words=129 beats='Rhian posts it at the end of the fourth autumn so that both volumes sit together, and starts a third; it is the first thing all year she does purely because of what it will mean to somebody else; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Ring Bea on the first night\"; \"Say you are staying with Mamgu\"; \"Say yes and start packing\"; \"Take the notebook out on the ferry\"), so the body must not depend on any of it.'>>",
    "is_ending": true,
    "ending": {
     "id": "e19_0",
@@ -3604,7 +3912,7 @@
   },
   {
    "id": "e19_1",
-   "body": "<<FILL role=setback words=152 beats='the evenings cost more than Rhian has and one by one the threads go slack; by spring there is nobody left from the migration year except her family, and she is the only person who could have prevented it'>>",
+   "body": "<<FILL role=setback words=152 beats='the evenings cost more than Rhian has and one by one the threads go slack; by spring there is nobody left from the migration year except her family, and she is the only person who could have prevented it; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Ring Bea on the first night\"; \"Say you are staying with Mamgu\"; \"Say yes and start packing\"; \"Take the notebook out on the ferry\"), so the body must not depend on any of it.'>>",
    "is_ending": true,
    "ending": {
     "id": "e19_1",
@@ -3615,7 +3923,7 @@
   },
   {
    "id": "e20_0",
-   "body": "<<FILL role=success words=134 beats='Rhian closes the twelve months on the estuary in October with the second volume open and the geese still coming; the year was done to her and the ending of it is not, and that difference is the whole of what she got out of it'>>",
+   "body": "<<FILL role=success words=134 beats='Rhian closes the twelve months on the estuary in October with the second volume open and the geese still coming; the year was done to her and the ending of it is not, and that difference is the whole of what she got out of it; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Ring Bea on the first night\"; \"Say you are staying with Mamgu\"; \"Say yes and start packing\"; \"Take the notebook out on the ferry\"), so the body must not depend on any of it.'>>",
    "is_ending": true,
    "ending": {
     "id": "e20_0",
@@ -3626,7 +3934,7 @@
   },
   {
    "id": "e20_1",
-   "body": "<<FILL role=completion words=157 beats='two volumes in a drawer in Caldy and a third in a rucksack; Mamgu writes the last entry of hers in her own hand and Rhian writes the first of the next one, and the thing that started in a laundry in 1968 does not stop'>>",
+   "body": "<<FILL role=completion words=157 beats='two volumes in a drawer in Caldy and a third in a rucksack; Mamgu writes the last entry of hers in her own hand and Rhian writes the first of the next one, and the thing that started in a laundry in 1968 does not stop; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Ring Bea on the first night\"; \"Say you are staying with Mamgu\"; \"Say yes and start packing\"; \"Take the notebook out on the ferry\"), so the body must not depend on any of it.'>>",
    "is_ending": true,
    "ending": {
     "id": "e20_1",
@@ -3637,7 +3945,7 @@
   },
   {
    "id": "e20_2",
-   "body": "<<FILL role=success words=139 beats='Rhian tells Mamgu that the best of them was the fortnight in May when she went back for Bea's examinations and did nothing but make tea, and Mamgu says she has taken a whole year to learn what took her eleven, and is pleased about it'>>",
+   "body": "<<FILL role=success words=139 beats='Rhian tells Mamgu that the best of them was the fortnight in May when she went back for Bea's examinations and did nothing but make tea, and Mamgu says she has taken a whole year to learn what took her eleven, and is pleased about it; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Ring Bea on the first night\"; \"Say you are staying with Mamgu\"; \"Say yes and start packing\"; \"Take the notebook out on the ferry\"), so the body must not depend on any of it.'>>",
    "is_ending": true,
    "ending": {
     "id": "e20_2",
@@ -3648,7 +3956,7 @@
   },
   {
    "id": "e20_3",
-   "body": "<<FILL role=completion words=121 beats='Rhian leaves the year able to arrive anywhere: find the water, find the group, find the one person who will do it properly rather than as a favour; it is a small and unglamorous set of skills and it will carry her for thirty years'>>",
+   "body": "<<FILL role=completion words=121 beats='Rhian leaves the year able to arrive anywhere: find the water, find the group, find the one person who will do it properly rather than as a favour; it is a small and unglamorous set of skills and it will carry her for thirty years; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Ring Bea on the first night\"; \"Say you are staying with Mamgu\"; \"Say yes and start packing\"; \"Take the notebook out on the ferry\"), so the body must not depend on any of it.'>>",
    "is_ending": true,
    "ending": {
     "id": "e20_3",
@@ -3659,7 +3967,7 @@
   },
   {
    "id": "e20_4",
-   "body": "<<FILL role=completion words=144 beats='Tobi in July, Sanne on the telephone at eleven at night, Carys at the gate refusing to be left behind; three friendships that survive because Rhian decides they are going to and pays for it in evenings'>>",
+   "body": "<<FILL role=completion words=144 beats='Tobi in July, Sanne on the telephone at eleven at night, Carys at the gate refusing to be left behind; three friendships that survive because Rhian decides they are going to and pays for it in evenings; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Ring Bea on the first night\"; \"Say you are staying with Mamgu\"; \"Say yes and start packing\"; \"Take the notebook out on the ferry\"), so the body must not depend on any of it.'>>",
    "is_ending": true,
    "ending": {
     "id": "e20_4",
@@ -3670,7 +3978,7 @@
   },
   {
    "id": "e20_5",
-   "body": "<<FILL role=discovery words=126 beats='a girl off a boat in 1968 with a job in a laundry and a landlady who would not say her name, writing down what flew over an estuary she did not know; Rhian has spent a year discovering a thing her grandmother has been quietly telling her since she was six'>>",
+   "body": "<<FILL role=discovery words=126 beats='a girl off a boat in 1968 with a job in a laundry and a landlady who would not say her name, writing down what flew over an estuary she did not know; Rhian has spent a year discovering a thing her grandmother has been quietly telling her since she was six; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Ring Bea on the first night\"; \"Say you are staying with Mamgu\"; \"Say yes and start packing\"; \"Take the notebook out on the ferry\"), so the body must not depend on any of it.'>>",
    "is_ending": true,
    "ending": {
     "id": "e20_5",
@@ -3681,7 +3989,7 @@
   },
   {
    "id": "e20_6",
-   "body": "<<FILL role=discovery words=149 beats='the honest arithmetic: four syllabuses, two friendships nearly lost, a sister who has become somebody she will have to get to know, and a father who is still on contracts; Rhian writes it down as a list, because that is what the notebook is for'>>",
+   "body": "<<FILL role=discovery words=149 beats='the honest arithmetic: four syllabuses, two friendships nearly lost, a sister who has become somebody she will have to get to know, and a father who is still on contracts; Rhian writes it down as a list, because that is what the notebook is for; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Ring Bea on the first night\"; \"Say you are staying with Mamgu\"; \"Say yes and start packing\"; \"Take the notebook out on the ferry\"), so the body must not depend on any of it.'>>",
    "is_ending": true,
    "ending": {
     "id": "e20_6",
@@ -3692,7 +4000,7 @@
   },
   {
    "id": "e20_7",
-   "body": "<<FILL role=setback words=131 beats='nobody is from anywhere yet, the grant runs three years and might not run four, and Rhian ends the migration year with an estuary she likes, a notebook with room in it, and no promises from anybody at all'>>",
+   "body": "<<FILL role=setback words=131 beats='nobody is from anywhere yet, the grant runs three years and might not run four, and Rhian ends the migration year with an estuary she likes, a notebook with room in it, and no promises from anybody at all; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Ring Bea on the first night\"; \"Say you are staying with Mamgu\"; \"Say yes and start packing\"; \"Take the notebook out on the ferry\"), so the body must not depend on any of it.'>>",
    "is_ending": true,
    "ending": {
     "id": "e20_7",

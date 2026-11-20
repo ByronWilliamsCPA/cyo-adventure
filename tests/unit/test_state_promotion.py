@@ -314,6 +314,18 @@ def test_stateless_view_round_trips_committed_skeletons(path: str) -> None:
 
 
 @pytest.mark.unit
+@pytest.mark.parametrize("path", _PILOT)
+def test_committed_pilot_is_reproducible(path: str) -> None:
+    """Each committed pilot skeleton is exactly what the tool produces today."""
+    committed = json.loads((_REPO / path).read_text(encoding="utf-8"))
+    assert committed["metadata"]["tier"] == 2
+    report = promote_skeleton(stateless_view(committed))
+    assert report.status == "promoted", report.reason
+    assert report.candidate == committed
+    assert report.ending_changing, "no payoff changes ending reachability"
+
+
+@pytest.mark.unit
 def test_words_per_stop_table_matches_choice_grammar() -> None:
     """The local copy of the CG-3 ceilings tracks the validator's table."""
     source = choice_grammar._WORDS_PER_STOP_CEILING

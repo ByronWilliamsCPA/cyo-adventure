@@ -11,7 +11,7 @@
       "target": 4.5,
       "tolerance": 1.5
     },
-    "tier": 1,
+    "tier": 2,
     "themes": [
       "community",
       "responsibility",
@@ -31,7 +31,26 @@
     "narrative_style": "prose",
     "production_eligible": true
   },
-  "variables": [],
+  "variables": [
+    {
+      "name": "did_start_beacon_steps",
+      "type": "bool",
+      "initial": false,
+      "description": "Set when the reader chooses \"Start at the Beacon Steps\" at n_list; pays off at fn_up and fn_count."
+    },
+    {
+      "name": "did_start_sheepfold_turn",
+      "type": "bool",
+      "initial": false,
+      "description": "Set when the reader chooses \"Start at the Sheepfold Turn\" at n_list; pays off at oil_bench and oil_can."
+    },
+    {
+      "name": "did_knock_doors_that",
+      "type": "bool",
+      "initial": false,
+      "description": "Set when the reader chooses \"Knock on the doors that used to say yes\" at gt_hands; pays off at pp_runner and pp_keep."
+    }
+  ],
   "start_node": "n_open",
   "nodes": [
     {
@@ -48,18 +67,32 @@
     },
     {
       "id": "n_list",
-      "body": "<<FILL role=setup words=78 beats='Mrs Trewin sits on an upturned crate with her wrist strapped and reads the list out loud, and half of it is already wrong: the Hunters moved away two winters ago, the paraffin is not where the page says, and the path above the landslip is not the path in the margin; the walking party comes down off the moor at half past five, the list has three sections, and there is one afternoon for all of them'>>",
+      "body": "<<FILL role=setup words=78 beats='Mrs Trewin sits on an upturned crate with her wrist strapped and reads the list out loud, and half of it is already wrong: the Hunters moved away two winters ago, the paraffin is not where the page says, and the path above the landslip is not the path in the margin; the walking party comes down off the moor at half past five, the list has three sections, and there is one afternoon for all of them; PLANT SITE: these options are no longer cosmetic: \"Start at the Beacon Steps\" plants did_start_beacon_steps (pays off at fn_up and fn_count); \"Start at the Sheepfold Turn\" plants did_start_sheepfold_turn (pays off at oil_bench and oil_can). Stage every option as appealing, with none the obviously right answer.'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_n_list_0",
           "label": "Start at the Beacon Steps.",
-          "target": "bs_hub"
+          "target": "bs_hub",
+          "effects": [
+            {
+              "op": "set",
+              "var": "did_start_beacon_steps",
+              "value": true
+            }
+          ]
         },
         {
           "id": "c_n_list_1",
           "label": "Start at the Sheepfold Turn.",
-          "target": "sf_hub"
+          "target": "sf_hub",
+          "effects": [
+            {
+              "op": "set",
+              "var": "did_start_sheepfold_turn",
+              "value": true
+            }
+          ]
         },
         {
           "id": "c_n_list_2",
@@ -70,7 +103,7 @@
     },
     {
       "id": "bs_hub",
-      "body": "<<FILL role=setup words=100 beats='the Beacon Steps are ninety-one stone stairs cut into the ridge with a lantern bracket every fourth step; frost has lifted three brackets clean out of the stone, the seventh step from the bottom has gone entirely, and every crate has to come up by hand because nothing wheels here'>>",
+      "body": "<<FILL role=setup words=100 beats='the Beacon Steps are ninety-one stone stairs cut into the ridge with a lantern bracket every fourth step; frost has lifted three brackets clean out of the stone, the seventh step from the bottom has gone entirely, and every crate has to come up by hand because nothing wheels here; PLANT (did_start_beacon_steps): the hero has just made this choice, and something concrete comes of it that a reader will remember: an object kept, a person helped, or a fact learned, named plainly in the prose. Invent it so that it would plausibly help much later, when the hero tries \"Give the turn the last two lanterns\" (node fn_up) or \"Wait at the sheepfold gate with a light\" (node fn_count): there it changes how that moment goes.'>>",
       "is_ending": false,
       "choices": [
         {
@@ -92,7 +125,7 @@
     },
     {
       "id": "sf_hub",
-      "body": "<<FILL role=setup words=100 beats='the Sheepfold Turn is where the path was moved after the landslip, so the list names a stretch of hillside that walkers no longer use and says nothing at all about the one they do; Mr Ovens keeps his ewes in the field the new path crosses and has wired the gate shut with three turns of wire'>>",
+      "body": "<<FILL role=setup words=100 beats='the Sheepfold Turn is where the path was moved after the landslip, so the list names a stretch of hillside that walkers no longer use and says nothing at all about the one they do; Mr Ovens keeps his ewes in the field the new path crosses and has wired the gate shut with three turns of wire; PLANT (did_start_sheepfold_turn): the hero has just made this choice, and something concrete comes of it that a reader will remember: an object kept, a person helped, or a fact learned, named plainly in the prose. Invent it so that it would plausibly help much later, when the hero tries \"Ask the village for anything that burns\" (node oil_bench) or \"Ration what there is across the route\" (node oil_can): there it changes how that moment goes.'>>",
       "is_ending": false,
       "choices": [
         {
@@ -334,7 +367,7 @@
     },
     {
       "id": "bs_plugs",
-      "body": "<<FILL role=rising words=100 beats='the jar of wall plugs is not on the shelf the list says it lives on; Mrs Trewin remembers it going up the steps last October and never coming down, which puts it either in the heather at the top or in the back of a garage in the lane'>>",
+      "body": "<<FILL role=rising words=100 beats='the jar of wall plugs is not on the shelf the list says it lives on; Mrs Trewin remembers it going up the steps last October and never coming down, which puts it either in the heather at the top or in the back of a garage in the lane; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came.'>>",
       "is_ending": false,
       "choices": [
         {
@@ -356,7 +389,7 @@
     },
     {
       "id": "bs_wire",
-      "body": "<<FILL role=rising words=100 beats='there are two arm lengths of fencing wire in the crate and a way of holding a bracket that Mrs Trewin shows with her good hand: twist, tuck the sharp end down, never leave a loop where a sleeve can catch; it holds for a season, and everybody who has done it says so with a face'>>",
+      "body": "<<FILL role=rising words=100 beats='there are two arm lengths of fencing wire in the crate and a way of holding a bracket that Mrs Trewin shows with her good hand: twist, tuck the sharp end down, never leave a loop where a sleeve can catch; it holds for a season, and everybody who has done it says so with a face; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came.'>>",
       "is_ending": false,
       "choices": [
         {
@@ -378,7 +411,7 @@
     },
     {
       "id": "bs_dot",
-      "body": "<<FILL role=rising words=100 beats='the shop keeps a drawer of oddments under the till and Dot Mallow will find a use for anything in it once somebody explains the job properly; she also has firm opinions about the ridge, a spare kettle, and the only paraffin funnel in the village that does not leak'>>",
+      "body": "<<FILL role=rising words=100 beats='the shop keeps a drawer of oddments under the till and Dot Mallow will find a use for anything in it once somebody explains the job properly; she also has firm opinions about the ridge, a spare kettle, and the only paraffin funnel in the village that does not leak; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came.'>>",
       "is_ending": false,
       "choices": [
         {
@@ -400,7 +433,7 @@
     },
     {
       "id": "sf_reroute",
-      "body": "<<FILL role=rising words=100 beats='the new path runs forty paces higher than the old one and turns twice where the old one ran straight, so nine lanterns in the old places would light a route that ends at a drop; the new line needs seven, and two of those have nothing to hang on'>>",
+      "body": "<<FILL role=rising words=100 beats='the new path runs forty paces higher than the old one and turns twice where the old one ran straight, so nine lanterns in the old places would light a route that ends at a drop; the new line needs seven, and two of those have nothing to hang on; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came.'>>",
       "is_ending": false,
       "choices": [
         {
@@ -422,7 +455,7 @@
     },
     {
       "id": "sf_posts",
-      "body": "<<FILL role=rising words=100 beats='there are no trees on the turn and no wall for a hundred paces, and the fence posts belong to Mr Ovens; the shed can offer three bamboo canes, a bundle of stakes meant for tomato plants and a mallet with a split handle'>>",
+      "body": "<<FILL role=rising words=100 beats='there are no trees on the turn and no wall for a hundred paces, and the fence posts belong to Mr Ovens; the shed can offer three bamboo canes, a bundle of stakes meant for tomato plants and a mallet with a split handle; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came.'>>",
       "is_ending": false,
       "choices": [
         {
@@ -444,7 +477,7 @@
     },
     {
       "id": "sf_sign",
-      "body": "<<FILL role=rising words=100 beats='a walker coming down in low cloud follows the ground that looks most walked, and that is still the old line; whatever else happens on this hill, the place where the path turns has to be unmistakable at dusk to somebody tired who has stopped reading the ground'>>",
+      "body": "<<FILL role=rising words=100 beats='a walker coming down in low cloud follows the ground that looks most walked, and that is still the old line; whatever else happens on this hill, the place where the path turns has to be unmistakable at dusk to somebody tired who has stopped reading the ground; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came.'>>",
       "is_ending": false,
       "choices": [
         {
@@ -466,7 +499,7 @@
     },
     {
       "id": "og_hooks",
-      "body": "<<FILL role=rising words=100 beats='the right height for an orchard lantern is above the tallest walker with a pack on and below the branch that whips in a gust, and finding it means standing where the walkers walk and looking up, rather than standing where the ladder happens to be'>>",
+      "body": "<<FILL role=rising words=100 beats='the right height for an orchard lantern is above the tallest walker with a pack on and below the branch that whips in a gust, and finding it means standing where the walkers walk and looking up, rather than standing where the ladder happens to be; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came.'>>",
       "is_ending": false,
       "choices": [
         {
@@ -488,7 +521,7 @@
     },
     {
       "id": "og_lane",
-      "body": "<<FILL role=rising words=100 beats='the last forty paces before the lane are the piece everybody forgets, because the village lights are already visible from there; it is also where the ground is worst, with a rut, a drain grating and the corner where the orchard wall hides the turn'>>",
+      "body": "<<FILL role=rising words=100 beats='the last forty paces before the lane are the piece everybody forgets, because the village lights are already visible from there; it is also where the ground is worst, with a rut, a drain grating and the corner where the orchard wall hides the turn; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came.'>>",
       "is_ending": false,
       "choices": [
         {
@@ -510,7 +543,7 @@
     },
     {
       "id": "og_twins",
-      "body": "<<FILL role=rising words=100 beats='Kit and Row are nine and have been standing at the gate for ten minutes waiting to be given something, and they are entirely capable of carrying, counting and telling the truth about how many lanterns are left; they are not capable of being quiet or of being trusted with the mallet'>>",
+      "body": "<<FILL role=rising words=100 beats='Kit and Row are nine and have been standing at the gate for ten minutes waiting to be given something, and they are entirely capable of carrying, counting and telling the truth about how many lanterns are left; they are not capable of being quiet or of being trusted with the mallet; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came.'>>",
       "is_ending": false,
       "choices": [
         {
@@ -532,7 +565,7 @@
     },
     {
       "id": "bs_flight",
-      "body": "<<FILL role=rising words=105 beats='the steps take one lantern every fourth bracket, twenty-two in all, and hanging from the bottom up means carrying past everything already hung, while hanging from the top down means walking back through the dark with nothing lit behind'>>",
+      "body": "<<FILL role=rising words=105 beats='the steps take one lantern every fourth bracket, twenty-two in all, and hanging from the bottom up means carrying past everything already hung, while hanging from the top down means walking back through the dark with nothing lit behind; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came.'>>",
       "is_ending": false,
       "choices": [
         {
@@ -554,7 +587,7 @@
     },
     {
       "id": "bs_test",
-      "body": "<<FILL role=rising words=105 beats='one lantern goes up on the third bracket and sits there swinging, and the way it swings says everything about how the other twenty-one will behave; the wind on the steps comes across the ridge rather than up it, which the list does not mention anywhere on the page'>>",
+      "body": "<<FILL role=rising words=105 beats='one lantern goes up on the third bracket and sits there swinging, and the way it swings says everything about how the other twenty-one will behave; the wind on the steps comes across the ridge rather than up it, which the list does not mention anywhere on the page; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came.'>>",
       "is_ending": false,
       "choices": [
         {
@@ -576,7 +609,7 @@
     },
     {
       "id": "bs_report",
-      "body": "<<FILL role=rising words=105 beats='there is a version of this afternoon where somebody walks back down and says plainly what the steps need and how long that really takes, and a version where nobody says it until dark; Mrs Trewin is at the hall with her wrist propped up and the kettle on'>>",
+      "body": "<<FILL role=rising words=105 beats='there is a version of this afternoon where somebody walks back down and says plainly what the steps need and how long that really takes, and a version where nobody says it until dark; Mrs Trewin is at the hall with her wrist propped up and the kettle on; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came.'>>",
       "is_ending": false,
       "choices": [
         {
@@ -598,7 +631,7 @@
     },
     {
       "id": "sf_walk",
-      "body": "<<FILL role=rising words=105 beats='carrying a crate along the new line is the only way to learn it, and it takes eleven minutes at a working pace with the wind pushing from the left; the light on the hill has already gone amber and the cloud is coming down rather than lifting'>>",
+      "body": "<<FILL role=rising words=105 beats='carrying a crate along the new line is the only way to learn it, and it takes eleven minutes at a working pace with the wind pushing from the left; the light on the hill has already gone amber and the cloud is coming down rather than lifting; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came.'>>",
       "is_ending": false,
       "choices": [
         {
@@ -620,7 +653,7 @@
     },
     {
       "id": "sf_permission",
-      "body": "<<FILL role=rising words=105 beats='there is a difference between cutting the wire and being handed the wire, and that difference lasts a great deal longer than tonight; Mr Ovens is at the barn until milking, and the lantern rota has needed his field every autumn for as long as the list has existed'>>",
+      "body": "<<FILL role=rising words=105 beats='there is a difference between cutting the wire and being handed the wire, and that difference lasts a great deal longer than tonight; Mr Ovens is at the barn until milking, and the lantern rota has needed his field every autumn for as long as the list has existed; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came.'>>",
       "is_ending": false,
       "choices": [
         {
@@ -642,7 +675,7 @@
     },
     {
       "id": "sf_mark",
-      "body": "<<FILL role=rising words=105 beats='the lip of the landslip is the one place on the whole route where being wrong costs more than a wet foot; two lanterns and a cane will say stop here to somebody who has stopped thinking, and there are two lanterns spare only if the steps turn out not to need them'>>",
+      "body": "<<FILL role=rising words=105 beats='the lip of the landslip is the one place on the whole route where being wrong costs more than a wet foot; two lanterns and a cane will say stop here to somebody who has stopped thinking, and there are two lanterns spare only if the steps turn out not to need them; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came.'>>",
       "is_ending": false,
       "choices": [
         {
@@ -664,7 +697,7 @@
     },
     {
       "id": "og_hang",
-      "body": "<<FILL role=rising words=105 beats='twelve lanterns in eleven trees with one tree taking two, and each of them lit by hand from a taper, because the orchard is the one place on the route where the wind cannot reach and the matches somehow can'>>",
+      "body": "<<FILL role=rising words=105 beats='twelve lanterns in eleven trees with one tree taking two, and each of them lit by hand from a taper, because the orchard is the one place on the route where the wind cannot reach and the matches somehow can; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came.'>>",
       "is_ending": false,
       "choices": [
         {
@@ -686,7 +719,7 @@
     },
     {
       "id": "og_check",
-      "body": "<<FILL role=rising words=105 beats='walking the orchard from the ridge end at a tired pace shows the hanging from the direction it is used, which is the opposite of the direction it was hung in; from that side two lanterns turn out to be behind branches and one is behind a trunk'>>",
+      "body": "<<FILL role=rising words=105 beats='walking the orchard from the ridge end at a tired pace shows the hanging from the direction it is used, which is the opposite of the direction it was hung in; from that side two lanterns turn out to be behind branches and one is behind a trunk; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came.'>>",
       "is_ending": false,
       "choices": [
         {
@@ -708,7 +741,7 @@
     },
     {
       "id": "og_spare",
-      "body": "<<FILL role=rising words=105 beats='the orchard needs twelve and the crate holds sixteen, and four spare lanterns at the top of the ridge are worth a great deal more than four spare lanterns in a crate at the bottom of it; carrying them up now costs the last of the easy light'>>",
+      "body": "<<FILL role=rising words=105 beats='the orchard needs twelve and the crate holds sixteen, and four spare lanterns at the top of the ridge are worth a great deal more than four spare lanterns in a crate at the bottom of it; carrying them up now costs the last of the easy light; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came.'>>",
       "is_ending": false,
       "choices": [
         {
@@ -730,7 +763,7 @@
     },
     {
       "id": "bs_page",
-      "body": "<<FILL role=discovery words=92 beats='the brackets get measured, the gap gets drawn to scale and the whole of the Beacon Steps becomes one honest page pinned to the shed door; the lanterns go up a week later on proper fixings with somebody else carrying, which is not the afternoon anybody planned and is not nothing'>>",
+      "body": "<<FILL role=discovery words=92 beats='the brackets get measured, the gap gets drawn to scale and the whole of the Beacon Steps becomes one honest page pinned to the shed door; the lanterns go up a week later on proper fixings with somebody else carrying, which is not the afternoon anybody planned and is not nothing; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came.'>>",
       "is_ending": true,
       "ending": {
         "id": "e_bs_page",
@@ -741,7 +774,7 @@
     },
     {
       "id": "sf_dark",
-      "body": "<<FILL role=setback words=92 beats='the wire stays on the gate and the new line stays unlit, so at four the rota gets phoned round the village and two adults walk the turn with head torches all evening; nobody comes to harm and nobody thanks anybody, and the list goes back into its envelope exactly as wrong as it came out'>>",
+      "body": "<<FILL role=setback words=92 beats='the wire stays on the gate and the new line stays unlit, so at four the rota gets phoned round the village and two adults walk the turn with head torches all evening; nobody comes to harm and nobody thanks anybody, and the list goes back into its envelope exactly as wrong as it came out; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came.'>>",
       "is_ending": true,
       "ending": {
         "id": "e_sf_dark",
@@ -752,7 +785,7 @@
     },
     {
       "id": "og_bottom",
-      "body": "<<FILL role=discovery words=92 beats='the orchard ends up lit properly and prettily and the ridge above it does not, so the walkers come down off the moor by torchlight and meet the lanterns only in the last five minutes of the way home; it looks like a welcome, and it was meant to be a route'>>",
+      "body": "<<FILL role=discovery words=92 beats='the orchard ends up lit properly and prettily and the ridge above it does not, so the walkers come down off the moor by torchlight and meet the lanterns only in the last five minutes of the way home; it looks like a welcome, and it was meant to be a route; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came.'>>",
       "is_ending": true,
       "ending": {
         "id": "e_og_bottom",
@@ -763,7 +796,7 @@
     },
     {
       "id": "gt_oil",
-      "body": "<<FILL role=rising words=100 beats='the list says the paraffin lives in the hall cupboard and the hall cupboard now holds folding chairs; there are four litres in a can behind the shop and the rest is wherever last autumn left it, and eighty lanterns hold rather more than four litres between them'>>",
+      "body": "<<FILL role=rising words=100 beats='the list says the paraffin lives in the hall cupboard and the hall cupboard now holds folding chairs; there are four litres in a can behind the shop and the rest is wherever last autumn left it, and eighty lanterns hold rather more than four litres between them; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Start at the Beacon Steps\"; \"Start at the Sheepfold Turn\"), so the body must not depend on any of it.'>>",
       "is_ending": false,
       "choices": [
         {
@@ -785,13 +818,20 @@
     },
     {
       "id": "gt_hands",
-      "body": "<<FILL role=rising words=100 beats='eleven people in the village have hung lanterns before and about six of them are in on a Tuesday afternoon; asking costs time now and buys time later, and the names column on the list has not been true since the autumn before last'>>",
+      "body": "<<FILL role=rising words=100 beats='eleven people in the village have hung lanterns before and about six of them are in on a Tuesday afternoon; asking costs time now and buys time later, and the names column on the list has not been true since the autumn before last; PLANT SITE: these options are no longer cosmetic: \"Knock on the doors that used to say yes\" plants did_knock_doors_that (pays off at pp_runner and pp_keep). The other options must keep their own appeal, so this is a real trade-off. MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Start at the Beacon Steps\"; \"Start at the Sheepfold Turn\"), so the body must not depend on any of it.'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_gt_hands_0",
           "label": "Knock on the doors that used to say yes.",
-          "target": "pp_doors"
+          "target": "cq_plant_did_knock_doors_that",
+          "effects": [
+            {
+              "op": "set",
+              "var": "did_knock_doors_that",
+              "value": true
+            }
+          ]
         },
         {
           "id": "c_gt_hands_1",
@@ -806,8 +846,20 @@
       ]
     },
     {
+      "id": "cq_plant_did_knock_doors_that",
+      "body": "<<FILL role=plant words=35 beats='Arrival beat for this choice, two or three sentences that show it happening and then lead straight into the next scene. PLANT (did_knock_doors_that): the hero has just made this choice, and something concrete comes of it that a reader will remember: an object kept, a person helped, or a fact learned, named plainly in the prose. Invent it so that it would plausibly help much later, when the hero tries \"Let the village finish it however it likes\" (node pp_runner) or \"Ask Mr Ovens for the quad bike\" (node pp_keep): there it changes how that moment goes.'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_cq_plant_did_knock_doors_that",
+          "label": "Knock on the doors that used to say yes.",
+          "target": "pp_doors"
+        }
+      ]
+    },
+    {
       "id": "gt_walk",
-      "body": "<<FILL role=rising words=100 beats='nobody has walked the full route today, and the list describes a route that has changed in two places since it was written; forty minutes of walking would answer more questions than an hour of standing in the shed guessing'>>",
+      "body": "<<FILL role=rising words=100 beats='nobody has walked the full route today, and the list describes a route that has changed in two places since it was written; forty minutes of walking would answer more questions than an hour of standing in the shed guessing; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Start at the Beacon Steps\"; \"Start at the Sheepfold Turn\"), so the body must not depend on any of it.'>>",
       "is_ending": false,
       "choices": [
         {
@@ -829,7 +881,7 @@
     },
     {
       "id": "gt_wind",
-      "body": "<<FILL role=rising words=100 beats='the wind that came across the ridge at two is now bending the top of the ash tree by the hall, and paper lanterns and wind have a long and expensive history in this village; the shed has a box of storm shades that fit rather less than half the lanterns'>>",
+      "body": "<<FILL role=rising words=100 beats='the wind that came across the ridge at two is now bending the top of the ash tree by the hall, and paper lanterns and wind have a long and expensive history in this village; the shed has a box of storm shades that fit rather less than half the lanterns; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Start at the Beacon Steps\"; \"Start at the Sheepfold Turn\"), so the body must not depend on any of it.'>>",
       "is_ending": false,
       "choices": [
         {
@@ -851,7 +903,7 @@
     },
     {
       "id": "gt_word",
-      "body": "<<FILL role=rising words=100 beats='Priya Shah is bringing fourteen people down off the moor and expects a lit ridge at half past five; there is one bar of signal at the top of the steps and none at all in the orchard, and the message she needs is not the one that says everything is fine'>>",
+      "body": "<<FILL role=rising words=100 beats='Priya Shah is bringing fourteen people down off the moor and expects a lit ridge at half past five; there is one bar of signal at the top of the steps and none at all in the orchard, and the message she needs is not the one that says everything is fine; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Start at the Beacon Steps\"; \"Start at the Sheepfold Turn\"), so the body must not depend on any of it.'>>",
       "is_ending": false,
       "choices": [
         {
@@ -873,7 +925,7 @@
     },
     {
       "id": "gt_bottom",
-      "body": "<<FILL role=rising words=100 beats='lighting from the bottom up keeps the finished work behind you all afternoon and shows the walkers the best of it last; it also means that when something goes wrong at five, the lit part is the part nearest the village, the phone and the kettle'>>",
+      "body": "<<FILL role=rising words=100 beats='lighting from the bottom up keeps the finished work behind you all afternoon and shows the walkers the best of it last; it also means that when something goes wrong at five, the lit part is the part nearest the village, the phone and the kettle; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Start at the Beacon Steps\"; \"Start at the Sheepfold Turn\"), so the body must not depend on any of it.'>>",
       "is_ending": false,
       "choices": [
         {
@@ -895,7 +947,7 @@
     },
     {
       "id": "oil_can",
-      "body": "<<FILL role=rising words=100 beats='four litres behind the shop, a half can in the church boiler room that may be paraffin and may be lamp oil, and a full can that Mrs Trewin swears went to the school for the harvest lanterns and never came back'>>",
+      "body": "<<FILL role=rising words=100 beats='four litres behind the shop, a half can in the church boiler room that may be paraffin and may be lamp oil, and a full can that Mrs Trewin swears went to the school for the harvest lanterns and never came back; PAYOFF SITE (did_start_sheepfold_turn): readers arrive here both having and not having chosen \"Start at the Sheepfold Turn\" earlier, so this body must be true either way and must not say which. The option \"Ration what there is across the route\" plays out differently for the two: with that earlier choice the reader first sees a payoff scene. MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Start at the Beacon Steps\"; \"Start at the Sheepfold Turn\"), so the body must not depend on any of it.'>>",
       "is_ending": false,
       "choices": [
         {
@@ -906,7 +958,28 @@
         {
           "id": "c_oil_can_1",
           "label": "Ration what there is across the route.",
-          "target": "oil_ration"
+          "target": "oil_ration",
+          "condition": {
+            "==": [
+              {
+                "var": "did_start_sheepfold_turn"
+              },
+              false
+            ]
+          }
+        },
+        {
+          "id": "c_oil_can_1_cq_did_start_sheepfold_turn",
+          "label": "Ration what there is across the route.",
+          "target": "cq_payoff_did_start_sheepfold_turn_site2",
+          "condition": {
+            "==": [
+              {
+                "var": "did_start_sheepfold_turn"
+              },
+              true
+            ]
+          }
         },
         {
           "id": "c_oil_can_2",
@@ -916,14 +989,47 @@
       ]
     },
     {
+      "id": "cq_payoff_did_start_sheepfold_turn_site2",
+      "body": "<<FILL role=payoff words=30 beats='PAYOFF (did_start_sheepfold_turn): only a reader who earlier chose \"Start at the Sheepfold Turn\" (node n_list) reaches this scene. The hero tries \"Ration what there is across the route\". The thing that came of that earlier choice changes how it goes: show it returning concretely in a few sentences, a moment only this reader gets. Then lead into the next scene (node oil_ration), which every reader who makes this move reaches, without contradicting it.'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_cq_payoff_did_start_sheepfold_turn_site2",
+          "label": "Ration what there is across the route.",
+          "target": "oil_ration"
+        }
+      ]
+    },
+    {
       "id": "oil_bench",
-      "body": "<<FILL role=rising words=100 beats='filling eighty lanterns needs a funnel, a rag, a flat surface and a firm rule about where the full ones go; doing it off a tailgate in the wind is how a village ends up with paraffin down the inside of every crate it owns'>>",
+      "body": "<<FILL role=rising words=100 beats='filling eighty lanterns needs a funnel, a rag, a flat surface and a firm rule about where the full ones go; doing it off a tailgate in the wind is how a village ends up with paraffin down the inside of every crate it owns; PAYOFF SITE (did_start_sheepfold_turn): readers arrive here both having and not having chosen \"Start at the Sheepfold Turn\" earlier, so this body must be true either way and must not say which. The option \"Ask the village for anything that burns\" plays out differently for the two: with that earlier choice the reader first sees a payoff scene. MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Start at the Beacon Steps\"; \"Start at the Sheepfold Turn\"), so the body must not depend on any of it.'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_oil_bench_0",
           "label": "Ask the village for anything that burns.",
-          "target": "oil_borrow"
+          "target": "oil_borrow",
+          "condition": {
+            "==": [
+              {
+                "var": "did_start_sheepfold_turn"
+              },
+              false
+            ]
+          }
+        },
+        {
+          "id": "c_oil_bench_0_cq_did_start_sheepfold_turn",
+          "label": "Ask the village for anything that burns.",
+          "target": "cq_payoff_did_start_sheepfold_turn",
+          "condition": {
+            "==": [
+              {
+                "var": "did_start_sheepfold_turn"
+              },
+              true
+            ]
+          }
         },
         {
           "id": "c_oil_bench_1",
@@ -938,8 +1044,20 @@
       ]
     },
     {
+      "id": "cq_payoff_did_start_sheepfold_turn",
+      "body": "<<FILL role=payoff words=30 beats='PAYOFF (did_start_sheepfold_turn): only a reader who earlier chose \"Start at the Sheepfold Turn\" (node n_list) reaches this scene. The hero tries \"Ask the village for anything that burns\". The thing that came of that earlier choice changes how it goes: show it returning concretely in a few sentences, a moment only this reader gets. Then lead into the next scene (node oil_borrow), which every reader who makes this move reaches, without contradicting it.'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_cq_payoff_did_start_sheepfold_turn",
+          "label": "Ask the village for anything that burns.",
+          "target": "oil_borrow"
+        }
+      ]
+    },
+    {
       "id": "oil_wick",
-      "body": "<<FILL role=rising words=100 beats='a wick that has sat in a shed for a year burns for twenty minutes and then goes out sulking; there are two boxes of new wick in the drawer cut to the wrong length, and trimming eighty of them is an hour nobody has when half of them do not need it'>>",
+      "body": "<<FILL role=rising words=100 beats='a wick that has sat in a shed for a year burns for twenty minutes and then goes out sulking; there are two boxes of new wick in the drawer cut to the wrong length, and trimming eighty of them is an hour nobody has when half of them do not need it; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Start at the Beacon Steps\"; \"Start at the Sheepfold Turn\"), so the body must not depend on any of it.'>>",
       "is_ending": false,
       "choices": [
         {
@@ -961,7 +1079,7 @@
     },
     {
       "id": "pp_doors",
-      "body": "<<FILL role=rising words=100 beats='the names column is three years out of date and reads like a map of who has moved away; four of the doors are still the right doors, and two of those open onto somebody who has been waiting a long while to be asked again'>>",
+      "body": "<<FILL role=rising words=100 beats='the names column is three years out of date and reads like a map of who has moved away; four of the doors are still the right doors, and two of those open onto somebody who has been waiting a long while to be asked again; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Knock on the doors that used to say yes\"; \"Start at the Beacon Steps\"; \"Start at the Sheepfold Turn\"), so the body must not depend on any of it.'>>",
       "is_ending": false,
       "choices": [
         {
@@ -983,7 +1101,7 @@
     },
     {
       "id": "pp_gate",
-      "body": "<<FILL role=rising words=100 beats='the school gate at half past three holds more of the village in one place than anywhere else all week, and nobody standing at it is in a hurry to be anywhere for the next ten minutes'>>",
+      "body": "<<FILL role=rising words=100 beats='the school gate at half past three holds more of the village in one place than anywhere else all week, and nobody standing at it is in a hurry to be anywhere for the next ten minutes; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Start at the Beacon Steps\"; \"Start at the Sheepfold Turn\"), so the body must not depend on any of it.'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1005,7 +1123,7 @@
     },
     {
       "id": "pp_shop",
-      "body": "<<FILL role=rising words=100 beats='anything said across the counter at the shop is in eleven kitchens by teatime, and the version that arrives is the version Dot Mallow repeats, so the wording matters a good deal more than the asking'>>",
+      "body": "<<FILL role=rising words=100 beats='anything said across the counter at the shop is in eleven kitchens by teatime, and the version that arrives is the version Dot Mallow repeats, so the wording matters a good deal more than the asking; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Start at the Beacon Steps\"; \"Start at the Sheepfold Turn\"), so the body must not depend on any of it.'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1027,7 +1145,7 @@
     },
     {
       "id": "pa_survey",
-      "body": "<<FILL role=rising words=100 beats='the list and the ground disagree in nine places and only walking it finds them; the whole route takes thirty-eight minutes at a working pace, rather longer with a crate, and a pencil beats a memory every single time'>>",
+      "body": "<<FILL role=rising words=100 beats='the list and the ground disagree in nine places and only walking it finds them; the whole route takes thirty-eight minutes at a working pace, rather longer with a crate, and a pencil beats a memory every single time; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Start at the Beacon Steps\"; \"Start at the Sheepfold Turn\"), so the body must not depend on any of it.'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1049,7 +1167,7 @@
     },
     {
       "id": "pa_gaps",
-      "body": "<<FILL role=rising words=100 beats='a lit route is not eighty lanterns, it is eighty gaps, and the gap that matters is the one where a walker cannot see the next light from the last one; there are three of those on this hill and none of them are marked'>>",
+      "body": "<<FILL role=rising words=100 beats='a lit route is not eighty lanterns, it is eighty gaps, and the gap that matters is the one where a walker cannot see the next light from the last one; there are three of those on this hill and none of them are marked; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Start at the Beacon Steps\"; \"Start at the Sheepfold Turn\"), so the body must not depend on any of it.'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1071,7 +1189,7 @@
     },
     {
       "id": "pa_ground",
-      "body": "<<FILL role=rising words=100 beats='the clay above the sheepfold turn is already greasy and the forecast promises more after four, and a lantern that shows a walker the wrong side of that slope is worse than no lantern there at all'>>",
+      "body": "<<FILL role=rising words=100 beats='the clay above the sheepfold turn is already greasy and the forecast promises more after four, and a lantern that shows a walker the wrong side of that slope is worse than no lantern there at all; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Start at the Beacon Steps\"; \"Start at the Sheepfold Turn\"), so the body must not depend on any of it.'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1093,7 +1211,7 @@
     },
     {
       "id": "oil_school",
-      "body": "<<FILL role=rising words=105 beats='the school kitchen door stands open until four and the caretaker knows exactly where the harvest lanterns went and what came back with them; the walk home with a full can is uphill and takes both hands'>>",
+      "body": "<<FILL role=rising words=105 beats='the school kitchen door stands open until four and the caretaker knows exactly where the harvest lanterns went and what came back with them; the walk home with a full can is uphill and takes both hands; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Start at the Beacon Steps\"; \"Start at the Sheepfold Turn\"), so the body must not depend on any of it.'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1115,7 +1233,7 @@
     },
     {
       "id": "oil_ration",
-      "body": "<<FILL role=rising words=105 beats='four litres will fill about fifty lanterns properly or eighty badly, and a badly filled lantern does not fail at seven in the evening, it fails at ten past five with the whole village watching the ridge'>>",
+      "body": "<<FILL role=rising words=105 beats='four litres will fill about fifty lanterns properly or eighty badly, and a badly filled lantern does not fail at seven in the evening, it fails at ten past five with the whole village watching the ridge; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Start at the Beacon Steps\"; \"Start at the Sheepfold Turn\"), so the body must not depend on any of it.'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1137,7 +1255,7 @@
     },
     {
       "id": "oil_burn",
-      "body": "<<FILL role=rising words=105 beats='one filled lantern on the shed step with a watch beside it answers the only question that actually matters, which is whether the thing burns from now until the walkers are down; it costs twenty minutes to find out and rather more not to'>>",
+      "body": "<<FILL role=rising words=105 beats='one filled lantern on the shed step with a watch beside it answers the only question that actually matters, which is whether the thing burns from now until the walkers are down; it costs twenty minutes to find out and rather more not to; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Start at the Beacon Steps\"; \"Start at the Sheepfold Turn\"), so the body must not depend on any of it.'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1159,7 +1277,7 @@
     },
     {
       "id": "oil_borrow",
-      "body": "<<FILL role=rising words=105 beats='between the pub, the chapel and three kitchens there are storm lanterns, a camping lamp and a box of stubby candles in jam jars, none of which match the route and all of which make light'>>",
+      "body": "<<FILL role=rising words=105 beats='between the pub, the chapel and three kitchens there are storm lanterns, a camping lamp and a box of stubby candles in jam jars, none of which match the route and all of which make light; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Start at the Beacon Steps\"; \"Start at the Sheepfold Turn\"), so the body must not depend on any of it.'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1181,7 +1299,7 @@
     },
     {
       "id": "pp_teams",
-      "body": "<<FILL role=rising words=105 beats='two on the steps, two in the orchard, one on the turn and one running between them is a plan; six people all starting at the shed and talking is not, and the difference between them is whoever says the first sentence'>>",
+      "body": "<<FILL role=rising words=105 beats='two on the steps, two in the orchard, one on the turn and one running between them is a plan; six people all starting at the shed and talking is not, and the difference between them is whoever says the first sentence; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Knock on the doors that used to say yes\"; \"Start at the Beacon Steps\"; \"Start at the Sheepfold Turn\"), so the body must not depend on any of it.'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1203,7 +1321,7 @@
     },
     {
       "id": "pp_teach",
-      "body": "<<FILL role=rising words=105 beats='everybody who has never hung a lantern hangs the first one badly and the second one well, and the ten minutes spent on that are the cheapest ten minutes of the entire afternoon'>>",
+      "body": "<<FILL role=rising words=105 beats='everybody who has never hung a lantern hangs the first one badly and the second one well, and the ten minutes spent on that are the cheapest ten minutes of the entire afternoon; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Knock on the doors that used to say yes\"; \"Start at the Beacon Steps\"; \"Start at the Sheepfold Turn\"), so the body must not depend on any of it.'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1225,7 +1343,7 @@
     },
     {
       "id": "pp_quad",
-      "body": "<<FILL role=rising words=105 beats='a quad bike carries four crates to the top of the ridge in the time a person carries one, and the price of asking is standing in a yard being told about gates for five minutes first, with your hands behind your back'>>",
+      "body": "<<FILL role=rising words=105 beats='a quad bike carries four crates to the top of the ridge in the time a person carries one, and the price of asking is standing in a yard being told about gates for five minutes first, with your hands behind your back; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Knock on the doors that used to say yes\"; \"Start at the Beacon Steps\"; \"Start at the Sheepfold Turn\"), so the body must not depend on any of it.'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1247,7 +1365,7 @@
     },
     {
       "id": "pp_twins",
-      "body": "<<FILL role=rising words=105 beats='Kit and Row will do a dull job well for an hour if it is genuinely theirs and badly for four minutes if it was invented to keep them busy, and there is exactly one job on this route that fits them'>>",
+      "body": "<<FILL role=rising words=105 beats='Kit and Row will do a dull job well for an hour if it is genuinely theirs and badly for four minutes if it was invented to keep them busy, and there is exactly one job on this route that fits them; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Start at the Beacon Steps\"; \"Start at the Sheepfold Turn\"), so the body must not depend on any of it.'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1269,7 +1387,7 @@
     },
     {
       "id": "pa_spacing",
-      "body": "<<FILL role=rising words=105 beats='the list spaces them evenly and the ground does not want them evenly: it wants them at the turns, at the drop, and at the two places where the path looks convincingly like it goes somewhere it does not'>>",
+      "body": "<<FILL role=rising words=105 beats='the list spaces them evenly and the ground does not want them evenly: it wants them at the turns, at the drop, and at the two places where the path looks convincingly like it goes somewhere it does not; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Start at the Beacon Steps\"; \"Start at the Sheepfold Turn\"), so the body must not depend on any of it.'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1291,7 +1409,7 @@
     },
     {
       "id": "pa_drop",
-      "body": "<<FILL role=rising words=105 beats='two lanterns, a cane and a length of tape will say stop here in a way a tired person reads without thinking about it, and every one of those lanterns comes out of the count the top of the route was relying on'>>",
+      "body": "<<FILL role=rising words=105 beats='two lanterns, a cane and a length of tape will say stop here in a way a tired person reads without thinking about it, and every one of those lanterns comes out of the count the top of the route was relying on; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Start at the Beacon Steps\"; \"Start at the Sheepfold Turn\"), so the body must not depend on any of it.'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1313,7 +1431,7 @@
     },
     {
       "id": "pa_paint",
-      "body": "<<FILL role=rising words=105 beats='paint on a stone outlasts any lantern and the village has half a tin of white gate paint in the shed, and the argument about painting stones on a hill has been running since long before Mrs Trewin took the list'>>",
+      "body": "<<FILL role=rising words=105 beats='paint on a stone outlasts any lantern and the village has half a tin of white gate paint in the shed, and the argument about painting stones on a hill has been running since long before Mrs Trewin took the list; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Start at the Beacon Steps\"; \"Start at the Sheepfold Turn\"), so the body must not depend on any of it.'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1335,7 +1453,7 @@
     },
     {
       "id": "pa_shelter",
-      "body": "<<FILL role=rising words=105 beats='the wind comes across the ridge and not up it, which makes the leeward side of every wall, post and thorn on the route worth a lantern that will still be burning at seven'>>",
+      "body": "<<FILL role=rising words=105 beats='the wind comes across the ridge and not up it, which makes the leeward side of every wall, post and thorn on the route worth a lantern that will still be burning at seven; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Start at the Beacon Steps\"; \"Start at the Sheepfold Turn\"), so the body must not depend on any of it.'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1390,7 +1508,7 @@
     },
     {
       "id": "oil_line",
-      "body": "<<FILL role=rising words=100 beats='one fills, one wipes, one carries, and the queue moves at the speed of the slowest job, which is always the wiping; Kit and Row will hold that line for exactly as long as somebody keeps counting out loud'>>",
+      "body": "<<FILL role=rising words=100 beats='one fills, one wipes, one carries, and the queue moves at the speed of the slowest job, which is always the wiping; Kit and Row will hold that line for exactly as long as somebody keeps counting out loud; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Start at the Beacon Steps\"; \"Start at the Sheepfold Turn\"), so the body must not depend on any of it.'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1412,7 +1530,7 @@
     },
     {
       "id": "oil_shades",
-      "body": "<<FILL role=rising words=100 beats='the storm shades fit forty of the eighty and go on easily before a lantern is hung and horribly afterwards in the wind; the ones without shades will have to hang where the ridge shelters them, which is a different plan for the whole top half'>>",
+      "body": "<<FILL role=rising words=100 beats='the storm shades fit forty of the eighty and go on easily before a lantern is hung and horribly afterwards in the wind; the ones without shades will have to hang where the ridge shelters them, which is a different plan for the whole top half; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Start at the Beacon Steps\"; \"Start at the Sheepfold Turn\"), so the body must not depend on any of it.'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1434,7 +1552,7 @@
     },
     {
       "id": "oil_top",
-      "body": "<<FILL role=rising words=100 beats='the top of the route is the furthest from the shed and the last place anybody wants to be carrying at five o clock, and the argument for doing it first gets harder to make with every ten minutes that passes'>>",
+      "body": "<<FILL role=rising words=100 beats='the top of the route is the furthest from the shed and the last place anybody wants to be carrying at five o clock, and the argument for doing it first gets harder to make with every ten minutes that passes; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Start at the Beacon Steps\"; \"Start at the Sheepfold Turn\"), so the body must not depend on any of it.'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1456,7 +1574,7 @@
     },
     {
       "id": "oil_reserve",
-      "body": "<<FILL role=rising words=100 beats='six filled lanterns and a can kept at the hall are either the most sensible thing anybody does today or six lanterns of ridge left dark, and which one it turns out to be depends entirely on what goes wrong later'>>",
+      "body": "<<FILL role=rising words=100 beats='six filled lanterns and a can kept at the hall are either the most sensible thing anybody does today or six lanterns of ridge left dark, and which one it turns out to be depends entirely on what goes wrong later; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Start at the Beacon Steps\"; \"Start at the Sheepfold Turn\"), so the body must not depend on any of it.'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1478,7 +1596,7 @@
     },
     {
       "id": "pp_rota",
-      "body": "<<FILL role=rising words=100 beats='a rota on a page in somebody pocket is a rumour and a rota chalked on the shed door is a fact, and the shed door carries a faint chalk mark from every autumn back to when the lanterns were tin'>>",
+      "body": "<<FILL role=rising words=100 beats='a rota on a page in somebody pocket is a rumour and a rota chalked on the shed door is a fact, and the shed door carries a faint chalk mark from every autumn back to when the lanterns were tin; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Knock on the doors that used to say yes\"; \"Start at the Beacon Steps\"; \"Start at the Sheepfold Turn\"), so the body must not depend on any of it.'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1500,7 +1618,7 @@
     },
     {
       "id": "pp_runner",
-      "body": "<<FILL role=rising words=100 beats='the top of the steps cannot see the orchard and neither end can hear the other, so a runner who knows both is worth more than a phone with no signal; it is also the coldest job on the hill and the one nobody volunteers for'>>",
+      "body": "<<FILL role=rising words=100 beats='the top of the steps cannot see the orchard and neither end can hear the other, so a runner who knows both is worth more than a phone with no signal; it is also the coldest job on the hill and the one nobody volunteers for; PAYOFF SITE (did_knock_doors_that): readers arrive here both having and not having chosen \"Knock on the doors that used to say yes\" earlier, so this body must be true either way and must not say which. The option \"Let the village finish it however it likes\" plays out differently for the two: without that earlier choice it leads to the setback (pp_village); with it, to a recovery. MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Knock on the doors that used to say yes\"; \"Start at the Beacon Steps\"; \"Start at the Sheepfold Turn\"), so the body must not depend on any of it.'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1511,7 +1629,28 @@
         {
           "id": "c_pp_runner_1",
           "label": "Let the village finish it however it likes.",
-          "target": "pp_village"
+          "target": "pp_village",
+          "condition": {
+            "==": [
+              {
+                "var": "did_knock_doors_that"
+              },
+              false
+            ]
+          }
+        },
+        {
+          "id": "c_pp_runner_1_cq_did_knock_doors_that",
+          "label": "Let the village finish it however it likes.",
+          "target": "cq_payoff_did_knock_doors_that",
+          "condition": {
+            "==": [
+              {
+                "var": "did_knock_doors_that"
+              },
+              true
+            ]
+          }
         },
         {
           "id": "c_pp_runner_2",
@@ -1521,8 +1660,20 @@
       ]
     },
     {
+      "id": "cq_payoff_did_knock_doors_that",
+      "body": "<<FILL role=payoff words=30 beats='PAYOFF (did_knock_doors_that): only a reader who earlier chose \"Knock on the doors that used to say yes\" (node gt_hands) reaches this scene. The hero tries \"Let the village finish it however it likes\". For a reader without that earlier choice the same move ends the story early (pp_village). Here the thing that came of it turns the moment around: show it returning concretely and making the difference. End with the hero moving on to \"Get everyone off the hill by six\", leading into the next scene (node pp_count), which other readers also reach, without contradicting it.'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_cq_payoff_did_knock_doors_that",
+          "label": "Get everyone off the hill by six.",
+          "target": "pp_count"
+        }
+      ]
+    },
+    {
       "id": "pp_kettle",
-      "body": "<<FILL role=rising words=100 beats='a kettle at the hall at half past four is not a luxury, it is the thing that stops six people going home at five, and Mrs Trewin can manage it one handed if somebody else carries the water'>>",
+      "body": "<<FILL role=rising words=100 beats='a kettle at the hall at half past four is not a luxury, it is the thing that stops six people going home at five, and Mrs Trewin can manage it one handed if somebody else carries the water; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Knock on the doors that used to say yes\"; \"Start at the Beacon Steps\"; \"Start at the Sheepfold Turn\"), so the body must not depend on any of it.'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1544,7 +1695,7 @@
     },
     {
       "id": "pp_trewin",
-      "body": "<<FILL role=rising words=100 beats='she cannot carry and she cannot climb, and she can look at the ridge from the hall steps and say which lantern is wrong from four hundred paces away, which is the one skill everybody else on the hill is missing'>>",
+      "body": "<<FILL role=rising words=100 beats='she cannot carry and she cannot climb, and she can look at the ridge from the hall steps and say which lantern is wrong from four hundred paces away, which is the one skill everybody else on the hill is missing; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Knock on the doors that used to say yes\"; \"Start at the Beacon Steps\"; \"Start at the Sheepfold Turn\"), so the body must not depend on any of it.'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1566,7 +1717,7 @@
     },
     {
       "id": "pa_hang",
-      "body": "<<FILL role=rising words=100 beats='the top section takes nineteen lanterns under the new spacing and the crate that reached the stile holds sixteen, so either somebody goes back down the steps or the last three gaps stay gaps'>>",
+      "body": "<<FILL role=rising words=100 beats='the top section takes nineteen lanterns under the new spacing and the crate that reached the stile holds sixteen, so either somebody goes back down the steps or the last three gaps stay gaps; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Start at the Beacon Steps\"; \"Start at the Sheepfold Turn\"), so the body must not depend on any of it.'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1588,7 +1739,7 @@
     },
     {
       "id": "pa_dim",
-      "body": "<<FILL role=rising words=100 beats='by half past four the ridge is already dim enough to test, and walking it downhill in that light is the only way to see it as the walkers will; two things that looked fine at two are invisible from above'>>",
+      "body": "<<FILL role=rising words=100 beats='by half past four the ridge is already dim enough to test, and walking it downhill in that light is the only way to see it as the walkers will; two things that looked fine at two are invisible from above; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Start at the Beacon Steps\"; \"Start at the Sheepfold Turn\"), so the body must not depend on any of it.'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1610,7 +1761,7 @@
     },
     {
       "id": "pa_bag",
-      "body": "<<FILL role=rising words=100 beats='every autumn something is wrong at the last minute that nobody predicted, and four lanterns in a bag at the top of the steps is the cheapest insurance this village has ever bought itself'>>",
+      "body": "<<FILL role=rising words=100 beats='every autumn something is wrong at the last minute that nobody predicted, and four lanterns in a bag at the top of the steps is the cheapest insurance this village has ever bought itself; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Start at the Beacon Steps\"; \"Start at the Sheepfold Turn\"), so the body must not depend on any of it.'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1632,7 +1783,7 @@
     },
     {
       "id": "pa_post",
-      "body": "<<FILL role=rising words=100 beats='the new gate is the one place on the route where a walker has to do something rather than keep walking, and doing something in the dark without a light is where every argument about this path has started'>>",
+      "body": "<<FILL role=rising words=100 beats='the new gate is the one place on the route where a walker has to do something rather than keep walking, and doing something in the dark without a light is where every argument about this path has started; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Start at the Beacon Steps\"; \"Start at the Sheepfold Turn\"), so the body must not depend on any of it.'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1654,7 +1805,7 @@
     },
     {
       "id": "oil_relight",
-      "body": "<<FILL role=rising words=105 beats='some of them will go out, which is what the list means by the word ROUND written three times in the margin, and somebody has to be the person who walks the whole route again at seven with a taper in a jar'>>",
+      "body": "<<FILL role=rising words=105 beats='some of them will go out, which is what the list means by the word ROUND written three times in the margin, and somebody has to be the person who walks the whole route again at seven with a taper in a jar; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Start at the Beacon Steps\"; \"Start at the Sheepfold Turn\"), so the body must not depend on any of it.'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1676,7 +1827,7 @@
     },
     {
       "id": "oil_taper",
-      "body": "<<FILL role=rising words=105 beats='there are two boxes of matches, one of them damp, and a bundle of tapers Mrs Trewin cut from a broom handle years ago; lighting eighty lanterns in wind is not a match job, it is a taper job, and the difference is about forty minutes of standing still'>>",
+      "body": "<<FILL role=rising words=105 beats='there are two boxes of matches, one of them damp, and a bundle of tapers Mrs Trewin cut from a broom handle years ago; lighting eighty lanterns in wind is not a match job, it is a taper job, and the difference is about forty minutes of standing still; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Start at the Beacon Steps\"; \"Start at the Sheepfold Turn\"), so the body must not depend on any of it.'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1698,7 +1849,7 @@
     },
     {
       "id": "oil_count",
-      "body": "<<FILL role=rising words=105 beats='the only honest number is one somebody has walked out and counted, and the list has a tally box at the bottom that has been filled in in pencil every autumn since before anybody here was born'>>",
+      "body": "<<FILL role=rising words=105 beats='the only honest number is one somebody has walked out and counted, and the list has a tally box at the bottom that has been filled in in pencil every autumn since before anybody here was born; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Start at the Beacon Steps\"; \"Start at the Sheepfold Turn\"), so the body must not depend on any of it.'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1720,7 +1871,7 @@
     },
     {
       "id": "oil_message",
-      "body": "<<FILL role=rising words=105 beats='the party is coming down whether or not the ridge is lit, so the useful message is a number and a time rather than a promise; the signal at the top of the steps holds for about a minute at a stretch and then thinks about it'>>",
+      "body": "<<FILL role=rising words=105 beats='the party is coming down whether or not the ridge is lit, so the useful message is a number and a time rather than a promise; the signal at the top of the steps holds for about a minute at a stretch and then thinks about it; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Start at the Beacon Steps\"; \"Start at the Sheepfold Turn\"), so the body must not depend on any of it.'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1742,7 +1893,7 @@
     },
     {
       "id": "pp_top",
-      "body": "<<FILL role=rising words=105 beats='the two highest lanterns are the ones the walkers see first from the moor and the ones nobody walks back to check, and they hang in the worst of the wind with the least shelter on the route'>>",
+      "body": "<<FILL role=rising words=105 beats='the two highest lanterns are the ones the walkers see first from the moor and the ones nobody walks back to check, and they hang in the worst of the wind with the least shelter on the route; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Knock on the doors that used to say yes\"; \"Start at the Beacon Steps\"; \"Start at the Sheepfold Turn\"), so the body must not depend on any of it.'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1764,13 +1915,34 @@
     },
     {
       "id": "pp_keep",
-      "body": "<<FILL role=rising words=105 beats='the steps team has learned the steps in one afternoon and knows exactly which brackets turn in their holes, and handing that away at five to somebody fresh costs more than the fresh legs are worth'>>",
+      "body": "<<FILL role=rising words=105 beats='the steps team has learned the steps in one afternoon and knows exactly which brackets turn in their holes, and handing that away at five to somebody fresh costs more than the fresh legs are worth; PAYOFF SITE (did_knock_doors_that): readers arrive here both having and not having chosen \"Knock on the doors that used to say yes\" earlier, so this body must be true either way and must not say which. The option \"Ask Mr Ovens for the quad bike\" plays out differently for the two: with that earlier choice the reader first sees a payoff scene. MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Knock on the doors that used to say yes\"; \"Start at the Beacon Steps\"; \"Start at the Sheepfold Turn\"), so the body must not depend on any of it.'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_pp_keep_0",
           "label": "Ask Mr Ovens for the quad bike.",
-          "target": "fn_ovens"
+          "target": "fn_ovens",
+          "condition": {
+            "==": [
+              {
+                "var": "did_knock_doors_that"
+              },
+              false
+            ]
+          }
+        },
+        {
+          "id": "c_pp_keep_0_cq_did_knock_doors_that",
+          "label": "Ask Mr Ovens for the quad bike.",
+          "target": "cq_payoff_did_knock_doors_that_site2",
+          "condition": {
+            "==": [
+              {
+                "var": "did_knock_doors_that"
+              },
+              true
+            ]
+          }
         },
         {
           "id": "c_pp_keep_1",
@@ -1785,8 +1957,20 @@
       ]
     },
     {
+      "id": "cq_payoff_did_knock_doors_that_site2",
+      "body": "<<FILL role=payoff words=25 beats='PAYOFF (did_knock_doors_that): only a reader who earlier chose \"Knock on the doors that used to say yes\" (node gt_hands) reaches this scene. The hero tries \"Ask Mr Ovens for the quad bike\". The thing that came of that earlier choice changes how it goes: show it returning concretely in a few sentences, a moment only this reader gets. Then lead into the next scene (node fn_ovens), which every reader who makes this move reaches, without contradicting it.'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_cq_payoff_did_knock_doors_that_site2",
+          "label": "Ask Mr Ovens for the quad bike.",
+          "target": "fn_ovens"
+        }
+      ]
+    },
+    {
       "id": "pp_pair",
-      "body": "<<FILL role=rising words=105 beats='the phone signal at the top of the steps is one bar and one person alone up there at dusk is how the rota rule about pairs came to be written in the first place, in capital letters, twice'>>",
+      "body": "<<FILL role=rising words=105 beats='the phone signal at the top of the steps is one bar and one person alone up there at dusk is how the rota rule about pairs came to be written in the first place, in capital letters, twice; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Knock on the doors that used to say yes\"; \"Start at the Beacon Steps\"; \"Start at the Sheepfold Turn\"), so the body must not depend on any of it.'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1808,7 +1992,7 @@
     },
     {
       "id": "pp_count",
-      "body": "<<FILL role=rising words=105 beats='the rule that matters most has nothing to do with lanterns: everybody who went up comes down and is counted before the walkers arrive, and the counting is the part that gets forgotten on a good afternoon'>>",
+      "body": "<<FILL role=rising words=105 beats='the rule that matters most has nothing to do with lanterns: everybody who went up comes down and is counted before the walkers arrive, and the counting is the part that gets forgotten on a good afternoon; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Knock on the doors that used to say yes\"; \"Start at the Beacon Steps\"; \"Start at the Sheepfold Turn\"), so the body must not depend on any of it.'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1830,7 +2014,7 @@
     },
     {
       "id": "pa_ninety",
-      "body": "<<FILL role=rising words=105 beats='the gap between the top of the steps and the first ridge lantern is ninety paces of nothing at all, and it is the piece of the route a walker meets first and meets tired'>>",
+      "body": "<<FILL role=rising words=105 beats='the gap between the top of the steps and the first ridge lantern is ninety paces of nothing at all, and it is the piece of the route a walker meets first and meets tired; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Start at the Beacon Steps\"; \"Start at the Sheepfold Turn\"), so the body must not depend on any of it.'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1852,7 +2036,7 @@
     },
     {
       "id": "pa_blown",
-      "body": "<<FILL role=rising words=105 beats='two lanterns on the exposed shoulder have gone out once already and will do it again, and the real question is whether somebody stands there with them or moves them somewhere the wind is not'>>",
+      "body": "<<FILL role=rising words=105 beats='two lanterns on the exposed shoulder have gone out once already and will do it again, and the real question is whether somebody stands there with them or moves them somewhere the wind is not; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Start at the Beacon Steps\"; \"Start at the Sheepfold Turn\"), so the body must not depend on any of it.'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1874,7 +2058,7 @@
     },
     {
       "id": "pa_meet",
-      "body": "<<FILL role=rising words=105 beats='walking up to meet fourteen people coming off the moor turns a lit route into a welcome, and it means being out on the hill in the dark on purpose rather than by accident, which is a different thing to explain afterwards'>>",
+      "body": "<<FILL role=rising words=105 beats='walking up to meet fourteen people coming off the moor turns a lit route into a welcome, and it means being out on the hill in the dark on purpose rather than by accident, which is a different thing to explain afterwards; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Start at the Beacon Steps\"; \"Start at the Sheepfold Turn\"), so the body must not depend on any of it.'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1896,7 +2080,7 @@
     },
     {
       "id": "pa_hold",
-      "body": "<<FILL role=rising words=105 beats='standing at the orchard gate with a lamp and letting the hill do its own work is the harder choice and the one the rota was written around; the route is either good enough now or it is not'>>",
+      "body": "<<FILL role=rising words=105 beats='standing at the orchard gate with a lamp and letting the hill do its own work is the harder choice and the one the rota was written around; the route is either good enough now or it is not; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Start at the Beacon Steps\"; \"Start at the Sheepfold Turn\"), so the body must not depend on any of it.'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1918,7 +2102,7 @@
     },
     {
       "id": "oil_fifty",
-      "body": "<<FILL role=discovery words=92 beats='fifty go up filled properly and thirty stay in the crate, and the moon does more of the work than anybody expected; the walkers come down easily and never know there was a plan at all, and the tally box gets a fifty in it with a note beside it about the missing can'>>",
+      "body": "<<FILL role=discovery words=92 beats='fifty go up filled properly and thirty stay in the crate, and the moon does more of the work than anybody expected; the walkers come down easily and never know there was a plan at all, and the tally box gets a fifty in it with a note beside it about the missing can; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Start at the Beacon Steps\"; \"Start at the Sheepfold Turn\"), so the body must not depend on any of it.'>>",
       "is_ending": true,
       "ending": {
         "id": "e_oil_fifty",
@@ -1929,7 +2113,7 @@
     },
     {
       "id": "pp_village",
-      "body": "<<FILL role=discovery words=92 beats='the ridge gets lit by fourteen people who mostly did not know each other at two o clock, and half the lanterns hang at slightly wrong heights because of it; the list goes back in the envelope with eleven new names written into the column and one of them underlined'>>",
+      "body": "<<FILL role=discovery words=92 beats='the ridge gets lit by fourteen people who mostly did not know each other at two o clock, and half the lanterns hang at slightly wrong heights because of it; the list goes back in the envelope with eleven new names written into the column and one of them underlined; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Knock on the doors that used to say yes\"; \"Start at the Beacon Steps\"; \"Start at the Sheepfold Turn\"), so the body must not depend on any of it.'>>",
       "is_ending": true,
       "ending": {
         "id": "e_pp_village",
@@ -1940,7 +2124,7 @@
     },
     {
       "id": "pa_gap",
-      "body": "<<FILL role=discovery words=92 beats='the route is lit end to end except for one stretch on the shoulder that swallows two lanterns twice over, and the walkers come down chattering and never notice the dark they crossed; the tally box says seventy-eight and the note beside it says shoulder, again'>>",
+      "body": "<<FILL role=discovery words=92 beats='the route is lit end to end except for one stretch on the shoulder that swallows two lanterns twice over, and the walkers come down chattering and never notice the dark they crossed; the tally box says seventy-eight and the note beside it says shoulder, again; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Start at the Beacon Steps\"; \"Start at the Sheepfold Turn\"), so the body must not depend on any of it.'>>",
       "is_ending": true,
       "ending": {
         "id": "e_pa_gap",
@@ -1951,7 +2135,7 @@
     },
     {
       "id": "fn_wait",
-      "body": "<<FILL role=climax words=110 beats='half past five goes by with the ridge lit and nobody on it, and the moor above is a flat grey where fourteen people ought to be; ten minutes late off a moor means nothing at all and forty minutes means something'>>",
+      "body": "<<FILL role=climax words=110 beats='half past five goes by with the ridge lit and nobody on it, and the moor above is a flat grey where fourteen people ought to be; ten minutes late off a moor means nothing at all and forty minutes means something; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Knock on the doors that used to say yes\"; \"Start at the Beacon Steps\"; \"Start at the Sheepfold Turn\"), so the body must not depend on any of it.'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1973,7 +2157,7 @@
     },
     {
       "id": "fn_signal",
-      "body": "<<FILL role=climax words=110 beats='one bar at the top step, and a message Priya sent twenty minutes ago arrives all at once: they are down off the tops, one of them has turned an ankle, and they are moving slower than the light is going'>>",
+      "body": "<<FILL role=climax words=110 beats='one bar at the top step, and a message Priya sent twenty minutes ago arrives all at once: they are down off the tops, one of them has turned an ankle, and they are moving slower than the light is going; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Knock on the doors that used to say yes\"; \"Start at the Beacon Steps\"; \"Start at the Sheepfold Turn\"), so the body must not depend on any of it.'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1995,13 +2179,34 @@
     },
     {
       "id": "fn_count",
-      "body": "<<FILL role=climax words=110 beats='seventy-one lit, six out and three never hung, and the six that are out sit inside the same two hundred paces on the exposed shoulder where the wind comes across the ridge'>>",
+      "body": "<<FILL role=climax words=110 beats='seventy-one lit, six out and three never hung, and the six that are out sit inside the same two hundred paces on the exposed shoulder where the wind comes across the ridge; PAYOFF SITE (did_start_beacon_steps): readers arrive here both having and not having chosen \"Start at the Beacon Steps\" earlier, so this body must be true either way and must not say which. The option \"Wait at the sheepfold gate with a light\" plays out differently for the two: with that earlier choice the reader first sees a payoff scene. MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Knock on the doors that used to say yes\"; \"Start at the Beacon Steps\"; \"Start at the Sheepfold Turn\"), so the body must not depend on any of it.'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_fn_count_0",
           "label": "Wait at the sheepfold gate with a light.",
-          "target": "fx_gate"
+          "target": "fx_gate",
+          "condition": {
+            "==": [
+              {
+                "var": "did_start_beacon_steps"
+              },
+              false
+            ]
+          }
+        },
+        {
+          "id": "c_fn_count_0_cq_did_start_beacon_steps",
+          "label": "Wait at the sheepfold gate with a light.",
+          "target": "cq_payoff_did_start_beacon_steps_site2",
+          "condition": {
+            "==": [
+              {
+                "var": "did_start_beacon_steps"
+              },
+              true
+            ]
+          }
         },
         {
           "id": "c_fn_count_1",
@@ -2016,8 +2221,20 @@
       ]
     },
     {
+      "id": "cq_payoff_did_start_beacon_steps_site2",
+      "body": "<<FILL role=payoff words=25 beats='PAYOFF (did_start_beacon_steps): only a reader who earlier chose \"Start at the Beacon Steps\" (node n_list) reaches this scene. The hero tries \"Wait at the sheepfold gate with a light\". The thing that came of that earlier choice changes how it goes: show it returning concretely in a few sentences, a moment only this reader gets. Then lead into the next scene (node fx_gate), which every reader who makes this move reaches, without contradicting it.'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_cq_payoff_did_start_beacon_steps_site2",
+          "label": "Wait at the sheepfold gate with a light.",
+          "target": "fx_gate"
+        }
+      ]
+    },
+    {
       "id": "fn_torch",
-      "body": "<<FILL role=climax words=110 beats='the hall cupboard holds four head torches and two of them have batteries in, which is exactly the sort of fact the list exists to record and does not record anywhere'>>",
+      "body": "<<FILL role=climax words=110 beats='the hall cupboard holds four head torches and two of them have batteries in, which is exactly the sort of fact the list exists to record and does not record anywhere; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Knock on the doors that used to say yes\"; \"Start at the Beacon Steps\"; \"Start at the Sheepfold Turn\"), so the body must not depend on any of it.'>>",
       "is_ending": false,
       "choices": [
         {
@@ -2039,7 +2256,7 @@
     },
     {
       "id": "fn_up",
-      "body": "<<FILL role=climax words=110 beats='going up means walking away from every light on the route into the part of the hill that has never had a lantern on it, and it means somebody at the bottom knowing precisely where you have gone and when'>>",
+      "body": "<<FILL role=climax words=110 beats='going up means walking away from every light on the route into the part of the hill that has never had a lantern on it, and it means somebody at the bottom knowing precisely where you have gone and when; PAYOFF SITE (did_start_beacon_steps): readers arrive here both having and not having chosen \"Start at the Beacon Steps\" earlier, so this body must be true either way and must not say which. The option \"Give the turn the last two lanterns\" plays out differently for the two: without that earlier choice it leads to the setback (fx_short_end); with it, to a recovery. MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Knock on the doors that used to say yes\"; \"Start at the Beacon Steps\"; \"Start at the Sheepfold Turn\"), so the body must not depend on any of it.'>>",
       "is_ending": false,
       "choices": [
         {
@@ -2055,13 +2272,46 @@
         {
           "id": "c_fn_up_2",
           "label": "Give the turn the last two lanterns.",
-          "target": "fx_short_end"
+          "target": "fx_short_end",
+          "condition": {
+            "==": [
+              {
+                "var": "did_start_beacon_steps"
+              },
+              false
+            ]
+          }
+        },
+        {
+          "id": "c_fn_up_2_cq_did_start_beacon_steps",
+          "label": "Give the turn the last two lanterns.",
+          "target": "cq_payoff_did_start_beacon_steps",
+          "condition": {
+            "==": [
+              {
+                "var": "did_start_beacon_steps"
+              },
+              true
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "cq_payoff_did_start_beacon_steps",
+      "body": "<<FILL role=payoff words=40 beats='PAYOFF (did_start_beacon_steps): only a reader who earlier chose \"Start at the Beacon Steps\" (node n_list) reaches this scene. The hero tries \"Give the turn the last two lanterns\". For a reader without that earlier choice the same move ends the story early (fx_short_end). Here the thing that came of it turns the moment around: show it returning concretely and making the difference. End with the hero moving on to \"Rewrite the list while it is all still fresh\", leading into the next scene (node fx_list_end), which other readers also reach, without contradicting it.'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_cq_payoff_did_start_beacon_steps",
+          "label": "Rewrite the list while it is all still fresh.",
+          "target": "fx_list_end"
         }
       ]
     },
     {
       "id": "fn_hall",
-      "body": "<<FILL role=climax words=110 beats='the hall has a kettle, a radiator that works and the wrong number of chairs, and fourteen people off a moor at six on an October evening want all three of those more than they want a beautiful ridge'>>",
+      "body": "<<FILL role=climax words=110 beats='the hall has a kettle, a radiator that works and the wrong number of chairs, and fourteen people off a moor at six on an October evening want all three of those more than they want a beautiful ridge; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Knock on the doors that used to say yes\"; \"Start at the Beacon Steps\"; \"Start at the Sheepfold Turn\"), so the body must not depend on any of it.'>>",
       "is_ending": false,
       "choices": [
         {
@@ -2083,7 +2333,7 @@
     },
     {
       "id": "fn_ovens",
-      "body": "<<FILL role=climax words=110 beats='the quad will get up the track to the sheepfold turn in four minutes with a person and a bag on the back, and asking for it a second time in one afternoon is a different sort of asking than the first'>>",
+      "body": "<<FILL role=climax words=110 beats='the quad will get up the track to the sheepfold turn in four minutes with a person and a bag on the back, and asking for it a second time in one afternoon is a different sort of asking than the first; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Knock on the doors that used to say yes\"; \"Start at the Beacon Steps\"; \"Start at the Sheepfold Turn\"), so the body must not depend on any of it.'>>",
       "is_ending": false,
       "choices": [
         {
@@ -2105,7 +2355,7 @@
     },
     {
       "id": "fn_taper",
-      "body": "<<FILL role=climax words=110 beats='six lanterns out in one stretch is not bad luck, it is the wind finding the one place nobody thought hard enough about, and relighting them where they hang means doing it all again in twenty minutes'>>",
+      "body": "<<FILL role=climax words=110 beats='six lanterns out in one stretch is not bad luck, it is the wind finding the one place nobody thought hard enough about, and relighting them where they hang means doing it all again in twenty minutes; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Knock on the doors that used to say yes\"; \"Start at the Beacon Steps\"; \"Start at the Sheepfold Turn\"), so the body must not depend on any of it.'>>",
       "is_ending": false,
       "choices": [
         {
@@ -2127,7 +2377,7 @@
     },
     {
       "id": "fn_hold",
-      "body": "<<FILL role=climax words=110 beats='the route is lit, the rota is written, the tally is counted, and the temptation now is to keep changing things; there is a version of this evening where the best thing anybody does is nothing at all'>>",
+      "body": "<<FILL role=climax words=110 beats='the route is lit, the rota is written, the tally is counted, and the temptation now is to keep changing things; there is a version of this evening where the best thing anybody does is nothing at all; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Knock on the doors that used to say yes\"; \"Start at the Beacon Steps\"; \"Start at the Sheepfold Turn\"), so the body must not depend on any of it.'>>",
       "is_ending": false,
       "choices": [
         {
@@ -2149,7 +2399,7 @@
     },
     {
       "id": "fx_leeward",
-      "body": "<<FILL role=climax words=115 beats='moving a lantern in the dark means unhooking, carrying and rehanging with cold hands, and the leeward line is nine paces off the path, which is nine paces of light the walkers will not get'>>",
+      "body": "<<FILL role=climax words=115 beats='moving a lantern in the dark means unhooking, carrying and rehanging with cold hands, and the leeward line is nine paces off the path, which is nine paces of light the walkers will not get; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Knock on the doors that used to say yes\"; \"Start at the Beacon Steps\"; \"Start at the Sheepfold Turn\"), so the body must not depend on any of it.'>>",
       "is_ending": false,
       "choices": [
         {
@@ -2171,7 +2421,7 @@
     },
     {
       "id": "fx_bag",
-      "body": "<<FILL role=climax words=115 beats='four spare lanterns, a taper, a jar and two people who know the shoulder can close the dark stretch in twelve minutes, and the pair have to be back down before the party reaches the turn'>>",
+      "body": "<<FILL role=climax words=115 beats='four spare lanterns, a taper, a jar and two people who know the shoulder can close the dark stretch in twelve minutes, and the pair have to be back down before the party reaches the turn; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Knock on the doors that used to say yes\"; \"Start at the Beacon Steps\"; \"Start at the Sheepfold Turn\"), so the body must not depend on any of it.'>>",
       "is_ending": false,
       "choices": [
         {
@@ -2193,7 +2443,7 @@
     },
     {
       "id": "fx_corner",
-      "body": "<<FILL role=climax words=115 beats='the orchard corner is where the wall hides the turn and where a tired party with a hurt ankle will make its one mistake of the evening, and a storm lantern on the gatepost fixes it outright'>>",
+      "body": "<<FILL role=climax words=115 beats='the orchard corner is where the wall hides the turn and where a tired party with a hurt ankle will make its one mistake of the evening, and a storm lantern on the gatepost fixes it outright; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Knock on the doors that used to say yes\"; \"Start at the Beacon Steps\"; \"Start at the Sheepfold Turn\"), so the body must not depend on any of it.'>>",
       "is_ending": false,
       "choices": [
         {
@@ -2215,7 +2465,7 @@
     },
     {
       "id": "fx_relay",
-      "body": "<<FILL role=climax words=115 beats='three people spaced along the lit stretch can pass a message from the moor to the hall in under two minutes without any signal at all, and it uses the three people who were going to walk up anyway'>>",
+      "body": "<<FILL role=climax words=115 beats='three people spaced along the lit stretch can pass a message from the moor to the hall in under two minutes without any signal at all, and it uses the three people who were going to walk up anyway; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Knock on the doors that used to say yes\"; \"Start at the Beacon Steps\"; \"Start at the Sheepfold Turn\"), so the body must not depend on any of it.'>>",
       "is_ending": false,
       "choices": [
         {
@@ -2237,7 +2487,7 @@
     },
     {
       "id": "fx_watch",
-      "body": "<<FILL role=climax words=115 beats='one pair on the top step with the phone held at the exact angle that works is how the village hears what is happening on the moor, and it is twenty minutes of standing still in the wind doing apparently nothing'>>",
+      "body": "<<FILL role=climax words=115 beats='one pair on the top step with the phone held at the exact angle that works is how the village hears what is happening on the moor, and it is twenty minutes of standing still in the wind doing apparently nothing; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Knock on the doors that used to say yes\"; \"Start at the Beacon Steps\"; \"Start at the Sheepfold Turn\"), so the body must not depend on any of it.'>>",
       "is_ending": false,
       "choices": [
         {
@@ -2259,7 +2509,7 @@
     },
     {
       "id": "fx_ankle",
-      "body": "<<FILL role=climax words=115 beats='a turned ankle three hundred paces above the sheepfold gate needs a shoulder, a light and somebody who does not fuss, and the quad can meet them at the turn if the gate is open and somebody is standing at it'>>",
+      "body": "<<FILL role=climax words=115 beats='a turned ankle three hundred paces above the sheepfold gate needs a shoulder, a light and somebody who does not fuss, and the quad can meet them at the turn if the gate is open and somebody is standing at it; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Knock on the doors that used to say yes\"; \"Start at the Beacon Steps\"; \"Start at the Sheepfold Turn\"), so the body must not depend on any of it.'>>",
       "is_ending": false,
       "choices": [
         {
@@ -2281,7 +2531,7 @@
     },
     {
       "id": "fx_gate",
-      "body": "<<FILL role=climax words=115 beats='the gate is the pinch point of the whole evening: fourteen people, one hurt one, a wired hinge and a field of ewes, and whoever stands there with a lamp decides how the next ten minutes go'>>",
+      "body": "<<FILL role=climax words=115 beats='the gate is the pinch point of the whole evening: fourteen people, one hurt one, a wired hinge and a field of ewes, and whoever stands there with a lamp decides how the next ten minutes go; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Knock on the doors that used to say yes\"; \"Start at the Beacon Steps\"; \"Start at the Sheepfold Turn\"), so the body must not depend on any of it.'>>",
       "is_ending": false,
       "choices": [
         {
@@ -2303,7 +2553,7 @@
     },
     {
       "id": "fx_tally",
-      "body": "<<FILL role=climax words=115 beats='the tally box wants a number and the margin wants the truth, and the truth this year includes a missing can, a gate, a landslip and six lanterns that will not stay lit on the shoulder'>>",
+      "body": "<<FILL role=climax words=115 beats='the tally box wants a number and the margin wants the truth, and the truth this year includes a missing can, a gate, a landslip and six lanterns that will not stay lit on the shoulder; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Knock on the doors that used to say yes\"; \"Start at the Beacon Steps\"; \"Start at the Sheepfold Turn\"), so the body must not depend on any of it.'>>",
       "is_ending": false,
       "choices": [
         {
@@ -2325,7 +2575,7 @@
     },
     {
       "id": "fx_round",
-      "body": "<<FILL role=climax words=115 beats='one more round of the whole route at ten to six, relighting whatever has gone out, is the oldest instruction on the list and the one written in the steadiest hand'>>",
+      "body": "<<FILL role=climax words=115 beats='one more round of the whole route at ten to six, relighting whatever has gone out, is the oldest instruction on the list and the one written in the steadiest hand; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Knock on the doors that used to say yes\"; \"Start at the Beacon Steps\"; \"Start at the Sheepfold Turn\"), so the body must not depend on any of it.'>>",
       "is_ending": false,
       "choices": [
         {
@@ -2347,7 +2597,7 @@
     },
     {
       "id": "fx_hold_end",
-      "body": "<<FILL role=success words=95 beats='the party comes off the moor into a line of lights that runs unbroken from the top of the steps to the orchard gate, and fourteen people walk down talking about the view; nothing dramatic happens anywhere on the hill, which is what the list has been trying to achieve since 1953'>>",
+      "body": "<<FILL role=success words=95 beats='the party comes off the moor into a line of lights that runs unbroken from the top of the steps to the orchard gate, and fourteen people walk down talking about the view; nothing dramatic happens anywhere on the hill, which is what the list has been trying to achieve since 1953; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Knock on the doors that used to say yes\"; \"Start at the Beacon Steps\"; \"Start at the Sheepfold Turn\"), so the body must not depend on any of it.'>>",
       "is_ending": true,
       "ending": {
         "id": "e_fx_hold_end",
@@ -2358,7 +2608,7 @@
     },
     {
       "id": "fx_early_end",
-      "body": "<<FILL role=success words=95 beats='the last of the party reaches the orchard gate at twenty-five past six, ten minutes ahead of the rain, and the lanterns are still burning behind them all the way up the hill; Priya counts fourteen twice and then stops counting'>>",
+      "body": "<<FILL role=success words=95 beats='the last of the party reaches the orchard gate at twenty-five past six, ten minutes ahead of the rain, and the lanterns are still burning behind them all the way up the hill; Priya counts fourteen twice and then stops counting; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Knock on the doors that used to say yes\"; \"Start at the Beacon Steps\"; \"Start at the Sheepfold Turn\"), so the body must not depend on any of it.'>>",
       "is_ending": true,
       "ending": {
         "id": "e_fx_early_end",
@@ -2369,7 +2619,7 @@
     },
     {
       "id": "fx_count_end",
-      "body": "<<FILL role=completion words=95 beats='seventy-eight lit, fourteen walkers in, six people off the hill and all of it written in the tally box in pencil before anybody sits down; it is the first year in three that the numbers on the page and the numbers on the hill are the same numbers'>>",
+      "body": "<<FILL role=completion words=95 beats='seventy-eight lit, fourteen walkers in, six people off the hill and all of it written in the tally box in pencil before anybody sits down; it is the first year in three that the numbers on the page and the numbers on the hill are the same numbers; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Knock on the doors that used to say yes\"; \"Start at the Beacon Steps\"; \"Start at the Sheepfold Turn\"), so the body must not depend on any of it.'>>",
       "is_ending": true,
       "ending": {
         "id": "e_fx_count_end",
@@ -2380,7 +2630,7 @@
     },
     {
       "id": "fx_list_end",
-      "body": "<<FILL role=completion words=95 beats='the list gets rewritten on the hall table with the mud still on everybody, and the new one has the landslip in it, the gate in it, the shoulder in it and eleven names that are true; Mrs Trewin signs the bottom with her left hand and it is barely readable'>>",
+      "body": "<<FILL role=completion words=95 beats='the list gets rewritten on the hall table with the mud still on everybody, and the new one has the landslip in it, the gate in it, the shoulder in it and eleven names that are true; Mrs Trewin signs the bottom with her left hand and it is barely readable; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Knock on the doors that used to say yes\"; \"Start at the Beacon Steps\"; \"Start at the Sheepfold Turn\"), so the body must not depend on any of it.'>>",
       "is_ending": true,
       "ending": {
         "id": "e_fx_list_end",
@@ -2402,7 +2652,7 @@
     },
     {
       "id": "fx_short_end",
-      "body": "<<FILL role=setback words=95 beats='the turn is lit and the top of the steps is not, and the party comes down the steps in the dark with one head torch between fourteen; nobody falls and everybody notices, and the steps get talked about at the hall in the voice the village keeps for near misses'>>",
+      "body": "<<FILL role=setback words=95 beats='the turn is lit and the top of the steps is not, and the party comes down the steps in the dark with one head torch between fourteen; nobody falls and everybody notices, and the steps get talked about at the hall in the voice the village keeps for near misses; SETBACK HINT (did_start_beacon_steps): every reader who reaches this ending did NOT choose \"Start at the Beacon Steps\" earlier. Let the ending glimpse what would have helped, so the reader has a concrete reason to try again; do not scold.'>>",
       "is_ending": true,
       "ending": {
         "id": "e_fx_short_end",
@@ -2413,7 +2663,7 @@
     },
     {
       "id": "z_warm",
-      "body": "<<FILL role=success words=95 beats='fourteen people, one strapped ankle and six lantern keepers come through the hall door at twenty to seven into a room with a working radiator and the wrong number of chairs, and the ridge behind them is still burning end to end in the rain'>>",
+      "body": "<<FILL role=success words=95 beats='fourteen people, one strapped ankle and six lantern keepers come through the hall door at twenty to seven into a room with a working radiator and the wrong number of chairs, and the ridge behind them is still burning end to end in the rain; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Knock on the doors that used to say yes\"; \"Start at the Beacon Steps\"; \"Start at the Sheepfold Turn\"), so the body must not depend on any of it.'>>",
       "is_ending": true,
       "ending": {
         "id": "e_z_warm",
@@ -2424,7 +2674,7 @@
     },
     {
       "id": "z_turn",
-      "body": "<<FILL role=success words=95 beats='the new line above the sheepfold does exactly what it was rehung to do: fourteen people walk the turn without a single one of them drifting onto the old ground above the slip, and not one of them notices there was ever a choice to make there'>>",
+      "body": "<<FILL role=success words=95 beats='the new line above the sheepfold does exactly what it was rehung to do: fourteen people walk the turn without a single one of them drifting onto the old ground above the slip, and not one of them notices there was ever a choice to make there; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Knock on the doors that used to say yes\"; \"Start at the Beacon Steps\"; \"Start at the Sheepfold Turn\"), so the body must not depend on any of it.'>>",
       "is_ending": true,
       "ending": {
         "id": "e_z_turn",
@@ -2435,7 +2685,7 @@
     },
     {
       "id": "z_seen",
-      "body": "<<FILL role=success words=95 beats='from the moor the ridge shows as a line of small warm dots a mile off, and Priya says afterwards that the party stopped walking for a moment when they came over the last rise and saw it; that is the whole point of the lanterns and it is not written down anywhere on the list'>>",
+      "body": "<<FILL role=success words=95 beats='from the moor the ridge shows as a line of small warm dots a mile off, and Priya says afterwards that the party stopped walking for a moment when they came over the last rise and saw it; that is the whole point of the lanterns and it is not written down anywhere on the list; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Knock on the doors that used to say yes\"; \"Start at the Beacon Steps\"; \"Start at the Sheepfold Turn\"), so the body must not depend on any of it.'>>",
       "is_ending": true,
       "ending": {
         "id": "e_z_seen",
@@ -2446,7 +2696,7 @@
     },
     {
       "id": "z_quad",
-      "body": "<<FILL role=success words=95 beats='the quad takes the last crate and two people to the sheepfold turn in four minutes, the gate stands open with a lamp on the post, and Mr Ovens stands beside it in the rain telling everybody who passes that this is his field'>>",
+      "body": "<<FILL role=success words=95 beats='the quad takes the last crate and two people to the sheepfold turn in four minutes, the gate stands open with a lamp on the post, and Mr Ovens stands beside it in the rain telling everybody who passes that this is his field; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Knock on the doors that used to say yes\"; \"Start at the Beacon Steps\"; \"Start at the Sheepfold Turn\"), so the body must not depend on any of it.'>>",
       "is_ending": true,
       "ending": {
         "id": "e_z_quad",
@@ -2457,7 +2707,7 @@
     },
     {
       "id": "z_tally",
-      "body": "<<FILL role=completion words=95 beats='the tally box gets its number, the margin gets four lines of truth about the shoulder, and the clipboard goes back on its nail in the shed with the pencil on the string; next autumn starts from a page that is not lying'>>",
+      "body": "<<FILL role=completion words=95 beats='the tally box gets its number, the margin gets four lines of truth about the shoulder, and the clipboard goes back on its nail in the shed with the pencil on the string; next autumn starts from a page that is not lying; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Knock on the doors that used to say yes\"; \"Start at the Beacon Steps\"; \"Start at the Sheepfold Turn\"), so the body must not depend on any of it.'>>",
       "is_ending": true,
       "ending": {
         "id": "e_z_tally",
@@ -2468,7 +2718,7 @@
     },
     {
       "id": "z_hand",
-      "body": "<<FILL role=completion words=95 beats='the list comes back with a mended fixing, a rewritten section, a new name in the column and paraffin on the corner of page two, and Mrs Trewin reads it with her wrist on the table and says only that it will do, which from her is a great deal'>>",
+      "body": "<<FILL role=completion words=95 beats='the list comes back with a mended fixing, a rewritten section, a new name in the column and paraffin on the corner of page two, and Mrs Trewin reads it with her wrist on the table and says only that it will do, which from her is a great deal; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Knock on the doors that used to say yes\"; \"Start at the Beacon Steps\"; \"Start at the Sheepfold Turn\"), so the body must not depend on any of it.'>>",
       "is_ending": true,
       "ending": {
         "id": "e_z_hand",
@@ -2479,7 +2729,7 @@
     },
     {
       "id": "z_page",
-      "body": "<<FILL role=discovery words=95 beats='the evening ends with the ridge half lit and a page of notes that nobody asked for: where the path really goes, what the wind does, which brackets turn, and how long the steps take with a crate; it is the most useful thing written about this hill in years and it lit nothing at all tonight'>>",
+      "body": "<<FILL role=discovery words=95 beats='the evening ends with the ridge half lit and a page of notes that nobody asked for: where the path really goes, what the wind does, which brackets turn, and how long the steps take with a crate; it is the most useful thing written about this hill in years and it lit nothing at all tonight; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Knock on the doors that used to say yes\"; \"Start at the Beacon Steps\"; \"Start at the Sheepfold Turn\"), so the body must not depend on any of it.'>>",
       "is_ending": true,
       "ending": {
         "id": "e_z_page",
@@ -2490,7 +2740,7 @@
     },
     {
       "id": "z_late",
-      "body": "<<FILL role=setback words=95 beats='the party is home before the ridge is finished, so the last eleven lanterns go up at seven in the rain for nobody, and they burn beautifully over an empty hill until the wind takes three of them at nine'>>",
+      "body": "<<FILL role=setback words=95 beats='the party is home before the ridge is finished, so the last eleven lanterns go up at seven in the rain for nobody, and they burn beautifully over an empty hill until the wind takes three of them at nine; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Knock on the doors that used to say yes\"; \"Start at the Beacon Steps\"; \"Start at the Sheepfold Turn\"), so the body must not depend on any of it.'>>",
       "is_ending": true,
       "ending": {
         "id": "e_z_late",
@@ -2501,7 +2751,7 @@
     },
     {
       "id": "z_shoulder",
-      "body": "<<FILL role=setback words=95 beats='the shoulder goes dark for the third time and stays dark, and fourteen people cross two hundred paces of it on one head torch with the rain coming in sideways; everybody gets down, nobody is hurt, and nobody says the ridge was lit this year'>>",
+      "body": "<<FILL role=setback words=95 beats='the shoulder goes dark for the third time and stays dark, and fourteen people cross two hundred paces of it on one head torch with the rain coming in sideways; everybody gets down, nobody is hurt, and nobody says the ridge was lit this year; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Knock on the doors that used to say yes\"; \"Start at the Beacon Steps\"; \"Start at the Sheepfold Turn\"), so the body must not depend on any of it.'>>",
       "is_ending": true,
       "ending": {
         "id": "e_z_shoulder",

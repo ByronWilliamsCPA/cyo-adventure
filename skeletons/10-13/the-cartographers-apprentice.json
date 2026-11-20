@@ -11,7 +11,7 @@
    "target": 5.5,
    "tolerance": 1.5
   },
-  "tier": 1,
+  "tier": 2,
   "themes": [
    "public record",
    "precision",
@@ -30,7 +30,32 @@
   "narrative_style": "prose",
   "production_eligible": true
  },
- "variables": [],
+ "variables": [
+  {
+   "name": "did_compare_new_sheet",
+   "type": "bool",
+   "initial": false,
+   "description": "Set when the reader chooses \"Compare the new sheet to the old plate\" at n01d0; pays off at n06d3."
+  },
+  {
+   "name": "did_read_note_that",
+   "type": "bool",
+   "initial": false,
+   "description": "Set when the reader chooses \"Read the note that came with the file\" at n01d0; pays off at n08d3 and n10d3."
+  },
+  {
+   "name": "did_find_who_made",
+   "type": "bool",
+   "initial": false,
+   "description": "Set when the reader chooses \"Find out who made the simplification\" at n03d0; pays off at n13d2 and n13d1."
+  },
+  {
+   "name": "did_find_what_seven",
+   "type": "bool",
+   "initial": false,
+   "description": "Set when the reader chooses \"Find out what the seven years mean\" at n03d0; pays off at n13d0 and n13d4."
+  }
+ ],
  "start_node": "n00c0",
  "nodes": [
   {
@@ -47,13 +72,20 @@
   },
   {
    "id": "n01d0",
-   "body": "<<FILL role=setup words=100 beats='the Sixty Steps are not on it, nor is the cut between Marsh Row and the tannery yard, nor eleven other ways that people in this city have used since before there was a council to record them'>>",
+   "body": "<<FILL role=setup words=100 beats='the Sixty Steps are not on it, nor is the cut between Marsh Row and the tannery yard, nor eleven other ways that people in this city have used since before there was a council to record them; PLANT SITE: these options are no longer cosmetic: \"Compare the new sheet to the old plate\" plants did_compare_new_sheet (pays off at n06d3); \"Read the note that came with the file\" plants did_read_note_that (pays off at n08d3 and n10d3). Stage every option as appealing, with none the obviously right answer.'>>",
    "is_ending": false,
    "choices": [
     {
      "id": "c_n01d0_0",
      "label": "Compare the new sheet to the old plate.",
-     "target": "n02c0"
+     "target": "n02c0",
+     "effects": [
+      {
+       "op": "set",
+       "var": "did_compare_new_sheet",
+       "value": true
+      }
+     ]
     },
     {
      "id": "c_n01d0_1",
@@ -63,13 +95,20 @@
     {
      "id": "c_n01d0_2",
      "label": "Read the note that came with the file.",
-     "target": "n02c2"
+     "target": "n02c2",
+     "effects": [
+      {
+       "op": "set",
+       "var": "did_read_note_that",
+       "value": true
+      }
+     ]
     }
    ]
   },
   {
    "id": "n02c0",
-   "body": "<<FILL role=bridge words=36 beats='the 1971 engraved plate is still in the chest, and laid beside the new file it is like comparing a face to a passport photograph taken from too far away'>>",
+   "body": "<<FILL role=bridge words=36 beats='the 1971 engraved plate is still in the chest, and laid beside the new file it is like comparing a face to a passport photograph taken from too far away; PLANT (did_compare_new_sheet): the hero has just made this choice, and something concrete comes of it that a reader will remember: an object kept, a person helped, or a fact learned, named plainly in the prose. Invent it so that it would plausibly help much later, when the hero tries \"Rely on the old maps alone\" (node n06d3): there it changes how that moment goes.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -93,7 +132,7 @@
   },
   {
    "id": "n02c2",
-   "body": "<<FILL role=bridge words=36 beats='the covering note says the basemap has been simplified for clarity and consistency, and that any omission may be reported through the standard feedback channel'>>",
+   "body": "<<FILL role=bridge words=36 beats='the covering note says the basemap has been simplified for clarity and consistency, and that any omission may be reported through the standard feedback channel; PLANT (did_read_note_that): the hero has just made this choice, and something concrete comes of it that a reader will remember: an object kept, a person helped, or a fact learned, named plainly in the prose. Invent it so that it would plausibly help much later, when the hero tries \"Get the statements witnessed properly\" (node n08d3) or \"Answer the permission argument\" (node n10d3): there it changes how that moment goes.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -105,13 +144,20 @@
   },
   {
    "id": "n03d0",
-   "body": "<<FILL role=rising words=112 beats='somebody has to lay every old sheet against every new one and list what has gone, and Wren says that is a month of work and there is no month'>>",
+   "body": "<<FILL role=rising words=112 beats='somebody has to lay every old sheet against every new one and list what has gone, and Wren says that is a month of work and there is no month; PLANT SITE: these options are no longer cosmetic: \"Find out who made the simplification\" plants did_find_who_made (pays off at n13d2 and n13d1); \"Find out what the seven years mean\" plants did_find_what_seven (pays off at n13d0 and n13d4). Stage every option as appealing, with none the obviously right answer.'>>",
    "is_ending": false,
    "choices": [
     {
      "id": "c_n03d0_0",
      "label": "Find out who made the simplification.",
-     "target": "n04d0"
+     "target": "cq_plant_did_find_who_made",
+     "effects": [
+      {
+       "op": "set",
+       "var": "did_find_who_made",
+       "value": true
+      }
+     ]
     },
     {
      "id": "c_n03d0_1",
@@ -121,7 +167,26 @@
     {
      "id": "c_n03d0_2",
      "label": "Find out what the seven years mean.",
-     "target": "n04d2"
+     "target": "n04d2",
+     "effects": [
+      {
+       "op": "set",
+       "var": "did_find_what_seven",
+       "value": true
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "cq_plant_did_find_who_made",
+   "body": "<<FILL role=plant words=50 beats='Arrival beat for this choice, two or three sentences that show it happening and then lead straight into the next scene. PLANT (did_find_who_made): the hero has just made this choice, and something concrete comes of it that a reader will remember: an object kept, a person helped, or a fact learned, named plainly in the prose. Invent it so that it would plausibly help much later, when the hero tries \"Sit in a front room in Coley Bank\" (node n13d2) or \"Prepare the bundle for the inspector\" (node n13d1): there it changes how that moment goes.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_cq_plant_did_find_who_made",
+     "label": "Find out who made the simplification.",
+     "target": "n04d0"
     }
    ]
   },
@@ -171,7 +236,7 @@
   },
   {
    "id": "n04d0",
-   "body": "<<FILL role=rising words=100 beats='the basemap is bought in, the simplification was a setting, and the setting was chosen by Odell Trant, who is neither careless nor hiding'>>",
+   "body": "<<FILL role=rising words=100 beats='the basemap is bought in, the simplification was a setting, and the setting was chosen by Odell Trant, who is neither careless nor hiding; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Compare the new sheet to the old plate\"; \"Find out who made the simplification\"; \"Read the note that came with the file\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -215,7 +280,7 @@
   },
   {
    "id": "n04d2",
-   "body": "<<FILL role=rising words=100 beats='off the record means unmaintained, unmaintained means the handrail is not repaired and the gully is not cleared, and after seven winters a set of steps is not a set of steps'>>",
+   "body": "<<FILL role=rising words=100 beats='off the record means unmaintained, unmaintained means the handrail is not repaired and the gully is not cleared, and after seven winters a set of steps is not a set of steps; PLANT (did_find_what_seven): the hero has just made this choice, and something concrete comes of it that a reader will remember: an object kept, a person helped, or a fact learned, named plainly in the prose. Invent it so that it would plausibly help much later, when the hero tries \"Track down the last two tannery workers\" (node n13d0) or \"Read the bundle straight through\" (node n13d4): there it changes how that moment goes.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -297,7 +362,7 @@
   },
   {
    "id": "n05d0",
-   "body": "<<FILL role=rising words=106 beats='Trant runs the basemap and believes in it, and has a good reason for every single thing she has done, and all of the reasons are about the ninety per cent'>>",
+   "body": "<<FILL role=rising words=106 beats='Trant runs the basemap and believes in it, and has a good reason for every single thing she has done, and all of the reasons are about the ninety per cent; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Compare the new sheet to the old plate\"; \"Find out what the seven years mean\"; \"Find out who made the simplification\"; \"Read the note that came with the file\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -319,7 +384,7 @@
   },
   {
    "id": "n05d1",
-   "body": "<<FILL role=rising words=106 beats='Basim Rahmani has the deposited plans, the tithe map, the 1904 survey and a handwritten list of every path enquiry made since 1962'>>",
+   "body": "<<FILL role=rising words=106 beats='Basim Rahmani has the deposited plans, the tithe map, the 1904 survey and a handwritten list of every path enquiry made since 1962; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Compare the new sheet to the old plate\"; \"Find out what the seven years mean\"; \"Find out who made the simplification\"; \"Read the note that came with the file\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -341,7 +406,7 @@
   },
   {
    "id": "n05d2",
-   "body": "<<FILL role=rising words=106 beats='Kestrel has couriered in this city for nine years, knows every cut through by feel, and has never once looked at a map to do it'>>",
+   "body": "<<FILL role=rising words=106 beats='Kestrel has couriered in this city for nine years, knows every cut through by feel, and has never once looked at a map to do it; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Compare the new sheet to the old plate\"; \"Find out what the seven years mean\"; \"Find out who made the simplification\"; \"Read the note that came with the file\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -363,7 +428,7 @@
   },
   {
    "id": "n05d3",
-   "body": "<<FILL role=rising words=106 beats='Nan Perrott has gone up the Sixty Steps twice a day for forty one years and can tell you which tread was replaced in 2003 and why'>>",
+   "body": "<<FILL role=rising words=106 beats='Nan Perrott has gone up the Sixty Steps twice a day for forty one years and can tell you which tread was replaced in 2003 and why; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Some readers earlier chose \"Compare the new sheet to the old plate\" and some did not, so the body must not depend on it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -385,7 +450,7 @@
   },
   {
    "id": "n05d4",
-   "body": "<<FILL role=rising words=106 beats='Devi has a phone, a step counter and an opinion about what counts as data, and the opinion is a great deal stricter than yours'>>",
+   "body": "<<FILL role=rising words=106 beats='Devi has a phone, a step counter and an opinion about what counts as data, and the opinion is a great deal stricter than yours; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Some readers earlier chose \"Compare the new sheet to the old plate\" and some did not, so the body must not depend on it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -407,7 +472,7 @@
   },
   {
    "id": "n05d5",
-   "body": "<<FILL role=rising words=106 beats='there is a process for putting a way back on the record, it is called a modification order, and what it wants is evidence of use over twenty years'>>",
+   "body": "<<FILL role=rising words=106 beats='there is a process for putting a way back on the record, it is called a modification order, and what it wants is evidence of use over twenty years; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Some readers earlier chose \"Compare the new sheet to the old plate\" and some did not, so the body must not depend on it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -429,7 +494,7 @@
   },
   {
    "id": "n06d0",
-   "body": "<<FILL role=rising words=112 beats='twenty years of use by the public, without force, without secrecy and without permission, proved by people who will put it in writing and sign it'>>",
+   "body": "<<FILL role=rising words=112 beats='twenty years of use by the public, without force, without secrecy and without permission, proved by people who will put it in writing and sign it; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Compare the new sheet to the old plate\"; \"Find out what the seven years mean\"; \"Find out who made the simplification\"; \"Read the note that came with the file\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -451,7 +516,7 @@
   },
   {
    "id": "n06d1",
-   "body": "<<FILL role=rising words=112 beats='you cannot save three hundred and forty, you might save nine, and choosing which nine is the first genuinely hard thing anybody asks you to do'>>",
+   "body": "<<FILL role=rising words=112 beats='you cannot save three hundred and forty, you might save nine, and choosing which nine is the first genuinely hard thing anybody asks you to do; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Compare the new sheet to the old plate\"; \"Find out what the seven years mean\"; \"Find out who made the simplification\"; \"Read the note that came with the file\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -473,7 +538,7 @@
   },
   {
    "id": "n06d2",
-   "body": "<<FILL role=rising words=112 beats='a signed statement is a real thing that a real person has to sit down and write, and most people will say yes and then not do it'>>",
+   "body": "<<FILL role=rising words=112 beats='a signed statement is a real thing that a real person has to sit down and write, and most people will say yes and then not do it; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Compare the new sheet to the old plate\"; \"Find out what the seven years mean\"; \"Find out who made the simplification\"; \"Read the note that came with the file\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -495,7 +560,7 @@
   },
   {
    "id": "n06d3",
-   "body": "<<FILL role=rising words=112 beats='an old map proves the way existed, which nobody is disputing, and what is disputed is whether the public used it as of right, which maps cannot show'>>",
+   "body": "<<FILL role=rising words=112 beats='an old map proves the way existed, which nobody is disputing, and what is disputed is whether the public used it as of right, which maps cannot show; PAYOFF SITE (did_compare_new_sheet): readers arrive here both having and not having chosen \"Compare the new sheet to the old plate\" earlier, so this body must be true either way and must not say which. The option \"Rely on the old maps alone\" plays out differently for the two: without that earlier choice it leads to the setback (e07_1); with it, to a recovery. MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Compare the new sheet to the old plate\"; \"Find out what the seven years mean\"; \"Find out who made the simplification\"; \"Read the note that came with the file\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -506,10 +571,43 @@
     {
      "id": "c_n06d3_1",
      "label": "Rely on the old maps alone.",
-     "target": "e07_1"
+     "target": "e07_1",
+     "condition": {
+      "==": [
+       {
+        "var": "did_compare_new_sheet"
+       },
+       false
+      ]
+     }
+    },
+    {
+     "id": "c_n06d3_1_cq_did_compare_new_sheet",
+     "label": "Rely on the old maps alone.",
+     "target": "cq_payoff_did_compare_new_sheet",
+     "condition": {
+      "==": [
+       {
+        "var": "did_compare_new_sheet"
+       },
+       true
+      ]
+     }
     },
     {
      "id": "c_n06d3_2",
+     "label": "Take the nine ways with the most users.",
+     "target": "n07d0"
+    }
+   ]
+  },
+  {
+   "id": "cq_payoff_did_compare_new_sheet",
+   "body": "<<FILL role=payoff words=50 beats='PAYOFF (did_compare_new_sheet): only a reader who earlier chose \"Compare the new sheet to the old plate\" (node n01d0) reaches this scene. The hero tries \"Rely on the old maps alone\". For a reader without that earlier choice the same move ends the story early (e07_1). Here the thing that came of it turns the moment around: show it returning concretely and making the difference. End with the hero moving on to \"Take the nine ways with the most users\", leading into the next scene (node n07d0), which other readers also reach, without contradicting it.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_cq_payoff_did_compare_new_sheet",
      "label": "Take the nine ways with the most users.",
      "target": "n07d0"
     }
@@ -656,7 +754,7 @@
   },
   {
    "id": "n07d0",
-   "body": "<<FILL role=rising words=100 beats='the nine busiest are the ones you can prove fastest, and two of them are the two that Pentrell needs gone, which is either luck or is not luck'>>",
+   "body": "<<FILL role=rising words=100 beats='the nine busiest are the ones you can prove fastest, and two of them are the two that Pentrell needs gone, which is either luck or is not luck; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Compare the new sheet to the old plate\"; \"Find out what the seven years mean\"; \"Find out who made the simplification\"; \"Read the note that came with the file\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -678,7 +776,7 @@
   },
   {
    "id": "n07d1",
-   "body": "<<FILL role=rising words=100 beats='the oldest records are unarguable and the ways they cover are quiet, and quiet ways are exactly the ones nobody will sign a statement about'>>",
+   "body": "<<FILL role=rising words=100 beats='the oldest records are unarguable and the ways they cover are quiet, and quiet ways are exactly the ones nobody will sign a statement about; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Compare the new sheet to the old plate\"; \"Find out what the seven years mean\"; \"Find out who made the simplification\"; \"Read the note that came with the file\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -700,7 +798,7 @@
   },
   {
    "id": "n07d2",
-   "body": "<<FILL role=rising words=100 beats='one way, done to the standard the process actually wants, is a test case, and a test case that wins makes the next eight much cheaper'>>",
+   "body": "<<FILL role=rising words=100 beats='one way, done to the standard the process actually wants, is a test case, and a test case that wins makes the next eight much cheaper; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Compare the new sheet to the old plate\"; \"Find out what the seven years mean\"; \"Find out who made the simplification\"; \"Read the note that came with the file\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -722,7 +820,7 @@
   },
   {
    "id": "n07d3",
-   "body": "<<FILL role=rising words=100 beats='Nan will write it if somebody sits with her while she does, because she says her handwriting has gone and she will not have it laughed at'>>",
+   "body": "<<FILL role=rising words=100 beats='Nan will write it if somebody sits with her while she does, because she says her handwriting has gone and she will not have it laughed at; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Compare the new sheet to the old plate\"; \"Find out what the seven years mean\"; \"Find out who made the simplification\"; \"Read the note that came with the file\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -744,7 +842,7 @@
   },
   {
    "id": "n07d4",
-   "body": "<<FILL role=rising words=100 beats='Kestrel will log every cut through used for two weeks, on condition that nobody uses it to work out how fast Kestrel goes down Marsh Row'>>",
+   "body": "<<FILL role=rising words=100 beats='Kestrel will log every cut through used for two weeks, on condition that nobody uses it to work out how fast Kestrel goes down Marsh Row; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Compare the new sheet to the old plate\"; \"Find out what the seven years mean\"; \"Find out who made the simplification\"; \"Read the note that came with the file\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -766,7 +864,7 @@
   },
   {
    "id": "n07d5",
-   "body": "<<FILL role=rising words=100 beats='Devi will count at three sites, at fixed times, with a stated method and a stated error, and will not round anything in your favour'>>",
+   "body": "<<FILL role=rising words=100 beats='Devi will count at three sites, at fixed times, with a stated method and a stated error, and will not round anything in your favour; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Compare the new sheet to the old plate\"; \"Find out what the seven years mean\"; \"Find out who made the simplification\"; \"Read the note that came with the file\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -788,7 +886,7 @@
   },
   {
    "id": "n07d6",
-   "body": "<<FILL role=rising words=100 beats='the deposited plans for the 1904 improvement scheme show the steps in section, with a gradient, which is the single most official object anybody has produced'>>",
+   "body": "<<FILL role=rising words=100 beats='the deposited plans for the 1904 improvement scheme show the steps in section, with a gradient, which is the single most official object anybody has produced; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Compare the new sheet to the old plate\"; \"Find out what the seven years mean\"; \"Find out who made the simplification\"; \"Read the note that came with the file\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -810,7 +908,7 @@
   },
   {
    "id": "n07d7",
-   "body": "<<FILL role=rising words=100 beats='Wren will cut the nine ways onto a proof plate by hand, which will take four evenings and produce something no committee can ignore'>>",
+   "body": "<<FILL role=rising words=100 beats='Wren will cut the nine ways onto a proof plate by hand, which will take four evenings and produce something no committee can ignore; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Compare the new sheet to the old plate\"; \"Find out what the seven years mean\"; \"Find out who made the simplification\"; \"Read the note that came with the file\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -832,7 +930,7 @@
   },
   {
    "id": "n07d8",
-   "body": "<<FILL role=rising words=100 beats='Trant thinks for a while and says she would find one way, prove it beyond argument, and make the council explain why the other eighty nine are different'>>",
+   "body": "<<FILL role=rising words=100 beats='Trant thinks for a while and says she would find one way, prove it beyond argument, and make the council explain why the other eighty nine are different; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Compare the new sheet to the old plate\"; \"Find out what the seven years mean\"; \"Find out who made the simplification\"; \"Read the note that came with the file\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -854,7 +952,7 @@
   },
   {
    "id": "e07_0",
-   "body": "<<FILL role=discovery words=100 beats='the standard feedback channel returns a reference number, an acknowledgement, and after five weeks a note explaining that the omission has been logged for the next review cycle'>>",
+   "body": "<<FILL role=discovery words=100 beats='the standard feedback channel returns a reference number, an acknowledgement, and after five weeks a note explaining that the omission has been logged for the next review cycle; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Compare the new sheet to the old plate\"; \"Find out what the seven years mean\"; \"Find out who made the simplification\"; \"Read the note that came with the file\"), so the body must not depend on any of it.'>>",
    "is_ending": true,
    "ending": {
     "id": "e07_0",
@@ -865,7 +963,7 @@
   },
   {
    "id": "e07_1",
-   "body": "<<FILL role=setback words=100 beats='the old sheets prove the ways existed and the objection comes back in one line, which is that existence is not the question, and you have answered a question nobody asked'>>",
+   "body": "<<FILL role=setback words=100 beats='the old sheets prove the ways existed and the objection comes back in one line, which is that existence is not the question, and you have answered a question nobody asked; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Compare the new sheet to the old plate\"; \"Read the note that came with the file\"), so the body must not depend on any of it.'>>",
    "is_ending": true,
    "ending": {
     "id": "e07_1",
@@ -876,7 +974,7 @@
   },
   {
    "id": "n08d0",
-   "body": "<<FILL role=rising words=106 beats='three sites, two hours each, Tuesday and Saturday, for six weeks, counted by two people independently and reconciled the same evening'>>",
+   "body": "<<FILL role=rising words=106 beats='three sites, two hours each, Tuesday and Saturday, for six weeks, counted by two people independently and reconciled the same evening; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Compare the new sheet to the old plate\"; \"Find out what the seven years mean\"; \"Find out who made the simplification\"; \"Read the note that came with the file\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -898,7 +996,7 @@
   },
   {
    "id": "n08d1",
-   "body": "<<FILL role=rising words=106 beats='forty two doors on Marsh Row and the tannery side, and a form that takes eleven minutes to fill in properly if somebody helps'>>",
+   "body": "<<FILL role=rising words=106 beats='forty two doors on Marsh Row and the tannery side, and a form that takes eleven minutes to fill in properly if somebody helps; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Compare the new sheet to the old plate\"; \"Find out what the seven years mean\"; \"Find out who made the simplification\"; \"Read the note that came with the file\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -920,7 +1018,7 @@
   },
   {
    "id": "n08d2",
-   "body": "<<FILL role=rising words=106 beats='the treads are hollowed by two centimetres in the middle and nowhere else, which is a hundred years of feet and cannot be faked'>>",
+   "body": "<<FILL role=rising words=106 beats='the treads are hollowed by two centimetres in the middle and nowhere else, which is a hundred years of feet and cannot be faked; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Compare the new sheet to the old plate\"; \"Find out what the seven years mean\"; \"Find out who made the simplification\"; \"Read the note that came with the file\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -942,7 +1040,7 @@
   },
   {
    "id": "n08d3",
-   "body": "<<FILL role=rising words=106 beats='the 1904 plans, the 1938 sewer scheme and the 1971 traffic order all show the steps, and one of them shows a handrail that the council paid to install'>>",
+   "body": "<<FILL role=rising words=106 beats='the 1904 plans, the 1938 sewer scheme and the 1971 traffic order all show the steps, and one of them shows a handrail that the council paid to install; PAYOFF SITE (did_read_note_that): readers arrive here both having and not having chosen \"Read the note that came with the file\" earlier, so this body must be true either way and must not say which. The option \"Get the statements witnessed properly\" plays out differently for the two: with that earlier choice the reader first sees a payoff scene. MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Compare the new sheet to the old plate\"; \"Find out what the seven years mean\"; \"Find out who made the simplification\"; \"Read the note that came with the file\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -958,13 +1056,46 @@
     {
      "id": "c_n08d3_2",
      "label": "Get the statements witnessed properly.",
+     "target": "n09d0",
+     "condition": {
+      "==": [
+       {
+        "var": "did_read_note_that"
+       },
+       false
+      ]
+     }
+    },
+    {
+     "id": "c_n08d3_2_cq_did_read_note_that",
+     "label": "Get the statements witnessed properly.",
+     "target": "cq_payoff_did_read_note_that",
+     "condition": {
+      "==": [
+       {
+        "var": "did_read_note_that"
+       },
+       true
+      ]
+     }
+    }
+   ]
+  },
+  {
+   "id": "cq_payoff_did_read_note_that",
+   "body": "<<FILL role=payoff words=38 beats='PAYOFF (did_read_note_that): only a reader who earlier chose \"Read the note that came with the file\" (node n01d0) reaches this scene. The hero tries \"Get the statements witnessed properly\". The thing that came of that earlier choice changes how it goes: show it returning concretely in a few sentences, a moment only this reader gets. Then lead into the next scene (node n09d0), which every reader who makes this move reaches, without contradicting it.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_cq_payoff_did_read_note_that",
+     "label": "Get the statements witnessed properly.",
      "target": "n09d0"
     }
    ]
   },
   {
    "id": "n08d4",
-   "body": "<<FILL role=rising words=106 beats='Pentrell has the tannery site, the tannery cut runs through the middle of it, and a cut through a site is worth a great deal of money to remove'>>",
+   "body": "<<FILL role=rising words=106 beats='Pentrell has the tannery site, the tannery cut runs through the middle of it, and a cut through a site is worth a great deal of money to remove; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Compare the new sheet to the old plate\"; \"Find out what the seven years mean\"; \"Find out who made the simplification\"; \"Read the note that came with the file\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -986,7 +1117,7 @@
   },
   {
    "id": "n08d5",
-   "body": "<<FILL role=rising words=106 beats='nobody does, formally, and the gully is cleared by a man called Ivo who lives at the bottom and has done it for nineteen years for nothing'>>",
+   "body": "<<FILL role=rising words=106 beats='nobody does, formally, and the gully is cleared by a man called Ivo who lives at the bottom and has done it for nineteen years for nothing; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Compare the new sheet to the old plate\"; \"Find out what the seven years mean\"; \"Find out who made the simplification\"; \"Read the note that came with the file\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -1008,7 +1139,7 @@
   },
   {
    "id": "n08d6",
-   "body": "<<FILL role=rising words=106 beats='the printed edition is what the council actually uses on site, so what is on the plate is what gets maintained, and the plate goes down in eleven weeks'>>",
+   "body": "<<FILL role=rising words=106 beats='the printed edition is what the council actually uses on site, so what is on the plate is what gets maintained, and the plate goes down in eleven weeks; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Compare the new sheet to the old plate\"; \"Find out what the seven years mean\"; \"Find out who made the simplification\"; \"Read the note that came with the file\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -1030,7 +1161,7 @@
   },
   {
    "id": "n08c0",
-   "body": "<<FILL role=bridge words=36 beats='at seven in the morning the steps are a queue and at half past nine they are empty, and both facts are true and only one of them is ever seen by anybody from the council'>>",
+   "body": "<<FILL role=bridge words=36 beats='at seven in the morning the steps are a queue and at half past nine they are empty, and both facts are true and only one of them is ever seen by anybody from the council; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Compare the new sheet to the old plate\"; \"Find out what the seven years mean\"; \"Find out who made the simplification\"; \"Read the note that came with the file\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -1042,7 +1173,7 @@
   },
   {
    "id": "n08c1",
-   "body": "<<FILL role=bridge words=36 beats='the first door is answered by a man who has lived on Marsh Row for thirty years and has never once been asked anything by anybody official'>>",
+   "body": "<<FILL role=bridge words=36 beats='the first door is answered by a man who has lived on Marsh Row for thirty years and has never once been asked anything by anybody official; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Compare the new sheet to the old plate\"; \"Find out what the seven years mean\"; \"Find out who made the simplification\"; \"Read the note that came with the file\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -1054,7 +1185,7 @@
   },
   {
    "id": "n08c2",
-   "body": "<<FILL role=bridge words=36 beats='the photograph of the third tread with a rule laid across the hollow is the picture that ends up on the front of the submission'>>",
+   "body": "<<FILL role=bridge words=36 beats='the photograph of the third tread with a rule laid across the hollow is the picture that ends up on the front of the submission; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Compare the new sheet to the old plate\"; \"Find out what the seven years mean\"; \"Find out who made the simplification\"; \"Read the note that came with the file\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -1066,7 +1197,7 @@
   },
   {
    "id": "n08c3",
-   "body": "<<FILL role=bridge words=36 beats='Ivo clears the gully every autumn with a garden trowel and a bucket, and says that if he stopped the steps would be a waterfall by the third winter'>>",
+   "body": "<<FILL role=bridge words=36 beats='Ivo clears the gully every autumn with a garden trowel and a bucket, and says that if he stopped the steps would be a waterfall by the third winter; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Compare the new sheet to the old plate\"; \"Find out what the seven years mean\"; \"Find out who made the simplification\"; \"Read the note that came with the file\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -1136,7 +1267,7 @@
   },
   {
    "id": "n09d0",
-   "body": "<<FILL role=rising words=112 beats='each statement is signed, dated, and states how long the person has used the way and whether anybody ever stopped them, which is the whole test in one sentence'>>",
+   "body": "<<FILL role=rising words=112 beats='each statement is signed, dated, and states how long the person has used the way and whether anybody ever stopped them, which is the whole test in one sentence; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Compare the new sheet to the old plate\"; \"Find out what the seven years mean\"; \"Find out who made the simplification\"; \"Read the note that came with the file\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -1158,7 +1289,7 @@
   },
   {
    "id": "n09d1",
-   "body": "<<FILL role=rising words=112 beats='nineteen years of clearing a gully for nothing is not maintenance by the council, and Ivo says he will write it down but wants to know if it will get him in trouble'>>",
+   "body": "<<FILL role=rising words=112 beats='nineteen years of clearing a gully for nothing is not maintenance by the council, and Ivo says he will write it down but wants to know if it will get him in trouble; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Compare the new sheet to the old plate\"; \"Find out what the seven years mean\"; \"Find out who made the simplification\"; \"Read the note that came with the file\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -1180,7 +1311,7 @@
   },
   {
    "id": "n09d2",
-   "body": "<<FILL role=rising words=112 beats='measuring the hollow on every tread with a straight edge and a rule takes two people four hours and produces a table that nobody can argue with'>>",
+   "body": "<<FILL role=rising words=112 beats='measuring the hollow on every tread with a straight edge and a rule takes two people four hours and produces a table that nobody can argue with; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Compare the new sheet to the old plate\"; \"Find out what the seven years mean\"; \"Find out who made the simplification\"; \"Read the note that came with the file\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -1202,7 +1333,7 @@
   },
   {
    "id": "n09d3",
-   "body": "<<FILL role=rising words=112 beats='the site plan is public, costs three pounds to print, and shows the courtyard where the cut is, which is a fact you now have on paper'>>",
+   "body": "<<FILL role=rising words=112 beats='the site plan is public, costs three pounds to print, and shows the courtyard where the cut is, which is a fact you now have on paper; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Compare the new sheet to the old plate\"; \"Find out what the seven years mean\"; \"Find out who made the simplification\"; \"Read the note that came with the file\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -1224,7 +1355,7 @@
   },
   {
    "id": "n09d4",
-   "body": "<<FILL role=rising words=112 beats='if the criteria are written down then meeting them is a task rather than a favour, and Trant understands exactly why you are asking'>>",
+   "body": "<<FILL role=rising words=112 beats='if the criteria are written down then meeting them is a task rather than a favour, and Trant understands exactly why you are asking; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Compare the new sheet to the old plate\"; \"Find out what the seven years mean\"; \"Find out who made the simplification\"; \"Read the note that came with the file\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -1246,7 +1377,7 @@
   },
   {
    "id": "n09d5",
-   "body": "<<FILL role=rising words=112 beats='Wren cuts the steps in section and in plan on one plate, with the gradient from 1904 and the tread wear from last week, and it is beautiful and it is evidence'>>",
+   "body": "<<FILL role=rising words=112 beats='Wren cuts the steps in section and in plan on one plate, with the gradient from 1904 and the tread wear from last week, and it is beautiful and it is evidence; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Compare the new sheet to the old plate\"; \"Find out what the seven years mean\"; \"Find out who made the simplification\"; \"Read the note that came with the file\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -1268,7 +1399,7 @@
   },
   {
    "id": "n09d6",
-   "body": "<<FILL role=rising words=112 beats='the school path carries a hundred and ten children twice a day and the head teacher will say so on headed paper, which is worth forty statements'>>",
+   "body": "<<FILL role=rising words=112 beats='the school path carries a hundred and ten children twice a day and the head teacher will say so on headed paper, which is worth forty statements; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Compare the new sheet to the old plate\"; \"Find out what the seven years mean\"; \"Find out who made the simplification\"; \"Read the note that came with the file\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -1290,7 +1421,7 @@
   },
   {
    "id": "n09d7",
-   "body": "<<FILL role=rising words=112 beats='a solicitor will read it for nothing in an hour and tell you the four places where you have said more than you can prove'>>",
+   "body": "<<FILL role=rising words=112 beats='a solicitor will read it for nothing in an hour and tell you the four places where you have said more than you can prove; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Compare the new sheet to the old plate\"; \"Find out what the seven years mean\"; \"Find out who made the simplification\"; \"Read the note that came with the file\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -1312,7 +1443,7 @@
   },
   {
    "id": "n09d8",
-   "body": "<<FILL role=rising words=112 beats='the plate date can move by three weeks if the printer agrees, and the printer will agree if the council asks, and the council will ask if Trant asks'>>",
+   "body": "<<FILL role=rising words=112 beats='the plate date can move by three weeks if the printer agrees, and the printer will agree if the council asks, and the council will ask if Trant asks; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Compare the new sheet to the old plate\"; \"Find out what the seven years mean\"; \"Find out who made the simplification\"; \"Read the note that came with the file\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -1334,7 +1465,7 @@
   },
   {
    "id": "e09_0",
-   "body": "<<FILL role=discovery words=112 beats='Halloran Pentrell listens for twenty minutes, agrees that the cut is old, and offers a permissive path across the courtyard, which is a path that can be closed at any time by the person who granted it'>>",
+   "body": "<<FILL role=discovery words=112 beats='Halloran Pentrell listens for twenty minutes, agrees that the cut is old, and offers a permissive path across the courtyard, which is a path that can be closed at any time by the person who granted it; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Compare the new sheet to the old plate\"; \"Find out what the seven years mean\"; \"Find out who made the simplification\"; \"Read the note that came with the file\"), so the body must not depend on any of it.'>>",
    "is_ending": true,
    "ending": {
     "id": "e09_0",
@@ -1345,7 +1476,7 @@
   },
   {
    "id": "e09_1",
-   "body": "<<FILL role=setback words=112 beats='the plate goes down without the nine ways, the printed edition is what the maintenance teams carry, and from that month nobody is sent to clear anything'>>",
+   "body": "<<FILL role=setback words=112 beats='the plate goes down without the nine ways, the printed edition is what the maintenance teams carry, and from that month nobody is sent to clear anything; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Compare the new sheet to the old plate\"; \"Find out what the seven years mean\"; \"Find out who made the simplification\"; \"Read the note that came with the file\"), so the body must not depend on any of it.'>>",
    "is_ending": true,
    "ending": {
     "id": "e09_1",
@@ -1356,7 +1487,7 @@
   },
   {
    "id": "n10d0",
-   "body": "<<FILL role=rising words=100 beats='one modification order, fully evidenced: ninety one users counted, twenty two signed statements, a wear table, three deposited plans and a hand cut plate'>>",
+   "body": "<<FILL role=rising words=100 beats='one modification order, fully evidenced: ninety one users counted, twenty two signed statements, a wear table, three deposited plans and a hand cut plate; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Compare the new sheet to the old plate\"; \"Find out what the seven years mean\"; \"Find out who made the simplification\"; \"Read the note that came with the file\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -1378,7 +1509,7 @@
   },
   {
    "id": "n10d1",
-   "body": "<<FILL role=rising words=100 beats='nine orders together is one hearing instead of nine and one refusal instead of nine, and Wren says that is either efficient or reckless and will not say which'>>",
+   "body": "<<FILL role=rising words=100 beats='nine orders together is one hearing instead of nine and one refusal instead of nine, and Wren says that is either efficient or reckless and will not say which; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Compare the new sheet to the old plate\"; \"Find out what the seven years mean\"; \"Find out who made the simplification\"; \"Read the note that came with the file\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -1400,7 +1531,7 @@
   },
   {
    "id": "n10d2",
-   "body": "<<FILL role=rising words=100 beats='accepting a permissive path saves the walking and loses the right, and Nan Perrott has a view about that which she gives at some length'>>",
+   "body": "<<FILL role=rising words=100 beats='accepting a permissive path saves the walking and loses the right, and Nan Perrott has a view about that which she gives at some length; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Compare the new sheet to the old plate\"; \"Find out what the seven years mean\"; \"Find out who made the simplification\"; \"Read the note that came with the file\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -1422,7 +1553,7 @@
   },
   {
    "id": "n10d3",
-   "body": "<<FILL role=rising words=100 beats='the solicitor found four places where the submission claims more than the evidence carries, and cutting them makes the document weaker and true'>>",
+   "body": "<<FILL role=rising words=100 beats='the solicitor found four places where the submission claims more than the evidence carries, and cutting them makes the document weaker and true; PAYOFF SITE (did_read_note_that): readers arrive here both having and not having chosen \"Read the note that came with the file\" earlier, so this body must be true either way and must not say which. The option \"Answer the permission argument\" plays out differently for the two: with that earlier choice the reader first sees a payoff scene. MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Compare the new sheet to the old plate\"; \"Find out what the seven years mean\"; \"Find out who made the simplification\"; \"Read the note that came with the file\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -1438,13 +1569,46 @@
     {
      "id": "c_n10d3_2",
      "label": "Answer the permission argument.",
+     "target": "n11d0",
+     "condition": {
+      "==": [
+       {
+        "var": "did_read_note_that"
+       },
+       false
+      ]
+     }
+    },
+    {
+     "id": "c_n10d3_2_cq_did_read_note_that",
+     "label": "Answer the permission argument.",
+     "target": "cq_payoff_did_read_note_that_site2",
+     "condition": {
+      "==": [
+       {
+        "var": "did_read_note_that"
+       },
+       true
+      ]
+     }
+    }
+   ]
+  },
+  {
+   "id": "cq_payoff_did_read_note_that_site2",
+   "body": "<<FILL role=payoff words=44 beats='PAYOFF (did_read_note_that): only a reader who earlier chose \"Read the note that came with the file\" (node n01d0) reaches this scene. The hero tries \"Answer the permission argument\". The thing that came of that earlier choice changes how it goes: show it returning concretely in a few sentences, a moment only this reader gets. Then lead into the next scene (node n11d0), which every reader who makes this move reaches, without contradicting it.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_cq_payoff_did_read_note_that_site2",
+     "label": "Answer the permission argument.",
      "target": "n11d0"
     }
    ]
   },
   {
    "id": "n10d4",
-   "body": "<<FILL role=rising words=100 beats='three more weeks means a different paper allocation and a rescheduled press, and the printer wants to hear it from somebody with authority'>>",
+   "body": "<<FILL role=rising words=100 beats='three more weeks means a different paper allocation and a rescheduled press, and the printer wants to hear it from somebody with authority; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Compare the new sheet to the old plate\"; \"Find out what the seven years mean\"; \"Find out who made the simplification\"; \"Read the note that came with the file\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -1466,7 +1630,7 @@
   },
   {
    "id": "n10d5",
-   "body": "<<FILL role=rising words=100 beats='Pentrell objects formally and reasonably, and the objection is that use has been by permission, which is the one argument that would end this'>>",
+   "body": "<<FILL role=rising words=100 beats='Pentrell objects formally and reasonably, and the objection is that use has been by permission, which is the one argument that would end this; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Compare the new sheet to the old plate\"; \"Find out what the seven years mean\"; \"Find out who made the simplification\"; \"Read the note that came with the file\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -1488,7 +1652,7 @@
   },
   {
    "id": "n10d6",
-   "body": "<<FILL role=rising words=100 beats='Ivo is worried that saying he clears the gully will make him responsible for it, and the honest answer is that it might'>>",
+   "body": "<<FILL role=rising words=100 beats='Ivo is worried that saying he clears the gully will make him responsible for it, and the honest answer is that it might; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Compare the new sheet to the old plate\"; \"Find out what the seven years mean\"; \"Find out who made the simplification\"; \"Read the note that came with the file\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -1510,7 +1674,7 @@
   },
   {
    "id": "n10c0",
-   "body": "<<FILL role=bridge words=36 beats='the submission is bound with numbered pages, a contents sheet and a map on the inside cover, and it weighs more than a brick'>>",
+   "body": "<<FILL role=bridge words=36 beats='the submission is bound with numbered pages, a contents sheet and a map on the inside cover, and it weighs more than a brick; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Compare the new sheet to the old plate\"; \"Find out what the seven years mean\"; \"Find out who made the simplification\"; \"Read the note that came with the file\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -1522,7 +1686,7 @@
   },
   {
    "id": "n10c1",
-   "body": "<<FILL role=bridge words=36 beats='you carry it in on a wet Tuesday, the counter clerk stamps two copies and gives one back, and the stamp is the first irreversible thing'>>",
+   "body": "<<FILL role=bridge words=36 beats='you carry it in on a wet Tuesday, the counter clerk stamps two copies and gives one back, and the stamp is the first irreversible thing; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Compare the new sheet to the old plate\"; \"Find out what the seven years mean\"; \"Find out who made the simplification\"; \"Read the note that came with the file\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -1534,7 +1698,7 @@
   },
   {
    "id": "n10c2",
-   "body": "<<FILL role=bridge words=36 beats='Nan writes her statement in eleven lines, dates it, signs it, and then reads it back out loud to check that it is true'>>",
+   "body": "<<FILL role=bridge words=36 beats='Nan writes her statement in eleven lines, dates it, signs it, and then reads it back out loud to check that it is true; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Compare the new sheet to the old plate\"; \"Find out what the seven years mean\"; \"Find out who made the simplification\"; \"Read the note that came with the file\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -1546,7 +1710,7 @@
   },
   {
    "id": "n10c3",
-   "body": "<<FILL role=bridge words=36 beats='the solicitor walks the tannery cut once, looks at the gatepost, and says the words without let or hindrance in a tone that means something specific'>>",
+   "body": "<<FILL role=bridge words=36 beats='the solicitor walks the tannery cut once, looks at the gatepost, and says the words without let or hindrance in a tone that means something specific; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Compare the new sheet to the old plate\"; \"Find out what the seven years mean\"; \"Find out who made the simplification\"; \"Read the note that came with the file\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -1616,7 +1780,7 @@
   },
   {
    "id": "n11d0",
-   "body": "<<FILL role=rising words=106 beats='permission has to be shown and not assumed, and nobody can produce a single sign, gate, closure or letter in a hundred years of the Sixty Steps'>>",
+   "body": "<<FILL role=rising words=106 beats='permission has to be shown and not assumed, and nobody can produce a single sign, gate, closure or letter in a hundred years of the Sixty Steps; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Compare the new sheet to the old plate\"; \"Find out what the seven years mean\"; \"Find out who made the simplification\"; \"Read the note that came with the file\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -1638,7 +1802,7 @@
   },
   {
    "id": "n11d1",
-   "body": "<<FILL role=rising words=106 beats='the tannery cut is harder, because there was a gate, it was shut on one day a year until 1988, and one day a year is exactly how permission is preserved'>>",
+   "body": "<<FILL role=rising words=106 beats='the tannery cut is harder, because there was a gate, it was shut on one day a year until 1988, and one day a year is exactly how permission is preserved; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Compare the new sheet to the old plate\"; \"Find out what the seven years mean\"; \"Find out who made the simplification\"; \"Read the note that came with the file\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -1660,7 +1824,7 @@
   },
   {
    "id": "n11d2",
-   "body": "<<FILL role=rising words=106 beats='if the gate was shut one day a year then somebody wrote it down, and the tannery company records went to the record office in 1991 in nine boxes'>>",
+   "body": "<<FILL role=rising words=106 beats='if the gate was shut one day a year then somebody wrote it down, and the tannery company records went to the record office in 1991 in nine boxes; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Compare the new sheet to the old plate\"; \"Find out what the seven years mean\"; \"Find out who made the simplification\"; \"Read the note that came with the file\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -1682,7 +1846,7 @@
   },
   {
    "id": "n11d3",
-   "body": "<<FILL role=rising words=106 beats='the local history group has four thousand photographs and eleven of them show the tannery gate, and somebody has to look at all four thousand'>>",
+   "body": "<<FILL role=rising words=106 beats='the local history group has four thousand photographs and eleven of them show the tannery gate, and somebody has to look at all four thousand; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Compare the new sheet to the old plate\"; \"Find out what the seven years mean\"; \"Find out who made the simplification\"; \"Read the note that came with the file\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -1704,7 +1868,7 @@
   },
   {
    "id": "n11d4",
-   "body": "<<FILL role=rising words=106 beats='Trant has restored sixteen ways since the file was published, all on documentary evidence and none on evidence of use, which is a pattern'>>",
+   "body": "<<FILL role=rising words=106 beats='Trant has restored sixteen ways since the file was published, all on documentary evidence and none on evidence of use, which is a pattern; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Compare the new sheet to the old plate\"; \"Find out what the seven years mean\"; \"Find out who made the simplification\"; \"Read the note that came with the file\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -1726,7 +1890,7 @@
   },
   {
    "id": "n11d5",
-   "body": "<<FILL role=rising words=106 beats='a public hearing means Nan and Ivo and the head teacher in a room, and it means Pentrell making the permission argument out loud to their faces'>>",
+   "body": "<<FILL role=rising words=106 beats='a public hearing means Nan and Ivo and the head teacher in a room, and it means Pentrell making the permission argument out loud to their faces; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Compare the new sheet to the old plate\"; \"Find out what the seven years mean\"; \"Find out who made the simplification\"; \"Read the note that came with the file\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -1748,7 +1912,7 @@
   },
   {
    "id": "n11d6",
-   "body": "<<FILL role=rising words=106 beats='Wren was cutting plates in 1988 and remembers the tannery gate, and remembers it being shut, and will not say for certain which day'>>",
+   "body": "<<FILL role=rising words=106 beats='Wren was cutting plates in 1988 and remembers the tannery gate, and remembers it being shut, and will not say for certain which day; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Compare the new sheet to the old plate\"; \"Find out what the seven years mean\"; \"Find out who made the simplification\"; \"Read the note that came with the file\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -1770,7 +1934,7 @@
   },
   {
    "id": "n11d7",
-   "body": "<<FILL role=rising words=106 beats='a hundred and ten children is a fact and forty of them in a room is a tactic, and the head teacher is willing to do one and not the other'>>",
+   "body": "<<FILL role=rising words=106 beats='a hundred and ten children is a fact and forty of them in a room is a tactic, and the head teacher is willing to do one and not the other; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Compare the new sheet to the old plate\"; \"Find out what the seven years mean\"; \"Find out who made the simplification\"; \"Read the note that came with the file\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -1792,7 +1956,7 @@
   },
   {
    "id": "n11d8",
-   "body": "<<FILL role=rising words=106 beats='if the order is refused the way is not extinguished immediately, it is unrecorded, unmaintained, and on a seven year clock that has already run one year'>>",
+   "body": "<<FILL role=rising words=106 beats='if the order is refused the way is not extinguished immediately, it is unrecorded, unmaintained, and on a seven year clock that has already run one year; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Compare the new sheet to the old plate\"; \"Find out what the seven years mean\"; \"Find out who made the simplification\"; \"Read the note that came with the file\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -1814,7 +1978,7 @@
   },
   {
    "id": "e11_0",
-   "body": "<<FILL role=setback words=106 beats='you say it at the pre hearing meeting and cannot support it, the inspector notes it, and afterwards every true thing you say has that sentence standing behind it'>>",
+   "body": "<<FILL role=setback words=106 beats='you say it at the pre hearing meeting and cannot support it, the inspector notes it, and afterwards every true thing you say has that sentence standing behind it; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Compare the new sheet to the old plate\"; \"Find out what the seven years mean\"; \"Find out who made the simplification\"; \"Read the note that came with the file\"), so the body must not depend on any of it.'>>",
    "is_ending": true,
    "ending": {
     "id": "e11_0",
@@ -1825,7 +1989,7 @@
   },
   {
    "id": "e11_1",
-   "body": "<<FILL role=setback words=106 beats='dropping the hardest way makes the other eight simple and quick, the tannery cut closes in the spring, and Kestrel does not say anything about it at all'>>",
+   "body": "<<FILL role=setback words=106 beats='dropping the hardest way makes the other eight simple and quick, the tannery cut closes in the spring, and Kestrel does not say anything about it at all; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Compare the new sheet to the old plate\"; \"Find out what the seven years mean\"; \"Find out who made the simplification\"; \"Read the note that came with the file\"), so the body must not depend on any of it.'>>",
    "is_ending": true,
    "ending": {
     "id": "e11_1",
@@ -1836,7 +2000,7 @@
   },
   {
    "id": "n12d0",
-   "body": "<<FILL role=rising words=112 beats='nine boxes, no index, wage books and delivery notes and forty years of a works magazine, and somewhere in it either a closure record or nothing'>>",
+   "body": "<<FILL role=rising words=112 beats='nine boxes, no index, wage books and delivery notes and forty years of a works magazine, and somewhere in it either a closure record or nothing; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Compare the new sheet to the old plate\"; \"Find out what the seven years mean\"; \"Find out who made the simplification\"; \"Read the note that came with the file\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -1858,7 +2022,7 @@
   },
   {
    "id": "n12d1",
-   "body": "<<FILL role=rising words=112 beats='the history group will let you look on Thursdays, and there are four thousand, and eleven of them show the gate, and you do not know which eleven'>>",
+   "body": "<<FILL role=rising words=112 beats='the history group will let you look on Thursdays, and there are four thousand, and eleven of them show the gate, and you do not know which eleven; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Compare the new sheet to the old plate\"; \"Find out what the seven years mean\"; \"Find out who made the simplification\"; \"Read the note that came with the file\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -1880,7 +2044,7 @@
   },
   {
    "id": "n12d2",
-   "body": "<<FILL role=rising words=112 beats='Nan will be asked whether anybody ever stopped her and the answer is no, and being asked that in a room by a stranger is not the same as being asked it in a kitchen'>>",
+   "body": "<<FILL role=rising words=112 beats='Nan will be asked whether anybody ever stopped her and the answer is no, and being asked that in a room by a stranger is not the same as being asked it in a kitchen; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Compare the new sheet to the old plate\"; \"Find out what the seven years mean\"; \"Find out who made the simplification\"; \"Read the note that came with the file\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -1902,7 +2066,7 @@
   },
   {
    "id": "n12d3",
-   "body": "<<FILL role=rising words=112 beats='Ivo will be asked whether the council ever asked him to clear the gully and the answer is no, and that answer helps you and exposes him'>>",
+   "body": "<<FILL role=rising words=112 beats='Ivo will be asked whether the council ever asked him to clear the gully and the answer is no, and that answer helps you and exposes him; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Compare the new sheet to the old plate\"; \"Find out what the seven years mean\"; \"Find out who made the simplification\"; \"Read the note that came with the file\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -1924,7 +2088,7 @@
   },
   {
    "id": "n12d4",
-   "body": "<<FILL role=rising words=112 beats='you write out the permission argument in its strongest form, in the words of Pentrell, and then find that you cannot answer the third paragraph'>>",
+   "body": "<<FILL role=rising words=112 beats='you write out the permission argument in its strongest form, in the words of Pentrell, and then find that you cannot answer the third paragraph; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Compare the new sheet to the old plate\"; \"Find out what the seven years mean\"; \"Find out who made the simplification\"; \"Read the note that came with the file\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -1946,7 +2110,7 @@
   },
   {
    "id": "n12d5",
-   "body": "<<FILL role=rising words=112 beats='the press is rescheduled or it is not, and if it is not then whatever the hearing decides arrives after the maintenance teams have stopped coming'>>",
+   "body": "<<FILL role=rising words=112 beats='the press is rescheduled or it is not, and if it is not then whatever the hearing decides arrives after the maintenance teams have stopped coming; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Compare the new sheet to the old plate\"; \"Find out what the seven years mean\"; \"Find out who made the simplification\"; \"Read the note that came with the file\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -1968,7 +2132,7 @@
   },
   {
    "id": "n12d6",
-   "body": "<<FILL role=rising words=112 beats='keeping it in risks the whole order on the weakest way, and taking it out abandons the only way that anybody is actually trying to remove'>>",
+   "body": "<<FILL role=rising words=112 beats='keeping it in risks the whole order on the weakest way, and taking it out abandons the only way that anybody is actually trying to remove; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Compare the new sheet to the old plate\"; \"Find out what the seven years mean\"; \"Find out who made the simplification\"; \"Read the note that came with the file\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -1990,7 +2154,7 @@
   },
   {
    "id": "n12c0",
-   "body": "<<FILL role=bridge words=36 beats='the first box is wage books, 1952 to 1961, smells of damp cardboard, and takes an hour and forty minutes to be sure about'>>",
+   "body": "<<FILL role=bridge words=36 beats='the first box is wage books, 1952 to 1961, smells of damp cardboard, and takes an hour and forty minutes to be sure about; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Compare the new sheet to the old plate\"; \"Find out what the seven years mean\"; \"Find out who made the simplification\"; \"Read the note that came with the file\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -2002,7 +2166,7 @@
   },
   {
    "id": "n12c1",
-   "body": "<<FILL role=bridge words=36 beats='the history group light table is in a church hall and the photographs come in sleeves of twenty, and by the second Thursday you can date a coat to a decade'>>",
+   "body": "<<FILL role=bridge words=36 beats='the history group light table is in a church hall and the photographs come in sleeves of twenty, and by the second Thursday you can date a coat to a decade; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Compare the new sheet to the old plate\"; \"Find out what the seven years mean\"; \"Find out who made the simplification\"; \"Read the note that came with the file\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -2014,7 +2178,7 @@
   },
   {
    "id": "n12c2",
-   "body": "<<FILL role=bridge words=36 beats='Nan practises saying nobody ever stopped me until it stops sounding like a line and starts sounding like the plain fact that it is'>>",
+   "body": "<<FILL role=bridge words=36 beats='Nan practises saying nobody ever stopped me until it stops sounding like a line and starts sounding like the plain fact that it is; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Compare the new sheet to the old plate\"; \"Find out what the seven years mean\"; \"Find out who made the simplification\"; \"Read the note that came with the file\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -2026,7 +2190,7 @@
   },
   {
    "id": "n12c3",
-   "body": "<<FILL role=bridge words=36 beats='Ivo shows you where the water comes off the roof of the old bonded store and why the gully is where it is, and it has been where it is since 1904'>>",
+   "body": "<<FILL role=bridge words=36 beats='Ivo shows you where the water comes off the roof of the old bonded store and why the gully is where it is, and it has been where it is since 1904; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Compare the new sheet to the old plate\"; \"Find out what the seven years mean\"; \"Find out who made the simplification\"; \"Read the note that came with the file\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -2096,13 +2260,34 @@
   },
   {
    "id": "n13d0",
-   "body": "<<FILL role=rising words=100 beats='the photograph proves the gate was closed annually until at least 1971, and it also proves the practice existed, and both of those facts go in'>>",
+   "body": "<<FILL role=rising words=100 beats='the photograph proves the gate was closed annually until at least 1971, and it also proves the practice existed, and both of those facts go in; PAYOFF SITE (did_find_what_seven): readers arrive here both having and not having chosen \"Find out what the seven years mean\" earlier, so this body must be true either way and must not say which. The option \"Track down the last two tannery workers\" plays out differently for the two: with that earlier choice the reader first sees a payoff scene. MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Compare the new sheet to the old plate\"; \"Find out what the seven years mean\"; \"Find out who made the simplification\"; \"Read the note that came with the file\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
      "id": "c_n13d0_0",
      "label": "Track down the last two tannery workers.",
-     "target": "n14d0"
+     "target": "n14d0",
+     "condition": {
+      "==": [
+       {
+        "var": "did_find_what_seven"
+       },
+       false
+      ]
+     }
+    },
+    {
+     "id": "c_n13d0_0_cq_did_find_what_seven",
+     "label": "Track down the last two tannery workers.",
+     "target": "cq_payoff_did_find_what_seven",
+     "condition": {
+      "==": [
+       {
+        "var": "did_find_what_seven"
+       },
+       true
+      ]
+     }
     },
     {
      "id": "c_n13d0_1",
@@ -2117,14 +2302,47 @@
    ]
   },
   {
+   "id": "cq_payoff_did_find_what_seven",
+   "body": "<<FILL role=payoff words=44 beats='PAYOFF (did_find_what_seven): only a reader who earlier chose \"Find out what the seven years mean\" (node n03d0) reaches this scene. The hero tries \"Track down the last two tannery workers\". The thing that came of that earlier choice changes how it goes: show it returning concretely in a few sentences, a moment only this reader gets. Then lead into the next scene (node n14d0), which every reader who makes this move reaches, without contradicting it.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_cq_payoff_did_find_what_seven",
+     "label": "Track down the last two tannery workers.",
+     "target": "n14d0"
+    }
+   ]
+  },
+  {
    "id": "n13d1",
-   "body": "<<FILL role=rising words=100 beats='if the closures stopped in 1988 then twenty years of use as of right runs from then, and 1988 plus twenty is 2008, which is comfortably past'>>",
+   "body": "<<FILL role=rising words=100 beats='if the closures stopped in 1988 then twenty years of use as of right runs from then, and 1988 plus twenty is 2008, which is comfortably past; PAYOFF SITE (did_find_who_made): readers arrive here both having and not having chosen \"Find out who made the simplification\" earlier, so this body must be true either way and must not say which. The option \"Prepare the bundle for the inspector\" plays out differently for the two: with that earlier choice the reader first sees a payoff scene. MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Compare the new sheet to the old plate\"; \"Find out what the seven years mean\"; \"Find out who made the simplification\"; \"Read the note that came with the file\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
      "id": "c_n13d1_0",
      "label": "Prepare the bundle for the inspector.",
-     "target": "n14d3"
+     "target": "n14d3",
+     "condition": {
+      "==": [
+       {
+        "var": "did_find_who_made"
+       },
+       false
+      ]
+     }
+    },
+    {
+     "id": "c_n13d1_0_cq_did_find_who_made",
+     "label": "Prepare the bundle for the inspector.",
+     "target": "cq_payoff_did_find_who_made_site2",
+     "condition": {
+      "==": [
+       {
+        "var": "did_find_who_made"
+       },
+       true
+      ]
+     }
     },
     {
      "id": "c_n13d1_1",
@@ -2139,8 +2357,20 @@
    ]
   },
   {
+   "id": "cq_payoff_did_find_who_made_site2",
+   "body": "<<FILL role=payoff words=44 beats='PAYOFF (did_find_who_made): only a reader who earlier chose \"Find out who made the simplification\" (node n03d0) reaches this scene. The hero tries \"Prepare the bundle for the inspector\". The thing that came of that earlier choice changes how it goes: show it returning concretely in a few sentences, a moment only this reader gets. Then lead into the next scene (node n14d3), which every reader who makes this move reaches, without contradicting it.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_cq_payoff_did_find_who_made_site2",
+     "label": "Prepare the bundle for the inspector.",
+     "target": "n14d3"
+    }
+   ]
+  },
+  {
    "id": "n13d2",
-   "body": "<<FILL role=rising words=100 beats='somebody has to show the last year the gate was shut, and the works magazine stops in 1986 when the company was sold'>>",
+   "body": "<<FILL role=rising words=100 beats='somebody has to show the last year the gate was shut, and the works magazine stops in 1986 when the company was sold; PAYOFF SITE (did_find_who_made): readers arrive here both having and not having chosen \"Find out who made the simplification\" earlier, so this body must be true either way and must not say which. The option \"Sit in a front room in Coley Bank\" plays out differently for the two: without that earlier choice it leads to the setback (e15_1); with it, to a recovery. MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Compare the new sheet to the old plate\"; \"Find out what the seven years mean\"; \"Find out who made the simplification\"; \"Read the note that came with the file\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -2151,7 +2381,28 @@
     {
      "id": "c_n13d2_1",
      "label": "Sit in a front room in Coley Bank.",
-     "target": "n14c0"
+     "target": "n14c0",
+     "condition": {
+      "==": [
+       {
+        "var": "did_find_who_made"
+       },
+       false
+      ]
+     }
+    },
+    {
+     "id": "c_n13d2_1_cq_did_find_who_made",
+     "label": "Sit in a front room in Coley Bank.",
+     "target": "cq_payoff_did_find_who_made",
+     "condition": {
+      "==": [
+       {
+        "var": "did_find_who_made"
+       },
+       true
+      ]
+     }
     },
     {
      "id": "c_n13d2_2",
@@ -2161,8 +2412,20 @@
    ]
   },
   {
+   "id": "cq_payoff_did_find_who_made",
+   "body": "<<FILL role=payoff words=44 beats='PAYOFF (did_find_who_made): only a reader who earlier chose \"Find out who made the simplification\" (node n03d0) reaches this scene. The hero tries \"Sit in a front room in Coley Bank\". For a reader without that earlier choice the same move ends the story early (e15_1). Here the thing that came of it turns the moment around: show it returning concretely and making the difference. End with the hero moving on to \"Prepare for the possibility of losing\", leading into the next scene (node n14d6), which other readers also reach, without contradicting it.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_cq_payoff_did_find_who_made",
+     "label": "Prepare for the possibility of losing.",
+     "target": "n14d6"
+    }
+   ]
+  },
+  {
    "id": "n13d3",
-   "body": "<<FILL role=rising words=100 beats='eleven people who worked at the tannery are still in the city, four of them will talk to you, and two of them remember the gate'>>",
+   "body": "<<FILL role=rising words=100 beats='eleven people who worked at the tannery are still in the city, four of them will talk to you, and two of them remember the gate; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Compare the new sheet to the old plate\"; \"Find out what the seven years mean\"; \"Find out who made the simplification\"; \"Read the note that came with the file\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -2184,13 +2447,34 @@
   },
   {
    "id": "n13d4",
-   "body": "<<FILL role=rising words=100 beats='with the closure history documented the cut becomes the strongest way rather than the weakest, and the order goes in with all nine'>>",
+   "body": "<<FILL role=rising words=100 beats='with the closure history documented the cut becomes the strongest way rather than the weakest, and the order goes in with all nine; PAYOFF SITE (did_find_what_seven): readers arrive here both having and not having chosen \"Find out what the seven years mean\" earlier, so this body must be true either way and must not say which. The option \"Read the bundle straight through\" plays out differently for the two: with that earlier choice the reader first sees a payoff scene. MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Compare the new sheet to the old plate\"; \"Find out what the seven years mean\"; \"Find out who made the simplification\"; \"Read the note that came with the file\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
      "id": "c_n13d4_0",
      "label": "Read the bundle straight through.",
-     "target": "n14c5"
+     "target": "n14c5",
+     "condition": {
+      "==": [
+       {
+        "var": "did_find_what_seven"
+       },
+       false
+      ]
+     }
+    },
+    {
+     "id": "c_n13d4_0_cq_did_find_what_seven",
+     "label": "Read the bundle straight through.",
+     "target": "cq_payoff_did_find_what_seven_site2",
+     "condition": {
+      "==": [
+       {
+        "var": "did_find_what_seven"
+       },
+       true
+      ]
+     }
     },
     {
      "id": "c_n13d4_1",
@@ -2205,8 +2489,20 @@
    ]
   },
   {
+   "id": "cq_payoff_did_find_what_seven_site2",
+   "body": "<<FILL role=payoff words=25 beats='PAYOFF (did_find_what_seven): only a reader who earlier chose \"Find out what the seven years mean\" (node n03d0) reaches this scene. The hero tries \"Read the bundle straight through\". The thing that came of that earlier choice changes how it goes: show it returning concretely in a few sentences, a moment only this reader gets. Then lead into the next scene (node n14c5), which every reader who makes this move reaches, without contradicting it.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_cq_payoff_did_find_what_seven_site2",
+     "label": "Read the bundle straight through.",
+     "target": "n14c5"
+    }
+   ]
+  },
+  {
    "id": "n13d5",
-   "body": "<<FILL role=rising words=100 beats='sending it in advance means no surprises at the hearing, which loses an ambush and gains an inspector who trusts you'>>",
+   "body": "<<FILL role=rising words=100 beats='sending it in advance means no surprises at the hearing, which loses an ambush and gains an inspector who trusts you; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Compare the new sheet to the old plate\"; \"Find out what the seven years mean\"; \"Find out who made the simplification\"; \"Read the note that came with the file\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -2228,7 +2524,7 @@
   },
   {
    "id": "n13d6",
-   "body": "<<FILL role=rising words=100 beats='Trant is not the enemy and never was, and if she can restore the cut administratively then the hearing is about the other eight'>>",
+   "body": "<<FILL role=rising words=100 beats='Trant is not the enemy and never was, and if she can restore the cut administratively then the hearing is about the other eight; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Compare the new sheet to the old plate\"; \"Find out what the seven years mean\"; \"Find out who made the simplification\"; \"Read the note that came with the file\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -2250,7 +2546,7 @@
   },
   {
    "id": "n13d7",
-   "body": "<<FILL role=rising words=100 beats='Ferris moves the press by three weeks on one condition, which is that whatever goes on the plate is checked by Wren and by you and by nobody else'>>",
+   "body": "<<FILL role=rising words=100 beats='Ferris moves the press by three weeks on one condition, which is that whatever goes on the plate is checked by Wren and by you and by nobody else; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Compare the new sheet to the old plate\"; \"Find out what the seven years mean\"; \"Find out who made the simplification\"; \"Read the note that came with the file\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -2272,7 +2568,7 @@
   },
   {
    "id": "n13d8",
-   "body": "<<FILL role=rising words=100 beats='the order is for nine ways, the nine ways are for the ninety people at seven in the morning, and it helps to say that out loud before a hearing'>>",
+   "body": "<<FILL role=rising words=100 beats='the order is for nine ways, the nine ways are for the ninety people at seven in the morning, and it helps to say that out loud before a hearing; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Compare the new sheet to the old plate\"; \"Find out what the seven years mean\"; \"Find out who made the simplification\"; \"Read the note that came with the file\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -2294,7 +2590,7 @@
   },
   {
    "id": "e13_0",
-   "body": "<<FILL role=setback words=100 beats='you keep the photograph for the moment it will land hardest, the inspector asks why it was not disclosed, and after that it lands like nothing at all'>>",
+   "body": "<<FILL role=setback words=100 beats='you keep the photograph for the moment it will land hardest, the inspector asks why it was not disclosed, and after that it lands like nothing at all; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Compare the new sheet to the old plate\"; \"Find out what the seven years mean\"; \"Find out who made the simplification\"; \"Read the note that came with the file\"), so the body must not depend on any of it.'>>",
    "is_ending": true,
    "ending": {
     "id": "e13_0",
@@ -2305,7 +2601,7 @@
   },
   {
    "id": "e13_1",
-   "body": "<<FILL role=setback words=100 beats='the printed edition goes out without the nine ways because nobody rang Ferris in time, and the hearing happens anyway, three weeks into a map that is already wrong'>>",
+   "body": "<<FILL role=setback words=100 beats='the printed edition goes out without the nine ways because nobody rang Ferris in time, and the hearing happens anyway, three weeks into a map that is already wrong; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Compare the new sheet to the old plate\"; \"Find out what the seven years mean\"; \"Find out who made the simplification\"; \"Read the note that came with the file\"), so the body must not depend on any of it.'>>",
    "is_ending": true,
    "ending": {
     "id": "e13_1",
@@ -2316,7 +2612,7 @@
   },
   {
    "id": "n14d0",
-   "body": "<<FILL role=rising words=106 beats='two people remember the gate being shut, one says it stopped when the company went, and the other says it stopped years before that'>>",
+   "body": "<<FILL role=rising words=106 beats='two people remember the gate being shut, one says it stopped when the company went, and the other says it stopped years before that; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Compare the new sheet to the old plate\"; \"Find out what the seven years mean\"; \"Find out who made the simplification\"; \"Read the note that came with the file\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -2338,7 +2634,7 @@
   },
   {
    "id": "n14d1",
-   "body": "<<FILL role=rising words=106 beats='two honest memories that disagree is normal and is not evidence, the way through it is a document, and there is one more place to look'>>",
+   "body": "<<FILL role=rising words=106 beats='two honest memories that disagree is normal and is not evidence, the way through it is a document, and there is one more place to look; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Compare the new sheet to the old plate\"; \"Find out what the seven years mean\"; \"Find out who made the simplification\"; \"Read the note that came with the file\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -2360,7 +2656,7 @@
   },
   {
    "id": "n14d2",
-   "body": "<<FILL role=rising words=106 beats='an annual closure is a liability arrangement, liability arrangements are insured, and insurance schedules are kept forever by somebody'>>",
+   "body": "<<FILL role=rising words=106 beats='an annual closure is a liability arrangement, liability arrangements are insured, and insurance schedules are kept forever by somebody; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Compare the new sheet to the old plate\"; \"Find out what the seven years mean\"; \"Find out who made the simplification\"; \"Read the note that came with the file\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -2382,7 +2678,7 @@
   },
   {
    "id": "n14d3",
-   "body": "<<FILL role=rising words=106 beats='the bundle is tabbed, indexed, paginated and duplicated four times, and putting it together takes a weekend and no thought at all, which is a relief'>>",
+   "body": "<<FILL role=rising words=106 beats='the bundle is tabbed, indexed, paginated and duplicated four times, and putting it together takes a weekend and no thought at all, which is a relief; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Compare the new sheet to the old plate\"; \"Find out what the seven years mean\"; \"Find out who made the simplification\"; \"Read the note that came with the file\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -2404,7 +2700,7 @@
   },
   {
    "id": "n14d4",
-   "body": "<<FILL role=rising words=106 beats='six witnesses, each told the same three things: answer the question that is asked, say you do not know when you do not, and do not argue with anybody'>>",
+   "body": "<<FILL role=rising words=106 beats='six witnesses, each told the same three things: answer the question that is asked, say you do not know when you do not, and do not argue with anybody; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Compare the new sheet to the old plate\"; \"Find out what the seven years mean\"; \"Find out who made the simplification\"; \"Read the note that came with the file\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -2426,7 +2722,7 @@
   },
   {
    "id": "n14d5",
-   "body": "<<FILL role=rising words=106 beats='the plate carries all nine ways, engraved by hand, with the sources cut into the margin in six point, which nobody will read and everybody will see'>>",
+   "body": "<<FILL role=rising words=106 beats='the plate carries all nine ways, engraved by hand, with the sources cut into the margin in six point, which nobody will read and everybody will see; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Compare the new sheet to the old plate\"; \"Find out what the seven years mean\"; \"Find out who made the simplification\"; \"Read the note that came with the file\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -2448,7 +2744,7 @@
   },
   {
    "id": "n14d6",
-   "body": "<<FILL role=rising words=106 beats='if it goes badly the fallback is the seven year clock and a second attempt, and knowing that makes it possible to be calm on the day'>>",
+   "body": "<<FILL role=rising words=106 beats='if it goes badly the fallback is the seven year clock and a second attempt, and knowing that makes it possible to be calm on the day; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Compare the new sheet to the old plate\"; \"Find out what the seven years mean\"; \"Find out who made the simplification\"; \"Read the note that came with the file\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -2470,7 +2766,7 @@
   },
   {
    "id": "n14c0",
-   "body": "<<FILL role=bridge words=36 beats='the first tannery worker is eighty seven, makes tea, and talks for an hour about the yard before saying one useful sentence about the gate'>>",
+   "body": "<<FILL role=bridge words=36 beats='the first tannery worker is eighty seven, makes tea, and talks for an hour about the yard before saying one useful sentence about the gate; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Compare the new sheet to the old plate\"; \"Find out what the seven years mean\"; \"Find out who made the simplification\"; \"Read the note that came with the file\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -2482,7 +2778,7 @@
   },
   {
    "id": "n14c1",
-   "body": "<<FILL role=bridge words=36 beats='the broker is now three companies removed from the original, takes nine days to find anything, and then finds everything'>>",
+   "body": "<<FILL role=bridge words=36 beats='the broker is now three companies removed from the original, takes nine days to find anything, and then finds everything; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Compare the new sheet to the old plate\"; \"Find out what the seven years mean\"; \"Find out who made the simplification\"; \"Read the note that came with the file\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -2494,7 +2790,7 @@
   },
   {
    "id": "n14c2",
-   "body": "<<FILL role=bridge words=36 beats='four bundles, ninety tabs each, and Devi does two of them while explaining exactly why the counting method matters more than the counts'>>",
+   "body": "<<FILL role=bridge words=36 beats='four bundles, ninety tabs each, and Devi does two of them while explaining exactly why the counting method matters more than the counts; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Compare the new sheet to the old plate\"; \"Find out what the seven years mean\"; \"Find out who made the simplification\"; \"Read the note that came with the file\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -2506,7 +2802,7 @@
   },
   {
    "id": "n14c3",
-   "body": "<<FILL role=bridge words=36 beats='the nine ways can be walked in a single afternoon if you do them in the right order, and doing that once makes the whole thing feel finite'>>",
+   "body": "<<FILL role=bridge words=36 beats='the nine ways can be walked in a single afternoon if you do them in the right order, and doing that once makes the whole thing feel finite; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Compare the new sheet to the old plate\"; \"Find out what the seven years mean\"; \"Find out who made the simplification\"; \"Read the note that came with the file\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -2530,7 +2826,7 @@
   },
   {
    "id": "n14c5",
-   "body": "<<FILL role=bridge words=36 beats='reading it end to end takes four hours, and there is one page you would take out and you leave it in, and you are still not sure that was right'>>",
+   "body": "<<FILL role=bridge words=36 beats='reading it end to end takes four hours, and there is one page you would take out and you leave it in, and you are still not sure that was right; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Compare the new sheet to the old plate\"; \"Find out what the seven years mean\"; \"Find out who made the simplification\"; \"Read the note that came with the file\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -2576,7 +2872,7 @@
   },
   {
    "id": "n15d0",
-   "body": "<<FILL role=rising words=112 beats='the schedule lists an annual closure of the yard gate until 1987 and then stops, which dates the last closure to a year, in writing, from a disinterested source'>>",
+   "body": "<<FILL role=rising words=112 beats='the schedule lists an annual closure of the yard gate until 1987 and then stops, which dates the last closure to a year, in writing, from a disinterested source; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Compare the new sheet to the old plate\"; \"Find out what the seven years mean\"; \"Find out who made the simplification\"; \"Read the note that came with the file\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -2598,7 +2894,7 @@
   },
   {
    "id": "n15d1",
-   "body": "<<FILL role=rising words=112 beats='1987 plus twenty is 2007 and the claim is made now, so the period is complete with sixteen years to spare, and that is the whole case in one line'>>",
+   "body": "<<FILL role=rising words=112 beats='1987 plus twenty is 2007 and the claim is made now, so the period is complete with sixteen years to spare, and that is the whole case in one line; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Compare the new sheet to the old plate\"; \"Find out what the seven years mean\"; \"Find out who made the simplification\"; \"Read the note that came with the file\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -2620,7 +2916,7 @@
   },
   {
    "id": "n15d2",
-   "body": "<<FILL role=rising words=112 beats='the wear table is dull and unanswerable, and the inspector reads it for a long time and then asks one question about the straight edge'>>",
+   "body": "<<FILL role=rising words=112 beats='the wear table is dull and unanswerable, and the inspector reads it for a long time and then asks one question about the straight edge; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Compare the new sheet to the old plate\"; \"Find out what the seven years mean\"; \"Find out who made the simplification\"; \"Read the note that came with the file\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -2642,7 +2938,7 @@
   },
   {
    "id": "n15d3",
-   "body": "<<FILL role=rising words=112 beats='the counts have a method, an error and two independent counters, and Devi wrote the method, and Devi is in the room'>>",
+   "body": "<<FILL role=rising words=112 beats='the counts have a method, an error and two independent counters, and Devi wrote the method, and Devi is in the room; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Compare the new sheet to the old plate\"; \"Find out what the seven years mean\"; \"Find out who made the simplification\"; \"Read the note that came with the file\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -2664,7 +2960,7 @@
   },
   {
    "id": "n15d4",
-   "body": "<<FILL role=rising words=112 beats='Nan is asked whether anybody ever stopped her and says no, and is asked whether she ever sought permission and says it never once occurred to her'>>",
+   "body": "<<FILL role=rising words=112 beats='Nan is asked whether anybody ever stopped her and says no, and is asked whether she ever sought permission and says it never once occurred to her; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Compare the new sheet to the old plate\"; \"Find out what the seven years mean\"; \"Find out who made the simplification\"; \"Read the note that came with the file\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -2686,7 +2982,7 @@
   },
   {
    "id": "n15d5",
-   "body": "<<FILL role=rising words=112 beats='Ivo says the council has never asked him to do it and has never thanked him for it, and that he will keep doing it either way'>>",
+   "body": "<<FILL role=rising words=112 beats='Ivo says the council has never asked him to do it and has never thanked him for it, and that he will keep doing it either way; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Compare the new sheet to the old plate\"; \"Find out what the seven years mean\"; \"Find out who made the simplification\"; \"Read the note that came with the file\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -2708,7 +3004,7 @@
   },
   {
    "id": "n15d6",
-   "body": "<<FILL role=rising words=112 beats='a hundred and ten children twice a day for nineteen years, on headed paper, read out in a level voice, takes ninety seconds'>>",
+   "body": "<<FILL role=rising words=112 beats='a hundred and ten children twice a day for nineteen years, on headed paper, read out in a level voice, takes ninety seconds; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Compare the new sheet to the old plate\"; \"Find out what the seven years mean\"; \"Find out who made the simplification\"; \"Read the note that came with the file\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -2730,7 +3026,7 @@
   },
   {
    "id": "n15d7",
-   "body": "<<FILL role=rising words=112 beats='Pentrell argues permission, and you answer with the insurance schedule, the 1971 photograph and the twenty year period, in that order, and then stop'>>",
+   "body": "<<FILL role=rising words=112 beats='Pentrell argues permission, and you answer with the insurance schedule, the 1971 photograph and the twenty year period, in that order, and then stop; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Compare the new sheet to the old plate\"; \"Find out what the seven years mean\"; \"Find out who made the simplification\"; \"Read the note that came with the file\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -2752,7 +3048,7 @@
   },
   {
    "id": "n15d8",
-   "body": "<<FILL role=rising words=112 beats='an accompanied site visit means the inspector stands on the third tread and looks at the hollow, which no bundle can do'>>",
+   "body": "<<FILL role=rising words=112 beats='an accompanied site visit means the inspector stands on the third tread and looks at the hollow, which no bundle can do; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Compare the new sheet to the old plate\"; \"Find out what the seven years mean\"; \"Find out who made the simplification\"; \"Read the note that came with the file\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -2774,7 +3070,7 @@
   },
   {
    "id": "e15_0",
-   "body": "<<FILL role=discovery words=112 beats='the inspector reads the plate of Wren the way Wren reads it, from the margin inwards, and asks who cut it, and something in the room changes'>>",
+   "body": "<<FILL role=discovery words=112 beats='the inspector reads the plate of Wren the way Wren reads it, from the margin inwards, and asks who cut it, and something in the room changes; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Compare the new sheet to the old plate\"; \"Find out what the seven years mean\"; \"Find out who made the simplification\"; \"Read the note that came with the file\"), so the body must not depend on any of it.'>>",
    "is_ending": true,
    "ending": {
     "id": "e15_0",
@@ -2785,7 +3081,7 @@
   },
   {
    "id": "e15_1",
-   "body": "<<FILL role=setback words=112 beats='you speak for fifty minutes of an allotted twenty, and the last three witnesses are heard quickly at the end of a long afternoon'>>",
+   "body": "<<FILL role=setback words=112 beats='you speak for fifty minutes of an allotted twenty, and the last three witnesses are heard quickly at the end of a long afternoon; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Compare the new sheet to the old plate\"; \"Find out what the seven years mean\"; \"Find out who made the simplification\"; \"Read the note that came with the file\"), so the body must not depend on any of it.'>>",
    "is_ending": true,
    "ending": {
     "id": "e15_1",
@@ -2796,7 +3092,7 @@
   },
   {
    "id": "n16d0",
-   "body": "<<FILL role=rising words=100 beats='the inspector walks all nine ways in three hours in the rain, with Pentrell present, and says almost nothing except once at the gatepost'>>",
+   "body": "<<FILL role=rising words=100 beats='the inspector walks all nine ways in three hours in the rain, with Pentrell present, and says almost nothing except once at the gatepost; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Compare the new sheet to the old plate\"; \"Find out what the seven years mean\"; \"Find out who made the simplification\"; \"Read the note that came with the file\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -2818,7 +3114,7 @@
   },
   {
    "id": "n16d1",
-   "body": "<<FILL role=rising words=100 beats='there are ten working days for closing statements, Pentrell will use all ten, and yours should be four pages and no more'>>",
+   "body": "<<FILL role=rising words=100 beats='there are ten working days for closing statements, Pentrell will use all ten, and yours should be four pages and no more; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Compare the new sheet to the old plate\"; \"Find out what the seven years mean\"; \"Find out who made the simplification\"; \"Read the note that came with the file\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -2840,7 +3136,7 @@
   },
   {
    "id": "n16d2",
-   "body": "<<FILL role=rising words=100 beats='two of the nine are genuinely weak and conceding them makes the other seven look honest, and Wren thinks that is a trick and Devi thinks it is the truth'>>",
+   "body": "<<FILL role=rising words=100 beats='two of the nine are genuinely weak and conceding them makes the other seven look honest, and Wren thinks that is a trick and Devi thinks it is the truth; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Compare the new sheet to the old plate\"; \"Find out what the seven years mean\"; \"Find out who made the simplification\"; \"Read the note that came with the file\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -2862,7 +3158,7 @@
   },
   {
    "id": "n16d3",
-   "body": "<<FILL role=rising words=100 beats='the order is about nine ways, the underlying problem is three hundred and forty, and the closing statement can raise that or keep clean'>>",
+   "body": "<<FILL role=rising words=100 beats='the order is about nine ways, the underlying problem is three hundred and forty, and the closing statement can raise that or keep clean; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Compare the new sheet to the old plate\"; \"Find out what the seven years mean\"; \"Find out who made the simplification\"; \"Read the note that came with the file\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -2884,7 +3180,7 @@
   },
   {
    "id": "n16d4",
-   "body": "<<FILL role=rising words=100 beats='the decision takes eight to twelve weeks, the seven year clock does not pause, and there is another set of steps in Ferrisgate in the same position'>>",
+   "body": "<<FILL role=rising words=100 beats='the decision takes eight to twelve weeks, the seven year clock does not pause, and there is another set of steps in Ferrisgate in the same position; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Compare the new sheet to the old plate\"; \"Find out what the seven years mean\"; \"Find out who made the simplification\"; \"Read the note that came with the file\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -2906,7 +3202,7 @@
   },
   {
    "id": "n16d5",
-   "body": "<<FILL role=rising words=100 beats='Trant has restored two of the nine administratively during the hearing, which is either helping or narrowing the order, and is probably both'>>",
+   "body": "<<FILL role=rising words=100 beats='Trant has restored two of the nine administratively during the hearing, which is either helping or narrowing the order, and is probably both; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Compare the new sheet to the old plate\"; \"Find out what the seven years mean\"; \"Find out who made the simplification\"; \"Read the note that came with the file\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -2928,7 +3224,7 @@
   },
   {
    "id": "n16d6",
-   "body": "<<FILL role=rising words=100 beats='the ninety people who use the steps at seven in the morning have not been told any of this, and telling them is either a courtesy or a campaign'>>",
+   "body": "<<FILL role=rising words=100 beats='the ninety people who use the steps at seven in the morning have not been told any of this, and telling them is either a courtesy or a campaign; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Compare the new sheet to the old plate\"; \"Find out what the seven years mean\"; \"Find out who made the simplification\"; \"Read the note that came with the file\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -2950,7 +3246,7 @@
   },
   {
    "id": "n16c0",
-   "body": "<<FILL role=bridge words=36 beats='the inspector puts a straight edge across the third tread without being asked, looks at the gap underneath it, and writes something down'>>",
+   "body": "<<FILL role=bridge words=36 beats='the inspector puts a straight edge across the third tread without being asked, looks at the gap underneath it, and writes something down; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Compare the new sheet to the old plate\"; \"Find out what the seven years mean\"; \"Find out who made the simplification\"; \"Read the note that came with the file\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -2962,7 +3258,7 @@
   },
   {
    "id": "n16c1",
-   "body": "<<FILL role=bridge words=36 beats='the closing statement goes from eleven pages to four to two and back to four, and the four page version is the one that says only what was proved'>>",
+   "body": "<<FILL role=bridge words=36 beats='the closing statement goes from eleven pages to four to two and back to four, and the four page version is the one that says only what was proved; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Compare the new sheet to the old plate\"; \"Find out what the seven years mean\"; \"Find out who made the simplification\"; \"Read the note that came with the file\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -2974,7 +3270,7 @@
   },
   {
    "id": "n16c2",
-   "body": "<<FILL role=bridge words=36 beats='conceding two ways is a paragraph that takes an hour to write and is read in nine seconds, and it is the most difficult paragraph in the document'>>",
+   "body": "<<FILL role=bridge words=36 beats='conceding two ways is a paragraph that takes an hour to write and is read in nine seconds, and it is the most difficult paragraph in the document; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Compare the new sheet to the old plate\"; \"Find out what the seven years mean\"; \"Find out who made the simplification\"; \"Read the note that came with the file\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -2986,7 +3282,7 @@
   },
   {
    "id": "n16c3",
-   "body": "<<FILL role=bridge words=36 beats='a laminated notice explaining the order goes up at the bottom of the Sixty Steps, and by the second morning somebody has written thank you on it in pencil'>>",
+   "body": "<<FILL role=bridge words=36 beats='a laminated notice explaining the order goes up at the bottom of the Sixty Steps, and by the second morning somebody has written thank you on it in pencil; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Compare the new sheet to the old plate\"; \"Find out what the seven years mean\"; \"Find out who made the simplification\"; \"Read the note that came with the file\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -3056,7 +3352,7 @@
   },
   {
    "id": "n17d0",
-   "body": "<<FILL role=rising words=106 beats='seven of the nine ways confirmed as public rights of way, two refused, and a paragraph about the wear table that Wren cuts out and pins above the bench'>>",
+   "body": "<<FILL role=rising words=106 beats='seven of the nine ways confirmed as public rights of way, two refused, and a paragraph about the wear table that Wren cuts out and pins above the bench; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Compare the new sheet to the old plate\"; \"Find out what the seven years mean\"; \"Find out who made the simplification\"; \"Read the note that came with the file\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -3078,7 +3374,7 @@
   },
   {
    "id": "n17d1",
-   "body": "<<FILL role=rising words=106 beats='confirmation is not recording, somebody has to make the entry, the entry is made by the council, and the council is busy'>>",
+   "body": "<<FILL role=rising words=106 beats='confirmation is not recording, somebody has to make the entry, the entry is made by the council, and the council is busy; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Compare the new sheet to the old plate\"; \"Find out what the seven years mean\"; \"Find out who made the simplification\"; \"Read the note that came with the file\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -3100,7 +3396,7 @@
   },
   {
    "id": "n17d2",
-   "body": "<<FILL role=rising words=106 beats='Ferris has held the press for three weeks and Wren has the plate cut, and the seven ways go down in metal on a Tuesday morning'>>",
+   "body": "<<FILL role=rising words=106 beats='Ferris has held the press for three weeks and Wren has the plate cut, and the seven ways go down in metal on a Tuesday morning; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Compare the new sheet to the old plate\"; \"Find out what the seven years mean\"; \"Find out who made the simplification\"; \"Read the note that came with the file\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -3122,7 +3418,7 @@
   },
   {
    "id": "n17d3",
-   "body": "<<FILL role=rising words=106 beats='a recorded way is a maintained way, which means the gully is cleared by the council and Ivo can stop, and Ivo says he will carry on anyway'>>",
+   "body": "<<FILL role=rising words=106 beats='a recorded way is a maintained way, which means the gully is cleared by the council and Ivo can stop, and Ivo says he will carry on anyway; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Compare the new sheet to the old plate\"; \"Find out what the seven years mean\"; \"Find out who made the simplification\"; \"Read the note that came with the file\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -3144,7 +3440,7 @@
   },
   {
    "id": "n17d4",
-   "body": "<<FILL role=rising words=106 beats='the two refused ways can be resubmitted with better evidence, and the evidence that was missing is known exactly, which is the useful part of losing'>>",
+   "body": "<<FILL role=rising words=106 beats='the two refused ways can be resubmitted with better evidence, and the evidence that was missing is known exactly, which is the useful part of losing; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Compare the new sheet to the old plate\"; \"Find out what the seven years mean\"; \"Find out who made the simplification\"; \"Read the note that came with the file\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -3166,7 +3462,7 @@
   },
   {
    "id": "n17d5",
-   "body": "<<FILL role=rising words=106 beats='the method now exists and is written down, and three hundred and thirty one is a number a city could work through in ten years if it decided to'>>",
+   "body": "<<FILL role=rising words=106 beats='the method now exists and is written down, and three hundred and thirty one is a number a city could work through in ten years if it decided to; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Compare the new sheet to the old plate\"; \"Find out what the seven years mean\"; \"Find out who made the simplification\"; \"Read the note that came with the file\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -3188,7 +3484,7 @@
   },
   {
    "id": "n17d6",
-   "body": "<<FILL role=rising words=106 beats='the notice at the bottom of the steps is replaced with one saying the Sixty Steps are recorded, and somebody writes on it again, and this time it is a name and a date'>>",
+   "body": "<<FILL role=rising words=106 beats='the notice at the bottom of the steps is replaced with one saying the Sixty Steps are recorded, and somebody writes on it again, and this time it is a name and a date; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Compare the new sheet to the old plate\"; \"Find out what the seven years mean\"; \"Find out who made the simplification\"; \"Read the note that came with the file\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -3210,7 +3506,7 @@
   },
   {
    "id": "n17d7",
-   "body": "<<FILL role=rising words=106 beats='the simplification setting can be turned off for the next release if somebody accepts responsibility for four thousand unverified lines, and Trant now knows who would help'>>",
+   "body": "<<FILL role=rising words=106 beats='the simplification setting can be turned off for the next release if somebody accepts responsibility for four thousand unverified lines, and Trant now knows who would help; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Compare the new sheet to the old plate\"; \"Find out what the seven years mean\"; \"Find out who made the simplification\"; \"Read the note that came with the file\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -3232,7 +3528,7 @@
   },
   {
    "id": "n17d8",
-   "body": "<<FILL role=rising words=106 beats='Wren is sixty three, the map office has one engraver and no apprentice except you, and that arithmetic has been sitting in the room for a year'>>",
+   "body": "<<FILL role=rising words=106 beats='Wren is sixty three, the map office has one engraver and no apprentice except you, and that arithmetic has been sitting in the room for a year; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Compare the new sheet to the old plate\"; \"Find out what the seven years mean\"; \"Find out who made the simplification\"; \"Read the note that came with the file\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -3254,7 +3550,7 @@
   },
   {
    "id": "e17_0",
-   "body": "<<FILL role=success words=106 beats='the seven ways go onto the definitive map with dates and reference numbers, and from that entry they cannot be simplified away by any setting ever again'>>",
+   "body": "<<FILL role=success words=106 beats='the seven ways go onto the definitive map with dates and reference numbers, and from that entry they cannot be simplified away by any setting ever again; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Compare the new sheet to the old plate\"; \"Find out what the seven years mean\"; \"Find out who made the simplification\"; \"Read the note that came with the file\"), so the body must not depend on any of it.'>>",
    "is_ending": true,
    "ending": {
     "id": "e17_0",
@@ -3265,7 +3561,7 @@
   },
   {
    "id": "e17_1",
-   "body": "<<FILL role=completion words=106 beats='the plate goes down with all seven ways and the sources in the margin, and the printed edition that the maintenance teams carry is, for the first time in years, correct'>>",
+   "body": "<<FILL role=completion words=106 beats='the plate goes down with all seven ways and the sources in the margin, and the printed edition that the maintenance teams carry is, for the first time in years, correct; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Compare the new sheet to the old plate\"; \"Find out what the seven years mean\"; \"Find out who made the simplification\"; \"Read the note that came with the file\"), so the body must not depend on any of it.'>>",
    "is_ending": true,
    "ending": {
     "id": "e17_1",
@@ -3276,7 +3572,7 @@
   },
   {
    "id": "e17_2",
-   "body": "<<FILL role=discovery words=106 beats='not the photographs, not the plate, not the counts, but an insurance schedule from 1987 kept by a company that no longer exists, found because somebody kept looking after box six'>>",
+   "body": "<<FILL role=discovery words=106 beats='not the photographs, not the plate, not the counts, but an insurance schedule from 1987 kept by a company that no longer exists, found because somebody kept looking after box six; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Compare the new sheet to the old plate\"; \"Find out what the seven years mean\"; \"Find out who made the simplification\"; \"Read the note that came with the file\"), so the body must not depend on any of it.'>>",
    "is_ending": true,
    "ending": {
     "id": "e17_2",
@@ -3287,7 +3583,7 @@
   },
   {
    "id": "n18d0",
-   "body": "<<FILL role=rising words=112 beats='the two refusals name exactly what was missing, and one of the two is fixable with eleven statements and a Thursday in the photograph archive'>>",
+   "body": "<<FILL role=rising words=112 beats='the two refusals name exactly what was missing, and one of the two is fixable with eleven statements and a Thursday in the photograph archive; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Compare the new sheet to the old plate\"; \"Find out what the seven years mean\"; \"Find out who made the simplification\"; \"Read the note that came with the file\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -3309,7 +3605,7 @@
   },
   {
    "id": "n18d1",
-   "body": "<<FILL role=rising words=112 beats='eleven pages: how to count, how to take a statement, where the deposited plans are, and what an insurance schedule can tell you'>>",
+   "body": "<<FILL role=rising words=112 beats='eleven pages: how to count, how to take a statement, where the deposited plans are, and what an insurance schedule can tell you; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Compare the new sheet to the old plate\"; \"Find out what the seven years mean\"; \"Find out who made the simplification\"; \"Read the note that came with the file\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -3331,7 +3627,7 @@
   },
   {
    "id": "n18d2",
-   "body": "<<FILL role=rising words=112 beats='the Ferrisgate steps are the same case in a different postcode, and the survey is already six weeks old and running'>>",
+   "body": "<<FILL role=rising words=112 beats='the Ferrisgate steps are the same case in a different postcode, and the survey is already six weeks old and running; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Compare the new sheet to the old plate\"; \"Find out what the seven years mean\"; \"Find out who made the simplification\"; \"Read the note that came with the file\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -3353,7 +3649,7 @@
   },
   {
    "id": "n18d3",
-   "body": "<<FILL role=rising words=112 beats='Devi can run counts, Kestrel can walk routes and Basim can find documents, and none of them can do all three, and neither can you yet'>>",
+   "body": "<<FILL role=rising words=112 beats='Devi can run counts, Kestrel can walk routes and Basim can find documents, and none of them can do all three, and neither can you yet; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Compare the new sheet to the old plate\"; \"Find out what the seven years mean\"; \"Find out who made the simplification\"; \"Read the note that came with the file\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -3375,7 +3671,7 @@
   },
   {
    "id": "n18d4",
-   "body": "<<FILL role=rising words=112 beats='four thousand unverified lines can be checked by four thousand people once or by four people over ten years, and the first of those is a campaign'>>",
+   "body": "<<FILL role=rising words=112 beats='four thousand unverified lines can be checked by four thousand people once or by four people over ten years, and the first of those is a campaign; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Compare the new sheet to the old plate\"; \"Find out what the seven years mean\"; \"Find out who made the simplification\"; \"Read the note that came with the file\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -3397,7 +3693,7 @@
   },
   {
    "id": "n18d5",
-   "body": "<<FILL role=rising words=112 beats='Wren offers the full apprenticeship, five years, hand engraving, at exactly the moment the city has decided it does not need hand engraving'>>",
+   "body": "<<FILL role=rising words=112 beats='Wren offers the full apprenticeship, five years, hand engraving, at exactly the moment the city has decided it does not need hand engraving; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Compare the new sheet to the old plate\"; \"Find out what the seven years mean\"; \"Find out who made the simplification\"; \"Read the note that came with the file\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -3419,7 +3715,7 @@
   },
   {
    "id": "n18d6",
-   "body": "<<FILL role=rising words=112 beats='the original shortlist on the back of a proof sheet has nine ways on it, seven are done, and the sheet is still pinned to the wall'>>",
+   "body": "<<FILL role=rising words=112 beats='the original shortlist on the back of a proof sheet has nine ways on it, seven are done, and the sheet is still pinned to the wall; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Compare the new sheet to the old plate\"; \"Find out what the seven years mean\"; \"Find out who made the simplification\"; \"Read the note that came with the file\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -3441,7 +3737,7 @@
   },
   {
    "id": "n18c0",
-   "body": "<<FILL role=bridge words=36 beats='the Thursday light table again, four thousand photographs again, and this time you know what a gatepost looks like in 1963'>>",
+   "body": "<<FILL role=bridge words=36 beats='the Thursday light table again, four thousand photographs again, and this time you know what a gatepost looks like in 1963; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Compare the new sheet to the old plate\"; \"Find out what the seven years mean\"; \"Find out who made the simplification\"; \"Read the note that came with the file\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -3453,7 +3749,7 @@
   },
   {
    "id": "n18c1",
-   "body": "<<FILL role=bridge words=36 beats='the eleven pages become a stapled pamphlet that costs forty pence to print and turns up in three other cities within a year'>>",
+   "body": "<<FILL role=bridge words=36 beats='the eleven pages become a stapled pamphlet that costs forty pence to print and turns up in three other cities within a year; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Compare the new sheet to the old plate\"; \"Find out what the seven years mean\"; \"Find out who made the simplification\"; \"Read the note that came with the file\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -3465,7 +3761,7 @@
   },
   {
    "id": "n18c2",
-   "body": "<<FILL role=bridge words=36 beats='the Ferrisgate steps carry sixty people before nine, and one of them is a woman with a shopping trolley who does it twice'>>",
+   "body": "<<FILL role=bridge words=36 beats='the Ferrisgate steps carry sixty people before nine, and one of them is a woman with a shopping trolley who does it twice; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Compare the new sheet to the old plate\"; \"Find out what the seven years mean\"; \"Find out who made the simplification\"; \"Read the note that came with the file\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -3477,7 +3773,7 @@
   },
   {
    "id": "n18c3",
-   "body": "<<FILL role=bridge words=36 beats='the map office in the evening is the smell of ink and white spirit, the plan chest, and one bulb over the bench'>>",
+   "body": "<<FILL role=bridge words=36 beats='the map office in the evening is the smell of ink and white spirit, the plan chest, and one bulb over the bench; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Compare the new sheet to the old plate\"; \"Find out what the seven years mean\"; \"Find out who made the simplification\"; \"Read the note that came with the file\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -3489,7 +3785,7 @@
   },
   {
    "id": "n18c4",
-   "body": "<<FILL role=bridge words=36 beats='seven of the nine have a line through them in pencil and the other two do not, and nobody has taken the sheet down'>>",
+   "body": "<<FILL role=bridge words=36 beats='seven of the nine have a line through them in pencil and the other two do not, and nobody has taken the sheet down; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Compare the new sheet to the old plate\"; \"Find out what the seven years mean\"; \"Find out who made the simplification\"; \"Read the note that came with the file\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -3535,7 +3831,7 @@
   },
   {
    "id": "n19d0",
-   "body": "<<FILL role=rising words=100 beats='eleven new statements, the 1963 photograph and the wear table method, and the second order is confirmed without a hearing'>>",
+   "body": "<<FILL role=rising words=100 beats='eleven new statements, the 1963 photograph and the wear table method, and the second order is confirmed without a hearing; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Compare the new sheet to the old plate\"; \"Find out what the seven years mean\"; \"Find out who made the simplification\"; \"Read the note that came with the file\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -3557,7 +3853,7 @@
   },
   {
    "id": "n19d1",
-   "body": "<<FILL role=rising words=100 beats='three cities, then eleven, and a version with the forms in the back, and none of it is anything that anybody is paid to do'>>",
+   "body": "<<FILL role=rising words=100 beats='three cities, then eleven, and a version with the forms in the back, and none of it is anything that anybody is paid to do; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Compare the new sheet to the old plate\"; \"Find out what the seven years mean\"; \"Find out who made the simplification\"; \"Read the note that came with the file\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -3579,7 +3875,7 @@
   },
   {
    "id": "n19d2",
-   "body": "<<FILL role=rising words=100 beats='the Ferrisgate steps go in as a full order with the method applied from the first day, which takes seven months instead of eighteen'>>",
+   "body": "<<FILL role=rising words=100 beats='the Ferrisgate steps go in as a full order with the method applied from the first day, which takes seven months instead of eighteen; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Compare the new sheet to the old plate\"; \"Find out what the seven years mean\"; \"Find out who made the simplification\"; \"Read the note that came with the file\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -3601,7 +3897,7 @@
   },
   {
    "id": "n19d3",
-   "body": "<<FILL role=rising words=100 beats='Trant puts the simplification setting to review with a proposal that unverified lines are flagged rather than deleted, which is the whole argument in one word'>>",
+   "body": "<<FILL role=rising words=100 beats='Trant puts the simplification setting to review with a proposal that unverified lines are flagged rather than deleted, which is the whole argument in one word; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Compare the new sheet to the old plate\"; \"Find out what the seven years mean\"; \"Find out who made the simplification\"; \"Read the note that came with the file\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -3623,7 +3919,7 @@
   },
   {
    "id": "n19d4",
-   "body": "<<FILL role=rising words=100 beats='five years of hand engraving in a city that prints from files, learning a thing so that the thing does not stop, which is either sentiment or infrastructure'>>",
+   "body": "<<FILL role=rising words=100 beats='five years of hand engraving in a city that prints from files, learning a thing so that the thing does not stop, which is either sentiment or infrastructure; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Compare the new sheet to the old plate\"; \"Find out what the seven years mean\"; \"Find out who made the simplification\"; \"Read the note that came with the file\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -3645,7 +3941,7 @@
   },
   {
    "id": "n19d5",
-   "body": "<<FILL role=rising words=100 beats='there is a job at the record office and a course in surveying, both of them use everything you have learned, and neither of them is Wren'>>",
+   "body": "<<FILL role=rising words=100 beats='there is a job at the record office and a course in surveying, both of them use everything you have learned, and neither of them is Wren; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Compare the new sheet to the old plate\"; \"Find out what the seven years mean\"; \"Find out who made the simplification\"; \"Read the note that came with the file\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -3667,7 +3963,7 @@
   },
   {
    "id": "n19d6",
-   "body": "<<FILL role=rising words=100 beats='a year, two friendships strained, one sentence you should not have said at a pre hearing meeting, and a much clearer idea of what you are for'>>",
+   "body": "<<FILL role=rising words=100 beats='a year, two friendships strained, one sentence you should not have said at a pre hearing meeting, and a much clearer idea of what you are for; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Compare the new sheet to the old plate\"; \"Find out what the seven years mean\"; \"Find out who made the simplification\"; \"Read the note that came with the file\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -3689,7 +3985,7 @@
   },
   {
    "id": "n19d7",
-   "body": "<<FILL role=rising words=100 beats='Nan is slower than she was in February and still goes twice a day, and asks whether the steps are safe now, and the honest answer is yes'>>",
+   "body": "<<FILL role=rising words=100 beats='Nan is slower than she was in February and still goes twice a day, and asks whether the steps are safe now, and the honest answer is yes; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Compare the new sheet to the old plate\"; \"Find out what the seven years mean\"; \"Find out who made the simplification\"; \"Read the note that came with the file\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -3711,7 +4007,7 @@
   },
   {
    "id": "e19_0",
-   "body": "<<FILL role=success words=100 beats='all nine ways are recorded, the two refusals reversed on better evidence, and the shortlist on the back of the proof sheet has nine pencil lines through it'>>",
+   "body": "<<FILL role=success words=100 beats='all nine ways are recorded, the two refusals reversed on better evidence, and the shortlist on the back of the proof sheet has nine pencil lines through it; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Compare the new sheet to the old plate\"; \"Find out what the seven years mean\"; \"Find out who made the simplification\"; \"Read the note that came with the file\"), so the body must not depend on any of it.'>>",
    "is_ending": true,
    "ending": {
     "id": "e19_0",
@@ -3722,7 +4018,7 @@
   },
   {
    "id": "e19_1",
-   "body": "<<FILL role=completion words=100 beats='the pamphlet, the forms and the counting method go to eleven cities and to anybody who asks, and the work stops depending on any one person being available'>>",
+   "body": "<<FILL role=completion words=100 beats='the pamphlet, the forms and the counting method go to eleven cities and to anybody who asks, and the work stops depending on any one person being available; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Compare the new sheet to the old plate\"; \"Find out what the seven years mean\"; \"Find out who made the simplification\"; \"Read the note that came with the file\"), so the body must not depend on any of it.'>>",
    "is_ending": true,
    "ending": {
     "id": "e19_1",
@@ -3733,7 +4029,7 @@
   },
   {
    "id": "e19_2",
-   "body": "<<FILL role=setback words=100 beats='Ferrisgate is nineteen months further on than the Sixty Steps were, the survey is thorough and slow, and the steps are gone before the order is heard'>>",
+   "body": "<<FILL role=setback words=100 beats='Ferrisgate is nineteen months further on than the Sixty Steps were, the survey is thorough and slow, and the steps are gone before the order is heard; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Compare the new sheet to the old plate\"; \"Find out what the seven years mean\"; \"Find out who made the simplification\"; \"Read the note that came with the file\"), so the body must not depend on any of it.'>>",
    "is_ending": true,
    "ending": {
     "id": "e19_2",
@@ -3744,7 +4040,7 @@
   },
   {
    "id": "n20d0",
-   "body": "<<FILL role=rising words=106 beats='flagged rather than deleted means four thousand lines stay visible and marked as unverified, and the committee wants to know who is going to verify them'>>",
+   "body": "<<FILL role=rising words=106 beats='flagged rather than deleted means four thousand lines stay visible and marked as unverified, and the committee wants to know who is going to verify them; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Compare the new sheet to the old plate\"; \"Find out what the seven years mean\"; \"Find out who made the simplification\"; \"Read the note that came with the file\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -3766,7 +4062,7 @@
   },
   {
    "id": "n20d1",
-   "body": "<<FILL role=rising words=106 beats='anybody who walks a line can say so with a date and a photograph, and the checking becomes a thing a city does rather than a thing a department has time for'>>",
+   "body": "<<FILL role=rising words=106 beats='anybody who walks a line can say so with a date and a photograph, and the checking becomes a thing a city does rather than a thing a department has time for; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Compare the new sheet to the old plate\"; \"Find out what the seven years mean\"; \"Find out who made the simplification\"; \"Read the note that came with the file\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -3788,7 +4084,7 @@
   },
   {
    "id": "n20d2",
-   "body": "<<FILL role=rising words=106 beats='the hand cut plate costs more than it saves and is the only version anybody trusts, and defending that is a budget argument rather than an art argument'>>",
+   "body": "<<FILL role=rising words=106 beats='the hand cut plate costs more than it saves and is the only version anybody trusts, and defending that is a budget argument rather than an art argument; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Compare the new sheet to the old plate\"; \"Find out what the seven years mean\"; \"Find out who made the simplification\"; \"Read the note that came with the file\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -3810,7 +4106,7 @@
   },
   {
    "id": "n20d3",
-   "body": "<<FILL role=rising words=106 beats='counts at three sites twice a year for ten years is a series, and a series is the thing that answers the next simplification before it happens'>>",
+   "body": "<<FILL role=rising words=106 beats='counts at three sites twice a year for ten years is a series, and a series is the thing that answers the next simplification before it happens; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Compare the new sheet to the old plate\"; \"Find out what the seven years mean\"; \"Find out who made the simplification\"; \"Read the note that came with the file\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -3832,7 +4128,7 @@
   },
   {
    "id": "n20d4",
-   "body": "<<FILL role=rising words=106 beats='the statements are archived with names and dates, and in fifty years they will be the evidence somebody else needs, which is the point of a record office'>>",
+   "body": "<<FILL role=rising words=106 beats='the statements are archived with names and dates, and in fifty years they will be the evidence somebody else needs, which is the point of a record office; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Compare the new sheet to the old plate\"; \"Find out what the seven years mean\"; \"Find out who made the simplification\"; \"Read the note that came with the file\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -3854,7 +4150,7 @@
   },
   {
    "id": "n20d5",
-   "body": "<<FILL role=rising words=106 beats='three hundred and twenty two ways remain, and the method takes seven months each unless several people are running it at once'>>",
+   "body": "<<FILL role=rising words=106 beats='three hundred and twenty two ways remain, and the method takes seven months each unless several people are running it at once; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Compare the new sheet to the old plate\"; \"Find out what the seven years mean\"; \"Find out who made the simplification\"; \"Read the note that came with the file\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -3876,7 +4172,7 @@
   },
   {
    "id": "n20c0",
-   "body": "<<FILL role=bridge words=36 beats='eleven minutes, four slides and one photograph of a hollowed tread with a rule across it, and the committee asks about cost for nine of the eleven minutes'>>",
+   "body": "<<FILL role=bridge words=36 beats='eleven minutes, four slides and one photograph of a hollowed tread with a rule across it, and the committee asks about cost for nine of the eleven minutes; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Compare the new sheet to the old plate\"; \"Find out what the seven years mean\"; \"Find out who made the simplification\"; \"Read the note that came with the file\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -3888,7 +4184,7 @@
   },
   {
    "id": "n20c1",
-   "body": "<<FILL role=bridge words=36 beats='Devi builds the form in a weekend and it asks four questions, and the fourth question is the one that makes the answer usable'>>",
+   "body": "<<FILL role=bridge words=36 beats='Devi builds the form in a weekend and it asks four questions, and the fourth question is the one that makes the answer usable; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Compare the new sheet to the old plate\"; \"Find out what the seven years mean\"; \"Find out who made the simplification\"; \"Read the note that came with the file\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -3900,7 +4196,7 @@
   },
   {
    "id": "n20c2",
-   "body": "<<FILL role=bridge words=36 beats='the plate costs eleven hundred pounds and lasts eleven years, the file costs nothing and was wrong, and putting that on one sheet takes an afternoon'>>",
+   "body": "<<FILL role=bridge words=36 beats='the plate costs eleven hundred pounds and lasts eleven years, the file costs nothing and was wrong, and putting that on one sheet takes an afternoon; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Compare the new sheet to the old plate\"; \"Find out what the seven years mean\"; \"Find out who made the simplification\"; \"Read the note that came with the file\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -3912,7 +4208,7 @@
   },
   {
    "id": "n20c3",
-   "body": "<<FILL role=bridge words=36 beats='three sites, twice a year, the same method, written down and signed off, and a note about who does it when nobody does it'>>",
+   "body": "<<FILL role=bridge words=36 beats='three sites, twice a year, the same method, written down and signed off, and a note about who does it when nobody does it; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Compare the new sheet to the old plate\"; \"Find out what the seven years mean\"; \"Find out who made the simplification\"; \"Read the note that came with the file\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -3970,7 +4266,7 @@
   },
   {
    "id": "n21d0",
-   "body": "<<FILL role=rising words=112 beats='in the first year eleven hundred flagged lines are confirmed by members of the public and ninety are deleted properly, with a reason, by a named person'>>",
+   "body": "<<FILL role=rising words=112 beats='in the first year eleven hundred flagged lines are confirmed by members of the public and ninety are deleted properly, with a reason, by a named person; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Compare the new sheet to the old plate\"; \"Find out what the seven years mean\"; \"Find out who made the simplification\"; \"Read the note that came with the file\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -3992,7 +4288,7 @@
   },
   {
    "id": "n21d1",
-   "body": "<<FILL role=rising words=112 beats='the pamphlet is in eleven cities, two of them have modification orders running, and one of them has already lost a case in a way that teaches you something'>>",
+   "body": "<<FILL role=rising words=112 beats='the pamphlet is in eleven cities, two of them have modification orders running, and one of them has already lost a case in a way that teaches you something; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Compare the new sheet to the old plate\"; \"Find out what the seven years mean\"; \"Find out who made the simplification\"; \"Read the note that came with the file\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -4014,7 +4310,7 @@
   },
   {
    "id": "n21d2",
-   "body": "<<FILL role=rising words=112 beats='five years, a burin, a plan chest, and a trade that exists only because somebody in every generation decided that it should'>>",
+   "body": "<<FILL role=rising words=112 beats='five years, a burin, a plan chest, and a trade that exists only because somebody in every generation decided that it should; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Compare the new sheet to the old plate\"; \"Find out what the seven years mean\"; \"Find out who made the simplification\"; \"Read the note that came with the file\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -4036,7 +4332,7 @@
   },
   {
    "id": "n21d3",
-   "body": "<<FILL role=rising words=112 beats='Nan asked whether the steps were safe now, and safe means recorded, maintained and on the plate, and all three of those are true'>>",
+   "body": "<<FILL role=rising words=112 beats='Nan asked whether the steps were safe now, and safe means recorded, maintained and on the plate, and all three of those are true; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Compare the new sheet to the old plate\"; \"Find out what the seven years mean\"; \"Find out who made the simplification\"; \"Read the note that came with the file\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -4058,7 +4354,7 @@
   },
   {
    "id": "n21d4",
-   "body": "<<FILL role=rising words=112 beats='Ferrisgate is confirmed in seven months using the method, and the steps are cleared for the first time in nine years the following November'>>",
+   "body": "<<FILL role=rising words=112 beats='Ferrisgate is confirmed in seven months using the method, and the steps are cleared for the first time in nine years the following November; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Compare the new sheet to the old plate\"; \"Find out what the seven years mean\"; \"Find out who made the simplification\"; \"Read the note that came with the file\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -4080,7 +4376,7 @@
   },
   {
    "id": "n21d5",
-   "body": "<<FILL role=rising words=112 beats='the cut runs through the middle of the Pentrell courtyard with a paved surface, a light, and a small metal plate in the ground giving its reference number'>>",
+   "body": "<<FILL role=rising words=112 beats='the cut runs through the middle of the Pentrell courtyard with a paved surface, a light, and a small metal plate in the ground giving its reference number; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Compare the new sheet to the old plate\"; \"Find out what the seven years mean\"; \"Find out who made the simplification\"; \"Read the note that came with the file\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -4102,7 +4398,7 @@
   },
   {
    "id": "n21d6",
-   "body": "<<FILL role=rising words=112 beats='all of it the same except box six, the sentence at the pre hearing meeting and the fifty minutes, and none of those three were about the evidence'>>",
+   "body": "<<FILL role=rising words=112 beats='all of it the same except box six, the sentence at the pre hearing meeting and the fifty minutes, and none of those three were about the evidence; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Compare the new sheet to the old plate\"; \"Find out what the seven years mean\"; \"Find out who made the simplification\"; \"Read the note that came with the file\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -4124,7 +4420,7 @@
   },
   {
    "id": "e21_0",
-   "body": "<<FILL role=completion words=112 beats='five years later you cut a correction into a plate at the fourth attempt and grind out the first three, and Wren watches and says nothing, which is the highest praise available'>>",
+   "body": "<<FILL role=completion words=112 beats='five years later you cut a correction into a plate at the fourth attempt and grind out the first three, and Wren watches and says nothing, which is the highest praise available; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Compare the new sheet to the old plate\"; \"Find out what the seven years mean\"; \"Find out who made the simplification\"; \"Read the note that came with the file\"), so the body must not depend on any of it.'>>",
    "is_ending": true,
    "ending": {
     "id": "e21_0",
@@ -4135,7 +4431,7 @@
   },
   {
    "id": "e21_1",
-   "body": "<<FILL role=success words=112 beats='ten years, four thousand lines, several hundred people, and a definitive map that is definitive because a great many people walked somewhere and said so'>>",
+   "body": "<<FILL role=success words=112 beats='ten years, four thousand lines, several hundred people, and a definitive map that is definitive because a great many people walked somewhere and said so; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Compare the new sheet to the old plate\"; \"Find out what the seven years mean\"; \"Find out who made the simplification\"; \"Read the note that came with the file\"), so the body must not depend on any of it.'>>",
    "is_ending": true,
    "ending": {
     "id": "e21_1",
@@ -4146,7 +4442,7 @@
   },
   {
    "id": "e21_2",
-   "body": "<<FILL role=discovery words=112 beats='a map is not a picture of a place but a list of the things a city has agreed to look after, and anything left off the list stops being looked after, quietly, in about seven years'>>",
+   "body": "<<FILL role=discovery words=112 beats='a map is not a picture of a place but a list of the things a city has agreed to look after, and anything left off the list stops being looked after, quietly, in about seven years; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Compare the new sheet to the old plate\"; \"Find out what the seven years mean\"; \"Find out who made the simplification\"; \"Read the note that came with the file\"), so the body must not depend on any of it.'>>",
    "is_ending": true,
    "ending": {
     "id": "e21_2",
@@ -4157,7 +4453,7 @@
   },
   {
    "id": "n22d0",
-   "body": "<<FILL role=rising words=100 beats='the arithmetic that sat in the room for a year arrives again from the other side, and this time you are the one who has to make the offer'>>",
+   "body": "<<FILL role=rising words=100 beats='the arithmetic that sat in the room for a year arrives again from the other side, and this time you are the one who has to make the offer; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Compare the new sheet to the old plate\"; \"Find out what the seven years mean\"; \"Find out who made the simplification\"; \"Read the note that came with the file\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -4179,7 +4475,7 @@
   },
   {
    "id": "n22d1",
-   "body": "<<FILL role=rising words=100 beats='the second edition has the things that were learned the hard way in eleven cities, and a page at the front about box six'>>",
+   "body": "<<FILL role=rising words=100 beats='the second edition has the things that were learned the hard way in eleven cities, and a page at the front about box six; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Compare the new sheet to the old plate\"; \"Find out what the seven years mean\"; \"Find out who made the simplification\"; \"Read the note that came with the file\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -4201,7 +4497,7 @@
   },
   {
    "id": "n22d2",
-   "body": "<<FILL role=rising words=100 beats='a recorded way still has to be walked, because a way nobody walks becomes obstructed and an obstructed way becomes an argument all over again'>>",
+   "body": "<<FILL role=rising words=100 beats='a recorded way still has to be walked, because a way nobody walks becomes obstructed and an obstructed way becomes an argument all over again; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Compare the new sheet to the old plate\"; \"Find out what the seven years mean\"; \"Find out who made the simplification\"; \"Read the note that came with the file\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -4223,7 +4519,7 @@
   },
   {
    "id": "n22d3",
-   "body": "<<FILL role=rising words=100 beats='the ten year series ends, and a twenty year series is only a decision to carry on, made once, in exactly the same way as the first one'>>",
+   "body": "<<FILL role=rising words=100 beats='the ten year series ends, and a twenty year series is only a decision to carry on, made once, in exactly the same way as the first one; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Compare the new sheet to the old plate\"; \"Find out what the seven years mean\"; \"Find out who made the simplification\"; \"Read the note that came with the file\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -4245,7 +4541,7 @@
   },
   {
    "id": "n22c0",
-   "body": "<<FILL role=bridge words=36 beats='the plate for the Sixty Steps takes nine evenings and shows sixty two treads, the gradient, the gully, and the hollow in the third step'>>",
+   "body": "<<FILL role=bridge words=36 beats='the plate for the Sixty Steps takes nine evenings and shows sixty two treads, the gradient, the gully, and the hollow in the third step; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Compare the new sheet to the old plate\"; \"Find out what the seven years mean\"; \"Find out who made the simplification\"; \"Read the note that came with the file\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -4257,7 +4553,7 @@
   },
   {
    "id": "n22c1",
-   "body": "<<FILL role=bridge words=36 beats='the nine ways in April take an afternoon, and the tannery cut smells of nothing at all now, which is the strangest part'>>",
+   "body": "<<FILL role=bridge words=36 beats='the nine ways in April take an afternoon, and the tannery cut smells of nothing at all now, which is the strangest part; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Compare the new sheet to the old plate\"; \"Find out what the seven years mean\"; \"Find out who made the simplification\"; \"Read the note that came with the file\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -4269,7 +4565,7 @@
   },
   {
    "id": "n22c2",
-   "body": "<<FILL role=bridge words=36 beats='the bottom drawer still sticks and still has to be lifted rather than pulled, and you tell the new person that on the first day'>>",
+   "body": "<<FILL role=bridge words=36 beats='the bottom drawer still sticks and still has to be lifted rather than pulled, and you tell the new person that on the first day; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Compare the new sheet to the old plate\"; \"Find out what the seven years mean\"; \"Find out who made the simplification\"; \"Read the note that came with the file\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -4281,7 +4577,7 @@
   },
   {
    "id": "n22c3",
-   "body": "<<FILL role=bridge words=36 beats='the first pamphlet is eleven pages and slightly wrong in two places, and it has been used by more people than anything else you will ever make'>>",
+   "body": "<<FILL role=bridge words=36 beats='the first pamphlet is eleven pages and slightly wrong in two places, and it has been used by more people than anything else you will ever make; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Compare the new sheet to the old plate\"; \"Find out what the seven years mean\"; \"Find out who made the simplification\"; \"Read the note that came with the file\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -4293,7 +4589,7 @@
   },
   {
    "id": "e22_0",
-   "body": "<<FILL role=completion words=100 beats='the definitive map carries three hundred and nine ways that were not there before, each with a date, a reference and a person who walked it, and none of them can be simplified away'>>",
+   "body": "<<FILL role=completion words=100 beats='the definitive map carries three hundred and nine ways that were not there before, each with a date, a reference and a person who walked it, and none of them can be simplified away; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Compare the new sheet to the old plate\"; \"Find out what the seven years mean\"; \"Find out who made the simplification\"; \"Read the note that came with the file\"), so the body must not depend on any of it.'>>",
    "is_ending": true,
    "ending": {
     "id": "e22_0",
@@ -4304,7 +4600,7 @@
   },
   {
    "id": "e22_1",
-   "body": "<<FILL role=discovery words=100 beats='the ways stay on the record and are not walked, and in fifteen years four are obstructed and nobody notices until somebody tries to get through'>>",
+   "body": "<<FILL role=discovery words=100 beats='the ways stay on the record and are not walked, and in fifteen years four are obstructed and nobody notices until somebody tries to get through; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Compare the new sheet to the old plate\"; \"Find out what the seven years mean\"; \"Find out who made the simplification\"; \"Read the note that came with the file\"), so the body must not depend on any of it.'>>",
    "is_ending": true,
    "ending": {
     "id": "e22_1",
@@ -4315,7 +4611,7 @@
   },
   {
    "id": "n23d0",
-   "body": "<<FILL role=rising words=106 beats='from the top of the Sixty Steps you can see the tannery courtyard, the Ferrisgate flights, the school path, and about forty roofs of people who use them'>>",
+   "body": "<<FILL role=rising words=106 beats='from the top of the Sixty Steps you can see the tannery courtyard, the Ferrisgate flights, the school path, and about forty roofs of people who use them; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Compare the new sheet to the old plate\"; \"Find out what the seven years mean\"; \"Find out who made the simplification\"; \"Read the note that came with the file\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -4337,7 +4633,7 @@
   },
   {
    "id": "n23d1",
-   "body": "<<FILL role=rising words=106 beats='there are ways nobody has claimed because nobody uses them any more, and they are the ones that will be gone in a generation, and that may be correct'>>",
+   "body": "<<FILL role=rising words=106 beats='there are ways nobody has claimed because nobody uses them any more, and they are the ones that will be gone in a generation, and that may be correct; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Compare the new sheet to the old plate\"; \"Find out what the seven years mean\"; \"Find out who made the simplification\"; \"Read the note that came with the file\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -4359,7 +4655,7 @@
   },
   {
    "id": "n23d2",
-   "body": "<<FILL role=rising words=106 beats='the margin carries the sources in six point, and Wren was right that the margin is where a map tells the truth about itself'>>",
+   "body": "<<FILL role=rising words=106 beats='the margin carries the sources in six point, and Wren was right that the margin is where a map tells the truth about itself; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Compare the new sheet to the old plate\"; \"Find out what the seven years mean\"; \"Find out who made the simplification\"; \"Read the note that came with the file\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -4381,7 +4677,7 @@
   },
   {
    "id": "n23d3",
-   "body": "<<FILL role=rising words=106 beats='the first count sheet is a page of tally marks in your own handwriting from a Wednesday in February, and it says ninety one at the bottom'>>",
+   "body": "<<FILL role=rising words=106 beats='the first count sheet is a page of tally marks in your own handwriting from a Wednesday in February, and it says ninety one at the bottom; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Compare the new sheet to the old plate\"; \"Find out what the seven years mean\"; \"Find out who made the simplification\"; \"Read the note that came with the file\"), so the body must not depend on any of it.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -4403,7 +4699,7 @@
   },
   {
    "id": "e23_0",
-   "body": "<<FILL role=success words=106 beats='the plan chest, the press, the plates and the method go to somebody who will use them, and the map office has two engravers for the first time since 1979'>>",
+   "body": "<<FILL role=success words=106 beats='the plan chest, the press, the plates and the method go to somebody who will use them, and the map office has two engravers for the first time since 1979; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Compare the new sheet to the old plate\"; \"Find out what the seven years mean\"; \"Find out who made the simplification\"; \"Read the note that came with the file\"), so the body must not depend on any of it.'>>",
    "is_ending": true,
    "ending": {
     "id": "e23_0",
@@ -4414,7 +4710,7 @@
   },
   {
    "id": "e23_1",
-   "body": "<<FILL role=discovery words=106 beats='the first count sheet goes into the plan chest with the plates, and it is the least impressive object in the building and the one that everything else came from'>>",
+   "body": "<<FILL role=discovery words=106 beats='the first count sheet goes into the plan chest with the plates, and it is the least impressive object in the building and the one that everything else came from; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Compare the new sheet to the old plate\"; \"Find out what the seven years mean\"; \"Find out who made the simplification\"; \"Read the note that came with the file\"), so the body must not depend on any of it.'>>",
    "is_ending": true,
    "ending": {
     "id": "e23_1",
@@ -4425,7 +4721,7 @@
   },
   {
    "id": "e24_0",
-   "body": "<<FILL role=completion words=112 beats='the simplification that removed three hundred and forty ways is reversed line by line over eleven years by several hundred people, and the last one is entered on an ordinary Tuesday'>>",
+   "body": "<<FILL role=completion words=112 beats='the simplification that removed three hundred and forty ways is reversed line by line over eleven years by several hundred people, and the last one is entered on an ordinary Tuesday; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Compare the new sheet to the old plate\"; \"Find out what the seven years mean\"; \"Find out who made the simplification\"; \"Read the note that came with the file\"), so the body must not depend on any of it.'>>",
    "is_ending": true,
    "ending": {
     "id": "e24_0",
@@ -4436,7 +4732,7 @@
   },
   {
    "id": "e24_1",
-   "body": "<<FILL role=success words=112 beats='the council rebuilds the third flight, the gully is culverted properly, and the hollow in the third tread is left exactly as it is at the request of eleven residents'>>",
+   "body": "<<FILL role=success words=112 beats='the council rebuilds the third flight, the gully is culverted properly, and the hollow in the third tread is left exactly as it is at the request of eleven residents; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Compare the new sheet to the old plate\"; \"Find out what the seven years mean\"; \"Find out who made the simplification\"; \"Read the note that came with the file\"), so the body must not depend on any of it.'>>",
    "is_ending": true,
    "ending": {
     "id": "e24_1",
@@ -4447,7 +4743,7 @@
   },
   {
    "id": "e24_2",
-   "body": "<<FILL role=success words=112 beats='ninety one people go up the Sixty Steps between seven and nine on a Wednesday in February, which is the same number as the first count, and not one of them looks down'>>",
+   "body": "<<FILL role=success words=112 beats='ninety one people go up the Sixty Steps between seven and nine on a Wednesday in February, which is the same number as the first count, and not one of them looks down; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Compare the new sheet to the old plate\"; \"Find out what the seven years mean\"; \"Find out who made the simplification\"; \"Read the note that came with the file\"), so the body must not depend on any of it.'>>",
    "is_ending": true,
    "ending": {
     "id": "e24_2",
@@ -4458,7 +4754,7 @@
   },
   {
    "id": "e24_3",
-   "body": "<<FILL role=discovery words=112 beats='the answer that took a year to arrive is that a map is for the people who have to walk somewhere at seven in the morning, and that they are almost never asked'>>",
+   "body": "<<FILL role=discovery words=112 beats='the answer that took a year to arrive is that a map is for the people who have to walk somewhere at seven in the morning, and that they are almost never asked; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Compare the new sheet to the old plate\"; \"Find out what the seven years mean\"; \"Find out who made the simplification\"; \"Read the note that came with the file\"), so the body must not depend on any of it.'>>",
    "is_ending": true,
    "ending": {
     "id": "e24_3",
@@ -4469,7 +4765,7 @@
   },
   {
    "id": "e24_4",
-   "body": "<<FILL role=setback words=112 beats='the map office closes, the plates go into storage and then to a museum, and the file becomes the only map, and it is accurate, and nobody can now check it by hand'>>",
+   "body": "<<FILL role=setback words=112 beats='the map office closes, the plates go into storage and then to a museum, and the file becomes the only map, and it is accurate, and nobody can now check it by hand; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Compare the new sheet to the old plate\"; \"Find out what the seven years mean\"; \"Find out who made the simplification\"; \"Read the note that came with the file\"), so the body must not depend on any of it.'>>",
    "is_ending": true,
    "ending": {
     "id": "e24_4",

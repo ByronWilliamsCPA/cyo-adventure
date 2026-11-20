@@ -11,7 +11,7 @@
       "target": 4.5,
       "tolerance": 1.5
     },
-    "tier": 1,
+    "tier": 2,
     "themes": [
       "family",
       "reunion",
@@ -30,7 +30,32 @@
     "narrative_style": "prose",
     "production_eligible": true
   },
-  "variables": [],
+  "variables": [
+    {
+      "name": "did_go_back_down",
+      "type": "bool",
+      "initial": false,
+      "description": "Set when the reader chooses \"Go back down into the route l zone, where matriarch keeps the desk\" at n_hub; pays off at ob_pennants."
+    },
+    {
+      "name": "did_follow_warm_bread",
+      "type": "bool",
+      "initial": false,
+      "description": "Set when the reader chooses \"Follow the warm bread smell to the route k zone\" at n_hub; pays off at fin_midnight."
+    },
+    {
+      "name": "did_see_fin_chandelier",
+      "type": "bool",
+      "initial": false,
+      "description": "Set when the reader chooses \"See to the fin chandelier and its hundred candles\" at fin_hall; pays off at fin_summon."
+    },
+    {
+      "name": "did_find_sign_s",
+      "type": "bool",
+      "initial": false,
+      "description": "Set when the reader chooses \"Find the sign's r switchbox\" at ob_roof; pays off at gf_trick."
+    }
+  ],
   "start_node": "n_start",
   "nodes": [
     {
@@ -71,18 +96,32 @@
     },
     {
       "id": "n_hub",
-      "body": "<<FILL role=choice words=108 beats='the grand staircase landing, the crossroads of the whole {THRESHOLD}; from here the hotel spreads out like an opened hand: below, the lamplit {ROUTE_L_ZONE} behind the front desk; along one corridor, the double doors of the {ROUTE_K_ZONE} breathing a faint warm smell; behind frosted glass, the green glow of the {ROUTE_G_ZONE}; above, the {ROUTE_F_ZONE} where something quick is laughing; higher still, the narrow stair to the {ROUTE_R_ZONE}; and straight across, the shut grand doors of the {FINALE_ZONE} itself; keep this scene general so it reads naturally on a first visit or on any return trip between wings'>>",
+      "body": "<<FILL role=choice words=108 beats='the grand staircase landing, the crossroads of the whole {THRESHOLD}; from here the hotel spreads out like an opened hand: below, the lamplit {ROUTE_L_ZONE} behind the front desk; along one corridor, the double doors of the {ROUTE_K_ZONE} breathing a faint warm smell; behind frosted glass, the green glow of the {ROUTE_G_ZONE}; above, the {ROUTE_F_ZONE} where something quick is laughing; higher still, the narrow stair to the {ROUTE_R_ZONE}; and straight across, the shut grand doors of the {FINALE_ZONE} itself; keep this scene general so it reads naturally on a first visit or on any return trip between wings; PLANT SITE: these options are no longer cosmetic: \"Go back down into the {ROUTE_L_ZONE}, where {MATRIARCH} keeps the desk\" plants did_go_back_down (pays off at ob_pennants); \"Follow the warm bread smell to the {ROUTE_K_ZONE}\" plants did_follow_warm_bread (pays off at fin_midnight). Stage every option as appealing, with none the obviously right answer. MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Find the sign's {R_SWITCHBOX}\"; \"Follow the warm bread smell to the {ROUTE_K_ZONE}\"; \"Go back down into the {ROUTE_L_ZONE}, where {MATRIARCH} keeps the desk\"), so the body must not depend on any of it.'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_hub_lobby",
           "label": "Go back down into the {ROUTE_L_ZONE}, where {MATRIARCH} keeps the desk.",
-          "target": "lb_gate"
+          "target": "lb_gate",
+          "effects": [
+            {
+              "op": "set",
+              "var": "did_go_back_down",
+              "value": true
+            }
+          ]
         },
         {
           "id": "c_hub_kitchen",
           "label": "Follow the warm bread smell to the {ROUTE_K_ZONE}.",
-          "target": "kt_doors"
+          "target": "kt_doors",
+          "effects": [
+            {
+              "op": "set",
+              "var": "did_follow_warm_bread",
+              "value": true
+            }
+          ]
         },
         {
           "id": "c_hub_garden",
@@ -108,7 +147,7 @@
     },
     {
       "id": "lb_gate",
-      "body": "<<FILL role=choice words=96 beats='the {ROUTE_L_ZONE} by lantern light, seen from the foot of the stairs: dust sheets draped like sleeping swans, tall windows striped with moonlight, and the long front desk with its one faithful lamp where {MATRIARCH} keeps her post; behind the counter a doorway shows a wall of pigeonhole mailboxes, and a side door stands ajar on a room of brass sockets and cords; keep this arrival general so it reads naturally on a first visit or any return'>>",
+      "body": "<<FILL role=choice words=96 beats='the {ROUTE_L_ZONE} by lantern light, seen from the foot of the stairs: dust sheets draped like sleeping swans, tall windows striped with moonlight, and the long front desk with its one faithful lamp where {MATRIARCH} keeps her post; behind the counter a doorway shows a wall of pigeonhole mailboxes, and a side door stands ajar on a room of brass sockets and cords; keep this arrival general so it reads naturally on a first visit or any return; PLANT (did_go_back_down): the hero has just made this choice, and something concrete comes of it that a reader will remember: an object kept, a person helped, or a fact learned, named plainly in the prose. Invent it so that it would plausibly help much later, when the hero tries \"Rig the grand banner marked 100 as well, tonight\" (node ob_pennants): there it changes how that moment goes.'>>",
       "is_ending": false,
       "choices": [
         {
@@ -152,7 +191,7 @@
     },
     {
       "id": "lb_ask",
-      "body": "<<FILL role=choice words=104 beats='{MATRIARCH} tries to remember her family and comes back with everything except the people: someone who smelled of bread and thyme, someone who hummed to plants, two small someones who were never not running; the names and faces slide away like water off glass, and her lamp dims a shade before she straightens and brightens it herself; everything the {THRESHOLD} ever knew is written down somewhere, she says, that is what a hotel is, a building that keeps track of its people'>>",
+      "body": "<<FILL role=choice words=104 beats='{MATRIARCH} tries to remember her family and comes back with everything except the people: someone who smelled of bread and thyme, someone who hummed to plants, two small someones who were never not running; the names and faces slide away like water off glass, and her lamp dims a shade before she straightens and brightens it herself; everything the {THRESHOLD} ever knew is written down somewhere, she says, that is what a hotel is, a building that keeps track of its people; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Find the sign's {R_SWITCHBOX}\"; \"Follow the warm bread smell to the {ROUTE_K_ZONE}\"), so the body must not depend on any of it.'>>",
       "is_ending": false,
       "choices": [
         {
@@ -220,7 +259,7 @@
     },
     {
       "id": "lb_mail",
-      "body": "<<FILL role=choice words=98 beats='the {L_MAILROOM}: one hundred pigeonholes floor to ceiling, most empty, a few still holding shapes that make {HERO}'s lantern hand slow down; box 9 has a yellowed envelope that smells faintly of thyme; box 44 bristles with folded {L_DARTS}; and the top row, up a {L_LADDER}, keeps its secrets in shadow'>>",
+      "body": "<<FILL role=choice words=98 beats='the {L_MAILROOM}: one hundred pigeonholes floor to ceiling, most empty, a few still holding shapes that make {HERO}'s lantern hand slow down; box 9 has a yellowed envelope that smells faintly of thyme; box 44 bristles with folded {L_DARTS}; and the top row, up a {L_LADDER}, keeps its secrets in shadow; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Find the sign's {R_SWITCHBOX}\"; \"Follow the warm bread smell to the {ROUTE_K_ZONE}\"), so the body must not depend on any of it.'>>",
       "is_ending": false,
       "choices": [
         {
@@ -310,7 +349,7 @@
     },
     {
       "id": "lb_switch",
-      "body": "<<FILL role=choice words=98 beats='the {L_SWITCHBOARD}: a wall of brass sockets and cloth-wrapped cords, a headset on a hook, and a {L_HORN} like a great ear trumpet aimed at the whole hotel; one socket, room by room long dead, still carries a faint furry buzz, a line that never quite hung up; {HERO}'s fingers itch toward the cords'>>",
+      "body": "<<FILL role=choice words=98 beats='the {L_SWITCHBOARD}: a wall of brass sockets and cloth-wrapped cords, a headset on a hook, and a {L_HORN} like a great ear trumpet aimed at the whole hotel; one socket, room by room long dead, still carries a faint furry buzz, a line that never quite hung up; {HERO}'s fingers itch toward the cords; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Find the sign's {R_SWITCHBOX}\"; \"Follow the warm bread smell to the {ROUTE_K_ZONE}\"), so the body must not depend on any of it.'>>",
       "is_ending": false,
       "choices": [
         {
@@ -400,7 +439,7 @@
     },
     {
       "id": "lb_office",
-      "body": "<<FILL role=choice words=100 beats='the {L_OFFICE} behind the desk: a rolltop desk with a stubborn latch, a {L_PORTRAIT} turned to face the wall, a {L_CLOCK} stopped and dusty, and a lower drawer packed with letters in rubber bands gone brittle; the room smells of ink and quiet; everything in it seems to be waiting to be asked a question'>>",
+      "body": "<<FILL role=choice words=100 beats='the {L_OFFICE} behind the desk: a rolltop desk with a stubborn latch, a {L_PORTRAIT} turned to face the wall, a {L_CLOCK} stopped and dusty, and a lower drawer packed with letters in rubber bands gone brittle; the room smells of ink and quiet; everything in it seems to be waiting to be asked a question; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Find the sign's {R_SWITCHBOX}\"; \"Follow the warm bread smell to the {ROUTE_K_ZONE}\"), so the body must not depend on any of it.'>>",
       "is_ending": false,
       "choices": [
         {
@@ -439,7 +478,7 @@
     },
     {
       "id": "lb_rolltop",
-      "body": "<<FILL role=choice words=100 beats='the latch gives and the rolltop rattles up over the one book {HERO} has been hoping for, the {L_LEDGER} for the {OCCASION}; the guest list opens flat, and the top five lines are written in {MATRIARCH}'s own copperplate, {COOK}, FAMILY; {GARDENER}, FAMILY; {TWIN_A}, FAMILY; {TWIN_B}, FAMILY; and last, smaller, {MATRIARCH}, FAMILY FIRST, GUESTS AFTER; five names, safe in ink all along'>>",
+      "body": "<<FILL role=choice words=100 beats='the latch gives and the rolltop rattles up over the one book {HERO} has been hoping for, the {L_LEDGER} for the {OCCASION}; the guest list opens flat, and the top five lines are written in {MATRIARCH}'s own copperplate, {COOK}, FAMILY; {GARDENER}, FAMILY; {TWIN_A}, FAMILY; {TWIN_B}, FAMILY; and last, smaller, {MATRIARCH}, FAMILY FIRST, GUESTS AFTER; five names, safe in ink all along; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Find the sign's {R_SWITCHBOX}\"; \"Follow the warm bread smell to the {ROUTE_K_ZONE}\"), so the body must not depend on any of it.'>>",
       "is_ending": false,
       "choices": [
         {
@@ -490,7 +529,7 @@
     },
     {
       "id": "lb_show",
-      "body": "<<FILL role=rising words=104 beats='{HERO} spreads tonight's lobby findings across the desk blotter; write this general, whatever she happens to carry this trip, a menu, a paper dart, a pressed flower, a ledger, or only news, so it reads true on any path; {MATRIARCH} touches each find or each word like a keeper checking room by room, and her lamp burns warmer with every one; the hotel kept track of us, she whispers, I knew it would; her eyes come up bright and resolved'>>",
+      "body": "<<FILL role=rising words=104 beats='{HERO} spreads tonight's lobby findings across the desk blotter; write this general, whatever she happens to carry this trip, a menu, a paper dart, a pressed flower, a ledger, or only news, so it reads true on any path; {MATRIARCH} touches each find or each word like a keeper checking room by room, and her lamp burns warmer with every one; the hotel kept track of us, she whispers, I knew it would; her eyes come up bright and resolved; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Find the sign's {R_SWITCHBOX}\"; \"Follow the warm bread smell to the {ROUTE_K_ZONE}\"), so the body must not depend on any of it.'>>",
       "is_ending": false,
       "choices": [
         {
@@ -531,7 +570,7 @@
     },
     {
       "id": "lb_promise",
-      "body": "<<FILL role=choice words=100 beats='{HERO} gives her word as the new keeper of the hundred keys, and {MATRIARCH} stands straighter than lamplight, sets her cap, and begins polishing the silver bell for the big night; write the parting general so it reads the same however {HERO} got here; the grand staircase waits through the archway, and across the landing the {FINALE_ZONE} doors wait for someone with a key and a promise'>>",
+      "body": "<<FILL role=choice words=100 beats='{HERO} gives her word as the new keeper of the hundred keys, and {MATRIARCH} stands straighter than lamplight, sets her cap, and begins polishing the silver bell for the big night; write the parting general so it reads the same however {HERO} got here; the grand staircase waits through the archway, and across the landing the {FINALE_ZONE} doors wait for someone with a key and a promise; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Find the sign's {R_SWITCHBOX}\"; \"Follow the warm bread smell to the {ROUTE_K_ZONE}\"), so the body must not depend on any of it.'>>",
       "is_ending": false,
       "choices": [
         {
@@ -608,7 +647,7 @@
     },
     {
       "id": "kt_doors",
-      "body": "<<FILL role=choice words=98 beats='the kitchen's double doors swing at a touch, and the impossible smell arrives first, warm bread and thyme in a hotel closed forty years; beyond the doors a corridor splits three ways, toward the great main kitchen where copper glints, down a narrow pantry passage lined with shelves, and toward a bakery where an oven ticks with heat; keep this arrival general so it reads naturally on a first visit or any return'>>",
+      "body": "<<FILL role=choice words=98 beats='the kitchen's double doors swing at a touch, and the impossible smell arrives first, warm bread and thyme in a hotel closed forty years; beyond the doors a corridor splits three ways, toward the great main kitchen where copper glints, down a narrow pantry passage lined with shelves, and toward a bakery where an oven ticks with heat; keep this arrival general so it reads naturally on a first visit or any return; PLANT (did_follow_warm_bread): the hero has just made this choice, and something concrete comes of it that a reader will remember: an object kept, a person helped, or a fact learned, named plainly in the prose. Invent it so that it would plausibly help much later, when the hero tries \"Wish them rest, and one sweet goodnight all together\" (node fin_midnight): there it changes how that moment goes.'>>",
       "is_ending": false,
       "choices": [
         {
@@ -630,7 +669,7 @@
     },
     {
       "id": "kt_main",
-      "body": "<<FILL role=choice words=104 beats='the great kitchen: a city of copper pots, a stove glowing with ghost-light, and at its heart a broad transparent man in cook's whites, tasting from a long spoon and humming; write him general and re-entry-safe, a cook mid-shift whether {HERO} is seeing him for the first time or the third, he takes a midnight visitor in easy stride, {ROUTE_K_ZONE} are never closed to hungry children; steam that is not quite steam curls up through him and he salts it anyway'>>",
+      "body": "<<FILL role=choice words=104 beats='the great kitchen: a city of copper pots, a stove glowing with ghost-light, and at its heart a broad transparent man in cook's whites, tasting from a long spoon and humming; write him general and re-entry-safe, a cook mid-shift whether {HERO} is seeing him for the first time or the third, he takes a midnight visitor in easy stride, {ROUTE_K_ZONE} are never closed to hungry children; steam that is not quite steam curls up through him and he salts it anyway; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Find the sign's {R_SWITCHBOX}\"; \"Go back down into the {ROUTE_L_ZONE}, where {MATRIARCH} keeps the desk\"), so the body must not depend on any of it.'>>",
       "is_ending": false,
       "choices": [
         {
@@ -647,7 +686,7 @@
     },
     {
       "id": "kt_hello",
-      "body": "<<FILL role=choice words=96 beats='the cook beams like an oven door opening, waves {HERO} onto a stool at the worktable, and is three sentences into the secret of proper soup before she has sat down; he talks recipes the way other people talk about their families, which may be exactly what he is doing; midway he reaches for the name of whoever taught him the thyme trick, and the sentence just, softly, runs out'>>",
+      "body": "<<FILL role=choice words=96 beats='the cook beams like an oven door opening, waves {HERO} onto a stool at the worktable, and is three sentences into the secret of proper soup before she has sat down; he talks recipes the way other people talk about their families, which may be exactly what he is doing; midway he reaches for the name of whoever taught him the thyme trick, and the sentence just, softly, runs out; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Find the sign's {R_SWITCHBOX}\"; \"Go back down into the {ROUTE_L_ZONE}, where {MATRIARCH} keeps the desk\"), so the body must not depend on any of it.'>>",
       "is_ending": false,
       "choices": [
         {
@@ -720,7 +759,7 @@
     },
     {
       "id": "kt_ticket",
-      "body": "<<FILL role=rising words=92 beats='the ticket, in copperplate {HERO} has seen the like of at the front desk: SEVEN COURSES FOR THE {OCCASION}, FAMILY TABLE FIRST, and a single initial, P; the order that was never cancelled, so the kitchen never stopped; forty years of soup kept warm because nobody rang down to say otherwise'>>",
+      "body": "<<FILL role=rising words=92 beats='the ticket, in copperplate {HERO} has seen the like of at the front desk: SEVEN COURSES FOR THE {OCCASION}, FAMILY TABLE FIRST, and a single initial, P; the order that was never cancelled, so the kitchen never stopped; forty years of soup kept warm because nobody rang down to say otherwise; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Find the sign's {R_SWITCHBOX}\"; \"Go back down into the {ROUTE_L_ZONE}, where {MATRIARCH} keeps the desk\"), so the body must not depend on any of it.'>>",
       "is_ending": false,
       "choices": [
         {
@@ -737,7 +776,7 @@
     },
     {
       "id": "kt_who",
-      "body": "<<FILL role=choice words=96 beats='he circles the question like a pot he is afraid to burn: someone with flour on her sleeves and a little silver bell always at her elbow, someone who ran this whole house and still baked on Sundays; my mother, he says, wondering, I had a mother, in this very building, didn't I; his hat flickers brighter for a breath, then steadies'>>",
+      "body": "<<FILL role=choice words=96 beats='he circles the question like a pot he is afraid to burn: someone with flour on her sleeves and a little silver bell always at her elbow, someone who ran this whole house and still baked on Sundays; my mother, he says, wondering, I had a mother, in this very building, didn't I; his hat flickers brighter for a breath, then steadies; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Find the sign's {R_SWITCHBOX}\"; \"Go back down into the {ROUTE_L_ZONE}, where {MATRIARCH} keeps the desk\"), so the body must not depend on any of it.'>>",
       "is_ending": false,
       "choices": [
         {
@@ -754,7 +793,7 @@
     },
     {
       "id": "kt_for",
-      "body": "<<FILL role=choice words=96 beats='for the {FIN_TABLE}, he says at once, then stops, ladle in the air; whoever they are; the order never came down to cancel, you see, so I keep it warm; forty years, he agrees, is a long time to keep a meal warm, but you do not stop cooking for your people just because you have mislaid them; {HERO}'s chest aches in the good sad way'>>",
+      "body": "<<FILL role=choice words=96 beats='for the {FIN_TABLE}, he says at once, then stops, ladle in the air; whoever they are; the order never came down to cancel, you see, so I keep it warm; forty years, he agrees, is a long time to keep a meal warm, but you do not stop cooking for your people just because you have mislaid them; {HERO}'s chest aches in the good sad way; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Find the sign's {R_SWITCHBOX}\"; \"Go back down into the {ROUTE_L_ZONE}, where {MATRIARCH} keeps the desk\"), so the body must not depend on any of it.'>>",
       "is_ending": false,
       "choices": [
         {
@@ -771,7 +810,7 @@
     },
     {
       "id": "kt_cook",
-      "body": "<<FILL role=choice words=100 beats='aprons on, and {HERO} is stirring while the cook narrates like a kindly storm; and a strange thing happens as they work: the busier his hands, the closer his memory creeps; the bread smell, he murmurs, my mother baked on Sundays even with a full brigade downstairs, and her name, her name was right there on the tip of the ladle; write this beat re-entry-safe, a memory circling nearer, never a one-time confession'>>",
+      "body": "<<FILL role=choice words=100 beats='aprons on, and {HERO} is stirring while the cook narrates like a kindly storm; and a strange thing happens as they work: the busier his hands, the closer his memory creeps; the bread smell, he murmurs, my mother baked on Sundays even with a full brigade downstairs, and her name, her name was right there on the tip of the ladle; write this beat re-entry-safe, a memory circling nearer, never a one-time confession; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Find the sign's {R_SWITCHBOX}\"; \"Go back down into the {ROUTE_L_ZONE}, where {MATRIARCH} keeps the desk\"), so the body must not depend on any of it.'>>",
       "is_ending": false,
       "choices": [
         {
@@ -788,7 +827,7 @@
     },
     {
       "id": "kt_tell",
-      "body": "<<FILL role=rising words=100 beats='{MATRIARCH}; the name goes through the kitchen like a struck bell, every copper pot ringing faintly in answer; write this re-entry-safe, the name striking fresh on a first telling and ringing deeper on a return, never a one-time revelation; the cook grips the worktable, eyes wide, whispering it twice, and for a moment he is bright as noon; he unties his apron to go to her, and falters at the doors, faded too thin to cross the dark alone; cooks come when dinner is called, he says finally, call a proper dinner, small guest, and I will come to her through any dark in this house'>>",
+      "body": "<<FILL role=rising words=100 beats='{MATRIARCH}; the name goes through the kitchen like a struck bell, every copper pot ringing faintly in answer; write this re-entry-safe, the name striking fresh on a first telling and ringing deeper on a return, never a one-time revelation; the cook grips the worktable, eyes wide, whispering it twice, and for a moment he is bright as noon; he unties his apron to go to her, and falters at the doors, faded too thin to cross the dark alone; cooks come when dinner is called, he says finally, call a proper dinner, small guest, and I will come to her through any dark in this house; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Find the sign's {R_SWITCHBOX}\"; \"Go back down into the {ROUTE_L_ZONE}, where {MATRIARCH} keeps the desk\"), so the body must not depend on any of it.'>>",
       "is_ending": false,
       "choices": [
         {
@@ -800,7 +839,7 @@
     },
     {
       "id": "kt_gentle",
-      "body": "<<FILL role=rising words=96 beats='{HERO} holds her tongue and stirs; the cook works the memory like dough, thyme, the thyme came from under glass, from the garden, from, and his face opens like a window, my sister grew the thyme, I have a sister, a sister with a sun hat and opinions about my parsley; he laughs out loud at the ceiling, one name closer to whole, and the stove burns brighter for it'>>",
+      "body": "<<FILL role=rising words=96 beats='{HERO} holds her tongue and stirs; the cook works the memory like dough, thyme, the thyme came from under glass, from the garden, from, and his face opens like a window, my sister grew the thyme, I have a sister, a sister with a sun hat and opinions about my parsley; he laughs out loud at the ceiling, one name closer to whole, and the stove burns brighter for it; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Find the sign's {R_SWITCHBOX}\"; \"Go back down into the {ROUTE_L_ZONE}, where {MATRIARCH} keeps the desk\"), so the body must not depend on any of it.'>>",
       "is_ending": false,
       "choices": [
         {
@@ -851,7 +890,7 @@
     },
     {
       "id": "kt_cold",
-      "body": "<<FILL role=choice words=98 beats='inside the cold room, glowing faintly with its own winter, stands the {K_CAKE}; five tiers, sugar gardenias, {THRESHOLD} 100 in silver script, candles set but never lit, kept perfect all this time by frost and stubborn love; on the middle tier stand five small {K_CAKE_FIGURES}, a cook, a gardener in a sun hat, two tiny bellhops, and a woman with a speck of a silver bell'>>",
+      "body": "<<FILL role=choice words=98 beats='inside the cold room, glowing faintly with its own winter, stands the {K_CAKE}; five tiers, sugar gardenias, {THRESHOLD} 100 in silver script, candles set but never lit, kept perfect all this time by frost and stubborn love; on the middle tier stand five small {K_CAKE_FIGURES}, a cook, a gardener in a sun hat, two tiny bellhops, and a woman with a speck of a silver bell; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Find the sign's {R_SWITCHBOX}\"; \"Go back down into the {ROUTE_L_ZONE}, where {MATRIARCH} keeps the desk\"), so the body must not depend on any of it.'>>",
       "is_ending": false,
       "choices": [
         {
@@ -914,7 +953,7 @@
     },
     {
       "id": "kt_bakery",
-      "body": "<<FILL role=choice words=94 beats='the bakery: an oven warm with no fire, dough rising under a cloth like a slow breath, flour handprints on the table edge, and floury footprints crossing the tiles; on the worktable a loaf is braided in a {K_LOAF}, and carved neat into the table's edge, ONE STRAND FOR EACH OF US; the room smells like Sunday morning in the middle of the night'>>",
+      "body": "<<FILL role=choice words=94 beats='the bakery: an oven warm with no fire, dough rising under a cloth like a slow breath, flour handprints on the table edge, and floury footprints crossing the tiles; on the worktable a loaf is braided in a {K_LOAF}, and carved neat into the table's edge, ONE STRAND FOR EACH OF US; the room smells like Sunday morning in the middle of the night; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Find the sign's {R_SWITCHBOX}\"; \"Go back down into the {ROUTE_L_ZONE}, where {MATRIARCH} keeps the desk\"), so the body must not depend on any of it.'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1016,7 +1055,7 @@
     },
     {
       "id": "kt_promise",
-      "body": "<<FILL role=choice words=102 beats='the cook ties on a fresh apron with the snap of a man who has been waiting forty years for exactly this; write the scene general, whichever memories stirred tonight, so it reads the same on any path; he begins prepping the {OCCASION} feast in earnest, seven courses and star buns and the {K_CAKE}'s hundred candles counted twice, and his orders to {HERO} are simple: ready the hall, then call dinner, and no cook in this world or the next will be late'>>",
+      "body": "<<FILL role=choice words=102 beats='the cook ties on a fresh apron with the snap of a man who has been waiting forty years for exactly this; write the scene general, whichever memories stirred tonight, so it reads the same on any path; he begins prepping the {OCCASION} feast in earnest, seven courses and star buns and the {K_CAKE}'s hundred candles counted twice, and his orders to {HERO} are simple: ready the hall, then call dinner, and no cook in this world or the next will be late; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Find the sign's {R_SWITCHBOX}\"; \"Go back down into the {ROUTE_L_ZONE}, where {MATRIARCH} keeps the desk\"), so the body must not depend on any of it.'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1149,7 +1188,7 @@
     },
     {
       "id": "wg_path",
-      "body": "<<FILL role=choice words=96 beats='the palm path glows with night-bloomers, flowers that open for the moon and moths; and ahead, unmistakably, a {G_CAN} is walking, or rather tipping itself along the beds in small careful pours, floating at exactly the height a hand would hold it; write the sight re-entry-safe, wonder without alarm, the garden's ordinary miracle on any visit'>>",
+      "body": "<<FILL role=choice words=96 beats='the palm path glows with night-bloomers, flowers that open for the moon and moths; and ahead, unmistakably, a {G_CAN} is walking, or rather tipping itself along the beds in small careful pours, floating at exactly the height a hand would hold it; write the sight re-entry-safe, wonder without alarm, the garden's ordinary miracle on any visit; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Find the sign's {R_SWITCHBOX}\"; \"Follow the warm bread smell to the {ROUTE_K_ZONE}\"; \"Go back down into the {ROUTE_L_ZONE}, where {MATRIARCH} keeps the desk\"), so the body must not depend on any of it.'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1212,7 +1251,7 @@
     },
     {
       "id": "wg_water",
-      "body": "<<FILL role=choice words=98 beats='they water together down the long beds, and the gardener introduces her plants like family, because, {HERO} slowly realizes, that is what they are; the {G_PEPPER} by the warm wall is {COOK}, likes the cooking smells, that one; the {G_ROSE} is {MATRIARCH}, blooms best when the lobby bell rings; and two vines racing up one trellis are {TWIN_A} and {TWIN_B}, tie themselves in knots, those two; she cannot say why the names are those names; her hands remember the family her mind lost'>>",
+      "body": "<<FILL role=choice words=98 beats='they water together down the long beds, and the gardener introduces her plants like family, because, {HERO} slowly realizes, that is what they are; the {G_PEPPER} by the warm wall is {COOK}, likes the cooking smells, that one; the {G_ROSE} is {MATRIARCH}, blooms best when the lobby bell rings; and two vines racing up one trellis are {TWIN_A} and {TWIN_B}, tie themselves in knots, those two; she cannot say why the names are those names; her hands remember the family her mind lost; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Find the sign's {R_SWITCHBOX}\"; \"Follow the warm bread smell to the {ROUTE_K_ZONE}\"; \"Go back down into the {ROUTE_L_ZONE}, where {MATRIARCH} keeps the desk\"), so the body must not depend on any of it.'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1280,7 +1319,7 @@
     },
     {
       "id": "wg_tell",
-      "body": "<<FILL role=rising words=100 beats='{HERO} says it plain and kind, using only what she knows for certain: this garden has been keeping a family, a family of five, and one of them, a small silver-haired lady called {MATRIARCH}, is downstairs at the front desk right now, keeping the lights on and missing them all; the gardener goes very still; a wind moves through the shut glasshouse, every leaf turning as if the whole garden looked up at once; write her wonder re-entry-safe, the truth landing fresh on a first telling and settling deeper on a return, never a one-time confession; then the evening is finally coming, she whispers, and the buds along the bed tremble like held applause'>>",
+      "body": "<<FILL role=rising words=100 beats='{HERO} says it plain and kind, using only what she knows for certain: this garden has been keeping a family, a family of five, and one of them, a small silver-haired lady called {MATRIARCH}, is downstairs at the front desk right now, keeping the lights on and missing them all; the gardener goes very still; a wind moves through the shut glasshouse, every leaf turning as if the whole garden looked up at once; write her wonder re-entry-safe, the truth landing fresh on a first telling and settling deeper on a return, never a one-time confession; then the evening is finally coming, she whispers, and the buds along the bed tremble like held applause; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Find the sign's {R_SWITCHBOX}\"; \"Follow the warm bread smell to the {ROUTE_K_ZONE}\"; \"Go back down into the {ROUTE_L_ZONE}, where {MATRIARCH} keeps the desk\"), so the body must not depend on any of it.'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1309,7 +1348,7 @@
     },
     {
       "id": "wg_gardenias",
-      "body": "<<FILL role=choice words=96 beats='the {G_GARDENBED} at the garden's heart: a hundred buds closed tight as promises, ranked and ready, and at the center a ring of five older bushes, glossier, deeper, tended like the crown jewels; keep this bed general and re-entry-safe, it reads the same whether {HERO} wandered here alone or was led; the five bushes stand in a circle like people holding hands'>>",
+      "body": "<<FILL role=choice words=96 beats='the {G_GARDENBED} at the garden's heart: a hundred buds closed tight as promises, ranked and ready, and at the center a ring of five older bushes, glossier, deeper, tended like the crown jewels; keep this bed general and re-entry-safe, it reads the same whether {HERO} wandered here alone or was led; the five bushes stand in a circle like people holding hands; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Find the sign's {R_SWITCHBOX}\"; \"Follow the warm bread smell to the {ROUTE_K_ZONE}\"; \"Go back down into the {ROUTE_L_ZONE}, where {MATRIARCH} keeps the desk\"), so the body must not depend on any of it.'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1343,7 +1382,7 @@
     },
     {
       "id": "wg_fountain",
-      "body": "<<FILL role=choice words=96 beats='the {G_FOUNTAIN}: a stone basin dry for decades that nonetheless sounds of water, and in its empty bowl swim goldfish made of soft light, circling, flicking, entirely content in their remembered pond; coins glint among the leaves at the bottom, and an old brass tap crusted green hides under the rim; the singing is the fish, or the memory of water, or both'>>",
+      "body": "<<FILL role=choice words=96 beats='the {G_FOUNTAIN}: a stone basin dry for decades that nonetheless sounds of water, and in its empty bowl swim goldfish made of soft light, circling, flicking, entirely content in their remembered pond; coins glint among the leaves at the bottom, and an old brass tap crusted green hides under the rim; the singing is the fish, or the memory of water, or both; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Find the sign's {R_SWITCHBOX}\"; \"Follow the warm bread smell to the {ROUTE_K_ZONE}\"; \"Go back down into the {ROUTE_L_ZONE}, where {MATRIARCH} keeps the desk\"), so the body must not depend on any of it.'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1416,7 +1455,7 @@
     },
     {
       "id": "wg_shed",
-      "body": "<<FILL role=choice words=96 beats='the {G_SHED}: seed drawers labeled in the round green hand, two child-size gloves hung on one peg like small salutes, an espalier chart marked O TRADES PASTRY FOR PLUMS, FAIR IS FAIR, and up through the roof, magnificently, a great {G_FIGTREE} has grown, taking the shed with it as if the building agreed to become a treehouse; a {G_LEDGER} lies open on the bench'>>",
+      "body": "<<FILL role=choice words=96 beats='the {G_SHED}: seed drawers labeled in the round green hand, two child-size gloves hung on one peg like small salutes, an espalier chart marked O TRADES PASTRY FOR PLUMS, FAIR IS FAIR, and up through the roof, magnificently, a great {G_FIGTREE} has grown, taking the shed with it as if the building agreed to become a treehouse; a {G_LEDGER} lies open on the bench; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Find the sign's {R_SWITCHBOX}\"; \"Follow the warm bread smell to the {ROUTE_K_ZONE}\"; \"Go back down into the {ROUTE_L_ZONE}, where {MATRIARCH} keeps the desk\"), so the body must not depend on any of it.'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1438,7 +1477,7 @@
     },
     {
       "id": "wg_ledger",
-      "body": "<<FILL role=choice words=94 beats='the ledger's last entry, dated forty years back: PLANTED FIVE GARDENIA BUSHES FOR THE FAMILY ROW, ALL OF US, ONE EACH, HANDS IN THE DIRT, BEST DAY; and pressed beneath the words, five thumbprints in dried soil, two of them very small; proof you could hold, that five people once knelt in one bed laughing, and that the garden has been keeping their handshake alive ever since'>>",
+      "body": "<<FILL role=choice words=94 beats='the ledger's last entry, dated forty years back: PLANTED FIVE GARDENIA BUSHES FOR THE FAMILY ROW, ALL OF US, ONE EACH, HANDS IN THE DIRT, BEST DAY; and pressed beneath the words, five thumbprints in dried soil, two of them very small; proof you could hold, that five people once knelt in one bed laughing, and that the garden has been keeping their handshake alive ever since; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Find the sign's {R_SWITCHBOX}\"; \"Follow the warm bread smell to the {ROUTE_K_ZONE}\"; \"Go back down into the {ROUTE_L_ZONE}, where {MATRIARCH} keeps the desk\"), so the body must not depend on any of it.'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1605,7 +1644,7 @@
     },
     {
       "id": "gf_three",
-      "body": "<<FILL role=choice words=96 beats='floor three's corridor stretches long and carpeted, doors 30 to 39 standing at attention; a {F_TROLLEY} rockets past all by itself, takes the corner on two wheels like a getaway pony, and stops dead outside a plain door marked LINEN; the giggling has gone suspiciously silent, which any detective knows means an audience is hoped for; write the corridor re-entry-safe, the game freshly afoot on any visit'>>",
+      "body": "<<FILL role=choice words=96 beats='floor three's corridor stretches long and carpeted, doors 30 to 39 standing at attention; a {F_TROLLEY} rockets past all by itself, takes the corner on two wheels like a getaway pony, and stops dead outside a plain door marked LINEN; the giggling has gone suspiciously silent, which any detective knows means an audience is hoped for; write the corridor re-entry-safe, the game freshly afoot on any visit; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Find the sign's {R_SWITCHBOX}\"; \"Follow the warm bread smell to the {ROUTE_K_ZONE}\"; \"Go back down into the {ROUTE_L_ZONE}, where {MATRIARCH} keeps the desk\"), so the body must not depend on any of it.'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1644,7 +1683,7 @@
     },
     {
       "id": "gf_playalong",
-      "body": "<<FILL role=choice words=98 beats='{HERO} strolls the corridor lamenting theatrically, no bellhops anywhere, and her with all this heavy invisible luggage; the curtains detonate; two bellhop kids tumble out mid-bow, caps crooked, delighted beyond containment, A GUEST, FINALLY, do you have BAGS, can we CARRY them; write the pair entry-neutral, they greet any audience with the same joyous ceremony whether {HERO} is brand new or back for more'>>",
+      "body": "<<FILL role=choice words=98 beats='{HERO} strolls the corridor lamenting theatrically, no bellhops anywhere, and her with all this heavy invisible luggage; the curtains detonate; two bellhop kids tumble out mid-bow, caps crooked, delighted beyond containment, A GUEST, FINALLY, do you have BAGS, can we CARRY them; write the pair entry-neutral, they greet any audience with the same joyous ceremony whether {HERO} is brand new or back for more; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Find the sign's {R_SWITCHBOX}\"; \"Follow the warm bread smell to the {ROUTE_K_ZONE}\"; \"Go back down into the {ROUTE_L_ZONE}, where {MATRIARCH} keeps the desk\"), so the body must not depend on any of it.'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1712,7 +1751,7 @@
     },
     {
       "id": "gf_ask",
-      "body": "<<FILL role=choice words=100 beats='they are bellhops, the best in the building, on shift a while now, which is bellhop for forty years; they keep the floors warmed up for the guests who will come for the big night, whenever that is; they bunk in the {F_LINEN}; and there is a rule, the grandmother rule, NO RUNNING IN THE LOBBY, which is why they never go downstairs at all, or we would LOSE THE GAME; asked who made the rule, they go quiet in stereo, reaching for a face that will not come'>>",
+      "body": "<<FILL role=choice words=100 beats='they are bellhops, the best in the building, on shift a while now, which is bellhop for forty years; they keep the floors warmed up for the guests who will come for the big night, whenever that is; they bunk in the {F_LINEN}; and there is a rule, the grandmother rule, NO RUNNING IN THE LOBBY, which is why they never go downstairs at all, or we would LOSE THE GAME; asked who made the rule, they go quiet in stereo, reaching for a face that will not come; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Find the sign's {R_SWITCHBOX}\"; \"Follow the warm bread smell to the {ROUTE_K_ZONE}\"; \"Go back down into the {ROUTE_L_ZONE}, where {MATRIARCH} keeps the desk\"), so the body must not depend on any of it.'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1746,7 +1785,7 @@
     },
     {
       "id": "gf_tellp",
-      "body": "<<FILL role=choice words=100 beats='{HERO} tells them what she knows first-hand from tonight: at the front desk, right now, sits a small silver-haired lady named {MATRIARCH}, polishing a silver bell and keeping the lights on; the name lands like a dropped tea tray; both twins flicker cap-bright, {MATRIARCH}, and then, in a rush, does she still keep peppermints in the third drawer down; they remember drawers, sweets, rules, everything but her face, and they are suddenly desperate to fix that'>>",
+      "body": "<<FILL role=choice words=100 beats='{HERO} tells them what she knows first-hand from tonight: at the front desk, right now, sits a small silver-haired lady named {MATRIARCH}, polishing a silver bell and keeping the lights on; the name lands like a dropped tea tray; both twins flicker cap-bright, {MATRIARCH}, and then, in a rush, does she still keep peppermints in the third drawer down; they remember drawers, sweets, rules, everything but her face, and they are suddenly desperate to fix that; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Find the sign's {R_SWITCHBOX}\"; \"Follow the warm bread smell to the {ROUTE_K_ZONE}\"; \"Go back down into the {ROUTE_L_ZONE}, where {MATRIARCH} keeps the desk\"), so the body must not depend on any of it.'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1763,7 +1802,7 @@
     },
     {
       "id": "gf_game",
-      "body": "<<FILL role=choice words=98 beats='the Great Corridor Game, explained at speed with both twins talking in relay: doors are goals, rolled towels are balls, the trolley is the chariot, banking shots off the lucky dent in door 36 is legal and encouraged; behind door 33 they show her the {F_SCOREWALL}, tally marks flooding the paint floor to ceiling, M VS M, BEST OF 1000, and the score frozen at 499 to 499'>>",
+      "body": "<<FILL role=choice words=98 beats='the Great Corridor Game, explained at speed with both twins talking in relay: doors are goals, rolled towels are balls, the trolley is the chariot, banking shots off the lucky dent in door 36 is legal and encouraged; behind door 33 they show her the {F_SCOREWALL}, tally marks flooding the paint floor to ceiling, M VS M, BEST OF 1000, and the score frozen at 499 to 499; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Find the sign's {R_SWITCHBOX}\"; \"Follow the warm bread smell to the {ROUTE_K_ZONE}\"; \"Go back down into the {ROUTE_L_ZONE}, where {MATRIARCH} keeps the desk\"), so the body must not depend on any of it.'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1780,7 +1819,7 @@
     },
     {
       "id": "gf_score",
-      "body": "<<FILL role=choice words=100 beats='you do not play the last point of a best-of-a-thousand in an empty hotel, they explain, patient as teachers; the final point is the whole game, so it waits for the party, when everyone will watch and somebody with a silver bell rings the start; they have been 499 to 499 for forty years, saving the best point for an audience; write their patience entry-neutral, proud and matter-of-fact on any visit, never a confession'>>",
+      "body": "<<FILL role=choice words=100 beats='you do not play the last point of a best-of-a-thousand in an empty hotel, they explain, patient as teachers; the final point is the whole game, so it waits for the party, when everyone will watch and somebody with a silver bell rings the start; they have been 499 to 499 for forty years, saving the best point for an audience; write their patience entry-neutral, proud and matter-of-fact on any visit, never a confession; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Find the sign's {R_SWITCHBOX}\"; \"Follow the warm bread smell to the {ROUTE_K_ZONE}\"; \"Go back down into the {ROUTE_L_ZONE}, where {MATRIARCH} keeps the desk\"), so the body must not depend on any of it.'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1819,7 +1858,7 @@
     },
     {
       "id": "gf_trick",
-      "body": "<<FILL role=choice words=94 beats='the triple-bank shot: off door 36's lucky dent, off the radiator, off the skirting, and the towel-ball drops into the trolley basket sweet as a sunset; both twins scream with joy, declare her an honorary bellhop, and crown her with a spare cap two sizes too small; somewhere below, the hotel's pipes knock twice, which the twins swear is applause'>>",
+      "body": "<<FILL role=choice words=94 beats='the triple-bank shot: off door 36's lucky dent, off the radiator, off the skirting, and the towel-ball drops into the trolley basket sweet as a sunset; both twins scream with joy, declare her an honorary bellhop, and crown her with a spare cap two sizes too small; somewhere below, the hotel's pipes knock twice, which the twins swear is applause; PAYOFF SITE (did_find_sign_s): readers arrive here both having and not having chosen \"Find the sign's {R_SWITCHBOX}\" earlier, so this body must be true either way and must not say which. The option \"Play just one more round\" plays out differently for the two: without that earlier choice it leads to the setback (e_gf_rounds); with it, to a recovery.'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1830,13 +1869,46 @@
         {
           "id": "c_gftr_more",
           "label": "Play just one more round.",
-          "target": "e_gf_rounds"
+          "target": "e_gf_rounds",
+          "condition": {
+            "==": [
+              {
+                "var": "did_find_sign_s"
+              },
+              false
+            ]
+          }
+        },
+        {
+          "id": "c_gftr_more_cq_did_find_sign_s",
+          "label": "Play just one more round.",
+          "target": "cq_payoff_did_find_sign_s",
+          "condition": {
+            "==": [
+              {
+                "var": "did_find_sign_s"
+              },
+              true
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "cq_payoff_did_find_sign_s",
+      "body": "<<FILL role=payoff words=25 beats='PAYOFF (did_find_sign_s): only a reader who earlier chose \"Find the sign's {R_SWITCHBOX}\" (node ob_roof) reaches this scene. The hero tries \"Play just one more round\". For a reader without that earlier choice the same move ends the story early (e_gf_rounds). Here the thing that came of it turns the moment around: show it returning concretely and making the difference. End with the hero moving on to \"While they are glowing, talk about the big night\", leading into the next scene (node gf_deal), which other readers also reach, without contradicting it.'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_cq_payoff_did_find_sign_s",
+          "label": "While they are glowing, talk about the big night.",
+          "target": "gf_deal"
         }
       ]
     },
     {
       "id": "gf_deal",
-      "body": "<<FILL role=rising words=100 beats='the deal is struck bellhop-fashion, white-glove handshakes, both twins at once, crossed arms; write the deal re-entry-safe, sworn fresh on a first visit or gladly and solemnly re-sworn on a return, never a one-time ceremony; when the call comes and the hall is bright, they will come down, walking in the lobby, RUNNING on the stairs, and play the final point of the Great Corridor Game before the whole assembled family, grandmother's bell to start it; and afterward, they announce, they will carry every bag in the building forever, which is bellhop for happily ever after'>>",
+      "body": "<<FILL role=rising words=100 beats='the deal is struck bellhop-fashion, white-glove handshakes, both twins at once, crossed arms; write the deal re-entry-safe, sworn fresh on a first visit or gladly and solemnly re-sworn on a return, never a one-time ceremony; when the call comes and the hall is bright, they will come down, walking in the lobby, RUNNING on the stairs, and play the final point of the Great Corridor Game before the whole assembled family, grandmother's bell to start it; and afterward, they announce, they will carry every bag in the building forever, which is bellhop for happily ever after; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Find the sign's {R_SWITCHBOX}\"; \"Follow the warm bread smell to the {ROUTE_K_ZONE}\"; \"Go back down into the {ROUTE_L_ZONE}, where {MATRIARCH} keeps the desk\"), so the body must not depend on any of it.'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1887,7 +1959,7 @@
     },
     {
       "id": "gf_nine",
-      "body": "<<FILL role=choice words=96 beats='the ninth floor, top of the numbered world, quieter and dustier, doors 90 to 99 dreaming; and at the corridor's end, where door 100 ought to be, there is no door at all, only a door-shaped outline in the wall, paint a shade warmer than the wall around it, with a small bright keyhole set at hand height in the plaster; a door that is not there, with a lock that is'>>",
+      "body": "<<FILL role=choice words=96 beats='the ninth floor, top of the numbered world, quieter and dustier, doors 90 to 99 dreaming; and at the corridor's end, where door 100 ought to be, there is no door at all, only a door-shaped outline in the wall, paint a shade warmer than the wall around it, with a small bright keyhole set at hand height in the plaster; a door that is not there, with a lock that is; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Find the sign's {R_SWITCHBOX}\"; \"Follow the warm bread smell to the {ROUTE_K_ZONE}\"; \"Go back down into the {ROUTE_L_ZONE}, where {MATRIARCH} keeps the desk\"), so the body must not depend on any of it.'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1921,7 +1993,7 @@
     },
     {
       "id": "gf_ear",
-      "body": "<<FILL role=rising words=92 beats='through the wall, faint as a music box in a snowstorm, {HERO} hears a waltz playing, and under it five voices laughing at once, a party sealed in the plaster like summer sealed in a jar; the wall is warm as a sleeping animal; whatever waits behind the hundredth door, it is not gone, it is kept; she steps back with her heart drumming softly'>>",
+      "body": "<<FILL role=rising words=92 beats='through the wall, faint as a music box in a snowstorm, {HERO} hears a waltz playing, and under it five voices laughing at once, a party sealed in the plaster like summer sealed in a jar; the wall is warm as a sleeping animal; whatever waits behind the hundredth door, it is not gone, it is kept; she steps back with her heart drumming softly; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Find the sign's {R_SWITCHBOX}\"; \"Follow the warm bread smell to the {ROUTE_K_ZONE}\"; \"Go back down into the {ROUTE_L_ZONE}, where {MATRIARCH} keeps the desk\"), so the body must not depend on any of it.'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1960,7 +2032,7 @@
     },
     {
       "id": "gf_drawing",
-      "body": "<<FILL role=choice words=94 beats='the drawing's five figures hold hands in a row before a hundred-windowed hotel; the labels underneath have worn to ghosts, all but one word under the tall center figure, {MATRIARCH}; behind {HERO} two voices arrive mid-scold, HEY, that is PRIVATE, and then, smaller, in duet, do you know who they are, we forgot; the question is offered up like a towel-ball, hopeful and brave'>>",
+      "body": "<<FILL role=choice words=94 beats='the drawing's five figures hold hands in a row before a hundred-windowed hotel; the labels underneath have worn to ghosts, all but one word under the tall center figure, {MATRIARCH}; behind {HERO} two voices arrive mid-scold, HEY, that is PRIVATE, and then, smaller, in duet, do you know who they are, we forgot; the question is offered up like a towel-ball, hopeful and brave; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Find the sign's {R_SWITCHBOX}\"; \"Follow the warm bread smell to the {ROUTE_K_ZONE}\"; \"Go back down into the {ROUTE_L_ZONE}, where {MATRIARCH} keeps the desk\"), so the body must not depend on any of it.'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1977,7 +2049,7 @@
     },
     {
       "id": "gf_caps",
-      "body": "<<FILL role=choice words=92 beats='the bottle caps are ranked by campaign, they explain, medals from the {K_DUMBWAITER}, which sends them up with snacks when nobody is looking; HE saves them for us, they say, and cannot say who HE is, only that the caps keep coming, forty years of tribute riding up a rope in the dark; a family still passing notes it cannot read, and never once missing a delivery'>>",
+      "body": "<<FILL role=choice words=92 beats='the bottle caps are ranked by campaign, they explain, medals from the {K_DUMBWAITER}, which sends them up with snacks when nobody is looking; HE saves them for us, they say, and cannot say who HE is, only that the caps keep coming, forty years of tribute riding up a rope in the dark; a family still passing notes it cannot read, and never once missing a delivery; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Find the sign's {R_SWITCHBOX}\"; \"Follow the warm bread smell to the {ROUTE_K_ZONE}\"; \"Go back down into the {ROUTE_L_ZONE}, where {MATRIARCH} keeps the desk\"), so the body must not depend on any of it.'>>",
       "is_ending": false,
       "choices": [
         {
@@ -2038,7 +2110,7 @@
     },
     {
       "id": "e_gf_rounds",
-      "body": "<<FILL role=ending words=98 beats='one more round becomes five becomes thirty; the corridor game has no natural ending and neither do the twins, and {HERO} plays until her arms are noodles and her laugh is cracked and the windows have gone traitorously pale; she surrenders on the carpet, honorable and destroyed, and the twins tuck her in the wing chair by the landing window like champions honoring the fallen; she wakes to her dad calling her name up the stairwell, one real peppermint on the chair arm, and the {F_SCOREWALL}, she notices, now carries one small new column marked J'>>",
+      "body": "<<FILL role=ending words=98 beats='one more round becomes five becomes thirty; the corridor game has no natural ending and neither do the twins, and {HERO} plays until her arms are noodles and her laugh is cracked and the windows have gone traitorously pale; she surrenders on the carpet, honorable and destroyed, and the twins tuck her in the wing chair by the landing window like champions honoring the fallen; she wakes to her dad calling her name up the stairwell, one real peppermint on the chair arm, and the {F_SCOREWALL}, she notices, now carries one small new column marked J; SETBACK HINT (did_find_sign_s): every reader who reaches this ending did NOT choose \"Find the sign's {R_SWITCHBOX}\" earlier. Let the ending glimpse what would have helped, so the reader has a concrete reason to try again; do not scold.'>>",
       "is_ending": true,
       "ending": {
         "id": "end_gf_rounds",
@@ -2127,7 +2199,7 @@
     },
     {
       "id": "ob_scope",
-      "body": "<<FILL role=choice words=94 beats='the eyepiece is warm, as if someone just stepped away, and through it the stars swim close enough to touch; tied to the focus knob is a small card, LAST AIMED AT THE PERSEIDS, LEAVE HER POINTED THERE FOR US, and beneath the words five sets of initials in five hands, P, O, W, M, M; a telescope kept like a promise, aimed at a patch of August sky'>>",
+      "body": "<<FILL role=choice words=94 beats='the eyepiece is warm, as if someone just stepped away, and through it the stars swim close enough to touch; tied to the focus knob is a small card, LAST AIMED AT THE PERSEIDS, LEAVE HER POINTED THERE FOR US, and beneath the words five sets of initials in five hands, P, O, W, M, M; a telescope kept like a promise, aimed at a patch of August sky; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Find the sign's {R_SWITCHBOX}\"; \"Follow the warm bread smell to the {ROUTE_K_ZONE}\"; \"Go back down into the {ROUTE_L_ZONE}, where {MATRIARCH} keeps the desk\"), so the body must not depend on any of it.'>>",
       "is_ending": false,
       "choices": [
         {
@@ -2161,7 +2233,7 @@
     },
     {
       "id": "ob_charts",
-      "body": "<<FILL role=choice words=96 beats='the {R_CHARTS} are annotated in five hands taking turns: copperplate noting WISH MADE beside a meteor's path, grease pencil marking SUPPER AT MOONRISE, round green ink reminding that SEEDS WANT MOONLIGHT TOO, and two rival scrawls keeping meteor count down the margin, 51 against 51, tied, of course; one wall, one sky, one family all over it'>>",
+      "body": "<<FILL role=choice words=96 beats='the {R_CHARTS} are annotated in five hands taking turns: copperplate noting WISH MADE beside a meteor's path, grease pencil marking SUPPER AT MOONRISE, round green ink reminding that SEEDS WANT MOONLIGHT TOO, and two rival scrawls keeping meteor count down the margin, 51 against 51, tied, of course; one wall, one sky, one family all over it; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Find the sign's {R_SWITCHBOX}\"; \"Follow the warm bread smell to the {ROUTE_K_ZONE}\"; \"Go back down into the {ROUTE_L_ZONE}, where {MATRIARCH} keeps the desk\"), so the body must not depend on any of it.'>>",
       "is_ending": false,
       "choices": [
         {
@@ -2195,7 +2267,7 @@
     },
     {
       "id": "ob_book",
-      "body": "<<FILL role=choice words=98 beats='the {R_LOG}'s last entry, forty years old, in copperplate: {OCCASION} TOMORROW, ALL FIVE OF US TOO EXCITED TO SLEEP, WATCHED AN EARLY METEOR AND MADE OUR WISH TOGETHER; WHATEVER HAPPENS, WE END EVERY GREAT EVENING ON THIS ROOF; {HERO} reads it twice and closes the book gently, like tucking it in; now she knows how a {THRESHOLD} evening is supposed to end'>>",
+      "body": "<<FILL role=choice words=98 beats='the {R_LOG}'s last entry, forty years old, in copperplate: {OCCASION} TOMORROW, ALL FIVE OF US TOO EXCITED TO SLEEP, WATCHED AN EARLY METEOR AND MADE OUR WISH TOGETHER; WHATEVER HAPPENS, WE END EVERY GREAT EVENING ON THIS ROOF; {HERO} reads it twice and closes the book gently, like tucking it in; now she knows how a {THRESHOLD} evening is supposed to end; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Find the sign's {R_SWITCHBOX}\"; \"Follow the warm bread smell to the {ROUTE_K_ZONE}\"; \"Go back down into the {ROUTE_L_ZONE}, where {MATRIARCH} keeps the desk\"), so the body must not depend on any of it.'>>",
       "is_ending": false,
       "choices": [
         {
@@ -2229,7 +2301,7 @@
     },
     {
       "id": "ob_crank",
-      "body": "<<FILL role=choice words=92 beats='the shutter crank grinds, groans, gives, and the dome's whole slice of sky yawns wide, stars pouring in; better, the dome itself rotates on its rail with a carousel-smooth glide when the crank turns, the heavens wheeling politely past the telescope; {HERO}, being eleven, immediately understands the possibilities of a room that spins'>>",
+      "body": "<<FILL role=choice words=92 beats='the shutter crank grinds, groans, gives, and the dome's whole slice of sky yawns wide, stars pouring in; better, the dome itself rotates on its rail with a carousel-smooth glide when the crank turns, the heavens wheeling politely past the telescope; {HERO}, being eleven, immediately understands the possibilities of a room that spins; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Find the sign's {R_SWITCHBOX}\"; \"Follow the warm bread smell to the {ROUTE_K_ZONE}\"; \"Go back down into the {ROUTE_L_ZONE}, where {MATRIARCH} keeps the desk\"), so the body must not depend on any of it.'>>",
       "is_ending": false,
       "choices": [
         {
@@ -2246,13 +2318,20 @@
     },
     {
       "id": "ob_roof",
-      "body": "<<FILL role=choice words=98 beats='the roof walk: a wide boarded path behind a high safe rail, the town asleep far below, wind fresh off the dark; overhead looms the hotel's great unlit sign, THE {THRESHOLD} in a hundred cold bulbs, and along the boards the paint is worn in a curious pattern of scuffs; at the walk's end a small {R_TURRET} stands with its locker; keep the rooftop general and re-entry-safe on any visit'>>",
+      "body": "<<FILL role=choice words=98 beats='the roof walk: a wide boarded path behind a high safe rail, the town asleep far below, wind fresh off the dark; overhead looms the hotel's great unlit sign, THE {THRESHOLD} in a hundred cold bulbs, and along the boards the paint is worn in a curious pattern of scuffs; at the walk's end a small {R_TURRET} stands with its locker; keep the rooftop general and re-entry-safe on any visit; PLANT SITE: these options are no longer cosmetic: \"Find the sign's {R_SWITCHBOX}\" plants did_find_sign_s (pays off at gf_trick). The other options must keep their own appeal, so this is a real trade-off. MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Find the sign's {R_SWITCHBOX}\"; \"Follow the warm bread smell to the {ROUTE_K_ZONE}\"; \"Go back down into the {ROUTE_L_ZONE}, where {MATRIARCH} keeps the desk\"), so the body must not depend on any of it.'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_obr_sign",
           "label": "Find the sign's {R_SWITCHBOX}.",
-          "target": "ob_sign"
+          "target": "cq_plant_did_find_sign_s",
+          "effects": [
+            {
+              "op": "set",
+              "var": "did_find_sign_s",
+              "value": true
+            }
+          ]
         },
         {
           "id": "c_obr_moon",
@@ -2263,6 +2342,18 @@
           "id": "c_obr_turret",
           "label": "Walk to the {R_TURRET} at the end.",
           "target": "ob_turret"
+        }
+      ]
+    },
+    {
+      "id": "cq_plant_did_find_sign_s",
+      "body": "<<FILL role=plant words=41 beats='Arrival beat for this choice, two or three sentences that show it happening and then lead straight into the next scene. PLANT (did_find_sign_s): the hero has just made this choice, and something concrete comes of it that a reader will remember: an object kept, a person helped, or a fact learned, named plainly in the prose. Invent it so that it would plausibly help much later, when the hero tries \"Play just one more round\" (node gf_trick): there it changes how that moment goes.'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_cq_plant_did_find_sign_s",
+          "label": "Find the sign's {R_SWITCHBOX}.",
+          "target": "ob_sign"
         }
       ]
     },
@@ -2285,7 +2376,7 @@
     },
     {
       "id": "ob_sign",
-      "body": "<<FILL role=choice words=94 beats='the {R_SWITCHBOX} is brass and serious, two switches inside: one furred with corrosion and labeled EVERY NIGHT, long dead, and one polished bright as new, labeled OCCASIONS, THE FAMILY WILL KNOW; forty years of dust everywhere except that one bright toggle, which somebody keeps ready; write this find general, reading the same on any visit; {HERO}'s thumb hovers'>>",
+      "body": "<<FILL role=choice words=94 beats='the {R_SWITCHBOX} is brass and serious, two switches inside: one furred with corrosion and labeled EVERY NIGHT, long dead, and one polished bright as new, labeled OCCASIONS, THE FAMILY WILL KNOW; forty years of dust everywhere except that one bright toggle, which somebody keeps ready; write this find general, reading the same on any visit; {HERO}'s thumb hovers; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Find the sign's {R_SWITCHBOX}\"; \"Follow the warm bread smell to the {ROUTE_K_ZONE}\"; \"Go back down into the {ROUTE_L_ZONE}, where {MATRIARCH} keeps the desk\"), so the body must not depend on any of it.'>>",
       "is_ending": false,
       "choices": [
         {
@@ -2319,7 +2410,7 @@
     },
     {
       "id": "ob_turret",
-      "body": "<<FILL role=choice words=92 beats='the {R_TURRET}'s locker opens on party rigging: a line of a hundred little pennants rolled tight, a coil of halyard, and beneath them a {R_CHEST} with brass corners breathing out the smell of ginger and wool; the turret rail overlooks the whole dark roof walk and the hundred-bulb sign; a crow's nest waiting for a festival'>>",
+      "body": "<<FILL role=choice words=92 beats='the {R_TURRET}'s locker opens on party rigging: a line of a hundred little pennants rolled tight, a coil of halyard, and beneath them a {R_CHEST} with brass corners breathing out the smell of ginger and wool; the turret rail overlooks the whole dark roof walk and the hundred-bulb sign; a crow's nest waiting for a festival; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Find the sign's {R_SWITCHBOX}\"; \"Follow the warm bread smell to the {ROUTE_K_ZONE}\"; \"Go back down into the {ROUTE_L_ZONE}, where {MATRIARCH} keeps the desk\"), so the body must not depend on any of it.'>>",
       "is_ending": false,
       "choices": [
         {
@@ -2336,7 +2427,7 @@
     },
     {
       "id": "ob_pennants",
-      "body": "<<FILL role=choice words=94 beats='a dozen pennants run up the halyard and the wind snaps them bright and chattering against the stars, the first festival colors this roof has flown in forty years; and behind her, soft but unmistakable, comes a patter of applause with no hands in sight, warm as a lit window; {HERO} bows to the dark, which seems only polite, and the applause dissolves into wind that has clearly enjoyed itself'>>",
+      "body": "<<FILL role=choice words=94 beats='a dozen pennants run up the halyard and the wind snaps them bright and chattering against the stars, the first festival colors this roof has flown in forty years; and behind her, soft but unmistakable, comes a patter of applause with no hands in sight, warm as a lit window; {HERO} bows to the dark, which seems only polite, and the applause dissolves into wind that has clearly enjoyed itself; PAYOFF SITE (did_go_back_down): readers arrive here both having and not having chosen \"Go back down into the {ROUTE_L_ZONE}, where {MATRIARCH} keeps the desk\" earlier, so this body must be true either way and must not say which. The option \"Rig the grand banner marked 100 as well, tonight\" plays out differently for the two: without that earlier choice it leads to the setback (e_ob_banner); with it, to a recovery.'>>",
       "is_ending": false,
       "choices": [
         {
@@ -2347,13 +2438,46 @@
         {
           "id": "c_obpe_banner",
           "label": "Rig the grand banner marked 100 as well, tonight.",
-          "target": "e_ob_banner"
+          "target": "e_ob_banner",
+          "condition": {
+            "==": [
+              {
+                "var": "did_go_back_down"
+              },
+              false
+            ]
+          }
+        },
+        {
+          "id": "c_obpe_banner_cq_did_go_back_down",
+          "label": "Rig the grand banner marked 100 as well, tonight.",
+          "target": "cq_payoff_did_go_back_down",
+          "condition": {
+            "==": [
+              {
+                "var": "did_go_back_down"
+              },
+              true
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "cq_payoff_did_go_back_down",
+      "body": "<<FILL role=payoff words=39 beats='PAYOFF (did_go_back_down): only a reader who earlier chose \"Go back down into the {ROUTE_L_ZONE}, where {MATRIARCH} keeps the desk\" (node n_hub) reaches this scene. The hero tries \"Rig the grand banner marked 100 as well, tonight\". For a reader without that earlier choice the same move ends the story early (e_ob_banner). Here the thing that came of it turns the moment around: show it returning concretely and making the difference. End with the hero moving on to \"Open the {R_CHEST} next\", leading into the next scene (node ob_chest), which other readers also reach, without contradicting it.'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_cq_payoff_did_go_back_down",
+          "label": "Open the {R_CHEST} next.",
+          "target": "ob_chest"
         }
       ]
     },
     {
       "id": "ob_chest",
-      "body": "<<FILL role=choice words=96 beats='the {R_CHEST} is the family's roof kit, packed by someone who loved them: five rolled deck chairs with name tags worn blank, two of them small; a biscuit tin, empty but still gingery; one blanket sized for five people who sit close; and on top, a {R_WHISTLE} on a lanyard, its little tag reading SUPPER'S READY, THREE BLASTS; {HERO} holds forty years of family evenings in one chest and breathes the ginger smell'>>",
+      "body": "<<FILL role=choice words=96 beats='the {R_CHEST} is the family's roof kit, packed by someone who loved them: five rolled deck chairs with name tags worn blank, two of them small; a biscuit tin, empty but still gingery; one blanket sized for five people who sit close; and on top, a {R_WHISTLE} on a lanyard, its little tag reading SUPPER'S READY, THREE BLASTS; {HERO} holds forty years of family evenings in one chest and breathes the ginger smell; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Find the sign's {R_SWITCHBOX}\"; \"Follow the warm bread smell to the {ROUTE_K_ZONE}\"; \"Go back down into the {ROUTE_L_ZONE}, where {MATRIARCH} keeps the desk\"), so the body must not depend on any of it.'>>",
       "is_ending": false,
       "choices": [
         {
@@ -2420,7 +2544,7 @@
     },
     {
       "id": "e_ob_banner",
-      "body": "<<FILL role=ending words=96 beats='the grand 100 banner is not a pennant, it is a sail, and the night wind has been waiting forty years for exactly this; the banner fills, hauls, and turns {HERO} into an anchor with her heels braced and her hat gone to the harbor, feet never leaving the boards but every button tested; she wrestles it down, folds it breathless, and lays it back in the locker, where it settles with the smugness of fabric that has made its point: the grand banner flies on the grand night, in company, with more hands; dawn is graying as she climbs down, windburned and wiser'>>",
+      "body": "<<FILL role=ending words=96 beats='the grand 100 banner is not a pennant, it is a sail, and the night wind has been waiting forty years for exactly this; the banner fills, hauls, and turns {HERO} into an anchor with her heels braced and her hat gone to the harbor, feet never leaving the boards but every button tested; she wrestles it down, folds it breathless, and lays it back in the locker, where it settles with the smugness of fabric that has made its point: the grand banner flies on the grand night, in company, with more hands; dawn is graying as she climbs down, windburned and wiser; SETBACK HINT (did_go_back_down): every reader who reaches this ending did NOT choose \"Go back down into the {ROUTE_L_ZONE}, where {MATRIARCH} keeps the desk\" earlier. Let the ending glimpse what would have helped, so the reader has a concrete reason to try again; do not scold.'>>",
       "is_ending": true,
       "ending": {
         "id": "end_ob_banner",
@@ -2464,7 +2588,7 @@
     },
     {
       "id": "fin_approach",
-      "body": "<<FILL role=choice words=122 beats='the {FINALE_ZONE}'s grand doors, tall as trees, carved with the number 100 in a wreath of gardenias; this is the room {MATRIARCH} asked for, the evening that was never finished, and the proof is right here on site: through the crack between the doors {HERO} can see a banner sagging in the dark, sheeted tables still waiting, a {FIN_CHANDELIER} hung with forty years of quiet; write this so it reads naturally whether the {FINALE_ZONE} is {HERO}'s first stop of the night or her last, whatever wings she has already wandered; the ring of hundred keys holds one stamped {FINALE_ZONE}, warm in her fingers'>>",
+      "body": "<<FILL role=choice words=122 beats='the {FINALE_ZONE}'s grand doors, tall as trees, carved with the number 100 in a wreath of gardenias; this is the room {MATRIARCH} asked for, the evening that was never finished, and the proof is right here on site: through the crack between the doors {HERO} can see a banner sagging in the dark, sheeted tables still waiting, a {FIN_CHANDELIER} hung with forty years of quiet; write this so it reads naturally whether the {FINALE_ZONE} is {HERO}'s first stop of the night or her last, whatever wings she has already wandered; the ring of hundred keys holds one stamped {FINALE_ZONE}, warm in her fingers; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Find the sign's {R_SWITCHBOX}\"; \"Follow the warm bread smell to the {ROUTE_K_ZONE}\"; \"Go back down into the {ROUTE_L_ZONE}, where {MATRIARCH} keeps the desk\"), so the body must not depend on any of it.'>>",
       "is_ending": false,
       "choices": [
         {
@@ -2493,7 +2617,7 @@
     },
     {
       "id": "fin_doors",
-      "body": "<<FILL role=rising words=92 beats='the {FINALE_ZONE} key turns like it was oiled yesterday, and the doors swing wide without a creak, as if they had been practicing; lantern light rolls down a hall vast as a ship, over parquet dim with dust and mirrors gone cloudy; the air smells faintly of candle wax and gardenias, kept safe all this time; the room seems to straighten up, hopeful'>>",
+      "body": "<<FILL role=rising words=92 beats='the {FINALE_ZONE} key turns like it was oiled yesterday, and the doors swing wide without a creak, as if they had been practicing; lantern light rolls down a hall vast as a ship, over parquet dim with dust and mirrors gone cloudy; the air smells faintly of candle wax and gardenias, kept safe all this time; the room seems to straighten up, hopeful; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Find the sign's {R_SWITCHBOX}\"; \"Follow the warm bread smell to the {ROUTE_K_ZONE}\"; \"Go back down into the {ROUTE_L_ZONE}, where {MATRIARCH} keeps the desk\"), so the body must not depend on any of it.'>>",
       "is_ending": false,
       "choices": [
         {
@@ -2505,13 +2629,20 @@
     },
     {
       "id": "fin_hall",
-      "body": "<<FILL role=choice words=104 beats='{HERO} stands in the middle of the great floor and thinks like a keeper: a party needs light, music, and a table; the {FIN_CHANDELIER} hangs dark in its canvas with candle boxes stacked by the winch; the little stage holds a {FIN_GRAMOPHONE} and a record cabinet; the {FIN_TABLE} sleeps under dust sheets by the windows; keep this survey general, whichever corners already glow from earlier work, so it reads the same on a first pass or a return trip'>>",
+      "body": "<<FILL role=choice words=104 beats='{HERO} stands in the middle of the great floor and thinks like a keeper: a party needs light, music, and a table; the {FIN_CHANDELIER} hangs dark in its canvas with candle boxes stacked by the winch; the little stage holds a {FIN_GRAMOPHONE} and a record cabinet; the {FIN_TABLE} sleeps under dust sheets by the windows; keep this survey general, whichever corners already glow from earlier work, so it reads the same on a first pass or a return trip; PLANT SITE: these options are no longer cosmetic: \"See to the {FIN_CHANDELIER} and its hundred candles\" plants did_see_fin_chandelier (pays off at fin_summon). The other options must keep their own appeal, so this is a real trade-off. MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Find the sign's {R_SWITCHBOX}\"; \"Follow the warm bread smell to the {ROUTE_K_ZONE}\"; \"Go back down into the {ROUTE_L_ZONE}, where {MATRIARCH} keeps the desk\"; \"See to the {FIN_CHANDELIER} and its hundred candles\"), so the body must not depend on any of it.'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_hall_light",
           "label": "See to the {FIN_CHANDELIER} and its hundred candles.",
-          "target": "fp_light1"
+          "target": "fp_light1",
+          "effects": [
+            {
+              "op": "set",
+              "var": "did_see_fin_chandelier",
+              "value": true
+            }
+          ]
         },
         {
           "id": "c_hall_music",
@@ -2527,7 +2658,7 @@
     },
     {
       "id": "fp_light1",
-      "body": "<<FILL role=rising words=94 beats='the {FIN_CHANDELIER} winch wakes with a groan and lets the great crystal ring float down to {HERO}'s height; the candle boxes hold one hundred pale candles, wrapped in paper like presents; she works steadily, setting each candle in its cup, and the crystals chime softly as if counting along with her'>>",
+      "body": "<<FILL role=rising words=94 beats='the {FIN_CHANDELIER} winch wakes with a groan and lets the great crystal ring float down to {HERO}'s height; the candle boxes hold one hundred pale candles, wrapped in paper like presents; she works steadily, setting each candle in its cup, and the crystals chime softly as if counting along with her; PLANT (did_see_fin_chandelier): the hero has just made this choice, and something concrete comes of it that a reader will remember: an object kept, a person helped, or a fact learned, named plainly in the prose. Invent it so that it would plausibly help much later, when the hero tries \"Strike the great {FIN_GONG}\" (node fin_summon): there it changes how that moment goes.'>>",
       "is_ending": false,
       "choices": [
         {
@@ -2599,7 +2730,7 @@
     },
     {
       "id": "fin_ready",
-      "body": "<<FILL role=choice words=98 beats='{HERO} turns a slow circle in the great hall; corner by corner the {FINALE_ZONE} is coming back to life, and the parts still waiting look eager rather than sad; write this moment general, whichever task she has just finished, one more corner glowing than before; the question now is whether the room wants more hands or whether it is time to call the family home'>>",
+      "body": "<<FILL role=choice words=98 beats='{HERO} turns a slow circle in the great hall; corner by corner the {FINALE_ZONE} is coming back to life, and the parts still waiting look eager rather than sad; write this moment general, whichever task she has just finished, one more corner glowing than before; the question now is whether the room wants more hands or whether it is time to call the family home; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Find the sign's {R_SWITCHBOX}\"; \"Follow the warm bread smell to the {ROUTE_K_ZONE}\"; \"Go back down into the {ROUTE_L_ZONE}, where {MATRIARCH} keeps the desk\"; \"See to the {FIN_CHANDELIER} and its hundred candles\"), so the body must not depend on any of it.'>>",
       "is_ending": false,
       "choices": [
         {
@@ -2616,13 +2747,34 @@
     },
     {
       "id": "fin_summon",
-      "body": "<<FILL role=choice words=106 beats='by the service door {HERO} finds the hotel's three voices, kept side by side for occasions: a great bronze {FIN_GONG} with its mallet on a velvet hook, a braided {FIN_BELLWIRE} labeled FRONT DESK that runs away into the wall, and the {FIN_GRAMOPHONE} waiting on stage with the doors of the {FINALE_ZONE} standing open to the dark hotel; three honest ways to call a faded family to one bright room; {HERO} weighs them with her heart thudding'>>",
+      "body": "<<FILL role=choice words=106 beats='by the service door {HERO} finds the hotel's three voices, kept side by side for occasions: a great bronze {FIN_GONG} with its mallet on a velvet hook, a braided {FIN_BELLWIRE} labeled FRONT DESK that runs away into the wall, and the {FIN_GRAMOPHONE} waiting on stage with the doors of the {FINALE_ZONE} standing open to the dark hotel; three honest ways to call a faded family to one bright room; {HERO} weighs them with her heart thudding; PAYOFF SITE (did_see_fin_chandelier): readers arrive here both having and not having chosen \"See to the {FIN_CHANDELIER} and its hundred candles\" earlier, so this body must be true either way and must not say which. The option \"Strike the great {FIN_GONG}\" plays out differently for the two: with that earlier choice the reader first sees a payoff scene.'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_sum_gong",
           "label": "Strike the great {FIN_GONG}.",
-          "target": "fs_gong"
+          "target": "fs_gong",
+          "condition": {
+            "==": [
+              {
+                "var": "did_see_fin_chandelier"
+              },
+              false
+            ]
+          }
+        },
+        {
+          "id": "c_sum_gong_cq_did_see_fin_chandelier",
+          "label": "Strike the great {FIN_GONG}.",
+          "target": "cq_payoff_did_see_fin_chandelier",
+          "condition": {
+            "==": [
+              {
+                "var": "did_see_fin_chandelier"
+              },
+              true
+            ]
+          }
         },
         {
           "id": "c_sum_bell",
@@ -2637,8 +2789,20 @@
       ]
     },
     {
+      "id": "cq_payoff_did_see_fin_chandelier",
+      "body": "<<FILL role=payoff words=25 beats='PAYOFF (did_see_fin_chandelier): only a reader who earlier chose \"See to the {FIN_CHANDELIER} and its hundred candles\" (node fin_hall) reaches this scene. The hero tries \"Strike the great {FIN_GONG}\". The thing that came of that earlier choice changes how it goes: show it returning concretely in a few sentences, a moment only this reader gets. Then lead into the next scene (node fs_gong), which every reader who makes this move reaches, without contradicting it.'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_cq_payoff_did_see_fin_chandelier",
+          "label": "Strike the great {FIN_GONG}.",
+          "target": "fs_gong"
+        }
+      ]
+    },
+    {
       "id": "fs_gong",
-      "body": "<<FILL role=rising words=92 beats='the gong's bronze note rolls out of the {FINALE_ZONE} and down every pipe and shaft and stairwell like warm thunder; the building carries it gladly to its farthest floors; and back through the same pipes come answers, a clang of pot lids, a tap on a {G_CAN}, a double knock, a whistle down a stair; the {THRESHOLD}'s family has heard dinner called'>>",
+      "body": "<<FILL role=rising words=92 beats='the gong's bronze note rolls out of the {FINALE_ZONE} and down every pipe and shaft and stairwell like warm thunder; the building carries it gladly to its farthest floors; and back through the same pipes come answers, a clang of pot lids, a tap on a {G_CAN}, a double knock, a whistle down a stair; the {THRESHOLD}'s family has heard dinner called; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Find the sign's {R_SWITCHBOX}\"; \"Follow the warm bread smell to the {ROUTE_K_ZONE}\"; \"Go back down into the {ROUTE_L_ZONE}, where {MATRIARCH} keeps the desk\"; \"See to the {FIN_CHANDELIER} and its hundred candles\"), so the body must not depend on any of it.'>>",
       "is_ending": false,
       "choices": [
         {
@@ -2674,7 +2838,7 @@
     },
     {
       "id": "fin_gather",
-      "body": "<<FILL role=rising words=126 beats='and they come; a warmth of bread and thyme arrives ahead of a broad cook with his sleeves rolled, wiping his hands on a fresh apron; a smell of rain and leaves arrives with a woman in a sun hat, a jar of white buds against her hip; two bellhop caps come racing each other down the banister and land in a tumble of giggles at the door; write each arrival so it reads warmly whether {HERO} already met them in tonight's wandering or is seeing them for the very first time, strangers to her or friends, they are plainly, achingly, a family arriving at a party; yet all four hesitate at the threshold, looking toward the one empty place at the head of the table'>>",
+      "body": "<<FILL role=rising words=126 beats='and they come; a warmth of bread and thyme arrives ahead of a broad cook with his sleeves rolled, wiping his hands on a fresh apron; a smell of rain and leaves arrives with a woman in a sun hat, a jar of white buds against her hip; two bellhop caps come racing each other down the banister and land in a tumble of giggles at the door; write each arrival so it reads warmly whether {HERO} already met them in tonight's wandering or is seeing them for the very first time, strangers to her or friends, they are plainly, achingly, a family arriving at a party; yet all four hesitate at the threshold, looking toward the one empty place at the head of the table; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Find the sign's {R_SWITCHBOX}\"; \"Follow the warm bread smell to the {ROUTE_K_ZONE}\"; \"Go back down into the {ROUTE_L_ZONE}, where {MATRIARCH} keeps the desk\"; \"See to the {FIN_CHANDELIER} and its hundred candles\"), so the body must not depend on any of it.'>>",
       "is_ending": false,
       "choices": [
         {
@@ -2722,13 +2886,34 @@
     },
     {
       "id": "fin_midnight",
-      "body": "<<FILL role=choice words=124 beats='at the first stroke of midnight the five stand together glowing their brightest, and {MATRIARCH} takes {HERO}'s hands in her cool bright ones; the evening is finished at last, she says, and a finished evening frees a family to choose; we can rest now, all together, the way we always meant to end a great night, or we can stay and keep the {THRESHOLD} with your family as it wakes again; and because you gave us back to each other, newest keeper of the hundred keys, we would like you to help us choose; the clock strikes on, unhurried, while {HERO} looks from face to bright face'>>",
+      "body": "<<FILL role=choice words=124 beats='at the first stroke of midnight the five stand together glowing their brightest, and {MATRIARCH} takes {HERO}'s hands in her cool bright ones; the evening is finished at last, she says, and a finished evening frees a family to choose; we can rest now, all together, the way we always meant to end a great night, or we can stay and keep the {THRESHOLD} with your family as it wakes again; and because you gave us back to each other, newest keeper of the hundred keys, we would like you to help us choose; the clock strikes on, unhurried, while {HERO} looks from face to bright face; PAYOFF SITE (did_follow_warm_bread): readers arrive here both having and not having chosen \"Follow the warm bread smell to the {ROUTE_K_ZONE}\" earlier, so this body must be true either way and must not say which. The option \"Wish them rest, and one sweet goodnight all together\" plays out differently for the two: with that earlier choice the reader first sees a payoff scene.'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_mid_rest",
           "label": "Wish them rest, and one sweet goodnight all together.",
-          "target": "fr_rest"
+          "target": "fr_rest",
+          "condition": {
+            "==": [
+              {
+                "var": "did_follow_warm_bread"
+              },
+              false
+            ]
+          }
+        },
+        {
+          "id": "c_mid_rest_cq_did_follow_warm_bread",
+          "label": "Wish them rest, and one sweet goodnight all together.",
+          "target": "cq_payoff_did_follow_warm_bread",
+          "condition": {
+            "==": [
+              {
+                "var": "did_follow_warm_bread"
+              },
+              true
+            ]
+          }
         },
         {
           "id": "c_mid_stay",
@@ -2743,8 +2928,20 @@
       ]
     },
     {
+      "id": "cq_payoff_did_follow_warm_bread",
+      "body": "<<FILL role=payoff words=31 beats='PAYOFF (did_follow_warm_bread): only a reader who earlier chose \"Follow the warm bread smell to the {ROUTE_K_ZONE}\" (node n_hub) reaches this scene. The hero tries \"Wish them rest, and one sweet goodnight all together\". The thing that came of that earlier choice changes how it goes: show it returning concretely in a few sentences, a moment only this reader gets. Then lead into the next scene (node fr_rest), which every reader who makes this move reaches, without contradicting it.'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_cq_payoff_did_follow_warm_bread",
+          "label": "Wish them rest, and one sweet goodnight all together.",
+          "target": "fr_rest"
+        }
+      ]
+    },
+    {
       "id": "fr_rest",
-      "body": "<<FILL role=choice words=104 beats='{MATRIARCH} nods as if {HERO} has passed a final, gentle test; then we end it properly, she says, we always finish a great evening on the roof, under the stars, all of us; the family climbs the hotel together, {HERO} in the middle of them, up through the sleeping floors to the rooftop where the night is clear and enormous and the deck chairs wait in their old worn dents facing the meteor sky'>>",
+      "body": "<<FILL role=choice words=104 beats='{MATRIARCH} nods as if {HERO} has passed a final, gentle test; then we end it properly, she says, we always finish a great evening on the roof, under the stars, all of us; the family climbs the hotel together, {HERO} in the middle of them, up through the sleeping floors to the rooftop where the night is clear and enormous and the deck chairs wait in their old worn dents facing the meteor sky; MERGE: readers reach this scene by more than one route; open in the moment, assert only what is true on every route, and never say which way the hero came. Readers also differ in what they chose earlier (\"Find the sign's {R_SWITCHBOX}\"; \"Follow the warm bread smell to the {ROUTE_K_ZONE}\"; \"Go back down into the {ROUTE_L_ZONE}, where {MATRIARCH} keeps the desk\"; \"See to the {FIN_CHANDELIER} and its hundred candles\"), so the body must not depend on any of it.'>>",
       "is_ending": false,
       "choices": [
         {

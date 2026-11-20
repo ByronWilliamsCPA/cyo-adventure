@@ -19,6 +19,10 @@ state d02_2 #FFF9C4
 d02_2 : choice · 120w
 state d03_0 #D1C4E9
 d03_0 : rising · 125w
+state cq_plant_did_ring_bea_night #ECEFF1
+cq_plant_did_ring_bea_night : plant · 46w
+state cq_plant_did_take_notebook_ferry #ECEFF1
+cq_plant_did_take_notebook_ferry : plant · 58w
 state d03_1 #D1C4E9
 d03_1 : rising · 154w
 state d03_2 #D1C4E9
@@ -139,6 +143,8 @@ state d10_8 #D1C4E9
 d10_8 : rising · 154w
 state d11_0 #D1C4E9
 d11_0 : rising · 123w
+state cq_payoff_did_say_are_staying #ECEFF1
+cq_payoff_did_say_are_staying : payoff · 60w
 state d11_1 #D1C4E9
 d11_1 : rising · 152w
 state d11_2 #D1C4E9
@@ -149,10 +155,16 @@ state d11_4 #D1C4E9
 d11_4 : rising · 147w
 state d11_5 #D1C4E9
 d11_5 : rising · 130w
+state cq_payoff_did_say_yes_start_site2 #ECEFF1
+cq_payoff_did_say_yes_start_site2 : payoff · 70w
 state d11_6 #D1C4E9
 d11_6 : rising · 159w
+state cq_payoff_did_ring_bea_night #ECEFF1
+cq_payoff_did_ring_bea_night : payoff · 48w
 state d11_7 #D1C4E9
 d11_7 : rising · 142w
+state cq_payoff_did_say_are_staying_site2 #ECEFF1
+cq_payoff_did_say_are_staying_site2 : payoff · 53w
 state d12_0 #D1C4E9
 d12_0 : rising · 140w
 state d12_1 #D1C4E9
@@ -163,6 +175,8 @@ state d12_3 #D1C4E9
 d12_3 : rising · 135w
 state d12_4 #D1C4E9
 d12_4 : rising · 164w
+state cq_payoff_did_say_yes_start #ECEFF1
+cq_payoff_did_say_yes_start : payoff · 77w
 state d12_5 #D1C4E9
 d12_5 : rising · 147w
 state d12_6 #D1C4E9
@@ -189,6 +203,8 @@ state d13_8 #D1C4E9
 d13_8 : rising · 159w
 state d14_0 #ECEFF1
 d14_0 : revelation · 128w
+state cq_payoff_did_take_notebook_ferry_site2 #ECEFF1
+cq_payoff_did_take_notebook_ferry_site2 : payoff · 55w
 state d14_1 #D1C4E9
 d14_1 : rising · 157w
 state d14_2 #D1C4E9
@@ -209,6 +225,8 @@ state d15_1 #D1C4E9
 d15_1 : rising · 128w
 state d15_2 #D1C4E9
 d15_2 : rising · 157w
+state cq_payoff_did_take_notebook_ferry #ECEFF1
+cq_payoff_did_take_notebook_ferry : payoff · 48w
 state d15_3 #D1C4E9
 d15_3 : rising · 140w
 state d15_4 #D1C4E9
@@ -402,9 +420,11 @@ d02_1 --> d03_0 : Go through the notebook with Mamgu.
 d02_2 --> d03_1 : Work out what actually comes with you.
 d02_2 --> d03_2 : Talk to Bea about staying.
 d02_2 --> d03_3 : Say goodbye to the works.
-d03_0 --> d04_0 : Take the notebook out on the ferry.
+d03_0 --> cq_plant_did_take_notebook_ferry : Take the notebook out on the ferry.
 d03_0 --> d04_1 : Arrive at the Hull flat.
-d03_0 --> d04_2 : Ring Bea on the first night.
+d03_0 --> cq_plant_did_ring_bea_night : Ring Bea on the first night.
+cq_plant_did_ring_bea_night --> d04_2 : Ring Bea on the first night.
+cq_plant_did_take_notebook_ferry --> d04_0 : Take the notebook out on the ferry.
 d03_1 --> d04_3 : Watch your mother start work.
 d03_1 --> d04_4 : Watch your father not start work.
 d03_1 --> d04_5 : Walk the whole city on the first Saturda...
@@ -595,8 +615,10 @@ d10_8 --> d11_6 : Sit down with your mother about next yea...
 d10_8 --> d11_7 : Do the last Rotterdam count.
 d10_8 --> d11_0 : Finish the language programme.
 d11_0 --> d12_0 : Leave Rotterdam.
+d11_0 --> cq_payoff_did_say_are_staying : Leave Rotterdam.
 d11_0 --> d12_1 : Arrive in the village.
 d11_0 --> e11_0 : Ask to repeat the year rather than move ...
+cq_payoff_did_say_are_staying --> d12_0 : Leave Rotterdam.
 d11_1 --> d12_2 : Go and see Mamgu on the first day.
 d11_1 --> d12_3 : Find Bea changed.
 d11_1 --> d12_4 : Meet Carys.
@@ -611,14 +633,20 @@ d11_4 --> d12_4 : Meet Carys.
 d11_4 --> d12_5 : Walk out on to the flats.
 d11_4 --> e11_0 : Ask to repeat the year rather than move ...
 d11_5 --> d12_6 : Deal with the fourth school.
+d11_5 --> cq_payoff_did_say_yes_start_site2 : Deal with the fourth school.
 d11_5 --> d12_7 : Ask your father what happens now.
 d11_5 --> d12_0 : Leave Rotterdam.
+cq_payoff_did_say_yes_start_site2 --> d12_6 : Deal with the fourth school.
 d11_6 --> d12_1 : Arrive in the village.
 d11_6 --> d12_2 : Go and see Mamgu on the first day.
+d11_6 --> cq_payoff_did_ring_bea_night : Go and see Mamgu on the first day.
 d11_6 --> d12_3 : Find Bea changed.
+cq_payoff_did_ring_bea_night --> d12_2 : Go and see Mamgu on the first day.
 d11_7 --> d12_4 : Meet Carys.
 d11_7 --> d12_5 : Walk out on to the flats.
+d11_7 --> cq_payoff_did_say_are_staying_site2 : Walk out on to the flats.
 d11_7 --> d12_6 : Deal with the fourth school.
+cq_payoff_did_say_are_staying_site2 --> d12_5 : Walk out on to the flats.
 d12_0 --> d13_0 : Tell your mother.
 d12_0 --> d13_1 : Go out on the flats with Carys.
 d12_0 --> d13_2 : Take Mamgu out to see the birds.
@@ -635,6 +663,8 @@ d12_3 --> d13_1 : Go out on the flats with Carys.
 d12_4 --> d13_2 : Take Mamgu out to see the birds.
 d12_4 --> d13_3 : Start the school year.
 d12_4 --> e12_0 : Keep your father's secret.
+d12_4 --> cq_payoff_did_say_yes_start : Keep your father's secret.
+cq_payoff_did_say_yes_start --> d13_2 : Take Mamgu out to see the birds.
 d12_5 --> d13_4 : Write to Tobi.
 d12_5 --> d13_5 : Work out where you actually are from.
 d12_5 --> d13_6 : Deal with the money.
@@ -675,8 +705,10 @@ d13_8 --> d14_6 : Look at where the family goes in spring.
 d13_8 --> d14_7 : Walk the flats at the turn of the tide.
 d13_8 --> d14_0 : Ask Mamgu about 1968.
 d14_0 --> d15_0 : Take the notebook and start a second vol...
+d14_0 --> cq_payoff_did_take_notebook_ferry_site2 : Take the notebook and start a second vol...
 d14_0 --> d15_1 : Get the four schools into one story.
 d14_0 --> e14_0 : Refuse the notebook.
+cq_payoff_did_take_notebook_ferry_site2 --> d15_0 : Take the notebook and start a second vol...
 d14_1 --> d15_2 : Set up the winter counts.
 d14_1 --> d15_3 : Have the argument about spring properly.
 d14_1 --> d15_4 : Go and see the works site.
@@ -709,6 +741,8 @@ d15_1 --> d16_5 : Talk to Sanne.
 d15_2 --> d16_6 : Tell Carys about the move.
 d15_2 --> d16_7 : Look at the whole notebook at once.
 d15_2 --> e15_1 : Let the second volume stay empty.
+d15_2 --> cq_payoff_did_take_notebook_ferry : Let the second volume stay empty.
+cq_payoff_did_take_notebook_ferry --> d16_6 : Tell Carys about the move.
 d15_3 --> d16_8 : Decide what you are actually asking for.
 d15_3 --> d16_0 : Do the second Sunday in November.
 d15_3 --> d16_1 : Face the spring move.
@@ -885,9 +919,9 @@ e20_7 --> [*]
 
 legend right
   The Migration Year
-  Band 13-16 · Tier 1 · ~14 min
+  Band 13-16 · Tier 2 · ~14 min
   Topology: branch_and_bottleneck
-  176 nodes · 30 endings (10+ / 13n / 7-)
+  185 nodes · 30 endings (10+ / 13n / 7-)
   Production-eligible
   Scale: long · prose
 endlegend

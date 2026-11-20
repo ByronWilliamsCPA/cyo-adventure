@@ -19,6 +19,8 @@ state n02c2 #ECEFF1
 n02c2 : bridge · 36w
 state n03d0 #D1C4E9
 n03d0 : rising · 112w
+state cq_plant_did_find_who_made #ECEFF1
+cq_plant_did_find_who_made : plant · 50w
 state n03d1 #D1C4E9
 n03d1 : rising · 112w
 state n03d2 #D1C4E9
@@ -59,6 +61,8 @@ state n06d2 #D1C4E9
 n06d2 : rising · 112w
 state n06d3 #D1C4E9
 n06d3 : rising · 112w
+state cq_payoff_did_compare_new_sheet #ECEFF1
+cq_payoff_did_compare_new_sheet : payoff · 50w
 state n06d4 #D1C4E9
 n06d4 : rising · 112w
 state n06d5 #D1C4E9
@@ -112,6 +116,8 @@ state n08d2 #D1C4E9
 n08d2 : rising · 106w
 state n08d3 #D1C4E9
 n08d3 : rising · 106w
+state cq_payoff_did_read_note_that #ECEFF1
+cq_payoff_did_read_note_that : payoff · 38w
 state n08d4 #D1C4E9
 n08d4 : rising · 106w
 state n08d5 #D1C4E9
@@ -170,6 +176,8 @@ state n10d2 #D1C4E9
 n10d2 : rising · 100w
 state n10d3 #D1C4E9
 n10d3 : rising · 100w
+state cq_payoff_did_read_note_that_site2 #ECEFF1
+cq_payoff_did_read_note_that_site2 : payoff · 44w
 state n10d4 #D1C4E9
 n10d4 : rising · 100w
 state n10d5 #D1C4E9
@@ -256,14 +264,22 @@ e12_1 : discovery (neutral)
 e12_1 : "Somebody With a Padlock"
 state n13d0 #D1C4E9
 n13d0 : rising · 100w
+state cq_payoff_did_find_what_seven #ECEFF1
+cq_payoff_did_find_what_seven : payoff · 44w
 state n13d1 #D1C4E9
 n13d1 : rising · 100w
+state cq_payoff_did_find_who_made_site2 #ECEFF1
+cq_payoff_did_find_who_made_site2 : payoff · 44w
 state n13d2 #D1C4E9
 n13d2 : rising · 100w
+state cq_payoff_did_find_who_made #ECEFF1
+cq_payoff_did_find_who_made : payoff · 44w
 state n13d3 #D1C4E9
 n13d3 : rising · 100w
 state n13d4 #D1C4E9
 n13d4 : rising · 100w
+state cq_payoff_did_find_what_seven_site2 #ECEFF1
+cq_payoff_did_find_what_seven_site2 : payoff · 25w
 state n13d5 #D1C4E9
 n13d5 : rising · 100w
 state n13d6 #D1C4E9
@@ -565,9 +581,10 @@ n01d0 --> n02c2 : Read the note that came with the file.
 n02c0 --> n03d0 : Start from the difference between the ma...
 n02c1 --> n03d1 : Start from the steps themselves.
 n02c2 --> n03d2 : Start from the rule underneath it.
-n03d0 --> n04d0 : Find out who made the simplification.
+n03d0 --> cq_plant_did_find_who_made : Find out who made the simplification.
 n03d0 --> n04d1 : Find out how many ways are gone.
 n03d0 --> n04d2 : Find out what the seven years mean.
+cq_plant_did_find_who_made --> n04d0 : Find out who made the simplification.
 n03d1 --> n04c0 : Pull every sheet out of the chest.
 n03d1 --> n04c1 : Stand at the bottom of the steps and cou...
 n03d1 --> n04c2 : Read the rule twice.
@@ -617,7 +634,9 @@ n06d2 --> n07d7 : Ask Wren to engrave the shortlist.
 n06d2 --> n07d8 : Ask Trant what she would do in your plac...
 n06d3 --> e07_0 : Report it through the feedback channel a...
 n06d3 --> e07_1 : Rely on the old maps alone.
+n06d3 --> cq_payoff_did_compare_new_sheet : Rely on the old maps alone.
 n06d3 --> n07d0 : Take the nine ways with the most users.
+cq_payoff_did_compare_new_sheet --> n07d0 : Take the nine ways with the most users.
 n06d4 --> n07d1 : Take the nine with the oldest records.
 n06d4 --> n07d2 : Take the Sixty Steps alone and do it pro...
 n06d4 --> n07d3 : Ask Nan to write her statement.
@@ -670,6 +689,8 @@ n08d2 --> n09d8 : Get the eleven week deadline moved.
 n08d3 --> e09_0 : Take the case straight to Pentrell.
 n08d3 --> e09_1 : Let the deadline pass on the printed edi...
 n08d3 --> n09d0 : Get the statements witnessed properly.
+n08d3 --> cq_payoff_did_read_note_that : Get the statements witnessed properly.
+cq_payoff_did_read_note_that --> n09d0 : Get the statements witnessed properly.
 n08d4 --> n09d1 : Get Ivo to write about the gully.
 n08d4 --> n09d2 : Get the wear survey done properly.
 n08d4 --> n09d3 : Get a copy of the tannery site plan.
@@ -725,6 +746,8 @@ n10d2 --> n11d8 : Ask what happens if you lose.
 n10d3 --> e11_0 : Argue that Pentrell is acting in bad fai...
 n10d3 --> e11_1 : Drop the tannery cut to save the rest.
 n10d3 --> n11d0 : Answer the permission argument.
+n10d3 --> cq_payoff_did_read_note_that_site2 : Answer the permission argument.
+cq_payoff_did_read_note_that_site2 --> n11d0 : Answer the permission argument.
 n10d4 --> n11d1 : Answer it for the tannery cut too.
 n10d4 --> n11d2 : Look for the annual closure record.
 n10d4 --> n11d3 : Look for a sign in an old photograph.
@@ -797,20 +820,28 @@ n12c4 --> n13d3 : Ask the last employees.
 n12c5 --> n13d4 : Put the tannery cut back in the order.
 n12c6 --> n13d5 : Send the whole file to Pentrell first.
 n13d0 --> n14d0 : Track down the last two tannery workers.
+n13d0 --> cq_payoff_did_find_what_seven : Track down the last two tannery workers.
 n13d0 --> n14d1 : Reconcile the two accounts.
 n13d0 --> n14d2 : Look in the insurance schedules.
+cq_payoff_did_find_what_seven --> n14d0 : Track down the last two tannery workers.
 n13d1 --> n14d3 : Prepare the bundle for the inspector.
+n13d1 --> cq_payoff_did_find_who_made_site2 : Prepare the bundle for the inspector.
 n13d1 --> n14d4 : Prepare the witnesses.
 n13d1 --> n14d5 : Prepare the plate with Wren.
+cq_payoff_did_find_who_made_site2 --> n14d3 : Prepare the bundle for the inspector.
 n13d2 --> n14d6 : Prepare for the possibility of losing.
 n13d2 --> n14c0 : Sit in a front room in Coley Bank.
+n13d2 --> cq_payoff_did_find_who_made : Sit in a front room in Coley Bank.
 n13d2 --> n14c1 : Ring the insurance broker.
+cq_payoff_did_find_who_made --> n14d6 : Prepare for the possibility of losing.
 n13d3 --> n14c2 : Tab the bundle at the kitchen table.
 n13d3 --> n14c3 : Walk the nine ways in one afternoon.
 n13d3 --> n14c4 : Watch Wren cut the margin.
 n13d4 --> n14c5 : Read the bundle straight through.
+n13d4 --> cq_payoff_did_find_what_seven_site2 : Read the bundle straight through.
 n13d4 --> n14c6 : Sleep badly the night before.
 n13d4 --> e14_0 : Coach the witnesses too hard.
+cq_payoff_did_find_what_seven_site2 --> n14c5 : Read the bundle straight through.
 n13d5 --> e14_1 : Leave the insurance schedules unchecked.
 n13d5 --> n14d0 : Track down the last two tannery workers.
 n13d5 --> n14d1 : Reconcile the two accounts.
@@ -1103,9 +1134,9 @@ e24_4 --> [*]
 
 legend right
   The Cartographer's Apprentice
-  Band 10-13 · Tier 1 · ~9 min
+  Band 10-13 · Tier 2 · ~9 min
   Topology: branch_and_bottleneck
-  254 nodes · 43 endings (12+ / 16n / 15-)
+  262 nodes · 43 endings (12+ / 16n / 15-)
   Production-eligible
   Scale: long · prose
 endlegend
