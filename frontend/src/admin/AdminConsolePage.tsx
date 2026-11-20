@@ -11,6 +11,7 @@ import { queueItemCounts, tierBreakdownLabel } from '../guardian/findingCounts'
 import { formatRelativeTime } from '../guardian/intakeApi'
 import { pluralize } from '../guardian/storyReadThrough'
 import { ageBandLabel } from '../guardian/storyRequestOptions'
+import { useAuth } from '../auth/useAuth'
 import { classifyApiError } from '../hooks/classifyApiError'
 import { useApi } from '../hooks/useApi'
 import { usePageTitle } from '../hooks/usePageTitle'
@@ -275,6 +276,21 @@ export function AdminConsolePage() {
   usePageTitle('Admin Console')
   const api = useApi()
   const reviewApi = useMemo(() => makeReviewApi(api), [api])
+  const { principal } = useAuth()
+  // GET /v1/generation-jobs is guardian-only (api/generation.py checks
+  // Principal.is_guardian, the base role). An admin-only adult always 403s
+  // there, and although stillProcessing() swallows that 403, the browser
+  // still logs "Failed to load resource: 403" for it on every console visit,
+  // which is exactly the console noise the usersim-real admin walk's I1
+  // invariant flags. Asking only when the base role is guardian (a dual-role
+  // adult) removes a request whose answer is already known.
+  // #ASSUME: security: principal.role mirrors the backend's base role from
+  // /v1/me; this gate only decides whether to ASK, never what is shown, so a
+  // stale role at worst re-introduces the swallowed 403 or hides a list the
+  // backend would also have refused.
+  // #VERIFY: AdminConsolePage.test.tsx asserts an admin-only principal never
+  // requests /v1/generation-jobs and a dual-role principal still does.
+  const canListGenerationJobs = principal?.role === 'guardian'
   const [state, setState] = useState<LoadState>({ kind: 'loading' })
   const [refreshing, setRefreshing] = useState(false)
   const [refreshFailed, setRefreshFailed] = useState(false)
@@ -284,10 +300,14 @@ export function AdminConsolePage() {
   const fetchQueue = useCallback(async () => {
     const [items, stillProcessing] = await Promise.all([
       reviewApi.queue(),
-      reviewApi.stillProcessing(),
+      // An admin-only caller gets the same truthful, non-degraded empty list
+      // stillProcessing() already returns for its 403, without the request.
+      canListGenerationJobs
+        ? reviewApi.stillProcessing()
+        : Promise.resolve({ jobs: [], degraded: false }),
     ])
     return { items, processing: stillProcessing.jobs, processingDegraded: stillProcessing.degraded }
-  }, [reviewApi])
+  }, [reviewApi, canListGenerationJobs])
 
   useEffect(() => {
     let cancelled = false

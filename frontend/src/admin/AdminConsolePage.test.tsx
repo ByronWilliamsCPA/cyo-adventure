@@ -12,6 +12,29 @@ vi.mock('../hooks/useApi', () => ({
   useApi: () => fakeApi,
 }))
 
+// Default to a dual-role adult (guardian base role plus the admin capability),
+// the only caller for whom GET /v1/generation-jobs answers 200, so the
+// "Still processing" tests below exercise a real list. The admin-only case is
+// pinned by its own test.
+interface TestPrincipal {
+  subject: string
+  role: 'guardian' | 'admin'
+  isAdmin: boolean
+  familyId: string
+  profileIds: string[]
+}
+const DUAL_ROLE: TestPrincipal = {
+  subject: 'dev-dual',
+  role: 'guardian',
+  isAdmin: true,
+  familyId: 'fam-1',
+  profileIds: [],
+}
+const mockPrincipal = vi.fn<() => TestPrincipal>()
+vi.mock('../auth/useAuth', () => ({
+  useAuth: () => ({ principal: mockPrincipal() }),
+}))
+
 const FLAGGED = {
   storybook_id: 'flag-1',
   title: 'Scary Tale',
@@ -112,6 +135,7 @@ function mockQueue(items: unknown[], jobs: unknown[] = []) {
 }
 
 beforeEach(() => {
+  mockPrincipal.mockReturnValue(DUAL_ROLE)
   mockGet.mockReset()
   mockQueue([FLAGGED, READY])
   mockPost.mockReset()
@@ -479,6 +503,32 @@ describe('AdminConsolePage', () => {
     expect(screen.getByText(/Could not load what is generating right now/i)).toBeInTheDocument()
     expect(screen.queryByText(/No stories are generating right now/i)).not.toBeInTheDocument()
     errorSpy.mockRestore()
+  })
+
+  it('never requests the guardian-only jobs list for an admin-only principal', async () => {
+    // The endpoint 403s for this caller by design; the request itself is what
+    // made the browser log a 403 console error on every admin console visit
+    // (the usersim-real admin walk's I1 failure).
+    mockPrincipal.mockReturnValue({
+      subject: 'dev-admin',
+      role: 'admin',
+      isAdmin: true,
+      familyId: 'fam-admin',
+      profileIds: [],
+    })
+    mockQueue([READY], [{ id: 'j1', status: 'running', title: 'Brewing a Tale' }])
+    renderPage()
+    expect(await screen.findByText('Gentle Tale')).toBeInTheDocument()
+    expect(screen.getByText(/No stories are generating right now/i)).toBeInTheDocument()
+    expect(mockGet).not.toHaveBeenCalledWith('/v1/generation-jobs')
+    expect(screen.queryByText('Brewing a Tale')).not.toBeInTheDocument()
+  })
+
+  it('still requests the jobs list for a dual-role guardian admin', async () => {
+    mockQueue([READY])
+    renderPage()
+    expect(await screen.findByText('Gentle Tale')).toBeInTheDocument()
+    expect(mockGet).toHaveBeenCalledWith('/v1/generation-jobs')
   })
 
   it('keeps the plain empty state for a 403, the expected admin outcome', async () => {
