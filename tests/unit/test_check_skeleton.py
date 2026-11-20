@@ -429,3 +429,51 @@ def test_strict_agency_blocks_only_under_strict(
     capsys.readouterr()
     assert check_skeleton.main([str(_DEMO_SHELL), "--allow-mvp", "--strict"]) == 1
     assert "FAIL strict agency: x" in capsys.readouterr().err
+
+
+def _dead_end_story(*, extra_choice: bool) -> dict:
+    def ending(nid: str, valence: str) -> dict:
+        node = _walk_ending(nid, "positive")
+        node["ending"]["valence"] = valence
+        return node
+
+    nodes = [
+        _walk_choice_node("a", ["b", "c"] + (["d"] if extra_choice else [])),
+        ending("b", "negative"),
+        ending("c", "negative"),
+    ]
+    if extra_choice:
+        nodes.append(ending("d", "positive"))
+    return _walk_story(nodes)
+
+
+@pytest.mark.unit
+def test_tier1_dead_end_flags_all_forbidden_decision() -> None:
+    meta = {"age_band": "10-13"}
+    assert check_skeleton.all_forbidden_decision_nodes(
+        _dead_end_story(extra_choice=False), meta
+    ) == ["a"]
+    assert (
+        check_skeleton.all_forbidden_decision_nodes(
+            _dead_end_story(extra_choice=True), meta
+        )
+        == []
+    )
+    # The teen bands forbid death only, and these are not death endings.
+    assert (
+        check_skeleton.all_forbidden_decision_nodes(
+            _dead_end_story(extra_choice=False), {"age_band": "13-16"}
+        )
+        == []
+    )
+
+
+@pytest.mark.unit
+def test_tier1_dead_end_is_advisory_only(
+    capsys: pytest.CaptureFixture[str], monkeypatch: pytest.MonkeyPatch
+) -> None:
+    monkeypatch.setattr(
+        check_skeleton, "all_forbidden_decision_nodes", lambda *_: ["n1"]
+    )
+    assert check_skeleton.main([str(_DEMO_SHELL), "--allow-mvp"]) == 0
+    assert "WARNING tier1-dead-end node=n1" in capsys.readouterr().out

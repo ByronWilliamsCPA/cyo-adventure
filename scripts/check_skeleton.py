@@ -443,6 +443,8 @@ def agency_lines(story: dict[str, Any]) -> list[str]:
 # Bands where ADR-011 section 12 requires declared state for a skeleton with a
 # merge node. 3-5 and 5-8 stay Tier 1 by design.
 _STATE_REQUIRED_BANDS = frozenset({"8-11", "10-13", "13-16", "16+"})
+_FORBIDDEN_VALENCE_BANDS = frozenset({"3-5", "5-8", "8-11", "10-13"})
+_FORBIDDEN_KIND_BANDS = frozenset({"13-16", "16+"})
 _GRANDFATHER_PATH = Path(__file__).with_name("stateless_shell_grandfather.txt")
 
 
@@ -510,6 +512,76 @@ def stateless_shell_violation(
         "boolean variables, at most 4, planted early and paid off later, with "
         "one payoff that changes which ending is reachable "
         "(scripts/add_consequence.py applies this to a shell)"
+    )
+
+
+def all_forbidden_decision_nodes(
+    story: dict[str, Any], metadata: dict[str, Any]
+) -> list[str]:
+    """Return decision nodes whose every option is a forced path to a forbidden ending.
+
+    A Tier-1 equivalent of Layer 2's L2-14 (``validator/layer2.py``,
+    ``_check_no_all_fatal_decisions``), computed on the plain choice graph
+    because Layer 2 never runs on a shell with no variables. It mirrors L2-14's
+    reading: a node with two or more distinct targets is flagged when each
+    target leads, through single-successor nodes only, to an ending the band
+    forbids (negative valence at 3-5 to 10-13, kind ``death`` at 13-16 and
+    16+). Conditions are ignored, so on a stateful shell this over-approximates
+    visibility; Layer 2 stays authoritative there.
+
+    #ASSUME: data-integrity: advisory only, never a gate change. Node and
+    ending shapes follow the Storybook schema (``ending.valence``/``kind``).
+    #VERIFY: tests/unit/test_check_skeleton.py::
+    test_tier1_dead_end_flags_all_forbidden_decision.
+
+    Args:
+        story: The decoded skeleton dict.
+        metadata: Its ``metadata`` mapping.
+
+    Returns:
+        Sorted ids of the flagged nodes; empty when the band is not covered.
+    """
+    band = str(metadata.get("age_band", ""))
+    if band in _FORBIDDEN_VALENCE_BANDS:
+        field, value = "valence", "negative"
+    elif band in _FORBIDDEN_KIND_BANDS:
+        field, value = "kind", "death"
+    else:
+        return []
+    nodes_raw = story.get("nodes")
+    by_id: dict[str, dict[str, Any]] = {
+        str(n["id"]): n
+        for n in (nodes_raw if isinstance(nodes_raw, list) else [])
+        if isinstance(n, dict) and "id" in n
+    }
+
+    def targets(node: dict[str, Any]) -> list[str]:
+        choices = node.get("choices")
+        raw = choices if isinstance(choices, list) else []
+        found = {str(c["target"]) for c in raw if isinstance(c, dict) and "target" in c}
+        return sorted(found)
+
+    def doomed(start: str) -> bool:
+        seen: set[str] = set()
+        current = start
+        while current not in seen:
+            seen.add(current)
+            node = by_id.get(current)
+            if node is None:
+                return False
+            nxt = targets(node)
+            if len(nxt) >= 2:
+                return False
+            if not nxt:
+                ending = node.get("ending")
+                return isinstance(ending, dict) and ending.get(field) == value
+            current = nxt[0]
+        return False
+
+    return sorted(
+        nid
+        for nid, node in by_id.items()
+        if len(targets(node)) >= 2 and all(doomed(t) for t in targets(node))
     )
 
 
@@ -1008,6 +1080,12 @@ def main(argv: list[str] | None = None) -> int:
     )
     for line in agency_lines(skeleton):
         sys.stdout.write(f"{line}\n")
+    for node_id in all_forbidden_decision_nodes(skeleton, metadata):
+        sys.stdout.write(
+            f"WARNING tier1-dead-end node={node_id} every option leads to a "
+            "forbidden ending with no further choice (Tier-1 equivalent of "
+            "L2-14; advisory, non-blocking)\n"
+        )
     if args.headroom or args.strict:
         band = str(metadata.get("age_band", ""))
         style_raw = metadata.get("narrative_style")
