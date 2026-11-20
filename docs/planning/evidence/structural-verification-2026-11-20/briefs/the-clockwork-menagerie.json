@@ -1,0 +1,32 @@
+{
+  "title": "The Clockwork Menagerie",
+  "premise": "After missing the last bus, Nia and her wind-up mouse Tock slip into the Windvale Museum of Clockwork Animals for shelter. In the dark the mechanical animals begin to stir, and something is wrong with the great mainspring that keeps them all running. With only a candle stub that is burning down, Nia has to find keeper Fettle's caretaker master key and decide whom to help before the sky lightens toward grey dawn.",
+  "protagonist": {
+    "name": "Nia",
+    "age": 10,
+    "role": "a curious kid stranded overnight with her wind-up mouse Tock"
+  },
+  "point_of_view": "third",
+  "age_band": "8-11",
+  "reading_level_target": 4.5,
+  "tier": 1,
+  "tone": "wondrous, curious, warm, a little spooky",
+  "themes_allowed": [
+    "wonder",
+    "curiosity",
+    "kindness",
+    "courage"
+  ],
+  "content_nogo": [
+    "graphic violence",
+    "romance"
+  ],
+  "target_node_count": 167,
+  "ending_count": 27,
+  "structure_pattern": "branch_and_bottleneck",
+  "length": "long",
+  "narrative_style": "prose",
+  "desired_variables": [],
+  "special_constraints": [],
+  "anchor_context": null
+}

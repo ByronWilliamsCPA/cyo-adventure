@@ -1,0 +1,20 @@
+--- /tmp/claude-0/-workspace-cyo-adventure/3af012c8-2d83-5407-a008-720efda8cbae/scratchpad/prompt-old.user.txt	2026-11-20 21:48:31.715309619 +0000
++++ /tmp/claude-0/-workspace-cyo-adventure/3af012c8-2d83-5407-a008-720efda8cbae/scratchpad/prompt-new.user.txt	2026-11-20 21:48:33.435387753 +0000
+@@ -8,0 +9,17 @@
++## Passages Reached From More Than One Place
++
++Each passage below is reached from every passage listed after it. A reader can arrive from any one of them, so write its body to be true for all of them: open in the scene, and do not state anything (where a companion or object is, what the hero has learned or picked up) that only some of those passages establish. Never tell the reader their route did not matter.
++
++- `av_deep` (from `av_x1`, `av_rec2`)
++- `av_conv` (from `av_a5`, `av_b4`)
++- `sv_deep` (from `sv_x1`, `sv_rec2`)
++- `sv_conv` (from `sv_a5`, `sv_b4`)
++- `ds_deep` (from `ds_x1`, `ds_rec2`)
++- `ds_conv` (from `ds_a5`, `ds_b4`)
++- `cg_deep` (from `cg_x1`, `cg_rec2`)
++- `cg_conv` (from `cg_a5`, `cg_b4`)
++- `n_key` (from `av_conv3`, `sv_conv3`, `ds_conv3`, `cg_conv3`)
++- `n_spring` (from `k_a3`, `k_b3`, `k_c3`)
++- `n_shop` (from `s_a3`, `s_b3`, `s_c3`)
++- `n_hub` (from `p_a3`, `p_b3`, `p_c3`)
++

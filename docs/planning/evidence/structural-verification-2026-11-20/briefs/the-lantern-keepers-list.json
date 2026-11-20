@@ -1,0 +1,33 @@
+{
+  "title": "The Lantern Keepers' List",
+  "premise": "Mrs Trewin has strapped her wrist and cannot hang the ridge lanterns this year, so the list comes to a village kid: eighty paper lanterns, three sections of route up the ridge path, and one afternoon before the walking party comes down off the moor at half past five. Half the list is already out of date, the paraffin is not where the page says, and the village has to be talked into helping.",
+  "protagonist": {
+    "name": "Wren",
+    "age": 10,
+    "role": "the village kid standing in for Mrs Trewin on the lantern list"
+  },
+  "point_of_view": "third",
+  "age_band": "8-11",
+  "reading_level_target": 4.5,
+  "tier": 2,
+  "tone": "cosy, practical, gently urgent, community-minded",
+  "themes_allowed": [
+    "community",
+    "responsibility",
+    "wayfinding",
+    "autumn",
+    "care"
+  ],
+  "content_nogo": [
+    "graphic violence",
+    "romance"
+  ],
+  "target_node_count": 132,
+  "ending_count": 24,
+  "structure_pattern": "branch_and_bottleneck",
+  "length": "medium",
+  "narrative_style": "prose",
+  "desired_variables": [],
+  "special_constraints": [],
+  "anchor_context": null
+}

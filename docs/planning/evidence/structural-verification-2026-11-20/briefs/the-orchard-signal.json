@@ -1,0 +1,32 @@
+{
+  "title": "The Orchard Signal",
+  "premise": "In the last week of October the big Bramley at the top of the orchard is in full blossom, white and early and wrong, while every other tree on the hill stands bare. Ada has kept notebooks on this orchard for decades. A young volunteer who helps her has to work out what the blossom means, whether the old records can prove anything, and how to make the evidence count before a deadline decides it for them.",
+  "protagonist": {
+    "name": "Jonah",
+    "age": 12,
+    "role": "a young volunteer who helps Ada keep the orchard's notebooks"
+  },
+  "point_of_view": "third",
+  "age_band": "10-13",
+  "reading_level_target": 5.5,
+  "tier": 2,
+  "tone": "thoughtful, quietly suspenseful, grounded",
+  "themes_allowed": [
+    "record keeping",
+    "evidence",
+    "persistence",
+    "community"
+  ],
+  "content_nogo": [
+    "graphic violence",
+    "romance"
+  ],
+  "target_node_count": 179,
+  "ending_count": 30,
+  "structure_pattern": "branch_and_bottleneck",
+  "length": "medium",
+  "narrative_style": "prose",
+  "desired_variables": [],
+  "special_constraints": [],
+  "anchor_context": null
+}

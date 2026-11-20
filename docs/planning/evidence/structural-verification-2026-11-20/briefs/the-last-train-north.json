@@ -1,0 +1,32 @@
+{
+  "title": "The Last Train North",
+  "premise": "Vera boards the last northbound overnight train of the season on the platform as sleet turns to snow. The carriages are full of passengers who seem to be travelling toward something other than a station: a night conductor with a silver punch-clock, a letter a stranger left folded on her seat, a child who never sleeps, a woman travelling in mourning. Before the mountain tunnel and the first grey dawn, Vera has to decide what to ask, whom to trust, and what she is ready to let go of.",
+  "protagonist": {
+    "name": "Vera",
+    "age": 17,
+    "role": "a young traveller going north alone"
+  },
+  "point_of_view": "third",
+  "age_band": "16+",
+  "reading_level_target": 9.0,
+  "tier": 1,
+  "tone": "uncanny, quiet, melancholy, tender",
+  "themes_allowed": [
+    "the uncanny",
+    "journey and passage",
+    "memory",
+    "letting go"
+  ],
+  "content_nogo": [
+    "graphic violence",
+    "romance"
+  ],
+  "target_node_count": 144,
+  "ending_count": 25,
+  "structure_pattern": "branch_and_bottleneck",
+  "length": "medium",
+  "narrative_style": "prose",
+  "desired_variables": [],
+  "special_constraints": [],
+  "anchor_context": null
+}

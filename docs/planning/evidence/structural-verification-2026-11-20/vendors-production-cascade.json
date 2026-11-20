@@ -1,0 +1,16 @@
+[
+  {
+    "label": "deepseek-v4-pro",
+    "model": "deepseek/deepseek-v4-pro",
+    "provider_order": ["azure/us"],
+    "family": "deepseek",
+    "_note": "Production primary (core/config.py openrouter_model); pin is the one core/pricing.py ENDPOINT_PINS applies when production passes no order."
+  },
+  {
+    "label": "claude-sonnet-4.6",
+    "model": "anthropic/claude-sonnet-4.6",
+    "provider_order": [],
+    "family": "anthropic",
+    "_note": "Production fallback leg (openrouter_fallback_model); production applies no pin to it, so the probe sends none."
+  }
+]

@@ -1,0 +1,10 @@
+ src/cyo_adventure/generation/merge_notes.py        | 170 +++++++++++++++++++++
+ src/cyo_adventure/generation/prompts.py            | 105 ++++++++++++-
+ .../generation/templates/drafting_guide.md         | 112 ++++++++++----
+ .../generation/templates/fidelity_repair.md        |   5 +
+ src/cyo_adventure/generation/templates/fill.md     |  17 +++
+ .../generation/templates/fill_bound.md             |  17 +++
+ .../generation/templates/fill_subset.md            |  17 +++
+ .../generation/templates/fill_subset_bound.md      |  17 +++
+ .../generation/templates/reading_level_repair.md   |  16 +-
+ 9 files changed, 437 insertions(+), 39 deletions(-)
