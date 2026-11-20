@@ -19,6 +19,7 @@ from cyo_adventure.events import Actor, EventType, record_event
 from cyo_adventure.generation.guarded import PiiGuardedProvider
 from cyo_adventure.generation.metered import MeteredProvider, ledger_of
 from cyo_adventure.generation.pii import assert_prompt_pii_safe
+from cyo_adventure.moderation.agency import findings_from_agency
 from cyo_adventure.moderation.classifiers import run_classifiers
 from cyo_adventure.moderation.leaf_diversity import run_leaf_diversity_check
 from cyo_adventure.moderation.personalizable_slots import (
@@ -902,11 +903,14 @@ def _apply_prose_craft_findings(
     version_row: StorybookVersion,
     report: ModerationReport,
 ) -> None:
-    """Append the prose-craft advisories to ``report``, if any.
+    """Append the prose-craft and reader-agency advisories to ``report``, if any.
 
     Skipped once a hard block has decided routing, for a different reason than
     the ATG's: these findings never gate, so their only value is being read by
-    the human approver an auto-rejected book will never reach.
+    the human approver an auto-rejected book will never reach. The agency
+    advisories (``moderation/agency.py``, `UW-C479`) ride the same call so they
+    inherit both placement decisions recorded at the call site: after the
+    repair branch, and skipped on a hard block.
 
     Args:
         version_row: The persisted version under moderation, read for its blob.
@@ -915,6 +919,8 @@ def _apply_prose_craft_findings(
     if report.has_hard_block:
         return
     for finding in findings_from_prose_craft(version_row.blob):
+        report.add(finding)
+    for finding in findings_from_agency(version_row.blob):
         report.add(finding)
 
 

@@ -43,6 +43,7 @@ from cyo_adventure.generation.provider import _CANNED_STORY, MockProvider
 from cyo_adventure.moderation import leaf_diversity as leaf_diversity_mod
 from cyo_adventure.moderation import personalizable_slots as pslots_mod
 from cyo_adventure.moderation import pipeline as pipeline_mod
+from cyo_adventure.moderation.agency import findings_from_agency
 from cyo_adventure.moderation.leaf_diversity import (
     run_leaf_diversity_check as _real_run_leaf_diversity_check,
 )
@@ -51,7 +52,7 @@ from cyo_adventure.moderation.personalizable_slots import (
     PersonalizableSlots,
 )
 from cyo_adventure.moderation.prose_craft import findings_from_prose_craft
-from cyo_adventure.moderation.report import Finding, Source, Verdict
+from cyo_adventure.moderation.report import Finding, FindingSeverity, Source, Verdict
 from cyo_adventure.storybook.models import AgeBand
 from cyo_adventure.storybook.sentinels import wrap
 from cyo_adventure.storybook.theme_contract import SlotScope, SlotSpec, ThemeContract
@@ -3273,6 +3274,71 @@ async def test_prose_craft_advisory_reaches_the_report_without_gating(
     assert advisories[0]["verdict"] == Verdict.ADVISORY
 
 
+def _agency_seam(node_id: str) -> Finding:
+    """Build one per-node agency ADVISORY, as moderation/agency.py emits it."""
+    return Finding(
+        stage=0,
+        source=Source.PIPELINE,
+        category="agency_merge_seam",
+        verdict=Verdict.ADVISORY,
+        node_id=node_id,
+        score=None,
+        severity=FindingSeverity.LOW,
+        message="merge seam: this node opens by erasing the route",
+    )
+
+
+@pytest.mark.unit
+async def test_agency_advisories_reach_the_report_merged_without_gating(
+    mock_session: AsyncMock,
+    monkeypatch: pytest.MonkeyPatch,
+    review_seam: Callable[[MockProvider], dict[str, object]],
+) -> None:
+    """UW-C479: the agency advisories land on the persisted report, merged.
+
+    Same contract as the prose-craft advisory: routing does not move (submit,
+    no repair), and the persist-time merge stage collapses the per-node seam
+    findings into one row carrying every merge node, which is the shape the
+    review surface's drill-down renders.
+    """
+    story, version = _story(), _version_with_slug()
+    _load(mock_session, story, version)
+    review_seam(_verdict_review_provider())
+    monkeypatch.setattr(
+        pipeline_mod,
+        "findings_from_agency",
+        create_autospec(
+            findings_from_agency,
+            return_value=[_agency_seam("n1"), _agency_seam("n2")],
+        ),
+    )
+    submit = AsyncMock()
+    auto_reject = AsyncMock()
+    monkeypatch.setattr("cyo_adventure.publishing.service.submit", submit)
+    monkeypatch.setattr("cyo_adventure.publishing.service.auto_reject", auto_reject)
+    generation_provider = MockProvider(responses=[])
+
+    await pipeline_mod.run_moderation_pipeline(
+        session=mock_session,
+        story_id="s1",
+        version=1,
+        settings=_settings(),
+        generation_provider=generation_provider,
+        pii=_pii(),
+    )
+
+    submit.assert_awaited_once()
+    auto_reject.assert_not_awaited()
+    assert generation_provider.calls == []
+    moderation_report = version.moderation_report
+    assert moderation_report is not None
+    findings = cast("list[dict[str, object]]", moderation_report["findings"])
+    seams = [f for f in findings if f.get("category") == "agency_merge_seam"]
+    assert len(seams) == 1
+    assert seams[0]["verdict"] == Verdict.ADVISORY
+    assert seams[0]["node_ids"] == ["n1", "n2"]
+
+
 @pytest.mark.unit
 async def test_prose_craft_skipped_on_hard_block(
     mock_session: AsyncMock,
@@ -3290,6 +3356,8 @@ async def test_prose_craft_skipped_on_hard_block(
 
     prose_craft = create_autospec(findings_from_prose_craft, return_value=[])
     monkeypatch.setattr(pipeline_mod, "findings_from_prose_craft", prose_craft)
+    agency = create_autospec(findings_from_agency, return_value=[])
+    monkeypatch.setattr(pipeline_mod, "findings_from_agency", agency)
     auto_reject = AsyncMock()
     submit = AsyncMock()
     monkeypatch.setattr("cyo_adventure.publishing.service.auto_reject", auto_reject)
@@ -3306,6 +3374,7 @@ async def test_prose_craft_skipped_on_hard_block(
 
     auto_reject.assert_awaited_once()
     prose_craft.assert_not_called()
+    agency.assert_not_called()
 
 
 @pytest.mark.unit

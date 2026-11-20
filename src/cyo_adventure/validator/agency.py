@@ -83,7 +83,10 @@ exactly as the other narrator-attribution detectors do. A character who says
 craft rather than the defect.
 
 Pure module: stdlib plus ``validator.prose_craft`` and ``utils.sentences``.
-Offline and report-first: nothing on the request path imports it.
+Report-first: ``scripts/check_prose_craft.py`` runs every detector offline,
+and ``moderation/agency.py`` runs the precise subset (merge seams, the three
+label checks, and the stateless-merge headline) on the request path as
+advisory findings for the human approver. Nothing here gates.
 """
 
 from __future__ import annotations
@@ -121,7 +124,9 @@ __all__ = [
     "give_up_endings",
     "inbound_sources",
     "label_defects",
+    "merge_node_count",
     "merge_seams",
+    "merge_state_headline",
     "option_recaps",
     "state_counts",
 ]
@@ -202,6 +207,21 @@ def inbound_sources(story: Mapping[str, Any]) -> dict[str, frozenset[str]]:
             if target != source:
                 inbound.setdefault(target, set()).add(source)
     return {node_id: frozenset(srcs) for node_id, srcs in inbound.items()}
+
+
+def merge_node_count(story: Mapping[str, Any]) -> int:
+    """Count the merge nodes: nodes with two or more distinct inbound nodes.
+
+    Works on a skeleton as well as a filled book, since it reads only ids and
+    choice targets.
+
+    Args:
+        story: Decoded filled-story or skeleton JSON.
+
+    Returns:
+        The number of nodes reached from two or more distinct nodes.
+    """
+    return sum(1 for srcs in inbound_sources(story).values() if len(srcs) >= 2)
 
 
 def decisions_to_reach(story: Mapping[str, Any]) -> dict[str, int]:
@@ -1018,21 +1038,7 @@ class AgencyReport:
     @property
     def headline(self) -> str:
         """Return the agency picture as one sentence a non-engineer can read."""
-        if self.merge_nodes:
-            merges = (
-                f"{self.merge_nodes} merge nodes, {len(self.seams)} of them tell "
-                "the reader the route did not matter"
-            )
-        else:
-            merges = "no merge nodes (every route stays separate)"
-        if self.state.stateless:
-            state = f"{self.state.variables} variables, so no choice comes back"
-        else:
-            state = (
-                f"{self.state.variables} variables and "
-                f"{self.state.conditional_choices} conditional choices carry "
-                "earlier choices forward"
-            )
+        route = merge_state_headline(self.merge_nodes, len(self.seams), self.state)
         recaps = (
             f"{len(self.recaps)} of {self.decision_nodes} decisions restate or "
             "announce their options"
@@ -1042,7 +1048,39 @@ class AgencyReport:
             f"have the hero give up, {len(self.early)} come within "
             f"{self.early_decisions} decisions"
         )
-        return f"{merges}; {state}; {recaps}; {endings}."
+        return f"{route}; {recaps}; {endings}."
+
+
+def merge_state_headline(merge_nodes: int, seams: int, state: StateCounts) -> str:
+    """Return the merge-and-state clauses of :attr:`AgencyReport.headline`.
+
+    Split out so the request-path advisory (``moderation/agency.py``) can
+    quote exactly the clauses the offline report prints without also quoting
+    the recap and ending clauses it deliberately does not surface.
+
+    Args:
+        merge_nodes: Nodes with two or more distinct inbound nodes.
+        seams: Merge nodes whose opening erases the reader's route.
+        state: The book's declared state.
+
+    Returns:
+        Two clauses joined by a semicolon, with no closing full stop.
+    """
+    if merge_nodes:
+        merges = (
+            f"{merge_nodes} merge nodes, {seams} of them tell the reader the "
+            "route did not matter"
+        )
+    else:
+        merges = "no merge nodes (every route stays separate)"
+    if state.stateless:
+        carried = f"{state.variables} variables, so no choice comes back"
+    else:
+        carried = (
+            f"{state.variables} variables and {state.conditional_choices} "
+            "conditional choices carry earlier choices forward"
+        )
+    return f"{merges}; {carried}"
 
 
 def agency_report(
@@ -1060,9 +1098,8 @@ def agency_report(
         AgencyReport: The counts, the hits, and the headline.
     """
     nodes = _nodes(story)
-    inbound = inbound_sources(story)
     return AgencyReport(
-        merge_nodes=sum(1 for srcs in inbound.values() if len(srcs) >= 2),
+        merge_nodes=merge_node_count(story),
         decision_nodes=sum(1 for n in nodes if not _is_ending(n) and _is_decision(n)),
         state=state_counts(story),
         seams=merge_seams(story),
