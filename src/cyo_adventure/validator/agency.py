@@ -39,6 +39,43 @@ style of the rest. Each false-positive class found during calibration is
 named next to the rule that excludes it and pinned by a regression test in
 ``tests/unit/test_validator_agency.py``.
 
+Baseline on ``main`` (2026-11-20), all 31 books; book, band, merge nodes,
+seams, decisions, recaps, meta / jargon / second-person labels, negative
+endings, give-ups, early setbacks (at 3 decisions), variables::
+
+    book                     band  mrg seam dec recap meta jar 2p neg give early var
+    baking-day-with-grandma- 3-5     5    0   8     5    0   0  0   0    0     0   0
+    puddle-jumping-day       3-5     0    0   3     1    0   0  0   0    0     0   0
+    ashfall-expedition       16+    21    0  57    15    0   0  0 140   56    10   0
+    backyard-treasure-map    5-8     0    0  10     2    0   0  0   0    0     0   0
+    big-red-balloon          3-5     0    0   5     0    0   0  0   0    0     0   0
+    cave-of-echoes           8-11    0    0  14     5    0   0  0   0    0     0   0
+    clocktower-cipher        10-13   3    0  11    10    0   0  2   4    1     0   0
+    clockwork-menagerie      8-11   12    8  29    21    0   0  6   7    0     3   0
+    clover-and-the-butterfly 3-5     0    0   5     3    0   0  0   0    0     0   0
+    drowned-court            16+    10    0  37    20    0   0  0  98   44    11   0
+    harrowstone-keep         13-16  66    0 211     0    0   0  0 145    7     3   4
+    hollow-lighthouse        10-13  17   14  63    42    0   0  0  16    4     2   0
+    lantern-festival         5-8     2    0  17    17    0   0  3   0    0     0   0
+    last-train-north         16+    21   21  43    26    0   0 20  11    0     4   0
+    lost-mitten              3-5     3    0   6     6    0   0  1   0    0     0   0
+    mapmakers-island         10-13  33    1 113     7    3   0  3  29    4     2   0
+    midnight-museum          10-13   8    2  31     9    1   1  4   9    3     3   0
+    night-market             5-8     8    0  23    16    0   0  0   0    0     0   0
+    salt-archive             16+    11   11  62    55    0   0 16  18    0     4   0
+    school-garden-mystery    5-8     3    0  20    10    0   0  0   0    0     0   0
+    signal-in-the-static     13-16   6    5  51    42    8   0  4  21    4     2   0
+    sky-ship-stowaway        8-11   20    4  36    32    0   0  6   4    2     2   0
+    sleepy-little-star       3-5     3    0   6     6    0   0  0   0    0     0   0
+    snow-day-expedition      5-8     0    0   9     2    0   0  0   0    0     0   0
+    sunken-signal            16+     5    0  13    12    0   0  0  12    1     2   4
+    sunken-temple            13-16  66    0 211     0    2   0  0 145    3     3   4
+    sunspire-ascent          13-16  11    0  37    31    0   0  0  67   50     3   0
+    teddy-bears-picnic       3-5     2    0  16    10    0   0  0   0    0     0   0
+    thornwood-trial          13-16  19    0  40    11    0   0  0 111   17     6   0
+    tide-pool-rescue         5-8    14    0  26    23    0   0  5   0    0     0   0
+    vanishing-orchard        13-16   9    3  38    23    3   0 18  23    2     8   0
+
 **Dialogue.** Seams, recaps, and give-up closes are narrator moves, so
 dialogue is stripped first with :func:`~cyo_adventure.validator.prose_craft.narration_of`,
 exactly as the other narrator-attribution detectors do. A character who says

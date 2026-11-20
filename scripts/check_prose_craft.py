@@ -875,8 +875,8 @@ def _build_parser() -> argparse.ArgumentParser:
         "reader agency (validator/agency.py)",
         "Report-only unless a budget is passed: an unset budget prints the "
         "count marked 'info' and never affects --check. Calibrated on all 31 "
-        "committed books (2026-11-20); per-book counts are in the docstring "
-        "of validator/agency.py's tests.",
+        "committed books (2026-11-20); the per-book table is in "
+        "validator/agency.py's module docstring.",
     )
     agency.add_argument(
         "--max-merge-seams",
@@ -928,7 +928,7 @@ def _build_parser() -> argparse.ArgumentParser:
         help=(
             "Second-person labels in a third-person book (default unset; "
             "second-person books and gamebooks are never counted). Precise: "
-            "97 hits across 14 books, all addressing the reader over "
+            "88 hits across 12 books, all addressing the reader over "
             "third-person prose."
         ),
     )
@@ -938,9 +938,10 @@ def _build_parser() -> argparse.ArgumentParser:
         default=None,
         help=(
             "Negative endings whose close has the hero go home, turn back, "
-            "quit, or defer (default unset). Report-only: roughly 2 in 100 "
+            "quit, or defer (default unset). Report-only: about 2 in 100 "
             "hits name someone other than the hero ('the escort turning "
-            "back'), and death-trap gamebooks score in the dozens by genre."
+            "back'), and death-trap gamebooks score in the dozens by genre "
+            "(198 hits, 177 of them in the six gamebooks)."
         ),
     )
     agency.add_argument(
