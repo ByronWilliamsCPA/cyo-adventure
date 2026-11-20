@@ -1,6 +1,8 @@
 import { expect, test } from '@playwright/test'
 
-import { BACKEND, requireBackend } from './real-stack'
+import { CONSENT_POLICY_VERSION } from '../src/auth/onboardingApi'
+
+import { BACKEND, requireBackend, stampFixtureModeration } from './real-stack'
 
 /**
  * Real-API ADR-016 (register G17) family-connection ENFORCEMENT: not just
@@ -191,7 +193,22 @@ async function provisionActiveGuardian(label: string): Promise<OnboardResult> {
   // suffix keeps two concurrent runs (or two calls in the same run) from
   // colliding on the unique authn_subject index.
   const bearer = `e2e-conn-${label}-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`
-  const onboardRes = await apiFetch('/api/v1/onboarding', bearer, { method: 'POST' })
+  // The consent block is what the real guardian onboarding UI sends
+  // (auth/AuthContext.tsx). Without it the family has no recorded VPC and
+  // POST /profiles refuses the profile below with rule=vpc_required (400),
+  // which is exactly how this spec failed once its approve step could pass.
+  const onboardRes = await apiFetch('/api/v1/onboarding', bearer, {
+    method: 'POST',
+    body: JSON.stringify({
+      consent: {
+        accepted: true,
+        policy_version: CONSENT_POLICY_VERSION,
+        signer_name: `E2E ${label} guardian`,
+        residence_country: 'US',
+        adulthood_attested: true,
+      },
+    }),
+  })
   expect(onboardRes.ok, `POST /onboarding failed (HTTP ${onboardRes.status})`).toBe(true)
   const onboarded = (await onboardRes.json()) as {
     family_id: string
@@ -275,15 +292,29 @@ test('a fresh catalog-visible storybook is generated and approved through the re
   const jobId = await enqueueGeneration(conceptId)
   storybookId = await pollGenerationJob(jobId)
 
+  // The mock reviewer's report is unapprovable by design (the 400 below is
+  // the product's safety gate, not a harness fault); prove that first, then
+  // stand an explicitly labelled fixture judgment in for the real reviewer.
+  const refusedRes = await apiFetch(`/api/v1/storybooks/${storybookId}/approve`, ADMIN_BEARER, {
+    method: 'POST',
+    body: JSON.stringify({ visibility: 'catalog' }),
+  })
+  expect(refusedRes.status, 'a mock-reviewed story must not be approvable').toBe(400)
+  expect(await refusedRes.text()).toContain('approve_with_unusable_moderation')
+  stampFixtureModeration(storybookId)
+
   const approveRes = await apiFetch(`/api/v1/storybooks/${storybookId}/approve`, ADMIN_BEARER, {
     method: 'POST',
     body: JSON.stringify({ visibility: 'catalog' }),
   })
-  expect(
-    approveRes.ok,
-    `POST /approve failed (HTTP ${approveRes.status}): ${await approveRes.text()}`
-  ).toBe(true)
-  const approved = (await approveRes.json()) as { visibility: string }
+  // Read the body exactly once: the failure message's text() used to run
+  // eagerly on success too, so the json() after it always threw "Body has
+  // already been read" (masked until the approve itself could succeed).
+  const approveBody = await approveRes.text()
+  expect(approveRes.ok, `POST /approve failed (HTTP ${approveRes.status}): ${approveBody}`).toBe(
+    true
+  )
+  const approved = JSON.parse(approveBody) as { visibility: string }
   expect(approved.visibility).toBe('catalog')
 })
 
@@ -317,11 +348,13 @@ test('an admin-created connection alone, with zero consent, still shows nothing'
     method: 'POST',
     body: JSON.stringify({ family_id: viewer.familyId, connected_family_id: sharer.familyId }),
   })
+  // One body read, for the same reason as the approve step above.
+  const createBody = await createRes.text()
   expect(
     createRes.ok,
-    `POST /admin/family-connections failed (HTTP ${createRes.status}): ${await createRes.text()}`
+    `POST /admin/family-connections failed (HTTP ${createRes.status}): ${createBody}`
   ).toBe(true)
-  const created = (await createRes.json()) as { id: string }
+  const created = JSON.parse(createBody) as { id: string }
   connectionId = created.id
 
   const items = await fetchRecommendations(viewer.bearer, viewerProfileId)
@@ -375,7 +408,21 @@ test('the real rendered kid library shows the "Cousin" recommendation chip once 
       body: JSON.stringify({ profile_id: viewerProfileId }),
     })
     expect(sessionRes.ok, `POST /child-sessions failed (HTTP ${sessionRes.status})`).toBe(true)
-    const session = (await sessionRes.json()) as { token: string }
+    const session = (await sessionRes.json()) as {
+      token: string
+      expires_at: string
+      profile_id: string
+    }
+    // The app reads a minted child session from the single `child_session`
+    // JSON blob (src/auth/childSession.ts, written by ProfilePickerPage), not
+    // from `auth_token`. Stored as a guardian bearer, the JWT was sent as an
+    // authn subject the local auth seam does not know, every kid call 401'd,
+    // and the library rendered "Time to find your grown-up" instead.
+    const childSessionValue = JSON.stringify({
+      token: session.token,
+      expiresAt: session.expires_at,
+      profileId: session.profile_id,
+    })
 
     const grantRes = await apiFetch('/api/v1/device-grants', viewer.bearer, {
       method: 'POST',
@@ -397,11 +444,11 @@ test('the real rendered kid library shows the "Cousin" recommendation chip once 
     })
 
     await context.addInitScript(
-      ([grantKey, grantValue, authKey, tokenValue]) => {
+      ([grantKey, grantValue, sessionKey, sessionValue]) => {
         window.localStorage.setItem(grantKey, grantValue)
-        window.localStorage.setItem(authKey, tokenValue)
+        window.localStorage.setItem(sessionKey, sessionValue)
       },
-      ['device_grant', deviceGrantValue, 'auth_token', session.token] as const
+      ['device_grant', deviceGrantValue, 'child_session', childSessionValue] as const
     )
 
     const page = await context.newPage()

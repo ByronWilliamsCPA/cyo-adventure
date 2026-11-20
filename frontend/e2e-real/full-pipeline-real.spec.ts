@@ -2,7 +2,13 @@ import { expect, test } from '@playwright/test'
 
 import type { DeviceGrant } from '../src/auth/deviceGrant'
 
-import { authorizeDevice, BACKEND, requireBackend, revokeDevice } from './real-stack'
+import {
+  authorizeDevice,
+  BACKEND,
+  requireBackend,
+  revokeDevice,
+  stampFixtureModeration,
+} from './real-stack'
 
 import { seedGuardianSession } from '../e2e/support/auth'
 
@@ -223,6 +229,21 @@ test('the admin approves and publishes the generated story through the real API'
 
   await seedGuardianSession(context, 'dev-admin')
   await page.goto(`/admin/review/${storybookId}`)
+  await expect(page.getByRole('heading', { name: CANNED_TITLE })).toBeVisible()
+
+  // The worker's report came from the MOCK reviewer, which the product stamps
+  // unapprovable on purpose (moderation/pipeline.py::_stamp_mock_reviewer):
+  // the review surface disables Approve and the API refuses it. That refusal
+  // is the safety gate working, so assert it at both layers before standing
+  // an explicitly labelled fixture judgment in for the real reviewer.
+  await expect(page.getByRole('button', { name: /^Approve$/ })).toBeDisabled()
+  const refusedRes = await apiFetch(`/api/v1/storybooks/${storybookId}/approve`, ADMIN_BEARER, {
+    method: 'POST',
+  })
+  expect(refusedRes.status, 'a mock-reviewed story must not be approvable').toBe(400)
+  expect(await refusedRes.text()).toContain('approve_with_unusable_moderation')
+  stampFixtureModeration(storybookId)
+  await page.reload()
   await expect(page.getByRole('heading', { name: CANNED_TITLE })).toBeVisible()
 
   await page.getByRole('button', { name: /^Approve$/ }).click()

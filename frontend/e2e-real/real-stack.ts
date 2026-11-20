@@ -60,6 +60,49 @@ export function resetRealState(): void {
   }
 }
 
+/**
+ * Replace a worker-generated story's mock-reviewer moderation report with an
+ * explicitly labelled fixture judgment so the pipeline tier can exercise
+ * approve, publish, assign, and read (shells out to
+ * `scripts/reset_e2e_real_state.py --stamp-fixture-moderation`).
+ *
+ * The mock reviewer this tier runs stamps every report it writes
+ * `reviewer_independent=False`, and `publishing/service.py` refuses to
+ * approve such a report by design (`approve_with_unusable_moderation`), so
+ * without this step the approve leg can never pass. Callers MUST first assert
+ * that refusal against the unstamped story, so the tier keeps proving the
+ * gate holds for real worker output before it stands a fixture in for the
+ * real reviewer.
+ *
+ * #CRITICAL: security: the Python side refuses anything but a local database,
+ * a worker-generated `s_<uuid>` id, an `in_review` story, and a report that
+ * carries the mock-reviewer stamp, so it cannot overwrite a genuine judgment
+ * or make a seeded/imported story approvable.
+ * #VERIFY: tests/unit/test_reset_e2e_real_state.py (test_fixture_report_*).
+ */
+export function stampFixtureModeration(storybookId: string): void {
+  try {
+    execFileSync(
+      'uv',
+      [
+        'run',
+        'python',
+        'scripts/reset_e2e_real_state.py',
+        '--stamp-fixture-moderation',
+        storybookId,
+      ],
+      { cwd: REPO_ROOT, stdio: 'inherit', timeout: 60_000 }
+    )
+  } catch (error) {
+    const reason = error instanceof Error ? error.message : String(error)
+    throw new Error(
+      `scripts/reset_e2e_real_state.py --stamp-fixture-moderation ${storybookId} ` +
+        `failed (see output above): ${reason}`,
+      { cause: error }
+    )
+  }
+}
+
 // localStorage key the app reads the device grant from; mirrors GRANT_KEY in
 // src/auth/deviceGrant.ts (not exported there). Kept in sync manually, exactly
 // as the specs hardcode the 'auth_token' key.
