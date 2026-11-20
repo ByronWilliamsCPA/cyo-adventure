@@ -33,6 +33,11 @@ same beat, so you SHOULD rewrite the body of any node named in a violation.
 3. **Do not introduce new violations.** The fidelity checks re-run on your output; a fix
    that repairs one node's word count but breaks another node's is still a failure.
 
+4. **A rewritten body stays a scene.** End a passage that offers a choice on the stakes,
+   not on a sentence restating the options; the buttons state them. A node reached from
+   more than one other node must not tell the reader their route did not matter, and must
+   not state anything only some of those routes established. Keep any dialogue.
+
 ## Output
 
 Respond with valid JSON only. Do not include prose before or after the JSON. Do not

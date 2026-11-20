@@ -40,7 +40,14 @@ FILL_TEMPLATES = (
 # Each entry is a clause every fill template must carry, keyed by its heading
 # text. Add a row here when a ruling adds a section to fill.md; the parity test
 # then fails until the other three templates carry it too.
-SHARED_CLAUSE_HEADINGS = ("Narrative person",)
+SHARED_CLAUSE_HEADINGS = (
+    "Narrative person",
+    # The reader-agency rules (2026-11-20 editorial read) and the per-merge
+    # notes section they point at: a chunked or bound fill that lacked either
+    # would write merge passages blind, which is the defect they exist to stop.
+    "Reader agency",
+    "Passages Reached From More Than One Place",
+)
 
 # Clauses the one-shot pair shares but the chunked pair cannot: the one-shot
 # model returns a whole document and ``normalize_fill`` restores only the frozen

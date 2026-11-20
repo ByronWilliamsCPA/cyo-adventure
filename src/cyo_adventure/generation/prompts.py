@@ -29,9 +29,10 @@ from __future__ import annotations
 import json
 from dataclasses import dataclass
 from importlib.resources import files
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, cast
 
 from cyo_adventure.core.exceptions import BusinessLogicError
+from cyo_adventure.generation.merge_notes import render_merge_notes
 from cyo_adventure.storybook.schema_export import build_schema
 from cyo_adventure.validator.band_profile import (
     min_complete_floor,
@@ -86,6 +87,10 @@ _DRAFTING_GUIDE_PLACEHOLDER = "{drafting_guide}"
 # The theme-brief placeholder recurs across the fill, bind, interpret-and-bind,
 # and bound-fill templates; named once for the same reason as the two above.
 _THEME_BRIEF_PLACEHOLDER = "{theme_brief}"
+
+# The per-merge notes block every fill template carries in its user region
+# (see generation/merge_notes.py). Named once because four builders fill it.
+_MERGE_NOTES_PLACEHOLDER = "{merge_notes}"
 
 # Terminator of the ``<<<UNTRUSTED_USER_INPUT ... >>>END_UNTRUSTED_USER_INPUT``
 # fence, and the inert form substituted for it inside a payload. The defanged
@@ -271,6 +276,79 @@ def _drafting_guide() -> str:
     # #VERIFY: confirm `src/cyo_adventure/generation/templates/` is present
     # before shipping; add a smoke test in CI.
     return _load_template("drafting_guide.md")
+
+
+def _decoded_object(text: str) -> dict[str, object] | None:
+    """Decode *text* as a JSON object, or return ``None``.
+
+    Args:
+        text: A JSON string the caller expects to hold an object.
+
+    Returns:
+        The decoded object, or ``None`` when *text* is not valid JSON or does
+        not decode to an object.
+    """
+    try:
+        decoded = cast("object", json.loads(text))
+    except json.JSONDecodeError:
+        return None
+    return cast("dict[str, object]", decoded) if isinstance(decoded, dict) else None
+
+
+def _batch_node_ids(nodes_to_fill_json: str) -> list[str] | None:
+    """Return the ``node_id`` of every entry in a chunked batch's work order.
+
+    Args:
+        nodes_to_fill_json: The batch work order, as produced by
+            :func:`~cyo_adventure.generation.chunking.batch_request`.
+
+    Returns:
+        The batch's node ids, or ``None`` when the work order is not a JSON
+        list (the caller then falls back to the whole-skeleton notes).
+    """
+    try:
+        decoded = cast("object", json.loads(nodes_to_fill_json))
+    except json.JSONDecodeError:
+        return None
+    if not isinstance(decoded, list):
+        return None
+    ids: list[str] = []
+    for entry in cast("list[object]", decoded):
+        if isinstance(entry, dict):
+            node_id = cast("dict[str, object]", entry).get("node_id")
+            if isinstance(node_id, str):
+                ids.append(node_id)
+    return ids
+
+
+def _merge_notes(skeleton_json: str, nodes_to_fill_json: str | None = None) -> str:
+    """Render the per-merge notes for a fill prompt's user block.
+
+    Every fill builder states which passages are merges and what arrives at
+    each, so the model can write a merge body that is true on every inbound
+    route instead of one that announces the route did not matter (the
+    2026-11-20 editorial read counted 69 such seams across the catalog).
+
+    Args:
+        skeleton_json: The skeleton being filled, as the builder received it.
+        nodes_to_fill_json: On the chunked path, the batch work order; the
+            notes are then restricted to merges the batch is writing. ``None``
+            on the one-shot path, which writes every passage.
+
+    Returns:
+        The rendered notes block (see
+        :func:`~cyo_adventure.generation.merge_notes.render_merge_notes`).
+    """
+    # #ASSUME: data-integrity: every production caller passes the skeleton as
+    # ``json.dumps`` of a decoded document (orchestrator.py), so it decodes.
+    # A string that does not (only seen in unit tests that pass a stand-in)
+    # renders the no-merge sentence rather than raising: the notes are
+    # guidance, and a prompt builder that raised on them would fail a fill the
+    # gate would have accepted.
+    # #VERIFY: test_merge_notes.py::test_an_undecodable_skeleton_renders_no_merges.
+    document = _decoded_object(skeleton_json) or {}
+    only = None if nodes_to_fill_json is None else _batch_node_ids(nodes_to_fill_json)
+    return render_merge_notes(document, only=only)
 
 
 def _schema_rules() -> str:
@@ -595,6 +673,9 @@ def build_fill_prompt(
     - ``{schema_rules}`` with the pretty-printed Storybook JSON Schema (system).
     - ``{skeleton_with_fill_directives}`` with the matched skeleton's JSON,
       FILL directives intact (user).
+    - ``{merge_notes}`` with one line per merge node naming the nodes that
+      lead into it (:func:`_merge_notes`), so a merge body can be written to
+      be true on every inbound route (user).
     - ``{theme_brief}`` with the JSON-serialised concept brief driving the
       reskin (user).
 
@@ -622,6 +703,9 @@ def build_fill_prompt(
         .replace(_DRAFTING_GUIDE_PLACEHOLDER, _drafting_guide())
         .replace(_SCHEMA_RULES_PLACEHOLDER, _schema_rules())
         .replace("{skeleton_with_fill_directives}", _neutralize_fence(skeleton_json))
+        .replace(
+            _MERGE_NOTES_PLACEHOLDER, _neutralize_fence(_merge_notes(skeleton_json))
+        )
         .replace(_THEME_BRIEF_PLACEHOLDER, _neutralize_fence(theme_brief))
         .replace(
             "{differentiation_directive}",
@@ -683,7 +767,9 @@ def build_fill_subset_prompt(
     * the prose earlier batches wrote, so names, world, and voice hold across
       batches rather than restarting at each one,
     * the full skeleton, so a passage is written knowing where it sits in the
-      graph, and
+      graph, plus the per-merge notes for the merges this batch writes (the
+      batch's own merges only: a note about a passage written in another
+      batch is input this batch cannot act on), and
     * the theme brief and differentiation directive, identical to one-shot.
 
     Args:
@@ -718,6 +804,10 @@ def build_fill_subset_prompt(
         .replace("{nodes_to_fill}", _neutralize_fence(batch.nodes_to_fill_json))
         .replace("{prose_so_far}", _neutralize_fence(batch.prose_so_far_json))
         .replace("{skeleton_with_fill_directives}", _neutralize_fence(skeleton_json))
+        .replace(
+            _MERGE_NOTES_PLACEHOLDER,
+            _neutralize_fence(_merge_notes(skeleton_json, batch.nodes_to_fill_json)),
+        )
         .replace(_THEME_BRIEF_PLACEHOLDER, _neutralize_fence(theme_brief))
         .replace(
             "{differentiation_directive}",
@@ -745,6 +835,8 @@ def build_fill_subset_bound_prompt(
     contract whether it is emitted in one shot or a batch at a time. Those are
     the WS-2 binding preamble, the ending-title freeze and verbatim-token rules,
     and the labeled bound-values data block.
+    The per-merge notes are restricted to the batch exactly as in the unbound
+    chunked builder.
 
     Without this variant a bound fill could not be chunked at all, so a bound
     skeleton over the serving model's ceiling had no degraded path and simply
@@ -810,6 +902,10 @@ def build_fill_subset_bound_prompt(
         .replace("{nodes_to_fill}", _neutralize_fence(batch.nodes_to_fill_json))
         .replace("{prose_so_far}", _neutralize_fence(batch.prose_so_far_json))
         .replace("{skeleton_with_fill_directives}", _neutralize_fence(skeleton_json))
+        .replace(
+            _MERGE_NOTES_PLACEHOLDER,
+            _neutralize_fence(_merge_notes(skeleton_json, batch.nodes_to_fill_json)),
+        )
         .replace("{slot_bindings}", _neutralize_fence(batch.slot_bindings_json))
         .replace(_THEME_BRIEF_PLACEHOLDER, _neutralize_fence(theme_brief))
         .replace(
@@ -1023,6 +1119,8 @@ def build_bound_fill_prompt(
       validated slot values (user).
     - ``{slot_bindings}`` with the JSON-serialised slot-value map, labeled as
       validated data (user).
+    - ``{merge_notes}`` with the per-merge notes, as in
+      :func:`build_fill_prompt` (user).
     - ``{theme_brief}`` with the JSON-serialised theme brief, fenced as
       untrusted input, byte-identical to ``fill.md``'s fence (user).
 
@@ -1063,6 +1161,9 @@ def build_bound_fill_prompt(
         .replace(_DRAFTING_GUIDE_PLACEHOLDER, _drafting_guide())
         .replace(_SCHEMA_RULES_PLACEHOLDER, _schema_rules())
         .replace("{skeleton_with_fill_directives}", _neutralize_fence(skeleton_json))
+        .replace(
+            _MERGE_NOTES_PLACEHOLDER, _neutralize_fence(_merge_notes(skeleton_json))
+        )
         .replace("{slot_bindings}", _neutralize_fence(slot_bindings_json))
         .replace(_THEME_BRIEF_PLACEHOLDER, _neutralize_fence(theme_brief))
         .replace(

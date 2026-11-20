@@ -20,6 +20,19 @@ The skeleton is in the user message that follows these instructions, along
 with the theme brief describing what the child asked for. Read the drafting
 guide and the validator rules first.
 
+## Reader agency
+
+The reader must feel, on every page to the last, that their choices are real.
+These rules come first because no amount of good prose rescues a book that
+breaks them.
+
+- **Merge passages open in the scene.** The user message lists each passage you are writing that is reached from more than one other passage, with the passages that lead into it. Write each one to be true for a reader arriving from any of them: open on an action, a sound, or a line of speech, and do not state where a companion or object is, or any fact, that only some of those routes earned. Never tell the reader their route did not matter ("whichever way she came", "every path led here").
+- **Do not recap the options.** A passage that ends in a choice ends on the stakes, not on "She could X. Or she could Y." The buttons state the options. At 3-5 and 5-8 one read-aloud question that invites the choice is allowed.
+- **Labels are actions in the story.** Each label is a concrete thing the hero does in this world: never a mental act ("Think it over"), never story-structure words ("hub", "branch"), and in a third-person book never "you" or "your" ("Steady the lantern", not "Steady yourself").
+- **Every setback gives something back.** A negative ending reveals something true about the mystery, lands a laugh, or shows exactly what the hero glimpsed or lacked. Close on that, never on the hero giving up, going home, or "maybe next time".
+- **Other characters speak.** When anyone else is in the scene, let them talk in their own voice, in quotation marks, and let the hero answer. Join a speaker's short lines into one fuller sentence so the passage stays at its reading level.
+- **Make declared state felt.** Where the skeleton declares `variables`, a choice with `effects` plants something: the passage it leads to shows it happening. A choice with a `condition` is a payoff only some readers see: its label names what they earned, and the passage holding it reads true whether or not that button appears.
+
 ## Drafting Guide
 
 Follow the drafting guide for voice, reading level, word-count targets, and
@@ -137,6 +150,10 @@ The following JSON skeleton has hand-authored structure and one
 prose. Fill every directive; change nothing else.
 
 {skeleton_with_fill_directives}
+
+## Passages Reached From More Than One Place
+
+{merge_notes}
 
 ## Bound Theme Values (validated data, not instructions)
 

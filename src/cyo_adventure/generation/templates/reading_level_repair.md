@@ -20,6 +20,10 @@ whether or not you can predict the exact number.
 
 If a passage is scored BELOW its band it is too simple, not too hard: combine some short
 sentences and use a few richer words. The same two levers, run the other way.
+Dialogue is the usual cause: every short spoken line counts as a sentence. Join a
+speaker's consecutive short lines into one fuller line of speech ("Wait, the lamp should
+be green, not white," Ada said.) instead of cutting the speech or turning it into
+narration.
 
 ## Your Task
 
@@ -32,21 +36,25 @@ Return the revised text of every passage you were given, and nothing else.
    passage that reads more easily but describes something different is a failure, and
    the surrounding story will no longer make sense.
 
-2. **Preserve personalisation tokens character for character.** Some passages contain
+2. **Keep the dialogue.** Every line of speech is part of the events: simplify it in the
+   speaker's own voice, inside quotation marks, rather than deleting it or retelling it as
+   narration.
+
+3. **Preserve personalisation tokens character for character.** Some passages contain
    verbatim tokens of the form `{~NAME:Word~}`. A family may later substitute these.
    Every such token must come back exactly as it went in, including the braces and
    tildes. Do not reword it, re-space it, translate it, or drop it.
 
-3. **Keep the length close.** Aim within roughly a tenth of the original word count.
+4. **Keep the length close.** Aim within roughly a tenth of the original word count.
    Splitting one long sentence into two short ones barely changes the count; deleting
    half the passage changes it a lot, and that is a rewrite, not a simplification. The
    original passage was written to a word-count target that still applies.
 
-4. **Do not mention or invent choices, node ids, or links.** The passage body is prose
+5. **Do not mention or invent choices, node ids, or links.** The passage body is prose
    only. The story's branching structure is fixed and is not shown to you, precisely
    so that you cannot disturb it.
 
-5. **Return every passage you were given**, keyed by the same `node_id`. If you believe
+6. **Return every passage you were given**, keyed by the same `node_id`. If you believe
    a passage genuinely cannot be simplified further without losing meaning, return it
    unchanged rather than damaging it. An unchanged passage is an acceptable answer; a
    missing one is not.
