@@ -45,6 +45,7 @@ from cyo_adventure.mutation.identity import recompute_tier
 from cyo_adventure.mutation.operators import M1_OP_ID, M2_OP_ID, M3_OP_ID, M4_OP_ID
 from cyo_adventure.mutation.ops import OpParams, ParamValue
 from cyo_adventure.mutation.state_ops import M5_OP_ID
+from cyo_adventure.mutation.state_promotion import stateless_view
 from cyo_adventure.mutation.subtree import extract_subtree, node_ids
 from cyo_adventure.storybook.models import StoryMetadata
 
@@ -625,7 +626,7 @@ def _pick_donor(parent: CatalogEntry, catalog: Catalog) -> CatalogEntry | None:
     ranked = sorted(
         donors,
         key=lambda donor: (
-            -structural_distance(parent.document, donor.document),
+            -structural_distance(parent.document, stateless_view(donor.document)),
             donor.slug,
         ),
     )
@@ -653,11 +654,14 @@ def _graft_params(parent: CatalogEntry, donor: CatalogEntry) -> OpParams | None:
         OpParams | None: The graft params (``mode=graft`` plus ids), or None when
             no eligible graft exists.
     """
-    donor_start = _start_node(donor.document)
+    # Graft from the donor's Tier-1 reading, exactly as M3's default resolver
+    # does, so the subtrees enumerated here are the ones M3 will see.
+    donor_doc = stateless_view(donor.document)
+    donor_start = _start_node(donor_doc)
     sized_roots = [
-        (root, len(extract_subtree(donor.document, root).node_ids))
-        for root in node_ids(donor.document)
-        if root != donor_start and extract_subtree(donor.document, root).self_contained
+        (root, len(extract_subtree(donor_doc, root).node_ids))
+        for root in node_ids(donor_doc)
+        if root != donor_start and extract_subtree(donor_doc, root).self_contained
     ]
     # Largest subtree first (then id): the biggest in-envelope graft is the most
     # structure-shifting one the anti-clone floor cares about.

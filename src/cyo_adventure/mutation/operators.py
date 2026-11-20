@@ -2531,7 +2531,17 @@ def _load_catalog_donor(slug: str) -> dict[str, object]:
     if not isinstance(data, dict):
         msg = f"donor skeleton '{slug}' is not a JSON object"
         raise ValidationError(msg, field="donor", value=slug)
-    return cast(dict[str, object], data)  # noqa: TC006
+    # A donor the consequence tool promoted to Tier 2 is grafted from its exact
+    # Tier-1 reading: M3 v1 grafts only state-free regions, and without this the
+    # plant and payoff sites would wall off every large subtree (2026-11-20).
+    # #ASSUME: data-integrity: stateless_view is the exact inverse of
+    # promote_skeleton and returns any other document unchanged.
+    # #VERIFY: test_state_promotion.py::test_stateless_view_round_trips_committed_skeletons.
+    from cyo_adventure.mutation.state_promotion import (  # noqa: PLC0415 -- cycle
+        stateless_view,
+    )
+
+    return stateless_view(cast(dict[str, object], data))  # noqa: TC006
 
 
 # --- M3 contract-merge transform (dry in D4; wired into acceptance in D7) ---
