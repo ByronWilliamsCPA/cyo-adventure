@@ -967,7 +967,10 @@ also_copy = [
     #             straight from the tree. The whole directory, not just the two
     #             files they name: test_ci_gate_contract.py also resolves other
     #             workflows by name at runtime.
+    # .claude/skills/naive-ux-check/ -> tests/unit/test_naive_ux_scenarios.py
+    #             loads render.py, scenarios.json and SKILL.md from the tree.
     ".github/",
+    ".claude/skills/naive-ux-check/",
     "fuzz/",
     "tools/",
     "schema/",
