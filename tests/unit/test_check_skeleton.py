@@ -260,3 +260,84 @@ def test_depth_qualified_endings_excludes_shallow_leaves() -> None:
     )
     assert check_skeleton.depth_qualified_endings(story, 3) == (1, 2)
     assert check_skeleton.depth_qualified_endings(story, 1) == (2, 2)
+
+
+# ---------------------------------------------------------------------------
+# Agency advisory: merge nodes against declared variables (UW-C479, AL-768)
+# ---------------------------------------------------------------------------
+
+
+def _diamond(variables: list[dict[str, object]]) -> dict[str, object]:
+    """Return a two-route diamond whose ``m`` node is a merge."""
+    story = _walk_story(
+        [
+            _walk_choice_node("a", ["b", "c"]),
+            _walk_choice_node("b", ["m"]),
+            _walk_choice_node("c", ["m"]),
+            _walk_choice_node("m", ["end"]),
+            _walk_ending("end", "positive"),
+        ]
+    )
+    story["variables"] = variables
+    return story
+
+
+@pytest.mark.unit
+def test_agency_flags_merges_without_variables() -> None:
+    """A merge with no state erases the route; the skeleton is where to fix it."""
+    lines = check_skeleton.agency_lines(_diamond([]))
+    assert lines[0] == "agency: merge nodes 1, declared variables 0"
+    assert len(lines) == 2
+    assert lines[1].startswith("advisory agency: 1 merge nodes and no declared")
+    assert "no early choice can matter later" in lines[1]
+
+
+@pytest.mark.unit
+def test_agency_is_quiet_when_a_variable_can_carry_the_route() -> None:
+    lines = check_skeleton.agency_lines(
+        _diamond([{"name": "has_key", "type": "bool", "initial": False}])
+    )
+    assert lines == ["agency: merge nodes 1, declared variables 1"]
+
+
+@pytest.mark.unit
+def test_agency_is_quiet_on_a_stateless_tree() -> None:
+    """No merge, no erased route: a pure tree needs no state to keep choices."""
+    story = _walk_story(
+        [
+            _walk_choice_node("a", ["b", "c"]),
+            _walk_ending("b", "positive"),
+            _walk_ending("c", "negative"),
+        ]
+    )
+    assert check_skeleton.agency_lines(story) == [
+        "agency: merge nodes 0, declared variables 0"
+    ]
+
+
+@pytest.mark.unit
+def test_agency_advisory_never_changes_the_exit_code(
+    capsys: pytest.CaptureFixture[str],
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Report-only: 69 of 84 shells have no variables, and that is content work.
+
+    The demo shell has no merge, so the merge count is forced; the advisory
+    must print and the exit code must stay what the gate alone decides, in
+    both the default and the strict mode.
+    """
+    assert check_skeleton.main([str(_DEMO_SHELL), "--allow-mvp"]) == 0
+    capsys.readouterr()
+    assert check_skeleton.main([str(_DEMO_SHELL), "--allow-mvp", "--strict"]) == 1
+    strict_err_before = capsys.readouterr().err
+
+    monkeypatch.setattr(check_skeleton, "merge_node_count", lambda _story: 7)
+
+    assert check_skeleton.main([str(_DEMO_SHELL), "--allow-mvp"]) == 0
+    out = capsys.readouterr().out
+    assert "advisory agency: 7 merge nodes and no declared variables" in out
+    assert "ok: skeleton passes gate and brief checks" in out
+    assert check_skeleton.main([str(_DEMO_SHELL), "--allow-mvp", "--strict"]) == 1
+    captured = capsys.readouterr()
+    assert captured.err == strict_err_before
+    assert "agency" not in captured.err

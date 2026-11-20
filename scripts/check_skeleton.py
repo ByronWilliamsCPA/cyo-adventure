@@ -30,6 +30,13 @@ they are deliberately NOT part of the production gate until the
 grandfathered catalog is removed, so no rule id is claimed in the validator
 catalog yet.
 
+Every run also prints an ``agency:`` line (merge nodes against declared
+variables) and, when a shell has merge nodes but declares no variables, an
+``advisory agency:`` line, because no fill can make an early choice matter
+after a merge that carries no state. Report-only in every mode, including
+``--strict``; ``check_promotion_bundle.py`` runs this script in-process, so the
+line also reaches the skeleton-promotion workflow log.
+
 Exits 1 on a gate block, any brief mismatch, or (with ``--strict``) any
 escalated advisory or a walk-floor breach.
 """
@@ -63,6 +70,7 @@ from cyo_adventure.storybook.models import (
     Storybook,
     VariableType,
 )
+from cyo_adventure.validator.agency import merge_node_count, state_counts
 from cyo_adventure.validator.band_profile import (
     breadth_scaled_floors,
     cell_ending_bounds,
@@ -388,6 +396,42 @@ def _state_headroom_lines(story: dict[str, Any]) -> list[str]:
         lines.append(
             f"state reachable     {reached:,} of the {DEFAULT_CONFIG_CAP:,} cap "
             f"({DEFAULT_CONFIG_CAP - reached:+,} spare, {reached / DEFAULT_CONFIG_CAP:.1%} used)"
+        )
+    return lines
+
+
+def agency_lines(story: dict[str, Any]) -> list[str]:
+    """Report merge nodes against declared variables, and flag a stateless funnel.
+
+    A merge node is a place two routes rejoin. With no declared variable,
+    nothing a reader did before the merge can change anything after it, so
+    every merge erases the route by construction, and no fill, however good,
+    can make an early choice matter later. That is a skeleton property, which
+    is why it is reported here rather than only on filled books
+    (``scripts/check_prose_craft.py``, ``moderation/agency.py``).
+
+    #ASSUME: data-integrity: report-only. 69 of the 84 committed shells
+    declare no variables (2026-11-20), and adding plant-and-payoff variables
+    is content work (`AL-768`), so this never changes the exit code, with or
+    without ``--strict``.
+    #VERIFY: tests/unit/test_check_skeleton.py::
+    test_agency_advisory_never_changes_the_exit_code.
+
+    Args:
+        story: The decoded skeleton dict.
+
+    Returns:
+        One count line, plus one ``advisory`` line when the skeleton has merge
+        nodes and declares no variables.
+    """
+    merges = merge_node_count(story)
+    variables = state_counts(story).variables
+    lines = [f"agency: merge nodes {merges}, declared variables {variables}"]
+    if merges and variables == 0:
+        lines.append(
+            f"advisory agency: {merges} merge nodes and no declared variables: "
+            "no early choice can matter later. Plant a variable before a merge "
+            "and branch on it after (report-only)"
         )
     return lines
 
@@ -879,6 +923,8 @@ def main(argv: list[str] | None = None) -> int:
         f"{metadata.get('narrative_style')}) topology={metadata.get('topology')} "
         f"tier={metadata.get('tier')}\n"
     )
+    for line in agency_lines(skeleton):
+        sys.stdout.write(f"{line}\n")
     if args.headroom or args.strict:
         band = str(metadata.get("age_band", ""))
         style_raw = metadata.get("narrative_style")
