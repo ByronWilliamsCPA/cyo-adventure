@@ -60,10 +60,16 @@ jobs:
       # is what proves the script reads the CLI's bookkeeping correctly. A
       # freshly migrated stack must come out IN PARITY on both halves: every
       # file recorded as applied, every ORM column present, zero warnings.
+      # DATABASE BEHIND fails this job. DATABASE AHEAD is reported in the log
+      # but deliberately does not fail it yet (no --fail-on-ahead): whether a
+      # fresh CLI stack carries anything in `public` beyond what the ORM maps
+      # has never been observed on a real runner, and a false red here would
+      # land on the first PR that touches a migration. Add --fail-on-ahead
+      # once a run of this step has printed IN PARITY.
       # #VERIFY: a non-zero exit fails this job; --json output is printed in
       # the log for diagnosis. The URL is the CLI's documented local default
       # (no secret: this stack exists only inside the runner).
       - name: Schema parity against the CLI-built stack
         env:
           SCHEMA_PARITY_DATABASE_URL: postgresql://postgres:postgres@127.0.0.1:54322/postgres
-        run: uv run python scripts/check_schema_parity.py --json --fail-on-ahead
+        run: uv run python scripts/check_schema_parity.py --json
