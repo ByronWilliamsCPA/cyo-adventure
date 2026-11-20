@@ -145,6 +145,34 @@ Invoke when given a skeleton file under `skeletons/<band>/<slug>.json` (or any
    structure), and re-run. If it reports an RL-13 reading-level warning, adjust vocabulary
    toward the band target; warnings do not block but should be addressed.
 
+6a. **Check craft and reader agency.** The gate passes books that stop behaving like a
+   choose-your-own-adventure. Run the offline craft checker before calling a fill done:
+
+   ```bash
+   uv run python scripts/check_prose_craft.py out/<slug>.filled.json --check
+   ```
+
+   The `ok`/`FAIL` lines (tense, moral tags, told emotion, sameness, person) gate. The
+   `info` lines are the reader-agency checks; they never fail `--check` unless you pass a
+   budget, but each names the node or choice to fix:
+
+   - **merge seams**: a node reached from two or more nodes must not open by telling the
+     reader the route did not matter ("Whichever way Mira had come, every path had led her
+     here"). Open on what is in front of the hero instead.
+   - **option recaps**: a decision node must not close by restating its buttons ("She could
+     X. Or she could Y.") or announcing a choice ("Wren had a choice to make."). End on the
+     situation; the labels carry the options.
+   - **meta / jargon / second-person labels**: a label is an action in the story, never a
+     mental act ("Sit with what this means."), never graph vocabulary ("hub"), and in a
+     third-person book never "you"/"your".
+   - **give-up endings / early setbacks**: a negative ending should not close on the hero
+     walking home or quitting, and a setback within three decisions deserves a second look.
+
+   The `agency:` line summarizes the book in one sentence. For a revision, run
+   `--max-merge-seams 0 --max-meta-labels 0 --max-jargon-labels 0
+   --max-second-person-labels 0` to hold the precise checks at zero; add `--json` to compare
+   before and after.
+
 7. **Log what the run taught you.** Append any lessons learned to
    `docs/planning/authoring-lessons-log.md`, then validate the log:
 
