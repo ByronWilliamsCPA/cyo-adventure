@@ -13,15 +13,50 @@ source: "docs/planning/tech-spec.md sections Authoring Pipeline, Validation Gate
 
 # Story Drafting Guide
 
-> **Status**: Draft | **Version**: 0.2 | **Updated**: 2026-08-01
+> **Status**: Draft | **Version**: 0.3 | **Updated**: 2026-11-20
 
 ## Purpose
 
-This guide is the reference document inserted into Stage A (Structure) and Stage B (Prose)
-generation prompts as `{drafting_guide}`. It is also the practical handbook for a human
+This guide is the reference document inserted into the Stage A (Structure), Stage B (Prose), and
+Stage B' (Fill) generation prompts as `{drafting_guide}`; this file, not
+`docs/planning/drafting-guide.md`, is the copy the prompts render. It is also the practical handbook for a human
 author writing stories by hand. Every section maps to a constraint that the validation
 gate enforces, so following this guide is the fastest path to a story that passes on the
 first attempt.
+
+---
+
+## Reader Agency
+
+A choose-your-own-adventure works only while the reader believes their choices matter. An
+editorial read of 31 catalog books (2026-11-20) found books that stop behaving like gamebooks by
+the middle while passing every validator rule. These rules apply at every band and stage;
+`scripts/check_prose_craft.py` reports each one (definitions in `validator/agency.py`).
+
+- **Merge passages open in the scene** and state only what every inbound route established (not
+  where a companion or prop is, not a fact only some routes earned). Never "Whichever way Mira had
+  come, every path had led her here"; a route-specific beat belongs in the node before the merge.
+- **No option recap.** A decision node ends on the stakes, not "She could X. Or she could Y."
+  (At 3-5 and 5-8, one read-aloud question inviting the choice is allowed.)
+- **Labels are concrete actions in the book's person**: never a mental act ("Sit with what this
+  means"), never graph vocabulary ("hub"), never "you" over third-person prose.
+- **Setbacks give something back** (a true glimpse of the mystery, a laugh, what the hero lacked)
+  and close on it, never on giving up, going home, or "maybe next time".
+- **People talk**, in quotation marks and their own voice, and the hero answers.
+
+**Plants and payoffs** (structure work: skeleton authoring and book revision; a fill writes prose
+for the ones the skeleton already declares and never adds or changes them). A book with merge nodes
+and no state erases every route at every merge. The fix needs no engine change: declare two to four
+`bool` variables, plant one with `effects` on an early choice, and pay it off with a `condition` on
+a later choice that both planted and unplanted readers reach. Make the plant a trade-off, not a
+free upgrade. Three shapes have worked in the catalog: the **same label, opposite conditions** pair
+(one button every reader sees, gated `true` and `false` on the flag, leading to different nodes:
+"Run to the bosun." in `the-sky-ship-stowaway`); the **swap pair**, two differently labelled
+choices on opposite conditions so each reader sees exactly one of them (the chalk arrows in
+`the-midnight-museum`); and the **unlocked option**, one conditional choice beside unconditional
+ones. Every node with conditional choices keeps at least one unconditional choice, and a node
+holding a payoff choice reads true in both states. The full revision recipe is
+`.claude/skills/cyo-author/reference/story-agency-revision.md`.
 
 ---
 
@@ -69,6 +104,11 @@ pattern, the story fans out from choice points into distinct branches, then conv
 at bottleneck nodes before fanning out again. This keeps the story manageable for the LLM
 and keeps the validator's reachability check tractable.
 
+A bottleneck is a **merge node**: one `body` that every converging branch arrives at. Write it to
+be true on every inbound route and to open in the scene, never by telling the reader that their
+route did not matter; see Reader Agency above. Plants and payoffs (Tier-2 variables) are what let
+an earlier branch still count after the merge.
+
 ```text
 start
   |
@@ -103,11 +143,18 @@ because the LLM runs out of distinctive beats.
 
 ## Voice, Tense, and Perspective
 
-**Second person, present tense, is the POV standard for every band, `3-5` through `16+`, with no
-per-band exception.** This was ratified as decision D14 (design review section 8,
-2026-08-01): "second person is the standard for all bands." There is no band where third person is
-correct; a prior reading of this guide that implied otherwise for the young bands was never policy,
-it was drift between the guide and an un-audited corpus (design review section 2.2).
+**The skeleton's declared person governs.** Every skeleton declares `metadata.narrative_person`
+(`"second"` addresses the reader as "you"; `"third"` follows a named protagonist), and a fill
+writes every passage in that person, without drifting between the two. When the field is absent,
+follow the person the `beats=` directives use. This is the `UW-C328` ruling of 2026-08-21: the
+field was backfilled across all 84 skeletons (most of them third person), and
+`scripts/check_prose_craft.py` holds each book to the person it declares. A fill never changes a
+skeleton's person, in either direction.
+
+Decision D14 (design review section 8, 2026-08-01) makes **second person, present tense** the
+standard for newly authored skeletons; a gamebook (`narrative_style: gamebook`) is always second
+person, and the schema rejects a third-person gamebook. D14 governs what a new skeleton declares;
+it does not license a fill to override a skeleton that declares third person.
 
 > You push open the heavy door. The corridor stretches ahead, lit by a single lantern
 > hanging from the ceiling. To your left, a narrow staircase leads upward. To your right,
@@ -115,33 +162,19 @@ it was drift between the guide and an un-audited corpus (design review section 2
 
 Rules, all bands:
 
-- Address the reader as "you," never "the protagonist" or a character name in body text
-  (the protagonist name belongs in the concept brief only, and is the hook a
-  `personalizable` HERO slot binds to, where a skeleton declares one).
-- Use present tense throughout, including flashbacks described as memories ("you remember
-  the day you first...").
+- **Second person**: address the reader as "you", never "the protagonist" or a character name,
+  in present tense throughout, including memories ("you remember the day you first...").
+- **Third person**: follow the named protagonist in one tense for the whole book (past or
+  present; the prose-craft check fails a book told in both). "You" appears only inside dialogue.
 - Choice labels use the imperative or a description of the action ("Open the door" or
-  "Go left toward the staircase"), not a question.
+  "Go left toward the staircase"), not a question. In a third-person book a label is a neutral
+  imperative with no "you" or "your" ("Steady the lantern", not "Steady yourself").
 - Endings state what happens, do not ask what the reader wants to do next. Ending nodes
   have `is_ending: true` and zero choices.
 
-**At 3-5**, the prose is read aloud by an adult, not decoded silently by the child; "you" still
-addresses the child directly, present tense narrates what is happening to them right now, in the
-story. Do not soften second person to a named third-person character to make the read-aloud voice
-easier: "you" is what makes the story theirs, and read-aloud delivery does not require narrating
-distance (design review sections 2.2 and 2.6).
-
-**Enforcement**: this guide is prompt-side guidance only, as of this revision. A fill-gate check
-that measures second-person density (the design review's own audit measured 15-57 "you" per 1,000
-words in compliant books versus 0-6.6 in the third-person kid-band corpus) and rejects an
-out-of-spec fill is a separate, later work item (`W2.3` in the kid-appeal implementation plan) and
-is not active yet. Until it lands, follow this rule directly; do not treat the absence of an
-automated gate as license to draft in third person.
-
-**Existing catalog**: the 3-5/5-8/8-11 skeletons filled before 2026-08-01 are third person and are
-grandfathered under decision D11: they stay readable, but a cell stops offering them for new
-generation once a compliant (second-person) skeleton exists for that cell. They are not a style
-reference for new fills.
+**At 3-5**, the prose is read aloud by an adult, not decoded silently by the child. A new 3-5
+skeleton should declare second person so "you" addresses the child directly (design review sections
+2.2 and 2.6); an existing third-person 3-5 skeleton is still filled in third person.
 
 ---
 
@@ -166,6 +199,14 @@ stated 8.0 at 13-16 and 10.0 at 16+ while the catalog declared 7.0 and 9.0, so p
 its own centre landed a full grade outside the window RL-13 measures (`UW-C281`); the tolerance window applies
 `storybook/models.py`'s `ReadingLevel.tolerance` default of `1.0`. See "Craft for Delight" below
 for why the 3-5 window should not be drafted to as a literal, line-by-line target.
+
+**Dialogue lowers the measured grade.** Flesch-Kincaid counts every short spoken line as a
+sentence, so a scene of quick exchanges can score under the band floor (RL-13) even when the prose
+suits the age: the first dialogue draft of `the-hollow-lighthouse` put 43 of 161 nodes out of band
+this way. Keep the speech and join a speaker's short lines into one fuller sentence ("Wait, the
+lamp should be green, not white," Ada said, already climbing.) rather than stacking "Wait." "Look."
+"Green." At 10-13 that means roughly 13 to 16 words per sentence across a passage that carries
+dialogue.
 
 ### Node body length
 
@@ -192,8 +233,13 @@ and slow the reading experience; shorter bodies leave the story feeling sparse.
 
 ## Tier-2 Variables and Conditions
 
-Tier-2 mechanics are available for the 10-13 and 13-16 bands. Use them sparingly; every
-variable multiplies the state space.
+The schema does not gate Tier-2 by age band: `metadata.tier` is any of 1 or 2, and the
+only hard rule is that a Tier-1 story must not declare variables (`tier 1 stories must not
+declare variables`). As an authoring guideline, reserve state-tracking (Tier-2) for the
+bands where a reader can follow persistent state: the 8-11, 10-13, 13-16, and 16+ bands.
+Keep the youngest bands (3-5 and 5-8) at Tier-1. Use variables sparingly at any band;
+every variable multiplies the state space (see the configuration cap under Node and Depth
+Budgets).
 
 **Variable rules**:
 

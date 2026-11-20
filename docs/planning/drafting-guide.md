@@ -13,15 +13,53 @@ source: "docs/planning/tech-spec.md sections Authoring Pipeline, Validation Gate
 
 # Story Drafting Guide
 
-> **Status**: Active | **Version**: 0.2 | **Updated**: 2026-07-03
+> **Status**: Active | **Version**: 0.3 | **Updated**: 2026-11-20
 
 ## Purpose
 
-This guide is the reference document inserted into Stage A (Structure) and Stage B (Prose)
-generation prompts as `{drafting_guide}`. It is also the practical handbook for a human
+This is the human-maintained planning copy of the drafting guide. The copy the generation
+prompts actually render as `{drafting_guide}` (structure, prose, and fill) is
+`src/cyo_adventure/generation/templates/drafting_guide.md`. The two have diverged in places (this
+copy carries the measured words-per-sentence table; the prompt copy carries the FK targets the gate
+grades against), but the **Reader Agency** and **Voice, Tense, and Perspective** sections are kept
+word for word identical in both; change them together. It is the practical handbook for a human
 author writing stories by hand. Every section maps to a constraint that the validation
 gate enforces, so following this guide is the fastest path to a story that passes on the
 first attempt.
+
+---
+
+## Reader Agency
+
+A choose-your-own-adventure works only while the reader believes their choices matter. An
+editorial read of 31 catalog books (2026-11-20) found books that stop behaving like gamebooks by
+the middle while passing every validator rule. These rules apply at every band and stage;
+`scripts/check_prose_craft.py` reports each one (definitions in `validator/agency.py`).
+
+- **Merge passages open in the scene** and state only what every inbound route established (not
+  where a companion or prop is, not a fact only some routes earned). Never "Whichever way Mira had
+  come, every path had led her here"; a route-specific beat belongs in the node before the merge.
+- **No option recap.** A decision node ends on the stakes, not "She could X. Or she could Y."
+  (At 3-5 and 5-8, one read-aloud question inviting the choice is allowed.)
+- **Labels are concrete actions in the book's person**: never a mental act ("Sit with what this
+  means"), never graph vocabulary ("hub"), never "you" over third-person prose.
+- **Setbacks give something back** (a true glimpse of the mystery, a laugh, what the hero lacked)
+  and close on it, never on giving up, going home, or "maybe next time".
+- **People talk**, in quotation marks and their own voice, and the hero answers.
+
+**Plants and payoffs** (structure work: skeleton authoring and book revision; a fill writes prose
+for the ones the skeleton already declares and never adds or changes them). A book with merge nodes
+and no state erases every route at every merge. The fix needs no engine change: declare two to four
+`bool` variables, plant one with `effects` on an early choice, and pay it off with a `condition` on
+a later choice that both planted and unplanted readers reach. Make the plant a trade-off, not a
+free upgrade. Three shapes have worked in the catalog: the **same label, opposite conditions** pair
+(one button every reader sees, gated `true` and `false` on the flag, leading to different nodes:
+"Run to the bosun." in `the-sky-ship-stowaway`); the **swap pair**, two differently labelled
+choices on opposite conditions so each reader sees exactly one of them (the chalk arrows in
+`the-midnight-museum`); and the **unlocked option**, one conditional choice beside unconditional
+ones. Every node with conditional choices keeps at least one unconditional choice, and a node
+holding a payoff choice reads true in both states. The full revision recipe is
+`.claude/skills/cyo-author/reference/story-agency-revision.md`.
 
 ---
 
@@ -64,6 +102,11 @@ The recommended structure pattern for all age bands is `branch_and_bottleneck`. 
 pattern, the story fans out from choice points into distinct branches, then converges back
 at bottleneck nodes before fanning out again. This keeps the story manageable for the LLM
 and keeps the validator's reachability check tractable.
+
+A bottleneck is a **merge node**: one `body` that every converging branch arrives at. Write it to
+be true on every inbound route and to open in the scene, never by telling the reader that their
+route did not matter; see Reader Agency above. Plants and payoffs (Tier-2 variables) are what let
+an earlier branch still count after the merge.
 
 ```text
 start
@@ -114,22 +157,38 @@ because the LLM runs out of distinctive beats.
 
 ## Voice, Tense, and Perspective
 
-All story prose is written in **second person, present tense**:
+**The skeleton's declared person governs.** Every skeleton declares `metadata.narrative_person`
+(`"second"` addresses the reader as "you"; `"third"` follows a named protagonist), and a fill
+writes every passage in that person, without drifting between the two. When the field is absent,
+follow the person the `beats=` directives use. This is the `UW-C328` ruling of 2026-08-21: the
+field was backfilled across all 84 skeletons (most of them third person), and
+`scripts/check_prose_craft.py` holds each book to the person it declares. A fill never changes a
+skeleton's person, in either direction.
+
+Decision D14 (design review section 8, 2026-08-01) makes **second person, present tense** the
+standard for newly authored skeletons; a gamebook (`narrative_style: gamebook`) is always second
+person, and the schema rejects a third-person gamebook. D14 governs what a new skeleton declares;
+it does not license a fill to override a skeleton that declares third person.
 
 > You push open the heavy door. The corridor stretches ahead, lit by a single lantern
 > hanging from the ceiling. To your left, a narrow staircase leads upward. To your right,
 > water drips from a stone alcove.
 
-Rules:
+Rules, all bands:
 
-- Address the reader as "you," never "the protagonist" or a character name in body text
-  (the protagonist name belongs in the concept brief only).
-- Use present tense throughout, including flashbacks described as memories ("you remember
-  the day you first...").
+- **Second person**: address the reader as "you", never "the protagonist" or a character name,
+  in present tense throughout, including memories ("you remember the day you first...").
+- **Third person**: follow the named protagonist in one tense for the whole book (past or
+  present; the prose-craft check fails a book told in both). "You" appears only inside dialogue.
 - Choice labels use the imperative or a description of the action ("Open the door" or
-  "Go left toward the staircase"), not a question.
+  "Go left toward the staircase"), not a question. In a third-person book a label is a neutral
+  imperative with no "you" or "your" ("Steady the lantern", not "Steady yourself").
 - Endings state what happens, do not ask what the reader wants to do next. Ending nodes
   have `is_ending: true` and zero choices.
+
+**At 3-5**, the prose is read aloud by an adult, not decoded silently by the child. A new 3-5
+skeleton should declare second person so "you" addresses the child directly (design review sections
+2.2 and 2.6); an existing third-person 3-5 skeleton is still filled in third person.
 
 ---
 
@@ -161,6 +220,14 @@ those through the formula and sentence length accounts for about three quarters 
 spread from 3-5 to 16+. A 3-5 book and a 16+ book are built from words of nearly the same
 difficulty; what separates them is how many of those words are asked to arrive at once. So when a
 node scores high, split its sentences first and reach for shorter words second.
+
+**Dialogue lowers the measured grade.** Flesch-Kincaid counts every short spoken line as a
+sentence, so a scene of quick exchanges can score under the band floor (RL-13) even when the prose
+suits the age: the first dialogue draft of `the-hollow-lighthouse` put 43 of 161 nodes out of band
+this way. Keep the speech and join a speaker's short lines into one fuller sentence ("Wait, the
+lamp should be green, not white," Ada said, already climbing.) rather than stacking "Wait." "Look."
+"Green." At 10-13 that means roughly 13 to 16 words per sentence across a passage that carries
+dialogue.
 
 **Draft, then measure, then repair.** Prose written to a stated FK target lands out of band
 essentially every time: all eight books drafted on 2026-08-14 did, one at 57 of 57 nodes with
