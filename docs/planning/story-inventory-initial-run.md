@@ -240,6 +240,10 @@ design brief --(A: Fable designer)--> skeletons/<band>/<slug>.json
   `run_gate`. The whole current production catalog is Tier 1, so this is the first
   real exercise of the Tier-2 path; if pilot Tier-2 skeletons prove expensive to
   validate, the supervisor may keep the remainder Tier 1 and record the decision.
+  **Superseded for new skeletons on 2026-11-20**: state is no longer an option at
+  `8-11` and up for any graph with a merge node; see
+  [ADR-011 section 12](adr/adr-011-story-scale-framework.md) for the plant, payoff, and
+  state-neutral-merge rules, and `scripts/add_consequence.py` for the retrofit tool.
 - **Schema source of truth**: `storybook/models.py` (`ending.kind` / `ending.valence`),
   not the stale `reference/skeleton-format.md` field names; the format reference is
   used only for the `<<FILL role=... words=... beats='...'>>` directive grammar. Every

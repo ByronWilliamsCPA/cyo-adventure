@@ -36,7 +36,7 @@ by narrative role.
 | Skeleton | Band | Length (min) | Tier | Topology | Nodes | Endings (+/n/-) | Diagram |
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | The Blackout Week | 10-13 | 7 | 1 | branch_and_bottleneck | 91 | 10/9/0 | [svg](diagrams/skeletons/10-13/the-blackout-week.svg) |
-| The Cartographer's Apprentice | 10-13 | 9 | 1 | branch_and_bottleneck | 254 | 12/16/15 | [svg](diagrams/skeletons/10-13/the-cartographers-apprentice.svg) |
+| The Cartographer's Apprentice | 10-13 | 9 | 2 | branch_and_bottleneck | 262 | 12/16/15 | [svg](diagrams/skeletons/10-13/the-cartographers-apprentice.svg) |
 | The Cinderwick Exchange | 10-13 | 12 | 1 | sorting_hat | 99 | 8/5/7 | [svg](diagrams/skeletons/10-13/the-cinderwick-exchange.svg) |
 | The Clocktower Cipher | 10-13 | 18 | 1 | branch_and_bottleneck | 26 | 3/1/4 | [svg](diagrams/skeletons/10-13/the-clocktower-cipher.svg) |
 | The Envoy of Three Courts | 10-13 | 9 | 1 | sorting_hat | 159 | 18/6/6 | [svg](diagrams/skeletons/10-13/the-envoy-of-three-courts.svg) |
@@ -47,17 +47,17 @@ by narrative role.
 | The Midnight Frequency | 10-13 | 7 | 1 | open_map | 101 | 9/2/7 | [svg](diagrams/skeletons/10-13/the-midnight-frequency.svg) |
 | The Midnight Museum | 10-13 | 9 | 1 | branch_and_bottleneck | 95 | 7/3/9 | [svg](diagrams/skeletons/10-13/the-midnight-museum.svg) |
 | The Observatory Shift | 10-13 | 16 | 1 | sorting_hat | 145 | 9/11/7 | [svg](diagrams/skeletons/10-13/the-observatory-shift.svg) |
-| The Orchard Signal | 10-13 | 7 | 1 | branch_and_bottleneck | 173 | 9/15/6 | [svg](diagrams/skeletons/10-13/the-orchard-signal.svg) |
+| The Orchard Signal | 10-13 | 7 | 2 | branch_and_bottleneck | 179 | 9/15/6 | [svg](diagrams/skeletons/10-13/the-orchard-signal.svg) |
 | The Skyrail Heist | 10-13 | 11 | 1 | sorting_hat | 246 | 29/6/5 | [svg](diagrams/skeletons/10-13/the-skyrail-heist.svg) |
 | The Winter of the Wolf Queen | 10-13 | 12 | 2 | open_map | 250 | 19/14/7 | [svg](diagrams/skeletons/10-13/the-winter-of-the-wolf-queen.svg) |
 | The Conservatory Wars | 13-16 | 11 | 1 | sorting_hat | 160 | 20/4/2 | [svg](diagrams/skeletons/13-16/the-conservatory-wars.svg) |
 | The Glasswright's Debt | 13-16 | 11 | 1 | branch_and_bottleneck | 130 | 7/10/6 | [svg](diagrams/skeletons/13-16/the-glasswright-debt.svg) |
 | The Harrowstone Keep | 13-16 | 30 | 2 | branch_and_bottleneck | 551 | 4/3/145 | [svg](diagrams/skeletons/13-16/the-harrowstone-keep.svg) |
-| The Hollow Crown Gambit | 13-16 | 11 | 1 | branch_and_bottleneck | 434 | 8/10/40 | [svg](diagrams/skeletons/13-16/the-hollow-crown-gambit.svg) |
+| The Hollow Crown Gambit | 13-16 | 11 | 2 | branch_and_bottleneck | 443 | 8/10/40 | [svg](diagrams/skeletons/13-16/the-hollow-crown-gambit.svg) |
 | The Hollow Sea | 13-16 | 24 | 2 | open_map | 197 | 21/12/7 | [svg](diagrams/skeletons/13-16/the-hollow-sea.svg) |
 | The Iron Spire Trial | 13-16 | 30 | 2 | gauntlet | 277 | 2/1/76 | [svg](diagrams/skeletons/13-16/the-iron-spire-trial.svg) |
 | The Labyrinth of Glass | 13-16 | 35 | 1 | gauntlet | 383 | 2/1/113 | [svg](diagrams/skeletons/13-16/the-labyrinth-of-glass.svg) |
-| The Migration Year | 13-16 | 14 | 1 | branch_and_bottleneck | 176 | 10/13/7 | [svg](diagrams/skeletons/13-16/the-migration-year.svg) |
+| The Migration Year | 13-16 | 14 | 2 | branch_and_bottleneck | 185 | 10/13/7 | [svg](diagrams/skeletons/13-16/the-migration-year.svg) |
 | The Quarry Signal | 13-16 | 10 | 2 | branch_and_bottleneck | 267 | 9/8/19 | [svg](diagrams/skeletons/13-16/the-quarry-signal.svg) |
 | The Saltmarsh Run | 13-16 | 8 | 1 | gauntlet | 322 | 6/9/27 | [svg](diagrams/skeletons/13-16/the-saltmarsh-run.svg) |
 | The Serpent Vaults | 13-16 | 35 | 2 | gauntlet | 530 | 4/33/135 | [svg](diagrams/skeletons/13-16/the-serpent-vaults.svg) |
@@ -111,8 +111,8 @@ by narrative role.
 | The Clockwork Menagerie | 8-11 | 18 | 1 | branch_and_bottleneck | 167 | 14/6/7 | [svg](diagrams/skeletons/8-11/the-clockwork-menagerie.svg) |
 | The Guild of Junior Inventors | 8-11 | 12 | 1 | sorting_hat | 191 | 11/8/15 | [svg](diagrams/skeletons/8-11/the-guild-of-junior-inventors.svg) |
 | The Half-Hour Call | 8-11 | 8 | 1 | branch_and_bottleneck | 61 | 7/7/0 | [svg](diagrams/skeletons/8-11/the-half-hour-call.svg) |
-| The Hundred-Door Hotel | 8-11 | 12 | 1 | open_map | 176 | 6/24/1 | [svg](diagrams/skeletons/8-11/the-hundred-door-hotel.svg) |
-| The Lantern Keepers' List | 8-11 | 10 | 1 | branch_and_bottleneck | 125 | 10/12/2 | [svg](diagrams/skeletons/8-11/the-lantern-keepers-list.svg) |
+| The Hundred-Door Hotel | 8-11 | 12 | 2 | open_map | 181 | 6/24/1 | [svg](diagrams/skeletons/8-11/the-hundred-door-hotel.svg) |
+| The Lantern Keepers' List | 8-11 | 10 | 2 | branch_and_bottleneck | 132 | 10/12/2 | [svg](diagrams/skeletons/8-11/the-lantern-keepers-list.svg) |
 | The Locked Carousel | 8-11 | 8 | 1 | open_map | 71 | 6/7/0 | [svg](diagrams/skeletons/8-11/the-locked-carousel.svg) |
 | The River of Small Boats | 8-11 | 10 | 1 | time_cave | 127 | 17/9/0 | [svg](diagrams/skeletons/8-11/the-river-of-small-boats.svg) |
 | The Robot Fair Sabotage | 8-11 | 8 | 1 | branch_and_bottleneck | 74 | 5/5/4 | [svg](diagrams/skeletons/8-11/the-robot-fair-sabotage.svg) |
@@ -149,7 +149,12 @@ production cell, and are excluded from the cell-aware selection described below.
 ADR-011 `length` scale tier described below; per-cell production node budgets live in
 `validator/band_profile.py` (`_PRODUCTION_CELLS`), not a single fixed per-band range.
 The "Tier" column is the generation `tier` field (`1` forbids state variables, `2`
-allows them), a separate concept from the MVP/Test tier.
+allows them), a separate concept from the MVP/Test tier. Since 2026-11-20 a new
+production skeleton at `8-11` and up whose graph has a merge node must be Tier 2, with
+planted variables, payoffs (at least one changing which ending is reachable), and
+state-neutral merge directives ([ADR-011 section 12](../planning/adr/adr-011-story-scale-framework.md));
+`scripts/add_consequence.py` retrofits an existing Tier-1 skeleton to that shape, and a
+Tier-2 node id prefixed `cq_` is one it inserted.
 
 ## Skeleton selection
 

@@ -693,7 +693,9 @@ the signature floor decides).
 
 ### 5.5 Deferred within M5
 
-Tier promotion (adding state to a Tier-1 tree), variable addition/removal on
+Tier promotion (adding state to a Tier-1 tree; a narrow, in-place form shipped on
+2026-11-20 as `mutation/state_promotion.py`, which revises a skeleton rather than growing
+a mutant, so it carries no lineage; see ADR-011 section 12), variable addition/removal on
 Tier-2 trees, stateful grafts, and gamebook restart-on-fail rewiring
 (13-16/16+ lethal restart semantics interact with band policy in ways that
 deserve the composer's whole-graph reasoning). Each is admissible under the

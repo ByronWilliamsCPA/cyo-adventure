@@ -521,6 +521,80 @@ Deliberately **not** changed here: the M4 mutation operator still self-enforces 
 historical 4-8 window as a no-worsen guard; re-deriving M4's guard per cell is tracked
 as `UW-C330` in the unscheduled work register.
 
+### 12. Amendment (2026-11-20): declared state for new skeletons (plants, payoffs, state-neutral merges)
+
+Owner-directed on 2026-11-20 after the catalogue editorial review: per-book revision is
+paused and the fix is to be structural, so that future books are created stateful. The
+thresholds below are this amendment's proposal from the data cited; the owner may move
+them.
+
+**The defect this closes.** Books stopped behaving like choose-your-own-adventures by
+the middle: 28 of 31 filled books and 69 of 84 committed skeletons declared no
+variables. In a `branch_and_bottleneck` graph with nothing carried through, every route
+converges on merge nodes that must read correctly for every way in, so the fill writes
+merge prose that hedges ("Whichever way she had come...") over forks that rejoin with
+nothing changed. Section 7's table said "loops optional (T2)" at `8-11` and nothing at
+all required state anywhere, so the grammar never asked for the one mechanism that lets
+an early choice come back. Five books were revised by hand to prove the remedy needs no
+engine or schema change.
+
+**Rule (new production skeletons, `8-11` and up).** A skeleton whose graph has at least
+one merge node (two or more distinct inbound nodes) is Tier 2 and declares state:
+
+1. **Variables.** Booleans only, lower snake case, each with a `description`; at least
+   two for a `short` cell and at least three for `medium` and `long`, at most four
+   unless the author justifies more against the state walk (`L2-12`).
+2. **Plants.** Each variable is set by an `effects` entry on an early choice, before the
+   first third of the deepest path. Prefer a trade-off: when both options of one fork
+   plant, they plant different variables that pay off in different places, so neither
+   option is obviously right. Converting a cosmetic fork (one the consequence measure,
+   `validator/consequence.py`, scores as a false choice) is the preferred site. A plant
+   is never on the start node (`PL-25`).
+3. **Payoffs.** Each variable is tested by a `condition` on a later choice, at least two
+   hops deeper, on a node that readers reach both with and without the plant: either an
+   extra option only the planter sees, or a same-label pair with opposite conditions
+   whose outcome differs. **At least one payoff changes which ending is reachable**
+   (the planter avoids a setback ending, or reaches one the other reader cannot).
+4. **No stranding.** A node with a conditional choice always keeps at least one
+   unconditional choice.
+5. **State-neutral merges.** Every merge node's directive says its body must be true on
+   every inbound route and in every state, and must not say which way the hero came.
+   Route-specific acknowledgment belongs in a short single-choice arrival node in front
+   of the merge, which the flowed bands read as one passage.
+6. **Exposure.** Put payoffs where planters actually arrive: on a mid-story
+   bottleneck, or on several parallel lanes. A lattice with no bottleneck after the
+   opening caps it structurally. Measured with a uniform random reader on 2026-11-20:
+   the four hand-revised books give 6% to 35% of readers a payoff choice to take
+   (median about 11%); the six retrofitted pilot skeletons, all lattices, reach 2% to 8%
+   even with two payoff sites per variable. A new skeleton should design its bottlenecks
+   with its payoffs, not retrofit them.
+
+**Why these thresholds.** Section 10's own table already asks for this and nothing
+enforced it: `8-11` "state-gated consequences begin", `10-13` "delayed, cross-scene
+consequences", `13-16` "consequence foreshadowed". A plant and its payoff need two
+decisions on one read; measured on the committed production catalogue (2026-11-20,
+uniform random reader), the median decisions per read is at least 4.0 in every `8-11`+
+cell (lowest: `16+` long gamebook; `8-11` short is 7.1), and the median merge count is
+at least 9 in every `8-11`+ cell, so every such cell has room for two callbacks. Cost is
+negligible: four booleans bound the configuration space at 16 x nodes, and the six pilot
+skeletons walk 456 to 3,675 configurations against the 100,000 cap (at most 3.7%).
+`3-5` and `5-8` stay Tier 1 (section 7 and the 2026-08-15 amendment). A pure tree
+(`time_cave`, a `sorting_hat` with no cross-track merge) is exempt: with no shared route
+there is no hedged merge and no route on which a non-planter could meet the payoff; its
+consequence is divergence itself.
+
+**Tooling.** `scripts/add_consequence.py` (over `mutation/state_promotion.py`) applies
+items 1-5 deterministically to an existing Tier-1 skeleton and refuses with a reason
+when it cannot; `scripts/measure_consequence.py` reports false choices; the gate's
+Layer 2 (`L2-9`..`L2-12`, `L2-14`) proves the result. The rule is not yet a blocking
+check: `scripts/check_skeleton.py --strict` is the place for it (a skeleton with a merge
+node and no declared variable, or Tier 2 with no ending-changing payoff, fails `--strict`
+at `8-11`+), tracked with the rest of the `--strict` escalation set. The existing
+catalogue is grandfathered exactly as for section 10; the 2026-11-20 pilot promoted six
+skeletons (`8-11` the-lantern-keepers-list and the-hundred-door-hotel, `10-13`
+the-orchard-signal and the-cartographers-apprentice, `13-16` the-migration-year and
+the-hollow-crown-gambit) and the rest await owner review of that pilot.
+
 ## Consequences
 
 - ✅ Size is a recorded, self-consistent contract (nodes derived from words and
