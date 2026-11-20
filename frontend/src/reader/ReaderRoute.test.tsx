@@ -12,11 +12,14 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { ToastProvider } from '../notifications/ToastProvider'
 import {
   _resetDbHandle,
+  cacheLibraryList,
   cachePersonalizationValues,
+  getCachedLibraryList,
   enqueueWrite,
   getCachedPersonalizationValues,
 } from '../offline/db'
 import * as deviceIdModule from '../offline/deviceId'
+import type { LibraryItemView } from '../library/libraryApi'
 import type { ValuesPayload } from '../player/personalization'
 import type { ReadingState, Storybook } from '../player/types'
 import { ReaderRoute } from './ReaderRoute'
@@ -51,10 +54,25 @@ const fakeApi = { get: mockGet, put: mockPut, post: mockPost }
 vi.mock('../hooks/useApi', () => ({
   useApi: () => fakeApi,
 }))
+// jsdom has no server for useOnlineStatus's connectivity probe, so the real
+// hook settles on "offline" a tick after mount; pin it online so the
+// ending-screen stars (withheld offline) are observable.
+vi.mock('../hooks/useOnlineStatus', () => ({ useOnlineStatus: () => true }))
 
 // ToastProvider wraps the router in every render helper, mirroring App.tsx's
 // production mounting: ReaderRoute calls useToast() unconditionally, so a
 // bare render would throw its outside-provider error.
+// The routed reader opens a fresh read on its title page (ReaderEntryContext);
+// tap Start when it is there, so each test lands on the reading screen it
+// was written against whether its fixture is a fresh read or a resume.
+async function openReader(): Promise<HTMLElement> {
+  const first = await screen.findByTestId(/^(title-page|reader)$/)
+  if (first.dataset.testid === 'title-page') {
+    fireEvent.click(screen.getByTestId('start-reading'))
+  }
+  return screen.findByTestId('reader')
+}
+
 function renderAt(path: string) {
   return render(
     <ToastProvider>
@@ -165,7 +183,7 @@ describe('ReaderRoute wiring (T5)', () => {
 
     renderAt(`/read/p_t5/${lantern.id}/${lantern.version}`)
 
-    await screen.findByTestId('reader')
+    await openReader()
     // Let the app settle; a reload loop would keep firing calls during this
     // window instead of going quiet after the initial load.
     await new Promise((resolve) => setTimeout(resolve, 400))
@@ -212,7 +230,7 @@ describe('ReaderRoute wiring (T5)', () => {
       </ToastProvider>
     )
 
-    await screen.findByTestId('reader')
+    await openReader()
     // The continuation seed jumps straight to n_cave_fork with has_lantern
     // carried in, so the gated choice is visible without clicking through
     // the start passage.
@@ -291,7 +309,7 @@ describe('ReaderRoute replay reconciliation (B2)', () => {
 
     renderAt(`/read/${profileId}/${lantern.id}/${lantern.version}`)
 
-    await screen.findByTestId('reader')
+    await openReader()
 
     function replayBodies(): { state_revision: number }[] {
       return mockPut.mock.calls
@@ -362,7 +380,7 @@ describe('ReaderRoute replay reconciliation (B2)', () => {
 
     renderAt(`/read/${profileId}/${lantern.id}/${lantern.version}`)
 
-    await screen.findByTestId('reader')
+    await openReader()
     await waitFor(() => expect(screen.getByRole('alert')).toBeTruthy())
     expect(screen.getByRole('alert').textContent).toContain(
       "We couldn't save some of your reading."
@@ -418,7 +436,7 @@ describe('ReaderRoute personalization wiring (C3c)', () => {
   it('does not fetch personalization values when the flag is off', async () => {
     // The flag is unset in src/test/setup.ts, so this is the default path.
     renderAt(`/read/p_flagoff/${lantern.id}/${lantern.version}`)
-    await screen.findByTestId('reader')
+    await openReader()
     await new Promise((resolve) => setTimeout(resolve, 100))
     expect(
       mockGet.mock.calls.filter(([url]) => String(url).includes('personalization-values'))
@@ -531,7 +549,7 @@ describe('ReaderRoute personalization eligibility route state (D8)', () => {
     renderAtWithState(`/read/p_ineligible/${lantern.id}/${lantern.version}`, {
       personalizationEligible: false,
     })
-    await screen.findByTestId('reader')
+    await openReader()
     // Give the fetcher a chance to fire before asserting its absence.
     await new Promise((resolve) => setTimeout(resolve, 100))
     expect(personalizationCalls()).toEqual([])
@@ -541,7 +559,7 @@ describe('ReaderRoute personalization eligibility route state (D8)', () => {
     renderAtWithState(`/read/p_eligible/${lantern.id}/${lantern.version}`, {
       personalizationEligible: true,
     })
-    await screen.findByTestId('reader')
+    await openReader()
     await waitFor(() => expect(personalizationCalls().length).toBeGreaterThan(0))
   })
 
@@ -549,7 +567,7 @@ describe('ReaderRoute personalization eligibility route state (D8)', () => {
     // No `state` at all, the same shape a bookmarked or shared deep link
     // produces: absence must read as "unknown", not as ineligible.
     renderAt(`/read/p_deeplink/${lantern.id}/${lantern.version}`)
-    await screen.findByTestId('reader')
+    await openReader()
     await waitFor(() => expect(personalizationCalls().length).toBeGreaterThan(0))
   })
 
@@ -559,7 +577,7 @@ describe('ReaderRoute personalization eligibility route state (D8)', () => {
     renderAtWithState(`/read/p_continued/${lantern.id}/${lantern.version}`, {
       continuation: { entryNode: null },
     })
-    await screen.findByTestId('reader')
+    await openReader()
     await waitFor(() => expect(personalizationCalls().length).toBeGreaterThan(0))
   })
 })
@@ -657,7 +675,7 @@ describe('ReaderRoute personalization fetcher behavior (C3c)', () => {
 
     renderAt(`/read/p_cache/${sentinelStory.id}/1`)
 
-    await screen.findByTestId('reader')
+    await openReader()
     // The adapter maps the rejected GET to null; the fetcher falls back to the
     // cached payload, so the child's name still renders offline.
     await waitFor(() => expect(screen.getByTestId('passage-body').textContent).toContain('Maya'))
@@ -670,7 +688,7 @@ describe('ReaderRoute personalization fetcher behavior (C3c)', () => {
 
     renderAt(`/read/p_revoked/${sentinelStory.id}/1`)
 
-    await screen.findByTestId('reader')
+    await openReader()
     // The authoritative empty payload is a revocation: the reconcile deletes
     // the entry, and the fetcher resolves null so the generic word renders.
     await waitFor(async () =>
@@ -688,7 +706,7 @@ describe('ReaderRoute personalization fetcher behavior (C3c)', () => {
 
     renderAt(`/read/p_keep/${sentinelStory.id}/1`)
 
-    await screen.findByTestId('reader')
+    await openReader()
     // Let the fetcher settle fully before asserting nothing was purged: a
     // failed fetch is "no authoritative answer", never a revocation.
     await new Promise((resolve) => setTimeout(resolve, 100))
@@ -703,7 +721,7 @@ describe('ReaderRoute personalization fetcher behavior (C3c)', () => {
 
     renderAt(`/read/p_sibling/${sentinelStory.id}/1`)
 
-    await screen.findByTestId('reader')
+    await openReader()
     await waitFor(() =>
       expect(screen.getByTestId('passage-body').textContent).toContain('Explorer')
     )
@@ -750,7 +768,7 @@ describe('ReaderRoute flag-off residue purge', () => {
 
     renderAt(`/read/p_off/${lantern.id}/${lantern.version}`)
 
-    await screen.findByTestId('reader')
+    await openReader()
     await waitFor(async () =>
       expect(await getCachedPersonalizationValues('p_off', 's_residue')).toBeUndefined()
     )
@@ -764,7 +782,7 @@ describe('ReaderRoute flag-off residue purge', () => {
 
     renderAt(`/read/p_on/${lantern.id}/${lantern.version}`)
 
-    await screen.findByTestId('reader')
+    await openReader()
     await new Promise((resolve) => setTimeout(resolve, 100))
     expect(await getCachedPersonalizationValues('p_on', 's_other_book')).toEqual(cachedPayload)
   })
@@ -821,7 +839,7 @@ describe('ReaderRoute age-band wiring (ADR-026 decision 6)', () => {
 
     renderAt(`/read/p_band/${lantern.id}/${lantern.version}`)
 
-    await screen.findByTestId('reader')
+    await openReader()
     // ReaderRoute's own useKidProfile lookup reached the real /v1/profiles
     // endpoint; Reader.tsx's ageBand-gated behavior is unit-tested directly
     // in Reader.test.tsx against this exact wiring.
@@ -889,7 +907,7 @@ describe('ReaderRoute replay success toast', () => {
 
     renderAt(`/read/${profileId}/${lantern.id}/${lantern.version}`)
 
-    await screen.findByTestId('reader')
+    await openReader()
     expect(await screen.findByText('All caught up! Your reading is saved.')).toBeTruthy()
     // Success means success: neither failure surface is up beside the toast.
     expect(screen.queryByTestId('conflict-dialog')).toBeNull()
@@ -941,11 +959,116 @@ describe('ReaderRoute device-download reporting', () => {
 
     renderAt(`/read/p_deviceid_throw/${lantern.id}/${lantern.version}`)
 
-    await screen.findByTestId('reader')
+    await openReader()
     // The report itself never went out: the throw happened while building
     // its arguments, before reportDownloadApi was ever called.
     expect(mockPut.mock.calls.some(([url]) => String(url).startsWith('/v1/device-downloads'))).toBe(
       false
     )
+  })
+})
+
+describe('ReaderRoute title page and shelf entry (reader moments)', () => {
+  const shelfItem: LibraryItemView = {
+    id: lantern.id,
+    title: lantern.title,
+    version: lantern.version,
+    age_band: '8-11',
+    tier: 1,
+    reading_level_target: 2,
+    node_count: 4,
+    rating: 2,
+    progress: null,
+    series_id: null,
+    book_index: null,
+    cover_url: 'https://covers.example/cached.webp',
+    published_at: null,
+  }
+
+  beforeEach(() => {
+    globalThis.indexedDB = new IDBFactory()
+    _resetDbHandle()
+    mockGet.mockReset()
+    mockPut.mockReset()
+    mockPost.mockReset()
+    mockGet.mockImplementation((url: string) => {
+      if (url.startsWith('/v1/storybooks/')) return Promise.resolve({ data: lantern })
+      if (url.startsWith('/v1/reading-state/')) return Promise.resolve({ data: { state: null } })
+      return Promise.reject(new Error(`unexpected GET ${url}`))
+    })
+  })
+
+  afterEach(() => {
+    cleanup()
+  })
+
+  function renderWithState(state: unknown) {
+    return render(
+      <ToastProvider>
+        <MemoryRouter
+          initialEntries={[{ pathname: `/read/p_shelf/${lantern.id}/${lantern.version}`, state }]}
+        >
+          <Routes>
+            <Route path="/read/:profileId/:storybookId/:version" element={<ReaderRoute />} />
+          </Routes>
+        </MemoryRouter>
+      </ToastProvider>
+    )
+  }
+
+  it('opens a fresh read on the title page with the cover the shelf handed over', async () => {
+    renderWithState({ shelf: { coverUrl: 'https://covers.example/route.webp', rating: null } })
+    await screen.findByTestId('title-page')
+    expect(screen.getByRole('heading', { level: 1, name: lantern.title })).toBeTruthy()
+    expect(screen.getByTestId('book-cover').querySelector('img')?.getAttribute('src')).toBe(
+      'https://covers.example/route.webp'
+    )
+  })
+
+  it('falls back to the cached shelf entry when the route carries none', async () => {
+    await cacheLibraryList('p_shelf', [shelfItem])
+    renderWithState(null)
+    await screen.findByTestId('title-page')
+    await waitFor(() =>
+      expect(screen.getByTestId('book-cover').querySelector('img')?.getAttribute('src')).toBe(
+        'https://covers.example/cached.webp'
+      )
+    )
+  })
+
+  it('saves a rating from the ending screen and keeps the cached shelf in step', async () => {
+    await cacheLibraryList('p_shelf', [shelfItem])
+    mockPost.mockImplementation((url: string, body: { storybook_id: string; value: number }) => {
+      if (url === '/v1/ratings') {
+        return Promise.resolve({
+          data: {
+            child_profile_id: 'p_shelf',
+            storybook_id: body.storybook_id,
+            value: body.value,
+            rated_at: '2026-11-20T00:00:00Z',
+          },
+        })
+      }
+      return Promise.resolve({ data: {} })
+    })
+    mockPut.mockResolvedValue({ data: {} })
+    renderWithState({ shelf: { coverUrl: null, rating: 2 } })
+    await openReader()
+    fireEvent.click(screen.getByTestId('choice-c_take_lantern'))
+    fireEvent.click(screen.getByTestId('choice-c_dark_passage'))
+    const five = await screen.findByRole('button', { name: 'Rate 5 stars' })
+    expect(screen.getByRole('button', { name: 'Rate 2 stars' }).getAttribute('aria-pressed')).toBe(
+      'true'
+    )
+    fireEvent.click(five)
+    await waitFor(() => expect(five.getAttribute('aria-pressed')).toBe('true'))
+    expect(mockPost).toHaveBeenCalledWith(
+      '/v1/ratings',
+      expect.objectContaining({ storybook_id: lantern.id, value: 5 })
+    )
+    await waitFor(async () => {
+      const cached = await getCachedLibraryList('p_shelf')
+      expect(cached?.[0]?.rating).toBe(5)
+    })
   })
 })

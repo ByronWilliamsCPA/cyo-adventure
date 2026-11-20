@@ -23,7 +23,13 @@ import { useReplayOnReconnect } from '../hooks/useReplayOnReconnect'
 import { getReadAloudPreference } from '../kid/readAloudPreference'
 import { useKidProfile } from '../kid/useKidProfile'
 import { useToast } from '../notifications/useToast'
-import { clearPersonalizationValues, getCachedPersonalizationValues } from '../offline/db'
+import { makeLibraryApi } from '../library/libraryApi'
+import {
+  cacheLibraryList,
+  clearPersonalizationValues,
+  getCachedLibraryList,
+  getCachedPersonalizationValues,
+} from '../offline/db'
 import { getOrCreateDeviceId } from '../offline/deviceId'
 import { type ReplayOutcome } from '../offline/sync'
 import { reconcilePersonalizationValues } from '../offline/revocation'
@@ -32,6 +38,12 @@ import { KID_PICKER_PATH } from '../routes'
 import { BackToLibrary } from './BackToLibrary'
 import { makeFetchActiveCharacterBinding } from './characterSeed'
 import { ReaderPage } from './ReaderPage'
+import {
+  parseShelfState,
+  ReaderEntryContext,
+  type ReaderEntry,
+  type ShelfEntry,
+} from './readerEntry'
 
 // #ASSUME: security: router location.state is untrusted input, same caveat as
 // parseContinuation in player/series.ts (any page can craft it via history
@@ -245,6 +257,71 @@ export function ReaderRoute() {
       console.warn('personalization: flag-off residue purge failed:', err)
     })
   }, [])
+  // Title page, cover, and ending-screen rating (ReaderEntryContext). The
+  // shelf the child tapped hands over its cover URL and current rating in
+  // router state (BookCard); a deep link, reload, or series hand-off has no
+  // such state, so fall back to the shelf list the library last cached on
+  // this device. Both are data the client already holds: no extra request.
+  const routeShelf = useMemo(() => parseShelfState(location.state), [location.state])
+  const [cachedShelf, setCachedShelf] = useState<ShelfEntry | null>(null)
+  useEffect(() => {
+    if (routeShelf !== null || profileId === undefined || storybookId === undefined) return
+    let cancelled = false
+    // #ASSUME: external-resources: IndexedDB can be unavailable (private
+    // mode, blocked storage) or hold no list for this profile; either way the
+    // reader simply has no shelf data and shows the letter tile.
+    // #VERIFY: ReaderRoute.test.tsx "falls back to the cached shelf entry".
+    getCachedLibraryList(profileId)
+      .then((items) => {
+        const item = items?.find((candidate) => candidate.id === storybookId)
+        if (!cancelled && item) {
+          setCachedShelf({ coverUrl: item.cover_url ?? null, rating: item.rating })
+        }
+      })
+      .catch((err: unknown) => {
+        console.warn('[reader] cached shelf lookup failed:', err)
+      })
+    return () => {
+      cancelled = true
+    }
+  }, [routeShelf, profileId, storybookId])
+  const libraryApi = useMemo(() => makeLibraryApi(api), [api])
+  // A rating saved from the ending screen outlives that screen: rewinding
+  // and reaching an ending again remounts it, and it must show the new
+  // value, not the shelf's pre-read one.
+  const [savedRating, setSavedRating] = useState<number | null>(null)
+  const readerEntry = useMemo<ReaderEntry>(() => {
+    const base = routeShelf ?? cachedShelf
+    return {
+      titlePage: true,
+      entry:
+        savedRating === null ? base : { coverUrl: base?.coverUrl ?? null, rating: savedRating },
+      rate:
+        profileId === undefined
+          ? undefined
+          : async (bookId: string, value: number) => {
+              const view = await libraryApi.rate(profileId, bookId, value)
+              setSavedRating(view.value)
+              // Keep the cached shelf in step, so an offline shelf (or the
+              // next reader open from a deep link) shows the new rating.
+              // Best-effort: the rating itself is already saved server-side.
+              try {
+                const items = await getCachedLibraryList(profileId)
+                if (items) {
+                  await cacheLibraryList(
+                    profileId,
+                    items.map((item) =>
+                      item.id === view.storybook_id ? { ...item, rating: view.value } : item
+                    )
+                  )
+                }
+              } catch (err: unknown) {
+                console.warn('[reader] cached shelf rating update failed:', err)
+              }
+              return view.value
+            },
+    }
+  }, [routeShelf, cachedShelf, savedRating, libraryApi, profileId])
   const navigate = useNavigate()
   const continuation = useMemo(() => parseContinuation(location.state), [location.state])
   // K7 / Phase 4b read-aloud: this route only ever gets a profile id, never
@@ -350,26 +427,28 @@ export function ReaderRoute() {
           different version/profile) fully remounts ReaderPage instead of
           reusing the same instance; a stale in-flight load from the old story
           can then never resolve into the new one's state. */}
-      <ReaderPage
-        key={`${profileId}:${storybookId}:${parsedVersion}`}
-        api={syncApi}
-        fetchStory={fetchStory}
-        fetchServerState={fetchServerState}
-        fetchActiveCharacter={fetchActiveCharacter}
-        recordCompletion={recordCompletion}
-        fetchSeriesNext={fetchSeriesNext}
-        continuation={continuation}
-        profileId={profileId}
-        storybookId={storybookId}
-        version={parsedVersion}
-        ttsEnabled={ttsEnabled}
-        fetchReadingHistory={fetchReadingHistory}
-        submitFlag={submitFlag}
-        fetchPersonalizationValues={fetchPersonalizationValues}
-        ageBand={ageBand}
-        reportDownload={reportDownload}
-        reportRemoval={reportRemoval}
-      />
+      <ReaderEntryContext value={readerEntry}>
+        <ReaderPage
+          key={`${profileId}:${storybookId}:${parsedVersion}`}
+          api={syncApi}
+          fetchStory={fetchStory}
+          fetchServerState={fetchServerState}
+          fetchActiveCharacter={fetchActiveCharacter}
+          recordCompletion={recordCompletion}
+          fetchSeriesNext={fetchSeriesNext}
+          continuation={continuation}
+          profileId={profileId}
+          storybookId={storybookId}
+          version={parsedVersion}
+          ttsEnabled={ttsEnabled}
+          fetchReadingHistory={fetchReadingHistory}
+          submitFlag={submitFlag}
+          fetchPersonalizationValues={fetchPersonalizationValues}
+          ageBand={ageBand}
+          reportDownload={reportDownload}
+          reportRemoval={reportRemoval}
+        />
+      </ReaderEntryContext>
       {replayFailedCount > 0 && (
         <div role="alert" className="replay-failed-banner">
           <span>

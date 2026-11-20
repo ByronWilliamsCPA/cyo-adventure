@@ -77,7 +77,13 @@ export interface BookCardProps {
    * instead, so LibraryPage can show the creator first and continue into
    * `readTo` itself once one exists.
    */
-  onNeedsCharacter?: (readTo: string, readState?: { personalizationEligible: boolean }) => void
+  onNeedsCharacter?: (readTo: string, readState?: BookReadState) => void
+}
+
+/** Router location state a BookCard hands the reader route. */
+export interface BookReadState {
+  personalizationEligible?: boolean
+  shelf?: { coverUrl: string | null; rating: number | null }
 }
 
 export function BookCard({
@@ -104,10 +110,16 @@ export function BookCard({
   // field existed) carries no key at all rather than an explicit `false`;
   // ReaderRoute's parser treats an absent key as "unknown", which keeps its
   // values fetch attempted exactly as it was before this field existed.
-  const readState =
+  // The reader's title page and ending-screen stars (ReaderRoute's
+  // parseShelfState) read `shelf` from here: the cover the child just tapped
+  // and the rating this card shows right now, which is fresher than the
+  // device's cached shelf list (a rating saved on this card updates local
+  // state only, not that cache).
+  const shelf = { coverUrl: item.cover_url ?? null, rating: item.rating }
+  const readState: BookReadState =
     item.personalization_eligible === undefined
-      ? undefined
-      : { personalizationEligible: item.personalization_eligible }
+      ? { shelf }
+      : { personalizationEligible: item.personalization_eligible, shelf }
   const pct = percentComplete(item)
   const started = item.progress !== null
   // A broken or expired cover URL falls back to the letter tile instead of

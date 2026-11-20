@@ -9,7 +9,10 @@
   background-color: var(--color-parchment-dark);
   color: var(--color-ink);
   font-family: var(--font-serif);
-  font-size: var(--text-base);
+  /* Same size as the passage it answers (PassageText.css): the age band's
+     reader text size times the reader's A/A+/A++ scale. Outside the reader
+     neither custom property is set, so this is still --text-base there. */
+  font-size: calc(var(--band-reader-text, var(--text-base)) * var(--reader-font-scale, 1));
   line-height: var(--leading-normal);
   padding: var(--space-4) var(--space-6);
   border: 2px solid var(--color-amber-light);
@@ -50,6 +53,16 @@
   background-color: var(--color-amber-light);
   border-color: var(--color-amber);
   box-shadow: var(--shadow-md);
+}
+
+/* Mirrors PassageText.css's 640px bump so a choice never reads smaller than
+   the prose above it on a tablet. */
+@media (min-width: 640px) {
+  .cyo-choice {
+    font-size: calc(
+      max(var(--text-lg), var(--band-reader-text, var(--text-base))) * var(--reader-font-scale, 1)
+    );
+  }
 }
 
 /* The decorative › marker shifts right on hover/selected */

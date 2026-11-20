@@ -7,7 +7,7 @@
  * design-system components (PassageText, ChoiceButton) and a persistent top bar.
  */
 
-import { useEffect, useMemo, useRef, type CSSProperties } from 'react'
+import { useEffect, useMemo, useRef, useState, type CSSProperties } from 'react'
 import { useNavigate } from 'react-router'
 
 import { Button } from '@ds/components/Button'
@@ -38,14 +38,20 @@ import type { ReadingState, Storybook, VarState } from '../player/types'
 import type { ReadingTimeApi } from '../offline/readingTimeSync'
 import { BackToLibrary } from './BackToLibrary'
 import { BadgeUnlockToast } from './BadgeUnlockToast'
+import { BookCover } from './BookCover'
 import { BookmarksButton } from './BookmarksButton'
 import { ContinueSeries } from './ContinueSeries'
 import { DedicationOverlay } from './DedicationOverlay'
 import { EndingsGalleryButton } from './EndingsGalleryButton'
+import { EndingRating } from './EndingRating'
+import { endingFraming, isSetbackEnding } from './endingInvitation'
 import { EndingsProgress } from './EndingsProgress'
 import { FlagButton } from './FlagButton'
 import { ReaderChrome } from './ReaderChrome'
+import { isOpeningRead, useReaderEntry } from './readerEntry'
+import { findLatestFork } from './rewindToFork'
 import { TextSizeControl } from './TextSizeControl'
+import { TitlePage } from './TitlePage'
 import { useReaderFontScale } from './useReaderFontScale'
 import { useReadingTimeAccumulator } from './useReadingTimeAccumulator'
 import { isFlowedBand, readerPositionLabel } from './readerProgress'
@@ -229,6 +235,25 @@ export function Reader({
   const { stop: flowedStop, originReading } = useFlowedStop(story, reading, send, flowed)
   const nodesById = useMemo(() => new Map(story.nodes.map((n) => [n.id, n])), [story])
 
+  // How this book was entered (ReaderRoute's ReaderEntryContext): whether a
+  // fresh open gets a title page, the shelf's cover and rating, and the
+  // rating port. The default (no provider) is none of those.
+  const bookEntry = useReaderEntry()
+  // The title page is decided once, at mount, from the state this Reader was
+  // opened with: a fresh read (or one still on its opening stop) shows it, a
+  // resumed read never does, so returning mid-book costs no extra tap.
+  // "Read again" (RESTART) does not bring it back; it never remounts.
+  // #ASSUME: timing dependencies: `ageBand` can still be undefined at mount
+  // (ReaderRoute's profile lookup is best-effort), in which case the
+  // page-band rule (path length 1) decides. A flowed read persisted at the
+  // terminal of its untouched opening stop then resumes on that stop instead
+  // of showing the title page: one fewer beat, never a lost place.
+  // #VERIFY: Reader.moments.test.tsx "shows the title page on a flowed read
+  // persisted at its opening stop terminal".
+  const [titlePageOpen, setTitlePageOpen] = useState(
+    () => bookEntry.titlePage && isOpeningRead(story, initialReading, flowed)
+  )
+
   // #CRITICAL: security: resolved here rather than at each JSX site so no future
   // render branch can add a fourth path that shows a raw marker to a child.
   // ADR-023 section 10: a sentinel on a kid-facing surface is a straightforward
@@ -258,6 +283,14 @@ export function Reader({
   const endingTitle = useMemo(
     () => resolvePersonalization(node?.ending?.title ?? '', personalization),
     [node, personalization]
+  )
+  // The book title is story-supplied text on a kid-facing surface (title
+  // page, ending screen, the star group's label), so it takes the same
+  // resolve-once path as the passage and the ending title above: never a raw
+  // `story.title` at a JSX site.
+  const bookTitle = useMemo(
+    () => resolvePersonalization(story.title, personalization),
+    [story.title, personalization]
   )
   // The generic-resolved body, for the read-aloud egress guard: a non-local
   // TTS voice must never receive the personalized text (see useReadAloud).
@@ -313,6 +346,15 @@ export function Reader({
     isReadAloudPlaying: readAloud.speaking,
     containerRef: shellRef,
   })
+  // Set by "Try a different choice" on the ending screen: the fork the read
+  // was rewound to and the label of the choice taken there last time, so the
+  // reading screen can say so. Cleared by the next choice, a restart, or a
+  // bookmark load; and only shown while the reader is still on that node.
+  const [rewoundTo, setRewoundTo] = useState<{
+    nodeId: string
+    previousLabel: string | null
+  } | null>(null)
+  const rewindNoteRef = useRef<HTMLParagraphElement>(null)
   // Choice labels never legally carry sentinels (generation/binding.py), but
   // the module's own rationale applies here too: a defensive strip to generic
   // words is cheaper than trusting every future write path, and a label is a
@@ -375,6 +417,7 @@ export function Reader({
     // covered by the hook's unmount cleanup.
     readAloud.stop()
     recordInteraction()
+    setRewoundTo(null)
     send({ type: 'CHOOSE', choiceId })
   }
 
@@ -418,8 +461,23 @@ export function Reader({
       (window.matchMedia?.('(prefers-reduced-motion: reduce)').matches ?? false) ||
       Boolean(passageRef.current?.closest('[data-reduce-motion="true"]'))
     window.scrollTo?.({ top: 0, behavior: reduceMotion ? 'auto' : 'smooth' })
-    passageRef.current?.focus?.({ preventScroll: true })
+    // After "Try a different choice" the rewind note (rendered in the same
+    // commit as the landed passage) takes focus instead: the child has read
+    // this passage already, and the note is what tells a screen-reader user
+    // where they are and why.
+    const target = rewindNoteRef.current ?? passageRef.current
+    target?.focus?.({ preventScroll: true })
   }, [reading.current_node])
+
+  // "Start" on the title page does not change the node, so the effect above
+  // never sees it: move focus to the first passage here, the same way a
+  // choice does, so it is announced from its start.
+  const focusPassageOnStartRef = useRef(false)
+  useEffect(() => {
+    if (titlePageOpen || !focusPassageOnStartRef.current) return
+    focusPassageOnStartRef.current = false
+    passageRef.current?.focus?.({ preventScroll: true })
+  }, [titlePageOpen])
 
   // An always-visible exit: a child can leave a story at any point, not only
   // from the ending screen. It reads as "Leave" rather than a bare arrow so the
@@ -532,6 +590,40 @@ export function Reader({
   // graph has no honest "how much is left on the path this child took"
   // figure to fill a bar toward (see that module's doc for why).
   const ended = snapshot.matches('ended')
+
+  // "Try a different choice": the most recent point on this read where the
+  // child saw two or more choices, as a count of BACK steps (see
+  // rewindToFork.ts for why counting is exact and how flowed stops and
+  // conditional choices are treated). Only computed on the ending screen.
+  // #CRITICAL: data-integrity: the rewind is applied ONLY as `steps` BACK
+  // events through the machine, the transition "Go back a page" already
+  // sends, so var_state, path and visit_set are re-derived by the engine's
+  // own replay; this component never builds a reading state itself. `seed`
+  // is passed for the same lock-step reason as `canUndo` below.
+  // #VERIFY: Reader.moments.test.tsx "lands on the fork before a single-choice
+  // run, with the run's effects undone".
+  const latestFork = useMemo(
+    () => (ended ? findLatestFork(story, reading, seed) : null),
+    [ended, story, reading, seed]
+  )
+  const tryDifferentChoice = (): void => {
+    if (latestFork === null) return
+    readAloud.stop()
+    recordInteraction()
+    const previous = latestFork.previousChoiceId
+      ? nodesById
+          .get(latestFork.nodeId)
+          ?.choices?.find((choice) => choice.id === latestFork.previousChoiceId)
+      : undefined
+    setRewoundTo({
+      nodeId: latestFork.nodeId,
+      // Strip only, never resolve: the same rule as every rendered label.
+      previousLabel: previous ? stripSentinels(previous.label) : null,
+    })
+    for (let i = 0; i < latestFork.steps; i += 1) {
+      send({ type: 'BACK' })
+    }
+  }
   // The read-aloud toggle only makes sense while there is a real passage to
   // read (the normal reading and ending screens); the stuck-page error
   // screen below shares `chrome` but never gets the toggle, so a child is
@@ -572,7 +664,10 @@ export function Reader({
           onSave={() =>
             send({ type: 'SAVE_BOOKMARK', label: readerPositionLabel(story, reading, ageBand) })
           }
-          onLoad={(slotId) => send({ type: 'LOAD_BOOKMARK', slotId })}
+          onLoad={(slotId) => {
+            setRewoundTo(null)
+            send({ type: 'LOAD_BOOKMARK', slotId })
+          }}
           onDelete={(slotId) => send({ type: 'DELETE_BOOKMARK', slotId })}
         />
       }
@@ -608,6 +703,7 @@ export function Reader({
               size="lg"
               onClick={() => {
                 readAloud.stop()
+                setRewoundTo(null)
                 send({ type: 'RESTART' })
               }}
             >
@@ -616,6 +712,32 @@ export function Reader({
             <BackToLibrary profileId={profileId} />
           </div>
         </section>
+      </div>
+    )
+  }
+
+  if (titlePageOpen) {
+    return (
+      <div className="reader-shell" style={shellStyle} ref={shellRef}>
+        <TitlePage
+          title={bookTitle}
+          gradientSeed={story.title}
+          coverUrl={bookEntry.entry?.coverUrl ?? null}
+          // A slim bar, not the full chrome: Leave and text size are the only
+          // controls that mean anything before page one (a child can set A++
+          // before the story starts), and bookmarks/flag/position do not.
+          chrome={
+            <header className="reader-chrome">
+              {leaveButton}
+              <TextSizeControl fontScale={fontScale} />
+            </header>
+          }
+          onStart={() => {
+            recordInteraction()
+            focusPassageOnStartRef.current = true
+            setTitlePageOpen(false)
+          }}
+        />
       </div>
     )
   }
@@ -634,6 +756,39 @@ export function Reader({
     // the screen stays kind rather than gleeful. An ending without valence
     // data celebrates: finishing a story is a win by default.
     const celebrate = ending?.valence !== 'negative'
+    // A setback (negative valence, or a setback/capture/death kind) leads
+    // with "Try a different choice": the pull of the genre is "what if I had
+    // picked the other thing", and a loss is exactly where that should be the
+    // obvious next tap. On every other ending it stays secondary to "Read
+    // again", and both keep their behavior either way.
+    const setback = isSetbackEnding(ending)
+    const framing = endingFraming(ending)
+    const tryDifferentButton =
+      latestFork !== null ? (
+        <Button
+          variant={setback ? 'primary' : 'ghost'}
+          size="lg"
+          data-testid="try-different-choice"
+          onClick={tryDifferentChoice}
+        >
+          Try a different choice
+        </Button>
+      ) : null
+    const readAgainButton = (
+      <Button
+        variant={setback && tryDifferentButton ? 'ghost' : 'primary'}
+        size="lg"
+        data-testid="restart"
+        onClick={() => {
+          readAloud.stop()
+          recordInteraction()
+          setRewoundTo(null)
+          send({ type: 'RESTART' })
+        }}
+      >
+        Read again
+      </Button>
+    )
     return (
       <div className="reader-shell" style={shellStyle} ref={shellRef}>
         {chrome}
@@ -659,6 +814,18 @@ export function Reader({
                 : 'reader-ending__mascot'
             }
           />
+          {/* The book's identity carries through to the end (design review
+              recommendation 12). Text, not a heading: the ending title below
+              stays the screen's heading so the outline does not change. */}
+          <div className="reader-ending__book" data-testid="ending-book">
+            <BookCover
+              coverUrl={bookEntry.entry?.coverUrl ?? null}
+              title={bookTitle}
+              gradientSeed={story.title}
+              size="sm"
+            />
+            <p className="reader-ending__book-title">{bookTitle}</p>
+          </div>
           <h2 className="reader-ending__title">{endingTitle === '' ? 'The End' : endingTitle}</h2>
           <div
             ref={passageRef}
@@ -669,6 +836,11 @@ export function Reader({
           >
             <PassageText text={bodyText} highlightRange={readAloud.spokenWordRange} />
           </div>
+          {framing ? (
+            <p className="reader-ending__framing" data-testid="ending-framing">
+              {framing}
+            </p>
+          ) : null}
           <p data-testid="ending-id" hidden>
             {currentEndingId(story, reading) ?? ''}
           </p>
@@ -699,20 +871,20 @@ export function Reader({
             <BadgeUnlockToast badge={newlyEarnedBadge} onDismiss={() => onDismissBadgeToast?.()} />
           ) : null}
           <div className="reader-ending__actions">
-            <Button
-              variant="primary"
-              size="lg"
-              data-testid="restart"
-              onClick={() => {
-                readAloud.stop()
-                recordInteraction()
-                send({ type: 'RESTART' })
-              }}
-            >
-              Read again
-            </Button>
-            {/* "Go back a page" is where try-the-other-path value peaks: it
-                returns into the story one step before this ending. */}
+            {setback ? (
+              <>
+                {tryDifferentButton}
+                {readAgainButton}
+              </>
+            ) : (
+              <>
+                {readAgainButton}
+                {tryDifferentButton}
+              </>
+            )}
+            {/* "Go back a page" stays as it was: one step (one stop at flowed
+                bands) before this ending. "Try a different choice" above is
+                the jump to the last real decision. */}
             {goBackButton}
             <BackToLibrary profileId={profileId} />
             {showContinue && meta && fetchSeriesNext ? (
@@ -725,16 +897,42 @@ export function Reader({
               />
             ) : null}
           </div>
+          {/* Below the actions on purpose: rating is optional, saves in the
+              background, and must never sit between a child and "what
+              next". */}
+          {bookEntry.rate ? (
+            <EndingRating
+              storybookId={story.id}
+              bookTitle={bookTitle}
+              initialRating={bookEntry.entry?.rating ?? null}
+              rate={bookEntry.rate}
+            />
+          ) : null}
         </section>
       </div>
     )
   }
+
+  const showRewindNote = rewoundTo !== null && rewoundTo.nodeId === reading.current_node
 
   return (
     <div className="reader-shell" style={shellStyle} ref={shellRef}>
       {chrome}
       <section data-testid="reader" className="reader">
         {atOpening ? <DedicationOverlay personalization={personalization} /> : null}
+        {showRewindNote ? (
+          // Focused (not live) on arrival: see the node-change effect above.
+          <p
+            ref={rewindNoteRef}
+            tabIndex={-1}
+            className="reader-rewind-note"
+            data-testid="rewind-note"
+          >
+            {rewoundTo.previousLabel
+              ? `Back at your last choice. Last time you picked "${rewoundTo.previousLabel}". What will you try now?`
+              : 'Back at your last choice. What will you try now?'}
+          </p>
+        ) : null}
         <div
           ref={passageRef}
           tabIndex={-1}

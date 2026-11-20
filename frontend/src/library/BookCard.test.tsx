@@ -258,22 +258,41 @@ describe('BookCard', () => {
     it('carries personalizationEligible: false through router state', () => {
       renderCardThenNavigate({ ...BASE_ITEM, personalization_eligible: false })
       expect(screen.getByTestId('location-state').textContent).toBe(
-        JSON.stringify({ personalizationEligible: false })
+        JSON.stringify({
+          personalizationEligible: false,
+          shelf: { coverUrl: null, rating: null },
+        })
       )
     })
 
     it('carries personalizationEligible: true through router state', () => {
       renderCardThenNavigate({ ...BASE_ITEM, personalization_eligible: true })
       expect(screen.getByTestId('location-state').textContent).toBe(
-        JSON.stringify({ personalizationEligible: true })
+        JSON.stringify({
+          personalizationEligible: true,
+          shelf: { coverUrl: null, rating: null },
+        })
       )
     })
 
-    it('carries no state at all when personalization_eligible is absent (offline-cached item)', () => {
+    it('carries no personalization key when personalization_eligible is absent (offline-cached item)', () => {
       // BASE_ITEM deliberately omits the optional personalization_eligible
       // key, matching an item cached offline before this field existed.
       renderCardThenNavigate(BASE_ITEM)
-      expect(screen.getByTestId('location-state').textContent).toBe('null')
+      expect(screen.getByTestId('location-state').textContent).toBe(
+        JSON.stringify({ shelf: { coverUrl: null, rating: null } })
+      )
+    })
+
+    it('hands the reader the cover and current rating it shows', () => {
+      renderCardThenNavigate({
+        ...BASE_ITEM,
+        cover_url: 'https://covers.example/s1.webp',
+        rating: 4,
+      })
+      expect(screen.getByTestId('location-state').textContent).toBe(
+        JSON.stringify({ shelf: { coverUrl: 'https://covers.example/s1.webp', rating: 4 } })
+      )
     })
   })
 

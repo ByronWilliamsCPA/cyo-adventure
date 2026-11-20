@@ -23,7 +23,7 @@ import {
 import { evictStaleOfflineBooks, reconcileOfflineCache } from '../offline/revocation'
 import { GUARDIAN_LOGIN_PATH, KID_PICKER_PATH } from '../routes'
 import { cacheLibraryList, getCachedLibraryList, getCachedStorybook } from '../offline/db'
-import { BookCard } from './BookCard'
+import { BookCard, type BookReadState } from './BookCard'
 import { EndingsGallery } from './EndingsGallery'
 import { makeLibraryApi, type LibraryItemView, type ReadingHistoryItem } from './libraryApi'
 import { pickHero } from './pickHero'
@@ -173,10 +173,10 @@ export function LibraryPage({ readOnly = false }: LibraryPageProps = {}) {
   // though zero catalog books could use one.
   const [pendingRead, setPendingRead] = useState<{
     to: string
-    state?: { personalizationEligible: boolean }
+    state?: BookReadState
   } | null>(null)
   const handleNeedsCharacter = useCallback(
-    (to: string, state?: { personalizationEligible: boolean }) => setPendingRead({ to, state }),
+    (to: string, state?: BookReadState) => setPendingRead({ to, state }),
     []
   )
   // W3.2: the Endings Gallery / "Every path walked!" data source, fetched
