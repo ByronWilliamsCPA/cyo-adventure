@@ -123,6 +123,11 @@ _COSMETIC_WEIGHT: tuple[tuple[int, float], ...] = ((1, 1.0), (3, 0.8), (8, 0.5))
 # node (not reached in both states, or a branch-depth overrun), excluding it.
 _MAX_ATTEMPTS = 8
 
+# Payoff sites per variable (on different lanes). See _add_extra_sites for the
+# measurement behind it; two keeps the conditional-choice count (two per site)
+# at 8-16 for a four-variable skeleton, the range the hand-revised books use.
+_SITES_PER_VARIABLE = 2
+
 # Plants must be early: the fork's shortest depth from the start may be at most
 # this fraction of the deepest non-ending node's depth.
 _EARLY_FRACTION = 0.5
@@ -328,6 +333,7 @@ class _Graph:
         self.is_dag = self._acyclic()
         self.reach = self._reach_dag() if self.is_dag else self._reach_monte_carlo()
         self.depth_budget = depth_budget
+        self._reach_cache: dict[str, dict[str, float]] = {}
         self.longest_from: dict[str, int] = {}
         self.longest_to: dict[str, int] = {}
         if self.is_dag:
@@ -448,6 +454,42 @@ class _Graph:
                 visits[node_id] += 1
         return {k: v / _MC_WALKS for k, v in visits.items()}
 
+    def reach_from(self, start: str) -> dict[str, float]:
+        """Visit probability of each node for a uniform reader standing at ``start``.
+
+        Exact on a DAG; on a graph with cycles it falls back to the global
+        Monte Carlo estimate (a ranking signal only). Cached per start node.
+        """
+        cached = self._reach_cache.get(start)
+        if cached is not None:
+            return cached
+        if not self.is_dag:
+            self._reach_cache[start] = self.reach
+            return self.reach
+        prob = dict.fromkeys(self.order, 0.0)
+        prob[start] = 1.0
+        for node_id in self._topological():
+            node = self.nodes[node_id]
+            if not node.choices or prob[node_id] == 0.0:
+                continue
+            share = prob[node_id] / len(node.choices)
+            for choice in node.choices:
+                prob[choice.target] += share
+        self._reach_cache[start] = prob
+        return prob
+
+    def ancestors(self, root: str) -> set[str]:
+        """Return every node that can reach ``root``, including ``root``."""
+        seen = {root}
+        queue: deque[str] = deque([root])
+        while queue:
+            cur = queue.popleft()
+            for prev in self.preds.get(cur, set()):
+                if prev not in seen:
+                    seen.add(prev)
+                    queue.append(prev)
+        return seen
+
     def descendants(self, root: str) -> set[str]:
         """Return every node reachable from ``root``, including ``root``."""
         seen = {root}
@@ -531,9 +573,19 @@ class _PayoffPlan:
 @dataclass(slots=True)
 class _VarPlan:
     name: str
-    fork_id: str
+    fork: _ForkPlan
     choice_id: str
-    payoff: _PayoffPlan
+    label: str
+    payoffs: list[_PayoffPlan]
+
+    @property
+    def fork_id(self) -> str:
+        return self.fork.fork_id
+
+    @property
+    def payoff(self) -> _PayoffPlan:
+        """The primary payoff (the one planned first)."""
+        return self.payoffs[0]
 
 
 @dataclass(slots=True)
@@ -683,13 +735,22 @@ def _payoff_site_ok(graph: _Graph, node_id: str, unavailable: set[str]) -> bool:
 
 def _find_payoff(
     planner: _Planner,
-    fork: _ForkPlan,
+    plant: tuple[_ForkPlan, str],
     *,
     prefer_rescue: bool,
     blocked: set[str] | None = None,
 ) -> _PayoffPlan | None:
-    """Pick the best payoff for a plant on ``fork``, or ``None``."""
+    """Pick the best payoff for ``plant``, a ``(fork, planted option id)`` pair.
+
+    Sites are ranked by how many uniform random readers arrive there HOLDING the
+    plant (the visit probability propagated from the planted option's target),
+    discounted when the site sits close behind the fork. Ranking by plain visit
+    probability instead favoured sites the planter rarely reaches.
+    """
     graph = planner.graph
+    fork, planted = plant
+    planted_target = _choice(graph, fork.fork_id, planted).target
+    exposure = graph.reach_from(planted_target)
     fork_depth = graph.depth[fork.fork_id]
     want_gap = max(_MIN_PAYOFF_GAP + 1, graph.max_depth() // 3)
     scored: list[tuple[tuple[float, float, int, str], _PayoffPlan]] = []
@@ -724,7 +785,7 @@ def _find_payoff(
             )
             bonus = 0.0 if negative else 0.5
         gap_factor = min(1.0, (depth - fork_depth) / want_gap)
-        score = graph.reach.get(node_id, 0.0) * gap_factor
+        score = exposure.get(node_id, 0.0) * gap_factor
         scored.append(((bonus, -score, -depth, node_id), chosen))
     if not scored:
         return None
@@ -790,7 +851,9 @@ def _place_one(
     # offers them, and the rest show payoff scenes.
     rescues = sum(1 for p in planner.plans if p.payoff.kind == "rescue")
     prefer_rescue = rescues < (len(planner.plans) + 2) // 2
-    payoff = _find_payoff(planner, fork, prefer_rescue=prefer_rescue, blocked=blocked)
+    payoff = _find_payoff(
+        planner, (fork, choice_id), prefer_rescue=prefer_rescue, blocked=blocked
+    )
     if payoff is None:
         msg = (
             f"fork {fork.fork_id}: no payoff site for {choice_id} at least "
@@ -799,10 +862,41 @@ def _place_one(
         planner.diagnostics.append(msg)
         return False
     name = _variable_name(plant_choice.label, planner.names)
-    planner.plans.append(_VarPlan(name, fork.fork_id, choice_id, payoff))
+    planner.plans.append(_VarPlan(name, fork, choice_id, plant_choice.label, [payoff]))
     planner.used_nodes |= {payoff.node_id, fork.fork_id}
     planner.used_nodes |= {c.target for c in graph.nodes[payoff.node_id].choices}
     return True
+
+
+def _add_extra_sites(planner: _Planner, fork_ids: set[str]) -> None:
+    """Give each planted variable up to :data:`_SITES_PER_VARIABLE` payoff sites.
+
+    Measured on the 2026-11-20 pilot: with one site per variable only 2-8% of
+    uniform random readers ever reached a payoff scene, because these lattice
+    graphs spread readers across many parallel nodes and no single mid-story
+    node is visited by more than about a sixth of them. Extra sites go on nodes
+    on OTHER lanes (neither an ancestor nor a descendant of the variable's
+    existing sites), so they reach readers the first site misses instead of
+    paying the same reader off twice.
+
+    Args:
+        planner: The planner, updated in place.
+        fork_ids: Every plant fork candidate (never a payoff site).
+    """
+    graph = planner.graph
+    for plan in planner.plans:
+        while len(plan.payoffs) < _SITES_PER_VARIABLE:
+            lane = set(fork_ids)
+            for site in plan.payoffs:
+                lane |= graph.descendants(site.node_id) | graph.ancestors(site.node_id)
+            extra = _find_payoff(
+                planner, (plan.fork, plan.choice_id), prefer_rescue=False, blocked=lane
+            )
+            if extra is None:
+                break
+            plan.payoffs.append(extra)
+            planner.used_nodes.add(extra.node_id)
+            planner.used_nodes |= {c.target for c in graph.nodes[extra.node_id].choices}
 
 
 def _plan(
@@ -845,6 +939,7 @@ def _plan(
         ]
         if placed:
             planner.used_nodes |= set(graph.succ.get(fork.fork_id, []))
+    _add_extra_sites(planner, fork_ids)
     return planner
 
 
@@ -890,18 +985,18 @@ def _median_words(story: Storybook) -> int:
     return int(statistics.median(values)) if values else 90
 
 
-def _plant_text(var: str, payoff_label: str, payoff_node: str, kind: PayoffKind) -> str:
-    then = (
-        "it is what turns a setback into a recovery"
-        if kind == "rescue"
-        else "it changes how that moment goes"
+def _plant_text(plan: _VarPlan, graph: _Graph) -> str:
+    """Return the plant beat, naming every later move the plant must serve."""
+    moves = " or ".join(
+        f"{_q(_choice(graph, p.node_id, p.choice_id).label)} (node {p.node_id})"
+        for p in plan.payoffs
     )
     return (
-        f"PLANT ({var}): the hero has just made this choice, and something "
+        f"PLANT ({plan.name}): the hero has just made this choice, and something "
         "concrete comes of it that a reader will remember: an object kept, a "
         "person helped, or a fact learned, named plainly in the prose. Invent it "
         "so that it would plausibly help much later, when the hero tries "
-        f"{_q(payoff_label)} (node {payoff_node}): {then}."
+        f"{moves}: there it changes how that moment goes."
     )
 
 
@@ -919,33 +1014,34 @@ def _fork_text(entries: list[tuple[str, str, str]]) -> str:
     return f"PLANT SITE: these options are no longer cosmetic: {planted}. {tail}"
 
 
-def _payoff_site_text(plan: _VarPlan, plant_label: str, label: str) -> str:
+def _payoff_site_text(plan: _VarPlan, payoff: _PayoffPlan, label: str) -> str:
+    """Return the note for the node that holds a same-label pair."""
     base = (
         f"PAYOFF SITE ({plan.name}): readers arrive here both having and not "
-        f"having chosen {_q(plant_label)} earlier, so this body must be true "
+        f"having chosen {_q(plan.label)} earlier, so this body must be true "
         f"either way and must not say which. The option {_q(label)} plays out "
         "differently for the two"
     )
-    if plan.payoff.kind == "rescue":
+    if payoff.kind == "rescue":
         return (
             f"{base}: without that earlier choice it leads to the setback "
-            f"({plan.payoff.setback_ending}); with it, to a recovery."
+            f"({payoff.setback_ending}); with it, to a recovery."
         )
     return f"{base}: with that earlier choice the reader first sees a payoff scene."
 
 
-def _scene_text(plan: _VarPlan, plant_label: str, label: str, onward: Choice) -> str:
+def _scene_text(plan: _VarPlan, payoff: _PayoffPlan, label: str, onward: Choice) -> str:
     """Return the inserted payoff scene's beats."""
     next_label, next_node = onward.label, onward.target
     head = (
         f"PAYOFF ({plan.name}): only a reader who earlier chose "
-        f"{_q(plant_label)} (node {plan.fork_id}) reaches this scene. The hero "
+        f"{_q(plan.label)} (node {plan.fork_id}) reaches this scene. The hero "
         f"tries {_q(label)}."
     )
-    if plan.payoff.kind == "rescue":
+    if payoff.kind == "rescue":
         return (
             f"{head} For a reader without that earlier choice the same move ends "
-            f"the story early ({plan.payoff.setback_ending}). Here the thing that "
+            f"the story early ({payoff.setback_ending}). Here the thing that "
             "came of it turns the moment around: show it returning concretely and "
             f"making the difference. End with the hero moving on to "
             f"{_q(next_label)}, leading into the next scene (node {next_node}), "
@@ -1012,6 +1108,8 @@ class _Editor:
     graph: _Graph
     words: int
     notes: list[str] = field(default_factory=list)
+    band: str = ""
+    scene_words: int = _MIN_INSERTED_WORDS
 
     def node(self, node_id: str) -> dict[str, object]:
         for node in _raw_nodes(self.doc):
@@ -1094,6 +1192,54 @@ def _single_choice_node(node_id: str, body: str, onward: Choice) -> dict[str, ob
     }
 
 
+def _apply_payoff(
+    editor: _Editor, plan: _VarPlan, payoff: _PayoffPlan, index: int
+) -> PayoffPlacement:
+    """Insert one payoff scene and split its choice into a same-label pair."""
+    graph = editor.graph
+    payoff_choice = _choice(graph, payoff.node_id, payoff.choice_id)
+    onward = _choice(graph, payoff.node_id, payoff.continue_choice_id)
+    # "_site2", not "_2": variable names already use "_2" to stay unique, so a
+    # bare numeric suffix collided with the next variable's first scene.
+    suffix = "" if index == 0 else f"_site{index + 1}"
+    scene_id = f"{_ID_INFIX}_payoff_{plan.name}{suffix}"
+    scene = _single_choice_node(
+        scene_id,
+        _directive(
+            "payoff",
+            _fit_stop(graph, editor.band, editor.scene_words, onward.target),
+            _scene_text(plan, payoff, payoff_choice.label, onward),
+        ),
+        onward,
+    )
+    editor.insert_after(payoff.node_id, scene)
+    raw_choices = _raw_choices(editor.node(payoff.node_id))
+    original = editor.choice(payoff.node_id, payoff.choice_id)
+    original["condition"] = _cond(plan.name, value=False)
+    twin_id = f"{payoff.choice_id}_{_ID_INFIX}_{plan.name}"
+    twin: dict[str, object] = {
+        "id": twin_id,
+        "label": payoff_choice.label,
+        "target": scene_id,
+        "condition": _cond(plan.name, value=True),
+    }
+    raw_choices.insert(raw_choices.index(original) + 1, twin)
+    editor.annotate(
+        payoff.node_id, _payoff_site_text(plan, payoff, payoff_choice.label)
+    )
+    return PayoffPlacement(
+        variable=plan.name,
+        node_id=payoff.node_id,
+        kind=payoff.kind,
+        choice_id=payoff.choice_id,
+        gated_choice_id=twin_id,
+        label=payoff_choice.label,
+        scene_id=scene_id,
+        rejoin_id=onward.target,
+        setback_ending=payoff.setback_ending,
+    )
+
+
 def _apply(
     skeleton: Mapping[str, object], graph: _Graph, plans: list[_VarPlan]
 ) -> tuple[dict[str, object], list[PlantPlacement], list[PayoffPlacement], list[str]]:
@@ -1109,9 +1255,11 @@ def _apply(
     variables: list[dict[str, object]] = []
     fork_entries: dict[str, list[tuple[str, str, str]]] = {}
 
+    editor.band = band
+    editor.scene_words = scene_words
     for plan in plans:
         fork_choice = _choice(graph, plan.fork_id, plan.choice_id)
-        payoff_choice = _choice(graph, plan.payoff.node_id, plan.payoff.choice_id)
+        sites = " and ".join(p.node_id for p in plan.payoffs)
         variables.append(
             {
                 "name": plan.name,
@@ -1122,7 +1270,7 @@ def _apply(
                 # rendering and fail its residual-token post-condition.
                 "description": (
                     f"Set when the reader chooses {_q(_plain(fork_choice.label))} "
-                    f"at {plan.fork_id}; pays off at {plan.payoff.node_id}."
+                    f"at {plan.fork_id}; pays off at {sites}."
                 ),
             }
         )
@@ -1131,9 +1279,7 @@ def _apply(
         raw_fork_choice["effects"] = [{"op": "set", "var": plan.name, "value": True}]
         target = fork_choice.target
         sole_entry = not _needs_arrival(graph, plan.fork_id, fork_choice)
-        plant_text = _plant_text(
-            plan.name, payoff_choice.label, plan.payoff.node_id, plan.payoff.kind
-        )
+        plant_text = _plant_text(plan, graph)
         if sole_entry and editor.annotate(target, plant_text):
             site, inserted = target, False
         else:
@@ -1167,53 +1313,12 @@ def _apply(
             )
         )
         fork_entries.setdefault(plan.fork_id, []).append(
-            (fork_choice.label, plan.name, plan.payoff.node_id)
+            (fork_choice.label, plan.name, sites)
         )
-        # --- payoff ------------------------------------------------------
-        continue_choice = _choice(
-            graph, plan.payoff.node_id, plan.payoff.continue_choice_id
-        )
-        scene_id = f"{_ID_INFIX}_payoff_{plan.name}"
-        scene = _single_choice_node(
-            scene_id,
-            _directive(
-                "payoff",
-                _fit_stop(graph, band, scene_words, continue_choice.target),
-                _scene_text(
-                    plan, fork_choice.label, payoff_choice.label, continue_choice
-                ),
-            ),
-            continue_choice,
-        )
-        editor.insert_after(plan.payoff.node_id, scene)
-        raw_payoff_node = editor.node(plan.payoff.node_id)
-        raw_choices = _raw_choices(raw_payoff_node)
-        original = editor.choice(plan.payoff.node_id, plan.payoff.choice_id)
-        original["condition"] = _cond(plan.name, value=False)
-        twin_id = f"{plan.payoff.choice_id}_{_ID_INFIX}_{plan.name}"
-        twin: dict[str, object] = {
-            "id": twin_id,
-            "label": payoff_choice.label,
-            "target": scene_id,
-            "condition": _cond(plan.name, value=True),
-        }
-        raw_choices.insert(raw_choices.index(original) + 1, twin)
-        editor.annotate(
-            plan.payoff.node_id,
-            _payoff_site_text(plan, fork_choice.label, payoff_choice.label),
-        )
-        payoffs.append(
-            PayoffPlacement(
-                variable=plan.name,
-                node_id=plan.payoff.node_id,
-                kind=plan.payoff.kind,
-                choice_id=plan.payoff.choice_id,
-                gated_choice_id=twin_id,
-                label=payoff_choice.label,
-                scene_id=scene_id,
-                rejoin_id=continue_choice.target,
-                setback_ending=plan.payoff.setback_ending,
-            )
+        # --- payoffs -----------------------------------------------------
+        payoffs.extend(
+            _apply_payoff(editor, plan, payoff, index)
+            for index, payoff in enumerate(plan.payoffs)
         )
 
     for fork_id, entries in fork_entries.items():
@@ -1733,7 +1838,7 @@ def _plan_problem(graph: _Graph, planner: _Planner) -> str | None:
             f"found {len(planner.plans)} plant/payoff pair(s), need "
             f"{MIN_VARIABLES}: {detail}"
         )
-    if not any(p.payoff.kind == "rescue" for p in planner.plans):
+    if not any(o.kind == "rescue" for p in planner.plans for o in p.payoffs):
         return _no_rescue_reason(graph)
     return None
 
@@ -1848,15 +1953,11 @@ def _gate_refusal(
         for f in errors[:2]
     )
     if depth_overrun and plans:
-        deepest = max(
-            plans,
-            key=lambda p: (graph.depth.get(p.payoff.node_id, 0), p.payoff.node_id),
-        )
-        return (
-            f"verification: the gate blocks the candidate: {summary}",
-            deepest.payoff.node_id,
-        )
-    touched = {p.payoff.node_id for p in plans} | {p.fork_id for p in plans}
+        sites = [o.node_id for p in plans for o in p.payoffs]
+        deepest = max(sites, key=lambda n: (graph.depth.get(n, 0), n))
+        return (f"verification: the gate blocks the candidate: {summary}", deepest)
+    touched = {o.node_id for p in plans for o in p.payoffs}
+    touched |= {p.fork_id for p in plans}
     latent = [
         f
         for f in errors

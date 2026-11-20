@@ -211,7 +211,7 @@ def _print_report(
         )
         changes = (
             " [changes reachable endings]"
-            if payoff.variable in report.ending_changing
+            if payoff.kind == "rescue" and payoff.variable in report.ending_changing
             else ""
         )
         print(
