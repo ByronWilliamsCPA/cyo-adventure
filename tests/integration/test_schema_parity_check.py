@@ -57,6 +57,15 @@ pytestmark = pytest.mark.integration
 _URL_ENV = "SCHEMA_PARITY_DATABASE_URL"
 _NEWEST = MIGRATIONS[-1]
 
+# The migration production is believed to have stopped short of (register row
+# UW-C363): it adds the cover-review columns the ORM maps onto
+# storybook_version. Named explicitly, NOT taken as MIGRATIONS[-1]: a test that
+# says "the newest migration adds column X" breaks the day anyone adds a
+# migration, which is exactly what happened when the reading-trail table
+# landed in the same batch as this file.
+_COVER_REVIEW_STEM = "20260908000000_add_cover_review_columns"
+_COVER_REVIEW = next(p for p in MIGRATIONS if p.stem == _COVER_REVIEW_STEM)
+
 
 def _version(path: Path) -> str:
     return path.name.split("_", 1)[0]
@@ -147,10 +156,15 @@ def test_full_chain_is_in_parity_with_no_warnings(
     assert not runtime.ahead
 
 
-def test_missing_newest_migration_is_behind(
+def test_chain_stopped_before_a_column_migration_is_behind(
     pg_url: str, capsys: pytest.CaptureFixture[str]
 ) -> None:
-    applied = MIGRATIONS[:-1]
+    """A database stopped short of a migration the ORM depends on is BEHIND.
+
+    Reproduces the state production is believed to be in: every migration up
+    to, but not including, the cover-review columns.
+    """
+    applied = MIGRATIONS[: MIGRATIONS.index(_COVER_REVIEW)]
     url = asyncio.run(
         _build(pg_url, "sp_behind", applied, [_version(p) for p in applied])
     )
@@ -159,9 +173,11 @@ def test_missing_newest_migration_is_behind(
 
     assert code == 1
     assert out.startswith("VERDICT: DATABASE BEHIND")
+    # Every migration from the stopping point on is pending, the newest too.
+    assert _COVER_REVIEW.stem in out
     assert _NEWEST.stem in out
-    # The newest migration adds the cover-review columns the ORM maps; their
-    # absence is what 500s the storybook-version pages.
+    # The cover-review columns are mapped by the ORM; their absence is what
+    # 500s the storybook-version pages.
     assert "storybook_version.cover_review_verdict" in out
     assert "postgresql://" not in out
 
