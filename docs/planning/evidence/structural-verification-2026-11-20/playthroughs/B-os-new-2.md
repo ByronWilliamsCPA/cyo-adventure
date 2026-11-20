@@ -87,4 +87,3 @@ Planted reader (route of 13 nodes: n00c0 > n01d0 > n02c0 > n03d0 > cq_plant_did_
 Unplanted reader (route: n00c0 > n01d0 > n02c0 > n03d0 > n04d1 > n05d3 > n06c4 > n07d0 > n08d0 > n09d0 > n10d1 > n11d5) gets `e12_1` instead:
 
 > Jonah did not pick a release date, so the deadline picked one for him. The version that went in was whatever was finished on Friday. The fourth objection still had no answer, and the frost pocket data was still marked as early. It was not the worst version and it was not the best. It was the version the deadline made. In the weeks that followed, he often thought about what might have been different. What if he had known more about who wrote the survey? What if he had tracked down the name sooner? What if he had understood earlier that the key to fighting the words was knowing who wrote them?
-

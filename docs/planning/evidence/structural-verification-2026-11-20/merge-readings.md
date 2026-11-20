@@ -11,7 +11,7 @@ em-dash characters in model prose are rendered as " - " (repository rule); nothi
 
 **`g1a1_4`** (detector seam: no)
 
-> The wrongness was gentle and absolute: the child was not a child. She was a passenger who had been riding this line since before the line was built, and the thing she was watching for through the cold glass was not the mountain tunnel but the moment when the train would stop being a train and become something else, something that did not run on rails. The silent words she had been shaping were the timetable, and the timetable had Vera's name on it, written in a hand she now recognised as her mother's, a name that appeared nowhere else in the schedule. The journey closed around the fact like a 
+> The wrongness was gentle and absolute: the child was not a child. She was a passenger who had been riding this line since before the line was built, and the thing she was watching for through the cold glass was not the mountain tunnel but the moment when the train would stop being a train and become something else, something that did not run on rails. The silent words she had been shaping were the timetable, and the timetable had Vera's name on it, written in a hand she now recognised as her mother's, a name that appeared nowhere else in the schedule. The journey closed around the fact like a
 
 **`p2_who_passengers`** (detector seam: no)
 
@@ -19,7 +19,7 @@ em-dash characters in model prose are rendered as " - " (repository rule); nothi
 
 **`r_dawn`** (detector seam: yes)
 
-> The first grey dawn had crested the ridgeline and was pouring down the eastern slopes in a slow flood of gold and rose and the palest blue, and every route through the night had gathered here, at this bottleneck above the mountain tunnel, where the peaks stood bare against the lightening sky and the engine was labouring up the final grade. The passengers were quiet. The child who never sleeps had opened her eyes. The mourning woman's coat had turned the colour of the sky. The letter in Vera's pocket had stopped writing. And the last shape of her journey - the choice she had been riding toward 
+> The first grey dawn had crested the ridgeline and was pouring down the eastern slopes in a slow flood of gold and rose and the palest blue, and every route through the night had gathered here, at this bottleneck above the mountain tunnel, where the peaks stood bare against the lightening sky and the engine was labouring up the final grade. The passengers were quiet. The child who never sleeps had opened her eyes. The mourning woman's coat had turned the colour of the sky. The letter in Vera's pocket had stopped writing. And the last shape of her journey - the choice she had been riding toward
 
 ## A-ltn-new-2
 
@@ -89,7 +89,7 @@ em-dash characters in model prose are rendered as " - " (repository rule); nothi
 
 **`r_dawn`** (detector seam: no)
 
-> The train reached the high point of the line, a ledge carved into the mountain's shoulder where the rails curved around a final spur of rock and the whole northern valley opened below. The first grey dawn was no longer grey: the peaks were going gold, the snowfields catching fire, the shadows retreating into the deepest folds of the range. The passengers were quiet, each one turned toward the light, and Vera understood that this was the true bottleneck - the place where every route through the night gathered, every thread she had followed, every question she had asked of the conductor and the 
+> The train reached the high point of the line, a ledge carved into the mountain's shoulder where the rails curved around a final spur of rock and the whole northern valley opened below. The first grey dawn was no longer grey: the peaks were going gold, the snowfields catching fire, the shadows retreating into the deepest folds of the range. The passengers were quiet, each one turned toward the light, and Vera understood that this was the true bottleneck - the place where every route through the night gathered, every thread she had followed, every question she had asked of the conductor and the
 
 ## A-ltn-old-3
 
@@ -131,7 +131,7 @@ em-dash characters in model prose are rendered as " - " (repository rule); nothi
 
 **`n_spring`** (detector seam: no)
 
-> Nia stood above the great spring-room and saw why the whole menagerie had fallen asleep. The great mainspring lay below her like a cracked rib. Its steel had snapped clean across. The broken ends were sprung apart by a gap as wide as her hand. Even the caretaker master key was useless against a broken heart of steel. The key could turn, but there was nothing for it to turn against. Tock scratched at the iron floor in worry, his claws making a small, fretful sound. On the far side of the room, Nia saw three things. A keeper toolbox glinted under a lamp. A wall of repair books, bound in cracked 
+> Nia stood above the great spring-room and saw why the whole menagerie had fallen asleep. The great mainspring lay below her like a cracked rib. Its steel had snapped clean across. The broken ends were sprung apart by a gap as wide as her hand. Even the caretaker master key was useless against a broken heart of steel. The key could turn, but there was nothing for it to turn against. Tock scratched at the iron floor in worry, his claws making a small, fretful sound. On the far side of the room, Nia saw three things. A keeper toolbox glinted under a lamp. A wall of repair books, bound in cracked
 
 ## A-cm-new-3
 
@@ -188,4 +188,3 @@ em-dash characters in model prose are rendered as " - " (repository rule); nothi
 **`n_spring`** (detector seam: yes)
 
 > All three ways brought Nia out above the great spring-room. And here she learned why the whole menagerie fell asleep. The great mainspring had snapped clean across. Its broken ends sprung apart like a cut ribbon of steel. Even the caretaker master key was no use against a broken heart of steel. Nia's shoulders slumped. Her wind-up mouse Tock scratched at the floor in worry. Nia saw three ways to look for help: the keeper toolbox, the wall of repair guides, and the scratched patch of floor where Tock was digging.
-

@@ -101,4 +101,3 @@ Planted reader (route of 12 nodes: n_open > n_list > bs_hub > bs_brackets > bs_p
 Unplanted reader (route: n_open > n_list > bs_hub > bs_brackets > bs_plugs > bs_flight > gt_hands > pp_gate > pp_twins > pp_kettle > pp_keep) gets `fn_ovens` instead:
 
 > The quad could climb the track to the sheepfold turn in four minutes. It had a person and a bag on the back. Asking for it twice in one afternoon was a different kind of ask than the first. The quad was parked by the barn. Its engine was still warm from the last run. Mr Ovens was wiping his hands on a rag.
-

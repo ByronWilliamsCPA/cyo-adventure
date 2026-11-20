@@ -3,7 +3,7 @@
 @@ -20,6 +20,19 @@
  with the theme brief describing what the child asked for. Read the drafting
  guide and the validator rules first.
- 
+
 +## Reader agency
 +
 +The reader must feel, on every page to the last, that their choices are real.
@@ -18,17 +18,17 @@
 +- **Make declared state felt.** Where the skeleton declares `variables`, a choice with `effects` plants something: the passage it leads to shows it happening. A choice with a `condition` is a payoff only some readers see: its label names what they earned, and the passage holding it reads true whether or not that button appears.
 +
  ## Drafting Guide
- 
+
  Follow the drafting guide for voice, reading level, word-count targets, and
 @@ -40,18 +53,53 @@
- 
+
  # Story Drafting Guide
- 
+
 -> **Status**: Draft | **Version**: 0.2 | **Updated**: 2026-08-01
 +> **Status**: Draft | **Version**: 0.3 | **Updated**: 2026-11-20
- 
+
  ## Purpose
- 
+
 -This guide is the reference document inserted into Stage A (Structure) and Stage B (Prose)
 -generation prompts as `{drafting_guide}`. It is also the practical handbook for a human
 +This guide is the reference document inserted into the Stage A (Structure), Stage B (Prose), and
@@ -37,9 +37,9 @@
  author writing stories by hand. Every section maps to a constraint that the validation
  gate enforces, so following this guide is the fastest path to a story that passes on the
  first attempt.
- 
+
  ---
- 
+
 +## Reader Agency
 +
 +A choose-your-own-adventure works only while the reader believes their choices matter. An
@@ -75,12 +75,12 @@
 +---
 +
  ## Node and Depth Budgets
- 
+
  Node count and branch depth are enforced by the Layer-1 graph validator. Stay within these
 @@ -96,6 +144,11 @@
  at bottleneck nodes before fanning out again. This keeps the story manageable for the LLM
  and keeps the validator's reachability check tractable.
- 
+
 +A bottleneck is a **merge node**: one `body` that every converging branch arrives at. Write it to
 +be true on every inbound route and to open in the scene, never by telling the reader that their
 +route did not matter; see Reader Agency above. Plants and payoffs (Tier-2 variables) are what let
@@ -90,9 +90,9 @@
  start
    |
 @@ -130,11 +183,18 @@
- 
+
  ## Voice, Tense, and Perspective
- 
+
 -**Second person, present tense, is the POV standard for every band, `3-5` through `16+`, with no
 -per-band exception.** This was ratified as decision D14 (design review section 8,
 -2026-08-01): "second person is the standard for all bands." There is no band where third person is
@@ -110,13 +110,13 @@
 +standard for newly authored skeletons; a gamebook (`narrative_style: gamebook`) is always second
 +person, and the schema rejects a third-person gamebook. D14 governs what a new skeleton declares;
 +it does not license a fill to override a skeleton that declares third person.
- 
+
  > You push open the heavy door. The corridor stretches ahead, lit by a single lantern
  > hanging from the ceiling. To your left, a narrow staircase leads upward. To your right,
 @@ -142,33 +202,19 @@
- 
+
  Rules, all bands:
- 
+
 -- Address the reader as "you," never "the protagonist" or a character name in body text
 -  (the protagonist name belongs in the concept brief only, and is the hook a
 -  `personalizable` HERO slot binds to, where a skeleton declares one).
@@ -132,7 +132,7 @@
 +  imperative with no "you" or "your" ("Steady the lantern", not "Steady yourself").
  - Endings state what happens, do not ask what the reader wants to do next. Ending nodes
    have `is_ending: true` and zero choices.
- 
+
 -**At 3-5**, the prose is read aloud by an adult, not decoded silently by the child; "you" still
 -addresses the child directly, present tense narrates what is happening to them right now, in the
 -story. Do not soften second person to a named third-person character to make the read-aloud voice
@@ -153,13 +153,13 @@
 +**At 3-5**, the prose is read aloud by an adult, not decoded silently by the child. A new 3-5
 +skeleton should declare second person so "you" addresses the child directly (design review sections
 +2.2 and 2.6); an existing third-person 3-5 skeleton is still filled in third person.
- 
+
  ---
- 
+
 @@ -194,6 +240,14 @@
  `storybook/models.py`'s `ReadingLevel.tolerance` default of `1.0`. See "Craft for Delight" below
  for why the 3-5 window should not be drafted to as a literal, line-by-line target.
- 
+
 +**Dialogue lowers the measured grade.** Flesch-Kincaid counts every short spoken line as a
 +sentence, so a scene of quick exchanges can score under the band floor (RL-13) even when the prose
 +suits the age: the first dialogue draft of `the-hollow-lighthouse` put 43 of 161 nodes out of band
@@ -169,12 +169,12 @@
 +dialogue.
 +
  ### Node body length
- 
+
  Node body length is governed by `validator/band_profile.py`'s words-per-node envelope (ADR-011
 @@ -219,8 +273,13 @@
- 
+
  ## Tier-2 Variables and Conditions
- 
+
 -Tier-2 mechanics are available for the 10-13 and 13-16 bands. Use them sparingly; every
 -variable multiplies the state space.
 +The schema does not gate Tier-2 by age band: `metadata.tier` is any of 1 or 2, and the
@@ -184,6 +184,5 @@
 +Keep the youngest bands (3-5 and 5-8) at Tier-1. Use variables sparingly at any band;
 +every variable multiplies the state space (see the configuration cap under Node and Depth
 +Budgets).
- 
+
  **Variable rules**:
- 

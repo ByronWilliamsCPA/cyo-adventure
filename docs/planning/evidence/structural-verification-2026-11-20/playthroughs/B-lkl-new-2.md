@@ -101,4 +101,3 @@ Planted reader (route of 12 nodes: n_open > n_list > bs_hub > bs_brackets > bs_p
 Unplanted reader (route: n_open > n_list > bs_hub > bs_brackets > bs_plugs > bs_flight > gt_hands > pp_gate > pp_twins > pp_kettle > pp_keep) gets `fn_ovens` instead:
 
 > The quad bike could get up the track to the sheepfold turn in four minutes with a person and a bag on the back. Its engine was loud and steady across the field. Asking for it a second time in one afternoon was a different sort of asking than the first. It was not the careful, biscuit-offering politeness of earlier. It was the direct sentence of someone who had already been told yes once and meant to hear it again. Wren could see the quad parked by the barn, its key still in the ignition.
-
