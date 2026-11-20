@@ -183,8 +183,9 @@ def test_fixture_report_passes_the_approval_predicates() -> None:
 )
 def test_fixture_report_refuses_a_non_generated_story_id(storybook_id: str) -> None:
     """Seeded and imported slugs can never be stamped approvable."""
+    stored = _mock_stamped_report()
     with pytest.raises(BusinessLogicError, match="not a worker-generated"):
-        reset.build_fixture_moderation_report(storybook_id, _mock_stamped_report())
+        reset.build_fixture_moderation_report(storybook_id, stored)
 
 
 def test_fixture_report_refuses_a_report_without_the_mock_stamp() -> None:
@@ -218,5 +219,6 @@ def test_stamp_guard_refuses_non_local_environment(
 ) -> None:
     """The stamp mode shares the reset's local-database guard."""
     _set_settings(monkeypatch, environment="production", dsn=_LOCAL_DSN)
+    stamp = reset.stamp_fixture_moderation(_GENERATED_ID)
     with pytest.raises(ConfigurationError, match="stamp an e2e-real fixture"):
-        asyncio.run(reset.stamp_fixture_moderation(_GENERATED_ID))
+        asyncio.run(stamp)
