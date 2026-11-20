@@ -573,11 +573,14 @@ defers to the runbook for the commands.
       pull and recreate the containers (the manual homelab step) and read the labels again. Evidence: the SHA, the
       release it maps to, and both image digests. `org.opencontainers.image.version` reads `0.1.0` and tracks
       nothing; use the revision only.
-- [ ] **A3.** Run `uv run python scripts/check_env_boots.py` against a copy of the production backend env file,
-      and again against the worker's (see its `--help` for how to pass the file). It loads `Settings` exactly as
-      the app does and reports every boot-time validation failure without printing values. Expected: no failures.
-      Evidence: the summary line for each file. Do this before recreating a container on a changed env file; a
-      config error stops uvicorn importing the app at all, and has taken the frontend down with it before.
+- [ ] **A3.** Run `uv run python scripts/check_env_boots.py /path/to/backend.env --integrations` from a checkout
+      of the ref you will deploy, against a copy of the production backend env file, and again against the
+      worker's. It loads `Settings` exactly as the app does, isolated from your shell, and reports every boot-time
+      validation failure in one pass, naming the setting and the rule and never printing a value. Expected:
+      `BOOTS` (exit 0) for each file; `WOULD REFUSE TO BOOT` (exit 1) lists what to fix. The `--integrations` block
+      names which optional integrations are configured; use it for steps `B1` to `B3`. Evidence: the verdict line
+      for each file. Do this before recreating a container on a changed env file; a config error stops uvicorn
+      importing the app at all, and has taken the frontend down with it before.
 - [ ] **A4.** List pending migrations with the "Detect drift" commands in runbook section 2.5 (applied set on
       production via `--db-url`, never `--linked`, compared with `git ls-tree` at the ref you will deploy).
       Expected at time of writing: at least `20260831120000_seed_moderation_threshold_grid`,
@@ -594,10 +597,14 @@ defers to the runbook for the commands.
       `moderation_threshold` now holding rows (the seed is behaviour-preserving: every row has `min_score` NULL
       and `min_verdict` `flag`); the three `cover_review_*` columns present on `storybook_version`; and an
       authenticated `GET /api/v1/me` answering 200. Evidence: each result.
-- [ ] **A8.** Run `uv run python scripts/check_schema_parity.py` against production (read-only; compares applied
-      migrations and ORM-mapped columns against the live database). Expected: `IN PARITY`. `DATABASE BEHIND`
-      means go back to `A4`; `DATABASE AHEAD` means the image is older than the schema, so go back to `A2`.
-      Evidence: the verdict line.
+- [ ] **A8.** Run `SCHEMA_PARITY_DATABASE_URL="$SUPABASE_DB_URL" uv run python scripts/check_schema_parity.py`
+      against production, from a checkout of the deployed ref (read-only transaction; compares applied migrations
+      and ORM-mapped tables and columns against the live database; prints names only, never the URL). Expected:
+      `IN PARITY` (exit 0). `DATABASE BEHIND` (exit 1) lists the pending migrations and missing columns, so go
+      back to `A4`; `DATABASE AHEAD` means the image is older than the schema, so go back to `A2`; `INCOMPLETE`
+      (exit 3) means the role could not read the migration history, so rerun with the `postgres` session-pooler
+      string or add `--schema-only`. Before the 2026-11 deploy this is expected to report BEHIND by
+      `20260831120000`, `20260831130000`, and `20260908000000`. Evidence: the verdict line.
 - [ ] **A9.** Fetch `/api/v1/health/ready` from outside the LAN (or read the `health-probe.spec.ts` result from
       `A10`). Expected: 200 `application/json`, and every entry in `checks` (`database`, `database_privilege`,
       `cache`, `generation_queue`, `generation_cascade`, `kws_verification`) reports `status: true`. Evidence:
@@ -637,10 +644,14 @@ Read these from the production env files `A3` checked, plus the readiness JSON f
       argument in the homelab frontend build. `frontend/Dockerfile` declares no such `ARG`, so it is off unless
       the out-of-repo build injects it, and `frontend/src/env.ts` records that it must not be enabled where a
       real family can reach it until its gating task has merged. Evidence: the build arguments you checked.
-- [ ] **B6.** *Applies once deployed.* Decide whether the reading-trail capture (choices taken, endings reached,
-      where a read was abandoned) is on for this session, set its server setting accordingly, and record the
-      decision. Expected: the setting matches your decision. If it is on, the data is about your own children;
-      check that `/guardian/privacy` describes it before the session.
+- [ ] **B6.** *Applies once deployed.* Decide whether the reading-trail capture (reads started, choices taken,
+      rewinds, endings reached, where a read was left) is on for this session. It ships off. To turn it on, apply
+      migration `20261120120000_add_reading_trail` (step `A5` does this) and set `READING_TRAIL_ENABLED=true` on
+      the backend container, then restart it. Expected: the setting matches your decision. What it stores is
+      described in `docs/planning/privacy-model.md` ("Reading Trail"): per read, an ordered list of node and
+      choice ids with whole seconds since the read began and one date; no free text, device, or network data;
+      first-party only; erased with the profile; purged after 30 days. It is data about your own children, and it
+      is not yet described on any in-app privacy page, which is why it must stay off for any other family.
 
 ### C. Adult accounts
 
@@ -698,11 +709,18 @@ from the queue at `/admin` (books `in_review`) or from `/admin/library` (any sta
       for this session only, the high-failure gamebooks `the-sunspire-ascent` and `the-thornwood-trial`.
       Production ids may differ from these file slugs; match by title. Evidence: "none present", or the book and
       its state.
-- [ ] **D4.** *Applies once deployed.* Five catalog books received an editorial revision and must be re-imported
-      and re-moderated before approval: *The Signal in the Static* (13-16), *The Hollow Lighthouse* (10-13), *The
-      Midnight Museum* (10-13), *The Sky-Ship Stowaway* (8-11), *The Cave of Echoes* (8-11). Follow the revision's
-      own import instructions. Expected: each shows a new latest version at `in_review` with a fresh moderation
-      report whose reviewer is not the mock. Evidence: book, new version number, report date.
+- [ ] **D4.** *Applies once deployed.* Five catalog books received an editorial revision: *The Signal in the
+      Static* (13-16), *The Hollow Lighthouse* (10-13), *The Midnight Museum* (10-13), *The Sky-Ship Stowaway*
+      (8-11), *The Cave of Echoes* (8-11). The plain catalog import skips any story id that already exists, so
+      import the revisions as a second edition beside the first, the same way the first catalog import was run
+      (issue #347), with the production backend env loaded and a real reviewer configured (step `B2`):
+      `uv run python -m cyo_adventure.generation.import_catalog --only the-signal-in-the-static --only
+      the-hollow-lighthouse --only the-midnight-museum --only the-sky-ship-stowaway --only the-cave-of-echoes
+      --edition r2`. Expected: the summary reads `imported: 5`; each revision is a NEW story whose id ends in
+      `__r2`, at `in_review`, with a fresh moderation report whose reviewer is not the mock. The first editions
+      are not changed: afterwards retire each one by hand so the two do not sit side by side under one title (send
+      it back if it is `in_review`; use **Archive** on `/admin/review/<id>` if it is published, and unassign it
+      first if a child has it). Evidence: the import summary, and each first edition's final state.
 - [ ] **D5.** Approve each book you intend to offer. In `/admin/review/<id>`, read the summary and findings, press
       **Approve**, and in the confirm dialog choose **"Catalog (every family)"** under "Who can see this book?".
       Expected: the book is Published with catalog visibility. Three traps: the dialog **defaults to "This family
@@ -768,18 +786,30 @@ from the queue at `/admin` (books `in_review`) or from `/admin/library` (any sta
 
 ### H. Reader features landing in the 2026-11 batch
 
-All four steps **apply once deployed**. Behaviour is described generically because these steps were written
-before the code landed; correct the wording against the shipped UI the first time you run them.
+All four steps **apply once deployed**. They were first written before the code landed and were rewritten on
+2026-11-20 against the merged implementation and its screenshots, but never against a deployed build; correct
+any wording that differs the first time you run them.
 
-- [ ] **H1.** Open a book with an approved cover. Expected: a title page showing the cover and title appears before
-      the first passage, and continuing from it starts the story.
-- [ ] **H2.** Reach an ending and use **"Try a different choice"**. Expected: the reader returns to an earlier fork
-      and lets the child choose differently, and the guardian progress view stays consistent with what was read.
-- [ ] **H3.** Reach an ending. Expected: a rating prompt appears on the ending screen, and the rating given there
-      shows on the book's library card. This settles step `5.5` as well.
-- [ ] **H4.** With the reading-trail setting on (step `B6`), complete one read and abandon another midway. Expected:
-      the choices taken, the ending reached, and where the abandoned read stopped are all recorded in the surface
-      the feature exposes; with the setting off, nothing is recorded. Evidence: what you saw and where.
+- [ ] **H1.** From the library, open a book the child has not started. Expected: a title page with the cover (the
+      letter tile if the book has no approved cover), the title, and one **Start** button, with the text-size
+      control available before page one; **Start** begins the story. Then leave and reopen it. Expected: a book in
+      progress resumes on its page with no title page.
+- [ ] **H2.** Reach a setback ending. Expected: a one-line invitation under the ending text (for example "Not the
+      ending you hoped for? Stories can go lots of ways."), and **"Try a different choice"** as the leading
+      button. Tap it. Expected: the reader returns to the most recent point where two or more choices were
+      visible, with a note naming the choice taken last time; picking the other choice continues from there, and
+      the guardian progress view stays consistent with what was read. On a happy ending the same button is
+      present but secondary; when a read has no earlier fork it is absent.
+- [ ] **H3.** Reach an ending while online. Expected: "How did you like this story?" with five stars below the
+      ending buttons; the rating given there shows on the book's library card. Offline, the prompt is hidden.
+      This settles step `5.5` as well.
+- [ ] **H4.** With the reading-trail setting on (step `B6`), complete one read, rewind once from an ending, and
+      leave another read midway. Then, on the deployment host, run `READING_TRAIL_REPORT_DATABASE_URL=<owner or
+      worker DSN> uv run python scripts/report_reading_trail.py` (add `--by-profile` to split by child, and
+      `--storybook <id>` for one book). Expected: per book, reads started and finished, endings reached, the nodes
+      where reads stopped, and for each real decision the picks per choice and the rewinds back to it. With the
+      setting off, nothing is stored and the report is empty. Run it within 30 days of the session; trails are
+      purged after that. Evidence: the report, kept on that host.
 
 ### J. Privacy and erasure (non-destructive)
 
