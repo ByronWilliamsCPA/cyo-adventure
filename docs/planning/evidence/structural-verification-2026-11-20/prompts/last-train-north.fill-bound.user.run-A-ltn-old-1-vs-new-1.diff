@@ -1,0 +1,29 @@
+--- /tmp/claude-0/-workspace-cyo-adventure/3af012c8-2d83-5407-a008-720efda8cbae/scratchpad/runs/A-ltn-old-1/calls/call-00.prompt.txt	2026-11-20 21:49:15.736441633 +0000
++++ /tmp/claude-0/-workspace-cyo-adventure/3af012c8-2d83-5407-a008-720efda8cbae/scratchpad/runs/A-ltn-new-1/calls/call-00.prompt.txt	2026-11-20 21:49:14.993118476 +0000
+@@ -8,0 +9,26 @@
++## Passages Reached From More Than One Place
++
++Each passage below is reached from every passage listed after it. A reader can arrive from any one of them, so write its body to be true for all of them: open in the scene, and do not state anything (where a companion or object is, what the hero has learned or picked up) that only some of those passages establish. Never tell the reader their route did not matter.
++
++- `g0a0_4` (from `g0a0_3a`, `g0a0_3b`)
++- `g0a1_4` (from `g0a1_3a`, `g0a1_3b`)
++- `g0a2_4` (from `g0a2_3a`, `g0a2_3b`)
++- `g0a3_4` (from `g0a3_3a`, `g0a3_3b`)
++- `g1a0_4` (from `g1a0_3a`, `g1a0_3b`)
++- `g1a1_4` (from `g1a1_3a`, `g1a1_3b`)
++- `g1a2_4` (from `g1a2_3a`, `g1a2_3b`)
++- `g1a3_4` (from `g1a3_3a`, `g1a3_3b`)
++- `g2a0_4` (from `g2a0_3a`, `g2a0_3b`)
++- `g2a1_4` (from `g2a1_3a`, `g2a1_3b`)
++- `g2a2_4` (from `g2a2_3a`, `g2a2_3b`)
++- `g2a3_4` (from `g2a3_3a`, `g2a3_3b`)
++- `g3a0_4` (from `g3a0_3a`, `g3a0_3b`)
++- `g3a1_4` (from `g3a1_3a`, `g3a1_3b`)
++- `g3a2_4` (from `g3a2_3a`, `g3a2_3b`)
++- `g3a3_4` (from `g3a3_3a`, `g3a3_3b`)
++- `p1_never_arrives` (from `g0a0_5`, `g0a1_5`, `g0a2_5`, `g0a3_5`)
++- `p2_who_passengers` (from `g1a0_5`, `g1a1_5`, `g1a2_5`, `g1a3_5`)
++- `p3_tunnel_choice` (from `g2a0_5`, `g2a1_5`, `g2a2_5`, `g2a3_5`)
++- `p4_dawn_reveal` (from `g3a0_5`, `g3a1_5`, `g3a2_5`, `g3a3_5`)
++- `r_dawn` (from `r_peace3`, `r_help3`, `r_truth3`, `r_leave3`)
++

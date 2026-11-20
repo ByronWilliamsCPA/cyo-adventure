@@ -1,0 +1,147 @@
+{
+  "label": "committed-the-clockwork-menagerie",
+  "arm": "committed",
+  "skeleton": "the-clockwork-menagerie.json",
+  "status": null,
+  "error": null,
+  "attempts": null,
+  "stage_log": null,
+  "served_models": null,
+  "elapsed_s": null,
+  "calls": 0,
+  "input_tokens": null,
+  "output_tokens": null,
+  "estimated_cost_usd": null,
+  "provider_reported_spend_usd": null,
+  "force_cap": null,
+  "completed": true,
+  "delivered_state": {
+    "compared": true,
+    "choices_with_state": 0,
+    "missing_choices": [],
+    "changed_condition_or_effects": [],
+    "extra_choices": [],
+    "variables_identical": true,
+    "exact": true
+  },
+  "gate": {
+    "blocked": false,
+    "findings_by_rule": {
+      "CG-4:warning": 15,
+      "CG-6:warning": 2,
+      "PN-1:warning": 1,
+      "RL-13:warning": 6
+    }
+  },
+  "fill_integrity_exit": 1,
+  "words": {
+    "commissioned": 15831,
+    "delivered": 17069,
+    "raw_ratio": 1.078,
+    "story_fill_rate": 0.996
+  },
+  "dialogue": {
+    "share": 0.036,
+    "nodes_with_dialogue": 0.036
+  },
+  "prose_craft": {
+    "headline": "12 merge nodes, 8 of them tell the reader the route did not matter; 0 variables, so no choice comes back; 21 of 29 decisions restate or announce their options; 0 of 7 setback endings have the hero give up, 3 come within 3 decisions.",
+    "merge_nodes": 12,
+    "merge_seams": [
+      "av_conv",
+      "sv_conv",
+      "ds_conv",
+      "cg_conv",
+      "n_key",
+      "n_spring",
+      "n_shop",
+      "n_hub"
+    ],
+    "option_recaps": [
+      "n_start",
+      "av_x1",
+      "av_deep",
+      "av_risk",
+      "sv_risk",
+      "ds_deep",
+      "ds_risk",
+      "cg_deep",
+      "cg_risk",
+      "k_c1",
+      "s_c1",
+      "p_c1",
+      "n_hub",
+      "fh_rw1",
+      "fh_rw_b1",
+      "fh_fx1",
+      "fh_sec1",
+      "fh_sec_m1",
+      "fh_sec_c1",
+      "fh_dawn1",
+      "fh_dawn_w1"
+    ],
+    "meta_labels": [],
+    "jargon_labels": [],
+    "second_person_labels": [
+      [
+        "av_rec",
+        "c_av_rec1",
+        "Steady yourself."
+      ],
+      [
+        "sv_rec",
+        "c_sv_rec1",
+        "Steady yourself."
+      ],
+      [
+        "ds_rec",
+        "c_ds_rec1",
+        "Steady yourself."
+      ],
+      [
+        "cg_rec",
+        "c_cg_rec1",
+        "Steady yourself."
+      ],
+      [
+        "fh_sec_m1",
+        "c_sec_m1b",
+        "Coax the mouse gently to you."
+      ],
+      [
+        "fh_dawn_w1",
+        "c_dawn_w1c",
+        "Hide until you know who it is."
+      ]
+    ],
+    "give_up_endings": [],
+    "early_setbacks": [
+      "e_set_av",
+      "e_set_ds",
+      "e_set_cg"
+    ],
+    "negative_endings": 7,
+    "decision_nodes": 29,
+    "tense_unstable": 0,
+    "moral_tag_nodes": 0,
+    "told_emotion_per_1000": 0.881,
+    "second_person_node_rate": 0.006
+  },
+  "consequence": {
+    "seconds": 0.004,
+    "skipped": [],
+    "books": [
+      {
+        "name": "filled.json",
+        "forks": 62,
+        "false_choices": 0,
+        "rate": null,
+        "median_distance": 3,
+        "state_carrying": 0,
+        "diverging": 34,
+        "stateless": true
+      }
+    ],
+    "verdict": "NOT MEASURED: no book produced a complete report, so nothing here is evidence about the catalogue"
+  }
+}

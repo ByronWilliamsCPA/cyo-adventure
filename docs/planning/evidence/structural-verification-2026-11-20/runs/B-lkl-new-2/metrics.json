@@ -1,0 +1,110 @@
+{
+  "label": "B-lkl-new-2",
+  "arm": "new",
+  "skeleton": "the-lantern-keepers-list.json",
+  "status": "passed",
+  "error": null,
+  "attempts": 0,
+  "stage_log": [
+    "stage_fill:gate_ok",
+    "reading_level:1:107",
+    "reading_level:2:24"
+  ],
+  "served_models": [
+    "deepseek/deepseek-v4-pro"
+  ],
+  "elapsed_s": 280.8,
+  "calls": 16,
+  "input_tokens": 84006,
+  "output_tokens": 47448,
+  "estimated_cost_usd": "0.34217730",
+  "provider_reported_spend_usd": 1.227239,
+  "force_cap": null,
+  "raw_first_reply_state": {
+    "compared": true,
+    "choices_with_state": 15,
+    "missing_choices": [],
+    "changed_condition_or_effects": [],
+    "extra_choices": [],
+    "variables_identical": false,
+    "exact": true
+  },
+  "completed": true,
+  "delivered_state": {
+    "compared": true,
+    "choices_with_state": 15,
+    "missing_choices": [],
+    "changed_condition_or_effects": [],
+    "extra_choices": [],
+    "variables_identical": false,
+    "exact": true
+  },
+  "gate": {
+    "blocked": false,
+    "findings_by_rule": {
+      "CG-4:warning": 10,
+      "CG-6:warning": 201,
+      "PN-1:warning": 8,
+      "RL-13:warning": 30
+    }
+  },
+  "fill_integrity": {
+    "exit": 0,
+    "fail_lines": []
+  },
+  "words": {
+    "commissioned": 12891,
+    "delivered": 10179,
+    "raw_ratio": 0.79,
+    "story_fill_rate": 0.75
+  },
+  "dialogue": {
+    "share": 0.076,
+    "nodes_with_dialogue": 0.076
+  },
+  "prose_craft": {
+    "headline": "106 merge nodes, 0 of them tell the reader the route did not matter; 3 variables and 12 conditional choices carry earlier choices forward; 0 of 100 decisions restate or announce their options; 0 of 2 setback endings have the hero give up, 0 come within 3 decisions.",
+    "merge_nodes": 106,
+    "merge_seams": [],
+    "option_recaps": [],
+    "meta_labels": [],
+    "jargon_labels": [],
+    "second_person_labels": [
+      [
+        "fn_torch",
+        "c_fn_torch_0",
+        "Stand where you are and let the ridge do its work."
+      ],
+      [
+        "fn_hold",
+        "c_fn_hold_0",
+        "Stand where you are and let the ridge do its work."
+      ]
+    ],
+    "give_up_endings": [],
+    "early_setbacks": [],
+    "negative_endings": 2,
+    "decision_nodes": 100,
+    "tense_unstable": 0,
+    "moral_tag_nodes": 0,
+    "told_emotion_per_1000": 0.0,
+    "second_person_node_rate": 0.083
+  },
+  "consequence": {
+    "seconds": 0.019,
+    "skipped": [],
+    "books": [
+      {
+        "name": "filled.json",
+        "forks": 300,
+        "false_choices": 119,
+        "rate": 0.39666666666666667,
+        "median_distance": 1,
+        "state_carrying": 5,
+        "diverging": 103,
+        "stateless": false
+      }
+    ],
+    "verdict": "NOT MEASURED: 1 complete book(s), under the 3 needed before a spread means anything. The per-book rows above are still real; the verdict is not"
+  }
+}

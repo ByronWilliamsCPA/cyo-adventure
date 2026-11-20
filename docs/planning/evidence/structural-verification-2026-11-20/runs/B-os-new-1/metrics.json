@@ -1,0 +1,363 @@
+{
+  "label": "B-os-new-1",
+  "arm": "new",
+  "skeleton": "the-orchard-signal.json",
+  "status": "passed",
+  "error": null,
+  "attempts": 0,
+  "stage_log": [
+    "stage_fill:gate_ok",
+    "reading_level:1:151",
+    "reading_level:2:33"
+  ],
+  "served_models": [
+    "deepseek/deepseek-v4-pro"
+  ],
+  "elapsed_s": 445.5,
+  "calls": 24,
+  "input_tokens": 114699,
+  "output_tokens": 75804,
+  "estimated_cost_usd": "0.50940441",
+  "provider_reported_spend_usd": 1.398104,
+  "force_cap": null,
+  "raw_first_reply_state": {
+    "compared": true,
+    "choices_with_state": 13,
+    "missing_choices": [],
+    "changed_condition_or_effects": [],
+    "extra_choices": [],
+    "variables_identical": false,
+    "exact": true
+  },
+  "completed": true,
+  "delivered_state": {
+    "compared": true,
+    "choices_with_state": 13,
+    "missing_choices": [],
+    "changed_condition_or_effects": [],
+    "extra_choices": [],
+    "variables_identical": false,
+    "exact": true
+  },
+  "gate": {
+    "blocked": false,
+    "findings_by_rule": {
+      "CG-4:warning": 23,
+      "CG-6:warning": 223,
+      "PN-1:warning": 9,
+      "RL-13:warning": 82
+    }
+  },
+  "fill_integrity": {
+    "exit": 0,
+    "fail_lines": []
+  },
+  "words": {
+    "commissioned": 15324,
+    "delivered": 16014,
+    "raw_ratio": 1.045,
+    "story_fill_rate": 0.881
+  },
+  "dialogue": {
+    "share": 0.223,
+    "nodes_with_dialogue": 0.223
+  },
+  "prose_craft": {
+    "headline": "129 merge nodes, 0 of them tell the reader the route did not matter; 3 variables and 10 conditional choices carry earlier choices forward; 9 of 96 decisions restate or announce their options; 0 of 6 setback endings have the hero give up, 1 come within 3 decisions.",
+    "merge_nodes": 129,
+    "merge_seams": [],
+    "option_recaps": [
+      "n09d5",
+      "n10d3",
+      "n12d3",
+      "n12d6",
+      "n13d3",
+      "n15d2",
+      "n15d3",
+      "n15d5",
+      "n16d3"
+    ],
+    "meta_labels": [
+      [
+        "n07d4",
+        "c_n07d4_2",
+        "Decide the chart is enough on its own."
+      ],
+      [
+        "n09d1",
+        "c_n09d1_2",
+        "Decide what to do about the paper."
+      ],
+      [
+        "n09d2",
+        "c_n09d2_0",
+        "Decide who signs the objection."
+      ],
+      [
+        "n09d7",
+        "c_n09d7_0",
+        "Decide what to do about the paper."
+      ],
+      [
+        "n09d7",
+        "c_n09d7_1",
+        "Decide who signs the objection."
+      ],
+      [
+        "n11d1",
+        "c_n11d1_0",
+        "Decide what to say to Halvor."
+      ],
+      [
+        "n11d1",
+        "c_n11d1_0_cq_did_find_who_wrote",
+        "Decide what to say to Halvor."
+      ],
+      [
+        "n11d1",
+        "c_n11d1_1",
+        "Decide how hard to push the frost pocket."
+      ],
+      [
+        "n11d1",
+        "c_n11d1_2",
+        "Decide whether Ada should speak."
+      ],
+      [
+        "cq_payoff_did_find_who_wrote_site2",
+        "c_cq_payoff_did_find_who_wrote_site2",
+        "Decide what to say to Halvor."
+      ],
+      [
+        "n11d2",
+        "c_n11d2_0",
+        "Decide when to release the dossier."
+      ],
+      [
+        "n11d6",
+        "c_n11d6_1",
+        "Decide what to say to Halvor."
+      ],
+      [
+        "n11d6",
+        "c_n11d6_2",
+        "Decide how hard to push the frost pocket."
+      ],
+      [
+        "n11d7",
+        "c_n11d7_0",
+        "Decide whether Ada should speak."
+      ],
+      [
+        "n11d7",
+        "c_n11d7_1",
+        "Decide when to release the dossier."
+      ],
+      [
+        "n14d0",
+        "c_n14d0_2",
+        "Decide what to do about the spine road."
+      ],
+      [
+        "n14d1",
+        "c_n14d1_0",
+        "Decide who keeps the notebooks now."
+      ],
+      [
+        "n14d1",
+        "c_n14d1_1",
+        "Decide what to tell the class."
+      ],
+      [
+        "n14d1",
+        "c_n14d1_2",
+        "Decide what to do next year."
+      ],
+      [
+        "n14d2",
+        "c_n14d2_0",
+        "Decide what to say to Halvor now."
+      ],
+      [
+        "n14d4",
+        "c_n14d4_0",
+        "Decide what to do about the spine road."
+      ],
+      [
+        "n14d4",
+        "c_n14d4_1",
+        "Decide who keeps the notebooks now."
+      ],
+      [
+        "n14d4",
+        "c_n14d4_2",
+        "Decide what to tell the class."
+      ],
+      [
+        "n14d5",
+        "c_n14d5_0",
+        "Decide what to do next year."
+      ],
+      [
+        "n14d5",
+        "c_n14d5_1",
+        "Decide what to say to Halvor now."
+      ],
+      [
+        "n14c4",
+        "c_n14c4_0",
+        "Decide what to do about the spine road."
+      ],
+      [
+        "n14c5",
+        "c_n14c5_0",
+        "Decide who keeps the notebooks now."
+      ],
+      [
+        "n15d0",
+        "c_n15d0_2",
+        "Decide what the trust is for."
+      ],
+      [
+        "n15d1",
+        "c_n15d1_0",
+        "Decide how the record continues."
+      ],
+      [
+        "n15d4",
+        "c_n15d4_0",
+        "Decide what the trust is for."
+      ],
+      [
+        "n15d4",
+        "c_n15d4_1",
+        "Decide how the record continues."
+      ]
+    ],
+    "jargon_labels": [],
+    "second_person_labels": [
+      [
+        "n00c0",
+        "c_n00c0_0",
+        "Go and tell Ada what you have seen."
+      ],
+      [
+        "n05d1",
+        "c_n05d1_2",
+        "Work out how to prove you copied it right."
+      ],
+      [
+        "n06d2",
+        "c_n06d2_1",
+        "Ask what happens if you are wrong."
+      ],
+      [
+        "n06c0",
+        "c_n06c0_0",
+        "Ask what happens if you are wrong."
+      ],
+      [
+        "n08d3",
+        "c_n08d3_1",
+        "Say something about Faulks you cannot support."
+      ],
+      [
+        "n08d3",
+        "c_n08d3_1_cq_did_ask_whether_notebooks",
+        "Say something about Faulks you cannot support."
+      ],
+      [
+        "n08c0",
+        "c_n08c0_0",
+        "Say something about Faulks you cannot support."
+      ],
+      [
+        "n09d4",
+        "c_n09d4_2",
+        "Publish everything the moment you have it."
+      ],
+      [
+        "n11d4",
+        "c_n11d4_2",
+        "Keep the found volumes to yourself."
+      ],
+      [
+        "n11d5",
+        "c_n11d5_0",
+        "Let the deadline decide for you."
+      ],
+      [
+        "n11d5",
+        "c_n11d5_0_cq_did_find_who_wrote",
+        "Let the deadline decide for you."
+      ],
+      [
+        "n12d3",
+        "c_n12d3_0",
+        "Finish the record before you finish the fight."
+      ],
+      [
+        "n12d6",
+        "c_n12d6_2",
+        "Finish the record before you finish the fight."
+      ],
+      [
+        "n13d4",
+        "c_n13d4_1",
+        "Say only what you can support."
+      ],
+      [
+        "n14d3",
+        "c_n14d3_0",
+        "Ask what the early bloom was actually telling you."
+      ],
+      [
+        "n14c1",
+        "c_n14c1_0",
+        "Ask what the early bloom was actually telling you."
+      ],
+      [
+        "n16d0",
+        "c_n16d0_2",
+        "Look at what you would do again."
+      ],
+      [
+        "n16d2",
+        "c_n16d2_2",
+        "Look at what you would do again."
+      ],
+      [
+        "n16c2",
+        "c_n16c2_0",
+        "Look at what you would do again."
+      ]
+    ],
+    "give_up_endings": [],
+    "early_setbacks": [
+      "e06_0"
+    ],
+    "negative_endings": 6,
+    "decision_nodes": 96,
+    "tense_unstable": 0,
+    "moral_tag_nodes": 1,
+    "told_emotion_per_1000": 0.0,
+    "second_person_node_rate": 0.101
+  },
+  "consequence": {
+    "seconds": 0.033,
+    "skipped": [],
+    "books": [
+      {
+        "name": "filled.json",
+        "forks": 288,
+        "false_choices": 10,
+        "rate": null,
+        "median_distance": 2.0,
+        "state_carrying": 5,
+        "diverging": 92,
+        "stateless": false
+      }
+    ],
+    "verdict": "NOT MEASURED: no book produced a complete report, so nothing here is evidence about the catalogue"
+  }
+}

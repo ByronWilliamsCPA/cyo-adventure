@@ -1,0 +1,261 @@
+{
+  "label": "A-ltn-new-3",
+  "arm": "new",
+  "skeleton": "the-last-train-north.json",
+  "status": "passed",
+  "error": null,
+  "attempts": 1,
+  "stage_log": [
+    "stage_fill:blocked",
+    "repair:1",
+    "reading_level:1:2",
+    "reading_level:2:3"
+  ],
+  "served_models": [
+    "deepseek/deepseek-v4-pro"
+  ],
+  "elapsed_s": 454.1,
+  "calls": 14,
+  "input_tokens": 106340,
+  "output_tokens": 86254,
+  "estimated_cost_usd": "0.53346222",
+  "provider_reported_spend_usd": 1.018683,
+  "force_cap": null,
+  "raw_first_reply_state": {
+    "compared": true,
+    "choices_with_state": 0,
+    "missing_choices": [
+      [
+        "g1a0_3b",
+        "c_g1a0_3b1"
+      ],
+      [
+        "g1a0_3b",
+        "c_g1a0_3b2"
+      ]
+    ],
+    "changed_condition_or_effects": [],
+    "extra_choices": [
+      [
+        "g1a0_3b",
+        "c_g0a1_3b1"
+      ],
+      [
+        "g1a0_3b",
+        "c_g0a1_3b2"
+      ]
+    ],
+    "variables_identical": true,
+    "exact": false
+  },
+  "completed": true,
+  "delivered_state": {
+    "compared": true,
+    "choices_with_state": 0,
+    "missing_choices": [],
+    "changed_condition_or_effects": [],
+    "extra_choices": [],
+    "variables_identical": true,
+    "exact": true
+  },
+  "gate": {
+    "blocked": false,
+    "findings_by_rule": {
+      "CG-4:warning": 57,
+      "CG-6:warning": 38,
+      "PL-19:warning": 1,
+      "RL-13:warning": 66
+    }
+  },
+  "fill_integrity": {
+    "exit": 0,
+    "fail_lines": []
+  },
+  "words": {
+    "commissioned": 24445,
+    "delivered": 17382,
+    "raw_ratio": 0.711,
+    "story_fill_rate": 0.694
+  },
+  "dialogue": {
+    "share": 0.208,
+    "nodes_with_dialogue": 0.208
+  },
+  "prose_craft": {
+    "headline": "21 merge nodes, 2 of them tell the reader the route did not matter; 0 variables, so no choice comes back; 33 of 43 decisions restate or announce their options; 0 of 11 setback endings have the hero give up, 4 come within 3 decisions.",
+    "merge_nodes": 21,
+    "merge_seams": [
+      "g1a1_4",
+      "r_dawn"
+    ],
+    "option_recaps": [
+      "g0a0_2",
+      "g0a0_3b",
+      "g0a1_2",
+      "g0a1_3b",
+      "g0a2_2",
+      "g0a2_3b",
+      "g0a3_2",
+      "g0a3_3b",
+      "g1a0_2",
+      "g1a0_3b",
+      "g1a1_2",
+      "g1a1_3b",
+      "g1a2_2",
+      "g1a2_3b",
+      "g1a3_2",
+      "g1a3_3b",
+      "g2a0_2",
+      "g2a0_3b",
+      "g2a1_2",
+      "g2a1_3b",
+      "g2a2_2",
+      "g2a2_3b",
+      "g2a3_2",
+      "g2a3_3b",
+      "g3a0_2",
+      "g3a0_3b",
+      "g3a1_2",
+      "g3a1_3b",
+      "g3a2_3b",
+      "g3a3_2",
+      "g3a3_3b",
+      "p3_tunnel_choice",
+      "r_choice_help"
+    ],
+    "meta_labels": [],
+    "jargon_labels": [],
+    "second_person_labels": [
+      [
+        "g0a0_3b",
+        "c_g0a0_3b2",
+        "Let the hour take you."
+      ],
+      [
+        "g0a1_3b",
+        "c_g0a1_3b2",
+        "Let the hour take you."
+      ],
+      [
+        "g0a2_3b",
+        "c_g0a2_3b2",
+        "Let the hour take you."
+      ],
+      [
+        "g0a3_3b",
+        "c_g0a3_3b2",
+        "Let the hour take you."
+      ],
+      [
+        "g1a0_3b",
+        "c_g1a0_3b2",
+        "Let the hour take you."
+      ],
+      [
+        "g1a1_3b",
+        "c_g1a1_3b2",
+        "Let the hour take you."
+      ],
+      [
+        "g1a2_3b",
+        "c_g1a2_3b2",
+        "Let the hour take you."
+      ],
+      [
+        "g1a3_3b",
+        "c_g1a3_3b2",
+        "Let the hour take you."
+      ],
+      [
+        "g2a0_3b",
+        "c_g2a0_3b2",
+        "Let the hour take you."
+      ],
+      [
+        "g2a1_3b",
+        "c_g2a1_3b2",
+        "Let the hour take you."
+      ],
+      [
+        "g2a2_3b",
+        "c_g2a2_3b2",
+        "Let the hour take you."
+      ],
+      [
+        "g2a3_3b",
+        "c_g2a3_3b2",
+        "Let the hour take you."
+      ],
+      [
+        "g3a0_3b",
+        "c_g3a0_3b2",
+        "Let the hour take you."
+      ],
+      [
+        "g3a1_3b",
+        "c_g3a1_3b2",
+        "Let the hour take you."
+      ],
+      [
+        "g3a2_3b",
+        "c_g3a2_3b2",
+        "Let the hour take you."
+      ],
+      [
+        "g3a3_3b",
+        "c_g3a3_3b2",
+        "Let the hour take you."
+      ],
+      [
+        "p3_tunnel_choice",
+        "c_p3_tunnel_choice_1",
+        "Let the child lead you."
+      ],
+      [
+        "p4_dawn_reveal",
+        "c_p4_help",
+        "Turn to the traveler who needs you."
+      ],
+      [
+        "r_dawn",
+        "c_dawn_help",
+        "Give the traveler your seat."
+      ],
+      [
+        "r_dawn",
+        "c_dawn_truth",
+        "Name what you have understood."
+      ]
+    ],
+    "give_up_endings": [],
+    "early_setbacks": [
+      "g0a0_end",
+      "g0a1_end",
+      "g0a2_end",
+      "g0a3_end"
+    ],
+    "negative_endings": 11,
+    "decision_nodes": 43,
+    "tense_unstable": 0,
+    "moral_tag_nodes": 1,
+    "told_emotion_per_1000": 0.121,
+    "second_person_node_rate": 0.035
+  },
+  "consequence": {
+    "seconds": 0.004,
+    "skipped": [],
+    "books": [
+      {
+        "name": "filled.json",
+        "forks": 73,
+        "false_choices": 16,
+        "rate": null,
+        "median_distance": 5.0,
+        "state_carrying": 0,
+        "diverging": 15,
+        "stateless": true
+      }
+    ],
+    "verdict": "NOT MEASURED: no book produced a complete report, so nothing here is evidence about the catalogue"
+  }
+}

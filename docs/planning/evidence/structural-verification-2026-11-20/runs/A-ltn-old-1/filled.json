@@ -1,0 +1,2015 @@
+{
+  "schema_version": "2.0",
+  "id": "sk_last_train_north",
+  "version": 1,
+  "title": "The Last Train North",
+  "metadata": {
+    "narrative_person": "third",
+    "age_band": "16+",
+    "reading_level": {
+      "scheme": "flesch_kincaid",
+      "target": 9.0,
+      "tolerance": 1.5
+    },
+    "tier": 1,
+    "themes": [
+      "the uncanny",
+      "journey and passage",
+      "memory",
+      "letting go"
+    ],
+    "estimated_minutes": 14,
+    "ending_count": 25,
+    "content_flags": {
+      "violence": "mild",
+      "scariness": "moderate",
+      "peril": "moderate"
+    },
+    "topology": "branch_and_bottleneck",
+    "length": "medium",
+    "narrative_style": "prose",
+    "production_eligible": true
+  },
+  "variables": [],
+  "start_node": "n_open",
+  "nodes": [
+    {
+      "id": "n_open",
+      "body": "The last northbound overnight train of the season stood breathing steam into the platform's amber lights as {~HERO:Vera~} crossed the freezing concrete, her case heavy in one hand. Sleet needled sideways and softened without warning into fat, silent flakes that clung to her coat and melted against the brass rail. She climbed aboard into the warm, oil-scented vestibule and paused: the platform clock had already stopped at ten past eleven, its minute hand pinned against a pale moth that had died there weeks ago. No attendant came forward. No announcement called her carriage. She stepped into the corridor alone, the window glass doubling the empty seats beside her.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_open",
+          "label": "Find a seat and settle in.",
+          "target": "n_start"
+        }
+      ]
+    },
+    {
+      "id": "n_start",
+      "body": "The carriage stretched ahead like a corridor in a half-remembered dream, half-lit and resonant with the low hum of the wheels beneath. Vera stood at its mouth and understood that the night would ask something of her before it ended\u2014four doors stood ajar, and each one whispered a different invitation. The air smelled of cold wool, distant coffee, and something sharper beneath, like ozone before a storm.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_start_0",
+          "label": "Seek out the night conductor.",
+          "target": "g0a0_1"
+        },
+        {
+          "id": "c_start_1",
+          "label": "Walk the aisle of curtained sleepers.",
+          "target": "g0a1_1"
+        },
+        {
+          "id": "c_start_2",
+          "label": "Unfold the letter waiting on your seat.",
+          "target": "g0a2_1"
+        },
+        {
+          "id": "c_start_3",
+          "label": "Press your face to the cold window.",
+          "target": "g0a3_1"
+        }
+      ]
+    },
+    {
+      "id": "g0a0_1",
+      "body": "{~HERO:Vera~} walked toward the end of the carriage where the night conductor stood beside his silver punch-clock, a heavy thing suspended from a leather strap that had worn a groove into his tunic. He did not look up. The carriage swayed and the cold glass held her reflection over the dark, a ghost {~HERO:Vera~} laid briefly against the black pines streaming past. A first detail snagged her attention and held it: the punch-clock's second hand swept backward, once, then resumed its forward arc as though the night had hiccuped.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_g0a0_1",
+          "label": "Step closer and watch.",
+          "target": "g0a0_2"
+        }
+      ]
+    },
+    {
+      "id": "g0a0_2",
+      "body": "The night conductor did not blink while {~HERO:Vera~} watched him. His fingers rested on the clock's brass rim with the easy familiarity of a man who has held the same object for decades. His eyes were fixed on the corridor behind her, as if tracking someone she could not see. Two paths opened before her. She could step into his sight line and ask directly, risking that the whole fragile scene would fold shut the moment she spoke. Or she could wait in the vestibule shadow and let the last northbound overnight train of the season offer up its strangeness at its own unhurried pace.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_g0a0_2a",
+          "label": "Walk straight toward him.",
+          "target": "g0a0_3a"
+        },
+        {
+          "id": "c_g0a0_2b",
+          "label": "Wait and observe from the vestibule.",
+          "target": "g0a0_3b"
+        }
+      ]
+    },
+    {
+      "id": "g0a0_3a",
+      "body": "{~HERO:Vera~} stepped into the pool of light around the conductor and asked him what line they were riding. He looked at her directly for the first time, and in the moment his gaze met hers his punch-clock gave a soft click\u2014the sound of a ticket being validated, except no ticket had passed through his hands. His smile was kind and entirely wrong. \"We are riding the only line that runs this late,\" he said, and the statement was a fact {~HERO:Vera~} could feel lodging under her ribs like a splinter, pointing deeper into the last northbound overnight train of the season.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_g0a0_3a",
+          "label": "Hold his answer and walk on.",
+          "target": "g0a0_4"
+        }
+      ]
+    },
+    {
+      "id": "g0a0_3b",
+      "body": "{~HERO:Vera~} stayed in the vestibule with her shoulder braced against the cold riveted wall. She watched the night conductor through the half-open connecting door. The observation settled into her slowly. Every passenger who passed him received the same slight nod and the same unbuckling of that silver clock. Not one of them produced a ticket. She could hold this thread and follow it forward into the carriage's deeper dark. Or she could let the late hour and the steady rocking of the wheels fold the mystery over her, warm as a blanket, until morning erased it.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_g0a0_3b1",
+          "label": "Keep this thread and continue onward.",
+          "target": "g0a0_4"
+        },
+        {
+          "id": "c_g0a0_3b2",
+          "label": "Let the rhythm pull you under.",
+          "target": "g0a0_end"
+        }
+      ]
+    },
+    {
+      "id": "g0a0_4",
+      "body": "Seized or glimpsed, the fact was the same small splinter lodged in {~HERO:Vera~}'s awareness. No passenger aboard the last northbound overnight train of the season had ever shown a ticket. The night conductor and his silver punch-clock did not exist to verify passage. They existed to mark that a threshold had been crossed. {~HERO:Vera~} felt the journey close around that knowledge like a held breath. The wheels beneath her quieted a half-tone. The lamps along the corridor dimmed as though the train itself were listening.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_g0a0_4",
+          "label": "Walk on into the deeper carriages.",
+          "target": "g0a0_5"
+        }
+      ]
+    },
+    {
+      "id": "g0a0_5",
+      "body": "She moved forward through the swaying cars with the conductor's clock still ticking in her memory, a backward heartbeat. The carriages grew older as she walked. The upholstery changed from navy to faded maroon. The lamps shifted from electric to a soft, hissing gas. {~HERO:Vera~} passed sleepers with their curtains drawn tight. She passed a dining car where the tables were set but nobody was eating. At the far end of the third carriage she sensed the question the whole train seemed built around, coiled in the dark ahead like a promise.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_g0a0_5",
+          "label": "Follow it toward the heart of the mystery.",
+          "target": "p1_never_arrives"
+        }
+      ]
+    },
+    {
+      "id": "g0a0_end",
+      "body": "The warm fog of the vestibule closed over {~HERO:Vera~} before she could pin the thought down, and the conductor's silver clock ticked backward twice more while her eyes fell shut. She surfaced hours later to a pale carriage empty of passengers, the train standing silent at a station whose signboard was blank. Safe. Hollow. The clock she had almost understood was gone, and the night had rolled past her like a country she did not visit.",
+      "is_ending": true,
+      "ending": {
+        "id": "e_g0a0",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "You Slept Through the Stop"
+      }
+    },
+    {
+      "id": "g0a1_1",
+      "body": "{~HERO:Vera~} turned into the sleeper aisle, a long throat of drawn curtains and brass berth-numbers that gleamed dully beneath the running lights. The carriage swayed and the cold glass held her reflection over the dark, a pale shape in the window that seemed to hesitate whenever she did. A first detail snagged her attention: behind one curtain, a pair of shoes sat neatly on the floor\u2014men's brogues, polished to a high mirror\u2014but the berth above them was flat and unslept in, the pillow still wrapped in its paper sleeve.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_g0a1_1",
+          "label": "Pause and study what you see.",
+          "target": "g0a1_2"
+        }
+      ]
+    },
+    {
+      "id": "g0a1_2",
+      "body": "The long row of curtained sleeper berths extended the length of the carriage. Every pair of curtains was drawn except the one nearest the far door. That one flickered faintly, as though a candle burned behind it. {~HERO:Vera~} stood in the aisle and felt the weight of two possible approaches. She could walk directly to the lit berth and draw the curtain aside, forfeiting surprise. Or she could wait in the corridor, let her eyes adjust, and let the last northbound overnight train of the season reveal what it would at its own measured pace.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_g0a1_2a",
+          "label": "March to the lit berth and look inside.",
+          "target": "g0a1_3a"
+        },
+        {
+          "id": "c_g0a1_2b",
+          "label": "Wait and watch from the aisle.",
+          "target": "g0a1_3b"
+        }
+      ]
+    },
+    {
+      "id": "g0a1_3a",
+      "body": "{~HERO:Vera~} pulled the curtain aside and found the berth empty except for a small silver hand mirror propped against the pillow, its face turned toward the corridor as though the last occupant had wanted to catch whoever looked in. In the mirror she saw her own reflection, and behind her, in the aisle, a figure in grey who had not been there a moment before\u2014gone by the time she spun around. A hard, specific fact lodged in her mind: the sleeper cars were not empty; they were attentive. And that attention pointed deeper into the last northbound overnight train of the season.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_g0a1_3a",
+          "label": "Carry this glimpse and move on.",
+          "target": "g0a1_4"
+        }
+      ]
+    },
+    {
+      "id": "g0a1_3b",
+      "body": "{~HERO:Vera~} stayed where she was and let her breathing settle. The carriage's small sounds separated themselves. She heard the creak of a berth-frame. She heard the whisper of a draught beneath the outer wall. And, very faintly, a voice murmured a list of names from behind one of the middle curtains. The names were ones she did not know but felt she should. She could fold this observation into the unease already growing in her. Or she could let the late hour and the motion of the last northbound overnight train of the season pull her under before she had fully understood it.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_g0a1_3b1",
+          "label": "Hold the thread and keep moving.",
+          "target": "g0a1_4"
+        },
+        {
+          "id": "c_g0a1_3b2",
+          "label": "Let the darkness pull you down.",
+          "target": "g0a1_end"
+        }
+      ]
+    },
+    {
+      "id": "g0a1_4",
+      "body": "Both the bold look and the patient wait led to the same small wrongness. No berth in the sleeper carriage held a living passenger. Every curtain concealed an arrangement of objects. There was a glove folded beside a timetable. A half-eaten pear turned brown. A photograph of a station that no map recorded. The feeling that grew in {~HERO:Vera~} was not fear but recognition. It was the slow pressure of a held breath waiting for her to notice it.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_g0a1_4",
+          "label": "Press deeper into the train.",
+          "target": "g0a1_5"
+        }
+      ]
+    },
+    {
+      "id": "g0a1_5",
+      "body": "What the sleeper cars had told {~HERO:Vera~} was heavier than a fact. Every object aboard had been left by someone who had boarded thinking they would arrive. They had found instead that arrival meant something different on this line. She moved on through the swaying carriages toward the question the whole train seemed built around. The polished brogues and the silver hand mirror filed themselves into a pattern she could almost read.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_g0a1_5",
+          "label": "Go where the pattern leads.",
+          "target": "p1_never_arrives"
+        }
+      ]
+    },
+    {
+      "id": "g0a1_end",
+      "body": "The susurrus of the sleeper curtains and the murmur of names behind them thickened into a fog that closed over {~HERO:Vera~} before she could keep hold of the thread. She surfaced later in a different carriage, the mirror gone, the aisle empty, her own reflection in the window the only passenger still in view. Safe and hollow. The thing she had almost understood had receded like a half-remembered dream she could not quite reach.",
+      "is_ending": true,
+      "ending": {
+        "id": "e_g0a1",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "A Door You Did Not Open"
+      }
+    },
+    {
+      "id": "g0a2_1",
+      "body": "{~HERO:Vera~} found her seat and saw the letter waiting there, a cream envelope folded once and tucked beneath the window sill's brass lip. The carriage swayed and the cold glass held her reflection over the dark, her face suspended above the pines like a second moon. A first detail snagged her attention: the envelope bore no stamp, no address, only the word '{~HERO:Vera~}' written in a hand that looked exactly like her own.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_g0a2_1",
+          "label": "Pick up the letter and examine it.",
+          "target": "g0a2_2"
+        }
+      ]
+    },
+    {
+      "id": "g0a2_2",
+      "body": "The letter a stranger left folded on her seat was warm. It felt as though it had been held against someone's body until moments before she boarded. {~HERO:Vera~} turned it over. Two ways to read it waited in her hands. She could tear the envelope open now and take whatever the message gave her, direct and irreversible. Or she could slide it into her coat pocket unread and let the last northbound overnight train of the season keep its secret a while longer. The unopened paper would be a promise she could carry into the dark.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_g0a2_2a",
+          "label": "Open the letter at once.",
+          "target": "g0a2_3a"
+        },
+        {
+          "id": "c_g0a2_2b",
+          "label": "Pocket it and wait.",
+          "target": "g0a2_3b"
+        }
+      ]
+    },
+    {
+      "id": "g0a2_3a",
+      "body": "{~HERO:Vera~} tore the envelope and unfolded a single sheet of thin paper covered in a handwriting that was unmistakably hers\u2014except she had never written these words. The message was brief: \"You will reach the north terminus one hour after you decide to arrive.\" A hard, specific fact that would not sit still in her mind, because it was not a prediction; it was an instruction. It pointed deeper into the last northbound overnight train of the season like a finger resting on a map she had not yet learned to read.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_g0a2_3a",
+          "label": "Fold the letter and carry it forward.",
+          "target": "g0a2_4"
+        }
+      ]
+    },
+    {
+      "id": "g0a2_3b",
+      "body": "{~HERO:Vera~} slid the unopened letter into her coat and sat with the weight of it against her ribs, a small rectangle of heat. The passengers around her read books, stared at the dark, breathed slowly in their seats. Watching the letter without reading it was like standing at the edge of a conversation she was not yet ready to join. She could fold the presence of it into what she already knew\u2014that this journey was not a simple transit\u2014or she could let the late hour and the motion pull her under before the message had a chance to reach her.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_g0a2_3b1",
+          "label": "Hold onto the letter and keep going.",
+          "target": "g0a2_4"
+        },
+        {
+          "id": "c_g0a2_3b2",
+          "label": "Let sleep take you first.",
+          "target": "g0a2_end"
+        }
+      ]
+    },
+    {
+      "id": "g0a2_4",
+      "body": "Whether she read it or put it in her pocket, the letter felt faintly wrong in {~HERO:Vera~}'s hands. The handwriting was hers. The words were true before she understood them. The paper felt older than the train itself. It was soft at the creases and smelled faintly of lavender, train oil, and something else\u2014something like time. She felt the journey close around it like a held breath. The carriage lamps flickered once, all together.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_g0a2_4",
+          "label": "Press on through the dimming cars.",
+          "target": "g0a2_5"
+        }
+      ]
+    },
+    {
+      "id": "g0a2_5",
+      "body": "A stranger had left the folded letter on the seat. It told {~HERO:Vera~} more than she was ready to know. This line ran on a different kind of time. The north end would not arrive until she arrived at it within herself. She moved on through the swaying cars, the paper warm against her coat. She was moving toward the question the whole train seemed built around. The question was now shaping itself into words she could almost hear.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_g0a2_5",
+          "label": "Walk toward what the letter promised.",
+          "target": "p1_never_arrives"
+        }
+      ]
+    },
+    {
+      "id": "g0a2_end",
+      "body": "The warmth of the letter against {~HERO:Vera~}'s ribs dimmed as her eyes grew heavy, and the words she had not yet read dissolved into the grey of a half-dream. She surfaced later to a pale sky, the envelope unread, the train slowing toward a station whose name she did not catch. Safe. Emptied. The thing she had almost understood was a letter she would never be able to open again.",
+      "is_ending": true,
+      "ending": {
+        "id": "e_g0a2",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "The Page Blurs to Nothing"
+      }
+    },
+    {
+      "id": "g0a3_1",
+      "body": "{~HERO:Vera~} turned her face to the window and let the black country sliding past resolve into shapes: the white scribble of birch trunks, the sudden gleam of a frozen river, a single lit farmhouse whose light vanished before she could mark its position. The carriage swayed and the cold glass held her reflection over the dark, a faint double-exposure. A first detail snagged her attention: the farmhouse's light had not disappeared behind a hill; it had simply gone, as though a door had closed on it.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_g0a3_1",
+          "label": "Press your face to the cold glass.",
+          "target": "g0a3_2"
+        }
+      ]
+    },
+    {
+      "id": "g0a3_2",
+      "body": "The dark country sliding past the window was not empty. It was full of things that almost were. Shapes became trees just as she looked at them. Trackside signals lit up a split second after the train passed. A second train ran on a far line across the valley. Its carriages glowed with the same amber light as her own. {~HERO:Vera~} could face this strangeness directly. She could cup her hands around her eyes and search the dark for what it hid. Or she could stay patient. She could let the train carry her past at its own slow pace, collecting glimpses like dropped coins.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_g0a3_2a",
+          "label": "Peer hard into the black glass.",
+          "target": "g0a3_3a"
+        },
+        {
+          "id": "c_g0a3_2b",
+          "label": "Stay back and let the dark unfurl.",
+          "target": "g0a3_3b"
+        }
+      ]
+    },
+    {
+      "id": "g0a3_3a",
+      "body": "{~HERO:Vera~} pressed her forehead to the freezing glass and searched the black country for the thing that was not quite right. She found it: the reflection of the carriage behind her in the window showed passengers whose faces were familiar, except they were younger\u2014a girl in grey who was the mourning woman before she mourned, a child whose eyes were already ancient. A hard, specific fact that would not sit still in her mind. The landscape was not just passing; it was leading backward. The fact pointed deeper into the last northbound overnight train of the season, toward a junction she had not noticed.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_g0a3_3a",
+          "label": "Hold the reflection and walk on.",
+          "target": "g0a3_4"
+        }
+      ]
+    },
+    {
+      "id": "g0a3_3b",
+      "body": "{~HERO:Vera~} let the countryside slide past. She did not hunt for anything specific. In that gentler attention, she noticed something subtler. The landscape was repeating. The same stand of pines, the same curve of river, the same fallen signal post appeared three times in twenty minutes. Each time it was a little more snow-covered, a little more distant. It was as though the train were passing through the same moment from slightly further away each time. She could fold that observation into what she already knew. Or she could let the late hour and the motion pull her under before she had understood it.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_g0a3_3b1",
+          "label": "Carry the strange repetition forward.",
+          "target": "g0a3_4"
+        },
+        {
+          "id": "c_g0a3_3b2",
+          "label": "Let the rocking lull you to sleep.",
+          "target": "g0a3_end"
+        }
+      ]
+    },
+    {
+      "id": "g0a3_4",
+      "body": "Both the sharp stare and the easy gaze landed on the same small wrongness. The train was not crossing the dark country. The dark country was circling the train. It was a slow carousel of winter fields, frozen rivers, and the same three farmhouses wearing different coats of snow. {~HERO:Vera~} felt the whole journey close around it like a held breath. The wheels beneath her were suddenly silent for one full second. Then their steady click came back.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_g0a3_4",
+          "label": "Turn from the window and walk on.",
+          "target": "g0a3_5"
+        }
+      ]
+    },
+    {
+      "id": "g0a3_5",
+      "body": "What the black country had shown {~HERO:Vera~} was not a geography but a memory, a landscape the train was wearing like a shawl. She moved on through the swaying cars with the image of that circling dark still turning behind her eyes, toward the question the whole train seemed built around\u2014a question that had begun to feel less like a riddle and more like a door.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_g0a3_5",
+          "label": "Head toward the heart of the night.",
+          "target": "p1_never_arrives"
+        }
+      ]
+    },
+    {
+      "id": "g0a3_end",
+      "body": "The rocking of the carriage and the hypnotic stream of the black country through the glass closed over {~HERO:Vera~} before she could hold the strange repetition in her mind. She surfaced later to a station whose name she did not catch, the window now reflecting only her own tired face, the journey already receding into forgetfulness. Safe. Hollow. The thing she had almost understood had dissolved like the three farmhouses into the permanent snow.",
+      "is_ending": true,
+      "ending": {
+        "id": "e_g0a3",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "Lulled by the Snow"
+      }
+    },
+    {
+      "id": "g1a0_1",
+      "body": "{~HERO:Vera~} stepped into the dining car and found four passengers seated at separate tables, each with a clean plate and an empty cup, watching the corridor as though waiting for a train within the train. The carriage swayed and the cold glass held her reflection over the dark, her doubled face suspended above the white tablecloths. A first detail snagged her attention: the clock above the galley door read five minutes to midnight, and the second hand was still.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_g1a0_1",
+          "label": "Study the silent diners.",
+          "target": "g1a0_2"
+        }
+      ]
+    },
+    {
+      "id": "g1a0_2",
+      "body": "The dining-car regulars sat in a quiet scene. They never seemed to order. There was a man in a travelling coat with a paper dated three winters ago. There was a woman knitting a scarf that had no end. There was an old railwayman whose uniform had no badge. And there was a young man holding a coffee cup that had long gone cold. {~HERO:Vera~} could go straight to them, taking the empty seat in the middle of the car. She could let the silence break around her. Or she could hang back and let the train hold its secret a while longer, watching from the doorway to see what these four were waiting for.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_g1a0_2a",
+          "label": "Sit down among them.",
+          "target": "g1a0_3a"
+        },
+        {
+          "id": "c_g1a0_2b",
+          "label": "Watch from the doorway.",
+          "target": "g1a0_3b"
+        }
+      ]
+    },
+    {
+      "id": "g1a0_3a",
+      "body": "{~HERO:Vera~} pulled out the chair and sat. The four diners turned to her in unison, and the railwayman spoke first. \"We are waiting for the north terminus,\" he said, and the knitting woman added softly, \"We have been waiting since last winter.\" The young man set down his cold coffee. \"Nobody told us the line stopped running.\" A hard, specific fact lodged in {~HERO:Vera~}'s mind: these passengers had ridden through an entire year, and the dining car had not once served a meal. The fact pointed deeper into the last northbound overnight train of the season like a needle finding north.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_g1a0_3a",
+          "label": "Carry their waiting onward.",
+          "target": "g1a0_4"
+        }
+      ]
+    },
+    {
+      "id": "g1a0_3b",
+      "body": "{~HERO:Vera~} stayed in the doorway and watched the dining-car regulars from the edges. The man with the newspaper turned a page every five minutes, exactly, though the paper never grew thinner. The railwayman's fingers drummed a station-call on the tablecloth that looped after the fourth stop. The woman's knitting needles made a sound like a slowing metronome. {~HERO:Vera~} could fold this patient, looping strangeness into what she already knew\u2014that the train was a held breath\u2014or she could let the late hour and the motion pull her under before she had understood it.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_g1a0_3b1",
+          "label": "Hold the pattern and go on.",
+          "target": "g1a0_4"
+        },
+        {
+          "id": "c_g1a0_3b2",
+          "label": "Let the hour pull you away.",
+          "target": "g1a0_end"
+        }
+      ]
+    },
+    {
+      "id": "g1a0_4",
+      "body": "Whether addressed or observed, the four diners offered {~HERO:Vera~} the same small wrongness: they had been aboard long enough to lose the memory of boarding, and they were not hungry because time in the dining car moved differently\u2014seconds pooled and thickened, minutes stretched like taffy. {~HERO:Vera~} felt the journey close around that knowledge like a held breath, the whole carriage seeming to lean toward her.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_g1a0_4",
+          "label": "Leave the dining car and press onward.",
+          "target": "g1a0_5"
+        }
+      ]
+    },
+    {
+      "id": "g1a0_5",
+      "body": "The dining-car regulars had shown her something: waiting could be a kind of travel, and the line ran through time as well as space. Carrying that thought, {~HERO:Vera~} moved on through the swaying cars. She was heading toward the question the whole train seemed built around. Behind her, the railwayman\u2019s fingers began their four-stop loop again. She understood she was now part of something the dining car would remember.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_g1a0_5",
+          "label": "Walk toward the central question.",
+          "target": "p2_who_passengers"
+        }
+      ]
+    },
+    {
+      "id": "g1a0_end",
+      "body": "In the dining-car regulars who never seem to order, {~HERO:Vera~} found one true, unsettling detail and kept it: the young man's coffee cup was warm on the outside and frozen solid within, a thin disc of ice sealing the dark liquid. She carried the image off the last northbound overnight train of the season like a stone in her pocket\u2014real, hers, a fragment of the great strangeness she had glimpsed. It did not complete the picture, but it was true.",
+      "is_ending": true,
+      "ending": {
+        "id": "e_g1a0",
+        "valence": "neutral",
+        "kind": "discovery",
+        "title": "The Same Four Faces"
+      }
+    },
+    {
+      "id": "g1a1_1",
+      "body": "{~HERO:Vera~} walked toward the end of the carriage where a small child sat cross-legged on a seat, wide awake, watching her approach with eyes that held the same ancient stillness she had seen in the window's reflection. The carriage swayed and the cold glass held her reflection over the dark, a woman and a child suspended together in the black pane. A first detail snagged her attention: the child was holding a ticket stub, and the date punched into it was tomorrow.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_g1a1_1",
+          "label": "Crouch down to the child's level.",
+          "target": "g1a1_2"
+        }
+      ]
+    },
+    {
+      "id": "g1a1_2",
+      "body": "The small child awake at the end of the carriage did not blink while {~HERO:Vera~} knelt before her. The ticket stub dangled from a piece of red string around her wrist. \"Are you lost?\" the child asked, and the question was so calm, so utterly sincere, that {~HERO:Vera~} felt the corridor narrow around them. She could answer directly, risking that the child's strange knowledge would sweep her into currents she could not control, or she could stay patient and let the last northbound overnight train of the season reveal what the child was guarding at its own careful pace.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_g1a1_2a",
+          "label": "Answer the child honestly.",
+          "target": "g1a1_3a"
+        },
+        {
+          "id": "c_g1a1_2b",
+          "label": "Ask the child a question instead.",
+          "target": "g1a1_3b"
+        }
+      ]
+    },
+    {
+      "id": "g1a1_3a",
+      "body": "\"I don't know if I'm lost,\" {~HERO:Vera~} said, and the child nodded as though this were the only reasonable answer. \"Nobody on this line knows if they're lost,\" the child said. \"That's why the conductor doesn't check tickets until the end.\" She held up the stub with tomorrow's date. \"This is when I get off.\" A hard, specific fact rooted itself in {~HERO:Vera~}'s mind: the child was travelling toward a moment that had not yet happened, and she was entirely at peace with it. The fact pointed deeper into the last northbound overnight train of the season, toward a terminus that existed ahead in time.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_g1a1_3a",
+          "label": "Carry the child's calm revelation onward.",
+          "target": "g1a1_4"
+        }
+      ]
+    },
+    {
+      "id": "g1a1_3b",
+      "body": "{~HERO:Vera~} did not answer the child's question; she asked her own. \"Why aren't you asleep?\" The child looked at her with an expression that was patient and enormously sad. \"I'm waiting for someone to get off at my stop with me,\" she said, \"but nobody ever does.\" {~HERO:Vera~} could fold that answer into what she already knew\u2014that the train was full of people waiting for something they could not name\u2014or let the late hour and the motion pull her under before the child's loneliness had time to weigh on her fully.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_g1a1_3b1",
+          "label": "Stay with this strange knowledge.",
+          "target": "g1a1_4"
+        },
+        {
+          "id": "c_g1a1_3b2",
+          "label": "Let the night draw you away.",
+          "target": "g1a1_end"
+        }
+      ]
+    },
+    {
+      "id": "g1a1_4",
+      "body": "Whether honest or watchful, {~HERO:Vera~} arrived at the same small wrongness: the child awake at the end of the carriage was travelling forward through time while the train travelled forward through space, and the two journeys were not yet aligned. The child's ticket was real and her stop was waiting. {~HERO:Vera~} felt the journey close around that understanding like a held breath, the carriage lamps flickering once as if acknowledging the thought.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_g1a1_4",
+          "label": "Walk on from the child's vigil.",
+          "target": "g1a1_5"
+        }
+      ]
+    },
+    {
+      "id": "g1a1_5",
+      "body": "Carrying what the small child awake at the end of the carriage had shown her\u2014that the line measured time in ticket stubs, that a stop could exist before it occurred\u2014{~HERO:Vera~} moved on through the swaying cars toward the question the whole train seemed built around. The child's ancient, waiting eyes stayed with her like a flame she had been trusted to shield.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_g1a1_5",
+          "label": "Follow the thread the child left you.",
+          "target": "p2_who_passengers"
+        }
+      ]
+    },
+    {
+      "id": "g1a1_end",
+      "body": "In the small child awake at the end of the carriage, {~HERO:Vera~} found one true, unsettling detail and kept it: the ticket stub around the child's wrist was blank except for a single word\u2014'tomorrow'\u2014and the paper was warm, as though it had just been issued. She carried the knowledge off the last northbound overnight train of the season, a small ember of the uncanny cupped in her memory. It did not complete the picture, but it was real, and it was hers.",
+      "is_ending": true,
+      "ending": {
+        "id": "e_g1a1",
+        "valence": "neutral",
+        "kind": "discovery",
+        "title": "What the Child Knows"
+      }
+    },
+    {
+      "id": "g1a2_1",
+      "body": "{~HERO:Vera~} heard the man before she saw him: a soft, steady murmur from the seat at the far end of the next carriage. She walked toward the sound and found an old man in a herringbone coat, his eyes closed, his lips moving. The carriage swayed and the cold glass held her reflection over the dark, a silent companion at her shoulder. A first detail snagged her attention: the names he was murmuring were stations she had never heard of\u2014stations that did not appear on any timetable she had ever studied.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_g1a2_1",
+          "label": "Stand near him and listen.",
+          "target": "g1a2_2"
+        }
+      ]
+    },
+    {
+      "id": "g1a2_2",
+      "body": "The man softly counting stations that never come opened his eyes when {~HERO:Vera~} stopped beside him. \"Glen Loran, Hearth Crossing, Silver Birches Halt, Deep Lane...\" He paused and looked up at her. \"I am counting the stations we have passed,\" he said, \"but they keep adding new ones.\" {~HERO:Vera~} could press him directly, asking how many stations there were and whether the north terminus was among them, or she could stay patient and let the last northbound overnight train of the season keep its secret a while, observing the rhythm of his counting and what lay behind it.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_g1a2_2a",
+          "label": "Ask him directly about the terminus.",
+          "target": "g1a2_3a"
+        },
+        {
+          "id": "c_g1a2_2b",
+          "label": "Just listen to the litany.",
+          "target": "g1a2_3b"
+        }
+      ]
+    },
+    {
+      "id": "g1a2_3a",
+      "body": "\"The north terminus?\" The man's face clouded. \"Nobody's ever counted that far. I'm on four hundred and twelve, and every time I think I've reached the last one, a new name rises up in my mind like a bubble.\" He reached into his coat and pulled out a notebook, its pages dense with station names in a tiny, obsessive script. {~HERO:Vera~} saw that the most recent entry was written in fresh ink. A hard, specific fact lodged in her: the man was not remembering stations; he was conjuring them. And the list pointed deeper into the last northbound overnight train of the season, toward a terminus that existed only when it was named.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_g1a2_3a",
+          "label": "Carry the endless list onward.",
+          "target": "g1a2_4"
+        }
+      ]
+    },
+    {
+      "id": "g1a2_3b",
+      "body": "{~HERO:Vera~} did not interrupt the man's counting. She sat in the seat across the aisle and listened to the soft river of names: Glen Loran, Hearth Crossing, Silver Birches Halt, Deep Lane, Coldwater Junction, Mallow Fields, Thorn Halt... The rhythm became hypnotic, and she noticed something strange: some of the names repeated, but in a different order, as though the route were reconfiguring itself behind them. She could fold this observation into what she already knew, or let the late hour and the motion pull her under before she had understood what the litany was building toward.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_g1a2_3b1",
+          "label": "Hold the rhythm and go on.",
+          "target": "g1a2_4"
+        },
+        {
+          "id": "c_g1a2_3b2",
+          "label": "Let the counting lull you away.",
+          "target": "g1a2_end"
+        }
+      ]
+    },
+    {
+      "id": "g1a2_4",
+      "body": "Whether questioned or simply heard, the man softly counting stations that never come offered {~HERO:Vera~} the same small wrongness. His list was the train's memory. It was a record of every trip the last northbound overnight train of the season had ever made. He had been aboard long enough to become the keeper of that memory. {~HERO:Vera~} felt the journey close around that knowledge like a held breath. The wheels beneath her hummed a tone that was almost a voice.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_g1a2_4",
+          "label": "Walk on from the endless list.",
+          "target": "g1a2_5"
+        }
+      ]
+    },
+    {
+      "id": "g1a2_5",
+      "body": "Carrying what the man softly counting stations that never come had shown her\u2014that a terminus might be named, not found\u2014{~HERO:Vera~} moved on through the swaying cars toward the question the whole train seemed built around. Behind her, the litany continued, and she understood that somewhere in that flowing river of syllables her own station was waiting to be spoken.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_g1a2_5",
+          "label": "Follow the litany forward.",
+          "target": "p2_who_passengers"
+        }
+      ]
+    },
+    {
+      "id": "g1a2_end",
+      "body": "In the man softly counting stations that never come, {~HERO:Vera~} found one true, unsettling detail and kept it. The station name 'Coldwater Junction' was in his notebook seven times. Each time it was written in a slightly different hand. It was as though seven different versions of himself had recorded the same stop on seven different journeys. She carried the notebook's image off the last northbound overnight train of the season. It was a small, real fragment of the great loop. It did not complete the picture, but it was hers.",
+      "is_ending": true,
+      "ending": {
+        "id": "e_g1a2",
+        "valence": "neutral",
+        "kind": "discovery",
+        "title": "Numbers Without a Sum"
+      }
+    },
+    {
+      "id": "g1a3_1",
+      "body": "{~HERO:Vera~} saw her at the middle of the carriage: a woman in grey, her veil drawn back, her hands folded on a small wooden box in her lap. The carriage swayed and the cold glass held her reflection over the dark, the woman's face doubled in the window, one version calm and one deeply, impossibly tired. A first detail snagged her attention: the box was the exact size and shape of a ticket holder, but it was sealed with a ribbon that had been tied years ago, the silk frayed to threads.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_g1a3_1",
+          "label": "Take the seat across from her.",
+          "target": "g1a3_2"
+        }
+      ]
+    },
+    {
+      "id": "g1a3_2",
+      "body": "The woman in grey travelling in mourning did not look up when {~HERO:Vera~} sat down, but her hands tightened on the wooden box. \"You are the first person to sit here in a very long time,\" she said, and her voice was like the rustle of dry leaves. {~HERO:Vera~} could ask her directly what she mourned and where she was travelling, risking that the answer would open something that could not be closed, or she could stay patient and let the last northbound overnight train of the season keep its secret a while, letting the woman's silence speak for itself in the swaying dark.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_g1a3_2a",
+          "label": "Ask her where she is going.",
+          "target": "g1a3_3a"
+        },
+        {
+          "id": "c_g1a3_2b",
+          "label": "Sit silently beside her grief.",
+          "target": "g1a3_3b"
+        }
+      ]
+    },
+    {
+      "id": "g1a3_3a",
+      "body": "\"I am going north,\" the woman said, \"to a station that no longer exists. My husband's last letter was postmarked from there, but when I tried to find it on the map, the map had changed.\" She opened the box and inside was a single letter, yellowed, its ink faded to sepia. \"I have been riding this line every winter since, hoping the station will remember itself.\" A hard, specific fact lodged in {~HERO:Vera~}'s mind: the woman was not just travelling in mourning; she was travelling toward a memory that had become a place. And that fact pointed deeper into the last northbound overnight train of the season.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_g1a3_3a",
+          "label": "Carry her story onward.",
+          "target": "g1a3_4"
+        }
+      ]
+    },
+    {
+      "id": "g1a3_3b",
+      "body": "{~HERO:Vera~} said nothing, and in the silence the woman in grey seemed to relax. Her hands uncurled from the box, and she looked at {~HERO:Vera~} with an expression that was almost gratitude. \"You're not going to tell me to move on,\" she said softly. \"They always tell me to move on.\" {~HERO:Vera~} could fold that quiet permission into what she already knew\u2014that the train was holding its passengers as much as carrying them\u2014or let the late hour and the motion pull her under before she had understood the full weight of the woman's vigil.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_g1a3_3b1",
+          "label": "Hold her quiet trust and go on.",
+          "target": "g1a3_4"
+        },
+        {
+          "id": "c_g1a3_3b2",
+          "label": "Let the hour take you.",
+          "target": "g1a3_end"
+        }
+      ]
+    },
+    {
+      "id": "g1a3_4",
+      "body": "Whether asked or simply seen, the woman in grey travelling in mourning offered {~HERO:Vera~} the same small wrongness. Her grief was not a burden she carried. It was a compass she followed. The letter in the wooden box was not a message from the dead. It was a map\u2014a map drawn in love. It pointed north toward a place that existed only because it was loved. {~HERO:Vera~} felt the journey close around that understanding like a held breath. The whole carriage seemed to soften around the woman's still silhouette.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_g1a3_4",
+          "label": "Walk on from her vigil.",
+          "target": "g1a3_5"
+        }
+      ]
+    },
+    {
+      "id": "g1a3_5",
+      "body": "Carrying what the woman in grey travelling in mourning had shown her\u2014that grief could be a form of navigation\u2014{~HERO:Vera~} moved on through the swaying cars toward the question the whole train seemed built around. The image of the wooden box and its frayed silk ribbon stayed with her, a small, steady compass of its own.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_g1a3_5",
+          "label": "Walk toward what the grief points to.",
+          "target": "p2_who_passengers"
+        }
+      ]
+    },
+    {
+      "id": "g1a3_end",
+      "body": "In the woman in grey travelling in mourning, {~HERO:Vera~} found one true, unsettling detail and kept it: the letter inside the wooden box was not addressed to the woman but from her\u2014a letter she had written to her husband and never sent, its seal unbroken, its message a question she could not bring herself to ask. {~HERO:Vera~} carried the image off the last northbound overnight train of the season, a small, real weight. It did not complete the picture, but it was true, and it was hers.",
+      "is_ending": true,
+      "ending": {
+        "id": "e_g1a3",
+        "valence": "neutral",
+        "kind": "discovery",
+        "title": "A Grief Held Very Still"
+      }
+    },
+    {
+      "id": "g2a0_1",
+      "body": "{~HERO:Vera~} found the night conductor a second time near the front of the train. The corridor was narrow there and the lamps burned a deeper amber. The carriage swayed and the cold glass held her reflection over the dark. A woman and a question stood side by side in the black pane. A first detail snagged her attention. The silver punch-clock had stopped entirely. Its hands were frozen at one minute to midnight. The conductor stared at it with a strange expression. He looked like someone who had just been asked to remember something he had spent decades forgetting.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_g2a0_1",
+          "label": "Approach the frozen clock.",
+          "target": "g2a0_2"
+        }
+      ]
+    },
+    {
+      "id": "g2a0_2",
+      "body": "The conductor pressed a second time near the tunnel did not acknowledge {~HERO:Vera~} immediately, but his shoulders shifted as though he had been waiting for her. \"This clock,\" he said, \"has not moved since the season began. The last northbound overnight train of the season runs on a different measure.\" {~HERO:Vera~} could ask him directly what measure, what time, what terminus\u2014risking that the answer would be more than she wanted to carry\u2014or she could hang back and let the last northbound overnight train of the season keep its secret a while longer, watching what the conductor would do with his frozen instrument now that someone had noticed it.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_g2a0_2a",
+          "label": "Demand to know what time it really is.",
+          "target": "g2a0_3a"
+        },
+        {
+          "id": "c_g2a0_2b",
+          "label": "Wait and watch the conductor.",
+          "target": "g2a0_3b"
+        }
+      ]
+    },
+    {
+      "id": "g2a0_3a",
+      "body": "\"It is always one minute to midnight on this line,\" the conductor said, turning to face {~HERO:Vera~} fully. \"The clock holds the journey open. If it ever struck twelve, the north terminus would arrive, and none of us are ready for that.\" He met her eyes, and for a moment she saw something flicker there\u2014a younger man, a different uniform, a platform full of passengers who had not yet learned to wait. A hard, specific fact lodged in her mind: the conductor was not the keeper of the clock; the clock was the keeper of the conductor. And that fact pointed deeper into the last northbound overnight train of the season.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_g2a0_3a",
+          "label": "Carry the frozen minute onward.",
+          "target": "g2a0_4"
+        }
+      ]
+    },
+    {
+      "id": "g2a0_3b",
+      "body": "{~HERO:Vera~} stayed in the corridor and watched the conductor with his frozen punch-clock. He did not wind it. He did not tap its face. He simply held it, his thumb resting on the crown, and after a long minute his shoulders dropped and he let out a breath that fogged in the corridor's cold air despite the carriage being warm. {~HERO:Vera~} could fold that observation into what she already knew\u2014that everyone aboard was holding something still\u2014or let the late hour and the motion pull her under before she understood what the conductor was holding still for.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_g2a0_3b1",
+          "label": "Hold the quiet revelation.",
+          "target": "g2a0_4"
+        },
+        {
+          "id": "c_g2a0_3b2",
+          "label": "Let the moment pass.",
+          "target": "g2a0_end"
+        }
+      ]
+    },
+    {
+      "id": "g2a0_4",
+      "body": "Whether demanded or observed, the conductor's frozen clock offered {~HERO:Vera~} the same small wrongness. Time on the last northbound overnight train of the season was not a measure. It was a permission. It was granted to passengers who were not yet ready to arrive. The midnight that never struck was an open door. And the conductor was its guardian. {~HERO:Vera~} felt the journey close around that understanding like a held breath. The tunnel's darkness was already gathering at the edges of the carriage windows.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_g2a0_4",
+          "label": "Press on into the gathered dark.",
+          "target": "g2a0_5"
+        }
+      ]
+    },
+    {
+      "id": "g2a0_5",
+      "body": "Carrying what the conductor pressed a second time near the tunnel had told her\u2014that the train was holding the night open for its passengers\u2014{~HERO:Vera~} moved on through the swaying cars toward the question the whole train seemed built around. The silver punch-clock's frozen minute stayed with her, a stopped heart she could feel beating against her own.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_g2a0_5",
+          "label": "Walk toward the tunnel's mouth.",
+          "target": "p3_tunnel_choice"
+        }
+      ]
+    },
+    {
+      "id": "g2a0_end",
+      "body": "In the conductor pressed a second time near the tunnel, {~HERO:Vera~} found one true, unsettling detail and kept it: the silver punch-clock was warm to the touch, as though it had been held against a living heart for years, and the conductor's thumb had worn a smooth hollow into the brass crown. She carried the warmth off the last northbound overnight train of the season like a small, secret sun. It did not complete the picture, but it was real, and it was hers.",
+      "is_ending": true,
+      "ending": {
+        "id": "e_g2a0",
+        "valence": "neutral",
+        "kind": "discovery",
+        "title": "What the Conductor Won't Say"
+      }
+    },
+    {
+      "id": "g2a1_1",
+      "body": "{~HERO:Vera~} unfolded the stranger's letter again and found, in the margins, a faint map drawn in ink so pale it might have been water. The carriage swayed and the cold glass held her reflection over the dark, a reader suspended between two panes of night. A first detail snagged her attention: the map showed the mountain tunnel ahead, but instead of a line passing through it, the route branched\u2014one line continuing north, one line turning back on itself in a perfect circle, and one line simply stopping at the tunnel's mouth with the notation 'here: decide.'",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_g2a1_1",
+          "label": "Study the branched map closely.",
+          "target": "g2a1_2"
+        }
+      ]
+    },
+    {
+      "id": "g2a1_2",
+      "body": "The faint map drawn in the letter's margins was made by the same hand that wrote her name on the envelope. It was her own hand, or something that shared its shape. The map showed the season's last northbound overnight train reaching the mountain tunnel and then forking into three paths. Next to each path was a word: Peace, Help, Truth. {~HERO:Vera~} could take the map at its word and start to get ready now for the choice it described. Or, she could stay patient and let the last northbound overnight train of the season keep its secret a bit longer. She could trust that the branching would become clear when the tunnel's mouth appeared in the window.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_g2a1_2a",
+          "label": "Memorize the map's three paths.",
+          "target": "g2a1_3a"
+        },
+        {
+          "id": "c_g2a1_2b",
+          "label": "Fold the map away and wait.",
+          "target": "g2a1_3b"
+        }
+      ]
+    },
+    {
+      "id": "g2a1_3a",
+      "body": "{~HERO:Vera~} committed the three-branched map to memory: Peace northward, Help circling back, Truth ending at the tunnel. When she looked at the paper again, the ink had shifted\u2014the word 'Truth' now read 'Name,' and a fourth branch had appeared, faint as breath on glass, leading upward into blank space with no label at all. A hard, specific fact lodged in her mind: the map was drawing itself as she read it, responding to the shape of her attention. The fact pointed deeper into the last northbound overnight train of the season, toward a choice that was not yet fully formed.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_g2a1_3a",
+          "label": "Carry the shifting map onward.",
+          "target": "g2a1_4"
+        }
+      ]
+    },
+    {
+      "id": "g2a1_3b",
+      "body": "{~HERO:Vera~} folded the faint map back into the letter and returned it to her coat pocket. She could feel its warmth against her ribs, and she understood that the map was not a prediction but a question\u2014a question that would not answer itself until she reached the tunnel. She could fold that understanding into what she already knew, or let the late hour and the motion pull her under before the branching paths had a chance to resolve into clarity.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_g2a1_3b1",
+          "label": "Hold the hidden map close.",
+          "target": "g2a1_4"
+        },
+        {
+          "id": "c_g2a1_3b2",
+          "label": "Let the night pull you away.",
+          "target": "g2a1_end"
+        }
+      ]
+    },
+    {
+      "id": "g2a1_4",
+      "body": "The map in the letter's margins stayed with {~HERO:Vera~}, whether memorized or kept in her pocket. But something about it felt off. The branching it showed was not a turn in the rails but a moral choice. The labels\u2014Peace, Help, and Name\u2014were not places. They were ways of moving through the dark. {~HERO:Vera~} felt the journey close around this thought. It was like a held breath. The ink of the map seemed to pulse once against her chest.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_g2a1_4",
+          "label": "Walk toward the branching paths.",
+          "target": "g2a1_5"
+        }
+      ]
+    },
+    {
+      "id": "g2a1_5",
+      "body": "The faint map in the letter's margins had shown her the mountain tunnel was a place where journeys forked inward. Carrying this, {~HERO:Vera~} moved on through the swaying cars toward the question the whole train seemed built around. The unlabeled fourth branch tugged at her mind like a loose thread she had not yet decided to pull.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_g2a1_5",
+          "label": "Walk toward the tunnel.",
+          "target": "p3_tunnel_choice"
+        }
+      ]
+    },
+    {
+      "id": "g2a1_end",
+      "body": "The pull of the faint map inked in the margins of the letter closed over {~HERO:Vera~} before she could hold it; the three-branched paths dissolved into a blur of ink and tiredness, and she surfaced later having missed the moment of clarity. Safe but emptied of the thing she had almost understood, the letter now blank in her pocket, the map erased.",
+      "is_ending": true,
+      "ending": {
+        "id": "e_g2a1",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "The Ink Runs in the Cold"
+      }
+    },
+    {
+      "id": "g2a2_1",
+      "body": "{~HERO:Vera~} pressed her palm to the window and saw them: three signal lamps burning ahead of the tunnel mouth, suspended in the black like coloured stars. The carriage swayed and the cold glass held her reflection over the dark, a face poised at the border between the train's warmth and the mountain's waiting dark. A first detail snagged her attention: the lamps were red, green, and white, but they were not fixed\u2014they cycled, slowly, red becoming green becoming white and back again, a signal that meant nothing in any railway code she knew.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_g2a2_1",
+          "label": "Keep watching the cycling lights.",
+          "target": "g2a2_2"
+        }
+      ]
+    },
+    {
+      "id": "g2a2_2",
+      "body": "The signal lamps burning ahead of the tunnel mouth were not railway signals; they were something older. As {~HERO:Vera~} watched, the red lamp flared brighter and held for three full seconds. The pause felt planned, and personal, as though the light were looking back at her. She could accept that direct gaze, stepping into its beam and letting it read whatever it was searching for. Or, she could stay patient and watch the lamps cycle through their slow, wordless chat. She could let the last northbound overnight train of the season keep its secret a while longer.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_g2a2_2a",
+          "label": "Step into the red lamp's beam.",
+          "target": "g2a2_3a"
+        },
+        {
+          "id": "c_g2a2_2b",
+          "label": "Watch from the shadowed aisle.",
+          "target": "g2a2_3b"
+        }
+      ]
+    },
+    {
+      "id": "g2a2_3a",
+      "body": "{~HERO:Vera~} stood in the window's full frame and let the red lamp's beam fall across her face. For one held moment, a light filled the carriage that was not red at all but the deep amber of old glass. In that light, she saw the other passengers as they truly were: travellers who had each, at some point, stepped into the beam and been seen. They now rode on with that moment folded inside them like a letter. A hard fact lodged in her mind: the lamps were not signals; they were witnesses. The fact pointed deeper into the last northbound overnight train of the season, toward a tunnel that would only open for those who had been truly seen.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_g2a2_3a",
+          "label": "Carry the beam's recognition onward.",
+          "target": "g2a2_4"
+        }
+      ]
+    },
+    {
+      "id": "g2a2_3b",
+      "body": "{~HERO:Vera~} stayed in the aisle's shadow and watched the signal lamps cycle\u2014red, green, white, red again\u2014and noticed that each colour held for a different length of time depending on who was standing near the window. When the woman in grey passed, the white lamp held longest. When the child crossed the carriage, the green flared. {~HERO:Vera~} could fold that observation into what she already knew\u2014that the train was reading its passengers in a language she was only beginning to learn\u2014or let the late hour and the motion pull her under before she understood what the lamps were trying to show her.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_g2a2_3b1",
+          "label": "Hold the colour-language and go on.",
+          "target": "g2a2_4"
+        },
+        {
+          "id": "c_g2a2_3b2",
+          "label": "Let the cycling lights lull you.",
+          "target": "g2a2_end"
+        }
+      ]
+    },
+    {
+      "id": "g2a2_4",
+      "body": "Whether stepped into or observed from shadow, the signal lamps burning ahead of the tunnel mouth offered {~HERO:Vera~} the same small wrongness: they were not positioned for the train to read; they were positioned for the passengers. The red was recognition, the green was permission, the white was release\u2014and together they were asking a question that could only be answered by the choice made inside the tunnel. {~HERO:Vera~} felt the journey close around that understanding like a held breath, the mountain's dark mouth opening wider in the window.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_g2a2_4",
+          "label": "Walk on toward the waiting dark.",
+          "target": "g2a2_5"
+        }
+      ]
+    },
+    {
+      "id": "g2a2_5",
+      "body": "The signal lamps burning ahead of the tunnel mouth had shown her the train was being watched by something patient and glowing. Carrying this, {~HERO:Vera~} moved on through the swaying cars toward the question the whole train seemed built around. The red lamp's gaze still burned on her skin, a warmth that was not heat but pure attention.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_g2a2_5",
+          "label": "Walk into the tunnel's question.",
+          "target": "p3_tunnel_choice"
+        }
+      ]
+    },
+    {
+      "id": "g2a2_end",
+      "body": "In the signal lamps burning ahead of the tunnel mouth, {~HERO:Vera~} found one true, unsettling detail and kept it. The green lamp's glass was cracked, a fine web of fractures that caught the light and scattered it into a dozen tiny emerald stars. Behind the crack, she could see a second, unlit filament, waiting. She carried the image off the last northbound overnight train of the season, a small, broken picture in the sky. It did not complete the puzzle, but it was real, and it was hers.",
+      "is_ending": true,
+      "ending": {
+        "id": "e_g2a2",
+        "valence": "neutral",
+        "kind": "discovery",
+        "title": "Green, and Then Not"
+      }
+    },
+    {
+      "id": "g2a3_1",
+      "body": "{~HERO:Vera~} turned back toward the dining car and found it transformed: the four regulars had been joined by the child, the counting man, and the woman in grey, all seated together at the long table as though they had been waiting for her to return. The carriage swayed and the cold glass held her reflection over the dark, her face suspended above the gathering like a moon. A first detail snagged her attention: the table was set for eight, and the eighth place, at the head, was empty.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_g2a3_1",
+          "label": "Approach the gathering.",
+          "target": "g2a3_2"
+        }
+      ]
+    },
+    {
+      "id": "g2a3_2",
+      "body": "The passengers gathered to weigh the choice together turned as {~HERO:Vera~} entered, and the old railwayman gestured toward the empty chair at the head of the table. \"We've been riding this line long enough to know that the mountain tunnel asks a question of every traveller,\" he said. \"We thought you might want to hear what we've learned.\" {~HERO:Vera~} could take the seat and let the gathered passengers pool their strange wisdom, risking that their answers would shape her choice in ways she could not undo, or she could stay patient and let the last northbound overnight train of the season keep its secret a while longer, thanking them but standing apart.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_g2a3_2a",
+          "label": "Sit at the head of the table.",
+          "target": "g2a3_3a"
+        },
+        {
+          "id": "c_g2a3_2b",
+          "label": "Thank them but stay standing.",
+          "target": "g2a3_3b"
+        }
+      ]
+    },
+    {
+      "id": "g2a3_3a",
+      "body": "{~HERO:Vera~} sat, and the gathered passengers spoke in turn. The counting man offered the name of a station he had never been able to reach; the child showed her tomorrow-ticket; the woman in grey opened her box and laid the unsent letter on the table. Each story was a piece of a larger pattern, and {~HERO:Vera~} saw that they were not offering her advice; they were offering her the shape of their own choices, so that she could recognize the shape of hers when it came. A hard, specific fact lodged in her mind: the empty chair was not a place of honour; it was the seat of someone who had not yet decided. The fact pointed deeper into the last northbound overnight train of the season.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_g2a3_3a",
+          "label": "Carry their gathered stories onward.",
+          "target": "g2a3_4"
+        }
+      ]
+    },
+    {
+      "id": "g2a3_3b",
+      "body": "{~HERO:Vera~} thanked the gathered passengers but remained standing. The old railwayman nodded, unsurprised. \"Some travellers need to face the tunnel alone,\" he said. \"The choice is yours either way.\" {~HERO:Vera~} could fold that permission into what she already knew, or let the late hour and the motion pull her under before the gathered wisdom had a chance to settle into anything she could carry.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_g2a3_3b1",
+          "label": "Hold their quiet permission and go.",
+          "target": "g2a3_4"
+        },
+        {
+          "id": "c_g2a3_3b2",
+          "label": "Let the hour take you.",
+          "target": "g2a3_end"
+        }
+      ]
+    },
+    {
+      "id": "g2a3_4",
+      "body": "Seated or standing, the gathered passengers showed {~HERO:Vera~} the same small wrongness. They were not strangers sharing a carriage. They were versions of the same journey. Each had faced the tunnel in their own way, and each still rode because they had not yet finished facing it. {~HERO:Vera~} felt the trip close around that thought like a held breath. The dining car lamps flickered once, then steadied.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_g2a3_4",
+          "label": "Walk on from the gathered table.",
+          "target": "g2a3_5"
+        }
+      ]
+    },
+    {
+      "id": "g2a3_5",
+      "body": "The gathered passengers had shown her that every traveller on the line was a mirror. Carrying this, {~HERO:Vera~} moved on through the swaying cars. She walked toward the question the whole train seemed built around. The empty chair at the head of the table was waiting for her return. She understood that whether she sat in it depended on what she chose in the dark.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_g2a3_5",
+          "label": "Walk toward the tunnel.",
+          "target": "p3_tunnel_choice"
+        }
+      ]
+    },
+    {
+      "id": "g2a3_end",
+      "body": "The pull of the gathered passengers closed over {~HERO:Vera~} before she could hold it. The long table and its seven seated travellers melted into the dark of the swaying carriage. She surfaced later, having missed the moment of gathering. She was safe but emptied of the thing she had almost understood. The eighth chair was still empty.",
+      "is_ending": true,
+      "ending": {
+        "id": "e_g2a3",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "No One Will Meet Your Eye"
+      }
+    },
+    {
+      "id": "g3a0_1",
+      "body": "{~HERO:Vera~} found the conductor a third time, standing at the very front of the train where the corridor ended in a single door that led to the engine. The carriage swayed and the cold glass held her reflection over the dark, a woman who had walked through half a night to stand here. A first detail snagged her attention: the conductor had set his silver punch-clock on the windowsill, and its hands were moving again\u2014forward now, sweeping toward twelve with a steady, living tick.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_g3a0_1",
+          "label": "Stand beside him at the window.",
+          "target": "g3a0_2"
+        }
+      ]
+    },
+    {
+      "id": "g3a0_2",
+      "body": "The conductor at last willing to explain the north line turned to {~HERO:Vera~} with an expression that was exhausted and gentle. \"The north terminus is not a station,\" he said. \"It is a decision. Every passenger who rides this line reaches the tunnel, and every passenger must choose what to carry through. I have watched a hundred travellers make that choice, and I have never seen the same choice twice.\" {~HERO:Vera~} could ask him directly what choices the others had made, risking that the knowledge would constrain her own, or she could stay patient and let the last northbound overnight train of the season keep its secret a while longer, accepting only the quiet permission he was offering.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_g3a0_2a",
+          "label": "Ask him what the others chose.",
+          "target": "g3a0_3a"
+        },
+        {
+          "id": "c_g3a0_2b",
+          "label": "Accept his quiet permission.",
+          "target": "g3a0_3b"
+        }
+      ]
+    },
+    {
+      "id": "g3a0_3a",
+      "body": "\"Some chose peace,\" the conductor said. \"They rode on past the tunnel and let the terminus stay one hour off forever. Some chose to help a fellow traveller. Some chose to name what they had understood. And some\u2014\" He paused, and the clock's hands swept faster. \"Some chose to step off before the tunnel, and they woke on the first platform of all, the night unspent.\" A hard, specific fact lodged in {~HERO:Vera~}'s mind: the choices were not infinite; they were four, and they had been waiting for her since the moment she boarded. The fact pointed deeper into the last northbound overnight train of the season, toward the tunnel's mouth.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_g3a0_3a",
+          "label": "Carry the four choices onward.",
+          "target": "g3a0_4"
+        }
+      ]
+    },
+    {
+      "id": "g3a0_3b",
+      "body": "{~HERO:Vera~} did not ask what the others had chosen. She stood beside the conductor in the swaying corridor and let his quiet permission settle into her, a warmth that was not an answer but the space in which an answer could grow. She could fold that permission into what she already knew\u2014that the choice was hers alone\u2014or let the late hour and the motion pull her under before the moment of choosing arrived.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_g3a0_3b1",
+          "label": "Hold the permission and go on.",
+          "target": "g3a0_4"
+        },
+        {
+          "id": "c_g3a0_3b2",
+          "label": "Let the hour take you.",
+          "target": "g3a0_end"
+        }
+      ]
+    },
+    {
+      "id": "g3a0_4",
+      "body": "Whether spelled out or held in silence, the conductor's knowledge offered {~HERO:Vera~} the same small wrongness: he had been aboard longer than any passenger, and yet he had never made the choice himself. His role was to witness, not to decide, and the silver clock's moving hands were not measuring time; they were measuring the distance between {~HERO:Vera~} and the thing she was ready to let go of. She felt the journey close around that understanding like a held breath, the tunnel's mouth now visible as a black arch in the forward window.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_g3a0_4",
+          "label": "Walk into the tunnel's question.",
+          "target": "g3a0_5"
+        }
+      ]
+    },
+    {
+      "id": "g3a0_5",
+      "body": "Carrying what the conductor at last willing to explain the north line had told her\u2014that the terminus was a decision, not a place\u2014{~HERO:Vera~} moved on through the swaying cars toward the question the whole train seemed built around. The clock's forward ticking followed her, a heartbeat growing steadier with every step.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_g3a0_5",
+          "label": "Walk toward the dark arch.",
+          "target": "p4_dawn_reveal"
+        }
+      ]
+    },
+    {
+      "id": "g3a0_end",
+      "body": "In the conductor at last willing to explain the north line, {~HERO:Vera~} found one true, unsettling detail and kept it: the silver punch-clock had been empty the entire time\u2014no mechanism, no gears, only a hollow brass shell that had kept the time because its keeper believed it would. She carried the hollow clock off the last northbound overnight train of the season, a small, resonant truth. It did not complete the picture, but it was real, and it was hers.",
+      "is_ending": true,
+      "ending": {
+        "id": "e_g3a0",
+        "valence": "neutral",
+        "kind": "discovery",
+        "title": "What the Conductor Carries"
+      }
+    },
+    {
+      "id": "g3a1_1",
+      "body": "{~HERO:Vera~} found the wakeful child standing at the front of the carriage, her hand resting on the door that led forward. The carriage swayed and the cold glass held her reflection over the dark, a woman and a child suspended side by side. A first detail snagged her attention: the child's ticket stub had changed; the word 'tomorrow' was gone, and in its place was a single hand-drawn symbol\u2014a door, open.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_g3a1_1",
+          "label": "Kneel beside the child.",
+          "target": "g3a1_2"
+        }
+      ]
+    },
+    {
+      "id": "g3a1_2",
+      "body": "The wakeful child offering to show the way through looked at {~HERO:Vera~} with her ancient, patient eyes. \"The tunnel is scary if you go alone,\" she said, \"but I know the way. I've walked it every night since I boarded, waiting for someone who would walk it with me.\" {~HERO:Vera~} could take the child's hand directly, accepting the guidance and the company both, or she could stay patient and let the last northbound overnight train of the season keep its secret a while longer, walking behind the child but letting her lead alone.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_g3a1_2a",
+          "label": "Take the child's hand.",
+          "target": "g3a1_3a"
+        },
+        {
+          "id": "c_g3a1_2b",
+          "label": "Follow behind her.",
+          "target": "g3a1_3b"
+        }
+      ]
+    },
+    {
+      "id": "g3a1_3a",
+      "body": "{~HERO:Vera~} took the child's hand, and the small fingers were warm and solid and entirely real. The child smiled\u2014the first smile {~HERO:Vera~} had seen on the last northbound overnight train of the season\u2014and said, \"You're the one I was waiting for.\" A hard, specific fact lodged in {~HERO:Vera~}'s mind: the child had been awake not because she was lost but because she was waiting to be found, and in finding her, {~HERO:Vera~} had become the answer to someone else's question. The fact pointed deeper into the last northbound overnight train of the season, toward a tunnel that was no longer frightening.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_g3a1_3a",
+          "label": "Walk forward, hand in hand.",
+          "target": "g3a1_4"
+        }
+      ]
+    },
+    {
+      "id": "g3a1_3b",
+      "body": "{~HERO:Vera~} did not take the child's hand, but she followed as the small figure pushed open the door and stepped into the forward carriage. The child walked with the absolute confidence of someone who had made this journey many times, and her quiet sureness was its own kind of guidance. {~HERO:Vera~} could fold that sureness into what she already knew\u2014that the train held more than one kind of wisdom\u2014or let the late hour and the motion pull her under before the child's lead became a gift she could accept.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_g3a1_3b1",
+          "label": "Hold the child's quiet guidance.",
+          "target": "g3a1_4"
+        },
+        {
+          "id": "c_g3a1_3b2",
+          "label": "Let the hour take you.",
+          "target": "g3a1_end"
+        }
+      ]
+    },
+    {
+      "id": "g3a1_4",
+      "body": "Whether hand in hand or trailing behind, the wakeful child who showed the way gave {~HERO:Vera~} a small wrong feeling. The child was not a rider. She was the train's memory of all who had ever been afraid. The memory was made small and given a voice so the fear could be faced. {~HERO:Vera~} felt the trip close around that thought like a held breath. The dark tunnel now felt warm, not cold.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_g3a1_4",
+          "label": "Walk on with the child's gift.",
+          "target": "g3a1_5"
+        }
+      ]
+    },
+    {
+      "id": "g3a1_5",
+      "body": "Carrying what the wakeful child offering to show the way through had given her\u2014companionship that asked nothing in return\u2014{~HERO:Vera~} moved on through the swaying cars toward the question the whole train seemed built around. The child's hand, or the memory of it, was a warm pressure she could still feel as the tunnel's mouth opened before her.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_g3a1_5",
+          "label": "Walk toward the waiting dark.",
+          "target": "p4_dawn_reveal"
+        }
+      ]
+    },
+    {
+      "id": "g3a1_end",
+      "body": "Through the wakeful child offering to show the way through, {~HERO:Vera~} did one whole, quiet good thing for another traveller: she asked the child her name, and the child told her, and the telling was a gift that had been waiting to be given. The doing of it was enough. The carriage seemed to warm a half-degree around them, and the child's ancient eyes, for the first time, looked exactly her age.",
+      "is_ending": true,
+      "ending": {
+        "id": "e_g3a1",
+        "valence": "positive",
+        "kind": "completion",
+        "title": "The Child Shows the Way"
+      }
+    },
+    {
+      "id": "g3a2_1",
+      "body": "{~HERO:Vera~} returned to the woman in grey and found her standing at the carriage window, the wooden box open in her hands. The carriage swayed and the cold glass held her reflection over the dark, two women suspended in the black pane. A first detail snagged her attention: the unsent letter was no longer in the box; it was in the woman's hand, and she was holding it toward {~HERO:Vera~}.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_g3a2_1",
+          "label": "Reach for the letter.",
+          "target": "g3a2_2"
+        }
+      ]
+    },
+    {
+      "id": "g3a2_2",
+      "body": "The mourning woman's quiet request to carry a message on was not spoken; it was held out on the yellowed paper, the ink so faint that {~HERO:Vera~} had to lean close to read it. \"This is the letter I could never send,\" the woman said. \"If you carry it through the tunnel, I think it might arrive. I think that is what the line is for.\" {~HERO:Vera~} could take the letter directly, accepting the burden and the trust both, or she could stay patient and let the last northbound overnight train of the season keep its secret a while longer, reading the letter first before she agreed to carry it.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_g3a2_2a",
+          "label": "Take the letter at once.",
+          "target": "g3a2_3a"
+        },
+        {
+          "id": "c_g3a2_2b",
+          "label": "Read it before you accept.",
+          "target": "g3a2_3b"
+        }
+      ]
+    },
+    {
+      "id": "g3a2_3a",
+      "body": "{~HERO:Vera~} took the letter without reading it, and the woman in grey let out a breath she had been holding for a very long time. \"Thank you,\" she said, and the word was so quiet and so full that {~HERO:Vera~} felt it settle into her chest like a stone into still water. A hard, specific fact lodged in her mind: some burdens become lighter the moment they are shared, and the woman's grief was one of them. The fact pointed deeper into the last northbound overnight train of the season, toward a tunnel where letters could be delivered and grief could find its terminus.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_g3a2_3a",
+          "label": "Carry the unsent letter onward.",
+          "target": "g3a2_4"
+        }
+      ]
+    },
+    {
+      "id": "g3a2_3b",
+      "body": "{~HERO:Vera~} read the letter before she took it. It was addressed to a name she did not recognize, and it said only: \"I am still riding north. The snow is deep and the train is warm. I will keep riding until I find you, or until I understand that finding you is not the point.\" {~HERO:Vera~} looked up at the woman in grey and understood that the message was not a plea; it was a release. She could fold that understanding into what she already knew, or let the late hour and the motion pull her under before the weight of the letter became hers to carry.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_g3a2_3b1",
+          "label": "Accept the letter and its release.",
+          "target": "g3a2_4"
+        },
+        {
+          "id": "c_g3a2_3b2",
+          "label": "Let the hour take you.",
+          "target": "g3a2_end"
+        }
+      ]
+    },
+    {
+      "id": "g3a2_4",
+      "body": "Whether taken blind or read first, the sad woman's quiet plea to carry a message gave {~HERO:Vera~} a small wrong feeling. The letter was not meant for a person. It was meant for the tunnel, to pass through the dark and come out the other side complete. {~HERO:Vera~} felt the trip close around that thought like a held breath. The paper was warm in her hand. The woman's quiet thanks was a second warmth beside it.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_g3a2_4",
+          "label": "Walk toward the tunnel with the letter.",
+          "target": "g3a2_5"
+        }
+      ]
+    },
+    {
+      "id": "g3a2_5",
+      "body": "Carrying what the sad woman's quiet plea had given her, a weight that was also a release, {~HERO:Vera~} moved on through the swaying cars. She moved toward the big question the train seemed built around. The unsent letter was a small spot of warmth against her heart. She knew she was no longer riding alone.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_g3a2_5",
+          "label": "Walk toward the dark arch.",
+          "target": "p4_dawn_reveal"
+        }
+      ]
+    },
+    {
+      "id": "g3a2_end",
+      "body": "Through the sad woman's quiet plea to carry a message, {~HERO:Vera~} met the trip on its own terms and got her reply. She placed the unsent letter on the windowsill just as the first grey dawn touched the peaks. The light caught the paper and held it. For one strange moment, the ink glowed gold. Something long carried was finally set down. The woman in grey, for the first time, closed her empty wooden box.",
+      "is_ending": true,
+      "ending": {
+        "id": "e_g3a2",
+        "valence": "positive",
+        "kind": "success",
+        "title": "You Carried Her Message"
+      }
+    },
+    {
+      "id": "g3a3_1",
+      "body": "{~HERO:Vera~} found the timetable in a leather case by the front door. Its pages were dense with rows of stops that ran past the paper's edge. She was sure they went on to pages that did not exist. The car swayed. The cold glass held her face over the dark. She was a reader bent over a text that was reading her back. A first detail caught her eye. Every station name in the third column had a small note in brackets: 'arrived,' 'pending,' 'departed,' 'waiting.' Halfway down the fourth column, she found her own name. The note beside it simply read: 'choosing.'",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_g3a3_1",
+          "label": "Trace your name in the columns.",
+          "target": "g3a3_2"
+        }
+      ]
+    },
+    {
+      "id": "g3a3_2",
+      "body": "The timetable with endless station columns was not a schedule. It was a record of every rider who had ever taken the last northbound train of the season. Beside each name was a note of their status. Most read 'waiting.' A few said 'arrived.' {~HERO:Vera~} saw that 'departed' appeared only in the very oldest entries, written in a hand long faded. She could search the columns for the north end, hunting for her own stop among the endless names. Or she could stay patient and let the train keep its secret a while longer. She could close the folder and trust that the timetable would write itself.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_g3a3_2a",
+          "label": "Search the columns for the terminus.",
+          "target": "g3a3_3a"
+        },
+        {
+          "id": "c_g3a3_2b",
+          "label": "Close the timetable and trust.",
+          "target": "g3a3_3b"
+        }
+      ]
+    },
+    {
+      "id": "g3a3_3a",
+      "body": "{~HERO:Vera~} searched the columns, her finger running down the dense script, and she found the north terminus at the very bottom of the last page\u2014except the page was not the last page; another page was growing from it, its ink still wet, and the station names on it were not places but words: 'forgiveness,' 'release,' 'arrival,' 'peace.' A hard, specific fact lodged in her mind: the timetable was not a map of the route; it was a map of the journey inward. The fact pointed deeper into the last northbound overnight train of the season, toward a terminus that could only be reached by naming it.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_g3a3_3a",
+          "label": "Carry the growing timetable onward.",
+          "target": "g3a3_4"
+        }
+      ]
+    },
+    {
+      "id": "g3a3_3b",
+      "body": "{~HERO:Vera~} closed the timetable and let the columns recede into their leather folder. She did not need to search for the terminus; the timetable had already told her what she needed to know\u2014that she was listed as 'choosing,' and that the next notation was blank, waiting for her to supply it. She could fold that trust into what she already knew, or let the late hour and the motion pull her under before the blank space had a chance to fill with whatever she decided.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_g3a3_3b1",
+          "label": "Hold the blank space and go on.",
+          "target": "g3a3_4"
+        },
+        {
+          "id": "c_g3a3_3b2",
+          "label": "Let the hour take you.",
+          "target": "g3a3_end"
+        }
+      ]
+    },
+    {
+      "id": "g3a3_4",
+      "body": "Whether searched or trusted, the timetable with endless station lists gave {~HERO:Vera~} a small wrong feeling. Her name was written in it. The note beside her name was changing as she looked. It went from 'choosing' to something still forming. Letters built themselves from the ink like a thought turning into a word. {~HERO:Vera~} felt the trip close around that thought like a held breath. The timetable's leather cover was warm in her hands.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_g3a3_4",
+          "label": "Walk toward the changing notation.",
+          "target": "g3a3_5"
+        }
+      ]
+    },
+    {
+      "id": "g3a3_5",
+      "body": "Carrying what the timetable whose columns of stations never end had shown her\u2014that her journey was being written as she made it\u2014{~HERO:Vera~} moved on through the swaying cars toward the question the whole train seemed built around. The blank space beside her name was waiting, and she understood that she was about to fill it.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_g3a3_5",
+          "label": "Walk toward the dark arch.",
+          "target": "p4_dawn_reveal"
+        }
+      ]
+    },
+    {
+      "id": "g3a3_end",
+      "body": "The pull of the timetable whose columns of stations never end closed over {~HERO:Vera~} before she could hold it; the endless columns dissolved into a blur of ink and tiredness, and she surfaced later having missed the moment the notation beside her name changed. Safe but emptied of the thing she had almost understood, the timetable now blank, her name nowhere in its pages.",
+      "is_ending": true,
+      "ending": {
+        "id": "e_g3a3",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "Lost Among the Columns"
+      }
+    },
+    {
+      "id": "p1_never_arrives",
+      "body": "The last northbound overnight train of the season ran on through the deepening snow, and Vera understood what the conductor's frozen clock had been trying to tell her: the north terminus would never arrive because arrival was not a place but a permission. Every clock aboard had stopped at one minute to midnight, and the journey had been running inside that suspended minute for as long as the line had existed. The north terminus stayed exactly one hour off, no matter how far they travelled, because the distance was not measured in track but in readiness. She was not on a train; she was inside a question, and the question was this: what are you willing to let go of in order to arrive?",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_p1_never_arrives_0",
+          "label": "Return to the dining car and its regulars.",
+          "target": "g1a0_1"
+        },
+        {
+          "id": "c_p1_never_arrives_1",
+          "label": "Find the child who never sleeps.",
+          "target": "g1a1_1"
+        },
+        {
+          "id": "c_p1_never_arrives_2",
+          "label": "Follow the man counting stations.",
+          "target": "g1a2_1"
+        },
+        {
+          "id": "c_p1_never_arrives_3",
+          "label": "Approach the woman in mourning.",
+          "target": "g1a3_1"
+        }
+      ]
+    },
+    {
+      "id": "p2_who_passengers",
+      "body": "Vera stood in the link between cars and let the truth settle like snow on the roof above. The others were not strangers sharing a ride. They were the ride itself, each one a different face of the same trip. The people in the food car were the part that waits without hunger. The child was the part that stays awake hoping for a friend. The counting man was the part that names what it passes. The woman in grey was the part that carries what it has lost. None of them would say where they first got on. The answer was the same for all of them: they got on the moment they needed to, and they would get off the moment they were ready.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_p2_who_passengers_0",
+          "label": "Confront the conductor once more.",
+          "target": "g2a0_1"
+        },
+        {
+          "id": "c_p2_who_passengers_1",
+          "label": "Decipher the faint map in the letter's margins.",
+          "target": "g2a1_1"
+        },
+        {
+          "id": "c_p2_who_passengers_2",
+          "label": "Study the changing signal lights ahead.",
+          "target": "g2a2_1"
+        },
+        {
+          "id": "c_p2_who_passengers_3",
+          "label": "Gather the passengers to share what they know.",
+          "target": "g2a3_1"
+        }
+      ]
+    },
+    {
+      "id": "p3_tunnel_choice",
+      "body": "The train slowed as the mountain rose before it, a black wall of granite and snow, and the tunnel mouth opened like a held breath finally released. {~HERO:Vera~} stood at the forward door and understood that this was the moment the whole night had been building toward. The last northbound overnight train of the season would pass through the dark, and what she carried with her\u2014what she chose to hold and what she chose to set down\u2014would shape what waited on the other side. Four paths lay before her, four ways of moving through the mountain: the conductor's truth, the child's guidance, the mourning woman's message, or the endless timetable's blank, waiting space.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_p3_tunnel_choice_0",
+          "label": "Ask the conductor for the full truth.",
+          "target": "g3a0_1"
+        },
+        {
+          "id": "c_p3_tunnel_choice_1",
+          "label": "Let the wakeful child guide you.",
+          "target": "g3a1_1"
+        },
+        {
+          "id": "c_p3_tunnel_choice_2",
+          "label": "Accept the mourner's letter and carry it onward.",
+          "target": "g3a2_1"
+        },
+        {
+          "id": "c_p3_tunnel_choice_3",
+          "label": "Search the endless timetable for your destination.",
+          "target": "g3a3_1"
+        }
+      ]
+    },
+    {
+      "id": "p4_dawn_reveal",
+      "body": "The mountain tunnel fell away behind them, and the first grey dawn touched the peaks with a light that was not yet gold but was no longer dark. In that half-light, the passengers revealed themselves: the conductor with his ticking, hollow clock, the child with her open-door ticket, the woman in grey with her empty box, the counting man with his endless litany, the dining-car regulars with their patient, unserved table. They were not ghosts; they were the faces of a single journey, a passage the line made possible for anyone who needed to travel through a question rather than toward an answer. {~HERO:Vera~} understood that the last northbound overnight train of the season was a passage and not a route, and that how the night ended was now hers to shape.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_p4_peace",
+          "label": "Ride onward and simply be present.",
+          "target": "r_peace1"
+        },
+        {
+          "id": "c_p4_help",
+          "label": "Turn toward the traveller who needs you.",
+          "target": "r_help1"
+        },
+        {
+          "id": "c_p4_truth",
+          "label": "Follow the last threads of the mystery.",
+          "target": "r_truth1"
+        },
+        {
+          "id": "c_p4_leave",
+          "label": "Try to step off before the tunnel swallows you.",
+          "target": "r_leave1"
+        }
+      ]
+    },
+    {
+      "id": "r_peace1",
+      "body": "{~HERO:Vera~} gave herself to the plain act of riding on, wide awake, and found that the simple decision to stop striving was its own kind of arrival. The carriage narrowed to this one long, lucid stretch of track before the mountain tunnel, the wheels singing a steady note beneath her, the snow falling gently beyond the glass. She did not need to understand; she only needed to be here, and the being was enough.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_r_peace1",
+          "label": "Ride on toward the gathering dawn.",
+          "target": "r_peace2"
+        }
+      ]
+    },
+    {
+      "id": "r_peace2",
+      "body": "In the plain act of riding on, wide awake, Vera found a smaller door and a larger one standing side by side in the quiet of her own mind. The smaller door was the temptation to hold this peace too tightly, to close the journey early and keep the calm as a possession rather than a gift. The larger door stayed open toward the first grey dawn, a threshold that asked nothing but that she remain present as the light grew. One closed the night early; the other let the night ripen into morning.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_r_peace2a",
+          "label": "Stay open to the coming light.",
+          "target": "r_peace3"
+        },
+        {
+          "id": "c_r_peace2b",
+          "label": "Close the door and keep the calm.",
+          "target": "e_peace_early"
+        }
+      ]
+    },
+    {
+      "id": "r_peace3",
+      "body": "Having chosen the plain act of riding on, wide awake, {~HERO:Vera~} came level with the first grey dawn coming up over the ridgeline where all the night's threads seemed to gather. The peaks went silver, then rose, then gold, and the snow on the ridgeline caught the light and held it. She was still riding, still present, and the journey had become not a transit but a way of being.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_r_peace3",
+          "label": "Meet the dawn with open eyes.",
+          "target": "r_dawn"
+        }
+      ]
+    },
+    {
+      "id": "e_peace_early",
+      "body": "The calm {~HERO:Vera~} found was real but slipped through her fingers before the first grey dawn could anchor it; she arrived at a station whose name she did not catch, the peace already receding, sure only that she had let a moment pass that would not come again. The train pulled away northward without her, and the calm, unkept, became just another thing she had almost held.",
+      "is_ending": true,
+      "ending": {
+        "id": "e_calm_unkept",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "A Calm You Cannot Keep"
+      }
+    },
+    {
+      "id": "r_help1",
+      "body": "{~HERO:Vera~} gave herself to the traveller at the carriage end who needed a hand\u2014a young man whose coat was thin and whose eyes were closed, his breath shallow in the cold air. She knelt beside him, offered her scarf, and felt the carriage narrow to this one long, lucid stretch of track before the mountain tunnel, where helping another was the only thing that mattered.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_r_help1",
+          "label": "Stay with him as the dawn approaches.",
+          "target": "r_help2"
+        }
+      ]
+    },
+    {
+      "id": "r_help2",
+      "body": "In the traveller at the carriage end who needed a hand, Vera found a smaller door and a larger one. The smaller door was the impulse to help only enough to feel she had done something, then retreat into her own journey before the cost grew too great. The larger door stayed open toward the first grey dawn, a commitment to see this stranger through the dark even if it meant letting go of her own arrival for a while. One closed the night early; the other let the night become generous.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_r_help2a",
+          "label": "Stay open to what he needs.",
+          "target": "r_help3"
+        },
+        {
+          "id": "c_r_help2b",
+          "label": "Draw back before it costs too much.",
+          "target": "e_help_early"
+        }
+      ]
+    },
+    {
+      "id": "r_help3",
+      "body": "Having chosen the man at the carriage end who needed a hand, {~HERO:Vera~} came level with the first grey dawn over the ridge where all the night's threads seemed to meet. The young man opened his eyes as the light touched his face. His first word was a quiet thank-you. It made the whole night's strangeness feel, for one held moment, totally worth it.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_r_help3",
+          "label": "Meet the dawn beside him.",
+          "target": "r_dawn"
+        }
+      ]
+    },
+    {
+      "id": "e_help_early",
+      "body": "{~HERO:Vera~} hesitated one beat too long, and the hand she meant to take was withdrawn; the traveller's eyes opened, met hers with a sadness that was not an accusation, and closed again. She stood and walked on, and he rode on alone, and the gift she had almost given became a hollow space she would carry for a long time afterward.",
+      "is_ending": true,
+      "ending": {
+        "id": "e_hand_untaken",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "The Hand You Did Not Take"
+      }
+    },
+    {
+      "id": "r_truth1",
+      "body": "{~HERO:Vera~} gave herself to the last unread lines of the stranger's letter and found, beneath the faint map and the familiar handwriting, a postscript she had missed before: \"The north terminus is not a station. It is the name you give the thing you are ready to let go of.\" The carriage narrowed to this one long, lucid stretch of track before the mountain tunnel, and the words settled into her like a key turning in a lock.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_r_truth1",
+          "label": "Read onward as the light grows.",
+          "target": "r_truth2"
+        }
+      ]
+    },
+    {
+      "id": "r_truth2",
+      "body": "In the last unread lines of the stranger's letter, Vera found a smaller door and a larger one. The smaller door was the desire to understand everything\u2014to read every hidden message, decode every margin map, chase the truth until it was wrung dry of mystery. The larger door stayed open toward the first grey dawn, an acceptance that some truths are meant to be lived rather than solved. One closed the night early; the other let the night ripen into wisdom.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_r_truth2a",
+          "label": "Stay open to what the mystery becomes.",
+          "target": "r_truth3"
+        },
+        {
+          "id": "c_r_truth2b",
+          "label": "Fold the letter and close the door.",
+          "target": "e_truth_early"
+        }
+      ]
+    },
+    {
+      "id": "r_truth3",
+      "body": "Having chosen the last unread lines of the stranger's letter, {~HERO:Vera~} came level with the first grey dawn over the ridge where all the night's threads seemed to meet. The letter in her hands was no longer a message from someone else. It was a talk with herself, a loop closed across the winter dark. The truth it held was not an answer but a way of seeing.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_r_truth3",
+          "label": "Meet the dawn with the letter open.",
+          "target": "r_dawn"
+        }
+      ]
+    },
+    {
+      "id": "e_truth_early",
+      "body": "{~HERO:Vera~} read half the endless timetable's secret and no more: the columns of stations resolved into a single phrase\u2014'the line is kind'\u2014but the word that followed, the reason, the why, remained in the ink that had not yet dried. It was enough to know the last northbound overnight train of the season was kind. It was not enough to know why it had chosen her, and the half-knowledge was a small, permanent ache.",
+      "is_ending": true,
+      "ending": {
+        "id": "e_half_timetable",
+        "valence": "neutral",
+        "kind": "discovery",
+        "title": "Half the Timetable"
+      }
+    },
+    {
+      "id": "r_leave1",
+      "body": "{~HERO:Vera~} gave herself to the cold outer door and the idea of stepping down onto the tracks. She wanted away from the question, the tunnel, and the gathered riders. The carriage shrank to this one long, clear stretch of track before the mountain tunnel. The door handle was cold and solid and fully real. It was maybe the only real thing on the whole train.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_r_leave1",
+          "label": "Stand at the door as the light approaches.",
+          "target": "r_leave2"
+        }
+      ]
+    },
+    {
+      "id": "r_leave2",
+      "body": "In the cold vestibule door and the idea of stepping down, Vera found a smaller door and a larger one. The smaller door was the real, brass-handled door before her, the choice to open it now and escape the uncanny weight of the journey before the tunnel demanded anything more of her. The larger door stayed open toward the first grey dawn, a choice to remain aboard and see what the night would become. One closed the journey early; the other let the journey complete itself.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_r_leave2a",
+          "label": "Stay aboard and face the dawn.",
+          "target": "r_leave3"
+        },
+        {
+          "id": "c_r_leave2b",
+          "label": "Open the door and step down.",
+          "target": "e_leave_early"
+        }
+      ]
+    },
+    {
+      "id": "r_leave3",
+      "body": "Having chosen the cold vestibule door and the idea of stepping down\u2014and then choosing to stay\u2014{~HERO:Vera~} came level with the first grey dawn coming up over the ridgeline where all the night's threads seemed to gather. The vestibule door remained closed, and the handle, when she touched it again, was warm. She had chosen to stay, and the staying had become its own arrival.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_r_leave3",
+          "label": "Meet the dawn you chose to stay for.",
+          "target": "r_dawn"
+        }
+      ]
+    },
+    {
+      "id": "e_leave_early",
+      "body": "The door opened onto the first platform of all, the very place where the season's sleet had turned to snow a lifetime ago. {~HERO:Vera~} woke there as the last northbound overnight train of the season pulled away north without her. The night was unspent and the journey undone. She stood on the empty platform. The cold glass of the carriage window still held, somewhere far ahead, the ghost she had left behind.",
+      "is_ending": true,
+      "ending": {
+        "id": "e_first_platform",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "Back at the First Platform"
+      }
+    },
+    {
+      "id": "r_dawn",
+      "body": "Every route through the night gathered at the first grey dawn bottleneck above the mountain tunnel: the conductor's truth, the child's guidance, the woman's message, the timetable's blank space, the peace of simply riding, the hand extended to a stranger, the letter's unread lines, the vestibule door that stayed closed. The peaks went gold, the passengers were quiet, and {~HERO:Vera~} stood at the centre of it all, the last shape of her journey waiting on one final turning. The north terminus was not a station but a question, and the question was now so close she could feel its shape in her chest as if it were her own heartbeat. What would she carry through the end of the night?",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_dawn_peace",
+          "label": "Set the night down and stay with the morning.",
+          "target": "r_choice_peace"
+        },
+        {
+          "id": "c_dawn_help",
+          "label": "Give your seat to the traveller who still needs it.",
+          "target": "r_choice_help"
+        },
+        {
+          "id": "c_dawn_truth",
+          "label": "Name aloud what you have understood.",
+          "target": "r_choice_truth"
+        },
+        {
+          "id": "c_dawn_safe",
+          "label": "Ask only to wake unharmed.",
+          "target": "r_choice_safe"
+        }
+      ]
+    },
+    {
+      "id": "r_choice_peace",
+      "body": "{~HERO:Vera~} stopped trying to arrive. She let the north terminus stay one hour off forever, a lighthouse that never grew closer but never dimmed, and found that the distance had become, not a frustration, but a kind of peace. The train would ride on, and she would ride with it, and the not-arriving was, at last, a thing she did not mind. The snow kept falling, and the carriage stayed warm, and the journey became its own home.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_rcp",
+          "label": "Let peace become the journey itself.",
+          "target": "e_make_peace"
+        }
+      ]
+    },
+    {
+      "id": "r_choice_help",
+      "body": "The seat beside the mourning traveller was warm from where the woman in grey had been. {~HERO:Vera~} knew her choice. She could stay through the mountain tunnel. Her own stop would slip into the distance while she kept watch beside someone who should not be alone. Or she could step back and keep her own northward path. The seat would be empty, but her heart would be whole. The seat's warmth was an offer. The cost of taking it was the last stop she had been riding toward all night.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_rch_stay",
+          "label": "Sit down and stay beside her.",
+          "target": "e_help_passenger"
+        },
+        {
+          "id": "c_rch_cost",
+          "label": "Stay far too long.",
+          "target": "e_help_cost"
+        }
+      ]
+    },
+    {
+      "id": "r_choice_truth",
+      "body": "{~HERO:Vera~} stood at the window with the grey dawn rising over the peaks and spoke the north terminus's whole quiet truth aloud to the cold glass, and the naming of it was its own kind of arrival. The words were simple\u2014a list of the things she was ready to let go of, a quiet acknowledgment of what the night had shown her\u2014and as she spoke them, the carriage seemed to lift, the wheels humming a note she had not heard before. She had arrived, not at a station, but at the end of something.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_rct",
+          "label": "Speak the names of what you release.",
+          "target": "e_uncover_truth"
+        }
+      ]
+    },
+    {
+      "id": "r_choice_safe",
+      "body": "{~HERO:Vera~} asked the last northbound overnight train of the season for nothing but a safe waking. The train, being kinder than she had feared, granted exactly that and no more. The night grew soft, the strangeness pulled back to a gentle distance, and she felt certain of a quiet station somewhere ahead, a place where she would step down whole and unharmed. The train asked nothing further of her; it simply carried her on.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_rcs",
+          "label": "Wake into the gentle morning.",
+          "target": "e_unsettled_safe"
+        }
+      ]
+    },
+    {
+      "id": "e_make_peace",
+      "body": "{~HERO:Vera~} rode the last northbound night train of the season with open eyes and an open heart. She was at peace with a journey that never had to end at a station. Snow kept falling past the glass. The other riders were no longer strangers. The conductor, the child, the woman in grey, the counting man, the dining-car crowd. They were all companions on a road through the heart of the night. The road did not need to arrive to be whole. The first grey dawn held steady over the peaks. She was finally, fully here. Not waiting. Not striving. Not measuring the gap to a last stop that had always been a badge for something she had already found.",
+      "is_ending": true,
+      "ending": {
+        "id": "e_final_peace",
+        "valence": "positive",
+        "kind": "success",
+        "title": "The Last Train North"
+      }
+    },
+    {
+      "id": "e_help_passenger",
+      "body": "{~HERO:Vera~} stayed beside the mourning traveller through the mountain tunnel. Her hand rested lightly on the woman in grey's. The dark swallowed the carriage and then let it go into the silver light beyond. She did not reach the north end. She reached, instead, the place where another person's grief had softened. Held quietly and without demand, it became something that could be carried without breaking the carrier. Helping another home turned out to be the arrival {~HERO:Vera~} had been riding toward all along. As the first grey dawn touched the peaks, the woman in grey closed her empty box and smiled.",
+      "is_ending": true,
+      "ending": {
+        "id": "e_final_help",
+        "valence": "positive",
+        "kind": "completion",
+        "title": "A Seat Beside Her"
+      }
+    },
+    {
+      "id": "e_help_cost",
+      "body": "{~HERO:Vera~} stayed past every fair hour, long after the tunnel was behind them and the first grey dawn had slipped by the window unseen. The mourning traveller was helped. Her box was closed and her watch was over. But {~HERO:Vera~} came out of it frayed and far from herself. The good deed was shadowed by what it had cost her. A night without rest. A last stop she would never see. A kindness that had hollowed something out of her in the giving.",
+      "is_ending": true,
+      "ending": {
+        "id": "e_final_cost",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "You Stayed Too Long"
+      }
+    },
+    {
+      "id": "e_uncover_truth",
+      "body": "{~HERO:Vera~} named the north terminus for what it was. It was a passage the season lends to travellers who are ready. A line that runs not through geography, but through the quiet places where memory loosens its hold and letting go becomes possible. She did not stay, but she left knowing, and the knowing settled something deep in her chest\u2014a stone that had been lodged there for years, now set free. The train rode on into the morning, and she carried the truth of it with her, a small, steady lantern.",
+      "is_ending": true,
+      "ending": {
+        "id": "e_final_truth",
+        "valence": "positive",
+        "kind": "discovery",
+        "title": "The Northbound Names"
+      }
+    },
+    {
+      "id": "e_unsettled_safe",
+      "body": "{~HERO:Vera~} woke at her own quiet station, unharmed and a little haunted. The last northbound overnight train of the season was already a grey smudge on the horizon. The night was left unexplained, the passengers unreachable, the tunnel unchosen. She carried only the sense of a door she had chosen not to walk through. And the quiet knowledge that some journeys ask a question, and then accept a silence as its own kind of answer.",
+      "is_ending": true,
+      "ending": {
+        "id": "e_final_safe",
+        "valence": "neutral",
+        "kind": "setback",
+        "title": "Awake and Unharmed"
+      }
+    }
+  ]
+}

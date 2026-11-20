@@ -1,0 +1,3260 @@
+{
+  "schema_version": "2.0",
+  "id": "sk_orchard_signal",
+  "version": 1,
+  "title": "The October Blossom",
+  "metadata": {
+    "narrative_person": "third",
+    "age_band": "10-13",
+    "reading_level": {
+      "scheme": "flesch_kincaid",
+      "target": 5.5,
+      "tolerance": 1.5
+    },
+    "tier": 2,
+    "themes": [
+      "record keeping",
+      "evidence",
+      "persistence",
+      "community"
+    ],
+    "estimated_minutes": 7,
+    "ending_count": 30,
+    "content_flags": {
+      "violence": "none",
+      "scariness": "mild",
+      "peril": "mild"
+    },
+    "topology": "branch_and_bottleneck",
+    "length": "medium",
+    "narrative_style": "prose",
+    "production_eligible": true
+  },
+  "variables": [
+    {
+      "name": "did_ask_whether_notebooks",
+      "type": "bool",
+      "initial": false,
+      "description": "Set when Jonah asks Ada whether the notebooks have recorded an October blossom before; pays off later when the records show a pattern no single observation could."
+    },
+    {
+      "name": "did_go_down_read",
+      "type": "bool",
+      "initial": false,
+      "description": "Set when Jonah goes down to read the laminated notice zip-tied to the orchard gate; pays off when the notice's own details are used against the survey."
+    },
+    {
+      "name": "did_find_who_wrote",
+      "type": "bool",
+      "initial": false,
+      "description": "Set when Jonah finds out who wrote the ecological survey; pays off during the final decisions about releasing the dossier and facing the developer."
+    }
+  ],
+  "start_node": "n00c0",
+  "nodes": [
+    {
+      "id": "n00c0",
+      "body": "It was the last week of October. The big Bramley apple tree at the top of the hill was covered in white flowers. Every other tree on the slope was bare, their black branches against a grey sky. But the old tree had bloomed like it was May. Jonah stood in the wet grass and stared. The blossom stared back, silent and strange. Its early, wrong bloom was the only one around.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n00c0_0",
+          "label": "Go and tell Ada what you have seen.",
+          "target": "n01d0"
+        }
+      ]
+    },
+    {
+      "id": "n01d0",
+      "body": "Ada was in the shed writing the day up in a ruled notebook, the way she had every evening since before Jonah was born. The paraffin heater ticked in the corner and the air smelled of old paper and cold earth. Jonah told her about the blossom, and she did not look up from the page. She did not look surprised either, which was worse than if she had. Her pen kept moving, a faint scratch in the quiet. \"I know,\" she said at last, and the words landed like a stone in still water. Three paths opened in Jonah's mind, each pulling a different direction, and none of them felt like the obviously right one.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n01d0_0",
+          "label": "Ask whether the notebooks have seen this before.",
+          "target": "n02c0",
+          "effects": [
+            {
+              "op": "set",
+              "var": "did_ask_whether_notebooks",
+              "value": true
+            }
+          ]
+        },
+        {
+          "id": "c_n01d0_1",
+          "label": "Go and stand by the hives instead.",
+          "target": "n02c1"
+        },
+        {
+          "id": "c_n01d0_2",
+          "label": "Go down and read the notice on the gate.",
+          "target": "n02c2",
+          "effects": [
+            {
+              "op": "set",
+              "var": "did_go_down_read",
+              "value": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "n02c0",
+      "body": "Ada turned back through decades of her own handwriting. Page after page, October after October, the dates ran backwards under her thumb. She looked at blossom dates, frost dates, and picking dates. Not one of them was like this one. The shed smelled of old apples and paraffin. The silence grew. Jonah watched her search and saw a loose sheet of paper tucked inside the back of the 1952 book. It was in a different hand. It was a note from Ada's own mother, listing every strange thing the orchard had ever done. Ada had forgotten it was there. She pressed it flat on the bench and read it twice. Then she nodded slowly.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n02c0_0",
+          "label": "Begin with what the record already holds.",
+          "target": "n03d0"
+        }
+      ]
+    },
+    {
+      "id": "n02c1",
+      "body": "The hives along the south fence were loud at four on a cold afternoon. The humming should not have been there in October. The bees were out and working, tricked by the warmth the blossom had promised. Their sound was wrong in the thin autumn light. Later, Mrs. Cassar told Jonah that bees did not do this. Not in the last week before the frosts. She had not seen anything like it in thirty years of keeping bees.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n02c1_0",
+          "label": "Begin with what the bees are doing.",
+          "target": "n03d1"
+        }
+      ]
+    },
+    {
+      "id": "n02c2",
+      "body": "A covered notice had appeared on the orchard gate since morning. It was tied at all four corners by someone who meant it to stay. It was an early science survey summary, typed and official. It looked out of place against the old wood and the wet weeds. Jonah read it through twice. The second time the words felt heavier. He took out his phone and took a photo. The bare trees were behind it. He only thought he wanted a record. Later that would turn out to be the only picture anyone had of the notice in place.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n02c2_0",
+          "label": "Begin with the notice itself.",
+          "target": "n03d2"
+        }
+      ]
+    },
+    {
+      "id": "n03d0",
+      "body": "Six shelves of notebooks filled the far wall of the shed. They ran from 1911 to this evening. Over the years, nine different people had written in them. There was no index, no list, no key. Everything anyone knew about this hill was in there. Weather, blossom, picking weights, wasp years, frost years, the price of ladders. Jonah stood in front of the shelves. He felt the weight of a hundred and fourteen years pressing back. The notebooks were an argument waiting to be made. But making it meant choosing where to start.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n03d0_0",
+          "label": "Find out who wrote the survey.",
+          "target": "cq_plant_did_find_who_wrote",
+          "effects": [
+            {
+              "op": "set",
+              "var": "did_find_who_wrote",
+              "value": true
+            }
+          ]
+        },
+        {
+          "id": "c_n03d0_1",
+          "label": "Find out what the survey left out.",
+          "target": "n04d1"
+        },
+        {
+          "id": "c_n03d0_2",
+          "label": "Ask what a hundred years of weather notes are worth.",
+          "target": "n04d2"
+        }
+      ]
+    },
+    {
+      "id": "cq_plant_did_find_who_wrote",
+      "body": "The survey was signed at the bottom of the last page: D. Faulks, dated in August. Jonah wrote the name down in the back of his exercise book and stared at it. A name was a starting point. It felt like a loose thread you could pull, and Jonah had a feeling that pulling it would unravel something. He closed the notebook and went to find Ada.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_cq_plant_did_find_who_wrote",
+          "label": "Find out who wrote the survey.",
+          "target": "n04d0"
+        }
+      ]
+    },
+    {
+      "id": "n03d1",
+      "body": "Mrs. Cassar kept her own hive records in a stack of spiral notebooks in her kitchen. Her counts did not match Jonah's by a wide margin. She had counted two hundred and forty bees searching for food on the warm side of the hives that afternoon. Jonah had counted fewer than half that. They sat at her table and compared their figures. The gap between them did not close. One of them had been counting the wrong thing all autumn. Neither could say which.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n03d1_0",
+          "label": "Copy the sentence out and take it home.",
+          "target": "n04c0"
+        },
+        {
+          "id": "c_n03d1_1",
+          "label": "Stay in the shed until the light goes.",
+          "target": "n04c1"
+        },
+        {
+          "id": "c_n03d1_2",
+          "label": "Walk the rows and count the trees.",
+          "target": "n04c2"
+        }
+      ]
+    },
+    {
+      "id": "n03d2",
+      "body": "The notice was an early science survey summary. It was printed on both sides and dated in August. Jonah read it standing at the gate with cold fingers. The sentence that mattered was eleven words long: the site is of no particular scientific interest. Eleven words dismissed a hundred and fourteen years of records. Nine hands, six shelves, and a tree flowering in the wrong month. Jonah read the sentence again. He felt something tighten in his chest.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n03d2_0",
+          "label": "Ask Ada who else wrote in these.",
+          "target": "n04c3"
+        },
+        {
+          "id": "c_n03d2_1",
+          "label": "Photograph the notice before anything happens to it.",
+          "target": "n04c4"
+        },
+        {
+          "id": "c_n03d2_2",
+          "label": "Find out who wrote the survey.",
+          "target": "n04d0"
+        }
+      ]
+    },
+    {
+      "id": "n04d0",
+      "body": "The survey was signed D. Faulks and dated in August. In August, a century-old orchard looks like nothing much: long grass and shade. Anyone walking through in high summer would see unpruned branches, weeds, and a pond thick with duckweed. No reason to stop. The signature sat at the bottom of the page, neat and small, as if the name itself was trying not to be seen. Jonah stared at it. He thought about what a person sees when they are not looking for anything in particular.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n04d0_0",
+          "label": "Find out how a survey gets challenged.",
+          "target": "n05d0"
+        },
+        {
+          "id": "c_n04d0_1",
+          "label": "Find out what Faulks actually looked at.",
+          "target": "n05d1"
+        },
+        {
+          "id": "c_n04d0_2",
+          "label": "Find somebody who reads old records for a living.",
+          "target": "n05d2"
+        }
+      ]
+    },
+    {
+      "id": "n04d1",
+      "body": "Every survey has a method section. It's a paragraph that tells you how the work was done. This one listed four site visits over eleven days. All of them were dry, and none of them lasted longer than an hour. Jonah read the times and added them up in his head. Four hours, spread across a fortnight in August. On that basis, someone had written eleven words. Those words could erase a hundred and fourteen years. The numbers felt like a door closing.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n04d1_0",
+          "label": "Find somebody who studies the ground itself.",
+          "target": "n05d3"
+        },
+        {
+          "id": "c_n04d1_1",
+          "label": "Find out what the developer actually wants.",
+          "target": "n05d4"
+        },
+        {
+          "id": "c_n04d1_2",
+          "label": "Ask Tobe to help with the numbers.",
+          "target": "n05d5"
+        }
+      ]
+    },
+    {
+      "id": "n04d2",
+      "body": "Ada said the notebooks were only the weather, nothing more. She said weather by itself proved nothing. Jonah said the weather was the whole argument. A tree that flowered in October was weather you could see. They stood in the shed with the heater ticking. The argument hung between them, unprovable. Ada had written the day up every evening for sixty years. She did not believe the notebooks could change anything. Jonah could not show her that she was wrong. Not standing there with the light going.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n04d2_0",
+          "label": "Let the six weeks run out.",
+          "target": "e05_0"
+        },
+        {
+          "id": "c_n04d2_1",
+          "label": "Find out how a survey gets challenged.",
+          "target": "n05d0"
+        },
+        {
+          "id": "c_n04d2_2",
+          "label": "Find out what Faulks actually looked at.",
+          "target": "n05d1"
+        }
+      ]
+    },
+    {
+      "id": "n04c0",
+      "body": "Jonah copied the eleven words into the back of an exercise book. He sat at the kitchen table with a pencil that needed sharpening. The sentence looked smaller in his own handwriting. It also looked worse. It sat on the page like a thing decided somewhere else. It had been delivered here without warning. He closed the book and put it in his pocket. The words went with him.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n04c0_0",
+          "label": "Find somebody who reads old records for a living.",
+          "target": "n05d2"
+        }
+      ]
+    },
+    {
+      "id": "n04c1",
+      "body": "The shed had one light bulb on a wire, swinging a little in the draft from the door. The oldest notebooks sat on the top shelf above it, where the light did not reach. Their spines had all faded to the same grey. Jonah stood on a crate and ran a finger along them, feeling the years in the dark. He thought about all the evenings people had written up in worse light than this.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n04c1_0",
+          "label": "Find somebody who studies the ground itself.",
+          "target": "n05d3"
+        }
+      ]
+    },
+    {
+      "id": "n04c2",
+      "body": "Jonah walked the rows counting trees, touching each trunk to keep the number steady. He got to three hundred and ninety-one somewhere near the pond. Then a moorhen clattered out of the reeds and the number went clean out of his head. He started again from the top of the hill. This time the count came out differently, and he understood that counting was not as simple as it sounded.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n04c2_0",
+          "label": "Find out what the developer actually wants.",
+          "target": "n05d4"
+        }
+      ]
+    },
+    {
+      "id": "n04c3",
+      "body": "Nine different hands had written in the notebooks over the years, Ada told him. She could name eight of them without thinking. The ninth was a small neat pencil that appeared in 1939 and stopped in 1943 without a word of why. Four years of careful entries and then nothing. Ada said she had never been able to work out who that writer was or why they stopped.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n04c3_0",
+          "label": "Ask Tobe to help with the numbers.",
+          "target": "n05d5"
+        }
+      ]
+    },
+    {
+      "id": "n04c4",
+      "body": "Jonah photographed the notice with the bare trees behind it. The zip-ties looked sharp against the grey sky. Then he went home and did not look at the picture again for weeks. Much later, when the notice had been taken down and nobody could say exactly what it had said or when it had appeared, that photograph turned out to be the only one anyone had of it in place.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n04c4_0",
+          "label": "Let the six weeks run out.",
+          "target": "e05_0"
+        }
+      ]
+    },
+    {
+      "id": "n05d0",
+      "body": "Objections closed in six weeks. The form Jonah downloaded from the council website asked for proof of scientific interest. The phrase sat in bold type halfway down the first page. It was the exact same phrase the survey had used to say there was none. Someone had written the form and someone else had written the survey. The two documents had been designed to fit together like a lock and a key. Jonah read the form three times. Each time the same sentence stared back at him, waiting to be answered.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n05d0_0",
+          "label": "Work out how many pages there actually are.",
+          "target": "n06d0"
+        },
+        {
+          "id": "c_n05d0_1",
+          "label": "Work out which years matter most.",
+          "target": "n06d1"
+        },
+        {
+          "id": "c_n05d0_2",
+          "label": "Work out how to read the difficult hands.",
+          "target": "n06d2"
+        }
+      ]
+    },
+    {
+      "id": "n05d1",
+      "body": "The four survey visits were logged to the half hour: nine-fifteen to ten, two-thirty to three-fifteen, and so on. Jonah added them up on a scrap of paper. They came to just under four hours. Not one visit had lasted long enough to walk the whole orchard. They had no time to open a hive or count the species in the pond. Four hours in August. On that basis, someone had written a sentence. That sentence could bring eighty-two houses and a spine road straight through the row where the big Bramley stood.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n05d1_0",
+          "label": "Work out who is allowed to touch them.",
+          "target": "n06d3"
+        },
+        {
+          "id": "c_n05d1_1",
+          "label": "Work out where to do the work.",
+          "target": "n06d4"
+        },
+        {
+          "id": "c_n05d1_2",
+          "label": "Work out how to prove you copied it right.",
+          "target": "n06d5"
+        }
+      ]
+    },
+    {
+      "id": "n05d2",
+      "body": "The city archive kept a Tuesday desk. The archivist there had seen a great many shoeboxes brought in by people who believed they were holding something important. She was not impressed by any of them yet. Her name was Mrs Okonkwo and she listened to Jonah's story with her hands folded on the desk. When he finished she said only, \"Show me what you have.\" It was not a dismissal and it was not a boost. It was somehow exactly the right thing to say.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n05d2_0",
+          "label": "Open the 1911 volume first.",
+          "target": "n06c0"
+        },
+        {
+          "id": "c_n05d2_1",
+          "label": "Set the laptop up on the shed bench.",
+          "target": "n06c1"
+        },
+        {
+          "id": "c_n05d2_2",
+          "label": "Take the folding table down to the orchard.",
+          "target": "n06c2"
+        }
+      ]
+    },
+    {
+      "id": "n05d3",
+      "body": "The university website listed a Dr Ines Abara under Long Term Monitoring. That phrase turned out to mean exactly what the six shelves were. Her research page showed a photo of a woman in her forties standing by a weather station in a field. Her work listed papers on thirty-year butterfly counts and sixty-year soil heat records. Jonah read the page twice. For the first time since the blossom, he felt that someone might already understand what they had.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n05d3_0",
+          "label": "Ask Ada to read the hard pages aloud.",
+          "target": "n06c3"
+        },
+        {
+          "id": "c_n05d3_1",
+          "label": "Photograph one page as a test.",
+          "target": "n06c4"
+        },
+        {
+          "id": "c_n05d3_2",
+          "label": "Make a list of every year that is missing.",
+          "target": "n06c5"
+        }
+      ]
+    },
+    {
+      "id": "n05d4",
+      "body": "The plan was eighty-two homes and a spine road, printed on a glossy brochure the developer had left in the village hall. The road ran in a straight line from the new roundabout to the edge of the parish. The straight line went directly along the row the big Bramley stood in. Jonah traced the route with his finger. He saw that the tree was not just in the way of the road. It was exactly where the road wanted to be. Someone had drawn a line on a map without knowing what was on the ground, or without caring.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n05d4_0",
+          "label": "Stop and eat something.",
+          "target": "n06c6"
+        },
+        {
+          "id": "c_n05d4_1",
+          "label": "Try to do all of it at once.",
+          "target": "e06_0"
+        },
+        {
+          "id": "c_n05d4_2",
+          "label": "Work out how many pages there actually are.",
+          "target": "n06d0"
+        }
+      ]
+    },
+    {
+      "id": "n05d5",
+      "body": "Tobe ran the school weather club, owned a laptop that actually worked, and thought a hundred years of bloom dates was the finest thing he had ever been offered. He sat in the shed with a notebook on his knee and listened while Jonah explained. By the end of it he was grinning. \"This is better than the rainfall project,\" he said. \"This is better than everything.\" He opened the laptop and flexed his fingers above the keyboard like someone about to play a difficult piece of music.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n05d5_0",
+          "label": "Work out which years matter most.",
+          "target": "n06d1"
+        },
+        {
+          "id": "c_n05d5_1",
+          "label": "Work out how to read the difficult hands.",
+          "target": "n06d2"
+        },
+        {
+          "id": "c_n05d5_2",
+          "label": "Work out who is allowed to touch them.",
+          "target": "n06d3"
+        }
+      ]
+    },
+    {
+      "id": "e05_0",
+      "body": "The notebooks went back on the shelf. The objection window closed without Jonah in it. The six weeks passed in ordinary days: school and weather and evenings in the shed. By the time anyone thought to ask what had happened, the deadline was already behind them. What Jonah was left with was a photo of a notice on a gate, the eleven words still in the back of an exercise book, and a clear idea of what he had not done. The Bramley stood at the top of the hill in the rain. Its blossom was long since blown away. The gate stayed shut.",
+      "is_ending": true,
+      "ending": {
+        "id": "e05_0",
+        "valence": "neutral",
+        "kind": "discovery",
+        "title": "The Six Weeks Run Out"
+      }
+    },
+    {
+      "id": "n06d0",
+      "body": "Tobe counted sample pages and multiplied on the back of an envelope. The answer came out somewhere near forty thousand daily lines. He read the number aloud and the kitchen went quiet. Forty thousand lines of weather, blossom, frost, wasps, picking weights, and the price of things. Ada put her cup down and did not pick it up again. The number sat in the middle of the table like an object that had weight. Nobody wanted to be the first to say what they were all thinking. Forty thousand lines was too many, and the six weeks were too short.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n06d0_0",
+          "label": "Take the four lines a year approach.",
+          "target": "n07d0"
+        },
+        {
+          "id": "c_n06d0_1",
+          "label": "Take the whole record but only for the Bramleys.",
+          "target": "n07d1"
+        },
+        {
+          "id": "c_n06d0_2",
+          "label": "Take the hive counts as well.",
+          "target": "n07d2"
+        }
+      ]
+    },
+    {
+      "id": "n06d1",
+      "body": "Tobe pointed out that they didn't have to type everything. The argument didn't need every detail. It needed bloom dates and frost dates, which was four lines a year. Four lines times a hundred and fourteen years came to four hundred and fifty-six numbers. That was a task you could hold in your head, not forty thousand lines, and it was still a century of proof. Ada nodded slowly, the way she did when something settled into place. Jonah felt the impossible weight of the job lift a little.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n06d1_0",
+          "label": "Ask the archive to hold the originals.",
+          "target": "n07d3"
+        },
+        {
+          "id": "c_n06d1_1",
+          "label": "Ask Dr Abara what would count as evidence.",
+          "target": "n07d4"
+        },
+        {
+          "id": "c_n06d1_2",
+          "label": "Ask Tobe to build the chart.",
+          "target": "n07d5"
+        }
+      ]
+    },
+    {
+      "id": "n06d2",
+      "body": "The 1920s handwriting leaned so far to the right that a three and a five looked almost the same. The ink had faded to a pale brown that caught the light in a new way on every page. Getting one digit wrong by two would put a bloom date in the wrong week. A wrong week was all someone like Faulks needed to throw out the whole set. Jonah held the page up to the bulb and squinted. The number refused to become clear. The past could be read, but only just, and only if you were careful.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n06d2_0",
+          "label": "Ask the school if the class can help.",
+          "target": "n07d6"
+        },
+        {
+          "id": "c_n06d2_1",
+          "label": "Ask what happens if you are wrong.",
+          "target": "n07d7"
+        },
+        {
+          "id": "c_n06d2_2",
+          "label": "Ask Ada what she wants out of this.",
+          "target": "n07d8"
+        }
+      ]
+    },
+    {
+      "id": "n06d3",
+      "body": "Ada had never let a notebook leave the shed, not once in sixty years. The archive would not take anything it could not see and check in person. Both sides made sense, and both meant the notebooks stayed right where they were. On the six shelves, with the single bulb, the paraffin heater, and the draft under the door. Jonah stood in the middle of the shed, feeling two walls of the argument pushing in from both sides. Neither one would move.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n06d3_0",
+          "label": "Hand the whole thing to the archive and step back.",
+          "target": "e07_0"
+        },
+        {
+          "id": "c_n06d3_1",
+          "label": "Send the chart out before it is checked.",
+          "target": "e07_1"
+        },
+        {
+          "id": "c_n06d3_2",
+          "label": "Take the four lines a year approach.",
+          "target": "n07d0",
+          "condition": {
+            "==": [
+              {
+                "var": "did_go_down_read"
+              },
+              false
+            ]
+          }
+        },
+        {
+          "id": "c_n06d3_2_cq_did_go_down_read",
+          "label": "Take the four lines a year approach.",
+          "target": "cq_payoff_did_go_down_read",
+          "condition": {
+            "==": [
+              {
+                "var": "did_go_down_read"
+              },
+              true
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "cq_payoff_did_go_down_read",
+      "body": "Jonah remembered the photo on his phone, the notice zip-tied to the gate with the bare trees behind it. He pulled it up on the screen. The eleven words were sharp and clear, and the date stamp proved exactly when the notice had appeared. Tobe looked at it. \"That's evidence they didn't put it up until October,\" he said. The picture changed the argument. It was not just a record now, but proof that the survey had been posted late. This cut the objection window shorter than it should have been. Tobe added the photo to the file.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_cq_payoff_did_go_down_read",
+          "label": "Take the four lines a year approach.",
+          "target": "n07d0"
+        }
+      ]
+    },
+    {
+      "id": "n06d4",
+      "body": "The shed was cold and had one socket. It was fixed to a board nailed to the wall in the 1970s. The kitchen had a table, but Ada did not want the books in the house. Someone might spill tea on them or put them away without knowing the right order. The school hall was free on Thursdays. It had heating, tables, and a plug socket for every laptop. The caretaker said yes before Jonah had even finished asking.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n06d4_0",
+          "label": "Take the whole record but only for the Bramleys.",
+          "target": "n07d1"
+        },
+        {
+          "id": "c_n06d4_1",
+          "label": "Take the hive counts as well.",
+          "target": "n07d2"
+        },
+        {
+          "id": "c_n06d4_2",
+          "label": "Ask the archive to hold the originals.",
+          "target": "n07d3"
+        }
+      ]
+    },
+    {
+      "id": "n06d5",
+      "body": "A number typed from a page was just a claim about a page, Tobe said. And claims were not evidence. The fix was boring. Photograph every page you typed, so anyone who doubted a number could check the original. \"It doubles the work,\" Tobe said, \"but it makes the work solid.\" Jonah looked at the six shelves and thought about the task being twice as big. Then he nodded, because solid was exactly what they needed.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n06d5_0",
+          "label": "Ask Dr Abara what would count as evidence.",
+          "target": "n07d4"
+        },
+        {
+          "id": "c_n06d5_1",
+          "label": "Ask Tobe to build the chart.",
+          "target": "n07d5"
+        },
+        {
+          "id": "c_n06d5_2",
+          "label": "Ask the school if the class can help.",
+          "target": "n07d6"
+        }
+      ]
+    },
+    {
+      "id": "n06c0",
+      "body": "The first volume opened with a crack. The binding creaked as Jonah laid it flat on the archive desk. The opening page was covered in tight, neat writing. It began with the price of ladders in March 1911. Then, with no big title, it gave the first bloom date. April the fourteenth. The ink had barely faded. Under it was a note about a late frost that had blackened the blossom on the lower row. Over a century of watching had started with ladders and frost, just the way it kept going.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n06c0_0",
+          "label": "Ask what happens if you are wrong.",
+          "target": "n07d7"
+        }
+      ]
+    },
+    {
+      "id": "n06c1",
+      "body": "The laptop sat on the shed bench between a sack of wax and a jar of screws. The extension lead ran out under the door and across the grass to the house. It was not a lasting fix, Ada said. The first rain would find the connection and trip the fuse. But it worked for now. The screen glowed blue in the dim shed, and Jonah typed the first line of the first year. Ada read it aloud over his shoulder.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n06c1_0",
+          "label": "Ask Ada what she wants out of this.",
+          "target": "n07d8"
+        }
+      ]
+    },
+    {
+      "id": "n06c2",
+      "body": "The folding table went down the hill on the wheelbarrow. It bumped over roots and molehills and came to rest on level ground by the pond. It was the only flat spot in the whole orchard. The light was good there, coming through the bare branches of the willows. Jonah set up the laptop and the first notebook. He worked to the sound of water and the odd splash of a frog. The work felt different outdoors. It felt less like a fight and more like something that was always meant to happen here.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n06c2_0",
+          "label": "Hand the whole thing to the archive and step back.",
+          "target": "e07_0"
+        }
+      ]
+    },
+    {
+      "id": "n06c3",
+      "body": "Ada read the 1920s pages out loud while Jonah typed. She read them the way a person reads things they half remember. Her voice slowed on certain dates. The ones where a late frost caught the blossom or a wet summer brought the wasps. Jonah could hear in the pauses that she was not just reading. She was remembering, or remembering being told, or maybe both. The past came through her voice into the laptop. The numbers on the screen felt warmer than numbers usually did.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n06c3_0",
+          "label": "Send the chart out before it is checked.",
+          "target": "e07_1"
+        }
+      ]
+    },
+    {
+      "id": "n06c4",
+      "body": "The first photo came out with Jonah's own shadow across the numbers. The dark shape wiped out the very figures he was trying to save. He learned fast to stand to the side of the light. He held the phone at an angle that caught the ink without catching himself. The second photo was better. The third was almost perfect. By the end of the afternoon, he had a system.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n06c4_0",
+          "label": "Take the four lines a year approach.",
+          "target": "n07d0"
+        }
+      ]
+    },
+    {
+      "id": "n06c5",
+      "body": "There was no 1917 volume and no 1918 volume. There was no note anywhere saying where they had gone. The gap on the shelf was the width of two fingers. The dust in it was the same grey as the dust on either side. That meant the books had been missing for a very long time. Jonah put his fingers into the gap and felt the rough wood. The loss of those two years felt like a question that no one alive could answer.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n06c5_0",
+          "label": "Take the whole record but only for the Bramleys.",
+          "target": "n07d1"
+        }
+      ]
+    },
+    {
+      "id": "n06c6",
+      "body": "Jonah ate toast standing up at nine at night with cold hands. The laptop was still glowing on the shed bench behind him. Ada poured tea and said this was what the work was, mostly, and always had been: late nights and cold fingers and the feeling that you had not done enough. She said it without complaint, as a fact. Jonah understood that she was not warning him off but welcoming him in.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n06c6_0",
+          "label": "Take the hive counts as well.",
+          "target": "n07d2"
+        }
+      ]
+    },
+    {
+      "id": "e06_0",
+      "body": "Jonah started at 1911, meaning to type everything: every line, every note, every observation. By the fourth evening, the pages blurred in front of his eyes and the numbers stopped meaning anything. The six weeks were shorter than they had been, and the task was larger than it had seemed. The laptop sat on the bench with only twelve years completed. The remaining century pressed down like a weight. The deadline was no longer a distant thing but something he could feel in his chest when he breathed. He had tried to do all of it at once, and all of it had been too much.",
+      "is_ending": true,
+      "ending": {
+        "id": "e06_0",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "Forty Thousand Lines"
+      }
+    },
+    {
+      "id": "n07d0",
+      "body": "First bloom, full bloom, last frost, first picking: those were the four dates that mattered. They told the story of the orchard year by year. A century of four dates was four hundred and fifty-six numbers instead of forty thousand. Four hundred and fifty-six was a number you could hold in your head. It was a task that could be finished before the deadline. Tobe set up the spreadsheet with four columns and a hundred and fourteen rows. The empty cells looked almost manageable, like a field waiting to be planted.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n07d0_0",
+          "label": "Set up a check by two people.",
+          "target": "n08d0"
+        },
+        {
+          "id": "c_n07d0_1",
+          "label": "Set up a rule for unreadable figures.",
+          "target": "n08d1"
+        },
+        {
+          "id": "c_n07d0_2",
+          "label": "Bring Mrs Cassar in properly.",
+          "target": "n08d2"
+        }
+      ]
+    },
+    {
+      "id": "n07d1",
+      "body": "One row of trees all the way back, the Bramleys only, was fewer numbers. It was also a much easier argument to explain out loud to somebody who was in a hurry. You could point at the row and say, these trees, this record, this century. The person listening could see the trees with their own eyes. The rest of the orchard would have to speak for itself later. But for now the Bramleys were the case, and the case was simple enough to fit in a single sentence.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n07d1_0",
+          "label": "Bring Dr Abara up the hill.",
+          "target": "n08d3"
+        },
+        {
+          "id": "c_n07d1_1",
+          "label": "Bring the school class in.",
+          "target": "n08d4"
+        },
+        {
+          "id": "c_n07d1_2",
+          "label": "Go and find the missing volumes.",
+          "target": "n08d5"
+        }
+      ]
+    },
+    {
+      "id": "n07d2",
+      "body": "Mrs Cassar had thirty years of her own hive records and was willing to share them. She wanted it understood that her early counts were done differently. She had changed her method in 2005 and again in 2014. The numbers from before and after those years were not quite the same thing. \"I'm not pretending otherwise,\" she said. The way she said it made clear that pretending otherwise was the thing she would not do, under any circumstances, for anyone.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n07d2_0",
+          "label": "Go and see Priya Raval at the council.",
+          "target": "n08d6"
+        },
+        {
+          "id": "c_n07d2_1",
+          "label": "Print the first proper chart.",
+          "target": "n08c0"
+        },
+        {
+          "id": "c_n07d2_2",
+          "label": "Walk the frost pocket at dawn.",
+          "target": "n08c1"
+        }
+      ]
+    },
+    {
+      "id": "n07d3",
+      "body": "The archivist, Mrs Okonkwo, offered a shelf in a room with a stable temperature. She offered a receipt on proper letterhead, and the right for Ada to see the notebooks any weekday she liked. The room was on the first floor, and the window faced north so the light would not fade the ink. The door locked with a key that only two people had. It was the best offer anyone was going to make. It meant the notebooks would outlast the argument, whatever the argument decided.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n07d3_0",
+          "label": "Sort the notebooks by hand.",
+          "target": "n08c2"
+        },
+        {
+          "id": "c_n07d3_1",
+          "label": "Wait outside the council office.",
+          "target": "n08c3"
+        },
+        {
+          "id": "c_n07d3_2",
+          "label": "Carry the carrier bags up the hill.",
+          "target": "n08c4"
+        }
+      ]
+    },
+    {
+      "id": "n07d4",
+      "body": "Dr Abara was careful on the phone, her voice slow and exact. She said a long unbroken local series was truly rare. It was one of the things ecologists hoped to find and almost never did. But it was only evidence, she said, if somebody could show how it had been measured and by whom. Method was everything. Without method, a hundred and fourteen years was just a hundred and fourteen years of someone writing things down. And writing things down was not science.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n07d4_0",
+          "label": "Let Tobe explain the spreadsheet.",
+          "target": "n08c5"
+        },
+        {
+          "id": "c_n07d4_1",
+          "label": "Look at the chart for a long time.",
+          "target": "n08c6"
+        },
+        {
+          "id": "c_n07d4_2",
+          "label": "Decide the chart is enough on its own.",
+          "target": "e08_0"
+        }
+      ]
+    },
+    {
+      "id": "n07d5",
+      "body": "Tobe put the bloom dates on one axis and the years on the other. The shape that came out was not subtle. The line moved eleven days earlier across the century, a steady creep that anybody could see. The room went quiet while they all looked at it. The quiet said more than words would have. The chart was no longer an argument. It was a fact, made visible, and facts did not need to be defended.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n07d5_0",
+          "label": "Guess at the unreadable figures.",
+          "target": "e08_1"
+        },
+        {
+          "id": "c_n07d5_1",
+          "label": "Set up a check by two people.",
+          "target": "n08d0"
+        },
+        {
+          "id": "c_n07d5_2",
+          "label": "Set up a rule for unreadable figures.",
+          "target": "n08d1"
+        }
+      ]
+    },
+    {
+      "id": "n07d6",
+      "body": "Thirty pairs of hands could type a century in a fortnight, working in shifts on Thursday afternoons. Thirty pairs of hands could also put a hundred small errors into the spreadsheet. Those errors would be hard to find and impossible to explain later. Jonah sat in the school hall and imagined the room full of people typing, the clatter of keyboards and the focus. He could not decide whether he was picturing a solution or a new problem.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n07d6_0",
+          "label": "Bring Mrs Cassar in properly.",
+          "target": "n08d2"
+        },
+        {
+          "id": "c_n07d6_1",
+          "label": "Bring Dr Abara up the hill.",
+          "target": "n08d3"
+        },
+        {
+          "id": "c_n07d6_2",
+          "label": "Bring the school class in.",
+          "target": "n08d4"
+        }
+      ]
+    },
+    {
+      "id": "n07d7",
+      "body": "If a single date was out by a fortnight, the whole chart could be questioned. Faulks would only need one error to say the rest could not be trusted. Everybody in the kitchen knew it. The knowledge sat in the middle of the table like a cold cup of tea. Nobody wanted to be the one to say that the whole task might depend on getting every digit exactly right. But the fact was there, unspoken, and it made every keystroke feel heavier than it should.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n07d7_0",
+          "label": "Go and find the missing volumes.",
+          "target": "n08d5"
+        },
+        {
+          "id": "c_n07d7_1",
+          "label": "Go and see Priya Raval at the council.",
+          "target": "n08d6"
+        },
+        {
+          "id": "c_n07d7_2",
+          "label": "Print the first proper chart.",
+          "target": "n08c0"
+        }
+      ]
+    },
+    {
+      "id": "n07d8",
+      "body": "Ada said she had never once thought of the notebooks as an argument. They were a record, a habit, a way of marking the days. She had written the day up every evening since she was twenty-one because her mother had done it and her grandmother before that. The idea of those careful pages being used to fight a developer made her uneasy in a way she could not quite explain. \"I'm not sure I like them becoming a weapon,\" she said. The word hung in the air of the shed, sharp and strange.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n07d8_0",
+          "label": "Walk the frost pocket at dawn.",
+          "target": "n08c1"
+        },
+        {
+          "id": "c_n07d8_1",
+          "label": "Sort the notebooks by hand.",
+          "target": "n08c2"
+        },
+        {
+          "id": "c_n07d8_2",
+          "label": "Wait outside the council office.",
+          "target": "n08c3"
+        }
+      ]
+    },
+    {
+      "id": "e07_0",
+      "body": "The notebooks went into the temperature-stable room at the archive. Mrs Okonkwo catalogued them under LOCAL WEATHER: ORCHARD HILL, 1911 TO PRESENT. They were safe forever, the paper protected from damp and sunlight and the slow decay of time. Nobody made the argument. The objection window closed without a single page of the record being used as evidence. The orchard was surveyed again in August by the same method, by the same person, and the result was the same. What Jonah had wanted to say was still there, unspoken, between the lines of every notebook on the shelf.",
+      "is_ending": true,
+      "ending": {
+        "id": "e07_0",
+        "valence": "neutral",
+        "kind": "discovery",
+        "title": "Safe on a Better Shelf"
+      }
+    },
+    {
+      "id": "e07_1",
+      "body": "The chart went round the neighbourhood in an evening. It passed from Tobe's laptop to a phone and then another and then another. It came back the next morning with a correction. It was a date someone's grandfather recalled differently. Jonah could not answer the correction because he had sent the chart before it was checked. After that, people read his next message more slowly and carefully. The trust that had carried the work was harmed in a way he could not fix by saying sorry. The chart was mostly right. But mostly was not enough.",
+      "is_ending": true,
+      "ending": {
+        "id": "e07_1",
+        "valence": "neutral",
+        "kind": "setback",
+        "title": "Sent Before It Was Checked"
+      }
+    },
+    {
+      "id": "n08d0",
+      "body": "Two people typed every page. They sat at opposite ends of the school hall so they could not see each other's screens. Tobe's laptop compared the two versions and found eleven mismatches in the first hundred pages. A three was a five, a date was flipped, a word was read wrong. Eleven errors in a hundred pages was not many. But it proved the double-typing was needed and the work could not be done by one person alone.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n08d0_0",
+          "label": "Ask Raval exactly what she can accept.",
+          "target": "n09d0"
+        },
+        {
+          "id": "c_n08d0_1",
+          "label": "Ask Abara to write about the frost pocket.",
+          "target": "n09d1"
+        },
+        {
+          "id": "c_n08d0_2",
+          "label": "Ask the archive to write a custody note.",
+          "target": "n09d2"
+        }
+      ]
+    },
+    {
+      "id": "n08d1",
+      "body": "Anything truly unclear was marked with a question mark rather than guessed. The marked ones were kept in their own list at the bottom of the spreadsheet for all to see. The list was not long, just nineteen entries out of four hundred and fifty-six. They were a few moments where the ink had failed or a hand had wobbled. By putting the gaps in plain sight, Jonah hid nothing. That openness was a strength of its own.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n08d1_0",
+          "label": "Ask Mrs Cassar to date her method changes.",
+          "target": "n09d3"
+        },
+        {
+          "id": "c_n08d1_1",
+          "label": "Ask what Faulks would say to this.",
+          "target": "n09d4"
+        },
+        {
+          "id": "c_n08d1_2",
+          "label": "Ask the paper to run something.",
+          "target": "n09d5"
+        }
+      ]
+    },
+    {
+      "id": "n08d2",
+      "body": "Mrs Cassar came to the shed with two carrier bags of hive records. The notebooks were stacked inside with their spines facing the same way. She had one rule, which she gave before she let anyone touch them. Nobody was to pretend her counts were more exact than they were. Her early years were rough guesses, she said. She would not have them dressed up as firm numbers. \"I won't be made a liar of after the fact,\" she said. She said it looking straight at Jonah, and he nodded.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n08d2_0",
+          "label": "Ask the developer for their survey data.",
+          "target": "n09d6"
+        },
+        {
+          "id": "c_n08d2_1",
+          "label": "Ask Ada about 1917.",
+          "target": "n09d7"
+        },
+        {
+          "id": "c_n08d2_2",
+          "label": "Ask the school to keep the Thursday hall.",
+          "target": "n09d8"
+        }
+      ]
+    },
+    {
+      "id": "n08d3",
+      "body": "Dr Abara walked the rows for two hours in the rain, her coat getting dark with water, and said almost nothing. At the bottom of the hill she stopped by the pond and looked back up the slope. Then she asked if anybody had ever measured the frost pocket. The question hung in the wet air. Jonah saw that he had walked past that dip in the ground a hundred times without ever thinking to put a thermometer in it. Abara nodded slowly, as if the lack of an answer was itself an answer.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n08d3_0",
+          "label": "Take the newspaper offer and stop there.",
+          "target": "e09_0"
+        },
+        {
+          "id": "c_n08d3_1",
+          "label": "Say something about Faulks you cannot support.",
+          "target": "e09_1",
+          "condition": {
+            "==": [
+              {
+                "var": "did_ask_whether_notebooks"
+              },
+              false
+            ]
+          }
+        },
+        {
+          "id": "c_n08d3_1_cq_did_ask_whether_notebooks",
+          "label": "Say something about Faulks you cannot support.",
+          "target": "cq_payoff_did_ask_whether_notebooks",
+          "condition": {
+            "==": [
+              {
+                "var": "did_ask_whether_notebooks"
+              },
+              true
+            ]
+          }
+        },
+        {
+          "id": "c_n08d3_2",
+          "label": "Ask Raval exactly what she can accept.",
+          "target": "n09d0"
+        }
+      ]
+    },
+    {
+      "id": "cq_payoff_did_ask_whether_notebooks",
+      "body": "Jonah recalled the loose sheet from 1952. It was Ada's mother's list of strange events, and he pulled it from the notebook. The list had a bloom in November 1948 and a frost in June 1953. It proved the orchard had done odd things before. Those things had been written down, checked, and found to be real. Instead of blaming Faulks, Jonah showed Abara the list. He asked if a pattern of odd events was itself proof. Abara read it and said softly, \"Yes. That is exactly what it is.\" The blame faded before it was spoken, and the argument grew stronger.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_cq_payoff_did_ask_whether_notebooks",
+          "label": "Ask Raval exactly what she can accept.",
+          "target": "n09d0"
+        }
+      ]
+    },
+    {
+      "id": "n08d4",
+      "body": "The Thursday hall filled with thirty people typing. The noise was huge and strange in a room that usually held assemblies and lunch lines. Keyboards clattered. The young ones asked questions and the older ones peered at the faded pages. By four in the afternoon the 1930s were done. Mrs Cassar brought tea in a flask and Ada walked between the tables, looking at the screens. The work that had seemed too big in the shed became simple and shared in a room full of people.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n08d4_0",
+          "label": "Ask Abara to write about the frost pocket.",
+          "target": "n09d1"
+        },
+        {
+          "id": "c_n08d4_1",
+          "label": "Ask the archive to write a custody note.",
+          "target": "n09d2"
+        },
+        {
+          "id": "c_n08d4_2",
+          "label": "Ask Mrs Cassar to date her method changes.",
+          "target": "n09d3"
+        }
+      ]
+    },
+    {
+      "id": "n08d5",
+      "body": "Two volumes were missing from the shelf, 1917 and 1918. Somebody must have taken them somewhere. The shed was not the only building on this hill. There was the old packing shed down by the road. There was the stone bothy that had been a home during the war. And there was the loft above the garage where Ada's father had kept his tools. Somewhere in one of those spaces, or somewhere else at all, two years of weather and blossom might still be waiting to be found.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n08d5_0",
+          "label": "Ask what Faulks would say to this.",
+          "target": "n09d4"
+        },
+        {
+          "id": "c_n08d5_1",
+          "label": "Ask the paper to run something.",
+          "target": "n09d5"
+        },
+        {
+          "id": "c_n08d5_2",
+          "label": "Ask the developer for their survey data.",
+          "target": "n09d6"
+        }
+      ]
+    },
+    {
+      "id": "n08d6",
+      "body": "Priya Raval was the council's ecology officer. She had eleven sites on her desk this month and a phone that rang every twelve minutes. She told Jonah plainly, without being mean, that a shed full of notebooks was not proof yet. Proof needed a method, a clear chain of care, and a way for anyone to check it. Right now the notebooks were just a very long diary kept by people who were not scientists. \"I'm not saying it isn't useful,\" she said. \"I'm saying it isn't ready.\"",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n08d6_0",
+          "label": "Ask Ada about 1917.",
+          "target": "n09d7"
+        },
+        {
+          "id": "c_n08d6_1",
+          "label": "Ask the school to keep the Thursday hall.",
+          "target": "n09d8"
+        },
+        {
+          "id": "c_n08d6_2",
+          "label": "Take the newspaper offer and stop there.",
+          "target": "e09_0"
+        }
+      ]
+    },
+    {
+      "id": "n08c0",
+      "body": "The chart came off the school printer in colour. The line of bloom dates stood out against the white paper. Jonah pinned it to the shed door with four drawing pins. It stayed there through a week of wind and one night of rain. The rain got the bottom corner and made the paper ripple, but the line was still clear. People walking past the orchard stopped to look at it. The chart was not proof yet, but it was public. And that was a start.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n08c0_0",
+          "label": "Say something about Faulks you cannot support.",
+          "target": "e09_1"
+        }
+      ]
+    },
+    {
+      "id": "n08c1",
+      "body": "At half past six in the morning, the low ground by the pond was white with frost, and the top of the hill was bare. The line between the two was as clear as a drawn edge. It ran along the outline where the cold air settled. The big Bramley stood right above it. Its roots were in earth that never froze as hard as the ground below. Jonah stood at the top of the slope and looked down at the frost. He saw, for the first time, that the orchard was not one place but many. And the difference between them mattered.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n08c1_0",
+          "label": "Ask Raval exactly what she can accept.",
+          "target": "n09d0"
+        }
+      ]
+    },
+    {
+      "id": "n08c2",
+      "body": "The nine hands sorted into four clear periods. The changeovers all fell in the same three months of three different years. Somebody had died, or left, or simply stopped writing. Another hand had taken over without a word. The record did not tell its own story. It was just the pages, one after another. The human story behind the changes was not in the notebooks but in the gaps between them. It was a story that only Ada might still recall.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n08c2_0",
+          "label": "Ask Abara to write about the frost pocket.",
+          "target": "n09d1"
+        }
+      ]
+    },
+    {
+      "id": "n08c3",
+      "body": "Jonah sat for forty minutes on a chair in a council corridor. There was a poster about recycling and a humming vending machine. By the end he had written what he wanted to say to Raval on the back of an envelope. The points were lined up in order. The wait had turned his nerves into something steadier. He was not asking for a favour, he reminded himself. He was showing evidence, and evidence did not need to be nervous.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n08c3_0",
+          "label": "Ask the archive to write a custody note.",
+          "target": "n09d2"
+        }
+      ]
+    },
+    {
+      "id": "n08c4",
+      "body": "The two carrier bags of hive records were heavier than they looked. The notebooks were thick with thirty years of counts and notes. Mrs Cassar would not let anyone else carry the older bag. That one held the 1990s notebooks. She walked up the hill holding it against her chest as though it held something fragile and irreplaceable, which it did.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n08c4_0",
+          "label": "Ask Mrs Cassar to date her method changes.",
+          "target": "n09d3"
+        }
+      ]
+    },
+    {
+      "id": "n08c5",
+      "body": "Tobe explained the spreadsheet to Ada twice. The second time he used the word ledger. He compared it to the accounts book her father had kept in the shop. After that she understood it fully. The rows and columns turned into something she knew. She nodded at the screen the way she nodded at the notebooks. She had the quiet approval of someone who knew good record-keeping when she saw it.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n08c5_0",
+          "label": "Ask what Faulks would say to this.",
+          "target": "n09d4"
+        }
+      ]
+    },
+    {
+      "id": "n08c6",
+      "body": "The line moved eleven days earlier across the century. It was a steady drift. It did not wobble the way Jonah had expected a real thing measured by hand to wobble. It was too smooth, too steady, as though the orchard was answering a question nobody had thought to ask. He stared at the chart for a long time, and the line stared back. He saw that the data was not just proof but a story, and the story was clear.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n08c6_0",
+          "label": "Ask the paper to run something.",
+          "target": "n09d5"
+        }
+      ]
+    },
+    {
+      "id": "e08_0",
+      "body": "Jonah sent the chart alone. He left out the method part, the custody note, and the double-typing records. He sent it because it was lovely and because he was tired. The council officer admired it and filed it. The thing everyone remembered later was that it was pretty. Pretty was not evidence. The chart sat in a folder while the time to object ran out. The eleven words on the gate stayed exactly as they were. The chart was right, but right was not enough.",
+      "is_ending": true,
+      "ending": {
+        "id": "e08_0",
+        "valence": "neutral",
+        "kind": "discovery",
+        "title": "Admired and Filed"
+      }
+    },
+    {
+      "id": "e08_1",
+      "body": "The guessed dates held up until Faulks found three of them. Three numbers out of four hundred and fifty-six. Each was a digit Jonah had squinted at and chosen. Once those three were wrong every one of the other four hundred and fifty-three was treated as a guess too. The chart was no longer proof but a set of claims, and claims were easy to wave off. The spreadsheet sat on Tobe's laptop, still open. Jonah closed it without saving.",
+      "is_ending": true,
+      "ending": {
+        "id": "e08_1",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "Three Wrong Numbers"
+      }
+    },
+    {
+      "id": "n09d0",
+      "body": "Priya Raval sat behind her desk. She said she could accept a data set with three things: a stated method, a named keeper, and a way for anyone to check it. She said it as though she was repeating a list she had given many times before. Then she added, almost as an extra thought, that almost nobody ever brought one. \"Most people come in here angry,\" she said. \"They don't come in with evidence.\" She looked at Jonah across the desk. Her look was not support but something closer to interest.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n09d0_0",
+          "label": "Put a thermometer in the frost pocket.",
+          "target": "n10d0"
+        },
+        {
+          "id": "c_n09d0_1",
+          "label": "Request the survey data formally.",
+          "target": "n10d1"
+        },
+        {
+          "id": "c_n09d0_2",
+          "label": "Write the method section.",
+          "target": "n10d2"
+        }
+      ]
+    },
+    {
+      "id": "n09d1",
+      "body": "Dr Abara would write two pages on cold air drainage. It was about how frost settled in the low ground and what it meant for the orchard's life. But only if someone took good readings for six weeks. Taking good readings meant a thermometer at dawn, every day. It meant someone to read it, and a notebook to write the numbers in. The rule was fair and the task was big. Jonah saw that Abara was not being hard but careful, because careful was what set science apart from opinion.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n09d1_0",
+          "label": "Write to the eight named hands.",
+          "target": "n10d3"
+        },
+        {
+          "id": "c_n09d1_1",
+          "label": "Go through the parish records for 1917.",
+          "target": "n10d4"
+        },
+        {
+          "id": "c_n09d1_2",
+          "label": "Decide what to do about the paper.",
+          "target": "n10d5"
+        }
+      ]
+    },
+    {
+      "id": "n09d2",
+      "body": "Mrs Okonkwo at the archive would put on paper where every volume had been since the day it arrived. This sounded dull and like office work, but it turned out to matter a great deal. The custody note was a chain of proof. It tied each notebook to the archive and the archive to the orchard. It meant that nobody could claim the data had been changed or made up later. Dull was exactly what the argument needed, and the archivist knew that better than anyone.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n09d2_0",
+          "label": "Decide who signs the objection.",
+          "target": "n10d6"
+        },
+        {
+          "id": "c_n09d2_1",
+          "label": "Read at dawn in the rain.",
+          "target": "n10c0"
+        },
+        {
+          "id": "c_n09d2_2",
+          "label": "File the request and wait.",
+          "target": "n10c1"
+        }
+      ]
+    },
+    {
+      "id": "n09d3",
+      "body": "Mrs Cassar could say exactly when she changed frames. She could say when she switched from one type of hive to another, and when she changed how she counted searching bees. The dates were in her own notebooks, written down at the time. They turned thirty rough years of data into three clean blocks. Each block was steady within itself. The shifts between them were written down and easy to explain. This was exactly the kind of openness that Priya Raval had asked for.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n09d3_0",
+          "label": "Draft the method section badly.",
+          "target": "n10c2"
+        },
+        {
+          "id": "c_n09d3_1",
+          "label": "Post the four letters.",
+          "target": "n10c3"
+        },
+        {
+          "id": "c_n09d3_2",
+          "label": "Sit at the Tuesday desk.",
+          "target": "n10c4"
+        }
+      ]
+    },
+    {
+      "id": "n09d4",
+      "body": "Tobe wrote out the objections he would make if he were Faulks, typing them on his laptop with the screen tilted so everyone could see. The list was four items long: the record was not continuous, the observers were not trained, the method was inconsistent, and the data had not been independently checked. Every item on the list was fair. Jonah read them and felt the wind go out of him, because Tobe had not been trying to be cruel but thorough, and thorough was frightening.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n09d4_0",
+          "label": "Pin the second chart beside the first.",
+          "target": "n10c5"
+        },
+        {
+          "id": "c_n09d4_1",
+          "label": "Let Ada sign nothing yet.",
+          "target": "n10c6"
+        },
+        {
+          "id": "c_n09d4_2",
+          "label": "Publish everything the moment you have it.",
+          "target": "e10_0"
+        }
+      ]
+    },
+    {
+      "id": "n09d5",
+      "body": "The local paper would take a picture of Ada with the notebooks, the photographer said. They would run a story about the century of records and the October flowers. It would be lovely. It was the kind of story people read and remembered. It would also put the shed on the front page and the argument in front of everyone who might decide it. Public notice was a tool. Like any tool it could be used with care or not, and Jonah had to choose which.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n09d5_0",
+          "label": "Skip the method section.",
+          "target": "e10_1"
+        },
+        {
+          "id": "c_n09d5_1",
+          "label": "Put a thermometer in the frost pocket.",
+          "target": "n10d0"
+        },
+        {
+          "id": "c_n09d5_2",
+          "label": "Request the survey data formally.",
+          "target": "n10d1"
+        }
+      ]
+    },
+    {
+      "id": "n09d6",
+      "body": "The law let you ask for the raw data the survey was built on. Just the facts behind the eleven words. The developer had to hand it over within twenty working days. Jonah filled in the form on the council website. A reference number popped up on screen when he sent it. The request felt real in a way nothing else had. Twenty working days is four weeks, and the objection window was six. The sums sat in Jonah's mind like a clock ticking.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n09d6_0",
+          "label": "Write the method section.",
+          "target": "n10d2"
+        },
+        {
+          "id": "c_n09d6_1",
+          "label": "Write to the eight named hands.",
+          "target": "n10d3"
+        },
+        {
+          "id": "c_n09d6_2",
+          "label": "Go through the parish records for 1917.",
+          "target": "n10d4"
+        }
+      ]
+    },
+    {
+      "id": "n09d7",
+      "body": "Ada said her gran never talked about the war years on the hill, except once. That one time was about a horse. The army took the horse in 1917 and brought it back in 1919. Nobody ever said why. The story was told so seldom that Ada was not sure she had it right. The missing notebooks vanished in those same years. The horse was most likely not linked. But it was the only story anyone had from that time. It felt like a thread worth pulling.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n09d7_0",
+          "label": "Decide what to do about the paper.",
+          "target": "n10d5"
+        },
+        {
+          "id": "c_n09d7_1",
+          "label": "Decide who signs the objection.",
+          "target": "n10d6"
+        },
+        {
+          "id": "c_n09d7_2",
+          "label": "Read at dawn in the rain.",
+          "target": "n10c0"
+        }
+      ]
+    },
+    {
+      "id": "n09d8",
+      "body": "The school hall could be booked for the rest of term if someone in charge signed. The only someone free was Jonah. The caretaker gave him the form and a pen. Jonah wrote his name on the line. He felt the weight of it settle on his shoulders. He was twelve and he had just signed for a hall. The hall was full of people typing up a century. The century was going to be a row. And the row was now his as much as anyone's.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n09d8_0",
+          "label": "File the request and wait.",
+          "target": "n10c1"
+        },
+        {
+          "id": "c_n09d8_1",
+          "label": "Draft the method section badly.",
+          "target": "n10c2"
+        },
+        {
+          "id": "c_n09d8_2",
+          "label": "Post the four letters.",
+          "target": "n10c3"
+        }
+      ]
+    },
+    {
+      "id": "e09_0",
+      "body": "The photo of Ada with an open notebook ran on page five. It was really lovely. She sat in the shed with light falling across her hands. The notebook was open to a page from 1947. She was not smiling, but she was not not smiling either. People liked the picture and shared it. The objection deadline passed while they were doing that. The photo was not just part of the fight. It was the fight. And it had not been enough. The eleven words on the gate stayed just as they were. The road stayed on the map, running straight through the row the big Bramley stood in.",
+      "is_ending": true,
+      "ending": {
+        "id": "e09_0",
+        "valence": "neutral",
+        "kind": "discovery",
+        "title": "Page Five, Lovely Photograph"
+      }
+    },
+    {
+      "id": "e09_1",
+      "body": "Jonah said, in front of others, that the survey was made to order. That Faulks knew what the builder wanted and gave it to him. He believed this deeply and fully. Yet he could not show one scrap of proof. The charge went round the room and came back changed. After that, every honest thing Jonah said arrived with that claim stuck to it. He had said the one thing he could not prove. It stained all his other words, like ink dropped in water. The notebooks were still true. But the person speaking for them was no longer trusted. And trust was the one thing the fight could not do without.",
+      "is_ending": true,
+      "ending": {
+        "id": "e09_1",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "The Thing You Could Not Show"
+      }
+    },
+    {
+      "id": "n10d0",
+      "body": "They used two thermometers. One sat in the frost pocket by the pond and one at the top of the hill. Someone read them at dawn each day for six weeks. The readings went into a new notebook that Jonah bought from the stationer's in town. The notebook had a blue cover, a date on the front, and a column for notes. The frost pocket was colder by as much as four degrees on some mornings. The gap was clear and steady. That meant it was proof.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n10d0_0",
+          "label": "Read the survey data when it arrives.",
+          "target": "n11d0"
+        },
+        {
+          "id": "c_n10d0_1",
+          "label": "Compare the survey dates to the weather.",
+          "target": "n11d1"
+        },
+        {
+          "id": "c_n10d0_2",
+          "label": "Compare the species list to Ada.",
+          "target": "n11d2"
+        }
+      ]
+    },
+    {
+      "id": "n10d1",
+      "body": "The request went in on a form with a reference number. A reply came the same day, in an email from the council's data officer. The email was two lines long and really polite. It was the first time any of this had felt real in a way Jonah could point to. Here was a number, a date, and a promise the data would come in twenty working days. The clock had started, and its ticking was almost a comfort.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n10d1_0",
+          "label": "Find out where the 1917 volumes went.",
+          "target": "n11d3"
+        },
+        {
+          "id": "c_n10d1_1",
+          "label": "Go and look for the volumes.",
+          "target": "n11d4"
+        },
+        {
+          "id": "c_n10d1_2",
+          "label": "Answer the four objections in writing.",
+          "target": "n11d5"
+        }
+      ]
+    },
+    {
+      "id": "n10d2",
+      "body": "Someone had to write down how the notebooks were kept, copied, checked, and stored. That someone turned out to be Jonah. He sat at the kitchen table with a blank screen on the laptop. The method part was the hardest writing anyone did. It meant you had to explain things that felt plain and back up choices made long before Jonah was born. Each sentence had to be true and able to be checked. The truth was messy. It needed careful words and a lot of deleting.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n10d2_0",
+          "label": "Ask Abara to read the whole dossier.",
+          "target": "n11d6"
+        },
+        {
+          "id": "c_n10d2_1",
+          "label": "Ask Raval to look at a draft.",
+          "target": "n11d7"
+        },
+        {
+          "id": "c_n10d2_2",
+          "label": "Ask Halvor from the developer what he wants.",
+          "target": "n11d8"
+        }
+      ]
+    },
+    {
+      "id": "n10d3",
+      "body": "Four of the nine writers had living family in the city. Ada knew the names and roughly where they lived. A letter to each of them could be a kindness or a rude shock, based on how it was written. Jonah sat with a blank page. He tried to find words that would not feel like a demand. The families might know nothing about the notebooks. Or they might have tales that were never put on paper. Asking felt like opening a door you could not shut again.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n10d3_0",
+          "label": "Accept the offer of a plaque.",
+          "target": "e11_0"
+        },
+        {
+          "id": "c_n10d3_1",
+          "label": "Go after Faulks personally.",
+          "target": "e11_1"
+        },
+        {
+          "id": "c_n10d3_2",
+          "label": "Read the survey data when it arrives.",
+          "target": "n11d0",
+          "condition": {
+            "==": [
+              {
+                "var": "did_ask_whether_notebooks"
+              },
+              false
+            ]
+          }
+        },
+        {
+          "id": "c_n10d3_2_cq_did_ask_whether_notebooks",
+          "label": "Read the survey data when it arrives.",
+          "target": "cq_payoff_did_ask_whether_notebooks_site2",
+          "condition": {
+            "==": [
+              {
+                "var": "did_ask_whether_notebooks"
+              },
+              true
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "cq_payoff_did_ask_whether_notebooks_site2",
+      "body": "When the survey data came, Jonah knew what to look for. The loose sheet from 1952 had shown the oddities were not chance. They bunched up in years when the winter was mild or the spring came late. He checked the survey's four visits against Ada's mother's list. He found August had been the driest month in a dry year. An orchard in drought looks nothing like an orchard in bloom. The pattern was there, and he had the proof to show it.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_cq_payoff_did_ask_whether_notebooks_site2",
+          "label": "Read the survey data when it arrives.",
+          "target": "n11d0"
+        }
+      ]
+    },
+    {
+      "id": "n10d4",
+      "body": "The parish records sat in the same archive as the notebooks. They were kept in the same cool room, just on a different shelf. Mrs Okonkwo brought the boxes without being asked. The Tuesday desk was patient. Somewhere in those boxes was the reason two books left this hill in 1917 and never came back. Jonah opened the first box. The paper smell was just like the shed: old, dry, and a bit sweet. The past waited in there. It could be read if you knew how.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n10d4_0",
+          "label": "Compare the survey dates to the weather.",
+          "target": "n11d1"
+        },
+        {
+          "id": "c_n10d4_1",
+          "label": "Compare the species list to Ada.",
+          "target": "n11d2"
+        },
+        {
+          "id": "c_n10d4_2",
+          "label": "Find out where the 1917 volumes went.",
+          "target": "n11d3"
+        }
+      ]
+    },
+    {
+      "id": "n10d5",
+      "body": "The paper would run the story when Jonah said so. Running it early made a splash. A splash was useful just once. After the first time, people stopped hearing it the same way. The editor, a man named Carver, had been at the paper for thirty years. He said this without any push, just as a fact, and left the choice on Jonah's side of the desk. The photo of Ada was ready. The headline was written. The whole thing was waiting for a date only Jonah could pick.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n10d5_0",
+          "label": "Go and look for the volumes.",
+          "target": "n11d4"
+        },
+        {
+          "id": "c_n10d5_1",
+          "label": "Answer the four objections in writing.",
+          "target": "n11d5"
+        },
+        {
+          "id": "c_n10d5_2",
+          "label": "Ask Abara to read the whole dossier.",
+          "target": "n11d6"
+        }
+      ]
+    },
+    {
+      "id": "n10d6",
+      "body": "The objection form had one line for a name. Ada was eighty-one years old. Her name on the form meant the council would send the replies, questions, and letters from the developer's lawyers. She would also get the final decision. The council would write back in official words. The people writing would be paid to answer. Ada would have to read whatever they sent. Jonah looked at the form and the blank line. He saw that putting Ada's name there was not just a signature. It was a burden. He was not sure he had the right to ask.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n10d6_0",
+          "label": "Ask Raval to look at a draft.",
+          "target": "n11d7"
+        },
+        {
+          "id": "c_n10d6_1",
+          "label": "Ask Halvor from the developer what he wants.",
+          "target": "n11d8"
+        },
+        {
+          "id": "c_n10d6_2",
+          "label": "Accept the offer of a plaque.",
+          "target": "e11_0"
+        }
+      ]
+    },
+    {
+      "id": "n10c0",
+      "body": "The dawn readings were the most dull and most hard to keep up. It was six-thirty every single morning. The grass was wet and the sky was barely light. The thermometers had to be read before the sun hit the ground. Tobe did nineteen of the forty-two readings. He turned up on his bike with his hood up and his breath misting. He never once complained. That was either friendship, stubbornness, or both.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n10c0_0",
+          "label": "Go after Faulks personally.",
+          "target": "e11_1"
+        }
+      ]
+    },
+    {
+      "id": "n10c1",
+      "body": "Twenty working days is four weeks. The window to object was six. This math sat on the kitchen table like a third person. If the data came on time, there would be two weeks to study it. If it came late, there would be less, or none. Every day that passed made the gap smaller. The waiting was a kind of work itself. It was harder than typing or counting because there was nothing to do but wait.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n10c1_0",
+          "label": "Read the survey data when it arrives.",
+          "target": "n11d0"
+        }
+      ]
+    },
+    {
+      "id": "n10c2",
+      "body": "The first draft of the method part was three pages long. It was just a list of what Jonah did, in the order he did it. He sent it to Dr Abara. She sent it back the next morning with one word written at the top. The word was \"why.\" Not what or how or when, but why. Jonah then knew he had told the steps without ever saying the reason behind them. And the reason was the only part that mattered.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n10c2_0",
+          "label": "Compare the survey dates to the weather.",
+          "target": "n11d1"
+        }
+      ]
+    },
+    {
+      "id": "n10c3",
+      "body": "The four letters went into the postbox at the bottom of the hill on a Tuesday afternoon. Jonah felt worse about it than he had expected. The letters were polite and careful. They asked only for news. But they were also a knock on the door of people who might not want to be reminded. They might not want to think about the orchard, the notebooks, or the person who wrote in them. The postbox clanged shut and the letters were gone. Now there was nothing to do but wait for answers that might never come.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n10c3_0",
+          "label": "Compare the species list to Ada.",
+          "target": "n11d2"
+        }
+      ]
+    },
+    {
+      "id": "n10c4",
+      "body": "Mrs Okonkwo brought the 1917 parish box. She left Jonah alone with it in the reading room. The room was so still he could hear the air hum in the ceiling. The box was the same grey as the shelves. The lid opened with a soft push. Inside were paper folders that had not been touched for decades. Somewhere in this box was the answer to a question that had sat on Ada's shelf for over a hundred years.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n10c4_0",
+          "label": "Find out where the 1917 volumes went.",
+          "target": "n11d3"
+        }
+      ]
+    },
+    {
+      "id": "n10c5",
+      "body": "The frost pocket readings went up on the shed door. They sat beside the bloom chart, two lines on two graphs. Together they said something neither of them said alone. The bloom dates were shifting earlier. The frost pocket was colder than the top of the hill. The link between the two was clear to anyone who looked. The charts were not beautiful the way the first chart had been beautiful. But they were true, and true was better.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n10c5_0",
+          "label": "Go and look for the volumes.",
+          "target": "n11d4"
+        }
+      ]
+    },
+    {
+      "id": "n10c6",
+      "body": "Ada said she would sign when there was something worth signing, and that she had watched people sign things too early her whole life. She had seen her father sign a contract that lost him half the hill, and her mother sign a letter that ended a friendship, and she was not going to put her name on something that was not ready. \"The signature is the last thing,\" she said. \"Not the first.\" Jonah nodded and closed the form and did not ask again.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n10c6_0",
+          "label": "Answer the four objections in writing.",
+          "target": "n11d5"
+        }
+      ]
+    },
+    {
+      "id": "e10_0",
+      "body": "The whole file went online at once. It was unchecked and complete. It went on the village site and was shared on every phone in the parish. Four hundred people read it in the first week. The comments were long and full of praise for the work. But no one with power answered it. The council said they got it and filed it away. The builder's lawyers sent a note that they had seen it. The window to object closed. The file was never used in an official response. Four hundred readers, and not one of them was the person who could change the result.",
+      "is_ending": true,
+      "ending": {
+        "id": "e10_0",
+        "valence": "neutral",
+        "kind": "discovery",
+        "title": "Four Hundred Readers, No Answer"
+      }
+    },
+    {
+      "id": "e10_1",
+      "body": "The numbers went in without any account of how they were made, just the four hundred and fifty-six dates and the chart and a covering letter that Jonah had written at midnight. Priya Raval sent them back the same week with a note that was polite and final: the data could not be considered without a stated method, and the objection would proceed on the basis of the original survey. The method section was still on the laptop, half-written, and the deadline was closer now than it had ever been, and the numbers by themselves had not been enough.",
+      "is_ending": true,
+      "ending": {
+        "id": "e10_1",
+        "valence": "neutral",
+        "kind": "setback",
+        "title": "Numbers Without a Method"
+      }
+    },
+    {
+      "id": "n11d0",
+      "body": "The raw data came in a PDF. It was twenty-two pages of tables and notes, and it felt scant. Four visits, one line across the slope, and a list of just twenty-two plants. The note at the bottom said the site was dry at the time of the survey. That was August. August in a dry year is the worst time to see what really lives in an old orchard. Jonah read the data twice. He felt the thinness of it, a weak spot where pressure could be pushed.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n11d0_0",
+          "label": "Show that the survey was done in a drought.",
+          "target": "n12d0"
+        },
+        {
+          "id": "c_n11d0_1",
+          "label": "Go to the agricultural committee building.",
+          "target": "n12d1"
+        },
+        {
+          "id": "c_n11d0_2",
+          "label": "Get the species list checked properly.",
+          "target": "n12d2"
+        }
+      ]
+    },
+    {
+      "id": "n11d1",
+      "body": "The four survey visits fell in the driest eleven days of that August. Tobe could show this from public rain records in about nine minutes. He pulled up the Met Office data on his laptop and there it was. Four visits, all on days when the ground was dry. The plants were stressed and the orchard had shut down to save water. The survey saw the site at its least active, its least clear. The eleven words had been written based on four hours in a drought.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n11d1_0",
+          "label": "Decide what to say to Halvor.",
+          "target": "n12d3",
+          "condition": {
+            "==": [
+              {
+                "var": "did_find_who_wrote"
+              },
+              false
+            ]
+          }
+        },
+        {
+          "id": "c_n11d1_0_cq_did_find_who_wrote",
+          "label": "Decide what to say to Halvor.",
+          "target": "cq_payoff_did_find_who_wrote_site2",
+          "condition": {
+            "==": [
+              {
+                "var": "did_find_who_wrote"
+              },
+              true
+            ]
+          }
+        },
+        {
+          "id": "c_n11d1_1",
+          "label": "Decide how hard to push the frost pocket.",
+          "target": "n12d4"
+        },
+        {
+          "id": "c_n11d1_2",
+          "label": "Decide whether Ada should speak.",
+          "target": "n12d5"
+        }
+      ]
+    },
+    {
+      "id": "cq_payoff_did_find_who_wrote_site2",
+      "body": "Jonah recalled the name on the survey: D. Faulks. He thought of the note he had made in his book weeks ago. Knowing who wrote it changed the talk with Halvor. It was not a nameless report now. It was a real person's work. Jonah could ask Halvor straight out if the builder had ordered the survey in August, knowing the site would be dry. The question hit harder when you could name the surveyor.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_cq_payoff_did_find_who_wrote_site2",
+          "label": "Decide what to say to Halvor.",
+          "target": "n12d3"
+        }
+      ]
+    },
+    {
+      "id": "n11d2",
+      "body": "Ada read the list of twenty-two species. She added fourteen more from memory. She named them in the order they came with the seasons: the early violets by the pond, the midsummer orchid in the long grass, the autumn fungi on the old stumps. Then she stopped. She said she would not swear to any of them without going and looking. Memory was not proof, and she would not claim what she could not show. The list grew from twenty-two to thirty-six, but fourteen of the names had to wait for spring.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n11d2_0",
+          "label": "Decide when to release the dossier.",
+          "target": "n12d6"
+        },
+        {
+          "id": "c_n11d2_1",
+          "label": "Go down into the basement.",
+          "target": "n12c0"
+        },
+        {
+          "id": "c_n11d2_2",
+          "label": "Read the rainfall record twice.",
+          "target": "n12c1"
+        }
+      ]
+    },
+    {
+      "id": "n11d3",
+      "body": "The parish box held a receipt. It was written by hand on a scrap of paper that had been folded and refolded until the creases were soft. It recorded two orchard books lent to the farming board in August 1917 for the war effort. Under the signature line, someone had written in different ink: not returned. The receipt had been filed and forgotten. The two books had been sitting in some office for over a hundred years, waiting to be found.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n11d3_0",
+          "label": "Walk the rows with a list in hand.",
+          "target": "n12c2"
+        },
+        {
+          "id": "c_n11d3_1",
+          "label": "Leave the coffee untouched.",
+          "target": "n12c3"
+        },
+        {
+          "id": "c_n11d3_2",
+          "label": "Sit with Ada in the shed.",
+          "target": "n12c4"
+        }
+      ]
+    },
+    {
+      "id": "n11d4",
+      "body": "If the books were never returned, they were in a building that still stands somewhere in the city or its edges. The farming board had become three things and then one thing. It was a string of mergers and new names that Mrs Okonkwo traced with her finger on a chart on the archive wall. The current group kept an office in the old market building. That office had a basement. In that basement there might be a box with a hundred-year-old loan still waiting to be paid back.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n11d4_0",
+          "label": "Number every page of the dossier.",
+          "target": "n12c5"
+        },
+        {
+          "id": "c_n11d4_1",
+          "label": "Find the two volumes in a box.",
+          "target": "n12c6"
+        },
+        {
+          "id": "c_n11d4_2",
+          "label": "Keep the found volumes to yourself.",
+          "target": "e12_0"
+        }
+      ]
+    },
+    {
+      "id": "n11d5",
+      "body": "Each of the four objections Tobe had written got a paragraph and a piece of evidence, laid out in order on the page. Two of them were easy to answer: the method section covered consistency, and the custody note covered the chain of evidence. The other two were harder, because they asked questions that could not be settled by pointing at a document, and the answers required Jonah to make an argument rather than simply present one. The four paragraphs sat on the screen, and two of them were solid and two of them were not.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n11d5_0",
+          "label": "Let the deadline decide for you.",
+          "target": "e12_1",
+          "condition": {
+            "==": [
+              {
+                "var": "did_find_who_wrote"
+              },
+              false
+            ]
+          }
+        },
+        {
+          "id": "c_n11d5_0_cq_did_find_who_wrote",
+          "label": "Let the deadline decide for you.",
+          "target": "cq_payoff_did_find_who_wrote",
+          "condition": {
+            "==": [
+              {
+                "var": "did_find_who_wrote"
+              },
+              true
+            ]
+          }
+        },
+        {
+          "id": "c_n11d5_1",
+          "label": "Show that the survey was done in a drought.",
+          "target": "n12d0"
+        },
+        {
+          "id": "c_n11d5_2",
+          "label": "Go to the agricultural committee building.",
+          "target": "n12d1"
+        }
+      ]
+    },
+    {
+      "id": "cq_payoff_did_find_who_wrote",
+      "body": "Jonah recalled what he had learned about Faulks: the surveyor's other work, the pattern of reports that always matched what the client wanted. He did not have to make the charge. He could let the facts sit on the page and speak for themselves. The deadline was close, but the file was stronger now. He could let it go knowing he had put in everything that could be shown. He attached the file and pressed send.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_cq_payoff_did_find_who_wrote",
+          "label": "Show that the survey was done in a drought.",
+          "target": "n12d0"
+        }
+      ]
+    },
+    {
+      "id": "n11d6",
+      "body": "Dr Abara would read the file once, properly, and say whether she would put her name near it. She said this on the phone in the same careful voice she used when she first visited the orchard. Jonah knew she was not being unkind. She was being honest. Her name attached to a piece of proof would carry weight. Weight meant duty. She would not lend her good name to something she could not stand by. That was exactly why her support mattered.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n11d6_0",
+          "label": "Get the species list checked properly.",
+          "target": "n12d2"
+        },
+        {
+          "id": "c_n11d6_1",
+          "label": "Decide what to say to Halvor.",
+          "target": "n12d3"
+        },
+        {
+          "id": "c_n11d6_2",
+          "label": "Decide how hard to push the frost pocket.",
+          "target": "n12d4"
+        }
+      ]
+    },
+    {
+      "id": "n11d7",
+      "body": "Priya Raval was not supposed to help a person who opposed a plan, she explained. She was allowed to explain her own rules. The gap between those two things was very small. She handled it by choosing her words with the care of someone who had done this job for a long time. She could tell Jonah what the board would look for. She could not tell him if his file met that test. The line between those two things was where she stood, careful, watching him across her desk.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n11d7_0",
+          "label": "Decide whether Ada should speak.",
+          "target": "n12d5"
+        },
+        {
+          "id": "c_n11d7_1",
+          "label": "Decide when to release the dossier.",
+          "target": "n12d6"
+        },
+        {
+          "id": "c_n11d7_2",
+          "label": "Go down into the basement.",
+          "target": "n12c0"
+        }
+      ]
+    },
+    {
+      "id": "n11d8",
+      "body": "Halvor from the builder was polite and young. He bought Jonah a coffee he did not drink. The coffee sat on the table between them in a paper cup, cooling. Halvor asked a fair question in a fair voice: what would make Jonah stop? The question was not a threat and not a bribe, just a simple ask. The honesty of it was somehow worse than either. Jonah looked at the coffee and thought about the eleven words and did not answer.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n11d8_0",
+          "label": "Read the rainfall record twice.",
+          "target": "n12c1"
+        },
+        {
+          "id": "c_n11d8_1",
+          "label": "Walk the rows with a list in hand.",
+          "target": "n12c2"
+        },
+        {
+          "id": "c_n11d8_2",
+          "label": "Leave the coffee untouched.",
+          "target": "n12c3"
+        }
+      ]
+    },
+    {
+      "id": "e11_0",
+      "body": "The builder offered a saved corner of the orchard, a sign telling its story, and a plaque with Ada's name on it. The offer came in a letter on thick paper. The wording was careful and kind. The saved corner did not take in the row with the big Bramley tree. The plaque would sit on a post beside a path that led to a play area. The rest of the orchard would be eighty-two homes and a main road. The notebooks would be noted on the sign, a bit about a century of keeping records. The record itself would be complete and finished and filed in a drawer.",
+      "is_ending": true,
+      "ending": {
+        "id": "e11_0",
+        "valence": "neutral",
+        "kind": "discovery",
+        "title": "A Corner and a Plaque"
+      }
+    },
+    {
+      "id": "e11_1",
+      "body": "Jonah wrote the thing about Faulks he had wanted to write for a month. It said the survey had been shaped to fit the builder's needs. The paper put it out on a Tuesday morning. People read it, shared it, and talked about it. From that morning on, the fight was not about the orchard but about Jonah. Every claim he had made was looked at again through the lens of that charge. The notebooks became less important than the person who had shown them. The facts were still true, but the teller had become the story. The story was angry, and anger was easier to brush off than proof.",
+      "is_ending": true,
+      "ending": {
+        "id": "e11_1",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "The Argument Becomes About Jonah"
+      }
+    },
+    {
+      "id": "n12d0",
+      "body": "The four visits, the rain log, and the method section all told one story. The site had been checked in the one two-week spell of the year it looked like nothing. It was a dry August. The ground was hard and the plants were asleep. The surveyor had walked one simple line, counted what could be seen, and found nothing of value. The claim was not that Faulks did wrong. It was that the poor timing made the survey nearly useless. The proof for that was in the public record where anyone could check it.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n12d0_0",
+          "label": "Submit the objection with the full method.",
+          "target": "n13d0"
+        },
+        {
+          "id": "c_n12d0_1",
+          "label": "Submit it in the name of the orchard trust.",
+          "target": "n13d1"
+        },
+        {
+          "id": "c_n12d0_2",
+          "label": "Ask for the hearing to be public.",
+          "target": "n13d2"
+        }
+      ]
+    },
+    {
+      "id": "n12d1",
+      "body": "The new body kept a basement in the old market building. The basement had a card index that stopped in 1961. The cards were yellow. They were typed on a machine that had left faint dents in the paper. They listed every item the board had ever taken in, lent out, or bought. Jonah pulled the drawer marked 1917 and worked through the cards one by one. The air smelled of cold paper and something older. The light was on a timer that ran out every four minutes.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n12d1_0",
+          "label": "Give the developer the dossier first.",
+          "target": "n13d3"
+        },
+        {
+          "id": "c_n12d1_1",
+          "label": "Put the found volumes into the record.",
+          "target": "n13d4"
+        },
+        {
+          "id": "c_n12d1_2",
+          "label": "Ask Abara to attend in person.",
+          "target": "n13d5"
+        }
+      ]
+    },
+    {
+      "id": "n12d2",
+      "body": "To make a proper species list, someone with training had to walk the rows in May. That is when the ground plants are out, the trees have leaves, and the insects are busy. It was November. The orchard was asleep. No one could argue with that fact. The survey's list had only twenty-two species. That was thin. Jonah's list had thirty-six, but it was just a first try. The council would see the gap between a list made in August by an expert and a list made in November from memory. The only way to close the gap was to wait for spring. Spring was months away.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n12d2_0",
+          "label": "Ask Mrs Cassar to bring the hives.",
+          "target": "n13d6"
+        },
+        {
+          "id": "c_n12d2_1",
+          "label": "Ask Ada to read one page aloud.",
+          "target": "n13d7"
+        },
+        {
+          "id": "c_n12d2_2",
+          "label": "Hand it in and let the work speak.",
+          "target": "e13_0"
+        }
+      ]
+    },
+    {
+      "id": "n12d3",
+      "body": "The honest answer to Halvor's question was that nothing would make Jonah stop. Saying that out loud would close a door he might want later. The developer could offer ways to soften the blow, trade-offs, and deals. If Jonah said now that only saving the whole orchard would do, there would be no room to talk later. The words sat in his mouth, true but risky. He had to choose if being honest was worth closing a door that had not opened yet.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n12d3_0",
+          "label": "Finish the record before you finish the fight.",
+          "target": "e13_1"
+        },
+        {
+          "id": "c_n12d3_1",
+          "label": "Read the whole thing through one last time.",
+          "target": "e13_2"
+        },
+        {
+          "id": "c_n12d3_2",
+          "label": "Submit the objection with the full method.",
+          "target": "n13d0"
+        }
+      ]
+    },
+    {
+      "id": "n12d4",
+      "body": "Six weeks of dawn readings were a small but real set of facts. Dr Abara would say so in those exact words if asked. The frost pocket data showed a steady gap in warmth, up to four degrees. That gap mattered for the life of the orchard. It meant the lower ground was a different sort of home from the upper slope. Six weeks was not a year, and Abara would not pretend it was. But it was enough to show the pocket was there and could be measured. That was a start.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n12d4_0",
+          "label": "Submit it in the name of the orchard trust.",
+          "target": "n13d1"
+        },
+        {
+          "id": "c_n12d4_1",
+          "label": "Ask for the hearing to be public.",
+          "target": "n13d2"
+        },
+        {
+          "id": "c_n12d4_2",
+          "label": "Give the developer the dossier first.",
+          "target": "n13d3"
+        }
+      ]
+    },
+    {
+      "id": "n12d5",
+      "body": "Ada in a room of forty people was either the best thing Jonah had or a thing he should not have asked of her. She was eighty-one and had never spoken in public about the notebooks. Asking her to stand up in a council room and read from a page written by her mother was either a brave act or a cruel push. Jonah could not tell which. He could see her in that room, clear as day. The clear picture did not help him choose.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n12d5_0",
+          "label": "Put the found volumes into the record.",
+          "target": "n13d4"
+        },
+        {
+          "id": "c_n12d5_1",
+          "label": "Ask Abara to attend in person.",
+          "target": "n13d5"
+        },
+        {
+          "id": "c_n12d5_2",
+          "label": "Ask Mrs Cassar to bring the hives.",
+          "target": "n13d6"
+        }
+      ]
+    },
+    {
+      "id": "n12d6",
+      "body": "If they let the file out early, the builder's own experts could pick it apart with weeks left to go. If they let it out late, no one could check it. The board might just call it a last-minute trick to slow things down. There was no date that was not a choice. Each one had a cost Jonah had to weigh against the rest. The kitchen wall calendar had the final date marked in red. The empty weeks between now and then were shrinking.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n12d6_0",
+          "label": "Ask Ada to read one page aloud.",
+          "target": "n13d7"
+        },
+        {
+          "id": "c_n12d6_1",
+          "label": "Hand it in and let the work speak.",
+          "target": "e13_0"
+        },
+        {
+          "id": "c_n12d6_2",
+          "label": "Finish the record before you finish the fight.",
+          "target": "e13_1"
+        }
+      ]
+    },
+    {
+      "id": "n12c0",
+      "body": "The basement of the old market building smelled of cold paper and damp stone. The card index drawers stuck when Jonah pulled them. The light ran on a timer that cut out every four minutes, throwing the room into darkness until he found the switch and pressed it again. He worked in four-minute chunks. The cards flickered under his fingers. The past was in there somewhere, filed and forgotten, waiting for someone to pull the right drawer.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n12c0_0",
+          "label": "Read the whole thing through one last time.",
+          "target": "e13_2"
+        }
+      ]
+    },
+    {
+      "id": "n12c1",
+      "body": "The rainfall record for that August was public, plain, and a total smoking gun. Tobe pulled it up on his laptop and they read it together in the shed. The daily totals scrolled down the screen. The eleven days of the survey visits were the driest of the whole month. The data came from the Met Office. It was official and could not be argued with. It made the survey's timing look either sloppy or on purpose. Jonah read the record twice because it seemed too easy. The second time it was still true.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n12c1_0",
+          "label": "Submit the objection with the full method.",
+          "target": "n13d0"
+        }
+      ]
+    },
+    {
+      "id": "n12c2",
+      "body": "Jonah walked the rows in November with the species list in his hand. He ticked the ones he could be sure of. The number he could be sure of was nine: the bare branches, the pond seen through the reeds, the moss on the old wall. The rest were asleep or gone or could not be named in the low grey light of late fall. The list felt thin and not enough. But it was honest. And honesty was the one thing he could offer that the survey had not.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n12c2_0",
+          "label": "Submit it in the name of the orchard trust.",
+          "target": "n13d1"
+        }
+      ]
+    },
+    {
+      "id": "n12c3",
+      "body": "The coffee went cold on the table between Jonah and Halvor. Neither of them spoke of it. The cafe was quiet and the windows were steamed. Halvor asked his fair questions in his fair voice. Jonah gave answers that were careful and not quite whole. When it was over, Halvor paid for the coffee on the way out. It was a small act that was neither kind nor mean. The cold cup stayed on the table, untouched.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n12c3_0",
+          "label": "Ask for the hearing to be public.",
+          "target": "n13d2"
+        }
+      ]
+    },
+    {
+      "id": "n12c4",
+      "body": "Ada sat in the shed with the paraffin heater ticking. She said speaking in rooms was not the hard part. The hard part came after, when people were kind to you about it. \"Kindness after the fact is harder to bear than fighting it before,\" she said. Jonah understood she was talking about something older than the orchard, older than the notebooks. It was an old hurt that had healed but still ached in certain kinds of weather.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n12c4_0",
+          "label": "Give the developer the dossier first.",
+          "target": "n13d3"
+        }
+      ]
+    },
+    {
+      "id": "n12c5",
+      "body": "Every page of the file was numbered. Every figure had a source. Every unknown part was stated in plain words at the bottom of the page it belonged to. The work ate up two evenings. It cut away four of the points Tobe had listed. A complaint you have already seen and answered stops being a complaint. The file was thicker now and heavier. Jonah felt its weight like a kind of sure-footed trust.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n12c5_0",
+          "label": "Put the found volumes into the record.",
+          "target": "n13d4"
+        }
+      ]
+    },
+    {
+      "id": "n12c6",
+      "body": "The two 1917 books were in a box marked WAR COMMITTEE MISC on the lowest shelf in the basement. They were not damaged and sat right where they had been put a hundred years ago. Jonah lifted them out and opened the first one. A pressed leaf fell from the pages at July. It was crisp, brown, and kept its shape. The handwriting was the same tidy copperplate as the first book in Ada's shed. The dates went on without a break. The missing years were missing no longer.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n12c6_0",
+          "label": "Ask Abara to attend in person.",
+          "target": "n13d5"
+        }
+      ]
+    },
+    {
+      "id": "e12_0",
+      "body": "Jonah put the two books back on the shelf in Ada's shed. He didn't tell anyone where they had been. The full record was now on all six shelves\u2014a hundred and fourteen years with no breaks. But the story of the missing years was a story only Jonah knew. The gap was filled, and the record was stronger for it. Still, the filling had been done quietly. That quietness sat in Jonah's chest like a held breath. The notebooks were whole, and their wholeness was a secret.",
+      "is_ending": true,
+      "ending": {
+        "id": "e12_0",
+        "valence": "neutral",
+        "kind": "discovery",
+        "title": "The Gap Filled Quietly"
+      }
+    },
+    {
+      "id": "e12_1",
+      "body": "Jonah did not pick a release date, so the deadline picked one. What went in was the version that happened to be done that Friday. The dossier was nearly complete, but not quite. Anyone who read it closely could see the missing pieces. The committee noted the gaps and the rushed sections. They considered the objection on its merits, which were less than they could have been. The work was done, but it wasn't done as well as possible. The gap between finished and ready was the gap between the dossier and what it might have been. Jonah thought later that knowing who Faulks was might have made the difference. It might have given the dossier a shape it lacked. But that knowledge had stayed unused on a page of his exercise book.",
+      "is_ending": true,
+      "ending": {
+        "id": "e12_1",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "The Version That Was Finished"
+      }
+    },
+    {
+      "id": "n13d0",
+      "body": "The objection went in with a hundred and fourteen years of data, a stated method, and a custody note from the archive. It also had nine species Jonah could swear to even in November. On top was a covering page of just eleven words. These were not the words from the gate but new ones. Jonah had written them at the kitchen table: the site is of long-term scientific interest, evidenced by the attached record. The form was signed, dated, and sent. The waiting began.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n13d0_0",
+          "label": "Answer the drought question first.",
+          "target": "n14d0"
+        },
+        {
+          "id": "c_n13d0_1",
+          "label": "Answer the amateur question.",
+          "target": "n14d1"
+        },
+        {
+          "id": "c_n13d0_2",
+          "label": "Answer the too short question.",
+          "target": "n14d2"
+        }
+      ]
+    },
+    {
+      "id": "n13d1",
+      "body": "A name that was not a person was harder to answer unkindly. The Orchard Hill Trust took an afternoon to set up. It needed three signatures: Ada's, Mrs Cassar's, and Jonah's mother's. She signed without pause and then made tea. The trust was now a legal body, a name on a form. It could hold the data, make the objection, and receive the replies. The developer's lawyers would have to send their letters to an organisation. Not to an old woman or a twelve-year-old boy. That small shift in words mattered more than Jonah had expected.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n13d1_0",
+          "label": "Let Faulks speak without interrupting.",
+          "target": "n14d3"
+        },
+        {
+          "id": "c_n13d1_1",
+          "label": "Let Ada read her page.",
+          "target": "n14d4"
+        },
+        {
+          "id": "c_n13d1_2",
+          "label": "Offer the panel the whole dataset.",
+          "target": "n14d5"
+        }
+      ]
+    },
+    {
+      "id": "n13d2",
+      "body": "A public hearing meant neighbours in the room and a note-taker writing it all down. It meant Faulks would have to answer out loud. In writing, a surveyor could hide behind careful words and the passive voice. But out loud, in a room of people, the answers would have to be given in real time to real questions. That was either a gain or a risk. It all depended on what Faulks said and how he said it.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n13d2_0",
+          "label": "Sit in the front row and wait.",
+          "target": "n14c0"
+        },
+        {
+          "id": "c_n13d2_1",
+          "label": "Set the two charts on the easel.",
+          "target": "n14c1"
+        },
+        {
+          "id": "c_n13d2_2",
+          "label": "Watch the note taker write.",
+          "target": "n14c2"
+        }
+      ]
+    },
+    {
+      "id": "n13d3",
+      "body": "Handing the dossier to the developer before the hearing was either fair play or a wasted edge. Ada thought it was the first. Tobe thought it was the second. Ada said that surprising people with proof was not the same as convincing them. Tobe said that giving them time to make up answers was just what the survey had done to them. The argument was polite and still open. Jonah had to decide whose advice to follow.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n13d3_0",
+          "label": "Pass the frame along the table.",
+          "target": "n14c3"
+        },
+        {
+          "id": "c_n13d3_1",
+          "label": "Let the room go quiet.",
+          "target": "n14c4"
+        },
+        {
+          "id": "c_n13d3_2",
+          "label": "Wait outside while they decide.",
+          "target": "n14c5"
+        }
+      ]
+    },
+    {
+      "id": "n13d4",
+      "body": "The two war books went back into the record. They were put in with the receipt that explained them. The gap on the shelf became the most powerful part of the whole dossier. The missing years had been found and returned. The story of their loss and recovery was itself proof of the care with which the record had been kept. The committee could see that the notebooks were not just raw facts. They were a steady act of attention. It stretched across wars, decades, and the plain passage of time. Its continuity was its own argument.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n13d4_0",
+          "label": "Argue with the panel.",
+          "target": "e14_0"
+        },
+        {
+          "id": "c_n13d4_1",
+          "label": "Say only what you can support.",
+          "target": "e14_1"
+        },
+        {
+          "id": "c_n13d4_2",
+          "label": "Answer the drought question first.",
+          "target": "n14d0"
+        }
+      ]
+    },
+    {
+      "id": "n13d5",
+      "body": "Dr Abara would come to the hearing. She would say only what she could defend. That was less than Jonah wanted but more than anyone else in the room would have. She would confirm that a hundred-year phenological record was rare and valuable. She would say six weeks of frost pocket data was a short but proper dataset. She would not be drawn into guessing or pushing a cause. Her being in the room would be its own statement. The committee would notice that a university scientist had taken the day to attend.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n13d5_0",
+          "label": "Answer the amateur question.",
+          "target": "n14d1"
+        },
+        {
+          "id": "c_n13d5_1",
+          "label": "Answer the too short question.",
+          "target": "n14d2"
+        },
+        {
+          "id": "c_n13d5_2",
+          "label": "Let Faulks speak without interrupting.",
+          "target": "n14d3"
+        }
+      ]
+    },
+    {
+      "id": "n13d6",
+      "body": "Mrs Cassar would bring thirty years of hive counts and a frame in a glass case. It was a perfect block of honeycomb she had kept since 2008. She kept it as an example of what healthy bees built when left alone. She wanted it noted, she said, that her early years were rough. She would not have anyone later claim she had pretended they were exact. The frame would sit on the table during the hearing. It was golden and perfect and impossible to ignore.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n13d6_0",
+          "label": "Let Ada read her page.",
+          "target": "n14d4"
+        },
+        {
+          "id": "c_n13d6_1",
+          "label": "Offer the panel the whole dataset.",
+          "target": "n14d5"
+        },
+        {
+          "id": "c_n13d6_2",
+          "label": "Sit in the front row and wait.",
+          "target": "n14c0"
+        }
+      ]
+    },
+    {
+      "id": "n13d7",
+      "body": "One page, chosen by Ada, read out at the hearing. It was either the cheapest trick in the room or the only true thing in it. Jonah could not decide which. The page would be read in Ada's voice. It would be a piece of the past made present. The committee would hear not an argument but a witness. Whether that witness would move them or just embarrass them was impossible to know ahead of time. That not knowing was the whole risk.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n13d7_0",
+          "label": "Set the two charts on the easel.",
+          "target": "n14c1"
+        },
+        {
+          "id": "c_n13d7_1",
+          "label": "Watch the note taker write.",
+          "target": "n14c2"
+        },
+        {
+          "id": "c_n13d7_2",
+          "label": "Pass the frame along the table.",
+          "target": "n14c3"
+        }
+      ]
+    },
+    {
+      "id": "e13_0",
+      "body": "The objection was accepted on its evidence, which was all Jonah had asked for. The officer's report named the series. It called it a long, unbroken local record of rare steadiness. It said the survey should be redone in May, when the site was growing. This was not a win but an opening. It was a door held ajar. The orchard would have to prove itself again in the spring. The notebooks had done their job. They had made the argument serious enough that someone had to answer it properly.",
+      "is_ending": true,
+      "ending": {
+        "id": "e13_0",
+        "valence": "positive",
+        "kind": "success",
+        "title": "Redone in May"
+      }
+    },
+    {
+      "id": "e13_1",
+      "body": "The copying was finished and lodged with the archive. Tobe checked it twice. It was open to anyone who wanted to read it. The hundred and fourteen years now lived outside the shed. They were in a digital file, a paper copy, and a custody note in Mrs Okonkwo's careful script. Whatever the hearing decided, the record was no longer fragile. It no longer depended on a single bulb, a paraffin heater, and the memory of an old woman. It had been copied and shared and made lasting. The work of a hundred years was now safe from the accidents of a single afternoon.",
+      "is_ending": true,
+      "ending": {
+        "id": "e13_1",
+        "valence": "positive",
+        "kind": "completion",
+        "title": "It Exists Outside the Shed"
+      }
+    },
+    {
+      "id": "e13_2",
+      "body": "Jonah read the whole dossier. He saw then that the notebooks were never about the orchard. They were about people showing up, in order, for a hundred and fourteen years. Every evening, nine different hands wrote down the weather, the blossom, and the price of ladders. Nobody had asked them to. They did it because showing up was the thing they did. The data was proof, but the real proof was the chain of people. That chain was not a number. It was a choice, made again and again. They never knew what their record-keeping would one day be asked to prove.",
+      "is_ending": true,
+      "ending": {
+        "id": "e13_2",
+        "valence": "neutral",
+        "kind": "discovery",
+        "title": "People Turning Up, In Order"
+      }
+    },
+    {
+      "id": "n14d0",
+      "body": "The panel's first question was why the survey should not stand. The rainfall record answered it in about ninety seconds. Tobe had a single sheet. It showed the survey dates laid over the August rainfall data. You could see the link without any words. All four visits had taken place in a dry spell. That dry spell had hidden the very things the survey was meant to find. The panel chair nodded slowly. It was the way people nodded when an answer was both a surprise and enough.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n14d0_0",
+          "label": "Read the officer report when it lands.",
+          "target": "n15d0"
+        },
+        {
+          "id": "c_n14d0_1",
+          "label": "Read the conditions attached.",
+          "target": "n15d1"
+        },
+        {
+          "id": "c_n14d0_2",
+          "label": "Decide what to do about the spine road.",
+          "target": "n15d2"
+        }
+      ]
+    },
+    {
+      "id": "n14d1",
+      "body": "Someone on the panel called the notebooks \"amateur.\" The word hung in the air of the council room. Jonah answered with the custody note, the double-typing records, and the marked doubts. He laid each paper on the table in order. \"Amateur\" was not an insult when the work was done with care. And care could be proved. The member who had spoken did not say sorry. But the word was not said again. The silence that followed was the kind that meant a question had been answered.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n14d1_0",
+          "label": "Decide who keeps the notebooks now.",
+          "target": "n15d3"
+        },
+        {
+          "id": "c_n14d1_1",
+          "label": "Decide what to tell the class.",
+          "target": "n15d4"
+        },
+        {
+          "id": "c_n14d1_2",
+          "label": "Decide what to do next year.",
+          "target": "n15d5"
+        }
+      ]
+    },
+    {
+      "id": "n14d2",
+      "body": "Six weeks of frost pocket readings was short. Jonah said so before anyone else could. He told the panel what the data did and did not show. It showed a steady temperature gap. It showed a tiny climate that shaped the lower orchard. It showed a set of data that would need a full winter to be final. His honesty seemed to catch the panel off guard. The chair wrote something down that Jonah could not read from his seat. Sharing the limits of the proof was not the same as making it weak. The panel seemed to get that.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n14d2_0",
+          "label": "Decide what to say to Halvor now.",
+          "target": "n15d6"
+        },
+        {
+          "id": "c_n14d2_1",
+          "label": "Hand the series over to the archive for good.",
+          "target": "e15_0"
+        },
+        {
+          "id": "c_n14d2_2",
+          "label": "Hold out for the road to move.",
+          "target": "e15_1"
+        }
+      ]
+    },
+    {
+      "id": "n14d3",
+      "body": "Faulks laid out his method in a flat voice. It was a standard method, done right, but in the wrong two weeks. He had used the right path, the right forms, and the right sample rules. But he had done it all in August, when the ground was dry and the plants were sleeping. The orchard had shut down to wait for rain. He did not enjoy saying so, and you could hear it in his voice. The method was sound, he said. The timing was just unlucky. The gap between those two truths was where the argument turned.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n14d3_0",
+          "label": "Ask what the early bloom was actually telling you.",
+          "target": "e15_2"
+        },
+        {
+          "id": "c_n14d3_1",
+          "label": "Read the officer report when it lands.",
+          "target": "n15d0"
+        },
+        {
+          "id": "c_n14d3_2",
+          "label": "Read the conditions attached.",
+          "target": "n15d1"
+        }
+      ]
+    },
+    {
+      "id": "n14d4",
+      "body": "Ada read a page from March 1947. It told of ice on the water butt and eleven days of nothing. A cold snap had caught the early blossom and blackened it on the branch. She read in her normal voice, the same one she used in the shed. The room was perfectly quiet when she stopped. The page was not an argument. It was a moment, saved in ink. The silence that followed was the kind that meant something had moved. The note-taker's pen had stopped.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n14d4_0",
+          "label": "Decide what to do about the spine road.",
+          "target": "n15d2"
+        },
+        {
+          "id": "c_n14d4_1",
+          "label": "Decide who keeps the notebooks now.",
+          "target": "n15d3"
+        },
+        {
+          "id": "c_n14d4_2",
+          "label": "Decide what to tell the class.",
+          "target": "n15d4"
+        }
+      ]
+    },
+    {
+      "id": "n14d5",
+      "body": "Jonah gave the file to the panel, the builder, and the public on the same day. He sent it by email to every address on the council's list. The edge of surprise was gone. In its place was something else. The dossier was now out in the open. Anyone could read it. The builder could not claim later that they had been ambushed by proof they had no time to check. The move cost the edge but bought openness. And openness was its own kind of power.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n14d5_0",
+          "label": "Decide what to do next year.",
+          "target": "n15d5"
+        },
+        {
+          "id": "c_n14d5_1",
+          "label": "Decide what to say to Halvor now.",
+          "target": "n15d6"
+        },
+        {
+          "id": "c_n14d5_2",
+          "label": "Hand the series over to the archive for good.",
+          "target": "e15_0"
+        }
+      ]
+    },
+    {
+      "id": "n14c0",
+      "body": "The hearing ran an hour late. Jonah sat through a drainage item and a fence fight. The afternoon light crept across the council room floor. By the end of the other items, his hands were calm. His nerves had burned off during the wait. The orchard item was called. Jonah stood up, and the calm held.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n14c0_0",
+          "label": "Hold out for the road to move.",
+          "target": "e15_1"
+        }
+      ]
+    },
+    {
+      "id": "n14c1",
+      "body": "The two charts went on the easel side by side. One showed the bloom dates. One showed the frost pocket data. They stayed there all afternoon while the other items were heard. People looked at them during the drainage talk and the fence fight. Their eyes would drift to the lines on the paper. By the time the orchard item was called, the charts had already done half their job. The panel had seen the proof before a single word was spoken.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n14c1_0",
+          "label": "Ask what the early bloom was actually telling you.",
+          "target": "e15_2"
+        }
+      ]
+    },
+    {
+      "id": "n14c2",
+      "body": "The note-taker wrote down the phrase \"long unbroken local series.\" Tobe nudged Jonah under the table. They both stared straight ahead. That was the exact phrase Dr. Abara had used in her report. Its presence in the official minutes meant the panel had taken the notebooks as proof. The note-taker's pen moved on. The phrase stayed on the page. The argument had shifted, and nobody had said a word about it.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n14c2_0",
+          "label": "Read the officer report when it lands.",
+          "target": "n15d0"
+        }
+      ]
+    },
+    {
+      "id": "n14c3",
+      "body": "Mrs. Cassar's frame went along the table inside its glass case. Every person on the panel picked it up, even the one who stayed quiet the whole hearing. The honeycomb was gold and perfect. The wax was clear in the council room light. The panel held it like people hold something they know can break and never be replaced. The frame went back in its case, and Mrs. Cassar shut the lid. The panel had seen something that a report could not carry.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n14c3_0",
+          "label": "Read the conditions attached.",
+          "target": "n15d1"
+        }
+      ]
+    },
+    {
+      "id": "n14c4",
+      "body": "After Ada read the page from 1947, nobody spoke for eight seconds. In a council room, that is a very long time. The silence was not awkward. It felt full, like a room after a piece of music ends. The chair did not rush to fill it. Ada shut the notebook and sat down. The hearing went on, but something had changed in the room. Jonah could feel it, though he could not name it.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n14c4_0",
+          "label": "Decide what to do about the spine road.",
+          "target": "n15d2"
+        }
+      ]
+    },
+    {
+      "id": "n14c5",
+      "body": "Jonah waited in the hall with the recycling poster again. Mrs Cassar told him about a swarm in 1994, on purpose and for a long time. The story had a neighbour's chimney, a bee-keeper from three villages away, and a way of getting the bees that Mrs Cassar described with care. She was not filling the quiet but giving Jonah something to hear while the panel made up its mind. The kindness of it was so on purpose that Jonah nearly laughed.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n14c5_0",
+          "label": "Decide who keeps the notebooks now.",
+          "target": "n15d3"
+        }
+      ]
+    },
+    {
+      "id": "e14_0",
+      "body": "Jonah answered a fair question as if it were unfair. His voice got louder and the words came out faster than he meant. After that, the chair became careful with him, the way someone handles a problem more than they listen. Careful was the worst thing a chair could turn into. The rest of the hearing went on in a tone of polite patience. The decision, when it came, was measured and fair and all against the orchard. Jonah had made it a personal fight. That was not proof. The notebooks sat on the table, unused.",
+      "is_ending": true,
+      "ending": {
+        "id": "e14_0",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "The Chair Becomes Careful"
+      }
+    },
+    {
+      "id": "e14_1",
+      "body": "Jonah answered six questions with six bits of proof. Each came from the file and was placed on the table one by one. He did not answer the seventh question in a fully honest way. He said the data did not back a firm answer and he would not pretend it did. The chair gave a nod. The note-taker wrote something. The officer's report later asked for the site to be checked again in the growing season by a new surveyor. The honest seventh answer did not make the case weaker; it made the first six answers impossible to argue with.",
+      "is_ending": true,
+      "ending": {
+        "id": "e14_1",
+        "valence": "positive",
+        "kind": "success",
+        "title": "Six Answers and One Honest No"
+      }
+    },
+    {
+      "id": "n15d0",
+      "body": "The officer's report was forty pages long. The orchard was in eight of them. The words \"of no special scientific interest\" were not there at all. Instead, the report pointed to the long local records, the frost pocket data, and the list of species. It set out rules that would force the builder to check the site again before any choice could be made final. Jonah read the report at the kitchen table while Ada made tea. The eight pages felt like a door that had been shut now starting to swing open.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n15d0_0",
+          "label": "Start the winter frost study properly.",
+          "target": "n16d0"
+        },
+        {
+          "id": "c_n15d0_1",
+          "label": "Train somebody to read the hands.",
+          "target": "n16d1"
+        },
+        {
+          "id": "c_n15d0_2",
+          "label": "Decide what the trust is for.",
+          "target": "n16d2"
+        }
+      ]
+    },
+    {
+      "id": "n15d1",
+      "body": "Three rules were set: a new check in May by a fresh ecologist, a frost pocket study over a full winter, and all the records handed to the archive as a term for any future go-ahead. Each rule was a job. Each job was a promise. The promises would stretch the work into a second year and more. The rules were not a win but a frame. The frame meant the orchard would have to keep showing its worth, season after season, for as long as the choice stayed unmade.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n15d1_0",
+          "label": "Decide how the record continues.",
+          "target": "n16d3"
+        },
+        {
+          "id": "c_n15d1_1",
+          "label": "Buy a second thermometer.",
+          "target": "n16c0"
+        },
+        {
+          "id": "c_n15d1_2",
+          "label": "Put the rota on the shed door.",
+          "target": "n16c1"
+        }
+      ]
+    },
+    {
+      "id": "n15d2",
+      "body": "The spine road could be moved forty metres east, for a price, the officer's report said. The row with the big Bramley tree might live through that choice or it might not. Forty metres was a field's width, a small shift on a map but huge on the ground. The council would have to weigh the cost of the move against the worth of the trees. The Bramley stood on the hilltop, its roots in ground never built on. Its life now hung on a number in a fund and a line on a plan.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n15d2_0",
+          "label": "Sit with the 1917 volumes.",
+          "target": "n16c2"
+        },
+        {
+          "id": "c_n15d2_1",
+          "label": "Watch the May resurvey happen.",
+          "target": "n16c3"
+        },
+        {
+          "id": "c_n15d2_2",
+          "label": "Write the hundred and fifteenth year.",
+          "target": "e16_0"
+        }
+      ]
+    },
+    {
+      "id": "n15d3",
+      "body": "The notebooks could go to the archive, or to the trust, or stay in the shed. Each of those three paths was a promise to someone not in the room. To Ada, who had kept them for sixty years. To Mrs Okonkwo, who had offered them a lasting home. And to the future, which would need the record to go on. The choice was not about where to put them but about keeping things going. That keeping going was what made the notebooks worth keeping in the first place.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n15d3_0",
+          "label": "Let the rota lapse in December.",
+          "target": "e16_1"
+        },
+        {
+          "id": "c_n15d3_1",
+          "label": "Start the winter frost study properly.",
+          "target": "n16d0"
+        },
+        {
+          "id": "c_n15d3_2",
+          "label": "Train somebody to read the hands.",
+          "target": "n16d1"
+        }
+      ]
+    },
+    {
+      "id": "n15d4",
+      "body": "Thirty people had typed the notes from the 1930s in the school hall on Thursday afternoons. They deserved a fair account of what their work had done and not done. Jonah wrote a letter to the class. He set out the hearing, the new rules, and the road that might move forty metres east. The letter was careful and full of thanks. It did not pretend the orchard was safe. The class had given their time, and that time had counted. The letter was a way to say that without pledging more than the truth could bear.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n15d4_0",
+          "label": "Decide what the trust is for.",
+          "target": "n16d2"
+        },
+        {
+          "id": "c_n15d4_1",
+          "label": "Decide how the record continues.",
+          "target": "n16d3"
+        },
+        {
+          "id": "c_n15d4_2",
+          "label": "Buy a second thermometer.",
+          "target": "n16c0"
+        }
+      ]
+    },
+    {
+      "id": "n15d5",
+      "body": "The readings meant a thing only if they went on. Going on was a choice someone had to make every single morning. The thermometers did not read themselves. The notebook did not fill itself. The list on the shed door would need names on it, week after week, month after month, for as long as the frost pocket study took. Someone had to choose to carry on. The choice was not one act but many of them, made at dawn in the cold, over and over.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n15d5_0",
+          "label": "Put the rota on the shed door.",
+          "target": "n16c1"
+        },
+        {
+          "id": "c_n15d5_1",
+          "label": "Sit with the 1917 volumes.",
+          "target": "n16c2"
+        },
+        {
+          "id": "c_n15d5_2",
+          "label": "Watch the May resurvey happen.",
+          "target": "n16c3"
+        }
+      ]
+    },
+    {
+      "id": "n15d6",
+      "body": "Halvor asked the same question again in the hall after the hearing. This time the true answer was not the same. The orchard was not safe, but it was not gone either. What would make Jonah stop now was not giving in. It was a process: a real survey, a fair hearing, a choice made on proof, not ease. Halvor heard him out and did not argue. The coffee cup from the shop was still on a sill somewhere, cold and lost. The question had changed because things had changed, and both of them knew that.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n15d6_0",
+          "label": "Write the hundred and fifteenth year.",
+          "target": "e16_0"
+        },
+        {
+          "id": "c_n15d6_1",
+          "label": "Let the rota lapse in December.",
+          "target": "e16_1"
+        },
+        {
+          "id": "c_n15d6_2",
+          "label": "Start the winter frost study properly.",
+          "target": "n16d0"
+        }
+      ]
+    },
+    {
+      "id": "e15_0",
+      "body": "The notebooks went to the stable room at the archive with a gift deed, a public list entry, and a lasting right for Ada to read any of them when she liked. Mrs Okonkwo set them on the shelf herself, in time order. The gap where the war years had been was no longer a gap. It was now a note in the catalogue that told how they were found again. The record would outlast all who had been in the fight: the builders, the councillors, the surveyors. The hundred and fourteen years would sit in the room kept at a steady heat, with its window facing north. They would wait to turn into a hundred and fifteen, then two hundred, then more than anyone could count.",
+      "is_ending": true,
+      "ending": {
+        "id": "e15_0",
+        "valence": "positive",
+        "kind": "completion",
+        "title": "A Deed of Gift"
+      }
+    },
+    {
+      "id": "e15_1",
+      "body": "The road went forty metres east. It curved around the top of the hill instead of cutting through it, and the row with the big Bramley stood. The condition about the winter frost study was written in full into the permission. The developer would have to fund the checking for five years. The data would belong to the trust and be stored in the archive. The orchard was not a nature reserve or a protected site. But it was a place that had been noticed and recorded and argued for. That noticing was what saved it. The Bramley stood at the top of the hill in the rain, bare now in December. The road curved away from it as though the tree had always been there, waiting to be seen.",
+      "is_ending": true,
+      "ending": {
+        "id": "e15_1",
+        "valence": "positive",
+        "kind": "success",
+        "title": "Forty Metres East"
+      }
+    },
+    {
+      "id": "e15_2",
+      "body": "Dr Abara said the honest answer was that one October bloom proved nothing and a hundred and fourteen years of dates proved a great deal. The tree had not been a signal but a question, she said, and the question was not why it had flowered in October but why anyone had been there to notice. The answer to that question was in the notebooks, in the nine hands and the six shelves and the evenings in the shed, and the answer was not data but attention. The orchard had been watched, and the watching was the thing that had made the evidence possible, and the evidence was the thing that had changed the decision, and the decision was the thing that would keep the orchard standing long enough for the next question to be asked.",
+      "is_ending": true,
+      "ending": {
+        "id": "e15_2",
+        "valence": "neutral",
+        "kind": "discovery",
+        "title": "Not a Signal, a Question"
+      }
+    },
+    {
+      "id": "n16d0",
+      "body": "A full winter of dawn readings needed nine people. It needed a spare thermometer in case the first one broke. It needed someone to do December, the hardest month. The mornings were dark and the grass was frozen. The urge to stay in bed was stronger than any talk of data. Jonah looked at the calendar. He saw the blank squares of December. He knew the rota would hold only if someone made it hold. That someone was going to have to be him.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n16d0_0",
+          "label": "Look at what the resurvey found.",
+          "target": "n17d0"
+        },
+        {
+          "id": "c_n16d0_1",
+          "label": "Look at what the argument cost.",
+          "target": "n17d1"
+        },
+        {
+          "id": "c_n16d0_2",
+          "label": "Look at what you would do again.",
+          "target": "n17d2"
+        }
+      ]
+    },
+    {
+      "id": "n16d1",
+      "body": "The nine different hands could be taught in an afternoon to anyone patient, Ada said. The teaching turned out to be the part she liked most. She sat with the young volunteers at the kitchen table and showed them how the letters sloped and where the ink had faded. Her voice was patient and exact. The volunteers listened with the care of people who knew they were learning something that could not be learned from a screen. The hands would outlast her. The teaching was a way of making sure they did.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n16d1_0",
+          "label": "Look at the Bramley in April.",
+          "target": "n17d3"
+        },
+        {
+          "id": "c_n16d1_1",
+          "label": "Take the long view on purpose.",
+          "target": "e17_0"
+        },
+        {
+          "id": "c_n16d1_2",
+          "label": "Take the record for what it is.",
+          "target": "e17_1"
+        }
+      ]
+    },
+    {
+      "id": "n16d2",
+      "body": "A trust with three names and no purpose was just a form. Deciding what the trust was for took four meetings and one argument. The argument was about what it should be. Should it be a fighting body or a caring one? Fighting for the orchard or simply looking after it? That difference was the difference between a weapon and a home. The argument ended in a deal that left nobody fully happy, but everyone was pleased enough. The trust's purpose was written down, signed, and filed. The form became something real.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n16d2_0",
+          "label": "Look at what the resurvey found.",
+          "target": "n17d0"
+        },
+        {
+          "id": "c_n16d2_1",
+          "label": "Look at what the argument cost.",
+          "target": "n17d1"
+        },
+        {
+          "id": "c_n16d2_2",
+          "label": "Look at what you would do again.",
+          "target": "n17d2"
+        }
+      ]
+    },
+    {
+      "id": "n16d3",
+      "body": "Somebody had to write the day up every evening. It had to be a single person, and it had to be someone who would still be doing it in March. The record could not carry on alone, and the archive could not carry it on, and the trust could not carry it on. Only a person could carry it on, writing in a notebook in the shed. The paraffin heater ticked and the bulb swung in the draught. That person had to choose to do it, evening after evening, the way Ada had chosen for sixty years.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n16d3_0",
+          "label": "Look at the Bramley in April.",
+          "target": "n17d3"
+        },
+        {
+          "id": "c_n16d3_1",
+          "label": "Take the long view on purpose.",
+          "target": "e17_0"
+        },
+        {
+          "id": "c_n16d3_2",
+          "label": "Take the record for what it is.",
+          "target": "e17_1"
+        }
+      ]
+    },
+    {
+      "id": "n16c0",
+      "body": "The second thermometer cost eleven pounds from the hardware shop in town. It was the most important buy anyone made that year. With two thermometers the frost pocket study could go on even if one failed. The data would not have a gap in it, and a gap was the thing that could ruin months of work. Eleven pounds. The future of the orchard rested on it as much as on any legal fight or council report.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n16c0_0",
+          "label": "Look at what the resurvey found.",
+          "target": "n17d0"
+        }
+      ]
+    },
+    {
+      "id": "n16c1",
+      "body": "The rota went up on the shed door where the chart used to be. By January, two names had been crossed out and four new ones added. People dropped out and others stepped in. The rota was a living thing. It changed with the weather, the season, and the usual demands of people's lives. The crossings-out were not failures. They were just fixes. The names that stayed were the ones that mattered.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n16c1_0",
+          "label": "Look at what the argument cost.",
+          "target": "n17d1"
+        }
+      ]
+    },
+    {
+      "id": "n16c2",
+      "body": "The two war volumes were just like all the others. They were full of weather, ladders, wasps, and one line from September 1917 about the horse. The horse had been taken and given back. The note about it was short and dry. The rest of the volume carried on as though nothing had happened. The war had passed over the hill and left only a receipt and an empty spot on a shelf. The notebooks had simply carried on, the way they always did.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n16c2_0",
+          "label": "Look at what you would do again.",
+          "target": "n17d2"
+        }
+      ]
+    },
+    {
+      "id": "n16c3",
+      "body": "The May resurvey took nine days and four people. It found sixty-one species. Nobody had ever recorded one of them on this hill before. It was a small orchid growing in the shade of the old wall. The ecologist who found it knelt in the wet grass and took photos from three sides. The species list was no longer thin. It was rich. That richness was the answer to the eleven words on the gate. It was an answer written not in arguments, but in the slow, careful work of looking properly.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n16c3_0",
+          "label": "Look at the Bramley in April.",
+          "target": "n17d3"
+        }
+      ]
+    },
+    {
+      "id": "e16_0",
+      "body": "Jonah wrote up the day in a new notebook, in his own hand. He did it badly. The letters were bumpy and the dates a little crooked. Ada watched from her chair by the heater and said nothing. Her silence was not anger. It was something else. It felt like a gift of trust. The record went on being a record. It was flawed but it carried on. The hundred and fifteenth year began with a boy's handwriting in a blue notebook adding his line to the six shelves. The shelves accepted it without a word, the way they had accepted every hand before his.",
+      "is_ending": true,
+      "ending": {
+        "id": "e16_0",
+        "valence": "positive",
+        "kind": "completion",
+        "title": "The Hundred and Fifteenth Year"
+      }
+    },
+    {
+      "id": "e16_1",
+      "body": "The December readings stopped for eleven days over Christmas. The people on the rota were away. Those who had said they would cover forgot, got sick, or just did not show up. The gap in the data was small. It was eleven days out of a hundred and eighty, but it was a gap. No amount of care later could fill it. The winter series had a hole. The final report showed that hole as a dotted line where data should have been. That dotted line was a reminder. It showed that keeping things going was fragile, and eleven days of not paying attention could undo months of work.",
+      "is_ending": true,
+      "ending": {
+        "id": "e16_1",
+        "valence": "neutral",
+        "kind": "setback",
+        "title": "Eleven Days Missing"
+      }
+    },
+    {
+      "id": "n17d0",
+      "body": "The resurvey report listed sixty-one species. It gave the frost pocket its own paragraph. It said the orchard should be watched, not cleared. The word 'watched' showed up three times in the final advice. Each time was a small win. It was a sign that the site was not dead but living. Living things changed. Change needed watching. The report was not a pardon. It was a promise. And that promise would stretch on for years.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n17d0_0",
+          "label": "Finish it the way it was started.",
+          "target": "e18_0"
+        },
+        {
+          "id": "c_n17d0_1",
+          "label": "See the orchard through to the following autumn.",
+          "target": "e18_1"
+        },
+        {
+          "id": "c_n17d0_2",
+          "label": "Look back at the eleven words.",
+          "target": "e18_2"
+        }
+      ]
+    },
+    {
+      "id": "n17d1",
+      "body": "Four months had passed. Two friendships were strained. There was one letter Jonah should not have sent. And there was a grandmother who was more tired than she had been in October. Ada moved more slowly now. Her writing in the new notebook was shakier than before. The cost of the argument was clear in the way she sat down at the end of the day and closed her eyes. The orchard had been defended, but it had taken something from everyone. That something was not coming back.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n17d1_0",
+          "label": "Stop keeping it.",
+          "target": "e18_3"
+        },
+        {
+          "id": "c_n17d1_1",
+          "label": "Finish it the way it was started.",
+          "target": "e18_0"
+        },
+        {
+          "id": "c_n17d1_2",
+          "label": "See the orchard through to the following autumn.",
+          "target": "e18_1"
+        }
+      ]
+    },
+    {
+      "id": "n17d2",
+      "body": "Almost all of the work stood, in the same order. The one thing missing was the thing Jonah had said about Faulks. He would not say it again. The rest was all there. The copies, the charts, the data from the frost pocket. The letters to the families. The Thursday afternoons in the school hall. The dossier was solid. The record was complete. The case had been made honestly. The single moment of blame was the only piece Jonah would take back if he could. Knowing that was itself a kind of learning. And the learning was worth keeping.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n17d2_0",
+          "label": "Look back at the eleven words.",
+          "target": "e18_2"
+        },
+        {
+          "id": "c_n17d2_1",
+          "label": "Stop keeping it.",
+          "target": "e18_3"
+        },
+        {
+          "id": "c_n17d2_2",
+          "label": "Finish it the way it was started.",
+          "target": "e18_0"
+        }
+      ]
+    },
+    {
+      "id": "n17d3",
+      "body": "In April the whole row blossomed at once, just the way it should. The big tree at the top was neither early nor late. The blossom was pink and white and plain, and the bees worked it in the thin spring sunlight. The orchard looked exactly the way it had looked every April for a hundred and fourteen years. The October bloom did not happen again. The notebooks wrote down the date without saying anything more, the way they wrote down everything. And the fact that things were normal was its own kind of comfort.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n17d3_0",
+          "label": "See the orchard through to the following autumn.",
+          "target": "e18_1"
+        },
+        {
+          "id": "c_n17d3_1",
+          "label": "Look back at the eleven words.",
+          "target": "e18_2"
+        },
+        {
+          "id": "c_n17d3_2",
+          "label": "Stop keeping it.",
+          "target": "e18_3"
+        }
+      ]
+    },
+    {
+      "id": "e17_0",
+      "body": "The orchard was watched. The series was public and growing. In the end, the thing that had saved it was not one October morning. It was a hundred and fourteen ordinary evenings. Evenings when someone had walked up the hill. They had opened a notebook and written down the weather, the blossom, the frost, the wasps, and the price of ladders. They had kept the record without knowing what it would one day be asked to prove. That keeping was the proof. The notebooks sat in the archive and on the shelf in the shed. They sat in the digital file on Tobe's laptop. The hundred and fifteenth year was underway. And the record went on, as it always had, because someone had decided that it should.",
+      "is_ending": true,
+      "ending": {
+        "id": "e17_0",
+        "valence": "positive",
+        "kind": "success",
+        "title": "A Hundred and Fourteen Evenings"
+      }
+    },
+    {
+      "id": "e17_1",
+      "body": "Jonah understood at last that a record was not proof and never had been. It was only the reason a person could be believed when they finally said something. The notebooks had not won the argument by themselves; they had made it possible for Ada to speak and be heard, for the data to be checked and confirmed, for the frost pocket to be measured and cited. The record was the foundation, and the foundation was not the building, but without it nothing else could stand. The notebooks were not evidence of anything except attention, and attention was the thing that made all the other evidence possible.",
+      "is_ending": true,
+      "ending": {
+        "id": "e17_1",
+        "valence": "neutral",
+        "kind": "discovery",
+        "title": "The Reason to Be Believed"
+      }
+    },
+    {
+      "id": "e18_0",
+      "body": "The last thing Jonah did was index the six shelves. Nobody had ever done this. He listed every volume by year and hand and subject. The index filled a notebook of its own. That notebook sat at the end of the shelf like a key to a door. The index took a year, working in the evenings after school and on weekends. By the time it was done, the orchard had been resurveyed twice. The road had been moved. The frost pocket study had become a long-term programme. The index was the most useful thing on the hill, and Jonah had made it. Making it was the last piece of the work.",
+      "is_ending": true,
+      "ending": {
+        "id": "e18_0",
+        "valence": "positive",
+        "kind": "completion",
+        "title": "The First Index"
+      }
+    },
+    {
+      "id": "e18_1",
+      "body": "The next October the Bramley did not bloom. The road ran forty metres east, where it had been moved to. The picking was normal and huge and took nine days. The apples came off the trees in baskets and crates. The shed filled with the smell of them. The notebooks wrote down the picking weights in the usual column. The October bloom of the year before was a single line in a single volume. The hundred and fifteenth year was just a year, like all the others. Its ordinariness was the very thing they had been fighting for. The orchard was still an orchard. The road went around it. The trees went on being trees, the way they always had.",
+      "is_ending": true,
+      "ending": {
+        "id": "e18_1",
+        "valence": "positive",
+        "kind": "success",
+        "title": "An Ordinary Enormous Autumn"
+      }
+    },
+    {
+      "id": "e18_2",
+      "body": "The eleven words were still in the back of Jonah's exercise book. He had copied them in his own handwriting on the day the notice went up on the gate. He read them again, months later. They no longer felt like a threat. They were the reason there was now a hundred and fifteen years of anything. The reason the record had been copied, checked and sent in. The reason the road had been moved and the orchard watched. The eleven words had not been beaten but answered. The answer was six shelves of notebooks. A winter of dawn readings. A trust with three signatures. The words were still there, and they were not untrue. But they were no longer the last word. And that was enough.",
+      "is_ending": true,
+      "ending": {
+        "id": "e18_2",
+        "valence": "neutral",
+        "kind": "discovery",
+        "title": "The Eleven Words"
+      }
+    },
+    {
+      "id": "e18_3",
+      "body": "The notebooks were safe in the archive. They were listed in the public system, and nobody added to them. The last entry was the one Ada had written on the evening of the October bloom. After that, the pages were blank. The series was closed. It was a whole thing from 1911 to now. In twenty years it would be a set of papers that people studied, rather than a thing that was kept. The chain was broken. Not by fire or flood, but by the simple fact that nobody had picked up the pen. The record was finished and complete. And its being complete was a kind of loss.",
+      "is_ending": true,
+      "ending": {
+        "id": "e18_3",
+        "valence": "neutral",
+        "kind": "setback",
+        "title": "A Closed Thing"
+      }
+    }
+  ]
+}

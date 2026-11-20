@@ -1,0 +1,151 @@
+{
+  "label": "A-cm-new-3",
+  "arm": "new",
+  "skeleton": "the-clockwork-menagerie.json",
+  "status": "passed",
+  "error": null,
+  "attempts": 0,
+  "stage_log": [
+    "stage_fill:gate_ok",
+    "reading_level:1:73",
+    "reading_level:2:8"
+  ],
+  "served_models": [
+    "deepseek/deepseek-v4-pro"
+  ],
+  "elapsed_s": 262.6,
+  "calls": 12,
+  "input_tokens": 63181,
+  "output_tokens": 40987,
+  "estimated_cost_usd": "0.27765592",
+  "provider_reported_spend_usd": 0.641608,
+  "force_cap": null,
+  "raw_first_reply_state": {
+    "compared": true,
+    "choices_with_state": 0,
+    "missing_choices": [],
+    "changed_condition_or_effects": [],
+    "extra_choices": [],
+    "variables_identical": true,
+    "exact": true
+  },
+  "completed": true,
+  "delivered_state": {
+    "compared": true,
+    "choices_with_state": 0,
+    "missing_choices": [],
+    "changed_condition_or_effects": [],
+    "extra_choices": [],
+    "variables_identical": true,
+    "exact": true
+  },
+  "gate": {
+    "blocked": false,
+    "findings_by_rule": {
+      "CG-4:warning": 13,
+      "CG-6:warning": 5,
+      "RL-13:warning": 19
+    }
+  },
+  "fill_integrity": {
+    "exit": 0,
+    "fail_lines": []
+  },
+  "words": {
+    "commissioned": 15831,
+    "delivered": 13639,
+    "raw_ratio": 0.862,
+    "story_fill_rate": 0.828
+  },
+  "dialogue": {
+    "share": 0.048,
+    "nodes_with_dialogue": 0.048
+  },
+  "prose_craft": {
+    "headline": "12 merge nodes, 1 of them tell the reader the route did not matter; 0 variables, so no choice comes back; 15 of 29 decisions restate or announce their options; 0 of 7 setback endings have the hero give up, 3 come within 3 decisions.",
+    "merge_nodes": 12,
+    "merge_seams": [
+      "n_spring"
+    ],
+    "option_recaps": [
+      "n_start",
+      "sv_deep",
+      "ds_risk",
+      "k_c1",
+      "s_c1",
+      "p_c1",
+      "n_hub",
+      "fh_rw1",
+      "fh_rw_c2",
+      "fh_rw_b1",
+      "fh_sec1",
+      "fh_sec_m1",
+      "fh_sec_c1",
+      "fh_dawn1",
+      "fh_dawn_w1"
+    ],
+    "meta_labels": [],
+    "jargon_labels": [],
+    "second_person_labels": [
+      [
+        "av_rec",
+        "c_av_rec1",
+        "Steady yourself."
+      ],
+      [
+        "sv_rec",
+        "c_sv_rec1",
+        "Steady yourself."
+      ],
+      [
+        "ds_rec",
+        "c_ds_rec1",
+        "Steady yourself."
+      ],
+      [
+        "cg_rec",
+        "c_cg_rec1",
+        "Steady yourself."
+      ],
+      [
+        "fh_sec_m1",
+        "c_sec_m1b",
+        "Coax the mouse gently to you."
+      ],
+      [
+        "fh_dawn_w1",
+        "c_dawn_w1c",
+        "Hide until you know who it is."
+      ]
+    ],
+    "give_up_endings": [],
+    "early_setbacks": [
+      "e_set_av",
+      "e_set_ds",
+      "e_set_cg"
+    ],
+    "negative_endings": 7,
+    "decision_nodes": 29,
+    "tense_unstable": 0,
+    "moral_tag_nodes": 0,
+    "told_emotion_per_1000": 0.074,
+    "second_person_node_rate": 0.006
+  },
+  "consequence": {
+    "seconds": 0.003,
+    "skipped": [],
+    "books": [
+      {
+        "name": "filled.json",
+        "forks": 62,
+        "false_choices": 0,
+        "rate": null,
+        "median_distance": 3,
+        "state_carrying": 0,
+        "diverging": 34,
+        "stateless": true
+      }
+    ],
+    "verdict": "NOT MEASURED: no book produced a complete report, so nothing here is evidence about the catalogue"
+  }
+}

@@ -1,0 +1,2764 @@
+{
+  "schema_version": "2.0",
+  "id": "sk_lantern_keepers_list",
+  "version": 1,
+  "title": "The Lantern Keepers' List",
+  "metadata": {
+    "narrative_person": "third",
+    "age_band": "8-11",
+    "reading_level": {
+      "scheme": "flesch_kincaid",
+      "target": 4.5,
+      "tolerance": 1.5
+    },
+    "tier": 2,
+    "themes": [
+      "community",
+      "responsibility",
+      "wayfinding",
+      "autumn",
+      "care"
+    ],
+    "estimated_minutes": 10,
+    "ending_count": 24,
+    "content_flags": {
+      "violence": "none",
+      "scariness": "none",
+      "peril": "mild"
+    },
+    "topology": "branch_and_bottleneck",
+    "length": "medium",
+    "narrative_style": "prose",
+    "production_eligible": true
+  },
+  "variables": [
+    {
+      "name": "did_start_beacon_steps",
+      "type": "bool",
+      "initial": false,
+      "description": "True when Wren chooses to begin the lantern rounds at the Beacon Steps, learning a specific trick or local secret there that may later help balance the shortfall at the top of the ridge."
+    },
+    {
+      "name": "did_start_sheepfold_turn",
+      "type": "bool",
+      "initial": false,
+      "description": "True when Wren chooses to begin at the Sheepfold Turn, gaining something useful from the encounter\u2014a bit of goodwill, a borrowed object, or a piece of knowledge\u2014that may later ease the oil crisis."
+    },
+    {
+      "name": "did_knock_doors_that",
+      "type": "bool",
+      "initial": false,
+      "description": "True when Wren chooses to knock on the old doors listed in the margin, reconnecting with a retired lantern keeper whose help later turns a chaotic finale into a controlled one."
+    }
+  ],
+  "start_node": "n_open",
+  "nodes": [
+    {
+      "id": "n_open",
+      "body": "The lean-to shed behind the village hall smelled of old fuel and wet rope. Eighty paper lanterns sat in wooden boxes. Their pale covers were pressed tight, like closed flower petals. A roll of fence wire hung from a hook. An old clipboard waited on a rusty nail. Across its top, in green pen, someone had written THE LIST. Past the open door, the ridge path climbed into low cloud. The church clock ticked and it was quarter past two.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n_open_0",
+          "label": "Take the list and pick a section.",
+          "target": "n_list"
+        }
+      ]
+    },
+    {
+      "id": "n_list",
+      "body": "Mrs Trewin sat on an upside-down crate. A bright blue bandage was wrapped around her wrist. She read the list aloud. Half of it was already wrong. The Hunters' old cottage had been empty for two winters. The fuel was not on the shelf where the page said it would be. The path drawn in the margin showed a route the hillside had swallowed in February. The walking group would come down off the moor at half past five. The list had three parts, and there was one afternoon to do them all. Wren looked at the page, then at the ridge. She knew the first choice would shape every minute that followed.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n_list_0",
+          "label": "Start at the Beacon Steps.",
+          "target": "bs_hub",
+          "effects": [
+            {
+              "op": "set",
+              "var": "did_start_beacon_steps",
+              "value": true
+            }
+          ]
+        },
+        {
+          "id": "c_n_list_1",
+          "label": "Start at the Sheepfold Turn.",
+          "target": "sf_hub",
+          "effects": [
+            {
+              "op": "set",
+              "var": "did_start_sheepfold_turn",
+              "value": true
+            }
+          ]
+        },
+        {
+          "id": "c_n_list_2",
+          "label": "Start at the Orchard Gate.",
+          "target": "og_hub"
+        }
+      ]
+    },
+    {
+      "id": "bs_hub",
+      "body": "The Beacon Steps were ninety-one stone stairs cut into the ridge. An iron hook waited for a lantern on every fourth step. Three hooks had been pried clean out of the stone by frost. Their screws still sat in the rusty cups. The seventh step from the bottom was just gone. It left a dark gap that dropped knee-high onto loose stones. Nothing on wheels could come here. Every box would have to come up by hand. Wren knelt to study the broken stone. The bottom of her shoe brushed something in the heather. It was an old leather glove, dried stiff. Its cuff was marked in pencil with the letters A.T. A faded phone number was on a scrap of paper tucked inside. Someone had dropped it last season and never found it. The paper told Wren exactly who to call if the top of the ridge ran short.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_bs_hub_0",
+          "label": "Look at the loose brackets first.",
+          "target": "bs_brackets"
+        },
+        {
+          "id": "c_bs_hub_1",
+          "label": "Deal with the missing step.",
+          "target": "bs_step"
+        },
+        {
+          "id": "c_bs_hub_2",
+          "label": "Carry the crates up while it is dry.",
+          "target": "bs_carry"
+        }
+      ]
+    },
+    {
+      "id": "sf_hub",
+      "body": "The Sheepfold Turn was where the path had been rerouted after the landslip, so the list named a stretch of hillside the walkers no longer used and said nothing at all about the one they did. Mr Ovens kept his ewes in the field the new track crossed and had wired the gate shut with three tight turns of fencing wire. A note in blue biro read SHUT MEANS SHUT. As Wren pushed a damp curl of wool caught in the wire, a hand fell on the gatepost\u2014not Mr Ovens, but the postmistress, Dot Mallow, out walking her terrier. \"He'll thaw if you ask him right,\" she said, nodding toward the barn. \"Take him the last of the oat biscuits from the shop tin. He's partial.\" She pressed a small paper bag into Wren's palm and continued on her way.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_sf_hub_0",
+          "label": "Look at the wired gate.",
+          "target": "sf_gate"
+        },
+        {
+          "id": "c_sf_hub_1",
+          "label": "Walk the landslip and see what is left.",
+          "target": "sf_slip"
+        },
+        {
+          "id": "c_sf_hub_2",
+          "label": "Go and find Mr Ovens.",
+          "target": "sf_ovens"
+        }
+      ]
+    },
+    {
+      "id": "og_hub",
+      "body": "The Orchard Gate marked the bottom of the route. Twelve lanterns hung in old apple trees where the path left the lane. The branches sagged with unpicked fruit. The gate dragged a deep groove in the mud each time it swung. The lanterns had been hung so low last autumn that a walker had put a shoulder straight through one. The torn paper skin was still patched with a yellow sticky note that said SORRY. Above, through the net of twigs, the sky was a clean pale grey. The ridge waited.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_og_hub_0",
+          "label": "See to the dragging gate.",
+          "target": "og_hinge"
+        },
+        {
+          "id": "c_og_hub_1",
+          "label": "Sort out the low branches.",
+          "target": "og_low"
+        },
+        {
+          "id": "c_og_hub_2",
+          "label": "Deal with the fallen fruit.",
+          "target": "og_fruit"
+        }
+      ]
+    },
+    {
+      "id": "bs_brackets",
+      "body": "Three brackets lay in the wet grass, their screws still sitting in them like tiny passengers. The holes in the stone had widened\u2014the frost had chewed the edges\u2014and now the screws turned uselessly in the gaps. A fourth bracket shifted in its hole like a loose tooth when Wren touched it. The forecast chalked on the shop board promised the frost would be back tonight.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_bs_brackets_0",
+          "label": "Hunt down the jar of wall plugs.",
+          "target": "bs_plugs"
+        },
+        {
+          "id": "c_bs_brackets_1",
+          "label": "Wire the brackets in instead.",
+          "target": "bs_wire"
+        },
+        {
+          "id": "c_bs_brackets_2",
+          "label": "Ask Dot Mallow what the shop has.",
+          "target": "bs_dot"
+        }
+      ]
+    },
+    {
+      "id": "bs_step",
+      "body": "The gap where the seventh step had been was a dark mouth of loose scree, exactly where a tired walker would plant a foot after dusk. In afternoon light anyone could see it. After dark it would vanish. Behind the shed leaned one scaffold plank, four house bricks, and half a bag of cement that had gone hard and pale in the rain.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_bs_step_0",
+          "label": "Hunt down the jar of wall plugs.",
+          "target": "bs_plugs"
+        },
+        {
+          "id": "c_bs_step_1",
+          "label": "Wire the brackets in instead.",
+          "target": "bs_wire"
+        },
+        {
+          "id": "c_bs_step_2",
+          "label": "Ask Dot Mallow what the shop has.",
+          "target": "bs_dot"
+        }
+      ]
+    },
+    {
+      "id": "bs_carry",
+      "body": "Eighty lanterns weighed almost nothing on their own but a lot stacked together. The crates needed two hands each. The forecast promised rain after four, drawn in neat white chalk on the shop board. Rafi could pull his bike trailer as far as the stile. But the last two hundred steps belonged to whoever was carrying. Wren could already feel the burn in both arms just looking at the climb.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_bs_carry_0",
+          "label": "Hunt down the jar of wall plugs.",
+          "target": "bs_plugs"
+        },
+        {
+          "id": "c_bs_carry_1",
+          "label": "Wire the brackets in instead.",
+          "target": "bs_wire"
+        },
+        {
+          "id": "c_bs_carry_2",
+          "label": "Ask Dot Mallow what the shop has.",
+          "target": "bs_dot"
+        }
+      ]
+    },
+    {
+      "id": "sf_gate",
+      "body": "The gate onto the new path was wired shut with three turns of fencing wire and the blue biro note that stated SHUT MEANS SHUT. The ewes stood in the top corner of the field with their backs to the wind, their breath making small clouds. Beside the gate, the old stile had one plank missing and another gone green with moss. The list did not mention any of this.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_sf_gate_0",
+          "label": "Work out where the lanterns go now.",
+          "target": "sf_reroute"
+        },
+        {
+          "id": "c_sf_gate_1",
+          "label": "Find something to hang the new ones on.",
+          "target": "sf_posts"
+        },
+        {
+          "id": "c_sf_gate_2",
+          "label": "Make the turn obvious in the dark.",
+          "target": "sf_sign"
+        }
+      ]
+    },
+    {
+      "id": "sf_slip",
+      "body": "The old path ended fast at a lip of raw earth. The hillside had torn away here in February. Below, the ground was a messy slope of grey clay and heather roots. No one should cross it in the dark. The list still had nine lanterns marked along the stretch that was no longer there. Little pencilled Xs marked a ghost route.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_sf_slip_0",
+          "label": "Work out where the lanterns go now.",
+          "target": "sf_reroute"
+        },
+        {
+          "id": "c_sf_slip_1",
+          "label": "Find something to hang the new ones on.",
+          "target": "sf_posts"
+        },
+        {
+          "id": "c_sf_slip_2",
+          "label": "Make the turn obvious in the dark.",
+          "target": "sf_sign"
+        }
+      ]
+    },
+    {
+      "id": "sf_ovens",
+      "body": "Mr Ovens was somewhere between the barn and the top field. He had told the village council twice this year that his land was treated like a hall-way. He was also the only person with a quad bike and a spare roll of wire. In anyone's memory, he had never once let a walker come to harm on his hill. Wren could hear the rattle of a feed bucket from the barn door.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_sf_ovens_0",
+          "label": "Work out where the lanterns go now.",
+          "target": "sf_reroute"
+        },
+        {
+          "id": "c_sf_ovens_1",
+          "label": "Find something to hang the new ones on.",
+          "target": "sf_posts"
+        },
+        {
+          "id": "c_sf_ovens_2",
+          "label": "Make the turn obvious in the dark.",
+          "target": "sf_sign"
+        }
+      ]
+    },
+    {
+      "id": "og_hinge",
+      "body": "The orchard gate ploughed a groove in the mud so deep it held water. Moving it took two hands and a shoulder. That was fine at two in the afternoon. It was unkind at half past five to someone with a pack on. The hinge pin was worn to a shine, like a polished coin. The post itself had begun leaning downhill. Wren pressed a thumb against the cold metal and felt the whole gate shift.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_og_hinge_0",
+          "label": "Rehang the hooks where they belong.",
+          "target": "og_hooks"
+        },
+        {
+          "id": "c_og_hinge_1",
+          "label": "Light the last stretch into the lane.",
+          "target": "og_lane"
+        },
+        {
+          "id": "c_og_hinge_2",
+          "label": "Take the twins up on their offer.",
+          "target": "og_twins"
+        }
+      ]
+    },
+    {
+      "id": "og_low",
+      "body": "Last autumn, someone had hung the orchard lanterns at eye height under branches heavy with unpicked apples. A walker had put a shoulder through one and got a face full of fuel smell. The torn paper still hung from the hook like a shed skin. The trees had grown since then, their branches heavier. The same hooks now sat even lower. A tall person with a backpack would hit one square across the forehead.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_og_low_0",
+          "label": "Rehang the hooks where they belong.",
+          "target": "og_hooks"
+        },
+        {
+          "id": "c_og_low_1",
+          "label": "Light the last stretch into the lane.",
+          "target": "og_lane"
+        },
+        {
+          "id": "c_og_low_2",
+          "label": "Take the twins up on their offer.",
+          "target": "og_twins"
+        }
+      ]
+    },
+    {
+      "id": "og_fruit",
+      "body": "Windfalls lay three deep under the two oldest trees nearest the lane. It was a brown and gold carpet humming with slow, cross wasps made sleepy by the cold. Nobody wanted to reach up into a tree above that. An old wooden cart with one bent wheel leaned behind the wall. Clearing the fruit would cost about twenty minutes of good light.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_og_fruit_0",
+          "label": "Rehang the hooks where they belong.",
+          "target": "og_hooks"
+        },
+        {
+          "id": "c_og_fruit_1",
+          "label": "Light the last stretch into the lane.",
+          "target": "og_lane"
+        },
+        {
+          "id": "c_og_fruit_2",
+          "label": "Take the twins up on their offer.",
+          "target": "og_twins"
+        }
+      ]
+    },
+    {
+      "id": "bs_plugs",
+      "body": "The jar of wall plugs was not on the shelf the list said it lived on. The shelf held a coiled hose and an empty seed tray. Mrs Trewin frowned at the gap. She said she remembered it going up the steps last October and never coming down. That put it either in the heather at the top of the ridge or in the back of a garage in the lane, with two years of cobwebs on the lid. Wren pushed aside a coil of rope and found only dust.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_bs_plugs_0",
+          "label": "Set the whole flight before the light goes.",
+          "target": "bs_flight"
+        },
+        {
+          "id": "c_bs_plugs_1",
+          "label": "Hang one lantern and watch it in the wind.",
+          "target": "bs_test"
+        },
+        {
+          "id": "c_bs_plugs_2",
+          "label": "Go down and tell Mrs Trewin what the steps need.",
+          "target": "bs_report"
+        }
+      ]
+    },
+    {
+      "id": "bs_wire",
+      "body": "There were two arm-lengths of fence wire in the crate. Mrs Trewin showed Wren a way to hold a hook, using her good hand. She twisted the wire tight around the stone spur. She tucked the sharp end down into the gap, never leaving a loop where a sleeve could catch. It would hold for a season, she said. Every person who had ever done it said so with a certain face, a mix of pride and worry. \"It's ugly and it works,\" she added, and handed Wren the pliers.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_bs_wire_0",
+          "label": "Measure the steps and write them up properly.",
+          "target": "bs_page"
+        },
+        {
+          "id": "c_bs_wire_1",
+          "label": "Set the whole flight before the light goes.",
+          "target": "bs_flight"
+        },
+        {
+          "id": "c_bs_wire_2",
+          "label": "Hang one lantern and watch it in the wind.",
+          "target": "bs_test"
+        }
+      ]
+    },
+    {
+      "id": "bs_dot",
+      "body": "The village shop had a shallow drawer of odd bits under the till. Dot Mallow could find a use for anything in it, once you told her the job. She had firm views about the ridge. She kept a spare kettle always on the boil. And she owned the only oil funnel in the village that did not leak. The drawer was open now. It held a jumble of wall plugs, brass screws, and one leather work glove that matched nothing.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_bs_dot_0",
+          "label": "Go down and tell Mrs Trewin what the steps need.",
+          "target": "bs_report"
+        },
+        {
+          "id": "c_bs_dot_1",
+          "label": "Measure the steps and write them up properly.",
+          "target": "bs_page"
+        },
+        {
+          "id": "c_bs_dot_2",
+          "label": "Set the whole flight before the light goes.",
+          "target": "bs_flight"
+        }
+      ]
+    },
+    {
+      "id": "sf_reroute",
+      "body": "The new path ran forty paces higher than the old one. It turned twice where the old line had been straight. Nine lamps hung along the old line would now light a route that stopped at a drop. The new line needed seven. Two of those had nothing to hang on\u2014no tree, no post, no wall. Wren could see exactly where the light should fall. She had nothing to hang it from.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_sf_reroute_0",
+          "label": "Walk the new line carrying a crate.",
+          "target": "sf_walk"
+        },
+        {
+          "id": "c_sf_reroute_1",
+          "label": "Get the gate question settled properly.",
+          "target": "sf_permission"
+        },
+        {
+          "id": "c_sf_reroute_2",
+          "label": "Mark the drop above the slip.",
+          "target": "sf_mark"
+        }
+      ]
+    },
+    {
+      "id": "sf_posts",
+      "body": "There were no trees on the turn and no wall for a hundred paces. The fence posts belonged to Mr Ovens. The shed could give three bamboo canes left from the summer bean frame. It also had a bundle of stakes for tomato plants and a wooden mallet with a split handle. Wren lifted the mallet. The head wobbled on its shaft. Not great, but not nothing.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_sf_posts_0",
+          "label": "Leave the turn for the grown-ups and go back down.",
+          "target": "sf_dark"
+        },
+        {
+          "id": "c_sf_posts_1",
+          "label": "Walk the new line carrying a crate.",
+          "target": "sf_walk"
+        },
+        {
+          "id": "c_sf_posts_2",
+          "label": "Get the gate question settled properly.",
+          "target": "sf_permission"
+        }
+      ]
+    },
+    {
+      "id": "sf_sign",
+      "body": "A walker coming down in low cloud follows the ground that looks most walked. That was still the old line. It was a pale scar running straight toward the edge of the slip. Whatever else happened on this hill, the place where the path turned had to be very clear at dusk. It had to be clear to a tired person who had stopped reading the ground.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_sf_sign_0",
+          "label": "Mark the drop above the slip.",
+          "target": "sf_mark"
+        },
+        {
+          "id": "c_sf_sign_1",
+          "label": "Leave the turn for the grown-ups and go back down.",
+          "target": "sf_dark"
+        },
+        {
+          "id": "c_sf_sign_2",
+          "label": "Walk the new line carrying a crate.",
+          "target": "sf_walk"
+        }
+      ]
+    },
+    {
+      "id": "og_hooks",
+      "body": "The right height for an orchard lamp was above the tallest walker with a pack on. It was below the branch that whipped in a gust. Finding it meant standing where the walkers walked and looking up. It did not mean standing where the ladder was. Wren stood on the path itself, squinting into the tangle of twigs. She saw a hook hanging at eyebrow level. It was exactly wrong.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_og_hooks_0",
+          "label": "Hang the orchard through before dusk.",
+          "target": "og_hang"
+        },
+        {
+          "id": "c_og_hooks_1",
+          "label": "Walk the orchard the way a walker would.",
+          "target": "og_check"
+        },
+        {
+          "id": "c_og_hooks_2",
+          "label": "Take the spare lanterns up the ridge.",
+          "target": "og_spare"
+        }
+      ]
+    },
+    {
+      "id": "og_lane",
+      "body": "The last forty paces before the lane were the part everybody forgot. You could already see the village lights from there. It was also where the ground was worst. There was a rut deep enough to turn an ankle. An iron drain grid was slick with wet leaves. And the orchard wall hid the turn until a walker was right on it. A lamp here would cost almost nothing. It would catch the one mistake that happened every year.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_og_lane_0",
+          "label": "Finish the orchard beautifully and stop there.",
+          "target": "og_bottom"
+        },
+        {
+          "id": "c_og_lane_1",
+          "label": "Hang the orchard through before dusk.",
+          "target": "og_hang"
+        },
+        {
+          "id": "c_og_lane_2",
+          "label": "Walk the orchard the way a walker would.",
+          "target": "og_check"
+        }
+      ]
+    },
+    {
+      "id": "og_twins",
+      "body": "Kit and Row were nine. They had been standing at the gate for ten minutes, waiting to be given something. They could fully carry things, count, and tell the truth about how many lamps were left. They could not be quiet. And they could not be trusted with the mallet. Row had already picked up the mallet twice. Each time he put it down again with a look of deep longing.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_og_twins_0",
+          "label": "Take the spare lanterns up the ridge.",
+          "target": "og_spare"
+        },
+        {
+          "id": "c_og_twins_1",
+          "label": "Finish the orchard beautifully and stop there.",
+          "target": "og_bottom"
+        },
+        {
+          "id": "c_og_twins_2",
+          "label": "Hang the orchard through before dusk.",
+          "target": "og_hang"
+        }
+      ]
+    },
+    {
+      "id": "bs_flight",
+      "body": "The steps took one lamp every fourth bracket\u2014twenty-two in all. Hanging from the bottom up meant carrying past everything already lit. The paper globes swung at shoulder height. Hanging from the top down meant walking back through the dark with nothing burning behind you. Wren looked up the long grey stretch of stone. She felt the weight of the first crate in both hands.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_bs_flight_0",
+          "label": "Get the paraffin sorted first.",
+          "target": "gt_oil"
+        },
+        {
+          "id": "c_bs_flight_1",
+          "label": "Get more hands onto the ridge.",
+          "target": "gt_hands"
+        },
+        {
+          "id": "c_bs_flight_2",
+          "label": "Walk the whole route once, end to end.",
+          "target": "gt_walk"
+        }
+      ]
+    },
+    {
+      "id": "bs_test",
+      "body": "One lamp went up on the third bracket and sat there swinging. It was a pale paper globe against the grey sky. The way it swung said everything about how the other twenty-one would act. It rocked in quick, nervous jerks, not the slow sway of a sheltered garden. The wind on the steps came across the ridge, not up it. The list did not mention this fact anywhere on the page.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_bs_test_0",
+          "label": "Get ahead of the wind.",
+          "target": "gt_wind"
+        },
+        {
+          "id": "c_bs_test_1",
+          "label": "Send word up to the walking party.",
+          "target": "gt_word"
+        },
+        {
+          "id": "c_bs_test_2",
+          "label": "Light the bottom of the route now.",
+          "target": "gt_bottom"
+        }
+      ]
+    },
+    {
+      "id": "bs_report",
+      "body": "Mrs Trewin was in the hall. Her wrist was propped on a cushion and the kettle was just coming to the boil. She looked up as the door opened. Her face said she had been waiting for just this knock. There was a version of this afternoon where someone walked back in and said plainly what the steps needed and how long that really took. And there was a version where nobody said it until dark.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_bs_report_0",
+          "label": "Get the paraffin sorted first.",
+          "target": "gt_oil"
+        },
+        {
+          "id": "c_bs_report_1",
+          "label": "Get more hands onto the ridge.",
+          "target": "gt_hands"
+        },
+        {
+          "id": "c_bs_report_2",
+          "label": "Walk the whole route once, end to end.",
+          "target": "gt_walk"
+        }
+      ]
+    },
+    {
+      "id": "sf_walk",
+      "body": "Carrying a crate along the new line was the only way to learn it. It took eleven minutes at a working pace. The wind pushed from the left, sharp and steady. The light on the hill had already turned amber. It was a soft gold that made the grass look warmer than it was. The cloud was coming down rather than lifting. Its grey belly was settling over the moor above.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_sf_walk_0",
+          "label": "Get ahead of the wind.",
+          "target": "gt_wind"
+        },
+        {
+          "id": "c_sf_walk_1",
+          "label": "Send word up to the walking party.",
+          "target": "gt_word"
+        },
+        {
+          "id": "c_sf_walk_2",
+          "label": "Light the bottom of the route now.",
+          "target": "gt_bottom"
+        }
+      ]
+    },
+    {
+      "id": "sf_permission",
+      "body": "There was a big gap between cutting the wire and being handed the wire. That gap would last a lot longer than tonight. Mr Ovens was at the barn until milking. The lamp rota had needed his field every autumn for as long as the list had been around. The question was not if he would say yes. He always did, in the end. The question was who had to ask him, and how.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_sf_permission_0",
+          "label": "Get the paraffin sorted first.",
+          "target": "gt_oil"
+        },
+        {
+          "id": "c_sf_permission_1",
+          "label": "Get more hands onto the ridge.",
+          "target": "gt_hands"
+        },
+        {
+          "id": "c_sf_permission_2",
+          "label": "Walk the whole route once, end to end.",
+          "target": "gt_walk"
+        }
+      ]
+    },
+    {
+      "id": "sf_mark",
+      "body": "The lip of the landslip was the one place on the whole route where being wrong cost more than a wet foot. Two lanterns and a bamboo cane pushed into the earth would say stop here to somebody who had stopped thinking. There were two lanterns to spare only if the steps turned out not to need them. It was a gamble Wren could feel deep in her stomach.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_sf_mark_0",
+          "label": "Get ahead of the wind.",
+          "target": "gt_wind"
+        },
+        {
+          "id": "c_sf_mark_1",
+          "label": "Send word up to the walking party.",
+          "target": "gt_word"
+        },
+        {
+          "id": "c_sf_mark_2",
+          "label": "Light the bottom of the route now.",
+          "target": "gt_bottom"
+        }
+      ]
+    },
+    {
+      "id": "og_hang",
+      "body": "Twelve lanterns hung in eleven trees. One tree took two because its branches spread wider than the rest. Each lantern had to be lit by hand from a taper. The orchard was the one place on the route where the wind could not reach. But the matches somehow could. It was a small, maddening miracle. Lantern keepers had been muttering about it for decades.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_og_hang_0",
+          "label": "Get the paraffin sorted first.",
+          "target": "gt_oil"
+        },
+        {
+          "id": "c_og_hang_1",
+          "label": "Get more hands onto the ridge.",
+          "target": "gt_hands"
+        },
+        {
+          "id": "c_og_hang_2",
+          "label": "Walk the whole route once, end to end.",
+          "target": "gt_walk"
+        }
+      ]
+    },
+    {
+      "id": "og_check",
+      "body": "Walking the orchard from the ridge end at a tired pace showed it the way walkers would use it. This was the opposite direction from how it was hung. From that side, two lanterns were behind thick branches. One was fully hidden by a trunk. A walker heading down would see ten lights, not twelve. The two they missed were the ones nearest the turn toward the lane.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_og_check_0",
+          "label": "Get ahead of the wind.",
+          "target": "gt_wind"
+        },
+        {
+          "id": "c_og_check_1",
+          "label": "Send word up to the walking party.",
+          "target": "gt_word"
+        },
+        {
+          "id": "c_og_check_2",
+          "label": "Light the bottom of the route now.",
+          "target": "gt_bottom"
+        }
+      ]
+    },
+    {
+      "id": "og_spare",
+      "body": "The orchard needed twelve lanterns. The crate held sixteen. Four pale lanterns sat waiting in the straw. Four spare lanterns at the top of the ridge were worth far more than four in a crate at the bottom. Carrying them up now would use up the last of the easy light. But not carrying them might cost the top half of the route.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_og_spare_0",
+          "label": "Get the paraffin sorted first.",
+          "target": "gt_oil"
+        },
+        {
+          "id": "c_og_spare_1",
+          "label": "Get more hands onto the ridge.",
+          "target": "gt_hands"
+        },
+        {
+          "id": "c_og_spare_2",
+          "label": "Walk the whole route once, end to end.",
+          "target": "gt_walk"
+        }
+      ]
+    },
+    {
+      "id": "bs_page",
+      "body": "The brackets got measured with a piece of string. The gap got drawn to scale on the back of an old seed list. The whole of the Beacon Steps became one honest page. It was pinned to the shed door with a drawing pin. The lanterns would go up a week later on proper fixings. Someone else would carry the crates. It was not the afternoon anyone had planned, and it was not nothing. The page fluttered in the breeze. Wren's pencil marks held steady.",
+      "is_ending": true,
+      "ending": {
+        "id": "e_bs_page",
+        "valence": "neutral",
+        "kind": "discovery",
+        "title": "The Steps Get Their Own Page"
+      }
+    },
+    {
+      "id": "sf_dark",
+      "body": "The wire stayed on the gate and the new line stayed unlit. At four o'clock the rota was phoned round the village. Two grown-ups walked the turn with head torches all evening. Their small white beams bobbed in the dark. Nobody came to harm and nobody thanked anybody. The list went back into its brown envelope. It was exactly as wrong as it had come out. The ridge above sat in perfect, unbroken darkness.",
+      "is_ending": true,
+      "ending": {
+        "id": "e_sf_dark",
+        "valence": "neutral",
+        "kind": "setback",
+        "title": "The Turn Left Dark"
+      }
+    },
+    {
+      "id": "og_bottom",
+      "body": "The orchard ended up lit properly and prettily. Twelve warm globes hung in the apple trees like a promise. The ridge above it did not. The walkers came down off the moor by torchlight. They met the lanterns only in the last five minutes of the way home. Their faces were soft in the orange glow. It looked like a welcome, and it was meant to be a route. Those are two different things. Only one of them had been achieved.",
+      "is_ending": true,
+      "ending": {
+        "id": "e_og_bottom",
+        "valence": "neutral",
+        "kind": "discovery",
+        "title": "The Bottom Half Lit"
+      }
+    },
+    {
+      "id": "gt_oil",
+      "body": "The list said the paraffin lived in the hall cupboard. The hall cupboard now held folding chairs and a box of old choir robes that smelled of mothballs. There were four litres in a blue can behind the shop. The rest was wherever last autumn had left it. It could be anywhere from the church boiler room to the back of a garage. Eighty lanterns held rather more than four litres between them. Wren could do the maths in her head.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_gt_oil_0",
+          "label": "Track down the rest of the paraffin.",
+          "target": "oil_can"
+        },
+        {
+          "id": "c_gt_oil_1",
+          "label": "Set up somewhere to fill them.",
+          "target": "oil_bench"
+        },
+        {
+          "id": "c_gt_oil_2",
+          "label": "Go through the wicks before filling anything.",
+          "target": "oil_wick"
+        }
+      ]
+    },
+    {
+      "id": "gt_hands",
+      "body": "Eleven people in the village had hung lanterns before. About six of them were around on a Tuesday afternoon. Asking cost time now and bought time later. Every minute spent knocking on doors was a minute not spent on the ridge. Every pair of hands that answered was four crates carried. The names column on the list had not been true since the autumn before last. Wren did not know who had moved away and who had simply stopped being asked.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_gt_hands_0",
+          "label": "Knock on the doors that used to say yes.",
+          "target": "cq_plant_did_knock_doors_that",
+          "effects": [
+            {
+              "op": "set",
+              "var": "did_knock_doors_that",
+              "value": true
+            }
+          ]
+        },
+        {
+          "id": "c_gt_hands_1",
+          "label": "Catch people at the school gate.",
+          "target": "pp_gate"
+        },
+        {
+          "id": "c_gt_hands_2",
+          "label": "Put the word out through the shop.",
+          "target": "pp_shop"
+        }
+      ]
+    },
+    {
+      "id": "cq_plant_did_knock_doors_that",
+      "body": "The first door opened on Mrs Chen, who had not been asked for two years and had kept her old lantern hook wrapped in brown paper in the hall drawer. \"I wondered if you'd ever come round again,\" she said, and handed it over. The second door opened on Mr Riley, who still had a spare crate of storm shades in his shed from the year the ridge blew out. Wren wrote both names down.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_cq_plant_did_knock_doors_that",
+          "label": "Knock on the doors that used to say yes.",
+          "target": "pp_doors"
+        }
+      ]
+    },
+    {
+      "id": "gt_walk",
+      "body": "Nobody had walked the full route today. The list described a ridge that had changed in two places since it was written. Those were the landslip and the wired gate. Forty minutes of walking would answer more questions than an hour of standing in the shed. Guessing at a page that no longer told the truth was a waste of time. Wren could feel the afternoon tightening, but a wrong lantern was worse than no lantern at all.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_gt_walk_0",
+          "label": "Walk the route with the list and a pencil.",
+          "target": "pa_survey"
+        },
+        {
+          "id": "c_gt_walk_1",
+          "label": "Find the dark gaps between lanterns.",
+          "target": "pa_gaps"
+        },
+        {
+          "id": "c_gt_walk_2",
+          "label": "Look at what the rain has made of the ground.",
+          "target": "pa_ground"
+        }
+      ]
+    },
+    {
+      "id": "gt_wind",
+      "body": "The wind that had come across the ridge at two was now bending the top of the ash tree by the hall. Its branches thrashed in slow arcs. Paper lanterns and wind had a long and costly history in this village. The shed held a cardboard box of storm shades. These were small glass chimneys that fitted over the flame. But they fitted rather less than half the lanterns. The rest would have to take their chances. Wren knew exactly what those chances were.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_gt_wind_0",
+          "label": "Track down the rest of the paraffin.",
+          "target": "oil_can"
+        },
+        {
+          "id": "c_gt_wind_1",
+          "label": "Set up somewhere to fill them.",
+          "target": "oil_bench"
+        },
+        {
+          "id": "c_gt_wind_2",
+          "label": "Go through the wicks before filling anything.",
+          "target": "oil_wick"
+        }
+      ]
+    },
+    {
+      "id": "gt_word",
+      "body": "Priya Shah was bringing fourteen people down off the moor. She expected a lit ridge at half past five. There was one bar of mobile signal at the top of the steps and none at all in the orchard. So the message she needed had to be sent from exactly the right spot. It was the honest message about the wind, the missing paraffin, and the turn that still was not marked. It was not the message that said everything was fine.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_gt_word_0",
+          "label": "Knock on the doors that used to say yes.",
+          "target": "pp_doors"
+        },
+        {
+          "id": "c_gt_word_1",
+          "label": "Catch people at the school gate.",
+          "target": "pp_gate"
+        },
+        {
+          "id": "c_gt_word_2",
+          "label": "Put the word out through the shop.",
+          "target": "pp_shop"
+        }
+      ]
+    },
+    {
+      "id": "gt_bottom",
+      "body": "Lighting from the bottom up kept the finished work behind you all afternoon. It showed the walkers the best part last\u2014the orchard glowing like a row of warm windows. It also helped at five o'clock when something went wrong. The lit part was the part nearest the village, the phone line, and the kettle. Wren could see the sense in it. It did mean the top of the ridge stayed dark the longest.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_gt_bottom_0",
+          "label": "Walk the route with the list and a pencil.",
+          "target": "pa_survey"
+        },
+        {
+          "id": "c_gt_bottom_1",
+          "label": "Find the dark gaps between lanterns.",
+          "target": "pa_gaps"
+        },
+        {
+          "id": "c_gt_bottom_2",
+          "label": "Look at what the rain has made of the ground.",
+          "target": "pa_ground"
+        }
+      ]
+    },
+    {
+      "id": "oil_can",
+      "body": "Four litres in the blue can behind the shop. A half-can in the church boiler room that might be lamp oil\u2014nobody had written on it. And a full can that Mrs Trewin swore went to the school for the harvest lanterns and never came back. Wren stared at the small blue square of the four-litre can. She felt the weight of the missing fuel pressing on the whole afternoon.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_oil_can_0",
+          "label": "Go to the school for the missing can.",
+          "target": "oil_school"
+        },
+        {
+          "id": "c_oil_can_1",
+          "label": "Ration what there is across the route.",
+          "target": "oil_ration",
+          "condition": {
+            "==": [
+              {
+                "var": "did_start_sheepfold_turn"
+              },
+              false
+            ]
+          }
+        },
+        {
+          "id": "c_oil_can_1_cq_did_start_sheepfold_turn",
+          "label": "Ration what there is across the route.",
+          "target": "cq_payoff_did_start_sheepfold_turn_site2",
+          "condition": {
+            "==": [
+              {
+                "var": "did_start_sheepfold_turn"
+              },
+              true
+            ]
+          }
+        },
+        {
+          "id": "c_oil_can_2",
+          "label": "Burn one for twenty minutes and watch it.",
+          "target": "oil_burn"
+        }
+      ]
+    },
+    {
+      "id": "cq_payoff_did_start_sheepfold_turn_site2",
+      "body": "Wren remembered the paper bag of oat biscuits Dot Mallow had pressed into her palm near the gate. Mr Ovens had taken them with a grunt that was almost a smile. In return he had told her about the old paraffin store behind the milking shed\u2014a two-litre can he used for the barn heater. It was nearly full. That was enough to tip the ration sums from not possible to tight.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_cq_payoff_did_start_sheepfold_turn_site2",
+          "label": "Ration what there is across the route.",
+          "target": "oil_ration"
+        }
+      ]
+    },
+    {
+      "id": "oil_bench",
+      "body": "Filling eighty lanterns needed a funnel, a rag, a flat surface, and a firm rule about where the full ones went. Doing it off a tailgate in the wind was how a village ended up with paraffin down the inside of every crate. The shed doorstep was flat. The funnel was Dot Mallow's, the one that didn't leak. The rag was an old tea towel that still smelled faintly of washing powder.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_oil_bench_0",
+          "label": "Ask the village for anything that burns.",
+          "target": "oil_borrow",
+          "condition": {
+            "==": [
+              {
+                "var": "did_start_sheepfold_turn"
+              },
+              false
+            ]
+          }
+        },
+        {
+          "id": "c_oil_bench_0_cq_did_start_sheepfold_turn",
+          "label": "Ask the village for anything that burns.",
+          "target": "cq_payoff_did_start_sheepfold_turn",
+          "condition": {
+            "==": [
+              {
+                "var": "did_start_sheepfold_turn"
+              },
+              true
+            ]
+          }
+        },
+        {
+          "id": "c_oil_bench_1",
+          "label": "Fill fast and get the crates moving.",
+          "target": "oil_spill"
+        },
+        {
+          "id": "c_oil_bench_2",
+          "label": "Go to the school for the missing can.",
+          "target": "oil_school"
+        }
+      ]
+    },
+    {
+      "id": "cq_payoff_did_start_sheepfold_turn",
+      "body": "The oat biscuits had done their work. When Wren went round asking for spare fuel, Mr Ovens was already in a useful mood. He handed over the barn-heater can without a single word about gates. \"You're the only one who thought to ask nicely,\" he said. The extra two litres changed the whole filling table. Every lantern could now have its full share.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_cq_payoff_did_start_sheepfold_turn",
+          "label": "Ask the village for anything that burns.",
+          "target": "oil_borrow"
+        }
+      ]
+    },
+    {
+      "id": "oil_wick",
+      "body": "A wick that had sat in a shed for a year burned for twenty minutes and then went out sulking. Its blackened tip curled over like a question mark. There were two boxes of new wick in the drawer, but they had been cut to the wrong length\u2014too short for the ridge lanterns, too long for the orchard ones. Trimming eighty of them was an hour nobody had, when half of them did not need a trim at all.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_oil_wick_0",
+          "label": "Ration what there is across the route.",
+          "target": "oil_ration"
+        },
+        {
+          "id": "c_oil_wick_1",
+          "label": "Burn one for twenty minutes and watch it.",
+          "target": "oil_burn"
+        },
+        {
+          "id": "c_oil_wick_2",
+          "label": "Ask the village for anything that burns.",
+          "target": "oil_borrow"
+        }
+      ]
+    },
+    {
+      "id": "pp_doors",
+      "body": "The names list was three years out of date. It read like a map of who had moved away. Four of the doors were still the right doors, their brass numbers polished. Two of those opened onto someone who had been waiting a long while to be asked again. They were the sort of person who kept their old lantern hook in a drawer, wrapped in brown paper, just in case.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pp_doors_0",
+          "label": "Split whoever comes into teams.",
+          "target": "pp_teams"
+        },
+        {
+          "id": "c_pp_doors_1",
+          "label": "Show the new ones how a bracket holds.",
+          "target": "pp_teach"
+        },
+        {
+          "id": "c_pp_doors_2",
+          "label": "Bring Mr Ovens in properly.",
+          "target": "pp_quad"
+        }
+      ]
+    },
+    {
+      "id": "pp_gate",
+      "body": "The school gate at half past three held more of the village than anywhere else all week. Parents, grandparents, the lollipop lady, and a group of small brothers and sisters in wellies were all there. Nobody standing at it was in a hurry to be anywhere for the next ten minutes. Wren could see half a dozen people who had hung lanterns before.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pp_gate_0",
+          "label": "Give the twins a job that is really theirs.",
+          "target": "pp_twins"
+        },
+        {
+          "id": "c_pp_gate_1",
+          "label": "Ask everybody and sort it out when they arrive.",
+          "target": "pp_crowd"
+        },
+        {
+          "id": "c_pp_gate_2",
+          "label": "Split whoever comes into teams.",
+          "target": "pp_teams"
+        }
+      ]
+    },
+    {
+      "id": "pp_shop",
+      "body": "Anything said across the counter at the shop was in eleven kitchens by tea time. The version that arrived was the version Dot Mallow passed on. The wording mattered a good deal more than the asking. Wren stood at the counter, the bell still ringing on the door. She chose the exact sentence that would travel fastest.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pp_shop_0",
+          "label": "Show the new ones how a bracket holds.",
+          "target": "pp_teach"
+        },
+        {
+          "id": "c_pp_shop_1",
+          "label": "Bring Mr Ovens in properly.",
+          "target": "pp_quad"
+        },
+        {
+          "id": "c_pp_shop_2",
+          "label": "Give the twins a job that is really theirs.",
+          "target": "pp_twins"
+        }
+      ]
+    },
+    {
+      "id": "pa_survey",
+      "body": "The list and the ground did not match in nine places. Only walking the route found them all. The whole loop took thirty-eight minutes at a working pace, and rather longer with a crate. A pencil beat a memory every single time. Wren's stub of pencil, borrowed from the shop counter, had already marked four fixes in the margin.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pa_survey_0",
+          "label": "Respace the lanterns for the real path.",
+          "target": "pa_spacing"
+        },
+        {
+          "id": "c_pa_survey_1",
+          "label": "Make the drop above the slip safe.",
+          "target": "pa_drop"
+        },
+        {
+          "id": "c_pa_survey_2",
+          "label": "Mark the turns with something better than light.",
+          "target": "pa_paint"
+        }
+      ]
+    },
+    {
+      "id": "pa_gaps",
+      "body": "A lit route was not eighty lanterns\u2014it was eighty gaps. The gap that mattered was the one where a walker could not see the next light from the last. There were three of those on this hill. Three stretches of darkness where the ground dipped or curved, and none of them were on the list. Wren stood in the first one and looked back. The last lantern was a tiny dot, just about seen.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pa_gaps_0",
+          "label": "Find the sheltered hanging points.",
+          "target": "pa_shelter"
+        },
+        {
+          "id": "c_pa_gaps_1",
+          "label": "Finish the survey properly before hanging anything.",
+          "target": "pa_map"
+        },
+        {
+          "id": "c_pa_gaps_2",
+          "label": "Respace the lanterns for the real path.",
+          "target": "pa_spacing"
+        }
+      ]
+    },
+    {
+      "id": "pa_ground",
+      "body": "The clay above the sheepfold turn was already greasy underfoot. It was a slick grey paste that grabbed at Wren's boots. The forecast promised more rain after four. A lantern that showed a walker the wrong side of that slope\u2014the side that ended in a slide\u2014was worse than no lantern at all. Wren crouched and pressed a finger into the mud. It came away cold and shining.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pa_ground_0",
+          "label": "Make the drop above the slip safe.",
+          "target": "pa_drop"
+        },
+        {
+          "id": "c_pa_ground_1",
+          "label": "Mark the turns with something better than light.",
+          "target": "pa_paint"
+        },
+        {
+          "id": "c_pa_ground_2",
+          "label": "Find the sheltered hanging points.",
+          "target": "pa_shelter"
+        }
+      ]
+    },
+    {
+      "id": "oil_school",
+      "body": "The school kitchen door was open until four. The caretaker, Mr Okonkwo, knew all about the harvest lanterns. He knew where they went and what came back. He was mopping the hall floor. He looked up with a patient face. He was a man who was always being asked where things were. The walk home with a full can of paraffin was uphill. It took both hands. Wren could already feel how much her wrists would ache just thinking about it.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_oil_school_0",
+          "label": "Run a filling line with the twins.",
+          "target": "oil_line"
+        },
+        {
+          "id": "c_oil_school_1",
+          "label": "Fit the storm shades to the filled ones.",
+          "target": "oil_shades"
+        },
+        {
+          "id": "c_oil_school_2",
+          "label": "Get the filled crates to the top first.",
+          "target": "oil_top"
+        }
+      ]
+    },
+    {
+      "id": "oil_ration",
+      "body": "Four litres would fill about fifty lanterns well. Or it would fill eighty badly. A badly filled lantern did not fail at seven in the evening when nobody was watching. It failed at ten past five, with the whole village looking up at the ridge. Wren opened the blue can. She caught the sharp, clean smell of the paraffin. She was trying to make the numbers come out right.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_oil_ration_0",
+          "label": "Hold a reserve back at the hall.",
+          "target": "oil_reserve"
+        },
+        {
+          "id": "c_oil_ration_1",
+          "label": "Run a filling line with the twins.",
+          "target": "oil_line"
+        },
+        {
+          "id": "c_oil_ration_2",
+          "label": "Fit the storm shades to the filled ones.",
+          "target": "oil_shades"
+        }
+      ]
+    },
+    {
+      "id": "oil_burn",
+      "body": "One filled lantern on the shed step with a watch beside it answered the only thing that really mattered. Would the thing burn from now until the walkers came down? It cost twenty minutes to find out. Not knowing would have cost more. Wren lit the wick with a match and watched the small flame settle. It was steady and yellow. She sat on the step and waited for the clock to tick round.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_oil_burn_0",
+          "label": "Get the filled crates to the top first.",
+          "target": "oil_top"
+        },
+        {
+          "id": "c_oil_burn_1",
+          "label": "Hold a reserve back at the hall.",
+          "target": "oil_reserve"
+        },
+        {
+          "id": "c_oil_burn_2",
+          "label": "Run a filling line with the twins.",
+          "target": "oil_line"
+        }
+      ]
+    },
+    {
+      "id": "oil_borrow",
+      "body": "The pub, the chapel, and three kitchens together could make a plain backup group. They gave a mix of storm lanterns, a camping lamp with a cracked glass, and a box of stubby candles in old jam jars. None of them matched the paper lanterns. All of them made light. Wren lined them up on the shed step\u2014a small, mismatched army of backup.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_oil_borrow_0",
+          "label": "Fit the storm shades to the filled ones.",
+          "target": "oil_shades"
+        },
+        {
+          "id": "c_oil_borrow_1",
+          "label": "Get the filled crates to the top first.",
+          "target": "oil_top"
+        },
+        {
+          "id": "c_oil_borrow_2",
+          "label": "Hold a reserve back at the hall.",
+          "target": "oil_reserve"
+        }
+      ]
+    },
+    {
+      "id": "pp_teams",
+      "body": "Two on the steps, two in the orchard, one on the turn, and one running between them was a plan. Six people all starting at the shed and talking was not. The difference between the two was whoever spoke the first sentence. Wren looked at the small crowd that had gathered\u2014some in coats, some still in school uniforms\u2014and knew the next words out of her mouth would shape the next three hours.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pp_teams_0",
+          "label": "Write the rota where people can see it.",
+          "target": "pp_rota"
+        },
+        {
+          "id": "c_pp_teams_1",
+          "label": "Set up a runner between the two ends.",
+          "target": "pp_runner"
+        },
+        {
+          "id": "c_pp_teams_2",
+          "label": "Get the kettle going at the hall.",
+          "target": "pp_kettle"
+        }
+      ]
+    },
+    {
+      "id": "pp_teach",
+      "body": "Everyone who had never hung a lantern hung the first one badly and the second one well. The ten minutes spent on that were the cheapest ten minutes of the whole afternoon. It was a small fix that stopped a dozen crooked lanterns from showing up on the ridge at dusk. Wren held up a bracket. She showed the newcomers how the wire went. Her own fingers recalled the twist from Mrs Trewin's showing.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pp_teach_0",
+          "label": "Put Mrs Trewin where she can see the ridge.",
+          "target": "pp_trewin"
+        },
+        {
+          "id": "c_pp_teach_1",
+          "label": "Write the rota where people can see it.",
+          "target": "pp_rota"
+        },
+        {
+          "id": "c_pp_teach_2",
+          "label": "Set up a runner between the two ends.",
+          "target": "pp_runner"
+        }
+      ]
+    },
+    {
+      "id": "pp_quad",
+      "body": "A quad bike carried four crates to the top of the ridge in the time a person carried one. The engine noise alone was worth it\u2014a cheerful, rattling promise that the heavy work was being done. The price of asking was standing in Mr Ovens' yard. You had to be told about gates for five minutes first, with your hands behind your back like a schoolchild. Wren had already decided it was worth it.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pp_quad_0",
+          "label": "Get the kettle going at the hall.",
+          "target": "pp_kettle"
+        },
+        {
+          "id": "c_pp_quad_1",
+          "label": "Put Mrs Trewin where she can see the ridge.",
+          "target": "pp_trewin"
+        },
+        {
+          "id": "c_pp_quad_2",
+          "label": "Write the rota where people can see it.",
+          "target": "pp_rota"
+        }
+      ]
+    },
+    {
+      "id": "pp_twins",
+      "body": "Kit and Row would do a dull job well for an hour if it was truly theirs. They would do it badly for four minutes if it was just made up to keep them busy. There was only one job on this route that fit them. It was a task that mattered. It needed moving between the two ends of the route. It came with the huge job of carrying the spare lanterns. Wren caught their eyes and saw them both lean forward.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pp_twins_0",
+          "label": "Set up a runner between the two ends.",
+          "target": "pp_runner"
+        },
+        {
+          "id": "c_pp_twins_1",
+          "label": "Get the kettle going at the hall.",
+          "target": "pp_kettle"
+        },
+        {
+          "id": "c_pp_twins_2",
+          "label": "Put Mrs Trewin where she can see the ridge.",
+          "target": "pp_trewin"
+        }
+      ]
+    },
+    {
+      "id": "pa_spacing",
+      "body": "The list spaced the lanterns evenly. The ground did not want them placed evenly. It wanted them at the turns. It wanted them at the drop. And it wanted them at the two places where the path looked like it went somewhere it did not. Wren had walked the route. She had seen where the light was needed. Now the old page in her hand was just a suggestion, not a firm map.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pa_spacing_0",
+          "label": "Hang the top section to the new plan.",
+          "target": "pa_hang"
+        },
+        {
+          "id": "c_pa_spacing_1",
+          "label": "Walk it in the half dark and look.",
+          "target": "pa_dim"
+        },
+        {
+          "id": "c_pa_spacing_2",
+          "label": "Keep four lanterns for whatever is wrong.",
+          "target": "pa_bag"
+        }
+      ]
+    },
+    {
+      "id": "pa_drop",
+      "body": "Two lanterns, a bamboo cane, and a length of white tape would say stop here. A tired person would read it without thinking. The tape fluttered in the wind. It was bright and urgent. The cane stood firm in the soft earth. Each one of those lanterns came out of the count the top of the route relied on. It was a trade Wren could feel in the tightness of the numbers.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pa_drop_0",
+          "label": "Get a light onto the sheepfold gate.",
+          "target": "pa_post"
+        },
+        {
+          "id": "c_pa_drop_1",
+          "label": "Hang the top section to the new plan.",
+          "target": "pa_hang"
+        },
+        {
+          "id": "c_pa_drop_2",
+          "label": "Walk it in the half dark and look.",
+          "target": "pa_dim"
+        }
+      ]
+    },
+    {
+      "id": "pa_paint",
+      "body": "Paint on a stone lasts longer than any lantern. The village had half a tin of white gate paint in the shed, its lid rusted on. The row about painting stones on the hill had run since long before Mrs Trewin took the list. Some said it spoiled the ridge. Others said it saved walkers from the drop. Wren pried the lid off with a screwdriver. Beneath the skin the paint was still good, thick and creamy white.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pa_paint_0",
+          "label": "Keep four lanterns for whatever is wrong.",
+          "target": "pa_bag"
+        },
+        {
+          "id": "c_pa_paint_1",
+          "label": "Get a light onto the sheepfold gate.",
+          "target": "pa_post"
+        },
+        {
+          "id": "c_pa_paint_2",
+          "label": "Hang the top section to the new plan.",
+          "target": "pa_hang"
+        }
+      ]
+    },
+    {
+      "id": "pa_shelter",
+      "body": "The wind came across the ridge, not up it. This made the sheltered side of every wall, post, and thorn bush on the route worth a lantern. It meant the lantern would still be burning at seven. Wren held up a hand. She felt the cold push of the air. Then she stepped behind a low stone wall and felt it stop. The sheltered spots were easy to find if you stood still and paid attention.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pa_shelter_0",
+          "label": "Walk it in the half dark and look.",
+          "target": "pa_dim"
+        },
+        {
+          "id": "c_pa_shelter_1",
+          "label": "Keep four lanterns for whatever is wrong.",
+          "target": "pa_bag"
+        },
+        {
+          "id": "c_pa_shelter_2",
+          "label": "Get a light onto the sheepfold gate.",
+          "target": "pa_post"
+        }
+      ]
+    },
+    {
+      "id": "oil_spill",
+      "body": "The can went over on the shed step with a sound like a slap and the whole afternoon went with it. The sharp, stuffy smell was everywhere. Pale liquid spread in a wide silver sheet over the floor. Sand went down from the bucket by the door and the crate had to be washed twice with cold water. By the time the yard was safe to stand in, the good light was thin. They walked the ridge with head torches that night. The paper lanterns stayed clean and empty in their crates until Saturday.",
+      "is_ending": true,
+      "ending": {
+        "id": "e_oil_spill",
+        "valence": "neutral",
+        "kind": "setback",
+        "title": "Paraffin on the Path"
+      }
+    },
+    {
+      "id": "pp_crowd",
+      "body": "Nine people came at ten past four and stood in the shed asking what to do while the light left the sky. By the time someone wrote down who was doing what, the ridge had gone blue-grey and the first stars were pricking through. The lanterns went up by torchlight, all crooked, their paper skins glowing pink in the small white beams. Later everyone said it was lovely to see so many people out. That was true. It was not the same as the ridge being lit the right way.",
+      "is_ending": true,
+      "ending": {
+        "id": "e_pp_crowd",
+        "valence": "neutral",
+        "kind": "setback",
+        "title": "Too Many Hands, Too Late"
+      }
+    },
+    {
+      "id": "pa_map",
+      "body": "The survey was done at ten past five. Every measurement was taken, every gap noted, every bracket checked. It was honest and complete and truly useful. And the hill was not lit. The list got rewritten that evening at the kitchen table. Neat pencilled lines on the new page showed the real path, the real turns, and the real places the lanterns should hang. The lanterns went up on Saturday in daylight. Everyone knew exactly where they belonged. The new page was the first true thing anyone had written about the ridge in three years.",
+      "is_ending": true,
+      "ending": {
+        "id": "e_pa_map",
+        "valence": "neutral",
+        "kind": "setback",
+        "title": "A Very Good Map of a Dark Hill"
+      }
+    },
+    {
+      "id": "oil_line",
+      "body": "One filled, one wiped, one carried. The queue moved at the speed of the slowest job, which was always the wiping. Kit and Row would hold that line as long as someone kept counting out loud. \"Twenty-three, twenty-four, twenty-five,\" they would say, their voices rising together like a skipping rhyme. Wren watched the filled lanterns stack up in their crates. She felt the afternoon begin to catch its breath.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_oil_line_0",
+          "label": "Plan for the ones that go out.",
+          "target": "oil_relight"
+        },
+        {
+          "id": "c_oil_line_1",
+          "label": "Get the tapers and matches sorted.",
+          "target": "oil_taper"
+        },
+        {
+          "id": "c_oil_line_2",
+          "label": "Count what is actually lit.",
+          "target": "oil_count"
+        }
+      ]
+    },
+    {
+      "id": "oil_shades",
+      "body": "The storm shades fit forty of the eighty lanterns. They went on easily before a lantern was hung, and horribly after, in the wind. The little glass chimneys slipped and turned in cold fingers. The ones without shades had to hang where the ridge sheltered them. That meant a different plan for the whole top half of the route, where the wind was already building. Wren could hear it in the hall chimney, a low, steady hum.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_oil_shades_0",
+          "label": "Get a message to Priya about the timing.",
+          "target": "oil_message"
+        },
+        {
+          "id": "c_oil_shades_1",
+          "label": "Fill fifty properly and leave the rest empty.",
+          "target": "oil_fifty"
+        },
+        {
+          "id": "c_oil_shades_2",
+          "label": "Plan for the ones that go out.",
+          "target": "oil_relight"
+        }
+      ]
+    },
+    {
+      "id": "oil_top",
+      "body": "The top of the route was furthest from the shed. It was the last place anyone wanted to be carrying at five o'clock, with the light draining and the wind getting stronger. The argument for doing it first, getting the hardest stretch done while the afternoon still held, got harder to make with every ten minutes that passed. Wren looked at the long climb. She felt the weight of the first crate pulling at both arms.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_oil_top_0",
+          "label": "Get the tapers and matches sorted.",
+          "target": "oil_taper"
+        },
+        {
+          "id": "c_oil_top_1",
+          "label": "Count what is actually lit.",
+          "target": "oil_count"
+        },
+        {
+          "id": "c_oil_top_2",
+          "label": "Get a message to Priya about the timing.",
+          "target": "oil_message"
+        }
+      ]
+    },
+    {
+      "id": "oil_reserve",
+      "body": "Six filled lanterns and a small can were kept at the hall. They were either the most sensible thing anyone did all day, or six lanterns of ridge left dark. Which one it turned out to be depended on what went wrong later. The wind, the timing, the simple bad luck of a wick that gave up at twenty minutes. Wren lined the six up against the hall wall. She capped the can tight.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_oil_reserve_0",
+          "label": "Fill fifty properly and leave the rest empty.",
+          "target": "oil_fifty"
+        },
+        {
+          "id": "c_oil_reserve_1",
+          "label": "Plan for the ones that go out.",
+          "target": "oil_relight"
+        },
+        {
+          "id": "c_oil_reserve_2",
+          "label": "Get the tapers and matches sorted.",
+          "target": "oil_taper"
+        }
+      ]
+    },
+    {
+      "id": "pp_rota",
+      "body": "A rota on a page in someone's pocket was a rumour. A rota chalked on the shed door was a fact. The shed door already held a faint ghost of chalk marks from every autumn back to when the lanterns were tin. Layer upon layer of names and times. Wren picked up the lump of yellow chalk that lived on the shelf. She pressed it to the wood.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pp_rota_0",
+          "label": "Have somebody check the top pair.",
+          "target": "pp_top"
+        },
+        {
+          "id": "c_pp_rota_1",
+          "label": "Keep the top half with the team that knows it.",
+          "target": "pp_keep"
+        },
+        {
+          "id": "c_pp_rota_2",
+          "label": "Send two people up for the signal.",
+          "target": "pp_pair"
+        }
+      ]
+    },
+    {
+      "id": "pp_runner",
+      "body": "The top of the steps could not see the orchard. Neither end could hear the other. So a runner who knew both was worth more than a mobile phone with no signal. It was also the coldest job on the hill and the one nobody chose to do. A long, open trudge back and forth while the wind did its work. Wren knew exactly who would say yes if asked directly.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pp_runner_0",
+          "label": "Get everyone off the hill by six.",
+          "target": "pp_count"
+        },
+        {
+          "id": "c_pp_runner_1",
+          "label": "Let the village finish it however it likes.",
+          "target": "pp_village",
+          "condition": {
+            "==": [
+              {
+                "var": "did_knock_doors_that"
+              },
+              false
+            ]
+          }
+        },
+        {
+          "id": "c_pp_runner_1_cq_did_knock_doors_that",
+          "label": "Let the village finish it however it likes.",
+          "target": "cq_payoff_did_knock_doors_that",
+          "condition": {
+            "==": [
+              {
+                "var": "did_knock_doors_that"
+              },
+              true
+            ]
+          }
+        },
+        {
+          "id": "c_pp_runner_2",
+          "label": "Have somebody check the top pair.",
+          "target": "pp_top"
+        }
+      ]
+    },
+    {
+      "id": "cq_payoff_did_knock_doors_that",
+      "body": "Mrs Chen and Mr Riley had arrived fifteen minutes ago with their old hooks and their crate of storm shades. They were already setting up the orchard line without being told. Their quiet, practised hands changed the whole mood on the hill. What had been a scramble of volunteers became a team. The village didn't need managing. It just needed the right people to remember they had been asked. Wren took a breath and turned toward the next job.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_cq_payoff_did_knock_doors_that",
+          "label": "Get everyone off the hill by six.",
+          "target": "pp_count"
+        }
+      ]
+    },
+    {
+      "id": "pp_kettle",
+      "body": "A kettle at the hall at half past four was not a treat. It was the thing that stopped six cold people giving up and going home at five. Mrs Trewin could manage it one-handed if someone else carried the water and set out the mugs. Wren could already picture the steam rising in the draughty hall kitchen. That small warmth said the village was paying attention.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pp_kettle_0",
+          "label": "Keep the top half with the team that knows it.",
+          "target": "pp_keep"
+        },
+        {
+          "id": "c_pp_kettle_1",
+          "label": "Send two people up for the signal.",
+          "target": "pp_pair"
+        },
+        {
+          "id": "c_pp_kettle_2",
+          "label": "Get everyone off the hill by six.",
+          "target": "pp_count"
+        }
+      ]
+    },
+    {
+      "id": "pp_trewin",
+      "body": "Mrs Trewin could not carry and she could not climb. But she could look at the ridge from the hall steps, four hundred paces away, and say which lantern was wrong. It was the one skill everyone else on the hill was missing. The long, practised eye that knew the exact spacing of the old route. She could spot a gap before the walkers reached it. She sat on the hall step with a blanket over her knees, her good hand shading her eyes.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pp_trewin_0",
+          "label": "Let the village finish it however it likes.",
+          "target": "pp_village"
+        },
+        {
+          "id": "c_pp_trewin_1",
+          "label": "Have somebody check the top pair.",
+          "target": "pp_top"
+        },
+        {
+          "id": "c_pp_trewin_2",
+          "label": "Keep the top half with the team that knows it.",
+          "target": "pp_keep"
+        }
+      ]
+    },
+    {
+      "id": "pa_hang",
+      "body": "The top section took nineteen lanterns under the new spacing. The crate that had reached the stile held sixteen. Someone was going to have to go back down the steps for three more. If not, the last three gaps on the ridge would stay as gaps, dark mouths in the line of light. Wren looked down the long grey flight of stone and did the sums in her head.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pa_hang_0",
+          "label": "Close the last gap on the ridge.",
+          "target": "pa_ninety"
+        },
+        {
+          "id": "c_pa_hang_1",
+          "label": "Go back for the two that blew out.",
+          "target": "pa_blown"
+        },
+        {
+          "id": "c_pa_hang_2",
+          "label": "Go up and meet the party at the top.",
+          "target": "pa_meet"
+        }
+      ]
+    },
+    {
+      "id": "pa_dim",
+      "body": "By half past four the ridge was already dim enough to test. The grey light was turning into something that was not quite dusk and not quite afternoon. Walking it downhill in that light was the only way to see it as the walkers would. Two things that had looked fine at two o'clock, in full sun, could not be seen from above. The slope's angle had swallowed them. Wren's pencil moved again in the margin.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pa_dim_0",
+          "label": "Hold the bottom and let them come down.",
+          "target": "pa_hold"
+        },
+        {
+          "id": "c_pa_dim_1",
+          "label": "Leave the shoulder and light everything else.",
+          "target": "pa_gap"
+        },
+        {
+          "id": "c_pa_dim_2",
+          "label": "Close the last gap on the ridge.",
+          "target": "pa_ninety"
+        }
+      ]
+    },
+    {
+      "id": "pa_bag",
+      "body": "Every autumn something went wrong at the last minute that nobody could have guessed. A bracket might snap, a wick might fail, or a gust might take a lantern clean off its hook. Four lanterns in a canvas bag at the top of the steps was the best backup this village had ever bought. Wren packed them with care. The paper skins rustled as she tied the drawstring tight.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pa_bag_0",
+          "label": "Go back for the two that blew out.",
+          "target": "pa_blown"
+        },
+        {
+          "id": "c_pa_bag_1",
+          "label": "Go up and meet the party at the top.",
+          "target": "pa_meet"
+        },
+        {
+          "id": "c_pa_bag_2",
+          "label": "Hold the bottom and let them come down.",
+          "target": "pa_hold"
+        }
+      ]
+    },
+    {
+      "id": "pa_post",
+      "body": "The sheepfold gate was the one place on the route where a walker had to do more than just walk. They had to stop, lift a latch, and step through. Doing that in the dark, with cold fingers and tired legs, was where every fight about this path had started. A lantern on the gatepost would catch the whole moment and hold it steady. Wren could see exactly where the hook should go.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pa_post_0",
+          "label": "Leave the shoulder and light everything else.",
+          "target": "pa_gap"
+        },
+        {
+          "id": "c_pa_post_1",
+          "label": "Close the last gap on the ridge.",
+          "target": "pa_ninety"
+        },
+        {
+          "id": "c_pa_post_2",
+          "label": "Go back for the two that blew out.",
+          "target": "pa_blown"
+        }
+      ]
+    },
+    {
+      "id": "oil_relight",
+      "body": "Some of the lanterns would go out. That was what the list meant by the word ROUND, written three times in the margin in three different inks. The oldest was so faded it was barely there. Somebody had to walk the whole route again at seven with a taper in a jar, relighting whatever had failed. The job was cold, lonely, and vital. It had been written into the list since before anyone alive could remember.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_oil_relight_0",
+          "label": "Wait at the top of the steps.",
+          "target": "fn_wait"
+        },
+        {
+          "id": "c_oil_relight_1",
+          "label": "Get the phone up to the signal.",
+          "target": "fn_signal"
+        },
+        {
+          "id": "c_oil_relight_2",
+          "label": "Walk the route counting what is lit.",
+          "target": "fn_count"
+        }
+      ]
+    },
+    {
+      "id": "oil_taper",
+      "body": "There were two boxes of matches. One was damp from a leak in the shed roof. There was also a bundle of tapers that Mrs Trewin had cut from an old broom handle years ago. Lighting eighty lanterns in wind was not a match job\u2014it was a taper job. The difference was about forty minutes of standing still with your back to the gusts. Wren lit the first taper and watched its long, steady flame curl upward.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_oil_taper_0",
+          "label": "Fetch the head torches from the hall.",
+          "target": "fn_torch"
+        },
+        {
+          "id": "c_oil_taper_1",
+          "label": "Go up the ridge to meet them.",
+          "target": "fn_up"
+        },
+        {
+          "id": "c_oil_taper_2",
+          "label": "Get the hall ready for fourteen cold people.",
+          "target": "fn_hall"
+        }
+      ]
+    },
+    {
+      "id": "oil_count",
+      "body": "The only honest number was one someone had walked out and counted, using their own eyes on each flame. The list had a tally box at the bottom\u2014a small pencilled grid. It had been filled in every autumn since before anyone here was born. The box for this year was still empty, waiting for a number. Wren ran a finger over the pale columns and pictured the pencil pressing down.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_oil_count_0",
+          "label": "Ask Mr Ovens for the quad bike.",
+          "target": "fn_ovens"
+        },
+        {
+          "id": "c_oil_count_1",
+          "label": "Take a taper to the shoulder.",
+          "target": "fn_taper"
+        },
+        {
+          "id": "c_oil_count_2",
+          "label": "Hold the plan and trust the route.",
+          "target": "fn_hold"
+        }
+      ]
+    },
+    {
+      "id": "oil_message",
+      "body": "The party was coming down whether or not the ridge was lit. So the useful message was a number and a time, not a promise. The signal at the top of the steps held for about a minute at a stretch and then thought about it. One bar flickered to nothing and back again. Wren held the phone at the exact angle that worked. Her arm ached. She typed out the honest message.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_oil_message_0",
+          "label": "Wait at the top of the steps.",
+          "target": "fn_wait"
+        },
+        {
+          "id": "c_oil_message_1",
+          "label": "Get the phone up to the signal.",
+          "target": "fn_signal"
+        },
+        {
+          "id": "c_oil_message_2",
+          "label": "Walk the route counting what is lit.",
+          "target": "fn_count"
+        }
+      ]
+    },
+    {
+      "id": "pp_top",
+      "body": "The two top lanterns were the first thing walkers saw from the moor. A mile off they were two small warm dots saying the ridge was lit and the village was waiting. They also caught the worst of the wind. There was no shelter for two hundred paces and nobody walked back to check them once they were hung. Wren looked up at the bare stretch and felt the full push of the air.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pp_top_0",
+          "label": "Fetch the head torches from the hall.",
+          "target": "fn_torch"
+        },
+        {
+          "id": "c_pp_top_1",
+          "label": "Go up the ridge to meet them.",
+          "target": "fn_up"
+        },
+        {
+          "id": "c_pp_top_2",
+          "label": "Get the hall ready for fourteen cold people.",
+          "target": "fn_hall"
+        }
+      ]
+    },
+    {
+      "id": "pp_keep",
+      "body": "The steps team had learned the steps in one afternoon. They knew exactly which brackets turned in their holes, which stones took the wire, and where the wind came from. Handing that knowledge away at five o'clock to someone fresh, who would have to learn it all from scratch in the dark, cost more than the fresh legs were worth. Wren looked at the small, wind-burned group who had been on the ridge since two. She knew they should stay.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pp_keep_0",
+          "label": "Ask Mr Ovens for the quad bike.",
+          "target": "fn_ovens",
+          "condition": {
+            "==": [
+              {
+                "var": "did_knock_doors_that"
+              },
+              false
+            ]
+          }
+        },
+        {
+          "id": "c_pp_keep_0_cq_did_knock_doors_that",
+          "label": "Ask Mr Ovens for the quad bike.",
+          "target": "cq_payoff_did_knock_doors_that_site2",
+          "condition": {
+            "==": [
+              {
+                "var": "did_knock_doors_that"
+              },
+              true
+            ]
+          }
+        },
+        {
+          "id": "c_pp_keep_1",
+          "label": "Take a taper to the shoulder.",
+          "target": "fn_taper"
+        },
+        {
+          "id": "c_pp_keep_2",
+          "label": "Hold the plan and trust the route.",
+          "target": "fn_hold"
+        }
+      ]
+    },
+    {
+      "id": "cq_payoff_did_knock_doors_that_site2",
+      "body": "When Wren asked for the quad bike, Mr Riley and Mrs Chen both nodded. They had known Mr Ovens for twenty years. They knew exactly how to ask him\u2014a short sentence, no fuss, while helping him stack hay bales. The quad arrived four minutes later. Its engine rattled cheerfully across the field. The last crate reached the steps before the light gave out.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_cq_payoff_did_knock_doors_that_site2",
+          "label": "Ask Mr Ovens for the quad bike.",
+          "target": "fn_ovens"
+        }
+      ]
+    },
+    {
+      "id": "pp_pair",
+      "body": "The mobile signal at the top of the steps was one bar. It was a weak, flickering thread of a link. One person alone up there at dusk was how the rota rule about pairs had been written in the first place. It was in capital letters, twice. Wren could see the rule on the list: NEVER ALONE AT THE SIGNAL. It was the only line on the page that had been underlined.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pp_pair_0",
+          "label": "Wait at the top of the steps.",
+          "target": "fn_wait"
+        },
+        {
+          "id": "c_pp_pair_1",
+          "label": "Get the phone up to the signal.",
+          "target": "fn_signal"
+        },
+        {
+          "id": "c_pp_pair_2",
+          "label": "Walk the route counting what is lit.",
+          "target": "fn_count"
+        }
+      ]
+    },
+    {
+      "id": "pp_count",
+      "body": "The rule that mattered most had nothing to do with lanterns. Everybody who went up came down and was counted before the walkers arrived. The counting was the part that got forgotten on a good afternoon. That was when the light held, the wind dropped, and everyone drifted home thinking the job was done. Wren had a tally in her head now\u2014names, not just numbers. She meant to use it.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pp_count_0",
+          "label": "Fetch the head torches from the hall.",
+          "target": "fn_torch"
+        },
+        {
+          "id": "c_pp_count_1",
+          "label": "Go up the ridge to meet them.",
+          "target": "fn_up"
+        },
+        {
+          "id": "c_pp_count_2",
+          "label": "Get the hall ready for fourteen cold people.",
+          "target": "fn_hall"
+        }
+      ]
+    },
+    {
+      "id": "pa_ninety",
+      "body": "The gap from the top of the steps to the first ridge lantern was just ninety paces of open hillside. No wall, no post, only the dark shape of the moor above. A tired walker met this part first, with legs already heavy from the long way down. Wren stood at the top step and looked across the gap. She knew the whole evening began right here for the people coming down.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pa_ninety_0",
+          "label": "Ask Mr Ovens for the quad bike.",
+          "target": "fn_ovens"
+        },
+        {
+          "id": "c_pa_ninety_1",
+          "label": "Take a taper to the shoulder.",
+          "target": "fn_taper"
+        },
+        {
+          "id": "c_pa_ninety_2",
+          "label": "Hold the plan and trust the route.",
+          "target": "fn_hold"
+        }
+      ]
+    },
+    {
+      "id": "pa_blown",
+      "body": "Two lamps on the open shoulder had already gone out once. They would go out again. The wind on that stretch was strong and steady. It found every weak flame. The real question was whether to stand there with a taper and relight them every twenty minutes. Or to move them where the wind was not. Wren felt the gusts pulling at her coat collar.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pa_blown_0",
+          "label": "Wait at the top of the steps.",
+          "target": "fn_wait"
+        },
+        {
+          "id": "c_pa_blown_1",
+          "label": "Get the phone up to the signal.",
+          "target": "fn_signal"
+        },
+        {
+          "id": "c_pa_blown_2",
+          "label": "Walk the route counting what is lit.",
+          "target": "fn_count"
+        }
+      ]
+    },
+    {
+      "id": "pa_meet",
+      "body": "Walking up to meet fourteen people coming off the moor turned a lit route into a welcome. It meant being out on the hill in the dark on purpose, not by chance. It was a different thing to explain later, and a different thing to feel while you did it. Wren could picture their faces when they saw a light coming toward them instead of just waiting below.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pa_meet_0",
+          "label": "Fetch the head torches from the hall.",
+          "target": "fn_torch"
+        },
+        {
+          "id": "c_pa_meet_1",
+          "label": "Go up the ridge to meet them.",
+          "target": "fn_up"
+        },
+        {
+          "id": "c_pa_meet_2",
+          "label": "Get the hall ready for fourteen cold people.",
+          "target": "fn_hall"
+        }
+      ]
+    },
+    {
+      "id": "pa_hold",
+      "body": "Standing at the orchard gate with a lamp and letting the hill do its own work was the harder choice and the one the rota had been written around. The route was either good enough now or it was not, and no amount of fussing at the last minute would change which one it was. Wren stood with her back against the gatepost, the lamp warm in her hand, and waited.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pa_hold_0",
+          "label": "Ask Mr Ovens for the quad bike.",
+          "target": "fn_ovens"
+        },
+        {
+          "id": "c_pa_hold_1",
+          "label": "Take a taper to the shoulder.",
+          "target": "fn_taper"
+        },
+        {
+          "id": "c_pa_hold_2",
+          "label": "Hold the plan and trust the route.",
+          "target": "fn_hold"
+        }
+      ]
+    },
+    {
+      "id": "oil_fifty",
+      "body": "Fifty lamps went up, filled just right, and each one burned steady. Thirty more stayed in the box, clean and empty. The moon did more work than anyone had guessed. It rose over the moor like a pale coin and made the path glint. The walkers came down with ease, their voices loud in the cold air. They never knew there had been a plan at all. The tally box got a fifty written in it, in pencil, and a short note beside it about the missing can and the spare fuel that made it all work.",
+      "is_ending": true,
+      "ending": {
+        "id": "e_oil_fifty",
+        "valence": "neutral",
+        "kind": "discovery",
+        "title": "Fifty Lanterns and a Rising Moon"
+      }
+    },
+    {
+      "id": "pp_village",
+      "body": "The ridge got lit by fourteen people. Most of them had not known each other at two in the afternoon. Because of this, half the lamps hung at slightly wrong heights. A little high on the steps, a little low in the orchard. But they burned anyway, their flames steady in the dusk. The list went back in its envelope. It had eleven new names in the column, one of them underlined, and a coffee ring on the corner of page two.",
+      "is_ending": true,
+      "ending": {
+        "id": "e_pp_village",
+        "valence": "neutral",
+        "kind": "discovery",
+        "title": "The Village That Turned Up"
+      }
+    },
+    {
+      "id": "pa_gap",
+      "body": "The route was lit end to end except for one stretch on the shoulder. That stretch swallowed two lamps twice over. The wind snuffed them out, the taper lit them again, and the wind snuffed them out once more. The walkers came down chatting, their boots loud on the stone. They never noticed the dark they crossed. The tally box said seventy-eight. The note beside it said shoulder, again, in the same handwriting that had written it for nine autumns running.",
+      "is_ending": true,
+      "ending": {
+        "id": "e_pa_gap",
+        "valence": "neutral",
+        "kind": "discovery",
+        "title": "Ninety Paces of Dark"
+      }
+    },
+    {
+      "id": "fn_wait",
+      "body": "Half past five came and went. The ridge was lit\u2014a long, quiet line of small flames\u2014and nobody was on it. Above, the moor was a flat grey where fourteen people ought to have been, their shapes visible against the sky. Ten minutes late off a moor meant nothing at all\u2014a pause to retie a bootlace, a moment to look back at the view. Forty minutes meant something. Wren stood at the top of the steps, staring into the grey, and began counting the seconds.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fn_wait_0",
+          "label": "Move the six to the leeward side.",
+          "target": "fx_leeward"
+        },
+        {
+          "id": "c_fn_wait_1",
+          "label": "Send a pair up with the spare bag.",
+          "target": "fx_bag"
+        },
+        {
+          "id": "c_fn_wait_2",
+          "label": "Put a lamp at the orchard corner.",
+          "target": "fx_corner"
+        }
+      ]
+    },
+    {
+      "id": "fn_signal",
+      "body": "Wren had one bar of signal at the top step. A message Priya had sent twenty minutes ago arrived all at once with a small chirp. They were down off the tops. One person had turned an ankle on a grass clump. The group was moving slower than the light was going. Wren read the message twice, the screen bright in the dusk. She felt the whole afternoon shift into a new, more urgent shape.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fn_signal_0",
+          "label": "Set a relay along the lit stretch.",
+          "target": "fx_relay"
+        },
+        {
+          "id": "c_fn_signal_1",
+          "label": "Keep the signal watch at the top step.",
+          "target": "fx_watch"
+        },
+        {
+          "id": "c_fn_signal_2",
+          "label": "Get help to the walker with the ankle.",
+          "target": "fx_ankle"
+        }
+      ]
+    },
+    {
+      "id": "fn_count",
+      "body": "Seventy-one lamps lit, six out, and three never hung. The numbers came together in Wren's head as she walked the route. It was a tally of flame and darkness. The six out sat inside the same two hundred paces on the open shoulder. There, the wind came across the ridge in steady, strong gusts. The list's tally box was still empty, waiting for what she chose to write.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fn_count_0",
+          "label": "Wait at the sheepfold gate with a light.",
+          "target": "fx_gate",
+          "condition": {
+            "==": [
+              {
+                "var": "did_start_beacon_steps"
+              },
+              false
+            ]
+          }
+        },
+        {
+          "id": "c_fn_count_0_cq_did_start_beacon_steps",
+          "label": "Wait at the sheepfold gate with a light.",
+          "target": "cq_payoff_did_start_beacon_steps_site2",
+          "condition": {
+            "==": [
+              {
+                "var": "did_start_beacon_steps"
+              },
+              true
+            ]
+          }
+        },
+        {
+          "id": "c_fn_count_1",
+          "label": "Finish the tally and write it down.",
+          "target": "fx_tally"
+        },
+        {
+          "id": "c_fn_count_2",
+          "label": "Go round once more with the taper.",
+          "target": "fx_round"
+        }
+      ]
+    },
+    {
+      "id": "cq_payoff_did_start_beacon_steps_site2",
+      "body": "The old leather glove with the initials A.T. and the faded phone number. Wren had called it on a hunch, and A.T.\u2014Arthur Tremlett, retired postman\u2014had answered on the second ring. He had been replacing ridge brackets for forty years. He arrived at the sheepfold gate with two spare storm shades and a roll of wire, muttering that he'd wondered when someone would finally ask. The gate was lit and steady within minutes.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_cq_payoff_did_start_beacon_steps_site2",
+          "label": "Wait at the sheepfold gate with a light.",
+          "target": "fx_gate"
+        }
+      ]
+    },
+    {
+      "id": "fn_torch",
+      "body": "The hall cupboard held four head torches. Two of them had batteries in\u2014the other two were dead, their straps stiff with old mud. It was exactly the sort of fact the list existed to record and did not record anywhere. Wren clicked the working ones on and off, their small white beams bouncing across the cupboard's dark interior, and pocketed both.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fn_torch_0",
+          "label": "Stand where you are and let the ridge do its work.",
+          "target": "fx_hold_end"
+        },
+        {
+          "id": "c_fn_torch_1",
+          "label": "Get them down before the weather closes in.",
+          "target": "fx_early_end"
+        },
+        {
+          "id": "c_fn_torch_2",
+          "label": "Count them in and check the tally.",
+          "target": "fx_count_end"
+        }
+      ]
+    },
+    {
+      "id": "fn_up",
+      "body": "Going up meant walking away from every light on the route. It meant heading into the part of the hill that had never had a lamp on it. The bare, open shoulder and the dark lip of the moor. It meant someone at the bottom knew just where you had gone and when. And it meant being the first face the walking party saw. Wren tightened the strap on her head torch. She felt the cold rising off the heather.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fn_up_0",
+          "label": "Rewrite the list while it is all still fresh.",
+          "target": "fx_list_end"
+        },
+        {
+          "id": "c_fn_up_1",
+          "label": "Stay on the shoulder and watch what the wind does.",
+          "target": "fx_wind_end"
+        },
+        {
+          "id": "c_fn_up_2",
+          "label": "Give the turn the last two lanterns.",
+          "target": "fx_short_end",
+          "condition": {
+            "==": [
+              {
+                "var": "did_start_beacon_steps"
+              },
+              false
+            ]
+          }
+        },
+        {
+          "id": "c_fn_up_2_cq_did_start_beacon_steps",
+          "label": "Give the turn the last two lanterns.",
+          "target": "cq_payoff_did_start_beacon_steps",
+          "condition": {
+            "==": [
+              {
+                "var": "did_start_beacon_steps"
+              },
+              true
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "cq_payoff_did_start_beacon_steps",
+      "body": "Arthur Tremlett was still at the sheepfold gate when Wren came back down, his spare storm shades protecting the last two lanterns on the turn. He handed over the shades without a word and nodded at the ridge. \"Go on, then. I'll watch these.\" The turn was safe. And because the turn was safe, the whole route held. Wren tucked the spare wire he'd given her into a pocket and went back to the shed to rewrite the list with everything the afternoon had taught her.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_cq_payoff_did_start_beacon_steps",
+          "label": "Rewrite the list while it is all still fresh.",
+          "target": "fx_list_end"
+        }
+      ]
+    },
+    {
+      "id": "fn_hall",
+      "body": "The hall had a kettle, a heater that worked, and the wrong number of chairs. Fourteen people off the moor at six on an October evening wanted all three of those things more than they wanted a pretty ridge. Warmth, a seat, something hot to hold. Wren could already hear the first rattle of the kettle and the creak of the heater coming to life.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fn_hall_0",
+          "label": "Move the six to the leeward side.",
+          "target": "fx_leeward"
+        },
+        {
+          "id": "c_fn_hall_1",
+          "label": "Send a pair up with the spare bag.",
+          "target": "fx_bag"
+        },
+        {
+          "id": "c_fn_hall_2",
+          "label": "Put a lamp at the orchard corner.",
+          "target": "fx_corner"
+        }
+      ]
+    },
+    {
+      "id": "fn_ovens",
+      "body": "The quad bike could get up the track to the sheepfold turn in four minutes with a person and a bag on the back. Its engine was loud and steady across the field. Asking for it a second time in one afternoon was a different sort of asking than the first. It was not the careful, biscuit-offering politeness of earlier. It was the direct sentence of someone who had already been told yes once and meant to hear it again. Wren could see the quad parked by the barn, its key still in the ignition.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fn_ovens_0",
+          "label": "Set a relay along the lit stretch.",
+          "target": "fx_relay"
+        },
+        {
+          "id": "c_fn_ovens_1",
+          "label": "Keep the signal watch at the top step.",
+          "target": "fx_watch"
+        },
+        {
+          "id": "c_fn_ovens_2",
+          "label": "Get help to the walker with the ankle.",
+          "target": "fx_ankle"
+        }
+      ]
+    },
+    {
+      "id": "fn_taper",
+      "body": "Six lanterns out in one stretch was not bad luck. It was the wind finding the one place nobody had thought hard enough about. Relighting them where they hung meant doing it all again in twenty minutes. It meant standing with a taper on the open shoulder while the gusts did their work. Wren sheltered the flame with a cupped hand and looked at the dark stretch ahead.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fn_taper_0",
+          "label": "Wait at the sheepfold gate with a light.",
+          "target": "fx_gate"
+        },
+        {
+          "id": "c_fn_taper_1",
+          "label": "Finish the tally and write it down.",
+          "target": "fx_tally"
+        },
+        {
+          "id": "c_fn_taper_2",
+          "label": "Go round once more with the taper.",
+          "target": "fx_round"
+        }
+      ]
+    },
+    {
+      "id": "fn_hold",
+      "body": "The route was lit, the rota was chalked on the shed door, and the tally was counted. Every lantern was accounted for. The urge now was to keep changing things, to tweak and fuss and move the ones that looked a little crooked. There was a version of this evening where the best thing anyone did was nothing at all. Stand at the bottom, watch the ridge, and let the lights do their work.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fn_hold_0",
+          "label": "Stand where you are and let the ridge do its work.",
+          "target": "fx_hold_end"
+        },
+        {
+          "id": "c_fn_hold_1",
+          "label": "Get them down before the weather closes in.",
+          "target": "fx_early_end"
+        },
+        {
+          "id": "c_fn_hold_2",
+          "label": "Count them in and check the tally.",
+          "target": "fx_count_end"
+        }
+      ]
+    },
+    {
+      "id": "fx_leeward",
+      "body": "To move a lantern in the dark you had to unhook it and carry the thin paper globe in cold hands. You hung it again nine paces off the path, on the still side where the wind could not reach. Nine paces of light the walkers would not get, given up to keep six flames burning. Wren worked with care, the paper warm on her fingers. Each time she stepped behind the low wall the wind dropped away.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fx_leeward_0",
+          "label": "Walk them down and get the door open.",
+          "target": "z_warm"
+        },
+        {
+          "id": "c_fx_leeward_1",
+          "label": "See them safely round the turn.",
+          "target": "z_turn"
+        },
+        {
+          "id": "c_fx_leeward_2",
+          "label": "Get the top pair lit before they clear the tops.",
+          "target": "z_seen"
+        }
+      ]
+    },
+    {
+      "id": "fx_bag",
+      "body": "Four spare lanterns, a taper, a jar, and two people who knew the shoulder could close the dark stretch in twelve minutes. They just had to move fast and not stop. The pair had to be back down before the party reached the turn. The turn was the next problem and it would need someone standing at it with a light. Wren handed the canvas bag to the two fastest walkers and pointed up the hill.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fx_bag_0",
+          "label": "Send the quad up with the last crate.",
+          "target": "z_quad"
+        },
+        {
+          "id": "c_fx_bag_1",
+          "label": "Fill in the tally box and hang the list back up.",
+          "target": "z_tally"
+        },
+        {
+          "id": "c_fx_bag_2",
+          "label": "Hand the list back to Mrs Trewin.",
+          "target": "z_hand"
+        }
+      ]
+    },
+    {
+      "id": "fx_corner",
+      "body": "The orchard corner hid the turn behind a stone wall. You couldn't see it until you were right there. A tired group with a hurt ankle made their one mistake of the evening there. A storm lantern on the gatepost\u2014bright, steady, clear\u2014fixed the problem simply. Wren set it down on the cold stone and felt the weight of the evening lift a little.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fx_corner_0",
+          "label": "Write down what the list should have said.",
+          "target": "z_page"
+        },
+        {
+          "id": "c_fx_corner_1",
+          "label": "Light what is left after they are down.",
+          "target": "z_late"
+        },
+        {
+          "id": "c_fx_corner_2",
+          "label": "Leave the shoulder to the wind and go down.",
+          "target": "z_shoulder"
+        }
+      ]
+    },
+    {
+      "id": "fx_relay",
+      "body": "Three people spread along the lit stretch could pass a message from the moor to the hall in under two minutes without any signal at all. It was just voices carrying down the line, one to the next. It used the three people who were going to walk up anyway. It meant the whole ridge knew what was happening before anyone had to make a phone call. Wren placed the first person and watched them call the second.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fx_relay_0",
+          "label": "Walk them down and get the door open.",
+          "target": "z_warm"
+        },
+        {
+          "id": "c_fx_relay_1",
+          "label": "See them safely round the turn.",
+          "target": "z_turn"
+        },
+        {
+          "id": "c_fx_relay_2",
+          "label": "Get the top pair lit before they clear the tops.",
+          "target": "z_seen"
+        }
+      ]
+    },
+    {
+      "id": "fx_watch",
+      "body": "Two people stood on the top step with a phone. They held it out, tilting the screen toward the moor. That was how the village heard what was happening on the hill. They stood still in the wind for twenty minutes doing what looked like nothing. It was the kind of nothing that was really everything. Wren watched the two figures at the top. Their shapes were sharp against the grey sky. She waited for a signal.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fx_watch_0",
+          "label": "Send the quad up with the last crate.",
+          "target": "z_quad"
+        },
+        {
+          "id": "c_fx_watch_1",
+          "label": "Fill in the tally box and hang the list back up.",
+          "target": "z_tally"
+        },
+        {
+          "id": "c_fx_watch_2",
+          "label": "Hand the list back to Mrs Trewin.",
+          "target": "z_hand"
+        }
+      ]
+    },
+    {
+      "id": "fx_ankle",
+      "body": "A turned ankle three hundred paces above the sheepfold gate needed a shoulder, a light, and somebody who did not fuss. The quad bike could meet them at the turn if the gate was open. Someone had to stand at it with a lamp. Someone steady, who would not make the walker feel like a problem. Wren unlatched the gate and stood with the storm lantern raised, watching the dark shapes come slowly down the hill.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fx_ankle_0",
+          "label": "Write down what the list should have said.",
+          "target": "z_page"
+        },
+        {
+          "id": "c_fx_ankle_1",
+          "label": "Light what is left after they are down.",
+          "target": "z_late"
+        },
+        {
+          "id": "c_fx_ankle_2",
+          "label": "Leave the shoulder to the wind and go down.",
+          "target": "z_shoulder"
+        }
+      ]
+    },
+    {
+      "id": "fx_gate",
+      "body": "The sheepfold gate was the pinch point of the whole evening. There were fourteen people, one with a strapped ankle, a wired hinge, and a field of ewes on the other side. Whoever stood there with a lamp decided how the next ten minutes went. It decided if the walkers filed through calmly or bunched up in the dark. Wren held the lamp high and steady. Its glow caught the first face that appeared out of the dusk.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fx_gate_0",
+          "label": "Walk them down and get the door open.",
+          "target": "z_warm"
+        },
+        {
+          "id": "c_fx_gate_1",
+          "label": "See them safely round the turn.",
+          "target": "z_turn"
+        },
+        {
+          "id": "c_fx_gate_2",
+          "label": "Get the top pair lit before they clear the tops.",
+          "target": "z_seen"
+        }
+      ]
+    },
+    {
+      "id": "fx_tally",
+      "body": "The tally box wanted a number and the margin wanted the truth. The truth this year held a missing can, a wired gate, a landslip, and six lanterns that would not stay lit on the shoulder. It did not matter how many times someone walked up there with a taper. Wren held the pencil and wrote the number first. She wrote seventy-one. Then she added the note, small and neat, in the space beside it.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fx_tally_0",
+          "label": "Send the quad up with the last crate.",
+          "target": "z_quad"
+        },
+        {
+          "id": "c_fx_tally_1",
+          "label": "Fill in the tally box and hang the list back up.",
+          "target": "z_tally"
+        },
+        {
+          "id": "c_fx_tally_2",
+          "label": "Hand the list back to Mrs Trewin.",
+          "target": "z_hand"
+        }
+      ]
+    },
+    {
+      "id": "fx_round",
+      "body": "One more round of the whole route at ten to six, relighting whatever had gone out. This was the oldest instruction on the list and the one written in the steadiest hand. The letters were formed with care, the ink dark and sure. Wren took the taper from the jar and began the long walk up. The lit lanterns counted themselves off like stops on a railway. She felt the weight of every autumn that had done this same thing before.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fx_round_0",
+          "label": "Write down what the list should have said.",
+          "target": "z_page"
+        },
+        {
+          "id": "c_fx_round_1",
+          "label": "Light what is left after they are down.",
+          "target": "z_late"
+        },
+        {
+          "id": "c_fx_round_2",
+          "label": "Leave the shoulder to the wind and go down.",
+          "target": "z_shoulder"
+        }
+      ]
+    },
+    {
+      "id": "fx_hold_end",
+      "body": "The group came off the moor into a long line of lights. The lights ran without a break from the top of the steps to the orchard gate. They were a chain of small, warm globes. Fourteen people walked down, talking about the view and carrying their voices on the cold air. Not one of them stumbled or paused. Nothing big happened anywhere on the hill that evening. That was exactly what the list had been trying to do since 1953.",
+      "is_ending": true,
+      "ending": {
+        "id": "e_fx_hold_end",
+        "valence": "positive",
+        "kind": "success",
+        "title": "The Ridge Holds"
+      }
+    },
+    {
+      "id": "fx_early_end",
+      "body": "The last walker reached the orchard gate at twenty-five past six. That was ten minutes before the rain. The first drops began to fall as the gate swung shut. They were fat, cold splashes on the stones. The lanterns were still burning behind them, all the way up the hill. Priya counted fourteen twice: once at the gate and once at the hall door. Then she stopped counting. The number was right. The ridge was lit. The walking group was home.",
+      "is_ending": true,
+      "ending": {
+        "id": "e_fx_early_end",
+        "valence": "positive",
+        "kind": "success",
+        "title": "Down Before the Rain"
+      }
+    },
+    {
+      "id": "fx_count_end",
+      "body": "Seventy-eight lanterns were lit. Fourteen walkers were safe. Six people were off the hill. All of it was written in the tally box in pencil before anyone sat down. The numbers on the page and the numbers on the hill were the same. It was the first time in three years. Wren closed the list. She set the pencil down on top of it. The small sound it made was the sound of a day that had done exactly what it was supposed to do.",
+      "is_ending": true,
+      "ending": {
+        "id": "e_fx_count_end",
+        "valence": "positive",
+        "kind": "completion",
+        "title": "Every Lantern Counted"
+      }
+    },
+    {
+      "id": "fx_list_end",
+      "body": "The list was rewritten on the hall table. Mud was still on everyone's boots. The new page filled with the real names of the real turns. The landslip was marked for the first time. The gate was noted in the margin. Eleven names went into the column. All of them were true. Mrs Trewin signed the bottom with her left hand. The letters were wobbly and hard to read. The pen left a small blue smudge. It would still be there next autumn.",
+      "is_ending": true,
+      "ending": {
+        "id": "e_fx_list_end",
+        "valence": "positive",
+        "kind": "completion",
+        "title": "The List Made True"
+      }
+    },
+    {
+      "id": "fx_wind_end",
+      "body": "Wren spent twenty minutes on the shoulder with a taper. She learned more in that time than in nine autumns of hanging lanterns. The gusts came in threes across the ridge. One, two, three, pause. Nothing hung on the path side made it through the second gust. Wren crouched behind the low wall. She watched the dark shapes of the lanterns jerk and flutter. She filled a page of the old seed catalogue with notes. The walking party passed safely along the lower route. The wind on the shoulder wrote its own lesson into the margin. The notebook went back to the shed with a new idea pressed between its pages.",
+      "is_ending": true,
+      "ending": {
+        "id": "e_fx_wind_end",
+        "valence": "neutral",
+        "kind": "discovery",
+        "title": "What the Wind Does on the Shoulder"
+      }
+    },
+    {
+      "id": "fx_short_end",
+      "body": "The turn was lit and the top of the steps was not, and the party came down those ninety-one stone stairs in the dark with one head torch between fourteen people. Nobody fell. Everyone noticed. The steps got talked about in the hall afterwards in the particular voice the village kept for near misses\u2014low, careful, with long pauses. If someone had known the steps better, if someone had had the spare fixings, the top pair would have been lit. Wren could see exactly where the last two lanterns should have gone.",
+      "is_ending": true,
+      "ending": {
+        "id": "e_fx_short_end",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "Two Lanterns Short at the Steps"
+      }
+    },
+    {
+      "id": "z_warm",
+      "body": "Fourteen people, one strapped ankle, and six lantern keepers came through the hall door at twenty to seven. They walked into a room with a working heater and the wrong number of chairs. The room smelled of tea. Someone had put out the mugs. Behind them, through the rain-spotted window, the ridge was still burning end to end. It made a line of small warm dots against the black hill. Someone shut the door. The room filled with voices.",
+      "is_ending": true,
+      "ending": {
+        "id": "e_z_warm",
+        "valence": "positive",
+        "kind": "success",
+        "title": "Fourteen In and Warm"
+      }
+    },
+    {
+      "id": "z_turn",
+      "body": "The new line above the sheepfold did exactly what it was meant to do. Fourteen people walked the turn without a single one of them straying onto the old ground above the slip. Their boots stayed on the path. Their torches stayed aimed at the next lantern. Not one of them noticed there had ever been a choice to make there. The work had been hidden inside the walking. That was the whole point of it.",
+      "is_ending": true,
+      "ending": {
+        "id": "e_z_turn",
+        "valence": "positive",
+        "kind": "success",
+        "title": "The Turn Nobody Missed"
+      }
+    },
+    {
+      "id": "z_seen",
+      "body": "From the moor, the ridge was a line of small warm dots a mile off. It looked like stars that had fallen to earth. Priya spoke about it after, standing in the hall with mud still on her boots and a mug of tea. She said the group had stopped walking for a moment when they came over the last rise and saw it. All fourteen of them stood in silence, just looking. That was the whole point of the lanterns, and it was not written down anywhere on the list.",
+      "is_ending": true,
+      "ending": {
+        "id": "e_z_seen",
+        "valence": "positive",
+        "kind": "success",
+        "title": "A Ridge You Could See From the Moor"
+      }
+    },
+    {
+      "id": "z_quad",
+      "body": "The quad bike took the last crate and two people to the sheepfold turn. The trip took four minutes. Its headlight cut a bright path through the dusk. The gate stood open with a storm lantern on the post. Mr Ovens stood beside it in the rain. He told every walker who passed, \"This is my field, you're welcome, mind the ewes.\" He said it with the special pride of a man who had been asked nicely twice in one day and had said yes both times.",
+      "is_ending": true,
+      "ending": {
+        "id": "e_z_quad",
+        "valence": "positive",
+        "kind": "success",
+        "title": "The Gate Stood Open"
+      }
+    },
+    {
+      "id": "z_tally",
+      "body": "The tally box got its number. The margin got four lines of truth about the shoulder. It told of the gusts, the two lanterns that blew out, and the ones that stayed lit. The clipboard went back on its nail in the shed with the pencil on its string. The page fluttered once in the breeze from the door. Next autumn would start from a page that was not lying. Whoever picked up the list then would know exactly what they were up against.",
+      "is_ending": true,
+      "ending": {
+        "id": "e_z_tally",
+        "valence": "positive",
+        "kind": "completion",
+        "title": "The Tally Box Filled In"
+      }
+    },
+    {
+      "id": "z_hand",
+      "body": "The list came back with a fixed clasp, a rewritten part, a new name in the column, and a small paraffin thumbprint on the corner of page two. Mrs Trewin read it with her wrist on the table. Her good hand traced the lines. When she got to the end she said only, \"It'll do.\" From her, that was a lot. It was a whole afternoon's work pressed into two words and a small, brief nod.",
+      "is_ending": true,
+      "ending": {
+        "id": "e_z_hand",
+        "valence": "positive",
+        "kind": "completion",
+        "title": "Handed Back Better Than It Came"
+      }
+    },
+    {
+      "id": "z_page",
+      "body": "The evening ended with the ridge half lit and a page of notes no one had asked for. The notes said where the path really went, what the wind did on the shoulder, and which brackets turned in their holes. They told how long the steps took with a crate. It was the most useful thing anyone had written about the hill in years. And it had lit nothing at all tonight. Wren folded the page with care. She put it in the shed drawer, on top of the old seed catalogues. Next autumn would find it there.",
+      "is_ending": true,
+      "ending": {
+        "id": "e_z_page",
+        "valence": "neutral",
+        "kind": "discovery",
+        "title": "The Page That Should Have Been There"
+      }
+    },
+    {
+      "id": "z_late",
+      "body": "The group came home before the ridge was done. The last eleven lanterns went up at seven in the rain, for nobody, and burned well over an empty hill. Small, steady flames shone in the wet dark. At nine, the wind took three of them. Their paper skins flared up for a second and then went out. The ridge was lit late, and lit anyway. That was not the same as being lit on time, but it was not nothing.",
+      "is_ending": true,
+      "ending": {
+        "id": "e_z_late",
+        "valence": "neutral",
+        "kind": "setback",
+        "title": "Lit Late, Lit Anyway"
+      }
+    },
+    {
+      "id": "z_shoulder",
+      "body": "The shoulder went dark for the third time and stayed dark. Six lanterns went out in just two hundred paces. No taper was left to light them again. Fourteen people crossed that stretch with one head torch. The rain came in sideways and their boots slipped on the wet stone. Everybody got down and nobody was hurt. Nobody said the ridge was lit this year. The dark gap on the shoulder was what people would remember. The list's edge had another note it did not want.",
+      "is_ending": true,
+      "ending": {
+        "id": "e_z_shoulder",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "The Shoulder Went Dark Again"
+      }
+    }
+  ]
+}

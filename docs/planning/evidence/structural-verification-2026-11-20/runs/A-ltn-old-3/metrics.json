@@ -1,0 +1,394 @@
+{
+  "label": "A-ltn-old-3",
+  "arm": "old",
+  "skeleton": "the-last-train-north.json",
+  "status": "passed",
+  "error": null,
+  "attempts": 0,
+  "stage_log": [
+    "stage_fill:gate_ok",
+    "reading_level:1:2",
+    "reading_level:2:1"
+  ],
+  "served_models": [
+    "deepseek/deepseek-v4-pro"
+  ],
+  "elapsed_s": 310.7,
+  "calls": 13,
+  "input_tokens": 63632,
+  "output_tokens": 49196,
+  "estimated_cost_usd": "0.30995780",
+  "provider_reported_spend_usd": 0.705289,
+  "force_cap": null,
+  "raw_first_reply_state": {
+    "compared": true,
+    "choices_with_state": 0,
+    "missing_choices": [],
+    "changed_condition_or_effects": [],
+    "extra_choices": [],
+    "variables_identical": true,
+    "exact": true
+  },
+  "completed": true,
+  "delivered_state": {
+    "compared": true,
+    "choices_with_state": 0,
+    "missing_choices": [],
+    "changed_condition_or_effects": [],
+    "extra_choices": [],
+    "variables_identical": true,
+    "exact": true
+  },
+  "gate": {
+    "blocked": false,
+    "findings_by_rule": {
+      "CG-4:warning": 40,
+      "CG-6:warning": 23,
+      "PL-19:warning": 1,
+      "PN-1:warning": 5,
+      "RL-13:warning": 63
+    }
+  },
+  "fill_integrity": {
+    "exit": 0,
+    "fail_lines": []
+  },
+  "words": {
+    "commissioned": 24445,
+    "delivered": 15458,
+    "raw_ratio": 0.632,
+    "story_fill_rate": 0.615
+  },
+  "dialogue": {
+    "share": 0.167,
+    "nodes_with_dialogue": 0.167
+  },
+  "prose_craft": {
+    "headline": "21 merge nodes, 5 of them tell the reader the route did not matter; 0 variables, so no choice comes back; 28 of 43 decisions restate or announce their options; 1 of 11 setback endings have the hero give up, 4 come within 3 decisions.",
+    "merge_nodes": 21,
+    "merge_seams": [
+      "g0a0_4",
+      "g0a1_4",
+      "g0a2_4",
+      "g2a0_4",
+      "g3a0_4"
+    ],
+    "option_recaps": [
+      "g0a0_2",
+      "g0a0_3b",
+      "g0a1_2",
+      "g0a1_3b",
+      "g0a2_2",
+      "g0a2_3b",
+      "g0a3_2",
+      "g1a0_2",
+      "g1a0_3b",
+      "g1a1_2",
+      "g1a1_3b",
+      "g1a2_3b",
+      "g1a3_2",
+      "g1a3_3b",
+      "g2a0_2",
+      "g2a1_2",
+      "g2a1_3b",
+      "g2a2_2",
+      "g2a2_3b",
+      "g2a3_2",
+      "g3a0_2",
+      "g3a1_2",
+      "g3a1_3b",
+      "g3a2_3b",
+      "g3a3_2",
+      "g3a3_3b",
+      "r_help2",
+      "r_choice_help"
+    ],
+    "meta_labels": [
+      [
+        "g1a3_2",
+        "c_g1a3_2b",
+        "Sit with her in shared silence."
+      ]
+    ],
+    "jargon_labels": [],
+    "second_person_labels": [
+      [
+        "n_open",
+        "c_open",
+        "Take a seat and let the carriage settle around you."
+      ],
+      [
+        "n_start",
+        "c_start_2",
+        "Read the letter someone left behind on your seat."
+      ],
+      [
+        "g0a0_3a",
+        "c_g0a0_3a",
+        "Hold onto what he told you and keep moving."
+      ],
+      [
+        "g0a0_3b",
+        "c_g0a0_3b2",
+        "Let the rocking of the carriage overtake you."
+      ],
+      [
+        "g0a1_3b",
+        "c_g0a1_3b1",
+        "Keep your eyes open and follow the thread."
+      ],
+      [
+        "g0a1_3b",
+        "c_g0a1_3b2",
+        "Let the warmth and the dark decide for you."
+      ],
+      [
+        "g0a1_5",
+        "c_g0a1_5",
+        "Let the question pull you forward."
+      ],
+      [
+        "g0a2_3a",
+        "c_g0a2_3a",
+        "Carry the letter with you as you go."
+      ],
+      [
+        "g0a2_3b",
+        "c_g0a2_3b2",
+        "Let your eyes close over the pages."
+      ],
+      [
+        "g0a3_3b",
+        "c_g0a3_3b2",
+        "Let the rhythm lull you under."
+      ],
+      [
+        "g0a3_4",
+        "c_g0a3_4",
+        "Let the vigil pull you deeper."
+      ],
+      [
+        "g1a0_3a",
+        "c_g1a0_3a",
+        "Carry what he told you and move on."
+      ],
+      [
+        "g1a0_3b",
+        "c_g1a0_3b1",
+        "Widen your understanding and stay alert."
+      ],
+      [
+        "g1a0_3b",
+        "c_g1a0_3b2",
+        "Let the warmth and the rhythm take you down."
+      ],
+      [
+        "g1a1_3b",
+        "c_g1a1_3b2",
+        "Close your eyes and release the effort."
+      ],
+      [
+        "g1a1_4",
+        "c_g1a1_4",
+        "Rise and carry her stillness with you."
+      ],
+      [
+        "g1a2_3b",
+        "c_g1a2_3b2",
+        "Let the sound of the names carry you away."
+      ],
+      [
+        "g1a2_4",
+        "c_g1a2_4",
+        "Rise and carry the names with you."
+      ],
+      [
+        "g1a2_5",
+        "c_g1a2_5",
+        "Let the names guide you onward."
+      ],
+      [
+        "g1a3_3a",
+        "c_g1a3_3a",
+        "Carry the weight of what she told you."
+      ],
+      [
+        "g1a3_4",
+        "c_g1a3_4",
+        "Rise and carry her grief with you."
+      ],
+      [
+        "g2a0_3b",
+        "c_g2a0_3b1",
+        "Hold the thread he gave you and walk on."
+      ],
+      [
+        "g2a0_3b",
+        "c_g2a0_3b2",
+        "Let his weariness become your own."
+      ],
+      [
+        "g2a0_5",
+        "c_g2a0_5",
+        "Let the mountain pull you forward."
+      ],
+      [
+        "g2a1_1",
+        "c_g2a1_1",
+        "Trace the map with your fingertip."
+      ],
+      [
+        "g2a1_3a",
+        "c_g2a1_3a",
+        "Carry the phantom branch in your mind."
+      ],
+      [
+        "g2a2_2",
+        "c_g2a2_2b",
+        "Accept that the lights are for you alone."
+      ],
+      [
+        "g2a2_4",
+        "c_g2a2_4",
+        "Let the mountain hear your decision."
+      ],
+      [
+        "g2a3_2",
+        "c_g2a3_2a",
+        "Add your own gathered pieces to the table."
+      ],
+      [
+        "g2a3_2",
+        "c_g2a3_2b",
+        "Listen before you speak."
+      ],
+      [
+        "g2a3_3b",
+        "c_g2a3_3b2",
+        "Let their stories overwhelm you."
+      ],
+      [
+        "g2a3_4",
+        "c_g2a3_4",
+        "Rise and carry the table's silence with you."
+      ],
+      [
+        "g3a0_1",
+        "c_g3a0_1",
+        "Ask him to tell you everything."
+      ],
+      [
+        "g3a0_3a",
+        "c_g3a0_3a",
+        "Carry the cost with you."
+      ],
+      [
+        "g3a1_2",
+        "c_g3a1_2b",
+        "Follow, but keep your own counsel."
+      ],
+      [
+        "g3a1_3a",
+        "c_g3a1_3a",
+        "Let the child guide you onward."
+      ],
+      [
+        "g3a1_3b",
+        "c_g3a1_3b2",
+        "Let the darkness carry your thoughts away."
+      ],
+      [
+        "g3a1_5",
+        "c_g3a1_5",
+        "Let the dawn find you walking."
+      ],
+      [
+        "g3a2_3b",
+        "c_g3a2_3b2",
+        "Let the weight of the story overwhelm you."
+      ],
+      [
+        "g3a2_5",
+        "c_g3a2_5",
+        "Walk toward the threshold with the tin against your heart."
+      ],
+      [
+        "g3a3_3a",
+        "c_g3a3_3a",
+        "Carry the word 'Arrival' with you."
+      ],
+      [
+        "g3a3_5",
+        "c_g3a3_5",
+        "Enter the tunnel with the names in your keeping."
+      ],
+      [
+        "p3_tunnel_choice",
+        "c_p3_tunnel_choice_1",
+        "Let the wakeful child show you the way through."
+      ],
+      [
+        "p4_dawn_reveal",
+        "c_p4_leave",
+        "Try to step off before the tunnel closes behind you."
+      ],
+      [
+        "r_peace1",
+        "c_r_peace1",
+        "Let the steady rhythm pull you toward the dawn."
+      ],
+      [
+        "r_help2",
+        "c_r_help2a",
+        "Let the connection carry you toward the dawn."
+      ],
+      [
+        "r_truth2",
+        "c_r_truth2a",
+        "Let the stranger's question become your own."
+      ],
+      [
+        "r_dawn",
+        "c_dawn_help",
+        "Give the mourning woman your seat beside the window."
+      ],
+      [
+        "r_dawn",
+        "c_dawn_truth",
+        "Name aloud everything you have understood tonight."
+      ]
+    ],
+    "give_up_endings": [
+      "e_help_early"
+    ],
+    "early_setbacks": [
+      "g0a0_end",
+      "g0a1_end",
+      "g0a2_end",
+      "g0a3_end"
+    ],
+    "negative_endings": 11,
+    "decision_nodes": 43,
+    "tense_unstable": 0,
+    "moral_tag_nodes": 4,
+    "told_emotion_per_1000": 0.0,
+    "second_person_node_rate": 0.014
+  },
+  "consequence": {
+    "seconds": 0.004,
+    "skipped": [],
+    "books": [
+      {
+        "name": "filled.json",
+        "forks": 73,
+        "false_choices": 16,
+        "rate": null,
+        "median_distance": 5.0,
+        "state_carrying": 0,
+        "diverging": 15,
+        "stateless": true
+      }
+    ],
+    "verdict": "NOT MEASURED: no book produced a complete report, so nothing here is evidence about the catalogue"
+  }
+}

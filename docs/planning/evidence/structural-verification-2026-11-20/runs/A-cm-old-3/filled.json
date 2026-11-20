@@ -1,0 +1,2229 @@
+{
+  "schema_version": "2.0",
+  "id": "sk_clockwork_menagerie",
+  "title": "The Clockwork Menagerie",
+  "version": 1,
+  "metadata": {
+    "narrative_person": "third",
+    "age_band": "8-11",
+    "reading_level": {
+      "scheme": "flesch_kincaid",
+      "target": 4.5,
+      "tolerance": 1.5
+    },
+    "tier": 1,
+    "themes": [
+      "wonder",
+      "curiosity",
+      "kindness",
+      "courage"
+    ],
+    "estimated_minutes": 18,
+    "ending_count": 27,
+    "content_flags": {
+      "violence": "none",
+      "scariness": "mild",
+      "peril": "moderate"
+    },
+    "topology": "branch_and_bottleneck",
+    "length": "long",
+    "narrative_style": "prose",
+    "production_eligible": true
+  },
+  "variables": [],
+  "start_node": "n_open",
+  "nodes": [
+    {
+      "id": "n_open",
+      "body": "The last bus left in a puff of smoke. {~HERO:Nia~} knew she was stuck. The Windvale Museum of Clockwork Animals stood quiet behind her. Its tall windows were dark. Her wind-up mouse Tock sat on her shoulder. Its brass gears ticked softly, as if to say, *Come on, come on.* {~HERO:Nia~} pushed the heavy door. Inside, a hall full of brass, tin, and copper creatures waited. Every one was wound down and perfectly, breathlessly still.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_open",
+          "label": "Step into the dark entrance hall.",
+          "target": "n_start"
+        }
+      ]
+    },
+    {
+      "id": "n_start",
+      "body": "Four great wings opened off the dark entrance hall like the pages of a storybook. To the left, the brass aviary gleamed faintly. Straight ahead, the tin savanna stretched wide and golden. To the right, the copper deep-sea hall glimmered blue. And tucked behind the staircase, the crystal insect conservatory sparkled with tiny points of light. {~HERO:Nia~}'s candle stub flickered. She had to choose before it burned down.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_start_av",
+          "label": "Enter the brass aviary.",
+          "target": "av_x0"
+        },
+        {
+          "id": "c_start_sv",
+          "label": "Cross into the tin savanna.",
+          "target": "sv_x0"
+        },
+        {
+          "id": "c_start_ds",
+          "label": "Slip into the copper deep-sea hall.",
+          "target": "ds_x0"
+        },
+        {
+          "id": "c_start_cg",
+          "label": "Step into the crystal insect conservatory.",
+          "target": "cg_x0"
+        }
+      ]
+    },
+    {
+      "id": "av_x0",
+      "body": "{~HERO:Nia~} stepped into the brass aviary and stopped. Hundreds of clockwork birds sat frozen on their perches, beaks open in songs that had stopped hours ago. A brass swallow hung mid-flutter, its wings forever half-spread. A tin wren tilted its head as if listening. The silence was enormous. On {~HERO:Nia~}'s shoulder, her wind-up mouse Tock gave a soft, urgent tick, as if telling her to hurry before the candle failed.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_av_x0",
+          "label": "Walk in under the silent birds.",
+          "target": "av_x1"
+        }
+      ]
+    },
+    {
+      "id": "av_x1",
+      "body": "The aviary split two ways. Down the center, a wide floor of tall perch-trees led deeper among the biggest birds. Their brass feathers caught the candlelight. To the left, a narrow spiral stair climbed toward the raptor roost. Its top faded into the dark near the glass roof. Nia could hear the metal steps hum softly with the draft.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_av_deep",
+          "label": "Walk among the perch-trees.",
+          "target": "av_deep"
+        },
+        {
+          "id": "c_av_risk",
+          "label": "Climb the spiral stair to the raptor roost.",
+          "target": "av_risk"
+        }
+      ]
+    },
+    {
+      "id": "av_deep",
+      "body": "Among the perch-trees, the birds rose around {~HERO:Nia~} like a metal forest. She could turn toward the songbird nook. There, a wall of tiny brass shapes sparkled in the candlelight. Or she could go to the raptor roost. There, a huge brass eagle spread its still wings above a nest of twisted wire.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_av_a",
+          "label": "Visit the songbird alcove.",
+          "target": "av_a1"
+        },
+        {
+          "id": "c_av_b",
+          "label": "Approach the raptor roost.",
+          "target": "av_b1"
+        }
+      ]
+    },
+    {
+      "id": "av_a1",
+      "body": "The songbird alcove was a wall of tiny brass larks and wrens, each no bigger than a thumb, their little keys wound down to nothing. Nia leaned close. Their painted eyes stared back, bright and patient. She could almost imagine the chorus they must have made, a hundred small voices rising together.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_av_a1",
+          "label": "Go on.",
+          "target": "av_a2"
+        }
+      ]
+    },
+    {
+      "id": "av_a2",
+      "body": "Tock scampered down {~HERO:Nia~}'s arm and darted onto a dusty music-box set into the wall, its brass drum covered in tiny pins. {~HERO:Nia~} traced the mechanism with her finger. It was built to play all the birds at once, a whole orchestra from one winding. But the box was still and silent, its power long spent.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_av_a2",
+          "label": "Press deeper.",
+          "target": "av_a3"
+        }
+      ]
+    },
+    {
+      "id": "av_a3",
+      "body": "Behind the music-box, pinned to the wall, Nia found a small brass card, its edges worn smooth. She held the candle close and read. The card spoke of the caretaker master key, a single winding tool that could wake the whole museum from the central rotunda. Nia's heart beat faster.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_av_a3",
+          "label": "Follow Tock.",
+          "target": "av_a4"
+        }
+      ]
+    },
+    {
+      "id": "av_a4",
+      "body": "{~HERO:Nia~} pocketed the clue. She followed her wind-up mouse Tock along a narrow keeper walkway behind the display cases. The path was dusty and tight. It ran behind the perches where the birds sat still in their glass-fronted homes. Tock's ticking echoed softly against the walls.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_av_a4",
+          "label": "Keep going.",
+          "target": "av_a5"
+        }
+      ]
+    },
+    {
+      "id": "av_a5",
+      "body": "The keeper walkway ended at a low service door marked with a clock face, its hands painted at midnight. Nia pressed her ear to the wood. Beyond it, the heart of the museum hummed faintly, a deep and steady vibration she could feel through the soles of her shoes.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_av_a5",
+          "label": "Step forward.",
+          "target": "av_conv"
+        }
+      ]
+    },
+    {
+      "id": "av_b1",
+      "body": "The raptor roost was all shadows and great still wings. A brass eagle sat on a twisted iron perch, its beak half-open in a silent cry. Beside it, a bronze owl watched with glassy eyes that did not blink. Nia felt very small beneath their outstretched wings.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_av_b1",
+          "label": "Move along.",
+          "target": "av_b2"
+        }
+      ]
+    },
+    {
+      "id": "av_b2",
+      "body": "On the floor beneath the eagle, a single long feather had fallen. {~HERO:Nia~} picked it up. It was brass, cool and heavy, shaped exactly like a key. Her heart leaped, but when she tried it against her palm it was only a pretty decoy, a decoration, not the real thing.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_av_b2",
+          "label": "Go on.",
+          "target": "av_b3"
+        }
+      ]
+    },
+    {
+      "id": "av_b3",
+      "body": "The bronze owl, though, had one wing pointing stiffly downward, its brass pinions aimed at the floor. Nia knelt and saw a faint groove worn into the wood. Someone had set it that way long ago, on purpose. A keeper's sign, left for anyone who looked.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_av_b3",
+          "label": "Press deeper.",
+          "target": "av_b4"
+        }
+      ]
+    },
+    {
+      "id": "av_b4",
+      "body": "{~HERO:Nia~} followed where the owl pointed, down a short keeper stair that spiraled toward the warm hum at the center of the museum. Tock scurried ahead, its brass paws clicking on the steps. The air grew warmer, and the hum grew louder.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_av_b4",
+          "label": "Follow Tock.",
+          "target": "av_conv"
+        }
+      ]
+    },
+    {
+      "id": "av_conv",
+      "body": "Both ways brought {~HERO:Nia~} to the aviary door. It opened on the central rotunda. Her wind-up mouse Tock squeaked, a tiny brass chirp. It darted ahead through the gap. {~HERO:Nia~} pushed the door wider and stepped through into a round hall. A high skylight lit the room.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_av_conv",
+          "label": "Keep going.",
+          "target": "av_conv2"
+        }
+      ]
+    },
+    {
+      "id": "av_conv2",
+      "body": "The door swung on a round hall lit by the sky lightening toward grey dawn. High above, the skylight showed pale clouds moving slowly. This was the true middle of the whole clockwork museum, and Nia could feel the great weight of all the sleeping halls around her.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_av_conv2",
+          "label": "Step forward.",
+          "target": "av_conv3"
+        }
+      ]
+    },
+    {
+      "id": "av_conv3",
+      "body": "In the center of the rotunda stood the great museum clock, its brass face glowing faintly in the grey light. {~HERO:Nia~} was sure the caretaker master key must hang near it. The air around the clock felt alive, as if the whole museum breathed through it.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_av_conv3",
+          "label": "Enter the central rotunda.",
+          "target": "n_key"
+        }
+      ]
+    },
+    {
+      "id": "av_risk",
+      "body": "The raptor roost's spiral stair was rickety and old. Halfway up, a thin metal rung gave a warning crack beneath Nia's shoe. She froze, gripping the rail. Dust sifted down into the dark below. The stair trembled. Tock squeaked in alarm.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_av_rec",
+          "label": "Grab the rail and climb back down.",
+          "target": "av_rec"
+        },
+        {
+          "id": "c_av_fail",
+          "label": "Climb on toward the high nesting boxes.",
+          "target": "e_set_av"
+        }
+      ]
+    },
+    {
+      "id": "av_rec",
+      "body": "{~HERO:Nia~} froze, grabbed the rail with both hands, and waited until the shaking stopped. Her heart pounded in her ears. She could feel the cold metal vibrating under her palms. Slowly, carefully, she backed down the steps to the safe aviary floor.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_av_rec1",
+          "label": "Steady yourself.",
+          "target": "av_rec2"
+        }
+      ]
+    },
+    {
+      "id": "av_rec2",
+      "body": "Safe on the floor again, Nia let out a long breath. The high nesting boxes were not worth the danger. She turned instead to the perch-trees, where the big birds waited in the safer dark, their brass shapes solid and steady.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_av_rec2",
+          "label": "Explore the safer way.",
+          "target": "av_deep"
+        }
+      ]
+    },
+    {
+      "id": "e_set_av",
+      "body": "{~HERO:Nia~} climbed on even though the metal groaned. The thin rung folded under her weight with a shriek. The stair pulled away from the wall. She tumbled onto a narrow ledge among the sleeping birds. She was quite safe but completely stuck. Far below, her wind-up mouse Tock squeaked and waved its brass paws. {~HERO:Nia~} could only wait, perched among the raptors. She would wait until the museum staff came at opening time and fetched a ladder to bring her down.",
+      "is_ending": true,
+      "ending": {
+        "id": "e_set_av",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "Stranded in the Raptor Roost"
+      }
+    },
+    {
+      "id": "sv_x0",
+      "body": "The tin savanna opened wide and golden, a whole plain of tin grass frozen mid-sway. The tin lion caught mid-roar, its mane a crown of brass shavings. Giraffes as tall as the ceiling craned their necks toward the roof. In the middle distance, a great elephant stood dark and heavy, its trunk raised but utterly still.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_sv_x0",
+          "label": "Step out onto the tin plain.",
+          "target": "sv_x1"
+        }
+      ]
+    },
+    {
+      "id": "sv_x1",
+      "body": "{~HERO:Nia~} could cross the open savanna floor toward the big animals. The tin grass crunched softly under her feet. Or she could slip along the painted horizon wall. A narrow walkway skirted the edge of the hall there. Its murals showed a sunset that never moved.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_sv_deep",
+          "label": "Cross the open savanna floor.",
+          "target": "sv_deep"
+        },
+        {
+          "id": "c_sv_risk",
+          "label": "Edge along the horizon wall.",
+          "target": "sv_risk"
+        }
+      ]
+    },
+    {
+      "id": "sv_deep",
+      "body": "Out on the floor, the animals loomed around {~HERO:Nia~}. She could head for the elephant herd. They gathered around the tin watering hole, trunks dipping toward a pool of hammered metal. Or she could enter the giraffe grove. There, the tall necks reached up into shadow like a thicket of copper pipes.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_sv_a",
+          "label": "Approach the elephants around the tin watering hole.",
+          "target": "sv_a1"
+        },
+        {
+          "id": "c_sv_b",
+          "label": "Enter the giraffe grove.",
+          "target": "sv_b1"
+        }
+      ]
+    },
+    {
+      "id": "sv_a1",
+      "body": "Up close, the great tin elephant of the herd was enormous, its flanks like beaten silver. As {~HERO:Nia~} passed, a last bit of wind from a high vent made its trunk twitch and one foot scrape the floor with a grinding groan. {~HERO:Nia~} jumped back with a gasp.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_sv_a1",
+          "label": "Go on.",
+          "target": "sv_a2"
+        }
+      ]
+    },
+    {
+      "id": "sv_a2",
+      "body": "The elephant lurched a slow half-step, groaning, not truly awake but not truly asleep. Its trunk swung blindly through the air. {~HERO:Nia~} pressed herself against a tin baobab tree and saw she must give it a wide and careful berth.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_sv_a2",
+          "label": "Press deeper.",
+          "target": "sv_a3"
+        }
+      ]
+    },
+    {
+      "id": "sv_a3",
+      "body": "She ducked behind the tin baobab tree. She waited until the great beast settled again with a long metal sigh. Its gears clicked softly down to stillness. Tock peeked out from Nia's collar, twitching its whiskers.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_sv_a3",
+          "label": "Follow Tock.",
+          "target": "sv_a4"
+        }
+      ]
+    },
+    {
+      "id": "sv_a4",
+      "body": "Safe past the elephant, {~HERO:Nia~} found a worn keeper trail marked with oil-drips in the tin grass, a path of dark spots leading toward the heart of the museum. Tock sniffed the trail and scurried ahead.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_sv_a4",
+          "label": "Keep going.",
+          "target": "sv_a5"
+        }
+      ]
+    },
+    {
+      "id": "sv_a5",
+      "body": "The worn keeper trail ended at a plain door in the savanna wall. It was warm to the touch. Nia pressed her hand against it. She felt the hum of the great museum clock pulsing behind it, steady as a heartbeat.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_sv_a5",
+          "label": "Step forward.",
+          "target": "sv_conv"
+        }
+      ]
+    },
+    {
+      "id": "sv_b1",
+      "body": "The giraffe grove was a forest of long tin necks and gentle glass eyes, their heads lost up in the roof shadows. Nia walked among them, feeling like a tiny creature in a field of giant flowers. Their stillness was peaceful, not frightening.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_sv_b1",
+          "label": "Move along.",
+          "target": "sv_b2"
+        }
+      ]
+    },
+    {
+      "id": "sv_b2",
+      "body": "High on a shelf, almost out of reach, {~HERO:Nia~} spied a ring. It was raised on a rope pulley, the kind the keeper used to lift and lower supplies. She tugged the rope. The shelf creaked downward, its pulleys squeaking.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_sv_b2",
+          "label": "Go on.",
+          "target": "sv_b3"
+        }
+      ]
+    },
+    {
+      "id": "sv_b3",
+      "body": "She worked the pulley and lowered the shelf. It held only spare oil-cans, their labels yellowed with age, not keys. But a painted arrow on the wall pointed the way onward, faded but clear.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_sv_b3",
+          "label": "Press deeper.",
+          "target": "sv_b4"
+        }
+      ]
+    },
+    {
+      "id": "sv_b4",
+      "body": "{~HERO:Nia~} followed the painted arrow across the grove to a keeper door. The door hummed with the warmth of the museum heart. Tock pressed its nose to the gap under it and ticked in excitement.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_sv_b4",
+          "label": "Follow Tock.",
+          "target": "sv_conv"
+        }
+      ]
+    },
+    {
+      "id": "sv_conv",
+      "body": "Both routes met at the savanna arch, which opened onto the big central rotunda. Her wind-up mouse Tock slipped under the arch with a flick of its tail. Nia followed him through into the great round hall.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_sv_conv",
+          "label": "Keep going.",
+          "target": "sv_conv2"
+        }
+      ]
+    },
+    {
+      "id": "sv_conv2",
+      "body": "Past the arch, the round rotunda waited under a sky growing grey with dawn. The skylight showed clouds thinning and night fading. Nia stepped into the true middle of the clockwork museum and felt the heavy silence.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_sv_conv2",
+          "label": "Step forward.",
+          "target": "sv_conv3"
+        }
+      ]
+    },
+    {
+      "id": "sv_conv3",
+      "body": "The great museum clock towered in the center of the rotunda, its brass face catching the first pale light. {~HERO:Nia~} felt sure the caretaker master key must hang somewhere near it. She could almost feel its shape in the air.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_sv_conv3",
+          "label": "Enter the central rotunda.",
+          "target": "n_key"
+        }
+      ]
+    },
+    {
+      "id": "sv_risk",
+      "body": "The horizon-wall walkway was narrow. It was a painted ledge that ran along the edge of the hall. {~HERO:Nia~} edged along it. The lurching clockwork elephant on the floor below groaned and swung its heavy trunk. It blocked the way ahead. Its metal foot scraped the floor with a long grinding sound.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_sv_rec",
+          "label": "Press into an alcove and wait.",
+          "target": "sv_rec"
+        },
+        {
+          "id": "c_sv_fail",
+          "label": "Try to hurry past the lurching elephant.",
+          "target": "e_set_sv"
+        }
+      ]
+    },
+    {
+      "id": "sv_rec",
+      "body": "{~HERO:Nia~} pressed flat into a shallow alcove in the wall and held still, letting the lurching clockwork elephant sway and settle. Its trunk swung once more, then drooped. The grinding stopped. When it was quiet, {~HERO:Nia~} slipped back to the open floor.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_sv_rec1",
+          "label": "Steady yourself.",
+          "target": "sv_rec2"
+        }
+      ]
+    },
+    {
+      "id": "sv_rec2",
+      "body": "Back on the savanna floor, the elephant was still again. {~HERO:Nia~} decided the wall walkway was too risky. She picked a path among the big animals instead. The tin grass was thick there and the way was wide.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_sv_rec2",
+          "label": "Explore the safer way.",
+          "target": "sv_deep"
+        }
+      ]
+    },
+    {
+      "id": "e_set_sv",
+      "body": "{~HERO:Nia~} hurried past on the narrow walkway. But the lurching clockwork elephant swung round and gently backed her into the corner of the hall. Its great tin body blocked the way. It was just a big, slow beast in the way. {~HERO:Nia~} was safe in the corner. She had to wait until morning, when the keepers wound the elephant down and freed her.",
+      "is_ending": true,
+      "ending": {
+        "id": "e_set_sv",
+        "valence": "neutral",
+        "kind": "setback",
+        "title": "Cornered by the Great Elephant"
+      }
+    },
+    {
+      "id": "ds_x0",
+      "body": "The copper deep-sea hall was cool and blue. It was like walking into a cave under water. Great copper whales hung on wires overhead. Their flukes were frozen mid-stroke. A huge octopus coiled in a corner. Its tentacles reached toward glass tanks of still copper fish. The fish glinted in the dim light. Nia shivered, but not from cold.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ds_x0",
+          "label": "Wade into the blue hall.",
+          "target": "ds_x1"
+        }
+      ]
+    },
+    {
+      "id": "ds_x1",
+      "body": "{~HERO:Nia~} could wade between the low floor tanks toward the middle of the hall. There, copper crabs and tin lobsters sat frozen on sand made of crushed glass. Or she could climb the whale-rib catwalk. It arched high over everything in the dark. Its iron bones curved toward the ceiling.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ds_deep",
+          "label": "Wade among the floor tanks.",
+          "target": "ds_deep"
+        },
+        {
+          "id": "c_ds_risk",
+          "label": "Climb the whale-rib catwalk.",
+          "target": "ds_risk"
+        }
+      ]
+    },
+    {
+      "id": "ds_deep",
+      "body": "Among the tanks, {~HERO:Nia~} could explore the coral cabinet. There, copper starfish clung to brass rocks. Or she could peer into the deep trench diorama. There, the water-glass turned almost black. Something large seemed to move in the depths.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ds_a",
+          "label": "Open the coral cabinet.",
+          "target": "ds_a1"
+        },
+        {
+          "id": "c_ds_b",
+          "label": "Peer into the deep trench diorama.",
+          "target": "ds_b1"
+        }
+      ]
+    },
+    {
+      "id": "ds_a1",
+      "body": "The coral cabinet glittered with copper seahorses and darting fish, all frozen mid-swim. {~HERO:Nia~} rested her hand on a brass valve. It hummed at her touch. The low vibration ran up her arm and made Tock's whiskers twitch.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ds_a1",
+          "label": "Go on.",
+          "target": "ds_a2"
+        }
+      ]
+    },
+    {
+      "id": "ds_a2",
+      "body": "Tock tapped the brass valve with its nose. A panel slid back to show a folded chart of the whole museum. Every hall was drawn in careful ink. Nia spread it on the floor. There was the aviary, the savanna, the conservatory. They were all connected by dotted keeper paths.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ds_a2",
+          "label": "Press deeper.",
+          "target": "ds_a3"
+        }
+      ]
+    },
+    {
+      "id": "ds_a3",
+      "body": "On the folded chart, a small tag shaped like a key was tied with a bit of string. A note in neat writing pointed to the central rotunda at the museum heart. *Master key hangs here*, it read. Nia's pulse quickened.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ds_a3",
+          "label": "Follow Tock.",
+          "target": "ds_a4"
+        }
+      ]
+    },
+    {
+      "id": "ds_a4",
+      "body": "{~HERO:Nia~} tucked the chart away and followed its inked paths. Her wind-up mouse Tock led the way toward the warm middle of the building. The floor sloped gently upward. The air grew warmer with every step.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ds_a4",
+          "label": "Keep going.",
+          "target": "ds_a5"
+        }
+      ]
+    },
+    {
+      "id": "ds_a5",
+      "body": "The way ended at a round copper door like a porthole, humming softly. The great museum clock ticked somewhere close beyond it, a deep, slow sound that Nia felt in her chest.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ds_a5",
+          "label": "Step forward.",
+          "target": "ds_conv"
+        }
+      ]
+    },
+    {
+      "id": "ds_b1",
+      "body": "The deep trench diorama was the darkest place {~HERO:Nia~} had been all night. Black glass all around, and only a faint glow far down in it, like a star trapped underwater. Tock pressed close to her neck.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ds_b1",
+          "label": "Move along.",
+          "target": "ds_b2"
+        }
+      ]
+    },
+    {
+      "id": "ds_b2",
+      "body": "The glow came from an anglerfish lamp with a little wind left, its lure casting just enough light to show a low hatch set in the trench wall. The lamp buzzed faintly, its spring almost spent.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ds_b2",
+          "label": "Go on.",
+          "target": "ds_b3"
+        }
+      ]
+    },
+    {
+      "id": "ds_b3",
+      "body": "The anglerfish lamp flickered, and by its light {~HERO:Nia~} read a sign painted with an arrow above the low hatch. *Rotunda access*, it said. *Mind your head.* Tock squeaked and darted toward the opening.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ds_b3",
+          "label": "Press deeper.",
+          "target": "ds_b4"
+        }
+      ]
+    },
+    {
+      "id": "ds_b4",
+      "body": "She opened the low hatch and went down a snug copper passage. It was warm and humming, leading inward to the middle of the museum. The walls were close, but the hum was friendly, like a brass lullaby.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ds_b4",
+          "label": "Follow Tock.",
+          "target": "ds_conv"
+        }
+      ]
+    },
+    {
+      "id": "ds_conv",
+      "body": "Both ways led {~HERO:Nia~} to a round door. It opened into the deep-sea hall from the central rotunda. Her wind-up mouse Tock squeezed through the gap eagerly. {~HERO:Nia~} pushed the door wide onto the great round hall.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ds_conv",
+          "label": "Keep going.",
+          "target": "ds_conv2"
+        }
+      ]
+    },
+    {
+      "id": "ds_conv2",
+      "body": "Past the door, the great rotunda opened under the sky lightening toward grey dawn. The skylight was pale now, the stars fading. This was the true heart of the clockwork museum, and Nia could feel it beating.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ds_conv2",
+          "label": "Step forward.",
+          "target": "ds_conv3"
+        }
+      ]
+    },
+    {
+      "id": "ds_conv3",
+      "body": "The great museum clock stood at its center, its pendulum motionless but still. {~HERO:Nia~} was certain the caretaker master key must be near it. The air around the clock seemed to shimmer with waiting.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ds_conv3",
+          "label": "Enter the central rotunda.",
+          "target": "n_key"
+        }
+      ]
+    },
+    {
+      "id": "ds_risk",
+      "body": "The whale-rib catwalk swayed and its iron joints groaned as {~HERO:Nia~} climbed. A loose rib swung free over the middle of the dark hall. It clanged and left a gap she would have to jump. Below, the floor tanks glittered with a cold light.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ds_rec",
+          "label": "Cling to the rope and back off.",
+          "target": "ds_rec"
+        },
+        {
+          "id": "c_ds_fail",
+          "label": "Try to jump the loose rib in the dark.",
+          "target": "e_set_ds"
+        }
+      ]
+    },
+    {
+      "id": "ds_rec",
+      "body": "{~HERO:Nia~} backed off from the loose whale-rib, clinging to the guide rope. Her hands ached, but she edged her way carefully back to the solid start of the catwalk. The gap yawned behind her, but she was safe.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ds_rec1",
+          "label": "Steady yourself.",
+          "target": "ds_rec2"
+        }
+      ]
+    },
+    {
+      "id": "ds_rec2",
+      "body": "Safe at the bottom of the catwalk again, {~HERO:Nia~} thought the high dark crossing was not worth the risk. She went in among the floor tanks instead. There, the copper fish gleamed and the way was sure.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ds_rec2",
+          "label": "Explore the safer way.",
+          "target": "ds_deep"
+        }
+      ]
+    },
+    {
+      "id": "e_set_ds",
+      "body": "{~HERO:Nia~} tried to jump the gap in the dark, but she could not see the far side and froze on the loose whale-rib, too scared to go on or back. She clung there safely above the soft tank-nets below, her heart hammering. At opening time, a keeper heard her wind-up mouse Tock squeaking and fetched a ladder to help her down. Her night of exploring was over.",
+      "is_ending": true,
+      "ending": {
+        "id": "e_set_ds",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "Stuck Above the Deep-Sea Hall"
+      }
+    },
+    {
+      "id": "cg_x0",
+      "body": "The crystal insect hall glowed with a soft light. Clockwork bugs rested on glass ferns under a dome painted with stars. All was still and sparkly. A copper dragonfly hung from the dome on a thin wire, its wings spread like stained glass.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_cg_x0",
+          "label": "Wander in among the glass ferns.",
+          "target": "cg_x1"
+        }
+      ]
+    },
+    {
+      "id": "cg_x1",
+      "body": "{~HERO:Nia~} could walk through the low ferns among the sleeping bugs. Brass crickets sat frozen on crystal leaves. Or she could climb the iron stairs that ran around the glass walls. Their railings shone in the candlelight.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_cg_deep",
+          "label": "Wander the fern beds.",
+          "target": "cg_deep"
+        },
+        {
+          "id": "c_cg_risk",
+          "label": "Climb the mezzanine gallery.",
+          "target": "cg_risk"
+        }
+      ]
+    },
+    {
+      "id": "cg_deep",
+      "body": "Down in the ferns, {~HERO:Nia~} could visit the butterfly vault. Hundreds of foil-winged shapes rested in soft drawers. She could also visit the beetle corner, where little brass bugs crowded a work bench covered in tiny tools.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_cg_a",
+          "label": "Enter the butterfly vault.",
+          "target": "cg_a1"
+        },
+        {
+          "id": "c_cg_b",
+          "label": "Visit the beetle corner.",
+          "target": "cg_b1"
+        }
+      ]
+    },
+    {
+      "id": "cg_a1",
+      "body": "The butterfly vault was full of clockwork butterflies. Their wings were made of thin, bright foil, folded and still. They waited for a wind that never came. They hung in rows like a rainbow that had forgotten how to move.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_cg_a1",
+          "label": "Go on.",
+          "target": "cg_a2"
+        }
+      ]
+    },
+    {
+      "id": "cg_a2",
+      "body": "Tock nosed a tiny winder left on a stand, and {~HERO:Nia~} picked it up. Each butterfly had a keyhole no bigger than a seed, far too small for any ordinary key. The winder was delicate, meant for the lightest touch.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_cg_a2",
+          "label": "Press deeper.",
+          "target": "cg_a3"
+        }
+      ]
+    },
+    {
+      "id": "cg_a3",
+      "body": "Near the tiny winder, a card told of one master key. It could turn the whole museum at once from the central rotunda. {~HERO:Nia~} traced the map with her finger and fixed the route in her mind.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_cg_a3",
+          "label": "Follow Tock.",
+          "target": "cg_a4"
+        }
+      ]
+    },
+    {
+      "id": "cg_a4",
+      "body": "She left the vault and took the painted path. Her wind-up mouse Tock ran ahead between the glass ferns toward the middle of the museum. The path wound like a silver ribbon among the crystal leaves.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_cg_a4",
+          "label": "Keep going.",
+          "target": "cg_a5"
+        }
+      ]
+    },
+    {
+      "id": "cg_a5",
+      "body": "The painted path ended at a mirrored door edged with brass, humming gently. The great museum clock beat slow and deep beyond it, a sound like a heart beneath the floor. Nia pressed her palm to the warm wood.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_cg_a5",
+          "label": "Step forward.",
+          "target": "cg_conv"
+        }
+      ]
+    },
+    {
+      "id": "cg_b1",
+      "body": "The beetle corner buzzed with a tiny world of brass bugs. They were gathered around a work bench full of small tools. Nia saw tweezers, screwdrivers, and pots of oil. The beetles seemed to be having a talk, their feelers touching.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_cg_b1",
+          "label": "Move along.",
+          "target": "cg_b2"
+        }
+      ]
+    },
+    {
+      "id": "cg_b2",
+      "body": "In a half-open drawer, {~HERO:Nia~} found a folded map of the conservatory and the halls beyond, marked in a keeper hand. The ink was faded, but the lines were clear: a route through the cases to the central rotunda.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_cg_b2",
+          "label": "Go on.",
+          "target": "cg_b3"
+        }
+      ]
+    },
+    {
+      "id": "cg_b3",
+      "body": "The folded map showed a short way to the central rotunda, and a drawn beetle pointing its feelers seemed to point along the route. Nia smiled. Even the little brass creatures were trying to help.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_cg_b3",
+          "label": "Press deeper.",
+          "target": "cg_b4"
+        }
+      ]
+    },
+    {
+      "id": "cg_b4",
+      "body": "{~HERO:Nia~} followed the mapped way between the glass cases to a mirrored door edged with brass, warm and humming, that led toward the museum heart. Tock ticked a little faster, as if it knew they were close.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_cg_b4",
+          "label": "Follow Tock.",
+          "target": "cg_conv"
+        }
+      ]
+    },
+    {
+      "id": "cg_conv",
+      "body": "Both paths led {~HERO:Nia~} to the bug-hall arch that opened on the central rotunda. Her wind-up mouse Tock slipped through the crack ahead of her. {~HERO:Nia~} pushed the arch open and stepped into the great round hall.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_cg_conv",
+          "label": "Keep going.",
+          "target": "cg_conv2"
+        }
+      ]
+    },
+    {
+      "id": "cg_conv2",
+      "body": "The arch gave on the round rotunda under the sky lightening toward grey dawn. The skylight was brightening now, the grey giving way to silver. This was the true center of the clockwork museum.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_cg_conv2",
+          "label": "Step forward.",
+          "target": "cg_conv3"
+        }
+      ]
+    },
+    {
+      "id": "cg_conv3",
+      "body": "The great museum clock rose in the middle of the rotunda, its brass face catching the pale light. {~HERO:Nia~} knew the caretaker master key must hang close by. She could feel it, like a word on the tip of her tongue.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_cg_conv3",
+          "label": "Enter the central rotunda.",
+          "target": "n_key"
+        }
+      ]
+    },
+    {
+      "id": "cg_risk",
+      "body": "The mezzanine gallery was edged with old glass panels. Their frames were rusted. {~HERO:Nia~} leaned to look down at the conservatory below. A glass panel came loose on the rail. It shifted with a grinding sound and tipped slowly inward.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_cg_rec",
+          "label": "Step back from the loose glass.",
+          "target": "cg_rec"
+        },
+        {
+          "id": "c_cg_fail",
+          "label": "Squeeze past the shifting glass panel.",
+          "target": "e_set_cg"
+        }
+      ]
+    },
+    {
+      "id": "cg_rec",
+      "body": "{~HERO:Nia~} snatched her hands back. She stepped away as the glass panel settled crookedly against the rail. She went back along the gallery to the safe stairs down. Her heart thumped, but her feet were steady.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_cg_rec1",
+          "label": "Steady yourself.",
+          "target": "cg_rec2"
+        }
+      ]
+    },
+    {
+      "id": "cg_rec2",
+      "body": "Back on the conservatory floor, {~HERO:Nia~} was shaken. She decided the mezzanine was too weak. She explored the fern beds below instead. There, the glass leaves were cool and steady under her fingers.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_cg_rec2",
+          "label": "Explore the safer way.",
+          "target": "cg_deep"
+        }
+      ]
+    },
+    {
+      "id": "e_set_cg",
+      "body": "{~HERO:Nia~} edged past the shifting glass panel. But another panel shifted behind her. A glass door swung shut across the gallery, closing her gently in. Nothing broke. She was quite safe, but she could only wait. She tapped to her wind-up mouse Tock through the glass. She had to wait until the keepers opened the gallery in the morning.",
+      "is_ending": true,
+      "ending": {
+        "id": "e_set_cg",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "Shut in the Glass Gallery"
+      }
+    },
+    {
+      "id": "n_key",
+      "body": "Every wing of the museum led here, to the central round hall. And {~HERO:Nia~} found what she came for. High on a brass hook beside the great museum clock hung the caretaker master key. Its shaft was polished smooth by years of use. She climbed a little keeper ladder and lifted it down. The key was warm and heavy in her hands. Her wind-up mouse Tock cheered in tiny squeaks, dancing on the ladder's top rung. Three ways led on from the round hall now: through the great spring-room doors, along the gallery of old keeper portraits, or down the narrow back stairs.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_key_a",
+          "label": "Push through the great spring-room doors.",
+          "target": "k_a1"
+        },
+        {
+          "id": "c_key_b",
+          "label": "Follow the gallery of old keeper portraits.",
+          "target": "k_b1"
+        },
+        {
+          "id": "c_key_c",
+          "label": "Slip down the narrow back stairs.",
+          "target": "k_c1"
+        }
+      ]
+    },
+    {
+      "id": "k_a1",
+      "body": "The big spring-room doors opened onto the huge machine room where the whole museum clockwork lived. Wheels and shafts reached up into the dark. Their teeth meshed together in an endless chain of brass and steel.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_k_a1",
+          "label": "Go deeper toward the works.",
+          "target": "k_a2"
+        }
+      ]
+    },
+    {
+      "id": "k_a2",
+      "body": "{~HERO:Nia~} followed a gantry between the still gears, her wind-up mouse Tock pattering ahead. The metal catwalk rang under her shoes. Ahead, a great silent drum stood at the very center of it all, wrapped in coils of wire.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_k_a2",
+          "label": "Go deeper toward the works.",
+          "target": "k_a3"
+        }
+      ]
+    },
+    {
+      "id": "k_a3",
+      "body": "The walkway ended above the master works of the whole clockwork zoo. They waited cold and quiet. From here, Nia could see the great mainspring. It was a coiled steel ribbon as wide as her arm, dark and still.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_k_a3",
+          "label": "Go deeper toward the works.",
+          "target": "n_spring"
+        }
+      ]
+    },
+    {
+      "id": "k_b1",
+      "body": "The gallery of old keeper portraits was lined with paintings of old keepers. Their painted eyes seemed to follow {~HERO:Nia~} toward a door at the far end. The frames were dusty, but the faces were kind.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_k_b1",
+          "label": "Follow the gallery on.",
+          "target": "k_b2"
+        }
+      ]
+    },
+    {
+      "id": "k_b2",
+      "body": "The last portrait was the last portrait, a kind old man with a gentle smile and a tiny brass mouse on his shoulder. Beneath it, a brass plate read: *Keeper Fettle, Tender of the Works.* Tock squeaked and raised its head.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_k_b2",
+          "label": "Follow the gallery on.",
+          "target": "k_b3"
+        }
+      ]
+    },
+    {
+      "id": "k_b3",
+      "body": "The door below his portrait opened on a walkway. The walkway looked down into the vast machine room, the heart of the whole museum. Nia stood in the doorway. She felt the cold air rising from the silent gears.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_k_b3",
+          "label": "Follow the gallery on.",
+          "target": "n_spring"
+        }
+      ]
+    },
+    {
+      "id": "k_c1",
+      "body": "The narrow back stairs were cramped and dark, their walls close and cold. At the bottom, a keeper turnstile, its lock stiff with age, barred the way. {~HERO:Nia~} could try to squeeze carefully through the gap beside it, or shove hard against the turnstile itself.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_kc_ok",
+          "label": "Squeeze carefully through the gap.",
+          "target": "k_c2"
+        },
+        {
+          "id": "c_kc_fail",
+          "label": "Shove hard against the stubborn turnstile.",
+          "target": "e_set_key"
+        }
+      ]
+    },
+    {
+      "id": "k_c2",
+      "body": "{~HERO:Nia~} breathed in and slipped sideways through the narrow gap, her wind-up mouse Tock riding her collar. She emerged into a low passage beyond the turnstile, dusty and dark but passable.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_kc2",
+          "label": "Follow the low passage.",
+          "target": "k_c3"
+        }
+      ]
+    },
+    {
+      "id": "k_c3",
+      "body": "The low passage climbed and opened onto a ledge above the huge machine room. The whole menagerie's master works spread out below. It was a landscape of gears, levers, and the dark coil of the great spring.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_kc3",
+          "label": "Climb down to the works.",
+          "target": "n_spring"
+        }
+      ]
+    },
+    {
+      "id": "e_set_key",
+      "body": "{~HERO:Nia~} shoved the turnstile with all her weight. It swung the wrong way and latched shut behind her. She was penned in the little dark stairwell with no way back up. She was safe. Her wind-up mouse Tock kept her company, ticking softly in the dark. She could only sit and wait on the steps. The morning staff would come and unlatch the stubborn turnstile to let her out.",
+      "is_ending": true,
+      "ending": {
+        "id": "e_set_key",
+        "valence": "neutral",
+        "kind": "setback",
+        "title": "Trapped in the Stairwell"
+      }
+    },
+    {
+      "id": "n_spring",
+      "body": "All three ways brought {~HERO:Nia~} out above the great spring-room. And here she learned why the whole menagerie fell asleep. The great mainspring had snapped clean across. Its broken ends sprung apart like a cut ribbon of steel. Even the caretaker master key was no use against a broken heart of steel. {~HERO:Nia~}'s shoulders slumped. Her wind-up mouse Tock scratched at the floor in worry. {~HERO:Nia~} saw three ways to look for help: the keeper toolbox, the wall of repair guides, and the scratched patch of floor where Tock was digging.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_spring_a",
+          "label": "Open the keeper toolbox.",
+          "target": "s_a1"
+        },
+        {
+          "id": "c_spring_b",
+          "label": "Search the wall of repair manuals.",
+          "target": "s_b1"
+        },
+        {
+          "id": "c_spring_c",
+          "label": "Dig where Tock is scratching.",
+          "target": "s_c1"
+        }
+      ]
+    },
+    {
+      "id": "s_a1",
+      "body": "The keeper toolbox was a deep tin chest of spanners and oil. On top, half-buried in rags, lay a heavy, unfamiliar tool with a curved jaw. Nia lifted it. It was cold and solid, built for a purpose she did not yet know.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_s_a1",
+          "label": "Follow the keeper sign.",
+          "target": "s_a2"
+        }
+      ]
+    },
+    {
+      "id": "s_a2",
+      "body": "Tock dug under the tools and turned up a card of keeper repair steps. It was a keeper drawing of how a broken spring is clamped and changed. The pictures were neat and clear, drawn by a patient hand.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_s_a2",
+          "label": "Follow the keeper sign.",
+          "target": "s_a3"
+        }
+      ]
+    },
+    {
+      "id": "s_a3",
+      "body": "The repair card in hand, {~HERO:Nia~} followed a keeper sign from the toolbox. She went toward a low door half-hidden behind the great machine. The sign was a painted hand, its finger pointing the way.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_s_a3",
+          "label": "Follow the keeper sign.",
+          "target": "n_shop"
+        }
+      ]
+    },
+    {
+      "id": "s_b1",
+      "body": "The wall of repair guides was stacked with worn keeper books. Their spines read *Winding*, *Oiling*, and *Mending the Great Spring*. Nia ran her finger along their cracked leather backs.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_s_b1",
+          "label": "Search for the door.",
+          "target": "s_b2"
+        }
+      ]
+    },
+    {
+      "id": "s_b2",
+      "body": "{~HERO:Nia~} pulled down the mending book. Its pages fell open to a picture of a hidden workshop. It was a snug room full of tools and coiled springs. The caption read: *The caretaker's shop, behind the great machine.*",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_s_b2",
+          "label": "Search for the door.",
+          "target": "s_b3"
+        }
+      ]
+    },
+    {
+      "id": "s_b3",
+      "body": "The book named a low door half-hidden behind the great machine. {~HERO:Nia~} hurried to find it, her wind-up mouse Tock scampering at her heels. The door was there, just as the book had promised, tucked in the shadow of the largest gear.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_s_b3",
+          "label": "Search for the door.",
+          "target": "n_shop"
+        }
+      ]
+    },
+    {
+      "id": "s_c1",
+      "body": "Tock scratched at a loose floor panel. Under it was a crawlspace. But a big, half-braced gear leaned over the panel. Its iron teeth pointed down. {~HERO:Nia~} could lift the panel up slowly and gently. Or she could yank it free in a hurry.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_sc_ok",
+          "label": "Ease the panel up gently.",
+          "target": "s_c2"
+        },
+        {
+          "id": "c_sc_fail",
+          "label": "Yank the panel free quickly.",
+          "target": "e_set_spring"
+        }
+      ]
+    },
+    {
+      "id": "s_c2",
+      "body": "{~HERO:Nia~} lifted the panel a careful inch at a time, keeping clear of the heavy gear. Dust sifted down, but the gear held. She uncovered a low crawlspace behind the machine, a dark tunnel running toward the far wall.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_sc2",
+          "label": "Crawl through the space.",
+          "target": "s_c3"
+        }
+      ]
+    },
+    {
+      "id": "s_c3",
+      "body": "She crawled through the low crawlspace with her wind-up mouse Tock. She came up beside a low door half-hidden behind the great machine. It was the very one the keeper must have used. Tock squeaked in triumph.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_sc3",
+          "label": "Open the hidden door.",
+          "target": "n_shop"
+        }
+      ]
+    },
+    {
+      "id": "e_set_spring",
+      "body": "{~HERO:Nia~} yanked the panel free, but the sudden jerk unbalanced the heavy gear. It toppled with a great clang across the crawlspace, blocking it and pinning the hem of her coat. She wriggled safely out of her coat, unhurt, but the way was buried now. She had to wait by the broken spring until the keepers arrived at dawn to shift the gear.",
+      "is_ending": true,
+      "ending": {
+        "id": "e_set_spring",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "Blocked by the Fallen Gear"
+      }
+    },
+    {
+      "id": "n_shop",
+      "body": "Each way led to the same low door. Behind it {~HERO:Nia~} found the caretaker's hidden workshop, snug and warm and full of wonders. Here were coiled spare springs hanging on pegs. Oil and clamps and the special tool for changing a mainspring. On the bench lay keeper Fettle's letter. It told how he had been taken poorly and could not come. It had careful drawings of how to mend the great spring. Now {~HERO:Nia~} had the caretaker master key, a coiled spare mainspring, and the knowledge to use them. Three things called to her: the open repair guide, the spare mainspring's peg, and keeper Fettle's letter.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_shop_a",
+          "label": "Study the open repair manual.",
+          "target": "p_a1"
+        },
+        {
+          "id": "c_shop_b",
+          "label": "Take down the spare mainspring from its peg.",
+          "target": "p_b1"
+        },
+        {
+          "id": "c_shop_c",
+          "label": "Read keeper Fettle's letter.",
+          "target": "p_c1"
+        }
+      ]
+    },
+    {
+      "id": "p_a1",
+      "body": "The repair guide lay open at the very page {~HERO:Nia~} needed. Each step of changing the great spring was drawn in patient keeper ink. The pictures showed clamps and levers and the careful fit of steel coils.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_p_a1",
+          "label": "Head back to the spring-room.",
+          "target": "p_a2"
+        }
+      ]
+    },
+    {
+      "id": "p_a2",
+      "body": "{~HERO:Nia~} read it twice until she was sure she got it. Her wind-up mouse Tock followed her finger down the page like a tiny student. The steps were clear: clamp, lift, fit, wind.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_p_a2",
+          "label": "Head back to the spring-room.",
+          "target": "p_a3"
+        }
+      ]
+    },
+    {
+      "id": "p_a3",
+      "body": "Confident now, she gathered the tool and a coiled spare mainspring and headed back toward the great spring-room to begin. The spring was heavy, but her heart was light.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_p_a3",
+          "label": "Head back to the spring-room.",
+          "target": "n_hub"
+        }
+      ]
+    },
+    {
+      "id": "p_b1",
+      "body": "The coiled spare mainspring hung gleaming on its peg, as long as {~HERO:Nia~} was tall, heavier than it looked when she lifted it down. It was like holding a frozen silver snake.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_p_b1",
+          "label": "Wheel the cart back.",
+          "target": "p_b2"
+        }
+      ]
+    },
+    {
+      "id": "p_b2",
+      "body": "She loaded it onto the little keeper cart with the changing tool, her wind-up mouse Tock perched on top to keep watch. The cart's wheels squeaked, but it rolled smoothly.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_p_b2",
+          "label": "Wheel the cart back.",
+          "target": "p_b3"
+        }
+      ]
+    },
+    {
+      "id": "p_b3",
+      "body": "{~HERO:Nia~} pushed the small keeper cart with care. She went back toward the broken heart of the museum. The cart shook a little on the wood floor. Tock sat proud on the coiled spring.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_p_b3",
+          "label": "Wheel the cart back.",
+          "target": "n_hub"
+        }
+      ]
+    },
+    {
+      "id": "p_c1",
+      "body": "Keeper Fettle's letter told of a rusted short-cut lever for the cart. It could rush the heavy spring back to the great spring-room fast. {~HERO:Nia~} could take the spring the long safe way in her own arms. Or she could throw the rusted lever to send the cart on its way.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pc_ok",
+          "label": "Carry the spring the long safe way.",
+          "target": "p_c2"
+        },
+        {
+          "id": "c_pc_fail",
+          "label": "Throw the rusted shortcut lever.",
+          "target": "e_set_shop"
+        }
+      ]
+    },
+    {
+      "id": "p_c2",
+      "body": "{~HERO:Nia~} lifted the heavy spring in her own arms and carried it step by careful step, her wind-up mouse Tock cheering her on with soft ticks. The spring was cold and heavy, but she did not drop it.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pc2",
+          "label": "Set the spring down.",
+          "target": "p_c3"
+        }
+      ]
+    },
+    {
+      "id": "p_c3",
+      "body": "Breathing hard, she set the spring down beside the broken one, everything she needed now gathered in one place. The two springs lay side by side, one shattered and one whole.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pc3",
+          "label": "Turn to the great spring.",
+          "target": "n_hub"
+        }
+      ]
+    },
+    {
+      "id": "e_set_shop",
+      "body": "{~HERO:Nia~} threw the rusted short-cut lever. The small keeper cart jerked away too fast. It shook off down a side track with the spare spring on board. It went behind a locked shutter and was gone. Nothing was broken and {~HERO:Nia~} was fine. But the spare spring was now out of reach. She could only wait by the big machine until the keepers opened the shutter in the morning.",
+      "is_ending": true,
+      "ending": {
+        "id": "e_set_shop",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "The Runaway Cart"
+      }
+    },
+    {
+      "id": "n_hub",
+      "body": "Every path ended here at the great spring-room. {~HERO:Nia~} stood with the master key in one hand. A shiny spare mainspring sat at her feet. Keeper Fettle's steps were clear in her head. Through the tall windows, the sky was turning grey with dawn. Soon the doors would open. Children would pour in to see the animals move. There was time for one brave choice. {~HERO:Nia~} could try to change the great spring and wind the whole clockwork zoo. She could mend just one dear animal she had come to love. She could follow keeper Fettle's deepest secret. Or she could just keep the museum safe and let the quiet dawn come.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_hub_rw",
+          "label": "Change the great spring and rewind them all.",
+          "target": "fh_rw1"
+        },
+        {
+          "id": "c_hub_fx",
+          "label": "Mend one beloved creature.",
+          "target": "fh_fx1"
+        },
+        {
+          "id": "c_hub_sec",
+          "label": "Follow keeper Fettle's secret.",
+          "target": "fh_sec1"
+        },
+        {
+          "id": "c_hub_dawn",
+          "label": "Keep the museum safe until dawn.",
+          "target": "fh_dawn1"
+        }
+      ]
+    },
+    {
+      "id": "fh_rw1",
+      "body": "Changing the great mainspring was the hardest task of all, and how {~HERO:Nia~} did it mattered. She could work slow and careful by the manual, work bold and fast to beat the dawn, or try a clever trick from keeper Fettle's notes to make it easier.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_rw_c",
+          "label": "Work slow and careful by the manual.",
+          "target": "fh_rw_c1"
+        },
+        {
+          "id": "c_rw_b",
+          "label": "Work bold and fast to beat the dawn.",
+          "target": "fh_rw_b1"
+        },
+        {
+          "id": "c_rw_cl",
+          "label": "Try keeper Fettle's clever trick.",
+          "target": "fh_rw_cl1"
+        }
+      ]
+    },
+    {
+      "id": "fh_rw_c1",
+      "body": "Step by careful step, {~HERO:Nia~} clamped the great mainspring. She eased the broken ends apart. She fitted the coiled spare spring in, just as the book showed. Her wind-up mouse Tock passed her each tool. It carried spanners in its little brass teeth.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_rw_c1",
+          "label": "Fit the master key to the shaft.",
+          "target": "fh_rw_c2"
+        }
+      ]
+    },
+    {
+      "id": "fh_rw_c2",
+      "body": "The new spring was in. The master key fit the big winding shaft with a solid click. {~HERO:Nia~} could now wind it fully. Then the whole clockwork zoo would wake for the morning crowd. Or she could wind it just a bit and set it to stir only when keeper Fettle came back.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_rw_all",
+          "label": "Wind it fully and wake them all for dawn.",
+          "target": "e_win_all"
+        },
+        {
+          "id": "c_rw_quiet",
+          "label": "Set them to wake when keeper Fettle returns.",
+          "target": "e_win_all_quiet"
+        }
+      ]
+    },
+    {
+      "id": "fh_rw_b1",
+      "body": "Racing the light, {~HERO:Nia~} forced the spring in fast. It was nearly seated but not quite. She could feel it shift under the clamps. She had to choose: stop and reseat it properly, or wind it now and hope.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_rw_bok",
+          "label": "Stop and reseat it properly.",
+          "target": "fh_rw_b_ok"
+        },
+        {
+          "id": "c_rw_bfail",
+          "label": "Wind it now and hope.",
+          "target": "e_set_rw"
+        }
+      ]
+    },
+    {
+      "id": "fh_rw_b_ok",
+      "body": "{~HERO:Nia~} made herself slow down. She backed the spring out, took a deep breath, and seated it properly this time. The great works took the caretaker master key with a deep satisfying click that echoed through the room.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_rw_bok2",
+          "label": "Wind the museum awake.",
+          "target": "e_win_most"
+        }
+      ]
+    },
+    {
+      "id": "fh_rw_cl1",
+      "body": "Following keeper Fettle's clever notes, {~HERO:Nia~} linked the coiled spare mainspring through a helper gear that took half the strain. The mend went smoother than she dared hope, the gears meshing like they were made to.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_rw_cl1",
+          "label": "Turn the master key.",
+          "target": "fh_rw_cl2"
+        }
+      ]
+    },
+    {
+      "id": "fh_rw_cl2",
+      "body": "With the trick done, the great mainspring held firm. The caretaker master key turned the whole museum with a low waking hum that rose through the floor and into every hall.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_rw_cl2",
+          "label": "Watch the menagerie stir.",
+          "target": "e_win_clever"
+        }
+      ]
+    },
+    {
+      "id": "e_win_all",
+      "body": "{~HERO:Nia~} wound the master key. All through the museum the clockwork zoo stirred to life at once. Brass birds burst into song. The tin lion stretched and gave a rolling roar. The great copper whale turned slow on its wires. The once-jerky elephant lifted its trunk with a soft trumpet. When the doors opened at dawn, the children gasped with joy to see every animal move. Keeper Fettle heard the news and shed glad tears that a stranger saved his whole life's work. The very best of endings.",
+      "is_ending": true,
+      "ending": {
+        "id": "e_win_all",
+        "valence": "positive",
+        "kind": "completion",
+        "title": "The Menagerie Wakes at Dawn"
+      }
+    },
+    {
+      "id": "e_win_all_quiet",
+      "body": "{~HERO:Nia~} set the big spring with a soft touch so the animals would wake up slowly and easily the moment keeper Fettle turned the master key himself. She left everything fixed and ready. When keeper Fettle came home at last, he found his show of animals whole and waiting. He knew a kind hand had been here. A warm and thoughtful ending.",
+      "is_ending": true,
+      "ending": {
+        "id": "e_win_all_quiet",
+        "valence": "positive",
+        "kind": "success",
+        "title": "Ready for Keeper Fettle"
+      }
+    },
+    {
+      "id": "e_win_most",
+      "body": "The reseated spring held, and {~HERO:Nia~} wound the museum awake. Most of the menagerie stirred beautifully, a wave of motion spreading through the halls. Though a few small far-off animals slept on, the morning crowd still marveled at a hall of moving wonders. {~HERO:Nia~} grinned to have very nearly done it all. A proud ending.",
+      "is_ending": true,
+      "ending": {
+        "id": "e_win_most",
+        "valence": "positive",
+        "kind": "success",
+        "title": "Most of the Menagerie Stirs"
+      }
+    },
+    {
+      "id": "e_set_rw",
+      "body": "{~HERO:Nia~} wound the half-seated spring and it slipped with a twang, springing loose so the mend had to be done all over again. Nothing was harmed, but there was no time now before the doors opened. The animals slept on through the morning while {~HERO:Nia~} waited, a little sad, to explain it all to the keepers. A gentle setback.",
+      "is_ending": true,
+      "ending": {
+        "id": "e_set_rw",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "The Spring Slips"
+      }
+    },
+    {
+      "id": "e_win_clever",
+      "body": "{~HERO:Nia~}'s smart mend held strong. The master key woke the animals smoothly, one after another coming alive down the halls. The keepers later shook their heads in wonder at the neat helper gear. They said the child who did this had the makings of a fine keeper. A clever, happy ending.",
+      "is_ending": true,
+      "ending": {
+        "id": "e_win_clever",
+        "valence": "positive",
+        "kind": "success",
+        "title": "The Clever Rewind"
+      }
+    },
+    {
+      "id": "fh_fx1",
+      "body": "{~HERO:Nia~} could not fix the whole big spring in time. But with the master key and a bit of spare wind, she could wake just one animal. She thought of the ones she had met tonight: the brass lark, the tin lion, the great copper whale, a clockwork butterfly, or the once-lurching tin elephant.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fx_bird",
+          "label": "Wake the brass lark.",
+          "target": "fh_fx_bird"
+        },
+        {
+          "id": "c_fx_lion",
+          "label": "Wake the tin lion.",
+          "target": "fh_fx_lion"
+        },
+        {
+          "id": "c_fx_whale",
+          "label": "Wake the great copper whale.",
+          "target": "fh_fx_whale"
+        },
+        {
+          "id": "c_fx_fly",
+          "label": "Wake a clockwork butterfly.",
+          "target": "fh_fx_fly"
+        },
+        {
+          "id": "c_fx_eleph",
+          "label": "Wake the once-lurching tin elephant.",
+          "target": "fh_fx_eleph"
+        }
+      ]
+    },
+    {
+      "id": "fh_fx_bird",
+      "body": "{~HERO:Nia~} hurried to the brass birdhouse. She fit the small winder to the brass lark's tiny keyhole. She turned it with the greatest care. The keyhole was so small her fingers hardly felt the push back.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fx_bird1",
+          "label": "Wind it carefully.",
+          "target": "fh_fx_bird2"
+        }
+      ]
+    },
+    {
+      "id": "fh_fx_bird2",
+      "body": "The brass lark trembled, ruffled its brass feathers, and gathered itself. Tock watched in delight, its own ticking falling still as if to listen. The little bird opened its beak.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fx_bird2",
+          "label": "Step back and watch.",
+          "target": "e_win_bird"
+        }
+      ]
+    },
+    {
+      "id": "e_win_bird",
+      "body": "The brass lark burst into the sweetest clockwork song. It filled the whole birdhouse with silver notes that bounced off the glass roof. When the doors opened, the children crowded to hear the one bird singing its heart out in the hush. Keeper Fettle said a museum with even one waking animal was a museum full of hope. A bright, joyful ending.",
+      "is_ending": true,
+      "ending": {
+        "id": "e_win_bird",
+        "valence": "positive",
+        "kind": "success",
+        "title": "The Brass Lark Sings"
+      }
+    },
+    {
+      "id": "fh_fx_lion",
+      "body": "{~HERO:Nia~} crossed to the tin grassland. She fit the key to the tin lion and wound it until she felt its spring grow tight and ready. The lion's glass eyes caught the candlelight and seemed to flicker.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fx_lion1",
+          "label": "Wind it carefully.",
+          "target": "fh_fx_lion2"
+        }
+      ]
+    },
+    {
+      "id": "fh_fx_lion2",
+      "body": "The tin lion shivered, its tin mane shaking like a field of grass in wind. Slowly, it lifted its heavy head as the last of the wind took hold. Tock squeaked and hid behind Nia's collar.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fx_lion2",
+          "label": "Step back and watch.",
+          "target": "e_win_lion"
+        }
+      ]
+    },
+    {
+      "id": "e_win_lion",
+      "body": "The tin lion opened its jaws and gave a long rolling roar that echoed through every hall, and the sleeping museum seemed to shiver with it. The morning children jumped and then cheered, and {~HERO:Nia~} laughed, proud of her brave waking beast. A grand ending.",
+      "is_ending": true,
+      "ending": {
+        "id": "e_win_lion",
+        "valence": "positive",
+        "kind": "success",
+        "title": "The Tin Lion Roars"
+      }
+    },
+    {
+      "id": "fh_fx_whale",
+      "body": "{~HERO:Nia~} returned to the copper deep-sea hall and reached up to wind the great copper whale where it hung on its wires. She had to stand on tiptoe, the master key heavy in her hand.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fx_whale1",
+          "label": "Wind it carefully.",
+          "target": "fh_fx_whale2"
+        }
+      ]
+    },
+    {
+      "id": "fh_fx_whale2",
+      "body": "The great copper whale's flukes stirred, its great body swinging slow on its wires. A deep hum built inside it, like a song from far under the sea. Nia stepped back, her heart full.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fx_whale2",
+          "label": "Step back and watch.",
+          "target": "e_win_whale"
+        }
+      ]
+    },
+    {
+      "id": "e_win_whale",
+      "body": "The great copper whale let out a long, low, beautiful call that rolled through the blue hall, and turned gently on its wires as if swimming. When the children came, they stood hushed beneath it, gazing up in wonder. {~HERO:Nia~} felt she had given the museum its very heart back. A wondrous ending.",
+      "is_ending": true,
+      "ending": {
+        "id": "e_win_whale",
+        "valence": "positive",
+        "kind": "success",
+        "title": "The Great Copper Whale Sounds"
+      }
+    },
+    {
+      "id": "fh_fx_fly",
+      "body": "{~HERO:Nia~} slipped into the crystal insect room. She fit the seed-small winder to a clockwork butterfly with the lightest touch. Its foil wings shook under her fingers.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fx_fly1",
+          "label": "Wind it carefully.",
+          "target": "fh_fx_fly2"
+        }
+      ]
+    },
+    {
+      "id": "fh_fx_fly2",
+      "body": "The foil wings shook, opened, and caught the sky brightening toward grey dawn in a hundred colours. The little spring took hold. The butterfly lifted from its glass fern.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fx_fly2",
+          "label": "Step back and watch.",
+          "target": "e_win_fly"
+        }
+      ]
+    },
+    {
+      "id": "e_win_fly",
+      "body": "The clockwork butterfly lifted from its glass fern. It flew in slow bright circles under the starry dome. {~HERO:Nia~} wound a few more, one by one, until a little cloud of colour drifted through the room. The children who came would chase them with shining eyes. A delicate, magical ending.",
+      "is_ending": true,
+      "ending": {
+        "id": "e_win_fly",
+        "valence": "positive",
+        "kind": "success",
+        "title": "A Clockwork Butterfly Flies"
+      }
+    },
+    {
+      "id": "fh_fx_eleph",
+      "body": "{~HERO:Nia~} went to the once-lurching tin elephant that had scared her before. She was no longer afraid. She fit the master key to wind it true. The elephant stood still and calm, its trunk lowered.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fx_eleph1",
+          "label": "Wind it carefully.",
+          "target": "fh_fx_eleph2"
+        }
+      ]
+    },
+    {
+      "id": "fh_fx_eleph2",
+      "body": "The once-lurching tin elephant steadied as the proper wind filled its spring. Its lurching was gone, its movements smooth and calm at last. It swayed gently, a slow and friendly dance.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fx_eleph2",
+          "label": "Step back and watch.",
+          "target": "e_win_eleph"
+        }
+      ]
+    },
+    {
+      "id": "e_win_eleph",
+      "body": "The once-lurching tin elephant had seemed so scary in the dark. Now it swayed softly and lifted its trunk in a calm, friendly trumpet. It was tame and no longer a runaway. The morning children rode giggling in a circle around it. {~HERO:Nia~} was most proud of all to have made the scary thing gentle. A heart-warming ending.",
+      "is_ending": true,
+      "ending": {
+        "id": "e_win_eleph",
+        "valence": "positive",
+        "kind": "success",
+        "title": "The Gentle Elephant"
+      }
+    },
+    {
+      "id": "fh_sec1",
+      "body": "Keeper Fettle's letter hinted at a deeper secret in the museum. {~HERO:Nia~} burned to know it. She could read his private journal on the bench. She could follow a second clockwork mouse, twin to Tock. Or she could open the one locked cabinet in the workshop.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_sec_j",
+          "label": "Read keeper Fettle's private journal.",
+          "target": "fh_sec_j1"
+        },
+        {
+          "id": "c_sec_m",
+          "label": "Follow the second clockwork mouse.",
+          "target": "fh_sec_m1"
+        },
+        {
+          "id": "c_sec_c",
+          "label": "Open the one locked cabinet.",
+          "target": "fh_sec_c1"
+        }
+      ]
+    },
+    {
+      "id": "fh_sec_j1",
+      "body": "Keeper Fettle's private journal was thick and worn. Its pages were soft with age. {~HERO:Nia~} turned them by candlelight. Her wind-up mouse Tock was curled warm against her arm. Its ticking was slow and sleepy.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_sec_j1",
+          "label": "Read on.",
+          "target": "fh_sec_j2"
+        }
+      ]
+    },
+    {
+      "id": "fh_sec_j2",
+      "body": "Page by page, she learned how keeper Fettle built the whole menagerie himself, animal by animal, over a long and lonely lifetime of loving work. Each entry described a new creature, a new joy.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_sec_j2",
+          "label": "Read to the last page.",
+          "target": "fh_sec_j3"
+        }
+      ]
+    },
+    {
+      "id": "fh_sec_j3",
+      "body": "The last entry told of his dearest wish: that one day a child would come who cared enough to keep the animals alive after him. Nia read the words twice, her throat tight.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_sec_j3",
+          "label": "Close the journal.",
+          "target": "e_win_journal"
+        }
+      ]
+    },
+    {
+      "id": "e_win_journal",
+      "body": "{~HERO:Nia~} closed Keeper Fettle's private journal, understanding everything now. The menagerie was one old man's life poured lovingly into brass and tin. His biggest hope was for a child like her to find it. She left him a note that promised to come back. When Keeper Fettle read it, he knew his life's work was safe. It was a tender, meaningful ending.",
+      "is_ending": true,
+      "ending": {
+        "id": "e_win_journal",
+        "valence": "positive",
+        "kind": "completion",
+        "title": "Keeper Fettle's Journal"
+      }
+    },
+    {
+      "id": "fh_sec_m1",
+      "body": "The second clockwork mouse, twin to Tock, kept darting ahead and looking back, its brass eyes bright in the dark. It plainly wanted {~HERO:Nia~} to follow. She could chase after it into the dark, or coax it gently to come to her instead.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_sec_m1a",
+          "label": "Chase the mouse into the dark.",
+          "target": "fh_sec_m2"
+        },
+        {
+          "id": "c_sec_m1b",
+          "label": "Coax the mouse gently to you.",
+          "target": "e_neu_mouse"
+        }
+      ]
+    },
+    {
+      "id": "fh_sec_m2",
+      "body": "The second clockwork mouse led {~HERO:Nia~} to a tiny door behind the baseboard. It was hard to see in the shadows. She opened it and found a hidden nest. A dozen tiny brass mice slept in a bed of cotton scraps.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_sec_m2",
+          "label": "Wind the little mice.",
+          "target": "e_win_mouse"
+        }
+      ]
+    },
+    {
+      "id": "e_win_mouse",
+      "body": "The second clockwork mouse led {~HERO:Nia~} to Keeper Fettle's secret. It was a hidden nest of clockwork mice he had made for company. She wound them one by one. Soon, a dozen little helpers scurried out to tend the sleeping museum. Keeper Fettle was overjoyed that someone found his small friends. Now, Tock had a whole family. It was a sweet, surprising ending.",
+      "is_ending": true,
+      "ending": {
+        "id": "e_win_mouse",
+        "valence": "positive",
+        "kind": "success",
+        "title": "The Secret Mice"
+      }
+    },
+    {
+      "id": "e_neu_mouse",
+      "body": "The second clockwork mouse would not be caught. It simply sat, whiskers twitching, keeping {~HERO:Nia~} company through the last of the night. She never learned quite where it wanted to lead her, but she was not alone. Dawn found the two of them waiting quietly together for the keepers to arrive. A calm, gentle ending.",
+      "is_ending": true,
+      "ending": {
+        "id": "e_neu_mouse",
+        "valence": "neutral",
+        "kind": "discovery",
+        "title": "A Friend in the Dark"
+      }
+    },
+    {
+      "id": "fh_sec_c1",
+      "body": "The one locked cabinet in the workshop was old and beautiful, its wood dark with age. {~HERO:Nia~} was sure it held keeper Fettle's greatest secret. She could try the tiny keys on the master ring one by one, or force the little lock with a workshop tool.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_sec_c1a",
+          "label": "Try the tiny keys one by one.",
+          "target": "fh_sec_c2"
+        },
+        {
+          "id": "c_sec_c1b",
+          "label": "Force the lock with a tool.",
+          "target": "e_set_cabinet"
+        }
+      ]
+    },
+    {
+      "id": "fh_sec_c2",
+      "body": "Patiently, {~HERO:Nia~} tried key after key. At last, one turned with a soft click. The cabinet's door opened on quiet hinges. A faint smell of old oil drifted out.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_sec_c2",
+          "label": "Look inside.",
+          "target": "fh_sec_c3"
+        }
+      ]
+    },
+    {
+      "id": "fh_sec_c3",
+      "body": "Inside stood a small worn brass rabbit, older than all the rest, its ears bent and its paint faded. A note tied to its leg read: *Always keep me safe.* Nia's breath caught.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_sec_c3",
+          "label": "Wind the little rabbit.",
+          "target": "e_win_cabinet"
+        }
+      ]
+    },
+    {
+      "id": "e_win_cabinet",
+      "body": "The cabinet opened to show Keeper Fettle's first creation. It was a small, worn brass rabbit, the seed of the whole menagerie. {~HERO:Nia~} wound it with the greatest care. The old rabbit hopped slowly and faithfully, as it must have so long ago. Keeper Fettle could hardly believe his first friend lived again. He said {~HERO:Nia~} was the finest thing that ever happened to his museum. It was a precious, moving ending.",
+      "is_ending": true,
+      "ending": {
+        "id": "e_win_cabinet",
+        "valence": "positive",
+        "kind": "completion",
+        "title": "The First Clockwork Animal"
+      }
+    },
+    {
+      "id": "e_set_cabinet",
+      "body": "{~HERO:Nia~} tried to force the little lock with a tool. But the delicate old catch snapped. The cabinet jammed tight and she could not open it. Nothing was harmed that a keeper could not mend. Still, she never saw the secret inside. She had to wait, rather sheepishly, to tell Keeper Fettle she had been too hasty. This was just a small setback.",
+      "is_ending": true,
+      "ending": {
+        "id": "e_set_cabinet",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "The Locked Cabinet Stays Shut"
+      }
+    },
+    {
+      "id": "fh_dawn1",
+      "body": "The bravest thing, maybe, was just to keep the sleeping museum safe. She could let the sky lighten toward grey dawn. But even so, {~HERO:Nia~} had choices. She could let the animals sleep and wait. She could wind just one favourite before the light. Or she could wait by the door to meet whoever came.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_dawn_s",
+          "label": "Let them sleep and wait for morning.",
+          "target": "fh_dawn_s1"
+        },
+        {
+          "id": "c_dawn_o",
+          "label": "Wind one favourite before dawn.",
+          "target": "fh_dawn_o1"
+        },
+        {
+          "id": "c_dawn_w",
+          "label": "Wait by the door to meet someone.",
+          "target": "fh_dawn_w1"
+        }
+      ]
+    },
+    {
+      "id": "fh_dawn_s1",
+      "body": "{~HERO:Nia~} settled on the floor of the great spring-room. Her wind-up mouse Tock was in her lap. She watched the grey light climb the tall windows over the sleeping animals. The museum was quiet, but it was a peaceful quiet now.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_dawn_s1",
+          "label": "Wait for the dawn.",
+          "target": "e_neu_dawn"
+        }
+      ]
+    },
+    {
+      "id": "e_neu_dawn",
+      "body": "{~HERO:Nia~} kept the whole menagerie safe through the night. She let the sky lighten toward grey dawn very gently. The animals stayed still and sleeping, everything just as the keeper had left it. {~HERO:Nia~} did not fix the great spring, but nothing came to harm. When the doors opened, she could tell the keepers all that she had learned. It was a safe, quiet, unfinished ending.",
+      "is_ending": true,
+      "ending": {
+        "id": "e_neu_dawn",
+        "valence": "neutral",
+        "kind": "discovery",
+        "title": "Dawn Over the Sleeping Menagerie"
+      }
+    },
+    {
+      "id": "fh_dawn_o1",
+      "body": "{~HERO:Nia~} thought of all the animals and picked the one that touched her most. She hurried to it with the master key as the sky paled. Her footsteps echoed in the empty halls.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_dawn_o1",
+          "label": "Fit the master key.",
+          "target": "fh_dawn_o2"
+        }
+      ]
+    },
+    {
+      "id": "fh_dawn_o2",
+      "body": "She slid the master key in with care and wound it just enough to wake the animal for the morning, saving the rest for the keepers. Its gears caught and began to turn.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_dawn_o2",
+          "label": "Watch it stir.",
+          "target": "fh_dawn_o3"
+        }
+      ]
+    },
+    {
+      "id": "fh_dawn_o3",
+      "body": "The animal stirred to gentle life under her hands. It moved slowly, testing its springs, and Nia stepped back to watch, glad she had chosen it. Tock ticked a happy rhythm.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_dawn_o3",
+          "label": "Greet the dawn.",
+          "target": "e_win_one"
+        }
+      ]
+    },
+    {
+      "id": "e_win_one",
+      "body": "{~HERO:Nia~} woke one single animal she loved. It greeted the sky as it turned grey at dawn. The rest of the animals slept on, safe and ready. When the children came, they found one moving creature among the still ones. It was a sign of all the wonders to come once keeper Fettle fixed the rest. {~HERO:Nia~} loved the quiet magic of her one small waking. A lovely, hopeful ending.",
+      "is_ending": true,
+      "ending": {
+        "id": "e_win_one",
+        "valence": "positive",
+        "kind": "success",
+        "title": "One Last Winding"
+      }
+    },
+    {
+      "id": "fh_dawn_w1",
+      "body": "{~HERO:Nia~} waited by the great front door as the light grew. She could watch for the museum keepers arriving, leave a helpful note pinned where they would see it, or tuck herself out of sight until she understood who was coming.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_dawn_w1a",
+          "label": "Wait to meet the keepers.",
+          "target": "e_neu_caretaker"
+        },
+        {
+          "id": "c_dawn_w1b",
+          "label": "Leave a helpful note for the morning.",
+          "target": "fh_dawn_w2"
+        },
+        {
+          "id": "c_dawn_w1c",
+          "label": "Hide until you know who it is.",
+          "target": "e_set_dawn"
+        }
+      ]
+    },
+    {
+      "id": "fh_dawn_w2",
+      "body": "{~HERO:Nia~} wrote everything on a keeper pad. She wrote about the broken spring, the spare spring, and the steps to fix it. She pinned the note where the morning staff could not miss it, right by the clock.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_dawn_w2",
+          "label": "Prop the key beside it.",
+          "target": "fh_dawn_w3"
+        }
+      ]
+    },
+    {
+      "id": "fh_dawn_w3",
+      "body": "She placed the master key beside the note, ready for whoever came. She waited nearby to explain if they needed her. The key gleamed in the growing light.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_dawn_w3",
+          "label": "Wait for the morning.",
+          "target": "e_win_note"
+        }
+      ]
+    },
+    {
+      "id": "e_win_note",
+      "body": "The note told the morning keepers just how to fix the great spring. With it, they woke all the animals by opening time. The children never knew how close the museum came to a silent day. But {~HERO:Nia~} knew. The thankful keepers said her clear thinking saved the morning. A clever, happy ending.",
+      "is_ending": true,
+      "ending": {
+        "id": "e_win_note",
+        "valence": "positive",
+        "kind": "success",
+        "title": "A Note for the Morning"
+      }
+    },
+    {
+      "id": "e_neu_caretaker",
+      "body": "{~HERO:Nia~} waited quietly and met the first keeper through the door at dawn. She told him the whole story of the broken spring and the long night. The keeper listened amazed, thanked her kindly, and saw her safely home. Though {~HERO:Nia~} did not mend the menagerie herself, she left knowing she had helped. A calm, friendly ending.",
+      "is_ending": true,
+      "ending": {
+        "id": "e_neu_caretaker",
+        "valence": "neutral",
+        "kind": "discovery",
+        "title": "Waiting for the Keepers"
+      }
+    },
+    {
+      "id": "e_set_dawn",
+      "body": "{~HERO:Nia~} hid as the door opened, but it was only the early cleaner, who did not know a child was there and locked the inner gate on the way through, shutting {~HERO:Nia~} in the hall a while longer. She was safe, and it was soon sorted out, but her chance to explain the broken spring slipped by. The menagerie slept through the morning. A gentle setback.",
+      "is_ending": true,
+      "ending": {
+        "id": "e_set_dawn",
+        "valence": "neutral",
+        "kind": "setback",
+        "title": "Caught by the Early Cleaner"
+      }
+    }
+  ]
+}
