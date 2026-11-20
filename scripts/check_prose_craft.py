@@ -4,7 +4,11 @@ Usage:
     uv run python scripts/check_prose_craft.py <filled.json> [<filled.json>...]
         [--max-unstable-nodes N] [--min-tense-cues N] [--max-node-mix F]
         [--max-moral-tags N] [--ending-tail-sentences N]
-        [--max-told-per-1000 F] [--check]
+        [--max-told-per-1000 F] [--max-merge-seams N]
+        [--max-option-recaps N] [--max-meta-labels N] [--max-jargon-labels N]
+        [--max-second-person-labels N] [--max-give-up-endings N]
+        [--max-early-setbacks N] [--early-setback-decisions N] [--json]
+        [--check]
 
 AL-170/UW-C106: all nine books of the model-tier study cleared fill
 integrity, the full validator gate, safety, topology, word bands, and the
@@ -47,8 +51,42 @@ Thresholds are calibrated against the nine-book clocktower tier corpus
 default is the loosest value that still leaves the two shippable tiers
 clean. See each ``--flag`` help string for the measured per-tier numbers.
 
+**Reader agency** (``validator/agency.py``, added 2026-11-20). An editorial
+read of the catalogue found books that open well and stop behaving like
+choose-your-own-adventures by the middle, through four defect classes that
+every check above, and the gate, passed without comment:
+
+4. **Merge-seam narration.** A node reached from two or more nodes opens by
+   telling the reader their route did not matter ("Whichever way Mira had
+   come, every path had led her here at last.").
+5. **Option recap.** A decision node closes by restating its buttons in prose
+   ("She could hum slow and sure into the tube. Or she could let her fear win
+   out") or by announcing that a choice is due ("Wren had a choice to make.").
+6. **Label defects**, three sub-kinds: labels naming a mental act ("Sit with
+   what this means."), graph jargon ("Feel your way to the hub."), and
+   second-person labels over third-person prose ("Use your grandfather
+   transmitter."). Books written in second person (gamebooks, a declared
+   ``narrative_person``, or a measured second-person rate at the gamebook
+   floor) are exempt from the third.
+7. **Give-up and early setback endings.** Negative endings whose close has the
+   hero go home or quit, and negative endings within a few decisions of the
+   start.
+
+Each book also gets a one-sentence ``agency:`` headline that puts the counts
+next to the book's declared state: a book with merge nodes and no variables
+can never let an earlier choice come back.
+
+The agency checks are **report-only by default**: their budget flags default
+to unset, the line is marked ``info`` instead of ``ok``/``FAIL``, and
+``--check`` ignores them unless a budget flag is passed. Every existing
+invocation (the guard battery, the evidence scripts, the docs) therefore
+exits exactly as it did before they existed. See each ``--max-*`` help string
+for the calibration numbers and which checks are precise enough to budget.
+
 With ``--check``, exits 1 when any threshold is breached. Without it,
-reports and exits 0.
+reports and exits 0. With ``--json``, prints one JSON document instead of the
+text report (same exit codes), so a before-and-after comparison is a ``jq``
+one-liner.
 """
 
 from __future__ import annotations
@@ -58,9 +96,14 @@ import json
 import re
 import sys
 from pathlib import Path
-from typing import Any, NamedTuple, cast
+from typing import TYPE_CHECKING, Any, NamedTuple, cast
 
 from cyo_adventure.utils.sentences import split_sentences
+from cyo_adventure.validator.agency import (
+    DEFAULT_EARLY_SETBACK_DECISIONS,
+    AgencyReport,
+    agency_report,
+)
 from cyo_adventure.validator.prose_craft import (
     MAX_REDUNDANT_NODES,
     MAX_THIRD_SECOND_PERSON,
@@ -76,6 +119,9 @@ from cyo_adventure.validator.prose_craft import (
     sameness_report,
     strip_quoted,
 )
+
+if TYPE_CHECKING:
+    from collections.abc import Callable
 
 # The detectors and their thresholds live in the validator package so the
 # request-path advisory and this script cannot drift apart; see that module's
@@ -825,6 +871,106 @@ def _build_parser() -> argparse.ArgumentParser:
             "catches the worst book)."
         ),
     )
+    agency = parser.add_argument_group(
+        "reader agency (validator/agency.py)",
+        "Report-only unless a budget is passed: an unset budget prints the "
+        "count marked 'info' and never affects --check. Calibrated on all 31 "
+        "committed books (2026-11-20); per-book counts are in the docstring "
+        "of validator/agency.py's tests.",
+    )
+    agency.add_argument(
+        "--max-merge-seams",
+        type=int,
+        default=None,
+        help=(
+            "Merge nodes allowed to open by telling the reader the route did "
+            "not matter (default unset). Precise enough to budget: every one "
+            "of 69 calibration hits across 9 books read as a seam; 0 is the "
+            "right value for a revised book, while 22 of 31 books already "
+            "score 0."
+        ),
+    )
+    agency.add_argument(
+        "--max-option-recaps",
+        type=int,
+        default=None,
+        help=(
+            "Decision nodes allowed to close by restating or announcing their "
+            "options (default unset). Report-only: precise as a detector, but "
+            "28 of 31 books score above 0 and the 3-5 read-aloud books use "
+            "the question form ('Or poke the hive?') as house style, so a "
+            "single budget would be a style ruling, not a defect bar."
+        ),
+    )
+    agency.add_argument(
+        "--max-meta-labels",
+        type=int,
+        default=None,
+        help=(
+            "Labels naming a mental act instead of an action, such as 'Sit "
+            "with what this means.' (default unset). Precise: 17 hits across "
+            "5 books, all read as defects; 0 is budget-worthy."
+        ),
+    )
+    agency.add_argument(
+        "--max-jargon-labels",
+        type=int,
+        default=None,
+        help=(
+            "Labels carrying graph vocabulary such as 'hub' or 'node' "
+            "(default unset). Precise but rare: 1 hit in the catalogue."
+        ),
+    )
+    agency.add_argument(
+        "--max-second-person-labels",
+        type=int,
+        default=None,
+        help=(
+            "Second-person labels in a third-person book (default unset; "
+            "second-person books and gamebooks are never counted). Precise: "
+            "97 hits across 14 books, all addressing the reader over "
+            "third-person prose."
+        ),
+    )
+    agency.add_argument(
+        "--max-give-up-endings",
+        type=int,
+        default=None,
+        help=(
+            "Negative endings whose close has the hero go home, turn back, "
+            "quit, or defer (default unset). Report-only: roughly 2 in 100 "
+            "hits name someone other than the hero ('the escort turning "
+            "back'), and death-trap gamebooks score in the dozens by genre."
+        ),
+    )
+    agency.add_argument(
+        "--max-early-setbacks",
+        type=int,
+        default=None,
+        help=(
+            "Negative endings reachable within --early-setback-decisions "
+            "decisions of the start (default unset). Report-only: a "
+            "structural fact about the skeleton, not the fill."
+        ),
+    )
+    agency.add_argument(
+        "--early-setback-decisions",
+        type=int,
+        default=DEFAULT_EARLY_SETBACK_DECISIONS,
+        help=(
+            "Decision ceiling for an early setback (default "
+            f"{DEFAULT_EARLY_SETBACK_DECISIONS}; at 2 only the gamebooks "
+            "register, at 3 eleven prose books do)."
+        ),
+    )
+    parser.add_argument(
+        "--json",
+        action="store_true",
+        help=(
+            "Print one JSON document ({'books': [...]}) instead of the text "
+            "report. Exit codes are unchanged."
+        ),
+    )
     parser.add_argument(
         "--check",
         action="store_true",
@@ -833,22 +979,37 @@ def _build_parser() -> argparse.ArgumentParser:
     return parser
 
 
-def _report(story: dict[str, Any], name: str, args: argparse.Namespace) -> bool:
-    """Print all five detector reports for one book.
+def _report(
+    story: dict[str, Any],
+    name: str,
+    args: argparse.Namespace,
+    *,
+    record: dict[str, Any] | None = None,
+    write: Callable[[str], object] | None = None,
+) -> bool:
+    """Print every detector report for one book.
 
-    The five are tense, moral tags, told emotion, sameness, and narrative
-    person, in that order.
+    The order is tense, moral tags, told emotion, sameness, narrative person,
+    then the reader-agency checks and the agency headline. The first five
+    lines are byte-for-byte what they were before the agency checks existed.
 
     Args:
         story: Decoded filled-story JSON.
         name: Display name for the book (its file name).
         args: Parsed CLI arguments carrying the thresholds.
+        record: When given, filled with a JSON-serialisable summary of every
+            measure, for ``--json``.
+        write: Text sink; defaults to ``sys.stdout.write`` looked up at call
+            time. ``--json`` passes a no-op.
 
     Returns:
         True when any threshold is breached.
     """
+    emit = write or sys.stdout.write
+    rec: dict[str, Any] = record if record is not None else {}
+    rec["book"] = name
     breached = False
-    sys.stdout.write(f"{name}\n")
+    emit(f"{name}\n")
 
     tense = tense_report(
         story,
@@ -857,7 +1018,7 @@ def _report(story: dict[str, Any], name: str, args: argparse.Namespace) -> bool:
     )
     over_tense = len(tense.unstable) > cast("int", args.max_unstable_nodes)
     marker = "FAIL" if over_tense else "ok  "
-    sys.stdout.write(
+    emit(
         f"  {marker} tense: {tense.dominant}-dominant "
         f"({tense.past} past / {tense.present} present sentences, "
         f"{tense.minority_ratio:.1%} minority); "
@@ -865,34 +1026,48 @@ def _report(story: dict[str, Any], name: str, args: argparse.Namespace) -> bool:
         f"(budget {args.max_unstable_nodes})\n"
     )
     for node in tense.unstable:
-        sys.stdout.write(
+        emit(
             f"       {node.node_id}: {node.past} past / {node.present} present, "
             f"{node.reason}\n"
         )
     breached = breached or over_tense
+    rec["tense"] = {
+        "dominant": tense.dominant,
+        "unstable": [node.node_id for node in tense.unstable],
+        "breached": over_tense,
+    }
 
     morals = moral_tags(story, tail_sentences=cast("int", args.ending_tail_sentences))
     over_moral = len(morals) > cast("int", args.max_moral_tags)
     marker = "FAIL" if over_moral else "ok  "
-    sys.stdout.write(
+    emit(
         f"  {marker} moral tags: {len(morals)} in ending closings "
         f"(budget {args.max_moral_tags})\n"
     )
     for hit in morals:
-        sys.stdout.write(f"       {hit.node_id} [{hit.pattern}]: {hit.sentence}\n")
+        emit(f"       {hit.node_id} [{hit.pattern}]: {hit.sentence}\n")
     breached = breached or over_moral
+    rec["moral_tags"] = {
+        "nodes": [hit.node_id for hit in morals],
+        "breached": over_moral,
+    }
 
     told = told_emotion(story)
     over_told = told.per_1000 > cast("float", args.max_told_per_1000)
     marker = "FAIL" if over_told else "ok  "
-    sys.stdout.write(
+    emit(
         f"  {marker} told emotion: {len(told.hits)} phrases over {told.words} "
         f"narration words ({told.per_1000:.2f} per 1000; budget "
         f"{args.max_told_per_1000})\n"
     )
     for hit in told.hits:
-        sys.stdout.write(f"       {hit.node_id}: {hit.phrase}\n")
+        emit(f"       {hit.node_id}: {hit.phrase}\n")
     breached = breached or over_told
+    rec["told_emotion"] = {
+        "hits": len(told.hits),
+        "per_1000": round(told.per_1000, 3),
+        "breached": over_told,
+    }
 
     same = sameness_report(story)
     sameness = judge_sameness(
@@ -902,7 +1077,7 @@ def _report(story: dict[str, Any], name: str, args: argparse.Namespace) -> bool:
     )
     over_same = sameness.breached
     marker = "FAIL" if over_same else "ok  "
-    sys.stdout.write(
+    emit(
         f"  {marker} sameness: {same.redundant_nodes} redundant nodes over "
         f"{same.repeated_texts} repeated texts (budget "
         f"{args.max_redundant_nodes}); {same.distinct_labels}/{same.labels} "
@@ -910,6 +1085,11 @@ def _report(story: dict[str, Any], name: str, args: argparse.Namespace) -> bool:
         f"{args.max_top3_label_share:.0%})\n"
     )
     breached = breached or over_same
+    rec["sameness"] = {
+        "redundant_nodes": same.redundant_nodes,
+        "top3_share": round(same.top3_share, 3),
+        "breached": over_same,
+    }
 
     person = person_report(story)
     verdict = judge_person(
@@ -920,12 +1100,170 @@ def _report(story: dict[str, Any], name: str, args: argparse.Namespace) -> bool:
     )
     person_breach, framing = verdict.breached, verdict.framing
     marker = "FAIL" if person_breach else "ok  "
-    sys.stdout.write(
+    emit(
         f"  {marker} person: second-person in "
         f"{person.second_person_nodes}/{person.nodes} nodes "
         f"({person.rate:.1%}; {framing})\n"
     )
-    return breached or person_breach
+    rec["person"] = {
+        "rate": round(person.rate, 3),
+        "framing": framing,
+        "breached": person_breach,
+    }
+    breached = breached or person_breach
+
+    agency = agency_report(
+        story, early_decisions=cast("int", args.early_setback_decisions)
+    )
+    over_agency = _report_agency(agency, args, rec, emit)
+    rec["breached"] = breached or over_agency
+    return breached or over_agency
+
+
+def _verdict(count: int, budget: int | None) -> tuple[str, str, bool]:
+    """Return (marker, budget text, breached) for a report-first count.
+
+    Args:
+        count: The measured count.
+        budget: The allowance, or None when the check is report-only.
+
+    Returns:
+        ``info``/``ok``/``FAIL``, the parenthetical budget text, and whether
+        the budget was exceeded. An unset budget can never breach.
+    """
+    if budget is None:
+        return "info", "report only", False
+    over = count > budget
+    return ("FAIL" if over else "ok  "), f"budget {budget}", over
+
+
+def _report_agency(
+    agency: AgencyReport,
+    args: argparse.Namespace,
+    rec: dict[str, Any],
+    emit: Callable[[str], object],
+) -> bool:
+    """Print the reader-agency lines and fill their JSON record.
+
+    Args:
+        agency: The book's agency report.
+        args: Parsed CLI arguments carrying the (optional) budgets.
+        rec: The book's JSON record, filled in place.
+        emit: Text sink.
+
+    Returns:
+        True when any agency budget that was passed is exceeded.
+    """
+    breached = False
+
+    marker, budget, over = _verdict(
+        len(agency.seams), cast("int | None", args.max_merge_seams)
+    )
+    emit(
+        f"  {marker} merge seams: {len(agency.seams)} of {agency.merge_nodes} "
+        f"merge nodes open by telling the reader the route did not matter "
+        f"({budget})\n"
+    )
+    for seam in agency.seams:
+        emit(f"       {seam.node_id} [{seam.cue}]: {seam.sentence}\n")
+    breached = breached or over
+
+    enumerating = sum(1 for hit in agency.recaps if "enumerates" in hit.kinds)
+    announcing = sum(1 for hit in agency.recaps if "announces" in hit.kinds)
+    marker, budget, over = _verdict(
+        len(agency.recaps), cast("int | None", args.max_option_recaps)
+    )
+    emit(
+        f"  {marker} option recaps: {len(agency.recaps)} of "
+        f"{agency.decision_nodes} decisions close by restating "
+        f"({enumerating}) or announcing ({announcing}) their options "
+        f"({budget})\n"
+    )
+    for recap in agency.recaps:
+        emit(f"       {recap.node_id} [{'+'.join(recap.kinds)}]: {recap.sentence}\n")
+    breached = breached or over
+
+    labels = agency.labels
+    for title, hits, flag in (
+        ("meta labels", labels.meta, args.max_meta_labels),
+        ("jargon labels", labels.jargon, args.max_jargon_labels),
+        (
+            "second-person labels",
+            labels.second_person,
+            args.max_second_person_labels,
+        ),
+    ):
+        marker, budget, over = _verdict(len(hits), cast("int | None", flag))
+        suffix = (
+            f"; book held to {labels.person.person} person, {labels.person.source}"
+            if title == "second-person labels"
+            else ""
+        )
+        emit(f"  {marker} {title}: {len(hits)} ({budget}{suffix})\n")
+        for hit in hits:
+            emit(f"       {hit.node_id}/{hit.choice_id}: {hit.label}\n")
+        breached = breached or over
+
+    marker, budget, over = _verdict(
+        len(agency.give_ups), cast("int | None", args.max_give_up_endings)
+    )
+    emit(
+        f"  {marker} give-up endings: {len(agency.give_ups)} of "
+        f"{agency.negative_endings} negative endings close on the hero leaving "
+        f"or quitting ({budget})\n"
+    )
+    for ending in agency.give_ups:
+        emit(f"       {ending.node_id} [{ending.reason}]: {ending.detail}\n")
+    breached = breached or over
+
+    marker, budget, over = _verdict(
+        len(agency.early), cast("int | None", args.max_early_setbacks)
+    )
+    emit(
+        f"  {marker} early setbacks: {len(agency.early)} negative endings within "
+        f"{agency.early_decisions} decisions of the start ({budget})\n"
+    )
+    for ending in agency.early:
+        emit(f"       {ending.node_id}: {ending.detail}\n")
+    breached = breached or over
+
+    emit(f"  agency: {agency.headline}\n")
+    rec["agency"] = _agency_record(agency)
+    return breached
+
+
+def _agency_record(agency: AgencyReport) -> dict[str, Any]:
+    """Return the JSON-serialisable form of an agency report.
+
+    Args:
+        agency: The book's agency report.
+
+    Returns:
+        Counts plus the node (and choice) ids an editor needs to go straight
+        to each hit.
+    """
+    labels = agency.labels
+    return {
+        "headline": agency.headline,
+        "merge_nodes": agency.merge_nodes,
+        "decision_nodes": agency.decision_nodes,
+        "variables": agency.state.variables,
+        "conditional_choices": agency.state.conditional_choices,
+        "effects": agency.state.effects,
+        "merge_seams": [seam.node_id for seam in agency.seams],
+        "option_recaps": [recap.node_id for recap in agency.recaps],
+        "meta_labels": [[h.node_id, h.choice_id, h.label] for h in labels.meta],
+        "jargon_labels": [[h.node_id, h.choice_id, h.label] for h in labels.jargon],
+        "second_person_labels": [
+            [h.node_id, h.choice_id, h.label] for h in labels.second_person
+        ],
+        "label_person": labels.person.person,
+        "give_up_endings": [ending.node_id for ending in agency.give_ups],
+        "early_setbacks": [ending.node_id for ending in agency.early],
+        "early_setback_decisions": agency.early_decisions,
+        "negative_endings": agency.negative_endings,
+        "endings": agency.endings,
+    }
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -939,15 +1277,34 @@ def main(argv: list[str] | None = None) -> int:
         and any book breaches a threshold, 0 otherwise.
     """
     args = _build_parser().parse_args(argv)
+    as_json = cast("bool", args.json)
     breached = False
+    records: list[dict[str, Any]] = []
     for path in cast("list[str]", args.fills):
         story = _load(path)
         if story is None:
             return 2
-        breached = _report(story, Path(path).name, args) or breached
+        record: dict[str, Any] = {}
+        breached = (
+            _report(
+                story,
+                Path(path).name,
+                args,
+                record=record,
+                write=_discard if as_json else None,
+            )
+            or breached
+        )
+        records.append(record)
+    if as_json:
+        sys.stdout.write(json.dumps({"books": records}, indent=2) + "\n")
     if args.check and breached:
         return 1
     return 0
+
+
+def _discard(_text: str) -> None:
+    """Swallow report text; ``--json`` prints the record instead."""
 
 
 if __name__ == "__main__":
