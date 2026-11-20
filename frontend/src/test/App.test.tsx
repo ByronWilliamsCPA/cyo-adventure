@@ -1,6 +1,6 @@
 import 'fake-indexeddb/auto'
 
-import { render, screen } from '@testing-library/react'
+import { fireEvent, render, screen } from '@testing-library/react'
 import { createMemoryRouter } from 'react-router'
 import { RouterProvider } from 'react-router/dom'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
@@ -244,6 +244,8 @@ describe('router: kid surface', () => {
       })
     )
     renderAt('/read/p1/s_demo/1')
+    // A fresh read opens on the book's title page first; Start opens page one.
+    fireEvent.click(await screen.findByTestId('start-reading'))
     expect(await screen.findByTestId('reader')).toBeInTheDocument()
     expect(screen.getByText('Hello reader')).toBeInTheDocument()
   })

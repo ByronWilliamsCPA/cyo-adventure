@@ -836,6 +836,7 @@
   color: var(--color-ink);
   font-family: var(--font-sans);
   font-size: calc(var(--text-base) * var(--reader-font-scale, 1));
+  line-height: var(--leading-normal);
 }
 
 .reader-rewind-note:focus {
