@@ -44,6 +44,29 @@ test.describe('platform health, unauthenticated', () => {
     expect(body.checks).toBeInstanceOf(Object)
   })
 
+  test('the database is not behind the deployed application schema', async ({ request }) => {
+    // Register row UW-C363: production once ran 18 migrations behind the
+    // deployed image, 500ing every authenticated adult request while this
+    // endpoint returned 200. The backend's `schema` readiness check compares
+    // the ORM with the live catalog; it is deliberately non-gating (the HTTP
+    // status stays 200, see api/health.py::check_schema_parity), so this
+    // assertion is what turns drift into a red daily run that names the cause.
+    // #ASSUME: external resources: an image older than the check has no
+    // `schema` key; that is not drift, so the assertion only applies when the
+    // check is present. `unknown` (the catalog query failed) is not asserted
+    // here: it means unmeasured, not behind.
+    // #VERIFY: tests/unit/test_health_schema_parity.py pins the backend side
+    // (degraded state, 200 status, counts but no table names in the body).
+    const res = await request.get('/api/v1/health/ready')
+    const body = (await res.json()) as {
+      checks?: Record<string, { state?: string; error?: string | null }>
+    }
+    const schema = body.checks?.schema
+    if (schema !== undefined) {
+      expect(schema.state, schema.error ?? 'schema check degraded').not.toBe('degraded')
+    }
+  })
+
   test('the old shadowed path returns exactly 404 (nginx no longer stubs it)', async ({
     request,
   }) => {
