@@ -2,7 +2,9 @@
 #
 # Repo enforcement for the catalog flywheel's automation boundary. On any PR that
 # touches skeletons/**, re-prove every changed skeleton shell from scratch:
-# check_skeleton (gate/cell/envelope), check_theme_contract (when a contract
+# check_skeleton (gate/cell/envelope plus the ADR-011 section 12 agency rule via
+# --strict-agency; full --strict is not run because it fails 66 of 84 committed
+# shells), check_theme_contract (when a contract
 # sidecar is present), the WS-5 anti-clone floor, and verify_bundle-equivalent
 # lineage/hash validation. A hand-tampered or stale bundle cannot ride an
 # otherwise-green PR.

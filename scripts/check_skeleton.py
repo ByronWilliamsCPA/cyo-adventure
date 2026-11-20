@@ -38,8 +38,11 @@ after a merge that carries no state. Report-only in every mode, including
 line also reaches the skeleton-promotion workflow log. The advisory itself is
 report-only; ``--strict`` alone enforces ADR-011 section 12 (see
 ``stateless_shell_violation``), with the committed stateless corpus
-grandfathered from ``scripts/stateless_shell_grandfather.txt``. Neither the
-promotion workflow nor ``check_promotion_bundle.py`` passes ``--strict``.
+grandfathered from ``scripts/stateless_shell_grandfather.txt``.
+``--strict-agency`` enforces that one rule alone; ``check_promotion_bundle.py``
+passes it, not ``--strict``, because the rest of ``--strict`` (CG-1..CG-3, PL-23,
+PL-24, PL-26, walk floor, reconvergence, endings floor) fails 66 of the 84
+committed shells (measured 2026-11-20) and would block their re-promotion.
 
 Exits 1 on a gate block, any brief mismatch, or (with ``--strict``) any
 escalated advisory or a walk-floor breach.
@@ -999,6 +1002,16 @@ def main(argv: list[str] | None = None) -> int:
             "cap, and the depth-qualified endings floor."
         ),
     )
+    parser.add_argument(
+        "--strict-agency",
+        action="store_true",
+        help=(
+            "Enforce ONLY the ADR-011 section 12 agency rule (a production 8-11+ "
+            "shell with merge nodes must declare variables; grandfathered shells "
+            "exempt). Implied by --strict; used by the promotion path, where the "
+            "rest of --strict would block the grandfathered catalog."
+        ),
+    )
     args = parser.parse_args(argv)
     gate_results: list[GateResult] = []
     try:
@@ -1065,7 +1078,7 @@ def main(argv: list[str] | None = None) -> int:
                         f"{min_nodes} (gate treats as warning)\n"
                     )
     failed |= _check_brief(metadata, args)
-    if args.strict:
+    if args.strict or args.strict_agency:
         violation = stateless_shell_violation(
             skeleton, metadata, load_stateless_grandfather()
         )

@@ -477,3 +477,20 @@ def test_tier1_dead_end_is_advisory_only(
     )
     assert check_skeleton.main([str(_DEMO_SHELL), "--allow-mvp"]) == 0
     assert "WARNING tier1-dead-end node=n1" in capsys.readouterr().out
+
+
+@pytest.mark.unit
+def test_strict_agency_flag_enforces_only_the_agency_rule(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """--strict-agency blocks on the section 12 violation but not on --strict's rest."""
+    monkeypatch.setattr(
+        check_skeleton, "stateless_shell_violation", lambda *_: "strict agency: x"
+    )
+    assert (
+        check_skeleton.main([str(_DEMO_SHELL), "--allow-mvp", "--strict-agency"]) == 1
+    )
+    monkeypatch.setattr(check_skeleton, "stateless_shell_violation", lambda *_: None)
+    assert (
+        check_skeleton.main([str(_DEMO_SHELL), "--allow-mvp", "--strict-agency"]) == 0
+    )

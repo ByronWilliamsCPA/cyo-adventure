@@ -130,6 +130,28 @@ def mutant() -> _MutantParts:
     )
 
 
+@pytest.fixture(autouse=True)
+def _grandfather_the_mutant_fixture(
+    mutant: _MutantParts, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """Exempt the fixture mutant from the ADR-011 section 12 agency rule.
+
+    Its parent is a stateless Tier-1 8-11 shell, so the mutant is a stateless
+    merge shell with a new id, which ``--strict-agency`` now rejects (AL-794).
+    A Tier-1 shell cannot declare variables (L1-6), so there is no cheap way to
+    give the fixture state; grandfathering its key keeps this fixture proving the
+    other legs. The rejection itself has dedicated tests at the end of this
+    module, which use an id this fixture does not list.
+    """
+    from scripts import check_skeleton
+
+    real = check_skeleton.load_stateless_grandfather()
+    key = f"{mutant.band}/{mutant.shell_doc['id']}"
+    monkeypatch.setattr(
+        check_skeleton, "load_stateless_grandfather", lambda: real | {key}
+    )
+
+
 def _write_valid_bundle(bundle_dir: Path, mutant: _MutantParts) -> None:
     """Write a promotable bundle whose lineage points at a distant in-cell parent."""
     distant_entry = load_catalog().by_slug(_DISTANT_PARENT)
@@ -663,3 +685,55 @@ def test_scripts_declare_no_merge_or_automerge_path() -> None:
         assert "merge_pull_request" not in source
         assert "pr review" not in source
         assert "--approve" not in source
+
+
+# ---------------------------------------------------------------------------
+# ADR-011 section 12 on the promotion path (AL-794): --strict-agency
+# ---------------------------------------------------------------------------
+
+
+def _copy_shell(slug_path: str, tmp_path: Path, *, new_id: str | None = None) -> Path:
+    """Copy a committed shell alone (no sidecars) into ``tmp_path``."""
+    doc = json.loads((_REAL_SKELETONS / slug_path).read_text(encoding="utf-8"))
+    if new_id is not None:
+        doc["id"] = new_id
+    out = tmp_path / Path(slug_path).name
+    out.write_text(json.dumps(doc), encoding="utf-8")
+    return out
+
+
+def test_prove_shell_passes_strict_agency_flag_not_full_strict(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    """The in-process argv carries --strict-agency and never the broad --strict."""
+    seen: list[list[str]] = []
+
+    def fake(argv: list[str]) -> int:
+        seen.append(argv)
+        return 0
+
+    monkeypatch.setattr(cpb, "_run_check_skeleton", fake)
+    shell = _copy_shell("8-11/the-locked-carousel.json", tmp_path)
+    cpb.prove_shell(shell, skeletons_root=_REAL_SKELETONS)
+    assert seen == [[str(shell), "--strict-agency"]]
+
+
+def test_promotion_fails_a_new_stateless_merge_shell(tmp_path: Path) -> None:
+    """A stateless 8-11+ shell with merges and an ungrandfathered id is blocked."""
+    shell = _copy_shell(
+        "8-11/the-locked-carousel.json", tmp_path, new_id="sk_brand_new_stateless"
+    )
+    reasons = cpb.prove_shell(shell, skeletons_root=_REAL_SKELETONS)
+    assert any("check_skeleton" in reason for reason in reasons)
+
+
+def test_promotion_still_passes_a_grandfathered_stateless_shell(
+    tmp_path: Path,
+) -> None:
+    shell = _copy_shell("8-11/the-locked-carousel.json", tmp_path)
+    assert cpb.prove_shell(shell, skeletons_root=_REAL_SKELETONS) == []
+
+
+def test_promotion_still_passes_a_stateful_shell(tmp_path: Path) -> None:
+    shell = _copy_shell("8-11/the-hundred-door-hotel.json", tmp_path)
+    assert cpb.prove_shell(shell, skeletons_root=_REAL_SKELETONS) == []

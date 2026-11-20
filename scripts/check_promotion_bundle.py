@@ -10,7 +10,8 @@ acceptance time, so a hand-tampered or stale bundle cannot ride an otherwise
 green PR:
 
 1. ``check_skeleton`` on the shell (the full blocking gate plus the offered-cell
-   and production-envelope checks). The production-eligibility clause is applied
+   and production-envelope checks, plus the ADR-011 section 12 agency rule via
+   ``--strict-agency``). The production-eligibility clause is applied
    according to the shell's own ``metadata.production_eligible`` claim: a shell
    claiming production eligibility faces the full envelope, while a
    self-declared seed is proved with ``--allow-mvp`` and the downgrade is
@@ -320,7 +321,12 @@ def prove_shell(shell_path: Path, *, skeletons_root: Path) -> list[str]:
     # #VERIFY: if this predicate is ever reused where "eligible" grants rather
     # than withholds permission, validate the document through StoryMetadata
     # first. test_declares_production_eligible_fails_closed pins the direction.
-    skeleton_argv = [str(shell_path)]
+    # --strict-agency, not --strict: it enforces ADR-011 section 12 (a stateless
+    # 8-11+ shell with merge nodes) with the committed corpus grandfathered. The
+    # rest of --strict is the newly-drafted bar and fails 66 of 84 committed
+    # shells (CG-1..3, PL-23/24/26, walk floor, reconvergence, endings floor), so
+    # passing it would block re-promotion of any existing shell.
+    skeleton_argv = [str(shell_path), "--strict-agency"]
     if not declares_production_eligible(shell_doc):
         skeleton_argv.append("--allow-mvp")
         # Never downgrade a check silently: say so in the job log, so a reviewer
@@ -328,7 +334,7 @@ def prove_shell(shell_path: Path, *, skeletons_root: Path) -> list[str]:
         print(f"note: {name}: proved as a seed (metadata.production_eligible=false)")
 
     if _run_check_skeleton(skeleton_argv) != 0:
-        reasons.append(f"{name}: check_skeleton (gate/cell/envelope) failed")
+        reasons.append(f"{name}: check_skeleton (gate/cell/envelope/agency) failed")
 
     contract_path = shell_path.with_name(f"{shell_path.stem}.contract.json")
     if contract_path.is_file() and _run_check_theme_contract([str(shell_path)]) != 0:
