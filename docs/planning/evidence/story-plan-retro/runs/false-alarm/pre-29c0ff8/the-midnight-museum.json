@@ -1,0 +1,225 @@
+{
+  "book": "sk_midnight_museum",
+  "shape_hash": "sha256:26d8c8e8827e22695be39d03b0e5045720f1e223479d28d9c061a84abd2f1660",
+  "plan": {
+    "bound_to": "book file e466cce64d9f",
+    "producer": "hand-written",
+    "approver": null,
+    "book_file": "out/the-midnight-museum.filled.json",
+    "authored": "2026-11-21",
+    "authoring_minutes": 4,
+    "implicit_plants": {}
+  },
+  "ok": false,
+  "findings": [
+    {
+      "rule_id": "SP-4",
+      "severity": "error",
+      "story_id": "sk_midnight_museum",
+      "node_id": "e_set_locked_gallery",
+      "choice_id": null,
+      "message": "'e_set_locked_gallery' establishes 'map_back_warning', the plant of thread 't_back', on a route that skips every planting choice",
+      "state": "has_chalk=true, has_glasses=false, has_token=false, read_back=false",
+      "fact_id": "map_back_warning",
+      "route": "n_open > c_open > n_desk > c_desk_chalk > n_desk_chalk > c_desk_chalk_go > n_start > c_start_egypt > b_egypt1 > c_egypt_map > b_egypt_map > c_map_rope > e_set_locked_gallery"
+    },
+    {
+      "rule_id": "SP-8",
+      "severity": "error",
+      "story_id": "sk_midnight_museum",
+      "node_id": "n_start",
+      "choice_id": null,
+      "message": "decision 'n_start' offers c_start_gems, c_start_egypt, c_start_archive at one cost ('leaves the other wings') in 2 state(s)",
+      "state": "has_chalk=false, has_glasses=false, has_token=false, read_back=true",
+      "fact_id": null,
+      "route": null
+    },
+    {
+      "rule_id": "SP-8",
+      "severity": "error",
+      "story_id": "sk_midnight_museum",
+      "node_id": "n_cipher",
+      "choice_id": null,
+      "message": "decision 'n_cipher' offers c_cipher_stars, c_cipher_map, c_cipher_clock at one cost ('leaves the other roads') in 8 state(s)",
+      "state": "has_chalk=false, has_glasses=true, has_token=true, read_back=true",
+      "fact_id": null,
+      "route": null
+    },
+    {
+      "rule_id": "SP-9",
+      "severity": "error",
+      "story_id": "sk_midnight_museum",
+      "node_id": null,
+      "choice_id": null,
+      "message": "truth.statement: value exceeds the 120-character limit (length 438)",
+      "state": null,
+      "fact_id": null,
+      "route": null
+    },
+    {
+      "rule_id": "SP-9",
+      "severity": "error",
+      "story_id": "sk_midnight_museum",
+      "node_id": null,
+      "choice_id": null,
+      "message": "facts.half_map.text: value exceeds the 120-character limit (length 187)",
+      "state": null,
+      "fact_id": "half_map",
+      "route": null
+    },
+    {
+      "rule_id": "SP-9",
+      "severity": "error",
+      "story_id": "sk_midnight_museum",
+      "node_id": null,
+      "choice_id": null,
+      "message": "facts.map_back_warning.text: value exceeds the 120-character limit (length 200)",
+      "state": null,
+      "fact_id": "map_back_warning",
+      "route": null
+    },
+    {
+      "rule_id": "SP-9",
+      "severity": "error",
+      "story_id": "sk_midnight_museum",
+      "node_id": null,
+      "choice_id": null,
+      "message": "facts.founders_key.text: value exceeds the 120-character limit (length 137)",
+      "state": null,
+      "fact_id": "founders_key",
+      "route": null
+    },
+    {
+      "rule_id": "SP-9",
+      "severity": "error",
+      "story_id": "sk_midnight_museum",
+      "node_id": null,
+      "choice_id": null,
+      "message": "facts.cipher_shift_three.text: value exceeds the 120-character limit (length 143)",
+      "state": null,
+      "fact_id": "cipher_shift_three",
+      "route": null
+    },
+    {
+      "rule_id": "SP-9",
+      "severity": "error",
+      "story_id": "sk_midnight_museum",
+      "node_id": null,
+      "choice_id": null,
+      "message": "facts.globe_combo.text: value exceeds the 120-character limit (length 169)",
+      "state": null,
+      "fact_id": "globe_combo",
+      "route": null
+    },
+    {
+      "rule_id": "SP-9",
+      "severity": "error",
+      "story_id": "sk_midnight_museum",
+      "node_id": null,
+      "choice_id": null,
+      "message": "facts.floor_opens_by_clockwork.text: value exceeds the 120-character limit (length 185)",
+      "state": null,
+      "fact_id": "floor_opens_by_clockwork",
+      "route": null
+    },
+    {
+      "rule_id": "SP-9",
+      "severity": "error",
+      "story_id": "sk_midnight_museum",
+      "node_id": null,
+      "choice_id": null,
+      "message": "facts.vault_room.text: value exceeds the 120-character limit (length 177)",
+      "state": null,
+      "fact_id": "vault_room",
+      "route": null
+    },
+    {
+      "rule_id": "SP-9",
+      "severity": "error",
+      "story_id": "sk_midnight_museum",
+      "node_id": null,
+      "choice_id": null,
+      "message": "facts.staff_door_morning.text: value exceeds the 120-character limit (length 146)",
+      "state": null,
+      "fact_id": "staff_door_morning",
+      "route": null
+    },
+    {
+      "rule_id": "SP-9",
+      "severity": "error",
+      "story_id": "sk_midnight_museum",
+      "node_id": "n_open",
+      "choice_id": null,
+      "message": "nodes.n_open.event: value exceeds the 120-character limit (length 137)",
+      "state": null,
+      "fact_id": null,
+      "route": null
+    },
+    {
+      "rule_id": "SP-9",
+      "severity": "error",
+      "story_id": "sk_midnight_museum",
+      "node_id": "n_key",
+      "choice_id": null,
+      "message": "nodes.n_key.event: value exceeds the 120-character limit (length 121)",
+      "state": null,
+      "fact_id": null,
+      "route": null
+    },
+    {
+      "rule_id": "SP-9",
+      "severity": "error",
+      "story_id": "sk_midnight_museum",
+      "node_id": "k_display_careful",
+      "choice_id": null,
+      "message": "nodes.k_display_careful.event: value exceeds the 120-character limit (length 148)",
+      "state": null,
+      "fact_id": null,
+      "route": null
+    },
+    {
+      "rule_id": "SP-9",
+      "severity": "error",
+      "story_id": "sk_midnight_museum",
+      "node_id": "n_cipher",
+      "choice_id": null,
+      "message": "nodes.n_cipher.event: value exceeds the 120-character limit (length 159)",
+      "state": null,
+      "fact_id": null,
+      "route": null
+    },
+    {
+      "rule_id": "SP-9",
+      "severity": "error",
+      "story_id": "sk_midnight_museum",
+      "node_id": "ro_records_guard",
+      "choice_id": null,
+      "message": "nodes.ro_records_guard.event: value exceeds the 120-character limit (length 151)",
+      "state": null,
+      "fact_id": null,
+      "route": null
+    },
+    {
+      "rule_id": "SP-9",
+      "severity": "error",
+      "story_id": "sk_midnight_museum",
+      "node_id": "n_vault",
+      "choice_id": null,
+      "message": "nodes.n_vault.event: value exceeds the 120-character limit (length 132)",
+      "state": null,
+      "fact_id": null,
+      "route": null
+    },
+    {
+      "rule_id": "SP-9",
+      "severity": "error",
+      "story_id": "sk_midnight_museum",
+      "node_id": "v_map",
+      "choice_id": null,
+      "message": "nodes.v_map.event: value exceeds the 120-character limit (length 128)",
+      "state": null,
+      "fact_id": null,
+      "route": null
+    }
+  ]
+}

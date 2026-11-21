@@ -1,0 +1,203 @@
+{
+  "book": "sk_signal_in_the_static",
+  "shape_hash": "sha256:47dec22dff1f335e6d3687e9014decca2700f00064711207ef97edddb47c35ad",
+  "plan": {
+    "bound_to": "book file d701b7891ff2",
+    "producer": "hand-written",
+    "approver": null,
+    "book_file": "out/the-signal-in-the-static.filled.json",
+    "authored": "2026-11-21",
+    "authoring_minutes": 5,
+    "implicit_plants": {}
+  },
+  "ok": false,
+  "findings": [
+    {
+      "rule_id": "SP-8",
+      "severity": "error",
+      "story_id": "sk_signal_in_the_static",
+      "node_id": "m_numbers_1",
+      "choice_id": null,
+      "message": "decision 'm_numbers_1' offers c_m_numbers_1_1, c_m_numbers_1_2 at one cost ('one long job') in 4 state(s)",
+      "state": "has_battery=true, has_headset=false, left_note=true, okafor_trust=false",
+      "fact_id": null,
+      "route": null
+    },
+    {
+      "rule_id": "SP-9",
+      "severity": "error",
+      "story_id": "sk_signal_in_the_static",
+      "node_id": null,
+      "choice_id": null,
+      "message": "truth.statement: value exceeds the 120-character limit (length 526)",
+      "state": null,
+      "fact_id": null,
+      "route": null
+    },
+    {
+      "rule_id": "SP-9",
+      "severity": "error",
+      "story_id": "sk_signal_in_the_static",
+      "node_id": null,
+      "choice_id": null,
+      "message": "facts.loop_nightly.text: value exceeds the 120-character limit (length 162)",
+      "state": null,
+      "fact_id": "loop_nightly",
+      "route": null
+    },
+    {
+      "rule_id": "SP-9",
+      "severity": "error",
+      "story_id": "sk_signal_in_the_static",
+      "node_id": null,
+      "choice_id": null,
+      "message": "facts.okafor_trust.text: value exceeds the 120-character limit (length 129)",
+      "state": null,
+      "fact_id": "okafor_trust",
+      "route": null
+    },
+    {
+      "rule_id": "SP-9",
+      "severity": "error",
+      "story_id": "sk_signal_in_the_static",
+      "node_id": null,
+      "choice_id": null,
+      "message": "facts.station_register.text: value exceeds the 120-character limit (length 151)",
+      "state": null,
+      "fact_id": "station_register",
+      "route": null
+    },
+    {
+      "rule_id": "SP-9",
+      "severity": "error",
+      "story_id": "sk_signal_in_the_static",
+      "node_id": "n_open",
+      "choice_id": null,
+      "message": "nodes.n_open.event: value exceeds the 120-character limit (length 133)",
+      "state": null,
+      "fact_id": null,
+      "route": null
+    },
+    {
+      "rule_id": "SP-9",
+      "severity": "error",
+      "story_id": "sk_signal_in_the_static",
+      "node_id": "e_re_photo",
+      "choice_id": null,
+      "message": "nodes.e_re_photo.event: value exceeds the 120-character limit (length 137)",
+      "state": null,
+      "fact_id": null,
+      "route": null
+    },
+    {
+      "rule_id": "SP-9",
+      "severity": "error",
+      "story_id": "sk_signal_in_the_static",
+      "node_id": "m_who_story",
+      "choice_id": null,
+      "message": "nodes.m_who_story.event: value exceeds the 120-character limit (length 131)",
+      "state": null,
+      "fact_id": null,
+      "route": null
+    },
+    {
+      "rule_id": "SP-9",
+      "severity": "error",
+      "story_id": "sk_signal_in_the_static",
+      "node_id": "e_who_warn",
+      "choice_id": null,
+      "message": "nodes.e_who_warn.event: value exceeds the 120-character limit (length 129)",
+      "state": null,
+      "fact_id": null,
+      "route": null
+    },
+    {
+      "rule_id": "SP-9",
+      "severity": "error",
+      "story_id": "sk_signal_in_the_static",
+      "node_id": "mm_count_tide",
+      "choice_id": null,
+      "message": "nodes.mm_count_tide.event: value exceeds the 120-character limit (length 146)",
+      "state": null,
+      "fact_id": null,
+      "route": null
+    },
+    {
+      "rule_id": "SP-9",
+      "severity": "error",
+      "story_id": "sk_signal_in_the_static",
+      "node_id": "n_b3",
+      "choice_id": null,
+      "message": "nodes.n_b3.event: value exceeds the 120-character limit (length 124)",
+      "state": null,
+      "fact_id": null,
+      "route": null
+    },
+    {
+      "rule_id": "SP-9",
+      "severity": "error",
+      "story_id": "sk_signal_in_the_static",
+      "node_id": "n_b3_choice",
+      "choice_id": null,
+      "message": "nodes.n_b3_choice.event: value exceeds the 120-character limit (length 149)",
+      "state": null,
+      "fact_id": null,
+      "route": null
+    },
+    {
+      "rule_id": "SP-9",
+      "severity": "error",
+      "story_id": "sk_signal_in_the_static",
+      "node_id": "e_st_record",
+      "choice_id": null,
+      "message": "nodes.e_st_record.event: value exceeds the 120-character limit (length 134)",
+      "state": null,
+      "fact_id": null,
+      "route": null
+    },
+    {
+      "rule_id": "SP-9",
+      "severity": "error",
+      "story_id": "sk_signal_in_the_static",
+      "node_id": "e_st_wait",
+      "choice_id": null,
+      "message": "nodes.e_st_wait.event: value exceeds the 120-character limit (length 137)",
+      "state": null,
+      "fact_id": null,
+      "route": null
+    },
+    {
+      "rule_id": "SP-9",
+      "severity": "error",
+      "story_id": "sk_signal_in_the_static",
+      "node_id": "e_re_answer",
+      "choice_id": null,
+      "message": "nodes.e_re_answer.event: value exceeds the 120-character limit (length 165)",
+      "state": null,
+      "fact_id": null,
+      "route": null
+    },
+    {
+      "rule_id": "SP-9",
+      "severity": "error",
+      "story_id": "sk_signal_in_the_static",
+      "node_id": "f_he_act",
+      "choice_id": null,
+      "message": "nodes.f_he_act.event: value exceeds the 120-character limit (length 186)",
+      "state": null,
+      "fact_id": null,
+      "route": null
+    },
+    {
+      "rule_id": "SP-9",
+      "severity": "error",
+      "story_id": "sk_signal_in_the_static",
+      "node_id": "e_he_safe",
+      "choice_id": null,
+      "message": "nodes.e_he_safe.event: value exceeds the 120-character limit (length 157)",
+      "state": null,
+      "fact_id": null,
+      "route": null
+    }
+  ]
+}

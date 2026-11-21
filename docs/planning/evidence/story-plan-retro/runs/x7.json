@@ -1,0 +1,115 @@
+{
+  "book": "sk_sky_ship_stowaway",
+  "shape_hash": "sha256:505dc8a647b7f9437b0fe1113aece4e9fa7c461eea0b0ff626a50fd042216e42",
+  "plan": {
+    "bound_to": "book file bb215b407e97",
+    "producer": "wp-1.4 blind extraction",
+    "approver": null,
+    "book_file": "tmp_cleanup/blind/x7.book.json",
+    "authored": "2026-11-21",
+    "authoring_minutes": 75,
+    "implicit_plants": {}
+  },
+  "ok": false,
+  "findings": [
+    {
+      "rule_id": "SP-1",
+      "severity": "error",
+      "story_id": "sk_sky_ship_stowaway",
+      "node_id": null,
+      "choice_id": "c_rig_b_go",
+      "message": "choice 'c_rig_b_go' sets 'knows_ropes' but threads.ropes_learned.planting_choices omit it",
+      "state": null,
+      "fact_id": "knows_ropes",
+      "route": null
+    },
+    {
+      "rule_id": "SP-1",
+      "severity": "error",
+      "story_id": "sk_sky_ship_stowaway",
+      "node_id": null,
+      "choice_id": "c_rig_b",
+      "message": "threads.ropes_learned.planting_choices lists 'c_rig_b', which does not set 'knows_ropes' in the book",
+      "state": null,
+      "fact_id": "knows_ropes",
+      "route": null
+    },
+    {
+      "rule_id": "SP-A",
+      "severity": "error",
+      "story_id": "sk_sky_ship_stowaway",
+      "node_id": "p_people_cold",
+      "choice_id": null,
+      "message": "prose at 'p_people_cold' asserts 'bosun_does_not_know_bree' (The bosun knows every hand aboard and does not know Bree, whom he calls small fry.), which 3 of 3 reachable states enter without",
+      "state": "fed_pip=true, fin_free=false, knows_ropes=false, told_bosun=false",
+      "fact_id": "bosun_does_not_know_bree",
+      "route": "n_open > c_open > n_start > c_start_eng > a_eng1 > c_eng_deep > a_eng_deep > c_eng_a > a_eng_a > c_eng_a_go > a_eng_a2 > c_eng_a2_go > a_eng_conv > c_eng_conv_go > n_friend > c_friend_galley > f_galley1 > c_galley_a > f_galley_a > c_galley_a_go > f_galley_mid > c_galley_mid_go > n_storm > c_storm_deck > s_deck1 > c_deck_a > s_deck_a > c_deck_a_go > s_deck_mid > c_deck_mid_go > n_secret > c_secret_people > p_people1 > c_people_cold > p_people_cold"
+    },
+    {
+      "rule_id": "SP-A",
+      "severity": "error",
+      "story_id": "sk_sky_ship_stowaway",
+      "node_id": "b_free1",
+      "choice_id": null,
+      "message": "prose at 'b_free1' asserts 'nimbus_wears_harness' (Nimbus wears a leather harness buckled around his middle.), which 6 of 12 reachable states enter without",
+      "state": "fed_pip=true, fin_free=false, knows_ropes=false, told_bosun=false",
+      "fact_id": "nimbus_wears_harness",
+      "route": "n_open > c_open > n_start > c_start_eng > a_eng1 > c_eng_deep > a_eng_deep > c_eng_a > a_eng_a > c_eng_a_go > a_eng_a2 > c_eng_a2_go > a_eng_conv > c_eng_conv_go > n_friend > c_friend_galley > f_galley1 > c_galley_a > f_galley_a > c_galley_a_go > f_galley_mid > c_galley_mid_go > n_storm > c_storm_deck > s_deck1 > c_deck_a > s_deck_a > c_deck_a_go > s_deck_mid > c_deck_mid_go > n_secret > c_secret_pip > p_pip1 > c_pip_go > p_save_mid > c_save_mid_go > n_bridge > c_bridge_free > b_free1"
+    },
+    {
+      "rule_id": "SP-A",
+      "severity": "error",
+      "story_id": "sk_sky_ship_stowaway",
+      "node_id": "b_free_ok2",
+      "choice_id": null,
+      "message": "prose at 'b_free_ok2' asserts 'haven_lies_east' (The haven the Cirrus is bound for lies to the east.), which 6 of 6 reachable states enter without",
+      "state": "fed_pip=true, fin_free=true, knows_ropes=false, told_bosun=false",
+      "fact_id": "haven_lies_east",
+      "route": "n_open > c_open > n_start > c_start_eng > a_eng1 > c_eng_deep > a_eng_deep > c_eng_a > a_eng_a > c_eng_a_go > a_eng_a2 > c_eng_a2_go > a_eng_conv > c_eng_conv_go > n_friend > c_friend_galley > f_galley1 > c_galley_a > f_galley_a > c_galley_a_go > f_galley_mid > c_galley_mid_go > n_storm > c_storm_deck > s_deck1 > c_deck_a > s_deck_a > c_deck_a_go > s_deck_mid > c_deck_mid_go > n_secret > c_secret_save > p_save1 > c_save_b > p_save_b > c_save_b_go > p_save_mid > c_save_mid_go > n_bridge > c_bridge_free > b_free1 > c_free_ok > b_free_ok > c_free_ok_go > b_free_ok2"
+    },
+    {
+      "rule_id": "SP-A",
+      "severity": "error",
+      "story_id": "sk_sky_ship_stowaway",
+      "node_id": "e_neu_kite",
+      "choice_id": null,
+      "message": "prose at 'e_neu_kite' asserts 'nimbus_fin_strapped' (A harness strap is twisted tight around Nimbus's left fin, pinning it flat.), which 6 of 6 reachable states enter without",
+      "state": "fed_pip=true, fin_free=false, knows_ropes=false, told_bosun=false",
+      "fact_id": "nimbus_fin_strapped",
+      "route": "n_open > c_open > n_start > c_start_eng > a_eng1 > c_eng_deep > a_eng_deep > c_eng_a > a_eng_a > c_eng_a_go > a_eng_a2 > c_eng_a2_go > a_eng_conv > c_eng_conv_go > n_friend > c_friend_galley > f_galley1 > c_galley_a > f_galley_a > c_galley_a_go > f_galley_mid > c_galley_mid_go > n_storm > c_storm_deck > s_deck1 > c_deck_a > s_deck_a > c_deck_a_go > s_deck_mid > c_deck_mid_go > n_secret > c_secret_pip > p_pip1 > c_pip_go > p_save_mid > c_save_mid_go > n_bridge > c_bridge_free > b_free1 > c_free_tangled > e_neu_kite"
+    },
+    {
+      "rule_id": "SP-A",
+      "severity": "error",
+      "story_id": "sk_sky_ship_stowaway",
+      "node_id": "e_neu_kite",
+      "choice_id": null,
+      "message": "prose at 'e_neu_kite' asserts 'nimbus_wears_harness' (Nimbus wears a leather harness buckled around his middle.), which 6 of 6 reachable states enter without",
+      "state": "fed_pip=true, fin_free=false, knows_ropes=false, told_bosun=false",
+      "fact_id": "nimbus_wears_harness",
+      "route": "n_open > c_open > n_start > c_start_eng > a_eng1 > c_eng_deep > a_eng_deep > c_eng_a > a_eng_a > c_eng_a_go > a_eng_a2 > c_eng_a2_go > a_eng_conv > c_eng_conv_go > n_friend > c_friend_galley > f_galley1 > c_galley_a > f_galley_a > c_galley_a_go > f_galley_mid > c_galley_mid_go > n_storm > c_storm_deck > s_deck1 > c_deck_a > s_deck_a > c_deck_a_go > s_deck_mid > c_deck_mid_go > n_secret > c_secret_pip > p_pip1 > c_pip_go > p_save_mid > c_save_mid_go > n_bridge > c_bridge_free > b_free1 > c_free_tangled > e_neu_kite"
+    },
+    {
+      "rule_id": "SP-A",
+      "severity": "error",
+      "story_id": "sk_sky_ship_stowaway",
+      "node_id": "b_tell_doubt",
+      "choice_id": null,
+      "message": "prose at 'b_tell_doubt' asserts 'bosun_does_not_know_bree' (The bosun knows every hand aboard and does not know Bree, whom he calls small fry.), which 6 of 6 reachable states enter without",
+      "state": "fed_pip=true, fin_free=false, knows_ropes=false, told_bosun=false",
+      "fact_id": "bosun_does_not_know_bree",
+      "route": "n_open > c_open > n_start > c_start_eng > a_eng1 > c_eng_deep > a_eng_deep > c_eng_a > a_eng_a > c_eng_a_go > a_eng_a2 > c_eng_a2_go > a_eng_conv > c_eng_conv_go > n_friend > c_friend_galley > f_galley1 > c_galley_a > f_galley_a > c_galley_a_go > f_galley_mid > c_galley_mid_go > n_storm > c_storm_deck > s_deck1 > c_deck_a > s_deck_a > c_deck_a_go > s_deck_mid > c_deck_mid_go > n_secret > c_secret_pip > p_pip1 > c_pip_go > p_save_mid > c_save_mid_go > n_bridge > c_bridge_tell > b_tell1 > c_tell_crew_cold > b_tell_doubt"
+    },
+    {
+      "rule_id": "SP-A",
+      "severity": "error",
+      "story_id": "sk_sky_ship_stowaway",
+      "node_id": "e_win_discovery",
+      "choice_id": null,
+      "message": "prose at 'e_win_discovery' asserts 'cargo_fed_daily_forty' (Forty buckets of fish mash are made every day for the captain's 'cargo', which the cook says does not eat.), which 8 of 12 reachable states enter without",
+      "state": "fed_pip=false, fin_free=false, knows_ropes=false, told_bosun=false",
+      "fact_id": "cargo_fed_daily_forty",
+      "route": "n_open > c_open > n_start > c_start_eng > a_eng1 > c_eng_deep > a_eng_deep > c_eng_a > a_eng_a > c_eng_a_go > a_eng_a2 > c_eng_a2_go > a_eng_conv > c_eng_conv_go > n_friend > c_friend_cabin > f_cabin1 > c_cabin_a > f_cabin_a > c_cabin_a_go > f_cabin_mid > c_cabin_mid_go > n_storm > c_storm_deck > s_deck1 > c_deck_a > s_deck_a > c_deck_a_go > s_deck_mid > c_deck_mid_go > n_secret > c_secret_save > p_save1 > c_save_a > p_save_a > c_save_a_go > p_save_mid > c_save_mid_go > n_bridge > c_bridge_tell > b_tell1 > c_tell_reveal > b_tell_reveal > c_tell_reveal_win > e_win_discovery"
+    }
+  ]
+}

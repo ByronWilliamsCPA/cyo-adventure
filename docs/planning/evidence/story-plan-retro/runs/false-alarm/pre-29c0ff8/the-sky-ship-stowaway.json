@@ -1,0 +1,104 @@
+{
+  "book": "sk_sky_ship_stowaway",
+  "shape_hash": "sha256:505dc8a647b7f9437b0fe1113aece4e9fa7c461eea0b0ff626a50fd042216e42",
+  "plan": {
+    "bound_to": "book file 73a5c0d5d197",
+    "producer": "hand-written",
+    "approver": null,
+    "book_file": "out/the-sky-ship-stowaway.filled.json",
+    "authored": "2026-11-21",
+    "authoring_minutes": 4,
+    "implicit_plants": {}
+  },
+  "ok": false,
+  "findings": [
+    {
+      "rule_id": "SP-8",
+      "severity": "error",
+      "story_id": "sk_sky_ship_stowaway",
+      "node_id": "b_tell1",
+      "choice_id": null,
+      "message": "decision 'b_tell1' offers c_tell_crew, c_tell_captain, c_tell_reveal at one cost ('none') in 6 state(s)",
+      "state": "fed_pip=true, fin_free=false, knows_ropes=false, told_bosun=true",
+      "fact_id": null,
+      "route": null
+    },
+    {
+      "rule_id": "SP-9",
+      "severity": "error",
+      "story_id": "sk_sky_ship_stowaway",
+      "node_id": null,
+      "choice_id": null,
+      "message": "truth.statement: value exceeds the 120-character limit (length 296)",
+      "state": null,
+      "fact_id": null,
+      "route": null
+    },
+    {
+      "rule_id": "SP-9",
+      "severity": "error",
+      "story_id": "sk_sky_ship_stowaway",
+      "node_id": null,
+      "choice_id": null,
+      "message": "facts.he_in_hold.text: value exceeds the 120-character limit (length 139)",
+      "state": null,
+      "fact_id": "he_in_hold",
+      "route": null
+    },
+    {
+      "rule_id": "SP-9",
+      "severity": "error",
+      "story_id": "sk_sky_ship_stowaway",
+      "node_id": null,
+      "choice_id": null,
+      "message": "facts.hold_panel_care.text: value exceeds the 120-character limit (length 137)",
+      "state": null,
+      "fact_id": "hold_panel_care",
+      "route": null
+    },
+    {
+      "rule_id": "SP-9",
+      "severity": "error",
+      "story_id": "sk_sky_ship_stowaway",
+      "node_id": "e_set_galley",
+      "choice_id": null,
+      "message": "nodes.e_set_galley.event: value exceeds the 120-character limit (length 134)",
+      "state": null,
+      "fact_id": null,
+      "route": null
+    },
+    {
+      "rule_id": "SP-9",
+      "severity": "error",
+      "story_id": "sk_sky_ship_stowaway",
+      "node_id": "f_cabin_a",
+      "choice_id": null,
+      "message": "nodes.f_cabin_a.event: value exceeds the 120-character limit (length 124)",
+      "state": null,
+      "fact_id": null,
+      "route": null
+    },
+    {
+      "rule_id": "SP-9",
+      "severity": "error",
+      "story_id": "sk_sky_ship_stowaway",
+      "node_id": "n_secret",
+      "choice_id": null,
+      "message": "nodes.n_secret.event: value exceeds the 120-character limit (length 127)",
+      "state": null,
+      "fact_id": null,
+      "route": null
+    },
+    {
+      "rule_id": "SP-9",
+      "severity": "error",
+      "story_id": "sk_sky_ship_stowaway",
+      "node_id": "n_bridge",
+      "choice_id": null,
+      "message": "nodes.n_bridge.event: value exceeds the 120-character limit (length 154)",
+      "state": null,
+      "fact_id": null,
+      "route": null
+    }
+  ]
+}

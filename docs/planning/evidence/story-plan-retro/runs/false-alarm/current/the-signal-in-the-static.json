@@ -1,0 +1,27 @@
+{
+  "book": "sk_signal_in_the_static",
+  "shape_hash": "sha256:47dec22dff1f335e6d3687e9014decca2700f00064711207ef97edddb47c35ad",
+  "plan": {
+    "bound_to": "book file d701b7891ff2",
+    "producer": "hand-written",
+    "approver": null,
+    "book_file": "out/the-signal-in-the-static.filled.json",
+    "authored": "2026-11-21",
+    "authoring_minutes": 5,
+    "implicit_plants": {}
+  },
+  "ok": false,
+  "findings": [
+    {
+      "rule_id": "SP-8",
+      "severity": "error",
+      "story_id": "sk_signal_in_the_static",
+      "node_id": "m_numbers_1",
+      "choice_id": null,
+      "message": "decision 'm_numbers_1' offers c_m_numbers_1_1, c_m_numbers_1_2 at one cost ('one long job') in 4 state(s)",
+      "state": "has_battery=true, has_headset=false, left_note=true, okafor_trust=false",
+      "fact_id": null,
+      "route": null
+    }
+  ]
+}

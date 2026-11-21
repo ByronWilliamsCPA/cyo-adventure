@@ -1,0 +1,93 @@
+{
+  "book": "sk_hollow_lighthouse",
+  "shape_hash": "sha256:85107f93f5723531f2ed522c83b47821f9df18d4bcdf3d0b1775e8349e980401",
+  "plan": {
+    "bound_to": "book file 31ed53bfd03e",
+    "producer": "hand-written",
+    "approver": null,
+    "book_file": "out/the-hollow-lighthouse.filled.json",
+    "authored": "2026-11-21",
+    "authoring_minutes": 11,
+    "implicit_plants": {}
+  },
+  "ok": false,
+  "findings": [
+    {
+      "rule_id": "SP-3",
+      "severity": "warning",
+      "story_id": "sk_hollow_lighthouse",
+      "node_id": "a_desk_pick",
+      "choice_id": null,
+      "message": "contradicting facts 'has_key' (at a_desk_pick, a_hearth_key, b_lens_reflect, c_pool_metal, d_dinghy_tin, c_a_desk_drawer_1, c_a_hearth_brick_1, c_b_lens_2, c_c_pool_2, c_d_dinghy_2) and 'mira_lacks_lamp_key' (at cm_light_back, e_set_gears) sit only on routes no single reading crosses (a replay inconsistency)",
+      "state": null,
+      "fact_id": "has_key",
+      "route": null
+    },
+    {
+      "rule_id": "SP-4",
+      "severity": "error",
+      "story_id": "sk_hollow_lighthouse",
+      "node_id": "e_win_keeper_found",
+      "choice_id": null,
+      "message": "'e_win_keeper_found' establishes 'lamp_code', the plant of thread 't_code', on a route that skips every planting choice",
+      "state": "has_key=false, knows_code=false, knows_ledger=false, knows_tunnel=true",
+      "fact_id": "lamp_code",
+      "route": "n_open > c_open > n_start > c_n_start_1 > a_office1 > c_a_office1_1 > a_desk > c_a_desk_1 > a_desk_log > c_a_desk_log_1 > a_corridor > c_a_corridor_1 > a_toward > c_a_toward_1 > n_journal > c_n_journal_3 > jr_tunnel > c_jr_tunnel_1 > jr_tun_sketch > c_jr_tun_sketch_1 > jr_tun_join > c_jr_tun_join_1 > n_stairs > c_n_stairs_1 > st_wind > c_st_wind_1 > st_wind_up > c_st_wind_up_1 > n_light > c_n_light_1 > li_stair > c_li_stair_1 > li_stair_down > c_li_stair_down_1 > n_tunnel > c_n_tunnel_4 > tn_cut > c_tn_cut_1 > tn_cut_moor > c_tn_cut_moor_1 > cm_cottage > c_cm_cottage_1 > cm_cottage_bus > c_cm_cottage_bus_1 > e_win_keeper_found"
+    },
+    {
+      "rule_id": "SP-9",
+      "severity": "error",
+      "story_id": "sk_hollow_lighthouse",
+      "node_id": null,
+      "choice_id": null,
+      "message": "facts.little_lamp_rig.text: matches a band-mandatory denylist term in bundle 'graphic'",
+      "state": null,
+      "fact_id": "little_lamp_rig",
+      "route": null
+    },
+    {
+      "rule_id": "SP-9",
+      "severity": "error",
+      "story_id": "sk_hollow_lighthouse",
+      "node_id": "n_light",
+      "choice_id": null,
+      "message": "nodes.n_light.event: matches a band-mandatory denylist term in bundle 'graphic'",
+      "state": null,
+      "fact_id": null,
+      "route": null
+    },
+    {
+      "rule_id": "SP-9",
+      "severity": "error",
+      "story_id": "sk_hollow_lighthouse",
+      "node_id": "e_set_c_stuck",
+      "choice_id": null,
+      "message": "nodes.e_set_c_stuck.event: matches a band-mandatory denylist term in bundle 'graphic'",
+      "state": null,
+      "fact_id": null,
+      "route": null
+    },
+    {
+      "rule_id": "SP-9",
+      "severity": "error",
+      "story_id": "sk_hollow_lighthouse",
+      "node_id": "e_win_signal",
+      "choice_id": null,
+      "message": "nodes.e_win_signal.event: matches a band-mandatory denylist term in bundle 'graphic'",
+      "state": null,
+      "fact_id": null,
+      "route": null
+    },
+    {
+      "rule_id": "SP-9",
+      "severity": "error",
+      "story_id": "sk_hollow_lighthouse",
+      "node_id": "e_set_c_stuck",
+      "choice_id": null,
+      "message": "endings.e_set_c_stuck.gift: matches a band-mandatory denylist term in bundle 'graphic'",
+      "state": null,
+      "fact_id": null,
+      "route": null
+    }
+  ]
+}
