@@ -2717,7 +2717,7 @@
   "model": "claude-opus-5-5 (agent, hand-written by reading)",
   "shape": null,
   "book_file": "out/the-hollow-lighthouse.filled.json",
-  "book_sha256": "8527881924a8c1f38e6801b3b368594be0fbc6f237cf2d08cc396c56d908edb2",
+  "book_sha256": "31ed53bfd03edbe3fc2956072dde3368f3dc80407cb17cf2defbb63129aa3bbe",
   "authored": "2026-11-21",
   "authoring_minutes": 11,
   "checks": null,
