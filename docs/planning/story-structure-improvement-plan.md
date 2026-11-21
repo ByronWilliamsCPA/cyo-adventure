@@ -27,6 +27,11 @@ source: "story-structure-diversity-critical-analysis.md (as corrected by the 202
 
 # Story Structure and Diversity Improvement Plan
 
+> **Status: frozen 2026-11-21 (owner decision D2), pending the decision report.** Under
+> [ADR-033](./adr/adr-033-story-plan-meaning-layer.md) and WP-0.1 of the
+> [implementation plan](./story-plan-implementation-plan.md), do not open new skeleton, mutation, flywheel or diversity-round work from this plan, and do not remediate the 66 failing shells or grow `scripts/stateless_shell_grandfather.txt` work. Nothing here is deleted or revoked; it stays merged
+> and unused until the plan's decision report (WP-4.4, owner decision D10) resumes, restricts or retires it.
+
 > **For the implementation team**: per-deliverable implementation briefs, with file/function anchors,
 > current behavior, change specifications, test plans, and the onboarding reading list, are in
 > [story-structure-implementation-briefs.md](story-structure-implementation-briefs.md). Read the

@@ -16,8 +16,9 @@ tags:
 
 # Story Plan implementation plan
 
-> **Status**: draft for owner approval, 2026-11-21. **Decision record**:
-> [ADR-033](./adr/adr-033-story-plan-meaning-layer.md) (Proposed). **Source**: [architecture review,
+> **Status**: draft for owner approval, 2026-11-21; owner decisions D1 and D2 made 2026-11-21 (section 13).
+> **Decision record**:
+> [ADR-033](./adr/adr-033-story-plan-meaning-layer.md) (Accepted 2026-11-21). **Source**: [architecture review,
 > 2026-11-20](./architecture-review-2026-11-20.md) with its short-request addendum.
 >
 > **What is and is not established.** The review ran no generation. Every effort, cost and latency figure below is an
@@ -102,6 +103,20 @@ tags:
 - **Acceptance.** The three banners exist and link to ADR-033; Appendix B rows are applied; `check_work_linkage.py`
   passes.
 - **Gate.** None. **Depends on.** D2.
+- **Status.** Delivered 2026-11-21 after D2 (approved by the owner in session, 2026-11-21) and D1 (ADR-033 ratified
+  the same day). The freeze is a stop-using instruction, enforced by the status banners, the roadmap note and the
+  register dispositions; no script was disabled or gated in code. Two corrections to the action text, from the code
+  as it stands:
+  - `scripts/run_diversity_eval.py --check` runs in the `diversity` job of `ci.yml` (and the local nox `diversity_eval` session), and `scripts/calibrate_mutation_floors.py --check` runs in `skeleton-promotion.yml` (path-triggered on `skeletons/**`). These are
+    deterministic `--check` gates over committed data, not generation runs or paid work. They stay, so no passing CI
+    job changes. "Do not run" applies to the scripts' operating modes (cycle, scan, candidates, mutate, calibrate
+    without `--check`, evaluation rounds).
+  - The `grep` in action 2 finds no importer of `cyo_adventure.flywheel` or `cyo_adventure.mutation` outside those
+    packages, but `src/cyo_adventure/analysis/flywheel_input.py` refers to `flywheel.strategy` in docstrings only (no
+    import), so the premise holds.
+- **Selection note (action 4).** The six promoted pilot shells are not to be used for a reskinned request until one
+  reskinned fill of each has been read (addendum A.5 item 6). This is a selection note only: on-demand generation is
+  not in use for the family test, and no code gates it.
 
 ### WP-0.2 Short-request baseline design and code tag
 
@@ -529,8 +544,8 @@ Dates are proposals from 2026-11-21; each is also stated as the package it block
 
 | Id | Decision | Blocks | Proposed by |
 | --- | --- | --- | --- |
-| D1 | Ratify ADR-033 (or return it) | WP-1.1 merging to `main` | 2026-11-28 |
-| D2 | Confirm the freeze list in WP-0.1 | WP-0.1 | 2026-11-24 |
+| D1 | Ratify ADR-033 (or return it). **Ratified 2026-11-21** (owner, in session) | WP-1.1 merging to `main` | 2026-11-28 |
+| D2 | Confirm the freeze list in WP-0.1. **Approved 2026-11-21** (owner, in session) | WP-0.1 | 2026-11-24 |
 | D3 | Family-test book list; enable reading-trail capture for the session | WP-0.3, WP-0.5 | 2026-11-24 |
 | D4 | The retained shell set (eight to twelve, two per offered cell) | WP-2.2 | when G1 passes |
 | D5 | Accept the G1 verdict | all of Phase 2 | within two days of WP-1.5 |

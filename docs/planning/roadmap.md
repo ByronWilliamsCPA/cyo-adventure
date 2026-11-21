@@ -1111,6 +1111,14 @@ Full detail by ID in the [unscheduled work register](./unscheduled-work-register
 - The anti-template guard enforces per-band thresholds rather than advising.
 - No production cell is unfillable.
 
+### Freeze note (2026-11-21)
+
+Owner decision D2 (2026-11-21) froze mutation, flywheel, retrofit promotion, strict remediation of the failing shells,
+diversity rounds and paid prompt A/B pending the Story Plan decision report (WP-4.4, D10); see WP-0.1 of
+[story-plan-implementation-plan.md](./story-plan-implementation-plan.md) and
+[ADR-033](./adr/adr-033-story-plan-meaning-layer.md) (Accepted 2026-11-21). The code stays merged and unused; the
+deliverables above that depend on it are `blocked` in the register.
+
 ### Dependencies
 
 - Requires: nothing new. This work is offline and catalog-time; it does not block a release rung,

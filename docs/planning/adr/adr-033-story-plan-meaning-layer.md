@@ -1,7 +1,7 @@
 ---
 title: "ADR-033: A per-book Story Plan as the meaning layer of story generation"
 schema_type: planning
-status: proposed
+status: accepted
 owner: core-maintainer
 purpose: "Record the decision to give every generated or authored book an explicit Story Plan (cast,
   hidden truth, fact ledger, plant and payoff threads, per-node obligations), to compile typed
@@ -18,7 +18,8 @@ tags:
 
 # ADR-033: A per-book Story Plan as the meaning layer of story generation
 
-> **Status**: Proposed (2026-11-21). **Awaiting owner ratification.** Drafted by an agent from the [architecture
+> **Status**: Accepted (2026-11-21). Ratified by the project owner in session on 2026-11-21 (decision D1 of the
+> [implementation plan](../story-plan-implementation-plan.md)). Drafted by an agent from the [architecture
 > review of 2026-11-20](../architecture-review-2026-11-20.md) and its short-request addendum, after the owner asked
 > for the review to be turned into an implementation plan. Nothing here is tested against a model: the review ran no
 > generation. The first evidence gate (Phase 1 of the [implementation plan](../story-plan-implementation-plan.md)) is
@@ -287,8 +288,8 @@ Every item is a work package in the [implementation plan](../story-plan-implemen
 below are **proposed**: they are listed in that plan's Appendix B for the orchestrator to add, because the agent
 drafting this ADR was not permitted to edit the register. This ADR must not merge to `main` until those rows exist.
 
-- **`UW-A64`** (proposed, `decision`): owner ratification of this ADR.
-- **`UW-G28`** (proposed): freeze actions and register dispositions (WP-0.1).
+- **`UW-A64`** (`done` 2026-11-21): owner ratification of this ADR.
+- **`UW-G28`** (`done` 2026-11-21): freeze actions and register dispositions (WP-0.1).
 - **`UW-G29`** (proposed): hand-written plans and second-reader pass for the family-test books (WP-0.3, WP-0.4).
 - **`UW-G30`** (proposed): Story Plan schema, checks and the retrospective gate (WP-1.1 to WP-1.5).
 - **`UW-G31`** (proposed): brief unpinning (WP-2.1).

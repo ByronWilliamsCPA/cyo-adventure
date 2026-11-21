@@ -5,6 +5,11 @@ SPDX-License-Identifier: MIT
 
 # WS-8 D6 Runbook: Parameterize an Already-Promoted Contract-Less Tree
 
+> **Status: frozen 2026-11-21 (owner decision D2), pending the decision report.** Under
+> [ADR-033](./adr/adr-033-story-plan-meaning-layer.md) and WP-0.1 of the
+> [implementation plan](./story-plan-implementation-plan.md), do not run `scripts/parameterize_promotion.py`, `prepare_promotion_pr.py` or `add_consequence.py`: retrofit promotion is frozen. Nothing here is deleted or revoked; it stays merged
+> and unused until the plan's decision report (WP-4.4, owner decision D10) resumes, restricts or retires it.
+
 > **Status: operational runbook.** This documents the OPTIONAL, manual-first
 > parameterize-at-promotion path (WS-8 D6). It implements
 > `docs/planning/ws8-catalog-flywheel-design.md` section 7.3 and OQ-6, and it
