@@ -1,12 +1,18 @@
 {
   "plan_version": "0.0",
+  "book": {
+    "slug": "the-cave-of-echoes",
+    "storybook_id": "sk_cave_of_echoes",
+    "storybook_version": 1,
+    "title": "The Cave of Echoes"
+  },
   "request": {
     "text": null,
-    "source": "catalog book, hand-authored; no request exists",
     "band": "8-11",
     "length": "short",
     "style": "prose",
-    "tone": "wonder and gentle suspense; peril moderate, scariness mild, violence none"
+    "tone": "wonder and gentle suspense; peril moderate, scariness mild, violence none",
+    "note": "catalog book, hand-authored; no request exists"
   },
   "pitch": {
     "hero": "Maya, a girl exploring the sea caves under her aunt's lighthouse with her dog Biscuit",
@@ -51,7 +57,6 @@
     }
   },
   "truth": {
-    "answer": "There is no single hidden answer: each mouth's sound has its own natural cause. The left hum is stone that carries sound (a crystal grotto and a singing chamber) and an old ship's bell rung by drips; the right drip is a trickle leading to a black underground lake and a hidden tide-pool; the middle whisper is only a draft of air, and that way leads to a bat roost and a smugglers' cache. Every cave floods when the tide returns.",
     "facts": [
       "hum_is_ringing",
       "ships_bell",
@@ -60,7 +65,8 @@
       "black_lake",
       "smugglers_cache",
       "one_hour_deadline"
-    ]
+    ],
+    "statement": "There is no single hidden answer: each mouth's sound has its own natural cause. The left hum is stone that carries sound (a crystal grotto and a singing chamber) and an old ship's bell rung by drips; the right drip is a trickle leading to a black underground lake and a hidden tide-pool; the middle whisper is only a draft of air, and that way leads to a bat roost and a smugglers' cache. Every cave floods when the tide returns."
   },
   "facts": {
     "maya_and_biscuit": {
@@ -1512,32 +1518,22 @@
   "provenance": {
     "producer": "hand-written from a full read of the book (WP-0.3, control book, unrevised)",
     "model": "claude-opus-5-5",
-    "book": {
-      "id": "sk_cave_of_echoes",
-      "version": 1,
-      "path": "out/the-cave-of-echoes.filled.json",
-      "sha256": "a1367d591787f71738c655b75de8a7cad1bb52d87b193d08881ec292ea9c9d09"
-    },
-    "shape": {
-      "id": null,
-      "hash": "sha256:bd94786c032215768280d9358d38a52094db7a5a5e48accb3f7b8b669b111d54",
-      "hash_basis": "sha256 of compact JSON list of [node_id, is_ending, [[choice_id, target], ...]] in book order"
-    },
-    "declared_variables": [],
-    "threads_note": "The book declares no variables, so the plan has no threads. Implicit plant-like setups found while reading are recorded as facts with implicit_plant set.",
-    "check_results": null,
     "approver": null,
     "authoring_minutes": 5,
-    "continuity_notes": [
-      "PLAIN CONTRADICTION (same route c_right > c_lake > c_ra_pebbles): ra_fork and ra_lake_way establish a hollow lapping heard from down the branch and growing louder with each step (lapping_from_ahead); ra_lake2 then says 'The lapping sound, it turns out, is only Biscuit's paw' (lapping_is_biscuit). The sound was heard before Biscuit reached the water.",
-      "SOFT, cross-route: home_elsewhere vs home_near_cove. la_crystal_out ('show everyone back home') and ra_starfish2 ('the rockpool club back home') place Maya's home away from the cove; la_bell4 ('somewhere under the sea near her home') places it by the cove. No single route carries both, so no reader meets the clash.",
-      "SOFT, same route (c_cache > c_compass > c_da_out): da_compass says the needle points 'the quickest way back to the cave mouth'; da_compass2 says it is 'still finding true north'. Compatible only if the way out lies due north.",
-      "SOFT: n_open establishes Maya's aunt as the lighthouse keeper; la_song has Maya think 'only the old lighthouse keeper ever knew' of the chamber, and da_bat_back introduces 'the lighthouse ranger' as if known. Neither is introduced or tied to the aunt.",
-      "SOFT, same route (c_bat ... c_da_push): da_roost shows carved initials proving someone climbed the chimney before; da_skylight calls it 'a whole secret way into the caves' with bats 'nobody else ever knew' about.",
-      "SOFT, logic: la_bell4 has Maya climb 'the good rope' back up, though she came down a rope ladder that held firm and a loose coil cannot anchor itself at the top; the lantern is 'lit' with nothing established to light it.",
-      "UNPAID SETUP: la_tunnel's rustle 'like wind through paper' is never explained on any route (left_glow_rustle).",
-      "Props introduced in passing by possessive, recorded as established where first named: notebook (la_bell3, ra_starfish), map (da_cache_back), a camera or phone for the photo (ra_starfish, not recorded as a fact), a jar (ra_islet).",
-      "WP-0.4 (2026-11-21): the plain contradictions above (lapping, compass, keeper/ranger, carved initials, rope/lantern, map, photo, jar, passage direction) were fixed in the book; the soft cross-route home_elsewhere vs home_near_cove item and the unexplained rustle were left as recorded, as they are taste items on no single route. See docs/planning/evidence/story-plan-retro/findings-the-cave-of-echoes.md."
+    "book_file": "out/the-cave-of-echoes.filled.json",
+    "book_sha256": "3a3606f4a0bee7fa42c399b18847d62260b3efd074cf69328087c53f13928273",
+    "notes": [
+      "Migrated from the 0.0 dialect. Superseded 0.0 binding: book sha256 a1367d591787f71738c655b75de8a7cad1bb52d87b193d08881ec292ea9c9d09; shape hash sha256:bd94786c032215768280d9358d38a52094db7a5a5e48accb3f7b8b669b111d54 (sha256 of compact JSON list of [node_id, is_ending, [[choice_id, target], ...]] in book order); shape id was null. Binding is now provenance.book_sha256.",
+      "threads_note: The book declares no variables, so the plan has no threads. Implicit plant-like setups found while reading are recorded as facts with implicit_plant set.",
+      "continuity_notes: PLAIN CONTRADICTION (same route c_right > c_lake > c_ra_pebbles): ra_fork and ra_lake_way establish a hollow lapping heard from down the branch and growing louder with each step (lapping_from_ahead); ra_lake2 then says 'The lapping sound, it turns out, is only Biscuit's paw' (lapping_is_biscuit). The sound was heard before Biscuit reached the water.",
+      "continuity_notes: SOFT, cross-route: home_elsewhere vs home_near_cove. la_crystal_out ('show everyone back home') and ra_starfish2 ('the rockpool club back home') place Maya's home away from the cove; la_bell4 ('somewhere under the sea near her home') places it by the cove. No single route carries both, so no reader meets the clash.",
+      "continuity_notes: SOFT, same route (c_cache > c_compass > c_da_out): da_compass says the needle points 'the quickest way back to the cave mouth'; da_compass2 says it is 'still finding true north'. Compatible only if the way out lies due north.",
+      "continuity_notes: SOFT: n_open establishes Maya's aunt as the lighthouse keeper; la_song has Maya think 'only the old lighthouse keeper ever knew' of the chamber, and da_bat_back introduces 'the lighthouse ranger' as if known. Neither is introduced or tied to the aunt.",
+      "continuity_notes: SOFT, same route (c_bat ... c_da_push): da_roost shows carved initials proving someone climbed the chimney before; da_skylight calls it 'a whole secret way into the caves' with bats 'nobody else ever knew' about.",
+      "continuity_notes: SOFT, logic: la_bell4 has Maya climb 'the good rope' back up, though she came down a rope ladder that held firm and a loose coil cannot anchor itself at the top; the lantern is 'lit' with nothing established to light it.",
+      "continuity_notes: UNPAID SETUP: la_tunnel's rustle 'like wind through paper' is never explained on any route (left_glow_rustle).",
+      "continuity_notes: Props introduced in passing by possessive, recorded as established where first named: notebook (la_bell3, ra_starfish), map (da_cache_back), a camera or phone for the photo (ra_starfish, not recorded as a fact), a jar (ra_islet).",
+      "continuity_notes: WP-0.4 (2026-11-21): the plain contradictions above (lapping, compass, keeper/ranger, carved initials, rope/lantern, map, photo, jar, passage direction) were fixed in the book; the soft cross-route home_elsewhere vs home_near_cove item and the unexplained rustle were left as recorded, as they are taste items on no single route. See docs/planning/evidence/story-plan-retro/findings-the-cave-of-echoes.md."
     ]
   }
 }

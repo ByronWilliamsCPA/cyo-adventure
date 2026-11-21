@@ -1,12 +1,18 @@
 {
   "plan_version": "0.0",
+  "book": {
+    "slug": "the-mapmakers-island",
+    "storybook_id": "sk_mapmakers_island",
+    "storybook_version": 1,
+    "title": "The Mapmaker's Island"
+  },
   "request": {
     "text": null,
-    "source": "catalog book, hand-authored; no request exists",
     "band": "10-13",
     "length": "long",
     "style": "prose",
-    "tone": "adventurous and wondering; perseverance and legacy; scariness moderate, peril moderate, violence none"
+    "tone": "adventurous and wondering; perseverance and legacy; scariness moderate, peril moderate, violence none",
+    "note": "catalog book, hand-authored; no request exists"
   },
   "pitch": {
     "hero": "Wren, a would-be apprentice mapmaker of the Chart House, set ashore alone on an unnamed island",
@@ -52,7 +58,6 @@
     }
   },
   "truth": {
-    "answer": "Alder, a mapmaker of an earlier day who lived at the survey tower, mapped half the island and left the chart at a stone-and-canvas camp under the summit cliff before a storm took the boat that never came back. Clues across the island (driftwood shorthand, scratched names, notes, cairns, a bottle) all point to that camp. Only from the summit can the island be seen whole and the chart finished. Long before any mapmaker, the island's first people mapped it in ochre handprints and stars.",
     "facts": [
       "alder_named",
       "chart_at_camp",
@@ -61,7 +66,8 @@
       "alder_half_chart",
       "summit_view",
       "first_people"
-    ]
+    ],
+    "statement": "Alder, a mapmaker of an earlier day who lived at the survey tower, mapped half the island and left the chart at a stone-and-canvas camp under the summit cliff before a storm took the boat that never came back. Clues across the island (driftwood shorthand, scratched names, notes, cairns, a bottle) all point to that camp. Only from the summit can the island be seen whole and the chart finished. Long before any mapmaker, the island's first people mapped it in ochre handprints and stars."
   },
   "facts": {
     "wren_test": {
@@ -4536,44 +4542,34 @@
   "provenance": {
     "producer": "hand-written from a full read of the book (WP-0.3, control book, unrevised)",
     "model": "claude-opus-5-5",
-    "book": {
-      "id": "sk_mapmakers_island",
-      "version": 1,
-      "path": "out/the-mapmakers-island.filled.json",
-      "sha256": "2bb129096f67e9f45e1f9b19c2b2b63623c1fa492e1a5ca4c2d373ae65b1d4d1"
-    },
-    "shape": {
-      "id": null,
-      "hash": "sha256:398921e315b5840d3424dd10dcff02560a0f2dbe736384bf148fb9d0f0bde7cb",
-      "hash_basis": "sha256 of compact JSON list of [node_id, is_ending, [[choice_id, target], ...]] in book order"
-    },
-    "declared_variables": [],
-    "threads_note": "The book declares no variables, so the plan has no threads. Implicit plant-like setups found while reading are recorded as facts with implicit_plant set.",
-    "check_results": null,
     "approver": null,
     "authoring_minutes": 8,
-    "continuity_notes": [
-      "UNESTABLISHED NAME (the dominant defect): Alder is introduced explicitly only at mg_readmarks, mg_overhang, cf_notes, e_tw_log, tw_tube and tf_bottle, yet named as already known on routes that never reach those: mg_dam, e_mg_stake, mg_blind, e_mg_tidetable, mg_ruin (mangrove lagoon/heron routes); cf_fallpool ('Alder's hand again'), e_cf_gauge, cf_treetop, cf_shrine, cf_dellcarve (cloud-forest routes not via cf_notes); cv_ochre ('older than Alder'); tw_wallcharts, tw_seachest, tw_fuelstore ('a hand Wren was learning to know'), tw_viewdial, tw_cache ('a hand Wren now knew well') on tower routes; cove_seacave ('knew the hand. Alder's') and cove_rockpool; fresh_cairn; and camp_ascent5 / L_camp ('Alder's camp') for any route that met no Alder clue (for example c_n_start_2 > c_cf_enter_1 > c_cf_switch_1 > cf_ledge > cf_bench > camp).",
-      "UNESTABLISHED REFERENCE: camp_ascent5 says 'The driftwood arrows, the scratched names, the line of patient cairns, all of them had led here'; the driftwood is only on mg_carve and the scratched name only on mg_overhang, so almost every route into the camp asserts clues the reader never met.",
-      "MERGE DEFECT, 'every clue pointed to the camp': cf_bench ('the high camp Wren kept hearing about, the place every clue pointed to'), cove_ridge and tw_toridge ('all the day's clues kept pointing toward') presuppose chart_at_camp, missing on routes via cf_switch, via L_cove from tw_top/tf_cliffgap/cv_deepglow, and via tw_salvage.",
-      "MERGE DEFECT, tools: ch_sightings uses 'the salvaged brass rule' (the alidade, found only at tw_salvage); ch_farshore uses 'the brass glass' and camp_ready claims 'the pens, the glass' (spyglass and pens are in the trunk, opened only on camp_trunk; camp_chart shows unspecified tools on the table); L_summit and summit_signal use 'Alder's mirror' (trunk only), so routes c_L_camp_1 > camp_chart and c_L_camp_3 reach a mirror they never found; ch_ink uses 'Alder's good pen' likewise.",
-      "MERGE DEFECT: ch_sign says 'Whoever finishes the chart, Alder's journal had said, should name the island', but the journal is read only on c_camp_trunk_2 > camp_journal.",
-      "MERGE DEFECT: L_fresh says 'Whoever had drawn the first ochre map had marked this very place', but the ochre map is seen only on cv_ochre; every other route into the spring (mg_seep, cf_traverse, tf_gap, L_cove, cf_dellspring) never met it.",
-      "IMPOSSIBLE ON EVERY ROUTE: ch_pencil pencils in 'the handprint cave and the star slab and the vanished village' (and the orchids). The handprint cave (cv_glitter), star slab (cove_rise) and village (mg_ruin) are on mutually exclusive first-act branches, so no route has seen all of them.",
-      "MERGE DEFECT, rescue finale: summit_signal and meet_boat say Wren 'spotted from the heights' the seal pup in the warm cave and the turtle on the reef, and offer to lead the sailors to each. The pup is met only on c_cv_enter_3 > cv_warm and the turtle only on c_mg_enter_2 > mg_oyster, and both branches are mutually exclusive, so no route has met both; most routes have met neither. A pup inside a cave cannot be seen from the summit at all.",
-      "PLAIN CONTRADICTION, same route (c_mg_enter_2 > c_mg_oyster_1 > c_mg_turtle_note_1 ... > summit_signal > meet_boat > c_meet_boat_2): mg_oyster puts the turtle among the oyster rocks on the mangrove coast (left of the landing beach); e_rescue_turtle has Wren lead the sailors 'out across the flats to the reef' (the flats are to the right).",
-      "PLAIN CONTRADICTION, ink versus pencil (c_ch_table_2 > ch_pencil > c_ch_pencil_1 > ch_sign > c_ch_sign_3 > ch_seal_final > c_ch_seal_final_2): e_ch_clean hands over 'the clean inked masterwork exactly as drawn ... fixed forever in black ink', but on this route the chart was pencilled soft and grey with every small detail.",
-      "PLAIN CONTRADICTION, same route possible (c_tf_cargo_1 > tf_cliffgap > L_cove > cove_rise > cove_starrock): tf_cargo calls the Marigold the ship of 'the island's first settlers'; cove_starrock, cv_ochre, cv_lakebeach, mg_ruin and cf_shrine attribute the island's first finding and mapping to an ancient people long before any chart.",
-      "UNESTABLISHED REFERENCE, cv routes: cv_deepglow calls it 'the hidden cove, seen from below now', implying an earlier view from above that no cave route has had.",
-      "SOFT: tw_cellar's 'the very map the whole island seemed to whisper about' and tf_bottle's 'the hand was one Wren was coming to know' presuppose clues not met on those routes.",
-      "SOFT: L_cove and tf_cliffgap call the cove 'a place no chart had ever shown' and ch_ink has 'the cove and the reef named at last', while camp_chart shows the cove fixed on Alder's chart and camp_journal says Alder named the hidden cove.",
-      "SOFT: cv_enter says someone had been in the sink-hole 'and recently', but the only predecessor in the book is Alder, long gone.",
-      "SOFT, time and the ship: n_open has the ship leave and return at dusk; summit_signal finds it 'standing off the reef, patient, waiting for dusk' all day. Several endings mix 'morning', 'sun climbed', 'past noon' and 'dusk' loosely (for example e_mg_turtle_seen's 'slipping light' in the morning).",
-      "MINOR: mg_seep's 'the seep of clear water' is unintroduced on the root-tunnel route (c_mg_lagoon_2 > c_mg_lagtunnel_1); cv_tohigh, tw_salvage, tw_top and L_fresh mention 'the ridge camp' / 'the camp' as known on routes where it is first heard there.",
-      "UNPAID SETUP: cf_box's locket holds a girl who 'looked a little like Wren's own' eyes; no route returns to it. Wren's marked turtle or pup (turtle_marked, pup_marked, tangled_pup_marked) are only paid off at meet_boat, and the net-tangled pup on the flats (tf_seals) is never mentioned again.",
-      "PROSE BUG (not continuity): e_cove_tin ends 'and could not bring itself to mind', a pronoun slip for Wren, who otherwise never takes a pronoun.",
-      "Authoring note: intents for 39 of the 40 single-continue choices were derived mechanically from their labels; every multi-choice intent is the label paraphrased and its cost hand-written."
-    ],
-    "wp04_second_read": "2026-11-21: WP-0.4 second reader (control book, continuity only) fixed every continuity note above except the items marked SOFT time, UNPAID SETUP and PROSE BUG, which are recorded in docs/planning/evidence/story-plan-retro/findings-the-mapmakers-island.md and left as written. Facts, requires and establishes updated to the fixed book; continuity_notes are kept as the pre-fix record."
+    "book_file": "out/the-mapmakers-island.filled.json",
+    "book_sha256": "2bb129096f67e9f45e1f9b19c2b2b63623c1fa492e1a5ca4c2d373ae65b1d4d1",
+    "notes": [
+      "Migrated from the 0.0 dialect. Superseded 0.0 binding: book sha256 2bb129096f67e9f45e1f9b19c2b2b63623c1fa492e1a5ca4c2d373ae65b1d4d1; shape hash sha256:398921e315b5840d3424dd10dcff02560a0f2dbe736384bf148fb9d0f0bde7cb (sha256 of compact JSON list of [node_id, is_ending, [[choice_id, target], ...]] in book order); shape id was null. Binding is now provenance.book_sha256.",
+      "threads_note: The book declares no variables, so the plan has no threads. Implicit plant-like setups found while reading are recorded as facts with implicit_plant set.",
+      "continuity_notes: UNESTABLISHED NAME (the dominant defect): Alder is introduced explicitly only at mg_readmarks, mg_overhang, cf_notes, e_tw_log, tw_tube and tf_bottle, yet named as already known on routes that never reach those: mg_dam, e_mg_stake, mg_blind, e_mg_tidetable, mg_ruin (mangrove lagoon/heron routes); cf_fallpool ('Alder's hand again'), e_cf_gauge, cf_treetop, cf_shrine, cf_dellcarve (cloud-forest routes not via cf_notes); cv_ochre ('older than Alder'); tw_wallcharts, tw_seachest, tw_fuelstore ('a hand Wren was learning to know'), tw_viewdial, tw_cache ('a hand Wren now knew well') on tower routes; cove_seacave ('knew the hand. Alder's') and cove_rockpool; fresh_cairn; and camp_ascent5 / L_camp ('Alder's camp') for any route that met no Alder clue (for example c_n_start_2 > c_cf_enter_1 > c_cf_switch_1 > cf_ledge > cf_bench > camp).",
+      "continuity_notes: UNESTABLISHED REFERENCE: camp_ascent5 says 'The driftwood arrows, the scratched names, the line of patient cairns, all of them had led here'; the driftwood is only on mg_carve and the scratched name only on mg_overhang, so almost every route into the camp asserts clues the reader never met.",
+      "continuity_notes: MERGE DEFECT, 'every clue pointed to the camp': cf_bench ('the high camp Wren kept hearing about, the place every clue pointed to'), cove_ridge and tw_toridge ('all the day's clues kept pointing toward') presuppose chart_at_camp, missing on routes via cf_switch, via L_cove from tw_top/tf_cliffgap/cv_deepglow, and via tw_salvage.",
+      "continuity_notes: MERGE DEFECT, tools: ch_sightings uses 'the salvaged brass rule' (the alidade, found only at tw_salvage); ch_farshore uses 'the brass glass' and camp_ready claims 'the pens, the glass' (spyglass and pens are in the trunk, opened only on camp_trunk; camp_chart shows unspecified tools on the table); L_summit and summit_signal use 'Alder's mirror' (trunk only), so routes c_L_camp_1 > camp_chart and c_L_camp_3 reach a mirror they never found; ch_ink uses 'Alder's good pen' likewise.",
+      "continuity_notes: MERGE DEFECT: ch_sign says 'Whoever finishes the chart, Alder's journal had said, should name the island', but the journal is read only on c_camp_trunk_2 > camp_journal.",
+      "continuity_notes: MERGE DEFECT: L_fresh says 'Whoever had drawn the first ochre map had marked this very place', but the ochre map is seen only on cv_ochre; every other route into the spring (mg_seep, cf_traverse, tf_gap, L_cove, cf_dellspring) never met it.",
+      "continuity_notes: IMPOSSIBLE ON EVERY ROUTE: ch_pencil pencils in 'the handprint cave and the star slab and the vanished village' (and the orchids). The handprint cave (cv_glitter), star slab (cove_rise) and village (mg_ruin) are on mutually exclusive first-act branches, so no route has seen all of them.",
+      "continuity_notes: MERGE DEFECT, rescue finale: summit_signal and meet_boat say Wren 'spotted from the heights' the seal pup in the warm cave and the turtle on the reef, and offer to lead the sailors to each. The pup is met only on c_cv_enter_3 > cv_warm and the turtle only on c_mg_enter_2 > mg_oyster, and both branches are mutually exclusive, so no route has met both; most routes have met neither. A pup inside a cave cannot be seen from the summit at all.",
+      "continuity_notes: PLAIN CONTRADICTION, same route (c_mg_enter_2 > c_mg_oyster_1 > c_mg_turtle_note_1 ... > summit_signal > meet_boat > c_meet_boat_2): mg_oyster puts the turtle among the oyster rocks on the mangrove coast (left of the landing beach); e_rescue_turtle has Wren lead the sailors 'out across the flats to the reef' (the flats are to the right).",
+      "continuity_notes: PLAIN CONTRADICTION, ink versus pencil (c_ch_table_2 > ch_pencil > c_ch_pencil_1 > ch_sign > c_ch_sign_3 > ch_seal_final > c_ch_seal_final_2): e_ch_clean hands over 'the clean inked masterwork exactly as drawn ... fixed forever in black ink', but on this route the chart was pencilled soft and grey with every small detail.",
+      "continuity_notes: PLAIN CONTRADICTION, same route possible (c_tf_cargo_1 > tf_cliffgap > L_cove > cove_rise > cove_starrock): tf_cargo calls the Marigold the ship of 'the island's first settlers'; cove_starrock, cv_ochre, cv_lakebeach, mg_ruin and cf_shrine attribute the island's first finding and mapping to an ancient people long before any chart.",
+      "continuity_notes: UNESTABLISHED REFERENCE, cv routes: cv_deepglow calls it 'the hidden cove, seen from below now', implying an earlier view from above that no cave route has had.",
+      "continuity_notes: SOFT: tw_cellar's 'the very map the whole island seemed to whisper about' and tf_bottle's 'the hand was one Wren was coming to know' presuppose clues not met on those routes.",
+      "continuity_notes: SOFT: L_cove and tf_cliffgap call the cove 'a place no chart had ever shown' and ch_ink has 'the cove and the reef named at last', while camp_chart shows the cove fixed on Alder's chart and camp_journal says Alder named the hidden cove.",
+      "continuity_notes: SOFT: cv_enter says someone had been in the sink-hole 'and recently', but the only predecessor in the book is Alder, long gone.",
+      "continuity_notes: SOFT, time and the ship: n_open has the ship leave and return at dusk; summit_signal finds it 'standing off the reef, patient, waiting for dusk' all day. Several endings mix 'morning', 'sun climbed', 'past noon' and 'dusk' loosely (for example e_mg_turtle_seen's 'slipping light' in the morning).",
+      "continuity_notes: MINOR: mg_seep's 'the seep of clear water' is unintroduced on the root-tunnel route (c_mg_lagoon_2 > c_mg_lagtunnel_1); cv_tohigh, tw_salvage, tw_top and L_fresh mention 'the ridge camp' / 'the camp' as known on routes where it is first heard there.",
+      "continuity_notes: UNPAID SETUP: cf_box's locket holds a girl who 'looked a little like Wren's own' eyes; no route returns to it. Wren's marked turtle or pup (turtle_marked, pup_marked, tangled_pup_marked) are only paid off at meet_boat, and the net-tangled pup on the flats (tf_seals) is never mentioned again.",
+      "continuity_notes: PROSE BUG (not continuity): e_cove_tin ends 'and could not bring itself to mind', a pronoun slip for Wren, who otherwise never takes a pronoun.",
+      "continuity_notes: Authoring note: intents for 39 of the 40 single-continue choices were derived mechanically from their labels; every multi-choice intent is the label paraphrased and its cost hand-written.",
+      "wp04_second_read: 2026-11-21: WP-0.4 second reader (control book, continuity only) fixed every continuity note above except the items marked SOFT time, UNPAID SETUP and PROSE BUG, which are recorded in docs/planning/evidence/story-plan-retro/findings-the-mapmakers-island.md and left as written. Facts, requires and establishes updated to the fixed book; continuity_notes are kept as the pre-fix record."
+    ]
   }
 }

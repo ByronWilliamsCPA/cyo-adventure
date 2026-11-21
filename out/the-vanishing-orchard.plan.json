@@ -1,12 +1,18 @@
 {
   "plan_version": "0.0",
+  "book": {
+    "slug": "the-vanishing-orchard",
+    "storybook_id": "sk_vanishing_orchard",
+    "storybook_version": 1,
+    "title": "The Vanishing Orchard"
+  },
   "request": {
     "text": null,
-    "source": "catalog book, hand-authored; no request exists",
     "band": "13-16",
     "length": "long",
     "style": "prose",
-    "tone": "eerie, elegiac mystery about memory and sacrifice; violence mild, scariness moderate, peril moderate"
+    "tone": "eerie, elegiac mystery about memory and sacrifice; violence mild, scariness moderate, peril moderate",
+    "note": "catalog book, hand-authored; no request exists"
   },
   "pitch": {
     "hero": "Rowan Ashby, a teenager born in Alderwick but raised elsewhere, back in her orchard hometown",
@@ -89,7 +95,6 @@
     }
   },
   "truth": {
-    "answer": "The Quiet is the hunger of the orchard's oldest tree, whose taproot pushed through the split founding wall under the cider house into a black spring. In a starving winter the founders begged it to take their grief; to take grief it took memory, and the town's harvests stayed fruitful. The orchard lease renews the bargain once every fortieth year; under it the tree was given one willing name a year, a keeper remembered by the orchard and forgotten by everyone else. The line broke forty years ago when Rowan's grandmother, named in that year's renewal, went down into the spring; she has been held there since, so Rowan never met her and knows her only from photographs. Since then the Quiet takes what it pleases, and the lost turn in the spring. Rowan was born in Alderwick but carried away as a small child and raised elsewhere, so the root has no hold on her. This year's first frost will set the bargain for another forty years. The bargain's motive is told two ways (grief relief, a fruitful harvest); the book treats them as two faces of one trade.",
     "facts": [
       "quiet_from_oldest_tree",
       "founders_grief_bargain",
@@ -99,7 +104,8 @@
       "grew_up_elsewhere",
       "rowan_immune",
       "frost_deadline"
-    ]
+    ],
+    "statement": "The Quiet is the hunger of the orchard's oldest tree, whose taproot pushed through the split founding wall under the cider house into a black spring. In a starving winter the founders begged it to take their grief; to take grief it took memory, and the town's harvests stayed fruitful. The orchard lease renews the bargain once every fortieth year; under it the tree was given one willing name a year, a keeper remembered by the orchard and forgotten by everyone else. The line broke forty years ago when Rowan's grandmother, named in that year's renewal, went down into the spring; she has been held there since, so Rowan never met her and knows her only from photographs. Since then the Quiet takes what it pleases, and the lost turn in the spring. Rowan was born in Alderwick but carried away as a small child and raised elsewhere, so the root has no hold on her. This year's first frost will set the bargain for another forty years. The bargain's motive is told two ways (grief relief, a fruitful harvest); the book treats them as two faces of one trade."
   },
   "facts": {
     "rowan_arrives_by_bus": {
@@ -3481,56 +3487,44 @@
   "provenance": {
     "producer": "hand-written from a full read of the book (WP-0.3, control book, unrevised)",
     "model": "claude-opus-5-5",
-    "book": {
-      "id": "sk_vanishing_orchard",
-      "version": 1,
-      "path": "out/the-vanishing-orchard.filled.json",
-      "sha256": "46e02987d637f13acb6115f36807c820d324a0cd113cd1e2870516ee336e2716"
-    },
-    "shape": {
-      "id": null,
-      "hash": "sha256:0e15db63026be6a617976e7288998708b6fe585555de3d2ede15bb1c450520c6",
-      "hash_basis": "sha256 of compact JSON list of [node_id, is_ending, [[choice_id, target], ...]] in book order"
-    },
-    "declared_variables": [],
-    "threads_note": "The book declares no variables, so the plan has no threads. Implicit plant-like setups found while reading are recorded as facts with implicit_plant set.",
-    "check_results": null,
     "approver": null,
     "authoring_minutes": 9,
-    "continuity_notes": [
-      "PLAIN CONTRADICTION, most routes: rowan_knew_grandmother vs grandmother_gone_forty_years. kee_a_p3, b2k_p1, b2kt_p3, n_b5_2 and e_all_grandmother say the grandmother went into the spring forty years ago and has been held there since; pho_conv and cel_t_p3 ('younger than Rowan had ever known her'), pho_t_p1 (birthday cards) and b2t_p1/e_b2tb (her Sunday kitchen) say teenage Rowan knew her. Example route: c_n_start_2 > c_kee_entry_1 ... c_n_b2_1 > b2t_p1.",
-      "PLAIN CONTRADICTION, same route (kee_entry > c_kee_entry_2 > kee_b_p1): kee_entry has the knotted cord 'looped at her belt'; kee_b_p1 has it hanging 'on a nail beside Odile', the nail rubbed smooth by generations.",
-      "PLAIN CONTRADICTION, kee routes into n_b3: kee_t_p3 says Odile's legs 'would no longer carry her down the steep hill' and she will send Teo instead; n_b3 has her come down to the spring on Teo's arm, and b3ut_p1/fin_all_2 have her teaching and steering there.",
-      "PLAIN CONTRADICTION, same route (c_n_b2_1 > b2t_p1 ... c_b2t_m_2 > e_b2tb): b2t_p1 gives the root the memory of her grandmother's Sunday kitchen and b2t_m says a traded memory is gone for good; e_b2tb then gives 'her whole memory of her grandmother, ... the Sunday kitchens' again.",
-      "PLAIN CONTRADICTION, cadence of the bargain: rec_b_p2/rec_b_p4, cel_t_p4, n_b4 and e_one_hesitate say once every fortieth year; kee_a_p3 says one willing name a year; n_b1 (on every route) says a little each season. Same-route clashes: any rec_b route through n_b1; any kee_a route reaching e_one_hesitate or n_b4.",
-      "PLAIN CONTRADICTION, Rowan's childhood: kee_t_p1 ('You were never planted here'), b1at_p1 ('her childhood banked in streets the orchard had never owned') vs b3v_p2 ('children together for a few short years'), fin_one_1 ('the neighbour girl she had grown up beside'), fin_one_2 ('her own first summer in Alderwick') and e_b3wn. Same route example: kee route > n_b3 > c_n_b3_2 > b3v_p2.",
-      "UNESTABLISHED REFERENCE, cel routes (c_n_start_4): cel_a_p3 ('Odile's warning came back to her'), cel_a_p4 ('the black spring Odile had described') and cel_t_p1 ('understood what Odile had meant') cite a conversation that happens only on the keeper branch; Rowan never meets Odile on any cel route.",
-      "UNESTABLISHED REFERENCE, cel_b route (c_cel_entry_2): cel_b_p1 drops a pebble 'through the gap in the barklocked door' and cel_b_p3 lowers the lamp 'through the gap', but the gap is chiselled only on the cel_a branch; cel_b_p4 then 'opened the door fully' with no prying of the living bar.",
-      "UNESTABLISHED REFERENCE, rec routes: rec_clue says 'this time the door did not bar itself behind her', but the hall door is barred only in the ending e_rec_a.",
-      "UNESTABLISHED NAME, pho routes (c_n_start_3) and cel_b/cel_t: 'the Quiet' is used as a known name (pho_a_p3, pho_b_p1, pho_b_p4, pho_t_p3, e_pho_a, e_pho_b, cel_b_p2, cel_t_p1) though it is introduced only by Odile on the keeper branch; n_b1 then presents it as known on every route.",
-      "CROSS-BRANCH LEAK: kee_a_p1 explains 'why the register ran blank' and kee_b_p2 compares Odile to 'the clerk', both seen only on the records branch.",
-      "MERGE DEFECT, n_b1 (all four entries): Rowan holds 'a withered seed, the token every keeper carries' in her palm, but the seed is given only on the keeper branch (kee_conv). The rec, pho and cel routes never hand it to her.",
-      "MERGE DEFECT, rec_conv from rec_a (c_rec_adec_1): 'the name written on the latest clause' and rec_clue's 'the fortieth-year clause' cite the lease clause found only on rec_b.",
-      "MERGE DEFECT, pho_t_p1..pho_t_p4 and pho_clue from pho_a (c_pho_adec_1): 'the album', 'the steady orchard album' cite the album found only on pho_b.",
-      "MERGE DEFECT, b1a_p3 from rec, pho and cel routes: 'exactly what the empty knot was waiting for' cites the empty knot shown only at kee_conv.",
-      "MERGE DEFECT, b1bt_p1 from pho and cel routes via b1b: 'her untaken memory', 'her outsideness' presuppose grew_up_elsewhere, not yet told on those routes.",
-      "MERGE DEFECT, b2k_p1 from cel routes: recaps the grandmother as the keeper whose line broke forty years ago, never told on cel routes (the cel branch only shows her among the drowned).",
-      "MERGE DEFECT, fin_all_1, fin_all_2, fin_share_1, fin_share_2, e_share_lost from b3v (c_n_b3_2) and b3w (c_n_b3_3): all address 'the gathered town', gathered only on b3u. n_b4 hedges ('the gathered town, or else a single beloved face') but offers all four finales on every route.",
-      "MERGE DEFECT, n_b5 and n_b5_2 from fin_share: the choice 'Notice the one gap the flood did not reach' and n_b5_2's 'the great rising flood of remembering' cite the flood that happens only in fin_all_1.",
-      "MERGE DEFECT, minor: b3u_p1 relies on 'Teo's stubborn kind of love' (told only on kee or b1c routes); b3u_p2 names 'Old Mr Hallet' (b1c only) and 'the frightened clerk' (rec only); fin_one_1 introduces the neighbour girl as known on b3u/b3w routes (it restates enough to stand alone).",
-      "SOFT, callback: n_b5 shows 'a gap-toothed girl who had once won every game of conkers', a callback to the neighbour girl who is introduced only on b3v; on b3u routes (the main way into fin_all/fin_share) the detail is unexplained.",
-      "SOFT, time of day: n_open has Rowan arrive at dusk; rec_t_p4, pho_clue, cel_a_p1, e_cel_a, e_cel_b and e_b2ta place the investigation in the afternoon with no night passing on the page; b1c_p1 and b3u_p1 are at dusk again; n_b5 lights the bakery 'in the dusk' and e_all_restore steps straight into 'morning light'.",
-      "SOFT, motive of the bargain: kee_a_p2, b1a_p2 and b3w_p2 make it grief relief; rec_b_p4 and n_b1 make it memory for a fruitful harvest. Compatible if both are true, but the book never joins them.",
-      "SOFT, 'last keeper': Odile is 'the last orchard-keeper' and 'the last keeper on Mabb Hill' (kee_entry, n_b3, e_b2ka) while the grandmother is 'the last keeper to pay the price' (kee_conv, n_b5_2). And kee_a_p3 has keepers feed the tree another willing name, where pho_t_p2, b1a_p3 and b2k_d1 make the keeper the one who is kept.",
-      "SOFT: cel_entry says 'every thread she had followed in Alderwick ended here' though on that route she followed none; e_cel_b mentions 'the old woman on the hill' whom she has not met.",
-      "SOFT, same route (b1c > b1ct_p3 > n_b2 > ... > n_b3): Teo is already 'beside her' returning to the spring at b1ct_p3, yet n_b3 has him arrive on the stair, and e_b2kb has him 'climbing down to find her'.",
-      "UNPAID SETUPS: the margin word 'enough' (rec_b_p3), the pressed blossom and child's lock of hair (pho_b_p3), the eleven mill-fire children (rec_t_p2) and the clerk's daughter (rec_a_p2) are never returned to on any route."
-    ],
-    "continuity_resolution": {
-      "pass": "WP-0.4 second-reader continuity pass, 2026-11-21 (control book: continuity only, no agency changes)",
-      "findings": "docs/planning/evidence/story-plan-retro/findings-the-vanishing-orchard.md",
-      "backstory_decision": "Grandmother went into the spring forty years ago and Rowan never met her (supported by both grandmother endings, n_b5_2, kee_a_p3, kee_conv, rec_conv, b2k/b2kt, cel_t_p3); Rowan was born in Alderwick, carried away as a small child, raised elsewhere (supported by n_open on every route, b3v_p2, fin_one_1, fin_one_2, e_b3wn, and every 'grew up elsewhere' line); cadence: lease renewed every fortieth year, one willing name a year.",
-      "note": "continuity_notes below are the pre-fix record written in WP-0.3; every PLAIN CONTRADICTION, UNESTABLISHED and MERGE DEFECT entry is resolved in the book. SOFT 'last keeper' wording, the two-faced motive, the unpaid setups and the n_b5 conkers callback are not plain contradictions and stay as written (control)."
-    }
+    "book_file": "out/the-vanishing-orchard.filled.json",
+    "book_sha256": "46e02987d637f13acb6115f36807c820d324a0cd113cd1e2870516ee336e2716",
+    "notes": [
+      "Migrated from the 0.0 dialect. Superseded 0.0 binding: book sha256 46e02987d637f13acb6115f36807c820d324a0cd113cd1e2870516ee336e2716; shape hash sha256:0e15db63026be6a617976e7288998708b6fe585555de3d2ede15bb1c450520c6 (sha256 of compact JSON list of [node_id, is_ending, [[choice_id, target], ...]] in book order); shape id was null. Binding is now provenance.book_sha256.",
+      "threads_note: The book declares no variables, so the plan has no threads. Implicit plant-like setups found while reading are recorded as facts with implicit_plant set.",
+      "continuity_notes: PLAIN CONTRADICTION, most routes: rowan_knew_grandmother vs grandmother_gone_forty_years. kee_a_p3, b2k_p1, b2kt_p3, n_b5_2 and e_all_grandmother say the grandmother went into the spring forty years ago and has been held there since; pho_conv and cel_t_p3 ('younger than Rowan had ever known her'), pho_t_p1 (birthday cards) and b2t_p1/e_b2tb (her Sunday kitchen) say teenage Rowan knew her. Example route: c_n_start_2 > c_kee_entry_1 ... c_n_b2_1 > b2t_p1.",
+      "continuity_notes: PLAIN CONTRADICTION, same route (kee_entry > c_kee_entry_2 > kee_b_p1): kee_entry has the knotted cord 'looped at her belt'; kee_b_p1 has it hanging 'on a nail beside Odile', the nail rubbed smooth by generations.",
+      "continuity_notes: PLAIN CONTRADICTION, kee routes into n_b3: kee_t_p3 says Odile's legs 'would no longer carry her down the steep hill' and she will send Teo instead; n_b3 has her come down to the spring on Teo's arm, and b3ut_p1/fin_all_2 have her teaching and steering there.",
+      "continuity_notes: PLAIN CONTRADICTION, same route (c_n_b2_1 > b2t_p1 ... c_b2t_m_2 > e_b2tb): b2t_p1 gives the root the memory of her grandmother's Sunday kitchen and b2t_m says a traded memory is gone for good; e_b2tb then gives 'her whole memory of her grandmother, ... the Sunday kitchens' again.",
+      "continuity_notes: PLAIN CONTRADICTION, cadence of the bargain: rec_b_p2/rec_b_p4, cel_t_p4, n_b4 and e_one_hesitate say once every fortieth year; kee_a_p3 says one willing name a year; n_b1 (on every route) says a little each season. Same-route clashes: any rec_b route through n_b1; any kee_a route reaching e_one_hesitate or n_b4.",
+      "continuity_notes: PLAIN CONTRADICTION, Rowan's childhood: kee_t_p1 ('You were never planted here'), b1at_p1 ('her childhood banked in streets the orchard had never owned') vs b3v_p2 ('children together for a few short years'), fin_one_1 ('the neighbour girl she had grown up beside'), fin_one_2 ('her own first summer in Alderwick') and e_b3wn. Same route example: kee route > n_b3 > c_n_b3_2 > b3v_p2.",
+      "continuity_notes: UNESTABLISHED REFERENCE, cel routes (c_n_start_4): cel_a_p3 ('Odile's warning came back to her'), cel_a_p4 ('the black spring Odile had described') and cel_t_p1 ('understood what Odile had meant') cite a conversation that happens only on the keeper branch; Rowan never meets Odile on any cel route.",
+      "continuity_notes: UNESTABLISHED REFERENCE, cel_b route (c_cel_entry_2): cel_b_p1 drops a pebble 'through the gap in the barklocked door' and cel_b_p3 lowers the lamp 'through the gap', but the gap is chiselled only on the cel_a branch; cel_b_p4 then 'opened the door fully' with no prying of the living bar.",
+      "continuity_notes: UNESTABLISHED REFERENCE, rec routes: rec_clue says 'this time the door did not bar itself behind her', but the hall door is barred only in the ending e_rec_a.",
+      "continuity_notes: UNESTABLISHED NAME, pho routes (c_n_start_3) and cel_b/cel_t: 'the Quiet' is used as a known name (pho_a_p3, pho_b_p1, pho_b_p4, pho_t_p3, e_pho_a, e_pho_b, cel_b_p2, cel_t_p1) though it is introduced only by Odile on the keeper branch; n_b1 then presents it as known on every route.",
+      "continuity_notes: CROSS-BRANCH LEAK: kee_a_p1 explains 'why the register ran blank' and kee_b_p2 compares Odile to 'the clerk', both seen only on the records branch.",
+      "continuity_notes: MERGE DEFECT, n_b1 (all four entries): Rowan holds 'a withered seed, the token every keeper carries' in her palm, but the seed is given only on the keeper branch (kee_conv). The rec, pho and cel routes never hand it to her.",
+      "continuity_notes: MERGE DEFECT, rec_conv from rec_a (c_rec_adec_1): 'the name written on the latest clause' and rec_clue's 'the fortieth-year clause' cite the lease clause found only on rec_b.",
+      "continuity_notes: MERGE DEFECT, pho_t_p1..pho_t_p4 and pho_clue from pho_a (c_pho_adec_1): 'the album', 'the steady orchard album' cite the album found only on pho_b.",
+      "continuity_notes: MERGE DEFECT, b1a_p3 from rec, pho and cel routes: 'exactly what the empty knot was waiting for' cites the empty knot shown only at kee_conv.",
+      "continuity_notes: MERGE DEFECT, b1bt_p1 from pho and cel routes via b1b: 'her untaken memory', 'her outsideness' presuppose grew_up_elsewhere, not yet told on those routes.",
+      "continuity_notes: MERGE DEFECT, b2k_p1 from cel routes: recaps the grandmother as the keeper whose line broke forty years ago, never told on cel routes (the cel branch only shows her among the drowned).",
+      "continuity_notes: MERGE DEFECT, fin_all_1, fin_all_2, fin_share_1, fin_share_2, e_share_lost from b3v (c_n_b3_2) and b3w (c_n_b3_3): all address 'the gathered town', gathered only on b3u. n_b4 hedges ('the gathered town, or else a single beloved face') but offers all four finales on every route.",
+      "continuity_notes: MERGE DEFECT, n_b5 and n_b5_2 from fin_share: the choice 'Notice the one gap the flood did not reach' and n_b5_2's 'the great rising flood of remembering' cite the flood that happens only in fin_all_1.",
+      "continuity_notes: MERGE DEFECT, minor: b3u_p1 relies on 'Teo's stubborn kind of love' (told only on kee or b1c routes); b3u_p2 names 'Old Mr Hallet' (b1c only) and 'the frightened clerk' (rec only); fin_one_1 introduces the neighbour girl as known on b3u/b3w routes (it restates enough to stand alone).",
+      "continuity_notes: SOFT, callback: n_b5 shows 'a gap-toothed girl who had once won every game of conkers', a callback to the neighbour girl who is introduced only on b3v; on b3u routes (the main way into fin_all/fin_share) the detail is unexplained.",
+      "continuity_notes: SOFT, time of day: n_open has Rowan arrive at dusk; rec_t_p4, pho_clue, cel_a_p1, e_cel_a, e_cel_b and e_b2ta place the investigation in the afternoon with no night passing on the page; b1c_p1 and b3u_p1 are at dusk again; n_b5 lights the bakery 'in the dusk' and e_all_restore steps straight into 'morning light'.",
+      "continuity_notes: SOFT, motive of the bargain: kee_a_p2, b1a_p2 and b3w_p2 make it grief relief; rec_b_p4 and n_b1 make it memory for a fruitful harvest. Compatible if both are true, but the book never joins them.",
+      "continuity_notes: SOFT, 'last keeper': Odile is 'the last orchard-keeper' and 'the last keeper on Mabb Hill' (kee_entry, n_b3, e_b2ka) while the grandmother is 'the last keeper to pay the price' (kee_conv, n_b5_2). And kee_a_p3 has keepers feed the tree another willing name, where pho_t_p2, b1a_p3 and b2k_d1 make the keeper the one who is kept.",
+      "continuity_notes: SOFT: cel_entry says 'every thread she had followed in Alderwick ended here' though on that route she followed none; e_cel_b mentions 'the old woman on the hill' whom she has not met.",
+      "continuity_notes: SOFT, same route (b1c > b1ct_p3 > n_b2 > ... > n_b3): Teo is already 'beside her' returning to the spring at b1ct_p3, yet n_b3 has him arrive on the stair, and e_b2kb has him 'climbing down to find her'.",
+      "continuity_notes: UNPAID SETUPS: the margin word 'enough' (rec_b_p3), the pressed blossom and child's lock of hair (pho_b_p3), the eleven mill-fire children (rec_t_p2) and the clerk's daughter (rec_a_p2) are never returned to on any route.",
+      "continuity_resolution.pass: WP-0.4 second-reader continuity pass, 2026-11-21 (control book: continuity only, no agency changes)",
+      "continuity_resolution.findings: docs/planning/evidence/story-plan-retro/findings-the-vanishing-orchard.md",
+      "continuity_resolution.backstory_decision: Grandmother went into the spring forty years ago and Rowan never met her (supported by both grandmother endings, n_b5_2, kee_a_p3, kee_conv, rec_conv, b2k/b2kt, cel_t_p3); Rowan was born in Alderwick, carried away as a small child, raised elsewhere (supported by n_open on every route, b3v_p2, fin_one_1, fin_one_2, e_b3wn, and every 'grew up elsewhere' line); cadence: lease renewed every fortieth year, one willing name a year.",
+      "continuity_resolution.note: continuity_notes below are the pre-fix record written in WP-0.3; every PLAIN CONTRADICTION, UNESTABLISHED and MERGE DEFECT entry is resolved in the book. SOFT 'last keeper' wording, the two-faced motive, the unpaid setups and the n_b5 conkers callback are not plain contradictions and stay as written (control)."
+    ]
   }
 }
