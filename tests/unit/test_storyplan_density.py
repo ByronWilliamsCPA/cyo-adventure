@@ -162,6 +162,17 @@ def test_largest_smoke_plan_trips_every_ratio_metric() -> None:
     assert "share their cost" in messages
 
 
+@pytest.mark.unit
+def test_no_existing_plan_meets_the_failure_fact_case() -> None:
+    # The AL-849 SP-3 change (a failure fact marked against the truth becomes
+    # a WARNING) applies to no committed plan, so it changed no SP-3 ERROR in
+    # the corpus.
+    for name, report in _reports().items():
+        assert not any(
+            f.rule_id == "SP-3" and "failure fact" in f.message for f in report.findings
+        ), name
+
+
 # ---------------------------------------------------------------------------
 # The metrics on focused fixtures
 # ---------------------------------------------------------------------------

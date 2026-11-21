@@ -63,6 +63,18 @@ two sides are both established at some reachable site (a node's
 - ERROR when the pair sits only on routes no single reading crosses but one
   side is a ``truth`` fact: the book gives two answers to its own question
   (the two-backstory class, AL-773), which a reader who replays meets.
+- WARNING, not ERROR, in that same split-truth case when the non-truth side
+  is a failure fact: every reachable site that establishes it (a passage, or
+  a configuration entered through a choice that plants it) can reach no
+  positive ending, so it sits only on routes that end in a negative or
+  neutral ending (WP-2.3 follow-on, 2026-11-21, AL-849). What a hero
+  believes or does on a route that fails ("she rushes and the wick stays
+  damp") is not a second answer to the book's question: the book answers it
+  once, on the routes that succeed, and the failure reads as a failure.
+  Convention 1 asks the plan to record such a statement and mark it against
+  its opposite; as an ERROR this case rewarded deleting the mark, which is
+  what the smoke's run 2 repair most likely did. A failure fact that one
+  reading meets together with the truth is still the ERROR above.
 - WARNING when the pair sits only on mutually exclusive routes and neither side
   is a truth fact (for example a cipher that is a three-place shift on one
   route and a shuffled table on another). It is a replay inconsistency, not a
@@ -1214,8 +1226,70 @@ def _pair_route(
     return " > ".join(reversed(steps))
 
 
+def _can_reach_positive(ctx: _Context) -> frozenset[int]:
+    """Return the configurations from which some positive ending is reachable.
+
+    Args:
+        ctx: The analysis context.
+
+    Returns:
+        frozenset[int]: Configuration indices, positive endings included.
+    """
+    positive = {
+        node.id
+        for node in ctx.book.nodes
+        if node.ending is not None and node.ending.valence is Valence.POSITIVE
+    }
+    seen = {
+        config
+        for config, node_id in enumerate(ctx.graph.node_of)
+        if node_id in positive
+    }
+    queue: deque[int] = deque(seen)
+    while queue:
+        current = queue.popleft()
+        for source, _ in ctx.preds.get(current, ()):
+            if source not in seen:
+                seen.add(source)
+                queue.append(source)
+    return frozenset(seen)
+
+
+def _failure_only(ctx: _Context, fact: str, winning: frozenset[int]) -> bool:
+    """Report whether a fact is established only where no positive ending follows.
+
+    A site is a configuration whose passage establishes the fact, or one
+    entered through a choice that plants it. The fact is failure-only when it
+    has at least one site and no site can reach a positive ending, that is
+    when every route establishing it ends in a negative or neutral ending.
+
+    Args:
+        ctx: The analysis context.
+        fact: The fact id.
+        winning: :func:`_can_reach_positive`.
+
+    Returns:
+        bool: True when the fact sits only on routes that end without a win.
+    """
+    found = False
+    for config, node_id in enumerate(ctx.graph.node_of):
+        here = fact in ctx.node_gen.get(node_id, _EMPTY) or any(
+            fact in ctx.choice_gen.get(choice_id, _EMPTY)
+            for _, choice_id in ctx.preds.get(config, ())
+        )
+        if not here:
+            continue
+        if config in winning:
+            return False
+        found = True
+    return found
+
+
 def _check_single_truth(ctx: _Context) -> list[PlanFinding]:
     """SP-3: contradictions a reading meets, or that split the truth, block.
+
+    A failure fact marked against a truth fact on routes no reading crosses is
+    a WARNING (AL-849); see the module docstring.
 
     Args:
         ctx: The analysis context.
@@ -1227,6 +1301,7 @@ def _check_single_truth(ctx: _Context) -> list[PlanFinding]:
     sites = _establishment_sites(ctx)
     truth = set(ctx.plan.truth.facts)
     findings: list[PlanFinding] = []
+    winning: frozenset[int] | None = None
     for pair in sorted(ctx.plan.contradiction_pairs(), key=sorted):
         first, second = sorted(pair)
         if not (sites.get(first) and sites.get(second)):
@@ -1259,18 +1334,43 @@ def _check_single_truth(ctx: _Context) -> list[PlanFinding]:
             continue
         first_site = sites[blamed][0]
         splits_truth = bool(pair & truth)
+        failure = False
+        if splits_truth and blamed not in truth:
+            # #ASSUME: data-integrity: a non-truth fact established only where
+            # no positive ending follows records a failed route, not a second
+            # answer (AL-849). The truth side is still required to be
+            # established somewhere reachable by the check below.
+            # #VERIFY: test_storyplan_checks.py::
+            # test_sp3_failure_fact_against_the_truth_is_a_warning and
+            # ::test_sp3_failure_fact_that_also_reaches_a_win_is_an_error.
+            if winning is None:
+                winning = _can_reach_positive(ctx)
+            failure = _failure_only(ctx, blamed, winning)
+        if failure:
+            message = (
+                f"failure fact {where} sit on routes no single reading crosses, "
+                f"and every route establishing {blamed!r} ends in a negative or "
+                "neutral ending: a failed route marked against the truth, which "
+                "convention 1 asks for, so keep the mark (advisory)"
+            )
+        elif splits_truth:
+            message = (
+                f"the book answers its question two ways: {where} sit on "
+                "routes no single reading crosses"
+            )
+        else:
+            message = (
+                f"contradicting facts {where} sit only on routes no "
+                "single reading crosses (a replay inconsistency)"
+            )
         findings.append(
             _finding(
                 "SP-3",
                 story,
-                (
-                    f"the book answers its question two ways: {where} sit on "
-                    "routes no single reading crosses"
-                    if splits_truth
-                    else f"contradicting facts {where} sit only on routes no "
-                    "single reading crosses (a replay inconsistency)"
+                message,
+                severity=(
+                    Severity.ERROR if splits_truth and not failure else Severity.WARNING
                 ),
-                severity=Severity.ERROR if splits_truth else Severity.WARNING,
                 node_id=first_site if first_site in ctx.plan.nodes else None,
                 choice_id=first_site if first_site in ctx.plan.choices else None,
                 fact_id=blamed,
@@ -2965,14 +3065,28 @@ def _witness_sp2() -> tuple[dict[str, object], dict[str, object]]:
 
 
 def _witness_sp3() -> tuple[dict[str, object], dict[str, object]]:
-    """Tell the second backstory on the road route.
+    """Tell the second backstory at a second winning ending.
+
+    The cliff ending becomes a positive discovery, so the second backstory is
+    a real second answer rather than a failed route's belief, which SP-3 only
+    advises on (AL-849).
 
     Returns:
         tuple[dict[str, object], dict[str, object]]: ``(book, plan)``.
     """
     book, plan = base_example()
+    nodes = book["nodes"]
+    if isinstance(nodes, list):
+        fall = nodes[-1]  # pyright: ignore[reportUnknownVariableType]
+        if isinstance(fall, dict):
+            fall["ending"] = {  # the witness book's last node is n_fall
+                "id": "e_n_fall",
+                "valence": "positive",
+                "kind": "discovery",
+                "title": "n_fall",
+            }
     _section(plan, "nodes", "n_fall")["establishes"] = ["stranger_left_map"]
-    return book, plan
+    return book, _bind(book, plan)
 
 
 def _witness_sp4() -> tuple[dict[str, object], dict[str, object]]:

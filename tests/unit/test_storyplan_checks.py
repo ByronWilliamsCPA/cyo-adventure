@@ -634,6 +634,97 @@ def test_sp3_exclusive_routes_splitting_the_truth_is_an_error() -> None:
     assert "answers its question two ways" in finding.message
 
 
+def _failure_fact_pair(
+    valence: str = "negative",
+) -> tuple[dict[str, Any], dict[str, Any]]:
+    """Return the clean pair with the second backstory told only at the cliff.
+
+    Args:
+        valence: The cliff ending's valence.
+
+    Returns:
+        tuple[dict[str, Any], dict[str, Any]]: ``(book, plan)``.
+    """
+    book, plan = _pair()
+    _node(book, "n_fall")["ending"]["valence"] = valence
+    _rebind(book, plan)
+    plan["nodes"]["n_fall"]["establishes"] = ["stranger_left_map"]
+    if valence != "negative":
+        plan["endings"]["n_fall"].pop("valence", None)
+    return book, plan
+
+
+@pytest.mark.unit
+@pytest.mark.parametrize("valence", ["negative", "neutral"])
+def test_sp3_failure_fact_against_the_truth_is_a_warning(valence: str) -> None:
+    # AL-849: the fact sits only on a route that ends without a win, so it is
+    # a failed route marked against the truth (convention 1), not a second
+    # answer; as an ERROR it rewarded deleting the contradicts mark.
+    book, plan = _failure_fact_pair(valence)
+    report = _check(book, plan)
+    assert report.ok
+    [finding] = _findings(report, "SP-3")
+    assert finding.severity is Severity.WARNING
+    assert finding.fact_id == "stranger_left_map"
+    assert finding.node_id == "n_fall"
+    assert "failure fact" in finding.message
+    assert "keep the mark" in finding.message
+
+
+@pytest.mark.unit
+def test_sp3_deleting_the_mark_no_longer_changes_the_verdict() -> None:
+    # The repair the smoke's run 2 most likely made: dropping the mark turns
+    # the finding off entirely. Both versions now pass, so removing a true
+    # mark buys the plan nothing.
+    book, plan = _failure_fact_pair()
+    assert _check(book, plan).ok
+    plan["facts"]["stranger_left_map"]["contradicts"] = []
+    unmarked = _check(book, plan)
+    assert unmarked.ok
+    assert not _findings(unmarked, "SP-3")
+
+
+@pytest.mark.unit
+def test_sp3_failure_fact_that_also_reaches_a_win_is_an_error() -> None:
+    # The truth is told only in the cave; the second backstory in the tunnel,
+    # from which the reader still wins at home. No reading crosses both, and
+    # the tunnel is not a failed route, so the book answers two ways: ERROR.
+    book, plan = _pair()
+    plan["nodes"]["n_home"]["establishes"] = []
+    plan["nodes"]["n_cave"]["establishes"] = ["cave_drawing", "grandpa_left_map"]
+    plan["nodes"]["n_tunnel"]["establishes"] = ["stranger_left_map"]
+    [finding] = _findings(_check(book, plan), "SP-3")
+    assert finding.severity is Severity.ERROR
+    assert "answers its question two ways" in finding.message
+    assert finding.fact_id == "stranger_left_map"
+
+
+@pytest.mark.unit
+def test_sp3_failure_fact_met_with_the_truth_on_one_reading_is_an_error() -> None:
+    # The truth is told on the shared path; a reader who then falls meets the
+    # failure fact on the same reading. That is a contradiction one reading
+    # contains, unchanged by AL-849.
+    book, plan = _failure_fact_pair()
+    plan["nodes"]["n_home"]["establishes"] = []
+    plan["nodes"]["n_path"]["establishes"] = ["grandpa_left_map"]
+    [finding] = _findings(_check(book, plan), "SP-3")
+    assert finding.severity is Severity.ERROR
+    assert "one reading meets both" in finding.message
+
+
+@pytest.mark.unit
+def test_sp3_a_failure_fact_planted_by_a_choice_into_a_failed_route() -> None:
+    # A site entered through a choice that establishes the fact counts the
+    # same as a passage establishing it.
+    book, plan = _pair()
+    plan["choices"]["c_cliff"]["establishes"] = ["stranger_left_map"]
+    report = _check(book, plan)
+    assert report.ok
+    [finding] = _findings(report, "SP-3")
+    assert finding.severity is Severity.WARNING
+    assert finding.choice_id == "c_cliff"
+
+
 @pytest.mark.unit
 def test_sp3_a_truth_fact_nobody_establishes() -> None:
     book, plan = _pair()
