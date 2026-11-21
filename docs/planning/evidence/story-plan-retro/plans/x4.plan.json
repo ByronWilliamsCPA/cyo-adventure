@@ -1,0 +1,3638 @@
+{
+  "plan_version": "0.1",
+  "book": {
+    "slug": "the-lantern-keepers-list",
+    "storybook_id": "sk_lantern_keepers_list",
+    "storybook_version": 1,
+    "title": "The Lantern Keepers' List"
+  },
+  "request": {
+    "text": null,
+    "band": "8-11",
+    "length": "medium",
+    "style": "prose",
+    "tone": "warm community responsibility; peril mild, scariness none, violence none",
+    "note": "plan written blind by reading the book; no request text available"
+  },
+  "pitch": {
+    "hero": "Wren, a village girl given the lantern list for one autumn afternoon",
+    "want": "to light the ridge route for a walking group coming off the moor at half past five",
+    "obstacle": "the list is out of date: swallowed path, missing paraffin, wind across the ridge, too few hands",
+    "stake": "fourteen walkers coming down a dark hill past a landslip and a broken step",
+    "ending_kind": "branch and bottleneck: a fully lit ridge, an honest record, or a safe but dark evening"
+  },
+  "cast": {
+    "wren": {
+      "name": "Wren",
+      "role": "protagonist",
+      "want": "to get the ridge lit and the walkers down safe",
+      "voice": "third person past; practical, careful, does sums in her head",
+      "knows": [
+        "three_sections",
+        "walkers_half_five"
+      ]
+    },
+    "mrs_trewin": {
+      "name": "Mrs Trewin",
+      "role": "keeper of the list, hurt wrist",
+      "want": "the lanterns up and the list kept",
+      "voice": "terse; it'll do; it's ugly and it works",
+      "knows": [
+        "trewin_keeps_list",
+        "wire_method",
+        "school_can"
+      ]
+    },
+    "mr_ovens": {
+      "name": "Mr Ovens",
+      "role": "farmer whose field the new path crosses",
+      "want": "his gate respected and to be asked nicely",
+      "voice": "gruff; grunts; this is my field, mind the ewes",
+      "knows": [
+        "barn_heater_can",
+        "ovens_field_gate"
+      ]
+    },
+    "dot_mallow": {
+      "name": "Dot Mallow",
+      "role": "postmistress and shopkeeper",
+      "want": "to smooth the way",
+      "voice": "brisk advice in passing",
+      "knows": [
+        "oat_biscuits"
+      ]
+    },
+    "kit_and_row": {
+      "name": "Kit and Row",
+      "role": "nine-year-old twin helpers",
+      "want": "a real job",
+      "voice": "eager, loud, counting in a skipping rhyme",
+      "knows": []
+    },
+    "mrs_chen": {
+      "name": "Mrs Chen",
+      "role": "former lantern keeper (plant branch)",
+      "want": "to be asked again",
+      "voice": "I wondered if you'd ever come round again",
+      "knows": [
+        "chen_hook"
+      ]
+    },
+    "mr_riley": {
+      "name": "Mr Riley",
+      "role": "former lantern keeper (plant branch)",
+      "want": "to help",
+      "voice": "quiet, practised hands",
+      "knows": [
+        "riley_shades"
+      ]
+    },
+    "arthur_tremlett": {
+      "name": "Arthur Tremlett",
+      "role": "retired postman, owner of the A.T. glove (plant branch)",
+      "want": "to be asked at last",
+      "voice": "mutters; go on, then, I'll watch these",
+      "knows": [
+        "arthur_tremlett"
+      ]
+    },
+    "priya_shah": {
+      "name": "Priya Shah",
+      "role": "walk leader, offstage until the end",
+      "want": "her fourteen walkers down safely",
+      "voice": "a text message; counts heads twice",
+      "knows": [
+        "walker_ankle"
+      ]
+    },
+    "mr_okonkwo": {
+      "name": "Mr Okonkwo",
+      "role": "school caretaker",
+      "want": "unstated",
+      "voice": "patient",
+      "knows": [
+        "okonkwo_can"
+      ]
+    },
+    "rafi": {
+      "name": "Rafi",
+      "role": "villager with a bike trailer, named once",
+      "want": "unstated",
+      "voice": "never speaks",
+      "knows": []
+    }
+  },
+  "truth": {
+    "statement": "The old lantern list no longer matches the hill: the Hunters' cottage is empty, the fuel is not where the page says, the margin's path was swallowed by the February landslip and rerouted at the Sheepfold Turn, and the wind crosses the ridge rather than climbing it. Lighting the route for the half past five walkers depends on walking, testing and counting the real route and on asking the right people, not on following the page.",
+    "facts": [
+      "hunters_moved",
+      "paraffin_misplaced",
+      "old_route_swallowed",
+      "path_rerouted",
+      "wind_across",
+      "walkers_half_five"
+    ],
+    "question": "Why can the old list not be followed, and what does lighting the ridge really need?"
+  },
+  "facts": {
+    "shed_lanterns": {
+      "text": "Eighty paper lanterns with pale, tightly pressed covers sit in wooden boxes in the lean-to shed behind the village hall."
+    },
+    "the_list": {
+      "text": "An old clipboard headed THE LIST in green pen hangs on a rusty nail in the lantern shed."
+    },
+    "fence_wire_shed": {
+      "text": "A roll of fence wire hangs from a hook in the lantern shed."
+    },
+    "ridge_cloud": {
+      "text": "The ridge path climbs into low cloud."
+    },
+    "quarter_past_two": {
+      "text": "The church clock says quarter past two when the work begins."
+    },
+    "trewin_wrist": {
+      "text": "Mrs Trewin's wrist is wrapped in a bright blue bandage, so she cannot carry or climb and works with her good hand."
+    },
+    "trewin_keeps_list": {
+      "text": "Mrs Trewin is the keeper of the lantern list and reads it aloud."
+    },
+    "hunters_moved": {
+      "text": "The Hunters' old cottage on the list has been empty for two winters."
+    },
+    "paraffin_misplaced": {
+      "text": "The fuel is not on the shelf where the list says it will be."
+    },
+    "old_route_swallowed": {
+      "text": "The route drawn in the list's margin is one the hillside swallowed in a landslip in February."
+    },
+    "path_rerouted": {
+      "text": "The path at the Sheepfold Turn was rerouted after the landslip; the list names a stretch walkers no longer use and says nothing of the new one."
+    },
+    "walkers_half_five": {
+      "text": "A walking group will come down off the moor at half past five."
+    },
+    "three_sections": {
+      "text": "The list has three parts, the Beacon Steps, the Sheepfold Turn and the Orchard Gate, and there is one afternoon to do them all."
+    },
+    "wren": {
+      "text": "Wren is the girl doing the lantern work this afternoon."
+    },
+    "steps_layout": {
+      "text": "The Beacon Steps are ninety-one stone stairs with an iron lantern hook every fourth step, and nothing on wheels can reach them."
+    },
+    "three_brackets_out": {
+      "text": "Frost has pried three hooks clean out of the stone on the Beacon Steps."
+    },
+    "seventh_step_gone": {
+      "text": "The seventh step from the bottom is gone, leaving a dark gap that drops knee-high onto loose stones."
+    },
+    "at_glove": {
+      "text": "At the Beacon Steps Wren found an old leather glove marked A.T. with a faded phone number inside, telling her who to call if the top of the ridge runs short."
+    },
+    "frost_holes": {
+      "text": "Frost has widened the bracket holes so the screws turn uselessly, a fourth bracket is loose, and the shop board says frost returns tonight."
+    },
+    "step_materials": {
+      "text": "Behind the shed lean one scaffold plank, four house bricks and half a bag of cement gone hard in the rain."
+    },
+    "rain_after_four": {
+      "text": "Rain is forecast after four."
+    },
+    "rafi_trailer": {
+      "text": "Rafi can pull his bike trailer as far as the stile."
+    },
+    "plugs_missing": {
+      "text": "The jar of wall plugs went up the steps last October and never came back, so it is not on its shelf."
+    },
+    "wire_method": {
+      "text": "Mrs Trewin showed Wren how to wire a hook to the stone with no loop to catch a sleeve; it is ugly, works, and holds a season."
+    },
+    "dot_mallow": {
+      "text": "Dot Mallow is the village postmistress who keeps the shop."
+    },
+    "dot_funnel": {
+      "text": "Dot Mallow owns the only oil funnel in the village that does not leak."
+    },
+    "shop_drawer_glove": {
+      "text": "The shop's odd-bits drawer holds wall plugs, brass screws and one leather work glove that matches nothing."
+    },
+    "steps_need_22": {
+      "text": "The steps need twenty-two lanterns, one on every fourth bracket."
+    },
+    "wind_across": {
+      "text": "The wind on the ridge comes across it, not up it, and the list does not mention this."
+    },
+    "ovens_field_gate": {
+      "text": "The gate onto the new path through Mr Ovens's field is wired shut with three turns of wire and a note saying SHUT MEANS SHUT."
+    },
+    "mr_ovens": {
+      "text": "Mr Ovens is the farmer who keeps ewes in the field the new path crosses."
+    },
+    "oat_biscuits": {
+      "text": "Dot Mallow gave Wren a bag of oat biscuits from the shop tin to take to Mr Ovens, who is partial to them, so he will thaw if asked right."
+    },
+    "ovens_character": {
+      "text": "Mr Ovens has told the council his land is treated like a hallway, but he has never let a walker come to harm on his hill."
+    },
+    "ovens_quad": {
+      "text": "Mr Ovens is the only person with a quad bike and a spare roll of wire."
+    },
+    "old_line_nine": {
+      "text": "The old path ends at a raw lip above the landslip, and the list still marks nine lanterns along the vanished stretch."
+    },
+    "new_line_seven": {
+      "text": "The new path runs forty paces higher and turns twice; it needs seven lanterns, two with nothing to hang on."
+    },
+    "no_posts_turn": {
+      "text": "The turn has no trees or wall for a hundred paces, the fence posts are Mr Ovens's, and the shed offers only canes, stakes and a split mallet."
+    },
+    "walkers_follow_old": {
+      "text": "A walker coming down in low cloud follows the most-walked ground, still the old line running toward the edge of the slip."
+    },
+    "new_line_walked": {
+      "text": "Carrying a crate along the new line takes eleven minutes at a working pace."
+    },
+    "ovens_at_barn": {
+      "text": "Mr Ovens is at the barn until milking; he always says yes in the end, and the question is who asks him and how."
+    },
+    "slip_lip_danger": {
+      "text": "The lip of the landslip is the one spot on the route where being wrong costs more than a wet foot; two lanterns and a cane can mark it."
+    },
+    "orchard_twelve": {
+      "text": "Twelve lanterns hang in old apple trees at the Orchard Gate, where the path leaves the lane."
+    },
+    "orchard_gate_drags": {
+      "text": "The orchard gate drags a deep groove in the mud and takes two hands and a shoulder to move."
+    },
+    "orchard_hooks_low": {
+      "text": "Last autumn a walker put a shoulder through a low orchard lantern, still patched with a SORRY note, and the hooks now sit lower still."
+    },
+    "windfalls": {
+      "text": "Windfalls full of sleepy wasps lie three deep under the two oldest trees nearest the lane."
+    },
+    "twins_kit_row": {
+      "text": "Kit and Row are nine-year-old twins who can carry and count but cannot be quiet or trusted with the mallet."
+    },
+    "twins_offered": {
+      "text": "Kit and Row have been waiting at the orchard gate for ten minutes to be given something to do."
+    },
+    "orchard_height_rule": {
+      "text": "An orchard lantern belongs above the tallest walker with a pack and below the branch that whips in a gust."
+    },
+    "lane_stretch": {
+      "text": "The last forty paces before the lane have an ankle-turning rut, a slick drain grid and a corner the orchard wall hides."
+    },
+    "orchard_hidden": {
+      "text": "From the ridge end two orchard lanterns are hidden by branches and a trunk, so walkers heading down see ten lights, not twelve."
+    },
+    "orchard_four_spare": {
+      "text": "The orchard needs twelve lanterns and its crate holds sixteen, leaving four spare."
+    },
+    "four_litres_shop": {
+      "text": "The hall cupboard now holds folding chairs and choir robes; there are only four litres of paraffin, in a blue can behind the shop."
+    },
+    "eleven_hangers": {
+      "text": "Eleven villagers have hung lanterns before, about six are around, and the names column has not been true since the autumn before last."
+    },
+    "old_keepers_found": {
+      "text": "Wren knocked on the old doors and found former lantern keepers Mrs Chen and Mr Riley glad to be asked again."
+    },
+    "chen_hook": {
+      "text": "Mrs Chen had kept her old lantern hook wrapped in brown paper and handed it to Wren."
+    },
+    "riley_shades": {
+      "text": "Mr Riley still has a spare crate of storm shades from the year the ridge blew out."
+    },
+    "route_changed": {
+      "text": "Nobody has walked the full route today; it has changed in two places since the list was written, the landslip and the wired gate."
+    },
+    "storm_shades": {
+      "text": "The shed holds a box of glass storm shades that fit fewer than half the lanterns."
+    },
+    "priya_party": {
+      "text": "Priya Shah is bringing fourteen walkers down off the moor and expects a lit ridge at half past five."
+    },
+    "signal_top": {
+      "text": "There is one bar of mobile signal at the top of the steps and none in the orchard."
+    },
+    "lit_bottom_up": {
+      "text": "Lighting from the bottom up keeps the lit part nearest the village, the phone line and the kettle, but leaves the top dark longest."
+    },
+    "boiler_can": {
+      "text": "A half-can in the church boiler room might be lamp oil; nobody has labelled it."
+    },
+    "school_can": {
+      "text": "A full can of paraffin went to the school for the harvest lanterns and never came back."
+    },
+    "barn_heater_can": {
+      "text": "Mr Ovens has a nearly full two-litre paraffin can for his barn heater, stored behind the milking shed."
+    },
+    "biscuits_given": {
+      "text": "Wren gave Mr Ovens the oat biscuits and he took them with a grunt that was almost a smile."
+    },
+    "ovens_gave_can": {
+      "text": "Mr Ovens, in a good mood from the biscuits, handed Wren his barn-heater can without a word about gates."
+    },
+    "spare_fuel_found": {
+      "text": "Wren has found paraffin beyond the four litres from behind the shop."
+    },
+    "ovens_said_yes_before": {
+      "text": "Mr Ovens has already said yes to Wren once today."
+    },
+    "filling_station": {
+      "text": "Wren fills lanterns on the flat shed doorstep with Dot Mallow's funnel and an old tea towel."
+    },
+    "old_wicks": {
+      "text": "Old wicks burn twenty minutes and go out, and the boxes of new wick are cut to the wrong length."
+    },
+    "okonkwo_can": {
+      "text": "Mr Okonkwo, the school caretaker, knows about the harvest lanterns, and the full can has to be carried home uphill."
+    },
+    "ration_fifty": {
+      "text": "The paraffin to hand is four litres, enough to fill about fifty lanterns well or eighty badly.",
+      "contradicts": [
+        "barn_heater_can"
+      ]
+    },
+    "burn_test": {
+      "text": "Wren is burning one filled lantern on the shed step against a watch to see if it lasts."
+    },
+    "borrowed_lights": {
+      "text": "The pub, the chapel and three kitchens lent storm lanterns, a cracked camping lamp and candles in jam jars."
+    },
+    "teams_plan": {
+      "text": "Wren splits the helpers: two on the steps, two in the orchard, one on the turn and one running between."
+    },
+    "six_helpers": {
+      "text": "About six helpers have gathered."
+    },
+    "two_waiting": {
+      "text": "Four of the old doors on the list are still right, and two open onto people who kept their old lantern hooks and waited to be asked again."
+    },
+    "school_gate_crowd": {
+      "text": "At half past three the school gate holds much of the village, including half a dozen past lantern hangers."
+    },
+    "shop_gossip": {
+      "text": "Anything said at the shop counter is in eleven kitchens by teatime, in the version Dot Mallow passes on."
+    },
+    "teach_bracket": {
+      "text": "Wren shows the new helpers how the wire goes on a bracket."
+    },
+    "quad_asked": {
+      "text": "Wren decided to ask Mr Ovens for his quad bike, at the price of five minutes hearing about gates."
+    },
+    "twins_job": {
+      "text": "Wren gives Kit and Row the one job that fits them: moving between the ends of the route carrying the spare lanterns."
+    },
+    "rota_chalked": {
+      "text": "Wren chalked the rota on the shed door, which holds chalk marks from every autumn."
+    },
+    "runner_job": {
+      "text": "A runner between the top of the steps and the orchard carries word where phones cannot; it is the coldest job."
+    },
+    "keepers_set_up_orchard": {
+      "text": "Mrs Chen and Mr Riley arrived with their hooks and storm shades and are setting up the orchard line unasked."
+    },
+    "kettle_on": {
+      "text": "The kettle at the hall keeps six cold helpers from going home at five."
+    },
+    "trewin_spotter": {
+      "text": "Mrs Trewin sits on the hall step watching the ridge, able to spot a wrong lantern from four hundred paces."
+    },
+    "top_pair": {
+      "text": "The two top lanterns are the first thing walkers see from the moor, take the worst wind, and nobody checks them."
+    },
+    "steps_team": {
+      "text": "A steps team has been on the ridge since two and knows which brackets turn and where the wind comes from."
+    },
+    "keepers_fetch_quad": {
+      "text": "Mr Riley and Mrs Chen, who have known Mr Ovens twenty years, asked him for the quad and it arrived four minutes later."
+    },
+    "pairs_rule": {
+      "text": "The rota rule NEVER ALONE AT THE SIGNAL is in capitals twice and is the only underlined line on the list."
+    },
+    "count_rule": {
+      "text": "Everyone who goes up must come down and be counted before the walkers arrive."
+    },
+    "survey_nine": {
+      "text": "Walking the route with the list found nine places where list and ground disagree; the loop takes thirty-eight minutes."
+    },
+    "three_dark_gaps": {
+      "text": "There are three unlisted stretches on the hill where a walker cannot see the next light."
+    },
+    "clay_greasy": {
+      "text": "The clay above the sheepfold turn is greasy and grabs at boots."
+    },
+    "respaced": {
+      "text": "Wren respaces the lanterns to the turns, the drop and the misleading spots rather than evenly."
+    },
+    "drop_marker": {
+      "text": "Two lanterns, a bamboo cane and white tape can mark the drop, but those lanterns come out of the count for the top of the route."
+    },
+    "gate_paint": {
+      "text": "There is half a tin of white gate paint in the shed, and painting stones on the hill is a long village row."
+    },
+    "sheltered_spots": {
+      "text": "The sheltered side of each wall, post and thorn bush on the route keeps a lantern burning."
+    },
+    "top_needs_nineteen": {
+      "text": "The top section needs nineteen lanterns under the new spacing, but the crate at the stile holds only sixteen."
+    },
+    "dim_test": {
+      "text": "Walking down in the half dark showed two things that looked fine at two cannot be seen from above."
+    },
+    "spare_bag": {
+      "text": "Four spare lanterns wait in a canvas bag at the top of the steps."
+    },
+    "gate_latch": {
+      "text": "At the sheepfold gate a walker must stop, lift a latch and step through."
+    },
+    "ninety_gap": {
+      "text": "From the top of the steps to the first ridge lantern is ninety paces of open hillside with no light."
+    },
+    "shoulder": {
+      "text": "The shoulder is a bare, open, windy stretch of the ridge route."
+    },
+    "two_blown": {
+      "text": "Two lanterns on the open shoulder have already gone out once."
+    },
+    "meet_welcome": {
+      "text": "Walking up to meet the walkers turns a lit route into a welcome but means being on the dark hill on purpose."
+    },
+    "round_rule": {
+      "text": "The list says ROUND three times in three inks: someone must walk the route again at seven relighting lanterns."
+    },
+    "tapers": {
+      "text": "There are two boxes of matches, one damp, and tapers Mrs Trewin cut from a broom handle; lighting by taper takes about forty minutes."
+    },
+    "tally_box": {
+      "text": "The list has a tally box at the bottom, filled in every autumn, and this year's box is still empty."
+    },
+    "signal_minute": {
+      "text": "The signal at the top of the steps holds for about a minute at a stretch."
+    },
+    "reserve_six": {
+      "text": "Six filled lanterns and a small can are held in reserve at the hall."
+    },
+    "filling_line": {
+      "text": "Kit and Row work a filling line, counting out loud: one fills, one wipes, one carries."
+    },
+    "shades_forty": {
+      "text": "The storm shades fit forty of the eighty lanterns, and the unshaded ones must hang in sheltered spots."
+    },
+    "top_far": {
+      "text": "The top of the route is the furthest from the shed."
+    },
+    "party_late": {
+      "text": "Half past five has passed and the walking group is not yet on the ridge."
+    },
+    "walker_ankle": {
+      "text": "Priya's message says the group is down off the tops, but one walker has turned an ankle and they are moving slowly."
+    },
+    "count_71": {
+      "text": "Wren's count finds seventy-one lanterns lit, six out and three never hung."
+    },
+    "six_out": {
+      "text": "Six lanterns are out, all within two hundred paces on the open shoulder where the wind crosses."
+    },
+    "arthur_tremlett": {
+      "text": "A.T. is Arthur Tremlett, a retired postman who replaced ridge brackets for forty years."
+    },
+    "arthur_at_gate": {
+      "text": "Wren phoned the number from the glove, and Arthur Tremlett came to the sheepfold gate with two spare storm shades and a roll of wire."
+    },
+    "arthur_guards_turn": {
+      "text": "Arthur Tremlett's spare storm shades protect the last two lanterns on the turn, and he stays to watch them."
+    },
+    "head_torches": {
+      "text": "The hall cupboard holds four head torches, only two with batteries; Wren pockets the working pair."
+    },
+    "wren_head_torch": {
+      "text": "Wren is wearing a head torch."
+    },
+    "beyond_last_lantern": {
+      "text": "Going up the ridge means walking away from every light onto the bare shoulder and the dark lip of the moor."
+    },
+    "hall_ready": {
+      "text": "The hall has a kettle, a working heater and the wrong number of chairs."
+    },
+    "quad_four_minutes": {
+      "text": "The quad can climb the track to the sheepfold turn in four minutes with a person and a bag."
+    },
+    "leeward_moved": {
+      "text": "Wren moved lanterns nine paces off the path to the still side of the wall to keep six flames burning."
+    },
+    "pair_sent_bag": {
+      "text": "Wren sent the two fastest walkers up the hill with the canvas bag to close the dark stretch in twelve minutes."
+    },
+    "corner_lamp": {
+      "text": "Wren set a storm lantern on the orchard gatepost to light the hidden corner."
+    },
+    "relay": {
+      "text": "Three people along the lit stretch pass messages from the moor to the hall by voice."
+    },
+    "signal_watch": {
+      "text": "Two people on the top step hold the phone toward the moor so the village hears what is happening."
+    },
+    "ankle_help": {
+      "text": "Wren unlatches the sheepfold gate and waits with a storm lantern for the hurt walker; the quad can meet them there."
+    },
+    "gate_lit_arrivals": {
+      "text": "Wren holds a lamp at the sheepfold gate as the fourteen walkers arrive."
+    },
+    "tally_71_note": {
+      "text": "Wren wrote seventy-one in the tally box and a small note of the year's truths beside it."
+    },
+    "final_round": {
+      "text": "Wren makes one more relighting round at ten to six, the oldest instruction on the list."
+    },
+    "list_since_1953": {
+      "text": "The list has been trying to light the ridge for walkers since 1953."
+    },
+    "steps_page": {
+      "text": "A measured page for the Beacon Steps is pinned to the shed door; the lanterns will go up a week later on proper fixings."
+    },
+    "turn_dark": {
+      "text": "The turn stayed unlit, and two grown-ups walked it with head torches all evening."
+    },
+    "only_orchard_lit": {
+      "text": "Only the orchard was lit, so the walkers came down by torchlight and met the lanterns in the last five minutes."
+    },
+    "paraffin_spill": {
+      "text": "A can of paraffin spilled on the shed step and the lanterns stayed in their crates until Saturday."
+    },
+    "crowd_late": {
+      "text": "Nine people arrived at ten past four with no plan, and the lanterns went up crooked by torchlight."
+    },
+    "map_no_light": {
+      "text": "The survey was finished at ten past five and the hill was not lit; the list was rewritten for a Saturday hanging."
+    },
+    "fifty_lit": {
+      "text": "Fifty well-filled lanterns went up, thirty stayed empty, and the moon helped the walkers down."
+    },
+    "village_lit": {
+      "text": "The ridge was lit by fourteen people who mostly had not known each other, and eleven new names went on the list."
+    },
+    "shoulder_gap_78": {
+      "text": "The route was lit except one stretch on the shoulder, and the tally box says seventy-eight."
+    },
+    "ridge_holds": {
+      "text": "The walkers came down a line of lights unbroken from the top of the steps to the orchard gate, and nothing went wrong."
+    },
+    "down_before_rain": {
+      "text": "The last walker reached the orchard gate at twenty-five past six, ten minutes before the rain."
+    },
+    "every_counted": {
+      "text": "Seventy-eight lanterns, fourteen walkers and six helpers were all counted and matched on the page."
+    },
+    "list_rewritten": {
+      "text": "The list was rewritten true, with the landslip, the gate and eleven true names, and Mrs Trewin signed it left-handed."
+    },
+    "wind_threes": {
+      "text": "Twenty minutes on the shoulder showed the gusts come in threes and nothing on the path side survives the second."
+    },
+    "seed_catalogue_notebook": {
+      "text": "Wren is carrying an old seed catalogue to use as a notebook."
+    },
+    "steps_dark_short": {
+      "text": "The top of the steps was left dark, and fourteen walkers came down with one head torch."
+    },
+    "fourteen_warm": {
+      "text": "Fourteen walkers, one strapped ankle and six lantern keepers reached the warm hall at twenty to seven."
+    },
+    "turn_missed_none": {
+      "text": "All fourteen walkers followed the new line round the turn and none strayed onto the old ground above the slip."
+    },
+    "seen_from_moor": {
+      "text": "From the moor the lit ridge showed as a line of warm dots a mile off, and the walkers stopped to look."
+    },
+    "quad_gate_open": {
+      "text": "The quad took the last crate up, and Mr Ovens stood by his open, lit gate welcoming each walker."
+    },
+    "tally_filled": {
+      "text": "The tally box got its number and four lines about the shoulder, and the list went back on its nail."
+    },
+    "handed_back": {
+      "text": "Wren handed the improved list back to Mrs Trewin, who said it will do."
+    },
+    "notes_page": {
+      "text": "The evening ended with the ridge half lit and an honest page of notes left in the shed drawer for next year."
+    },
+    "lit_late": {
+      "text": "The last eleven lanterns went up at seven, after the walkers were home, and burned over an empty hill."
+    },
+    "shoulder_dark_twice": {
+      "text": "The shoulder has gone dark twice before."
+    },
+    "shoulder_dark_third": {
+      "text": "The shoulder went dark for the third time and fourteen walkers crossed it on one head torch."
+    }
+  },
+  "nodes": {
+    "n_open": {
+      "function": "open",
+      "event": "In the lean-to shed behind the village hall, eighty lanterns and THE LIST wait at quarter past two.",
+      "requires": [],
+      "establishes": [
+        "shed_lanterns",
+        "the_list",
+        "fence_wire_shed",
+        "ridge_cloud",
+        "quarter_past_two"
+      ]
+    },
+    "n_list": {
+      "function": "decision",
+      "event": "Mrs Trewin, wrist bandaged, reads the half-wrong list; three parts, one afternoon, walkers at half past five.",
+      "requires": [
+        "the_list"
+      ],
+      "establishes": [
+        "trewin_wrist",
+        "trewin_keeps_list",
+        "hunters_moved",
+        "paraffin_misplaced",
+        "old_route_swallowed",
+        "walkers_half_five",
+        "three_sections",
+        "wren"
+      ]
+    },
+    "bs_hub": {
+      "function": "decision",
+      "event": "At the broken Beacon Steps Wren finds an old glove marked A.T. with a phone number to call if the top runs short.",
+      "requires": [],
+      "establishes": [
+        "steps_layout",
+        "three_brackets_out",
+        "seventh_step_gone",
+        "at_glove",
+        "wren"
+      ]
+    },
+    "sf_hub": {
+      "function": "decision",
+      "event": "At the rerouted Sheepfold Turn, Mr Ovens's gate is wired shut; postmistress Dot Mallow gives Wren oat biscuits for him.",
+      "requires": [],
+      "establishes": [
+        "path_rerouted",
+        "mr_ovens",
+        "ovens_field_gate",
+        "dot_mallow",
+        "oat_biscuits",
+        "wren"
+      ]
+    },
+    "og_hub": {
+      "function": "decision",
+      "event": "The Orchard Gate has twelve lanterns in apple trees, a dragging gate and hooks hung too low.",
+      "requires": [],
+      "establishes": [
+        "orchard_twelve",
+        "orchard_gate_drags",
+        "orchard_hooks_low"
+      ]
+    },
+    "bs_brackets": {
+      "function": "decision",
+      "event": "Frost has widened the bracket holes and the shop board says frost returns tonight.",
+      "requires": [],
+      "establishes": [
+        "frost_holes",
+        "dot_mallow",
+        "wren"
+      ]
+    },
+    "bs_step": {
+      "function": "decision",
+      "event": "The missing seventh step will vanish after dark; only a plank, bricks and hard cement are to hand.",
+      "requires": [],
+      "establishes": [
+        "seventh_step_gone",
+        "step_materials",
+        "dot_mallow"
+      ]
+    },
+    "bs_carry": {
+      "function": "decision",
+      "event": "Carrying eighty lanterns up by hand before the forecast rain.",
+      "requires": [],
+      "establishes": [
+        "rain_after_four",
+        "rafi_trailer",
+        "dot_mallow",
+        "wren"
+      ]
+    },
+    "sf_gate": {
+      "function": "decision",
+      "event": "The gate to the new path is wired shut and the stile is broken; the list says nothing of it.",
+      "requires": [
+        "the_list"
+      ],
+      "establishes": [
+        "ovens_field_gate"
+      ]
+    },
+    "sf_slip": {
+      "function": "decision",
+      "event": "The old path ends at a raw lip above the landslip, where the list still marks nine lanterns.",
+      "requires": [
+        "the_list"
+      ],
+      "establishes": [
+        "old_line_nine"
+      ]
+    },
+    "sf_ovens": {
+      "function": "decision",
+      "event": "Mr Ovens, owner of the only quad bike and spare wire, is somewhere between the barn and the top field.",
+      "requires": [
+        "mr_ovens"
+      ],
+      "establishes": [
+        "ovens_character",
+        "ovens_quad",
+        "wren"
+      ]
+    },
+    "og_hinge": {
+      "function": "decision",
+      "event": "The orchard gate ploughs a water-filled groove and its post leans downhill.",
+      "requires": [],
+      "establishes": [
+        "orchard_gate_drags",
+        "wren"
+      ]
+    },
+    "og_low": {
+      "function": "decision",
+      "event": "The orchard hooks hang lower than last year, when a walker hit one.",
+      "requires": [],
+      "establishes": [
+        "orchard_hooks_low"
+      ]
+    },
+    "og_fruit": {
+      "function": "decision",
+      "event": "Wasp-filled windfalls under the lane trees would take twenty minutes to clear.",
+      "requires": [],
+      "establishes": [
+        "windfalls"
+      ]
+    },
+    "bs_plugs": {
+      "function": "decision",
+      "event": "The jar of wall plugs is missing; Mrs Trewin recalls it going up the steps last October.",
+      "requires": [
+        "trewin_keeps_list"
+      ],
+      "establishes": [
+        "plugs_missing",
+        "wren"
+      ]
+    },
+    "bs_wire": {
+      "function": "decision",
+      "event": "Mrs Trewin shows Wren the wire trick with her good hand and hands her the pliers.",
+      "requires": [
+        "trewin_wrist"
+      ],
+      "establishes": [
+        "wire_method",
+        "wren"
+      ]
+    },
+    "bs_dot": {
+      "function": "decision",
+      "event": "Dot Mallow's shop drawer holds plugs, screws and one odd leather glove; she has the funnel that does not leak.",
+      "requires": [],
+      "establishes": [
+        "dot_mallow",
+        "dot_funnel",
+        "shop_drawer_glove"
+      ]
+    },
+    "sf_reroute": {
+      "function": "decision",
+      "event": "The new path needs seven lanterns, two with nothing to hang on.",
+      "requires": [
+        "path_rerouted"
+      ],
+      "establishes": [
+        "new_line_seven",
+        "wren"
+      ]
+    },
+    "sf_posts": {
+      "function": "decision",
+      "event": "There is nothing to hang lanterns on at the turn and the shed offers little.",
+      "requires": [
+        "mr_ovens"
+      ],
+      "establishes": [
+        "no_posts_turn",
+        "wren"
+      ]
+    },
+    "sf_sign": {
+      "function": "decision",
+      "event": "Walkers in cloud follow the old line toward the slip, so the turn must be clear.",
+      "requires": [
+        "path_rerouted"
+      ],
+      "establishes": [
+        "walkers_follow_old"
+      ]
+    },
+    "og_hooks": {
+      "function": "decision",
+      "event": "Wren finds the right height for orchard lanterns by standing where walkers walk.",
+      "requires": [],
+      "establishes": [
+        "orchard_height_rule",
+        "wren"
+      ]
+    },
+    "og_lane": {
+      "function": "decision",
+      "event": "The forgotten last stretch into the lane is where the ground is worst.",
+      "requires": [],
+      "establishes": [
+        "lane_stretch"
+      ]
+    },
+    "og_twins": {
+      "function": "decision",
+      "event": "Nine-year-old twins Kit and Row have been waiting at the gate to be given a job.",
+      "requires": [],
+      "establishes": [
+        "twins_kit_row",
+        "twins_offered"
+      ]
+    },
+    "bs_flight": {
+      "function": "bottleneck",
+      "event": "The steps need twenty-two lanterns and Wren weighs hanging bottom-up or top-down.",
+      "requires": [],
+      "establishes": [
+        "steps_need_22",
+        "wren"
+      ]
+    },
+    "bs_test": {
+      "function": "bottleneck",
+      "event": "One test lantern jerks in the wind, showing it comes across the ridge, not up it.",
+      "requires": [
+        "the_list"
+      ],
+      "establishes": [
+        "wind_across"
+      ]
+    },
+    "bs_report": {
+      "function": "bottleneck",
+      "event": "Mrs Trewin waits at the hall, wrist propped, for someone to say plainly what the steps need.",
+      "requires": [
+        "trewin_wrist",
+        "trewin_keeps_list"
+      ],
+      "establishes": []
+    },
+    "sf_walk": {
+      "function": "bottleneck",
+      "event": "Carrying a crate along the new line teaches it as the light turns amber.",
+      "requires": [
+        "path_rerouted"
+      ],
+      "establishes": [
+        "new_line_walked"
+      ]
+    },
+    "sf_permission": {
+      "function": "bottleneck",
+      "event": "The gate question hangs: Mr Ovens always says yes in the end, but who asks and how.",
+      "requires": [
+        "mr_ovens",
+        "ovens_field_gate"
+      ],
+      "establishes": [
+        "ovens_at_barn"
+      ]
+    },
+    "sf_mark": {
+      "function": "bottleneck",
+      "event": "The landslip lip is the most dangerous spot and could take two spare lanterns.",
+      "requires": [
+        "old_route_swallowed"
+      ],
+      "establishes": [
+        "slip_lip_danger",
+        "wren"
+      ]
+    },
+    "og_hang": {
+      "function": "bottleneck",
+      "event": "Twelve lanterns are hung and lit by taper in eleven sheltered trees.",
+      "requires": [],
+      "establishes": []
+    },
+    "og_check": {
+      "function": "bottleneck",
+      "event": "Walking the orchard as a walker would shows only ten of twelve lights.",
+      "requires": [],
+      "establishes": [
+        "orchard_hidden"
+      ]
+    },
+    "og_spare": {
+      "function": "bottleneck",
+      "event": "Four spare orchard lanterns could be carried up the ridge.",
+      "requires": [],
+      "establishes": [
+        "orchard_four_spare"
+      ]
+    },
+    "bs_page": {
+      "function": "ending",
+      "event": "The steps are measured and written up honestly; lanterns will go up a week later.",
+      "requires": [
+        "seventh_step_gone"
+      ],
+      "establishes": [
+        "steps_page",
+        "wren"
+      ]
+    },
+    "sf_dark": {
+      "function": "ending",
+      "event": "The turn is left dark and two grown-ups walk it with head torches.",
+      "requires": [
+        "ovens_field_gate",
+        "path_rerouted"
+      ],
+      "establishes": [
+        "turn_dark"
+      ]
+    },
+    "og_bottom": {
+      "function": "ending",
+      "event": "Only the orchard is lit, a welcome rather than a route.",
+      "requires": [],
+      "establishes": [
+        "only_orchard_lit"
+      ]
+    },
+    "gt_oil": {
+      "function": "decision",
+      "event": "The paraffin is not in the hall cupboard; only four litres sit in a blue can behind the shop.",
+      "requires": [],
+      "establishes": [
+        "four_litres_shop",
+        "wren"
+      ]
+    },
+    "gt_hands": {
+      "function": "decision",
+      "event": "Only a few past lantern hangers are around and the names column is stale.",
+      "requires": [
+        "the_list"
+      ],
+      "establishes": [
+        "eleven_hangers",
+        "wren"
+      ]
+    },
+    "cq_plant_did_knock_doors_that": {
+      "function": "plant",
+      "event": "Mrs Chen hands over her old hook and Mr Riley still has storm shades; Wren writes both names down.",
+      "requires": [],
+      "establishes": [
+        "old_keepers_found",
+        "chen_hook",
+        "riley_shades",
+        "wren"
+      ]
+    },
+    "gt_walk": {
+      "function": "decision",
+      "event": "Nobody has walked the route, changed at the landslip and the wired gate, today.",
+      "requires": [
+        "the_list"
+      ],
+      "establishes": [
+        "route_changed",
+        "wren"
+      ]
+    },
+    "gt_wind": {
+      "function": "decision",
+      "event": "The wind is rising and the glass storm shades fit fewer than half the lanterns.",
+      "requires": [],
+      "establishes": [
+        "wind_across",
+        "storm_shades",
+        "wren"
+      ]
+    },
+    "gt_word": {
+      "function": "decision",
+      "event": "Priya Shah's fourteen walkers expect a lit ridge; the honest message must go from the one-bar spot.",
+      "requires": [
+        "paraffin_misplaced",
+        "path_rerouted"
+      ],
+      "establishes": [
+        "priya_party",
+        "signal_top"
+      ]
+    },
+    "gt_bottom": {
+      "function": "decision",
+      "event": "Lighting from the bottom up keeps the lit part near the village but the top dark longest.",
+      "requires": [],
+      "establishes": [
+        "lit_bottom_up",
+        "wren"
+      ]
+    },
+    "oil_can": {
+      "function": "decision",
+      "event": "Wren learns where the rest of the paraffin may be: the boiler room or the school.",
+      "requires": [
+        "trewin_keeps_list"
+      ],
+      "establishes": [
+        "four_litres_shop",
+        "boiler_can",
+        "school_can",
+        "wren"
+      ]
+    },
+    "cq_payoff_did_start_sheepfold_turn_site2": {
+      "function": "payoff",
+      "event": "The biscuits Dot gave won Mr Ovens over, and he told Wren of his two-litre barn-heater can.",
+      "requires": [
+        "oat_biscuits",
+        "dot_mallow",
+        "mr_ovens"
+      ],
+      "establishes": [
+        "biscuits_given",
+        "barn_heater_can",
+        "spare_fuel_found",
+        "ovens_said_yes_before",
+        "wren"
+      ]
+    },
+    "oil_bench": {
+      "function": "decision",
+      "event": "Wren sets up filling on the flat shed doorstep with Dot Mallow's funnel.",
+      "requires": [
+        "dot_mallow"
+      ],
+      "establishes": [
+        "dot_funnel",
+        "filling_station"
+      ]
+    },
+    "cq_payoff_did_start_sheepfold_turn": {
+      "function": "payoff",
+      "event": "Softened by the biscuits, Mr Ovens hands over his barn-heater can, two extra litres.",
+      "requires": [
+        "oat_biscuits",
+        "mr_ovens",
+        "biscuits_given"
+      ],
+      "establishes": [
+        "barn_heater_can",
+        "ovens_gave_can",
+        "spare_fuel_found",
+        "ovens_said_yes_before",
+        "wren"
+      ]
+    },
+    "oil_wick": {
+      "function": "decision",
+      "event": "Old wicks fail and the new ones are the wrong length.",
+      "requires": [],
+      "establishes": [
+        "old_wicks"
+      ]
+    },
+    "pp_doors": {
+      "function": "decision",
+      "event": "Four old doors are still right, and two open onto people who kept their old hooks.",
+      "requires": [
+        "the_list"
+      ],
+      "establishes": [
+        "two_waiting"
+      ]
+    },
+    "pp_gate": {
+      "function": "decision",
+      "event": "The school gate crowd holds half a dozen past lantern hangers.",
+      "requires": [],
+      "establishes": [
+        "school_gate_crowd",
+        "wren"
+      ]
+    },
+    "pp_shop": {
+      "function": "decision",
+      "event": "Word spoken at Dot Mallow's counter spreads fast, so Wren picks her sentence.",
+      "requires": [],
+      "establishes": [
+        "dot_mallow",
+        "shop_gossip",
+        "wren"
+      ]
+    },
+    "pa_survey": {
+      "function": "decision",
+      "event": "Wren walks the route with the list and finds nine mismatches.",
+      "requires": [],
+      "establishes": [
+        "survey_nine",
+        "wren"
+      ]
+    },
+    "pa_gaps": {
+      "function": "decision",
+      "event": "Wren finds three unlisted dark stretches where the next light cannot be seen.",
+      "requires": [
+        "the_list"
+      ],
+      "establishes": [
+        "three_dark_gaps",
+        "wren"
+      ]
+    },
+    "pa_ground": {
+      "function": "decision",
+      "event": "The clay above the sheepfold turn is greasy and more rain is coming.",
+      "requires": [],
+      "establishes": [
+        "clay_greasy",
+        "rain_after_four",
+        "wren"
+      ]
+    },
+    "oil_school": {
+      "function": "decision",
+      "event": "Mr Okonkwo the caretaker knows about the harvest lanterns; the full can must be carried home uphill.",
+      "requires": [
+        "school_can"
+      ],
+      "establishes": [
+        "okonkwo_can",
+        "spare_fuel_found",
+        "wren"
+      ]
+    },
+    "oil_ration": {
+      "function": "decision",
+      "event": "Wren opens the blue can and works the sums for four litres.",
+      "requires": [
+        "four_litres_shop"
+      ],
+      "establishes": [
+        "ration_fifty",
+        "wren"
+      ]
+    },
+    "oil_burn": {
+      "function": "decision",
+      "event": "A test lantern burns on the shed step against a watch.",
+      "requires": [],
+      "establishes": [
+        "burn_test",
+        "wren"
+      ]
+    },
+    "oil_borrow": {
+      "function": "decision",
+      "event": "The village lends a mismatched army of lamps and candles.",
+      "requires": [],
+      "establishes": [
+        "borrowed_lights",
+        "wren"
+      ]
+    },
+    "pp_teams": {
+      "function": "decision",
+      "event": "Wren gives the gathered helpers a plan of teams.",
+      "requires": [],
+      "establishes": [
+        "teams_plan",
+        "six_helpers",
+        "wren"
+      ]
+    },
+    "pp_teach": {
+      "function": "decision",
+      "event": "Wren shows the newcomers the wire twist her fingers learned from Mrs Trewin.",
+      "requires": [
+        "wire_method"
+      ],
+      "establishes": [
+        "teach_bracket",
+        "wren"
+      ]
+    },
+    "pp_quad": {
+      "function": "decision",
+      "event": "Wren decides the quad is worth five minutes of gate talk in Mr Ovens's yard.",
+      "requires": [
+        "mr_ovens"
+      ],
+      "establishes": [
+        "quad_asked",
+        "wren"
+      ]
+    },
+    "pp_twins": {
+      "function": "decision",
+      "event": "Wren gives Kit and Row the job of moving the spare lanterns between the ends.",
+      "requires": [
+        "twins_kit_row"
+      ],
+      "establishes": [
+        "twins_job",
+        "wren"
+      ]
+    },
+    "pa_spacing": {
+      "function": "decision",
+      "event": "Wren respaces the lanterns to where the ground needs them.",
+      "requires": [],
+      "establishes": [
+        "respaced",
+        "wren"
+      ]
+    },
+    "pa_drop": {
+      "function": "decision",
+      "event": "Marking the drop with lanterns, cane and tape costs lanterns from the top's count.",
+      "requires": [],
+      "establishes": [
+        "drop_marker",
+        "wren"
+      ]
+    },
+    "pa_paint": {
+      "function": "decision",
+      "event": "Wren opens the old tin of white gate paint, a long village row.",
+      "requires": [
+        "trewin_keeps_list"
+      ],
+      "establishes": [
+        "gate_paint",
+        "wren"
+      ]
+    },
+    "pa_shelter": {
+      "function": "decision",
+      "event": "Because the wind crosses the ridge, sheltered spots keep lanterns burning.",
+      "requires": [],
+      "establishes": [
+        "wind_across",
+        "sheltered_spots",
+        "wren"
+      ]
+    },
+    "oil_spill": {
+      "function": "ending",
+      "event": "A paraffin can spills on the shed step and the lanterns wait for Saturday.",
+      "requires": [],
+      "establishes": [
+        "paraffin_spill"
+      ]
+    },
+    "pp_crowd": {
+      "function": "ending",
+      "event": "Nine helpers arrive late with no plan; the lanterns go up crooked by torchlight.",
+      "requires": [],
+      "establishes": [
+        "crowd_late"
+      ]
+    },
+    "pa_map": {
+      "function": "ending",
+      "event": "The survey is finished but the hill is not lit; the list is rewritten for Saturday.",
+      "requires": [],
+      "establishes": [
+        "map_no_light"
+      ]
+    },
+    "oil_line": {
+      "function": "decision",
+      "event": "Kit and Row run a filling line, counting out loud.",
+      "requires": [
+        "twins_kit_row"
+      ],
+      "establishes": [
+        "filling_line",
+        "wren"
+      ]
+    },
+    "oil_shades": {
+      "function": "decision",
+      "event": "The storm shades fit only forty lanterns, forcing a new plan for the top.",
+      "requires": [],
+      "establishes": [
+        "storm_shades",
+        "shades_forty",
+        "wren"
+      ]
+    },
+    "oil_top": {
+      "function": "decision",
+      "event": "Doing the far top of the route first gets harder as the light goes.",
+      "requires": [],
+      "establishes": [
+        "top_far",
+        "wren"
+      ]
+    },
+    "oil_reserve": {
+      "function": "decision",
+      "event": "Six filled lanterns and a small can are kept back at the hall.",
+      "requires": [],
+      "establishes": [
+        "reserve_six",
+        "wren"
+      ]
+    },
+    "pp_rota": {
+      "function": "decision",
+      "event": "Wren chalks the rota on the shed door.",
+      "requires": [],
+      "establishes": [
+        "rota_chalked",
+        "wren"
+      ]
+    },
+    "pp_runner": {
+      "function": "decision",
+      "event": "A runner is needed between the two ends that cannot see or hear each other.",
+      "requires": [],
+      "establishes": [
+        "runner_job",
+        "wren"
+      ]
+    },
+    "cq_payoff_did_knock_doors_that": {
+      "function": "payoff",
+      "event": "Mrs Chen and Mr Riley have arrived with hooks and shades and are setting up the orchard line.",
+      "requires": [
+        "old_keepers_found",
+        "chen_hook",
+        "riley_shades"
+      ],
+      "establishes": [
+        "keepers_set_up_orchard",
+        "wren"
+      ]
+    },
+    "pp_kettle": {
+      "function": "decision",
+      "event": "The kettle at the hall keeps six cold helpers from going home.",
+      "requires": [
+        "trewin_wrist"
+      ],
+      "establishes": [
+        "kettle_on",
+        "six_helpers",
+        "wren"
+      ]
+    },
+    "pp_trewin": {
+      "function": "decision",
+      "event": "Mrs Trewin sits on the hall step to spot wrong lanterns on the ridge.",
+      "requires": [
+        "trewin_wrist"
+      ],
+      "establishes": [
+        "trewin_spotter"
+      ]
+    },
+    "pa_hang": {
+      "function": "decision",
+      "event": "The top needs nineteen lanterns but only sixteen reached the stile.",
+      "requires": [],
+      "establishes": [
+        "top_needs_nineteen",
+        "wren"
+      ]
+    },
+    "pa_dim": {
+      "function": "decision",
+      "event": "A half-dark walk down shows two things invisible from above.",
+      "requires": [],
+      "establishes": [
+        "dim_test",
+        "wren"
+      ]
+    },
+    "pa_bag": {
+      "function": "decision",
+      "event": "Wren packs four spare lanterns in a canvas bag at the top of the steps.",
+      "requires": [],
+      "establishes": [
+        "spare_bag",
+        "wren"
+      ]
+    },
+    "pa_post": {
+      "function": "decision",
+      "event": "The sheepfold gate, where walkers must lift a latch in the dark, needs a lantern on its post.",
+      "requires": [],
+      "establishes": [
+        "gate_latch",
+        "wren"
+      ]
+    },
+    "oil_relight": {
+      "function": "decision",
+      "event": "The list's ROUND rule means someone relights the route at seven.",
+      "requires": [
+        "the_list"
+      ],
+      "establishes": [
+        "round_rule"
+      ]
+    },
+    "oil_taper": {
+      "function": "decision",
+      "event": "Matches will not do in wind; Mrs Trewin's tapers mean forty minutes of lighting.",
+      "requires": [
+        "trewin_keeps_list"
+      ],
+      "establishes": [
+        "tapers",
+        "wren"
+      ]
+    },
+    "oil_count": {
+      "function": "decision",
+      "event": "The list's tally box waits, empty, for a walked count.",
+      "requires": [],
+      "establishes": [
+        "tally_box",
+        "wren"
+      ]
+    },
+    "oil_message": {
+      "function": "decision",
+      "event": "Wren types an honest message with a number and a time at the flickering signal.",
+      "requires": [
+        "walkers_half_five"
+      ],
+      "establishes": [
+        "signal_minute",
+        "wren"
+      ]
+    },
+    "pp_top": {
+      "function": "decision",
+      "event": "The two top lanterns take the worst wind and nobody checks them.",
+      "requires": [],
+      "establishes": [
+        "top_pair",
+        "wren"
+      ]
+    },
+    "pp_keep": {
+      "function": "decision",
+      "event": "The steps team knows the route; swapping them out at five costs more than fresh legs.",
+      "requires": [
+        "teams_plan"
+      ],
+      "establishes": [
+        "steps_team",
+        "wren"
+      ]
+    },
+    "cq_payoff_did_knock_doors_that_site2": {
+      "function": "payoff",
+      "event": "Mr Riley and Mrs Chen ask Mr Ovens the right way and the quad arrives four minutes later.",
+      "requires": [
+        "old_keepers_found",
+        "mr_ovens",
+        "ovens_quad"
+      ],
+      "establishes": [
+        "keepers_fetch_quad",
+        "ovens_said_yes_before",
+        "wren"
+      ]
+    },
+    "pp_pair": {
+      "function": "decision",
+      "event": "The underlined rule says never alone at the signal.",
+      "requires": [
+        "the_list"
+      ],
+      "establishes": [
+        "pairs_rule",
+        "signal_top",
+        "wren"
+      ]
+    },
+    "pp_count": {
+      "function": "decision",
+      "event": "Everyone who went up must be counted down; Wren keeps the names in her head.",
+      "requires": [],
+      "establishes": [
+        "count_rule",
+        "wren"
+      ]
+    },
+    "pa_ninety": {
+      "function": "decision",
+      "event": "A ninety-pace dark gap lies at the top, the first stretch walkers meet.",
+      "requires": [],
+      "establishes": [
+        "ninety_gap",
+        "wren"
+      ]
+    },
+    "pa_blown": {
+      "function": "decision",
+      "event": "Two lanterns on the open shoulder have blown out once and will again.",
+      "requires": [],
+      "establishes": [
+        "shoulder",
+        "two_blown",
+        "wren"
+      ]
+    },
+    "pa_meet": {
+      "function": "decision",
+      "event": "Walking up to meet the walkers means being on the dark hill on purpose.",
+      "requires": [
+        "walkers_half_five"
+      ],
+      "establishes": [
+        "meet_welcome",
+        "wren"
+      ]
+    },
+    "pa_hold": {
+      "function": "decision",
+      "event": "Wren holds the orchard gate with a lamp and lets the route work.",
+      "requires": [],
+      "establishes": [
+        "wren"
+      ]
+    },
+    "oil_fifty": {
+      "function": "ending",
+      "event": "Fifty well-filled lanterns and the moon light the walkers down.",
+      "requires": [
+        "tally_box",
+        "school_can",
+        "spare_fuel_found"
+      ],
+      "establishes": [
+        "fifty_lit"
+      ]
+    },
+    "pp_village": {
+      "function": "ending",
+      "event": "The village lights the ridge its own uneven way and adds eleven names.",
+      "requires": [],
+      "establishes": [
+        "village_lit"
+      ]
+    },
+    "pa_gap": {
+      "function": "ending",
+      "event": "All but one stretch of the shoulder is lit; the tally says seventy-eight.",
+      "requires": [
+        "tally_box"
+      ],
+      "establishes": [
+        "shoulder",
+        "shoulder_gap_78"
+      ]
+    },
+    "fn_wait": {
+      "function": "decision",
+      "event": "Half past five passes with the ridge lit and no walkers on it.",
+      "requires": [
+        "walkers_half_five"
+      ],
+      "establishes": [
+        "party_late",
+        "wren"
+      ]
+    },
+    "fn_signal": {
+      "function": "decision",
+      "event": "Priya's delayed message: they are down off the tops but a walker has turned an ankle.",
+      "requires": [
+        "priya_party"
+      ],
+      "establishes": [
+        "signal_top",
+        "walker_ankle",
+        "wren"
+      ]
+    },
+    "fn_count": {
+      "function": "decision",
+      "event": "Wren counts seventy-one lit, six out on the open shoulder and three never hung.",
+      "requires": [],
+      "establishes": [
+        "count_71",
+        "six_out",
+        "shoulder",
+        "tally_box",
+        "wren"
+      ]
+    },
+    "cq_payoff_did_start_beacon_steps_site2": {
+      "function": "payoff",
+      "event": "Wren phones the glove's number and Arthur Tremlett comes to the gate with spare shades and wire.",
+      "requires": [
+        "at_glove"
+      ],
+      "establishes": [
+        "arthur_tremlett",
+        "arthur_at_gate",
+        "wren"
+      ]
+    },
+    "fn_torch": {
+      "function": "decision",
+      "event": "Only two of four head torches in the hall cupboard work, and Wren pockets them.",
+      "requires": [],
+      "establishes": [
+        "head_torches",
+        "wren"
+      ]
+    },
+    "fn_up": {
+      "function": "decision",
+      "event": "Wren tightens her head torch and goes up past the last lantern onto the shoulder.",
+      "requires": [
+        "wren_head_torch"
+      ],
+      "establishes": [
+        "beyond_last_lantern",
+        "shoulder",
+        "wren"
+      ]
+    },
+    "cq_payoff_did_start_beacon_steps": {
+      "function": "payoff",
+      "event": "Arthur Tremlett is still at the sheepfold gate, his shades guarding the last two lanterns on the turn.",
+      "requires": [
+        "arthur_tremlett",
+        "arthur_at_gate"
+      ],
+      "establishes": [
+        "arthur_guards_turn",
+        "wren"
+      ]
+    },
+    "fn_hall": {
+      "function": "decision",
+      "event": "The hall is readied with kettle and heater for fourteen cold walkers.",
+      "requires": [],
+      "establishes": [
+        "hall_ready",
+        "wren"
+      ]
+    },
+    "fn_ovens": {
+      "function": "decision",
+      "event": "Wren goes to ask Mr Ovens for the quad a second time, directly this time.",
+      "requires": [
+        "mr_ovens",
+        "ovens_quad",
+        "ovens_said_yes_before",
+        "biscuits_given"
+      ],
+      "establishes": [
+        "quad_four_minutes",
+        "wren"
+      ]
+    },
+    "fn_taper": {
+      "function": "decision",
+      "event": "Six lanterns out on one stretch means the wind found a weak spot; Wren shelters a taper.",
+      "requires": [
+        "six_out",
+        "shoulder"
+      ],
+      "establishes": [
+        "wren"
+      ]
+    },
+    "fn_hold": {
+      "function": "decision",
+      "event": "With the route lit and the rota chalked, the best move may be to change nothing.",
+      "requires": [
+        "rota_chalked"
+      ],
+      "establishes": []
+    },
+    "fx_leeward": {
+      "function": "decision",
+      "event": "Wren moves lanterns to the still side of the wall to keep six flames burning.",
+      "requires": [
+        "six_out"
+      ],
+      "establishes": [
+        "leeward_moved",
+        "wren"
+      ]
+    },
+    "fx_bag": {
+      "function": "decision",
+      "event": "Wren sends the two fastest walkers up with the canvas bag to close the dark stretch.",
+      "requires": [
+        "shoulder",
+        "spare_bag"
+      ],
+      "establishes": [
+        "pair_sent_bag",
+        "wren"
+      ]
+    },
+    "fx_corner": {
+      "function": "decision",
+      "event": "Wren lights the hidden orchard corner where a tired group with a hurt ankle could slip.",
+      "requires": [
+        "walker_ankle"
+      ],
+      "establishes": [
+        "corner_lamp",
+        "wren"
+      ]
+    },
+    "fx_relay": {
+      "function": "decision",
+      "event": "A voice relay carries messages from the moor to the hall.",
+      "requires": [],
+      "establishes": [
+        "relay",
+        "wren"
+      ]
+    },
+    "fx_watch": {
+      "function": "decision",
+      "event": "Two people keep the phone watch on the top step.",
+      "requires": [],
+      "establishes": [
+        "signal_watch",
+        "wren"
+      ]
+    },
+    "fx_ankle": {
+      "function": "decision",
+      "event": "Wren unlatches the gate and waits with a lantern for the hurt walker; the quad can meet them.",
+      "requires": [
+        "walker_ankle",
+        "ovens_quad"
+      ],
+      "establishes": [
+        "ankle_help",
+        "wren"
+      ]
+    },
+    "fx_gate": {
+      "function": "decision",
+      "event": "At the sheepfold gate Wren holds a lamp as the walkers, one with a strapped ankle, arrive.",
+      "requires": [
+        "walker_ankle",
+        "ovens_field_gate"
+      ],
+      "establishes": [
+        "gate_lit_arrivals",
+        "wren"
+      ]
+    },
+    "fx_tally": {
+      "function": "decision",
+      "event": "Wren writes seventy-one in the tally box and a note of the year's truths.",
+      "requires": [
+        "tally_box",
+        "school_can",
+        "six_out",
+        "shoulder"
+      ],
+      "establishes": [
+        "tally_71_note",
+        "wren"
+      ]
+    },
+    "fx_round": {
+      "function": "decision",
+      "event": "Wren makes one last relighting round with the taper.",
+      "requires": [
+        "the_list"
+      ],
+      "establishes": [
+        "final_round",
+        "wren"
+      ]
+    },
+    "fx_hold_end": {
+      "function": "ending",
+      "event": "The walkers come down an unbroken line of lights and nothing goes wrong.",
+      "requires": [],
+      "establishes": [
+        "ridge_holds",
+        "list_since_1953"
+      ]
+    },
+    "fx_early_end": {
+      "function": "ending",
+      "event": "The walkers reach the orchard gate ten minutes ahead of the rain.",
+      "requires": [
+        "priya_party"
+      ],
+      "establishes": [
+        "down_before_rain"
+      ]
+    },
+    "fx_count_end": {
+      "function": "ending",
+      "event": "Every lantern, walker and helper is counted and the numbers match.",
+      "requires": [],
+      "establishes": [
+        "every_counted",
+        "wren"
+      ]
+    },
+    "fx_list_end": {
+      "function": "ending",
+      "event": "The list is rewritten true and Mrs Trewin signs it left-handed.",
+      "requires": [
+        "trewin_wrist",
+        "old_route_swallowed",
+        "ovens_field_gate"
+      ],
+      "establishes": [
+        "list_rewritten"
+      ]
+    },
+    "fx_wind_end": {
+      "function": "ending",
+      "event": "Wren studies the shoulder's wind and fills a page of the old seed catalogue.",
+      "requires": [
+        "shoulder",
+        "seed_catalogue_notebook"
+      ],
+      "establishes": [
+        "wind_threes",
+        "wren"
+      ]
+    },
+    "fx_short_end": {
+      "function": "ending",
+      "event": "The turn is lit but the top of the ninety-one steps is dark for the walkers.",
+      "requires": [
+        "steps_layout"
+      ],
+      "establishes": [
+        "steps_dark_short",
+        "wren"
+      ]
+    },
+    "z_warm": {
+      "function": "ending",
+      "event": "Fourteen walkers, one ankle strapped, come into the warm hall.",
+      "requires": [
+        "walker_ankle"
+      ],
+      "establishes": [
+        "fourteen_warm"
+      ]
+    },
+    "z_turn": {
+      "function": "ending",
+      "event": "Every walker follows the new line round the turn.",
+      "requires": [
+        "path_rerouted"
+      ],
+      "establishes": [
+        "turn_missed_none"
+      ]
+    },
+    "z_seen": {
+      "function": "ending",
+      "event": "The lit ridge is seen from the moor a mile off.",
+      "requires": [
+        "priya_party"
+      ],
+      "establishes": [
+        "seen_from_moor"
+      ]
+    },
+    "z_quad": {
+      "function": "ending",
+      "event": "The quad takes the last crate up and Mr Ovens, asked nicely twice, welcomes walkers at his gate.",
+      "requires": [
+        "mr_ovens",
+        "ovens_quad",
+        "ovens_said_yes_before"
+      ],
+      "establishes": [
+        "quad_gate_open"
+      ]
+    },
+    "z_tally": {
+      "function": "ending",
+      "event": "The tally box is filled in truthfully and the list hung back up.",
+      "requires": [
+        "tally_box",
+        "shoulder",
+        "two_blown"
+      ],
+      "establishes": [
+        "tally_filled"
+      ]
+    },
+    "z_hand": {
+      "function": "ending",
+      "event": "Wren hands the improved list back to Mrs Trewin, who says it will do.",
+      "requires": [
+        "trewin_wrist",
+        "trewin_keeps_list"
+      ],
+      "establishes": [
+        "handed_back"
+      ]
+    },
+    "z_page": {
+      "function": "ending",
+      "event": "The ridge is half lit but an honest page of notes goes in the shed drawer.",
+      "requires": [],
+      "establishes": [
+        "notes_page",
+        "wren"
+      ]
+    },
+    "z_late": {
+      "function": "ending",
+      "event": "The last lanterns go up after the walkers are home.",
+      "requires": [],
+      "establishes": [
+        "lit_late"
+      ]
+    },
+    "z_shoulder": {
+      "function": "ending",
+      "event": "The shoulder goes dark a third time and the walkers cross it on one torch.",
+      "requires": [
+        "shoulder",
+        "shoulder_dark_twice"
+      ],
+      "establishes": [
+        "shoulder_dark_third"
+      ]
+    }
+  },
+  "choices": {
+    "c_n_open_0": {
+      "intent": "take charge of the lantern list",
+      "cost": "none"
+    },
+    "c_n_list_0": {
+      "intent": "begin at the steep stone steps",
+      "cost": "the other two sections wait",
+      "plants": [
+        "beacon_glove"
+      ]
+    },
+    "c_n_list_1": {
+      "intent": "begin at the rerouted turn by the landslip",
+      "cost": "the other two sections wait",
+      "plants": [
+        "dot_biscuits"
+      ]
+    },
+    "c_n_list_2": {
+      "intent": "begin at the easy bottom of the route",
+      "cost": "the hard top of the route waits"
+    },
+    "c_bs_hub_0": {
+      "intent": "inspect the frost-damaged brackets",
+      "cost": "time spent before any lantern goes up"
+    },
+    "c_bs_hub_1": {
+      "intent": "look at the gap where the seventh step was",
+      "cost": "time spent on a hazard, not on lanterns"
+    },
+    "c_bs_hub_2": {
+      "intent": "haul crates before the rain",
+      "cost": "tired arms and the easy light used up"
+    },
+    "c_sf_hub_0": {
+      "intent": "inspect Mr Ovens's wired gate",
+      "cost": "none"
+    },
+    "c_sf_hub_1": {
+      "intent": "see the old path's broken end",
+      "cost": "none"
+    },
+    "c_sf_hub_2": {
+      "intent": "talk to the farmer whose field the path crosses",
+      "cost": "facing a gruff man about his land"
+    },
+    "c_og_hub_0": {
+      "intent": "look at the heavy orchard gate",
+      "cost": "none"
+    },
+    "c_og_hub_1": {
+      "intent": "deal with lanterns hung too low",
+      "cost": "none"
+    },
+    "c_og_hub_2": {
+      "intent": "clear the wasp-filled windfalls",
+      "cost": "about twenty minutes of good light"
+    },
+    "c_bs_brackets_0": {
+      "intent": "find proper fixings for the brackets",
+      "cost": "time searching for a jar that is not there"
+    },
+    "c_bs_brackets_1": {
+      "intent": "fix the brackets with fence wire",
+      "cost": "a repair that only lasts a season"
+    },
+    "c_bs_brackets_2": {
+      "intent": "ask the shopkeeper for odd bits",
+      "cost": "a walk to the shop"
+    },
+    "c_bs_step_0": {
+      "intent": "find proper fixings for the brackets",
+      "cost": "time searching for a jar that is not there"
+    },
+    "c_bs_step_1": {
+      "intent": "fix the brackets with fence wire",
+      "cost": "a repair that only lasts a season"
+    },
+    "c_bs_step_2": {
+      "intent": "ask the shopkeeper for odd bits",
+      "cost": "a walk to the shop"
+    },
+    "c_bs_carry_0": {
+      "intent": "find proper fixings for the brackets",
+      "cost": "time searching for a jar that is not there"
+    },
+    "c_bs_carry_1": {
+      "intent": "fix the brackets with fence wire",
+      "cost": "a repair that only lasts a season"
+    },
+    "c_bs_carry_2": {
+      "intent": "ask the shopkeeper for odd bits",
+      "cost": "a walk to the shop"
+    },
+    "c_sf_gate_0": {
+      "intent": "plan lanterns for the new path",
+      "cost": "none"
+    },
+    "c_sf_gate_1": {
+      "intent": "find posts for a turn with nothing to hang on",
+      "cost": "none"
+    },
+    "c_sf_gate_2": {
+      "intent": "make sure walkers see the turn",
+      "cost": "none"
+    },
+    "c_sf_slip_0": {
+      "intent": "plan lanterns for the new path",
+      "cost": "none"
+    },
+    "c_sf_slip_1": {
+      "intent": "find posts for a turn with nothing to hang on",
+      "cost": "none"
+    },
+    "c_sf_slip_2": {
+      "intent": "make sure walkers see the turn",
+      "cost": "none"
+    },
+    "c_sf_ovens_0": {
+      "intent": "plan lanterns for the new path",
+      "cost": "none"
+    },
+    "c_sf_ovens_1": {
+      "intent": "find posts for a turn with nothing to hang on",
+      "cost": "none"
+    },
+    "c_sf_ovens_2": {
+      "intent": "make sure walkers see the turn",
+      "cost": "none"
+    },
+    "c_og_hinge_0": {
+      "intent": "move the orchard hooks to a safe height",
+      "cost": "time on a ladder"
+    },
+    "c_og_hinge_1": {
+      "intent": "light the forgotten stretch above the lane",
+      "cost": "none"
+    },
+    "c_og_hinge_2": {
+      "intent": "let the waiting twins help",
+      "cost": "two noisy helpers to manage",
+      "requires": [
+        "twins_kit_row",
+        "twins_offered"
+      ]
+    },
+    "c_og_low_0": {
+      "intent": "move the orchard hooks to a safe height",
+      "cost": "time on a ladder"
+    },
+    "c_og_low_1": {
+      "intent": "light the forgotten stretch above the lane",
+      "cost": "none"
+    },
+    "c_og_low_2": {
+      "intent": "let the waiting twins help",
+      "cost": "two noisy helpers to manage",
+      "requires": [
+        "twins_kit_row",
+        "twins_offered"
+      ]
+    },
+    "c_og_fruit_0": {
+      "intent": "move the orchard hooks to a safe height",
+      "cost": "time on a ladder"
+    },
+    "c_og_fruit_1": {
+      "intent": "light the forgotten stretch above the lane",
+      "cost": "none"
+    },
+    "c_og_fruit_2": {
+      "intent": "let the waiting twins help",
+      "cost": "two noisy helpers to manage",
+      "requires": [
+        "twins_kit_row",
+        "twins_offered"
+      ]
+    },
+    "c_bs_plugs_0": {
+      "intent": "hang all the lanterns on the steps",
+      "cost": "a long climb with crates"
+    },
+    "c_bs_plugs_1": {
+      "intent": "test how the wind treats a lantern",
+      "cost": "a few minutes of waiting"
+    },
+    "c_bs_plugs_2": {
+      "intent": "report the real state of the steps",
+      "cost": "a walk down and an awkward truth",
+      "requires": [
+        "trewin_keeps_list"
+      ]
+    },
+    "c_bs_wire_0": {
+      "intent": "record the steps honestly instead of lighting them",
+      "cost": "the steps go unlit today"
+    },
+    "c_bs_wire_1": {
+      "intent": "hang all the lanterns on the steps",
+      "cost": "a long climb with crates"
+    },
+    "c_bs_wire_2": {
+      "intent": "test how the wind treats a lantern",
+      "cost": "a few minutes of waiting"
+    },
+    "c_bs_dot_0": {
+      "intent": "report the real state of the steps",
+      "cost": "a walk down and an awkward truth",
+      "requires": [
+        "trewin_keeps_list"
+      ]
+    },
+    "c_bs_dot_1": {
+      "intent": "record the steps honestly instead of lighting them",
+      "cost": "the steps go unlit today"
+    },
+    "c_bs_dot_2": {
+      "intent": "hang all the lanterns on the steps",
+      "cost": "a long climb with crates"
+    },
+    "c_sf_reroute_0": {
+      "intent": "learn the new path by carrying along it",
+      "cost": "eleven minutes and aching arms"
+    },
+    "c_sf_reroute_1": {
+      "intent": "get Mr Ovens's leave for the gate",
+      "cost": "time and a hard conversation",
+      "requires": [
+        "ovens_field_gate"
+      ]
+    },
+    "c_sf_reroute_2": {
+      "intent": "mark the dangerous lip of the landslip",
+      "cost": "two lanterns taken from elsewhere"
+    },
+    "c_sf_posts_0": {
+      "intent": "give up on the turn",
+      "cost": "the turn stays dark tonight"
+    },
+    "c_sf_posts_1": {
+      "intent": "learn the new path by carrying along it",
+      "cost": "eleven minutes and aching arms"
+    },
+    "c_sf_posts_2": {
+      "intent": "get Mr Ovens's leave for the gate",
+      "cost": "time and a hard conversation",
+      "requires": [
+        "ovens_field_gate"
+      ]
+    },
+    "c_sf_sign_0": {
+      "intent": "mark the dangerous lip of the landslip",
+      "cost": "two lanterns taken from elsewhere"
+    },
+    "c_sf_sign_1": {
+      "intent": "give up on the turn",
+      "cost": "the turn stays dark tonight"
+    },
+    "c_sf_sign_2": {
+      "intent": "learn the new path by carrying along it",
+      "cost": "eleven minutes and aching arms"
+    },
+    "c_og_hooks_0": {
+      "intent": "hang and light all the orchard lanterns",
+      "cost": "none"
+    },
+    "c_og_hooks_1": {
+      "intent": "check the orchard from the walkers' direction",
+      "cost": "time walking instead of hanging"
+    },
+    "c_og_hooks_2": {
+      "intent": "carry the four spare lanterns to the top",
+      "cost": "the last of the easy light"
+    },
+    "c_og_lane_0": {
+      "intent": "do only the orchard and do it well",
+      "cost": "the ridge above stays dark"
+    },
+    "c_og_lane_1": {
+      "intent": "hang and light all the orchard lanterns",
+      "cost": "none"
+    },
+    "c_og_lane_2": {
+      "intent": "check the orchard from the walkers' direction",
+      "cost": "time walking instead of hanging"
+    },
+    "c_og_twins_0": {
+      "intent": "carry the four spare lanterns to the top",
+      "cost": "the last of the easy light"
+    },
+    "c_og_twins_1": {
+      "intent": "do only the orchard and do it well",
+      "cost": "the ridge above stays dark"
+    },
+    "c_og_twins_2": {
+      "intent": "hang and light all the orchard lanterns",
+      "cost": "none"
+    },
+    "c_bs_flight_0": {
+      "intent": "solve the fuel problem first",
+      "cost": "none"
+    },
+    "c_bs_flight_1": {
+      "intent": "recruit helpers",
+      "cost": "time spent asking"
+    },
+    "c_bs_flight_2": {
+      "intent": "walk the whole route to check it",
+      "cost": "about forty minutes"
+    },
+    "c_bs_test_0": {
+      "intent": "prepare for the rising wind",
+      "cost": "none"
+    },
+    "c_bs_test_1": {
+      "intent": "warn the walkers honestly",
+      "cost": "none"
+    },
+    "c_bs_test_2": {
+      "intent": "start lighting from the bottom",
+      "cost": "the top stays dark longest"
+    },
+    "c_bs_report_0": {
+      "intent": "solve the fuel problem first",
+      "cost": "none"
+    },
+    "c_bs_report_1": {
+      "intent": "recruit helpers",
+      "cost": "time spent asking"
+    },
+    "c_bs_report_2": {
+      "intent": "walk the whole route to check it",
+      "cost": "about forty minutes"
+    },
+    "c_sf_walk_0": {
+      "intent": "prepare for the rising wind",
+      "cost": "none"
+    },
+    "c_sf_walk_1": {
+      "intent": "warn the walkers honestly",
+      "cost": "none"
+    },
+    "c_sf_walk_2": {
+      "intent": "start lighting from the bottom",
+      "cost": "the top stays dark longest"
+    },
+    "c_sf_permission_0": {
+      "intent": "solve the fuel problem first",
+      "cost": "none"
+    },
+    "c_sf_permission_1": {
+      "intent": "recruit helpers",
+      "cost": "time spent asking"
+    },
+    "c_sf_permission_2": {
+      "intent": "walk the whole route to check it",
+      "cost": "about forty minutes"
+    },
+    "c_sf_mark_0": {
+      "intent": "prepare for the rising wind",
+      "cost": "none"
+    },
+    "c_sf_mark_1": {
+      "intent": "warn the walkers honestly",
+      "cost": "none"
+    },
+    "c_sf_mark_2": {
+      "intent": "start lighting from the bottom",
+      "cost": "the top stays dark longest"
+    },
+    "c_og_hang_0": {
+      "intent": "solve the fuel problem first",
+      "cost": "none"
+    },
+    "c_og_hang_1": {
+      "intent": "recruit helpers",
+      "cost": "time spent asking"
+    },
+    "c_og_hang_2": {
+      "intent": "walk the whole route to check it",
+      "cost": "about forty minutes"
+    },
+    "c_og_check_0": {
+      "intent": "prepare for the rising wind",
+      "cost": "none"
+    },
+    "c_og_check_1": {
+      "intent": "warn the walkers honestly",
+      "cost": "none"
+    },
+    "c_og_check_2": {
+      "intent": "start lighting from the bottom",
+      "cost": "the top stays dark longest"
+    },
+    "c_og_spare_0": {
+      "intent": "solve the fuel problem first",
+      "cost": "none"
+    },
+    "c_og_spare_1": {
+      "intent": "recruit helpers",
+      "cost": "time spent asking"
+    },
+    "c_og_spare_2": {
+      "intent": "walk the whole route to check it",
+      "cost": "about forty minutes"
+    },
+    "c_gt_oil_0": {
+      "intent": "find the missing fuel",
+      "cost": "none"
+    },
+    "c_gt_oil_1": {
+      "intent": "set up a safe filling station",
+      "cost": "none"
+    },
+    "c_gt_oil_2": {
+      "intent": "check the old wicks first",
+      "cost": "time trimming"
+    },
+    "c_gt_hands_0": {
+      "intent": "ask the old lantern volunteers again",
+      "cost": "time on doorsteps",
+      "plants": [
+        "old_keepers"
+      ]
+    },
+    "c_gt_hands_1": {
+      "intent": "recruit parents at the school gate",
+      "cost": "none"
+    },
+    "c_gt_hands_2": {
+      "intent": "spread the call through the shop",
+      "cost": "the message depends on Dot's wording"
+    },
+    "c_cq_plant_did_knock_doors_that": {
+      "intent": "ask the old lantern volunteers again",
+      "cost": "time on doorsteps"
+    },
+    "c_gt_walk_0": {
+      "intent": "survey the route against the list",
+      "cost": "thirty-eight minutes of walking"
+    },
+    "c_gt_walk_1": {
+      "intent": "find where walkers cannot see the next light",
+      "cost": "none"
+    },
+    "c_gt_walk_2": {
+      "intent": "check the slippery clay",
+      "cost": "none"
+    },
+    "c_gt_wind_0": {
+      "intent": "find the missing fuel",
+      "cost": "none"
+    },
+    "c_gt_wind_1": {
+      "intent": "set up a safe filling station",
+      "cost": "none"
+    },
+    "c_gt_wind_2": {
+      "intent": "check the old wicks first",
+      "cost": "time trimming"
+    },
+    "c_gt_word_0": {
+      "intent": "ask the old lantern volunteers again",
+      "cost": "time on doorsteps"
+    },
+    "c_gt_word_1": {
+      "intent": "recruit parents at the school gate",
+      "cost": "none"
+    },
+    "c_gt_word_2": {
+      "intent": "spread the call through the shop",
+      "cost": "the message depends on Dot's wording"
+    },
+    "c_gt_bottom_0": {
+      "intent": "survey the route against the list",
+      "cost": "thirty-eight minutes of walking"
+    },
+    "c_gt_bottom_1": {
+      "intent": "find where walkers cannot see the next light",
+      "cost": "none"
+    },
+    "c_gt_bottom_2": {
+      "intent": "check the slippery clay",
+      "cost": "none"
+    },
+    "c_oil_can_0": {
+      "intent": "fetch the can lent to the school",
+      "cost": "an uphill carry with both hands",
+      "requires": [
+        "school_can"
+      ]
+    },
+    "c_oil_can_1": {
+      "intent": "spread the fuel thin across all lanterns",
+      "cost": "lanterns filled less well"
+    },
+    "c_oil_can_1_cq_did_start_sheepfold_turn": {
+      "intent": "spread the fuel thin across all lanterns",
+      "cost": "lanterns filled less well"
+    },
+    "c_oil_can_2": {
+      "intent": "test whether a lantern lasts",
+      "cost": "twenty minutes of waiting"
+    },
+    "c_cq_payoff_did_start_sheepfold_turn_site2": {
+      "intent": "spread the fuel thin across all lanterns",
+      "cost": "lanterns filled less well"
+    },
+    "c_oil_bench_0": {
+      "intent": "borrow lights from around the village",
+      "cost": "lights that do not match"
+    },
+    "c_oil_bench_0_cq_did_start_sheepfold_turn": {
+      "intent": "borrow lights from around the village",
+      "cost": "lights that do not match"
+    },
+    "c_oil_bench_1": {
+      "intent": "rush the filling",
+      "cost": "risk of a spill"
+    },
+    "c_oil_bench_2": {
+      "intent": "fetch the can lent to the school",
+      "cost": "an uphill carry with both hands",
+      "requires": [
+        "school_can"
+      ]
+    },
+    "c_cq_payoff_did_start_sheepfold_turn": {
+      "intent": "borrow lights from around the village",
+      "cost": "lights that do not match"
+    },
+    "c_oil_wick_0": {
+      "intent": "spread the fuel thin across all lanterns",
+      "cost": "lanterns filled less well"
+    },
+    "c_oil_wick_1": {
+      "intent": "test whether a lantern lasts",
+      "cost": "twenty minutes of waiting"
+    },
+    "c_oil_wick_2": {
+      "intent": "borrow lights from around the village",
+      "cost": "lights that do not match"
+    },
+    "c_pp_doors_0": {
+      "intent": "organise helpers into teams",
+      "cost": "none"
+    },
+    "c_pp_doors_1": {
+      "intent": "teach the new helpers",
+      "cost": "ten minutes of teaching"
+    },
+    "c_pp_doors_2": {
+      "intent": "ask Mr Ovens and his quad bike to help",
+      "cost": "five minutes being told about gates",
+      "requires": [
+        "mr_ovens"
+      ]
+    },
+    "c_pp_gate_0": {
+      "intent": "give Kit and Row a real job",
+      "cost": "none",
+      "requires": [
+        "twins_kit_row"
+      ]
+    },
+    "c_pp_gate_1": {
+      "intent": "invite everyone and plan later",
+      "cost": "no plan when people arrive"
+    },
+    "c_pp_gate_2": {
+      "intent": "organise helpers into teams",
+      "cost": "none"
+    },
+    "c_pp_shop_0": {
+      "intent": "teach the new helpers",
+      "cost": "ten minutes of teaching"
+    },
+    "c_pp_shop_1": {
+      "intent": "ask Mr Ovens and his quad bike to help",
+      "cost": "five minutes being told about gates",
+      "requires": [
+        "mr_ovens"
+      ]
+    },
+    "c_pp_shop_2": {
+      "intent": "give Kit and Row a real job",
+      "cost": "none",
+      "requires": [
+        "twins_kit_row"
+      ]
+    },
+    "c_pa_survey_0": {
+      "intent": "place lanterns where the ground needs them",
+      "cost": "none"
+    },
+    "c_pa_survey_1": {
+      "intent": "mark the landslip drop",
+      "cost": "two lanterns from the top's count"
+    },
+    "c_pa_survey_2": {
+      "intent": "paint the turns with white gate paint",
+      "cost": "an old village argument"
+    },
+    "c_pa_gaps_0": {
+      "intent": "find spots out of the wind",
+      "cost": "none"
+    },
+    "c_pa_gaps_1": {
+      "intent": "complete the survey first",
+      "cost": "no lanterns hung today"
+    },
+    "c_pa_gaps_2": {
+      "intent": "place lanterns where the ground needs them",
+      "cost": "none"
+    },
+    "c_pa_ground_0": {
+      "intent": "mark the landslip drop",
+      "cost": "two lanterns from the top's count"
+    },
+    "c_pa_ground_1": {
+      "intent": "paint the turns with white gate paint",
+      "cost": "an old village argument"
+    },
+    "c_pa_ground_2": {
+      "intent": "find spots out of the wind",
+      "cost": "none"
+    },
+    "c_oil_school_0": {
+      "intent": "fill lanterns in a line with Kit and Row",
+      "cost": "none",
+      "requires": [
+        "twins_kit_row"
+      ]
+    },
+    "c_oil_school_1": {
+      "intent": "put storm shades on before hanging",
+      "cost": "only half the lanterns get one"
+    },
+    "c_oil_school_2": {
+      "intent": "carry the hardest stretch first",
+      "cost": "a long climb as the light goes"
+    },
+    "c_oil_ration_0": {
+      "intent": "keep spare filled lanterns at the hall",
+      "cost": "six lanterns of ridge left dark"
+    },
+    "c_oil_ration_1": {
+      "intent": "fill lanterns in a line with Kit and Row",
+      "cost": "none",
+      "requires": [
+        "twins_kit_row"
+      ]
+    },
+    "c_oil_ration_2": {
+      "intent": "put storm shades on before hanging",
+      "cost": "only half the lanterns get one"
+    },
+    "c_oil_burn_0": {
+      "intent": "carry the hardest stretch first",
+      "cost": "a long climb as the light goes"
+    },
+    "c_oil_burn_1": {
+      "intent": "keep spare filled lanterns at the hall",
+      "cost": "six lanterns of ridge left dark"
+    },
+    "c_oil_burn_2": {
+      "intent": "fill lanterns in a line with Kit and Row",
+      "cost": "none",
+      "requires": [
+        "twins_kit_row"
+      ]
+    },
+    "c_oil_borrow_0": {
+      "intent": "put storm shades on before hanging",
+      "cost": "only half the lanterns get one"
+    },
+    "c_oil_borrow_1": {
+      "intent": "carry the hardest stretch first",
+      "cost": "a long climb as the light goes"
+    },
+    "c_oil_borrow_2": {
+      "intent": "keep spare filled lanterns at the hall",
+      "cost": "six lanterns of ridge left dark"
+    },
+    "c_pp_teams_0": {
+      "intent": "chalk the rota on the shed door",
+      "cost": "none"
+    },
+    "c_pp_teams_1": {
+      "intent": "connect both ends with a runner",
+      "cost": "someone takes the coldest job"
+    },
+    "c_pp_teams_2": {
+      "intent": "keep helpers warm and staying",
+      "cost": "none"
+    },
+    "c_pp_teach_0": {
+      "intent": "use Mrs Trewin as a spotter",
+      "cost": "none",
+      "requires": [
+        "trewin_keeps_list"
+      ]
+    },
+    "c_pp_teach_1": {
+      "intent": "chalk the rota on the shed door",
+      "cost": "none"
+    },
+    "c_pp_teach_2": {
+      "intent": "connect both ends with a runner",
+      "cost": "someone takes the coldest job"
+    },
+    "c_pp_quad_0": {
+      "intent": "keep helpers warm and staying",
+      "cost": "none"
+    },
+    "c_pp_quad_1": {
+      "intent": "use Mrs Trewin as a spotter",
+      "cost": "none",
+      "requires": [
+        "trewin_keeps_list"
+      ]
+    },
+    "c_pp_quad_2": {
+      "intent": "chalk the rota on the shed door",
+      "cost": "none"
+    },
+    "c_pp_twins_0": {
+      "intent": "connect both ends with a runner",
+      "cost": "someone takes the coldest job"
+    },
+    "c_pp_twins_1": {
+      "intent": "keep helpers warm and staying",
+      "cost": "none"
+    },
+    "c_pp_twins_2": {
+      "intent": "use Mrs Trewin as a spotter",
+      "cost": "none",
+      "requires": [
+        "trewin_keeps_list"
+      ]
+    },
+    "c_pa_spacing_0": {
+      "intent": "hang the top to the new spacing",
+      "cost": "the crate is three lanterns short"
+    },
+    "c_pa_spacing_1": {
+      "intent": "test the route in dim light",
+      "cost": "time in the dusk"
+    },
+    "c_pa_spacing_2": {
+      "intent": "hold four spares at the top",
+      "cost": "four spots left unlit for now"
+    },
+    "c_pa_drop_0": {
+      "intent": "light the gate walkers must open",
+      "cost": "none"
+    },
+    "c_pa_drop_1": {
+      "intent": "hang the top to the new spacing",
+      "cost": "the crate is three lanterns short"
+    },
+    "c_pa_drop_2": {
+      "intent": "test the route in dim light",
+      "cost": "time in the dusk"
+    },
+    "c_pa_paint_0": {
+      "intent": "hold four spares at the top",
+      "cost": "four spots left unlit for now"
+    },
+    "c_pa_paint_1": {
+      "intent": "light the gate walkers must open",
+      "cost": "none"
+    },
+    "c_pa_paint_2": {
+      "intent": "hang the top to the new spacing",
+      "cost": "the crate is three lanterns short"
+    },
+    "c_pa_shelter_0": {
+      "intent": "test the route in dim light",
+      "cost": "time in the dusk"
+    },
+    "c_pa_shelter_1": {
+      "intent": "hold four spares at the top",
+      "cost": "four spots left unlit for now"
+    },
+    "c_pa_shelter_2": {
+      "intent": "light the gate walkers must open",
+      "cost": "none"
+    },
+    "c_oil_line_0": {
+      "intent": "plan a relighting round",
+      "cost": "someone walks the route again"
+    },
+    "c_oil_line_1": {
+      "intent": "prepare tapers for lighting in wind",
+      "cost": "forty minutes standing still"
+    },
+    "c_oil_line_2": {
+      "intent": "count the lanterns honestly",
+      "cost": "none"
+    },
+    "c_oil_shades_0": {
+      "intent": "tell the walk leader the real timing",
+      "cost": "a cold wait for signal",
+      "requires": [
+        "priya_party"
+      ]
+    },
+    "c_oil_shades_1": {
+      "intent": "fill fewer lanterns well",
+      "cost": "thirty lanterns stay dark"
+    },
+    "c_oil_shades_2": {
+      "intent": "plan a relighting round",
+      "cost": "someone walks the route again"
+    },
+    "c_oil_top_0": {
+      "intent": "prepare tapers for lighting in wind",
+      "cost": "forty minutes standing still"
+    },
+    "c_oil_top_1": {
+      "intent": "count the lanterns honestly",
+      "cost": "none"
+    },
+    "c_oil_top_2": {
+      "intent": "tell the walk leader the real timing",
+      "cost": "a cold wait for signal",
+      "requires": [
+        "priya_party"
+      ]
+    },
+    "c_oil_reserve_0": {
+      "intent": "fill fewer lanterns well",
+      "cost": "thirty lanterns stay dark"
+    },
+    "c_oil_reserve_1": {
+      "intent": "plan a relighting round",
+      "cost": "someone walks the route again"
+    },
+    "c_oil_reserve_2": {
+      "intent": "prepare tapers for lighting in wind",
+      "cost": "forty minutes standing still"
+    },
+    "c_pp_rota_0": {
+      "intent": "check the two highest lanterns",
+      "cost": "none"
+    },
+    "c_pp_rota_1": {
+      "intent": "keep the experienced team on the top",
+      "cost": "no fresh legs"
+    },
+    "c_pp_rota_2": {
+      "intent": "send a pair to the signal spot",
+      "cost": "two people off other jobs"
+    },
+    "c_pp_runner_0": {
+      "intent": "make sure every helper comes down",
+      "cost": "none"
+    },
+    "c_pp_runner_1": {
+      "intent": "step back and let the village finish",
+      "cost": "lanterns hung unevenly"
+    },
+    "c_pp_runner_1_cq_did_knock_doors_that": {
+      "intent": "step back and let the village finish",
+      "cost": "lanterns hung unevenly"
+    },
+    "c_pp_runner_2": {
+      "intent": "check the two highest lanterns",
+      "cost": "none"
+    },
+    "c_cq_payoff_did_knock_doors_that": {
+      "intent": "make sure every helper comes down",
+      "cost": "none"
+    },
+    "c_pp_kettle_0": {
+      "intent": "keep the experienced team on the top",
+      "cost": "no fresh legs"
+    },
+    "c_pp_kettle_1": {
+      "intent": "send a pair to the signal spot",
+      "cost": "two people off other jobs"
+    },
+    "c_pp_kettle_2": {
+      "intent": "make sure every helper comes down",
+      "cost": "none"
+    },
+    "c_pp_trewin_0": {
+      "intent": "step back and let the village finish",
+      "cost": "lanterns hung unevenly"
+    },
+    "c_pp_trewin_1": {
+      "intent": "check the two highest lanterns",
+      "cost": "none"
+    },
+    "c_pp_trewin_2": {
+      "intent": "keep the experienced team on the top",
+      "cost": "no fresh legs"
+    },
+    "c_pa_hang_0": {
+      "intent": "light the ninety-pace gap at the top",
+      "cost": "none"
+    },
+    "c_pa_hang_1": {
+      "intent": "relight the two blown lanterns",
+      "cost": "time on the windy shoulder",
+      "requires": [
+        "two_blown"
+      ]
+    },
+    "c_pa_hang_2": {
+      "intent": "walk up to greet the walkers",
+      "cost": "being out in the dark on purpose"
+    },
+    "c_pa_dim_0": {
+      "intent": "wait at the bottom and trust the route",
+      "cost": "none"
+    },
+    "c_pa_dim_1": {
+      "intent": "give up on the windy shoulder",
+      "cost": "one stretch stays dark",
+      "requires": [
+        "shoulder"
+      ]
+    },
+    "c_pa_dim_2": {
+      "intent": "light the ninety-pace gap at the top",
+      "cost": "none"
+    },
+    "c_pa_bag_0": {
+      "intent": "relight the two blown lanterns",
+      "cost": "time on the windy shoulder",
+      "requires": [
+        "two_blown"
+      ]
+    },
+    "c_pa_bag_1": {
+      "intent": "walk up to greet the walkers",
+      "cost": "being out in the dark on purpose"
+    },
+    "c_pa_bag_2": {
+      "intent": "wait at the bottom and trust the route",
+      "cost": "none"
+    },
+    "c_pa_post_0": {
+      "intent": "give up on the windy shoulder",
+      "cost": "one stretch stays dark",
+      "requires": [
+        "shoulder"
+      ]
+    },
+    "c_pa_post_1": {
+      "intent": "light the ninety-pace gap at the top",
+      "cost": "none"
+    },
+    "c_pa_post_2": {
+      "intent": "relight the two blown lanterns",
+      "cost": "time on the windy shoulder",
+      "requires": [
+        "two_blown"
+      ]
+    },
+    "c_oil_relight_0": {
+      "intent": "wait for the walkers at the top",
+      "cost": "none"
+    },
+    "c_oil_relight_1": {
+      "intent": "check for messages at the signal spot",
+      "cost": "none"
+    },
+    "c_oil_relight_2": {
+      "intent": "count the lit lanterns along the route",
+      "cost": "none"
+    },
+    "c_oil_taper_0": {
+      "intent": "get head torches ready",
+      "cost": "none"
+    },
+    "c_oil_taper_1": {
+      "intent": "walk up past the last lantern",
+      "cost": "walking into the dark"
+    },
+    "c_oil_taper_2": {
+      "intent": "prepare the hall for the walkers",
+      "cost": "none"
+    },
+    "c_oil_count_0": {
+      "intent": "borrow Mr Ovens's quad bike",
+      "cost": "asking a gruff man a favour",
+      "requires": [
+        "mr_ovens",
+        "ovens_quad"
+      ]
+    },
+    "c_oil_count_1": {
+      "intent": "relight the windy shoulder",
+      "cost": "twenty minutes in the wind",
+      "requires": [
+        "shoulder"
+      ]
+    },
+    "c_oil_count_2": {
+      "intent": "change nothing and trust the work",
+      "cost": "none"
+    },
+    "c_oil_message_0": {
+      "intent": "wait for the walkers at the top",
+      "cost": "none"
+    },
+    "c_oil_message_1": {
+      "intent": "check for messages at the signal spot",
+      "cost": "none"
+    },
+    "c_oil_message_2": {
+      "intent": "count the lit lanterns along the route",
+      "cost": "none"
+    },
+    "c_pp_top_0": {
+      "intent": "get head torches ready",
+      "cost": "none"
+    },
+    "c_pp_top_1": {
+      "intent": "walk up past the last lantern",
+      "cost": "walking into the dark"
+    },
+    "c_pp_top_2": {
+      "intent": "prepare the hall for the walkers",
+      "cost": "none"
+    },
+    "c_pp_keep_0": {
+      "intent": "borrow Mr Ovens's quad bike",
+      "cost": "asking a gruff man a favour",
+      "requires": [
+        "mr_ovens",
+        "ovens_quad"
+      ]
+    },
+    "c_pp_keep_0_cq_did_knock_doors_that": {
+      "intent": "borrow Mr Ovens's quad bike",
+      "cost": "asking a gruff man a favour",
+      "requires": [
+        "mr_ovens",
+        "ovens_quad"
+      ]
+    },
+    "c_pp_keep_1": {
+      "intent": "relight the windy shoulder",
+      "cost": "twenty minutes in the wind",
+      "requires": [
+        "shoulder"
+      ]
+    },
+    "c_pp_keep_2": {
+      "intent": "change nothing and trust the work",
+      "cost": "none"
+    },
+    "c_cq_payoff_did_knock_doors_that_site2": {
+      "intent": "borrow Mr Ovens's quad bike",
+      "cost": "asking a gruff man a favour",
+      "requires": [
+        "mr_ovens",
+        "ovens_quad"
+      ]
+    },
+    "c_pp_pair_0": {
+      "intent": "wait for the walkers at the top",
+      "cost": "none"
+    },
+    "c_pp_pair_1": {
+      "intent": "check for messages at the signal spot",
+      "cost": "none"
+    },
+    "c_pp_pair_2": {
+      "intent": "count the lit lanterns along the route",
+      "cost": "none"
+    },
+    "c_pp_count_0": {
+      "intent": "get head torches ready",
+      "cost": "none"
+    },
+    "c_pp_count_1": {
+      "intent": "walk up past the last lantern",
+      "cost": "walking into the dark"
+    },
+    "c_pp_count_2": {
+      "intent": "prepare the hall for the walkers",
+      "cost": "none"
+    },
+    "c_pa_ninety_0": {
+      "intent": "borrow Mr Ovens's quad bike",
+      "cost": "asking a gruff man a favour",
+      "requires": [
+        "mr_ovens",
+        "ovens_quad"
+      ]
+    },
+    "c_pa_ninety_1": {
+      "intent": "relight the windy shoulder",
+      "cost": "twenty minutes in the wind",
+      "requires": [
+        "shoulder"
+      ]
+    },
+    "c_pa_ninety_2": {
+      "intent": "change nothing and trust the work",
+      "cost": "none"
+    },
+    "c_pa_blown_0": {
+      "intent": "wait for the walkers at the top",
+      "cost": "none"
+    },
+    "c_pa_blown_1": {
+      "intent": "check for messages at the signal spot",
+      "cost": "none"
+    },
+    "c_pa_blown_2": {
+      "intent": "count the lit lanterns along the route",
+      "cost": "none"
+    },
+    "c_pa_meet_0": {
+      "intent": "get head torches ready",
+      "cost": "none"
+    },
+    "c_pa_meet_1": {
+      "intent": "walk up past the last lantern",
+      "cost": "walking into the dark"
+    },
+    "c_pa_meet_2": {
+      "intent": "prepare the hall for the walkers",
+      "cost": "none"
+    },
+    "c_pa_hold_0": {
+      "intent": "borrow Mr Ovens's quad bike",
+      "cost": "asking a gruff man a favour",
+      "requires": [
+        "mr_ovens",
+        "ovens_quad"
+      ]
+    },
+    "c_pa_hold_1": {
+      "intent": "relight the windy shoulder",
+      "cost": "twenty minutes in the wind",
+      "requires": [
+        "shoulder"
+      ]
+    },
+    "c_pa_hold_2": {
+      "intent": "change nothing and trust the work",
+      "cost": "none"
+    },
+    "c_fn_wait_0": {
+      "intent": "move the blown-out lanterns to shelter",
+      "cost": "nine paces of light off the path",
+      "requires": [
+        "six_out"
+      ]
+    },
+    "c_fn_wait_1": {
+      "intent": "close the dark stretch with the spares",
+      "cost": "two helpers sent into the wind",
+      "requires": [
+        "spare_bag"
+      ]
+    },
+    "c_fn_wait_2": {
+      "intent": "light the hidden orchard corner",
+      "cost": "none"
+    },
+    "c_fn_signal_0": {
+      "intent": "pass messages down by voice",
+      "cost": "three people standing in the cold"
+    },
+    "c_fn_signal_1": {
+      "intent": "keep the phone signal watched",
+      "cost": "twenty minutes standing still"
+    },
+    "c_fn_signal_2": {
+      "intent": "help the injured walker",
+      "cost": "none",
+      "requires": [
+        "walker_ankle"
+      ]
+    },
+    "c_fn_count_0": {
+      "intent": "stand at the gate with a lantern",
+      "cost": "none"
+    },
+    "c_fn_count_0_cq_did_start_beacon_steps": {
+      "intent": "stand at the gate with a lantern",
+      "cost": "none"
+    },
+    "c_fn_count_1": {
+      "intent": "record the count honestly",
+      "cost": "none"
+    },
+    "c_fn_count_2": {
+      "intent": "make one last relighting round",
+      "cost": "a long walk in the dark"
+    },
+    "c_cq_payoff_did_start_beacon_steps_site2": {
+      "intent": "stand at the gate with a lantern",
+      "cost": "none"
+    },
+    "c_fn_torch_0": {
+      "intent": "let the lit ridge guide the walkers",
+      "cost": "none"
+    },
+    "c_fn_torch_1": {
+      "intent": "hurry the walkers down ahead of rain",
+      "cost": "none"
+    },
+    "c_fn_torch_2": {
+      "intent": "count walkers and lanterns",
+      "cost": "none"
+    },
+    "c_fn_up_0": {
+      "intent": "make the list true",
+      "cost": "none"
+    },
+    "c_fn_up_1": {
+      "intent": "study the wind on the shoulder",
+      "cost": "missing the walk down",
+      "requires": [
+        "shoulder"
+      ]
+    },
+    "c_fn_up_2": {
+      "intent": "spend the last two lanterns on the turn",
+      "cost": "the top of the steps may go short"
+    },
+    "c_fn_up_2_cq_did_start_beacon_steps": {
+      "intent": "spend the last two lanterns on the turn",
+      "cost": "the top of the steps may go short"
+    },
+    "c_cq_payoff_did_start_beacon_steps": {
+      "intent": "make the list true",
+      "cost": "none"
+    },
+    "c_fn_hall_0": {
+      "intent": "move the blown-out lanterns to shelter",
+      "cost": "nine paces of light off the path",
+      "requires": [
+        "six_out"
+      ]
+    },
+    "c_fn_hall_1": {
+      "intent": "close the dark stretch with the spares",
+      "cost": "two helpers sent into the wind",
+      "requires": [
+        "spare_bag"
+      ]
+    },
+    "c_fn_hall_2": {
+      "intent": "light the hidden orchard corner",
+      "cost": "none"
+    },
+    "c_fn_ovens_0": {
+      "intent": "pass messages down by voice",
+      "cost": "three people standing in the cold"
+    },
+    "c_fn_ovens_1": {
+      "intent": "keep the phone signal watched",
+      "cost": "twenty minutes standing still"
+    },
+    "c_fn_ovens_2": {
+      "intent": "help the injured walker",
+      "cost": "none",
+      "requires": [
+        "walker_ankle"
+      ]
+    },
+    "c_fn_taper_0": {
+      "intent": "stand at the gate with a lantern",
+      "cost": "none"
+    },
+    "c_fn_taper_1": {
+      "intent": "record the count honestly",
+      "cost": "none"
+    },
+    "c_fn_taper_2": {
+      "intent": "make one last relighting round",
+      "cost": "a long walk in the dark"
+    },
+    "c_fn_hold_0": {
+      "intent": "let the lit ridge guide the walkers",
+      "cost": "none"
+    },
+    "c_fn_hold_1": {
+      "intent": "hurry the walkers down ahead of rain",
+      "cost": "none"
+    },
+    "c_fn_hold_2": {
+      "intent": "count walkers and lanterns",
+      "cost": "none"
+    },
+    "c_fx_leeward_0": {
+      "intent": "bring the walkers to the warm hall",
+      "cost": "none"
+    },
+    "c_fx_leeward_1": {
+      "intent": "guide the walkers past the landslip turn",
+      "cost": "none"
+    },
+    "c_fx_leeward_2": {
+      "intent": "light the top lanterns for the walkers to see",
+      "cost": "a race against time"
+    },
+    "c_fx_bag_0": {
+      "intent": "use the quad for the last crate",
+      "cost": "none",
+      "requires": [
+        "ovens_quad"
+      ]
+    },
+    "c_fx_bag_1": {
+      "intent": "record the tally and return the list",
+      "cost": "none",
+      "requires": [
+        "tally_box"
+      ]
+    },
+    "c_fx_bag_2": {
+      "intent": "return the improved list",
+      "cost": "none",
+      "requires": [
+        "trewin_keeps_list"
+      ]
+    },
+    "c_fx_corner_0": {
+      "intent": "write honest notes for next year",
+      "cost": "the ridge stays half lit"
+    },
+    "c_fx_corner_1": {
+      "intent": "finish lighting after the walkers pass",
+      "cost": "the lanterns burn for nobody"
+    },
+    "c_fx_corner_2": {
+      "intent": "abandon the windy shoulder",
+      "cost": "the shoulder goes dark",
+      "requires": [
+        "shoulder"
+      ]
+    },
+    "c_fx_relay_0": {
+      "intent": "bring the walkers to the warm hall",
+      "cost": "none"
+    },
+    "c_fx_relay_1": {
+      "intent": "guide the walkers past the landslip turn",
+      "cost": "none"
+    },
+    "c_fx_relay_2": {
+      "intent": "light the top lanterns for the walkers to see",
+      "cost": "a race against time"
+    },
+    "c_fx_watch_0": {
+      "intent": "use the quad for the last crate",
+      "cost": "none",
+      "requires": [
+        "ovens_quad"
+      ]
+    },
+    "c_fx_watch_1": {
+      "intent": "record the tally and return the list",
+      "cost": "none",
+      "requires": [
+        "tally_box"
+      ]
+    },
+    "c_fx_watch_2": {
+      "intent": "return the improved list",
+      "cost": "none",
+      "requires": [
+        "trewin_keeps_list"
+      ]
+    },
+    "c_fx_ankle_0": {
+      "intent": "write honest notes for next year",
+      "cost": "the ridge stays half lit"
+    },
+    "c_fx_ankle_1": {
+      "intent": "finish lighting after the walkers pass",
+      "cost": "the lanterns burn for nobody"
+    },
+    "c_fx_ankle_2": {
+      "intent": "abandon the windy shoulder",
+      "cost": "the shoulder goes dark",
+      "requires": [
+        "shoulder"
+      ]
+    },
+    "c_fx_gate_0": {
+      "intent": "bring the walkers to the warm hall",
+      "cost": "none"
+    },
+    "c_fx_gate_1": {
+      "intent": "guide the walkers past the landslip turn",
+      "cost": "none"
+    },
+    "c_fx_gate_2": {
+      "intent": "light the top lanterns for the walkers to see",
+      "cost": "a race against time"
+    },
+    "c_fx_tally_0": {
+      "intent": "use the quad for the last crate",
+      "cost": "none",
+      "requires": [
+        "ovens_quad"
+      ]
+    },
+    "c_fx_tally_1": {
+      "intent": "record the tally and return the list",
+      "cost": "none",
+      "requires": [
+        "tally_box"
+      ]
+    },
+    "c_fx_tally_2": {
+      "intent": "return the improved list",
+      "cost": "none",
+      "requires": [
+        "trewin_keeps_list"
+      ]
+    },
+    "c_fx_round_0": {
+      "intent": "write honest notes for next year",
+      "cost": "the ridge stays half lit"
+    },
+    "c_fx_round_1": {
+      "intent": "finish lighting after the walkers pass",
+      "cost": "the lanterns burn for nobody"
+    },
+    "c_fx_round_2": {
+      "intent": "abandon the windy shoulder",
+      "cost": "the shoulder goes dark",
+      "requires": [
+        "shoulder"
+      ]
+    }
+  },
+  "threads": {
+    "beacon_glove": {
+      "variable": "did_start_beacon_steps",
+      "plant": "at_glove",
+      "planting_choices": [
+        "c_n_list_0"
+      ],
+      "payoff_sites": [
+        {
+          "node": "fn_count",
+          "choice": "c_fn_count_0_cq_did_start_beacon_steps",
+          "shows": "Wren phones the number in the A.T. glove and Arthur Tremlett lights the gate with spare shades."
+        },
+        {
+          "node": "fn_up",
+          "choice": "c_fn_up_2_cq_did_start_beacon_steps",
+          "shows": "Arthur Tremlett's spare storm shades keep the last two lanterns on the turn alight."
+        }
+      ]
+    },
+    "dot_biscuits": {
+      "variable": "did_start_sheepfold_turn",
+      "plant": "oat_biscuits",
+      "planting_choices": [
+        "c_n_list_1"
+      ],
+      "payoff_sites": [
+        {
+          "node": "oil_can",
+          "choice": "c_oil_can_1_cq_did_start_sheepfold_turn",
+          "shows": "The biscuits won Mr Ovens over and he told Wren of his two-litre barn-heater can."
+        },
+        {
+          "node": "oil_bench",
+          "choice": "c_oil_bench_0_cq_did_start_sheepfold_turn",
+          "shows": "Mr Ovens, softened by the biscuits, hands Wren his barn-heater can."
+        }
+      ]
+    },
+    "old_keepers": {
+      "variable": "did_knock_doors_that",
+      "plant": "old_keepers_found",
+      "planting_choices": [
+        "c_gt_hands_0"
+      ],
+      "payoff_sites": [
+        {
+          "node": "pp_runner",
+          "choice": "c_pp_runner_1_cq_did_knock_doors_that",
+          "shows": "Mrs Chen and Mr Riley have already set up the orchard line with their hooks and shades."
+        },
+        {
+          "node": "pp_keep",
+          "choice": "c_pp_keep_0_cq_did_knock_doors_that",
+          "shows": "Mrs Chen and Mr Riley know how to ask Mr Ovens, and his quad arrives in four minutes."
+        }
+      ]
+    }
+  },
+  "endings": {
+    "bs_page": {
+      "gift": "the Beacon Steps get one honest, measured page and a proper repair next week",
+      "valence": "neutral",
+      "kind": "discovery"
+    },
+    "sf_dark": {
+      "gift": "nobody is hurt, and Wren knows exactly where every lantern on the turn should go",
+      "valence": "neutral",
+      "kind": "setback"
+    },
+    "og_bottom": {
+      "gift": "a pretty, well-lit orchard and the lesson that a welcome is not a route",
+      "valence": "neutral",
+      "kind": "discovery"
+    },
+    "oil_spill": {
+      "gift": "a safe yard after the spill and a Saturday hanging: a reason to fill more carefully",
+      "valence": "neutral",
+      "kind": "setback"
+    },
+    "pp_crowd": {
+      "gift": "a village that turned out in numbers, and the lesson that hands need a plan",
+      "valence": "neutral",
+      "kind": "setback"
+    },
+    "pa_map": {
+      "gift": "the first true map of the route, so Saturday's hanging will be right",
+      "valence": "neutral",
+      "kind": "setback"
+    },
+    "oil_fifty": {
+      "gift": "fifty well-filled lanterns and a helpful moon get every walker down",
+      "valence": "neutral",
+      "kind": "discovery"
+    },
+    "pp_village": {
+      "gift": "a messy, bright ridge and eleven new names for the list",
+      "valence": "neutral",
+      "kind": "discovery"
+    },
+    "pa_gap": {
+      "gift": "a lit route but for the shoulder, and an honest note that it needs fixing",
+      "valence": "neutral",
+      "kind": "discovery"
+    },
+    "fx_hold_end": {
+      "gift": "a ridge lit end to end and walkers who never knew anything was hard",
+      "valence": "positive",
+      "kind": "success"
+    },
+    "fx_early_end": {
+      "gift": "every walker home ten minutes ahead of the rain",
+      "valence": "positive",
+      "kind": "success"
+    },
+    "fx_count_end": {
+      "gift": "a tally where the page and the hill finally agree",
+      "valence": "positive",
+      "kind": "completion"
+    },
+    "fx_list_end": {
+      "gift": "the list made true for next year, signed by Mrs Trewin",
+      "valence": "positive",
+      "kind": "completion"
+    },
+    "fx_wind_end": {
+      "gift": "real knowledge of how the wind behaves on the shoulder",
+      "valence": "neutral",
+      "kind": "discovery"
+    },
+    "fx_short_end": {
+      "gift": "a near miss on the dark steps: a reason to know the steps and carry spare fixings next time",
+      "valence": "negative",
+      "kind": "setback"
+    },
+    "z_warm": {
+      "gift": "fourteen walkers safe and warm in the hall",
+      "valence": "positive",
+      "kind": "success"
+    },
+    "z_turn": {
+      "gift": "every walker follows the new turn and nobody nears the slip",
+      "valence": "positive",
+      "kind": "success"
+    },
+    "z_seen": {
+      "gift": "a ridge of lights the walkers stop to admire from the moor",
+      "valence": "positive",
+      "kind": "success"
+    },
+    "z_quad": {
+      "gift": "Mr Ovens, asked nicely twice, proudly welcoming walkers at his lit gate",
+      "valence": "positive",
+      "kind": "success"
+    },
+    "z_tally": {
+      "gift": "an honest tally so next autumn starts from a true page",
+      "valence": "positive",
+      "kind": "completion"
+    },
+    "z_hand": {
+      "gift": "the list handed back better, and Mrs Trewin's quiet approval",
+      "valence": "positive",
+      "kind": "completion"
+    },
+    "z_page": {
+      "gift": "a page of honest notes in the shed drawer that will light the ridge next year",
+      "valence": "neutral",
+      "kind": "discovery"
+    },
+    "z_late": {
+      "gift": "the ridge lit late but lit, which is not nothing",
+      "valence": "neutral",
+      "kind": "setback"
+    },
+    "z_shoulder": {
+      "gift": "everyone safe, and the shoulder's failure written into the list's margin",
+      "valence": "negative",
+      "kind": "setback"
+    }
+  },
+  "provenance": {
+    "producer": "wp-1.4 blind extraction",
+    "model": "claude-opus-5-5",
+    "method": "read-book",
+    "book_file": "tmp_cleanup/blind/x4.book.json",
+    "book_sha256": "904b126589216729e132cd2a4b0d4325e004bbef651538c4a0beb1d99c6159ab",
+    "authored": "2026-11-21",
+    "authoring_minutes": 30,
+    "notes": [
+      "Same graph and labels as x3 with different prose; every fact and obligation here was taken from x4's text.",
+      "Wren is first named at n_list in this book; every node naming her establishes fact wren.",
+      "A name given with identifying context counts as an introduction; a bare name counts as a presupposition."
+    ]
+  }
+}

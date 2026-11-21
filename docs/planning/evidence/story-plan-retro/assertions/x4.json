@@ -1,0 +1,698 @@
+{
+  "n_open": [
+    "fence_wire_shed",
+    "quarter_past_two",
+    "ridge_cloud",
+    "shed_lanterns",
+    "the_list"
+  ],
+  "n_list": [
+    "hunters_moved",
+    "old_route_swallowed",
+    "paraffin_misplaced",
+    "the_list",
+    "three_sections",
+    "trewin_keeps_list",
+    "trewin_wrist",
+    "walkers_half_five",
+    "wren"
+  ],
+  "bs_hub": [
+    "at_glove",
+    "seventh_step_gone",
+    "steps_layout",
+    "three_brackets_out",
+    "wren"
+  ],
+  "sf_hub": [
+    "dot_mallow",
+    "mr_ovens",
+    "oat_biscuits",
+    "ovens_field_gate",
+    "path_rerouted",
+    "wren"
+  ],
+  "og_hub": [
+    "orchard_gate_drags",
+    "orchard_hooks_low",
+    "orchard_twelve"
+  ],
+  "bs_brackets": [
+    "dot_mallow",
+    "frost_holes",
+    "wren"
+  ],
+  "bs_step": [
+    "dot_mallow",
+    "seventh_step_gone",
+    "step_materials"
+  ],
+  "bs_carry": [
+    "dot_mallow",
+    "rafi_trailer",
+    "rain_after_four",
+    "wren"
+  ],
+  "sf_gate": [
+    "ovens_field_gate",
+    "the_list"
+  ],
+  "sf_slip": [
+    "old_line_nine",
+    "the_list"
+  ],
+  "sf_ovens": [
+    "mr_ovens",
+    "ovens_character",
+    "ovens_quad",
+    "wren"
+  ],
+  "og_hinge": [
+    "orchard_gate_drags",
+    "twins_kit_row",
+    "twins_offered",
+    "wren"
+  ],
+  "og_low": [
+    "orchard_hooks_low",
+    "twins_kit_row",
+    "twins_offered"
+  ],
+  "og_fruit": [
+    "twins_kit_row",
+    "twins_offered",
+    "windfalls"
+  ],
+  "bs_plugs": [
+    "plugs_missing",
+    "trewin_keeps_list",
+    "wren"
+  ],
+  "bs_wire": [
+    "trewin_wrist",
+    "wire_method",
+    "wren"
+  ],
+  "bs_dot": [
+    "dot_funnel",
+    "dot_mallow",
+    "shop_drawer_glove",
+    "trewin_keeps_list"
+  ],
+  "sf_reroute": [
+    "new_line_seven",
+    "ovens_field_gate",
+    "path_rerouted",
+    "wren"
+  ],
+  "sf_posts": [
+    "mr_ovens",
+    "no_posts_turn",
+    "ovens_field_gate",
+    "wren"
+  ],
+  "sf_sign": [
+    "path_rerouted",
+    "walkers_follow_old"
+  ],
+  "og_hooks": [
+    "orchard_height_rule",
+    "wren"
+  ],
+  "og_lane": [
+    "lane_stretch"
+  ],
+  "og_twins": [
+    "twins_kit_row",
+    "twins_offered"
+  ],
+  "bs_flight": [
+    "steps_need_22",
+    "wren"
+  ],
+  "bs_test": [
+    "the_list",
+    "wind_across"
+  ],
+  "bs_report": [
+    "trewin_keeps_list",
+    "trewin_wrist"
+  ],
+  "sf_walk": [
+    "new_line_walked",
+    "path_rerouted"
+  ],
+  "sf_permission": [
+    "mr_ovens",
+    "ovens_at_barn",
+    "ovens_field_gate"
+  ],
+  "sf_mark": [
+    "old_route_swallowed",
+    "slip_lip_danger",
+    "wren"
+  ],
+  "og_hang": [],
+  "og_check": [
+    "orchard_hidden"
+  ],
+  "og_spare": [
+    "orchard_four_spare"
+  ],
+  "bs_page": [
+    "seventh_step_gone",
+    "steps_page",
+    "wren"
+  ],
+  "sf_dark": [
+    "ovens_field_gate",
+    "path_rerouted",
+    "turn_dark"
+  ],
+  "og_bottom": [
+    "only_orchard_lit"
+  ],
+  "gt_oil": [
+    "four_litres_shop",
+    "wren"
+  ],
+  "gt_hands": [
+    "eleven_hangers",
+    "the_list",
+    "wren"
+  ],
+  "cq_plant_did_knock_doors_that": [
+    "chen_hook",
+    "old_keepers_found",
+    "riley_shades",
+    "wren"
+  ],
+  "gt_walk": [
+    "route_changed",
+    "the_list",
+    "wren"
+  ],
+  "gt_wind": [
+    "storm_shades",
+    "wind_across",
+    "wren"
+  ],
+  "gt_word": [
+    "paraffin_misplaced",
+    "path_rerouted",
+    "priya_party",
+    "signal_top"
+  ],
+  "gt_bottom": [
+    "lit_bottom_up",
+    "wren"
+  ],
+  "oil_can": [
+    "boiler_can",
+    "four_litres_shop",
+    "school_can",
+    "trewin_keeps_list",
+    "wren"
+  ],
+  "cq_payoff_did_start_sheepfold_turn_site2": [
+    "barn_heater_can",
+    "biscuits_given",
+    "dot_mallow",
+    "mr_ovens",
+    "oat_biscuits",
+    "ovens_said_yes_before",
+    "spare_fuel_found",
+    "wren"
+  ],
+  "oil_bench": [
+    "dot_funnel",
+    "dot_mallow",
+    "filling_station",
+    "school_can"
+  ],
+  "cq_payoff_did_start_sheepfold_turn": [
+    "barn_heater_can",
+    "biscuits_given",
+    "mr_ovens",
+    "oat_biscuits",
+    "ovens_gave_can",
+    "ovens_said_yes_before",
+    "spare_fuel_found",
+    "wren"
+  ],
+  "oil_wick": [
+    "old_wicks"
+  ],
+  "pp_doors": [
+    "mr_ovens",
+    "the_list",
+    "two_waiting"
+  ],
+  "pp_gate": [
+    "school_gate_crowd",
+    "twins_kit_row",
+    "wren"
+  ],
+  "pp_shop": [
+    "dot_mallow",
+    "mr_ovens",
+    "shop_gossip",
+    "twins_kit_row",
+    "wren"
+  ],
+  "pa_survey": [
+    "survey_nine",
+    "wren"
+  ],
+  "pa_gaps": [
+    "the_list",
+    "three_dark_gaps",
+    "wren"
+  ],
+  "pa_ground": [
+    "clay_greasy",
+    "rain_after_four",
+    "wren"
+  ],
+  "oil_school": [
+    "okonkwo_can",
+    "school_can",
+    "spare_fuel_found",
+    "twins_kit_row",
+    "wren"
+  ],
+  "oil_ration": [
+    "four_litres_shop",
+    "ration_fifty",
+    "twins_kit_row",
+    "wren"
+  ],
+  "oil_burn": [
+    "burn_test",
+    "twins_kit_row",
+    "wren"
+  ],
+  "oil_borrow": [
+    "borrowed_lights",
+    "wren"
+  ],
+  "pp_teams": [
+    "six_helpers",
+    "teams_plan",
+    "wren"
+  ],
+  "pp_teach": [
+    "teach_bracket",
+    "trewin_keeps_list",
+    "wire_method",
+    "wren"
+  ],
+  "pp_quad": [
+    "mr_ovens",
+    "quad_asked",
+    "trewin_keeps_list",
+    "wren"
+  ],
+  "pp_twins": [
+    "trewin_keeps_list",
+    "twins_job",
+    "twins_kit_row",
+    "wren"
+  ],
+  "pa_spacing": [
+    "respaced",
+    "wren"
+  ],
+  "pa_drop": [
+    "drop_marker",
+    "wren"
+  ],
+  "pa_paint": [
+    "gate_paint",
+    "trewin_keeps_list",
+    "wren"
+  ],
+  "pa_shelter": [
+    "sheltered_spots",
+    "wind_across",
+    "wren"
+  ],
+  "oil_spill": [
+    "paraffin_spill"
+  ],
+  "pp_crowd": [
+    "crowd_late"
+  ],
+  "pa_map": [
+    "map_no_light"
+  ],
+  "oil_line": [
+    "filling_line",
+    "twins_kit_row",
+    "wren"
+  ],
+  "oil_shades": [
+    "priya_party",
+    "shades_forty",
+    "storm_shades",
+    "wren"
+  ],
+  "oil_top": [
+    "priya_party",
+    "top_far",
+    "wren"
+  ],
+  "oil_reserve": [
+    "reserve_six",
+    "wren"
+  ],
+  "pp_rota": [
+    "rota_chalked",
+    "wren"
+  ],
+  "pp_runner": [
+    "runner_job",
+    "wren"
+  ],
+  "cq_payoff_did_knock_doors_that": [
+    "chen_hook",
+    "keepers_set_up_orchard",
+    "old_keepers_found",
+    "riley_shades",
+    "wren"
+  ],
+  "pp_kettle": [
+    "kettle_on",
+    "six_helpers",
+    "trewin_wrist",
+    "wren"
+  ],
+  "pp_trewin": [
+    "trewin_spotter",
+    "trewin_wrist"
+  ],
+  "pa_hang": [
+    "top_needs_nineteen",
+    "two_blown",
+    "wren"
+  ],
+  "pa_dim": [
+    "dim_test",
+    "shoulder",
+    "wren"
+  ],
+  "pa_bag": [
+    "spare_bag",
+    "two_blown",
+    "wren"
+  ],
+  "pa_post": [
+    "gate_latch",
+    "shoulder",
+    "two_blown",
+    "wren"
+  ],
+  "oil_relight": [
+    "round_rule",
+    "the_list"
+  ],
+  "oil_taper": [
+    "tapers",
+    "trewin_keeps_list",
+    "wren"
+  ],
+  "oil_count": [
+    "mr_ovens",
+    "ovens_quad",
+    "shoulder",
+    "tally_box",
+    "wren"
+  ],
+  "oil_message": [
+    "signal_minute",
+    "walkers_half_five",
+    "wren"
+  ],
+  "pp_top": [
+    "top_pair",
+    "wren"
+  ],
+  "pp_keep": [
+    "mr_ovens",
+    "ovens_quad",
+    "shoulder",
+    "steps_team",
+    "teams_plan",
+    "wren"
+  ],
+  "cq_payoff_did_knock_doors_that_site2": [
+    "keepers_fetch_quad",
+    "mr_ovens",
+    "old_keepers_found",
+    "ovens_quad",
+    "ovens_said_yes_before",
+    "wren"
+  ],
+  "pp_pair": [
+    "pairs_rule",
+    "signal_top",
+    "the_list",
+    "wren"
+  ],
+  "pp_count": [
+    "count_rule",
+    "wren"
+  ],
+  "pa_ninety": [
+    "mr_ovens",
+    "ninety_gap",
+    "ovens_quad",
+    "shoulder",
+    "wren"
+  ],
+  "pa_blown": [
+    "shoulder",
+    "two_blown",
+    "wren"
+  ],
+  "pa_meet": [
+    "meet_welcome",
+    "walkers_half_five",
+    "wren"
+  ],
+  "pa_hold": [
+    "mr_ovens",
+    "ovens_quad",
+    "shoulder",
+    "wren"
+  ],
+  "oil_fifty": [
+    "fifty_lit",
+    "school_can",
+    "spare_fuel_found",
+    "tally_box"
+  ],
+  "pp_village": [
+    "village_lit"
+  ],
+  "pa_gap": [
+    "shoulder",
+    "shoulder_gap_78",
+    "tally_box"
+  ],
+  "fn_wait": [
+    "party_late",
+    "six_out",
+    "spare_bag",
+    "walkers_half_five",
+    "wren"
+  ],
+  "fn_signal": [
+    "priya_party",
+    "signal_top",
+    "walker_ankle",
+    "wren"
+  ],
+  "fn_count": [
+    "count_71",
+    "shoulder",
+    "six_out",
+    "tally_box",
+    "wren"
+  ],
+  "cq_payoff_did_start_beacon_steps_site2": [
+    "arthur_at_gate",
+    "arthur_tremlett",
+    "at_glove",
+    "wren"
+  ],
+  "fn_torch": [
+    "head_torches",
+    "wren"
+  ],
+  "fn_up": [
+    "beyond_last_lantern",
+    "shoulder",
+    "wren",
+    "wren_head_torch"
+  ],
+  "cq_payoff_did_start_beacon_steps": [
+    "arthur_at_gate",
+    "arthur_guards_turn",
+    "arthur_tremlett",
+    "wren"
+  ],
+  "fn_hall": [
+    "hall_ready",
+    "six_out",
+    "spare_bag",
+    "wren"
+  ],
+  "fn_ovens": [
+    "biscuits_given",
+    "mr_ovens",
+    "ovens_quad",
+    "ovens_said_yes_before",
+    "quad_four_minutes",
+    "walker_ankle",
+    "wren"
+  ],
+  "fn_taper": [
+    "shoulder",
+    "six_out",
+    "wren"
+  ],
+  "fn_hold": [
+    "rota_chalked"
+  ],
+  "fx_leeward": [
+    "leeward_moved",
+    "six_out",
+    "wren"
+  ],
+  "fx_bag": [
+    "ovens_quad",
+    "pair_sent_bag",
+    "shoulder",
+    "spare_bag",
+    "tally_box",
+    "trewin_keeps_list",
+    "wren"
+  ],
+  "fx_corner": [
+    "corner_lamp",
+    "shoulder",
+    "walker_ankle",
+    "wren"
+  ],
+  "fx_relay": [
+    "relay",
+    "wren"
+  ],
+  "fx_watch": [
+    "ovens_quad",
+    "signal_watch",
+    "tally_box",
+    "trewin_keeps_list",
+    "wren"
+  ],
+  "fx_ankle": [
+    "ankle_help",
+    "ovens_quad",
+    "shoulder",
+    "walker_ankle",
+    "wren"
+  ],
+  "fx_gate": [
+    "gate_lit_arrivals",
+    "ovens_field_gate",
+    "walker_ankle",
+    "wren"
+  ],
+  "fx_tally": [
+    "ovens_quad",
+    "school_can",
+    "shoulder",
+    "six_out",
+    "tally_71_note",
+    "tally_box",
+    "trewin_keeps_list",
+    "wren"
+  ],
+  "fx_round": [
+    "final_round",
+    "shoulder",
+    "the_list",
+    "wren"
+  ],
+  "fx_hold_end": [
+    "list_since_1953",
+    "ridge_holds"
+  ],
+  "fx_early_end": [
+    "down_before_rain",
+    "priya_party"
+  ],
+  "fx_count_end": [
+    "every_counted",
+    "wren"
+  ],
+  "fx_list_end": [
+    "list_rewritten",
+    "old_route_swallowed",
+    "ovens_field_gate",
+    "trewin_wrist"
+  ],
+  "fx_wind_end": [
+    "seed_catalogue_notebook",
+    "shoulder",
+    "wind_threes",
+    "wren"
+  ],
+  "fx_short_end": [
+    "steps_dark_short",
+    "steps_layout",
+    "wren"
+  ],
+  "z_warm": [
+    "fourteen_warm",
+    "walker_ankle"
+  ],
+  "z_turn": [
+    "path_rerouted",
+    "turn_missed_none"
+  ],
+  "z_seen": [
+    "priya_party",
+    "seen_from_moor"
+  ],
+  "z_quad": [
+    "mr_ovens",
+    "ovens_quad",
+    "ovens_said_yes_before",
+    "quad_gate_open"
+  ],
+  "z_tally": [
+    "shoulder",
+    "tally_box",
+    "tally_filled",
+    "two_blown"
+  ],
+  "z_hand": [
+    "handed_back",
+    "trewin_keeps_list",
+    "trewin_wrist"
+  ],
+  "z_page": [
+    "notes_page",
+    "wren"
+  ],
+  "z_late": [
+    "lit_late"
+  ],
+  "z_shoulder": [
+    "shoulder",
+    "shoulder_dark_third",
+    "shoulder_dark_twice"
+  ]
+}

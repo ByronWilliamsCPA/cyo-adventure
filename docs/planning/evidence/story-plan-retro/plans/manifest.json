@@ -1,0 +1,108 @@
+{
+  "wp": "WP-1.4",
+  "date": "2026-11-21",
+  "prompt": "plans/EXTRACTION-PROMPT.md",
+  "staging": "Inputs staged as tmp_cleanup/blind/<id>.book.json in a separate worktree; plan provenance.book_file names that staging path. Reproduce with `git show <rev>:<path>` or copy the run file; verify by sha256.",
+  "extractions": {
+    "x1": {
+      "source_file": "out/the-hollow-lighthouse.filled.json",
+      "revision": "git:15b14a1",
+      "book_sha256": "82817aa48b088b2d5a154d9d76589410c9af376401bde8449c984f9d06561183",
+      "title": "The Hollow Lighthouse",
+      "role": "pre-fix revised edition (WP-0.4 input); scored against KD-LH-B1..S4",
+      "model_family": "opus",
+      "authoring_minutes": 75,
+      "note": "Used StoryEngine; assertion map = requires + establishes + label presuppositions + some restated facts."
+    },
+    "x2": {
+      "source_file": "out/the-hollow-lighthouse.filled.json",
+      "revision": "git:f3ba310",
+      "book_sha256": "acd8740b1ee7b42da44131c7bab2a4ad745eb40e93b2af2e5409a17a59d44430",
+      "title": "The Hollow Lighthouse",
+      "role": "original fill before revision (identical blob to 15b14a1^); scored against KD-LH-BS1",
+      "model_family": "opus",
+      "authoring_minutes": 80,
+      "note": "Used StoryEngine; book has no variables."
+    },
+    "x3": {
+      "source_file": "docs/planning/evidence/structural-verification-2026-11-20/runs/B-lkl-new-1/filled.json",
+      "revision": "worktree",
+      "book_sha256": "4874b76254b5e21f5f859717c800cbf5387a4f4e90265f994b93bbb972f6fe50",
+      "title": "The Lantern Keepers' List",
+      "role": "Run B fill; no answer-key entries (negative control)",
+      "model_family": "opus",
+      "authoring_minutes": 50,
+      "note": "Same graph as x4; choice intent/cost table shared between x3 and x4 (labels identical)."
+    },
+    "x4": {
+      "source_file": "docs/planning/evidence/structural-verification-2026-11-20/runs/B-lkl-new-2/filled.json",
+      "revision": "worktree",
+      "book_sha256": "904b126589216729e132cd2a4b0d4325e004bbef651538c4a0beb1d99c6159ab",
+      "title": "The Lantern Keepers' List",
+      "role": "Run B fill; scored against KD-RB-L2-OVENS, KD-RB-L2-BEACON",
+      "model_family": "opus",
+      "authoring_minutes": 30,
+      "note": "Same agent as x3; x4 facts and requires written from x4 text; intent/cost table reused."
+    },
+    "x5": {
+      "source_file": "docs/planning/evidence/structural-verification-2026-11-20/runs/B-os-new-1/filled.json",
+      "revision": "worktree",
+      "book_sha256": "e86eb8a116868732c2b953c257873343606fd6cfb5de8fb4d5e4088e75c3dba7",
+      "title": "The October Blossom",
+      "role": "Run B fill; scored against KD-RB-O1-E05 and two KD-OS-PP entries",
+      "model_family": "opus",
+      "authoring_minutes": 150,
+      "note": "Same agent as x6; did not see x5b. Ran ls on the output folders when creating them, which listed other agents' output file names (not opened)."
+    },
+    "x5b": {
+      "source_file": "docs/planning/evidence/structural-verification-2026-11-20/runs/B-os-new-1/filled.json",
+      "revision": "worktree",
+      "book_sha256": "e86eb8a116868732c2b953c257873343606fd6cfb5de8fb4d5e4088e75c3dba7",
+      "title": "The October Blossom",
+      "role": "second independent extraction of x5, for agreement",
+      "model_family": "opus",
+      "authoring_minutes": 80,
+      "note": "Separate agent; used StoryEngine."
+    },
+    "x6": {
+      "source_file": "docs/planning/evidence/structural-verification-2026-11-20/runs/B-os-new-2/filled.json",
+      "revision": "worktree",
+      "book_sha256": "d014a9e2c42bfb7de19beb7c38d18e8e32b31584bbf753b396f8cf97b644df09",
+      "title": "The Orchard Signal",
+      "role": "Run B fill; scored against two KD-OS-PP entries",
+      "model_family": "opus",
+      "authoring_minutes": 95,
+      "note": "Same agent as x5; intent/cost table reused from x5 and 19 costs rewritten for x6 text. Same ls deviation as x5."
+    },
+    "x7": {
+      "source_file": "out/the-sky-ship-stowaway.filled.json",
+      "revision": "git:60f1001",
+      "book_sha256": "bb215b407e972124f4f646c194916059bd96b0c76f00fb51006ea21d2b765d24",
+      "title": "The Sky-Ship Stowaway",
+      "role": "pre-fix revised edition; supplementary (WP-0.4 findings, not in the frozen key)",
+      "model_family": "sonnet",
+      "authoring_minutes": 75,
+      "note": "Traced routes by hand (no StoryEngine). Most choice costs 'none'."
+    },
+    "x8": {
+      "source_file": "out/the-signal-in-the-static.filled.json",
+      "revision": "git:aa5fd8c",
+      "book_sha256": "f0c851f90618cb43b7a7891e3e13cd6e8c3c9ac5c59ff337f6643be7cb1da5db",
+      "title": "The Signal in the Static",
+      "role": "pre-fix revised edition; supplementary",
+      "model_family": "sonnet",
+      "authoring_minutes": 75,
+      "note": "No StoryEngine."
+    },
+    "x9": {
+      "source_file": "out/the-midnight-museum.filled.json",
+      "revision": "git:ac61bd3",
+      "book_sha256": "39ee5a8c474b157f214a80497e63e47ff55405930996061bc33af7f75c556cd4",
+      "title": "The Midnight Museum",
+      "role": "pre-fix revised edition; supplementary",
+      "model_family": "sonnet",
+      "authoring_minutes": 95,
+      "note": "No StoryEngine; assertion map generated from plan requires/establishes, not a separate prose pass."
+    }
+  }
+}

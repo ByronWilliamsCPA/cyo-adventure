@@ -1,0 +1,3219 @@
+{
+  "plan_version": "0.1",
+  "book": {
+    "slug": "the-hollow-lighthouse",
+    "storybook_id": "sk_hollow_lighthouse",
+    "storybook_version": 1,
+    "title": "The Hollow Lighthouse"
+  },
+  "request": {
+    "text": null,
+    "band": "10-13",
+    "length": "medium",
+    "style": "prose",
+    "tone": "foggy mystery with moderate scariness and peril, no violence; courage and honesty rewarded",
+    "note": "plan written by reading an existing book; no request text exists"
+  },
+  "pitch": {
+    "hero": "Mira, a girl stranded on a foggy headland after missing the last bus",
+    "want": "to find out what the ghost light in the abandoned lighthouse is and what became of keeper Ferris",
+    "obstacle": "fog, rotten rails and rungs, rising tide, locked doors and a smuggler's hidden store",
+    "stake": "a fall or a soaking that sends her home with nothing, or a buried truth and a wronged keeper",
+    "ending_kind": "branch and bottleneck mystery: many solved endings, safe setbacks for rash choices"
+  },
+  "cast": {
+    "mira": {
+      "name": "Mira",
+      "role": "protagonist",
+      "want": "to understand the ghost light and what happened to Ferris, and to do the right thing with it",
+      "voice": "third person past; curious, careful, weighs patience against nerve; honest under temptation",
+      "knows": [
+        "mira_missed_bus",
+        "light_flickers",
+        "ferris_vanished"
+      ]
+    },
+    "ferris": {
+      "name": "old Ferris",
+      "role": "the vanished lighthouse keeper; offstage until one ending",
+      "want": "to be found and have the truth told and the tower lit true again",
+      "voice": "speaks only through his log, journal, notes and letter; cramped hand, anxious then plain",
+      "knows": [
+        "ferris_fled_inland",
+        "ferris_paid_look_away",
+        "smuggler_drove_ferris",
+        "ferris_left_light_burning",
+        "ferris_built_rig"
+      ]
+    },
+    "smuggler": {
+      "name": "the smuggler",
+      "role": "unnamed offstage antagonist",
+      "want": "the tower as a hidden store and the keeper's silence",
+      "voice": "never appears; known only by an initial in the ledger",
+      "knows": [
+        "tower_private_store"
+      ]
+    },
+    "stranger": {
+      "name": "the stranger in the photograph",
+      "role": "unidentified man beside Ferris on the gallery; never named or explained",
+      "want": "unknown",
+      "voice": "never appears",
+      "knows": []
+    },
+    "town_adults": {
+      "name": "the harbour master, clerk, constable, revenue men and coastguard",
+      "role": "offstage adults who act on Mira's evidence in the endings",
+      "want": "to set things right once shown proof",
+      "voice": "never speak on the page",
+      "knows": []
+    }
+  },
+  "truth": {
+    "question": "What is the ghost light in the Hollow Lighthouse, and what happened to keeper Ferris?",
+    "statement": "The ghost light is a made thing: a shuttered lantern with angled mirrors, dressed with glowing cave-weed, throwing light up the tower shaft. Ferris, who had taken a smuggler's money to look away while the smuggler used the tower as a store for uncustomed goods, was driven out by the smuggler's threats. He did not vanish but fled inland to a shepherd's cottage on the moor, leaving the false light burning so someone from town would come and find the truth.",
+    "facts": [
+      "lamp_rig",
+      "rig_dressed_weed",
+      "light_is_made",
+      "ferris_paid_look_away",
+      "tower_private_store",
+      "smuggled_goods",
+      "smuggler_drove_ferris",
+      "ferris_alive",
+      "ferris_fled_inland",
+      "shepherds_cottage",
+      "ferris_left_light_burning",
+      "light_meant_to_bring_town"
+    ]
+  },
+  "facts": {
+    "mira_missed_bus": {
+      "text": "Mira missed the last bus by four minutes and is out on the headland at night."
+    },
+    "fog_headland": {
+      "text": "A thick fog has rolled in over the headland."
+    },
+    "hollow_lighthouse": {
+      "text": "The Hollow Lighthouse stands dark and empty on the headland; nobody has lived there or wanted to since its keeper went."
+    },
+    "ferris_keeper": {
+      "text": "Old Ferris was the keeper of the Hollow Lighthouse."
+    },
+    "ferris_vanished": {
+      "text": "Ferris vanished from the lighthouse a year ago without a word."
+    },
+    "light_flickers": {
+      "text": "Tonight a pale light flickers on and off in the empty lighthouse's lamp room."
+    },
+    "four_ways": {
+      "text": "Four ways lead on from the tower grounds: the keeper's cottage, the tower stair, the sea caves and the old boathouse."
+    },
+    "town_nearby": {
+      "text": "Mira's town is within walking distance of the lighthouse."
+    },
+    "ferris_left_suddenly": {
+      "text": "The keeper's cottage looks as if Ferris stepped out one morning and never came back; his tea has turned to dust in its mug."
+    },
+    "cottage_desk_shelves_hearth": {
+      "text": "The cottage holds a shut roll-top desk, shelves of books and treasures, and a cold hearth of dead ash."
+    },
+    "keeper_log_last_entry": {
+      "text": "The keeper's log lies open on the desk at its last entry, which stops mid-sentence."
+    },
+    "desk_drawer_locked": {
+      "text": "A small drawer under the desk's writing surface is locked."
+    },
+    "ferris_lit_no_lamp": {
+      "text": "Ferris wrote of a light burning in the tower on nights he swore he had lit no lamp."
+    },
+    "log_footsteps": {
+      "text": "Ferris's last entry tells of footsteps on the shore coming closer night after night."
+    },
+    "hall_to_tower": {
+      "text": "A hallway from the cottage leads to a door into the tower."
+    },
+    "letter_opener": {
+      "text": "A bent letter-opener lies on the desk, thin enough to pick the drawer's lock."
+    },
+    "drawer_key_plan": {
+      "text": "The locked drawer holds a brass key in oilcloth and a plan of the cottage halls with a line inked to the tower door."
+    },
+    "mira_has_brass_key": {
+      "text": "Mira is carrying a brass key she found."
+    },
+    "ships_in_bottles": {
+      "text": "The shelves hold dozens of ships in bottles and a long row of leather logbooks."
+    },
+    "bottle_paper_seen": {
+      "text": "One bottled ship has a curl of paper hidden in its hull, and one logbook's spine is worn shiny from use."
+    },
+    "bottle_sketch_door": {
+      "text": "The paper in the bottle sketches the tower with a hidden small door at its foot."
+    },
+    "logbook_note": {
+      "text": "In the worn logbook, beside a pressed sprig of sea-holly, Ferris noted: follow the hall when the light burns wrong."
+    },
+    "hearth_buried_square": {
+      "text": "Something square lies unburned at the back of the hearth ash, and one firebrick sits loose."
+    },
+    "photo_ferris_stranger": {
+      "text": "A half-burned photograph shows Ferris on the lamp gallery beside a stranger whose stance makes Mira's skin prickle."
+    },
+    "brick_cavity_bundle": {
+      "text": "Behind the loose firebrick is a cavity holding a cloth-wrapped bundle, and the brick has jammed half out."
+    },
+    "hearth_key_tower_mark": {
+      "text": "The hearth bundle holds a brass key stamped with a tower mark."
+    },
+    "tower_mark_sketched": {
+      "text": "Mira has already seen the tower mark sketched somewhere in the cottage."
+    },
+    "kitchen_shortcut": {
+      "text": "A dark side corridor through the kitchen also leads to the tower's inner door."
+    },
+    "kitchen_draught": {
+      "text": "A cold draught smelling of stone and sea comes from a gap behind the kitchen pantry shelves."
+    },
+    "tower_inner_door": {
+      "text": "A heavy inner door at the end of the hall leads into the tower."
+    },
+    "inner_door_locked": {
+      "text": "The tower's inner door is locked."
+    },
+    "inner_door_ajar": {
+      "text": "The tower's inner door stands ajar, just a crack.",
+      "contradicts": [
+        "inner_door_locked"
+      ]
+    },
+    "journal_on_hook": {
+      "text": "The keeper's battered journal hangs on a hook beside the tower's inner door."
+    },
+    "light_no_heat": {
+      "text": "In the lamp room the pale light pulses with no heat and no flame Mira can see."
+    },
+    "lamp_room_features": {
+      "text": "The lamp room holds the great glass lens, a door to the outside gallery walk and a clockwork weight on a chain."
+    },
+    "glow_not_from_lens": {
+      "text": "The great lens is not lit; the glow is thrown up through a cracked panel near its base."
+    },
+    "second_reflector": {
+      "text": "A small second reflector has been fitted, on purpose and recently, behind the old lens."
+    },
+    "glow_from_below": {
+      "text": "The light's true source is far below the lamp room, rising up a shaft through the tower's heart."
+    },
+    "light_is_made": {
+      "text": "The ghost light is a built mechanism, made by hand, not a ghost or magic."
+    },
+    "stair_down_beside_lens": {
+      "text": "A narrow stair beside the lens curls down along the light shaft."
+    },
+    "gallery_rail_rusted": {
+      "text": "The gallery walk's iron rail is thick with rust above a drop hidden by fog."
+    },
+    "rail_trembles": {
+      "text": "The gallery rail shivers under Mira's hand; it might hold or might not."
+    },
+    "grille_glow": {
+      "text": "A thin glow leaks from a grille set low near the tower's base."
+    },
+    "chain_shaft": {
+      "text": "The clockwork weight's chain runs down a narrow shaft."
+    },
+    "clock_trapdoor": {
+      "text": "Winding the clockwork drops open a section of floor onto a narrow stair down into the tower's core."
+    },
+    "maintenance_stair": {
+      "text": "A worn but sturdy maintenance stair curls down beside the chain shaft."
+    },
+    "spiral_or_hatch": {
+      "text": "The way down splits into a worn spiral stair and a cramped service hatch."
+    },
+    "tower_base_landing": {
+      "text": "A low landing lies at the very foot of the tower."
+    },
+    "journal_on_stool": {
+      "text": "The keeper's battered journal lies open on an old stool on the landing at the tower's foot.",
+      "contradicts": [
+        "journal_on_hook"
+      ]
+    },
+    "journal_found": {
+      "text": "Mira has found the keeper's battered journal, his private record."
+    },
+    "journal_found_on_desk": {
+      "text": "Mira found the keeper's journal resting on the desk in the keeper's room.",
+      "contradicts": [
+        "journal_on_hook",
+        "journal_on_stool"
+      ]
+    },
+    "caves_three_ways": {
+      "text": "From the cave's entrance pool three ways open: a wet passage inland, a shelf of glimmering tide pools, and a carved stone arch."
+    },
+    "tide_coming_in": {
+      "text": "The tide is coming in and the water in the caves is rising."
+    },
+    "cave_stair_up": {
+      "text": "A stair cut in the rock climbs out of the caves toward the tower."
+    },
+    "glowing_weed": {
+      "text": "The tide pools glow with weed the same pale colour as the light above the tower."
+    },
+    "pool_metal_gleam": {
+      "text": "A dull gleam of metal lies half buried in one tide pool."
+    },
+    "weed_paints_light": {
+      "text": "The glowing weed is almost certainly what paints the tower's ghost light; a trick of nature someone clever noticed."
+    },
+    "tide_badge": {
+      "text": "Mira finds a keeper's brass tide-badge on a broken chain in the pool."
+    },
+    "arch_tally_marks": {
+      "text": "The low arch is scratched with rows of tally marks above a warning in cramped shorthand."
+    },
+    "narrow_gap": {
+      "text": "Beyond the arch the passage narrows to a gap barely wide enough for Mira's shoulders."
+    },
+    "tally_unlogged_nights": {
+      "text": "The tally marks count dozens of nights the tower light burned that no keeper ever logged lighting."
+    },
+    "under_tower_two_ways": {
+      "text": "Directly under the tower, worn steps and a bolted iron ladder both lead up."
+    },
+    "boathouse_contents": {
+      "text": "The leaning boathouse holds a tarp-covered dinghy, a rusted tool locker and a rickety ladder to a loft."
+    },
+    "oilskins_tin": {
+      "text": "Under the dinghy's tarp lie folded oilskins and a bailing tin that rattles."
+    },
+    "chart_passage": {
+      "text": "A coastal chart under the oilskins shows a passage inked under the lighthouse itself."
+    },
+    "boathouse_floor_hatch": {
+      "text": "A floor hatch in the boathouse leads down toward the tower."
+    },
+    "signal_note": {
+      "text": "A note in the bailing tin says: the light is not a ghost, it is a signal."
+    },
+    "light_is_signal": {
+      "text": "The light is a signal, not a haunting."
+    },
+    "rope_lantern_locker": {
+      "text": "The tool locker holds a strong coil of rope and a rusted storm lantern half full of oil."
+    },
+    "mira_has_rope": {
+      "text": "Mira is carrying a coil of rope."
+    },
+    "mira_has_lantern": {
+      "text": "Mira is carrying a lit lantern."
+    },
+    "loft_ladder_rotten": {
+      "text": "The loft ladder is missing rungs and one near the top is cracked through."
+    },
+    "flash_code_diagram": {
+      "text": "The loft holds signal flags and a diagram of lamp-flash patterns like a code; someone studied the tower's light closely."
+    },
+    "boathouse_storm": {
+      "text": "The boathouse door bangs in a rising storm wind."
+    },
+    "journal_light_entries": {
+      "text": "The journal holds anxious entries about a light that burned wrong night after night."
+    },
+    "journal_cargo_ledger": {
+      "text": "The journal holds a ledger of undeclared cargoes landed after dark."
+    },
+    "journal_tunnel_sketch": {
+      "text": "The journal holds a hurried sketch of a tunnel running beneath the tower."
+    },
+    "journal_light_pages": {
+      "text": "Two journal pages stand out: a detailed description of how the glow behaves and a column of odd dates."
+    },
+    "ferris_light_unexplained": {
+      "text": "Ferris could not explain the light's source and could only guess at a mechanism hidden below."
+    },
+    "hidden_stair": {
+      "text": "A hidden stair in the tower's core is the way onward."
+    },
+    "light_dates_foggy": {
+      "text": "Every date the strange light burned was a foggy night."
+    },
+    "light_tied_to_cargo": {
+      "text": "The light's nights are the nights secret cargoes were landed; the light and the smuggling are linked."
+    },
+    "hidden_panel": {
+      "text": "A hidden panel in the landing wall swings back onto the hidden stair."
+    },
+    "cargo_signed_initial": {
+      "text": "Each cargo entry is signed with a single initial that is not the keeper's."
+    },
+    "someone_used_tower": {
+      "text": "Someone other than Ferris has been using the tower."
+    },
+    "ledger_unbalanced": {
+      "text": "The ledger shows goods coming in again and again but almost nothing leaving."
+    },
+    "torn_page": {
+      "text": "One ledger page has been torn out in a hurry."
+    },
+    "mira_has_notebook": {
+      "text": "Mira has her own notebook."
+    },
+    "tower_private_store": {
+      "text": "Someone has used the empty tower as a private store for goods nobody wanted found."
+    },
+    "torn_page_store": {
+      "text": "The torn-out page names a hidden store deep in the tower, stocked with undeclared goods."
+    },
+    "one_smuggler": {
+      "text": "The coded initials resolve to a single smuggler."
+    },
+    "ferris_paid_look_away": {
+      "text": "For years Ferris took money from the smuggler to look the other way."
+    },
+    "smuggler_stopped_paying": {
+      "text": "Near the end the payments stopped, as if the smuggler wanted only the tower, not the keeper."
+    },
+    "cellar_door": {
+      "text": "A low cellar door with a heavy lock sits in the landing's shadowed corner."
+    },
+    "tunnel_to_sea_gate": {
+      "text": "The sketched tunnel runs from beneath the tower out under a sea gate."
+    },
+    "marked_flagstone": {
+      "text": "A loose flagstone on the landing is marked with the sketch's small cross."
+    },
+    "stair_only_dry_way": {
+      "text": "The sketch marks the hidden stair as the only dry way down to the tunnel; the other routes flood."
+    },
+    "stair_splits": {
+      "text": "The hidden stair splits into a tight winding stair inside the walls and outer steps open to the fog."
+    },
+    "hollow_step": {
+      "text": "One step near the top of the winding stair sounds hollow."
+    },
+    "outer_gust": {
+      "text": "A gust on the outer steps pushes Mira sideways against the tower."
+    },
+    "frosted_door": {
+      "text": "The climb ends at a small warm door of frosted glass glowing from the light behind it."
+    },
+    "lamp_rig": {
+      "text": "Behind the frosted door a shuttered lantern rigged with angled mirrors throws the pale glow up the tower's shaft."
+    },
+    "rig_dressed_weed": {
+      "text": "The lantern rig is dressed with strands of glowing cave-weed, which gives the light its eerie colour."
+    },
+    "three_ways_down": {
+      "text": "From the light chamber a broad stone stair, a narrow service shaft and an outer ladder lead down."
+    },
+    "landing_cupboard": {
+      "text": "A cupboard on the stone stair's landing holds Ferris's belongings: lamp parts, wire and a coat smelling of pipe smoke."
+    },
+    "spare_lens_marks": {
+      "text": "A spare lens in the cupboard is scored with marks that match the mirror rig."
+    },
+    "coat_note": {
+      "text": "A note in Ferris's coat pocket, in his hand, reads: gone but not lost."
+    },
+    "undercroft": {
+      "text": "A damp undercroft at the foot of the tower opens onto a tunnel mouth."
+    },
+    "shaft_staples_rope": {
+      "text": "The service shaft has iron staples in one wall and a frayed knotted rope beside them."
+    },
+    "outer_ladder_fog": {
+      "text": "The outer ladder runs down the tower's flank, slick and lost in dense fog."
+    },
+    "brick_tunnel": {
+      "text": "A low brick tunnel runs beneath the lighthouse out under the rock toward the sea."
+    },
+    "tunnel_lantern_lit": {
+      "text": "Mira lights the old storm lantern that hangs at the tunnel mouth."
+    },
+    "tunnel_three_branches": {
+      "text": "The tunnel splits toward the keeper's sealed private room, a store of unmarked crates, and a barred sea gate."
+    },
+    "crate_store": {
+      "text": "A store under the tower is stacked with crates and barrels bearing no marks of origin."
+    },
+    "oak_door_key_in_lock": {
+      "text": "The keeper's sealed door is brass-bound oak with his mark burned in, and a rusted old key sits in its lock."
+    },
+    "fallen_beam": {
+      "text": "A heavy beam has fallen across the passage by the keeper's door."
+    },
+    "lock_rusted": {
+      "text": "The key in the keeper's door catches on rust deep in the lock."
+    },
+    "ledger_box": {
+      "text": "A small locked ledger box sits on top of the crates."
+    },
+    "smuggled_goods": {
+      "text": "The crates hold lamp oil and fine cloth that never passed an honest customs house: a smuggler's haul."
+    },
+    "ledger_box_lists": {
+      "text": "The ledger box holds cramped lists of names, dates and figures for goods that never passed customs."
+    },
+    "draft_lantern": {
+      "text": "A cold draft worries Mira's lantern flame down to a weak flicker."
+    },
+    "sea_gate_tide": {
+      "text": "At the barred sea gate the rising tide is climbing the slick lower bars."
+    },
+    "current_ledge": {
+      "text": "Through the gate a narrow ledge is swept by a strong cold current."
+    },
+    "keeper_room": {
+      "text": "The keeper's sealed room under the sea is snug and dry, with an unlit lamp, a made bunk and a desk."
+    },
+    "sealed_letter": {
+      "text": "A sealed letter lies at the centre of the keeper's desk."
+    },
+    "letter_address": {
+      "text": "The letter is addressed: to whoever is brave enough to climb."
+    },
+    "smuggler_drove_ferris": {
+      "text": "A smuggler drove Ferris out of his own tower."
+    },
+    "ferris_left_light_burning": {
+      "text": "Ferris left the false light burning behind him when he went."
+    },
+    "ferris_alive": {
+      "text": "Ferris is alive; he did not truly vanish but went into hiding."
+    },
+    "ferris_fled_inland": {
+      "text": "Ferris fled the smuggler's threats and hid inland."
+    },
+    "light_meant_to_bring_town": {
+      "text": "Ferris left the light burning so that someone from town would eventually come looking and find the truth."
+    },
+    "letter_map": {
+      "text": "The letter includes a small map to Ferris's hiding place."
+    },
+    "ferris_confession": {
+      "text": "The letter includes Ferris's signed confession that he looked away from the smuggling for money."
+    },
+    "ferris_plea": {
+      "text": "The letter ends with a plea for whoever reads it to help make things right."
+    },
+    "plea_sorry_light": {
+      "text": "Ferris asks that they be told he is sorry, and that the tower be lit true again."
+    },
+    "shepherds_cottage": {
+      "text": "The map leads across the inland moor to a small shepherd's cottage far from the coast."
+    },
+    "harbour_office": {
+      "text": "The town has a harbour office that can organise a search."
+    },
+    "smuggler_wanted_all": {
+      "text": "On one terrible night the smuggler demanded everything: the tower and the keeper's silence."
+    },
+    "letter_kept_sealed": {
+      "text": "Mira keeps the letter sealed to hand to whoever should rightly open it."
+    },
+    "mira_has_phone": {
+      "text": "Mira has a phone she can photograph evidence with."
+    },
+    "evidence_photos": {
+      "text": "Mira photographs the crates and the ledger box as evidence."
+    },
+    "hidden_hoard": {
+      "text": "Deeper in lies the smuggler's private hoard, separate from the store, with a jewelled compass on top."
+    },
+    "hoard_photographed": {
+      "text": "Mira photographs the whole hidden hoard crate by crate without touching it."
+    },
+    "ferris_built_rig": {
+      "text": "Ferris built the light rig as a coded warning system to alert passing ships without giving himself away.",
+      "contradicts": [
+        "ferris_light_unexplained"
+      ]
+    },
+    "mirror_guide_marks": {
+      "text": "Ferris scratched guide marks into the mirror frame long ago to guide its repair."
+    },
+    "light_restored": {
+      "text": "Mira relights the tower's true lamp; a clean beam sweeps the fog for the first time in a year."
+    },
+    "signal_can_call": {
+      "text": "The signal rig can flash a coded call across the water."
+    },
+    "journal_flash_code": {
+      "text": "The keeper's journal holds a coded flash pattern that Mira has studied."
+    },
+    "drawer_split": {
+      "text": "The wrenched drawer splits and jams the desk shut; Mira leaves the cottage's secrets for the night."
+    },
+    "brick_rubble": {
+      "text": "A slide of rubble seals the hearth cavity and buries what it held."
+    },
+    "rail_rotten": {
+      "text": "The gallery rail sags under Mira's weight; she retreats into the lamp room to wait for dawn."
+    },
+    "tide_retreat": {
+      "text": "Mira wades back from the rising tide to a dry ledge and waits, safe but no closer to an answer."
+    },
+    "gap_backed_out": {
+      "text": "Mira wriggles back out of the narrow gap and leaves it behind."
+    },
+    "rung_snaps": {
+      "text": "The cracked rung snaps and drops Mira to the boathouse floor, bruised only in pride."
+    },
+    "hatch_buried": {
+      "text": "The storm slams the boathouse door and a shelf of gear buries the floor hatch; Mira walks home."
+    },
+    "cellar_lantern_dies": {
+      "text": "At the open cellar door Mira's lantern gutters out; she waits in the dark for morning."
+    },
+    "step_crumbles": {
+      "text": "The hollow step crumbles under Mira and she turns back down the hidden stair."
+    },
+    "rope_frays": {
+      "text": "The rope frays through; Mira catches the staples and climbs back up, leaving the tunnel unreached."
+    },
+    "fog_turns_back": {
+      "text": "Mira will not climb blind and edges back up the ladder to wait for the fog to lift."
+    },
+    "wards_broken": {
+      "text": "Forcing the key shears the wards and jams the keeper's door shut for good."
+    },
+    "beam_pins_coat": {
+      "text": "The beam shifts and pins Mira's coat; she tears free and backs out."
+    },
+    "gate_surge": {
+      "text": "The sea surges to Mira's waist at the gate and she wades back; the tide wins."
+    },
+    "bell_wire_patrol": {
+      "text": "A hidden bell-wire chimes as Mira pockets the compass; a dawn patrol waits with hard questions and the evidence is spoiled."
+    },
+    "gears_jam": {
+      "text": "Forced gears lock solid and jam the lamp mechanism for good."
+    },
+    "ferris_found_cottage": {
+      "text": "Mira finds Ferris alive at the shepherd's cottage, older and thinner than his photograph."
+    },
+    "search_finds_ferris": {
+      "text": "A search party follows Mira's map and finds Ferris safe; he comes home to town."
+    },
+    "town_suspected_ferris": {
+      "text": "The town had whispered suspicion against Ferris for a year."
+    },
+    "ferris_name_cleared": {
+      "text": "Mira makes the town learn the truth and Ferris's good name is restored."
+    },
+    "light_cry_for_help": {
+      "text": "The false light Ferris left burning was a quiet cry for help."
+    },
+    "mira_promise": {
+      "text": "Mira promises to see the tower mended and the truth told, and keeps her word."
+    },
+    "mira_sought_shelter": {
+      "text": "Mira had only meant to find shelter from the fog."
+    },
+    "smuggler_caught": {
+      "text": "A coastguard cutter answers Mira's signal and the smuggler is caught red-handed."
+    },
+    "smuggler_not_caught": {
+      "text": "Nobody is caught tonight; the smuggler's scheme is only half uncovered.",
+      "contradicts": [
+        "smuggler_caught"
+      ]
+    },
+    "store_emptied_harbour": {
+      "text": "The harbour master, constable and revenue men empty the secret store."
+    },
+    "hoard_case_sealed": {
+      "text": "The harbour master summons the coastguard and Mira's untouched photographs seal the case."
+    },
+    "coast_light_returned": {
+      "text": "A fishing boat answers the restored beam; the coast has its light back."
+    },
+    "rescue_lights": {
+      "text": "Lights from the harbour and out at sea answer Mira's call for help and everyone gets safely home."
+    },
+    "signal_documented": {
+      "text": "Mira logs every mirror and shutter of the signal rig; the ghost light becomes a solved mystery."
+    },
+    "letter_unread_carried": {
+      "text": "Mira carries the letter out unread into the dawn for others to open."
+    },
+    "compass_left": {
+      "text": "Mira leaves the jewelled compass where it lay and photographs the hoard instead."
+    },
+    "mystery_unsolved_town": {
+      "text": "Mira heads home with the mystery unsolved for now but no longer frightening."
+    },
+    "chalk_arrows": {
+      "text": "Mira leaves the journal as a signpost and chalks arrows along the tunnel for whoever comes next."
+    },
+    "journal_carried_home": {
+      "text": "Mira carries the keeper's journal home to hand to the town."
+    }
+  },
+  "nodes": {
+    "n_open": {
+      "function": "open",
+      "event": "Mira, stranded in fog after missing the last bus, sees a light flicker in the abandoned Hollow Lighthouse and walks toward it.",
+      "requires": [],
+      "establishes": [
+        "mira_missed_bus",
+        "fog_headland",
+        "hollow_lighthouse",
+        "ferris_keeper",
+        "ferris_vanished",
+        "light_flickers"
+      ]
+    },
+    "n_start": {
+      "function": "decision",
+      "event": "Four ways open around the tower: cottage, tower stair, sea caves, boathouse.",
+      "requires": [
+        "light_flickers"
+      ],
+      "establishes": [
+        "four_ways"
+      ]
+    },
+    "a_office1": {
+      "function": "decision",
+      "event": "The keeper's cottage looks abandoned mid-morning; desk, shelves and hearth each might hold an answer.",
+      "requires": [
+        "ferris_keeper"
+      ],
+      "establishes": [
+        "ferris_left_suddenly",
+        "cottage_desk_shelves_hearth"
+      ]
+    },
+    "a_desk": {
+      "function": "decision",
+      "event": "The roll-top desk holds the keeper's log open at its broken-off last page and a locked drawer.",
+      "requires": [
+        "cottage_desk_shelves_hearth"
+      ],
+      "establishes": [
+        "keeper_log_last_entry",
+        "desk_drawer_locked"
+      ]
+    },
+    "a_desk_log": {
+      "function": "continue",
+      "event": "Ferris's last entry tells of a light he never lit and footsteps on the shore; Mira follows the hall toward the tower.",
+      "requires": [
+        "keeper_log_last_entry",
+        "ferris_keeper"
+      ],
+      "establishes": [
+        "ferris_lit_no_lamp",
+        "log_footsteps",
+        "hall_to_tower"
+      ]
+    },
+    "a_desk_drawer": {
+      "function": "decision",
+      "event": "The drawer will not give; Mira can pick it with a bent letter-opener or wrench it.",
+      "requires": [
+        "desk_drawer_locked"
+      ],
+      "establishes": [
+        "letter_opener"
+      ]
+    },
+    "a_desk_pick": {
+      "function": "continue",
+      "event": "Mira picks the lock and finds a brass key and a plan with a line to the tower door.",
+      "requires": [
+        "letter_opener",
+        "desk_drawer_locked"
+      ],
+      "establishes": [
+        "drawer_key_plan",
+        "mira_has_brass_key",
+        "hall_to_tower"
+      ]
+    },
+    "a_shelf": {
+      "function": "decision",
+      "event": "The shelves hold ships in bottles and logbooks; one ship hides paper and one logbook is well worn.",
+      "requires": [
+        "cottage_desk_shelves_hearth"
+      ],
+      "establishes": [
+        "ships_in_bottles",
+        "bottle_paper_seen"
+      ]
+    },
+    "a_shelf_bottle": {
+      "function": "continue",
+      "event": "The bottle's paper sketches a hidden door at the tower's foot; Mira follows the hall that way.",
+      "requires": [
+        "bottle_paper_seen"
+      ],
+      "establishes": [
+        "bottle_sketch_door",
+        "hall_to_tower"
+      ]
+    },
+    "a_shelf_books": {
+      "function": "continue",
+      "event": "The worn logbook says to follow the hall when the light burns wrong, and it is burning wrong now.",
+      "requires": [
+        "bottle_paper_seen",
+        "light_flickers"
+      ],
+      "establishes": [
+        "logbook_note",
+        "hall_to_tower"
+      ]
+    },
+    "a_hearth": {
+      "function": "decision",
+      "event": "The cold hearth hides something unburned and a loose firebrick.",
+      "requires": [
+        "cottage_desk_shelves_hearth"
+      ],
+      "establishes": [
+        "hearth_buried_square"
+      ]
+    },
+    "a_hearth_ash": {
+      "function": "continue",
+      "event": "Mira finds a scorched photograph of Ferris with an unsettling stranger and carries it toward the hall.",
+      "requires": [
+        "hearth_buried_square",
+        "ferris_keeper"
+      ],
+      "establishes": [
+        "photo_ferris_stranger",
+        "hall_to_tower"
+      ]
+    },
+    "a_hearth_brick": {
+      "function": "decision",
+      "event": "Behind the jammed firebrick lies a bundle; Mira can ease it out or yank the brick.",
+      "requires": [
+        "hearth_buried_square"
+      ],
+      "establishes": [
+        "brick_cavity_bundle"
+      ]
+    },
+    "a_hearth_key": {
+      "function": "continue",
+      "event": "The bundle holds a brass key stamped with the tower mark she saw sketched elsewhere; she follows the hall.",
+      "requires": [
+        "brick_cavity_bundle",
+        "tower_mark_sketched"
+      ],
+      "establishes": [
+        "hearth_key_tower_mark",
+        "mira_has_brass_key",
+        "hall_to_tower"
+      ]
+    },
+    "a_corridor": {
+      "function": "decision",
+      "event": "The hall runs to the tower's inner door, with a kitchen shortcut beside; both end at the same locked door.",
+      "requires": [
+        "hall_to_tower"
+      ],
+      "establishes": [
+        "tower_inner_door",
+        "inner_door_locked",
+        "kitchen_shortcut"
+      ]
+    },
+    "a_kitchen": {
+      "function": "continue",
+      "event": "A sea-smelling draught behind the pantry leads Mira round to the tower door from the other side.",
+      "requires": [
+        "kitchen_shortcut",
+        "tower_inner_door"
+      ],
+      "establishes": [
+        "kitchen_draught"
+      ]
+    },
+    "a_toward": {
+      "function": "continue",
+      "event": "The tower's inner door stands ajar; Mira takes down a battered journal hanging on a hook beside it.",
+      "requires": [
+        "tower_inner_door"
+      ],
+      "establishes": [
+        "inner_door_ajar",
+        "journal_on_hook",
+        "journal_found"
+      ]
+    },
+    "b_lamp1": {
+      "function": "decision",
+      "event": "At the top of the tower the light pulses without heat or flame; lens, gallery and clockwork draw her eye.",
+      "requires": [
+        "light_flickers"
+      ],
+      "establishes": [
+        "light_no_heat",
+        "lamp_room_features"
+      ]
+    },
+    "b_lens": {
+      "function": "decision",
+      "event": "The lens is unlit; the glow comes through a cracked panel, and a new hidden reflector sits behind it.",
+      "requires": [
+        "lamp_room_features"
+      ],
+      "establishes": [
+        "glow_not_from_lens",
+        "second_reflector"
+      ]
+    },
+    "b_lens_crack": {
+      "function": "continue",
+      "event": "Through the crack Mira sees the light climbing a shaft from far below; a stair beside the lens goes down.",
+      "requires": [
+        "glow_not_from_lens"
+      ],
+      "establishes": [
+        "glow_from_below",
+        "stair_down_beside_lens"
+      ]
+    },
+    "b_lens_reflect": {
+      "function": "continue",
+      "event": "The reflector bounces light up from below: a built trick, not a ghost. Mira takes the stair down.",
+      "requires": [
+        "second_reflector"
+      ],
+      "establishes": [
+        "glow_from_below",
+        "light_is_made",
+        "stair_down_beside_lens"
+      ]
+    },
+    "b_gallery": {
+      "function": "decision",
+      "event": "The gallery rail is rotten with rust over a fog-hidden drop; walk out or look through the window.",
+      "requires": [
+        "lamp_room_features"
+      ],
+      "establishes": [
+        "gallery_rail_rusted"
+      ]
+    },
+    "b_gallery_out": {
+      "function": "decision",
+      "event": "The rail trembles under Mira's hand; trust it or step back.",
+      "requires": [
+        "gallery_rail_rusted"
+      ],
+      "establishes": [
+        "rail_trembles"
+      ]
+    },
+    "b_gallery_fog": {
+      "function": "continue",
+      "event": "Through the window Mira sees the glow leaking from a grille at the tower's base and seeks the way down.",
+      "requires": [
+        "light_flickers"
+      ],
+      "establishes": [
+        "grille_glow",
+        "glow_from_below"
+      ]
+    },
+    "b_clock": {
+      "function": "decision",
+      "event": "The clockwork chain groans; wind it or follow the chain down its shaft.",
+      "requires": [
+        "lamp_room_features"
+      ],
+      "establishes": [
+        "chain_shaft"
+      ]
+    },
+    "b_clock_wind": {
+      "function": "continue",
+      "event": "Winding the clockwork drops open a floor section onto a stair into the tower's core.",
+      "requires": [
+        "lamp_room_features"
+      ],
+      "establishes": [
+        "clock_trapdoor"
+      ]
+    },
+    "b_clock_chain": {
+      "function": "continue",
+      "event": "Mira takes a maintenance stair beside the chain shaft down.",
+      "requires": [
+        "chain_shaft"
+      ],
+      "establishes": [
+        "maintenance_stair"
+      ]
+    },
+    "b_down": {
+      "function": "decision",
+      "event": "The way down splits into a spiral stair and a cramped service hatch.",
+      "requires": [],
+      "establishes": [
+        "spiral_or_hatch"
+      ]
+    },
+    "b_down_spiral": {
+      "function": "continue",
+      "event": "The spiral stair ends at a landing at the tower's foot where the keeper's journal lies on a stool.",
+      "requires": [
+        "spiral_or_hatch"
+      ],
+      "establishes": [
+        "tower_base_landing",
+        "journal_on_stool",
+        "journal_found"
+      ]
+    },
+    "b_down_hatch": {
+      "function": "continue",
+      "event": "The hatch drops Mira onto the same low landing, where the keeper's journal waits on a stool.",
+      "requires": [
+        "spiral_or_hatch",
+        "tower_base_landing"
+      ],
+      "establishes": [
+        "journal_on_stool",
+        "journal_found"
+      ]
+    },
+    "c_cave1": {
+      "function": "decision",
+      "event": "The sea caves breathe with the tide; a wet passage, glowing pools and a carved arch lead on.",
+      "requires": [],
+      "establishes": [
+        "caves_three_ways"
+      ]
+    },
+    "c_pass": {
+      "function": "decision",
+      "event": "The passage narrows and the tide is rising; push on or hesitate.",
+      "requires": [],
+      "establishes": [
+        "tide_coming_in"
+      ]
+    },
+    "c_pass_deep": {
+      "function": "continue",
+      "event": "Mira reaches a dry ledge and slick steps cut upward toward the tower.",
+      "requires": [
+        "tide_coming_in"
+      ],
+      "establishes": [
+        "cave_stair_up"
+      ]
+    },
+    "c_pool": {
+      "function": "decision",
+      "event": "The pools glow with weed the colour of the tower light; something metal gleams in one.",
+      "requires": [
+        "light_flickers"
+      ],
+      "establishes": [
+        "glowing_weed",
+        "pool_metal_gleam"
+      ]
+    },
+    "c_pool_glow": {
+      "function": "continue",
+      "event": "The weed is surely what paints the ghost light, nothing haunted; Mira follows a handrail to a cliff stair.",
+      "requires": [
+        "glowing_weed",
+        "light_flickers"
+      ],
+      "establishes": [
+        "weed_paints_light",
+        "cave_stair_up"
+      ]
+    },
+    "c_pool_metal": {
+      "function": "continue",
+      "event": "Mira fishes out a keeper's brass tide-badge and climbs a rock stair toward the tower.",
+      "requires": [
+        "pool_metal_gleam"
+      ],
+      "establishes": [
+        "tide_badge",
+        "cave_stair_up"
+      ]
+    },
+    "c_arch": {
+      "function": "decision",
+      "event": "The arch is covered in tally marks and a shorthand warning; beyond it a tight gap.",
+      "requires": [],
+      "establishes": [
+        "arch_tally_marks",
+        "narrow_gap"
+      ]
+    },
+    "c_arch_marks": {
+      "function": "continue",
+      "event": "The tallies count nights the light burned unlogged, and the shorthand points to a stair up away from the rising sea.",
+      "requires": [
+        "arch_tally_marks"
+      ],
+      "establishes": [
+        "tally_unlogged_nights",
+        "cave_stair_up",
+        "tide_coming_in"
+      ]
+    },
+    "c_arch_gap": {
+      "function": "decision",
+      "event": "Wedged sideways in the gap, Mira can wriggle on or back out.",
+      "requires": [
+        "narrow_gap"
+      ],
+      "establishes": []
+    },
+    "c_gather": {
+      "function": "decision",
+      "event": "The stair brings Mira under the tower, where worn steps and an iron ladder lead up.",
+      "requires": [
+        "cave_stair_up"
+      ],
+      "establishes": [
+        "under_tower_two_ways"
+      ]
+    },
+    "c_steps": {
+      "function": "continue",
+      "event": "The steps reach a dry landing in the tower's base where the keeper's journal lies on a stool.",
+      "requires": [
+        "under_tower_two_ways"
+      ],
+      "establishes": [
+        "tower_base_landing",
+        "journal_on_stool",
+        "journal_found"
+      ]
+    },
+    "c_ladder": {
+      "function": "continue",
+      "event": "The ladder reaches the same low landing, where the keeper's journal waits on its stool.",
+      "requires": [
+        "under_tower_two_ways",
+        "tower_base_landing"
+      ],
+      "establishes": [
+        "journal_on_stool",
+        "journal_found"
+      ]
+    },
+    "d_boat1": {
+      "function": "decision",
+      "event": "The leaning boathouse holds a dinghy, a tool locker and a ladder to a loft.",
+      "requires": [],
+      "establishes": [
+        "boathouse_contents"
+      ]
+    },
+    "d_dinghy": {
+      "function": "decision",
+      "event": "Under the dinghy's tarp are oilskins and a rattling bailing tin.",
+      "requires": [
+        "boathouse_contents"
+      ],
+      "establishes": [
+        "oilskins_tin"
+      ]
+    },
+    "d_dinghy_tarp": {
+      "function": "continue",
+      "event": "A chart shows a passage under the lighthouse, pointing to a floor hatch in the corner.",
+      "requires": [
+        "oilskins_tin"
+      ],
+      "establishes": [
+        "chart_passage",
+        "boathouse_floor_hatch"
+      ]
+    },
+    "d_dinghy_tin": {
+      "function": "continue",
+      "event": "The tin holds a brass key and a note: the light is not a ghost, it is a signal. Mira goes to the floor hatch.",
+      "requires": [
+        "oilskins_tin"
+      ],
+      "establishes": [
+        "mira_has_brass_key",
+        "signal_note",
+        "light_is_signal",
+        "boathouse_floor_hatch"
+      ]
+    },
+    "d_locker": {
+      "function": "decision",
+      "event": "The locker holds rope and a half-full storm lantern; Mira picks one.",
+      "requires": [
+        "boathouse_contents"
+      ],
+      "establishes": [
+        "rope_lantern_locker"
+      ]
+    },
+    "d_locker_rope": {
+      "function": "continue",
+      "event": "Mira takes the rope and notices a well-worn floor hatch.",
+      "requires": [
+        "rope_lantern_locker"
+      ],
+      "establishes": [
+        "mira_has_rope",
+        "boathouse_floor_hatch"
+      ]
+    },
+    "d_locker_lantern": {
+      "function": "continue",
+      "event": "Mira lights the lantern and spots a well-worn floor hatch.",
+      "requires": [
+        "rope_lantern_locker"
+      ],
+      "establishes": [
+        "mira_has_lantern",
+        "boathouse_floor_hatch"
+      ]
+    },
+    "d_loft": {
+      "function": "decision",
+      "event": "The loft ladder is rotten, with one cracked rung near the top.",
+      "requires": [
+        "boathouse_contents"
+      ],
+      "establishes": [
+        "loft_ladder_rotten"
+      ]
+    },
+    "d_loft_up": {
+      "function": "continue",
+      "event": "The loft holds signal flags and a lamp-flash code diagram; a trapdoor drops her by the floor hatch she noticed earlier.",
+      "requires": [
+        "loft_ladder_rotten",
+        "boathouse_floor_hatch"
+      ],
+      "establishes": [
+        "flash_code_diagram"
+      ]
+    },
+    "d_hatch": {
+      "function": "decision",
+      "event": "The floor hatch is stiff and the storm is rising behind her.",
+      "requires": [
+        "boathouse_floor_hatch"
+      ],
+      "establishes": [
+        "boathouse_storm"
+      ]
+    },
+    "d_hatch_down": {
+      "function": "continue",
+      "event": "The passage under the rock reaches a landing at the tower's base where the keeper's journal lies on a stool.",
+      "requires": [
+        "boathouse_floor_hatch"
+      ],
+      "establishes": [
+        "tower_base_landing",
+        "journal_on_stool",
+        "journal_found"
+      ]
+    },
+    "n_journal": {
+      "function": "decision",
+      "event": "Every path leads to the same journal: entries on the wrong light, a ledger of night cargoes, a tunnel sketch.",
+      "requires": [
+        "journal_found"
+      ],
+      "establishes": [
+        "journal_light_entries",
+        "journal_cargo_ledger",
+        "journal_tunnel_sketch"
+      ]
+    },
+    "jr_light": {
+      "function": "decision",
+      "event": "Ferris's light entries grow uneasy; a detailed description and a column of dates stand out.",
+      "requires": [
+        "journal_light_entries",
+        "ferris_keeper"
+      ],
+      "establishes": [
+        "ferris_lit_no_lamp",
+        "ferris_light_unexplained",
+        "journal_light_pages"
+      ]
+    },
+    "jr_light_read": {
+      "function": "continue",
+      "event": "Ferris wrote the light is made, its source hidden below, and underlined: take the hidden stair.",
+      "requires": [
+        "journal_light_pages",
+        "ferris_keeper"
+      ],
+      "establishes": [
+        "light_is_made",
+        "glow_from_below",
+        "ferris_light_unexplained",
+        "hidden_stair"
+      ]
+    },
+    "jr_light_date": {
+      "function": "continue",
+      "event": "The dates are all foggy nights, the same nights cargoes were landed; a note points to a hidden stair.",
+      "requires": [
+        "journal_light_pages"
+      ],
+      "establishes": [
+        "light_dates_foggy",
+        "light_tied_to_cargo",
+        "hidden_stair"
+      ]
+    },
+    "jr_light_join": {
+      "function": "continue",
+      "event": "Mira presses the landing wall where the journal says and a hidden panel opens on a cramped stair.",
+      "requires": [
+        "hidden_stair",
+        "tower_base_landing"
+      ],
+      "establishes": [
+        "hidden_panel"
+      ]
+    },
+    "jr_smug": {
+      "function": "decision",
+      "event": "The cargo ledger is signed with an initial not the keeper's; someone else used the tower.",
+      "requires": [
+        "journal_cargo_ledger",
+        "ferris_keeper"
+      ],
+      "establishes": [
+        "cargo_signed_initial",
+        "someone_used_tower"
+      ]
+    },
+    "jr_smug_ledger": {
+      "function": "decision",
+      "event": "The figures never balance and one page has been torn out.",
+      "requires": [
+        "journal_cargo_ledger"
+      ],
+      "establishes": [
+        "ledger_unbalanced",
+        "torn_page"
+      ]
+    },
+    "jr_smug_copy": {
+      "function": "continue",
+      "event": "Mira copies the totals into her notebook as proof of a private store; a margin note points to the hidden stair.",
+      "requires": [
+        "journal_cargo_ledger"
+      ],
+      "establishes": [
+        "mira_has_notebook",
+        "tower_private_store",
+        "hidden_stair"
+      ]
+    },
+    "jr_smug_torn": {
+      "function": "continue",
+      "event": "The torn page, tucked in the back cover, names a hidden store and gives directions to the hidden stair.",
+      "requires": [
+        "torn_page"
+      ],
+      "establishes": [
+        "torn_page_store",
+        "hidden_stair"
+      ]
+    },
+    "jr_smug_names": {
+      "function": "continue",
+      "event": "The initials resolve to one smuggler who paid Ferris to look away, then stopped paying.",
+      "requires": [
+        "cargo_signed_initial",
+        "ferris_keeper"
+      ],
+      "establishes": [
+        "one_smuggler",
+        "ferris_paid_look_away",
+        "smuggler_stopped_paying",
+        "hidden_stair"
+      ]
+    },
+    "jr_smug_join": {
+      "function": "decision",
+      "event": "The ledger points to the hidden stair, but a locked cellar door sits in the landing's corner.",
+      "requires": [
+        "hidden_stair",
+        "tower_base_landing"
+      ],
+      "establishes": [
+        "cellar_door"
+      ]
+    },
+    "jr_tunnel": {
+      "function": "decision",
+      "event": "The sketch shows a tunnel out under a sea gate; a marked flagstone sits loose on the landing.",
+      "requires": [
+        "journal_tunnel_sketch",
+        "tower_base_landing"
+      ],
+      "establishes": [
+        "tunnel_to_sea_gate",
+        "marked_flagstone"
+      ]
+    },
+    "jr_tun_sketch": {
+      "function": "continue",
+      "event": "The sketch marks the hidden stair as the only dry way; a matching wall panel opens.",
+      "requires": [
+        "journal_tunnel_sketch",
+        "tower_base_landing"
+      ],
+      "establishes": [
+        "stair_only_dry_way",
+        "hidden_stair",
+        "hidden_panel"
+      ]
+    },
+    "jr_tun_stone": {
+      "function": "decision",
+      "event": "The flagstone is rusted fast; heave it or trust the sketch's drier route.",
+      "requires": [
+        "marked_flagstone",
+        "stair_only_dry_way"
+      ],
+      "establishes": []
+    },
+    "jr_tun_join": {
+      "function": "continue",
+      "event": "The sketch wins: the wall panel already stands open and Mira starts up the hidden stair.",
+      "requires": [
+        "stair_only_dry_way",
+        "hidden_panel"
+      ],
+      "establishes": [
+        "hidden_stair"
+      ]
+    },
+    "n_stairs": {
+      "function": "decision",
+      "event": "All journal threads lead to the hidden stair, which splits into a tight winding stair and fog-exposed outer steps.",
+      "requires": [
+        "hidden_stair",
+        "journal_found"
+      ],
+      "establishes": [
+        "stair_splits"
+      ]
+    },
+    "st_wind": {
+      "function": "decision",
+      "event": "On the winding stair one step near the top sounds hollow.",
+      "requires": [
+        "stair_splits"
+      ],
+      "establishes": [
+        "hollow_step"
+      ]
+    },
+    "st_wind_up": {
+      "function": "continue",
+      "event": "Keeping to the wall, Mira reaches a warm glowing frosted-glass door.",
+      "requires": [
+        "hollow_step"
+      ],
+      "establishes": [
+        "frosted_door"
+      ]
+    },
+    "st_outer": {
+      "function": "decision",
+      "event": "A gust on the outer steps shoves Mira; push on or wait.",
+      "requires": [
+        "stair_splits"
+      ],
+      "establishes": [
+        "outer_gust"
+      ]
+    },
+    "st_outer_wait": {
+      "function": "continue",
+      "event": "Mira waits out the gust and climbs to a glowing frosted-glass door.",
+      "requires": [
+        "outer_gust"
+      ],
+      "establishes": [
+        "frosted_door"
+      ]
+    },
+    "st_outer_up": {
+      "function": "continue",
+      "event": "The outer steps deliver Mira to a small frosted-glass door with the light just behind it.",
+      "requires": [
+        "light_flickers"
+      ],
+      "establishes": [
+        "frosted_door"
+      ]
+    },
+    "n_light": {
+      "function": "decision",
+      "event": "The ghost light is a shuttered lantern with mirrors, dressed with the cave-weed she saw below: a made signal. Three ways lead down.",
+      "requires": [
+        "frosted_door",
+        "glowing_weed"
+      ],
+      "establishes": [
+        "lamp_rig",
+        "rig_dressed_weed",
+        "light_is_made",
+        "light_is_signal",
+        "three_ways_down"
+      ]
+    },
+    "li_stair": {
+      "function": "decision",
+      "event": "A cupboard on the stone stair's landing holds the keeper's things.",
+      "requires": [
+        "three_ways_down",
+        "ferris_keeper"
+      ],
+      "establishes": [
+        "landing_cupboard"
+      ]
+    },
+    "li_stair_down": {
+      "function": "continue",
+      "event": "Mira descends past the lamp-rig's wiring to a damp undercroft and a tunnel mouth.",
+      "requires": [
+        "lamp_rig"
+      ],
+      "establishes": [
+        "undercroft"
+      ]
+    },
+    "li_stair_cup": {
+      "function": "decision",
+      "event": "The cupboard holds a spare lens marked like the mirror rig and Ferris's storm coat.",
+      "requires": [
+        "landing_cupboard",
+        "lamp_rig",
+        "ferris_keeper"
+      ],
+      "establishes": [
+        "spare_lens_marks"
+      ]
+    },
+    "li_cup_lens": {
+      "function": "continue",
+      "event": "The lens's rig-marks prove the light was hand-built; Mira continues down toward the tunnel.",
+      "requires": [
+        "spare_lens_marks",
+        "lamp_rig"
+      ],
+      "establishes": [
+        "light_is_made"
+      ]
+    },
+    "li_cup_coat": {
+      "function": "continue",
+      "event": "Ferris's coat pocket holds a note: gone but not lost. Mira continues to the tunnel mouth.",
+      "requires": [
+        "landing_cupboard",
+        "ferris_keeper"
+      ],
+      "establishes": [
+        "coat_note"
+      ]
+    },
+    "li_shaft": {
+      "function": "decision",
+      "event": "The shaft offers iron staples or a frayed knotted rope; both hold, for now.",
+      "requires": [
+        "three_ways_down"
+      ],
+      "establishes": [
+        "shaft_staples_rope"
+      ]
+    },
+    "li_shaft_down": {
+      "function": "continue",
+      "event": "The staples hold and Mira reaches the undercroft floor and the tunnel opening.",
+      "requires": [
+        "shaft_staples_rope"
+      ],
+      "establishes": [
+        "undercroft"
+      ]
+    },
+    "li_shaft_rope": {
+      "function": "decision",
+      "event": "The rope creaks under her weight; trust it or pull back.",
+      "requires": [
+        "shaft_staples_rope"
+      ],
+      "establishes": []
+    },
+    "li_ladder": {
+      "function": "decision",
+      "event": "The outer ladder vanishes into thick fog; keep climbing down blind or turn back.",
+      "requires": [
+        "three_ways_down"
+      ],
+      "establishes": [
+        "outer_ladder_fog"
+      ]
+    },
+    "li_ladder_down": {
+      "function": "continue",
+      "event": "Mira climbs down blind, reaches the ground and ducks into the tunnel mouth.",
+      "requires": [
+        "outer_ladder_fog"
+      ],
+      "establishes": []
+    },
+    "n_tunnel": {
+      "function": "decision",
+      "event": "Mira lights a lantern at the brick tunnel's mouth; it splits toward the keeper's room on the sketch, a crate store and a sea gate.",
+      "requires": [
+        "journal_tunnel_sketch"
+      ],
+      "establishes": [
+        "brick_tunnel",
+        "tunnel_lantern_lit",
+        "mira_has_lantern",
+        "tunnel_three_branches",
+        "crate_store"
+      ]
+    },
+    "tn_keeper": {
+      "function": "decision",
+      "event": "The keeper's sealed oak door has a rusted key in its lock, and a fallen beam blocks the passage behind.",
+      "requires": [
+        "tunnel_three_branches",
+        "ferris_keeper"
+      ],
+      "establishes": [
+        "oak_door_key_in_lock",
+        "fallen_beam"
+      ]
+    },
+    "tn_keep_door": {
+      "function": "decision",
+      "event": "The key turns halfway and catches on rust; coax or shove.",
+      "requires": [
+        "oak_door_key_in_lock"
+      ],
+      "establishes": [
+        "lock_rusted"
+      ]
+    },
+    "tn_keep_open": {
+      "function": "continue",
+      "event": "The keeper's door swings open on a small sealed room.",
+      "requires": [
+        "oak_door_key_in_lock",
+        "ferris_keeper"
+      ],
+      "establishes": []
+    },
+    "tn_keep_stuck": {
+      "function": "decision",
+      "event": "The key sticks; forcing it may snap the wards.",
+      "requires": [
+        "oak_door_key_in_lock"
+      ],
+      "establishes": []
+    },
+    "tn_keep_beam": {
+      "function": "decision",
+      "event": "Lever the wedged beam clear or squeeze under it.",
+      "requires": [
+        "fallen_beam"
+      ],
+      "establishes": []
+    },
+    "tn_store": {
+      "function": "decision",
+      "event": "A store of unmarked crates and barrels, with a locked ledger box on top.",
+      "requires": [
+        "tunnel_three_branches"
+      ],
+      "establishes": [
+        "crate_store",
+        "ledger_box"
+      ]
+    },
+    "tn_store_crate": {
+      "function": "continue",
+      "event": "The crate holds uncustomed lamp oil and cloth, a smuggler's haul in the supposedly haunted tower.",
+      "requires": [
+        "crate_store"
+      ],
+      "establishes": [
+        "smuggled_goods"
+      ]
+    },
+    "tn_store_box": {
+      "function": "continue",
+      "event": "The ledger box holds lists of uncustomed goods: proof enough on its own.",
+      "requires": [
+        "ledger_box"
+      ],
+      "establishes": [
+        "ledger_box_lists"
+      ]
+    },
+    "tn_store_join": {
+      "function": "decision",
+      "event": "A draft gutters the lantern she lit at the tunnel mouth; press on or trim the wick.",
+      "requires": [
+        "tunnel_lantern_lit"
+      ],
+      "establishes": [
+        "draft_lantern"
+      ]
+    },
+    "tn_store_relight": {
+      "function": "continue",
+      "event": "Mira trims the wick and follows the clear passage to the keeper's door she knows from the sketch.",
+      "requires": [
+        "tunnel_lantern_lit",
+        "journal_tunnel_sketch"
+      ],
+      "establishes": []
+    },
+    "tn_gate": {
+      "function": "decision",
+      "event": "The tide is climbing the sea gate's bars; open it or think twice.",
+      "requires": [
+        "tunnel_three_branches"
+      ],
+      "establishes": [
+        "sea_gate_tide"
+      ]
+    },
+    "tn_gate_open": {
+      "function": "decision",
+      "event": "Through the gate a strong current tugs at Mira on a narrow ledge.",
+      "requires": [
+        "sea_gate_tide"
+      ],
+      "establishes": [
+        "current_ledge"
+      ]
+    },
+    "tn_gate_wait": {
+      "function": "continue",
+      "event": "Mira waits out the current and climbs a dry passage toward the keeper's room.",
+      "requires": [
+        "current_ledge"
+      ],
+      "establishes": []
+    },
+    "n_chamber": {
+      "function": "decision",
+      "event": "In the keeper's snug room a sealed letter promises the truth of Ferris, the smuggler who drove him out, and the light he left burning.",
+      "requires": [
+        "ferris_keeper",
+        "ferris_vanished"
+      ],
+      "establishes": [
+        "keeper_room",
+        "sealed_letter",
+        "smuggler_drove_ferris",
+        "ferris_left_light_burning"
+      ]
+    },
+    "cm_letter": {
+      "function": "decision",
+      "event": "The letter is addressed to whoever is brave enough to climb; read it or keep it sealed.",
+      "requires": [
+        "sealed_letter"
+      ],
+      "establishes": [
+        "letter_address"
+      ]
+    },
+    "cm_letter_read": {
+      "function": "decision",
+      "event": "Ferris fled the smuggler and hid inland, leaving the light to draw someone; a map, a confession and a plea follow.",
+      "requires": [
+        "sealed_letter",
+        "ferris_keeper"
+      ],
+      "establishes": [
+        "ferris_alive",
+        "ferris_fled_inland",
+        "light_meant_to_bring_town",
+        "letter_map",
+        "ferris_confession",
+        "ferris_plea"
+      ]
+    },
+    "cm_letter_map": {
+      "function": "decision",
+      "event": "The map leads to a shepherd's cottage on the moor; go herself or take word to the harbour office.",
+      "requires": [
+        "letter_map"
+      ],
+      "establishes": [
+        "shepherds_cottage",
+        "harbour_office"
+      ]
+    },
+    "cm_letter_conf": {
+      "function": "continue",
+      "event": "The confession admits years of paid blind eyes and the night the smuggler demanded everything.",
+      "requires": [
+        "ferris_confession"
+      ],
+      "establishes": [
+        "ferris_paid_look_away",
+        "smuggler_wanted_all"
+      ]
+    },
+    "cm_letter_plea": {
+      "function": "continue",
+      "event": "Ferris asks that they be told he is sorry and the tower lit true; Mira takes up the task.",
+      "requires": [
+        "ferris_plea"
+      ],
+      "establishes": [
+        "plea_sorry_light"
+      ]
+    },
+    "cm_letter_keep": {
+      "function": "continue",
+      "event": "Mira decides the letter is not hers to open and keeps it sealed.",
+      "requires": [
+        "sealed_letter"
+      ],
+      "establishes": [
+        "letter_kept_sealed"
+      ]
+    },
+    "cm_smug": {
+      "function": "decision",
+      "event": "With the store laid bare, Mira can photograph everything or follow the passage deeper.",
+      "requires": [
+        "crate_store"
+      ],
+      "establishes": [
+        "mira_has_phone"
+      ]
+    },
+    "cm_smug_photo": {
+      "function": "decision",
+      "event": "Mira photographs the crates and ledger box; signal the coastguard with the tower rig or go to the harbour master.",
+      "requires": [
+        "crate_store",
+        "ledger_box",
+        "mira_has_phone",
+        "lamp_rig"
+      ],
+      "establishes": [
+        "evidence_photos"
+      ]
+    },
+    "cm_smug_follow": {
+      "function": "decision",
+      "event": "Deeper lies the smuggler's private hoard topped by a tempting jewelled compass.",
+      "requires": [
+        "crate_store",
+        "mira_has_lantern"
+      ],
+      "establishes": [
+        "hidden_hoard"
+      ]
+    },
+    "cm_smug_hoard": {
+      "function": "continue",
+      "event": "Mira photographs the whole hoard methodically without touching it.",
+      "requires": [
+        "hidden_hoard",
+        "mira_has_phone"
+      ],
+      "establishes": [
+        "hoard_photographed"
+      ]
+    },
+    "cm_smug_token": {
+      "function": "decision",
+      "event": "Mira's hand hovers over the compass, torn between easy proof and the right choice.",
+      "requires": [
+        "hidden_hoard"
+      ],
+      "establishes": []
+    },
+    "cm_light": {
+      "function": "decision",
+      "event": "The rig's secret is out; relight the true lamp or study Ferris's coded warning signal.",
+      "requires": [
+        "lamp_rig"
+      ],
+      "establishes": [
+        "ferris_built_rig"
+      ]
+    },
+    "cm_light_relight": {
+      "function": "decision",
+      "event": "Set the mirror true by Ferris's old guide marks, or force the stiff gears.",
+      "requires": [
+        "lamp_rig"
+      ],
+      "establishes": [
+        "mirror_guide_marks"
+      ]
+    },
+    "cm_light_true": {
+      "function": "continue",
+      "event": "Mira aligns the mirror by the marks and the true lamp flares, sweeping the fog for the first time in a year.",
+      "requires": [
+        "mirror_guide_marks"
+      ],
+      "establishes": [
+        "light_restored"
+      ]
+    },
+    "cm_light_study": {
+      "function": "decision",
+      "event": "The rig can flash a coded call; send for help now or log how it was built.",
+      "requires": [
+        "lamp_rig"
+      ],
+      "establishes": [
+        "signal_can_call"
+      ]
+    },
+    "cm_leave": {
+      "function": "decision",
+      "event": "Bone-tired, Mira weighs heading straight to town against marking the way for others.",
+      "requires": [
+        "fog_headland"
+      ],
+      "establishes": [
+        "town_nearby"
+      ]
+    },
+    "cm_leave_town": {
+      "function": "continue",
+      "event": "Mira fixes the keeper's room in memory and starts the long walk to town to tell it all in the morning.",
+      "requires": [
+        "keeper_room"
+      ],
+      "establishes": []
+    },
+    "cm_leave_mark": {
+      "function": "decision",
+      "event": "Leave the journal open on the desk where she found it as a signpost, or carry it to town.",
+      "requires": [
+        "journal_found",
+        "journal_found_on_desk"
+      ],
+      "establishes": []
+    },
+    "e_set_a_drawer": {
+      "function": "ending",
+      "event": "The wrenched drawer splits and jams the desk; Mira leaves the cottage to the fog.",
+      "requires": [
+        "desk_drawer_locked"
+      ],
+      "establishes": [
+        "drawer_split"
+      ]
+    },
+    "e_set_a_brick": {
+      "function": "ending",
+      "event": "Rubble buries the hearth cavity; Mira waits out the night by the door.",
+      "requires": [
+        "brick_cavity_bundle"
+      ],
+      "establishes": [
+        "brick_rubble"
+      ]
+    },
+    "e_set_b_rail": {
+      "function": "ending",
+      "event": "The rotten rail sags; Mira retreats to the lamp room to wait for dawn.",
+      "requires": [
+        "gallery_rail_rusted"
+      ],
+      "establishes": [
+        "rail_rotten"
+      ]
+    },
+    "e_set_c_tide": {
+      "function": "ending",
+      "event": "The tide rises to her knees; Mira waits safe on a dry ledge.",
+      "requires": [
+        "tide_coming_in"
+      ],
+      "establishes": [
+        "tide_retreat"
+      ]
+    },
+    "e_set_c_stuck": {
+      "function": "ending",
+      "event": "Mira wriggles back out of the gap and leaves it behind.",
+      "requires": [
+        "narrow_gap"
+      ],
+      "establishes": [
+        "gap_backed_out"
+      ]
+    },
+    "e_set_d_loft": {
+      "function": "ending",
+      "event": "The cracked rung snaps and Mira limps out to wait for morning.",
+      "requires": [
+        "loft_ladder_rotten"
+      ],
+      "establishes": [
+        "rung_snaps"
+      ]
+    },
+    "e_set_d_storm": {
+      "function": "ending",
+      "event": "The storm buries the floor hatch under fallen gear and Mira walks home.",
+      "requires": [
+        "boathouse_floor_hatch",
+        "boathouse_storm"
+      ],
+      "establishes": [
+        "hatch_buried",
+        "town_nearby"
+      ]
+    },
+    "e_set_cellar": {
+      "function": "ending",
+      "event": "Her borrowed lantern dies at the cellar door; Mira waits in the dark for morning.",
+      "requires": [
+        "cellar_door",
+        "mira_has_lantern",
+        "tower_base_landing"
+      ],
+      "establishes": [
+        "cellar_lantern_dies"
+      ]
+    },
+    "e_set_stair": {
+      "function": "ending",
+      "event": "The hollow step crumbles and Mira turns back down the hidden climb.",
+      "requires": [
+        "hollow_step",
+        "hidden_stair"
+      ],
+      "establishes": [
+        "step_crumbles"
+      ]
+    },
+    "e_set_shaft": {
+      "function": "ending",
+      "event": "The rope frays; Mira catches the staples and climbs back up.",
+      "requires": [
+        "shaft_staples_rope"
+      ],
+      "establishes": [
+        "rope_frays"
+      ]
+    },
+    "e_set_fog": {
+      "function": "ending",
+      "event": "Mira will not climb blind and waits above for the fog to lift.",
+      "requires": [
+        "outer_ladder_fog"
+      ],
+      "establishes": [
+        "fog_turns_back"
+      ]
+    },
+    "e_set_door": {
+      "function": "ending",
+      "event": "Forcing the key breaks the wards and seals the keeper's room for good.",
+      "requires": [
+        "oak_door_key_in_lock"
+      ],
+      "establishes": [
+        "wards_broken"
+      ]
+    },
+    "e_set_beam": {
+      "function": "ending",
+      "event": "The beam pins Mira's coat; she tears free and backs out.",
+      "requires": [
+        "fallen_beam"
+      ],
+      "establishes": [
+        "beam_pins_coat"
+      ]
+    },
+    "e_set_gate": {
+      "function": "ending",
+      "event": "The sea surges at the gate and Mira wades back to wait.",
+      "requires": [
+        "sea_gate_tide"
+      ],
+      "establishes": [
+        "gate_surge"
+      ]
+    },
+    "e_set_token": {
+      "function": "ending",
+      "event": "A bell-wire chimes as she pockets the compass; a dawn patrol waits and the evidence is spoiled.",
+      "requires": [
+        "hidden_hoard"
+      ],
+      "establishes": [
+        "bell_wire_patrol"
+      ]
+    },
+    "e_set_gears": {
+      "function": "ending",
+      "event": "The forced gears jam the lamp mechanism for good.",
+      "requires": [
+        "lamp_rig"
+      ],
+      "establishes": [
+        "gears_jam"
+      ]
+    },
+    "e_win_keeper_found": {
+      "function": "ending",
+      "event": "Mira follows the map to the shepherd's cottage and finds Ferris alive.",
+      "requires": [
+        "shepherds_cottage",
+        "photo_ferris_stranger"
+      ],
+      "establishes": [
+        "ferris_found_cottage",
+        "ferris_alive"
+      ]
+    },
+    "e_win_keeper_word": {
+      "function": "ending",
+      "event": "The harbour office sends a search that finds Ferris; he comes home cleared.",
+      "requires": [
+        "letter_map",
+        "harbour_office"
+      ],
+      "establishes": [
+        "search_finds_ferris",
+        "town_suspected_ferris"
+      ]
+    },
+    "e_win_name_cleared": {
+      "function": "ending",
+      "event": "Mira spreads the confession's truth and Ferris's good name is restored.",
+      "requires": [
+        "ferris_confession"
+      ],
+      "establishes": [
+        "ferris_name_cleared",
+        "town_suspected_ferris",
+        "light_cry_for_help"
+      ]
+    },
+    "e_win_promise": {
+      "function": "ending",
+      "event": "Mira promises to mend the tower and tell the truth, and keeps her word.",
+      "requires": [
+        "plea_sorry_light"
+      ],
+      "establishes": [
+        "mira_promise",
+        "mira_sought_shelter"
+      ]
+    },
+    "e_win_smugglers": {
+      "function": "ending",
+      "event": "Mira flashes the journal's code; a coastguard cutter answers and the smuggler is caught.",
+      "requires": [
+        "journal_flash_code",
+        "lamp_rig"
+      ],
+      "establishes": [
+        "smuggler_caught"
+      ]
+    },
+    "e_win_harbor": {
+      "function": "ending",
+      "event": "The harbour master and revenue men empty the store on Mira's proof.",
+      "requires": [
+        "evidence_photos",
+        "mira_missed_bus"
+      ],
+      "establishes": [
+        "store_emptied_harbour"
+      ]
+    },
+    "e_win_hoard": {
+      "function": "ending",
+      "event": "Mira's untouched photographs of the hoard seal the case.",
+      "requires": [
+        "hidden_hoard",
+        "hoard_photographed"
+      ],
+      "establishes": [
+        "hoard_case_sealed"
+      ]
+    },
+    "e_win_light_restored": {
+      "function": "ending",
+      "event": "The restored beam sweeps the coast and a fishing boat answers.",
+      "requires": [
+        "light_restored"
+      ],
+      "establishes": [
+        "coast_light_returned"
+      ]
+    },
+    "e_win_rescue": {
+      "function": "ending",
+      "event": "Mira's coded call brings answering lights and everyone home safe.",
+      "requires": [
+        "signal_can_call",
+        "ferris_built_rig"
+      ],
+      "establishes": [
+        "rescue_lights"
+      ]
+    },
+    "e_win_signal": {
+      "function": "ending",
+      "event": "Mira documents the rig; the ghost light becomes a solved mystery.",
+      "requires": [
+        "lamp_rig"
+      ],
+      "establishes": [
+        "signal_documented"
+      ]
+    },
+    "e_neutral_letter": {
+      "function": "ending",
+      "event": "Mira carries the sealed letter out unread into the dawn.",
+      "requires": [
+        "letter_kept_sealed"
+      ],
+      "establishes": [
+        "letter_unread_carried"
+      ]
+    },
+    "e_neutral_honest": {
+      "function": "ending",
+      "event": "Mira leaves the compass and photographs the hoard; nobody is caught tonight.",
+      "requires": [
+        "hidden_hoard"
+      ],
+      "establishes": [
+        "compass_left",
+        "smuggler_not_caught"
+      ]
+    },
+    "e_neutral_town": {
+      "function": "ending",
+      "event": "Mira heads home with the mystery unsolved but no longer frightening.",
+      "requires": [
+        "hollow_lighthouse",
+        "fog_headland"
+      ],
+      "establishes": [
+        "mystery_unsolved_town"
+      ]
+    },
+    "e_neutral_evidence": {
+      "function": "ending",
+      "event": "Mira leaves the journal on the desk as a signpost and chalks arrows in the tunnel.",
+      "requires": [
+        "journal_found_on_desk"
+      ],
+      "establishes": [
+        "chalk_arrows"
+      ]
+    },
+    "e_neutral_museum": {
+      "function": "ending",
+      "event": "Mira carries the keeper's journal home to hand to the town.",
+      "requires": [
+        "journal_found"
+      ],
+      "establishes": [
+        "journal_carried_home"
+      ]
+    }
+  },
+  "choices": {
+    "c_open": {
+      "intent": "go toward the strange light",
+      "cost": "none (single continue)"
+    },
+    "c_n_start_1": {
+      "intent": "search the keeper's cottage for clues",
+      "cost": "hidden: two setback endings for rough handling"
+    },
+    "c_n_start_2": {
+      "intent": "climb straight to the strange light",
+      "cost": "hidden: a rotten gallery rail"
+    },
+    "c_n_start_3": {
+      "intent": "explore the sea caves under the rock",
+      "cost": "hidden: rising tide and a tight gap"
+    },
+    "c_n_start_4": {
+      "intent": "search the old boathouse",
+      "cost": "hidden: a rotten ladder and a rising storm"
+    },
+    "c_a_office1_1": {
+      "intent": "search the roll-top desk",
+      "cost": "hidden: a drawer that splits if forced"
+    },
+    "c_a_office1_2": {
+      "intent": "read along the shelves",
+      "cost": "none"
+    },
+    "c_a_office1_3": {
+      "intent": "rake through the cold hearth",
+      "cost": "hidden: a jammed brick that can bury the find"
+    },
+    "c_a_desk_1": {
+      "intent": "read the keeper's last log page",
+      "cost": "leaves the locked drawer unopened"
+    },
+    "c_a_desk_2": {
+      "intent": "open the locked drawer",
+      "cost": "time and care, with a chance to break it"
+    },
+    "c_a_desk_log_1": {
+      "intent": "follow the hall toward the tower",
+      "cost": "none (single continue)"
+    },
+    "c_a_desk_drawer_1": {
+      "intent": "pick the lock patiently",
+      "cost": "slow; a dozen tries"
+    },
+    "c_a_desk_drawer_2": {
+      "intent": "wrench the drawer open fast",
+      "cost": "setback ending: the desk jams shut"
+    },
+    "c_a_desk_pick_1": {
+      "intent": "take the key and follow the plan",
+      "cost": "none (single continue)"
+    },
+    "c_a_shelf_1": {
+      "intent": "uncork the bottled ship",
+      "cost": "leaves the worn logbook unread"
+    },
+    "c_a_shelf_2": {
+      "intent": "pull the worn logbook",
+      "cost": "leaves the bottle unopened"
+    },
+    "c_a_shelf_bottle_1": {
+      "intent": "follow the sketch down the hall",
+      "cost": "none (single continue)"
+    },
+    "c_a_shelf_books_1": {
+      "intent": "follow the note down the hall",
+      "cost": "none (single continue)"
+    },
+    "c_a_hearth_1": {
+      "intent": "sift the ash for what survived",
+      "cost": "leaves the loose brick alone"
+    },
+    "c_a_hearth_2": {
+      "intent": "work the loose firebrick free",
+      "cost": "scraped knuckles; risk of a jam"
+    },
+    "c_a_hearth_ash_1": {
+      "intent": "carry the photograph to the hall",
+      "cost": "none (single continue)"
+    },
+    "c_a_hearth_brick_1": {
+      "intent": "ease the bundle out gently",
+      "cost": "slow, careful of her fingers"
+    },
+    "c_a_hearth_brick_2": {
+      "intent": "yank the jammed brick",
+      "cost": "setback ending: rubble buries the find"
+    },
+    "c_a_hearth_key_1": {
+      "intent": "follow the hall with the key",
+      "cost": "none (single continue)"
+    },
+    "c_a_corridor_1": {
+      "intent": "go straight to the tower door",
+      "cost": "none"
+    },
+    "c_a_corridor_2": {
+      "intent": "take the dark kitchen shortcut",
+      "cost": "a longer way round in the dark"
+    },
+    "c_a_kitchen_1": {
+      "intent": "step up to the tower door",
+      "cost": "none (single continue)"
+    },
+    "c_a_toward_1": {
+      "intent": "take the journal down",
+      "cost": "none (single continue)"
+    },
+    "c_b_lamp1_1": {
+      "intent": "examine the great lens",
+      "cost": "none"
+    },
+    "c_b_lamp1_2": {
+      "intent": "go to the gallery walk",
+      "cost": "hidden: a rotten rail over a long drop"
+    },
+    "c_b_lamp1_3": {
+      "intent": "study the clockwork weight",
+      "cost": "none"
+    },
+    "c_b_lens_1": {
+      "intent": "look through the cracked panel",
+      "cost": "leaves the reflector unexamined"
+    },
+    "c_b_lens_2": {
+      "intent": "examine the hidden reflector",
+      "cost": "leaves the crack unexamined"
+    },
+    "c_b_lens_crack_1": {
+      "intent": "take the stair down",
+      "cost": "none (single continue)"
+    },
+    "c_b_lens_reflect_1": {
+      "intent": "descend to find the source",
+      "cost": "none (single continue)"
+    },
+    "c_b_gallery_1": {
+      "intent": "step out onto the gallery",
+      "cost": "exposure on a rusted rail"
+    },
+    "c_b_gallery_2": {
+      "intent": "look through the fogged window",
+      "cost": "none"
+    },
+    "c_b_gallery_out_1": {
+      "intent": "trust the rail and edge along",
+      "cost": "risk of the rail giving way"
+    },
+    "c_b_gallery_out_2": {
+      "intent": "shrink back from the groaning rail",
+      "cost": "setback ending: wait in the lamp room till dawn"
+    },
+    "c_b_gallery_fog_1": {
+      "intent": "head for the down stair",
+      "cost": "none (single continue)"
+    },
+    "c_b_clock_1": {
+      "intent": "wind the stiff mechanism",
+      "cost": "hard effort"
+    },
+    "c_b_clock_2": {
+      "intent": "follow the chain down its shaft",
+      "cost": "none"
+    },
+    "c_b_clock_wind_1": {
+      "intent": "go down the opened stair",
+      "cost": "none (single continue)"
+    },
+    "c_b_clock_chain_1": {
+      "intent": "take the maintenance stair down",
+      "cost": "none (single continue)"
+    },
+    "c_b_down_1": {
+      "intent": "wind down the spiral stair",
+      "cost": "patience"
+    },
+    "c_b_down_2": {
+      "intent": "drop through the service hatch",
+      "cost": "nerve and a tight squeeze"
+    },
+    "c_b_down_spiral_1": {
+      "intent": "pick up the journal",
+      "cost": "none (single continue)"
+    },
+    "c_b_down_hatch_1": {
+      "intent": "take up the journal",
+      "cost": "none (single continue)"
+    },
+    "c_c_cave1_1": {
+      "intent": "follow the wet passage inland",
+      "cost": "hidden: the tide is rising"
+    },
+    "c_c_cave1_2": {
+      "intent": "search the glowing tide pools",
+      "cost": "none"
+    },
+    "c_c_cave1_3": {
+      "intent": "read the carved arch",
+      "cost": "hidden: a tight gap beyond"
+    },
+    "c_c_pass_1": {
+      "intent": "push deeper while the way is clear",
+      "cost": "racing the tide"
+    },
+    "c_c_pass_2": {
+      "intent": "hesitate as the water rises",
+      "cost": "setback ending: wait out the tide on a ledge"
+    },
+    "c_c_pass_deep_1": {
+      "intent": "take the slick steps up",
+      "cost": "none (single continue)"
+    },
+    "c_c_pool_1": {
+      "intent": "cup the glowing weed",
+      "cost": "leaves the metal unfound"
+    },
+    "c_c_pool_2": {
+      "intent": "fish out the gleam of metal",
+      "cost": "leaves the weed unexamined"
+    },
+    "c_c_pool_glow_1": {
+      "intent": "follow the handrail up",
+      "cost": "none (single continue)"
+    },
+    "c_c_pool_metal_1": {
+      "intent": "climb the rock stair",
+      "cost": "none (single continue)"
+    },
+    "c_c_arch_1": {
+      "intent": "study the carved marks",
+      "cost": "none"
+    },
+    "c_c_arch_2": {
+      "intent": "squeeze through the narrow gap",
+      "cost": "risk of getting wedged"
+    },
+    "c_c_arch_marks_1": {
+      "intent": "head for the stair up",
+      "cost": "none (single continue)"
+    },
+    "c_c_arch_gap_1": {
+      "intent": "wriggle all the way through",
+      "cost": "discomfort and fear in tight stone"
+    },
+    "c_c_arch_gap_2": {
+      "intent": "back out of the wedge",
+      "cost": "setback ending: the far chamber stays unseen"
+    },
+    "c_c_gather_1": {
+      "intent": "take the worn steps",
+      "cost": "none"
+    },
+    "c_c_gather_2": {
+      "intent": "climb the iron ladder",
+      "cost": "aching arms"
+    },
+    "c_c_steps_1": {
+      "intent": "pick up the journal",
+      "cost": "none (single continue)"
+    },
+    "c_c_ladder_1": {
+      "intent": "take up the journal",
+      "cost": "none (single continue)"
+    },
+    "c_d_boat1_1": {
+      "intent": "search the beached dinghy",
+      "cost": "none"
+    },
+    "c_d_boat1_2": {
+      "intent": "open the tool locker",
+      "cost": "none"
+    },
+    "c_d_boat1_3": {
+      "intent": "climb to the loft",
+      "cost": "hidden: a rotten ladder"
+    },
+    "c_d_dinghy_1": {
+      "intent": "lift the tarp fully",
+      "cost": "leaves the tin unopened"
+    },
+    "c_d_dinghy_2": {
+      "intent": "open the bailing tin",
+      "cost": "leaves the chart unfound"
+    },
+    "c_d_dinghy_tarp_1": {
+      "intent": "cross to the floor hatch",
+      "cost": "none (single continue)"
+    },
+    "c_d_dinghy_tin_1": {
+      "intent": "go to the floor hatch",
+      "cost": "none (single continue)"
+    },
+    "c_d_locker_1": {
+      "intent": "take the rope",
+      "cost": "leaves the lantern behind"
+    },
+    "c_d_locker_2": {
+      "intent": "take the lantern",
+      "cost": "leaves the rope behind"
+    },
+    "c_d_locker_rope_1": {
+      "intent": "open the floor hatch",
+      "cost": "none (single continue)"
+    },
+    "c_d_locker_lantern_1": {
+      "intent": "lift the floor hatch",
+      "cost": "none (single continue)"
+    },
+    "c_d_loft_1": {
+      "intent": "climb carefully testing each rung",
+      "cost": "slow"
+    },
+    "c_d_loft_2": {
+      "intent": "trust the cracked rung",
+      "cost": "setback ending: a fall to the floor"
+    },
+    "c_d_loft_up_1": {
+      "intent": "drop down to the floor hatch",
+      "cost": "none (single continue)"
+    },
+    "c_d_hatch_1": {
+      "intent": "pry the hatch and go down",
+      "cost": "hard work on a stiff hatch"
+    },
+    "c_d_hatch_2": {
+      "intent": "turn as the door slams",
+      "cost": "setback ending: the hatch is buried and she walks home"
+    },
+    "c_d_hatch_down_1": {
+      "intent": "take up the journal",
+      "cost": "none (single continue)"
+    },
+    "c_n_journal_1": {
+      "intent": "read the light entries",
+      "cost": "none"
+    },
+    "c_n_journal_2": {
+      "intent": "study the night-cargo ledger",
+      "cost": "hidden: a cellar door that ends the search"
+    },
+    "c_n_journal_3": {
+      "intent": "trace the tunnel sketch",
+      "cost": "none"
+    },
+    "c_jr_light_1": {
+      "intent": "read the careful description",
+      "cost": "leaves the dates unchecked"
+    },
+    "c_jr_light_2": {
+      "intent": "check the column of dates",
+      "cost": "leaves the description unread"
+    },
+    "c_jr_light_read_1": {
+      "intent": "look for the hidden stair",
+      "cost": "none (single continue)"
+    },
+    "c_jr_light_date_1": {
+      "intent": "find the hidden stair",
+      "cost": "none (single continue)"
+    },
+    "c_jr_light_join_1": {
+      "intent": "approach the hidden stair",
+      "cost": "none (single continue)"
+    },
+    "c_jr_smug_1": {
+      "intent": "work through the cargo figures",
+      "cost": "leaves the initials unread"
+    },
+    "c_jr_smug_2": {
+      "intent": "decode the initials",
+      "cost": "leaves the figures unchecked"
+    },
+    "c_jr_smug_ledger_1": {
+      "intent": "copy the remaining figures",
+      "cost": "leaves the torn page unfound"
+    },
+    "c_jr_smug_ledger_2": {
+      "intent": "search for the torn page",
+      "cost": "leaves the figures uncopied"
+    },
+    "c_jr_smug_copy_1": {
+      "intent": "head for the hidden stair",
+      "cost": "none (single continue)"
+    },
+    "c_jr_smug_torn_1": {
+      "intent": "make for the hidden stair",
+      "cost": "none (single continue)"
+    },
+    "c_jr_smug_names_1": {
+      "intent": "find the hidden stair",
+      "cost": "none (single continue)"
+    },
+    "c_jr_smug_join_1": {
+      "intent": "take the hidden stair",
+      "cost": "leaves the cellar unopened"
+    },
+    "c_jr_smug_join_2": {
+      "intent": "try the cellar door",
+      "cost": "setback ending: the lantern dies in the dark"
+    },
+    "c_jr_tunnel_1": {
+      "intent": "study the tunnel sketch",
+      "cost": "none"
+    },
+    "c_jr_tunnel_2": {
+      "intent": "test the marked flagstone",
+      "cost": "effort against a stuck stone"
+    },
+    "c_jr_tun_sketch_1": {
+      "intent": "go to the hidden stair",
+      "cost": "none (single continue)"
+    },
+    "c_jr_tun_stone_1": {
+      "intent": "give up and read the sketch",
+      "cost": "lost effort"
+    },
+    "c_jr_tun_stone_2": {
+      "intent": "heave the flagstone aside",
+      "cost": "strain"
+    },
+    "c_jr_tun_join_1": {
+      "intent": "approach the hidden stair",
+      "cost": "none (single continue)"
+    },
+    "c_n_stairs_1": {
+      "intent": "take the tight winding stair",
+      "cost": "hidden: a hollow step"
+    },
+    "c_n_stairs_2": {
+      "intent": "climb the outer steps in the fog",
+      "cost": "wind and exposure"
+    },
+    "c_st_wind_1": {
+      "intent": "climb steadily to the top",
+      "cost": "slow, testing each step"
+    },
+    "c_st_wind_2": {
+      "intent": "trust the hollow step",
+      "cost": "setback ending: the step crumbles"
+    },
+    "c_st_wind_up_1": {
+      "intent": "open the frosted door",
+      "cost": "none (single continue)"
+    },
+    "c_st_outer_1": {
+      "intent": "push up through the fog",
+      "cost": "risk in the wind"
+    },
+    "c_st_outer_2": {
+      "intent": "wait for the wind to drop",
+      "cost": "time"
+    },
+    "c_st_outer_wait_1": {
+      "intent": "reach the frosted door",
+      "cost": "none (single continue)"
+    },
+    "c_st_outer_up_1": {
+      "intent": "open the frosted door",
+      "cost": "none (single continue)"
+    },
+    "c_n_light_1": {
+      "intent": "descend the safe stone stair",
+      "cost": "none"
+    },
+    "c_n_light_2": {
+      "intent": "climb down the service shaft",
+      "cost": "hidden: a frayed rope"
+    },
+    "c_n_light_3": {
+      "intent": "take the outer ladder down",
+      "cost": "hidden: blinding fog"
+    },
+    "c_li_stair_1": {
+      "intent": "keep descending",
+      "cost": "leaves the cupboard unopened"
+    },
+    "c_li_stair_2": {
+      "intent": "open the landing cupboard",
+      "cost": "a short delay"
+    },
+    "c_li_stair_down_1": {
+      "intent": "enter the tunnel mouth",
+      "cost": "none (single continue)"
+    },
+    "c_li_stair_cup_1": {
+      "intent": "take the spare lens",
+      "cost": "leaves the coat unsearched"
+    },
+    "c_li_stair_cup_2": {
+      "intent": "search the keeper's coat",
+      "cost": "leaves the lens behind"
+    },
+    "c_li_cup_lens_1": {
+      "intent": "go down to the tunnel",
+      "cost": "none (single continue)"
+    },
+    "c_li_cup_coat_1": {
+      "intent": "descend to the tunnel",
+      "cost": "none (single continue)"
+    },
+    "c_li_shaft_1": {
+      "intent": "climb down the staples",
+      "cost": "none"
+    },
+    "c_li_shaft_2": {
+      "intent": "test the knotted rope",
+      "cost": "risk of a fraying rope"
+    },
+    "c_li_shaft_down_1": {
+      "intent": "step into the tunnel",
+      "cost": "none (single continue)"
+    },
+    "c_li_shaft_rope_1": {
+      "intent": "trust the rope down",
+      "cost": "risk"
+    },
+    "c_li_shaft_rope_2": {
+      "intent": "pull back as it frays",
+      "cost": "setback ending: the tunnel stays unreached"
+    },
+    "c_li_ladder_1": {
+      "intent": "climb down blind through the fog",
+      "cost": "risk of a fall unseen"
+    },
+    "c_li_ladder_2": {
+      "intent": "judge the fog too thick",
+      "cost": "setback ending: wait for the fog to lift"
+    },
+    "c_li_ladder_down_1": {
+      "intent": "follow the tunnel in",
+      "cost": "none (single continue)"
+    },
+    "c_n_tunnel_1": {
+      "intent": "go to the keeper's sealed door",
+      "cost": "hidden: a fallen beam and a rusted lock"
+    },
+    "c_n_tunnel_2": {
+      "intent": "go to the crate store",
+      "cost": "none"
+    },
+    "c_n_tunnel_3": {
+      "intent": "go to the sea gate",
+      "cost": "hidden: the rising tide"
+    },
+    "c_tn_keeper_1": {
+      "intent": "try the brass key on the door",
+      "cost": "risk of breaking the lock",
+      "requires": [
+        "mira_has_brass_key"
+      ]
+    },
+    "c_tn_keeper_2": {
+      "intent": "deal with the fallen beam",
+      "cost": "strength or a risky squeeze"
+    },
+    "c_tn_keep_door_1": {
+      "intent": "coax the key gently",
+      "cost": "patience"
+    },
+    "c_tn_keep_door_2": {
+      "intent": "shove the key hard",
+      "cost": "risk of jamming the lock"
+    },
+    "c_tn_keep_open_1": {
+      "intent": "step into the keeper's room",
+      "cost": "none (single continue)"
+    },
+    "c_tn_keep_stuck_1": {
+      "intent": "ease the key back and re-seat it",
+      "cost": "patience against instinct"
+    },
+    "c_tn_keep_stuck_2": {
+      "intent": "force it and risk the wards",
+      "cost": "setback ending: the door jams for good"
+    },
+    "c_tn_keep_beam_1": {
+      "intent": "lever the beam clear carefully",
+      "cost": "slow effort"
+    },
+    "c_tn_keep_beam_2": {
+      "intent": "squeeze under the beam",
+      "cost": "setback ending: pinned and backing out"
+    },
+    "c_tn_store_1": {
+      "intent": "prise open a crate",
+      "cost": "leaves the ledger box shut"
+    },
+    "c_tn_store_2": {
+      "intent": "take down the ledger box",
+      "cost": "leaves the crates shut"
+    },
+    "c_tn_store_crate_1": {
+      "intent": "go on to the keeper's room",
+      "cost": "none (single continue)"
+    },
+    "c_tn_store_box_1": {
+      "intent": "carry the box onward",
+      "cost": "none (single continue)"
+    },
+    "c_tn_store_join_1": {
+      "intent": "press on before the lantern dies",
+      "cost": "risk of the dark"
+    },
+    "c_tn_store_join_2": {
+      "intent": "stop to trim the lantern",
+      "cost": "time"
+    },
+    "c_tn_store_relight_1": {
+      "intent": "follow the passage to the room",
+      "cost": "none (single continue)"
+    },
+    "c_tn_gate_1": {
+      "intent": "work the sea gate open",
+      "cost": "a strong current beyond"
+    },
+    "c_tn_gate_2": {
+      "intent": "think twice at the rising water",
+      "cost": "setback ending: the tide wins"
+    },
+    "c_tn_gate_open_1": {
+      "intent": "slip through with the current",
+      "cost": "risk of being pulled"
+    },
+    "c_tn_gate_open_2": {
+      "intent": "wait for the current to ease",
+      "cost": "time"
+    },
+    "c_tn_gate_wait_1": {
+      "intent": "climb to the keeper's room",
+      "cost": "none (single continue)"
+    },
+    "c_n_chamber_1": {
+      "intent": "read the sealed letter",
+      "cost": "none"
+    },
+    "c_n_chamber_2": {
+      "intent": "deal with the smugglers' store",
+      "cost": "hidden: a tempting compass",
+      "requires": [
+        "crate_store"
+      ]
+    },
+    "c_n_chamber_3": {
+      "intent": "turn to the false-light rig",
+      "cost": "hidden: gears that can jam",
+      "requires": [
+        "lamp_rig"
+      ]
+    },
+    "c_n_chamber_4": {
+      "intent": "head back to town",
+      "cost": "the mystery left unfinished"
+    },
+    "c_cm_letter_1": {
+      "intent": "break the seal and read",
+      "cost": "none"
+    },
+    "c_cm_letter_2": {
+      "intent": "keep the letter sealed",
+      "cost": "the truth stays unread"
+    },
+    "c_cm_letter_read_1": {
+      "intent": "follow the map to the keeper",
+      "cost": "none"
+    },
+    "c_cm_letter_read_2": {
+      "intent": "read the confession",
+      "cost": "none"
+    },
+    "c_cm_letter_read_3": {
+      "intent": "answer the keeper's plea",
+      "cost": "takes on a long task"
+    },
+    "c_cm_letter_map_1": {
+      "intent": "go to the inland cottage herself",
+      "cost": "a long walk across the moor"
+    },
+    "c_cm_letter_map_2": {
+      "intent": "take word to the harbour office",
+      "cost": "lets the grown-ups find him"
+    },
+    "c_cm_letter_conf_1": {
+      "intent": "take the confession to the town",
+      "cost": "none (single continue)"
+    },
+    "c_cm_letter_plea_1": {
+      "intent": "take up the keeper's task",
+      "cost": "none (single continue)"
+    },
+    "c_cm_letter_keep_1": {
+      "intent": "carry the sealed letter out",
+      "cost": "none (single continue)"
+    },
+    "c_cm_smug_1": {
+      "intent": "photograph the evidence",
+      "cost": "none"
+    },
+    "c_cm_smug_2": {
+      "intent": "follow the store deeper",
+      "cost": "hidden: temptation"
+    },
+    "c_cm_smug_photo_1": {
+      "intent": "signal the coastguard now",
+      "cost": "none"
+    },
+    "c_cm_smug_photo_2": {
+      "intent": "take it to the harbour master",
+      "cost": "waits for first light"
+    },
+    "c_cm_smug_follow_1": {
+      "intent": "record the whole hoard",
+      "cost": "slow, patient work"
+    },
+    "c_cm_smug_follow_2": {
+      "intent": "reach for the jewelled compass",
+      "cost": "a temptation to take"
+    },
+    "c_cm_smug_hoard_1": {
+      "intent": "take the record to the authorities",
+      "cost": "none (single continue)"
+    },
+    "c_cm_smug_token_1": {
+      "intent": "pocket the compass and go",
+      "cost": "setback ending: caught out and the evidence spoiled"
+    },
+    "c_cm_smug_token_2": {
+      "intent": "leave it and photograph it",
+      "cost": "nobody caught tonight"
+    },
+    "c_cm_light_1": {
+      "intent": "relight the true lamp",
+      "cost": "hidden: gears that can jam"
+    },
+    "c_cm_light_2": {
+      "intent": "study the warning signal",
+      "cost": "none"
+    },
+    "c_cm_light_relight_1": {
+      "intent": "set the mirror true by the marks",
+      "cost": "patience"
+    },
+    "c_cm_light_relight_2": {
+      "intent": "force the stiff gears",
+      "cost": "setback ending: the lamp jams for good"
+    },
+    "c_cm_light_true_1": {
+      "intent": "send the light out to sea",
+      "cost": "none (single continue)"
+    },
+    "c_cm_light_study_1": {
+      "intent": "rig it to call for help",
+      "cost": "none"
+    },
+    "c_cm_light_study_2": {
+      "intent": "log the signal for the record",
+      "cost": "no call tonight"
+    },
+    "c_cm_leave_1": {
+      "intent": "head straight back to town",
+      "cost": "the mystery stays unsolved"
+    },
+    "c_cm_leave_2": {
+      "intent": "mark the way for others",
+      "cost": "a few more tired minutes"
+    },
+    "c_cm_leave_town_1": {
+      "intent": "set off for town",
+      "cost": "none (single continue)"
+    },
+    "c_cm_leave_mark_1": {
+      "intent": "leave the journal as a signpost",
+      "cost": "carries nothing out",
+      "requires": [
+        "journal_found"
+      ]
+    },
+    "c_cm_leave_mark_2": {
+      "intent": "carry the journal into town",
+      "cost": "none",
+      "requires": [
+        "journal_found"
+      ]
+    }
+  },
+  "threads": {},
+  "endings": {
+    "e_set_a_drawer": {
+      "gift": "a safe retreat and a reason to try the patient way next time",
+      "valence": "negative",
+      "kind": "setback"
+    },
+    "e_set_a_brick": {
+      "gift": "an unhurt night and the hint that gentle hands would have kept the find",
+      "valence": "negative",
+      "kind": "setback"
+    },
+    "e_set_b_rail": {
+      "gift": "safety chosen over a rotten rail, and the light still waiting below",
+      "valence": "negative",
+      "kind": "setback"
+    },
+    "e_set_c_tide": {
+      "gift": "a sensible retreat from the sea, safe and dry on a ledge",
+      "valence": "negative",
+      "kind": "setback"
+    },
+    "e_set_c_stuck": {
+      "gift": "keeping calm in tight stone, and the far chamber left for another try",
+      "valence": "negative",
+      "kind": "setback"
+    },
+    "e_set_d_loft": {
+      "gift": "a small fall, a stung pride, and the careful way to try next time",
+      "valence": "negative",
+      "kind": "setback"
+    },
+    "e_set_d_storm": {
+      "gift": "a sensible walk home through the storm",
+      "valence": "negative",
+      "kind": "setback"
+    },
+    "e_set_cellar": {
+      "gift": "some mysteries deserve better light: a calm wait in the dark",
+      "valence": "negative",
+      "kind": "setback"
+    },
+    "e_set_stair": {
+      "gift": "a safe turn back from a crumbling step",
+      "valence": "negative",
+      "kind": "setback"
+    },
+    "e_set_shaft": {
+      "gift": "a near miss survived, and the sturdier staples to try next time",
+      "valence": "negative",
+      "kind": "setback"
+    },
+    "e_set_fog": {
+      "gift": "refusing to climb blind, and the light still waiting to be found",
+      "valence": "negative",
+      "kind": "setback"
+    },
+    "e_set_door": {
+      "gift": "a lesson in patience: forcing the lock sealed the answer away",
+      "valence": "negative",
+      "kind": "setback"
+    },
+    "e_set_beam": {
+      "gift": "a close call and the careful lever to try next time",
+      "valence": "negative",
+      "kind": "setback"
+    },
+    "e_set_gate": {
+      "gift": "no shame in letting the tide win; a reason to try another branch",
+      "valence": "negative",
+      "kind": "setback"
+    },
+    "e_set_token": {
+      "gift": "the cost of taking: a spoiled case and hard questions at dawn",
+      "valence": "negative",
+      "kind": "setback"
+    },
+    "e_set_gears": {
+      "gift": "a jammed lamp, and the keeper's marks to follow next time",
+      "valence": "negative",
+      "kind": "setback"
+    },
+    "e_win_keeper_found": {
+      "gift": "Ferris found alive at the moor cottage, and the whole mystery solved",
+      "valence": "positive",
+      "kind": "completion"
+    },
+    "e_win_keeper_word": {
+      "gift": "a search party, Ferris home safe, and his name cleared by Mira's word",
+      "valence": "positive",
+      "kind": "completion"
+    },
+    "e_win_name_cleared": {
+      "gift": "the keeper's good name restored and the real culprit named",
+      "valence": "positive",
+      "kind": "success"
+    },
+    "e_win_promise": {
+      "gift": "a keeper's trust handed down, and a promise kept",
+      "valence": "positive",
+      "kind": "success"
+    },
+    "e_win_smugglers": {
+      "gift": "the coastguard answers her signal and the smuggler is caught red-handed",
+      "valence": "positive",
+      "kind": "success"
+    },
+    "e_win_harbor": {
+      "gift": "proof laid on the harbour master's desk and the secret store emptied",
+      "valence": "positive",
+      "kind": "success"
+    },
+    "e_win_hoard": {
+      "gift": "patient, untouched evidence that seals the case",
+      "valence": "positive",
+      "kind": "success"
+    },
+    "e_win_light_restored": {
+      "gift": "the true light shining over the coast again and a boat's grateful horn",
+      "valence": "positive",
+      "kind": "completion"
+    },
+    "e_win_rescue": {
+      "gift": "the keeper's rig calls the lights home and everyone is safe",
+      "valence": "positive",
+      "kind": "success"
+    },
+    "e_win_signal": {
+      "gift": "the ghost light explained in her own notes, a fear turned into a solved puzzle",
+      "valence": "positive",
+      "kind": "success"
+    },
+    "e_neutral_letter": {
+      "gift": "the sealed letter carried safely out for the right hands to open",
+      "valence": "neutral",
+      "kind": "discovery"
+    },
+    "e_neutral_honest": {
+      "gift": "clean hands and a clearer sense of who she is, though nobody is caught",
+      "valence": "neutral",
+      "kind": "discovery"
+    },
+    "e_neutral_town": {
+      "gift": "a mystery no longer frightening, only a story waiting to be finished",
+      "valence": "neutral",
+      "kind": "discovery"
+    },
+    "e_neutral_evidence": {
+      "gift": "a chalked trail and a signpost left for whoever comes next",
+      "valence": "neutral",
+      "kind": "discovery"
+    },
+    "e_neutral_museum": {
+      "gift": "the keeper's journal carried home as proof to bring the right people back",
+      "valence": "neutral",
+      "kind": "discovery"
+    }
+  },
+  "provenance": {
+    "producer": "wp-1.4 blind extraction",
+    "model": "claude-opus-5-5",
+    "method": "read-book",
+    "book_file": "tmp_cleanup/blind/x2.book.json",
+    "book_sha256": "acd8740b1ee7b42da44131c7bab2a4ad745eb40e93b2af2e5409a17a59d44430",
+    "authored": "2026-11-21",
+    "authoring_minutes": 80,
+    "notes": [
+      "The book declares no variables, so the plan has no threads; every state is the empty state.",
+      "book.slug is derived from the title; the book file carries no slug.",
+      "c_tn_keeper_1 says the brass key while tn_keeper describes only a stiff old key in the lock; recorded as requiring mira_has_brass_key.",
+      "Several joins presuppose things only some routes show; these are recorded as requires, not smoothed over."
+    ]
+  }
+}
