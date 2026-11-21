@@ -1,0 +1,994 @@
+{
+  "plan_version": "0.1",
+  "book": {
+    "slug": "the-clocktower-cipher",
+    "storybook_id": "sk_clocktower_cipher",
+    "storybook_version": 1,
+    "title": "The Clocktower Cipher"
+  },
+  "request": {
+    "text": null,
+    "band": "10-13",
+    "tone": "mystery and puzzle-solving friendship; scariness mild, peril mild, violence none",
+    "note": "catalog book; no request exists"
+  },
+  "pitch": {
+    "hero": "Mara, Theo and Lin: a puzzle-lover, a climber and a careful friend at a silent clocktower",
+    "want": "to solve the cipher pinned to the tower door and find what its maker hid",
+    "obstacle": "a locked tower built to test entrants, fading light, a narrow ledge, and traps for the rash and greedy",
+    "stake": "being locked out for the night, jamming the clock, or being caught taking what is not theirs",
+    "ending_kind": "branch and bottleneck: three ways in, four ways up, then share, keep or grab; setbacks send them home"
+  },
+  "cast": {
+    "mara": {
+      "name": "Mara",
+      "role": "protagonist; the puzzle solver",
+      "want": "to crack Eda's cipher the patient way",
+      "voice": "third person; eager, breathless over puzzles, works with pencil and cipher wheel",
+      "knows": [
+        "mara_loves_puzzles",
+        "cipher_first_line_cracked",
+        "mara_can_decode"
+      ]
+    },
+    "theo": {
+      "name": "Theo",
+      "role": "friend; the climber",
+      "want": "to get up and in fast",
+      "voice": "impatient, grinning, quick to act and quick to own his mistakes",
+      "knows": [
+        "theo_loves_climbing"
+      ]
+    },
+    "lin": {
+      "name": "Lin",
+      "role": "friend; the careful one",
+      "want": "to keep the three of them safe and respect what is Eda's",
+      "voice": "quiet, cautious, speaks softly at moments of wonder",
+      "knows": [
+        "lin_careful"
+      ]
+    },
+    "keeper": {
+      "name": "the clockkeeper",
+      "role": "old man who tends the tower and tells Eda's story",
+      "want": "for worthy finders to solve Eda's tower",
+      "voice": "ink-stained, sharp and kind, says little and means it",
+      "knows": [
+        "keeper_knows_note",
+        "tower_built_to_test",
+        "eda_name",
+        "eda_hid_secret",
+        "set_clock_opens"
+      ]
+    },
+    "eda": {
+      "name": "Eda",
+      "role": "offstage clockmaker who built the tower and its puzzles",
+      "want": "for someone patient and kind to find what she hid",
+      "voice": "speaks only through her cipher, letter and devices",
+      "knows": [
+        "eda_hid_secret",
+        "letter_reveals_charter_spring",
+        "hidden_workshop"
+      ]
+    }
+  },
+  "truth": {
+    "question": "Who built the clocktower's cipher, and what does it guard?",
+    "statement": "Eda, the town's great clockmaker, built the clocktower as a puzzle to guard a secret the town nearly lost. The cipher names a time; setting the clock hands to it opens a vault behind the clockface holding her sealed letter, which tells where the original town charter and the lost spring were hidden during a long-ago flood. A faint scratched sequence on a hidden dial behind the clockface leads instead to her private workshop.",
+    "facts": [
+      "eda_name",
+      "clockmaker_built",
+      "eda_hid_secret",
+      "cipher_names_time",
+      "tower_has_vault",
+      "letter_reveals_charter_spring",
+      "hidden_workshop"
+    ]
+  },
+  "facts": {
+    "tower_frozen": {
+      "text": "The old clocktower has not chimed in years; its great brass hands are frozen at twelve."
+    },
+    "front_door_locked": {
+      "text": "The clocktower's front door, solid oak, is locked tight."
+    },
+    "three_friends": {
+      "text": "Mara, Theo and Lin are three friends standing at the foot of the clocktower steps."
+    },
+    "cipher_note": {
+      "text": "A square of paper covered in rows of strange symbols, a cipher, is pinned to the front door with a brass tack."
+    },
+    "mara_loves_puzzles": {
+      "text": "Mara loves puzzles more than anything."
+    },
+    "lin_careful": {
+      "text": "Lin is always careful."
+    },
+    "keep_out_sign": {
+      "text": "A warning sign half buried in ivy reads KEEP OUT."
+    },
+    "note_meant_to_be_found": {
+      "text": "Mara reasons that someone pinned the code to the locked door because they wanted it found and solved."
+    },
+    "clockkeeper_nearby": {
+      "text": "An old clockkeeper still lives near the tower."
+    },
+    "cipher_first_line_cracked": {
+      "text": "The cipher is a simple substitution; Mara cracks its first line and part of the second."
+    },
+    "key_under_third_stone": {
+      "text": "The note's first line reads THE KEY SLEEPS BENEATH THE THIRD STONE: a key is hidden in the front steps."
+    },
+    "loose_grate": {
+      "text": "The note's second line includes A LOOSE GRATE BREATHES: a loose grate is another way in."
+    },
+    "note_in_mara_pocket": {
+      "text": "Mara folds the note and keeps it in her pocket."
+    },
+    "side_door_swollen": {
+      "text": "Around the side of the tower is a smaller door swollen shut in its frame that gives slightly under Theo's shoulder."
+    },
+    "high_window_climb": {
+      "text": "A narrow window stands cracked open three storeys up, reachable by a drainpipe and carved stone ledges."
+    },
+    "theo_loves_climbing": {
+      "text": "Theo loves a climb."
+    },
+    "keeper_knows_note": {
+      "text": "The clockkeeper knows about the note; people find it now and then and most give up."
+    },
+    "tower_built_to_test": {
+      "text": "The tower was built to test whoever entered it, and it still does."
+    },
+    "keeper_can_unlock": {
+      "text": "The clockkeeper can unlock the tower door but will not climb its stairs himself."
+    },
+    "cipher_has_builder": {
+      "text": "A particular person built the cipher into the tower."
+    },
+    "brass_key_found": {
+      "text": "Under the cracked third stair, in a felt-lined hollow, lay an ornate brass key with a clockface head; Lin carries it."
+    },
+    "clockmaker_built": {
+      "text": "The tower was built by a clockmaker."
+    },
+    "eda_name": {
+      "text": "The clockmaker who built the tower was named Eda, the cleverest hands the town ever knew."
+    },
+    "eda_hid_secret": {
+      "text": "Eda built the tower to keep a secret the town had nearly lost, guarded by a puzzle meant for someone patient and kind."
+    },
+    "set_clock_opens": {
+      "text": "Setting the clock right opens the tower's secret; forcing it makes the tower fight back."
+    },
+    "keeper_gave_token": {
+      "text": "The clockkeeper handed Mara a small brass token from his mantel, saying she would know when she needed it."
+    },
+    "landing_inside": {
+      "text": "The friends dropped through the window onto a dusty wooden landing high inside the tower, a spiral stair winding down."
+    },
+    "tower_hall": {
+      "text": "The tower's tall hall offers four ways on: a spiral stair, the clockmaker's study, a pendulum pit with a ledge, and stairs to a basement."
+    },
+    "cipher_set_at_clockface": {
+      "text": "The cipher is to be set at the great clockface at the top of the spiral stair."
+    },
+    "light_limited": {
+      "text": "The daylight is running out, so the friends cannot do everything."
+    },
+    "gear_token_found": {
+      "text": "Under a loose stair tread near the top the friends find a small brass gear-token, which Mara pockets."
+    },
+    "cipher_wheel": {
+      "text": "A cipher wheel, two brass discs rimmed with letters, hangs in the study and is the way to read Eda's code."
+    },
+    "mara_can_decode": {
+      "text": "With the cipher wheel Mara can now decode anything Eda left."
+    },
+    "eda_logbooks": {
+      "text": "The study shelves hold dozens of Eda's logbooks: decades of notes, drawings and secrets."
+    },
+    "mara_has_cipher_wheel": {
+      "text": "Mara carries the cipher wheel."
+    },
+    "pendulum_still": {
+      "text": "A vast pendulum hangs motionless in its pit and will not swing unless the clock comes alive."
+    },
+    "oil_can_on_ledge": {
+      "text": "An old oil can hangs on a hook at the far end of the narrow pendulum ledge, useful for freeing stuck gears."
+    },
+    "has_oil_can": {
+      "text": "The friends crossed the ledge and carry the oil can.",
+      "contradicts": [
+        "no_oil_can"
+      ]
+    },
+    "no_oil_can": {
+      "text": "The friends do not have the oil can.",
+      "contradicts": [
+        "has_oil_can"
+      ]
+    },
+    "basement_lantern": {
+      "text": "Lin finds a fallen lantern in the basement engine room that still holds oil and lights it."
+    },
+    "service_ladder": {
+      "text": "An iron service ladder in the basement runs straight up a shaft to the clockface."
+    },
+    "clockface_symbol_ring": {
+      "text": "Behind the great clockface a ring of symbols in the note's alphabet runs around the hub of the hands."
+    },
+    "cipher_names_time": {
+      "text": "The cipher names a time; setting the clock hands to it makes something happen."
+    },
+    "panel_seam": {
+      "text": "Lin notices a seam in the brass behind the clockface, a panel that might hide another way through."
+    },
+    "cipher_time_read": {
+      "text": "Mara reads off the hour and minute Eda hid in the note.",
+      "contradicts": [
+        "cipher_unsolved",
+        "cipher_half_mystery"
+      ]
+    },
+    "clock_set_correctly": {
+      "text": "The friends set the clock hands to the exact time from the cipher.",
+      "contradicts": [
+        "clock_not_set"
+      ]
+    },
+    "tower_has_vault": {
+      "text": "What Eda guarded waits in a vault in the tower, opened from behind the clockface."
+    },
+    "vault_panel_opened": {
+      "text": "Setting the right time made a panel beside the clockface slide aside, opening onto a small dark room."
+    },
+    "gears_jammed": {
+      "text": "Forcing the hands by guesswork jammed a row of gears, locking the mechanism half-turned."
+    },
+    "gears_freed": {
+      "text": "The friends worked oil into the jammed gears and eased them loose."
+    },
+    "second_dial": {
+      "text": "Behind the back panel is a tiny symbol dial with two settings: one matching the note, and a faint scratched sequence almost hidden."
+    },
+    "hidden_workshop": {
+      "text": "The clockmaker has a hidden workshop that the faint sequence leads to."
+    },
+    "vault_entered": {
+      "text": "The friends stand in the vault, a small round room lit through a pinhole.",
+      "contradicts": [
+        "vault_not_found"
+      ]
+    },
+    "sealed_letter": {
+      "text": "In the vault sits a folded letter sealed with wax."
+    },
+    "automaton": {
+      "text": "In the vault sits a music-box automaton of a brass clockmaker at her bench."
+    },
+    "treasure_dish": {
+      "text": "In the vault sits a shallow dish of old coins and small bright jewels."
+    },
+    "tower_solved": {
+      "text": "The friends have solved the tower."
+    },
+    "letter_encoded": {
+      "text": "Eda's final message must be decoded.",
+      "contradicts": [
+        "letter_plain"
+      ]
+    },
+    "eda_story_learned": {
+      "text": "Reading the logbooks taught the friends more about Eda than the whole town remembered."
+    },
+    "clock_not_set": {
+      "text": "The friends did not set the clock.",
+      "contradicts": [
+        "clock_set_correctly"
+      ]
+    },
+    "vault_not_found": {
+      "text": "The friends did not find the vault.",
+      "contradicts": [
+        "vault_entered"
+      ]
+    },
+    "keeper_locks_tower": {
+      "text": "At day's end the clockkeeper locks the tower for the night."
+    },
+    "cipher_half_mystery": {
+      "text": "The cipher is still half a mystery when the friends go home.",
+      "contradicts": [
+        "cipher_time_read"
+      ]
+    },
+    "cipher_unsolved": {
+      "text": "The cipher is still unsolved when the friends leave.",
+      "contradicts": [
+        "cipher_time_read"
+      ]
+    },
+    "spin_jammed": {
+      "text": "Spinning the hands at random jammed the works and set off the lock-up bell."
+    },
+    "left_empty_handed": {
+      "text": "The friends leave the tower empty-handed."
+    },
+    "damage_not_permanent": {
+      "text": "The jam is not permanent; oil and patience could free the clock another day."
+    },
+    "keeper_come_back": {
+      "text": "The clockkeeper tells the friends the tower tests you and to come back when ready."
+    },
+    "workshop_unfinished_work": {
+      "text": "Eda's hidden workshop is crammed with half-finished clockwork no one else has seen; the friends become its keepers."
+    },
+    "letter_plain": {
+      "text": "Eda's letter is written in plain words.",
+      "contradicts": [
+        "letter_encoded"
+      ]
+    },
+    "letter_reveals_charter_spring": {
+      "text": "Eda's letter tells where the original town charter and the lost spring, hidden during a long-ago flood, can be found."
+    },
+    "spring_and_charter_restored": {
+      "text": "The spring is found flowing again and the charter goes to the town hall; the repaired clock chimes true."
+    },
+    "town_told": {
+      "text": "The friends bring Eda's message to the town.",
+      "contradicts": [
+        "secret_kept"
+      ]
+    },
+    "secret_kept": {
+      "text": "The friends tell no one what they found in the vault and keep it as a secret among themselves.",
+      "contradicts": [
+        "town_told"
+      ]
+    },
+    "bell_cage_trap": {
+      "text": "Lifting the treasure dish drops a cage of brass rods hung with jangling bells, a trap Eda built for the greedy."
+    },
+    "treasure_returned": {
+      "text": "The friends put every coin and jewel back exactly where it had been."
+    }
+  },
+  "nodes": {
+    "n_open": {
+      "function": "open",
+      "event": "Mara, Theo and Lin find a cipher note pinned to the locked door of the silent clocktower.",
+      "requires": [],
+      "establishes": [
+        "tower_frozen",
+        "front_door_locked",
+        "three_friends",
+        "cipher_note",
+        "mara_loves_puzzles",
+        "lin_careful",
+        "keep_out_sign"
+      ]
+    },
+    "n_start": {
+      "function": "decision",
+      "event": "Mara reasons the note was meant to be solved; the friends choose between the note, another way in, or the clockkeeper.",
+      "requires": [
+        "cipher_note",
+        "front_door_locked",
+        "three_friends"
+      ],
+      "establishes": [
+        "note_meant_to_be_found",
+        "clockkeeper_nearby"
+      ]
+    },
+    "n_note": {
+      "function": "decision",
+      "event": "Mara cracks the substitution cipher: a key under the third stone and a loose grate that breathes.",
+      "requires": [
+        "cipher_note",
+        "three_friends"
+      ],
+      "establishes": [
+        "cipher_first_line_cracked",
+        "key_under_third_stone",
+        "loose_grate",
+        "note_in_mara_pocket"
+      ]
+    },
+    "n_door": {
+      "function": "decision",
+      "event": "Circling the tower they find a swollen side door and a high open window with a climbing route.",
+      "requires": [
+        "front_door_locked",
+        "three_friends"
+      ],
+      "establishes": [
+        "side_door_swollen",
+        "high_window_climb",
+        "theo_loves_climbing"
+      ]
+    },
+    "n_keeper": {
+      "function": "decision",
+      "event": "The clockkeeper knows about the note, says the tower tests its entrants, and offers to unlock it or tell its maker's story.",
+      "requires": [
+        "clockkeeper_nearby",
+        "cipher_note"
+      ],
+      "establishes": [
+        "keeper_knows_note",
+        "tower_built_to_test",
+        "keeper_can_unlock",
+        "cipher_has_builder"
+      ]
+    },
+    "n_keyhunt": {
+      "function": "continue",
+      "event": "Under the third stair they find an ornate brass key and carry it to the front door.",
+      "requires": [
+        "key_under_third_stone",
+        "front_door_locked"
+      ],
+      "establishes": [
+        "brass_key_found"
+      ]
+    },
+    "n_keeper_story": {
+      "function": "continue",
+      "event": "The keeper tells of Eda the clockmaker, who hid a town secret behind a puzzle, and gives Mara a brass token.",
+      "requires": [
+        "cipher_has_builder",
+        "cipher_note"
+      ],
+      "establishes": [
+        "clockmaker_built",
+        "eda_name",
+        "eda_hid_secret",
+        "set_clock_opens",
+        "keeper_gave_token"
+      ]
+    },
+    "n_window": {
+      "function": "continue",
+      "event": "Theo climbs to the high window and the friends squeeze through onto a dusty landing inside.",
+      "requires": [
+        "high_window_climb",
+        "theo_loves_climbing",
+        "cipher_note"
+      ],
+      "establishes": [
+        "landing_inside"
+      ]
+    },
+    "n_inside": {
+      "function": "bottleneck",
+      "event": "From the foot of the landing the friends survey the hall: spiral stair, study, pendulum pit and basement.",
+      "requires": [
+        "landing_inside",
+        "clockmaker_built",
+        "cipher_note"
+      ],
+      "establishes": [
+        "tower_hall",
+        "cipher_set_at_clockface",
+        "light_limited"
+      ]
+    },
+    "n_stairs": {
+      "function": "continue",
+      "event": "Climbing the spiral stair, Theo finds a brass gear-token like the one the keeper described.",
+      "requires": [
+        "tower_hall",
+        "keeper_gave_token",
+        "eda_name",
+        "cipher_set_at_clockface"
+      ],
+      "establishes": [
+        "gear_token_found"
+      ]
+    },
+    "n_study": {
+      "function": "decision",
+      "event": "In the study Mara finds the cipher wheel and can now decode anything; Eda's logbooks tempt them to stay.",
+      "requires": [
+        "tower_hall",
+        "eda_name",
+        "cipher_note",
+        "cipher_set_at_clockface",
+        "light_limited"
+      ],
+      "establishes": [
+        "cipher_wheel",
+        "mara_can_decode",
+        "eda_logbooks"
+      ]
+    },
+    "n_pendulum": {
+      "function": "decision",
+      "event": "An oil can waits at the end of a narrow ledge past the still pendulum; cross for it or back away.",
+      "requires": [
+        "tower_hall"
+      ],
+      "establishes": [
+        "pendulum_still",
+        "oil_can_on_ledge"
+      ]
+    },
+    "n_basement": {
+      "function": "continue",
+      "event": "Lin lights an old lantern in the basement engine room and they climb a service ladder to the clockface.",
+      "requires": [
+        "tower_hall",
+        "eda_name"
+      ],
+      "establishes": [
+        "basement_lantern",
+        "service_ladder"
+      ]
+    },
+    "n_clockface": {
+      "function": "decision",
+      "event": "Behind the clockface Mara, holding the cipher wheel, sees the symbol ring; set carefully, force, search a panel, or spin.",
+      "requires": [
+        "cipher_note",
+        "cipher_wheel"
+      ],
+      "establishes": [
+        "clockface_symbol_ring",
+        "cipher_names_time",
+        "mara_has_cipher_wheel",
+        "panel_seam"
+      ]
+    },
+    "n_setcorrect": {
+      "function": "continue",
+      "event": "Mara reads the hidden time with the cipher wheel; setting it opens a panel into the vault.",
+      "requires": [
+        "mara_has_cipher_wheel",
+        "eda_name",
+        "cipher_names_time",
+        "cipher_note"
+      ],
+      "establishes": [
+        "cipher_time_read",
+        "clock_set_correctly",
+        "tower_has_vault",
+        "vault_panel_opened"
+      ]
+    },
+    "n_setjam": {
+      "function": "decision",
+      "event": "Theo forces the hands and jams the gears; the oil can from the pendulum ledge might free them.",
+      "requires": [
+        "oil_can_on_ledge"
+      ],
+      "establishes": [
+        "gears_jammed"
+      ]
+    },
+    "n_backpanel": {
+      "function": "decision",
+      "event": "Behind the back panel a tiny dial offers the note's setting into the vault or a faint scratched sequence.",
+      "requires": [
+        "panel_seam",
+        "mara_has_cipher_wheel",
+        "eda_name",
+        "tower_has_vault",
+        "cipher_note"
+      ],
+      "establishes": [
+        "second_dial",
+        "hidden_workshop"
+      ]
+    },
+    "n_vault": {
+      "function": "decision",
+      "event": "In Eda's vault sit a sealed letter, an automaton and a dish of treasure; share, keep, or grab.",
+      "requires": [
+        "tower_has_vault",
+        "eda_name"
+      ],
+      "establishes": [
+        "vault_entered",
+        "sealed_letter",
+        "automaton",
+        "treasure_dish",
+        "tower_solved",
+        "letter_encoded"
+      ]
+    },
+    "n_end_library": {
+      "function": "ending",
+      "event": "Lost in Eda's logbooks until the bell tolls, the friends leave without setting the clock, vowing to return.",
+      "requires": [
+        "eda_logbooks",
+        "eda_name",
+        "clockkeeper_nearby",
+        "tower_has_vault"
+      ],
+      "establishes": [
+        "eda_story_learned",
+        "clock_not_set",
+        "vault_not_found",
+        "keeper_locks_tower"
+      ]
+    },
+    "n_end_giveup": {
+      "function": "ending",
+      "event": "Lin judges the ledge too risky; without the oil can and out of light, they go home with the cipher half solved.",
+      "requires": [
+        "oil_can_on_ledge",
+        "pendulum_still"
+      ],
+      "establishes": [
+        "no_oil_can",
+        "cipher_half_mystery"
+      ]
+    },
+    "n_end_timeout": {
+      "function": "ending",
+      "event": "Theo spins the hands, the works jam and the lock-up bell drives them out empty-handed.",
+      "requires": [
+        "clockkeeper_nearby",
+        "eda_name"
+      ],
+      "establishes": [
+        "spin_jammed",
+        "cipher_unsolved",
+        "left_empty_handed"
+      ]
+    },
+    "n_end_stuck": {
+      "function": "ending",
+      "event": "Without the oil can the jam will not give; the keeper sends them home to come back ready.",
+      "requires": [
+        "gears_jammed",
+        "clockkeeper_nearby"
+      ],
+      "establishes": [
+        "no_oil_can",
+        "damage_not_permanent",
+        "keeper_come_back"
+      ]
+    },
+    "n_end_secret": {
+      "function": "ending",
+      "event": "The scratched sequence opens Eda's hidden workshop of unfinished clockwork, and the friends become its keepers.",
+      "requires": [
+        "second_dial",
+        "eda_name",
+        "hidden_workshop"
+      ],
+      "establishes": [
+        "workshop_unfinished_work"
+      ]
+    },
+    "n_end_hero": {
+      "function": "ending",
+      "event": "Eda's letter reveals the lost charter and spring; the town recovers both and the clock chimes again.",
+      "requires": [
+        "sealed_letter",
+        "eda_name",
+        "clockkeeper_nearby"
+      ],
+      "establishes": [
+        "letter_plain",
+        "letter_reveals_charter_spring",
+        "spring_and_charter_restored",
+        "town_told"
+      ]
+    },
+    "n_end_keepsake": {
+      "function": "ending",
+      "event": "Mara folds the letter back along its creases and the friends keep the vault as their shared secret.",
+      "requires": [
+        "sealed_letter",
+        "automaton"
+      ],
+      "establishes": [
+        "secret_kept"
+      ]
+    },
+    "n_end_caught": {
+      "function": "ending",
+      "event": "Grabbing the treasure drops a jangling bell cage; the keeper arrives and they return every coin.",
+      "requires": [
+        "treasure_dish",
+        "eda_name",
+        "clockkeeper_nearby"
+      ],
+      "establishes": [
+        "bell_cage_trap",
+        "treasure_returned",
+        "left_empty_handed"
+      ]
+    }
+  },
+  "choices": {
+    "c_open": {
+      "intent": "look at the cipher note together",
+      "cost": "none (single continue)"
+    },
+    "c_examine": {
+      "intent": "study the cipher note",
+      "cost": "gives up searching for a way in and asking the keeper",
+      "requires": [
+        "cipher_note"
+      ]
+    },
+    "c_door": {
+      "intent": "look for another way into the tower",
+      "cost": "gives up the note and the keeper's help"
+    },
+    "c_keeper": {
+      "intent": "ask the old clockkeeper for help",
+      "cost": "gives up the note and the search for another way in",
+      "requires": [
+        "clockkeeper_nearby"
+      ]
+    },
+    "c_note_key": {
+      "intent": "dig for the key the note names",
+      "cost": "gives up going straight for the grate",
+      "requires": [
+        "key_under_third_stone"
+      ]
+    },
+    "c_note_inside": {
+      "intent": "go straight for the loose grate",
+      "cost": "gives up the hidden key",
+      "requires": [
+        "loose_grate"
+      ]
+    },
+    "c_door_force": {
+      "intent": "shoulder the swollen side door open",
+      "cost": "gives up the window climb",
+      "requires": [
+        "side_door_swollen"
+      ]
+    },
+    "c_door_window": {
+      "intent": "climb the drainpipe to the high window",
+      "cost": "a long risky climb; gives up the quick door",
+      "requires": [
+        "high_window_climb"
+      ]
+    },
+    "c_keeper_enter": {
+      "intent": "go inside now with the keeper's blessing",
+      "cost": "gives up hearing who built the cipher"
+    },
+    "c_keeper_story": {
+      "intent": "hear who built the cipher",
+      "cost": "time spent listening instead of entering",
+      "requires": [
+        "cipher_has_builder"
+      ]
+    },
+    "c_keyhunt_in": {
+      "intent": "unlock the front door with the brass key",
+      "cost": "none (single continue)",
+      "requires": [
+        "brass_key_found"
+      ]
+    },
+    "c_story_in": {
+      "intent": "go inside carrying the keeper's story",
+      "cost": "none (single continue)"
+    },
+    "c_window_in": {
+      "intent": "drop down into the tower",
+      "cost": "none (single continue)",
+      "requires": [
+        "landing_inside"
+      ]
+    },
+    "c_inside_stairs": {
+      "intent": "climb straight to the clockface",
+      "cost": "gives up the study, the pendulum ledge and the basement"
+    },
+    "c_inside_study": {
+      "intent": "search the clockmaker's study",
+      "cost": "gives up the stairs, the pendulum ledge and the basement"
+    },
+    "c_inside_pendulum": {
+      "intent": "go after the oil can past the pendulum",
+      "cost": "a narrow ledge over a drop; gives up the other three ways"
+    },
+    "c_inside_basement": {
+      "intent": "explore the basement machinery",
+      "cost": "gives up the stairs, the study and the pendulum ledge"
+    },
+    "c_stairs_face": {
+      "intent": "climb to the clockface",
+      "cost": "none (single continue)"
+    },
+    "c_study_face": {
+      "intent": "take the cipher wheel to the clockface",
+      "cost": "leaves Eda's logbooks unread",
+      "requires": [
+        "cipher_wheel"
+      ],
+      "establishes": [
+        "mara_has_cipher_wheel"
+      ]
+    },
+    "c_study_logs": {
+      "intent": "stay and read Eda's logbooks",
+      "cost": "the daylight runs out before the clock is set",
+      "requires": [
+        "eda_logbooks"
+      ]
+    },
+    "c_pendulum_oil": {
+      "intent": "cross the ledge and grab the oil can",
+      "cost": "risks a slip over the long drop",
+      "requires": [
+        "oil_can_on_ledge"
+      ],
+      "establishes": [
+        "has_oil_can"
+      ]
+    },
+    "c_pendulum_giveup": {
+      "intent": "back away from the risky ledge",
+      "cost": "gives up the oil can and the clockface tonight",
+      "requires": [
+        "oil_can_on_ledge"
+      ]
+    },
+    "c_basement_face": {
+      "intent": "take the service ladder to the clockface",
+      "cost": "none (single continue)",
+      "requires": [
+        "service_ladder"
+      ]
+    },
+    "c_face_correct": {
+      "intent": "set the hands slowly with the cipher",
+      "cost": "gives up the panel search and the quick guesses",
+      "requires": [
+        "cipher_names_time"
+      ]
+    },
+    "c_face_jam": {
+      "intent": "force the hands to a guessed hour",
+      "cost": "risks jamming the gears"
+    },
+    "c_face_panel": {
+      "intent": "search the seam behind the face",
+      "cost": "gives up setting the hands directly",
+      "requires": [
+        "panel_seam"
+      ]
+    },
+    "c_face_random": {
+      "intent": "spin the hands and hope",
+      "cost": "jams the works and runs out the time"
+    },
+    "c_correct_vault": {
+      "intent": "step through into the vault",
+      "cost": "none (single continue)",
+      "requires": [
+        "vault_panel_opened"
+      ]
+    },
+    "c_jam_oil": {
+      "intent": "free the jammed gears with the oil can",
+      "cost": "gives up retreating for the night",
+      "requires": [
+        "gears_jammed",
+        "has_oil_can"
+      ],
+      "establishes": [
+        "gears_freed"
+      ]
+    },
+    "c_jam_stuck": {
+      "intent": "give up on the jammed gears",
+      "cost": "leaves the vault shut for the night",
+      "requires": [
+        "gears_jammed"
+      ]
+    },
+    "c_panel_vault": {
+      "intent": "set the dial to open the vault",
+      "cost": "gives up the hidden scratched sequence",
+      "requires": [
+        "second_dial"
+      ]
+    },
+    "c_panel_secret": {
+      "intent": "follow the scratched sequence to the hidden workshop",
+      "cost": "gives up the vault and its message",
+      "requires": [
+        "second_dial",
+        "hidden_workshop"
+      ]
+    },
+    "c_vault_share": {
+      "intent": "decode Eda's message and give it to the town",
+      "cost": "gives up keeping the secret or the treasure",
+      "requires": [
+        "sealed_letter",
+        "letter_encoded"
+      ]
+    },
+    "c_vault_keep": {
+      "intent": "keep the clockmaker's secret among friends",
+      "cost": "the town never learns what Eda hid",
+      "requires": [
+        "sealed_letter"
+      ]
+    },
+    "c_vault_grab": {
+      "intent": "grab the treasure and run",
+      "cost": "triggers Eda's trap and loses the friends' honor",
+      "requires": [
+        "treasure_dish"
+      ]
+    }
+  },
+  "threads": {},
+  "endings": {
+    "n_end_library": {
+      "gift": "pages of Eda's brilliance no one had read in years, and a promise to come back",
+      "valence": "neutral",
+      "kind": "discovery"
+    },
+    "n_end_giveup": {
+      "gift": "a safe walk home under the stars and the lesson that safety can be worth the prize",
+      "valence": "negative",
+      "kind": "setback"
+    },
+    "n_end_timeout": {
+      "gift": "the tower's iron answer that rushing is not the way: next time, Eda's way, slowly",
+      "valence": "negative",
+      "kind": "setback"
+    },
+    "n_end_stuck": {
+      "gift": "a humbling jam that is not permanent, and the keeper's invitation to be tested again",
+      "valence": "negative",
+      "kind": "setback"
+    },
+    "n_end_secret": {
+      "gift": "Eda's hidden workshop of unfinished clockwork, entrusted to the curious",
+      "valence": "positive",
+      "kind": "success"
+    },
+    "n_end_hero": {
+      "gift": "the lost charter and spring restored to the town, and the clock chiming true again",
+      "valence": "positive",
+      "kind": "completion"
+    },
+    "n_end_keepsake": {
+      "gift": "a real mystery solved and held close, binding three friends for years",
+      "valence": "positive",
+      "kind": "success"
+    },
+    "n_end_caught": {
+      "gift": "a ridiculous bell-cage trap and a lesson that the trap was built for the greedy",
+      "valence": "negative",
+      "kind": "setback"
+    }
+  },
+  "provenance": {
+    "producer": "wp-1.4 blind extraction",
+    "model": "claude-opus-5-5",
+    "method": "read-book",
+    "book_file": "tmp_cleanup/blind/z3.book.json",
+    "book_sha256": "2d476787f5e61104d2e8f87765820496488f2780d3c08cd19cfcc7516b305bb5",
+    "authored": "2026-11-21",
+    "authoring_minutes": 40,
+    "notes": [
+      "The book declares no variables and no choice conditions or effects, so there are no threads; every choice is visible in every state.",
+      "Ending titles for e_library, e_secret and e_hero are unfilled placeholders in the book.",
+      "book.slug is derived from the title; the book carries no slug."
+    ]
+  }
+}

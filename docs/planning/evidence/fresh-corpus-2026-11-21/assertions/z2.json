@@ -1,0 +1,870 @@
+{
+  "n_open": [
+    "nia_locked_in",
+    "animals_wound_down",
+    "tock"
+  ],
+  "n_start": [
+    "four_wings",
+    "candle_low"
+  ],
+  "av_x0": [
+    "four_wings",
+    "tock",
+    "candle_low",
+    "aviary_frozen_birds"
+  ],
+  "av_x1": [
+    "tock",
+    "aviary_two_paths"
+  ],
+  "av_deep": [
+    "tock",
+    "aviary_alcove_and_roost"
+  ],
+  "av_a1": [
+    "tock",
+    "songbirds_keys_wound_down"
+  ],
+  "av_a2": [
+    "tock",
+    "music_box"
+  ],
+  "av_a3": [
+    "candle_low",
+    "master_key_card",
+    "rotunda",
+    "key_can_wake_menagerie",
+    "nia_seeks_key"
+  ],
+  "av_a4": [
+    "master_key_card",
+    "tock",
+    "candle_low",
+    "nia_took_clue",
+    "keeper_walkway"
+  ],
+  "av_a5": [
+    "keeper_walkway",
+    "tock",
+    "clock_door_picture",
+    "museum_hum"
+  ],
+  "av_b1": [
+    "tock",
+    "raptor_roost"
+  ],
+  "av_b2": [
+    "nia_seeks_key",
+    "candle_low",
+    "feather_decoy"
+  ],
+  "av_b3": [
+    "tock",
+    "owl_wing_signpost"
+  ],
+  "av_b4": [
+    "owl_wing_signpost",
+    "museum_hum",
+    "tock",
+    "keeper_stair_down"
+  ],
+  "av_conv": [
+    "great_clock",
+    "museum_hum",
+    "tock",
+    "rotunda",
+    "tock_runs_ahead"
+  ],
+  "av_conv2": [
+    "tock_runs_ahead",
+    "tock",
+    "dawn_in_rotunda"
+  ],
+  "av_conv3": [
+    "master_key_card",
+    "nia_seeks_key",
+    "key_can_wake_menagerie",
+    "clock_hands_stopped",
+    "great_clock"
+  ],
+  "av_risk": [
+    "tock",
+    "stair_rung_cracks"
+  ],
+  "av_rec": [
+    "stair_rung_cracks",
+    "nia_climbed_down_stair"
+  ],
+  "av_rec2": [
+    "nia_climbed_down_stair",
+    "tock",
+    "nia_gave_up_stair"
+  ],
+  "e_set_av": [
+    "stair_rung_cracks",
+    "tock",
+    "nia_stranded_nests"
+  ],
+  "sv_x0": [
+    "four_wings",
+    "tock",
+    "savanna_view"
+  ],
+  "sv_x1": [
+    "tock",
+    "savanna_two_paths"
+  ],
+  "sv_deep": [
+    "tock",
+    "watering_hole_and_grove"
+  ],
+  "sv_a1": [
+    "tock",
+    "elephant_stirred_close",
+    "elephant_lurched_at_nia"
+  ],
+  "sv_a2": [
+    "elephant_stirred_close",
+    "elephant_half_wound"
+  ],
+  "sv_a3": [
+    "elephant_half_wound",
+    "tock",
+    "nia_waited_behind_baobab"
+  ],
+  "sv_a4": [
+    "nia_waited_behind_baobab",
+    "tock",
+    "oil_drip_trail"
+  ],
+  "sv_a5": [
+    "oil_drip_trail",
+    "great_clock",
+    "tock",
+    "museum_hum"
+  ],
+  "sv_b1": [
+    "tock",
+    "candle_low",
+    "giraffe_grove"
+  ],
+  "sv_b2": [
+    "nia_seeks_key",
+    "candle_low",
+    "shelf_ring_pulley"
+  ],
+  "sv_b3": [
+    "shelf_ring_pulley",
+    "ring_no_keys",
+    "painted_arrow"
+  ],
+  "sv_b4": [
+    "painted_arrow",
+    "nia_feels_doors_habit",
+    "tock",
+    "arrows_to_keeper_door",
+    "museum_hum"
+  ],
+  "sv_conv": [
+    "great_clock",
+    "tock",
+    "rotunda",
+    "tock_runs_ahead"
+  ],
+  "sv_conv2": [
+    "tock_runs_ahead",
+    "tock",
+    "dawn_in_rotunda"
+  ],
+  "sv_conv3": [
+    "nia_seeks_key",
+    "key_can_wake_menagerie",
+    "clock_hands_stopped",
+    "great_clock"
+  ],
+  "sv_risk": [
+    "elephant_half_wound",
+    "trunk_blocks_ledge",
+    "elephant_lurched_at_nia"
+  ],
+  "sv_rec": [
+    "trunk_blocks_ledge",
+    "nia_waited_in_alcove"
+  ],
+  "sv_rec2": [
+    "nia_waited_in_alcove",
+    "tock",
+    "nia_gave_up_ledge"
+  ],
+  "e_set_sv": [
+    "trunk_blocks_ledge",
+    "tock",
+    "nia_cornered_by_elephant",
+    "elephant_lurched_at_nia"
+  ],
+  "ds_x0": [
+    "four_wings",
+    "tock",
+    "deep_sea_view"
+  ],
+  "ds_x1": [
+    "tock",
+    "deep_sea_two_paths"
+  ],
+  "ds_deep": [
+    "tock",
+    "coral_and_trench"
+  ],
+  "ds_a1": [
+    "tock",
+    "humming_valve"
+  ],
+  "ds_a2": [
+    "humming_valve",
+    "tock",
+    "candle_low",
+    "nia_has_map"
+  ],
+  "ds_a3": [
+    "nia_has_map",
+    "candle_low",
+    "key_tag_rotunda",
+    "rotunda"
+  ],
+  "ds_a4": [
+    "nia_has_map",
+    "tock",
+    "candle_low"
+  ],
+  "ds_a5": [
+    "nia_has_map",
+    "great_clock",
+    "tock",
+    "porthole_door",
+    "museum_hum",
+    "great_clock_ticking"
+  ],
+  "ds_b1": [
+    "tock",
+    "nia_dislikes_dark"
+  ],
+  "ds_b2": [
+    "anglerfish_hatch"
+  ],
+  "ds_b3": [
+    "anglerfish_hatch",
+    "clock_mark_means_heart",
+    "nia_seeking_heart",
+    "great_clock",
+    "hatch_clock_sign"
+  ],
+  "ds_b4": [
+    "anglerfish_hatch",
+    "museum_hum",
+    "tock",
+    "candle_low",
+    "copper_crawl_passage"
+  ],
+  "ds_conv": [
+    "great_clock",
+    "tock",
+    "rotunda",
+    "tock_runs_ahead"
+  ],
+  "ds_conv2": [
+    "tock_runs_ahead",
+    "tock",
+    "dawn_in_rotunda"
+  ],
+  "ds_conv3": [
+    "nia_seeks_key",
+    "key_can_wake_menagerie",
+    "clock_hands_stopped",
+    "great_clock"
+  ],
+  "ds_risk": [
+    "catwalk_gap"
+  ],
+  "ds_rec": [
+    "catwalk_gap",
+    "tock",
+    "nia_backed_off_catwalk"
+  ],
+  "ds_rec2": [
+    "nia_backed_off_catwalk",
+    "nia_gave_up_catwalk"
+  ],
+  "e_set_ds": [
+    "catwalk_gap",
+    "tock",
+    "nia_stuck_on_rib"
+  ],
+  "cg_x0": [
+    "four_wings",
+    "tock",
+    "conservatory_view"
+  ],
+  "cg_x1": [
+    "tock",
+    "conservatory_two_paths"
+  ],
+  "cg_deep": [
+    "tock",
+    "vault_and_beetles"
+  ],
+  "cg_a1": [
+    "tock",
+    "candle_low",
+    "butterflies_folded"
+  ],
+  "cg_a2": [
+    "tock",
+    "butterfly_winder"
+  ],
+  "cg_a3": [
+    "butterfly_winder",
+    "master_key_card",
+    "rotunda",
+    "key_can_wake_menagerie",
+    "nia_seeks_key",
+    "winder_in_pocket"
+  ],
+  "cg_a4": [
+    "tock",
+    "painted_floor_path"
+  ],
+  "cg_a5": [
+    "painted_floor_path",
+    "great_clock",
+    "tock",
+    "candle_low",
+    "mirrored_door",
+    "museum_hum",
+    "great_clock_ticking"
+  ],
+  "cg_b1": [
+    "tock",
+    "beetle_bench_tools"
+  ],
+  "cg_b2": [
+    "tock",
+    "nia_has_map"
+  ],
+  "cg_b3": [
+    "nia_has_map",
+    "candle_low",
+    "beetle_map_route",
+    "rotunda"
+  ],
+  "cg_b4": [
+    "beetle_map_route",
+    "tock",
+    "mirrored_door",
+    "museum_hum"
+  ],
+  "cg_conv": [
+    "great_clock",
+    "tock",
+    "rotunda",
+    "tock_runs_ahead"
+  ],
+  "cg_conv2": [
+    "tock_runs_ahead",
+    "tock",
+    "dawn_in_rotunda"
+  ],
+  "cg_conv3": [
+    "nia_seeks_key",
+    "key_can_wake_menagerie",
+    "clock_hands_stopped",
+    "great_clock"
+  ],
+  "cg_risk": [
+    "loose_glass_panel"
+  ],
+  "cg_rec": [
+    "loose_glass_panel",
+    "nia_stepped_back_glass"
+  ],
+  "cg_rec2": [
+    "nia_stepped_back_glass",
+    "tock",
+    "nia_gave_up_gallery"
+  ],
+  "e_set_cg": [
+    "loose_glass_panel",
+    "tock",
+    "nia_shut_in_gallery"
+  ],
+  "n_key": [
+    "rotunda",
+    "great_clock",
+    "tock",
+    "nia_has_master_key",
+    "single_key_on_hook",
+    "caretaker_exists",
+    "key_can_wake_menagerie",
+    "three_ways_from_rotunda"
+  ],
+  "k_a1": [
+    "tock",
+    "candle_low",
+    "machine_room"
+  ],
+  "k_a2": [
+    "machine_room",
+    "tock",
+    "great_drum"
+  ],
+  "k_a3": [
+    "machine_room",
+    "tock"
+  ],
+  "k_b1": [
+    "candle_low",
+    "keeper_portraits"
+  ],
+  "k_b2": [
+    "keeper_portraits",
+    "candle_low",
+    "fettle_named",
+    "caretaker_exists"
+  ],
+  "k_b3": [
+    "tock",
+    "fettle_named",
+    "machine_room"
+  ],
+  "k_c1": [
+    "candle_low",
+    "rusted_turnstile"
+  ],
+  "k_c2": [
+    "rusted_turnstile",
+    "tock",
+    "nia_squeezed_through"
+  ],
+  "k_c3": [
+    "nia_squeezed_through",
+    "tock",
+    "machine_room"
+  ],
+  "e_set_key": [
+    "rusted_turnstile",
+    "tock",
+    "nia_penned_stairwell"
+  ],
+  "n_spring": [
+    "machine_room",
+    "tock",
+    "mainspring_snapped",
+    "spring_room_three_clues"
+  ],
+  "s_a1": [
+    "spring_room_three_clues",
+    "tock",
+    "clamp_tool"
+  ],
+  "s_a2": [
+    "clamp_tool",
+    "tock",
+    "candle_low",
+    "instruction_card"
+  ],
+  "s_a3": [
+    "instruction_card",
+    "clamp_tool",
+    "tock",
+    "nia_has_clamp_tool",
+    "sign_to_low_door"
+  ],
+  "s_b1": [
+    "spring_room_three_clues",
+    "tock",
+    "mending_book"
+  ],
+  "s_b2": [
+    "mending_book",
+    "book_shows_workshop"
+  ],
+  "s_b3": [
+    "book_shows_workshop",
+    "tock",
+    "candle_low",
+    "book_names_door"
+  ],
+  "s_c1": [
+    "spring_room_three_clues",
+    "tock",
+    "panel_under_gear"
+  ],
+  "s_c2": [
+    "panel_under_gear",
+    "crawlspace_open"
+  ],
+  "s_c3": [
+    "crawlspace_open",
+    "tock",
+    "fettle_named",
+    "hidden_door"
+  ],
+  "e_set_spring": [
+    "panel_under_gear",
+    "gear_buried_crawlspace"
+  ],
+  "n_shop": [
+    "candle_low",
+    "fettle_named",
+    "hidden_workshop",
+    "spare_spring_available",
+    "repair_manual_open",
+    "fettle_ill",
+    "fettle_left_drawings",
+    "nia_knows_mend",
+    "nia_has_master_key"
+  ],
+  "p_a1": [
+    "repair_manual_open",
+    "tock"
+  ],
+  "p_a2": [
+    "repair_manual_open",
+    "tock",
+    "mend_steps",
+    "nia_knows_mend"
+  ],
+  "p_a3": [
+    "mainspring_snapped",
+    "tock",
+    "nia_has_clamp_tool"
+  ],
+  "p_b1": [
+    "spare_spring_available",
+    "tock",
+    "spare_spring_heavy"
+  ],
+  "p_b2": [
+    "spare_spring_heavy",
+    "tock",
+    "keeper_cart",
+    "nia_has_clamp_tool"
+  ],
+  "p_b3": [
+    "keeper_cart",
+    "mainspring_snapped",
+    "tock"
+  ],
+  "p_c1": [
+    "examined_before_letter",
+    "spare_spring_heavy",
+    "fettle_named",
+    "shortcut_lever"
+  ],
+  "p_c2": [
+    "spare_spring_heavy",
+    "tock",
+    "nia_carried_spring"
+  ],
+  "p_c3": [
+    "nia_carried_spring",
+    "nia_has_master_key",
+    "nia_knows_mend",
+    "tock",
+    "spare_spring_at_spring_room"
+  ],
+  "e_set_shop": [
+    "shortcut_lever",
+    "spring_lost_behind_shutter"
+  ],
+  "n_hub": [
+    "nia_has_master_key",
+    "nia_knows_mend",
+    "nia_loves_a_creature",
+    "fettle_has_secret",
+    "fettle_named",
+    "spare_spring_at_spring_room",
+    "dawn_coming",
+    "mainspring_snapped"
+  ],
+  "fh_rw1": [
+    "fettle_left_drawings",
+    "nia_spotted_trick",
+    "fettle_named"
+  ],
+  "fh_rw_c1": [
+    "repair_manual_open",
+    "tock",
+    "careful_fitting"
+  ],
+  "fh_rw_c2": [
+    "careful_fitting",
+    "fettle_named",
+    "spring_mended",
+    "fettle_ill"
+  ],
+  "fh_rw_b1": [
+    "spring_half_seated"
+  ],
+  "fh_rw_b_ok": [
+    "spring_half_seated",
+    "spring_mended"
+  ],
+  "fh_rw_cl1": [
+    "fettle_named",
+    "helper_gear"
+  ],
+  "fh_rw_cl2": [
+    "helper_gear",
+    "tock",
+    "spring_mended",
+    "menagerie_stirs"
+  ],
+  "e_win_all": [
+    "spring_mended",
+    "fettle_named",
+    "all_awake_at_dawn",
+    "fettle_weeps_glad"
+  ],
+  "e_win_all_quiet": [
+    "spring_mended",
+    "fettle_ill",
+    "fettle_named",
+    "set_for_fettle"
+  ],
+  "e_win_most": [
+    "spring_mended",
+    "most_awake"
+  ],
+  "e_set_rw": [
+    "spring_half_seated",
+    "spring_slipped",
+    "spring_not_fixed"
+  ],
+  "e_win_clever": [
+    "helper_gear",
+    "spring_mended",
+    "fettle_named",
+    "keepers_praise_gear"
+  ],
+  "fh_fx1": [
+    "nia_has_master_key",
+    "cannot_mend_in_time",
+    "famous_five",
+    "elephant_half_wound"
+  ],
+  "fh_fx_bird": [
+    "famous_five",
+    "tock",
+    "lark_winder"
+  ],
+  "fh_fx_bird2": [
+    "lark_winder",
+    "tock",
+    "lark_wakes"
+  ],
+  "e_win_bird": [
+    "lark_wakes",
+    "fettle_named",
+    "lark_sings_for_children"
+  ],
+  "fh_fx_lion": [
+    "famous_five",
+    "tock",
+    "lion_keyhole"
+  ],
+  "fh_fx_lion2": [
+    "lion_keyhole",
+    "tock",
+    "lion_wakes"
+  ],
+  "e_win_lion": [
+    "lion_wakes",
+    "lion_roars"
+  ],
+  "fh_fx_whale": [
+    "famous_five",
+    "tock",
+    "whale_winding_place"
+  ],
+  "fh_fx_whale2": [
+    "whale_winding_place",
+    "tock",
+    "whale_wakes"
+  ],
+  "e_win_whale": [
+    "whale_wakes",
+    "whale_calls"
+  ],
+  "fh_fx_fly": [
+    "famous_five",
+    "butterfly_winder",
+    "tock",
+    "winder_on_stand"
+  ],
+  "fh_fx_fly2": [
+    "winder_on_stand",
+    "tock",
+    "butterfly_wakes"
+  ],
+  "e_win_fly": [
+    "butterfly_wakes",
+    "butterflies_fly"
+  ],
+  "fh_fx_eleph": [
+    "famous_five",
+    "tock",
+    "elephant_half_wound"
+  ],
+  "fh_fx_eleph2": [
+    "elephant_half_wound",
+    "tock",
+    "elephant_made_whole"
+  ],
+  "e_win_eleph": [
+    "elephant_made_whole",
+    "elephant_lurched_at_nia",
+    "elephant_gives_rides"
+  ],
+  "fh_sec1": [
+    "letter_hinted_secret",
+    "fettle_named",
+    "fettle_has_secret",
+    "workshop_three_secrets",
+    "nia_in_workshop_for_secret",
+    "second_mouse"
+  ],
+  "fh_sec_j1": [
+    "workshop_three_secrets",
+    "tock",
+    "candle_low",
+    "fettle_named",
+    "nia_read_journal"
+  ],
+  "fh_sec_j2": [
+    "nia_read_journal",
+    "fettle_named",
+    "fettle_built_alone"
+  ],
+  "fh_sec_j3": [
+    "fettle_built_alone",
+    "fettle_named",
+    "fettle_wish_child"
+  ],
+  "e_win_journal": [
+    "fettle_wish_child",
+    "fettle_built_alone",
+    "fettle_named",
+    "nia_promises_return"
+  ],
+  "fh_sec_m1": [
+    "tock",
+    "second_mouse"
+  ],
+  "fh_sec_m2": [
+    "second_mouse",
+    "candle_low",
+    "fettle_named",
+    "mouse_nest"
+  ],
+  "e_win_mouse": [
+    "mouse_nest",
+    "tock",
+    "fettle_named",
+    "mice_wake"
+  ],
+  "e_neu_mouse": [
+    "second_mouse",
+    "mouse_not_caught"
+  ],
+  "fh_sec_c1": [
+    "workshop_three_secrets",
+    "master_ring_tiny_keys",
+    "fettle_named"
+  ],
+  "fh_sec_c2": [
+    "master_ring_tiny_keys",
+    "candle_low",
+    "cabinet_opened"
+  ],
+  "fh_sec_c3": [
+    "cabinet_opened",
+    "fettle_named",
+    "brass_rabbit"
+  ],
+  "e_win_cabinet": [
+    "brass_rabbit",
+    "fettle_named",
+    "rabbit_hops"
+  ],
+  "e_set_cabinet": [
+    "workshop_three_secrets",
+    "fettle_named",
+    "cabinet_jammed",
+    "fettle_expected_morning"
+  ],
+  "fh_dawn1": [],
+  "fh_dawn_s1": [
+    "tock",
+    "nia_lets_them_sleep"
+  ],
+  "e_neu_dawn": [
+    "nia_lets_them_sleep",
+    "mainspring_snapped",
+    "hidden_workshop",
+    "spring_not_fixed"
+  ],
+  "fh_dawn_o1": [
+    "nia_has_master_key",
+    "tock"
+  ],
+  "fh_dawn_o2": [
+    "nia_has_master_key",
+    "tock",
+    "one_wound_partly"
+  ],
+  "fh_dawn_o3": [
+    "one_wound_partly",
+    "tock",
+    "one_wakes_for_dawn"
+  ],
+  "e_win_one": [
+    "one_wakes_for_dawn",
+    "fettle_named"
+  ],
+  "fh_dawn_w1": [
+    "waits_at_front_door"
+  ],
+  "fh_dawn_w2": [
+    "fettle_left_drawings",
+    "spare_spring_at_spring_room",
+    "tock",
+    "fettle_named",
+    "note_for_keepers"
+  ],
+  "fh_dawn_w3": [
+    "note_for_keepers",
+    "nia_has_master_key",
+    "tock",
+    "key_propped_by_note"
+  ],
+  "e_win_note": [
+    "note_for_keepers",
+    "key_propped_by_note",
+    "keepers_mend_by_note"
+  ],
+  "e_neu_caretaker": [
+    "waits_at_front_door",
+    "mainspring_snapped",
+    "hidden_workshop",
+    "second_mouse",
+    "nia_read_journal",
+    "older_keeper",
+    "spring_not_fixed"
+  ],
+  "e_set_dawn": [
+    "waits_at_front_door",
+    "cleaner_locks_gate",
+    "spring_not_fixed"
+  ]
+}

@@ -1,0 +1,3440 @@
+{
+  "plan_version": "0.1",
+  "book": {
+    "slug": "the-clockwork-menagerie",
+    "storybook_id": "sk_clockwork_menagerie",
+    "storybook_version": 1,
+    "title": "The Clockwork Menagerie"
+  },
+  "request": {
+    "text": null,
+    "band": "8-11",
+    "length": "long",
+    "style": "prose",
+    "tone": "wonder and gentle suspense; peril moderate, scariness mild, violence none",
+    "note": "plan extracted blind by reading the book; no request text available"
+  },
+  "pitch": {
+    "hero": "Nia, a girl locked overnight in a museum of wound-down clockwork animals, with her wind-up mouse Tock",
+    "want": "to find what could wake the sleeping clockwork menagerie before her candle and the night run out",
+    "obstacle": "a snapped mainspring, an absent keeper, rickety heights, a half-wound elephant and stiff old mechanisms",
+    "stake": "a silent museum at dawn for the waiting children; rash choices leave her stuck until morning",
+    "ending_kind": "branch and bottleneck: four wings, the rotunda key, the spring-room, then 27 endings of mends, wakings and setbacks"
+  },
+  "cast": {
+    "nia": {
+      "name": "Nia",
+      "role": "protagonist",
+      "want": "to explore the museum and wake its clockwork animals",
+      "voice": "third person past; brave, careful, patient, tender toward the creatures",
+      "knows": [
+        "nia_locked_in",
+        "candle_low"
+      ]
+    },
+    "tock": {
+      "name": "Tock",
+      "role": "companion, Nia's tiny wind-up mouse",
+      "want": "to lead Nia on, usually running ahead",
+      "voice": "no speech; ticking, squeaks, nudges and scampering",
+      "knows": []
+    },
+    "fettle": {
+      "name": "Keeper Fettle",
+      "role": "offstage caretaker who built the menagerie",
+      "want": "for a caring child to keep his life's work alive",
+      "voice": "speaks only through his letter, notes, card and journal",
+      "knows": [
+        "mainspring_snapped",
+        "fettle_left_drawings",
+        "fettle_built_alone"
+      ]
+    },
+    "second_mouse": {
+      "name": "the little clockwork mouse",
+      "role": "guide to Fettle's hidden mouse nest (secret route)",
+      "want": "to lead Nia somewhere",
+      "voice": "no speech; darting and looking back",
+      "knows": [
+        "mouse_nest"
+      ]
+    },
+    "older_keeper": {
+      "name": "the older keeper",
+      "role": "first keeper at dawn (one ending)",
+      "want": "to hear Nia's story and see her home",
+      "voice": "kind; thanks Nia warmly",
+      "knows": []
+    },
+    "cleaner": {
+      "name": "the early cleaner",
+      "role": "morning cleaner who locks Nia in (one ending)",
+      "want": "to sweep before the crowds",
+      "voice": "hums to himself; unaware of Nia",
+      "knows": []
+    }
+  },
+  "truth": {
+    "question": "Why has the clockwork menagerie fallen silent, and what could wake it?",
+    "statement": "The menagerie sleeps because the enormous mainspring that drives every animal has snapped. The caretaker, Keeper Fettle, was taken poorly and could not come, so he left drawings of how to mend it in his hidden workshop, where a spare mainspring and the special changing tool are kept. The master key that can wind the whole menagerie hangs by the great clock in the central rotunda, but it is useless until the spring is changed.",
+    "facts": [
+      "mainspring_snapped",
+      "fettle_named",
+      "fettle_ill",
+      "fettle_left_drawings",
+      "hidden_workshop",
+      "spare_spring_available",
+      "key_can_wake_menagerie",
+      "rotunda"
+    ]
+  },
+  "facts": {
+    "nia_locked_in": {
+      "text": "Nia missed the last bus home and is locked inside the Windvale Museum of Clockwork Animals until morning."
+    },
+    "animals_wound_down": {
+      "text": "Hundreds of the museum's clockwork creatures have wound down and stand still and silent."
+    },
+    "tock": {
+      "text": "Tock is Nia's tiny wind-up mouse, who rides on her shoulder ticking."
+    },
+    "four_wings": {
+      "text": "Four wings open off the entrance hall: the brass aviary, the tin savanna, the copper deep-sea hall and the crystal insect conservatory."
+    },
+    "candle_low": {
+      "text": "Nia carries a candle stub that is already burning low, so she can explore only one wing."
+    },
+    "aviary_frozen_birds": {
+      "text": "The brass aviary holds hundreds of frozen clockwork birds, beaks open on stopped songs."
+    },
+    "aviary_two_paths": {
+      "text": "In the aviary a broad floor of perch-trees leads among the big birds, and a thin old spiral stair climbs to the high nests."
+    },
+    "stair_rung_cracks": {
+      "text": "The rusted spiral stair sways, and a rung cracks under Nia halfway up."
+    },
+    "nia_stranded_nests": {
+      "text": "Nia is stranded on a ledge in the high nests after the stair peels away, unhurt, waiting for the morning staff and a ladder."
+    },
+    "nia_climbed_down_stair": {
+      "text": "Nia held the rail and climbed safely back down the shaking stair."
+    },
+    "nia_gave_up_stair": {
+      "text": "Nia decides the high nests are not worth a fall and turns to the perch-trees instead."
+    },
+    "aviary_alcove_and_roost": {
+      "text": "Among the perch-trees lie the songbird alcove of tiny larks and wrens and the raptor roost with a brass eagle and a bronze owl."
+    },
+    "songbirds_keys_wound_down": {
+      "text": "The songbird alcove's tiny birds each have a key in the back, every one wound down."
+    },
+    "music_box": {
+      "text": "A dusty wall music-box once played every bird in the alcove at once, but has no power to turn."
+    },
+    "master_key_card": {
+      "text": "A keeper's card says one master key can wake the whole museum at once, from the central rotunda at the building's heart."
+    },
+    "nia_seeks_key": {
+      "text": "Nia is searching for a key that could wake the museum."
+    },
+    "nia_took_clue": {
+      "text": "Nia has taken the clue card and tucked it in her pocket."
+    },
+    "keeper_walkway": {
+      "text": "A narrow keeper walkway behind the glass cases leads toward the middle of the building."
+    },
+    "clock_door_picture": {
+      "text": "A low service door is painted with the picture of a great clock."
+    },
+    "museum_hum": {
+      "text": "A deep, warm, steady hum from the heart of the museum can be felt through doors and floors near the middle."
+    },
+    "raptor_roost": {
+      "text": "In the raptor roost a brass eagle spreads huge wings and a bronze owl stares with unblinking glass eyes."
+    },
+    "feather_decoy": {
+      "text": "A key-shaped brass feather under the eagle is only a decoy with no teeth; it is not a real key."
+    },
+    "owl_wing_signpost": {
+      "text": "The bronze owl holds one wing straight out, set by a keeper like a signpost toward a low archway."
+    },
+    "keeper_stair_down": {
+      "text": "Through the owl's archway a worn keeper stair drops down toward a glowing doorway."
+    },
+    "savanna_view": {
+      "text": "The tin savanna is a painted plain with a lion caught mid-roar, ceiling-tall giraffes and a huge distant elephant."
+    },
+    "savanna_two_paths": {
+      "text": "On the savanna Nia can cross the open floor toward the big animals or edge along a narrow walkway by the painted horizon wall."
+    },
+    "elephant_half_wound": {
+      "text": "The great tin elephant is half-wound: leftover wind makes it lurch and groan blindly now and then, dangerous only by its size."
+    },
+    "elephant_lurched_at_nia": {
+      "text": "In the dark the half-wound elephant lurched and frightened Nia."
+    },
+    "trunk_blocks_ledge": {
+      "text": "On the horizon ledge the waking elephant's trunk swings across the path ahead."
+    },
+    "nia_cornered_by_elephant": {
+      "text": "The blind elephant has backed Nia gently into a corner; she is safe but stuck until the keepers wind it down in the morning."
+    },
+    "nia_waited_in_alcove": {
+      "text": "Nia pressed into a wall alcove and waited until the elephant settled, then slipped down to the floor."
+    },
+    "nia_gave_up_ledge": {
+      "text": "Nia decides the horizon ledge is not worth the risk and takes the open floor."
+    },
+    "watering_hole_and_grove": {
+      "text": "On the open floor an elephant herd stands at a tin watering hole and a giraffe grove climbs into the roof shadows."
+    },
+    "elephant_stirred_close": {
+      "text": "Up close a last breath of wind stirs the elephant; its trunk twitches and a foot scrapes forward."
+    },
+    "nia_waited_behind_baobab": {
+      "text": "Nia hid behind a tin baobab and waited until the elephant wound down and stood still."
+    },
+    "oil_drip_trail": {
+      "text": "A trail of old oil-drips, a keeper's daily path, runs across the plain toward the museum's heart."
+    },
+    "giraffe_grove": {
+      "text": "The giraffe grove is a forest of spotted tin necks with gentle glass eyes high above."
+    },
+    "shelf_ring_pulley": {
+      "text": "A keyring-shaped metal ring sits on a high shelf by a giraffe, with a rope pulley to lower it."
+    },
+    "ring_no_keys": {
+      "text": "The ring holds no keys at all, only spare oil-cans."
+    },
+    "painted_arrow": {
+      "text": "A painted keeper arrow behind the shelf points onward through the grove."
+    },
+    "arrows_to_keeper_door": {
+      "text": "A line of keeper arrows leads to a keeper door in the far wall."
+    },
+    "nia_feels_doors_habit": {
+      "text": "Nia has learned to press her hand flat to a door to feel what lies behind it."
+    },
+    "deep_sea_view": {
+      "text": "The copper deep-sea hall has copper whales on wires, a coiled octopus and tanks of copper fish."
+    },
+    "deep_sea_two_paths": {
+      "text": "In the deep-sea hall Nia can walk the low floor between tanks or climb a whale-rib catwalk high over the hall."
+    },
+    "catwalk_gap": {
+      "text": "A loose rib swings away on the catwalk, leaving a gap Nia cannot see across in the dark."
+    },
+    "nia_stuck_on_rib": {
+      "text": "Nia froze on a swinging rib above the safety nets and stayed stuck until a keeper helped her down at opening time."
+    },
+    "nia_backed_off_catwalk": {
+      "text": "Nia did not jump; she backed rib by rib along the rope to the start of the catwalk."
+    },
+    "nia_gave_up_catwalk": {
+      "text": "Nia decides a leap she cannot see the end of is not worth it and goes to the floor tanks."
+    },
+    "coral_and_trench": {
+      "text": "Two tanks stand out: the bright coral cabinet and the near-black deep trench diorama."
+    },
+    "humming_valve": {
+      "text": "A small brass valve on the coral cabinet hums faintly and is warm."
+    },
+    "nia_has_map": {
+      "text": "Nia has found a keeper's map of the halls of the museum."
+    },
+    "key_tag_rotunda": {
+      "text": "A key-shaped tag on the map carries a note pointing to the rotunda at the museum's heart, hinting something important waits there."
+    },
+    "rotunda": {
+      "text": "A central rotunda, a great round hall, lies at the very heart of the museum."
+    },
+    "nia_dislikes_dark": {
+      "text": "Nia does not much like the dark."
+    },
+    "anglerfish_hatch": {
+      "text": "A still-glowing clockwork anglerfish lights a small hatch low in the trench wall."
+    },
+    "hatch_clock_sign": {
+      "text": "Above the hatch a keeper sign shows an arrow and the shape of a clock."
+    },
+    "clock_mark_means_heart": {
+      "text": "A painted clock mark means the heart of the museum, the place with the great clock."
+    },
+    "nia_seeking_heart": {
+      "text": "Nia has been trying all night to reach the heart of the museum."
+    },
+    "copper_crawl_passage": {
+      "text": "Behind the hatch a warm, humming copper passage curves inward toward the center."
+    },
+    "porthole_door": {
+      "text": "A round copper porthole door at the end of the mapped way is warm and hums."
+    },
+    "conservatory_view": {
+      "text": "The crystal conservatory has clockwork butterflies and beetles on glass ferns under a dome painted with silver stars."
+    },
+    "conservatory_two_paths": {
+      "text": "In the conservatory Nia can walk the low fern beds or climb an iron mezzanine gallery around the glass walls."
+    },
+    "loose_glass_panel": {
+      "text": "On the gallery a tall loose glass panel grinds and tips toward Nia over the drop."
+    },
+    "nia_shut_in_gallery": {
+      "text": "A glass door swung shut and boxed Nia into a gallery dead end; she is safe but waits for the keepers."
+    },
+    "nia_stepped_back_glass": {
+      "text": "Nia stepped clear of the loose glass and backed along the gallery to the stairs."
+    },
+    "nia_gave_up_gallery": {
+      "text": "Nia decides the gallery's loose glass is too fragile to trust and goes to the fern beds."
+    },
+    "vault_and_beetles": {
+      "text": "In the fern beds lie the butterfly vault and the beetle corner around an old keeper bench."
+    },
+    "butterflies_folded": {
+      "text": "The vault's foil-winged clockwork butterflies hang folded and still."
+    },
+    "butterfly_winder": {
+      "text": "A tiny winder smaller than a matchstick is made for the butterflies' poppy-seed keyholes, which no ordinary key fits."
+    },
+    "winder_in_pocket": {
+      "text": "Nia tucked the tiny butterfly winder into her pocket.",
+      "contradicts": [
+        "winder_on_stand"
+      ]
+    },
+    "painted_floor_path": {
+      "text": "A keeper's painted path winds from the butterfly vault toward the middle of the museum."
+    },
+    "mirrored_door": {
+      "text": "A warm mirrored door edged with brass opens toward the middle of the museum."
+    },
+    "beetle_bench_tools": {
+      "text": "The keeper bench in the beetle corner is scattered with tiny tools for tending the beetles."
+    },
+    "beetle_map_route": {
+      "text": "The map shows a short way to the rotunda, marked along the route by a tiny inked beetle."
+    },
+    "tock_runs_ahead": {
+      "text": "At the rotunda entrance Tock darts ahead of Nia and vanishes into the room first."
+    },
+    "great_clock": {
+      "text": "The museum has a great clock at its center, whose hum or beat can be felt near the heart."
+    },
+    "dawn_in_rotunda": {
+      "text": "Grey first light of dawn falls through the rotunda's high skylight onto a worn round floor."
+    },
+    "clock_hands_stopped": {
+      "text": "The great museum clock stands in the center of the rotunda with its hands stopped, ringed by hooks and shelves.",
+      "contradicts": [
+        "great_clock_ticking"
+      ]
+    },
+    "great_clock_ticking": {
+      "text": "The great clock is ticking or beating behind the door."
+    },
+    "key_can_wake_menagerie": {
+      "text": "A key exists that can wake the whole menagerie."
+    },
+    "nia_has_master_key": {
+      "text": "Nia lifted the caretaker's master key down from its hook by the clock and carries it."
+    },
+    "single_key_on_hook": {
+      "text": "The master key hung alone: a single key on a brass hook.",
+      "contradicts": [
+        "master_ring_tiny_keys"
+      ]
+    },
+    "caretaker_exists": {
+      "text": "The museum has a caretaker who keeps the clockwork creatures wound."
+    },
+    "three_ways_from_rotunda": {
+      "text": "From the rotunda three ways lead on: the spring-room doors, the gallery of keeper portraits and the narrow back stairs."
+    },
+    "machine_room": {
+      "text": "Beyond lies the vast, silent machine room of wheels, shafts and gears that drives the whole museum."
+    },
+    "great_drum": {
+      "text": "In the middle of the machine looms a huge silent drum."
+    },
+    "keeper_portraits": {
+      "text": "A gallery of portraits shows old caretakers holding clockwork creatures."
+    },
+    "fettle_named": {
+      "text": "The museum's caretaker is Keeper Fettle, tender of the works, a kind old man with oil-stained hands."
+    },
+    "rusted_turnstile": {
+      "text": "At the foot of the back stairs a rusted keeper turnstile bars the way, with a narrow gap beside it."
+    },
+    "nia_penned_stairwell": {
+      "text": "The turnstile latched behind Nia and penned her in the stairwell until the morning staff let her out."
+    },
+    "nia_squeezed_through": {
+      "text": "Nia squeezed carefully through the gap beside the turnstile into a low passage."
+    },
+    "mainspring_snapped": {
+      "text": "The enormous mainspring that drives every animal has snapped clean across, so nothing can be wound, not even with the master key."
+    },
+    "spring_room_three_clues": {
+      "text": "In the spring-room are a keeper toolbox, a wall of repair manuals and a patch of floor where Tock keeps scratching."
+    },
+    "clamp_tool": {
+      "text": "The toolbox holds a heavy, oddly shaped tool with a great clamp at one end."
+    },
+    "instruction_card": {
+      "text": "A keeper's card shows how a broken mainspring is clamped and changed for a new one using the clamp tool."
+    },
+    "nia_has_clamp_tool": {
+      "text": "Nia is carrying the special mainspring tool."
+    },
+    "sign_to_low_door": {
+      "text": "A painted keeper arrow points to a low door hidden behind the great machine."
+    },
+    "mending_book": {
+      "text": "A manual on the wall is titled Mending the Great Spring."
+    },
+    "book_shows_workshop": {
+      "text": "The mending book pictures a hidden workshop where a keeper keeps spare springs and tools."
+    },
+    "book_names_door": {
+      "text": "The book names a hidden door behind the great machine and maps the way to it."
+    },
+    "panel_under_gear": {
+      "text": "A loose floor panel opens on a crawlspace under a heavy gear held by an old wooden wedge."
+    },
+    "gear_buried_crawlspace": {
+      "text": "The gear fell, blocked the crawlspace and pinned Nia's coat; she slipped free unhurt but must wait for the keepers."
+    },
+    "crawlspace_open": {
+      "text": "Nia lifted the panel gently and the crawlspace behind the machine lay open."
+    },
+    "hidden_door": {
+      "text": "A small hidden door stands at the end of the crawlspace."
+    },
+    "hidden_workshop": {
+      "text": "The low door opens on the caretaker's hidden workshop, with spare springs, oil-cans, clamps and the special tool for changing a mainspring."
+    },
+    "fettle_ill": {
+      "text": "Keeper Fettle's letter says he was taken poorly and could not come."
+    },
+    "fettle_left_drawings": {
+      "text": "Fettle left careful drawings of how to mend the great spring for whoever found them."
+    },
+    "nia_knows_mend": {
+      "text": "Nia knows how to mend the great spring."
+    },
+    "spare_spring_available": {
+      "text": "A spare mainspring hangs coiled in the workshop."
+    },
+    "repair_manual_open": {
+      "text": "A repair manual lies open on the workshop bench at the page for changing the great spring."
+    },
+    "mend_steps": {
+      "text": "The steps are: clamp the broken ends, ease them apart, fit the fresh spring, and only then wind."
+    },
+    "spare_spring_heavy": {
+      "text": "The spare mainspring is far heavier than it looks."
+    },
+    "keeper_cart": {
+      "text": "Nia loaded the spare spring and the changing tool onto a little keeper cart."
+    },
+    "shortcut_lever": {
+      "text": "Fettle's letter mentions a rusted shortcut lever that sends a loaded cart speeding back to the spring-room."
+    },
+    "examined_before_letter": {
+      "text": "Nia looked at the other workshop things before reading Fettle's letter."
+    },
+    "spring_lost_behind_shutter": {
+      "text": "The runaway cart carried the spare spring behind a locked shutter, out of Nia's reach until morning."
+    },
+    "nia_carried_spring": {
+      "text": "Nia carried the heavy spare spring in her arms the long safe way."
+    },
+    "spare_spring_at_spring_room": {
+      "text": "The spare mainspring is at Nia's feet in the great spring-room."
+    },
+    "dawn_coming": {
+      "text": "Dawn is turning the sky grey; soon the doors will open and children will come hoping to see the animals move."
+    },
+    "nia_loves_a_creature": {
+      "text": "Nia has come to love one particular creature in the museum."
+    },
+    "fettle_has_secret": {
+      "text": "Keeper Fettle has a deep secret."
+    },
+    "letter_hinted_secret": {
+      "text": "Fettle's letter hinted at a deeper secret hidden in the museum."
+    },
+    "nia_spotted_trick": {
+      "text": "Nia has spotted a clever trick in Fettle's notes meant to make changing the spring easier."
+    },
+    "careful_fitting": {
+      "text": "Working slowly by the manual, Nia clamped, eased apart and fitted the new spring, with Tock passing tools."
+    },
+    "spring_mended": {
+      "text": "The new mainspring is seated true in the great works.",
+      "contradicts": [
+        "spring_not_fixed",
+        "cannot_mend_in_time"
+      ]
+    },
+    "spring_half_seated": {
+      "text": "Working fast, Nia forced the spring in but one end stands proud of the shaft."
+    },
+    "spring_slipped": {
+      "text": "The half-seated spring slipped loose with a twang, and the mend must be done again."
+    },
+    "spring_not_fixed": {
+      "text": "The great spring is not mended, and the animals sleep on."
+    },
+    "helper_gear": {
+      "text": "Fettle's notes show a small helper gear that takes half the strain; Nia fitted it and the spring slid home."
+    },
+    "menagerie_stirs": {
+      "text": "Turning the master key starts a waking hum that spreads through the museum."
+    },
+    "all_awake_at_dawn": {
+      "text": "The whole menagerie wakes at once and moves for the children when the doors open."
+    },
+    "fettle_weeps_glad": {
+      "text": "Keeper Fettle weeps with gladness that a kind stranger saved his life's work."
+    },
+    "set_for_fettle": {
+      "text": "Nia wound the spring only part way so the animals wake when Fettle turns the key himself, and left him a note."
+    },
+    "most_awake": {
+      "text": "Most animals wake but a few small ones in distant halls sleep on, for the mend is not quite perfect."
+    },
+    "keepers_praise_gear": {
+      "text": "The keepers marvel at the helper gear and say Nia has the makings of a fine keeper."
+    },
+    "cannot_mend_in_time": {
+      "text": "Nia cannot mend the whole great spring in the time left."
+    },
+    "famous_five": {
+      "text": "Each hall has a famous creature: the brass lark, the tin lion, the copper whale and the crystal butterfly, plus the great tin elephant."
+    },
+    "lark_winder": {
+      "text": "The lark's keyhole is too small for the master key, but a fine little winder for tiny birds hangs on a keeper stand by the songbird cases."
+    },
+    "lion_keyhole": {
+      "text": "The tin lion's keyhole is in its shoulder and takes the master key."
+    },
+    "whale_winding_place": {
+      "text": "The biggest copper whale has a winding-place low on its side that takes the master key."
+    },
+    "winder_on_stand": {
+      "text": "The tiny butterfly winder lies on a little stand among the ferns.",
+      "contradicts": [
+        "winder_in_pocket"
+      ]
+    },
+    "lark_wakes": {
+      "text": "The brass lark wakes, ruffles and opens its beak to sing."
+    },
+    "lion_wakes": {
+      "text": "The tin lion shivers awake and lifts its heavy head."
+    },
+    "whale_wakes": {
+      "text": "The copper whale swims on its wires and begins a low humming song."
+    },
+    "butterfly_wakes": {
+      "text": "The crystal butterfly unfolds its foil wings and scatters colored light."
+    },
+    "elephant_made_whole": {
+      "text": "Wound full, the elephant stops lurching and becomes smooth, calm and gentle."
+    },
+    "lark_sings_for_children": {
+      "text": "The lark sings for the dawn crowd, and Fettle says one waking animal makes a museum full of hope."
+    },
+    "lion_roars": {
+      "text": "The tin lion roars through every hall and the morning children cheer."
+    },
+    "whale_calls": {
+      "text": "The copper whale's call rolls through the blue hall and the children gather beneath it in silence."
+    },
+    "butterflies_fly": {
+      "text": "The butterfly flies, Nia winds a few more, and a cloud of color drifts through the conservatory."
+    },
+    "elephant_gives_rides": {
+      "text": "The gentle elephant carries giggling children in a slow circle."
+    },
+    "workshop_three_secrets": {
+      "text": "In the workshop are Fettle's private journal, a darting little mouse and a single locked cabinet."
+    },
+    "nia_in_workshop_for_secret": {
+      "text": "Nia is in the workshop when she looks for Fettle's secret."
+    },
+    "second_mouse": {
+      "text": "A second little clockwork mouse, near twin to Tock, keeps darting ahead and looking back as if to lead Nia."
+    },
+    "nia_read_journal": {
+      "text": "Nia has read Keeper Fettle's journal."
+    },
+    "fettle_built_alone": {
+      "text": "Fettle built the whole menagerie himself over a long, lonely life, with no family; the creatures were his company."
+    },
+    "fettle_wish_child": {
+      "text": "Fettle's last entry wishes for a child who would keep the menagerie alive after he is gone."
+    },
+    "nia_promises_return": {
+      "text": "Nia leaves Fettle a note promising to come back and keep the animals remembered."
+    },
+    "mouse_nest": {
+      "text": "Behind a tiny door sleeps a nest of clockwork mice, Fettle's hidden family of helpers."
+    },
+    "mice_wake": {
+      "text": "Nia winds the hidden mice awake and Tock gains a family of his own."
+    },
+    "mouse_not_caught": {
+      "text": "The little mouse would not be caught; Nia never learned where it wanted to lead her."
+    },
+    "master_ring_tiny_keys": {
+      "text": "The master key hangs on a ring with a whole set of tiny keys.",
+      "contradicts": [
+        "single_key_on_hook"
+      ]
+    },
+    "cabinet_opened": {
+      "text": "Trying the tiny keys one by one, Nia opened the locked cabinet without forcing it."
+    },
+    "brass_rabbit": {
+      "text": "Inside the cabinet stands a small brass rabbit, the first clockwork animal Fettle ever made."
+    },
+    "rabbit_hops": {
+      "text": "Nia winds the brass rabbit and it hops again."
+    },
+    "cabinet_jammed": {
+      "text": "Nia forced the lock, it snapped, and the cabinet jammed shut; she will not see its secret tonight."
+    },
+    "fettle_expected_morning": {
+      "text": "Nia expects to tell Keeper Fettle in the morning."
+    },
+    "nia_lets_them_sleep": {
+      "text": "Nia keeps the museum safe and lets the animals sleep while dawn comes."
+    },
+    "one_wound_partly": {
+      "text": "Nia wound one favourite creature only a little, leaving the rest of the wind for the keepers."
+    },
+    "one_wakes_for_dawn": {
+      "text": "One favourite creature wakes gently while all the others sleep on."
+    },
+    "waits_at_front_door": {
+      "text": "Nia waits by the great front door as the light grows."
+    },
+    "older_keeper": {
+      "text": "The first keeper at dawn is an older woman with kind eyes, who thanks Nia and promises to see her home."
+    },
+    "note_for_keepers": {
+      "text": "Nia writes out every step of the mend and pins the note by the door."
+    },
+    "key_propped_by_note": {
+      "text": "Nia props the master key beside her note."
+    },
+    "keepers_mend_by_note": {
+      "text": "Following Nia's note the morning keepers mend and wind the menagerie by opening time."
+    },
+    "cleaner_locks_gate": {
+      "text": "The early cleaner, not knowing Nia is there, locks the inner gate and leaves her shut in a while longer."
+    }
+  },
+  "nodes": {
+    "n_open": {
+      "function": "open",
+      "event": "Nia, locked in the clockwork museum overnight with her wind-up mouse Tock, sets out into the hall.",
+      "requires": [],
+      "establishes": [
+        "nia_locked_in",
+        "animals_wound_down",
+        "tock"
+      ]
+    },
+    "n_start": {
+      "function": "decision",
+      "event": "Four wings open off the entrance hall and her low candle lets her explore only one.",
+      "requires": [],
+      "establishes": [
+        "four_wings",
+        "candle_low"
+      ]
+    },
+    "av_x0": {
+      "function": "continue",
+      "event": "Nia enters the hushed brass aviary of frozen birds.",
+      "requires": [
+        "four_wings",
+        "tock",
+        "candle_low"
+      ],
+      "establishes": [
+        "aviary_frozen_birds"
+      ]
+    },
+    "sv_x0": {
+      "function": "continue",
+      "event": "Nia steps onto the painted tin savanna with its lion, giraffes and distant elephant.",
+      "requires": [
+        "four_wings",
+        "tock"
+      ],
+      "establishes": [
+        "savanna_view"
+      ]
+    },
+    "ds_x0": {
+      "function": "continue",
+      "event": "Nia enters the cool blue copper deep-sea hall of whales, octopus and fish tanks.",
+      "requires": [
+        "four_wings",
+        "tock"
+      ],
+      "establishes": [
+        "deep_sea_view"
+      ]
+    },
+    "cg_x0": {
+      "function": "continue",
+      "event": "Nia enters the glittering crystal conservatory under its starry dome.",
+      "requires": [
+        "four_wings",
+        "tock"
+      ],
+      "establishes": [
+        "conservatory_view"
+      ]
+    },
+    "av_x1": {
+      "function": "decision",
+      "event": "The aviary splits between the safe perch-tree floor and a thin spiral stair to the nests.",
+      "requires": [
+        "tock"
+      ],
+      "establishes": [
+        "aviary_two_paths"
+      ]
+    },
+    "sv_x1": {
+      "function": "decision",
+      "event": "The savanna offers the open floor or a narrow edge walkway by the horizon wall.",
+      "requires": [
+        "tock"
+      ],
+      "establishes": [
+        "savanna_two_paths"
+      ]
+    },
+    "ds_x1": {
+      "function": "decision",
+      "event": "The deep-sea hall offers the low tank floor or a high whale-rib catwalk.",
+      "requires": [
+        "tock"
+      ],
+      "establishes": [
+        "deep_sea_two_paths"
+      ]
+    },
+    "cg_x1": {
+      "function": "decision",
+      "event": "The conservatory offers the low fern beds or a high mezzanine gallery.",
+      "requires": [
+        "tock"
+      ],
+      "establishes": [
+        "conservatory_two_paths"
+      ]
+    },
+    "av_deep": {
+      "function": "decision",
+      "event": "Among the perch-trees Nia chooses between the songbird alcove and the raptor roost.",
+      "requires": [
+        "tock"
+      ],
+      "establishes": [
+        "aviary_alcove_and_roost"
+      ]
+    },
+    "av_risk": {
+      "function": "decision",
+      "event": "Halfway up the spiral stair a rung cracks and Nia must go back or go on.",
+      "requires": [
+        "tock"
+      ],
+      "establishes": [
+        "stair_rung_cracks"
+      ]
+    },
+    "sv_deep": {
+      "function": "decision",
+      "event": "On the open floor Nia chooses between the elephant herd and the giraffe grove.",
+      "requires": [
+        "tock"
+      ],
+      "establishes": [
+        "watering_hole_and_grove"
+      ]
+    },
+    "sv_risk": {
+      "function": "decision",
+      "event": "On the narrow ledge the half-wound elephant swings its trunk across Nia's path.",
+      "requires": [],
+      "establishes": [
+        "elephant_half_wound",
+        "trunk_blocks_ledge",
+        "elephant_lurched_at_nia"
+      ]
+    },
+    "ds_deep": {
+      "function": "decision",
+      "event": "Among the floor tanks Nia chooses between the coral cabinet and the deep trench.",
+      "requires": [
+        "tock"
+      ],
+      "establishes": [
+        "coral_and_trench"
+      ]
+    },
+    "ds_risk": {
+      "function": "decision",
+      "event": "A rib swings loose on the catwalk, leaving a gap Nia cannot see across.",
+      "requires": [],
+      "establishes": [
+        "catwalk_gap"
+      ]
+    },
+    "cg_deep": {
+      "function": "decision",
+      "event": "In the fern beds Nia chooses between the butterfly vault and the beetle corner.",
+      "requires": [
+        "tock"
+      ],
+      "establishes": [
+        "vault_and_beetles"
+      ]
+    },
+    "cg_risk": {
+      "function": "decision",
+      "event": "On the gallery a tall loose glass panel tips toward Nia.",
+      "requires": [],
+      "establishes": [
+        "loose_glass_panel"
+      ]
+    },
+    "av_a1": {
+      "function": "continue",
+      "event": "Nia finds the songbird alcove's tiny birds all wound down.",
+      "requires": [
+        "tock"
+      ],
+      "establishes": [
+        "songbirds_keys_wound_down"
+      ]
+    },
+    "av_b1": {
+      "function": "continue",
+      "event": "Nia moves quietly under the eagle and staring owl of the raptor roost.",
+      "requires": [
+        "tock"
+      ],
+      "establishes": [
+        "raptor_roost"
+      ]
+    },
+    "av_rec": {
+      "function": "continue",
+      "event": "Nia holds the rail until the stair stills and climbs safely back down.",
+      "requires": [
+        "stair_rung_cracks"
+      ],
+      "establishes": [
+        "nia_climbed_down_stair"
+      ]
+    },
+    "e_set_av": {
+      "function": "ending",
+      "event": "Nia climbs on, the stair peels away, and she is stranded on a ledge until the morning staff bring a ladder.",
+      "requires": [
+        "stair_rung_cracks",
+        "tock"
+      ],
+      "establishes": [
+        "nia_stranded_nests"
+      ]
+    },
+    "sv_a1": {
+      "function": "continue",
+      "event": "Up close the great elephant stirs, its trunk twitching and a foot scraping forward.",
+      "requires": [
+        "tock"
+      ],
+      "establishes": [
+        "elephant_stirred_close",
+        "elephant_lurched_at_nia"
+      ]
+    },
+    "sv_b1": {
+      "function": "continue",
+      "event": "Nia walks among the gentle tin giraffes of the grove.",
+      "requires": [
+        "tock",
+        "candle_low"
+      ],
+      "establishes": [
+        "giraffe_grove"
+      ]
+    },
+    "sv_rec": {
+      "function": "continue",
+      "event": "Nia presses into an alcove until the elephant winds down, then slips to the floor.",
+      "requires": [
+        "trunk_blocks_ledge"
+      ],
+      "establishes": [
+        "nia_waited_in_alcove"
+      ]
+    },
+    "e_set_sv": {
+      "function": "ending",
+      "event": "Hurrying past, Nia is backed gently into a corner by the blind elephant to wait for morning.",
+      "requires": [
+        "trunk_blocks_ledge",
+        "tock"
+      ],
+      "establishes": [
+        "nia_cornered_by_elephant",
+        "elephant_lurched_at_nia"
+      ]
+    },
+    "ds_a1": {
+      "function": "continue",
+      "event": "At the coral cabinet Nia feels a warm, humming brass valve.",
+      "requires": [
+        "tock"
+      ],
+      "establishes": [
+        "humming_valve"
+      ]
+    },
+    "ds_b1": {
+      "function": "continue",
+      "event": "In the black trench Nia, who dislikes the dark, follows a faint glow far below.",
+      "requires": [
+        "tock"
+      ],
+      "establishes": [
+        "nia_dislikes_dark"
+      ]
+    },
+    "ds_rec": {
+      "function": "continue",
+      "event": "Nia backs rib by rib along the rope to the start of the catwalk.",
+      "requires": [
+        "catwalk_gap",
+        "tock"
+      ],
+      "establishes": [
+        "nia_backed_off_catwalk"
+      ]
+    },
+    "e_set_ds": {
+      "function": "ending",
+      "event": "Nia freezes mid-leap on a swinging rib and stays stuck until a keeper helps her down at opening time.",
+      "requires": [
+        "catwalk_gap",
+        "tock"
+      ],
+      "establishes": [
+        "nia_stuck_on_rib"
+      ]
+    },
+    "cg_a1": {
+      "function": "continue",
+      "event": "Nia admires the folded foil butterflies in the vault.",
+      "requires": [
+        "tock",
+        "candle_low"
+      ],
+      "establishes": [
+        "butterflies_folded"
+      ]
+    },
+    "cg_b1": {
+      "function": "continue",
+      "event": "Nia finds brass beetles around a keeper bench of tiny tools.",
+      "requires": [
+        "tock"
+      ],
+      "establishes": [
+        "beetle_bench_tools"
+      ]
+    },
+    "cg_rec": {
+      "function": "continue",
+      "event": "Nia steps clear of the leaning glass and backs to the stairs.",
+      "requires": [
+        "loose_glass_panel"
+      ],
+      "establishes": [
+        "nia_stepped_back_glass"
+      ]
+    },
+    "e_set_cg": {
+      "function": "ending",
+      "event": "Squeezing past, Nia is shut into a glass dead end until the keepers open the gallery.",
+      "requires": [
+        "loose_glass_panel",
+        "tock"
+      ],
+      "establishes": [
+        "nia_shut_in_gallery"
+      ]
+    },
+    "av_a2": {
+      "function": "continue",
+      "event": "Tock finds the music-box that once played the whole songbird wall.",
+      "requires": [
+        "tock"
+      ],
+      "establishes": [
+        "music_box"
+      ]
+    },
+    "av_b2": {
+      "function": "continue",
+      "event": "Nia finds a key-shaped feather under the eagle, but it is only a decoy.",
+      "requires": [
+        "nia_seeks_key",
+        "candle_low"
+      ],
+      "establishes": [
+        "feather_decoy"
+      ]
+    },
+    "av_rec2": {
+      "function": "continue",
+      "event": "Nia decides the nests are not worth a fall and heads for the perch-trees.",
+      "requires": [
+        "nia_climbed_down_stair",
+        "tock"
+      ],
+      "establishes": [
+        "nia_gave_up_stair"
+      ]
+    },
+    "sv_a2": {
+      "function": "continue",
+      "event": "Nia understands the elephant is half-wound and must be given a wide berth.",
+      "requires": [
+        "elephant_stirred_close"
+      ],
+      "establishes": [
+        "elephant_half_wound"
+      ]
+    },
+    "sv_b2": {
+      "function": "continue",
+      "event": "Nia spots a keyring-shaped ring on a high shelf and readies the pulley rope.",
+      "requires": [
+        "nia_seeks_key",
+        "candle_low"
+      ],
+      "establishes": [
+        "shelf_ring_pulley"
+      ]
+    },
+    "sv_rec2": {
+      "function": "continue",
+      "event": "Nia gives up the ledge and turns to the open floor.",
+      "requires": [
+        "nia_waited_in_alcove",
+        "tock"
+      ],
+      "establishes": [
+        "nia_gave_up_ledge"
+      ]
+    },
+    "ds_a2": {
+      "function": "continue",
+      "event": "Tock taps the valve, a panel opens, and Nia finds a careful map of the whole museum.",
+      "requires": [
+        "humming_valve",
+        "tock",
+        "candle_low"
+      ],
+      "establishes": [
+        "nia_has_map"
+      ]
+    },
+    "ds_b2": {
+      "function": "continue",
+      "event": "The glow is a still-running anglerfish whose lamp shows a small hatch in the wall.",
+      "requires": [],
+      "establishes": [
+        "anglerfish_hatch"
+      ]
+    },
+    "ds_rec2": {
+      "function": "continue",
+      "event": "Nia gives up the catwalk and goes to the floor tanks.",
+      "requires": [
+        "nia_backed_off_catwalk"
+      ],
+      "establishes": [
+        "nia_gave_up_catwalk"
+      ]
+    },
+    "cg_a2": {
+      "function": "continue",
+      "event": "Tock finds a tiny winder made for the butterflies' seed-small keyholes.",
+      "requires": [
+        "tock"
+      ],
+      "establishes": [
+        "butterfly_winder"
+      ]
+    },
+    "cg_b2": {
+      "function": "continue",
+      "event": "Nia finds a keeper's map of the conservatory and the halls beyond in the bench drawer.",
+      "requires": [
+        "tock"
+      ],
+      "establishes": [
+        "nia_has_map"
+      ]
+    },
+    "cg_rec2": {
+      "function": "continue",
+      "event": "Nia gives up the gallery and goes to the fern beds.",
+      "requires": [
+        "nia_stepped_back_glass",
+        "tock"
+      ],
+      "establishes": [
+        "nia_gave_up_gallery"
+      ]
+    },
+    "av_a3": {
+      "function": "continue",
+      "event": "A brass card behind the music-box tells of a master key in the central rotunda that can wake the whole museum.",
+      "requires": [
+        "candle_low"
+      ],
+      "establishes": [
+        "master_key_card",
+        "rotunda",
+        "key_can_wake_menagerie",
+        "nia_seeks_key"
+      ]
+    },
+    "av_b3": {
+      "function": "continue",
+      "event": "The bronze owl's outstretched wing points like a keeper signpost to a low archway.",
+      "requires": [
+        "tock"
+      ],
+      "establishes": [
+        "owl_wing_signpost"
+      ]
+    },
+    "sv_a3": {
+      "function": "continue",
+      "event": "Nia hides behind a baobab until the elephant winds down.",
+      "requires": [
+        "elephant_half_wound",
+        "tock"
+      ],
+      "establishes": [
+        "nia_waited_behind_baobab"
+      ]
+    },
+    "sv_b3": {
+      "function": "continue",
+      "event": "The ring holds only oil-cans, but a painted arrow points onward.",
+      "requires": [
+        "shelf_ring_pulley"
+      ],
+      "establishes": [
+        "ring_no_keys",
+        "painted_arrow"
+      ]
+    },
+    "ds_a3": {
+      "function": "continue",
+      "event": "A key-shaped tag on the map points to the rotunda at the museum's heart.",
+      "requires": [
+        "nia_has_map",
+        "candle_low"
+      ],
+      "establishes": [
+        "key_tag_rotunda",
+        "rotunda"
+      ]
+    },
+    "ds_b3": {
+      "function": "continue",
+      "event": "A keeper sign above the hatch shows an arrow and the clock mark Nia already knows means the heart.",
+      "requires": [
+        "anglerfish_hatch",
+        "clock_mark_means_heart",
+        "nia_seeking_heart",
+        "great_clock"
+      ],
+      "establishes": [
+        "hatch_clock_sign"
+      ]
+    },
+    "cg_a3": {
+      "function": "continue",
+      "event": "A card tells of a master key that wakes the museum from the rotunda; Nia pockets the winder.",
+      "requires": [
+        "butterfly_winder"
+      ],
+      "establishes": [
+        "master_key_card",
+        "rotunda",
+        "key_can_wake_menagerie",
+        "nia_seeks_key",
+        "winder_in_pocket"
+      ]
+    },
+    "cg_b3": {
+      "function": "continue",
+      "event": "The map shows a short way to the rotunda marked by an inked beetle.",
+      "requires": [
+        "nia_has_map",
+        "candle_low"
+      ],
+      "establishes": [
+        "beetle_map_route",
+        "rotunda"
+      ]
+    },
+    "av_a4": {
+      "function": "continue",
+      "event": "With the clue in her pocket, Nia follows Tock along a hidden keeper walkway toward the middle.",
+      "requires": [
+        "master_key_card",
+        "tock",
+        "candle_low"
+      ],
+      "establishes": [
+        "nia_took_clue",
+        "keeper_walkway"
+      ]
+    },
+    "av_b4": {
+      "function": "continue",
+      "event": "Through the owl's archway a keeper stair leads down toward the hum Nia now knows comes from the center.",
+      "requires": [
+        "owl_wing_signpost",
+        "museum_hum",
+        "tock"
+      ],
+      "establishes": [
+        "keeper_stair_down"
+      ]
+    },
+    "sv_a4": {
+      "function": "continue",
+      "event": "Past the sleeping elephant, Nia follows a keeper trail of oil-drips toward the heart.",
+      "requires": [
+        "nia_waited_behind_baobab",
+        "tock"
+      ],
+      "establishes": [
+        "oil_drip_trail"
+      ]
+    },
+    "sv_b4": {
+      "function": "continue",
+      "event": "Keeper arrows lead to a door where Nia, as she has learned to, feels the hum of the museum's heart.",
+      "requires": [
+        "painted_arrow",
+        "nia_feels_doors_habit",
+        "tock"
+      ],
+      "establishes": [
+        "arrows_to_keeper_door",
+        "museum_hum"
+      ]
+    },
+    "ds_a4": {
+      "function": "continue",
+      "event": "Nia follows the map's corridors inward with Tock ahead.",
+      "requires": [
+        "nia_has_map",
+        "tock",
+        "candle_low"
+      ],
+      "establishes": []
+    },
+    "ds_b4": {
+      "function": "continue",
+      "event": "Nia crawls into a warm copper passage carrying the hum she now knows so well.",
+      "requires": [
+        "anglerfish_hatch",
+        "museum_hum",
+        "tock",
+        "candle_low"
+      ],
+      "establishes": [
+        "copper_crawl_passage"
+      ]
+    },
+    "cg_a4": {
+      "function": "continue",
+      "event": "Nia follows a keeper's painted path from the vault toward the middle.",
+      "requires": [
+        "tock"
+      ],
+      "establishes": [
+        "painted_floor_path"
+      ]
+    },
+    "cg_b4": {
+      "function": "continue",
+      "event": "The mapped way leads to a warm mirrored door humming with the museum's heart.",
+      "requires": [
+        "beetle_map_route",
+        "tock"
+      ],
+      "establishes": [
+        "mirrored_door",
+        "museum_hum"
+      ]
+    },
+    "av_a5": {
+      "function": "continue",
+      "event": "The walkway ends at a door painted with a great clock, humming with the museum's heart.",
+      "requires": [
+        "keeper_walkway",
+        "tock"
+      ],
+      "establishes": [
+        "clock_door_picture",
+        "museum_hum"
+      ]
+    },
+    "sv_a5": {
+      "function": "continue",
+      "event": "The oil trail ends at a warm door; behind it hums what Nia is sure is the great clock.",
+      "requires": [
+        "oil_drip_trail",
+        "great_clock",
+        "tock"
+      ],
+      "establishes": [
+        "museum_hum"
+      ]
+    },
+    "ds_a5": {
+      "function": "continue",
+      "event": "The mapped way ends at a warm porthole door through which the great clock ticks.",
+      "requires": [
+        "nia_has_map",
+        "great_clock",
+        "tock"
+      ],
+      "establishes": [
+        "porthole_door",
+        "museum_hum",
+        "great_clock_ticking"
+      ]
+    },
+    "cg_a5": {
+      "function": "continue",
+      "event": "The painted path ends at a warm mirrored door where Nia feels the great clock beating.",
+      "requires": [
+        "painted_floor_path",
+        "great_clock",
+        "tock",
+        "candle_low"
+      ],
+      "establishes": [
+        "mirrored_door",
+        "museum_hum",
+        "great_clock_ticking"
+      ]
+    },
+    "av_conv": {
+      "function": "continue",
+      "event": "Both aviary ways reach the rotunda door, where the great clock hums and Tock darts in first.",
+      "requires": [
+        "great_clock",
+        "museum_hum",
+        "tock"
+      ],
+      "establishes": [
+        "rotunda",
+        "tock_runs_ahead"
+      ]
+    },
+    "sv_conv": {
+      "function": "continue",
+      "event": "Both savanna routes reach the arch to the rotunda; Tock darts through first.",
+      "requires": [
+        "great_clock",
+        "tock"
+      ],
+      "establishes": [
+        "rotunda",
+        "tock_runs_ahead"
+      ]
+    },
+    "ds_conv": {
+      "function": "continue",
+      "event": "Both deep-sea ways reach the round copper door to the rotunda; Tock squeezes through first.",
+      "requires": [
+        "great_clock",
+        "tock"
+      ],
+      "establishes": [
+        "rotunda",
+        "tock_runs_ahead"
+      ]
+    },
+    "cg_conv": {
+      "function": "continue",
+      "event": "Both conservatory ways reach the arch to the rotunda; Tock slips through first.",
+      "requires": [
+        "great_clock",
+        "tock"
+      ],
+      "establishes": [
+        "rotunda",
+        "tock_runs_ahead"
+      ]
+    },
+    "av_conv2": {
+      "function": "continue",
+      "event": "Nia enters the dawn-lit rotunda, the museum's true middle, where Tock waits.",
+      "requires": [
+        "tock_runs_ahead",
+        "tock"
+      ],
+      "establishes": [
+        "dawn_in_rotunda"
+      ]
+    },
+    "sv_conv2": {
+      "function": "continue",
+      "event": "Nia enters the dawn-lit rotunda where Tock waits proudly.",
+      "requires": [
+        "tock_runs_ahead",
+        "tock"
+      ],
+      "establishes": [
+        "dawn_in_rotunda"
+      ]
+    },
+    "ds_conv2": {
+      "function": "continue",
+      "event": "Nia steps from the cramped dark into the dawn-lit rotunda where Tock waits.",
+      "requires": [
+        "tock_runs_ahead",
+        "tock"
+      ],
+      "establishes": [
+        "dawn_in_rotunda"
+      ]
+    },
+    "cg_conv2": {
+      "function": "continue",
+      "event": "Nia enters the dawn-lit rotunda where Tock waits.",
+      "requires": [
+        "tock_runs_ahead",
+        "tock"
+      ],
+      "establishes": [
+        "dawn_in_rotunda"
+      ]
+    },
+    "av_conv3": {
+      "function": "continue",
+      "event": "Nia sees the great stopped clock and hurries to find the master key the clue promised.",
+      "requires": [
+        "master_key_card",
+        "nia_seeks_key",
+        "key_can_wake_menagerie"
+      ],
+      "establishes": [
+        "clock_hands_stopped",
+        "great_clock"
+      ]
+    },
+    "sv_conv3": {
+      "function": "continue",
+      "event": "Nia sees the great stopped clock and hunts for the keys that could wake the menagerie.",
+      "requires": [
+        "nia_seeks_key",
+        "key_can_wake_menagerie"
+      ],
+      "establishes": [
+        "clock_hands_stopped",
+        "great_clock"
+      ]
+    },
+    "ds_conv3": {
+      "function": "continue",
+      "event": "Nia sees the great stopped clock and searches for the keys that could wake the menagerie.",
+      "requires": [
+        "nia_seeks_key",
+        "key_can_wake_menagerie"
+      ],
+      "establishes": [
+        "clock_hands_stopped",
+        "great_clock"
+      ]
+    },
+    "cg_conv3": {
+      "function": "continue",
+      "event": "Nia sees the great stopped clock and looks for the keys that could wake the menagerie.",
+      "requires": [
+        "nia_seeks_key",
+        "key_can_wake_menagerie"
+      ],
+      "establishes": [
+        "clock_hands_stopped",
+        "great_clock"
+      ]
+    },
+    "n_key": {
+      "function": "decision",
+      "event": "Nia climbs a ladder and takes the caretaker's master key from its hook; three ways lead on.",
+      "requires": [
+        "rotunda",
+        "great_clock",
+        "tock"
+      ],
+      "establishes": [
+        "nia_has_master_key",
+        "single_key_on_hook",
+        "caretaker_exists",
+        "key_can_wake_menagerie",
+        "three_ways_from_rotunda"
+      ]
+    },
+    "k_a1": {
+      "function": "continue",
+      "event": "Through the spring-room doors Nia enters the vast silent machine room.",
+      "requires": [
+        "tock",
+        "candle_low"
+      ],
+      "establishes": [
+        "machine_room"
+      ]
+    },
+    "k_b1": {
+      "function": "continue",
+      "event": "Nia walks the gallery of old keepers' portraits toward a closed door.",
+      "requires": [
+        "candle_low"
+      ],
+      "establishes": [
+        "keeper_portraits"
+      ]
+    },
+    "k_c1": {
+      "function": "decision",
+      "event": "At the foot of the back stairs a rusted turnstile bars the way, with a narrow gap beside it.",
+      "requires": [
+        "candle_low"
+      ],
+      "establishes": [
+        "rusted_turnstile"
+      ]
+    },
+    "k_a2": {
+      "function": "continue",
+      "event": "On a gantry between frozen gears Nia heads for a huge silent drum.",
+      "requires": [
+        "machine_room",
+        "tock"
+      ],
+      "establishes": [
+        "great_drum"
+      ]
+    },
+    "k_b2": {
+      "function": "continue",
+      "event": "The last portrait is of Keeper Fettle, tender of the works, the museum's caretaker.",
+      "requires": [
+        "keeper_portraits",
+        "candle_low"
+      ],
+      "establishes": [
+        "fettle_named",
+        "caretaker_exists"
+      ]
+    },
+    "k_c2": {
+      "function": "continue",
+      "event": "Nia squeezes gently through the gap into a low passage.",
+      "requires": [
+        "rusted_turnstile",
+        "tock"
+      ],
+      "establishes": [
+        "nia_squeezed_through"
+      ]
+    },
+    "e_set_key": {
+      "function": "ending",
+      "event": "Nia shoves the turnstile, it latches behind her, and she is penned in the stairwell until morning.",
+      "requires": [
+        "rusted_turnstile",
+        "tock"
+      ],
+      "establishes": [
+        "nia_penned_stairwell"
+      ]
+    },
+    "k_a3": {
+      "function": "continue",
+      "event": "Nia gazes down on the still master works of the menagerie.",
+      "requires": [
+        "machine_room",
+        "tock"
+      ],
+      "establishes": []
+    },
+    "k_b3": {
+      "function": "continue",
+      "event": "The door under Fettle's portrait opens on a walkway above the machine room.",
+      "requires": [
+        "tock",
+        "fettle_named"
+      ],
+      "establishes": [
+        "machine_room"
+      ]
+    },
+    "k_c3": {
+      "function": "continue",
+      "event": "The low passage opens on a ledge above the machine room.",
+      "requires": [
+        "nia_squeezed_through",
+        "tock"
+      ],
+      "establishes": [
+        "machine_room"
+      ]
+    },
+    "n_spring": {
+      "function": "decision",
+      "event": "Nia sees the great mainspring snapped clean across and three places to look for help.",
+      "requires": [
+        "machine_room",
+        "tock"
+      ],
+      "establishes": [
+        "mainspring_snapped",
+        "spring_room_three_clues"
+      ]
+    },
+    "s_a1": {
+      "function": "continue",
+      "event": "In the toolbox Nia finds a heavy clamp tool for some special job.",
+      "requires": [
+        "spring_room_three_clues",
+        "tock"
+      ],
+      "establishes": [
+        "clamp_tool"
+      ]
+    },
+    "s_b1": {
+      "function": "continue",
+      "event": "Nia finds a manual titled Mending the Great Spring.",
+      "requires": [
+        "spring_room_three_clues",
+        "tock"
+      ],
+      "establishes": [
+        "mending_book"
+      ]
+    },
+    "s_c1": {
+      "function": "decision",
+      "event": "Under Tock's scratching lies a loose panel beneath a half-braced gear.",
+      "requires": [
+        "spring_room_three_clues",
+        "tock"
+      ],
+      "establishes": [
+        "panel_under_gear"
+      ]
+    },
+    "s_a2": {
+      "function": "continue",
+      "event": "Tock turns up a card showing how the clamp is used to change a broken mainspring.",
+      "requires": [
+        "clamp_tool",
+        "tock",
+        "candle_low"
+      ],
+      "establishes": [
+        "instruction_card"
+      ]
+    },
+    "s_b2": {
+      "function": "continue",
+      "event": "The book pictures a hidden workshop of spare springs and tools nearby.",
+      "requires": [
+        "mending_book"
+      ],
+      "establishes": [
+        "book_shows_workshop"
+      ]
+    },
+    "s_c2": {
+      "function": "continue",
+      "event": "Nia lifts the panel gently and the crawlspace lies open.",
+      "requires": [
+        "panel_under_gear"
+      ],
+      "establishes": [
+        "crawlspace_open"
+      ]
+    },
+    "e_set_spring": {
+      "function": "ending",
+      "event": "Nia yanks the panel, the gear falls and buries the crawlspace, and she waits for the keepers.",
+      "requires": [
+        "panel_under_gear"
+      ],
+      "establishes": [
+        "gear_buried_crawlspace"
+      ]
+    },
+    "s_a3": {
+      "function": "continue",
+      "event": "With card and tool, Nia follows a keeper arrow to a low hidden door.",
+      "requires": [
+        "instruction_card",
+        "clamp_tool",
+        "tock"
+      ],
+      "establishes": [
+        "nia_has_clamp_tool",
+        "sign_to_low_door"
+      ]
+    },
+    "s_b3": {
+      "function": "continue",
+      "event": "The book names a hidden door behind the machine and Nia searches for it.",
+      "requires": [
+        "book_shows_workshop",
+        "tock",
+        "candle_low"
+      ],
+      "establishes": [
+        "book_names_door"
+      ]
+    },
+    "s_c3": {
+      "function": "continue",
+      "event": "Nia crawls behind the machine to a small hidden door Fettle must have used.",
+      "requires": [
+        "crawlspace_open",
+        "tock",
+        "fettle_named"
+      ],
+      "establishes": [
+        "hidden_door"
+      ]
+    },
+    "n_shop": {
+      "function": "decision",
+      "event": "Nia finds the hidden workshop and Fettle's letter saying he fell ill and left drawings for the mend.",
+      "requires": [
+        "candle_low",
+        "fettle_named"
+      ],
+      "establishes": [
+        "hidden_workshop",
+        "spare_spring_available",
+        "repair_manual_open",
+        "fettle_ill",
+        "fettle_left_drawings",
+        "nia_knows_mend",
+        "nia_has_master_key"
+      ]
+    },
+    "p_a1": {
+      "function": "continue",
+      "event": "Nia studies the open repair manual's patient drawings.",
+      "requires": [
+        "repair_manual_open",
+        "tock"
+      ],
+      "establishes": []
+    },
+    "p_b1": {
+      "function": "continue",
+      "event": "Nia lifts down the spare mainspring and finds it very heavy.",
+      "requires": [
+        "spare_spring_available",
+        "tock"
+      ],
+      "establishes": [
+        "spare_spring_heavy"
+      ]
+    },
+    "p_c1": {
+      "function": "decision",
+      "event": "Reading the letter last, Nia learns of a rusted shortcut lever and must choose how to move the spring.",
+      "requires": [
+        "examined_before_letter",
+        "spare_spring_heavy",
+        "fettle_named"
+      ],
+      "establishes": [
+        "shortcut_lever"
+      ]
+    },
+    "p_a2": {
+      "function": "continue",
+      "event": "Nia reads the manual twice and fixes the four steps in her mind.",
+      "requires": [
+        "repair_manual_open",
+        "tock"
+      ],
+      "establishes": [
+        "mend_steps",
+        "nia_knows_mend"
+      ]
+    },
+    "p_b2": {
+      "function": "continue",
+      "event": "Nia loads the spring and the changing tool onto a keeper cart.",
+      "requires": [
+        "spare_spring_heavy",
+        "tock"
+      ],
+      "establishes": [
+        "keeper_cart",
+        "nia_has_clamp_tool"
+      ]
+    },
+    "p_c2": {
+      "function": "continue",
+      "event": "Nia carries the heavy spring herself back toward the spring-room.",
+      "requires": [
+        "spare_spring_heavy",
+        "tock"
+      ],
+      "establishes": [
+        "nia_carried_spring"
+      ]
+    },
+    "e_set_shop": {
+      "function": "ending",
+      "event": "Nia throws the lever and the runaway cart carries the spare spring behind a locked shutter.",
+      "requires": [
+        "shortcut_lever"
+      ],
+      "establishes": [
+        "spring_lost_behind_shutter"
+      ]
+    },
+    "p_a3": {
+      "function": "continue",
+      "event": "Nia takes the tool and a spare spring and heads back to the spring-room.",
+      "requires": [
+        "mainspring_snapped",
+        "tock"
+      ],
+      "establishes": [
+        "nia_has_clamp_tool"
+      ]
+    },
+    "p_b3": {
+      "function": "continue",
+      "event": "Nia wheels the loaded cart carefully back toward the spring-room.",
+      "requires": [
+        "keeper_cart",
+        "mainspring_snapped",
+        "tock"
+      ],
+      "establishes": []
+    },
+    "p_c3": {
+      "function": "continue",
+      "event": "Nia sets the spare spring beside the broken one with everything she needs gathered.",
+      "requires": [
+        "nia_carried_spring",
+        "nia_has_master_key",
+        "nia_knows_mend",
+        "tock"
+      ],
+      "establishes": [
+        "spare_spring_at_spring_room"
+      ]
+    },
+    "n_hub": {
+      "function": "decision",
+      "event": "At dawn in the spring-room with key, spring and instructions, Nia faces four ways to end the night.",
+      "requires": [
+        "nia_has_master_key",
+        "nia_knows_mend",
+        "nia_loves_a_creature",
+        "fettle_has_secret",
+        "fettle_named"
+      ],
+      "establishes": [
+        "spare_spring_at_spring_room",
+        "dawn_coming"
+      ]
+    },
+    "fh_rw1": {
+      "function": "decision",
+      "event": "Nia chooses how to change the great spring: careful, fast, or Fettle's trick.",
+      "requires": [
+        "fettle_left_drawings",
+        "nia_spotted_trick",
+        "fettle_named"
+      ],
+      "establishes": []
+    },
+    "fh_fx1": {
+      "function": "decision",
+      "event": "Unable to mend the whole spring in time, Nia chooses one famous creature to wake.",
+      "requires": [
+        "nia_has_master_key"
+      ],
+      "establishes": [
+        "cannot_mend_in_time",
+        "famous_five",
+        "elephant_half_wound"
+      ]
+    },
+    "fh_sec1": {
+      "function": "decision",
+      "event": "Back in the workshop, Nia chooses where Fettle's hinted secret lies: journal, mouse or cabinet.",
+      "requires": [
+        "letter_hinted_secret",
+        "fettle_named"
+      ],
+      "establishes": [
+        "fettle_has_secret",
+        "workshop_three_secrets",
+        "nia_in_workshop_for_secret",
+        "second_mouse"
+      ]
+    },
+    "fh_dawn1": {
+      "function": "decision",
+      "event": "Nia decides to keep the museum safe and chooses how to meet the dawn.",
+      "requires": [],
+      "establishes": []
+    },
+    "fh_rw_c1": {
+      "function": "continue",
+      "event": "Nia works slowly by the manual and fits the new spring.",
+      "requires": [
+        "repair_manual_open",
+        "tock"
+      ],
+      "establishes": [
+        "careful_fitting"
+      ]
+    },
+    "fh_rw_b1": {
+      "function": "decision",
+      "event": "Racing the dawn, Nia leaves the spring a hair proud of the shaft.",
+      "requires": [],
+      "establishes": [
+        "spring_half_seated"
+      ]
+    },
+    "fh_rw_cl1": {
+      "function": "continue",
+      "event": "Nia fits Fettle's helper gear and the spring slides home easily.",
+      "requires": [
+        "fettle_named"
+      ],
+      "establishes": [
+        "helper_gear"
+      ]
+    },
+    "fh_fx_bird": {
+      "function": "continue",
+      "event": "In the aviary Nia winds the brass lark with a tiny winder from a keeper stand.",
+      "requires": [
+        "famous_five",
+        "tock"
+      ],
+      "establishes": [
+        "lark_winder"
+      ]
+    },
+    "fh_fx_lion": {
+      "function": "continue",
+      "event": "On the savanna Nia winds the great tin lion with the master key.",
+      "requires": [
+        "famous_five",
+        "tock"
+      ],
+      "establishes": [
+        "lion_keyhole"
+      ]
+    },
+    "fh_fx_whale": {
+      "function": "continue",
+      "event": "In the deep-sea hall Nia winds the biggest copper whale with the master key.",
+      "requires": [
+        "famous_five",
+        "tock"
+      ],
+      "establishes": [
+        "whale_winding_place"
+      ]
+    },
+    "fh_fx_fly": {
+      "function": "continue",
+      "event": "In the conservatory Nia winds a butterfly with the seed-small winder from its stand.",
+      "requires": [
+        "famous_five",
+        "butterfly_winder",
+        "tock"
+      ],
+      "establishes": [
+        "winder_on_stand"
+      ]
+    },
+    "fh_fx_eleph": {
+      "function": "continue",
+      "event": "On the savanna Nia, unafraid, winds the half-wound elephant true and full.",
+      "requires": [
+        "famous_five",
+        "tock"
+      ],
+      "establishes": [
+        "elephant_half_wound"
+      ]
+    },
+    "fh_sec_j1": {
+      "function": "continue",
+      "event": "Nia settles on the workshop stool and begins Fettle's journal.",
+      "requires": [
+        "workshop_three_secrets",
+        "tock",
+        "candle_low",
+        "fettle_named"
+      ],
+      "establishes": [
+        "nia_read_journal"
+      ]
+    },
+    "fh_sec_m1": {
+      "function": "decision",
+      "event": "A second clockwork mouse, near twin to Tock, wants to lead Nia; chase it or coax it.",
+      "requires": [
+        "tock"
+      ],
+      "establishes": [
+        "second_mouse"
+      ]
+    },
+    "fh_sec_c1": {
+      "function": "decision",
+      "event": "Nia must open the locked cabinet with the tiny keys on her master ring or force it.",
+      "requires": [
+        "workshop_three_secrets",
+        "master_ring_tiny_keys",
+        "fettle_named"
+      ],
+      "establishes": [
+        "master_ring_tiny_keys"
+      ]
+    },
+    "fh_dawn_s1": {
+      "function": "continue",
+      "event": "Nia sits with Tock on the spring-room floor and watches dawn over the sleeping animals.",
+      "requires": [
+        "tock"
+      ],
+      "establishes": [
+        "nia_lets_them_sleep"
+      ]
+    },
+    "fh_dawn_o1": {
+      "function": "continue",
+      "event": "Nia hurries with the master key to the one creature that touched her most.",
+      "requires": [
+        "nia_has_master_key",
+        "tock"
+      ],
+      "establishes": []
+    },
+    "fh_dawn_w1": {
+      "function": "decision",
+      "event": "By the front door Nia chooses how to meet whoever comes first.",
+      "requires": [],
+      "establishes": [
+        "waits_at_front_door"
+      ]
+    },
+    "fh_rw_c2": {
+      "function": "decision",
+      "event": "With the spring seated, Nia chooses to wind fully for dawn or part way for Fettle.",
+      "requires": [
+        "careful_fitting",
+        "fettle_named"
+      ],
+      "establishes": [
+        "spring_mended"
+      ]
+    },
+    "fh_rw_b_ok": {
+      "function": "continue",
+      "event": "Nia stops, reseats the spring properly, and the works take the key with a sure click.",
+      "requires": [
+        "spring_half_seated"
+      ],
+      "establishes": [
+        "spring_mended"
+      ]
+    },
+    "e_set_rw": {
+      "function": "ending",
+      "event": "The half-seated spring slips loose, no time remains, and the animals sleep through the morning.",
+      "requires": [
+        "spring_half_seated"
+      ],
+      "establishes": [
+        "spring_slipped",
+        "spring_not_fixed"
+      ]
+    },
+    "fh_rw_cl2": {
+      "function": "continue",
+      "event": "Nia turns the key and a waking hum spreads through the museum.",
+      "requires": [
+        "helper_gear",
+        "tock"
+      ],
+      "establishes": [
+        "spring_mended",
+        "menagerie_stirs"
+      ]
+    },
+    "fh_fx_bird2": {
+      "function": "continue",
+      "event": "The brass lark stirs awake and opens its beak.",
+      "requires": [
+        "lark_winder",
+        "tock"
+      ],
+      "establishes": [
+        "lark_wakes"
+      ]
+    },
+    "fh_fx_lion2": {
+      "function": "continue",
+      "event": "The tin lion shivers awake.",
+      "requires": [
+        "lion_keyhole",
+        "tock"
+      ],
+      "establishes": [
+        "lion_wakes"
+      ]
+    },
+    "fh_fx_whale2": {
+      "function": "continue",
+      "event": "The copper whale begins to swim and hum.",
+      "requires": [
+        "whale_winding_place",
+        "tock"
+      ],
+      "establishes": [
+        "whale_wakes"
+      ]
+    },
+    "fh_fx_fly2": {
+      "function": "continue",
+      "event": "The butterfly unfolds its wings and scatters dawn colors.",
+      "requires": [
+        "winder_on_stand",
+        "tock"
+      ],
+      "establishes": [
+        "butterfly_wakes"
+      ]
+    },
+    "fh_fx_eleph2": {
+      "function": "continue",
+      "event": "Wound true, the elephant stops lurching and grows calm.",
+      "requires": [
+        "elephant_half_wound",
+        "tock"
+      ],
+      "establishes": [
+        "elephant_made_whole"
+      ]
+    },
+    "fh_sec_j2": {
+      "function": "continue",
+      "event": "The journal tells how Fettle built the menagerie alone over a lonely life.",
+      "requires": [
+        "nia_read_journal",
+        "fettle_named"
+      ],
+      "establishes": [
+        "fettle_built_alone"
+      ]
+    },
+    "fh_sec_m2": {
+      "function": "continue",
+      "event": "The mouse leads Nia to a hidden nest of sleeping clockwork mice, Fettle's secret.",
+      "requires": [
+        "second_mouse",
+        "candle_low",
+        "fettle_named"
+      ],
+      "establishes": [
+        "mouse_nest"
+      ]
+    },
+    "e_neu_mouse": {
+      "function": "ending",
+      "event": "The mouse will not be caught but keeps Nia company until the keepers come.",
+      "requires": [
+        "second_mouse"
+      ],
+      "establishes": [
+        "mouse_not_caught"
+      ]
+    },
+    "fh_sec_c2": {
+      "function": "continue",
+      "event": "Nia patiently tries the tiny keys until the cabinet opens.",
+      "requires": [
+        "master_ring_tiny_keys",
+        "candle_low"
+      ],
+      "establishes": [
+        "cabinet_opened"
+      ]
+    },
+    "e_set_cabinet": {
+      "function": "ending",
+      "event": "Nia forces the lock, the cabinet jams shut, and she must confess to Fettle in the morning.",
+      "requires": [
+        "workshop_three_secrets",
+        "fettle_named"
+      ],
+      "establishes": [
+        "cabinet_jammed",
+        "fettle_expected_morning"
+      ]
+    },
+    "e_neu_dawn": {
+      "function": "ending",
+      "event": "Nia keeps the sleeping menagerie safe and will tell the keepers how to mend it.",
+      "requires": [
+        "nia_lets_them_sleep",
+        "mainspring_snapped",
+        "hidden_workshop"
+      ],
+      "establishes": [
+        "spring_not_fixed"
+      ]
+    },
+    "fh_dawn_o2": {
+      "function": "continue",
+      "event": "Nia winds her favourite only a little, saving the rest for the keepers.",
+      "requires": [
+        "nia_has_master_key",
+        "tock"
+      ],
+      "establishes": [
+        "one_wound_partly"
+      ]
+    },
+    "e_neu_caretaker": {
+      "function": "ending",
+      "event": "Nia meets a kind older keeper at dawn and tells the whole story, including the mouse and the journal.",
+      "requires": [
+        "waits_at_front_door",
+        "mainspring_snapped",
+        "hidden_workshop",
+        "second_mouse",
+        "nia_read_journal"
+      ],
+      "establishes": [
+        "older_keeper",
+        "spring_not_fixed"
+      ]
+    },
+    "fh_dawn_w2": {
+      "function": "continue",
+      "event": "Nia writes every mend step on a note and pins it by the door.",
+      "requires": [
+        "fettle_left_drawings",
+        "spare_spring_at_spring_room",
+        "tock",
+        "fettle_named"
+      ],
+      "establishes": [
+        "note_for_keepers"
+      ]
+    },
+    "e_set_dawn": {
+      "function": "ending",
+      "event": "Hiding, Nia is locked in by the early cleaner and misses her chance to explain; the menagerie sleeps on.",
+      "requires": [
+        "waits_at_front_door"
+      ],
+      "establishes": [
+        "cleaner_locks_gate",
+        "spring_not_fixed"
+      ]
+    },
+    "e_win_all": {
+      "function": "ending",
+      "event": "Nia winds fully, the whole menagerie wakes for the dawn crowd, and Fettle weeps with gladness.",
+      "requires": [
+        "spring_mended",
+        "fettle_named"
+      ],
+      "establishes": [
+        "all_awake_at_dawn",
+        "fettle_weeps_glad"
+      ]
+    },
+    "e_win_all_quiet": {
+      "function": "ending",
+      "event": "Nia leaves the mended spring part-wound for Fettle, who finds his menagerie ready to wake.",
+      "requires": [
+        "spring_mended",
+        "fettle_ill",
+        "fettle_named"
+      ],
+      "establishes": [
+        "set_for_fettle"
+      ]
+    },
+    "e_win_most": {
+      "function": "ending",
+      "event": "The reseated spring holds and most of the menagerie wakes for the morning crowd.",
+      "requires": [
+        "spring_mended"
+      ],
+      "establishes": [
+        "most_awake"
+      ]
+    },
+    "e_win_clever": {
+      "function": "ending",
+      "event": "The helper-gear mend holds and the keepers say Nia has the makings of a fine keeper.",
+      "requires": [
+        "helper_gear",
+        "spring_mended",
+        "fettle_named"
+      ],
+      "establishes": [
+        "keepers_praise_gear"
+      ]
+    },
+    "e_win_bird": {
+      "function": "ending",
+      "event": "The brass lark sings for the dawn crowd and Fettle calls it hope.",
+      "requires": [
+        "lark_wakes",
+        "fettle_named"
+      ],
+      "establishes": [
+        "lark_sings_for_children"
+      ]
+    },
+    "e_win_lion": {
+      "function": "ending",
+      "event": "The tin lion roars for the cheering morning children.",
+      "requires": [
+        "lion_wakes"
+      ],
+      "establishes": [
+        "lion_roars"
+      ]
+    },
+    "e_win_whale": {
+      "function": "ending",
+      "event": "The copper whale sings and swims above hushed children.",
+      "requires": [
+        "whale_wakes"
+      ],
+      "establishes": [
+        "whale_calls"
+      ]
+    },
+    "e_win_fly": {
+      "function": "ending",
+      "event": "Nia winds a few butterflies and a cloud of color fills the conservatory.",
+      "requires": [
+        "butterfly_wakes"
+      ],
+      "establishes": [
+        "butterflies_fly"
+      ]
+    },
+    "e_win_eleph": {
+      "function": "ending",
+      "event": "The once-frightening elephant, made gentle, gives the children rides.",
+      "requires": [
+        "elephant_made_whole",
+        "elephant_lurched_at_nia"
+      ],
+      "establishes": [
+        "elephant_gives_rides"
+      ]
+    },
+    "fh_sec_j3": {
+      "function": "continue",
+      "event": "Fettle's last entry wishes for a child to keep the menagerie alive.",
+      "requires": [
+        "fettle_built_alone",
+        "fettle_named"
+      ],
+      "establishes": [
+        "fettle_wish_child"
+      ]
+    },
+    "e_win_mouse": {
+      "function": "ending",
+      "event": "Nia winds Fettle's hidden mice awake and Tock gains a family.",
+      "requires": [
+        "mouse_nest",
+        "tock",
+        "fettle_named"
+      ],
+      "establishes": [
+        "mice_wake"
+      ]
+    },
+    "fh_sec_c3": {
+      "function": "continue",
+      "event": "Inside the cabinet stands Fettle's first creation, a small brass rabbit.",
+      "requires": [
+        "cabinet_opened",
+        "fettle_named"
+      ],
+      "establishes": [
+        "brass_rabbit"
+      ]
+    },
+    "fh_dawn_o3": {
+      "function": "continue",
+      "event": "The favourite creature wakes gently while the others sleep.",
+      "requires": [
+        "one_wound_partly",
+        "tock"
+      ],
+      "establishes": [
+        "one_wakes_for_dawn"
+      ]
+    },
+    "fh_dawn_w3": {
+      "function": "continue",
+      "event": "Nia props the master key by the note and waits nearby.",
+      "requires": [
+        "note_for_keepers",
+        "nia_has_master_key",
+        "tock"
+      ],
+      "establishes": [
+        "key_propped_by_note"
+      ]
+    },
+    "e_win_journal": {
+      "function": "ending",
+      "event": "Nia leaves Fettle a note promising to come back, and he knows his work is safe.",
+      "requires": [
+        "fettle_wish_child",
+        "fettle_built_alone",
+        "fettle_named"
+      ],
+      "establishes": [
+        "nia_promises_return"
+      ]
+    },
+    "e_win_cabinet": {
+      "function": "ending",
+      "event": "Nia winds the brass rabbit and it hops again, to Fettle's joy.",
+      "requires": [
+        "brass_rabbit",
+        "fettle_named"
+      ],
+      "establishes": [
+        "rabbit_hops"
+      ]
+    },
+    "e_win_one": {
+      "function": "ending",
+      "event": "One favourite creature greets the morning children while the rest wait for Fettle.",
+      "requires": [
+        "one_wakes_for_dawn",
+        "fettle_named"
+      ],
+      "establishes": []
+    },
+    "e_win_note": {
+      "function": "ending",
+      "event": "The keepers follow Nia's note and wake the whole menagerie by opening time.",
+      "requires": [
+        "note_for_keepers",
+        "key_propped_by_note"
+      ],
+      "establishes": [
+        "keepers_mend_by_note"
+      ]
+    }
+  },
+  "choices": {
+    "c_open": {
+      "intent": "leave the entrance and start exploring",
+      "cost": "none (only way on)"
+    },
+    "c_start_av": {
+      "intent": "explore the brass aviary",
+      "cost": "gives up the other three wings for the night",
+      "requires": [
+        "four_wings"
+      ]
+    },
+    "c_start_sv": {
+      "intent": "explore the tin savanna",
+      "cost": "gives up the other three wings for the night",
+      "requires": [
+        "four_wings"
+      ]
+    },
+    "c_start_ds": {
+      "intent": "explore the copper deep-sea hall",
+      "cost": "gives up the other three wings for the night",
+      "requires": [
+        "four_wings"
+      ]
+    },
+    "c_start_cg": {
+      "intent": "explore the crystal conservatory",
+      "cost": "gives up the other three wings for the night",
+      "requires": [
+        "four_wings"
+      ]
+    },
+    "c_av_x0": {
+      "intent": "walk in under the birds",
+      "cost": "none (only way on)"
+    },
+    "c_sv_x0": {
+      "intent": "step onto the plain",
+      "cost": "none (only way on)"
+    },
+    "c_ds_x0": {
+      "intent": "wade into the hall",
+      "cost": "none (only way on)"
+    },
+    "c_cg_x0": {
+      "intent": "wander among the ferns",
+      "cost": "none (only way on)"
+    },
+    "c_av_deep": {
+      "intent": "take the broad safe floor among the perch-trees",
+      "cost": "gives up the high nests"
+    },
+    "c_av_risk": {
+      "intent": "climb the old spiral stair to the nests",
+      "cost": "a thin, rickety stair; gives up the safe floor"
+    },
+    "c_sv_deep": {
+      "intent": "cross the open floor toward the big animals",
+      "cost": "gives up the quick edge walkway"
+    },
+    "c_sv_risk": {
+      "intent": "edge along the narrow horizon walkway",
+      "cost": "a narrow ledge above a drop; gives up the open floor"
+    },
+    "c_ds_deep": {
+      "intent": "walk the low floor between the tanks",
+      "cost": "gives up the high catwalk"
+    },
+    "c_ds_risk": {
+      "intent": "climb the whale-rib catwalk",
+      "cost": "a swaying high bridge; gives up the safe floor"
+    },
+    "c_cg_deep": {
+      "intent": "walk the low fern beds",
+      "cost": "gives up the grand view from the gallery"
+    },
+    "c_cg_risk": {
+      "intent": "climb the mezzanine gallery",
+      "cost": "old loose glass over a drop; gives up the fern beds"
+    },
+    "c_av_a": {
+      "intent": "visit the tiny songbirds",
+      "cost": "gives up the raptor roost"
+    },
+    "c_av_b": {
+      "intent": "approach the great hunting birds",
+      "cost": "gives up the songbird alcove"
+    },
+    "c_av_rec": {
+      "intent": "retreat safely down the stair",
+      "cost": "gives up the high nests"
+    },
+    "c_av_fail": {
+      "intent": "push on up the cracking stair",
+      "cost": "the stair gives way and she is stranded"
+    },
+    "c_sv_a": {
+      "intent": "walk toward the elephant herd",
+      "cost": "gives up the giraffe grove"
+    },
+    "c_sv_b": {
+      "intent": "walk into the giraffe grove",
+      "cost": "gives up the elephant herd"
+    },
+    "c_sv_rec": {
+      "intent": "hide in an alcove and wait out the trunk",
+      "cost": "time and patience; gives up the ledge route"
+    },
+    "c_sv_fail": {
+      "intent": "rush past the swinging trunk",
+      "cost": "she is cornered by the elephant until morning"
+    },
+    "c_ds_a": {
+      "intent": "open the bright coral cabinet",
+      "cost": "gives up the dark trench"
+    },
+    "c_ds_b": {
+      "intent": "look into the dark trench",
+      "cost": "gives up the coral cabinet"
+    },
+    "c_ds_rec": {
+      "intent": "back off along the rope",
+      "cost": "gives up the catwalk crossing"
+    },
+    "c_ds_fail": {
+      "intent": "leap the unseen gap",
+      "cost": "she freezes on a rib and is stuck until opening time"
+    },
+    "c_cg_a": {
+      "intent": "visit the butterfly vault",
+      "cost": "gives up the beetle corner"
+    },
+    "c_cg_b": {
+      "intent": "visit the beetle corner",
+      "cost": "gives up the butterfly vault"
+    },
+    "c_cg_rec": {
+      "intent": "step back from the loose glass",
+      "cost": "gives up the gallery"
+    },
+    "c_cg_fail": {
+      "intent": "squeeze past the shifting panel",
+      "cost": "she is shut in a glass dead end until morning"
+    },
+    "c_av_a1": {
+      "intent": "go on from the songbirds",
+      "cost": "none (only way on)"
+    },
+    "c_av_b1": {
+      "intent": "move on beneath the raptors",
+      "cost": "none (only way on)"
+    },
+    "c_av_rec1": {
+      "intent": "steady herself after the climb down",
+      "cost": "none (only way on)"
+    },
+    "c_sv_a1": {
+      "intent": "go on past the stirring elephant",
+      "cost": "none (only way on)"
+    },
+    "c_sv_b1": {
+      "intent": "move on through the grove",
+      "cost": "none (only way on)"
+    },
+    "c_sv_rec1": {
+      "intent": "steady herself after the ledge",
+      "cost": "none (only way on)"
+    },
+    "c_ds_a1": {
+      "intent": "look closer at the valve",
+      "cost": "none (only way on)"
+    },
+    "c_ds_b1": {
+      "intent": "move toward the glow",
+      "cost": "none (only way on)"
+    },
+    "c_ds_rec1": {
+      "intent": "steady herself after the catwalk",
+      "cost": "none (only way on)"
+    },
+    "c_cg_a1": {
+      "intent": "go on from the butterflies",
+      "cost": "none (only way on)"
+    },
+    "c_cg_b1": {
+      "intent": "move on from the bench",
+      "cost": "none (only way on)"
+    },
+    "c_cg_rec1": {
+      "intent": "steady herself after the gallery",
+      "cost": "none (only way on)"
+    },
+    "c_av_a2": {
+      "intent": "press deeper behind the music-box",
+      "cost": "none (only way on)"
+    },
+    "c_av_b2": {
+      "intent": "go on after the decoy feather",
+      "cost": "none (only way on)"
+    },
+    "c_sv_a2": {
+      "intent": "press deeper, wary of the elephant",
+      "cost": "none (only way on)"
+    },
+    "c_sv_b2": {
+      "intent": "lower the shelf",
+      "cost": "none (only way on)"
+    },
+    "c_ds_a2": {
+      "intent": "press deeper with the map",
+      "cost": "none (only way on)"
+    },
+    "c_ds_b2": {
+      "intent": "look at the hatch",
+      "cost": "none (only way on)"
+    },
+    "c_cg_a2": {
+      "intent": "press deeper with the winder",
+      "cost": "none (only way on)"
+    },
+    "c_cg_b2": {
+      "intent": "study the map's routes",
+      "cost": "none (only way on)"
+    },
+    "c_av_a3": {
+      "intent": "follow Tock toward the middle",
+      "cost": "none (only way on)"
+    },
+    "c_av_b3": {
+      "intent": "follow the owl's wing",
+      "cost": "none (only way on)"
+    },
+    "c_sv_a3": {
+      "intent": "follow Tock past the still elephant",
+      "cost": "none (only way on)"
+    },
+    "c_sv_b3": {
+      "intent": "follow the painted arrow",
+      "cost": "none (only way on)"
+    },
+    "c_ds_a3": {
+      "intent": "follow Tock along the map",
+      "cost": "none (only way on)"
+    },
+    "c_ds_b3": {
+      "intent": "go through the hatch",
+      "cost": "none (only way on)"
+    },
+    "c_cg_a3": {
+      "intent": "follow Tock toward the rotunda",
+      "cost": "none (only way on)"
+    },
+    "c_cg_b3": {
+      "intent": "follow the beetle route",
+      "cost": "none (only way on)"
+    },
+    "c_av_a4": {
+      "intent": "keep along the keeper walkway",
+      "cost": "none (only way on)"
+    },
+    "c_av_b4": {
+      "intent": "follow Tock to the glowing doorway",
+      "cost": "none (only way on)"
+    },
+    "c_sv_a4": {
+      "intent": "keep along the oil-drip trail",
+      "cost": "none (only way on)"
+    },
+    "c_sv_b4": {
+      "intent": "follow Tock through the keeper door",
+      "cost": "none (only way on)"
+    },
+    "c_ds_a4": {
+      "intent": "keep along the mapped corridors",
+      "cost": "none (only way on)"
+    },
+    "c_ds_b4": {
+      "intent": "follow Tock through the copper passage",
+      "cost": "none (only way on)"
+    },
+    "c_cg_a4": {
+      "intent": "keep along the painted path",
+      "cost": "none (only way on)"
+    },
+    "c_cg_b4": {
+      "intent": "follow Tock through the mirrored door",
+      "cost": "none (only way on)"
+    },
+    "c_av_a5": {
+      "intent": "open the clock-painted door",
+      "cost": "none (only way on)"
+    },
+    "c_sv_a5": {
+      "intent": "open the warm savanna door",
+      "cost": "none (only way on)"
+    },
+    "c_ds_a5": {
+      "intent": "open the porthole door",
+      "cost": "none (only way on)"
+    },
+    "c_cg_a5": {
+      "intent": "open the mirrored door",
+      "cost": "none (only way on)"
+    },
+    "c_av_conv": {
+      "intent": "follow Tock into the rotunda",
+      "cost": "none (only way on)"
+    },
+    "c_sv_conv": {
+      "intent": "follow Tock under the arch",
+      "cost": "none (only way on)"
+    },
+    "c_ds_conv": {
+      "intent": "follow Tock through the round door",
+      "cost": "none (only way on)"
+    },
+    "c_cg_conv": {
+      "intent": "follow Tock through the arch",
+      "cost": "none (only way on)"
+    },
+    "c_av_conv2": {
+      "intent": "walk toward the center",
+      "cost": "none (only way on)"
+    },
+    "c_sv_conv2": {
+      "intent": "walk toward the center",
+      "cost": "none (only way on)"
+    },
+    "c_ds_conv2": {
+      "intent": "walk toward the center",
+      "cost": "none (only way on)"
+    },
+    "c_cg_conv2": {
+      "intent": "walk toward the center",
+      "cost": "none (only way on)"
+    },
+    "c_av_conv3": {
+      "intent": "search the rotunda for the key",
+      "cost": "none (only way on)"
+    },
+    "c_sv_conv3": {
+      "intent": "search the rotunda for the keys",
+      "cost": "none (only way on)"
+    },
+    "c_ds_conv3": {
+      "intent": "search the rotunda for the keys",
+      "cost": "none (only way on)"
+    },
+    "c_cg_conv3": {
+      "intent": "search the rotunda for the keys",
+      "cost": "none (only way on)"
+    },
+    "c_av_rec2": {
+      "intent": "take the safer perch-tree path",
+      "cost": "gives up the high nests for good",
+      "requires": [
+        "nia_gave_up_stair"
+      ]
+    },
+    "c_sv_rec2": {
+      "intent": "take the safer open floor",
+      "cost": "gives up the ledge for good",
+      "requires": [
+        "nia_gave_up_ledge"
+      ]
+    },
+    "c_ds_rec2": {
+      "intent": "take the safer floor tanks",
+      "cost": "gives up the catwalk for good",
+      "requires": [
+        "nia_gave_up_catwalk"
+      ]
+    },
+    "c_cg_rec2": {
+      "intent": "take the safer fern beds",
+      "cost": "gives up the gallery for good",
+      "requires": [
+        "nia_gave_up_gallery"
+      ]
+    },
+    "c_key_a": {
+      "intent": "go through the spring-room doors",
+      "cost": "gives up the portrait gallery and the back stairs"
+    },
+    "c_key_b": {
+      "intent": "walk the gallery of keeper portraits",
+      "cost": "gives up the spring-room doors and the back stairs"
+    },
+    "c_key_c": {
+      "intent": "take the narrow back stairs into the dark",
+      "cost": "a rusted turnstile waits; gives up the other two ways"
+    },
+    "c_kc_ok": {
+      "intent": "squeeze gently through the gap",
+      "cost": "slow and tight; gives up forcing the gate"
+    },
+    "c_kc_fail": {
+      "intent": "shove the turnstile hard",
+      "cost": "it latches and pens her in until morning"
+    },
+    "c_k_a1": {
+      "intent": "go deeper into the works",
+      "cost": "none (only way on)"
+    },
+    "c_k_b1": {
+      "intent": "walk on past the portraits",
+      "cost": "none (only way on)"
+    },
+    "c_k_a2": {
+      "intent": "go on toward the great drum",
+      "cost": "none (only way on)"
+    },
+    "c_k_b2": {
+      "intent": "go to the door below Fettle's portrait",
+      "cost": "none (only way on)"
+    },
+    "c_kc2": {
+      "intent": "follow the low passage",
+      "cost": "none (only way on)"
+    },
+    "c_k_a3": {
+      "intent": "go down toward the works",
+      "cost": "none (only way on)"
+    },
+    "c_k_b3": {
+      "intent": "follow the walkway down",
+      "cost": "none (only way on)"
+    },
+    "c_kc3": {
+      "intent": "climb down to the works",
+      "cost": "none (only way on)"
+    },
+    "c_s_a1": {
+      "intent": "look for more about the tool",
+      "cost": "none (only way on)"
+    },
+    "c_s_b1": {
+      "intent": "open the mending book",
+      "cost": "none (only way on)"
+    },
+    "c_sc2": {
+      "intent": "crawl through the opened space",
+      "cost": "none (only way on)"
+    },
+    "c_s_a2": {
+      "intent": "follow the keeper sign",
+      "cost": "none (only way on)"
+    },
+    "c_s_b2": {
+      "intent": "follow the book to the door",
+      "cost": "none (only way on)"
+    },
+    "c_s_a3": {
+      "intent": "go to the hidden low door",
+      "cost": "none (only way on)"
+    },
+    "c_s_b3": {
+      "intent": "find the door the book names",
+      "cost": "none (only way on)"
+    },
+    "c_sc3": {
+      "intent": "open the hidden door",
+      "cost": "none (only way on)"
+    },
+    "c_p_a1": {
+      "intent": "keep studying the manual",
+      "cost": "none (only way on)"
+    },
+    "c_p_b1": {
+      "intent": "find a way to move the spring",
+      "cost": "none (only way on)"
+    },
+    "c_pc2": {
+      "intent": "set the spring down in the spring-room",
+      "cost": "none (only way on)"
+    },
+    "c_p_a2": {
+      "intent": "gather the tool and spring",
+      "cost": "none (only way on)"
+    },
+    "c_p_b2": {
+      "intent": "wheel the cart back",
+      "cost": "none (only way on)"
+    },
+    "c_pc3": {
+      "intent": "turn to the broken spring",
+      "cost": "none (only way on)"
+    },
+    "c_p_a3": {
+      "intent": "return to the spring-room",
+      "cost": "none (only way on)"
+    },
+    "c_p_b3": {
+      "intent": "arrive at the spring-room",
+      "cost": "none (only way on)"
+    },
+    "c_spring_a": {
+      "intent": "search the keeper toolbox",
+      "cost": "gives up the manuals and Tock's digging"
+    },
+    "c_spring_b": {
+      "intent": "search the wall of manuals",
+      "cost": "gives up the toolbox and Tock's digging"
+    },
+    "c_spring_c": {
+      "intent": "dig where Tock is scratching",
+      "cost": "a half-braced gear looms; gives up the other two"
+    },
+    "c_sc_ok": {
+      "intent": "lift the panel slowly",
+      "cost": "slow; gives up a quick yank"
+    },
+    "c_sc_fail": {
+      "intent": "yank the panel free",
+      "cost": "the gear falls and buries the way"
+    },
+    "c_shop_a": {
+      "intent": "study the repair manual first",
+      "cost": "gives up starting with the spring or the letter",
+      "requires": [
+        "repair_manual_open"
+      ]
+    },
+    "c_shop_b": {
+      "intent": "take down the spare mainspring first",
+      "cost": "gives up starting with the manual or the letter",
+      "requires": [
+        "spare_spring_available"
+      ]
+    },
+    "c_shop_c": {
+      "intent": "read Fettle's letter",
+      "cost": "gives up starting with the manual or the spring",
+      "requires": [
+        "fettle_named"
+      ]
+    },
+    "c_pc_ok": {
+      "intent": "carry the spring the long safe way",
+      "cost": "slow, heavy and tiring; gives up the shortcut"
+    },
+    "c_pc_fail": {
+      "intent": "throw the rusted shortcut lever",
+      "cost": "the cart runs away with the spring"
+    },
+    "c_hub_rw": {
+      "intent": "change the great spring and rewind everything",
+      "cost": "the hardest task; gives up the other three ends",
+      "requires": [
+        "mainspring_snapped",
+        "spare_spring_at_spring_room"
+      ]
+    },
+    "c_hub_fx": {
+      "intent": "wake one beloved creature",
+      "cost": "leaves the rest asleep; gives up the other three ends",
+      "requires": [
+        "nia_loves_a_creature"
+      ]
+    },
+    "c_hub_sec": {
+      "intent": "follow Fettle's secret",
+      "cost": "leaves the spring unmended; gives up the other three ends",
+      "requires": [
+        "fettle_has_secret"
+      ]
+    },
+    "c_hub_dawn": {
+      "intent": "keep the museum safe until dawn",
+      "cost": "wakes nothing; gives up the other three ends"
+    },
+    "c_rw_c": {
+      "intent": "change the spring slowly by the manual",
+      "cost": "takes the most time; gives up speed and the trick"
+    },
+    "c_rw_b": {
+      "intent": "change the spring fast to beat the dawn",
+      "cost": "risks a careless fit; gives up care and the trick"
+    },
+    "c_rw_cl": {
+      "intent": "try Fettle's helper-gear trick",
+      "cost": "trusts an untried trick; gives up the manual way",
+      "requires": [
+        "nia_spotted_trick"
+      ]
+    },
+    "c_rw_bok": {
+      "intent": "stop and reseat the spring",
+      "cost": "costs precious time; gives up winding at once"
+    },
+    "c_rw_bfail": {
+      "intent": "wind the half-seated spring and hope",
+      "cost": "the spring slips and the animals sleep on"
+    },
+    "c_rw_c1": {
+      "intent": "fit the master key to the shaft",
+      "cost": "none (only way on)"
+    },
+    "c_rw_cl1": {
+      "intent": "turn the master key",
+      "cost": "none (only way on)"
+    },
+    "c_rw_all": {
+      "intent": "wind fully and wake everything for dawn",
+      "cost": "gives up leaving the waking to Fettle"
+    },
+    "c_rw_quiet": {
+      "intent": "wind part way so Fettle can wake them",
+      "cost": "gives up a waking for the dawn crowd",
+      "requires": [
+        "fettle_ill"
+      ]
+    },
+    "c_rw_bok2": {
+      "intent": "wind the museum awake",
+      "cost": "none (only way on)"
+    },
+    "c_rw_cl2": {
+      "intent": "watch the menagerie stir",
+      "cost": "none (only way on)"
+    },
+    "c_fx_bird": {
+      "intent": "wake the brass lark",
+      "cost": "gives up the other four creatures"
+    },
+    "c_fx_lion": {
+      "intent": "wake the tin lion",
+      "cost": "gives up the other four creatures"
+    },
+    "c_fx_whale": {
+      "intent": "wake the copper whale",
+      "cost": "gives up the other four creatures"
+    },
+    "c_fx_fly": {
+      "intent": "wake the crystal butterfly",
+      "cost": "gives up the other four creatures"
+    },
+    "c_fx_eleph": {
+      "intent": "wake the gentle elephant",
+      "cost": "gives up the other four creatures",
+      "requires": [
+        "elephant_half_wound"
+      ]
+    },
+    "c_fx_bird1": {
+      "intent": "wind the lark carefully",
+      "cost": "none (only way on)"
+    },
+    "c_fx_lion1": {
+      "intent": "wind the lion carefully",
+      "cost": "none (only way on)"
+    },
+    "c_fx_whale1": {
+      "intent": "wind the whale carefully",
+      "cost": "none (only way on)"
+    },
+    "c_fx_fly1": {
+      "intent": "wind the butterfly carefully",
+      "cost": "none (only way on)"
+    },
+    "c_fx_eleph1": {
+      "intent": "wind the elephant carefully",
+      "cost": "none (only way on)"
+    },
+    "c_fx_bird2": {
+      "intent": "watch the lark wake",
+      "cost": "none (only way on)"
+    },
+    "c_fx_lion2": {
+      "intent": "watch the lion wake",
+      "cost": "none (only way on)"
+    },
+    "c_fx_whale2": {
+      "intent": "watch the whale wake",
+      "cost": "none (only way on)"
+    },
+    "c_fx_fly2": {
+      "intent": "watch the butterfly wake",
+      "cost": "none (only way on)"
+    },
+    "c_fx_eleph2": {
+      "intent": "watch the elephant wake",
+      "cost": "none (only way on)"
+    },
+    "c_sec_j1": {
+      "intent": "read on in the journal",
+      "cost": "none (only way on)"
+    },
+    "c_sec_j2": {
+      "intent": "read to the last page",
+      "cost": "none (only way on)"
+    },
+    "c_sec_j3": {
+      "intent": "close the journal",
+      "cost": "none (only way on)"
+    },
+    "c_sec_m2": {
+      "intent": "wind the hidden mice",
+      "cost": "none (only way on)"
+    },
+    "c_sec_c2": {
+      "intent": "look inside the cabinet",
+      "cost": "none (only way on)"
+    },
+    "c_sec_c3": {
+      "intent": "wind the brass rabbit",
+      "cost": "none (only way on)"
+    },
+    "c_dawn_s1": {
+      "intent": "wait for the dawn",
+      "cost": "none (only way on)"
+    },
+    "c_dawn_o1": {
+      "intent": "fit the master key",
+      "cost": "none (only way on)"
+    },
+    "c_dawn_o2": {
+      "intent": "watch the creature stir",
+      "cost": "none (only way on)"
+    },
+    "c_dawn_o3": {
+      "intent": "greet the dawn",
+      "cost": "none (only way on)"
+    },
+    "c_dawn_w2": {
+      "intent": "prop the key beside the note",
+      "cost": "none (only way on)"
+    },
+    "c_dawn_w3": {
+      "intent": "wait for the morning",
+      "cost": "none (only way on)"
+    },
+    "c_sec_j": {
+      "intent": "read Fettle's private journal",
+      "cost": "gives up the mouse and the cabinet",
+      "requires": [
+        "workshop_three_secrets"
+      ]
+    },
+    "c_sec_m": {
+      "intent": "follow the clockwork mouse",
+      "cost": "gives up the journal and the cabinet",
+      "requires": [
+        "second_mouse"
+      ]
+    },
+    "c_sec_c": {
+      "intent": "open the locked cabinet",
+      "cost": "gives up the journal and the mouse",
+      "requires": [
+        "workshop_three_secrets"
+      ]
+    },
+    "c_sec_m1a": {
+      "intent": "chase the mouse into the dark",
+      "cost": "into dark corners; gives up coaxing it"
+    },
+    "c_sec_m1b": {
+      "intent": "coax the mouse to come to her",
+      "cost": "the mouse never leads her to its secret"
+    },
+    "c_sec_c1a": {
+      "intent": "try the tiny keys one by one",
+      "cost": "slow; gives up forcing the lock"
+    },
+    "c_sec_c1b": {
+      "intent": "force the lock with a tool",
+      "cost": "the lock breaks and the cabinet jams shut"
+    },
+    "c_dawn_s": {
+      "intent": "let them all sleep and wait",
+      "cost": "wakes nothing; gives up the other two"
+    },
+    "c_dawn_o": {
+      "intent": "wind one favourite before dawn",
+      "cost": "only one wakes; gives up the other two"
+    },
+    "c_dawn_w": {
+      "intent": "wait by the door to meet someone",
+      "cost": "gives up winding or simply waiting"
+    },
+    "c_dawn_w1a": {
+      "intent": "wait openly to meet the keepers",
+      "cost": "gives up the note and hiding"
+    },
+    "c_dawn_w1b": {
+      "intent": "leave a helpful note",
+      "cost": "gives up meeting the keepers first"
+    },
+    "c_dawn_w1c": {
+      "intent": "hide until she knows who comes",
+      "cost": "she is locked in and misses her chance to explain"
+    }
+  },
+  "threads": {},
+  "endings": {
+    "e_set_av": {
+      "gift": "a safe wait on a high ledge and a lesson about the cracking stair",
+      "valence": "negative",
+      "kind": "setback"
+    },
+    "e_set_sv": {
+      "gift": "a gentle tin giant guarding her corner till morning",
+      "valence": "neutral",
+      "kind": "setback"
+    },
+    "e_set_ds": {
+      "gift": "a keeper hears Tock and helps her down; a reason to choose the rope next time",
+      "valence": "negative",
+      "kind": "setback"
+    },
+    "e_set_cg": {
+      "gift": "a starlit glass box to wait in and a reason to step back next time",
+      "valence": "negative",
+      "kind": "setback"
+    },
+    "e_set_key": {
+      "gift": "a quiet wait on the stairs with Tock and a reason to go gently",
+      "valence": "neutral",
+      "kind": "setback"
+    },
+    "e_set_spring": {
+      "gift": "the broken spring seen and a reason to lift the panel slowly",
+      "valence": "negative",
+      "kind": "setback"
+    },
+    "e_set_shop": {
+      "gift": "the workshop found but the spring lost; a reason to carry it herself",
+      "valence": "negative",
+      "kind": "setback"
+    },
+    "e_win_all": {
+      "gift": "the whole menagerie awake at dawn and Fettle's life's work saved",
+      "valence": "positive",
+      "kind": "completion"
+    },
+    "e_win_all_quiet": {
+      "gift": "a mended menagerie left ready for Fettle's own hand",
+      "valence": "positive",
+      "kind": "success"
+    },
+    "e_win_most": {
+      "gift": "most of the museum moving for the morning crowd",
+      "valence": "positive",
+      "kind": "success"
+    },
+    "e_set_rw": {
+      "gift": "the whole mend learned, and a reason to reseat the spring next time",
+      "valence": "negative",
+      "kind": "setback"
+    },
+    "e_win_clever": {
+      "gift": "a clever mend and the keepers' praise: the makings of a fine keeper",
+      "valence": "positive",
+      "kind": "success"
+    },
+    "e_win_bird": {
+      "gift": "the brass lark's song and Fettle's word that one waking means hope",
+      "valence": "positive",
+      "kind": "success"
+    },
+    "e_win_lion": {
+      "gift": "the tin lion's roar through every hall",
+      "valence": "positive",
+      "kind": "success"
+    },
+    "e_win_whale": {
+      "gift": "the copper whale's song over hushed children",
+      "valence": "positive",
+      "kind": "success"
+    },
+    "e_win_fly": {
+      "gift": "a cloud of foil butterflies under the starry dome",
+      "valence": "positive",
+      "kind": "success"
+    },
+    "e_win_eleph": {
+      "gift": "the frightening elephant made gentle enough to give rides",
+      "valence": "positive",
+      "kind": "success"
+    },
+    "e_win_journal": {
+      "gift": "Fettle's lonely story and Nia's promise to keep his work alive",
+      "valence": "positive",
+      "kind": "completion"
+    },
+    "e_win_mouse": {
+      "gift": "Fettle's hidden mice awake and a family for Tock",
+      "valence": "positive",
+      "kind": "success"
+    },
+    "e_neu_mouse": {
+      "gift": "a small clockwork friend for the last dark hours",
+      "valence": "neutral",
+      "kind": "discovery"
+    },
+    "e_win_cabinet": {
+      "gift": "Fettle's first clockwork rabbit hopping again",
+      "valence": "positive",
+      "kind": "completion"
+    },
+    "e_set_cabinet": {
+      "gift": "the cabinet's secret kept for a more patient try",
+      "valence": "negative",
+      "kind": "setback"
+    },
+    "e_neu_dawn": {
+      "gift": "a safe, quiet dawn and the knowledge of how to mend the spring",
+      "valence": "neutral",
+      "kind": "discovery"
+    },
+    "e_win_one": {
+      "gift": "one gentle waking creature as a promise of wonders to come",
+      "valence": "positive",
+      "kind": "success"
+    },
+    "e_win_note": {
+      "gift": "the keepers wake the menagerie by following Nia's clear note",
+      "valence": "positive",
+      "kind": "success"
+    },
+    "e_neu_caretaker": {
+      "gift": "a kind keeper who hears the whole story and sees Nia home",
+      "valence": "neutral",
+      "kind": "discovery"
+    },
+    "e_set_dawn": {
+      "gift": "a gentle setback and a reason to meet the keepers openly",
+      "valence": "neutral",
+      "kind": "setback"
+    }
+  },
+  "provenance": {
+    "producer": "wp-1.4 blind extraction",
+    "method": "read-book",
+    "book_file": "tmp_cleanup/blind/z2.book.json",
+    "book_sha256": "f69e13d99a242a3478066522deb123f564cc556c1661ff14f824a8482274204e",
+    "authored": "2026-11-21",
+    "authoring_minutes": 55,
+    "notes": [
+      "The book declares no variables and no conditions, so there are no threads.",
+      "Several merge nodes presuppose facts shown on only some routes (the hum, the great clock, Keeper Fettle's name, the clue card); requires records the prose as written."
+    ]
+  }
+}

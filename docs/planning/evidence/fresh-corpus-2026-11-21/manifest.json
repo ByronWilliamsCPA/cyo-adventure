@@ -1,0 +1,32 @@
+{
+  "wp": "WP-1.6",
+  "date": "2026-11-21",
+  "prompt": "../story-plan-retro/plans/EXTRACTION-PROMPT-v2.md",
+  "staging": "Inputs staged as tmp_cleanup/blind/<id>.book.json in a rebuilt blind worktree with docs/planning (including the frozen second reads), tests, the skills reference, out/*.plan.json and the current revised books deleted; second-read scratch moved out of the repo. Fresh agents, opus; none saw the second reads.",
+  "extractions": {
+    "z1": {
+      "source_file": "out/the-thornwood-trial.filled.json",
+      "book_sha256": "cd3f45ad0d3d8075e57fdd203612a66ce59d65f1b2613c5ba7419caaf165476d",
+      "title": "The Thornwood Trial",
+      "second_read": "second-read-the-thornwood-trial.md",
+      "model_family": "opus",
+      "authoring_minutes": 75
+    },
+    "z2": {
+      "source_file": "out/the-clockwork-menagerie.filled.json",
+      "book_sha256": "f69e13d99a242a3478066522deb123f564cc556c1661ff14f824a8482274204e",
+      "title": "The Clockwork Menagerie",
+      "second_read": "second-read-the-clockwork-menagerie.md",
+      "model_family": "opus",
+      "authoring_minutes": 55
+    },
+    "z3": {
+      "source_file": "out/the-clocktower-cipher.filled.json",
+      "book_sha256": "2d476787f5e61104d2e8f87765820496488f2780d3c08cd19cfcc7516b305bb5",
+      "title": "The Clocktower Cipher",
+      "second_read": "second-read-the-clocktower-cipher.md",
+      "model_family": "opus",
+      "authoring_minutes": 40
+    }
+  }
+}

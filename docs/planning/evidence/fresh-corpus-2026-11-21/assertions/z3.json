@@ -1,0 +1,197 @@
+{
+  "n_open": [
+    "tower_frozen",
+    "front_door_locked",
+    "three_friends",
+    "cipher_note",
+    "mara_loves_puzzles",
+    "lin_careful",
+    "keep_out_sign"
+  ],
+  "n_start": [
+    "cipher_note",
+    "front_door_locked",
+    "three_friends",
+    "note_meant_to_be_found",
+    "clockkeeper_nearby"
+  ],
+  "n_note": [
+    "cipher_note",
+    "three_friends",
+    "cipher_first_line_cracked",
+    "key_under_third_stone",
+    "loose_grate",
+    "note_in_mara_pocket"
+  ],
+  "n_door": [
+    "front_door_locked",
+    "three_friends",
+    "side_door_swollen",
+    "high_window_climb",
+    "theo_loves_climbing"
+  ],
+  "n_keeper": [
+    "clockkeeper_nearby",
+    "cipher_note",
+    "keeper_knows_note",
+    "tower_built_to_test",
+    "keeper_can_unlock",
+    "cipher_has_builder"
+  ],
+  "n_keyhunt": [
+    "key_under_third_stone",
+    "front_door_locked",
+    "brass_key_found"
+  ],
+  "n_keeper_story": [
+    "cipher_has_builder",
+    "cipher_note",
+    "clockmaker_built",
+    "eda_name",
+    "eda_hid_secret",
+    "set_clock_opens",
+    "keeper_gave_token"
+  ],
+  "n_window": [
+    "high_window_climb",
+    "theo_loves_climbing",
+    "cipher_note",
+    "landing_inside"
+  ],
+  "n_inside": [
+    "landing_inside",
+    "clockmaker_built",
+    "cipher_note",
+    "tower_hall",
+    "cipher_set_at_clockface",
+    "light_limited"
+  ],
+  "n_stairs": [
+    "tower_hall",
+    "keeper_gave_token",
+    "eda_name",
+    "cipher_set_at_clockface",
+    "gear_token_found"
+  ],
+  "n_study": [
+    "tower_hall",
+    "eda_name",
+    "cipher_note",
+    "cipher_set_at_clockface",
+    "light_limited",
+    "cipher_wheel",
+    "mara_can_decode",
+    "eda_logbooks"
+  ],
+  "n_pendulum": [
+    "tower_hall",
+    "pendulum_still",
+    "oil_can_on_ledge"
+  ],
+  "n_basement": [
+    "tower_hall",
+    "eda_name",
+    "basement_lantern",
+    "service_ladder"
+  ],
+  "n_clockface": [
+    "cipher_note",
+    "cipher_wheel",
+    "clockface_symbol_ring",
+    "cipher_names_time",
+    "mara_has_cipher_wheel",
+    "panel_seam"
+  ],
+  "n_setcorrect": [
+    "mara_has_cipher_wheel",
+    "eda_name",
+    "cipher_names_time",
+    "cipher_note",
+    "cipher_time_read",
+    "clock_set_correctly",
+    "tower_has_vault",
+    "vault_panel_opened"
+  ],
+  "n_setjam": [
+    "oil_can_on_ledge",
+    "gears_jammed",
+    "has_oil_can"
+  ],
+  "n_backpanel": [
+    "panel_seam",
+    "mara_has_cipher_wheel",
+    "eda_name",
+    "tower_has_vault",
+    "cipher_note",
+    "second_dial",
+    "hidden_workshop"
+  ],
+  "n_vault": [
+    "tower_has_vault",
+    "eda_name",
+    "vault_entered",
+    "sealed_letter",
+    "automaton",
+    "treasure_dish",
+    "tower_solved",
+    "letter_encoded"
+  ],
+  "n_end_library": [
+    "eda_logbooks",
+    "eda_name",
+    "clockkeeper_nearby",
+    "tower_has_vault",
+    "eda_story_learned",
+    "clock_not_set",
+    "vault_not_found",
+    "keeper_locks_tower"
+  ],
+  "n_end_giveup": [
+    "oil_can_on_ledge",
+    "pendulum_still",
+    "no_oil_can",
+    "cipher_half_mystery"
+  ],
+  "n_end_timeout": [
+    "clockkeeper_nearby",
+    "eda_name",
+    "spin_jammed",
+    "cipher_unsolved",
+    "left_empty_handed"
+  ],
+  "n_end_stuck": [
+    "gears_jammed",
+    "clockkeeper_nearby",
+    "no_oil_can",
+    "damage_not_permanent",
+    "keeper_come_back"
+  ],
+  "n_end_secret": [
+    "second_dial",
+    "eda_name",
+    "hidden_workshop",
+    "workshop_unfinished_work"
+  ],
+  "n_end_hero": [
+    "sealed_letter",
+    "eda_name",
+    "clockkeeper_nearby",
+    "letter_plain",
+    "letter_reveals_charter_spring",
+    "spring_and_charter_restored",
+    "town_told"
+  ],
+  "n_end_keepsake": [
+    "sealed_letter",
+    "automaton",
+    "secret_kept"
+  ],
+  "n_end_caught": [
+    "treasure_dish",
+    "eda_name",
+    "clockkeeper_nearby",
+    "bell_cage_trap",
+    "treasure_returned",
+    "left_empty_handed"
+  ]
+}

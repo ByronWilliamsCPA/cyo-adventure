@@ -1,0 +1,2231 @@
+{
+  "n_open": [
+    "thornwood_enchanted",
+    "trial_horn",
+    "trial_one_day",
+    "wren_hero",
+    "wren_wants_warden"
+  ],
+  "n_start": [
+    "four_ways_in"
+  ],
+  "ap_1": [
+    "four_ways_in",
+    "maze_mouth_knot",
+    "took_deer_track",
+    "trial_one_day"
+  ],
+  "ap_2": [
+    "four_ways_in",
+    "maze_mouth_knot",
+    "took_stream_bed"
+  ],
+  "ap_3": [
+    "four_ways_in",
+    "maze_mouth_knot",
+    "took_road"
+  ],
+  "ap_4": [
+    "day_barely_begun",
+    "four_ways_in",
+    "maze_mouth_knot",
+    "took_wall"
+  ],
+  "e_maze_hub0": [
+    "maze_dead_end",
+    "maze_scene",
+    "trial_horn",
+    "trial_lost",
+    "trial_one_day",
+    "warden_marks_on_trunks"
+  ],
+  "e_maze_hub1": [
+    "maze_fell",
+    "trial_horn",
+    "trial_lost",
+    "trial_one_day"
+  ],
+  "x_mazeh_1_1": [
+    "maze_hazard1",
+    "warden_marks_on_trunks",
+    "wren_off_marks"
+  ],
+  "x_mazeh_1_2": [
+    "light_failing",
+    "maze_hazard1",
+    "maze_scene",
+    "wren_off_marks"
+  ],
+  "e_mazeh_1": [
+    "maze_shelter_wait",
+    "searchers_coming",
+    "trial_lost",
+    "trial_one_day"
+  ],
+  "h_maze": [
+    "maze_scene",
+    "maze_temptations",
+    "trial_one_day",
+    "true_mark_hardest",
+    "warden_marks_on_trunks"
+  ],
+  "e_maze_1_0": [
+    "maze_fell",
+    "trial_horn",
+    "trial_lost",
+    "trial_one_day"
+  ],
+  "x_maze1_2_1": [
+    "maze_hazard1",
+    "warden_marks_on_trunks",
+    "wren_off_marks"
+  ],
+  "x_maze1_2_2": [
+    "light_failing",
+    "maze_hazard1",
+    "wren_off_marks"
+  ],
+  "x_maze1_2_3": [
+    "maze_hazard1",
+    "wren_off_marks"
+  ],
+  "e_maze1_2": [
+    "false_marks_exist",
+    "maze_false_wall",
+    "trial_lost",
+    "trial_one_day",
+    "warden_marks_on_trunks"
+  ],
+  "x_maze1_3_1": [
+    "maze_hazard1",
+    "maze_scene",
+    "trial_one_day",
+    "warden_marks_on_trunks",
+    "wren_off_marks"
+  ],
+  "x_maze1_3_2": [
+    "maze_hazard1",
+    "wren_off_marks"
+  ],
+  "e_maze1_3": [
+    "maze_scene",
+    "maze_shelter_wait",
+    "searchers_coming",
+    "trial_lost",
+    "trial_one_day"
+  ],
+  "b_maze_1": [
+    "maze_scene",
+    "strange_light_warning",
+    "true_mark_hardest",
+    "warden_marks_on_trunks",
+    "warden_runs_exist"
+  ],
+  "e_maze_2_0": [
+    "false_marks_exist",
+    "maze_false_wall",
+    "trial_lost",
+    "trial_one_day",
+    "warden_marks_on_trunks"
+  ],
+  "x_maze2_4_1": [
+    "maze_hazard2",
+    "warden_marks_on_trunks",
+    "wren_off_marks"
+  ],
+  "x_maze2_4_2": [
+    "light_failing",
+    "maze_hazard2",
+    "maze_scene",
+    "wren_off_marks"
+  ],
+  "e_maze2_4": [
+    "maze_shelter_wait",
+    "searchers_coming",
+    "trial_lost",
+    "trial_one_day",
+    "warden_marks_on_trunks"
+  ],
+  "x_maze2_5_1": [
+    "maze_hazard2",
+    "warden_marks_on_trunks",
+    "wren_off_marks"
+  ],
+  "x_maze2_5_2": [
+    "light_failing",
+    "maze_hazard2",
+    "wren_off_marks"
+  ],
+  "x_maze2_5_3": [
+    "maze_hazard1",
+    "wren_off_marks"
+  ],
+  "e_maze2_5": [
+    "maze_scene",
+    "maze_snared",
+    "trial_horn",
+    "trial_lost",
+    "trial_one_day"
+  ],
+  "b_maze_2": [
+    "light_failing",
+    "maze_scene",
+    "warden_marks_on_trunks",
+    "warden_runs_exist"
+  ],
+  "e_maze_3_0": [
+    "maze_scene",
+    "maze_shelter_wait",
+    "trial_lost",
+    "trial_one_day"
+  ],
+  "x_maze3_6_1": [
+    "maze_hazard2",
+    "maze_scene",
+    "trial_one_day",
+    "warden_marks_on_trunks",
+    "wren_off_marks"
+  ],
+  "x_maze3_6_2": [
+    "maze_hazard2",
+    "wren_off_marks"
+  ],
+  "x_maze3_6_3": [
+    "maze_hazard1",
+    "wren_off_marks"
+  ],
+  "e_maze3_6": [
+    "maze_scene",
+    "maze_snared",
+    "trial_lost",
+    "trial_one_day"
+  ],
+  "x_maze3_7_1": [
+    "maze_hazard3",
+    "warden_marks_on_trunks",
+    "wren_off_marks"
+  ],
+  "x_maze3_7_2": [
+    "light_failing",
+    "maze_hazard3",
+    "maze_scene",
+    "wren_off_marks"
+  ],
+  "e_maze3_7": [
+    "maze_dismissed",
+    "maze_scene",
+    "trial_lost",
+    "trial_one_day",
+    "warden_present_maze"
+  ],
+  "b_maze_3": [
+    "legs_tiring",
+    "maze_scene",
+    "trial_one_day",
+    "warden_marks_on_trunks",
+    "warden_runs_exist"
+  ],
+  "e_maze_4_0": [
+    "maze_snared",
+    "trial_lost",
+    "trial_one_day"
+  ],
+  "x_maze4_8_1": [
+    "maze_hazard3",
+    "warden_marks_on_trunks",
+    "wren_off_marks"
+  ],
+  "x_maze4_8_2": [
+    "light_failing",
+    "maze_hazard3",
+    "wren_off_marks"
+  ],
+  "e_maze4_8": [
+    "maze_dismissed",
+    "maze_scene",
+    "trial_lost",
+    "trial_one_day",
+    "warden_present_maze"
+  ],
+  "x_maze4_9_1": [
+    "maze_hazard3",
+    "maze_scene",
+    "trial_one_day",
+    "warden_marks_on_trunks",
+    "wren_off_marks"
+  ],
+  "x_maze4_9_2": [
+    "maze_hazard3",
+    "wren_off_marks"
+  ],
+  "x_maze4_9_3": [
+    "maze_hazard2",
+    "wren_off_marks"
+  ],
+  "e_maze4_9": [
+    "maze_dead_end",
+    "trial_horn",
+    "trial_lost",
+    "trial_one_day",
+    "warden_marks_on_trunks"
+  ],
+  "b_maze_4": [
+    "marks_scarce",
+    "maze_scene",
+    "strange_sound",
+    "warden_marks_on_trunks"
+  ],
+  "e_maze_5_0": [
+    "maze_dismissed",
+    "maze_scene",
+    "trial_lost",
+    "trial_one_day",
+    "warden_present_maze"
+  ],
+  "x_maze5_10_1": [
+    "maze_hazard4",
+    "warden_marks_on_trunks",
+    "wren_off_marks"
+  ],
+  "x_maze5_10_2": [
+    "light_failing",
+    "maze_hazard4",
+    "maze_scene",
+    "wren_off_marks"
+  ],
+  "x_maze5_10_3": [
+    "maze_hazard2",
+    "wren_off_marks"
+  ],
+  "e_maze5_10": [
+    "maze_dead_end",
+    "trial_lost",
+    "trial_one_day",
+    "warden_marks_on_trunks"
+  ],
+  "x_maze5_11_1": [
+    "maze_hazard4",
+    "warden_marks_on_trunks",
+    "wren_off_marks"
+  ],
+  "x_maze5_11_2": [
+    "light_failing",
+    "maze_hazard4",
+    "wren_off_marks"
+  ],
+  "e_maze5_11": [
+    "maze_fell",
+    "trial_horn",
+    "trial_lost",
+    "trial_one_day"
+  ],
+  "b_maze_5": [
+    "badly_spent",
+    "maze_scene",
+    "strange_sound",
+    "warden_marks_on_trunks"
+  ],
+  "rc_maze_0_1": [
+    "maze_warden_run",
+    "trial_one_day",
+    "warden_marks_on_trunks",
+    "warden_runs_exist"
+  ],
+  "rc_maze_0_2": [
+    "light_failing",
+    "maze_warden_run"
+  ],
+  "rc_maze_0_3": [
+    "maze_scene",
+    "maze_warden_run",
+    "warden_marks_on_trunks",
+    "wren_rejoined_trail"
+  ],
+  "rc_maze_1_1": [
+    "maze_scene",
+    "maze_warden_run",
+    "trial_one_day",
+    "warden_marks_on_trunks",
+    "warden_runs_exist"
+  ],
+  "rc_maze_1_2": [
+    "light_failing",
+    "maze_scene",
+    "maze_warden_run"
+  ],
+  "rc_maze_1_3": [
+    "maze_scene",
+    "maze_warden_run",
+    "warden_marks_on_trunks",
+    "wren_rejoined_trail"
+  ],
+  "rc_maze_2_1": [
+    "maze_warden_run",
+    "trial_one_day",
+    "warden_marks_on_trunks",
+    "warden_runs_exist"
+  ],
+  "rc_maze_2_2": [
+    "light_failing",
+    "maze_warden_run"
+  ],
+  "rc_maze_2_3": [
+    "maze_scene",
+    "maze_warden_run",
+    "warden_marks_on_trunks",
+    "wren_rejoined_trail"
+  ],
+  "e_grove_hub0": [
+    "grove_fell",
+    "trial_horn",
+    "trial_lost",
+    "trial_one_day"
+  ],
+  "e_grove_hub1": [
+    "false_marks_exist",
+    "grove_false_wall",
+    "trial_lost",
+    "trial_one_day",
+    "warden_marks_on_trunks"
+  ],
+  "x_groveh_12_1": [
+    "grove_hazard1",
+    "warden_marks_on_trunks",
+    "wren_off_marks"
+  ],
+  "x_groveh_12_2": [
+    "grove_hazard1",
+    "grove_scene",
+    "light_failing",
+    "wren_off_marks"
+  ],
+  "e_groveh_12": [
+    "grove_scene",
+    "grove_snared",
+    "trial_horn",
+    "trial_lost",
+    "trial_one_day"
+  ],
+  "h_grove": [
+    "grove_first_warden",
+    "grove_scene",
+    "grove_temptations",
+    "trial_one_day",
+    "true_mark_hardest",
+    "warden_marks_on_trunks",
+    "warden_present_grove"
+  ],
+  "e_grove_1_0": [
+    "false_marks_exist",
+    "grove_false_wall",
+    "trial_lost",
+    "trial_one_day",
+    "warden_marks_on_trunks"
+  ],
+  "x_grove1_13_1": [
+    "grove_hazard1",
+    "warden_marks_on_trunks",
+    "wren_off_marks"
+  ],
+  "x_grove1_13_2": [
+    "grove_hazard1",
+    "light_failing",
+    "wren_off_marks"
+  ],
+  "x_grove1_13_3": [
+    "grove_hazard1",
+    "wren_off_marks"
+  ],
+  "e_grove1_13": [
+    "grove_shelter_wait",
+    "searchers_coming",
+    "trial_lost",
+    "trial_one_day"
+  ],
+  "x_grove1_14_1": [
+    "grove_hazard1",
+    "grove_scene",
+    "trial_one_day",
+    "warden_marks_on_trunks",
+    "wren_off_marks"
+  ],
+  "x_grove1_14_2": [
+    "grove_hazard1",
+    "wren_off_marks"
+  ],
+  "e_grove1_14": [
+    "grove_scene",
+    "grove_snared",
+    "trial_lost",
+    "trial_one_day"
+  ],
+  "b_grove_1": [
+    "grove_scene",
+    "strange_light_warning",
+    "true_mark_hardest",
+    "warden_marks_on_trunks",
+    "warden_runs_exist"
+  ],
+  "e_grove_2_0": [
+    "grove_scene",
+    "grove_shelter_wait",
+    "searchers_coming",
+    "trial_lost",
+    "trial_one_day"
+  ],
+  "x_grove2_15_1": [
+    "grove_hazard2",
+    "warden_marks_on_trunks",
+    "wren_off_marks"
+  ],
+  "x_grove2_15_2": [
+    "grove_hazard2",
+    "grove_scene",
+    "light_failing",
+    "wren_off_marks"
+  ],
+  "e_grove2_15": [
+    "grove_snared",
+    "trial_lost",
+    "trial_one_day"
+  ],
+  "x_grove2_16_1": [
+    "grove_hazard2",
+    "warden_marks_on_trunks",
+    "wren_off_marks"
+  ],
+  "x_grove2_16_2": [
+    "grove_hazard2",
+    "light_failing",
+    "wren_off_marks"
+  ],
+  "x_grove2_16_3": [
+    "grove_hazard1",
+    "wren_off_marks"
+  ],
+  "e_grove2_16": [
+    "grove_dismissed",
+    "grove_scene",
+    "trial_lost",
+    "trial_one_day",
+    "warden_present_grove"
+  ],
+  "b_grove_2": [
+    "grove_scene",
+    "light_failing",
+    "warden_marks_on_trunks",
+    "warden_runs_exist"
+  ],
+  "e_grove_3_0": [
+    "grove_scene",
+    "grove_snared",
+    "trial_lost",
+    "trial_one_day"
+  ],
+  "x_grove3_17_1": [
+    "grove_hazard2",
+    "grove_scene",
+    "trial_one_day",
+    "warden_marks_on_trunks",
+    "wren_off_marks"
+  ],
+  "x_grove3_17_2": [
+    "grove_hazard2",
+    "wren_off_marks"
+  ],
+  "x_grove3_17_3": [
+    "grove_hazard1",
+    "wren_off_marks"
+  ],
+  "e_grove3_17": [
+    "grove_dismissed",
+    "grove_scene",
+    "trial_lost",
+    "trial_one_day",
+    "warden_present_grove"
+  ],
+  "x_grove3_18_1": [
+    "grove_hazard3",
+    "grove_scene",
+    "warden_marks_on_trunks",
+    "wren_off_marks"
+  ],
+  "x_grove3_18_2": [
+    "grove_hazard3",
+    "grove_scene",
+    "light_failing",
+    "wren_off_marks"
+  ],
+  "e_grove3_18": [
+    "grove_dead_end",
+    "grove_scene",
+    "trial_horn",
+    "trial_lost",
+    "trial_one_day",
+    "warden_marks_on_trunks"
+  ],
+  "b_grove_3": [
+    "grove_scene",
+    "legs_tiring",
+    "trial_one_day",
+    "warden_marks_on_trunks",
+    "warden_runs_exist"
+  ],
+  "e_grove_4_0": [
+    "grove_dismissed",
+    "grove_scene",
+    "trial_lost",
+    "trial_one_day",
+    "warden_present_grove"
+  ],
+  "x_grove4_19_1": [
+    "grove_hazard3",
+    "grove_scene",
+    "warden_marks_on_trunks",
+    "wren_off_marks"
+  ],
+  "x_grove4_19_2": [
+    "grove_hazard3",
+    "grove_scene",
+    "light_failing",
+    "wren_off_marks"
+  ],
+  "e_grove4_19": [
+    "grove_dead_end",
+    "trial_horn",
+    "trial_lost",
+    "trial_one_day",
+    "warden_marks_on_trunks"
+  ],
+  "x_grove4_20_1": [
+    "grove_hazard3",
+    "grove_scene",
+    "trial_one_day",
+    "warden_marks_on_trunks",
+    "wren_off_marks"
+  ],
+  "x_grove4_20_2": [
+    "grove_hazard3",
+    "grove_scene",
+    "wren_off_marks"
+  ],
+  "x_grove4_20_3": [
+    "grove_hazard2",
+    "wren_off_marks"
+  ],
+  "e_grove4_20": [
+    "grove_fell",
+    "trial_horn",
+    "trial_lost",
+    "trial_one_day"
+  ],
+  "b_grove_4": [
+    "grove_scene",
+    "marks_scarce",
+    "strange_sound",
+    "warden_marks_on_trunks"
+  ],
+  "e_grove_5_0": [
+    "grove_dead_end",
+    "trial_lost",
+    "trial_one_day",
+    "warden_marks_on_trunks"
+  ],
+  "x_grove5_21_1": [
+    "grove_hazard4",
+    "warden_marks_on_trunks",
+    "wren_off_marks"
+  ],
+  "x_grove5_21_2": [
+    "grove_hazard4",
+    "grove_scene",
+    "light_failing",
+    "wren_off_marks"
+  ],
+  "x_grove5_21_3": [
+    "grove_hazard2",
+    "wren_off_marks"
+  ],
+  "e_grove5_21": [
+    "grove_fell",
+    "trial_horn",
+    "trial_lost",
+    "trial_one_day"
+  ],
+  "x_grove5_22_1": [
+    "grove_hazard4",
+    "warden_marks_on_trunks",
+    "wren_off_marks"
+  ],
+  "x_grove5_22_2": [
+    "grove_hazard4",
+    "light_failing",
+    "wren_off_marks"
+  ],
+  "e_grove5_22": [
+    "false_marks_exist",
+    "grove_false_wall",
+    "trial_lost",
+    "trial_one_day",
+    "warden_marks_on_trunks"
+  ],
+  "b_grove_5": [
+    "badly_spent",
+    "grove_scene",
+    "strange_sound",
+    "warden_marks_on_trunks"
+  ],
+  "rc_grove_0_1": [
+    "grove_warden_run",
+    "trial_one_day",
+    "warden_marks_on_trunks",
+    "warden_runs_exist"
+  ],
+  "rc_grove_0_2": [
+    "grove_warden_run",
+    "light_failing"
+  ],
+  "rc_grove_0_3": [
+    "grove_scene",
+    "grove_warden_run",
+    "warden_marks_on_trunks",
+    "wren_rejoined_trail"
+  ],
+  "rc_grove_1_1": [
+    "grove_scene",
+    "grove_warden_run",
+    "trial_one_day",
+    "warden_marks_on_trunks",
+    "warden_runs_exist"
+  ],
+  "rc_grove_1_2": [
+    "grove_scene",
+    "grove_warden_run",
+    "light_failing"
+  ],
+  "rc_grove_1_3": [
+    "grove_scene",
+    "grove_warden_run",
+    "warden_marks_on_trunks",
+    "wren_rejoined_trail"
+  ],
+  "rc_grove_2_1": [
+    "grove_warden_run",
+    "trial_one_day",
+    "warden_marks_on_trunks",
+    "warden_runs_exist"
+  ],
+  "rc_grove_2_2": [
+    "grove_warden_run",
+    "light_failing"
+  ],
+  "rc_grove_2_3": [
+    "grove_scene",
+    "grove_warden_run",
+    "warden_marks_on_trunks",
+    "wren_rejoined_trail"
+  ],
+  "e_warren_hub0": [
+    "false_marks_exist",
+    "trial_lost",
+    "trial_one_day",
+    "warden_marks_on_trunks",
+    "warren_false_wall"
+  ],
+  "e_warren_hub1": [
+    "searchers_coming",
+    "trial_lost",
+    "trial_one_day",
+    "warren_shelter_wait"
+  ],
+  "x_warrenh_23_1": [
+    "warden_marks_on_trunks",
+    "warren_hazard1",
+    "wren_off_marks"
+  ],
+  "x_warrenh_23_2": [
+    "light_failing",
+    "warren_hazard1",
+    "warren_scene",
+    "wren_off_marks"
+  ],
+  "e_warrenh_23": [
+    "trial_lost",
+    "trial_one_day",
+    "warden_present_warren",
+    "warren_dismissed",
+    "warren_scene"
+  ],
+  "h_warren": [
+    "trial_one_day",
+    "true_mark_hardest",
+    "warden_marks_on_trunks",
+    "warden_present_warren",
+    "warren_lynx_warden",
+    "warren_mercy_test",
+    "warren_scene",
+    "warren_temptations",
+    "wren_met_creatures"
+  ],
+  "e_warren_1_0": [
+    "searchers_coming",
+    "trial_lost",
+    "trial_one_day",
+    "warren_scene",
+    "warren_shelter_wait"
+  ],
+  "x_warren1_24_1": [
+    "warden_marks_on_trunks",
+    "warren_hazard1",
+    "wren_off_marks"
+  ],
+  "x_warren1_24_2": [
+    "light_failing",
+    "warren_hazard1",
+    "wren_off_marks"
+  ],
+  "x_warren1_24_3": [
+    "warren_hazard1",
+    "wren_off_marks"
+  ],
+  "e_warren1_24": [
+    "trial_horn",
+    "trial_lost",
+    "trial_one_day",
+    "warren_scene",
+    "warren_snared"
+  ],
+  "x_warren1_25_1": [
+    "trial_one_day",
+    "warden_marks_on_trunks",
+    "warren_hazard1",
+    "warren_scene",
+    "wren_off_marks"
+  ],
+  "x_warren1_25_2": [
+    "warren_hazard1",
+    "wren_off_marks"
+  ],
+  "e_warren1_25": [
+    "trial_lost",
+    "trial_one_day",
+    "warden_present_warren",
+    "warren_dismissed",
+    "warren_scene"
+  ],
+  "b_warren_1": [
+    "strange_light_warning",
+    "true_mark_hardest",
+    "warden_marks_on_trunks",
+    "warden_runs_exist",
+    "warren_scene"
+  ],
+  "e_warren_2_0": [
+    "trial_lost",
+    "trial_one_day",
+    "warren_scene",
+    "warren_snared"
+  ],
+  "x_warren2_26_1": [
+    "warden_marks_on_trunks",
+    "warren_hazard2",
+    "wren_off_marks"
+  ],
+  "x_warren2_26_2": [
+    "light_failing",
+    "warren_hazard2",
+    "warren_scene",
+    "wren_off_marks"
+  ],
+  "e_warren2_26": [
+    "trial_lost",
+    "trial_one_day",
+    "warden_present_warren",
+    "warren_dismissed",
+    "warren_scene"
+  ],
+  "x_warren2_27_1": [
+    "warden_marks_on_trunks",
+    "warren_hazard2",
+    "wren_off_marks"
+  ],
+  "x_warren2_27_2": [
+    "light_failing",
+    "warren_hazard2",
+    "wren_off_marks"
+  ],
+  "x_warren2_27_3": [
+    "warren_hazard1",
+    "wren_off_marks"
+  ],
+  "e_warren2_27": [
+    "trial_horn",
+    "trial_lost",
+    "trial_one_day",
+    "warden_marks_on_trunks",
+    "warren_dead_end",
+    "warren_scene"
+  ],
+  "b_warren_2": [
+    "light_failing",
+    "warden_marks_on_trunks",
+    "warden_runs_exist",
+    "warren_scene"
+  ],
+  "e_warren_3_0": [
+    "trial_lost",
+    "trial_one_day",
+    "warden_present_warren",
+    "warren_dismissed"
+  ],
+  "x_warren3_28_1": [
+    "trial_one_day",
+    "warden_marks_on_trunks",
+    "warren_hazard2",
+    "warren_scene",
+    "wren_off_marks"
+  ],
+  "x_warren3_28_2": [
+    "warren_hazard2",
+    "wren_off_marks"
+  ],
+  "x_warren3_28_3": [
+    "warren_hazard1",
+    "wren_off_marks"
+  ],
+  "e_warren3_28": [
+    "trial_horn",
+    "trial_lost",
+    "trial_one_day",
+    "warden_marks_on_trunks",
+    "warren_dead_end"
+  ],
+  "x_warren3_29_1": [
+    "warden_marks_on_trunks",
+    "warren_hazard3",
+    "wren_off_marks"
+  ],
+  "x_warren3_29_2": [
+    "light_failing",
+    "warren_hazard3",
+    "warren_scene",
+    "wren_off_marks"
+  ],
+  "e_warren3_29": [
+    "trial_horn",
+    "trial_lost",
+    "trial_one_day",
+    "warren_fell"
+  ],
+  "b_warren_3": [
+    "legs_tiring",
+    "trial_one_day",
+    "warden_marks_on_trunks",
+    "warden_runs_exist",
+    "warren_scene"
+  ],
+  "e_warren_4_0": [
+    "trial_lost",
+    "trial_one_day",
+    "warden_marks_on_trunks",
+    "warren_dead_end"
+  ],
+  "x_warren4_30_1": [
+    "warden_marks_on_trunks",
+    "warren_hazard3",
+    "wren_off_marks"
+  ],
+  "x_warren4_30_2": [
+    "light_failing",
+    "warren_hazard3",
+    "wren_off_marks"
+  ],
+  "e_warren4_30": [
+    "trial_horn",
+    "trial_lost",
+    "trial_one_day",
+    "warren_fell"
+  ],
+  "x_warren4_31_1": [
+    "trial_one_day",
+    "warden_marks_on_trunks",
+    "warren_hazard3",
+    "warren_scene",
+    "wren_off_marks"
+  ],
+  "x_warren4_31_2": [
+    "warren_hazard3",
+    "wren_off_marks"
+  ],
+  "x_warren4_31_3": [
+    "warren_hazard2",
+    "wren_off_marks"
+  ],
+  "e_warren4_31": [
+    "false_marks_exist",
+    "trial_lost",
+    "trial_one_day",
+    "warden_marks_on_trunks",
+    "warren_false_wall"
+  ],
+  "b_warren_4": [
+    "marks_scarce",
+    "strange_sound",
+    "warden_marks_on_trunks",
+    "warren_scene"
+  ],
+  "e_warren_5_0": [
+    "trial_horn",
+    "trial_lost",
+    "trial_one_day",
+    "warren_fell"
+  ],
+  "x_warren5_32_1": [
+    "warden_marks_on_trunks",
+    "warren_hazard4",
+    "wren_off_marks"
+  ],
+  "x_warren5_32_2": [
+    "light_failing",
+    "warren_hazard4",
+    "warren_scene",
+    "wren_off_marks"
+  ],
+  "x_warren5_32_3": [
+    "warren_hazard2",
+    "wren_off_marks"
+  ],
+  "e_warren5_32": [
+    "false_marks_exist",
+    "trial_lost",
+    "trial_one_day",
+    "warden_marks_on_trunks",
+    "warren_false_wall"
+  ],
+  "x_warren5_33_1": [
+    "warden_marks_on_trunks",
+    "warren_hazard4",
+    "wren_off_marks"
+  ],
+  "x_warren5_33_2": [
+    "light_failing",
+    "warren_hazard4",
+    "wren_off_marks"
+  ],
+  "e_warren5_33": [
+    "searchers_coming",
+    "trial_lost",
+    "trial_one_day",
+    "warden_marks_on_trunks",
+    "warren_shelter_wait"
+  ],
+  "b_warren_5": [
+    "badly_spent",
+    "strange_sound",
+    "warden_marks_on_trunks",
+    "warren_scene"
+  ],
+  "rc_warren_0_1": [
+    "trial_one_day",
+    "warden_marks_on_trunks",
+    "warden_runs_exist",
+    "warren_warden_run"
+  ],
+  "rc_warren_0_2": [
+    "light_failing",
+    "warren_warden_run"
+  ],
+  "rc_warren_0_3": [
+    "warden_marks_on_trunks",
+    "warren_scene",
+    "warren_warden_run",
+    "wren_rejoined_trail"
+  ],
+  "rc_warren_1_1": [
+    "trial_one_day",
+    "warden_marks_on_trunks",
+    "warden_runs_exist",
+    "warren_scene",
+    "warren_warden_run"
+  ],
+  "rc_warren_1_2": [
+    "light_failing",
+    "warren_scene",
+    "warren_warden_run"
+  ],
+  "rc_warren_1_3": [
+    "warden_marks_on_trunks",
+    "warren_scene",
+    "warren_warden_run",
+    "wren_rejoined_trail"
+  ],
+  "rc_warren_2_1": [
+    "trial_one_day",
+    "warden_marks_on_trunks",
+    "warden_runs_exist",
+    "warren_warden_run"
+  ],
+  "rc_warren_2_2": [
+    "light_failing",
+    "warren_warden_run"
+  ],
+  "rc_warren_2_3": [
+    "warden_marks_on_trunks",
+    "warren_scene",
+    "warren_warden_run",
+    "wren_rejoined_trail"
+  ],
+  "e_council_hub0": [
+    "council_shelter_wait",
+    "searchers_coming",
+    "trial_lost",
+    "trial_one_day"
+  ],
+  "e_council_hub1": [
+    "council_scene",
+    "council_snared",
+    "trial_horn",
+    "trial_lost",
+    "trial_one_day"
+  ],
+  "x_councilh_34_1": [
+    "council_hazard1",
+    "warden_marks_on_trunks",
+    "wren_off_marks"
+  ],
+  "x_councilh_34_2": [
+    "council_hazard1",
+    "council_scene",
+    "light_failing",
+    "wren_off_marks"
+  ],
+  "e_councilh_34": [
+    "council_dead_end",
+    "council_scene",
+    "trial_horn",
+    "trial_lost",
+    "trial_one_day",
+    "warden_marks_on_trunks"
+  ],
+  "h_council": [
+    "council_scene",
+    "council_second_test",
+    "council_temptations",
+    "council_wardens",
+    "trial_one_day",
+    "true_mark_hardest",
+    "warden_marks_on_trunks",
+    "warden_present_council"
+  ],
+  "e_council_1_0": [
+    "council_scene",
+    "council_snared",
+    "trial_lost",
+    "trial_one_day"
+  ],
+  "x_council1_35_1": [
+    "council_hazard1",
+    "warden_marks_on_trunks",
+    "wren_off_marks"
+  ],
+  "x_council1_35_2": [
+    "council_hazard1",
+    "light_failing",
+    "wren_off_marks"
+  ],
+  "x_council1_35_3": [
+    "council_hazard1",
+    "wren_off_marks"
+  ],
+  "e_council1_35": [
+    "council_dismissed",
+    "council_scene",
+    "trial_lost",
+    "trial_one_day",
+    "warden_present_council"
+  ],
+  "x_council1_36_1": [
+    "council_hazard1",
+    "council_scene",
+    "trial_one_day",
+    "warden_marks_on_trunks",
+    "wren_off_marks"
+  ],
+  "x_council1_36_2": [
+    "council_hazard1",
+    "wren_off_marks"
+  ],
+  "e_council1_36": [
+    "council_dead_end",
+    "trial_horn",
+    "trial_lost",
+    "trial_one_day",
+    "warden_marks_on_trunks"
+  ],
+  "b_council_1": [
+    "council_scene",
+    "strange_light_warning",
+    "true_mark_hardest",
+    "warden_marks_on_trunks",
+    "warden_runs_exist"
+  ],
+  "e_council_2_0": [
+    "council_dismissed",
+    "council_scene",
+    "trial_lost",
+    "trial_one_day",
+    "warden_present_council"
+  ],
+  "x_council2_37_1": [
+    "council_hazard2",
+    "warden_marks_on_trunks",
+    "wren_off_marks"
+  ],
+  "x_council2_37_2": [
+    "council_hazard2",
+    "council_scene",
+    "light_failing",
+    "wren_off_marks"
+  ],
+  "e_council2_37": [
+    "council_dead_end",
+    "trial_lost",
+    "trial_one_day",
+    "warden_marks_on_trunks"
+  ],
+  "x_council2_38_1": [
+    "council_hazard2",
+    "warden_marks_on_trunks",
+    "wren_off_marks"
+  ],
+  "x_council2_38_2": [
+    "council_hazard2",
+    "light_failing",
+    "wren_off_marks"
+  ],
+  "x_council2_38_3": [
+    "council_hazard1",
+    "wren_off_marks"
+  ],
+  "e_council2_38": [
+    "council_fell",
+    "trial_horn",
+    "trial_lost",
+    "trial_one_day"
+  ],
+  "b_council_2": [
+    "council_scene",
+    "light_failing",
+    "warden_marks_on_trunks",
+    "warden_runs_exist"
+  ],
+  "e_council_3_0": [
+    "council_dead_end",
+    "council_scene",
+    "trial_horn",
+    "trial_lost",
+    "trial_one_day"
+  ],
+  "x_council3_39_1": [
+    "council_hazard2",
+    "council_scene",
+    "trial_one_day",
+    "warden_marks_on_trunks",
+    "wren_off_marks"
+  ],
+  "x_council3_39_2": [
+    "council_hazard2",
+    "wren_off_marks"
+  ],
+  "x_council3_39_3": [
+    "council_hazard1",
+    "wren_off_marks"
+  ],
+  "e_council3_39": [
+    "council_fell",
+    "trial_horn",
+    "trial_lost",
+    "trial_one_day"
+  ],
+  "x_council3_40_1": [
+    "council_hazard3",
+    "warden_marks_on_trunks",
+    "wren_off_marks"
+  ],
+  "x_council3_40_2": [
+    "council_hazard3",
+    "council_scene",
+    "light_failing",
+    "wren_off_marks"
+  ],
+  "e_council3_40": [
+    "council_false_wall",
+    "false_marks_exist",
+    "trial_lost",
+    "trial_one_day",
+    "warden_marks_on_trunks"
+  ],
+  "b_council_3": [
+    "council_scene",
+    "legs_tiring",
+    "trial_one_day",
+    "warden_marks_on_trunks",
+    "warden_runs_exist"
+  ],
+  "e_council_4_0": [
+    "council_fell",
+    "trial_horn",
+    "trial_lost",
+    "trial_one_day"
+  ],
+  "x_council4_41_1": [
+    "council_hazard3",
+    "warden_marks_on_trunks",
+    "wren_off_marks"
+  ],
+  "x_council4_41_2": [
+    "council_hazard3",
+    "light_failing",
+    "wren_off_marks"
+  ],
+  "e_council4_41": [
+    "council_false_wall",
+    "false_marks_exist",
+    "trial_lost",
+    "trial_one_day",
+    "warden_marks_on_trunks"
+  ],
+  "x_council4_42_1": [
+    "council_hazard3",
+    "council_scene",
+    "trial_one_day",
+    "warden_marks_on_trunks",
+    "wren_off_marks"
+  ],
+  "x_council4_42_2": [
+    "council_hazard3",
+    "wren_off_marks"
+  ],
+  "x_council4_42_3": [
+    "council_hazard2",
+    "wren_off_marks"
+  ],
+  "e_council4_42": [
+    "council_scene",
+    "council_shelter_wait",
+    "searchers_coming",
+    "trial_lost",
+    "trial_one_day"
+  ],
+  "b_council_4": [
+    "council_scene",
+    "marks_scarce",
+    "strange_sound",
+    "warden_marks_on_trunks"
+  ],
+  "e_council_5_0": [
+    "council_false_wall",
+    "false_marks_exist",
+    "trial_lost",
+    "trial_one_day",
+    "warden_marks_on_trunks"
+  ],
+  "x_council5_43_1": [
+    "council_hazard4",
+    "council_scene",
+    "light_failing",
+    "warden_marks_on_trunks",
+    "wren_off_marks"
+  ],
+  "x_council5_43_2": [
+    "council_hazard4",
+    "council_scene",
+    "light_failing",
+    "wren_off_marks"
+  ],
+  "x_council5_43_3": [
+    "council_hazard2",
+    "wren_off_marks"
+  ],
+  "e_council5_43": [
+    "council_shelter_wait",
+    "searchers_coming",
+    "trial_lost",
+    "trial_one_day",
+    "warden_marks_on_trunks"
+  ],
+  "x_council5_44_1": [
+    "council_hazard4",
+    "council_scene",
+    "light_failing",
+    "warden_marks_on_trunks",
+    "wren_off_marks"
+  ],
+  "x_council5_44_2": [
+    "council_hazard4",
+    "council_scene",
+    "light_failing",
+    "wren_off_marks"
+  ],
+  "e_council5_44": [
+    "council_snared",
+    "trial_lost",
+    "trial_one_day"
+  ],
+  "b_council_5": [
+    "badly_spent",
+    "council_scene",
+    "strange_sound",
+    "warden_marks_on_trunks"
+  ],
+  "rc_council_0_1": [
+    "council_warden_run",
+    "trial_one_day",
+    "warden_marks_on_trunks",
+    "warden_runs_exist"
+  ],
+  "rc_council_0_2": [
+    "council_warden_run",
+    "light_failing"
+  ],
+  "rc_council_0_3": [
+    "council_scene",
+    "council_warden_run",
+    "warden_marks_on_trunks",
+    "wren_rejoined_trail"
+  ],
+  "rc_council_1_1": [
+    "council_scene",
+    "council_warden_run",
+    "trial_one_day",
+    "warden_marks_on_trunks",
+    "warden_runs_exist"
+  ],
+  "rc_council_1_2": [
+    "council_scene",
+    "council_warden_run",
+    "light_failing"
+  ],
+  "rc_council_1_3": [
+    "council_scene",
+    "council_warden_run",
+    "warden_marks_on_trunks",
+    "wren_rejoined_trail"
+  ],
+  "rc_council_2_1": [
+    "council_warden_run",
+    "trial_one_day",
+    "warden_marks_on_trunks",
+    "warden_runs_exist"
+  ],
+  "rc_council_2_2": [
+    "council_warden_run",
+    "light_failing"
+  ],
+  "rc_council_2_3": [
+    "council_scene",
+    "council_warden_run",
+    "warden_marks_on_trunks",
+    "wren_rejoined_trail"
+  ],
+  "e_ridge_hub0": [
+    "ridge_scene",
+    "ridge_snared",
+    "trial_horn",
+    "trial_lost",
+    "trial_one_day"
+  ],
+  "e_ridge_hub1": [
+    "ridge_dismissed",
+    "ridge_scene",
+    "trial_lost",
+    "trial_one_day",
+    "warden_present_ridge"
+  ],
+  "x_ridgeh_45_1": [
+    "ridge_hazard1",
+    "warden_marks_on_trunks",
+    "wren_off_marks"
+  ],
+  "x_ridgeh_45_2": [
+    "light_failing",
+    "ridge_hazard1",
+    "ridge_scene",
+    "wren_off_marks"
+  ],
+  "e_ridgeh_45": [
+    "ridge_fell",
+    "trial_horn",
+    "trial_lost",
+    "trial_one_day"
+  ],
+  "h_ridge": [
+    "light_failing",
+    "ridge_scene",
+    "ridge_temptations",
+    "ridge_third_test",
+    "trial_one_day",
+    "true_mark_hardest",
+    "warden_marks_on_trunks"
+  ],
+  "e_ridge_1_0": [
+    "ridge_dismissed",
+    "ridge_scene",
+    "trial_lost",
+    "trial_one_day",
+    "warden_present_ridge"
+  ],
+  "x_ridge1_46_1": [
+    "ridge_hazard1",
+    "warden_marks_on_trunks",
+    "wren_off_marks"
+  ],
+  "x_ridge1_46_2": [
+    "light_failing",
+    "ridge_hazard1",
+    "wren_off_marks"
+  ],
+  "x_ridge1_46_3": [
+    "ridge_hazard1",
+    "wren_off_marks"
+  ],
+  "e_ridge1_46": [
+    "ridge_dead_end",
+    "ridge_scene",
+    "trial_horn",
+    "trial_lost",
+    "trial_one_day",
+    "warden_marks_on_trunks"
+  ],
+  "x_ridge1_47_1": [
+    "ridge_hazard1",
+    "ridge_scene",
+    "trial_one_day",
+    "warden_marks_on_trunks",
+    "wren_off_marks"
+  ],
+  "x_ridge1_47_2": [
+    "ridge_hazard1",
+    "wren_off_marks"
+  ],
+  "e_ridge1_47": [
+    "ridge_fell",
+    "trial_horn",
+    "trial_lost",
+    "trial_one_day"
+  ],
+  "b_ridge_1": [
+    "ridge_scene",
+    "strange_light_warning",
+    "true_mark_hardest",
+    "warden_marks_on_trunks",
+    "warden_runs_exist"
+  ],
+  "e_ridge_2_0": [
+    "ridge_dead_end",
+    "trial_horn",
+    "trial_lost",
+    "trial_one_day",
+    "warden_marks_on_trunks"
+  ],
+  "x_ridge2_48_1": [
+    "ridge_hazard2",
+    "warden_marks_on_trunks",
+    "wren_off_marks"
+  ],
+  "x_ridge2_48_2": [
+    "light_failing",
+    "ridge_hazard2",
+    "ridge_scene",
+    "wren_off_marks"
+  ],
+  "e_ridge2_48": [
+    "ridge_fell",
+    "trial_horn",
+    "trial_lost",
+    "trial_one_day"
+  ],
+  "x_ridge2_49_1": [
+    "ridge_hazard2",
+    "warden_marks_on_trunks",
+    "wren_off_marks"
+  ],
+  "x_ridge2_49_2": [
+    "light_failing",
+    "ridge_hazard2",
+    "wren_off_marks"
+  ],
+  "x_ridge2_49_3": [
+    "ridge_hazard1",
+    "wren_off_marks"
+  ],
+  "e_ridge2_49": [
+    "false_marks_exist",
+    "ridge_false_wall",
+    "trial_lost",
+    "trial_one_day",
+    "warden_marks_on_trunks"
+  ],
+  "b_ridge_2": [
+    "light_failing",
+    "ridge_scene",
+    "warden_marks_on_trunks",
+    "warden_runs_exist"
+  ],
+  "e_ridge_3_0": [
+    "ridge_fell",
+    "ridge_scene",
+    "searchers_coming",
+    "trial_lost",
+    "trial_one_day"
+  ],
+  "x_ridge3_50_1": [
+    "ridge_hazard2",
+    "ridge_scene",
+    "trial_one_day",
+    "warden_marks_on_trunks",
+    "wren_off_marks"
+  ],
+  "x_ridge3_50_2": [
+    "ridge_hazard2",
+    "wren_off_marks"
+  ],
+  "x_ridge3_50_3": [
+    "ridge_hazard1",
+    "wren_off_marks"
+  ],
+  "e_ridge3_50": [
+    "false_marks_exist",
+    "ridge_false_wall",
+    "trial_lost",
+    "trial_one_day",
+    "warden_marks_on_trunks"
+  ],
+  "x_ridge3_51_1": [
+    "ridge_hazard3",
+    "warden_marks_on_trunks",
+    "wren_off_marks"
+  ],
+  "x_ridge3_51_2": [
+    "light_failing",
+    "ridge_hazard3",
+    "ridge_scene",
+    "wren_off_marks"
+  ],
+  "e_ridge3_51": [
+    "ridge_shelter_wait",
+    "searchers_coming",
+    "trial_lost",
+    "trial_one_day"
+  ],
+  "b_ridge_3": [
+    "legs_tiring",
+    "ridge_scene",
+    "trial_one_day",
+    "warden_marks_on_trunks",
+    "warden_runs_exist"
+  ],
+  "e_ridge_4_0": [
+    "false_marks_exist",
+    "ridge_false_wall",
+    "trial_lost",
+    "trial_one_day",
+    "warden_marks_on_trunks"
+  ],
+  "x_ridge4_52_1": [
+    "ridge_hazard3",
+    "warden_marks_on_trunks",
+    "wren_off_marks"
+  ],
+  "x_ridge4_52_2": [
+    "light_failing",
+    "ridge_hazard3",
+    "wren_off_marks"
+  ],
+  "e_ridge4_52": [
+    "ridge_scene",
+    "ridge_shelter_wait",
+    "searchers_coming",
+    "trial_lost",
+    "trial_one_day"
+  ],
+  "x_ridge4_53_1": [
+    "ridge_hazard3",
+    "ridge_scene",
+    "trial_one_day",
+    "warden_marks_on_trunks",
+    "wren_off_marks"
+  ],
+  "x_ridge4_53_2": [
+    "ridge_hazard3",
+    "wren_off_marks"
+  ],
+  "x_ridge4_53_3": [
+    "ridge_hazard2",
+    "wren_off_marks"
+  ],
+  "e_ridge4_53": [
+    "ridge_scene",
+    "ridge_snared",
+    "trial_lost",
+    "trial_one_day"
+  ],
+  "b_ridge_4": [
+    "marks_scarce",
+    "ridge_scene",
+    "strange_sound",
+    "warden_marks_on_trunks"
+  ],
+  "e_ridge_5_0": [
+    "ridge_shelter_wait",
+    "searchers_coming",
+    "trial_lost",
+    "trial_one_day",
+    "warden_marks_on_trunks"
+  ],
+  "x_ridge5_54_1": [
+    "ridge_hazard4",
+    "warden_marks_on_trunks",
+    "wren_off_marks"
+  ],
+  "x_ridge5_54_2": [
+    "light_failing",
+    "ridge_hazard4",
+    "ridge_scene",
+    "wren_off_marks"
+  ],
+  "x_ridge5_54_3": [
+    "ridge_hazard2",
+    "wren_off_marks"
+  ],
+  "e_ridge5_54": [
+    "ridge_snared",
+    "trial_lost",
+    "trial_one_day"
+  ],
+  "x_ridge5_55_1": [
+    "ridge_hazard4",
+    "warden_marks_on_trunks",
+    "wren_off_marks"
+  ],
+  "x_ridge5_55_2": [
+    "light_failing",
+    "ridge_hazard4",
+    "wren_off_marks"
+  ],
+  "e_ridge5_55": [
+    "ridge_dismissed",
+    "ridge_scene",
+    "trial_lost",
+    "trial_one_day",
+    "warden_present_ridge"
+  ],
+  "b_ridge_5": [
+    "badly_spent",
+    "ridge_scene",
+    "strange_sound",
+    "warden_marks_on_trunks"
+  ],
+  "rc_ridge_0_1": [
+    "ridge_warden_run",
+    "trial_one_day",
+    "warden_marks_on_trunks",
+    "warden_runs_exist"
+  ],
+  "rc_ridge_0_2": [
+    "light_failing",
+    "ridge_warden_run"
+  ],
+  "rc_ridge_0_3": [
+    "ridge_scene",
+    "ridge_warden_run",
+    "warden_marks_on_trunks",
+    "wren_rejoined_trail"
+  ],
+  "rc_ridge_1_1": [
+    "ridge_scene",
+    "ridge_warden_run",
+    "trial_one_day",
+    "warden_marks_on_trunks",
+    "warden_runs_exist"
+  ],
+  "rc_ridge_1_2": [
+    "light_failing",
+    "ridge_scene",
+    "ridge_warden_run"
+  ],
+  "rc_ridge_1_3": [
+    "ridge_scene",
+    "ridge_warden_run",
+    "warden_marks_on_trunks",
+    "wren_rejoined_trail"
+  ],
+  "rc_ridge_2_1": [
+    "ridge_warden_run",
+    "trial_one_day",
+    "warden_marks_on_trunks",
+    "warden_runs_exist"
+  ],
+  "rc_ridge_2_2": [
+    "light_failing",
+    "ridge_warden_run"
+  ],
+  "rc_ridge_2_3": [
+    "ridge_scene",
+    "ridge_warden_run",
+    "warden_marks_on_trunks",
+    "wren_rejoined_trail"
+  ],
+  "e_gate_hub0": [
+    "gate_dismissed",
+    "gate_scene",
+    "trial_lost",
+    "trial_one_day",
+    "warden_present_gate"
+  ],
+  "e_gate_hub1": [
+    "gate_dead_end",
+    "gate_scene",
+    "trial_horn",
+    "trial_lost",
+    "trial_one_day",
+    "warden_marks_on_trunks"
+  ],
+  "x_gateh_56_1": [
+    "gate_hazard1",
+    "warden_marks_on_trunks",
+    "wren_off_marks"
+  ],
+  "x_gateh_56_2": [
+    "gate_hazard1",
+    "gate_scene",
+    "light_failing",
+    "wren_off_marks"
+  ],
+  "e_gateh_56": [
+    "false_marks_exist",
+    "gate_false_wall",
+    "gate_outer_wall",
+    "trial_lost",
+    "trial_one_day",
+    "warden_marks_on_trunks"
+  ],
+  "h_gate": [
+    "gate_final_test",
+    "gate_outer_wall",
+    "gate_scene",
+    "gate_temptations",
+    "light_failing",
+    "trial_horns_end",
+    "trial_one_day",
+    "true_mark_hardest",
+    "warden_marks_on_trunks"
+  ],
+  "e_gate_1_0": [
+    "gate_dead_end",
+    "gate_outer_wall",
+    "trial_horn",
+    "trial_lost",
+    "trial_one_day",
+    "warden_marks_on_trunks"
+  ],
+  "x_gate1_57_1": [
+    "gate_hazard1",
+    "warden_marks_on_trunks",
+    "wren_off_marks"
+  ],
+  "x_gate1_57_2": [
+    "gate_hazard1",
+    "light_failing",
+    "wren_off_marks"
+  ],
+  "x_gate1_57_3": [
+    "gate_hazard1",
+    "wren_off_marks"
+  ],
+  "e_gate1_57": [
+    "gate_fell",
+    "gate_outer_wall",
+    "trial_horn",
+    "trial_lost",
+    "trial_one_day"
+  ],
+  "x_gate1_58_1": [
+    "gate_hazard1",
+    "gate_scene",
+    "trial_one_day",
+    "warden_marks_on_trunks",
+    "wren_off_marks"
+  ],
+  "x_gate1_58_2": [
+    "gate_hazard1",
+    "wren_off_marks"
+  ],
+  "e_gate1_58": [
+    "false_marks_exist",
+    "gate_false_wall",
+    "gate_outer_wall",
+    "trial_lost",
+    "trial_one_day",
+    "warden_marks_on_trunks"
+  ],
+  "b_gate_1": [
+    "gate_scene",
+    "strange_light_warning",
+    "true_mark_hardest",
+    "warden_marks_on_trunks",
+    "warden_runs_exist"
+  ],
+  "e_gate_2_0": [
+    "gate_fell",
+    "gate_outer_wall",
+    "trial_horn",
+    "trial_lost",
+    "trial_one_day"
+  ],
+  "x_gate2_59_1": [
+    "gate_hazard2",
+    "light_failing",
+    "warden_marks_on_trunks",
+    "wren_off_marks"
+  ],
+  "x_gate2_59_2": [
+    "gate_hazard2",
+    "gate_scene",
+    "light_failing",
+    "wren_off_marks"
+  ],
+  "e_gate2_59": [
+    "false_marks_exist",
+    "gate_false_wall",
+    "gate_outer_wall",
+    "trial_lost",
+    "trial_one_day",
+    "warden_marks_on_trunks"
+  ],
+  "x_gate2_60_1": [
+    "gate_hazard2",
+    "light_failing",
+    "warden_marks_on_trunks",
+    "wren_off_marks"
+  ],
+  "x_gate2_60_2": [
+    "gate_hazard2",
+    "light_failing",
+    "wren_off_marks"
+  ],
+  "x_gate2_60_3": [
+    "gate_hazard1",
+    "wren_off_marks"
+  ],
+  "e_gate2_60": [
+    "gate_outer_wall",
+    "gate_shelter_wait",
+    "searchers_coming",
+    "trial_lost",
+    "trial_one_day"
+  ],
+  "b_gate_2": [
+    "gate_scene",
+    "light_failing",
+    "warden_marks_on_trunks",
+    "warden_runs_exist"
+  ],
+  "e_gate_3_0": [
+    "false_marks_exist",
+    "gate_false_wall",
+    "gate_outer_wall",
+    "gate_scene",
+    "trial_horn",
+    "trial_lost",
+    "trial_one_day",
+    "warden_marks_on_trunks"
+  ],
+  "x_gate3_61_1": [
+    "gate_hazard2",
+    "gate_scene",
+    "light_failing",
+    "trial_one_day",
+    "warden_marks_on_trunks",
+    "wren_off_marks"
+  ],
+  "x_gate3_61_2": [
+    "gate_hazard2",
+    "light_failing",
+    "wren_off_marks"
+  ],
+  "x_gate3_61_3": [
+    "gate_hazard1",
+    "wren_off_marks"
+  ],
+  "e_gate3_61": [
+    "gate_outer_wall",
+    "gate_scene",
+    "gate_shelter_wait",
+    "searchers_coming",
+    "trial_lost",
+    "trial_one_day"
+  ],
+  "x_gate3_62_1": [
+    "gate_hazard3",
+    "gate_outer_wall",
+    "warden_marks_on_trunks",
+    "wren_off_marks"
+  ],
+  "x_gate3_62_2": [
+    "gate_hazard3",
+    "gate_outer_wall",
+    "gate_scene",
+    "light_failing",
+    "wren_off_marks"
+  ],
+  "e_gate3_62": [
+    "gate_scene",
+    "gate_snared",
+    "trial_horn",
+    "trial_lost",
+    "trial_one_day"
+  ],
+  "b_gate_3": [
+    "gate_scene",
+    "legs_tiring",
+    "trial_one_day",
+    "warden_marks_on_trunks",
+    "warden_runs_exist"
+  ],
+  "e_gate_4_0": [
+    "gate_outer_wall",
+    "gate_shelter_wait",
+    "searchers_coming",
+    "trial_lost",
+    "trial_one_day",
+    "warden_marks_on_trunks"
+  ],
+  "x_gate4_63_1": [
+    "gate_hazard3",
+    "gate_outer_wall",
+    "warden_marks_on_trunks",
+    "wren_off_marks"
+  ],
+  "x_gate4_63_2": [
+    "gate_hazard3",
+    "gate_outer_wall",
+    "light_failing",
+    "wren_off_marks"
+  ],
+  "e_gate4_63": [
+    "gate_scene",
+    "gate_snared",
+    "trial_lost",
+    "trial_one_day"
+  ],
+  "x_gate4_64_1": [
+    "gate_hazard3",
+    "gate_outer_wall",
+    "gate_scene",
+    "trial_one_day",
+    "warden_marks_on_trunks",
+    "wren_off_marks"
+  ],
+  "x_gate4_64_2": [
+    "gate_hazard3",
+    "gate_outer_wall",
+    "wren_off_marks"
+  ],
+  "x_gate4_64_3": [
+    "gate_hazard2",
+    "light_failing",
+    "wren_off_marks"
+  ],
+  "e_gate4_64": [
+    "gate_dismissed",
+    "gate_scene",
+    "trial_lost",
+    "trial_one_day",
+    "warden_present_gate"
+  ],
+  "b_gate_4": [
+    "gate_scene",
+    "marks_scarce",
+    "strange_sound",
+    "warden_marks_on_trunks"
+  ],
+  "e_gate_5_0": [
+    "gate_snared",
+    "trial_lost",
+    "trial_one_day"
+  ],
+  "x_gate5_65_1": [
+    "gate_hazard4",
+    "light_failing",
+    "trial_horns_end",
+    "warden_marks_on_trunks",
+    "wren_off_marks"
+  ],
+  "x_gate5_65_2": [
+    "gate_hazard4",
+    "gate_scene",
+    "light_failing",
+    "trial_horns_end",
+    "wren_off_marks"
+  ],
+  "x_gate5_65_3": [
+    "gate_hazard2",
+    "light_failing",
+    "wren_off_marks"
+  ],
+  "e_gate5_65": [
+    "gate_dismissed",
+    "gate_scene",
+    "trial_lost",
+    "trial_one_day",
+    "warden_present_gate"
+  ],
+  "x_gate5_66_1": [
+    "gate_hazard4",
+    "light_failing",
+    "trial_horns_end",
+    "warden_marks_on_trunks",
+    "wren_off_marks"
+  ],
+  "x_gate5_66_2": [
+    "gate_hazard4",
+    "light_failing",
+    "trial_horns_end",
+    "wren_off_marks"
+  ],
+  "e_gate5_66": [
+    "gate_dead_end",
+    "trial_lost",
+    "trial_one_day",
+    "warden_marks_on_trunks"
+  ],
+  "b_gate_5": [
+    "badly_spent",
+    "gate_scene",
+    "strange_sound",
+    "warden_marks_on_trunks"
+  ],
+  "rc_gate_0_1": [
+    "gate_outer_wall",
+    "gate_warden_run",
+    "trial_one_day",
+    "warden_marks_on_trunks",
+    "warden_runs_exist"
+  ],
+  "rc_gate_0_2": [
+    "gate_warden_run",
+    "light_failing"
+  ],
+  "rc_gate_0_3": [
+    "gate_scene",
+    "gate_warden_run",
+    "warden_marks_on_trunks",
+    "wren_rejoined_trail"
+  ],
+  "rc_gate_1_1": [
+    "gate_outer_wall",
+    "gate_scene",
+    "gate_warden_run",
+    "trial_one_day",
+    "warden_marks_on_trunks",
+    "warden_runs_exist"
+  ],
+  "rc_gate_1_2": [
+    "gate_scene",
+    "gate_warden_run",
+    "light_failing"
+  ],
+  "rc_gate_1_3": [
+    "gate_scene",
+    "gate_warden_run",
+    "warden_marks_on_trunks",
+    "wren_rejoined_trail"
+  ],
+  "rc_gate_2_1": [
+    "gate_outer_wall",
+    "gate_warden_run",
+    "trial_one_day",
+    "warden_marks_on_trunks",
+    "warden_runs_exist"
+  ],
+  "rc_gate_2_2": [
+    "gate_warden_run",
+    "light_failing"
+  ],
+  "rc_gate_2_3": [
+    "gate_scene",
+    "gate_warden_run",
+    "warden_marks_on_trunks",
+    "wren_rejoined_trail"
+  ],
+  "f_dusk": [
+    "arrived_gate_dusk",
+    "gate_scene",
+    "gate_three_wardens",
+    "trial_horns_end",
+    "trial_one_day",
+    "warden_present_gate",
+    "wild_ways_exist"
+  ],
+  "f_name": [
+    "gate_three_wardens",
+    "head_warden_question",
+    "warden_marks_on_trunks",
+    "wren_met_creatures",
+    "wren_showed_beasts_mercy"
+  ],
+  "f_wild": [
+    "gate_three_wardens",
+    "trial_one_day",
+    "wild_ways_exist",
+    "wild_ways_lesser_place",
+    "wren_latecomer"
+  ],
+  "e_win_warden": [
+    "gate_three_wardens",
+    "head_warden_question",
+    "head_warden_she",
+    "trial_one_day",
+    "warden_marks_on_trunks",
+    "wren_crossed_in_time",
+    "wren_named_warden"
+  ],
+  "e_win_wild": [
+    "gate_three_wardens",
+    "head_warden_question",
+    "warren_scene",
+    "wren_named_wild_warden",
+    "wren_showed_beasts_mercy"
+  ],
+  "e_win_honest": [
+    "gate_three_wardens",
+    "head_warden_question",
+    "honesty_first_mark",
+    "wren_named_warden"
+  ],
+  "e_win_alt": [
+    "warden_marks_on_trunks",
+    "wild_ways_lesser_place",
+    "wren_outer_warden"
+  ],
+  "e_gate_slip": [
+    "gate_scene",
+    "gate_three_wardens",
+    "trial_lost",
+    "wren_caught_slipping"
+  ],
+  "e_gate_late": [
+    "gate_scene",
+    "gate_three_wardens",
+    "trial_horns_end",
+    "trial_lost",
+    "wren_sank_down"
+  ],
+  "e_gate_next": [
+    "gate_three_wardens",
+    "trial_lost",
+    "wild_ways_lesser_place",
+    "wren_refused_wild_ways"
+  ]
+}
