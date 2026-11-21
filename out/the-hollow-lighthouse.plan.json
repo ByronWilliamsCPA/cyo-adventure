@@ -117,7 +117,7 @@
    "text": "The hidden mirror throws a light from far below up into the lamp room for the lens to spread."
   },
   "light_from_foundations": {
-   "text": "The pale light begins in the tower's foundations and only climbs up to show itself."
+   "text": "The pale light begins low in the tower and only climbs up to show itself."
   },
   "footsteps_below": {
    "text": "Quick footsteps and a closing door were heard far below in the tower."
@@ -203,12 +203,6 @@
   "hollow_step_19": {
    "text": "The nineteenth step of the winding stair is hollow, with something inside."
   },
-  "hollow_step_18": {
-   "text": "The hollow step on the winding stair is the eighteenth.",
-   "contradicts": [
-    "hollow_step_19"
-   ]
-  },
   "lantern_to_moor": {
    "text": "A walking lantern was seen leaving the tower for the moor."
   },
@@ -240,7 +234,7 @@
    "text": "Mira has the keeper's journal under her arm as she leaves the keeper's room."
   },
   "ferris_lives_on_moor": {
-   "text": "Ferris lives in a shepherd's cottage on the moor, past a bog and the second gate."
+   "text": "Ferris lives in a cottage on the moor, past a bog and two gates."
   },
   "ferris_warned_bog": {
    "text": "Ferris told Mira in person to mind the bog by the second gate."
@@ -264,16 +258,13 @@
    "text": "A lever beside the shutter's clockwork, marked \"clock\" and \"hand,\" lets a person work the shutter by hand."
   },
   "mira_lacks_lamp_key": {
-   "text": "Mira has no key for the great lamp's square socket and does not know where one is.",
+   "text": "Mira has no key for the great lamp's square socket.",
    "contradicts": [
     "has_key"
    ]
   },
-  "mira_does_not_know_name": {
-   "text": "Mira does not know the smuggler's name.",
-   "contradicts": [
-    "smuggler_is_varley"
-   ]
+  "tar_room_in_tunnel": {
+   "text": "One branch of the brick tunnel opens into a wide dark room that smells of tar."
   }
  },
  "nodes": {
@@ -505,7 +496,7 @@
   },
   "b_gallery_fog": {
    "function": "continue",
-   "event": "Through the window Mira sees the green glow leaking from a grille at the tower's foot: the light starts below.",
+   "event": "Through the window Mira sees the green glow leaking from a small window low on the tower's side: the light starts low in the tower.",
    "requires": [
     "pale_light"
    ],
@@ -1033,7 +1024,9 @@
    "function": "merge",
    "event": "The brick tunnel: a warm lantern on its bracket, three ways on, wet bootprints ending at the bracket.",
    "requires": [],
-   "establishes": []
+   "establishes": [
+    "tar_room_in_tunnel"
+   ]
   },
   "tn_keeper": {
    "function": "decision",
@@ -1130,13 +1123,13 @@
   },
   "tn_gate_open": {
    "function": "decision",
-   "event": "Through the gate onto the wet ledge, timing the swells.",
+   "event": "Through the gate onto the wet, sloping ledge; swells wash over it; ten frightening paces to the steps.",
    "requires": [],
    "establishes": []
   },
   "tn_gate_wait": {
    "function": "continue",
-   "event": "Waiting at the ring, Mira reads chalk tallies: landed, signed V, none taken away.",
+   "event": "Waiting at the ring, Mira reads chalk tallies (landed, signed V, none taken away), then edges ring to ring and is soaked on the last pace.",
    "requires": [],
    "establishes": [
     "ledger_tally"
@@ -1152,17 +1145,20 @@
   },
   "tn_cut_moor": {
    "function": "continue",
-   "event": "Mira follows the bootprints and a lantern across the moor for an hour to a stone cottage.",
+   "event": "At dawn Mira keeps well back on the open track, following the keeper's prints through two gates and past a bog to see where he lives, so she can tell the harbour office.",
    "requires": [],
-   "establishes": []
+   "establishes": [
+    "lantern_to_moor",
+    "ferris_lives_on_moor"
+   ]
   },
   "n_chamber": {
    "function": "merge",
-   "event": "The keeper's snug room: an empty \"Lamp key\" hook and a sealed letter \"To whoever followed the light\"; Mira thinks of the tar store behind her and the two lamps above.",
+   "event": "The keeper's dusty, snug room: an empty \"Lamp key\" hook and a sealed letter \"To whoever followed the light\"; a tar-smelling room back along the tunnel, the little lamp and the dark great lamp overhead.",
    "requires": [
-    "saw_great_lamp",
     "little_lamp_rig",
-    "store_seen",
+    "tar_room_in_tunnel",
+    "ferris_vanished",
     "mira_stranded"
    ],
    "establishes": [
@@ -1201,7 +1197,7 @@
   },
   "cm_cottage": {
    "function": "merge",
-   "event": "Behind the blue door an old voice fears \"the man with the grey boat,\" then asks how she found \"my light.\"",
+   "event": "Mira knocks and steps back to the gate; behind the bolted blue door an old voice fears \"the man with the grey boat,\" then asks how she found \"my light.\"",
    "requires": [],
    "establishes": [
     "grey_boat",
@@ -1259,7 +1255,7 @@
   },
   "cm_smug": {
    "function": "decision",
-   "event": "Back in the store: the radio says \"Still blinking... I can wait\"; drag marks lead deeper.",
+   "event": "Back in the store: the radio says \"Still blinking... I can wait\"; old dust-furred drag marks lead deeper.",
    "requires": [],
    "establishes": [
     "store_seen",
@@ -1278,7 +1274,7 @@
    "function": "decision",
    "event": "A hidden second room holds the grey-boat man's skimmed hoard and a jewelled compass.",
    "requires": [
-    "grey_boat"
+    "radio_voice"
    ],
    "establishes": [
     "hoard_room"
@@ -1310,25 +1306,26 @@
   },
   "cm_light_relight": {
    "function": "decision",
-   "event": "The great lamp has oil and wick but an empty square socket; Mira asks the lamp where its key is.",
+   "event": "The great lamp is ready but for winding; its square socket is empty and the gear gives a little.",
    "requires": [],
    "establishes": [
-    "lamp_socket_empty",
-    "mira_lacks_lamp_key"
+    "lamp_socket_empty"
    ]
   },
   "cm_light_back": {
    "function": "payoff",
-   "event": "\"Key hid. Be patient\" scratched by the socket; she walked past a key with a tower on it.",
+   "event": "\"Key hid. Be patient\" scratched by the socket; she walked past a key that fits it.",
    "requires": [],
-   "establishes": []
+   "establishes": [
+    "mira_lacks_lamp_key"
+   ]
   },
   "cm_light_true": {
    "function": "payoff",
-   "event": "Winding slowly \"as the tag said,\" forty turns, Mira lights the great lamp.",
+   "event": "The brass key fits; she winds the great lamp slowly until it will turn no more and lights it.",
    "requires": [
     "has_key",
-    "key_tag"
+    "lamp_socket_empty"
    ],
    "establishes": []
   },
@@ -1371,8 +1368,7 @@
    "function": "ending",
    "event": "The wrenched drawer splits and jams; the key stays out of reach until dawn.",
    "requires": [
-    "desk_drawer_locked",
-    "cottage_kitchen"
+    "desk_drawer_locked"
    ],
    "establishes": []
   },
@@ -1418,7 +1414,7 @@
   },
   "e_set_cellar": {
    "function": "ending",
-   "event": "The padlock rings an alarm bell; the light-keeper flees and the tower goes dark.",
+   "event": "The padlock rings a bell; the light-keeper flees down the stair and the glow up the panel stair goes out.",
    "requires": [],
    "establishes": []
   },
@@ -1428,9 +1424,7 @@
    "requires": [
     "hollow_step_19"
    ],
-   "establishes": [
-    "hollow_step_18"
-   ]
+   "establishes": []
   },
   "e_set_shaft": {
    "function": "ending",
@@ -1481,7 +1475,9 @@
   "e_set_gears": {
    "function": "ending",
    "event": "The forced gear breaks the clockwork; \"Wind her slow\" is stamped by the socket: it wanted a key, somewhere in the lighthouse.",
-   "requires": [],
+   "requires": [
+    "lamp_socket_empty"
+   ],
    "establishes": [
     "mira_lacks_lamp_key"
    ]
@@ -1501,11 +1497,10 @@
   },
   "e_win_keeper_word": {
    "function": "ending",
-   "event": "At the harbour office Mira sends men to the shepherd's cottage; Ferris comes down: \"Minded the bog, I see.\"",
+   "event": "Mira brings the harbour office to Ferris's cottage; he greets her as the one who followed his light and had the sense to fetch help.",
    "requires": [
     "ferris_lives_on_moor",
-    "ferris_alive_lights_light",
-    "ferris_warned_bog"
+    "ferris_alive_lights_light"
    ],
    "establishes": []
   },
@@ -1522,10 +1517,10 @@
   },
   "e_win_promise": {
    "function": "ending",
-   "event": "Mira takes up the keeper's task, writes her promise in the journal on its stool; the harbour master fetches Ferris from the moor.",
+   "event": "Mira winds the little lamp, writes her promise in the keeper's journal, gives the harbour master the letter and map; he fetches Ferris; three weeks later the light blinks on time.",
    "requires": [
-    "journal_on_stool",
-    "ferris_lives_on_moor"
+    "letter_moor_map",
+    "truth_ferris_sets_blink"
    ],
    "establishes": []
   },
@@ -1542,13 +1537,11 @@
   },
   "e_win_harbor": {
    "function": "ending",
-   "event": "The harbour master sees the photos; Mira, not knowing the name, says he has a grey boat; the launch is towed in.",
+   "event": "The harbour master sees the photos; Mira tells him of the waiting radio voice; a grey launch is towed in.",
    "requires": [
-    "grey_boat"
+    "radio_voice"
    ],
-   "establishes": [
-    "mira_does_not_know_name"
-   ]
+   "establishes": []
   },
   "e_win_hoard": {
    "function": "ending",
@@ -1610,7 +1603,7 @@
    "event": "Photographing the compass untouched reveals the bait wire; she walks out whistling at the grey-boat man.",
    "requires": [
     "hoard_room",
-    "grey_boat"
+    "radio_voice"
    ],
    "establishes": [
     "compass_bait_wire"
@@ -1642,6 +1635,18 @@
    "establishes": [
     "blinking_log_today"
    ]
+  },
+  "tn_gate_dash": {
+   "function": "continue",
+   "requires": [],
+   "establishes": [],
+   "event": "Mira goes between swells, slips, is caught to the knees by a swell, clings to a ring, and crawls up the steps soaked and frightened to a door."
+  },
+  "c_arch_back": {
+   "function": "continue",
+   "requires": [],
+   "establishes": [],
+   "event": "Mira backs out of the gap and takes the other opening, a dry crawl climbing away from the sea."
   }
  },
  "choices": {
@@ -2292,7 +2297,7 @@
    "cost": "none"
   },
   "c_tn_store_box_1": {
-   "intent": "continue",
+   "intent": "leave the ledger in place and go on",
    "cost": "none"
   },
   "c_tn_store_join_1": {
@@ -2338,7 +2343,7 @@
    "cost": "lets the trail go cold"
   },
   "c_tn_cut_moor_1": {
-   "intent": "continue",
+   "intent": "knock, then step back to the gate",
    "cost": "none"
   },
   "c_n_chamber_1": {
@@ -2349,17 +2354,16 @@
    ]
   },
   "c_n_chamber_2": {
-   "intent": "go back to the store",
+   "intent": "find the store that smells of tar",
    "cost": "leaves the letter",
    "requires": [
-    "store_seen"
+    "tar_room_in_tunnel"
    ]
   },
   "c_n_chamber_3": {
-   "intent": "go back up to the two lamps",
+   "intent": "climb back up toward the lamps",
    "cost": "leaves the letter",
    "requires": [
-    "saw_great_lamp",
     "little_lamp_rig"
    ]
   },
@@ -2375,7 +2379,7 @@
    "cost": "the letter is no longer whole evidence"
   },
   "c_cm_letter_2": {
-   "intent": "keep it sealed for the harbour master",
+   "intent": "keep it sealed in her jacket for the harbour master",
    "cost": "she does not learn what it says"
   },
   "c_cm_letter_read_1": {
@@ -2503,7 +2507,8 @@
   },
   "c_cm_light_relight_2": {
    "intent": "force the gear by hand",
-   "cost": "risks a setback ending: the clockwork breaks"
+   "cost": "risks a setback ending: the clockwork breaks",
+   "note": "gated has_key == false since WP-0.4: a key-holder sees only the winding choice"
   },
   "c_cm_light_relight_3": {
    "intent": "let the gear be and go back down",
@@ -2547,6 +2552,14 @@
   "c_cm_leave_mark_2": {
    "intent": "carry the journal out as proof",
    "cost": "nothing left in place"
+  },
+  "c_tn_gate_dash_1": {
+   "intent": "continue",
+   "cost": "none"
+  },
+  "c_c_arch_back_1": {
+   "intent": "continue",
+   "cost": "none"
   }
  },
  "threads": {
@@ -2570,6 +2583,11 @@
      "node": "cm_light_relight",
      "choice": "c_cm_light_relight_3",
      "shows": "without it, \"Key hid. Be patient\": she walked past it"
+    },
+    {
+     "node": "cm_light_relight",
+     "choice": "c_cm_light_relight_2",
+     "shows": "without it, forcing the gear jams the clockwork (e_set_gears); hidden from a key-holder"
     }
    ]
   },
@@ -2699,10 +2717,18 @@
   "model": "claude-opus-5-5 (agent, hand-written by reading)",
   "shape": null,
   "book_file": "out/the-hollow-lighthouse.filled.json",
-  "book_sha256": "82817aa48b088b2d5a154d9d76589410c9af376401bde8449c984f9d06561183",
+  "book_sha256": "8527881924a8c1f38e6801b3b368594be0fbc6f237cf2d08cc396c56d908edb2",
   "authored": "2026-11-21",
   "authoring_minutes": 11,
   "checks": null,
-  "approver": null
+  "approver": null,
+  "revisions": [
+   {
+    "date": "2026-11-21",
+    "work_package": "WP-0.4",
+    "by": "claude-opus-5-5 (second-reader continuity agent)",
+    "note": "Plan updated to match the fixed book; findings in docs/planning/evidence/story-plan-retro/findings-the-hollow-lighthouse.md."
+   }
+  ]
  }
 }
