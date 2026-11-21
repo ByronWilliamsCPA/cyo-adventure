@@ -1,0 +1,1918 @@
+{
+  "plan_version": "0.1",
+  "book": {
+    "slug": "the-cave-of-echoes",
+    "storybook_id": "sk_cave_of_echoes",
+    "storybook_version": 1,
+    "title": "The Cave of Echoes"
+  },
+  "request": {
+    "text": null,
+    "band": "8-11",
+    "length": "short",
+    "style": "prose",
+    "tone": "warm exploration and wonder against a tide clock; violence none, scariness mild, peril moderate",
+    "note": "catalog book read blind; no request exists"
+  },
+  "pitch": {
+    "hero": "Maya, a girl exploring the sea caves below her aunt's lighthouse with her companion Biscuit",
+    "want": "to find out what the three echoing caves hold before the tide comes back",
+    "obstacle": "a tide due back in about an hour, rising water, slick ledges, tight squeezes and a sleeping bat roost",
+    "stake": "being caught by the sea in the caves, or leaving a wonder undiscovered",
+    "ending_kind": "ten discoveries (crystal, song, bell, lake, islet, starfish, shell, skylight, compass, coins) or a safe retreat"
+  },
+  "cast": {
+    "maya": {
+      "name": "Maya",
+      "role": "protagonist, cave explorer",
+      "want": "to discover what the echoing caves hide and get out before the tide",
+      "voice": "close third present; curious, careful, brave in measured steps, tide-aware",
+      "knows": [
+        "aunt_keeps_lighthouse",
+        "one_hour_limit",
+        "must_not_touch_bats",
+        "maya_has_torch",
+        "maya_has_notebook"
+      ]
+    },
+    "biscuit": {
+      "name": "Biscuit",
+      "role": "Maya's four-legged companion (species never named; tail, paws, barks)",
+      "want": "to sniff out every path and stay close to Maya",
+      "voice": "wordless: tail thumps, whines, barks, nose-first curiosity",
+      "knows": []
+    },
+    "aunt": {
+      "name": "Maya's aunt",
+      "role": "keeper of the lighthouse; offstage guardian",
+      "want": "Maya back from the cove before the tide turns",
+      "voice": "never heard directly",
+      "knows": [
+        "aunt_knows_plan"
+      ]
+    }
+  },
+  "truth": {
+    "question": "What do the three echoing sea caves under the lighthouse hold, and can Maya reach it before the tide returns?",
+    "statement": "Each of the three cave mouths under the lighthouse leads to its own hidden wonders: the humming left cave to a crystal grotto, a singing chamber and a lost ship's bell; the dripping right cave to an underground lake and a hidden tide-pool; the whispering middle cave to a bat roost with a skylight to the meadow and a century-old smuggler's cache. Maya has about an hour before the sea comes back and seals every mouth, so every deeper step trades safety against discovery.",
+    "facts": [
+      "three_cave_mouths",
+      "one_hour_limit",
+      "tide_will_return",
+      "crystal_grotto",
+      "ringing_chamber",
+      "ships_bell",
+      "underground_lake",
+      "hidden_tide_pool",
+      "bat_roost",
+      "smuggler_cache"
+    ]
+  },
+  "facts": {
+    "maya_at_sea_caves": {
+      "text": "Maya ducks under the lighthouse rocks into a cove of sea caves to explore."
+    },
+    "biscuit_with_maya": {
+      "text": "Biscuit, Maya's four-legged companion with a tail, ears and paws, goes with her into the caves."
+    },
+    "lighthouse_above_cove": {
+      "text": "A lighthouse stands on the rocks above the cove and its sea caves."
+    },
+    "aunt_keeps_lighthouse": {
+      "text": "Maya's aunt keeps the lighthouse."
+    },
+    "aunt_knows_plan": {
+      "text": "Maya's aunt knows Maya and Biscuit are exploring the cove until the tide turns."
+    },
+    "tide_going_out": {
+      "text": "The tide is pulling back from the sea caves as Maya arrives."
+    },
+    "tide_will_return": {
+      "text": "The tide will turn and come back in, closing the caves."
+    },
+    "three_cave_mouths": {
+      "text": "Three dark openings in the cliff breathe cool air: one left, one right, one straight ahead."
+    },
+    "left_mouth_hums": {
+      "text": "The left cave mouth hums, warm and low."
+    },
+    "right_mouth_drips": {
+      "text": "The right cave mouth drips, slow and steady."
+    },
+    "middle_mouth_whispers": {
+      "text": "Something almost whispers in the dark of the middle cave mouth."
+    },
+    "one_hour_limit": {
+      "text": "Maya has about an hour before the sea comes back and seals every cave mouth shut."
+    },
+    "maya_has_torch": {
+      "text": "Maya carries a torch and has it switched on."
+    },
+    "maya_has_notebook": {
+      "text": "Maya keeps a notebook in her pocket."
+    },
+    "tide_turning_now": {
+      "text": "The tide has turned and the sea is coming back into the caves."
+    },
+    "maya_plans_return": {
+      "text": "Maya means to come back to the caves on another low tide."
+    },
+    "reached_mouth_safe": {
+      "text": "Maya and Biscuit get back out of the caves safely through the cave mouth before the sea closes it."
+    },
+    "evening_on_exit": {
+      "text": "Maya comes out of the caves into evening light over the sea."
+    },
+    "town_home": {
+      "text": "Maya has a home town near the cove whose people will want to hear what she found."
+    },
+    "museum_known": {
+      "text": "There is a museum that would care about what Maya finds in the caves."
+    },
+    "rockpool_club": {
+      "text": "Maya belongs to a rockpool club back home."
+    },
+    "left_tunnel_light": {
+      "text": "Past a bend in the narrow humming left tunnel a soft light glows."
+    },
+    "paper_rustle": {
+      "text": "A faint rustle like wind through paper drifts back along the left tunnel."
+    },
+    "left_fork_glitter": {
+      "text": "The humming tunnel splits; one way has a wall glittering with tiny specks."
+    },
+    "left_fork_murmur": {
+      "text": "The other way at the humming tunnel's split, the hum grows warmer, like a voice murmuring."
+    },
+    "glitter_is_quartz": {
+      "text": "The glittering specks are tiny bits of quartz in the stone."
+    },
+    "slope_to_crack": {
+      "text": "Beyond the quartz wall the floor slopes down toward a narrow crack breathing cold air."
+    },
+    "round_room": {
+      "text": "The sloping floor opens into a small, quiet round room."
+    },
+    "blue_crack": {
+      "text": "A crack in the wall glows with soft blue light."
+    },
+    "crack_squeezable": {
+      "text": "The glowing crack is narrow, but Maya could just squeeze through it sideways."
+    },
+    "grotto_water_rising": {
+      "text": "Cold water is seeping in and pooling around Maya's boots by the glowing crack."
+    },
+    "left_pool_retreat": {
+      "text": "Maya turns back from the glowing crack without going through it.",
+      "contradicts": [
+        "through_crack"
+      ]
+    },
+    "through_crack": {
+      "text": "Maya and Biscuit squeeze through the glowing crack."
+    },
+    "shimmer_room_ahead": {
+      "text": "Past the crack a wide room shimmers with blue light."
+    },
+    "crystal_grotto": {
+      "text": "The shimmering room is a grotto of glowing blue crystals."
+    },
+    "loose_crystal": {
+      "text": "One loose crystal wobbles in its socket at Maya's eye level."
+    },
+    "humming_archway": {
+      "text": "Deeper in the grotto a rounded archway hums with a low sound."
+    },
+    "maya_has_crystal": {
+      "text": "Maya takes the loose glowing crystal and holds it."
+    },
+    "unseen_passage_up": {
+      "text": "The crystal lights a low passage Maya had not seen before, curving up toward the lighthouse.",
+      "contradicts": [
+        "passage_seen_before"
+      ]
+    },
+    "passage_seen_before": {
+      "text": "Maya had already seen the low passage that curves up toward the lighthouse."
+    },
+    "stair_to_lighthouse_door": {
+      "text": "The crystal-lit stair ends at a little wooden door tucked behind the old lighthouse."
+    },
+    "ribbed_shell_walls": {
+      "text": "Past the archway, smooth ribbed walls curve overhead like the inside of a great shell, shaped as if to carry sound."
+    },
+    "ringing_chamber": {
+      "text": "The ribbed passage opens into a vast round chamber where every sound rings back layered like a choir."
+    },
+    "chamber_sings_back": {
+      "text": "When Maya sings a note, the chamber sings it back to her, layered and shimmering."
+    },
+    "keepers_knew_chamber": {
+      "text": "Maya thinks only the lighthouse keepers of long ago knew of the singing chamber."
+    },
+    "murmur_is_ringing": {
+      "text": "The warm murmur is not wind but a low even ringing, like a bell struck far below."
+    },
+    "chime_below": {
+      "text": "The ringing becomes a slow deep chime rising from a lit chamber below, where metal flashes."
+    },
+    "rope_ladder": {
+      "text": "An old rope ladder, left by someone long ago, hangs down into the chiming chamber and holds firm."
+    },
+    "time_short_tide_clock": {
+      "text": "The tide-clock in Maya's head warns her that time is short."
+    },
+    "hum_turned_back": {
+      "text": "Maya does not climb down the rope ladder and turns back toward daylight.",
+      "contradicts": [
+        "descended_ladder"
+      ]
+    },
+    "descended_ladder": {
+      "text": "Maya climbs down the old rope ladder into the chiming chamber."
+    },
+    "ships_bell": {
+      "text": "A huge old ship's bell, green with age, hangs from a stone arch, and drips make it ring."
+    },
+    "bell_names_lost_ship": {
+      "text": "Letters cast in the bell's lip spell the name of a ship lost a hundred years ago."
+    },
+    "lantern_and_rope": {
+      "text": "A rusted lantern and a coil of good rope sit on a dry ledge behind the bell."
+    },
+    "lantern_candle_stub": {
+      "text": "The rusted lantern still holds a stub of old candle."
+    },
+    "ship_name_copied": {
+      "text": "Maya copies the ship's name into her notebook."
+    },
+    "maya_has_lantern_rope": {
+      "text": "Maya carries the old lantern and the coil of rope."
+    },
+    "trickle_floor": {
+      "text": "A thin trickle of water runs along the floor of the cold, salty right passage."
+    },
+    "right_colder": {
+      "text": "The right passage feels colder than the other tunnels and tastes of salt."
+    },
+    "right_fork_lapping": {
+      "text": "Where the trickle splits, one way carries a slow hollow lapping sound."
+    },
+    "right_fork_briny": {
+      "text": "The other way at the split, a sharp briny smell comes from a low, narrow side-tunnel."
+    },
+    "pebble_cavern": {
+      "text": "The lapping way crosses wet pebbles into a space whose ceiling the torch cannot reach."
+    },
+    "black_water_shelf": {
+      "text": "A rock shelf borders wide, still black water; the lapping is that water."
+    },
+    "underground_lake": {
+      "text": "The black water is a vast underground lake."
+    },
+    "shelf_weed_slick": {
+      "text": "The rocky shelf narrows and turns slick with green weed above the lake."
+    },
+    "lake_pale_shore": {
+      "text": "The underground lake has a pale shore below the shelf."
+    },
+    "lake_turned_back": {
+      "text": "Maya backs off the slippery shelf and does not go down to the lake.",
+      "contradicts": [
+        "on_lake_shore"
+      ]
+    },
+    "on_lake_shore": {
+      "text": "Maya climbs down to the pale gravel shore of the underground lake."
+    },
+    "dark_shape_shore": {
+      "text": "Something long and dark rests half out of the water on the gravel shore."
+    },
+    "rowboat": {
+      "text": "The dark shape is an old wooden rowboat, cracked but whole."
+    },
+    "glowing_shallows": {
+      "text": "Further along the shore the shallow water glows from beneath."
+    },
+    "boat_has_oars": {
+      "text": "The rowboat's oars are still lashed inside it."
+    },
+    "boat_floats": {
+      "text": "Once emptied of rainwater, the rowboat floats steady on the lake."
+    },
+    "crossed_lake": {
+      "text": "Maya rows Biscuit across the hidden lake."
+    },
+    "chimney_to_dunes": {
+      "text": "Across the lake a stone chimney lets in daylight and leads up to dune grass."
+    },
+    "first_to_cross": {
+      "text": "Maya is sure they are the first people in a lifetime to cross the hidden lake."
+    },
+    "glowing_shells": {
+      "text": "Thousands of tiny pale shells glow on the bottom of the shallows."
+    },
+    "white_islet": {
+      "text": "The glowing shells lead to a tiny islet of white sand lit by a shaft of sky."
+    },
+    "maya_has_shells": {
+      "text": "Maya pockets a few pale shells to take home."
+    },
+    "islet_secret": {
+      "text": "Maya promises to keep the glowing islet a secret."
+    },
+    "biscuit_small": {
+      "text": "Biscuit is small enough to trot where Maya must crawl."
+    },
+    "pool_pale_light": {
+      "text": "A paler light glows ahead through the briny side-tunnel."
+    },
+    "clear_channel": {
+      "text": "The side-tunnel widens; weed hangs from the ceiling and a channel of clear seawater runs toward a rounded chamber."
+    },
+    "weed_curtain": {
+      "text": "The channel ends at a curtain of hanging weed with bright watery light beyond."
+    },
+    "channel_filling": {
+      "text": "Behind Maya the channel is filling fast with the tide."
+    },
+    "pool_turned_back": {
+      "text": "Maya hurries back without going through the weed curtain.",
+      "contradicts": [
+        "hidden_tide_pool"
+      ]
+    },
+    "hidden_tide_pool": {
+      "text": "Beyond the weed curtain lies a bright hidden tide-pool lit by sunlight from above."
+    },
+    "anemones_fish": {
+      "text": "Anemones cling to the tide-pool's edges and small silver fish dart in it."
+    },
+    "orange_starfish": {
+      "text": "A rare cushion starfish glows deep orange in a corner of the tide-pool."
+    },
+    "starfish_new_to_maya": {
+      "text": "Maya has never seen anything like the orange starfish before.",
+      "contradicts": [
+        "starfish_seen_before"
+      ]
+    },
+    "starfish_seen_before": {
+      "text": "Maya has seen a starfish like the orange cushion starfish before."
+    },
+    "crab_tracks_basin": {
+      "text": "Small crab tracks lead to a deeper, darker basin in the rock."
+    },
+    "starfish_sketched": {
+      "text": "Maya sketches the orange starfish in her notebook."
+    },
+    "starfish_left": {
+      "text": "Maya leaves the starfish where it clings to the rock.",
+      "contradicts": [
+        "starfish_taken"
+      ]
+    },
+    "starfish_taken": {
+      "text": "Maya takes the orange starfish with her."
+    },
+    "club_doubt": {
+      "text": "The rockpool club will not believe Maya until they see her sketch."
+    },
+    "pale_thing_basin": {
+      "text": "Something smooth and pale gleams half-buried at the bottom of the green basin."
+    },
+    "spiral_shell": {
+      "text": "Maya lifts out a perfect spiral shell as big as her two hands, pink inside."
+    },
+    "finest_find": {
+      "text": "The spiral shell is the finest thing Maya has ever found."
+    },
+    "whisper_is_draft": {
+      "text": "The whispering echo is only a draft of air sighing over cold stone."
+    },
+    "dark_fork_sounds": {
+      "text": "The dark passage forks: a papery squeaking and flutter one way, the creak of old wood and a glint of rusted iron the other."
+    },
+    "hanging_shapes": {
+      "text": "Hundreds of small folded shapes hang twitching from a high ceiling."
+    },
+    "bat_roost": {
+      "text": "The shapes are hundreds of sleeping bats roosting in a warm vaulted chamber."
+    },
+    "grey_light_roof": {
+      "text": "A faint circle of grey light shows through a narrow shaft in the roost's roof."
+    },
+    "must_not_touch_bats": {
+      "text": "The bats are wild animals, and Maya knows she must never touch them."
+    },
+    "bats_not_woken": {
+      "text": "The bats sleep on and are not woken.",
+      "contradicts": [
+        "bats_woken"
+      ]
+    },
+    "bats_woken": {
+      "text": "The bats wake and stir."
+    },
+    "bat_turned_back": {
+      "text": "Maya backs away from the roost without crossing under the bats.",
+      "contradicts": [
+        "crossed_under_bats"
+      ]
+    },
+    "crossed_under_bats": {
+      "text": "Maya and Biscuit cross the floor beneath the sleeping bats."
+    },
+    "bats_hunt_at_night": {
+      "text": "The roost wakes and pours into the night sky to hunt."
+    },
+    "rock_stair": {
+      "text": "Under the grey shaft, fallen rock forms a rough stair climbing toward daylight."
+    },
+    "old_carving": {
+      "text": "Halfway up the stair, an old carved arrow and faded initials show someone climbed it long before."
+    },
+    "mossy_funnel": {
+      "text": "The stair narrows into a damp mossy funnel smelling of grass."
+    },
+    "meadow_hole": {
+      "text": "The funnel comes out through a hidden hole in the clifftop meadow above the lighthouse."
+    },
+    "bats_unnoticed": {
+      "text": "Nobody in years seems to have noticed the bat colony below the meadow."
+    },
+    "door_in_side_cave": {
+      "text": "Broken barrel staves lie on the floor and a leaning door of grey planks with rusted nails is wedged into a side-cave."
+    },
+    "walled_hollow": {
+      "text": "Behind the door is a dry hollow, walled off by hand long ago as a hiding place, with stacked crates."
+    },
+    "smuggler_cache": {
+      "text": "The hollow is an old smuggler's cache, forgotten for a hundred years."
+    },
+    "cache_floor_wet": {
+      "text": "Creeping water already glistens on the floor of the cache."
+    },
+    "cache_turned_back": {
+      "text": "Maya leaves the cache without stepping inside.",
+      "contradicts": [
+        "cache_entered"
+      ]
+    },
+    "cache_entered": {
+      "text": "Maya steps inside the smuggler's cache."
+    },
+    "two_dry_boxes": {
+      "text": "Most crates have rotted, but two smaller boxes sit whole on a dry stone shelf."
+    },
+    "compass_in_box": {
+      "text": "The first box holds a green-crusted brass compass."
+    },
+    "coin_box_rattles": {
+      "text": "The second box is heavier and rattles like loose coins."
+    },
+    "carry_one_box": {
+      "text": "Maya can only carry one box out cleanly before the tide catches up.",
+      "contradicts": [
+        "took_both_boxes"
+      ]
+    },
+    "took_both_boxes": {
+      "text": "Maya carries both boxes out of the cache."
+    },
+    "took_compass": {
+      "text": "Maya takes the brass compass.",
+      "contradicts": [
+        "took_coins"
+      ]
+    },
+    "took_coins": {
+      "text": "Maya takes the heavy box of coins."
+    },
+    "compass_true": {
+      "text": "The compass needle still swings true."
+    },
+    "compass_guides_out": {
+      "text": "Maya follows the compass out of the caves."
+    },
+    "biscuit_leads_out": {
+      "text": "Biscuit leads the way out to the cave mouth while Maya follows him."
+    },
+    "silver_coins": {
+      "text": "The heavy box is full of blackened old silver coins stamped with strange faces."
+    },
+    "coins_uncounted": {
+      "text": "Maya does not stop to count the coins.",
+      "contradicts": [
+        "coins_counted"
+      ]
+    },
+    "coins_counted": {
+      "text": "Maya counts the coins."
+    }
+  },
+  "nodes": {
+    "n_open": {
+      "function": "open",
+      "event": "Maya and Biscuit slip into the cove below the lighthouse at falling tide and face three cave mouths, each with its own sound.",
+      "requires": [],
+      "establishes": [
+        "maya_at_sea_caves",
+        "biscuit_with_maya",
+        "lighthouse_above_cove",
+        "aunt_keeps_lighthouse",
+        "aunt_knows_plan",
+        "tide_going_out",
+        "tide_will_return",
+        "three_cave_mouths",
+        "left_mouth_hums",
+        "right_mouth_drips",
+        "middle_mouth_whispers"
+      ]
+    },
+    "n_start": {
+      "function": "decision",
+      "event": "Maya notes she has about an hour before the sea seals the caves, checks torch and notebook, and picks a sound to follow.",
+      "requires": [
+        "biscuit_with_maya",
+        "left_mouth_hums",
+        "right_mouth_drips",
+        "middle_mouth_whispers",
+        "tide_will_return"
+      ],
+      "establishes": [
+        "one_hour_limit",
+        "maya_has_torch",
+        "maya_has_notebook"
+      ]
+    },
+    "la_tunnel": {
+      "function": "continue",
+      "event": "The left passage narrows into a humming tunnel with a soft light and a paper-like rustle past a bend.",
+      "requires": [
+        "left_mouth_hums",
+        "biscuit_with_maya"
+      ],
+      "establishes": [
+        "left_tunnel_light",
+        "paper_rustle"
+      ]
+    },
+    "la_fork": {
+      "function": "decision",
+      "event": "The humming tunnel splits between a glittering wall and a warmer murmur, and the tide forces a choice.",
+      "requires": [
+        "left_mouth_hums",
+        "maya_has_torch",
+        "biscuit_with_maya",
+        "tide_will_return"
+      ],
+      "establishes": [
+        "left_fork_glitter",
+        "left_fork_murmur"
+      ]
+    },
+    "la_glitter": {
+      "function": "continue",
+      "event": "The glitter is quartz; the floor slopes down toward a narrow crack breathing cold air.",
+      "requires": [
+        "left_fork_glitter",
+        "maya_has_torch",
+        "biscuit_with_maya"
+      ],
+      "establishes": [
+        "glitter_is_quartz",
+        "slope_to_crack"
+      ]
+    },
+    "la_glitter2": {
+      "function": "continue",
+      "event": "The slope opens into a quiet round room where a crack glows blue.",
+      "requires": [
+        "slope_to_crack",
+        "biscuit_with_maya",
+        "maya_has_torch"
+      ],
+      "establishes": [
+        "round_room",
+        "blue_crack"
+      ]
+    },
+    "la_grotto_app": {
+      "function": "decision",
+      "event": "The glowing crack is just wide enough to squeeze through, but cold water is rising around Maya's boots.",
+      "requires": [
+        "blue_crack",
+        "biscuit_with_maya"
+      ],
+      "establishes": [
+        "crack_squeezable",
+        "grotto_water_rising"
+      ]
+    },
+    "la_retreat_pool": {
+      "function": "ending",
+      "event": "Maya carries Biscuit back through rising water and reaches the cave mouth, promising to return next low tide.",
+      "requires": [
+        "blue_crack",
+        "grotto_water_rising",
+        "biscuit_with_maya"
+      ],
+      "establishes": [
+        "left_pool_retreat",
+        "reached_mouth_safe",
+        "tide_turning_now",
+        "maya_plans_return"
+      ]
+    },
+    "la_squeeze": {
+      "function": "continue",
+      "event": "Maya and Biscuit squeeze through the crack toward a wide shimmering room.",
+      "requires": [
+        "blue_crack",
+        "maya_has_torch",
+        "biscuit_with_maya"
+      ],
+      "establishes": [
+        "through_crack",
+        "shimmer_room_ahead"
+      ]
+    },
+    "la_grotto": {
+      "function": "decision",
+      "event": "The room is a grotto of glowing blue crystals with one loose crystal and a humming archway deeper in.",
+      "requires": [
+        "shimmer_room_ahead",
+        "biscuit_with_maya"
+      ],
+      "establishes": [
+        "crystal_grotto",
+        "loose_crystal",
+        "humming_archway"
+      ]
+    },
+    "la_crystal_take": {
+      "function": "continue",
+      "event": "Maya eases the loose crystal free and its light reveals an unseen passage curving up toward the lighthouse.",
+      "requires": [
+        "loose_crystal",
+        "lighthouse_above_cove",
+        "biscuit_with_maya"
+      ],
+      "establishes": [
+        "maya_has_crystal",
+        "unseen_passage_up"
+      ]
+    },
+    "la_crystal_out": {
+      "function": "ending",
+      "event": "The crystal lights a stair to a door behind the lighthouse; Maya steps out into evening holding a real cave crystal.",
+      "requires": [
+        "maya_has_crystal",
+        "lighthouse_above_cove",
+        "biscuit_with_maya"
+      ],
+      "establishes": [
+        "stair_to_lighthouse_door",
+        "evening_on_exit",
+        "town_home"
+      ]
+    },
+    "la_crystal_deeper": {
+      "function": "continue",
+      "event": "Through the archway the hum becomes a chord and ribbed shell-like walls seem built to carry sound.",
+      "requires": [
+        "humming_archway",
+        "biscuit_with_maya"
+      ],
+      "establishes": [
+        "ribbed_shell_walls"
+      ]
+    },
+    "la_song_app": {
+      "function": "continue",
+      "event": "The ribbed walls open into a vast round chamber where every sound echoes like a choir.",
+      "requires": [
+        "ribbed_shell_walls",
+        "biscuit_with_maya",
+        "maya_has_torch"
+      ],
+      "establishes": [
+        "ringing_chamber"
+      ]
+    },
+    "la_song": {
+      "function": "ending",
+      "event": "Maya sings a note and the chamber sings it back; she has found a secret of the long-ago lighthouse keepers.",
+      "requires": [
+        "ringing_chamber",
+        "lighthouse_above_cove",
+        "biscuit_with_maya"
+      ],
+      "establishes": [
+        "chamber_sings_back",
+        "keepers_knew_chamber"
+      ]
+    },
+    "la_hum": {
+      "function": "continue",
+      "event": "The warm murmur turns out to be a ringing like a bell struck far below.",
+      "requires": [
+        "left_fork_murmur",
+        "biscuit_with_maya"
+      ],
+      "establishes": [
+        "murmur_is_ringing"
+      ]
+    },
+    "la_hum2": {
+      "function": "continue",
+      "event": "The passage steepens toward a lit chamber below where something metal chimes and flashes.",
+      "requires": [
+        "murmur_is_ringing",
+        "maya_has_torch",
+        "biscuit_with_maya"
+      ],
+      "establishes": [
+        "chime_below"
+      ]
+    },
+    "la_bell_app": {
+      "function": "decision",
+      "event": "An old rope ladder leads down to the chime, but Maya's tide-clock says time is short.",
+      "requires": [
+        "chime_below",
+        "tide_will_return",
+        "biscuit_with_maya"
+      ],
+      "establishes": [
+        "rope_ladder",
+        "time_short_tide_clock"
+      ]
+    },
+    "la_hum_back": {
+      "function": "ending",
+      "event": "Maya leaves the ladder and climbs back to the cave mouth safely as the sea begins to lap at it, planning her next visit.",
+      "requires": [
+        "rope_ladder",
+        "murmur_is_ringing",
+        "biscuit_with_maya"
+      ],
+      "establishes": [
+        "hum_turned_back",
+        "reached_mouth_safe",
+        "tide_turning_now",
+        "maya_plans_return"
+      ]
+    },
+    "la_bell": {
+      "function": "continue",
+      "event": "At the bottom of the ladder hangs a huge green ship's bell rung by drips.",
+      "requires": [
+        "rope_ladder",
+        "biscuit_with_maya"
+      ],
+      "establishes": [
+        "descended_ladder",
+        "ships_bell"
+      ]
+    },
+    "la_bell2": {
+      "function": "continue",
+      "event": "The bell bears the name of a ship lost a hundred years ago; a lantern and rope sit on a ledge behind it.",
+      "requires": [
+        "ships_bell",
+        "biscuit_with_maya"
+      ],
+      "establishes": [
+        "bell_names_lost_ship",
+        "lantern_and_rope"
+      ]
+    },
+    "la_bell3": {
+      "function": "continue",
+      "event": "Maya copies the ship's name into her notebook and gathers the lantern and rope.",
+      "requires": [
+        "bell_names_lost_ship",
+        "lantern_and_rope",
+        "maya_has_notebook",
+        "biscuit_with_maya"
+      ],
+      "establishes": [
+        "ship_name_copied",
+        "lantern_candle_stub",
+        "maya_has_lantern_rope"
+      ]
+    },
+    "la_bell4": {
+      "function": "ending",
+      "event": "Maya climbs out at evening with the ship's name, the lantern and the rope, picturing the town hearing of the lost ship's bell.",
+      "requires": [
+        "ship_name_copied",
+        "maya_has_lantern_rope",
+        "rope_ladder",
+        "maya_has_notebook",
+        "bell_names_lost_ship",
+        "biscuit_with_maya",
+        "town_home"
+      ],
+      "establishes": [
+        "evening_on_exit",
+        "town_home"
+      ]
+    },
+    "ra_drip": {
+      "function": "continue",
+      "event": "The right passage is cold and salty, with a trickle of water leading deeper.",
+      "requires": [
+        "right_mouth_drips",
+        "three_cave_mouths",
+        "maya_has_torch",
+        "biscuit_with_maya"
+      ],
+      "establishes": [
+        "trickle_floor",
+        "right_colder"
+      ]
+    },
+    "ra_fork": {
+      "function": "decision",
+      "event": "The trickle reaches a split between a hollow lapping and a briny side-tunnel.",
+      "requires": [
+        "trickle_floor",
+        "maya_has_torch",
+        "biscuit_with_maya"
+      ],
+      "establishes": [
+        "right_fork_lapping",
+        "right_fork_briny"
+      ]
+    },
+    "ra_lake_way": {
+      "function": "continue",
+      "event": "The lapping way crosses wet pebbles into a huge dark space.",
+      "requires": [
+        "right_fork_lapping",
+        "maya_has_torch",
+        "biscuit_with_maya"
+      ],
+      "establishes": [
+        "pebble_cavern"
+      ]
+    },
+    "ra_lake2": {
+      "function": "continue",
+      "event": "A rock shelf borders wide black still water, the source of the lapping.",
+      "requires": [
+        "pebble_cavern",
+        "maya_has_torch",
+        "biscuit_with_maya"
+      ],
+      "establishes": [
+        "black_water_shelf"
+      ]
+    },
+    "ra_lake_app": {
+      "function": "decision",
+      "event": "The shelf narrows and turns weed-slick above a vast underground lake; climb down to its pale shore or back off.",
+      "requires": [
+        "black_water_shelf",
+        "biscuit_with_maya"
+      ],
+      "establishes": [
+        "underground_lake",
+        "shelf_weed_slick",
+        "lake_pale_shore"
+      ]
+    },
+    "ra_lake_back": {
+      "function": "ending",
+      "event": "Maya coaxes Biscuit off the slick shelf and retraces the passage safely, leaving the lake for another day.",
+      "requires": [
+        "shelf_weed_slick",
+        "underground_lake",
+        "trickle_floor",
+        "biscuit_with_maya"
+      ],
+      "establishes": [
+        "lake_turned_back",
+        "reached_mouth_safe"
+      ]
+    },
+    "ra_descend": {
+      "function": "continue",
+      "event": "Maya climbs down to the pale gravel shore and sees a long dark shape half out of the water.",
+      "requires": [
+        "shelf_weed_slick",
+        "underground_lake",
+        "maya_has_torch",
+        "biscuit_with_maya"
+      ],
+      "establishes": [
+        "on_lake_shore",
+        "lake_pale_shore",
+        "dark_shape_shore"
+      ]
+    },
+    "ra_lakeshore": {
+      "function": "decision",
+      "event": "The shape is an old rowboat; further along, the shallows glow.",
+      "requires": [
+        "dark_shape_shore",
+        "biscuit_with_maya"
+      ],
+      "establishes": [
+        "rowboat",
+        "glowing_shallows"
+      ]
+    },
+    "ra_boat": {
+      "function": "continue",
+      "event": "The rowboat still has its oars and floats once emptied; Biscuit hops in.",
+      "requires": [
+        "rowboat",
+        "biscuit_with_maya"
+      ],
+      "establishes": [
+        "boat_has_oars",
+        "boat_floats"
+      ]
+    },
+    "ra_row": {
+      "function": "ending",
+      "event": "Maya rows across the hidden lake and climbs a daylight chimney into the dunes.",
+      "requires": [
+        "boat_has_oars",
+        "boat_floats",
+        "underground_lake",
+        "biscuit_with_maya"
+      ],
+      "establishes": [
+        "crossed_lake",
+        "chimney_to_dunes",
+        "first_to_cross"
+      ]
+    },
+    "ra_wade": {
+      "function": "continue",
+      "event": "Maya wades into shallows where tiny glowing shells lead toward a bright opening.",
+      "requires": [
+        "glowing_shallows",
+        "biscuit_with_maya"
+      ],
+      "establishes": [
+        "glowing_shells"
+      ]
+    },
+    "ra_islet": {
+      "function": "ending",
+      "event": "The shells lead to a sunlit islet of white sand; Maya pockets a few and vows to keep the place secret.",
+      "requires": [
+        "glowing_shells",
+        "biscuit_with_maya"
+      ],
+      "establishes": [
+        "white_islet",
+        "maya_has_shells",
+        "islet_secret"
+      ]
+    },
+    "ra_pool_way": {
+      "function": "continue",
+      "event": "Maya crawls through the tight briny side-tunnel behind Biscuit toward a paler light.",
+      "requires": [
+        "right_fork_briny",
+        "maya_has_torch",
+        "biscuit_with_maya"
+      ],
+      "establishes": [
+        "biscuit_small",
+        "pool_pale_light"
+      ]
+    },
+    "ra_pool2": {
+      "function": "continue",
+      "event": "The tunnel widens under hanging weed and a clear seawater channel runs ahead.",
+      "requires": [
+        "right_fork_briny",
+        "biscuit_with_maya"
+      ],
+      "establishes": [
+        "clear_channel"
+      ]
+    },
+    "ra_pool_app": {
+      "function": "decision",
+      "event": "The channel ends at a weed curtain with light beyond, while the tide fills the channel behind.",
+      "requires": [
+        "clear_channel",
+        "biscuit_with_maya"
+      ],
+      "establishes": [
+        "weed_curtain",
+        "channel_filling",
+        "tide_turning_now"
+      ]
+    },
+    "ra_pool_back": {
+      "function": "ending",
+      "event": "Maya carries Biscuit back through the filling channel and bursts out as the sea pours in, planning another try.",
+      "requires": [
+        "channel_filling",
+        "biscuit_with_maya"
+      ],
+      "establishes": [
+        "pool_turned_back",
+        "reached_mouth_safe",
+        "maya_plans_return"
+      ]
+    },
+    "ra_pool_enter": {
+      "function": "continue",
+      "event": "Beyond the weed lies a bright hidden tide-pool with anemones and silver fish.",
+      "requires": [
+        "weed_curtain",
+        "biscuit_with_maya"
+      ],
+      "establishes": [
+        "hidden_tide_pool",
+        "anemones_fish"
+      ]
+    },
+    "ra_pool_chamber": {
+      "function": "decision",
+      "event": "A rare orange starfish glows in one corner; crab tracks lead to a darker basin.",
+      "requires": [
+        "hidden_tide_pool",
+        "biscuit_with_maya"
+      ],
+      "establishes": [
+        "orange_starfish",
+        "starfish_new_to_maya",
+        "crab_tracks_basin"
+      ]
+    },
+    "ra_starfish": {
+      "function": "continue",
+      "event": "Maya sketches the starfish in her notebook, leaves it in place, and slips out.",
+      "requires": [
+        "orange_starfish",
+        "maya_has_notebook",
+        "hidden_tide_pool",
+        "biscuit_with_maya"
+      ],
+      "establishes": [
+        "starfish_sketched",
+        "starfish_left"
+      ]
+    },
+    "ra_starfish2": {
+      "function": "ending",
+      "event": "Maya leaves with notebook pages of starfish drawings the rockpool club will have to see to believe.",
+      "requires": [
+        "starfish_sketched",
+        "maya_has_notebook",
+        "rockpool_club",
+        "biscuit_with_maya"
+      ],
+      "establishes": [
+        "rockpool_club",
+        "club_doubt"
+      ]
+    },
+    "ra_pool_deep": {
+      "function": "continue",
+      "event": "In the green basin something pale gleams half-buried, and Maya reaches in.",
+      "requires": [
+        "crab_tracks_basin",
+        "biscuit_with_maya"
+      ],
+      "establishes": [
+        "pale_thing_basin"
+      ]
+    },
+    "ra_pool_deep2": {
+      "function": "ending",
+      "event": "Maya lifts out a great pink spiral shell, the finest thing she has ever found.",
+      "requires": [
+        "pale_thing_basin",
+        "hidden_tide_pool",
+        "biscuit_with_maya"
+      ],
+      "establishes": [
+        "spiral_shell",
+        "finest_find"
+      ]
+    },
+    "da_dark": {
+      "function": "continue",
+      "event": "The middle passage leads down; the whisper is only a draft over stone.",
+      "requires": [
+        "middle_mouth_whispers",
+        "three_cave_mouths",
+        "maya_has_torch",
+        "biscuit_with_maya"
+      ],
+      "establishes": [
+        "whisper_is_draft"
+      ]
+    },
+    "da_fork": {
+      "function": "decision",
+      "event": "The dark passage forks toward a squeaking flutter or a creak of old wood and rusted iron.",
+      "requires": [
+        "maya_has_torch",
+        "biscuit_with_maya"
+      ],
+      "establishes": [
+        "dark_fork_sounds"
+      ]
+    },
+    "da_bat_way": {
+      "function": "continue",
+      "event": "Under a high ceiling hang hundreds of small twitching shapes.",
+      "requires": [
+        "dark_fork_sounds",
+        "maya_has_torch",
+        "biscuit_with_maya"
+      ],
+      "establishes": [
+        "hanging_shapes"
+      ]
+    },
+    "da_bat2": {
+      "function": "continue",
+      "event": "The shapes are a sleeping bat roost in a warm vaulted chamber with grey light high in the roof.",
+      "requires": [
+        "hanging_shapes",
+        "biscuit_with_maya"
+      ],
+      "establishes": [
+        "bat_roost",
+        "grey_light_roof"
+      ]
+    },
+    "da_bat_app": {
+      "function": "decision",
+      "event": "Reaching the grey shaft means passing under the roost; Maya knows never to touch wild bats.",
+      "requires": [
+        "bat_roost",
+        "grey_light_roof",
+        "biscuit_with_maya"
+      ],
+      "establishes": [
+        "must_not_touch_bats"
+      ]
+    },
+    "da_bat_back": {
+      "function": "ending",
+      "event": "Maya leaves the bats sleeping and returns safely, glad of her kind choice and meaning to ask her aunt about them.",
+      "requires": [
+        "bat_roost",
+        "aunt_keeps_lighthouse",
+        "biscuit_with_maya"
+      ],
+      "establishes": [
+        "bat_turned_back",
+        "bats_not_woken",
+        "reached_mouth_safe",
+        "bats_hunt_at_night"
+      ]
+    },
+    "da_bat_enter": {
+      "function": "continue",
+      "event": "Maya and Biscuit cross hushed beneath the roost, no bat stirs, and a fallen-rock stair rises toward the light.",
+      "requires": [
+        "bat_roost",
+        "grey_light_roof",
+        "biscuit_with_maya"
+      ],
+      "establishes": [
+        "crossed_under_bats",
+        "bats_not_woken",
+        "rock_stair"
+      ]
+    },
+    "da_roost": {
+      "function": "continue",
+      "event": "Halfway up the stair Maya finds an old carved arrow and faded initials.",
+      "requires": [
+        "rock_stair",
+        "biscuit_with_maya"
+      ],
+      "establishes": [
+        "old_carving"
+      ]
+    },
+    "da_roost2": {
+      "function": "continue",
+      "event": "The stair narrows into a mossy funnel; Maya boosts Biscuit up and climbs toward green light.",
+      "requires": [
+        "rock_stair",
+        "biscuit_with_maya"
+      ],
+      "establishes": [
+        "mossy_funnel"
+      ]
+    },
+    "da_skylight": {
+      "function": "ending",
+      "event": "Maya climbs out into the clifftop meadow through a hidden hole, a forgotten way into the caves above an unnoticed bat colony.",
+      "requires": [
+        "mossy_funnel",
+        "lighthouse_above_cove",
+        "bat_roost",
+        "museum_known",
+        "biscuit_with_maya"
+      ],
+      "establishes": [
+        "meadow_hole",
+        "bats_unnoticed",
+        "museum_known"
+      ]
+    },
+    "da_cache_way": {
+      "function": "continue",
+      "event": "Barrel staves and a leaning plank door with rusted nails mark a side-cave.",
+      "requires": [
+        "dark_fork_sounds",
+        "maya_has_torch",
+        "biscuit_with_maya"
+      ],
+      "establishes": [
+        "door_in_side_cave"
+      ]
+    },
+    "da_cache2": {
+      "function": "continue",
+      "event": "Behind the door is a hand-walled hiding hollow with stacked crates.",
+      "requires": [
+        "door_in_side_cave",
+        "biscuit_with_maya"
+      ],
+      "establishes": [
+        "walled_hollow"
+      ]
+    },
+    "da_cache_app": {
+      "function": "decision",
+      "event": "It is a century-old smuggler's cache, but tide water is already creeping over its floor.",
+      "requires": [
+        "walled_hollow",
+        "biscuit_with_maya"
+      ],
+      "establishes": [
+        "smuggler_cache",
+        "tide_turning_now",
+        "cache_floor_wet"
+      ]
+    },
+    "da_cache_back": {
+      "function": "ending",
+      "event": "Maya fixes the cache in memory and hurries out ahead of the tide, planning to return on a drier day.",
+      "requires": [
+        "smuggler_cache",
+        "cache_floor_wet",
+        "biscuit_with_maya"
+      ],
+      "establishes": [
+        "cache_turned_back",
+        "reached_mouth_safe",
+        "tide_turning_now",
+        "maya_plans_return"
+      ]
+    },
+    "da_cache_enter": {
+      "function": "continue",
+      "event": "Most crates have rotted, but two whole boxes sit on a dry shelf.",
+      "requires": [
+        "walled_hollow",
+        "biscuit_with_maya"
+      ],
+      "establishes": [
+        "cache_entered",
+        "two_dry_boxes"
+      ]
+    },
+    "da_cache_room": {
+      "function": "decision",
+      "event": "One box holds a brass compass, the other rattles with coins; Maya can only carry one out before the tide.",
+      "requires": [
+        "two_dry_boxes",
+        "tide_will_return",
+        "biscuit_with_maya"
+      ],
+      "establishes": [
+        "compass_in_box",
+        "coin_box_rattles",
+        "carry_one_box"
+      ]
+    },
+    "da_compass": {
+      "function": "continue",
+      "event": "The compass needle still swings true; Biscuit leads Maya out fast ahead of the rising tide.",
+      "requires": [
+        "compass_in_box",
+        "biscuit_with_maya",
+        "tide_will_return"
+      ],
+      "establishes": [
+        "took_compass",
+        "compass_true",
+        "biscuit_leads_out",
+        "compass_guides_out"
+      ]
+    },
+    "da_compass2": {
+      "function": "ending",
+      "event": "Biscuit leads Maya out just ahead of the sea, a true-pointing smuggler's compass in her hand.",
+      "requires": [
+        "took_compass",
+        "compass_true",
+        "smuggler_cache",
+        "lighthouse_above_cove",
+        "town_home",
+        "biscuit_with_maya"
+      ],
+      "establishes": [
+        "biscuit_leads_out",
+        "reached_mouth_safe",
+        "town_home"
+      ]
+    },
+    "da_coins": {
+      "function": "continue",
+      "event": "The box is full of blackened silver coins; Maya does not stop to count them and carries the box off.",
+      "requires": [
+        "coin_box_rattles",
+        "cache_floor_wet",
+        "biscuit_with_maya"
+      ],
+      "establishes": [
+        "took_coins",
+        "silver_coins",
+        "coins_uncounted"
+      ]
+    },
+    "da_coins2": {
+      "function": "ending",
+      "event": "Maya lugs the coin box out ahead of the tide and pictures the museum displaying the hoard with her name.",
+      "requires": [
+        "took_coins",
+        "silver_coins",
+        "museum_known",
+        "biscuit_with_maya"
+      ],
+      "establishes": [
+        "reached_mouth_safe",
+        "museum_known"
+      ]
+    }
+  },
+  "choices": {
+    "c_open": {
+      "intent": "listen to the three cave sounds before choosing",
+      "cost": "none",
+      "requires": [
+        "three_cave_mouths"
+      ]
+    },
+    "c_left": {
+      "intent": "explore the warm humming left cave",
+      "cost": "gives up the right and middle caves",
+      "requires": [
+        "left_mouth_hums"
+      ]
+    },
+    "c_right": {
+      "intent": "explore the dripping right cave",
+      "cost": "gives up the left and middle caves",
+      "requires": [
+        "right_mouth_drips"
+      ]
+    },
+    "c_down": {
+      "intent": "explore the whispering middle cave going down",
+      "cost": "gives up the left and right caves",
+      "requires": [
+        "middle_mouth_whispers"
+      ]
+    },
+    "c_la_fork": {
+      "intent": "press on toward the glow",
+      "cost": "none",
+      "requires": [
+        "left_tunnel_light"
+      ]
+    },
+    "c_glitter": {
+      "intent": "follow the glittering wall",
+      "cost": "gives up the warm murmur route",
+      "requires": [
+        "left_fork_glitter"
+      ]
+    },
+    "c_hum": {
+      "intent": "follow the warm murmur",
+      "cost": "gives up the glittering wall route",
+      "requires": [
+        "left_fork_murmur"
+      ]
+    },
+    "c_la_slope": {
+      "intent": "follow the slope down",
+      "cost": "none",
+      "requires": [
+        "slope_to_crack"
+      ]
+    },
+    "c_la_crack": {
+      "intent": "approach the glowing crack",
+      "cost": "none",
+      "requires": [
+        "blue_crack"
+      ]
+    },
+    "c_squeeze": {
+      "intent": "squeeze through the crack despite rising water",
+      "cost": "risks being caught by the rising water",
+      "requires": [
+        "blue_crack"
+      ]
+    },
+    "c_retreat": {
+      "intent": "turn back safely while the way is dry",
+      "cost": "gives up the crystal grotto for today",
+      "requires": [
+        "grotto_water_rising"
+      ]
+    },
+    "c_la_room": {
+      "intent": "step into the shimmering room",
+      "cost": "none",
+      "requires": [
+        "shimmer_room_ahead"
+      ]
+    },
+    "c_take": {
+      "intent": "take the loose crystal",
+      "cost": "gives up the humming archway route",
+      "requires": [
+        "loose_crystal"
+      ]
+    },
+    "c_deeper": {
+      "intent": "follow the humming archway deeper",
+      "cost": "gives up the loose crystal",
+      "requires": [
+        "humming_archway"
+      ]
+    },
+    "c_la_up": {
+      "intent": "follow the crystal's light up and out",
+      "cost": "none",
+      "requires": [
+        "maya_has_crystal"
+      ]
+    },
+    "c_la_chord": {
+      "intent": "follow the chord toward its source",
+      "cost": "none",
+      "requires": [
+        "ribbed_shell_walls"
+      ]
+    },
+    "c_la_sing": {
+      "intent": "step into the ringing chamber",
+      "cost": "none",
+      "requires": [
+        "ringing_chamber"
+      ]
+    },
+    "c_la_ring": {
+      "intent": "follow the ringing downward",
+      "cost": "none",
+      "requires": [
+        "murmur_is_ringing"
+      ]
+    },
+    "c_la_chime": {
+      "intent": "climb down toward the chiming light",
+      "cost": "none",
+      "requires": [
+        "chime_below"
+      ]
+    },
+    "c_bell": {
+      "intent": "climb down the old rope ladder",
+      "cost": "spends time the tide may not allow",
+      "requires": [
+        "rope_ladder"
+      ]
+    },
+    "c_humback": {
+      "intent": "scramble back up to be safe",
+      "cost": "gives up the chiming chamber for today",
+      "requires": [
+        "rope_ladder"
+      ]
+    },
+    "c_la_bell2": {
+      "intent": "walk up to the bell",
+      "cost": "none",
+      "requires": [
+        "ships_bell"
+      ]
+    },
+    "c_la_bell3": {
+      "intent": "read the name and look behind the bell",
+      "cost": "none",
+      "requires": [
+        "bell_names_lost_ship"
+      ]
+    },
+    "c_la_bell4": {
+      "intent": "take the lantern and rope and head out",
+      "cost": "none",
+      "requires": [
+        "lantern_and_rope"
+      ]
+    },
+    "c_ra_fork": {
+      "intent": "follow the trickle deeper",
+      "cost": "none",
+      "requires": [
+        "trickle_floor"
+      ]
+    },
+    "c_lake": {
+      "intent": "head toward the lapping water",
+      "cost": "gives up the briny side-tunnel",
+      "requires": [
+        "right_fork_lapping"
+      ]
+    },
+    "c_pool": {
+      "intent": "follow the briny smell",
+      "cost": "gives up the lapping water route",
+      "requires": [
+        "right_fork_briny"
+      ]
+    },
+    "c_ra_pebbles": {
+      "intent": "cross the wet pebbles",
+      "cost": "none",
+      "requires": [
+        "pebble_cavern"
+      ]
+    },
+    "c_ra_shelf": {
+      "intent": "edge along the rocky shelf",
+      "cost": "none",
+      "requires": [
+        "black_water_shelf"
+      ]
+    },
+    "c_descend": {
+      "intent": "climb down the slick shelf to the lake shore",
+      "cost": "risks a fall into the cold lake",
+      "requires": [
+        "lake_pale_shore",
+        "shelf_weed_slick"
+      ]
+    },
+    "c_lakeback": {
+      "intent": "back off the slippery shelf",
+      "cost": "gives up the lake shore for today",
+      "requires": [
+        "shelf_weed_slick"
+      ]
+    },
+    "c_ra_shore": {
+      "intent": "walk along the gravel shore",
+      "cost": "none",
+      "requires": [
+        "on_lake_shore"
+      ]
+    },
+    "c_boat": {
+      "intent": "examine the old rowboat",
+      "cost": "gives up the glowing shallows",
+      "requires": [
+        "rowboat"
+      ]
+    },
+    "c_wade": {
+      "intent": "wade into the glowing shallows",
+      "cost": "gives up the rowboat",
+      "requires": [
+        "glowing_shallows"
+      ]
+    },
+    "c_ra_row": {
+      "intent": "climb in and push off",
+      "cost": "none",
+      "requires": [
+        "boat_floats"
+      ]
+    },
+    "c_ra_islet": {
+      "intent": "follow the glowing shells",
+      "cost": "none",
+      "requires": [
+        "glowing_shells"
+      ]
+    },
+    "c_ra_crouch": {
+      "intent": "crouch through toward the pale light",
+      "cost": "none",
+      "requires": [
+        "pool_pale_light"
+      ]
+    },
+    "c_ra_channel": {
+      "intent": "follow the clear channel",
+      "cost": "none",
+      "requires": [
+        "clear_channel"
+      ]
+    },
+    "c_enter": {
+      "intent": "push through the weed curtain",
+      "cost": "risks the channel flooding shut behind her",
+      "requires": [
+        "weed_curtain"
+      ]
+    },
+    "c_poolback": {
+      "intent": "hurry back before the channel fills",
+      "cost": "gives up the hidden pool for today",
+      "requires": [
+        "channel_filling"
+      ]
+    },
+    "c_ra_kneel": {
+      "intent": "kneel by the clear tide-pool",
+      "cost": "none",
+      "requires": [
+        "hidden_tide_pool"
+      ]
+    },
+    "c_star": {
+      "intent": "study the orange starfish",
+      "cost": "gives up the dark basin",
+      "requires": [
+        "orange_starfish"
+      ]
+    },
+    "c_deep": {
+      "intent": "follow the crab tracks to the dark basin",
+      "cost": "gives up the starfish",
+      "requires": [
+        "crab_tracks_basin"
+      ]
+    },
+    "c_ra_sketch": {
+      "intent": "finish the sketch and slip out",
+      "cost": "none",
+      "requires": [
+        "starfish_sketched"
+      ]
+    },
+    "c_ra_reach": {
+      "intent": "reach into the green basin",
+      "cost": "none",
+      "requires": [
+        "pale_thing_basin"
+      ]
+    },
+    "c_da_fork": {
+      "intent": "feel along the wall downward",
+      "cost": "none"
+    },
+    "c_bat": {
+      "intent": "go toward the squeaking and flutter",
+      "cost": "gives up the creaking wood route",
+      "requires": [
+        "dark_fork_sounds"
+      ]
+    },
+    "c_cache": {
+      "intent": "go toward the creaking wood",
+      "cost": "gives up the squeaking route",
+      "requires": [
+        "dark_fork_sounds"
+      ]
+    },
+    "c_da_creep": {
+      "intent": "creep on under the hanging shapes",
+      "cost": "none",
+      "requires": [
+        "hanging_shapes"
+      ]
+    },
+    "c_da_grey": {
+      "intent": "move quietly toward the grey light",
+      "cost": "none",
+      "requires": [
+        "grey_light_roof"
+      ]
+    },
+    "c_batenter": {
+      "intent": "tiptoe across under the bats",
+      "cost": "risks waking the whole roost",
+      "requires": [
+        "bat_roost"
+      ]
+    },
+    "c_batback": {
+      "intent": "back away and let the bats sleep",
+      "cost": "gives up the grey shaft for today",
+      "requires": [
+        "bat_roost"
+      ]
+    },
+    "c_da_stair": {
+      "intent": "start up the fallen-rock stair",
+      "cost": "none",
+      "requires": [
+        "rock_stair"
+      ]
+    },
+    "c_da_climb": {
+      "intent": "climb on past the old carving",
+      "cost": "none",
+      "requires": [
+        "old_carving"
+      ]
+    },
+    "c_da_push": {
+      "intent": "push up through the mossy funnel",
+      "cost": "none",
+      "requires": [
+        "mossy_funnel"
+      ]
+    },
+    "c_da_door": {
+      "intent": "approach the leaning plank door",
+      "cost": "none",
+      "requires": [
+        "door_in_side_cave"
+      ]
+    },
+    "c_da_peer": {
+      "intent": "peer into the walled-off hollow",
+      "cost": "none",
+      "requires": [
+        "walled_hollow"
+      ]
+    },
+    "c_cacheenter": {
+      "intent": "step in for a quick look at the crates",
+      "cost": "spends time as the tide rises",
+      "requires": [
+        "smuggler_cache"
+      ]
+    },
+    "c_cacheback": {
+      "intent": "leave the cache and beat the tide",
+      "cost": "gives up the cache for today",
+      "requires": [
+        "smuggler_cache"
+      ]
+    },
+    "c_da_boxes": {
+      "intent": "open the two dry boxes",
+      "cost": "none",
+      "requires": [
+        "two_dry_boxes"
+      ]
+    },
+    "c_compass": {
+      "intent": "take the brass compass",
+      "cost": "gives up the box of coins",
+      "requires": [
+        "compass_in_box"
+      ]
+    },
+    "c_coins": {
+      "intent": "take the heavy rattling box",
+      "cost": "gives up the compass",
+      "requires": [
+        "coin_box_rattles"
+      ]
+    },
+    "c_da_out": {
+      "intent": "follow the compass out",
+      "cost": "none",
+      "requires": [
+        "took_compass"
+      ]
+    },
+    "c_da_carry": {
+      "intent": "carry the box out quickly",
+      "cost": "none",
+      "requires": [
+        "took_coins"
+      ]
+    }
+  },
+  "threads": {},
+  "endings": {
+    "la_retreat_pool": {
+      "gift": "a safe, laughing escape from the rising water and a promise to come back for the glowing crack",
+      "valence": "neutral",
+      "kind": "setback"
+    },
+    "la_crystal_out": {
+      "gift": "a real glowing cave crystal and a secret stair out behind the lighthouse",
+      "valence": "positive",
+      "kind": "success"
+    },
+    "la_song": {
+      "gift": "a chamber that sings her own note back, a secret of the old lighthouse keepers",
+      "valence": "positive",
+      "kind": "completion"
+    },
+    "la_hum_back": {
+      "gift": "a safe return and a reason to come back for the chiming bell",
+      "valence": "neutral",
+      "kind": "setback"
+    },
+    "la_bell4": {
+      "gift": "a lost ship's bell still ringing under the sea, its name in her notebook",
+      "valence": "positive",
+      "kind": "success"
+    },
+    "ra_lake_back": {
+      "gift": "the good sense of backing off a slick ledge, with the black lake still waiting",
+      "valence": "neutral",
+      "kind": "setback"
+    },
+    "ra_row": {
+      "gift": "a crossing of the hidden lake and a secret way up into the dunes",
+      "valence": "positive",
+      "kind": "success"
+    },
+    "ra_islet": {
+      "gift": "a secret glowing islet and a pocketful of shining shells",
+      "valence": "positive",
+      "kind": "completion"
+    },
+    "ra_pool_back": {
+      "gift": "a thrilling race against the tide and a plan to try again",
+      "valence": "neutral",
+      "kind": "setback"
+    },
+    "ra_starfish2": {
+      "gift": "a careful sketch of a rare starfish left where it lives",
+      "valence": "positive",
+      "kind": "success"
+    },
+    "ra_pool_deep2": {
+      "gift": "a perfect pink spiral shell, the finest thing she has ever found",
+      "valence": "positive",
+      "kind": "success"
+    },
+    "da_bat_back": {
+      "gift": "the kind choice to let wild bats sleep, and a question for her aunt",
+      "valence": "neutral",
+      "kind": "setback"
+    },
+    "da_skylight": {
+      "gift": "a forgotten way into the caves and an unnoticed bat colony under the meadow",
+      "valence": "positive",
+      "kind": "completion"
+    },
+    "da_cache_back": {
+      "gift": "a smuggler's cache fixed in memory to come back for on a drier day",
+      "valence": "neutral",
+      "kind": "setback"
+    },
+    "da_compass2": {
+      "gift": "a smuggler's compass that still points true and a story for the town",
+      "valence": "positive",
+      "kind": "success"
+    },
+    "da_coins2": {
+      "gift": "a box of old smugglers' coins bound for the museum with her name",
+      "valence": "positive",
+      "kind": "success"
+    }
+  },
+  "provenance": {
+    "producer": "wp-1.4 blind extraction",
+    "model": "claude-opus-5-5",
+    "method": "read-book",
+    "book_file": "tmp_cleanup/blind/c2.book.json",
+    "book_sha256": "3a3606f4a0bee7fa42c399b18847d62260b3efd074cf69328087c53f13928273",
+    "authored": "2026-11-21",
+    "authoring_minutes": 35,
+    "notes": [
+      "The book declares no variables, so the plan has no threads; all 16 routes are a pure tree (walked with StoryEngine).",
+      "Label c_da_out says follow the compass out, while da_compass and da_compass2 say Biscuit leads and Maya follows him; both recorded as separate facts.",
+      "The middle mouth whispers straight ahead in n_open but the label c_down says straight down; recorded as the same middle mouth.",
+      "da_skylight and da_coins2 say the museum and ra_starfish2 says the rockpool club with no earlier introduction; recorded as required and established there."
+    ]
+  }
+}

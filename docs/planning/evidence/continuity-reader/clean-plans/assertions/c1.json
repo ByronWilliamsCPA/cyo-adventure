@@ -1,0 +1,750 @@
+{
+  "n_open": [
+    "nadia_reads_labels",
+    "left_behind_shoelace",
+    "ellery_museum",
+    "doors_locked",
+    "no_phone_signal",
+    "tess_best_friend",
+    "mum_thinks_tess",
+    "tess_thinks_home_sick",
+    "nobody_misses_her",
+    "handset_thirteen",
+    "half_map_in_pouch",
+    "mark_circle_two_lines",
+    "map_ringed_wing",
+    "map_note_hidden_collection"
+  ],
+  "n_desk": [
+    "half_map_in_pouch",
+    "night_lights_out",
+    "green_lamp_lobby",
+    "tour_board_chalk",
+    "night_guard_on_rounds"
+  ],
+  "n_desk_map": [
+    "half_map_in_pouch",
+    "green_lamp_lobby",
+    "read_map_back",
+    "back_brown_ink",
+    "rope_gallery_warning",
+    "lobby_lamp_off"
+  ],
+  "n_desk_chalk": [
+    "tour_board_chalk",
+    "chalk_message",
+    "nadia_class_6b",
+    "chalk_in_pocket",
+    "lobby_lamp_off"
+  ],
+  "n_start": [
+    "handset_thirteen",
+    "rotunda_globe",
+    "globe_stop_one",
+    "plaques_key_tour",
+    "ambrose_ellery_founder",
+    "ellery_recorded_tour",
+    "globe_is_heart",
+    "ellery_four_seconds",
+    "three_archways"
+  ],
+  "a_gems1": [
+    "handset_thirteen",
+    "plaques_key_tour",
+    "ambrose_ellery_founder",
+    "gems_gallery_stop_12",
+    "gems_case_crooked",
+    "beeping_in_gallery"
+  ],
+  "a_gems_case": [
+    "gems_case_crooked",
+    "handset_thirteen",
+    "gems_case_opened_hurry",
+    "someone_searched_before",
+    "tilted_vitrine",
+    "fallen_card"
+  ],
+  "a_gems_vitrine": [
+    "tilted_vitrine",
+    "half_map_in_pouch",
+    "mark_circle_two_lines",
+    "nadia_has_token",
+    "token_inscription",
+    "gems_back_door"
+  ],
+  "a_gems_note": [
+    "fallen_card",
+    "half_map_in_pouch",
+    "founder_thin_hand",
+    "founder_glass_ring_label",
+    "founder_moved_treasures",
+    "gems_corridor_on_map",
+    "gems_back_door"
+  ],
+  "a_gems_corridor": [
+    "half_map_in_pouch",
+    "mark_circle_two_lines",
+    "handset_thirteen",
+    "corridor_skirting_mark"
+  ],
+  "a_gems_alarm": [
+    "beeping_in_gallery",
+    "half_map_in_pouch",
+    "night_guard_on_rounds",
+    "beeping_is_sensor",
+    "guard_torch_humming",
+    "guard_ends_night",
+    "marble_busts"
+  ],
+  "a_gems_hide": [
+    "gems_case_crooked",
+    "guard_torch_humming",
+    "guard_31_years",
+    "guard_seeks_secret",
+    "gems_back_door"
+  ],
+  "b_egypt1": [
+    "handset_thirteen",
+    "plaques_key_tour",
+    "ambrose_ellery_founder",
+    "egypt_stop_19",
+    "sarcophagus_lid_crooked",
+    "old_wall_map"
+  ],
+  "b_egypt_sarco": [
+    "sarcophagus_lid_crooked",
+    "someone_searched_before",
+    "amulet_dent_empty"
+  ],
+  "b_egypt_lid": [
+    "half_map_in_pouch",
+    "mark_circle_two_lines",
+    "nadia_has_token",
+    "token_inscription",
+    "draught_behind_sarcophagus"
+  ],
+  "b_egypt_amulet": [
+    "amulet_dent_empty",
+    "amulet_card_founder_took",
+    "founder_moved_treasures",
+    "draught_behind_sarcophagus"
+  ],
+  "b_egypt_hall": [
+    "half_map_in_pouch",
+    "mark_circle_two_lines",
+    "handset_thirteen",
+    "hall_tile_mark"
+  ],
+  "b_egypt_map": [
+    "old_wall_map",
+    "map_ringed_wing",
+    "half_map_in_pouch",
+    "ringed_wing_behind_egypt",
+    "torch_on_bracket",
+    "roped_gallery",
+    "rope_gallery_warning"
+  ],
+  "b_egypt_torch": [
+    "torch_on_bracket",
+    "old_wall_map",
+    "roped_gallery",
+    "torch_died"
+  ],
+  "b_egypt_wedge": [
+    "rope_gallery_warning",
+    "roped_gallery",
+    "handset_thirteen",
+    "plaques_key_tour",
+    "ambrose_ellery_founder",
+    "bricked_arch_29",
+    "east_wing_behind_arch"
+  ],
+  "c_archive1": [
+    "handset_thirteen",
+    "plaques_key_tour",
+    "ambrose_ellery_founder",
+    "archive_stop_31",
+    "visitor_ledger",
+    "back_stacks_dark"
+  ],
+  "c_archive_ledger": [
+    "visitor_ledger",
+    "founder_came_to_hide",
+    "card_index_drawer"
+  ],
+  "c_archive_index": [
+    "half_map_in_pouch",
+    "mark_circle_two_lines",
+    "card_index_drawer",
+    "row_q_card",
+    "shelf_letters"
+  ],
+  "c_archive_drawer": [
+    "half_map_in_pouch",
+    "mark_circle_two_lines",
+    "card_index_drawer",
+    "nadia_has_token",
+    "token_inscription",
+    "stacks_plan_row_q",
+    "shelf_letters"
+  ],
+  "c_archive_stack": [
+    "row_q_mark_dictionaries"
+  ],
+  "c_archive_dark": [
+    "back_stacks_dark",
+    "night_guard_on_rounds",
+    "lantern_on_hook",
+    "grating_to_lobby",
+    "chalk_in_pocket"
+  ],
+  "c_archive_lantern": [
+    "lantern_on_hook",
+    "grating_to_lobby",
+    "shelf_letters"
+  ],
+  "c_archive_chalk": [
+    "chalk_in_pocket",
+    "founder_tour_records",
+    "records_for_finder",
+    "tour_has_36_stops",
+    "shelf_letters"
+  ],
+  "n_key": [
+    "half_map_in_pouch",
+    "mark_circle_two_lines",
+    "handset_thirteen",
+    "plaques_key_tour",
+    "ambrose_ellery_founder",
+    "brass_key_found",
+    "coded_note",
+    "tag_37",
+    "tour_has_36_stops",
+    "key_three_locks"
+  ],
+  "k_founder": [
+    "brass_key_found",
+    "ambrose_ellery_founder",
+    "ellery_recorded_tour",
+    "founder_study",
+    "founder_portrait",
+    "portrait_hinged"
+  ],
+  "k_founder_desk": [
+    "coded_note",
+    "founder_study",
+    "notebook_worked_line",
+    "nadia_has_glasses",
+    "reading_table_landing"
+  ],
+  "k_founder_portrait": [
+    "portrait_hinged",
+    "cipher_wheel",
+    "reading_table_landing"
+  ],
+  "k_display": [
+    "brass_key_found",
+    "night_guard_on_rounds",
+    "glass_cabinet_journals",
+    "guard_on_stairs"
+  ],
+  "k_display_open": [
+    "glass_cabinet_journals",
+    "guard_on_stairs",
+    "ribboned_ledger"
+  ],
+  "k_cabinet": [
+    "ribboned_ledger",
+    "coded_note",
+    "cipher_shift_three",
+    "reading_table_landing",
+    "green_lamp_table"
+  ],
+  "k_display_force": [
+    "glass_cabinet_journals",
+    "guard_on_stairs",
+    "cabinet_creak_alerts_guard",
+    "ribboned_ledger"
+  ],
+  "k_display_careful": [
+    "brass_key_found",
+    "coded_note",
+    "guard_on_stairs",
+    "ribboned_ledger",
+    "cipher_shift_three",
+    "reading_table_landing",
+    "green_lamp_table",
+    "bulb_changed"
+  ],
+  "k_stairs": [
+    "brass_key_found",
+    "back_stair_cupboard"
+  ],
+  "k_stairs_up": [
+    "key_three_locks",
+    "study_back_way",
+    "reading_table_landing",
+    "brass_dial_wall",
+    "cipher_shift_three"
+  ],
+  "k_stairs_base": [
+    "back_stair_cupboard",
+    "rolled_ring_chart",
+    "nadia_has_glasses",
+    "cipher_shift_three",
+    "reading_table_landing"
+  ],
+  "k_study": [
+    "reading_table_landing",
+    "brass_key_found",
+    "coded_note",
+    "green_lamp_table",
+    "bulb_changed"
+  ],
+  "n_cipher": [
+    "coded_note",
+    "rotunda_globe",
+    "ellery_four_seconds",
+    "cipher_shift_three",
+    "note_follow_stars",
+    "heart_means_globe",
+    "three_roads",
+    "combo_492"
+  ],
+  "ci_stars": [
+    "handset_thirteen",
+    "plaques_key_tour",
+    "ambrose_ellery_founder",
+    "astronomy_stop_22",
+    "one_star_liar",
+    "spiral_stair_and_ladder"
+  ],
+  "ci_stars_dome": [
+    "one_star_liar",
+    "liar_star_stud"
+  ],
+  "ci_stars_ladder": [
+    "spiral_stair_and_ladder",
+    "caged_walkway"
+  ],
+  "ci_stars_cross": [
+    "one_star_liar",
+    "caged_walkway",
+    "liar_star_stud"
+  ],
+  "ci_map": [
+    "handset_thirteen",
+    "plaques_key_tour",
+    "ambrose_ellery_founder",
+    "map_room_stop_25",
+    "sky_globe",
+    "giant_atlas"
+  ],
+  "ci_map_globe": [
+    "sky_globe",
+    "gold_star_mechanism"
+  ],
+  "ci_map_atlas": [
+    "giant_atlas",
+    "ambrose_ellery_founder",
+    "atlas_museum_chart"
+  ],
+  "ci_atlas2": [
+    "atlas_museum_chart"
+  ],
+  "ci_clock": [
+    "handset_thirteen",
+    "plaques_key_tour",
+    "ambrose_ellery_founder",
+    "clock_stop_27",
+    "gear_room_and_pendulum"
+  ],
+  "ci_clock_gears": [
+    "note_follow_stars",
+    "gold_star_mechanism"
+  ],
+  "ci_clock_pendulum": [
+    "gear_room_and_pendulum",
+    "pendulum_hangs_clear"
+  ],
+  "ci_clock_cross": [
+    "pendulum_hangs_clear"
+  ],
+  "n_rotunda": [
+    "rotunda_globe",
+    "heart_means_globe",
+    "globe_awake",
+    "rings_and_tiles",
+    "night_guard_room",
+    "combo_492"
+  ],
+  "ro_align": [
+    "rings_and_tiles",
+    "rings_worn_slippery"
+  ],
+  "ro_align_set": [
+    "combo_492",
+    "rings_worn_slippery",
+    "hidden_stair"
+  ],
+  "ro_align_guess": [
+    "combo_492",
+    "third_ring_caught"
+  ],
+  "ro_align_retry": [
+    "coded_note",
+    "third_ring_caught",
+    "heart_means_globe",
+    "combo_492",
+    "hidden_stair"
+  ],
+  "ro_panel": [
+    "rings_and_tiles",
+    "pedestal_tiles_slide",
+    "low_door_rotunda"
+  ],
+  "ro_panel_solve": [
+    "half_map_in_pouch",
+    "mark_circle_two_lines",
+    "pedestal_tiles_slide",
+    "tiles_make_mark",
+    "hidden_stair"
+  ],
+  "ro_panel_secret": [
+    "low_door_rotunda",
+    "workshop_room"
+  ],
+  "ro_workshop": [
+    "workshop_room",
+    "handset_thirteen",
+    "plaques_key_tour",
+    "workshop_39",
+    "brass_wren"
+  ],
+  "ro_records": [
+    "night_guard_room",
+    "guard_room_screens",
+    "crossword_has_nadia"
+  ],
+  "ro_records_guard": [
+    "globe_awake",
+    "rotunda_globe",
+    "clockwork_quarter_to_four",
+    "guards_never_saw_it",
+    "hidden_stair"
+  ],
+  "ro_records_note": [
+    "chalk_message",
+    "half_map_in_pouch",
+    "map_note_hidden_collection",
+    "crossword_has_nadia",
+    "pym_saw_board",
+    "front_doors_unlocked",
+    "guard_named_pym",
+    "map_is_pyms"
+  ],
+  "ro_pym": [
+    "front_doors_unlocked",
+    "guard_named_pym",
+    "brass_key_found",
+    "chalk_message",
+    "left_behind_shoelace",
+    "pym_hunted_key",
+    "guard_31_years"
+  ],
+  "ro_records_phone": [
+    "combo_492",
+    "globe_awake",
+    "phone_dial_tone"
+  ],
+  "n_vault": [
+    "hidden_stair",
+    "handset_thirteen",
+    "plaques_key_tour",
+    "ambrose_ellery_founder",
+    "vault_38",
+    "treasures_belong_to_town",
+    "sealed_letter",
+    "other_map_half",
+    "jewelled_owl",
+    "half_map_in_pouch"
+  ],
+  "v_letter": [
+    "sealed_letter",
+    "letter_opened",
+    "founder_thin_hand",
+    "town_thinks_ellery_thief",
+    "museum_in_debt",
+    "ellery_hid_took_blame",
+    "stop_40_truth",
+    "letter_tiny_line",
+    "nadia_has_glasses"
+  ],
+  "v_letter_ps": [
+    "nadia_has_glasses",
+    "letter_tiny_line",
+    "letter_ps_bulb_keeper",
+    "nadia_deduces_guard",
+    "stop_40_truth"
+  ],
+  "v_letter_reveal": [
+    "stop_40_truth",
+    "founder_thin_hand",
+    "handset_thirteen",
+    "ledger_of_pieces"
+  ],
+  "v_reveal2": [
+    "ledger_of_pieces",
+    "town_thinks_ellery_thief",
+    "ellery_not_thief"
+  ],
+  "v_letter_keep": [
+    "sealed_letter",
+    "letter_opened",
+    "hidden_stair",
+    "nadia_keeps_letter"
+  ],
+  "v_map": [
+    "half_map_in_pouch",
+    "other_map_half",
+    "map_ringed_wing",
+    "east_wing_intact",
+    "dotted_line_shelf"
+  ],
+  "v_map_follow": [
+    "dotted_line_shelf",
+    "lost_wing_paintings",
+    "wing_photographed"
+  ],
+  "v_map_photo": [
+    "sealed_letter",
+    "jewelled_owl",
+    "other_map_half",
+    "map_photographed",
+    "letter_still_sealed"
+  ],
+  "v_map_back": [
+    "read_map_back",
+    "back_brown_ink",
+    "brass_key_found",
+    "dotted_line_shelf",
+    "other_map_half",
+    "founders_door_garden"
+  ],
+  "v_share": [
+    "sealed_letter",
+    "night_guard_room",
+    "tess_best_friend",
+    "letter_still_sealed",
+    "museum_has_curator",
+    "curator_at_eight",
+    "tess_no_secrets",
+    "guard_room_pad"
+  ],
+  "v_share_curator": [
+    "curator_at_eight",
+    "sealed_letter",
+    "letter_still_sealed",
+    "museum_has_curator"
+  ],
+  "v_share_secret": [
+    "tess_best_friend",
+    "tess_thinks_home_sick",
+    "combo_492",
+    "sealed_letter",
+    "hidden_stair"
+  ],
+  "v_share_museum": [
+    "other_map_half",
+    "combo_492",
+    "brass_key_found",
+    "sealed_letter",
+    "guard_room_pad",
+    "hidden_stair",
+    "night_guard_room",
+    "letter_still_sealed"
+  ],
+  "v_grab": [
+    "jewelled_owl",
+    "owl_hollow",
+    "nadia_has_token"
+  ],
+  "v_grab_run": [
+    "tess_best_friend",
+    "owl_hollow",
+    "shelf_bells",
+    "no_coin_token"
+  ],
+  "v_grab_return": [
+    "coded_note",
+    "owl_hollow",
+    "shelf_counts"
+  ],
+  "v_grab_swap": [
+    "nadia_has_token",
+    "token_inscription",
+    "owl_speaks",
+    "museum_has_curator"
+  ],
+  "e_set_alarm": [
+    "half_map_in_pouch",
+    "handset_thirteen",
+    "mark_circle_two_lines",
+    "marble_busts",
+    "guard_named_pym",
+    "pym_placed_map",
+    "guard_31_years",
+    "guard_seeks_secret",
+    "nadia_found_nothing",
+    "map_is_pyms"
+  ],
+  "e_set_locked_gallery": [
+    "roped_gallery",
+    "handset_thirteen",
+    "plaques_key_tour",
+    "ambrose_ellery_founder",
+    "half_map_in_pouch",
+    "gallery_no_inside_handle",
+    "bricked_arch_29",
+    "east_wing_behind_arch",
+    "map_first_turned_in_gallery",
+    "back_brown_ink",
+    "rope_gallery_warning",
+    "cleaners_at_six"
+  ],
+  "e_set_stuck_dark": [
+    "tour_board_chalk",
+    "half_map_in_pouch",
+    "mark_circle_two_lines",
+    "records_for_finder"
+  ],
+  "e_set_broken_case": [
+    "ribboned_ledger",
+    "coded_note",
+    "guard_on_stairs",
+    "guard_31_years"
+  ],
+  "e_set_stuck_dome": [
+    "caged_walkway",
+    "half_map_in_pouch",
+    "mark_circle_two_lines",
+    "dome_stars_mark"
+  ],
+  "e_set_pendulum": [
+    "brass_key_found",
+    "pendulum_hangs_clear",
+    "key_lost_grating",
+    "pendulum_count_three"
+  ],
+  "e_set_jammed_globe": [
+    "third_ring_caught",
+    "clockwork_quarter_to_four"
+  ],
+  "e_set_caught": [
+    "jewelled_owl",
+    "shelf_bells",
+    "hidden_stair",
+    "guard_31_years"
+  ],
+  "e_set_dawn": [
+    "east_wing_intact",
+    "other_map_half",
+    "lost_wing_garden_windows"
+  ],
+  "e_win_secret_workshop": [
+    "brass_wren",
+    "low_door_rotunda",
+    "museum_has_curator"
+  ],
+  "e_win_night_guard": [
+    "pym_hunted_key",
+    "coded_note",
+    "combo_492",
+    "globe_awake",
+    "museum_has_curator",
+    "hidden_stair"
+  ],
+  "e_win_mystery_solved": [
+    "letter_opened",
+    "ledger_of_pieces",
+    "night_guard_on_rounds",
+    "museum_has_curator",
+    "town_restored_plate",
+    "ellery_not_thief"
+  ],
+  "e_win_quiet_keeper": [
+    "nadia_keeps_letter",
+    "museum_has_curator",
+    "combo_492",
+    "rotunda_globe",
+    "town_thinks_ellery_thief"
+  ],
+  "e_win_lost_wing": [
+    "wing_photographed",
+    "lost_wing_paintings",
+    "museum_has_curator",
+    "wing_opened_to_town"
+  ],
+  "e_win_founders_door": [
+    "founders_door_garden",
+    "brass_key_found",
+    "mark_circle_two_lines",
+    "museum_has_curator",
+    "lost_wing_paintings"
+  ],
+  "e_win_owl_witness": [
+    "jewelled_owl",
+    "owl_speaks",
+    "museum_has_curator",
+    "curator_at_eight",
+    "curator_says_no_room"
+  ],
+  "e_win_hero_curator": [
+    "sealed_letter",
+    "curator_at_eight",
+    "museum_has_curator",
+    "reading_table_landing",
+    "handset_thirteen",
+    "globe_stop_one",
+    "letter_opened_with_curator",
+    "ellery_not_thief"
+  ],
+  "e_win_secret_kept": [
+    "tess_best_friend",
+    "rotunda_globe",
+    "hidden_stair",
+    "sealed_letter",
+    "night_guard_on_rounds",
+    "secret_kept_with_tess"
+  ],
+  "e_win_donate": [
+    "night_guard_on_rounds",
+    "rotunda_globe",
+    "hidden_stair",
+    "museum_has_curator",
+    "found_by_visitor_plaque"
+  ],
+  "e_neutral_call_home": [
+    "mum_thinks_tess",
+    "combo_492",
+    "globe_awake",
+    "brass_key_found",
+    "key_on_guard_desk"
+  ],
+  "e_neutral_evidence": [
+    "map_photographed",
+    "combo_492",
+    "hidden_stair",
+    "museum_has_curator"
+  ],
+  "e_neutral_wiser": [
+    "coded_note",
+    "sealed_letter",
+    "other_map_half",
+    "jewelled_owl",
+    "shelf_counts",
+    "letter_still_sealed",
+    "museum_has_curator",
+    "curator_at_eight"
+  ]
+}
