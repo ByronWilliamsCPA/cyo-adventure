@@ -27,6 +27,7 @@ differs every call and is never cached.
 from __future__ import annotations
 
 import json
+import re
 from dataclasses import dataclass
 from importlib.resources import files
 from typing import TYPE_CHECKING, cast
@@ -58,6 +59,9 @@ __all__ = [
     "build_fill_subset_bound_prompt",
     "build_fill_subset_prompt",
     "build_interpret_bind_prompt",
+    "build_pitch_prompt",
+    "build_plan_prompt",
+    "build_plan_repair_prompt",
     "build_prose_prompt",
     "build_reading_level_repair_prompt",
     "build_repair_prompt",
@@ -1373,3 +1377,178 @@ def build_repair_prompt(
         .replace("{failing_node_ids}", _neutralize_fence(failing_node_ids))
     )
     return _split_stage_prompt(text)
+
+
+# ---------------------------------------------------------------------------
+# Story Plan prompts (ADR-033, WP-2.3): pitch, plan, plan repair
+# ---------------------------------------------------------------------------
+
+# The placeholders the three Story Plan templates own. Substitution is one
+# regex pass over the template (``_fill_plan_template``), so a payload that
+# itself spells ``{shape}`` or ``{request}`` is never rescanned and cannot pull
+# another payload into its own position.
+_PLAN_PLACEHOLDER_RE = re.compile(
+    r"\{(cell|shape|pitch|request|findings|previous_plan)\}"
+)
+
+
+def _fill_plan_template(text: str, values: Mapping[str, str]) -> StagePrompt:
+    """Substitute a Story Plan template's placeholders in one pass and split it.
+
+    Args:
+        text: The template text (``{plan_instructions}`` already inlined).
+        values: Placeholder name to its already-neutralized value.
+
+    Returns:
+        The :class:`StagePrompt`.
+
+    Raises:
+        BusinessLogicError: If the template uses a placeholder with no value,
+            or lacks its ``<!-- @user -->`` marker.
+    """
+    missing = sorted(
+        {m.group(1) for m in _PLAN_PLACEHOLDER_RE.finditer(text)} - set(values)
+    )
+    if missing:
+        msg = f"story plan template placeholders without a value: {missing}"
+        raise BusinessLogicError(msg, rule="story_plan_template")
+    return _split_stage_prompt(
+        _PLAN_PLACEHOLDER_RE.sub(lambda m: values[m.group(1)], text)
+    )
+
+
+def _request_block(request_brief: Mapping[str, object]) -> str:
+    """Return the fenced request payload: the brief as indented JSON, defanged.
+
+    Args:
+        request_brief: The request brief fields the model may read.
+
+    Returns:
+        The neutralized JSON text.
+    """
+    # #CRITICAL: security: the brief carries the child's or guardian's own
+    # words (OWASP LLM01). It is placed only inside an UNTRUSTED_USER_INPUT
+    # fence, and both prompt delimiters are defanged so it cannot close the
+    # fence or forge the stage marker.
+    # #VERIFY: test_storyplan_generate.py::
+    # test_plan_prompt_states_the_conventions_and_fences_the_request plants a
+    # fence terminator and a stage marker and asserts neither survives.
+    return _neutralize_fence(
+        json.dumps(dict(request_brief), indent=2, ensure_ascii=False)
+    )
+
+
+def _pitch_block(pitch: Mapping[str, str]) -> str:
+    """Return the fenced pitch payload, defanged.
+
+    Args:
+        pitch: The five pitch fields.
+
+    Returns:
+        The neutralized JSON text.
+    """
+    return _neutralize_fence(json.dumps(dict(pitch), indent=2, ensure_ascii=False))
+
+
+def build_pitch_prompt(
+    request_brief: Mapping[str, object], cell: Mapping[str, object]
+) -> StagePrompt:
+    """Build the WP-2.3 pitch prompt (request to three five-field pitches).
+
+    Args:
+        request_brief: The request brief fields (UNTRUSTED), fenced in the user
+            block.
+        cell: Code-derived facts about the book (band, length, endings),
+            placed in the user block.
+
+    Returns:
+        The pitch :class:`StagePrompt` (no unfilled tokens).
+    """
+    return _fill_plan_template(
+        _load_template("pitch.md"),
+        {
+            "cell": _neutralize_fence(json.dumps(dict(cell), indent=2)),
+            "request": _request_block(request_brief),
+        },
+    )
+
+
+def build_plan_prompt(
+    shape_json: str,
+    pitch: Mapping[str, str],
+    request_brief: Mapping[str, object],
+) -> StagePrompt:
+    """Build the WP-2.3 plan prompt (pitch plus shape to plan sections).
+
+    The system block is static (the plan record, the SP rules in plain words
+    and the ADR-033 plan-writing conventions) so an adapter may cache it; the
+    user block carries the alias-only shape, the fenced pitch and the fenced
+    request.
+
+    Args:
+        shape_json: The rendered shape view
+            (:meth:`cyo_adventure.storyplan.generate.ShapeView.render`), JSON.
+        pitch: The chosen pitch's five fields (model text, fenced).
+        request_brief: The request brief fields (UNTRUSTED, fenced).
+
+    Returns:
+        The plan :class:`StagePrompt`.
+    """
+    return _fill_plan_template(
+        _load_template("plan.md"),
+        {
+            "shape": _neutralize_fence(shape_json),
+            "pitch": _pitch_block(pitch),
+            "request": _request_block(request_brief),
+        },
+    )
+
+
+def build_plan_repair_prompt(  # noqa: PLR0913 - two keyword-only repair inputs
+    shape_json: str,
+    pitch: Mapping[str, str],
+    request_brief: Mapping[str, object],
+    *,
+    previous_plan: str | None,
+    findings: Sequence[str],
+) -> StagePrompt:
+    """Build the WP-2.3 plan repair prompt (findings back to the plan writer).
+
+    Its system block is the plan prompt's system block plus the repair
+    instruction, so the rules and conventions read identically on every call.
+
+    Args:
+        shape_json: The rendered shape view, JSON.
+        pitch: The chosen pitch's five fields.
+        request_brief: The request brief fields (UNTRUSTED, fenced).
+        previous_plan: The previous answer's plan sections in alias form, as
+            JSON, or None when the answer could not be read.
+        findings: One line per finding or load error, already aliased.
+
+    Returns:
+        The repair :class:`StagePrompt`.
+    """
+    # #CRITICAL: security: the findings and the previous plan are model-derived
+    # text (fact text, events, ids the model chose), so both are fenced and
+    # defanged like the request itself.
+    # #VERIFY: test_storyplan_generate.py::
+    # test_repair_prompt_carries_conventions_findings_and_fence asserts a stage
+    # marker planted in a finding is neutralized and the prompt splits once.
+    instructions = _split_stage_prompt(_load_template("plan.md")).system
+    template = _load_template("plan_repair.md").replace(
+        "{plan_instructions}", instructions
+    )
+    return _fill_plan_template(
+        template,
+        {
+            "findings": _neutralize_fence(
+                "\n".join(f"- {line}" for line in findings) or "- (none recorded)"
+            ),
+            "previous_plan": _neutralize_fence(
+                previous_plan or "(your previous answer could not be read as JSON)"
+            ),
+            "shape": _neutralize_fence(shape_json),
+            "pitch": _pitch_block(pitch),
+            "request": _request_block(request_brief),
+        },
+    )

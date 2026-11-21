@@ -868,6 +868,12 @@ _CODE_DERIVED_TOKENS = frozenset(
         # `reguide_draft.py`'s only other payload: `item.target.value`, one of
         # the three `ReguideTarget` StrEnum literals ("node"/"choice"/"ending").
         "{target_kind}",
+        # WP-2.3: `build_plan_repair_prompt` inlines the plan template's own
+        # static system region (`plan.md` above its marker, no placeholder and
+        # no payload), so the repair rules read identically to the plan rules.
+        # Every dynamic plan payload goes through `_fill_plan_template`'s
+        # neutralized values instead.
+        "{plan_instructions}",
         # No failure-feedback token is exempt any more. `{violations_block}`,
         # `{fidelity_violations}`, `{validator_report}` and `{failing_node_ids}`
         # were all listed here and none qualified; see
