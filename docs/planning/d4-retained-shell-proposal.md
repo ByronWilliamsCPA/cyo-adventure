@@ -3,6 +3,12 @@
 Status: proposal for owner decision D4 of `story-plan-implementation-plan.md`. Read-only analysis dated 2026-11-21.
 Consumed by WP-2.2 (retained shapes and typed directive format). Nothing in the catalog was changed to produce it.
 
+
+> **Decided 2026-11-21 (owner, in session).** Tier 1 as recommended (twelve shells, six short and medium cells);
+> trees count as a retained shape; the consequence-tool freeze stays and state comes from plan threads; family-test
+> shells may be converted, shell files only. Recorded as D4 in
+> [story-plan-implementation-plan.md](./story-plan-implementation-plan.md).
+
 ## 1. What this recommends
 
 1. The plan's wording cannot be met literally: the family bands have **10 offered cells**, so "two shapes per offered
