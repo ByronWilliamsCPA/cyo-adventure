@@ -67,7 +67,7 @@ jobs:
     steps:
       - name: Harden the runner
         # deferral: 2026-09-18
-        uses: step-security/harden-runner@46b06cea07f9e64621fdf066ba77ac6915163d43 # v2.22.3
+        uses: step-security/harden-runner@aebdcf6156ab6691adf63218240e476564a1ed4c # v2.23.0
         with:
           egress-policy: audit
 
@@ -170,7 +170,7 @@ jobs:
     steps:
       - name: Harden the runner
         # deferral: 2026-09-18
-        uses: step-security/harden-runner@46b06cea07f9e64621fdf066ba77ac6915163d43 # v2.22.3
+        uses: step-security/harden-runner@aebdcf6156ab6691adf63218240e476564a1ed4c # v2.23.0
         with:
           egress-policy: audit
 
@@ -281,7 +281,7 @@ jobs:
         if: ${{ env.QLTY_COVERAGE_TOKEN != '' && hashFiles('frontend/coverage/lcov.info') != '' }}
         # See the coverage-upload job: a Qlty hiccup must not block a merge.
         continue-on-error: true
-        uses: qltysh/qlty-action/coverage@ebcd284bf32e36a030afe15f1e136c7be08b9506 # v2.5.0
+        uses: qltysh/qlty-action/coverage@0ff2178667bf8eb28ed0013a7ef54857a24d4056 # v2.7.0
         with:
           token: ${{ env.QLTY_COVERAGE_TOKEN }}
           files: frontend/coverage/lcov.info
@@ -313,7 +313,7 @@ jobs:
     steps:
       - name: Harden the runner
         # deferral: 2026-09-18
-        uses: step-security/harden-runner@46b06cea07f9e64621fdf066ba77ac6915163d43 # v2.22.3
+        uses: step-security/harden-runner@aebdcf6156ab6691adf63218240e476564a1ed4c # v2.23.0
         with:
           egress-policy: audit
 
@@ -399,7 +399,7 @@ jobs:
     steps:
       - name: Harden the runner
         # deferral: 2026-09-18
-        uses: step-security/harden-runner@46b06cea07f9e64621fdf066ba77ac6915163d43 # v2.22.3
+        uses: step-security/harden-runner@aebdcf6156ab6691adf63218240e476564a1ed4c # v2.23.0
         with:
           egress-policy: audit
 
@@ -481,7 +481,7 @@ jobs:
     steps:
       - name: Harden the runner
         # deferral: 2026-09-18
-        uses: step-security/harden-runner@46b06cea07f9e64621fdf066ba77ac6915163d43 # v2.22.3
+        uses: step-security/harden-runner@aebdcf6156ab6691adf63218240e476564a1ed4c # v2.23.0
         with:
           egress-policy: audit
 
@@ -542,7 +542,7 @@ jobs:
         if: ${{ env.QLTY_COVERAGE_TOKEN != '' && hashFiles('frontend/design-system/coverage/lcov.info') != '' }}
         # See the coverage-upload job: a Qlty hiccup must not block a merge.
         continue-on-error: true
-        uses: qltysh/qlty-action/coverage@ebcd284bf32e36a030afe15f1e136c7be08b9506 # v2.5.0
+        uses: qltysh/qlty-action/coverage@0ff2178667bf8eb28ed0013a7ef54857a24d4056 # v2.7.0
         with:
           token: ${{ env.QLTY_COVERAGE_TOKEN }}
           files: frontend/design-system/coverage/lcov.info
@@ -571,7 +571,7 @@ jobs:
     steps:
       - name: Harden the runner
         # deferral: 2026-09-18
-        uses: step-security/harden-runner@46b06cea07f9e64621fdf066ba77ac6915163d43 # v2.22.3
+        uses: step-security/harden-runner@aebdcf6156ab6691adf63218240e476564a1ed4c # v2.23.0
         with:
           egress-policy: audit
 
@@ -649,7 +649,7 @@ jobs:
     steps:
       - name: Harden the runner
         # deferral: 2026-09-18
-        uses: step-security/harden-runner@46b06cea07f9e64621fdf066ba77ac6915163d43 # v2.22.3
+        uses: step-security/harden-runner@aebdcf6156ab6691adf63218240e476564a1ed4c # v2.23.0
         with:
           egress-policy: audit
 
@@ -703,7 +703,7 @@ jobs:
     steps:
       - name: Harden the runner
         # deferral: 2026-09-18
-        uses: step-security/harden-runner@46b06cea07f9e64621fdf066ba77ac6915163d43 # v2.22.3
+        uses: step-security/harden-runner@aebdcf6156ab6691adf63218240e476564a1ed4c # v2.23.0
         with:
           egress-policy: audit
 
@@ -771,7 +771,7 @@ jobs:
     steps:
       - name: Harden the runner
         # deferral: 2026-09-18
-        uses: step-security/harden-runner@46b06cea07f9e64621fdf066ba77ac6915163d43 # v2.22.3
+        uses: step-security/harden-runner@aebdcf6156ab6691adf63218240e476564a1ed4c # v2.23.0
         with:
           egress-policy: audit
 
@@ -825,7 +825,7 @@ jobs:
     steps:
       - name: Harden the runner
         # deferral: 2026-09-18
-        uses: step-security/harden-runner@46b06cea07f9e64621fdf066ba77ac6915163d43 # v2.22.3
+        uses: step-security/harden-runner@aebdcf6156ab6691adf63218240e476564a1ed4c # v2.23.0
         with:
           egress-policy: audit
 
@@ -853,7 +853,7 @@ jobs:
     steps:
       - name: Harden the runner
         # deferral: 2026-09-18
-        uses: step-security/harden-runner@46b06cea07f9e64621fdf066ba77ac6915163d43 # v2.22.3
+        uses: step-security/harden-runner@aebdcf6156ab6691adf63218240e476564a1ed4c # v2.23.0
         with:
           egress-policy: audit
 
@@ -968,7 +968,7 @@ jobs:
     steps:
       - name: Harden the runner
         # deferral: 2026-09-18
-        uses: step-security/harden-runner@46b06cea07f9e64621fdf066ba77ac6915163d43 # v2.22.3
+        uses: step-security/harden-runner@aebdcf6156ab6691adf63218240e476564a1ed4c # v2.23.0
         with:
           egress-policy: audit
 
@@ -1127,7 +1127,7 @@ jobs:
     steps:
       - name: Harden the runner
         # deferral: 2026-09-18
-        uses: step-security/harden-runner@46b06cea07f9e64621fdf066ba77ac6915163d43 # v2.22.3
+        uses: step-security/harden-runner@aebdcf6156ab6691adf63218240e476564a1ed4c # v2.23.0
         with:
           egress-policy: audit
 
@@ -1222,7 +1222,7 @@ jobs:
     steps:
       - name: Harden the runner
         # deferral: 2026-09-18
-        uses: step-security/harden-runner@46b06cea07f9e64621fdf066ba77ac6915163d43 # v2.22.3
+        uses: step-security/harden-runner@aebdcf6156ab6691adf63218240e476564a1ed4c # v2.23.0
         with:
           egress-policy: audit
 
@@ -1287,7 +1287,7 @@ jobs:
         # A Qlty upload hiccup must not fail the job or block a merge, matching
         # the Codecov steps' fail_ci_if_error: false.
         continue-on-error: true
-        uses: qltysh/qlty-action/coverage@ebcd284bf32e36a030afe15f1e136c7be08b9506 # v2.5.0
+        uses: qltysh/qlty-action/coverage@0ff2178667bf8eb28ed0013a7ef54857a24d4056 # v2.7.0
         with:
           token: ${{ env.QLTY_COVERAGE_TOKEN }}
           files: coverage-reports/coverage-unit.xml,coverage-reports/coverage-integration.xml,coverage-reports/coverage-security.xml
@@ -1347,7 +1347,7 @@ jobs:
     steps:
       - name: Harden the runner
         # deferral: 2026-09-18
-        uses: step-security/harden-runner@46b06cea07f9e64621fdf066ba77ac6915163d43 # v2.22.3
+        uses: step-security/harden-runner@aebdcf6156ab6691adf63218240e476564a1ed4c # v2.23.0
         with:
           egress-policy: audit
 
@@ -1381,7 +1381,7 @@ jobs:
     steps:
       - name: Harden the runner
         # deferral: 2026-09-18
-        uses: step-security/harden-runner@46b06cea07f9e64621fdf066ba77ac6915163d43 # v2.22.3
+        uses: step-security/harden-runner@aebdcf6156ab6691adf63218240e476564a1ed4c # v2.23.0
         with:
           egress-policy: audit
 
@@ -1543,7 +1543,7 @@ jobs:
     steps:
       - name: Harden the runner
         # deferral: 2026-09-18
-        uses: step-security/harden-runner@46b06cea07f9e64621fdf066ba77ac6915163d43 # v2.22.3
+        uses: step-security/harden-runner@aebdcf6156ab6691adf63218240e476564a1ed4c # v2.23.0
         with:
           egress-policy: audit
 
