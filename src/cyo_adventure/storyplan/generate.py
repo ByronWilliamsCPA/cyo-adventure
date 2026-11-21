@@ -65,7 +65,7 @@ from __future__ import annotations
 import json
 import re
 from collections.abc import Awaitable, Callable, Sequence
-from dataclasses import dataclass, field
+from dataclasses import dataclass, field, replace
 from datetime import UTC, datetime
 from typing import TYPE_CHECKING, Final, Literal, TypeAlias, cast
 
@@ -91,7 +91,12 @@ from cyo_adventure.storybook.models import (
     NarrativeStyle,
     Storybook,
 )
-from cyo_adventure.storyplan.checks import check_plan, text_floor_violations
+from cyo_adventure.storyplan.checks import (
+    DENSITY_RULE,
+    check_plan,
+    plan_density,
+    text_floor_violations,
+)
 from cyo_adventure.storyplan.models import (
     PLAN_VERSION,
     CheckRecord,
@@ -118,10 +123,13 @@ if TYPE_CHECKING:
 
 __all__ = [
     "DEFAULT_MAX_REPAIRS",
+    "DEFAULT_REPAIR_DENSITY_WARNINGS",
     "PITCH_COUNT",
     "REPORT_KEYS",
+    "AttemptSummary",
     "PitchCandidate",
     "PitchScreen",
+    "PlanDiff",
     "PlanGenerationResult",
     "PlanRequestInput",
     "PlanStatus",
@@ -141,6 +149,16 @@ PITCH_COUNT: Final = 3
 
 DEFAULT_MAX_REPAIRS: Final = 2
 """Repair calls allowed after the first plan call, so at most three plan calls."""
+
+DEFAULT_REPAIR_DENSITY_WARNINGS: Final = True
+"""Whether a checked plan with SP-D density warnings gets one repair (AL-848).
+
+The repair comes out of the same ``max_repairs`` budget and is made at most
+once per job. Density warnings never fail a plan: when the budget is spent,
+or the repair does not load or check cleanly, the job keeps the checked plan
+with its warnings recorded. ``Settings.story_plan_repair_density_warnings``
+is the production switch.
+"""
 
 _PITCH_MAX_TOKENS: Final = 2_000
 # A plan names every node and choice of its shape. The largest 8-11 shape
@@ -201,6 +219,7 @@ REPORT_KEYS: Final[tuple[str, ...]] = (
     "story_plan_shape",
     "story_plan_pitches",
     "story_plan_approval",
+    "story_plan_attempt_summaries",
 )
 """The ``GenerationJob.report`` keys a plan job writes (see :meth:`PlanGenerationResult.report`)."""
 
@@ -989,6 +1008,208 @@ async def generate_pitches(  # noqa: PLR0913 - keyword-only job inputs
 # ---------------------------------------------------------------------------
 
 
+def _pair_key(pair: frozenset[str]) -> str:
+    """Render a contradiction pair as ``"a|b"``, sorted.
+
+    Args:
+        pair: The two fact ids.
+
+    Returns:
+        str: The pair key.
+    """
+    return "|".join(sorted(pair))
+
+
+def _fact_uses(plan: StoryPlan) -> dict[str, tuple[tuple[str, ...], tuple[str, ...]]]:
+    """Return every node's and choice's ``(requires, establishes)``, sorted.
+
+    Args:
+        plan: The plan.
+
+    Returns:
+        dict[str, tuple[tuple[str, ...], tuple[str, ...]]]: Keyed by
+            ``node:<id>`` and ``choice:<id>``.
+    """
+    uses: dict[str, tuple[tuple[str, ...], tuple[str, ...]]] = {
+        f"node:{node_id}": (
+            tuple(sorted(node.requires)),
+            tuple(sorted(node.establishes)),
+        )
+        for node_id, node in plan.nodes.items()
+    }
+    uses.update(
+        {
+            f"choice:{choice_id}": (
+                tuple(sorted(choice.requires)),
+                tuple(sorted(choice.establishes)),
+            )
+            for choice_id, choice in plan.choices.items()
+        }
+    )
+    return uses
+
+
+@dataclass(frozen=True, slots=True)
+class PlanDiff:
+    """What changed in the fact ledger between two loaded plan attempts.
+
+    Compact on purpose (AL-850): enough to see what a repair did to the
+    ledger, not a full plan diff.
+
+    Attributes:
+        facts_added: Fact ids in the later plan only, sorted.
+        facts_removed: Fact ids in the earlier plan only, sorted.
+        contradicts_added: Contradiction pairs (``"a|b"``) in the later plan only.
+        contradicts_removed: Contradiction pairs in the earlier plan only.
+        fact_uses_changed: How many nodes and choices changed their
+            ``requires`` or ``establishes``.
+    """
+
+    facts_added: tuple[str, ...]
+    facts_removed: tuple[str, ...]
+    contradicts_added: tuple[str, ...]
+    contradicts_removed: tuple[str, ...]
+    fact_uses_changed: int
+
+    @classmethod
+    def between(cls, before: StoryPlan, after: StoryPlan) -> PlanDiff:
+        """Compare two plans' ledgers.
+
+        Args:
+            before: The earlier attempt's plan.
+            after: The later attempt's plan.
+
+        Returns:
+            PlanDiff: The ledger changes.
+        """
+        old_pairs = {_pair_key(p) for p in before.contradiction_pairs()}
+        new_pairs = {_pair_key(p) for p in after.contradiction_pairs()}
+        old_uses, new_uses = _fact_uses(before), _fact_uses(after)
+        return cls(
+            facts_added=tuple(sorted(set(after.facts) - set(before.facts))),
+            facts_removed=tuple(sorted(set(before.facts) - set(after.facts))),
+            contradicts_added=tuple(sorted(new_pairs - old_pairs)),
+            contradicts_removed=tuple(sorted(old_pairs - new_pairs)),
+            fact_uses_changed=sum(
+                1
+                for key in old_uses.keys() | new_uses.keys()
+                if old_uses.get(key) != new_uses.get(key)
+            ),
+        )
+
+    @property
+    def only_removed_marks(self) -> bool:
+        """Return whether the repair's only ledger change was dropping marks.
+
+        This is the AL-849 pattern: an SP-3 finding cleared by deleting a
+        ``contradicts`` mark rather than by changing the story.
+
+        Returns:
+            bool: True when marks were removed and no fact, no other mark and
+                no node or choice fact list changed.
+        """
+        return bool(self.contradicts_removed) and not (
+            self.facts_added
+            or self.facts_removed
+            or self.contradicts_added
+            or self.fact_uses_changed
+        )
+
+    def to_dict(self) -> dict[str, object]:
+        """Return the diff as a JSON-serialisable mapping.
+
+        Returns:
+            dict[str, object]: The five fields plus ``only_removed_marks``.
+        """
+        return {
+            "facts_added": list(self.facts_added),
+            "facts_removed": list(self.facts_removed),
+            "contradicts_added": list(self.contradicts_added),
+            "contradicts_removed": list(self.contradicts_removed),
+            "fact_uses_changed": self.fact_uses_changed,
+            "only_removed_marks": self.only_removed_marks,
+        }
+
+
+AttemptOutcome = Literal[
+    "unparseable", "personal_information", "load_errors", "checked", "failed_checks"
+]
+"""What one plan call produced."""
+
+
+def _counts_by_rule(findings: Sequence[object]) -> dict[str, int]:
+    """Count findings by their ``rule_id``, in sorted rule order.
+
+    Args:
+        findings: Validation findings.
+
+    Returns:
+        dict[str, int]: Rule id to count.
+    """
+    counts: dict[str, int] = {}
+    for finding in findings:
+        rule = str(getattr(finding, "rule_id", "?"))
+        counts[rule] = counts.get(rule, 0) + 1
+    return dict(sorted(counts.items()))
+
+
+@dataclass(frozen=True, slots=True)
+class AttemptSummary:
+    """One plan call's outcome, kept for every attempt (AL-850).
+
+    Attributes:
+        call: The plan call number, 1-based (1 is the first plan call).
+        outcome: What the call produced (:data:`AttemptOutcome`).
+        errors_by_rule: SP ERROR counts by rule; empty when the plan did not
+            load.
+        warnings_by_rule: SP WARNING counts by rule.
+        load_errors: How many load errors, when the plan did not load.
+        repair: Why the next call was made: ``"errors"`` (did not load, or
+            had an ERROR), ``"density"`` (a checked plan with SP-D warnings,
+            AL-848) or None when no further call followed.
+        diff: The ledger change from the previous attempt that loaded, or
+            None for the first plan that loads (or one that does not).
+        density: :func:`~cyo_adventure.storyplan.checks.plan_density` of the
+            loaded plan, or None.
+    """
+
+    call: int
+    outcome: AttemptOutcome
+    errors_by_rule: dict[str, int] = field(default_factory=dict)
+    warnings_by_rule: dict[str, int] = field(default_factory=dict)
+    load_errors: int = 0
+    repair: Literal["errors", "density"] | None = None
+    diff: PlanDiff | None = None
+    density: dict[str, object] | None = None
+
+    @property
+    def loaded(self) -> bool:
+        """Return whether the attempt's plan loaded and was checked.
+
+        Returns:
+            bool: True for ``checked`` and ``failed_checks``.
+        """
+        return self.outcome in {"checked", "failed_checks"}
+
+    def to_report(self) -> dict[str, object]:
+        """Return the attempt's report entry.
+
+        Returns:
+            dict[str, object]: Every field, ``loaded`` included, JSON-ready.
+        """
+        return {
+            "call": self.call,
+            "outcome": self.outcome,
+            "loaded": self.loaded,
+            "errors_by_rule": dict(self.errors_by_rule),
+            "warnings_by_rule": dict(self.warnings_by_rule),
+            "load_errors": self.load_errors,
+            "repair": self.repair,
+            "diff": None if self.diff is None else self.diff.to_dict(),
+            "density": None if self.density is None else dict(self.density),
+        }
+
+
 @dataclass(frozen=True, slots=True)
 class PlanGenerationResult:
     """What a plan job produced.
@@ -1002,6 +1223,7 @@ class PlanGenerationResult:
         load_errors: Why the last answer did not load, when it did not.
         plan_calls: Plan calls made (the first plus repairs).
         stage_log: A short trail, e.g. ``["pitch:1", "plan:errors=3", ...]``.
+        attempts: One summary per plan call, in order (AL-850).
     """
 
     status: PlanStatus
@@ -1012,6 +1234,7 @@ class PlanGenerationResult:
     load_errors: list[str] = field(default_factory=list)
     plan_calls: int = 0
     stage_log: list[str] = field(default_factory=list)
+    attempts: list[AttemptSummary] = field(default_factory=list)
 
     @property
     def repairs(self) -> int:
@@ -1054,6 +1277,7 @@ class PlanGenerationResult:
             "story_plan_approval": (
                 "pending_owner" if self.status == "checked" else "not_applicable"
             ),
+            "story_plan_attempt_summaries": [a.to_report() for a in self.attempts],
         }
 
 
@@ -1252,13 +1476,136 @@ def _sections_for_repair(view: ShapeView, plan: StoryPlan) -> dict[str, object]:
 
 @dataclass(slots=True)
 class _Attempt:
-    """The state the repair loop carries between plan calls."""
+    """The state the repair loop carries between plan calls.
+
+    ``plan`` and ``checks`` are the last plan that loaded; ``best`` is the
+    last plan that loaded with no ERROR, kept when a density repair (AL-848)
+    is attempted so that a repair which fails cannot cost the job its checked
+    plan; ``summaries`` is one entry per call (AL-850).
+    """
 
     previous: dict[str, object] | None = None
     feedback: list[str] = field(default_factory=list)
     plan: StoryPlan | None = None
     checks: ValidationReport | None = None
     load_errors: list[str] = field(default_factory=list)
+    best: tuple[StoryPlan, ValidationReport] | None = None
+    density_repaired: bool = False
+    summaries: list[AttemptSummary] = field(default_factory=list)
+
+    def record(
+        self,
+        call: int,
+        outcome: AttemptOutcome,
+        *,
+        loaded: tuple[StoryPlan, ValidationReport, dict[str, object] | None]
+        | None = None,
+    ) -> None:
+        """Append the summary of one plan call.
+
+        Call it before ``plan`` is updated, so the diff is against the
+        previous attempt that loaded.
+
+        Args:
+            call: The call number.
+            outcome: What it produced.
+            loaded: The plan, its SP report and its density metrics, when the
+                answer loaded.
+        """
+        plan, report, density = loaded if loaded is not None else (None, None, None)
+        diff = (
+            None
+            if plan is None or self.plan is None
+            else PlanDiff.between(self.plan, plan)
+        )
+        self.summaries.append(
+            AttemptSummary(
+                call=call,
+                outcome=outcome,
+                errors_by_rule={} if report is None else _counts_by_rule(report.errors),
+                warnings_by_rule=(
+                    {} if report is None else _counts_by_rule(report.warnings)
+                ),
+                load_errors=0 if plan is not None else len(self.load_errors),
+                diff=diff,
+                density=density,
+            )
+        )
+
+    def denser(
+        self, plan: StoryPlan, report: ValidationReport
+    ) -> tuple[StoryPlan, ValidationReport]:
+        """Return the checked plan to keep: this one, unless it is thinner.
+
+        After a density repair that checked cleanly, the repaired plan is
+        kept unless it has more SP-D warnings than the plan it repaired.
+
+        Args:
+            plan: A plan with no SP ERROR.
+            report: Its SP report.
+
+        Returns:
+            tuple[StoryPlan, ValidationReport]: The plan to keep and its report.
+        """
+        if self.best is not None and _density_findings(report) > _density_findings(
+            self.best[1]
+        ):
+            return self.best
+        return plan, report
+
+    def take_density_repair(
+        self,
+        plan: StoryPlan,
+        report: ValidationReport,
+        *,
+        enabled: bool,
+        has_next: bool,
+    ) -> bool:
+        """Decide whether a checked plan gets its one density repair (AL-848).
+
+        When it does, the plan is kept in ``best`` and the attempt is marked.
+
+        Args:
+            plan: A plan with no SP ERROR.
+            report: Its SP report.
+            enabled: The ``repair_density_warnings`` setting.
+            has_next: Whether the repair budget allows another call.
+
+        Returns:
+            bool: True when the next call is a density repair.
+        """
+        if not (
+            enabled
+            and has_next
+            and not self.density_repaired
+            and _density_findings(report)
+        ):
+            return False
+        self.best = (plan, report)
+        self.density_repaired = True
+        self.mark_repair("density")
+        return True
+
+    def mark_repair(self, reason: Literal["errors", "density"]) -> None:
+        """Note why the next call is made, on the last summary.
+
+        Args:
+            reason: ``"errors"`` or ``"density"``.
+        """
+        if self.summaries:
+            self.summaries[-1] = replace(self.summaries[-1], repair=reason)
+
+
+def _density_findings(report: ValidationReport) -> int:
+    """Count a report's SP-D warnings.
+
+    Args:
+        report: The SP report.
+
+    Returns:
+        int: How many density warnings it holds.
+    """
+    return sum(1 for f in report.warnings if f.rule_id == DENSITY_RULE)
 
 
 def _pitch_note(candidates: Sequence[PitchCandidate], chosen: PitchCandidate) -> str:
@@ -1326,6 +1673,7 @@ async def generate_story_plan(  # noqa: PLR0913 - keyword-only job inputs
     max_repairs: int = DEFAULT_MAX_REPAIRS,
     chosen_pitch: Pitch | None = None,
     model_label: str | None = None,
+    repair_density_warnings: bool = DEFAULT_REPAIR_DENSITY_WARNINGS,
 ) -> PlanGenerationResult:
     """Run pitches, plan, checks and bounded repair for one request.
 
@@ -1341,10 +1689,15 @@ async def generate_story_plan(  # noqa: PLR0913 - keyword-only job inputs
             made and this pitch is used (still floored by SP-9 as part of the
             plan).
         model_label: The writer model id recorded in ``provenance.model``.
+        repair_density_warnings: When True, a checked plan with SP-D density
+            warnings gets one repair from the same budget
+            (:data:`DEFAULT_REPAIR_DENSITY_WARNINGS`). The job still ends
+            ``checked`` when that repair cannot be made or does not check
+            cleanly; warnings never fail a plan.
 
     Returns:
         PlanGenerationResult: The outcome. A checked plan awaits approval; it
-            is never approved here.
+            is never approved here. ``attempts`` summarises every plan call.
 
     Raises:
         ValidationError: From the PII guard (``field="prompt"``) when the
@@ -1395,71 +1748,50 @@ async def generate_story_plan(  # noqa: PLR0913 - keyword-only job inputs
         completion = await guarded.complete(
             system=system, prompt=user, max_tokens=max_tokens
         )
-        decoded, problem = _decode_object(completion.text)
-        if decoded is None:
-            state.previous, state.feedback = None, [problem or "unparseable"]
-            state.load_errors = list(state.feedback)
-            stage_log.append(f"plan:{call}:unparseable")
-            continue
-        sections, dropped = _normalize(view, view.to_real(decoded))
-        if _carries_pii(sections, pii):
-            # #CRITICAL: security: a plan is persisted and later quoted into
-            # fill prompts; a family's child name or PII-shaped text the model
-            # invented must not be stored, and echoing it back in a repair
-            # prompt would trip the provider guard and fail the job. So the
-            # answer is discarded unread and the repair asks for invented names.
-            # #VERIFY: test_storyplan_generate.py::test_a_plan_naming_a_child_is_rewritten.
-            state.previous = None
-            state.feedback = [_PII_FEEDBACK]
-            state.load_errors = [_PII_FEEDBACK]
-            stage_log.append(f"plan:{call}:personal_information")
-            continue
-        document = _assemble(
+        has_next = call <= max_repairs
+        loaded = _load_plan(
             view,
-            sections,
-            request=request,
-            pitch=chosen.pitch,
-            model_label=model_label,
-            note=note,
+            completion.text,
+            _PlanParts(request, chosen.pitch, model_label, note, pii),
+            state,
+            call,
+            stage_log,
         )
-        try:
-            plan = StoryPlan.model_validate(document)
-        except PydanticValidationError as exc:
-            state.load_errors = _load_errors(view, exc)
-            state.previous = view.to_alias(sections)
-            state.feedback = [
-                *(f"ignored key {key!r}: not part of your answer" for key in dropped),
-                *state.load_errors,
-            ][:_MAX_FEEDBACK_LINES]
-            stage_log.append(f"plan:{call}:load_errors={len(state.load_errors)}")
+        if loaded is None:
+            if has_next:
+                state.mark_repair("errors")
             continue
-        report = check_plan(plan, view.book)
-        record = CheckRecord(
-            ok=report.ok, errors=len(report.errors), warnings=len(report.warnings)
+        plan, report = _check_attempt(view, loaded, state, call, stage_log)
+        if not report.ok:
+            state.previous = _sections_for_repair(view, plan)
+            state.feedback = _feedback(view, report)
+            if has_next:
+                state.mark_repair("errors")
+            continue
+        plan, report = state.denser(plan, report)
+        # #ASSUME: payment/financial: a density repair is one more paid call,
+        # taken only from the remaining max_repairs budget and at most once
+        # per job (AL-848); the checked plan is kept in state.best so a failed
+        # repair cannot cost the job its plan.
+        # #VERIFY: test_storyplan_generate.py::
+        # test_density_warnings_get_one_repair_within_the_budget and
+        # ::test_a_failed_density_repair_keeps_the_checked_plan.
+        if state.take_density_repair(
+            plan, report, enabled=repair_density_warnings, has_next=has_next
+        ):
+            state.previous = _sections_for_repair(view, plan)
+            state.feedback = _feedback(view, report)
+            stage_log.append(f"plan:{call}:density_repair={_density_findings(report)}")
+            continue
+        return _checked(view, candidates, plan, report, call, stage_log, state)
+    if state.best is not None:
+        # Warnings never fail a plan: the density repair did not check
+        # cleanly within the budget, so the job keeps the checked plan.
+        best_plan, best_report = state.best
+        stage_log.append("plan:kept_checked")
+        return _checked(
+            view, candidates, best_plan, best_report, calls, stage_log, state
         )
-        plan = plan.model_copy(
-            update={"provenance": plan.provenance.model_copy(update={"checks": record})}
-        )
-        state.plan, state.checks, state.load_errors = plan, report, []
-        stage_log.append(f"plan:{call}:errors={record.errors}")
-        if report.ok:
-            _logger.info(
-                "story_plan.checked",
-                shape_id=view.shape_id,
-                plan_calls=call,
-                warnings=record.warnings,
-            )
-            return PlanGenerationResult(
-                status="checked",
-                shape=shape,
-                pitches=candidates,
-                plan=plan,
-                checks=report,
-                plan_calls=call,
-                stage_log=stage_log,
-            )
-        state.previous = _sections_for_repair(view, plan)
-        state.feedback = _feedback(view, report)
     _logger.info(
         "story_plan.failed_checks",
         shape_id=view.shape_id,
@@ -1475,4 +1807,164 @@ async def generate_story_plan(  # noqa: PLR0913 - keyword-only job inputs
         load_errors=state.load_errors,
         plan_calls=calls,
         stage_log=stage_log,
+        attempts=list(state.summaries),
+    )
+
+
+@dataclass(frozen=True, slots=True)
+class _PlanParts:
+    """What every plan attempt is assembled from, besides the model's answer."""
+
+    request: PlanRequestInput
+    pitch: Pitch
+    model_label: str | None
+    note: str
+    pii: PiiContext
+
+
+def _load_plan(  # noqa: PLR0913, PLR0917 - one attempt's inputs and loop state
+    view: ShapeView,
+    text: str,
+    parts: _PlanParts,
+    state: _Attempt,
+    call: int,
+    stage_log: list[str],
+) -> StoryPlan | None:
+    """Decode, screen and load one plan answer, recording any failure.
+
+    Args:
+        view: The shape view.
+        text: The model's answer.
+        parts: The request, pitch, model label, provenance note and PII context.
+        state: The loop state; on failure its feedback, previous plan, load
+            errors and summaries are updated.
+        call: The plan call number.
+        stage_log: The stage trail, appended to on failure.
+
+    Returns:
+        StoryPlan | None: The loaded (unchecked) plan, or None when the answer
+            was unparseable, carried PII or did not load.
+    """
+    decoded, problem = _decode_object(text)
+    if decoded is None:
+        state.previous, state.feedback = None, [problem or "unparseable"]
+        state.load_errors = list(state.feedback)
+        state.record(call, "unparseable")
+        stage_log.append(f"plan:{call}:unparseable")
+        return None
+    sections, dropped = _normalize(view, view.to_real(decoded))
+    if _carries_pii(sections, parts.pii):
+        # #CRITICAL: security: a plan is persisted and later quoted into
+        # fill prompts; a family's child name or PII-shaped text the model
+        # invented must not be stored, and echoing it back in a repair
+        # prompt would trip the provider guard and fail the job. So the
+        # answer is discarded unread and the repair asks for invented names.
+        # #VERIFY: test_storyplan_generate.py::test_a_plan_naming_a_child_is_rewritten.
+        state.previous = None
+        state.feedback = [_PII_FEEDBACK]
+        state.load_errors = [_PII_FEEDBACK]
+        state.record(call, "personal_information")
+        stage_log.append(f"plan:{call}:personal_information")
+        return None
+    document = _assemble(
+        view,
+        sections,
+        request=parts.request,
+        pitch=parts.pitch,
+        model_label=parts.model_label,
+        note=parts.note,
+    )
+    try:
+        return StoryPlan.model_validate(document)
+    except PydanticValidationError as exc:
+        state.load_errors = _load_errors(view, exc)
+        state.previous = view.to_alias(sections)
+        state.feedback = [
+            *(f"ignored key {key!r}: not part of your answer" for key in dropped),
+            *state.load_errors,
+        ][:_MAX_FEEDBACK_LINES]
+        state.record(call, "load_errors")
+        stage_log.append(f"plan:{call}:load_errors={len(state.load_errors)}")
+        return None
+
+
+def _check_attempt(  # noqa: PLR0913, PLR0917 - one attempt's inputs and loop state
+    view: ShapeView,
+    plan: StoryPlan,
+    state: _Attempt,
+    call: int,
+    stage_log: list[str],
+) -> tuple[StoryPlan, ValidationReport]:
+    """Check a loaded plan, stamp its check record and summarise the attempt.
+
+    Args:
+        view: The shape view.
+        plan: The loaded plan.
+        state: The loop state; ``plan``, ``checks`` and ``summaries`` are
+            updated.
+        call: The plan call number.
+        stage_log: The stage trail.
+
+    Returns:
+        tuple[StoryPlan, ValidationReport]: The plan with its
+            ``provenance.checks`` set, and its SP report.
+    """
+    report = check_plan(plan, view.book)
+    record = CheckRecord(
+        ok=report.ok, errors=len(report.errors), warnings=len(report.warnings)
+    )
+    plan = plan.model_copy(
+        update={"provenance": plan.provenance.model_copy(update={"checks": record})}
+    )
+    density = plan_density(plan, view.book)
+    state.load_errors = []
+    state.record(
+        call,
+        "checked" if report.ok else "failed_checks",
+        loaded=(plan, report, None if density is None else density.to_dict()),
+    )
+    state.plan, state.checks = plan, report
+    stage_log.append(f"plan:{call}:errors={record.errors}")
+    return plan, report
+
+
+def _checked(  # noqa: PLR0913, PLR0917 - the parts of one checked result
+    view: ShapeView,
+    candidates: list[PitchCandidate],
+    plan: StoryPlan,
+    report: ValidationReport,
+    calls: int,
+    stage_log: list[str],
+    state: _Attempt,
+) -> PlanGenerationResult:
+    """Return the ``checked`` result for a plan with no SP ERROR.
+
+    Args:
+        view: The shape view.
+        candidates: Every pitch considered.
+        plan: The checked plan.
+        report: Its SP report (warnings only).
+        calls: Plan calls made in all.
+        stage_log: The stage trail.
+        state: The loop state (for the attempt summaries).
+
+    Returns:
+        PlanGenerationResult: Status ``checked``.
+    """
+    _logger.info(
+        "story_plan.checked",
+        shape_id=view.shape_id,
+        plan_calls=calls,
+        warnings=len(report.warnings),
+        density_warnings=_density_findings(report),
+    )
+    return PlanGenerationResult(
+        status="checked",
+        shape={"id": view.shape_id, "hash": view.shape_hash},
+        pitches=candidates,
+        plan=plan,
+        checks=report,
+        plan_calls=calls,
+        stage_log=stage_log,
+        attempts=list(state.summaries),
     )

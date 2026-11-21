@@ -310,3 +310,38 @@ async def test_plan_job_without_a_shape_binding_fails() -> None:
     )
     with pytest.raises(ResourceNotFoundError):
         await worker_module._run_plan_generation(ctx)
+
+
+@pytest.mark.asyncio
+async def test_plan_job_passes_the_plan_settings_to_the_generator(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """The worker forwards the density-repair setting (AL-848)."""
+    view = _view()
+    seen: dict[str, object] = {}
+    original = worker_module.generate_story_plan
+
+    async def _spy(*args: object, **kwargs: object) -> object:
+        seen.update(kwargs)
+        return await original(*args, **kwargs)  # pyright: ignore[reportArgumentType]
+
+    monkeypatch.setattr(worker_module, "generate_story_plan", _spy)
+    monkeypatch.setattr(
+        worker_module._default_settings,
+        "story_plan_repair_density_warnings",
+        False,
+    )
+    job, concept = _job(_metadata(view))
+    session = _Session(job, concept)
+    provider = MockProvider(
+        responses=[json.dumps({"pitches": [_PITCH]}), _clean_plan(view)]
+    )
+    await worker_module.run_generation_job(
+        job.id,
+        provider=provider,
+        session_factory=_factory(session),  # pyright: ignore[reportArgumentType]
+    )
+    assert seen["repair_density_warnings"] is False
+    report = cast("dict[str, object]", job.report)
+    summaries = cast("list[dict[str, object]]", report["story_plan_attempt_summaries"])
+    assert [s["outcome"] for s in summaries] == ["checked"]

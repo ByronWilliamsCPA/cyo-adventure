@@ -520,6 +520,14 @@ class Settings(BaseSettings):
     # (ignored by models that lack it).
     llm_effort: Literal["off", "low", "medium", "high"] = "off"
 
+    # WP-2.3 follow-on (AL-848): a Story Plan that checks cleanly but carries
+    # SP-D plan-density warnings gets one repair from the plan job's existing
+    # repair budget. Warnings never fail a plan: when the budget is spent, or
+    # the repair does not check cleanly, the job keeps the checked plan with
+    # its warnings recorded. False restores the WP-2.3 behaviour (repair only
+    # on ERRORs).
+    story_plan_repair_density_warnings: bool = True
+
     # Per-call wall-clock timeout for a single live provider completion. Generation
     # responses are large (a full story is thousands of tokens), so the default is
     # generous; the adapter's transient-retry backoff stacks on top of this.

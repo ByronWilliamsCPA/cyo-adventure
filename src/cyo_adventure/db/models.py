@@ -2687,6 +2687,7 @@ STORY_PLAN_REPORT_KEYS: tuple[str, ...] = (
     "story_plan_shape",
     "story_plan_pitches",
     "story_plan_approval",
+    "story_plan_attempt_summaries",
 )
 
 
@@ -2718,8 +2719,10 @@ class GenerationJob(UUIDPrimaryKeyMixin, CreatedAtMixin, UpdatedAtMixin, Base):
             authoring method, the plan status (``checked``,
             ``failed_checks`` or ``no_passing_pitch``), the plan itself, its
             SP check report, load errors, the number of plan calls, the shape
-            binding, every pitch with its screening verdict, and the approval
-            state (``pending_owner`` until WP-2.4). Admin-only: the job
+            binding, every pitch with its screening verdict, the approval
+            state (``pending_owner`` until WP-2.4), and one summary per plan
+            call (loaded or not, finding counts by rule, a compact ledger
+            diff, density metrics, and why the next call was made). Admin-only: the job
             endpoint returns ``report`` to admins and no kid-surface route
             reads it.
         storybook_id: String key of the produced storybook row, set only when

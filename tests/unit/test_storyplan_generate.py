@@ -11,10 +11,11 @@ import copy
 import json
 import re
 from pathlib import Path
-from typing import TYPE_CHECKING, cast
+from typing import TYPE_CHECKING, Any, cast
 
 import pytest
 
+from cyo_adventure.core.config import Settings
 from cyo_adventure.core.exceptions import ValidationError
 from cyo_adventure.db.models import STORY_PLAN_REPORT_KEYS
 from cyo_adventure.generation.pii import PiiContext
@@ -28,7 +29,9 @@ from cyo_adventure.storybook.fill_directive import derive_node_functions
 from cyo_adventure.storybook.models import AgeBand, Length, NarrativeStyle, Storybook
 from cyo_adventure.storyplan.checks import base_example, check_plan
 from cyo_adventure.storyplan.generate import (
+    DEFAULT_REPAIR_DENSITY_WARNINGS,
     REPORT_KEYS,
+    PlanGenerationResult,
     PlanRequestInput,
     ShapeView,
     build_shape_view,
@@ -724,3 +727,225 @@ async def test_a_plan_naming_a_child_is_rewritten(witness_view: ShapeView) -> No
     assert "invent every name" in provider.calls[2]
     assert result.plan is not None
     assert result.plan.cast["wren"].name == "Wren"
+
+
+# ---------------------------------------------------------------------------
+# Density repair (AL-848) and per-attempt summaries (AL-850)
+# ---------------------------------------------------------------------------
+
+
+def _thin_sections(view: ShapeView, *extra: str) -> dict[str, object]:
+    """The clean witness plan plus ledger facts nothing uses (SP-D warnings)."""
+    sections = _witness_sections(view)
+    facts = cast("dict[str, object]", sections["facts"])
+    for fact_id in extra or ("fox_seen",):
+        facts[fact_id] = {"text": f"Something about {fact_id} is noted."}
+    return sections
+
+
+async def _run(
+    view: ShapeView, *answers: dict[str, object] | str, **kwargs: object
+) -> tuple[PlanGenerationResult, MockProvider]:
+    provider = MockProvider(
+        responses=[
+            _pitches(_GOOD_PITCH),
+            *(a if isinstance(a, str) else json.dumps(a) for a in answers),
+        ]
+    )
+    result = await generate_story_plan(
+        _request(view),
+        view,
+        provider,
+        pii=_NO_PII,
+        screen=_clean_screen,
+        **cast("dict[str, Any]", kwargs),
+    )
+    return result, provider
+
+
+def _density_rules(result: PlanGenerationResult) -> list[str]:
+    assert result.checks is not None
+    return [f.rule_id for f in result.checks.warnings if f.rule_id == "SP-D"]
+
+
+def test_density_repair_is_on_by_default_in_code_and_settings() -> None:
+    assert DEFAULT_REPAIR_DENSITY_WARNINGS is True
+    assert Settings().story_plan_repair_density_warnings is True
+
+
+@pytest.mark.asyncio
+async def test_density_warnings_get_one_repair_within_the_budget(
+    witness_view: ShapeView,
+) -> None:
+    """A checked plan with SP-D warnings is sent back once with its findings."""
+    result, provider = await _run(
+        witness_view, _thin_sections(witness_view), _witness_sections(witness_view)
+    )
+    assert result.status == "checked"
+    assert result.plan_calls == 2
+    assert "SP-D warning" in provider.calls[2]
+    assert "'fox_seen'" in provider.calls[2]
+    assert _density_rules(result) == []
+    assert [a.repair for a in result.attempts] == ["density", None]
+    assert result.attempts[0].warnings_by_rule == {"SP-D": 1}
+    diff = result.attempts[1].diff
+    assert diff is not None
+    assert diff.facts_removed == ("fox_seen",)
+    assert any(
+        entry.startswith("plan:1:density_repair=1") for entry in result.stage_log
+    )
+
+
+@pytest.mark.asyncio
+async def test_density_repair_is_taken_at_most_once(witness_view: ShapeView) -> None:
+    """A second thin answer is kept, warnings recorded, budget left unused."""
+    thin = _thin_sections(witness_view)
+    result, provider = await _run(witness_view, thin, thin, thin, max_repairs=2)
+    assert result.status == "checked"
+    assert result.plan_calls == 2
+    assert len(provider.calls) == 3
+    assert _density_rules(result) == ["SP-D"]
+    assert result.plan is not None
+    assert result.plan.provenance.checks is not None
+    assert result.plan.provenance.checks.warnings == 1
+
+
+@pytest.mark.asyncio
+async def test_a_failed_density_repair_keeps_the_checked_plan(
+    witness_view: ShapeView,
+) -> None:
+    """Warnings never fail a plan: a repair that breaks it falls back."""
+    broken = _witness_sections(witness_view)
+    cast("dict[str, object]", broken["nodes"]).pop(witness_view.node_alias["n_cave"])
+    result, provider = await _run(
+        witness_view, _thin_sections(witness_view), broken, broken, max_repairs=2
+    )
+    assert result.status == "checked"
+    assert result.plan_calls == 3
+    assert len(provider.calls) == 4
+    assert result.plan is not None
+    assert "fox_seen" in result.plan.facts
+    assert _density_rules(result) == ["SP-D"]
+    assert result.stage_log[-1] == "plan:kept_checked"
+    assert [a.outcome for a in result.attempts] == [
+        "checked",
+        "failed_checks",
+        "failed_checks",
+    ]
+    assert [a.repair for a in result.attempts] == ["density", "errors", None]
+    report = result.report()
+    assert report["story_plan_status"] == "checked"
+    assert report["story_plan_approval"] == "pending_owner"
+
+
+@pytest.mark.asyncio
+async def test_a_thinner_density_repair_keeps_the_denser_plan(
+    witness_view: ShapeView,
+) -> None:
+    result, _ = await _run(
+        witness_view,
+        _thin_sections(witness_view),
+        _thin_sections(witness_view, "fox_seen", "owl_heard"),
+    )
+    assert result.status == "checked"
+    assert result.plan is not None
+    assert "owl_heard" not in result.plan.facts
+    assert _density_rules(result) == ["SP-D"]
+
+
+@pytest.mark.asyncio
+async def test_density_repair_setting_off_keeps_wp23_behaviour(
+    witness_view: ShapeView,
+) -> None:
+    result, provider = await _run(
+        witness_view, _thin_sections(witness_view), repair_density_warnings=False
+    )
+    assert result.status == "checked"
+    assert result.plan_calls == 1
+    assert len(provider.calls) == 2
+    assert _density_rules(result) == ["SP-D"]
+    assert result.attempts[0].repair is None
+
+
+@pytest.mark.asyncio
+async def test_density_repair_needs_budget(witness_view: ShapeView) -> None:
+    result, _ = await _run(witness_view, _thin_sections(witness_view), max_repairs=0)
+    assert result.status == "checked"
+    assert result.plan_calls == 1
+    assert _density_rules(result) == ["SP-D"]
+
+
+@pytest.mark.asyncio
+async def test_attempt_summaries_record_every_call(witness_view: ShapeView) -> None:
+    broken = _witness_sections(witness_view)
+    cast("dict[str, object]", broken["nodes"]).pop(witness_view.node_alias["n_cave"])
+    result, _ = await _run(
+        witness_view,
+        "not json at all",
+        broken,
+        _witness_sections(witness_view),
+        max_repairs=2,
+    )
+    assert result.status == "checked"
+    outcomes = [(a.call, a.outcome, a.loaded) for a in result.attempts]
+    assert outcomes == [
+        (1, "unparseable", False),
+        (2, "failed_checks", True),
+        (3, "checked", True),
+    ]
+    assert result.attempts[0].load_errors == 1
+    assert result.attempts[1].errors_by_rule == {"SP-1": 1}
+    assert result.attempts[2].errors_by_rule == {}
+    assert [a.repair for a in result.attempts] == ["errors", "errors", None]
+    assert result.attempts[1].diff is None  # the first plan that loaded
+    assert result.attempts[2].diff is not None
+    assert result.attempts[2].density is not None
+    entries = cast(
+        "list[dict[str, object]]", result.report()["story_plan_attempt_summaries"]
+    )
+    assert [e["outcome"] for e in entries] == [
+        "unparseable",
+        "failed_checks",
+        "checked",
+    ]
+    assert entries[1]["loaded"] is True
+    json.dumps(entries)  # JSON-ready for GenerationJob.report
+
+
+@pytest.mark.asyncio
+async def test_a_repair_that_only_removes_marks_is_visible(
+    witness_view: ShapeView,
+) -> None:
+    """AL-849/AL-850: clearing SP-3 by deleting the mark shows in the diff."""
+    contradicted = _witness_sections(witness_view)
+    nodes = cast("dict[str, dict[str, object]]", contradicted["nodes"])
+    nodes[witness_view.node_alias["n_path"]]["establishes"] = ["stranger_left_map"]
+    unmarked = copy.deepcopy(contradicted)
+    facts = cast("dict[str, dict[str, object]]", unmarked["facts"])
+    facts["stranger_left_map"]["contradicts"] = []
+    result, _ = await _run(witness_view, contradicted, unmarked)
+    assert result.status == "checked"
+    assert result.attempts[0].errors_by_rule == {"SP-3": 1}
+    diff = result.attempts[1].diff
+    assert diff is not None
+    assert diff.contradicts_removed == ("grandpa_left_map|stranger_left_map",)
+    assert diff.facts_added == diff.facts_removed == ()
+    assert diff.fact_uses_changed == 0
+    assert diff.only_removed_marks
+    entry = cast(
+        "list[dict[str, object]]", result.report()["story_plan_attempt_summaries"]
+    )[1]
+    assert cast("dict[str, object]", entry["diff"])["only_removed_marks"] is True
+
+
+@pytest.mark.asyncio
+async def test_a_story_change_repair_is_not_mark_only(witness_view: ShapeView) -> None:
+    contradicted = _witness_sections(witness_view)
+    nodes = cast("dict[str, dict[str, object]]", contradicted["nodes"])
+    nodes[witness_view.node_alias["n_path"]]["establishes"] = ["stranger_left_map"]
+    result, _ = await _run(witness_view, contradicted, _witness_sections(witness_view))
+    diff = result.attempts[1].diff
+    assert diff is not None
+    assert diff.contradicts_removed == ()
+    assert diff.fact_uses_changed == 1
+    assert not diff.only_removed_marks

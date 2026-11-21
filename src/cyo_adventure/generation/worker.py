@@ -1400,6 +1400,7 @@ async def _run_plan_generation(ctx: _PlanGenerationContext) -> GenerationOutcome
         screen=classifier_screen(_default_settings.openai_api_key),
         max_repairs=_PLAN_MAX_REPAIRS,
         model_label=_model_label(ctx.effective_provider),
+        repair_density_warnings=_default_settings.story_plan_repair_density_warnings,
     )
     logger.info(
         "generation_job.story_plan",
