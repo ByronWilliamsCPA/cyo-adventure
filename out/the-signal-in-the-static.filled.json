@@ -59,7 +59,7 @@
   "nodes": [
     {
       "id": "n_open",
-      "body": "Wren Callahan can't sleep. She climbs the ladder to the attic, where her late grandfather's shortwave radio sits under a dust sheet like something waiting to be woken up. She switches it on anyway, the way she has every night for a week now. Out of the hiss comes the same loop she heard last night: a woman's flat, careful voice reading a string of numbers, over and over, then a slow tone that counts downward and resets, starting the whole cycle again from the top. It should sound like nothing, an old machine talking to itself in an empty room. Instead it sounds like a door left open on purpose, waiting for someone to walk through it.",
+      "body": "Wren Callahan can't sleep. She climbs the ladder to the attic, where her late grandfather's shortwave radio sits under a dust sheet like something waiting to be woken up. She switches it on anyway, the way she has every night for a week now. Out of the hiss comes the same loop she heard last night: a young woman's flat, careful voice reading a string of numbers, over and over, then a slow tone that counts downward and resets, starting the whole cycle again from the top. It should sound like nothing, an old machine talking to itself in an empty room. Instead it sounds like a door left open on purpose, waiting for someone to walk through it.",
       "is_ending": false,
       "choices": [
         {
@@ -349,7 +349,7 @@
     },
     {
       "id": "r_coord_base_out",
-      "body": "She follows the stenciled arrows along the ridge, counting them, and stops counting at nineteen. The path they mark is cracked asphalt, just wide enough for a service truck, and it hugs the high ground all the way out toward the headland. Whoever painted these wanted them followed in the dark by somebody in a hurry, because each arrow has a dab of reflective paint at its tip that catches her flashlight and winks. With every hundred yards the loop steadies in her earbuds. It no longer feels like something drifting about in the air. It feels like a road, laid down one arrow at a time for whoever was patient enough to walk it.",
+      "body": "She follows the stenciled arrows along the ridge, counting them, and stops counting at nineteen. The path they mark is cracked asphalt, just wide enough for a service truck, and it hugs the high ground all the way out toward the headland. Whoever painted these wanted them followed in the dark by somebody in a hurry, because each arrow has a dab of reflective paint at its tip that catches her flashlight and winks. As she walks, the loop steadies in her earbuds. It no longer feels like something drifting about in the air. It feels like a road, laid down one arrow at a time for whoever was patient enough to walk it.",
       "is_ending": false,
       "choices": [
         {
@@ -431,7 +431,7 @@
     },
     {
       "id": "e_re_photo",
-      "body": "She photographs the mast three times with shaking hands, while a gust does its best to lift her off the path, and then she turns the bicycle round. Nobody who had seen that drop would call it cowardly. At home, under the covers, she swipes through the pictures, and the first two show a black tower against a blacker sky. The third is blurred, but along its bottom edge there is a yellow window, and in the window the shape of a man holding a mug. So somebody lives out there. Wren decides to go back at the weekend, in daylight, by the sheltered lane behind the station. The loop does not wait for the weekend. It stops two nights later, in the middle of a number, and the man with the mug is the only answer she ever gets.",
+      "body": "She photographs the mast three times with shaking hands, while a gust does its best to lift her off the path, and then she turns the bicycle round. Nobody who had seen that drop would call it cowardly. At home, under the covers, she swipes through the pictures, and the first two show a black tower against a blacker sky. The third is blurred, but along its bottom edge there is a yellow window, and in the window the shape of a man holding a mug. So somebody lives out there. Wren decides to go back at the weekend, in daylight, by the sheltered lane behind the station. The loop does not wait for the weekend. It stops the very next night, in the middle of a number, and the man with the mug is the only answer she ever gets.",
       "is_ending": true,
       "ending": {
         "id": "e_relay_photo",
@@ -877,12 +877,12 @@
     },
     {
       "id": "m_numbers_1",
-      "body": "She copies the numbers out in full across a fresh page and stares at them until they begin to swim. Old operators loved a book cipher, in which every group points to a page and a line in some book that both ends own, and her grandfather's logbook lies by her elbow, crammed with his cramped handwriting. But the groups arrive on a strict beat, and when she taps her pencil along with the recording, the beat is not quite steady. It might not be writing at all. It might be time, counted out loud. Her stopwatch is in the desk drawer, the logbook is under her hand, and her eyes will last for one long job tonight.",
+      "body": "She copies the numbers out in full across a fresh page and stares at them until they begin to swim. Old operators loved a book cipher, in which every group points to a page and a line in some book that both ends own. Her grandfather's logbook lies by her elbow, fetched down from the cedar trunk in the attic, and tucked inside its back cover is the one book every operator on this coast once owned: the club's printed station register. But the groups arrive on a strict beat, and when she taps her pencil along with the recording, the beat is not quite steady. It might not be writing at all. It might be time, counted out loud. Her stopwatch is in the desk drawer, the logbook is under her hand, and her eyes will last for one long job tonight.",
       "is_ending": false,
       "choices": [
         {
           "id": "c_m_numbers_1_1",
-          "label": "Try the logbook as a book cipher.",
+          "label": "Try the station register as a book cipher.",
           "target": "m_num_cipher"
         },
         {
@@ -894,12 +894,12 @@
     },
     {
       "id": "m_num_cipher",
-      "body": "Wren opens the logbook and treats every group of numbers as a page and a line, the way a book cipher works, counting her way down to a word. Fragments arrive almost at once: HOLDING, and ANSWER, and a single letter, M, which turns up too often to be an accident. Then the method stalls. One cluster near the end of the string comes out as nonsense however she counts it, and she counts it four different ways. Perhaps she has slipped by a page somewhere in the logbook. Perhaps that cluster was never keyed to the logbook at all. On the shelf above the desk sits the only other book of his that is underlined half as heavily, its spine cracked white with use.",
+      "body": "Wren opens the station register and treats every group of numbers as a page and a line, the way a book cipher works, counting her way down to a word. Fragments arrive almost at once: HOLDING, and ANSWER, and a single letter, M, which turns up too often to be an accident. Then the method stalls. One cluster near the end of the string comes out as nonsense however she counts it, and she counts it four different ways. Perhaps she has slipped by a page somewhere in the register. Perhaps that cluster was never keyed to the register at all. On the shelf above the desk sits the only other book of his that is underlined half as heavily, its spine cracked white with use.",
       "is_ending": false,
       "choices": [
         {
           "id": "c_m_num_cipher_1",
-          "label": "Go back through the logbook key, page by page.",
+          "label": "Go back through the register key, page by page.",
           "target": "m_num_cracked"
         },
         {
@@ -911,7 +911,7 @@
     },
     {
       "id": "m_num_cracked",
-      "body": "The logbook key holds after all, because she was only one page off, and once she shifts it every group drops into place like a bolt sliding home. The numbers make one plain sentence: STILL HOLDING THE CHANNEL OPEN FOR M. Wren reads it aloud to the empty room and has to stop and swallow before she can go on. The last group is not a word at all but a figure, and when she checks tonight's copy against last night's, the figure is smaller. Whatever else this broadcast is, part of it is a count, and the count is going down.",
+      "body": "The register key holds after all, because she was only one page off, and once she shifts it every group drops into place like a bolt sliding home. The numbers make one plain sentence: STILL HOLDING THE CHANNEL OPEN FOR M. Wren reads it aloud to the empty room and has to stop and swallow before she can go on. The last group is not a word at all but a figure, and when she checks tonight's copy against last night's, the figure is smaller. Whatever else this broadcast is, part of it is a count, and the count is going down.",
       "is_ending": false,
       "choices": [
         {
@@ -1132,7 +1132,7 @@
         "id": "e_who_warn",
         "valence": "negative",
         "kind": "setback",
-        "title": "Sent Home to Bed"
+        "title": "Not for a School Project"
       }
     },
     {
@@ -1170,7 +1170,7 @@
     },
     {
       "id": "n_b2_under",
-      "body": "She presses the cracked leather pads tight against her ears, the way he used to, and listens under the voice instead of to it. Between one number and the next, faint as a watermark, an older recording is bleeding through the tape, and in it a man says, \"Again, and slower this time.\" There is a sigh, and then a girl answers him, bored and fond at once: \"Dad, I am going slow.\" The next number arrives flat and careful, in the same voice made patient. Wren sits very still, because the woman reading the numbers was a girl once, and she called the man at that station Dad.",
+      "body": "She presses the cracked leather pads tight against her ears, the way he used to, and listens under the voice instead of to it. Between one number and the next, faint as a watermark, an older recording is bleeding through the tape, and in it a man says, \"Again, and slower this time.\" There is a sigh, and then a girl answers him, bored and fond at once: \"Dad, I am going slow.\" The next number arrives flat and careful, in the same voice made patient. Wren sits very still, because the voice reading the numbers belongs to a girl not much older than she is, and that girl called the man at that station Dad.",
       "is_ending": false,
       "choices": [
         {
@@ -1211,7 +1211,7 @@
     },
     {
       "id": "mm_listener_1",
-      "body": "A name has to start somewhere, and all Wren has to start from is a single letter. An M can be a person, since operators have families, and families leave records behind them: births, school photographs, a line in the county register. An M can just as easily be a place. Her grandfather's marine chart of the headland lies rolled on the desk, its margins crowded with letters that each stand for a mooring or a marker. Men keep watch over places too, and keep lights burning for boats that never came in. Wren looks from her laptop to the rolled chart and back again.",
+      "body": "A name has to start somewhere, and the loop itself gives her only a single letter. An M can be a person, since operators have families, and families leave records behind them: births, school photographs, a line in the county register. An M can just as easily be a place. Her grandfather's marine chart of the headland lies rolled on the desk, its margins crowded with letters that each stand for a mooring or a marker. Men keep watch over places too, and keep lights burning for boats that never came in. Wren looks from her laptop to the rolled chart and back again.",
       "is_ending": false,
       "choices": [
         {
@@ -1309,7 +1309,7 @@
     },
     {
       "id": "mm_count_1",
-      "body": "A clock can be read in two ways, and Wren has both of them within reach. The first is plain arithmetic: she has a week of logged starting notes, and a falling line can be followed down to the minute it hits bottom. The second is a hunch that refuses to leave her alone, because old operators timed everything by the sea. Her grandfather's tide table hangs on its nail by the window, and the evening forecast has been muttering about the headland all day. She taps the pencil against her teeth while, outside, the wind begins to lean on the house.",
+      "body": "A clock can be read in two ways, and Wren has both of them within reach. The first is plain arithmetic: she has a week of logged starting notes, and a falling line can be followed down to the minute it hits bottom. The second is a hunch that refuses to leave her alone, because old operators timed everything by the sea. This year's tide table hangs on its nail by the window, and the evening forecast has been muttering about the headland all day. She taps the pencil against her teeth while, outside, the wind begins to lean on the house.",
       "is_ending": false,
       "choices": [
         {
@@ -1367,7 +1367,7 @@
     },
     {
       "id": "mm_count_tide",
-      "body": "The tide table and the forecast agree with each other, and with the count, a great deal too well. High water tonight is a spring tide, the biggest of the month, and it tops out at eighteen minutes to midnight. The forecast carries a gale warning for the headland from eleven o'clock. Wren has seen what a spring tide does to the low end of that service lane on a calm day, and with a gale behind it the sea will be standing in the station yard. She could be wrong, of course. She is a kid with a pencil line and a column of figures, and it is past ten at night. Her grandfather used to say that the sea was the only clock on this coast that never needed winding.",
+      "body": "The tide table and the forecast agree with each other, and with the count, a great deal too well. High water tonight is a spring tide, the biggest of the month, and it tops out at eighteen minutes to midnight. The forecast carries a gale warning for the headland from eleven o'clock. Wren has seen what a spring tide does to the low road under the headland on a calm day, and with a gale behind it the sea will be standing in the station yard. She could be wrong, of course. She is a kid with a pencil line and a column of figures, and it is past ten at night. Her grandfather used to say that the sea was the only clock on this coast that never needed winding.",
       "is_ending": false,
       "choices": [
         {
@@ -1464,7 +1464,7 @@
     },
     {
       "id": "n_b3_choice",
-      "body": "Her watch says nineteen minutes to eleven, which leaves fifty-nine, and she spends the first of them standing perfectly still. A bicycle in the garage, her grandfather's transmitter under its dust sheet, a telephone on the desk: that is everything she has to throw at the relay station from here. Nobody else knows. That is the part she cannot get past. If she does nothing, nothing will happen, and it will happen at twenty to midnight exactly, to an old man beside a failing cell and a daughter who is not listening. Whatever she does instead, she will be doing it for the first time, in a gale, with no one to ask.",
+      "body": "Her watch says nineteen minutes to eleven, which leaves fifty-nine, and she spends the first of them standing perfectly still. A bicycle in the garage, her grandfather's transmitter under its dust sheet, a telephone on the desk: that is everything she has to throw at the relay station from here. Nobody else knows. That is the part she cannot get past. If she does nothing, nothing will happen, and it will happen at twenty to midnight exactly, to an old man beside a failing cell and a daughter who may not be listening. Whatever she does instead, she will be doing it for the first time, in a gale, with no one to ask.",
       "is_ending": false,
       "choices": [
         {
@@ -1653,7 +1653,7 @@
     },
     {
       "id": "e_st_record",
-      "body": "She nurses the dying cell by hand, holding its loose connector tight, and for a while it works: the needle steadies, and the red numbers run all the way down to zero. There is a click, a hiss of tape, and then an old man's voice says, as close as a hand on her shoulder, \"Marin.\" The cell dies under her fingers on that one word and takes the room with it, lamps and dials and voice together. Her phone is still recording in her jacket pocket, so that single word, at least, has been saved. Kneeling in the dark, Wren thinks about two bare terminals, and about a spare battery wrapped in a rag on an attic shelf. JUST IN CASE, the label said, and this was the case.",
+      "body": "She nurses the dying cell by hand, holding its loose connector tight, and for a while it works: the needle steadies, and the red numbers run all the way down to zero. There is a click, a hiss of tape, and then an old man's voice says, as close as a hand on her shoulder, \"Marin.\" The cell dies under her fingers on that one word and takes the room with it, lamps and dials and voice together. She thumbed her phone to record as she ran in from the yard, so that single word, at least, has been saved in her jacket pocket. Kneeling in the dark, Wren thinks about two bare terminals, and about a spare battery wrapped in a rag on an attic shelf. JUST IN CASE, the label said, and this was the case.",
       "is_ending": true,
       "ending": {
         "id": "e_st_record",
@@ -1755,7 +1755,7 @@
     },
     {
       "id": "e_st_wait",
-      "body": "She hammers on the steel door with both fists and shouts his name until her voice cracks, and the gale takes every sound and throws it out to sea. Through the little window she can see him, six steps along the wall, hunched in his headset with his back to her, and he never turns. At twenty to midnight the reels stop and start again, and a voice she knows from one recorded sentence comes faintly through the steel: \"Marin, I kept your voice on the air so that you would always know the way home.\" Then the lamp goes out, and Wren stands with her forehead against the cold door, thinking about the window. It was glass. He was facing the other way, but it was glass, and it was only six steps along the wall.",
+      "body": "She hammers on the steel door with both fists and shouts his name until her voice cracks, and the gale takes every sound and throws it out to sea. Through the little window she can see him, six steps along the wall, hunched in his headset with his back to her, and he never turns. At twenty to midnight the reels stop and start again, and a voice she knows from the tape an hour ago comes faintly through the steel: \"Marin, I kept your voice on the air so that you would always know the way home.\" Then the lamp goes out, and Wren stands with her forehead against the cold door, thinking about the window. It was glass. He was facing the other way, but it was glass, and it was only six steps along the wall.",
       "is_ending": true,
       "ending": {
         "id": "e_st_wait",
@@ -1817,7 +1817,7 @@
     },
     {
       "id": "e_re_answer",
-      "body": "\"This is for the station sending a carrier,\" Wren says into the microphone, as gently as she can. \"You don't have to say anything, because I'm nobody, I'm only the one who heard him, but if you are Marin, key twice.\" The hiss goes on. Then the needle jumps, and jumps again, and a woman's voice comes up out of the static, older than the one that reads the numbers but with the very same careful vowels. \"Who is this, and why is my name on the air?\" Wren tells her in one breath: the relay, the cell, the last hour, a father who has kept her voice on a loop for thirty years. \"He kept it,\" the woman says, and it is not a question. Wren turns the receiver up as loud as it will go, holds the microphone against it, and lets the two of them have the channel.",
+      "body": "\"This is for the station sending a carrier,\" Wren says into the microphone, as gently as she can. \"You don't have to say anything, because I'm nobody, I'm only the one who heard him, but if you are Marin, key twice.\" The hiss goes on. Then the needle jumps, and jumps again, and a woman's voice comes up out of the static, older than the one that reads the numbers but with the very same careful vowels, so that there is no mistaking whose voice the loop has been keeping. \"Who is this, and why is my name on the air?\" Wren tells her in one breath: the relay, the cell, the last hour, a father who has kept her voice on a loop for thirty years. \"He kept it,\" the woman says, and it is not a question. Wren turns the receiver up as loud as it will go, holds the microphone against it, and lets the two of them have the channel.",
       "is_ending": true,
       "ending": {
         "id": "e_re_answer",
@@ -1970,7 +1970,7 @@
     },
     {
       "id": "f_he_cg",
-      "body": "She calls the coast guard auxiliary, and a duty officer answers before the first ring has finished, in the voice of a man with a form in front of him and a pen in his hand. \"Auxiliary, go ahead, caller.\" Wren has rehearsed nothing. All she can see is an old man in a warm room beside a guttering cell, and all she can hear is a girl's voice counting, and the whole story is crowding up behind her teeth at once. \"Caller, are you still there?\" the officer says. \"I need a location from you, and then I need the nature of the emergency, in that order.\"",
+      "body": "She calls the coast guard auxiliary, and a duty officer answers before the first ring has finished, in the voice of a man with a form in front of him and a pen in his hand. \"Auxiliary, go ahead, caller.\" Wren has rehearsed nothing. All she can see is an old man in a warm room beside a guttering cell, and all she can hear is that careful voice counting, and the whole story is crowding up behind her teeth at once. \"Caller, are you still there?\" the officer says. \"I need a location from you, and then I need the nature of the emergency, in that order.\"",
       "is_ending": false,
       "choices": [
         {
@@ -1987,7 +1987,7 @@
     },
     {
       "id": "f_he_act",
-      "body": "She gives him a location, a hazard, and a time, in that order, and the officer's voice changes before she has finished. \"Occupied building, headland, spring tide plus gale, stand by.\" Eleven minutes later a crew chief is on the line from a truck, shouting over the engine, while Wren talks him round the chained gate and down the service road with a map spread under her elbows. \"We're in,\" the chief says. \"One male, elderly, uninjured, and not best pleased to see us. There's a console in here counting down, and he says it is none of our business. I've got sandbags and a generator, and I've got a records clerk on the radio who can find anybody in the county, but I have hands for one job before that tide tops out. So which is it to be, miss?\"",
+      "body": "She gives him a location, a hazard, and a time, in that order: the old relay on the headland, an old man alone in it with a gale coming, and twenty to midnight. The officer's voice changes before she has finished, and she hears keys clattering. \"Twenty to midnight is the top of a spring tide tonight, and with that gale behind it the sea will be in that yard,\" he says. \"Occupied building, headland, spring tide plus gale, stand by.\" Eleven minutes later a crew chief is on the line from a truck, shouting over the engine, while Wren talks him round the chained gate and down the service road with a map spread under her elbows. \"We're in,\" the chief says. \"One male, elderly, uninjured, and not best pleased to see us. There's a console in here counting down, and he says it is none of our business. I've got sandbags and a generator, and I've got a records clerk on the radio who can find anybody in the county, but I have hands for one job before that tide tops out. So which is it to be, miss?\"",
       "is_ending": false,
       "choices": [
         {
@@ -2015,7 +2015,7 @@
     },
     {
       "id": "e_he_safe",
-      "body": "\"Sandbag the building,\" Wren says, \"and save the tapes and the power, all of it, because if that station dies there is nothing left for her to find.\" The chief does not argue. For half an hour she listens to sandbags thumping down and a generator coughing into life. At twenty to midnight she hears the old man himself, close to the phone, say gruffly, \"The HOLD switch, under the red guard, no, the other red guard.\" The count stops with four seconds showing. In the morning the auxiliary opens a missing-relative file for one Marin Alder, last known two ridges west. The officer who takes it on has thirty years of recordings to play her when he finds her. He rings the Callahan house first, to say thank you, and to ask how a schoolgirl knew to start with the tide.",
+      "body": "\"Sandbag the building,\" Wren says, \"and save the tapes and the power, all of it, because if that station dies there is nothing left for her to find.\" The chief does not argue. For half an hour she listens to sandbags thumping down and a generator coughing into life. At twenty to midnight she hears the old man himself, close to the phone, say gruffly, \"The HOLD switch, under the red guard, no, the other red guard.\" The count stops with four seconds showing. In the morning the auxiliary opens a missing-relative file for one Marin Alder, last known two ridges west. The officer who takes it on has thirty years of recordings to play her when he finds her. He rings the Callahan house first, to say thank you, and to ask how a schoolgirl knew to give him the place, the danger and the hour before anything else.",
       "is_ending": true,
       "ending": {
         "id": "e_he_safe",
@@ -2077,7 +2077,7 @@
         "id": "e_he_complete",
         "valence": "positive",
         "kind": "success",
-        "title": "Two People There"
+        "title": "It Takes All Three"
       }
     },
     {
