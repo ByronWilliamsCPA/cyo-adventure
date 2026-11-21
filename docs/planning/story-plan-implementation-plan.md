@@ -398,6 +398,24 @@ that had read the continuity notes, so it is not the blind test WP-1.4 and WP-1.
   `UW-C497`) on the shells in use. The report says so plainly.
 - **Owner decision.** D5: accept the gate verdict. **Size.** S.
 
+### WP-1.6 Fresh-corpus confirmation (added 2026-11-21, D5 condition 2)
+
+- **Why.** G1 passed on its one re-run after a revision designed by an agent that had read the answer key. This package
+  measures the revised checks and the plan-writing conventions on books nobody has used to design them.
+- **Corpus.** Three catalog books (one per family band) that have not been read, planned or used anywhere in WP-0.3 to
+  WP-1.5 or the plan-review pilot. Chosen by the orchestrator from the catalog by a seeded draw, recorded before any read.
+- **Method, in this order.** (a) A WP-0.4-style second read of each book, findings frozen and committed first. (b) Blind
+  plan extraction under `EXTRACTION-PROMPT-v2.md` by fresh agents that cannot see (a). (c) The checker run on (b),
+  scored against (a) with the WP-1.5 "found" definition.
+- **Pass criterion (pre-registered here).** Of the second read's blockers and should-fix items in the classes the fact
+  model covers (unestablished fact on a route, state contradiction, two backstories, public plant, cross-payoff
+  reference), at least half found across the three books, every exact-class item found; and no more than one ERROR per
+  book that the owner judges wrong. Classes the fact model does not cover (timelines, location, physical state,
+  repeated reveals) are reported, not scored.
+- **If it passes.** The WP-0.4 second read may be retired as the standing control for catalog books (owner decision).
+  **If it fails.** The second read stays; the report says which classes failed. Phase 2 is not blocked either way.
+- **Depends on.** D5 (accepted). **Size.** M. **Spend.** none beyond agent time.
+
 ## 5. Phase 2: plan generation, directives, fill
 
 ### WP-2.1 Brief unpinning for 8-11 and up
@@ -780,7 +798,7 @@ Dates are proposals from 2026-11-21; each is also stated as the package it block
 | D2 | Confirm the freeze list in WP-0.1. **Approved 2026-11-21** (owner, in session) | WP-0.1 | 2026-11-24 |
 | D3 | Family-test book list; enable reading-trail capture for the session. **Decided 2026-11-21** (owner, in session): see the note below | WP-0.3, WP-0.5 | 2026-11-24 |
 | D4 | The retained shell set (eight to twelve, two per offered cell) | WP-2.2 | when G1 passes |
-| D5 | Accept the G1 verdict. **Decided 2026-11-21** (owner, in session): G1 failed as scored ([report](./evidence/story-plan-retro/report.md)); take the single permitted revision and one re-run. The SP-9 length change made before the first run (`29c0ff8`) does not count as the revision. Revision scope: `AL-817` to `AL-819` and `AL-822` (SP-4 independent of which half of a thread is declared the plant, SP-4 exempts endings, SP-8 symmetric opportunity costs, SP-9 'wound' homograph, state negations recorded at the asserting node), plus `AL-821`. Fresh blind re-extraction of the scored books; the criterion and answer key are unchanged. A second failure stops Phase 2 | all of Phase 2 | done |
+| D5 | Accept the G1 verdict. **Decided 2026-11-21** (owner, in session): G1 failed as scored ([report](./evidence/story-plan-retro/report.md)); take the single permitted revision and one re-run. The SP-9 length change made before the first run (`29c0ff8`) does not count as the revision. Revision scope: `AL-817` to `AL-819` and `AL-822` (SP-4 independent of which half of a thread is declared the plant, SP-4 exempts endings, SP-8 symmetric opportunity costs, SP-9 'wound' homograph, state negations recorded at the asserting node), plus `AL-821`. Fresh blind re-extraction of the scored books; the criterion and answer key are unchanged. A second failure stops Phase 2 **Re-run verdict accepted 2026-11-21** (owner, in session): G1 passes ([re-run report](./evidence/story-plan-retro/rerun/report.md)), on two conditions. (1) The plan-writing conventions of ADR-033 Decision 1 bind every plan, hand-written or generated. (2) The WP-0.4 second read stays the standing continuity control for catalog books until the fresh-corpus confirmation (WP-1.6) passes; the pass was earned after a revision designed with the answer key in view, so it is weaker evidence than a first-time pass. Phase 2 may start | all of Phase 2 | done |
 | D6 | Continuity reader thresholds (decide with D12, which reuses the same split and harness) | WP-3.2 | before WP-3.2 starts |
 | D7 | Phase 4 budget (proposed cap 150 USD) and the kill criteria as written | WP-4.1 | before WP-4.1 starts |
 | D8 | Wording of the approver's quality question; mandatory or not | WP-3.5 | before WP-3.5 starts |

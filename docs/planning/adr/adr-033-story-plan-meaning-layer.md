@@ -171,6 +171,20 @@ and choice ids are shared. Nothing else crosses: the Storybook stays a complete,
 makes them converge in wording (AL-208) and that a fact graph alone does not capture a decision (AL-197). That is why
 `intent` and `cost` are in the plan and why plans are not reused.
 
+**Plan-writing conventions (added 2026-11-21, a condition of accepting G1, decision D5).** Every plan, hand-written or
+generated, follows these, because the G1 re-run showed the checks can only see what the plan records:
+
+1. A statement a passage makes about the hero's possessions, knowledge or state, including a negative ("he has no
+   ticket"), is recorded as a fact that passage establishes, marked `contradicts` against its opposite. A
+   variable-backed state contradicted in a state where it holds is then an SP-3 ERROR.
+2. A warning, promise or instruction given in dialogue is its own fact (who told whom), separate from the thing it is
+   about, so a later "as she told you" on a route that never heard it is visible (`AL-830`).
+3. A choice's `cost` is "none" only when the option truly costs nothing; when its cost is giving up the other options,
+   the cost says so.
+
+The WP-2.3 plan template states these, and WP-1.6 measures them on books nobody has planned before. Until WP-1.6
+passes, the WP-0.4 second read remains the standing continuity control for catalog books.
+
 ### 2. Structural checks on the plan
 
 These block. None reads prose.
