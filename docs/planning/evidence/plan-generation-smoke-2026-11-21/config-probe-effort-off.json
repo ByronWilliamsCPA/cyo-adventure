@@ -1,0 +1,115 @@
+{
+ "run": 1,
+ "request": {
+  "id": "P01",
+  "source": "docs/planning/evidence/short-request-panel/panel.json requests[id=P01]",
+  "text": "a story about my dog who gets lost in the woods",
+  "band": "8-11",
+  "length": "short",
+  "style": "prose",
+  "selection_note": "panel order, band 8-11 first (panel README); length short as fixed"
+ },
+ "shape": {
+  "id": "the-locked-carousel",
+  "hash": "sha256:66d70a41cd1c65581a19f1c81e411ec4caf234db3939dbf5d91bb44be1c28393",
+  "selection": "cell pick (authoring_plan._pick_shape, seeded by request id)",
+  "cell": {
+   "band": "8-11",
+   "length": "short",
+   "style": "prose"
+  },
+  "cell_candidates": [
+   "the-cave-of-echoes",
+   "the-half-hour-call",
+   "the-locked-carousel",
+   "the-robot-fair-sabotage"
+  ],
+  "retained_in_cell": [
+   "the-locked-carousel",
+   "the-cave-of-echoes"
+  ],
+  "nodes": 71,
+  "choices": 118,
+  "variables": 0,
+  "request_seed_id": "f7ef8bd7-04cb-54e9-a23f-4d99a6ceb7a7"
+ },
+ "model": "anthropic/claude-sonnet-5.5",
+ "reasoning": "disabled: llm_effort='off' omits the reasoning parameter",
+ "max_repairs": 2,
+ "brief": {
+  "premise": "a story about my dog who gets lost in the woods",
+  "protagonist": {
+   "name": "Explorer",
+   "age": 8,
+   "role": "a curious young adventurer"
+  },
+  "point_of_view": "second",
+  "age_band": "8-11",
+  "tone": "gentle",
+  "themes_allowed": [],
+  "content_nogo": []
+ },
+ "stage0": {
+  "status": "skipped",
+  "reason": "no OPENAI_API_KEY in this environment (owner-approved skip, 2026-11-21); production classifier_screen(None) ran and called nothing",
+  "pitch_strings_offered": 5
+ },
+ "calls": [
+  {
+   "index": 0,
+   "kind": "pitch",
+   "max_tokens": 2000,
+   "prompt_chars": 2648,
+   "worst_case_usd": 0.02265,
+   "spent_before_usd": 0.0,
+   "model": "anthropic/claude-sonnet-5.5",
+   "provider": "openrouter",
+   "input_tokens": 1006,
+   "output_tokens": 500,
+   "reasoning_tokens": 0,
+   "finish_reason": "stop",
+   "cost_estimate_usd": 0.007012,
+   "vendor_cost_usd": 0.007332,
+   "latency_s": 5.9,
+   "provider_duration_ms": 5914,
+   "response_chars": 1356
+  },
+  {
+   "index": 1,
+   "kind": "plan_1",
+   "max_tokens": 32000,
+   "prompt_chars": 14381,
+   "worst_case_usd": 0.334382,
+   "spent_before_usd": 0.007332,
+   "model": "anthropic/claude-sonnet-5.5",
+   "provider": "openrouter",
+   "input_tokens": 6216,
+   "output_tokens": 25495,
+   "reasoning_tokens": 11490,
+   "finish_reason": "stop",
+   "cost_estimate_usd": 0.267382,
+   "vendor_cost_usd": 0.268346,
+   "latency_s": 165.4,
+   "provider_duration_ms": 165405,
+   "response_chars": 32575
+  }
+ ],
+ "wall_seconds": 171.3,
+ "stopped": "ReasoningStopError: call 1 reported 11490 reasoning tokens",
+ "story_plan_status": null,
+ "attempts": 1,
+ "totals": {
+  "calls": 2,
+  "input_tokens": 7222,
+  "output_tokens": 25995,
+  "reasoning_tokens": 11490,
+  "cost_estimate_usd": 0.274394,
+  "vendor_cost_usd": 0.275678,
+  "provider_seconds": 171.3
+ },
+ "budget": {
+  "budget_usd": 8.0,
+  "spent_before_usd": 0.0,
+  "spent_after_usd": 0.275678
+ }
+}

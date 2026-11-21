@@ -1,0 +1,1504 @@
+{
+ "run": 5,
+ "request": {
+  "id": "P05",
+  "source": "docs/planning/evidence/short-request-panel/panel.json requests[id=P05]",
+  "text": "a pirate looking for treasure under the sea",
+  "band": "8-11",
+  "length": "short",
+  "style": "prose",
+  "selection_note": "panel order, band 8-11 first (panel README); length short as fixed"
+ },
+ "shape": {
+  "id": "the-cave-of-echoes",
+  "hash": "sha256:70c334341d9e40bc1b272bcb9254c354308a798799ecafe3c75e0564f017a628",
+  "selection": "cell pick (authoring_plan._pick_shape, seeded by request id)",
+  "cell": {
+   "band": "8-11",
+   "length": "short",
+   "style": "prose"
+  },
+  "cell_candidates": [
+   "the-cave-of-echoes",
+   "the-half-hour-call",
+   "the-locked-carousel",
+   "the-robot-fair-sabotage"
+  ],
+  "retained_in_cell": [
+   "the-locked-carousel",
+   "the-cave-of-echoes"
+  ],
+  "nodes": 65,
+  "choices": 64,
+  "variables": 0,
+  "request_seed_id": "b23dce3a-ff5e-5230-9757-f8180f280ace"
+ },
+ "model": "anthropic/claude-sonnet-5.5",
+ "reasoning": "explicit: llm_effort='low' sent as reasoning.effort",
+ "max_repairs": 2,
+ "brief": {
+  "premise": "a pirate looking for treasure under the sea",
+  "protagonist": {
+   "name": "Explorer",
+   "age": 8,
+   "role": "a curious young adventurer"
+  },
+  "point_of_view": "second",
+  "age_band": "8-11",
+  "tone": "gentle",
+  "themes_allowed": [],
+  "content_nogo": []
+ },
+ "stage0": {
+  "status": "skipped",
+  "reason": "no OPENAI_API_KEY in this environment (owner-approved skip, 2026-11-21); production classifier_screen(None) ran and called nothing",
+  "pitch_strings_offered": 5
+ },
+ "calls": [
+  {
+   "index": 0,
+   "kind": "pitch",
+   "max_tokens": 2000,
+   "prompt_chars": 2645,
+   "worst_case_usd": 0.022646,
+   "spent_before_usd": 0.639374,
+   "model": "anthropic/claude-sonnet-5.5",
+   "provider": "openrouter",
+   "input_tokens": 1005,
+   "output_tokens": 444,
+   "reasoning_tokens": 0,
+   "finish_reason": "stop",
+   "cost_estimate_usd": 0.00645,
+   "vendor_cost_usd": 0.005236,
+   "latency_s": 4.9,
+   "provider_duration_ms": 4921,
+   "response_chars": 1200
+  },
+  {
+   "index": 1,
+   "kind": "plan_1",
+   "max_tokens": 32000,
+   "prompt_chars": 12815,
+   "worst_case_usd": 0.332816,
+   "spent_before_usd": 0.645824,
+   "model": "anthropic/claude-sonnet-5.5",
+   "provider": "openrouter",
+   "input_tokens": 5273,
+   "output_tokens": 6303,
+   "reasoning_tokens": 0,
+   "finish_reason": "stop",
+   "cost_estimate_usd": 0.073576,
+   "vendor_cost_usd": 0.069911,
+   "latency_s": 35.5,
+   "provider_duration_ms": 35544,
+   "response_chars": 14172
+  },
+  {
+   "index": 2,
+   "kind": "plan_2",
+   "max_tokens": 32000,
+   "prompt_chars": 38353,
+   "worst_case_usd": 0.358354,
+   "spent_before_usd": 0.7194,
+   "model": "anthropic/claude-sonnet-5.5",
+   "provider": "openrouter",
+   "input_tokens": 16667,
+   "output_tokens": 6604,
+   "reasoning_tokens": 285,
+   "finish_reason": "stop",
+   "cost_estimate_usd": 0.099374,
+   "vendor_cost_usd": 0.09542,
+   "latency_s": 33.1,
+   "provider_duration_ms": 33075,
+   "response_chars": 14206
+  }
+ ],
+ "wall_seconds": 73.6,
+ "stopped": null,
+ "story_plan_status": "checked",
+ "attempts": 2,
+ "stage_log": [
+  "pitch:1",
+  "plan:1:errors=3",
+  "plan:2:errors=0"
+ ],
+ "pitches": [
+  {
+   "index": 0,
+   "source": "model",
+   "passed": true,
+   "reasons": [],
+   "advisories": [],
+   "pitch": {
+    "hero": "Captain Juniper Quill, a young pirate with a patched diving bell",
+    "want": "To find the sunken ship Golden Minnow and its chest of treasure",
+    "obstacle": "A maze of kelp and coral tunnels where the maps drift and every path looks alike",
+    "stake": "The crew's old ship will be sold unless they find treasure by the end of the season",
+    "ending_kind": "a hard-won win with the crew"
+   }
+  },
+  {
+   "index": 1,
+   "source": "model",
+   "passed": false,
+   "reasons": [
+    "not screened"
+   ],
+   "advisories": [],
+   "pitch": null
+  },
+  {
+   "index": 2,
+   "source": "model",
+   "passed": false,
+   "reasons": [
+    "not screened"
+   ],
+   "advisories": [],
+   "pitch": null
+  }
+ ],
+ "attempt_findings": [
+  {
+   "attempt": 1,
+   "loaded": true,
+   "dropped_keys": [],
+   "ok": false,
+   "errors_by_rule": {
+    "SP-9": 3
+   },
+   "warnings_by_rule": {},
+   "findings": [
+    {
+     "rule_id": "SP-9",
+     "severity": "error",
+     "story_id": "sk_cave_of_echoes",
+     "node_id": "ra_pool_back",
+     "choice_id": null,
+     "message": "nodes.ra_pool_back.event: matches a band-mandatory denylist term in bundle 'lethal'",
+     "state": null,
+     "fact_id": null,
+     "route": null
+    },
+    {
+     "rule_id": "SP-9",
+     "severity": "error",
+     "story_id": "sk_cave_of_echoes",
+     "node_id": null,
+     "choice_id": "c_poolback",
+     "message": "choices.c_poolback.cost: matches a band-mandatory denylist term in bundle 'lethal'",
+     "state": null,
+     "fact_id": null,
+     "route": null
+    },
+    {
+     "rule_id": "SP-9",
+     "severity": "error",
+     "story_id": "sk_cave_of_echoes",
+     "node_id": "ra_pool_back",
+     "choice_id": null,
+     "message": "endings.ra_pool_back.gift: matches a band-mandatory denylist term in bundle 'lethal'",
+     "state": null,
+     "fact_id": null,
+     "route": null
+    }
+   ]
+  },
+  {
+   "attempt": 2,
+   "loaded": true,
+   "dropped_keys": [],
+   "ok": true,
+   "errors_by_rule": {},
+   "warnings_by_rule": {},
+   "findings": []
+  }
+ ],
+ "replay_consistent": true,
+ "final_checks": {
+  "ok": true,
+  "findings": []
+ },
+ "load_errors": [],
+ "plan": {
+  "plan_version": "0.1",
+  "book": null,
+  "request": {
+   "text": "a pirate looking for treasure under the sea",
+   "band": "8-11",
+   "length": "short",
+   "style": "prose",
+   "tone": null,
+   "note": null
+  },
+  "pitch": {
+   "hero": "Captain Juniper Quill, a young pirate with a patched diving bell",
+   "want": "To find the sunken ship Golden Minnow and its chest of treasure",
+   "obstacle": "A maze of kelp and coral tunnels where the maps drift and every path looks alike",
+   "stake": "The crew's old ship will be sold unless they find treasure by the end of the season",
+   "ending_kind": "a hard-won win with the crew"
+  },
+  "cast": {
+   "juniper": {
+    "name": "Captain Juniper Quill",
+    "role": "young pirate captain with a patched diving bell",
+    "want": "Find the Golden Minnow and its treasure chest",
+    "voice": "Bold, warm and cheerful",
+    "knows": [
+     "bell_patched",
+     "crew_needs_gold"
+    ]
+   },
+   "mara": {
+    "name": "Mara",
+    "role": "first mate and old friend",
+    "want": "Save the crew's old ship",
+    "voice": "Practical and dry",
+    "knows": [
+     "crew_needs_gold",
+     "kelp_marks"
+    ]
+   },
+   "pip": {
+    "name": "Pip",
+    "role": "cabin boy who tells jokes",
+    "want": "Keep everyone's spirits up",
+    "voice": "Chatty and quick",
+    "knows": [
+     "crew_needs_gold"
+    ]
+   },
+   "old_tam": {
+    "name": "Old Tam",
+    "role": "retired diver with a long memory",
+    "want": "See the Golden Minnow found at last",
+    "voice": "Slow and gravelly",
+    "knows": [
+     "minnow_in_cove",
+     "kelp_marks"
+    ]
+   }
+  },
+  "truth": {
+   "statement": "The Golden Minnow rests in a coral cove at the heart of the maze. The drifting maps fail, but the old knots tied on the kelp stalks stay put and mark the true way to the cove, where the chest lies. The crew shares the treasure and keeps their ship.",
+   "facts": [
+    "minnow_in_cove",
+    "kelp_marks",
+    "chest_found"
+   ],
+   "question": "Where is the Golden Minnow and how can the crew reach it?"
+  },
+  "facts": {
+   "bell_patched": {
+    "text": "Juniper's diving bell is patched but still sound.",
+    "contradicts": [],
+    "implicit_plant": null
+   },
+   "crew_needs_gold": {
+    "text": "The crew's old ship will be sold unless they find treasure by the season's end.",
+    "contradicts": [],
+    "implicit_plant": null
+   },
+   "maps_drift": {
+    "text": "The maps drift in the current, so they cannot be trusted in the maze.",
+    "contradicts": [],
+    "implicit_plant": null
+   },
+   "kelp_marks": {
+    "text": "Old knots tied on the kelp stalks stay fixed and mark the true way through the maze.",
+    "contradicts": [
+     "knots_lost"
+    ],
+    "implicit_plant": null
+   },
+   "knots_lost": {
+    "text": "The knots on the kelp are all gone and cannot guide anyone.",
+    "contradicts": [
+     "kelp_marks"
+    ],
+    "implicit_plant": null
+   },
+   "minnow_in_cove": {
+    "text": "The Golden Minnow lies in a coral cove at the heart of the maze.",
+    "contradicts": [
+     "minnow_in_reef"
+    ],
+    "implicit_plant": null
+   },
+   "minnow_in_reef": {
+    "text": "The Golden Minnow lies on the outer reef.",
+    "contradicts": [
+     "minnow_in_cove"
+    ],
+    "implicit_plant": null
+   },
+   "chest_found": {
+    "text": "The treasure chest is found aboard the Golden Minnow.",
+    "contradicts": [],
+    "implicit_plant": null
+   },
+   "tam_hint": {
+    "text": "Old Tam told Juniper to follow the knots, not the maps.",
+    "contradicts": [],
+    "implicit_plant": null
+   },
+   "lost_way": {
+    "text": "The crew has lost their way and must return to the surface.",
+    "contradicts": [],
+    "implicit_plant": null
+   }
+  },
+  "nodes": {
+   "n_open": {
+    "function": "opening",
+    "event": "At the dock, Juniper checks the patched bell and the crew learns the ship must be saved by season's end.",
+    "requires": [],
+    "establishes": [
+     "bell_patched",
+     "crew_needs_gold"
+    ]
+   },
+   "n_start": {
+    "function": "decision",
+    "event": "Juniper must choose who or what to follow into the kelp maze.",
+    "requires": [
+     "crew_needs_gold"
+    ],
+    "establishes": [
+     "maps_drift"
+    ]
+   },
+   "la_tunnel": {
+    "function": "continue",
+    "event": "Old Tam on the pier tells Juniper to follow the knots, not the maps.",
+    "requires": [
+     "maps_drift"
+    ],
+    "establishes": [
+     "tam_hint"
+    ]
+   },
+   "la_fork": {
+    "function": "decision",
+    "event": "The bell sinks into the kelp and two tunnels open ahead.",
+    "requires": [
+     "tam_hint"
+    ],
+    "establishes": []
+   },
+   "la_glitter": {
+    "function": "continue",
+    "event": "Juniper spots a knot on a stalk and follows it.",
+    "requires": [
+     "tam_hint"
+    ],
+    "establishes": [
+     "kelp_marks"
+    ]
+   },
+   "la_glitter2": {
+    "function": "continue",
+    "event": "More knots lead deeper through the glowing kelp.",
+    "requires": [
+     "kelp_marks"
+    ],
+    "establishes": []
+   },
+   "la_grotto_app": {
+    "function": "decision",
+    "event": "The knots split at a coral arch and Juniper must pick a way.",
+    "requires": [
+     "kelp_marks"
+    ],
+    "establishes": []
+   },
+   "la_retreat_pool": {
+    "function": "ending",
+    "event": "The tunnel curls back and the bell must rise. The crew tries another day.",
+    "requires": [
+     "kelp_marks"
+    ],
+    "establishes": [
+     "lost_way"
+    ]
+   },
+   "la_squeeze": {
+    "function": "continue",
+    "event": "A fish shows the way past the arch toward a glimmer.",
+    "requires": [
+     "kelp_marks"
+    ],
+    "establishes": []
+   },
+   "la_grotto": {
+    "function": "decision",
+    "event": "The cove opens and the Golden Minnow lies ahead.",
+    "requires": [
+     "kelp_marks"
+    ],
+    "establishes": [
+     "minnow_in_cove"
+    ]
+   },
+   "la_crystal_take": {
+    "function": "continue",
+    "event": "Juniper swims into the wreck and finds the chest.",
+    "requires": [
+     "minnow_in_cove"
+    ],
+    "establishes": [
+     "chest_found"
+    ]
+   },
+   "la_crystal_out": {
+    "function": "ending",
+    "event": "The crew hauls the chest up and saves the ship.",
+    "requires": [
+     "chest_found"
+    ],
+    "establishes": []
+   },
+   "la_crystal_deeper": {
+    "function": "continue",
+    "event": "Juniper signals the crew first and they dive down together.",
+    "requires": [
+     "minnow_in_cove"
+    ],
+    "establishes": []
+   },
+   "la_song_app": {
+    "function": "continue",
+    "event": "Together they lift the chest lid.",
+    "requires": [
+     "minnow_in_cove"
+    ],
+    "establishes": [
+     "chest_found"
+    ]
+   },
+   "la_song": {
+    "function": "ending",
+    "event": "The crew shares the gold and keeps the ship.",
+    "requires": [
+     "chest_found"
+    ],
+    "establishes": []
+   },
+   "la_hum": {
+    "function": "continue",
+    "event": "Juniper takes the side tunnel and the maps blur in the current.",
+    "requires": [
+     "tam_hint"
+    ],
+    "establishes": []
+   },
+   "la_hum2": {
+    "function": "continue",
+    "event": "Juniper finds a knot half hidden in weed.",
+    "requires": [
+     "tam_hint"
+    ],
+    "establishes": [
+     "kelp_marks"
+    ]
+   },
+   "la_bell_app": {
+    "function": "decision",
+    "event": "Two paths again, one marked by a knot.",
+    "requires": [
+     "kelp_marks"
+    ],
+    "establishes": []
+   },
+   "la_hum_back": {
+    "function": "ending",
+    "event": "The unmarked path loops and the bell rises with nothing found.",
+    "requires": [
+     "kelp_marks"
+    ],
+    "establishes": [
+     "lost_way"
+    ]
+   },
+   "la_bell": {
+    "function": "continue",
+    "event": "Juniper follows the knot and the water grows calm.",
+    "requires": [
+     "kelp_marks"
+    ],
+    "establishes": []
+   },
+   "la_bell2": {
+    "function": "continue",
+    "event": "Coral glows along the way to the cove.",
+    "requires": [
+     "kelp_marks"
+    ],
+    "establishes": [
+     "minnow_in_cove"
+    ]
+   },
+   "la_bell3": {
+    "function": "continue",
+    "event": "The Golden Minnow looms and Juniper enters.",
+    "requires": [
+     "minnow_in_cove"
+    ],
+    "establishes": []
+   },
+   "la_bell4": {
+    "function": "ending",
+    "event": "Juniper finds the chest and the crew cheers above.",
+    "requires": [
+     "minnow_in_cove"
+    ],
+    "establishes": [
+     "chest_found"
+    ]
+   },
+   "ra_drip": {
+    "function": "continue",
+    "event": "Mara the first mate joins Juniper in the bell and brings the maps.",
+    "requires": [
+     "maps_drift"
+    ],
+    "establishes": []
+   },
+   "ra_fork": {
+    "function": "decision",
+    "event": "Mara says the kelp holds old marks, and they must choose how to look.",
+    "requires": [
+     "maps_drift"
+    ],
+    "establishes": [
+     "kelp_marks"
+    ]
+   },
+   "ra_lake_way": {
+    "function": "continue",
+    "event": "They follow the marks down a narrow tunnel.",
+    "requires": [
+     "kelp_marks"
+    ],
+    "establishes": []
+   },
+   "ra_lake2": {
+    "function": "continue",
+    "event": "The marks lead to a bright coral wall.",
+    "requires": [
+     "kelp_marks"
+    ],
+    "establishes": []
+   },
+   "ra_lake_app": {
+    "function": "decision",
+    "event": "The wall has a gap and a safe-looking drift.",
+    "requires": [
+     "kelp_marks"
+    ],
+    "establishes": []
+   },
+   "ra_lake_back": {
+    "function": "ending",
+    "event": "The drift pulls them off course and they surface.",
+    "requires": [
+     "kelp_marks"
+    ],
+    "establishes": [
+     "lost_way"
+    ]
+   },
+   "ra_descend": {
+    "function": "continue",
+    "event": "They squeeze through the gap into open water.",
+    "requires": [
+     "kelp_marks"
+    ],
+    "establishes": [
+     "minnow_in_cove"
+    ]
+   },
+   "ra_lakeshore": {
+    "function": "decision",
+    "event": "The Golden Minnow lies before them.",
+    "requires": [
+     "minnow_in_cove"
+    ],
+    "establishes": []
+   },
+   "ra_boat": {
+    "function": "continue",
+    "event": "Mara and Juniper open the chest together.",
+    "requires": [
+     "minnow_in_cove"
+    ],
+    "establishes": [
+     "chest_found"
+    ]
+   },
+   "ra_row": {
+    "function": "ending",
+    "event": "They bring the chest up and save the ship.",
+    "requires": [
+     "chest_found"
+    ],
+    "establishes": []
+   },
+   "ra_wade": {
+    "function": "continue",
+    "event": "They call the crew down with a lantern signal.",
+    "requires": [
+     "minnow_in_cove"
+    ],
+    "establishes": [
+     "chest_found"
+    ]
+   },
+   "ra_islet": {
+    "function": "ending",
+    "event": "The whole crew shares the find.",
+    "requires": [
+     "chest_found"
+    ],
+    "establishes": []
+   },
+   "ra_pool_way": {
+    "function": "continue",
+    "event": "Juniper and Mara try the maps despite the drift.",
+    "requires": [
+     "maps_drift"
+    ],
+    "establishes": []
+   },
+   "ra_pool2": {
+    "function": "continue",
+    "event": "The maps slide and the tunnels all look alike.",
+    "requires": [
+     "maps_drift"
+    ],
+    "establishes": []
+   },
+   "ra_pool_app": {
+    "function": "decision",
+    "event": "They spot a knot on a stalk or a doubtful shortcut.",
+    "requires": [
+     "maps_drift"
+    ],
+    "establishes": [
+     "kelp_marks"
+    ]
+   },
+   "ra_pool_back": {
+    "function": "ending",
+    "event": "The shortcut ends at a blocked wall of coral and they surface.",
+    "requires": [
+     "kelp_marks"
+    ],
+    "establishes": [
+     "lost_way"
+    ]
+   },
+   "ra_pool_enter": {
+    "function": "continue",
+    "event": "They follow the knots to calm water.",
+    "requires": [
+     "kelp_marks"
+    ],
+    "establishes": []
+   },
+   "ra_pool_chamber": {
+    "function": "decision",
+    "event": "A glow shows the cove and the Golden Minnow.",
+    "requires": [
+     "kelp_marks"
+    ],
+    "establishes": [
+     "minnow_in_cove"
+    ]
+   },
+   "ra_starfish": {
+    "function": "continue",
+    "event": "They enter the wreck and find the chest.",
+    "requires": [
+     "minnow_in_cove"
+    ],
+    "establishes": [
+     "chest_found"
+    ]
+   },
+   "ra_starfish2": {
+    "function": "ending",
+    "event": "The chest is hauled up and the ship is saved.",
+    "requires": [
+     "chest_found"
+    ],
+    "establishes": []
+   },
+   "ra_pool_deep": {
+    "function": "continue",
+    "event": "They signal the crew and find the chest together.",
+    "requires": [
+     "minnow_in_cove"
+    ],
+    "establishes": [
+     "chest_found"
+    ]
+   },
+   "ra_pool_deep2": {
+    "function": "ending",
+    "event": "All share the gold and cheer.",
+    "requires": [
+     "chest_found"
+    ],
+    "establishes": []
+   },
+   "da_dark": {
+    "function": "continue",
+    "event": "Juniper dives alone with Pip's joke as luck.",
+    "requires": [
+     "maps_drift"
+    ],
+    "establishes": []
+   },
+   "da_fork": {
+    "function": "decision",
+    "event": "The kelp sways and two paths show.",
+    "requires": [
+     "maps_drift"
+    ],
+    "establishes": []
+   },
+   "da_bat_way": {
+    "function": "continue",
+    "event": "Juniper finds an old knot on a stalk.",
+    "requires": [
+     "maps_drift"
+    ],
+    "establishes": [
+     "kelp_marks"
+    ]
+   },
+   "da_bat2": {
+    "function": "continue",
+    "event": "The knots run on through the kelp.",
+    "requires": [
+     "kelp_marks"
+    ],
+    "establishes": []
+   },
+   "da_bat_app": {
+    "function": "decision",
+    "event": "A fork where one way glitters oddly.",
+    "requires": [
+     "kelp_marks"
+    ],
+    "establishes": []
+   },
+   "da_bat_back": {
+    "function": "ending",
+    "event": "The glitter was only shells and Juniper surfaces.",
+    "requires": [
+     "kelp_marks"
+    ],
+    "establishes": [
+     "lost_way"
+    ]
+   },
+   "da_bat_enter": {
+    "function": "continue",
+    "event": "Juniper keeps to the knots.",
+    "requires": [
+     "kelp_marks"
+    ],
+    "establishes": []
+   },
+   "da_roost": {
+    "function": "continue",
+    "event": "The cove opens with the Golden Minnow in it.",
+    "requires": [
+     "kelp_marks"
+    ],
+    "establishes": [
+     "minnow_in_cove"
+    ]
+   },
+   "da_roost2": {
+    "function": "continue",
+    "event": "Juniper rings the bell for the crew.",
+    "requires": [
+     "minnow_in_cove"
+    ],
+    "establishes": []
+   },
+   "da_skylight": {
+    "function": "ending",
+    "event": "The crew finds the chest together and keeps the ship.",
+    "requires": [
+     "minnow_in_cove"
+    ],
+    "establishes": [
+     "chest_found"
+    ]
+   },
+   "da_cache_way": {
+    "function": "continue",
+    "event": "Juniper follows a trail of bubbles instead.",
+    "requires": [
+     "maps_drift"
+    ],
+    "establishes": []
+   },
+   "da_cache2": {
+    "function": "continue",
+    "event": "The bubbles thin out in the tunnels.",
+    "requires": [
+     "maps_drift"
+    ],
+    "establishes": []
+   },
+   "da_cache_app": {
+    "function": "decision",
+    "event": "Juniper sees a knot and a tempting current.",
+    "requires": [
+     "maps_drift"
+    ],
+    "establishes": [
+     "kelp_marks"
+    ]
+   },
+   "da_cache_back": {
+    "function": "ending",
+    "event": "The current carries Juniper out and up.",
+    "requires": [
+     "kelp_marks"
+    ],
+    "establishes": [
+     "lost_way"
+    ]
+   },
+   "da_cache_enter": {
+    "function": "continue",
+    "event": "Juniper follows the knot onward.",
+    "requires": [
+     "kelp_marks"
+    ],
+    "establishes": []
+   },
+   "da_cache_room": {
+    "function": "decision",
+    "event": "The cove glows and the Golden Minnow appears.",
+    "requires": [
+     "kelp_marks"
+    ],
+    "establishes": [
+     "minnow_in_cove"
+    ]
+   },
+   "da_compass": {
+    "function": "continue",
+    "event": "Juniper opens the chest in the wreck.",
+    "requires": [
+     "minnow_in_cove"
+    ],
+    "establishes": [
+     "chest_found"
+    ]
+   },
+   "da_compass2": {
+    "function": "ending",
+    "event": "The chest rises and the ship is saved.",
+    "requires": [
+     "chest_found"
+    ],
+    "establishes": []
+   },
+   "da_coins": {
+    "function": "continue",
+    "event": "Juniper calls the crew and they share the find.",
+    "requires": [
+     "minnow_in_cove"
+    ],
+    "establishes": [
+     "chest_found"
+    ]
+   },
+   "da_coins2": {
+    "function": "ending",
+    "event": "The crew cheers and keeps the old ship.",
+    "requires": [
+     "chest_found"
+    ],
+    "establishes": []
+   }
+  },
+  "choices": {
+   "c_open": {
+    "intent": "Begin the search",
+    "cost": "none",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_left": {
+    "intent": "Ask Old Tam for advice",
+    "cost": "Gives up going with Mara or alone",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_right": {
+    "intent": "Take Mara and the maps",
+    "cost": "Gives up Tam's advice and diving alone",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_down": {
+    "intent": "Dive alone with Pip's luck",
+    "cost": "Gives up company and advice",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_la_fork": {
+    "intent": "Head to the bell",
+    "cost": "none",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_glitter": {
+    "intent": "Take the main tunnel",
+    "cost": "Gives up the side tunnel",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_hum": {
+    "intent": "Take the side tunnel",
+    "cost": "Gives up the main tunnel",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_la_slope": {
+    "intent": "Follow the knots",
+    "cost": "none",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_la_crack": {
+    "intent": "Go deeper",
+    "cost": "none",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_squeeze": {
+    "intent": "Follow the fish",
+    "cost": "Gives up the other arch way",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_retreat": {
+    "intent": "Trust a curling tunnel",
+    "cost": "Risks losing the way",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_la_room": {
+    "intent": "Swim toward the glimmer",
+    "cost": "none",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_take": {
+    "intent": "Enter the wreck alone",
+    "cost": "Gives up waiting for the crew",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_deeper": {
+    "intent": "Signal the crew first",
+    "cost": "Costs time",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_la_up": {
+    "intent": "Lift the chest",
+    "cost": "none",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_la_chord": {
+    "intent": "Dive down together",
+    "cost": "none",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_la_sing": {
+    "intent": "Open the lid",
+    "cost": "none",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_la_ring": {
+    "intent": "Search the weed",
+    "cost": "none",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_la_chime": {
+    "intent": "Study the knot",
+    "cost": "none",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_bell": {
+    "intent": "Follow the knot",
+    "cost": "Gives up the unmarked path",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_humback": {
+    "intent": "Take the unmarked path",
+    "cost": "Risks getting lost",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_la_bell2": {
+    "intent": "Swim on",
+    "cost": "none",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_la_bell3": {
+    "intent": "Enter the wreck",
+    "cost": "none",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_la_bell4": {
+    "intent": "Open the chest",
+    "cost": "none",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_ra_fork": {
+    "intent": "Ask Mara about marks",
+    "cost": "none",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_lake": {
+    "intent": "Follow the marks",
+    "cost": "Gives up the maps",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_pool": {
+    "intent": "Trust the maps",
+    "cost": "Gives up the marks",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_ra_pebbles": {
+    "intent": "Swim on",
+    "cost": "none",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_ra_shelf": {
+    "intent": "Look at the wall",
+    "cost": "none",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_descend": {
+    "intent": "Squeeze through the gap",
+    "cost": "Takes effort",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_lakeback": {
+    "intent": "Ride the drift",
+    "cost": "Risks getting lost",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_ra_shore": {
+    "intent": "Swim ahead",
+    "cost": "none",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_boat": {
+    "intent": "Open the chest together",
+    "cost": "Gives up calling the crew",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_wade": {
+    "intent": "Signal the crew",
+    "cost": "Costs time",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_ra_row": {
+    "intent": "Lift the chest",
+    "cost": "none",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_ra_islet": {
+    "intent": "Share the find",
+    "cost": "none",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_ra_crouch": {
+    "intent": "Keep swimming",
+    "cost": "none",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_ra_channel": {
+    "intent": "Look around",
+    "cost": "none",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_enter": {
+    "intent": "Follow the knot",
+    "cost": "Gives up the shortcut",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_poolback": {
+    "intent": "Take the shortcut",
+    "cost": "Risks a blocked tunnel",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_ra_kneel": {
+    "intent": "Swim on",
+    "cost": "none",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_star": {
+    "intent": "Enter the wreck",
+    "cost": "Gives up signaling the crew",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_deep": {
+    "intent": "Signal the crew",
+    "cost": "Costs time",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_ra_sketch": {
+    "intent": "Lift the chest",
+    "cost": "none",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_ra_reach": {
+    "intent": "Share the gold",
+    "cost": "none",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_da_fork": {
+    "intent": "Look around",
+    "cost": "none",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_bat": {
+    "intent": "Check the stalks",
+    "cost": "Gives up the other path",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_cache": {
+    "intent": "Follow the bubbles",
+    "cost": "Gives up the stalks",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_da_creep": {
+    "intent": "Follow the knots",
+    "cost": "none",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_da_grey": {
+    "intent": "Reach the fork",
+    "cost": "none",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_batenter": {
+    "intent": "Keep to the knots",
+    "cost": "Gives up the glitter",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_batback": {
+    "intent": "Chase the glitter",
+    "cost": "Risks getting lost",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_da_stair": {
+    "intent": "Swim on",
+    "cost": "none",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_da_climb": {
+    "intent": "Ring the bell",
+    "cost": "none",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_da_push": {
+    "intent": "Wait for the crew",
+    "cost": "none",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_da_door": {
+    "intent": "Swim on",
+    "cost": "none",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_da_peer": {
+    "intent": "Keep following",
+    "cost": "none",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_cacheenter": {
+    "intent": "Follow the knot",
+    "cost": "Gives up the current",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_cacheback": {
+    "intent": "Ride the current",
+    "cost": "Risks getting lost",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_da_boxes": {
+    "intent": "Swim on",
+    "cost": "none",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_compass": {
+    "intent": "Open the chest alone",
+    "cost": "Gives up calling the crew",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_coins": {
+    "intent": "Call the crew",
+    "cost": "Costs time",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_da_out": {
+    "intent": "Lift the chest",
+    "cost": "none",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_da_carry": {
+    "intent": "Share the find",
+    "cost": "none",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   }
+  },
+  "threads": {},
+  "endings": {
+   "la_retreat_pool": {
+    "gift": "A reason to try again and trust the knots",
+    "valence": null,
+    "kind": null
+   },
+   "la_crystal_out": {
+    "gift": "The joy of a hard-won rescue of the ship",
+    "valence": null,
+    "kind": null
+   },
+   "la_song": {
+    "gift": "The warmth of sharing the treasure",
+    "valence": null,
+    "kind": null
+   },
+   "la_hum_back": {
+    "gift": "A hint that unmarked paths loop",
+    "valence": null,
+    "kind": null
+   },
+   "la_bell4": {
+    "gift": "A cheering crew and a saved ship",
+    "valence": null,
+    "kind": null
+   },
+   "ra_lake_back": {
+    "gift": "A hint that drifts mislead",
+    "valence": null,
+    "kind": null
+   },
+   "ra_row": {
+    "gift": "A proud win with Mara",
+    "valence": null,
+    "kind": null
+   },
+   "ra_islet": {
+    "gift": "The warmth of a shared find",
+    "valence": null,
+    "kind": null
+   },
+   "ra_pool_back": {
+    "gift": "A laugh at the blocked tunnel and a lesson",
+    "valence": null,
+    "kind": null
+   },
+   "ra_starfish2": {
+    "gift": "A saved ship and a bold dive",
+    "valence": null,
+    "kind": null
+   },
+   "ra_pool_deep2": {
+    "gift": "A happy crew sharing gold",
+    "valence": null,
+    "kind": null
+   },
+   "da_bat_back": {
+    "gift": "A giggle at the glittering shells",
+    "valence": null,
+    "kind": null
+   },
+   "da_skylight": {
+    "gift": "A teamwork win",
+    "valence": null,
+    "kind": null
+   },
+   "da_cache_back": {
+    "gift": "A reason to try the knots next time",
+    "valence": null,
+    "kind": null
+   },
+   "da_compass2": {
+    "gift": "A solo triumph",
+    "valence": null,
+    "kind": null
+   },
+   "da_coins2": {
+    "gift": "A cheering crew and a kept ship",
+    "valence": null,
+    "kind": null
+   }
+  },
+  "provenance": {
+   "producer": "cyo_adventure.storyplan.generate",
+   "model": "anthropic/claude-sonnet-5.5",
+   "method": "generated",
+   "shape": {
+    "id": "the-cave-of-echoes",
+    "hash": "sha256:70c334341d9e40bc1b272bcb9254c354308a798799ecafe3c75e0564f017a628"
+   },
+   "book_file": null,
+   "book_sha256": null,
+   "authored": "2026-11-21",
+   "authoring_minutes": null,
+   "checks": {
+    "ok": true,
+    "errors": 0,
+    "warnings": 0
+   },
+   "approver": null,
+   "notes": [
+    "built from model pitch 1 of 3"
+   ]
+  }
+ },
+ "totals": {
+  "calls": 3,
+  "input_tokens": 22945,
+  "output_tokens": 13351,
+  "reasoning_tokens": 285,
+  "cost_estimate_usd": 0.1794,
+  "vendor_cost_usd": 0.170567,
+  "provider_seconds": 73.5
+ },
+ "budget": {
+  "budget_usd": 7.72,
+  "spent_before_usd": 0.639374,
+  "spent_after_usd": 0.818774
+ }
+}

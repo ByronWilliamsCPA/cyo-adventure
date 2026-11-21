@@ -1,0 +1,1548 @@
+{
+ "run": 2,
+ "request": {
+  "id": "P02",
+  "source": "docs/planning/evidence/short-request-panel/panel.json requests[id=P02]",
+  "text": "a dragon who is scared of fire",
+  "band": "8-11",
+  "length": "short",
+  "style": "prose",
+  "selection_note": "panel order, band 8-11 first (panel README); length short as fixed"
+ },
+ "shape": {
+  "id": "the-cave-of-echoes",
+  "hash": "sha256:70c334341d9e40bc1b272bcb9254c354308a798799ecafe3c75e0564f017a628",
+  "selection": "cell pick (authoring_plan._pick_shape, seeded by request id)",
+  "cell": {
+   "band": "8-11",
+   "length": "short",
+   "style": "prose"
+  },
+  "cell_candidates": [
+   "the-cave-of-echoes",
+   "the-half-hour-call",
+   "the-locked-carousel",
+   "the-robot-fair-sabotage"
+  ],
+  "retained_in_cell": [
+   "the-locked-carousel",
+   "the-cave-of-echoes"
+  ],
+  "nodes": 65,
+  "choices": 64,
+  "variables": 0,
+  "request_seed_id": "6842e60d-5079-5275-b388-cce4e576b74a"
+ },
+ "model": "anthropic/claude-sonnet-5.5",
+ "reasoning": "explicit: llm_effort='low' sent as reasoning.effort",
+ "max_repairs": 2,
+ "brief": {
+  "premise": "a dragon who is scared of fire",
+  "protagonist": {
+   "name": "Explorer",
+   "age": 8,
+   "role": "a curious young adventurer"
+  },
+  "point_of_view": "second",
+  "age_band": "8-11",
+  "tone": "gentle",
+  "themes_allowed": [],
+  "content_nogo": []
+ },
+ "stage0": {
+  "status": "skipped",
+  "reason": "no OPENAI_API_KEY in this environment (owner-approved skip, 2026-11-21); production classifier_screen(None) ran and called nothing",
+  "pitch_strings_offered": 5
+ },
+ "calls": [
+  {
+   "index": 0,
+   "kind": "pitch",
+   "max_tokens": 2000,
+   "prompt_chars": 2632,
+   "worst_case_usd": 0.022634,
+   "spent_before_usd": 0.116812,
+   "model": "anthropic/claude-sonnet-5.5",
+   "provider": "openrouter",
+   "input_tokens": 1002,
+   "output_tokens": 454,
+   "reasoning_tokens": 0,
+   "finish_reason": "stop",
+   "cost_estimate_usd": 0.006544,
+   "vendor_cost_usd": 0.00533,
+   "latency_s": 5.1,
+   "provider_duration_ms": 5056,
+   "response_chars": 1256
+  },
+  {
+   "index": 1,
+   "kind": "plan_1",
+   "max_tokens": 32000,
+   "prompt_chars": 12835,
+   "worst_case_usd": 0.332836,
+   "spent_before_usd": 0.123356,
+   "model": "anthropic/claude-sonnet-5.5",
+   "provider": "openrouter",
+   "input_tokens": 5275,
+   "output_tokens": 9043,
+   "reasoning_tokens": 2461,
+   "finish_reason": "stop",
+   "cost_estimate_usd": 0.10098,
+   "vendor_cost_usd": 0.097315,
+   "latency_s": 55.7,
+   "provider_duration_ms": 55733,
+   "response_chars": 15102
+  },
+  {
+   "index": 2,
+   "kind": "plan_2",
+   "max_tokens": 32000,
+   "prompt_chars": 39351,
+   "worst_case_usd": 0.359352,
+   "spent_before_usd": 0.224336,
+   "model": "anthropic/claude-sonnet-5.5",
+   "provider": "openrouter",
+   "input_tokens": 17009,
+   "output_tokens": 6597,
+   "reasoning_tokens": 0,
+   "finish_reason": "stop",
+   "cost_estimate_usd": 0.099988,
+   "vendor_cost_usd": 0.101028,
+   "latency_s": 28.9,
+   "provider_duration_ms": 28895,
+   "response_chars": 15146
+  },
+  {
+   "index": 3,
+   "kind": "plan_3",
+   "max_tokens": 32000,
+   "prompt_chars": 39404,
+   "worst_case_usd": 0.359406,
+   "spent_before_usd": 0.324324,
+   "model": "anthropic/claude-sonnet-5.5",
+   "provider": "openrouter",
+   "input_tokens": 17030,
+   "output_tokens": 6585,
+   "reasoning_tokens": 0,
+   "finish_reason": "stop",
+   "cost_estimate_usd": 0.09991,
+   "vendor_cost_usd": 0.095956,
+   "latency_s": 28.9,
+   "provider_duration_ms": 28899,
+   "response_chars": 15124
+  }
+ ],
+ "wall_seconds": 118.7,
+ "stopped": null,
+ "story_plan_status": "checked",
+ "attempts": 3,
+ "stage_log": [
+  "pitch:1",
+  "plan:1:errors=1",
+  "plan:2:errors=1",
+  "plan:3:errors=0"
+ ],
+ "pitches": [
+  {
+   "index": 0,
+   "source": "model",
+   "passed": true,
+   "reasons": [],
+   "advisories": [],
+   "pitch": {
+    "hero": "Ember, a young dragon who flinches at her own sparks",
+    "want": "To light the lantern for the mountain's Midwinter Gathering without panicking",
+    "obstacle": "Every time a flame grows, she freezes, and the lantern wick is damp and slow to catch",
+    "stake": "The village lanterns stay dark and the gathering is held without its shared light",
+    "ending_kind": "a warm win where a small steady flame feels safe at last"
+   }
+  },
+  {
+   "index": 1,
+   "source": "model",
+   "passed": false,
+   "reasons": [
+    "not screened"
+   ],
+   "advisories": [],
+   "pitch": null
+  },
+  {
+   "index": 2,
+   "source": "model",
+   "passed": false,
+   "reasons": [
+    "not screened"
+   ],
+   "advisories": [],
+   "pitch": null
+  }
+ ],
+ "attempt_findings": [
+  {
+   "attempt": 1,
+   "loaded": true,
+   "dropped_keys": [],
+   "ok": false,
+   "errors_by_rule": {
+    "SP-3": 1
+   },
+   "warnings_by_rule": {},
+   "findings": [
+    {
+     "rule_id": "SP-3",
+     "severity": "error",
+     "story_id": "sk_cave_of_echoes",
+     "node_id": "la_retreat_pool",
+     "choice_id": null,
+     "message": "the book answers its question two ways: 'f_rush' (at la_retreat_pool, la_hum_back, ra_lake_back, ra_pool_back, da_bat_back, da_cache_back) and 'f_small_safe' (at la_crystal_out, la_song, la_bell4, ra_row, ra_islet, ra_starfish2, ra_pool_deep2, da_roost2, da_compass2, da_coins2) sit on routes no single reading crosses",
+     "state": null,
+     "fact_id": "f_rush",
+     "route": null
+    }
+   ]
+  },
+  {
+   "attempt": 2,
+   "loaded": true,
+   "dropped_keys": [],
+   "ok": false,
+   "errors_by_rule": {
+    "SP-3": 1
+   },
+   "warnings_by_rule": {},
+   "findings": [
+    {
+     "rule_id": "SP-3",
+     "severity": "error",
+     "story_id": "sk_cave_of_echoes",
+     "node_id": "la_retreat_pool",
+     "choice_id": null,
+     "message": "the book answers its question two ways: 'f_rush' (at la_retreat_pool, la_hum_back, ra_lake_back, ra_pool_back, da_bat_back, da_cache_back) and 'f_small_safe' (at la_crystal_out, la_song, la_bell4, ra_row, ra_islet, ra_starfish2, ra_pool_deep2, da_roost2, da_compass2, da_coins2) sit on routes no single reading crosses",
+     "state": null,
+     "fact_id": "f_rush",
+     "route": null
+    }
+   ]
+  },
+  {
+   "attempt": 3,
+   "loaded": true,
+   "dropped_keys": [],
+   "ok": true,
+   "errors_by_rule": {},
+   "warnings_by_rule": {},
+   "findings": []
+  }
+ ],
+ "replay_consistent": true,
+ "final_checks": {
+  "ok": true,
+  "findings": []
+ },
+ "load_errors": [],
+ "plan": {
+  "plan_version": "0.1",
+  "book": null,
+  "request": {
+   "text": "a dragon who is scared of fire",
+   "band": "8-11",
+   "length": "short",
+   "style": "prose",
+   "tone": null,
+   "note": null
+  },
+  "pitch": {
+   "hero": "Ember, a young dragon who flinches at her own sparks",
+   "want": "To light the lantern for the mountain's Midwinter Gathering without panicking",
+   "obstacle": "Every time a flame grows, she freezes, and the lantern wick is damp and slow to catch",
+   "stake": "The village lanterns stay dark and the gathering is held without its shared light",
+   "ending_kind": "a warm win where a small steady flame feels safe at last"
+  },
+  "cast": {
+   "explorer": {
+    "name": "Explorer",
+    "role": "a curious young adventurer, the reader",
+    "want": "To help Ember light the Midwinter lantern",
+    "voice": "Kind and curious",
+    "knows": []
+   },
+   "ember": {
+    "name": "Ember",
+    "role": "a young dragon who flinches at her own sparks",
+    "want": "To light the lantern without panicking",
+    "voice": "Shy and quiet, with a small brave laugh",
+    "knows": [
+     "f_flinch",
+     "f_damp"
+    ]
+   },
+   "moth": {
+    "name": "Old Moth",
+    "role": "a gentle mountain helper who knows about flames",
+    "want": "To see the gathering lit",
+    "voice": "Soft, slow and calm",
+    "knows": [
+     "f_told_breathe"
+    ]
+   }
+  },
+  "truth": {
+   "statement": "Ember can light the lantern because she breathes slowly to keep her flame small and steady, and she lights a wick that was dried on warm stones. The small steady flame feels safe at last.",
+   "facts": [
+    "f_breath",
+    "f_dry",
+    "f_small_safe"
+   ],
+   "question": "What helps Ember light the lantern without panicking?"
+  },
+  "facts": {
+   "f_flinch": {
+    "text": "Ember the young dragon flinches and freezes at her own sparks.",
+    "contradicts": [],
+    "implicit_plant": null
+   },
+   "f_gathering": {
+    "text": "The Midwinter Gathering needs its lantern lit or the village lanterns stay dark.",
+    "contradicts": [],
+    "implicit_plant": null
+   },
+   "f_damp": {
+    "text": "The lantern wick is damp and slow to catch.",
+    "contradicts": [],
+    "implicit_plant": null
+   },
+   "f_told_breathe": {
+    "text": "Old Moth told Explorer that slow breaths keep a flame small and steady.",
+    "contradicts": [],
+    "implicit_plant": null
+   },
+   "f_warm_stones": {
+    "text": "The stones near the hearth stay warm all winter.",
+    "contradicts": [],
+    "implicit_plant": null
+   },
+   "f_river_mist": {
+    "text": "Cold mist or frost hangs over the path and chills the wick.",
+    "contradicts": [],
+    "implicit_plant": null
+   },
+   "f_dry": {
+    "text": "A wick dried on warm stones is ready to catch a small flame.",
+    "contradicts": [],
+    "implicit_plant": null
+   },
+   "f_breath": {
+    "text": "Slow breathing keeps Ember's flame small and steady.",
+    "contradicts": [],
+    "implicit_plant": null
+   },
+   "f_small_safe": {
+    "text": "A small steady flame is warm and safe, and the lantern glows.",
+    "contradicts": [],
+    "implicit_plant": null
+   },
+   "f_rush": {
+    "text": "Ember rushed, her flame flared, she froze, and the wick stayed damp.",
+    "contradicts": [],
+    "implicit_plant": null
+   }
+  },
+  "nodes": {
+   "n_open": {
+    "function": "opening",
+    "event": "On a snowy mountain, Explorer meets Ember, who jumps at her own sparks. The Midwinter lantern waits.",
+    "requires": [],
+    "establishes": [
+     "f_flinch",
+     "f_gathering"
+    ]
+   },
+   "n_start": {
+    "function": "decision",
+    "event": "Ember shows the lantern. Its wick is damp. Three paths lead off to find help.",
+    "requires": [
+     "f_flinch"
+    ],
+    "establishes": [
+     "f_damp"
+    ]
+   },
+   "la_tunnel": {
+    "function": "continue",
+    "event": "On the first path Old Moth greets them and says slow breaths keep a flame small and steady.",
+    "requires": [
+     "f_damp"
+    ],
+    "establishes": [
+     "f_told_breathe"
+    ]
+   },
+   "la_fork": {
+    "function": "decision",
+    "event": "The path splits toward the warm hearth stones or the misty river.",
+    "requires": [
+     "f_told_breathe"
+    ],
+    "establishes": []
+   },
+   "la_glitter": {
+    "function": "continue",
+    "event": "They reach the hearth cave where the stones are warm.",
+    "requires": [
+     "f_told_breathe"
+    ],
+    "establishes": [
+     "f_warm_stones"
+    ]
+   },
+   "la_glitter2": {
+    "function": "continue",
+    "event": "Ember counts her breaths while Explorer carries the lantern wick.",
+    "requires": [
+     "f_warm_stones"
+    ],
+    "establishes": []
+   },
+   "la_grotto_app": {
+    "function": "decision",
+    "event": "Ember must choose between hurrying or waiting by the stones.",
+    "requires": [
+     "f_warm_stones"
+    ],
+    "establishes": []
+   },
+   "la_retreat_pool": {
+    "function": "ending",
+    "event": "Ember hurries, a big flame flares, and she freezes. They go home to try again.",
+    "requires": [
+     "f_warm_stones"
+    ],
+    "establishes": [
+     "f_rush"
+    ]
+   },
+   "la_squeeze": {
+    "function": "continue",
+    "event": "They wait and the wick dries on the warm stones.",
+    "requires": [
+     "f_warm_stones"
+    ],
+    "establishes": [
+     "f_dry"
+    ]
+   },
+   "la_grotto": {
+    "function": "decision",
+    "event": "Ember is ready to try the flame, with a friend close by.",
+    "requires": [
+     "f_dry"
+    ],
+    "establishes": []
+   },
+   "la_crystal_take": {
+    "function": "continue",
+    "event": "Ember breathes slowly and her flame stays small.",
+    "requires": [
+     "f_dry",
+     "f_told_breathe"
+    ],
+    "establishes": [
+     "f_breath"
+    ]
+   },
+   "la_crystal_out": {
+    "function": "ending",
+    "event": "The wick catches and the lantern glows. Ember smiles at a flame that feels safe.",
+    "requires": [
+     "f_breath",
+     "f_dry"
+    ],
+    "establishes": [
+     "f_small_safe"
+    ]
+   },
+   "la_crystal_deeper": {
+    "function": "continue",
+    "event": "Ember asks Explorer to hum while she breathes slowly.",
+    "requires": [
+     "f_dry",
+     "f_told_breathe"
+    ],
+    "establishes": [
+     "f_breath"
+    ]
+   },
+   "la_song_app": {
+    "function": "continue",
+    "event": "The humming helps and her flame stays steady.",
+    "requires": [
+     "f_breath"
+    ],
+    "establishes": []
+   },
+   "la_song": {
+    "function": "ending",
+    "event": "The lantern lights and the gathering gets its shared light.",
+    "requires": [
+     "f_breath",
+     "f_dry"
+    ],
+    "establishes": [
+     "f_small_safe"
+    ]
+   },
+   "la_hum": {
+    "function": "continue",
+    "event": "They take the river path through cold mist.",
+    "requires": [
+     "f_told_breathe"
+    ],
+    "establishes": [
+     "f_river_mist"
+    ]
+   },
+   "la_hum2": {
+    "function": "continue",
+    "event": "The mist makes the wick damper, so they think about turning back toward warmth.",
+    "requires": [
+     "f_river_mist"
+    ],
+    "establishes": []
+   },
+   "la_bell_app": {
+    "function": "decision",
+    "event": "Ember must choose whether to rush or to carry the wick somewhere warm.",
+    "requires": [
+     "f_river_mist"
+    ],
+    "establishes": []
+   },
+   "la_hum_back": {
+    "function": "ending",
+    "event": "Ember tries to light it in the mist, freezes, and the wick stays damp. They head home.",
+    "requires": [
+     "f_river_mist"
+    ],
+    "establishes": [
+     "f_rush"
+    ]
+   },
+   "la_bell": {
+    "function": "continue",
+    "event": "They carry the wick to a warm spot and it dries.",
+    "requires": [
+     "f_river_mist"
+    ],
+    "establishes": [
+     "f_dry"
+    ]
+   },
+   "la_bell2": {
+    "function": "continue",
+    "event": "Ember recalls Moth's advice and breathes slowly.",
+    "requires": [
+     "f_dry",
+     "f_told_breathe"
+    ],
+    "establishes": [
+     "f_breath"
+    ]
+   },
+   "la_bell3": {
+    "function": "continue",
+    "event": "Her flame stays small and steady.",
+    "requires": [
+     "f_breath"
+    ],
+    "establishes": []
+   },
+   "la_bell4": {
+    "function": "ending",
+    "event": "The lantern glows and Ember finds her flame feels safe.",
+    "requires": [
+     "f_breath",
+     "f_dry"
+    ],
+    "establishes": [
+     "f_small_safe"
+    ]
+   },
+   "ra_drip": {
+    "function": "continue",
+    "event": "On the second path Old Moth sits on a ledge and says slow breaths keep a flame small and steady.",
+    "requires": [
+     "f_damp"
+    ],
+    "establishes": [
+     "f_told_breathe"
+    ]
+   },
+   "ra_fork": {
+    "function": "decision",
+    "event": "The path splits toward a warm cave or an icy ridge.",
+    "requires": [
+     "f_told_breathe"
+    ],
+    "establishes": []
+   },
+   "ra_lake_way": {
+    "function": "continue",
+    "event": "They enter a cave of warm stones.",
+    "requires": [
+     "f_told_breathe"
+    ],
+    "establishes": [
+     "f_warm_stones"
+    ]
+   },
+   "ra_lake2": {
+    "function": "continue",
+    "event": "Ember lays the wick on the stones and they watch it.",
+    "requires": [
+     "f_warm_stones"
+    ],
+    "establishes": []
+   },
+   "ra_lake_app": {
+    "function": "decision",
+    "event": "Ember chooses between lighting it now or waiting.",
+    "requires": [
+     "f_warm_stones"
+    ],
+    "establishes": []
+   },
+   "ra_lake_back": {
+    "function": "ending",
+    "event": "Ember lights it too soon, the flame flares, she freezes, and they try another day.",
+    "requires": [
+     "f_warm_stones"
+    ],
+    "establishes": [
+     "f_rush"
+    ]
+   },
+   "ra_descend": {
+    "function": "continue",
+    "event": "They wait and the wick dries.",
+    "requires": [
+     "f_warm_stones"
+    ],
+    "establishes": [
+     "f_dry"
+    ]
+   },
+   "ra_lakeshore": {
+    "function": "decision",
+    "event": "Ember chooses between practicing alone or with Explorer's help.",
+    "requires": [
+     "f_dry"
+    ],
+    "establishes": []
+   },
+   "ra_boat": {
+    "function": "continue",
+    "event": "With Explorer beside her, Ember breathes slowly.",
+    "requires": [
+     "f_dry",
+     "f_told_breathe"
+    ],
+    "establishes": [
+     "f_breath"
+    ]
+   },
+   "ra_row": {
+    "function": "ending",
+    "event": "The lantern glows and the small flame feels safe.",
+    "requires": [
+     "f_breath",
+     "f_dry"
+    ],
+    "establishes": [
+     "f_small_safe"
+    ]
+   },
+   "ra_wade": {
+    "function": "continue",
+    "event": "Ember practices alone, breathing slowly with small sparks.",
+    "requires": [
+     "f_dry",
+     "f_told_breathe"
+    ],
+    "establishes": [
+     "f_breath"
+    ]
+   },
+   "ra_islet": {
+    "function": "ending",
+    "event": "She lights the lantern herself and the flame feels safe.",
+    "requires": [
+     "f_breath",
+     "f_dry"
+    ],
+    "establishes": [
+     "f_small_safe"
+    ]
+   },
+   "ra_pool_way": {
+    "function": "continue",
+    "event": "They climb the icy ridge in cold mist.",
+    "requires": [
+     "f_told_breathe"
+    ],
+    "establishes": [
+     "f_river_mist"
+    ]
+   },
+   "ra_pool2": {
+    "function": "continue",
+    "event": "Snow dusts the wick and Ember worries.",
+    "requires": [
+     "f_river_mist"
+    ],
+    "establishes": []
+   },
+   "ra_pool_app": {
+    "function": "decision",
+    "event": "Ember chooses between rushing the flame and finding warmth.",
+    "requires": [
+     "f_river_mist"
+    ],
+    "establishes": []
+   },
+   "ra_pool_back": {
+    "function": "ending",
+    "event": "Ember rushes, freezes, and the wick stays damp. They go home.",
+    "requires": [
+     "f_river_mist"
+    ],
+    "establishes": [
+     "f_rush"
+    ]
+   },
+   "ra_pool_enter": {
+    "function": "continue",
+    "event": "They find a warm nook and the wick dries.",
+    "requires": [
+     "f_river_mist"
+    ],
+    "establishes": [
+     "f_dry"
+    ]
+   },
+   "ra_pool_chamber": {
+    "function": "decision",
+    "event": "Ember decides how to start her flame.",
+    "requires": [
+     "f_dry"
+    ],
+    "establishes": []
+   },
+   "ra_starfish": {
+    "function": "continue",
+    "event": "Ember breathes slowly as Moth taught.",
+    "requires": [
+     "f_dry",
+     "f_told_breathe"
+    ],
+    "establishes": [
+     "f_breath"
+    ]
+   },
+   "ra_starfish2": {
+    "function": "ending",
+    "event": "The lantern lights and the flame feels safe.",
+    "requires": [
+     "f_breath",
+     "f_dry"
+    ],
+    "establishes": [
+     "f_small_safe"
+    ]
+   },
+   "ra_pool_deep": {
+    "function": "continue",
+    "event": "Ember counts her breaths with Explorer's hand on her wing.",
+    "requires": [
+     "f_dry",
+     "f_told_breathe"
+    ],
+    "establishes": [
+     "f_breath"
+    ]
+   },
+   "ra_pool_deep2": {
+    "function": "ending",
+    "event": "The lantern glows and Ember is proud of her steady flame.",
+    "requires": [
+     "f_breath",
+     "f_dry"
+    ],
+    "establishes": [
+     "f_small_safe"
+    ]
+   },
+   "da_dark": {
+    "function": "continue",
+    "event": "On the third path Old Moth floats by and says slow breaths keep a flame small and steady.",
+    "requires": [
+     "f_damp"
+    ],
+    "establishes": [
+     "f_told_breathe"
+    ]
+   },
+   "da_fork": {
+    "function": "decision",
+    "event": "The path splits toward warm stones or a frosty trail.",
+    "requires": [
+     "f_told_breathe"
+    ],
+    "establishes": []
+   },
+   "da_bat_way": {
+    "function": "continue",
+    "event": "They reach a warm hearth nook.",
+    "requires": [
+     "f_told_breathe"
+    ],
+    "establishes": [
+     "f_warm_stones"
+    ]
+   },
+   "da_bat2": {
+    "function": "continue",
+    "event": "Ember sets the wick near the stones and practices breathing.",
+    "requires": [
+     "f_warm_stones"
+    ],
+    "establishes": []
+   },
+   "da_bat_app": {
+    "function": "decision",
+    "event": "Ember chooses between lighting now or waiting.",
+    "requires": [
+     "f_warm_stones"
+    ],
+    "establishes": []
+   },
+   "da_bat_back": {
+    "function": "ending",
+    "event": "Ember lights too soon, freezes, and they head home to try again.",
+    "requires": [
+     "f_warm_stones"
+    ],
+    "establishes": [
+     "f_rush"
+    ]
+   },
+   "da_bat_enter": {
+    "function": "continue",
+    "event": "They wait and the wick dries.",
+    "requires": [
+     "f_warm_stones"
+    ],
+    "establishes": [
+     "f_dry"
+    ]
+   },
+   "da_roost": {
+    "function": "continue",
+    "event": "Ember breathes slowly and her flame stays small.",
+    "requires": [
+     "f_dry",
+     "f_told_breathe"
+    ],
+    "establishes": [
+     "f_breath"
+    ]
+   },
+   "da_roost2": {
+    "function": "continue",
+    "event": "The wick catches and the lantern glows.",
+    "requires": [
+     "f_breath",
+     "f_dry"
+    ],
+    "establishes": [
+     "f_small_safe"
+    ]
+   },
+   "da_skylight": {
+    "function": "ending",
+    "event": "Ember carries the lit lantern to the gathering, no longer afraid.",
+    "requires": [
+     "f_small_safe"
+    ],
+    "establishes": []
+   },
+   "da_cache_way": {
+    "function": "continue",
+    "event": "They follow a frosty trail under bright stars.",
+    "requires": [
+     "f_told_breathe"
+    ],
+    "establishes": [
+     "f_river_mist"
+    ]
+   },
+   "da_cache2": {
+    "function": "continue",
+    "event": "Frost makes the wick damper and Ember grows nervous.",
+    "requires": [
+     "f_river_mist"
+    ],
+    "establishes": []
+   },
+   "da_cache_app": {
+    "function": "decision",
+    "event": "Ember chooses between trying now or finding warmth.",
+    "requires": [
+     "f_river_mist"
+    ],
+    "establishes": []
+   },
+   "da_cache_back": {
+    "function": "ending",
+    "event": "Ember tries in the cold, freezes, and the wick stays damp. They go home.",
+    "requires": [
+     "f_river_mist"
+    ],
+    "establishes": [
+     "f_rush"
+    ]
+   },
+   "da_cache_enter": {
+    "function": "continue",
+    "event": "They find a warm spot and the wick dries.",
+    "requires": [
+     "f_river_mist"
+    ],
+    "establishes": [
+     "f_dry"
+    ]
+   },
+   "da_cache_room": {
+    "function": "decision",
+    "event": "Ember chooses how to steady herself.",
+    "requires": [
+     "f_dry"
+    ],
+    "establishes": []
+   },
+   "da_compass": {
+    "function": "continue",
+    "event": "Ember breathes slowly, keeping the flame small.",
+    "requires": [
+     "f_dry",
+     "f_told_breathe"
+    ],
+    "establishes": [
+     "f_breath"
+    ]
+   },
+   "da_compass2": {
+    "function": "ending",
+    "event": "The lantern lights and the small flame feels safe.",
+    "requires": [
+     "f_breath",
+     "f_dry"
+    ],
+    "establishes": [
+     "f_small_safe"
+    ]
+   },
+   "da_coins": {
+    "function": "continue",
+    "event": "Explorer counts breaths aloud for Ember.",
+    "requires": [
+     "f_dry",
+     "f_told_breathe"
+    ],
+    "establishes": [
+     "f_breath"
+    ]
+   },
+   "da_coins2": {
+    "function": "ending",
+    "event": "The lantern glows and the gathering shares its light.",
+    "requires": [
+     "f_breath",
+     "f_dry"
+    ],
+    "establishes": [
+     "f_small_safe"
+    ]
+   }
+  },
+  "choices": {
+   "c_open": {
+    "intent": "See what Ember needs",
+    "cost": "none",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_left": {
+    "intent": "Follow the path to Old Moth's cave",
+    "cost": "Gives up the other two paths",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_right": {
+    "intent": "Take the ledge path with Moth",
+    "cost": "Gives up the cave and frost paths",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_down": {
+    "intent": "Try the frosty starlit path",
+    "cost": "Gives up the other two paths",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_la_fork": {
+    "intent": "Keep going with Moth's advice",
+    "cost": "none",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_glitter": {
+    "intent": "Head to the warm hearth stones",
+    "cost": "Gives up the river path",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_hum": {
+    "intent": "Check the misty river",
+    "cost": "Gives up the warm stones for now",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_la_slope": {
+    "intent": "Settle in the cave",
+    "cost": "none",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_la_crack": {
+    "intent": "Get ready to try",
+    "cost": "none",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_squeeze": {
+    "intent": "Wait for the wick to dry",
+    "cost": "Takes more time",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_retreat": {
+    "intent": "Try now to save time",
+    "cost": "Risks a big flare",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_la_room": {
+    "intent": "Move on when dry",
+    "cost": "none",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_take": {
+    "intent": "Breathe slowly and light it",
+    "cost": "Gives up the humming plan",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_deeper": {
+    "intent": "Ask Explorer to hum along",
+    "cost": "Gives up trying alone",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_la_up": {
+    "intent": "Watch the wick catch",
+    "cost": "none",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_la_chord": {
+    "intent": "Keep humming",
+    "cost": "none",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_la_sing": {
+    "intent": "Light the lantern",
+    "cost": "none",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_la_ring": {
+    "intent": "Press on through mist",
+    "cost": "none",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_la_chime": {
+    "intent": "Think about the cold",
+    "cost": "none",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_bell": {
+    "intent": "Warm and dry the wick first",
+    "cost": "Takes more time",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_humback": {
+    "intent": "Light it right away",
+    "cost": "Risks a freeze",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_la_bell2": {
+    "intent": "Remember Moth's advice",
+    "cost": "none",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_la_bell3": {
+    "intent": "Keep breathing slowly",
+    "cost": "none",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_la_bell4": {
+    "intent": "Light the lantern",
+    "cost": "none",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_ra_fork": {
+    "intent": "Walk on with Moth",
+    "cost": "none",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_lake": {
+    "intent": "Go to the warm cave",
+    "cost": "Gives up the icy ridge",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_pool": {
+    "intent": "Climb the icy ridge",
+    "cost": "Gives up the warm cave",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_ra_pebbles": {
+    "intent": "Lay the wick on the stones",
+    "cost": "none",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_ra_shelf": {
+    "intent": "Wait and watch",
+    "cost": "none",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_descend": {
+    "intent": "Wait for the wick to dry",
+    "cost": "Takes more time",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_lakeback": {
+    "intent": "Light it now",
+    "cost": "Risks a big flare",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_ra_shore": {
+    "intent": "Get ready",
+    "cost": "none",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_boat": {
+    "intent": "Practice with Explorer beside her",
+    "cost": "Gives up trying alone",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_wade": {
+    "intent": "Practice alone",
+    "cost": "Gives up Explorer's close help",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_ra_row": {
+    "intent": "Light the wick together",
+    "cost": "none",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_ra_islet": {
+    "intent": "Light it herself",
+    "cost": "none",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_ra_crouch": {
+    "intent": "Keep climbing",
+    "cost": "none",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_ra_channel": {
+    "intent": "Think about the cold",
+    "cost": "none",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_enter": {
+    "intent": "Find warmth first",
+    "cost": "Takes more time",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_poolback": {
+    "intent": "Rush the flame",
+    "cost": "Risks a freeze",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_ra_kneel": {
+    "intent": "Ready for the flame",
+    "cost": "none",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_star": {
+    "intent": "Breathe slowly alone",
+    "cost": "Gives up Explorer's counting",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_deep": {
+    "intent": "Lean on Explorer's counting",
+    "cost": "Gives up trying alone",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_ra_sketch": {
+    "intent": "Light the lantern",
+    "cost": "none",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_ra_reach": {
+    "intent": "Light the lantern",
+    "cost": "none",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_da_fork": {
+    "intent": "Walk on with Moth",
+    "cost": "none",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_bat": {
+    "intent": "Go to the warm stones",
+    "cost": "Gives up the frosty trail",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_cache": {
+    "intent": "Take the frosty trail",
+    "cost": "Gives up the warm stones",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_da_creep": {
+    "intent": "Set the wick near the stones",
+    "cost": "none",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_da_grey": {
+    "intent": "Practice breathing",
+    "cost": "none",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_batenter": {
+    "intent": "Wait for the wick to dry",
+    "cost": "Takes more time",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_batback": {
+    "intent": "Light it now",
+    "cost": "Risks a big flare",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_da_stair": {
+    "intent": "Get ready",
+    "cost": "none",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_da_climb": {
+    "intent": "Light the wick",
+    "cost": "none",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_da_push": {
+    "intent": "Head to the gathering",
+    "cost": "none",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_da_door": {
+    "intent": "Keep walking",
+    "cost": "none",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_da_peer": {
+    "intent": "Think about the cold",
+    "cost": "none",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_cacheenter": {
+    "intent": "Find warmth first",
+    "cost": "Takes more time",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_cacheback": {
+    "intent": "Try right now",
+    "cost": "Risks a freeze",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_da_boxes": {
+    "intent": "Get ready",
+    "cost": "none",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_compass": {
+    "intent": "Breathe slowly alone",
+    "cost": "Gives up Explorer's counting",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_coins": {
+    "intent": "Let Explorer count breaths",
+    "cost": "Gives up trying alone",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_da_out": {
+    "intent": "Light the lantern",
+    "cost": "none",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_da_carry": {
+    "intent": "Light the lantern",
+    "cost": "none",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   }
+  },
+  "threads": {},
+  "endings": {
+   "la_retreat_pool": {
+    "gift": "A gentle reason to try again and wait for the wick",
+    "valence": null,
+    "kind": null
+   },
+   "la_crystal_out": {
+    "gift": "A warm win as the small flame feels safe",
+    "valence": null,
+    "kind": null
+   },
+   "la_song": {
+    "gift": "The joy of humming a friend to bravery",
+    "valence": null,
+    "kind": null
+   },
+   "la_hum_back": {
+    "gift": "A reason to try again and dry the wick first",
+    "valence": null,
+    "kind": null
+   },
+   "la_bell4": {
+    "gift": "The reveal that warmth and slow breaths work together",
+    "valence": null,
+    "kind": null
+   },
+   "ra_lake_back": {
+    "gift": "A reason to retry and wait by the warm stones",
+    "valence": null,
+    "kind": null
+   },
+   "ra_row": {
+    "gift": "A warm win shared with a friend",
+    "valence": null,
+    "kind": null
+   },
+   "ra_islet": {
+    "gift": "Pride in Ember lighting it herself",
+    "valence": null,
+    "kind": null
+   },
+   "ra_pool_back": {
+    "gift": "A reason to try again and find warmth first",
+    "valence": null,
+    "kind": null
+   },
+   "ra_starfish2": {
+    "gift": "A quiet win on a starry night",
+    "valence": null,
+    "kind": null
+   },
+   "ra_pool_deep2": {
+    "gift": "A cozy win with a steady friend",
+    "valence": null,
+    "kind": null
+   },
+   "da_bat_back": {
+    "gift": "A reason to try again and wait for the wick",
+    "valence": null,
+    "kind": null
+   },
+   "da_skylight": {
+    "gift": "A glowing walk to the gathering",
+    "valence": null,
+    "kind": null
+   },
+   "da_cache_back": {
+    "gift": "A reason to try again and seek warmth",
+    "valence": null,
+    "kind": null
+   },
+   "da_compass2": {
+    "gift": "A bright lantern and a calm dragon",
+    "valence": null,
+    "kind": null
+   },
+   "da_coins2": {
+    "gift": "A shared light for the whole mountain",
+    "valence": null,
+    "kind": null
+   }
+  },
+  "provenance": {
+   "producer": "cyo_adventure.storyplan.generate",
+   "model": "anthropic/claude-sonnet-5.5",
+   "method": "generated",
+   "shape": {
+    "id": "the-cave-of-echoes",
+    "hash": "sha256:70c334341d9e40bc1b272bcb9254c354308a798799ecafe3c75e0564f017a628"
+   },
+   "book_file": null,
+   "book_sha256": null,
+   "authored": "2026-11-21",
+   "authoring_minutes": null,
+   "checks": {
+    "ok": true,
+    "errors": 0,
+    "warnings": 0
+   },
+   "approver": null,
+   "notes": [
+    "built from model pitch 1 of 3"
+   ]
+  }
+ },
+ "totals": {
+  "calls": 4,
+  "input_tokens": 40316,
+  "output_tokens": 22679,
+  "reasoning_tokens": 2461,
+  "cost_estimate_usd": 0.307422,
+  "vendor_cost_usd": 0.299629,
+  "provider_seconds": 118.6
+ },
+ "budget": {
+  "budget_usd": 7.72,
+  "spent_before_usd": 0.116812,
+  "spent_after_usd": 0.424234
+ }
+}

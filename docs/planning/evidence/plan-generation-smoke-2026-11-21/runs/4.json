@@ -1,0 +1,1788 @@
+{
+ "run": 4,
+ "request": {
+  "id": "P04",
+  "source": "docs/planning/evidence/short-request-panel/panel.json requests[id=P04]",
+  "text": "a robot that learns to play music",
+  "band": "8-11",
+  "length": "short",
+  "style": "prose",
+  "selection_note": "panel order, band 8-11 first (panel README); length short as fixed"
+ },
+ "shape": {
+  "id": "the-locked-carousel",
+  "hash": "sha256:66d70a41cd1c65581a19f1c81e411ec4caf234db3939dbf5d91bb44be1c28393",
+  "selection": "cell pick (authoring_plan._pick_shape, seeded by request id)",
+  "cell": {
+   "band": "8-11",
+   "length": "short",
+   "style": "prose"
+  },
+  "cell_candidates": [
+   "the-cave-of-echoes",
+   "the-half-hour-call",
+   "the-locked-carousel",
+   "the-robot-fair-sabotage"
+  ],
+  "retained_in_cell": [
+   "the-locked-carousel",
+   "the-cave-of-echoes"
+  ],
+  "nodes": 71,
+  "choices": 118,
+  "variables": 0,
+  "request_seed_id": "ede02888-1091-5cf8-83ba-6b375974d635"
+ },
+ "model": "anthropic/claude-sonnet-5.5",
+ "reasoning": "explicit: llm_effort='low' sent as reasoning.effort",
+ "max_repairs": 2,
+ "brief": {
+  "premise": "a robot that learns to play music",
+  "protagonist": {
+   "name": "Explorer",
+   "age": 8,
+   "role": "a curious young adventurer"
+  },
+  "point_of_view": "second",
+  "age_band": "8-11",
+  "tone": "gentle",
+  "themes_allowed": [],
+  "content_nogo": []
+ },
+ "stage0": {
+  "status": "skipped",
+  "reason": "no OPENAI_API_KEY in this environment (owner-approved skip, 2026-11-21); production classifier_screen(None) ran and called nothing",
+  "pitch_strings_offered": 5
+ },
+ "calls": [
+  {
+   "index": 0,
+   "kind": "pitch",
+   "max_tokens": 2000,
+   "prompt_chars": 2634,
+   "worst_case_usd": 0.022636,
+   "spent_before_usd": 0.515924,
+   "model": "anthropic/claude-sonnet-5.5",
+   "provider": "openrouter",
+   "input_tokens": 1000,
+   "output_tokens": 506,
+   "reasoning_tokens": 0,
+   "finish_reason": "stop",
+   "cost_estimate_usd": 0.00706,
+   "vendor_cost_usd": 0.005846,
+   "latency_s": 5.6,
+   "provider_duration_ms": 5641,
+   "response_chars": 1390
+  },
+  {
+   "index": 1,
+   "kind": "plan_1",
+   "max_tokens": 32000,
+   "prompt_chars": 14409,
+   "worst_case_usd": 0.33441,
+   "spent_before_usd": 0.522984,
+   "model": "anthropic/claude-sonnet-5.5",
+   "provider": "openrouter",
+   "input_tokens": 6210,
+   "output_tokens": 10397,
+   "reasoning_tokens": 1507,
+   "finish_reason": "stop",
+   "cost_estimate_usd": 0.11639,
+   "vendor_cost_usd": 0.112725,
+   "latency_s": 68.9,
+   "provider_duration_ms": 68882,
+   "response_chars": 20592
+  }
+ ],
+ "wall_seconds": 74.6,
+ "stopped": null,
+ "story_plan_status": "checked",
+ "attempts": 1,
+ "stage_log": [
+  "pitch:1",
+  "plan:1:errors=0"
+ ],
+ "pitches": [
+  {
+   "index": 0,
+   "source": "model",
+   "passed": true,
+   "reasons": [],
+   "advisories": [],
+   "pitch": {
+    "hero": "Explorer, a curious 8-year-old who finds a rusty robot called Tink in a junkyard",
+    "want": "To teach Tink to play a real tune on an old piano before the town music night",
+    "obstacle": "Tink's metal fingers press every key at once, and the piano is missing three keys",
+    "stake": "Tink may be taken back to the scrap pile if it cannot show it is more than spare parts",
+    "ending_kind": "a warm win at the town music night with Tink playing its first tune"
+   }
+  },
+  {
+   "index": 1,
+   "source": "model",
+   "passed": false,
+   "reasons": [
+    "not screened"
+   ],
+   "advisories": [],
+   "pitch": null
+  },
+  {
+   "index": 2,
+   "source": "model",
+   "passed": false,
+   "reasons": [
+    "not screened"
+   ],
+   "advisories": [],
+   "pitch": null
+  }
+ ],
+ "attempt_findings": [
+  {
+   "attempt": 1,
+   "loaded": true,
+   "dropped_keys": [],
+   "ok": true,
+   "errors_by_rule": {},
+   "warnings_by_rule": {},
+   "findings": []
+  }
+ ],
+ "replay_consistent": true,
+ "final_checks": {
+  "ok": true,
+  "findings": []
+ },
+ "load_errors": [],
+ "plan": {
+  "plan_version": "0.1",
+  "book": null,
+  "request": {
+   "text": "a robot that learns to play music",
+   "band": "8-11",
+   "length": "short",
+   "style": "prose",
+   "tone": null,
+   "note": null
+  },
+  "pitch": {
+   "hero": "Explorer, a curious 8-year-old who finds a rusty robot called Tink in a junkyard",
+   "want": "To teach Tink to play a real tune on an old piano before the town music night",
+   "obstacle": "Tink's metal fingers press every key at once, and the piano is missing three keys",
+   "stake": "Tink may be taken back to the scrap pile if it cannot show it is more than spare parts",
+   "ending_kind": "a warm win at the town music night with Tink playing its first tune"
+  },
+  "cast": {
+   "explorer": {
+    "name": "Explorer",
+    "role": "curious 8-year-old hero, you",
+    "want": "Teach Tink a real tune before town music night",
+    "voice": "Eager, kind, asks lots of questions",
+    "knows": [
+     "f_found",
+     "f_piano",
+     "f_music_night",
+     "f_scrap_threat",
+     "f_all_keys"
+    ]
+   },
+   "tink": {
+    "name": "Tink",
+    "role": "rusty junkyard robot learning music",
+    "want": "To prove it is more than spare parts",
+    "voice": "Squeaky, hopeful, answers in short chimes",
+    "knows": [
+     "f_all_keys"
+    ]
+   },
+   "collector": {
+    "name": "Mr Brisk",
+    "role": "scrap collector who may take Tink",
+    "want": "To clear the junkyard before the weekend",
+    "voice": "Gruff but fair, speaks in short orders",
+    "knows": [
+     "f_scrap_threat"
+    ]
+   }
+  },
+  "truth": {
+   "statement": "Tink plays its first tune by listening to a slow beat so its fingers press one key at a time, and a bottle chime covers the three missing piano keys.",
+   "facts": [
+    "f_listen",
+    "f_gap",
+    "f_tune"
+   ],
+   "question": "How can Tink play a real tune on a broken piano?"
+  },
+  "facts": {
+   "f_found": {
+    "text": "Explorer finds a rusty robot named Tink in the junkyard.",
+    "contradicts": [],
+    "implicit_plant": null
+   },
+   "f_piano": {
+    "text": "An old piano stands in the workshop and it is missing three keys.",
+    "contradicts": [],
+    "implicit_plant": null
+   },
+   "f_music_night": {
+    "text": "Town music night is soon and Explorer wants Tink to play there.",
+    "contradicts": [],
+    "implicit_plant": null
+   },
+   "f_scrap_threat": {
+    "text": "Mr Brisk says Tink goes back to the scrap pile unless it shows it is more than spare parts.",
+    "contradicts": [],
+    "implicit_plant": null
+   },
+   "f_all_keys": {
+    "text": "Tink's metal fingers press every piano key at once.",
+    "contradicts": [],
+    "implicit_plant": null
+   },
+   "f_listen": {
+    "text": "When Tink listens to a slow steady beat, its fingers press one key at a time.",
+    "contradicts": [],
+    "implicit_plant": null
+   },
+   "f_gap": {
+    "text": "A row of tuned bottle chimes can cover the three missing piano notes.",
+    "contradicts": [],
+    "implicit_plant": null
+   },
+   "f_tune": {
+    "text": "Tink plays a simple tune from start to finish with the piano and chimes.",
+    "contradicts": [],
+    "implicit_plant": null
+   }
+  },
+  "nodes": {
+   "n_start": {
+    "function": "opening",
+    "event": "In the junkyard Explorer hears a squeak and finds a rusty robot, Tink, under an old sheet.",
+    "requires": [],
+    "establishes": [
+     "f_found"
+    ]
+   },
+   "n_gate": {
+    "function": "continue",
+    "event": "Explorer brings Tink to a dusty workshop where an old piano waits with three keys missing.",
+    "requires": [
+     "f_found"
+    ],
+    "establishes": [
+     "f_piano"
+    ]
+   },
+   "n_notice": {
+    "function": "continue",
+    "event": "Mr Brisk visits and says Tink will be taken to the scrap pile unless it proves itself at town music night.",
+    "requires": [
+     "f_found",
+     "f_piano"
+    ],
+    "establishes": [
+     "f_music_night",
+     "f_scrap_threat"
+    ]
+   },
+   "n_hub": {
+    "function": "merge",
+    "event": "Tink tries the piano and every key clunks at once. Explorer chooses where to look for help.",
+    "requires": [
+     "f_piano",
+     "f_scrap_threat"
+    ],
+    "establishes": [
+     "f_all_keys"
+    ]
+   },
+   "tb_booth": {
+    "function": "decision",
+    "event": "Explorer visits the music shop where an old tuner is working at a bench.",
+    "requires": [
+     "f_all_keys"
+    ],
+    "establishes": []
+   },
+   "tb_ledgers": {
+    "function": "decision",
+    "event": "The tuner lets Explorer look through a box of spare piano parts.",
+    "requires": [
+     "f_all_keys"
+    ],
+    "establishes": []
+   },
+   "tb_recent": {
+    "function": "decision",
+    "event": "Explorer finds a few worn keys that do not fit, and sees a clock ticking.",
+    "requires": [
+     "f_all_keys"
+    ],
+    "establishes": []
+   },
+   "tb_old": {
+    "function": "decision",
+    "event": "Explorer finds a tiny hammer and wonders if it could help Tink.",
+    "requires": [
+     "f_all_keys"
+    ],
+    "establishes": []
+   },
+   "tb_office": {
+    "function": "decision",
+    "event": "A side door leads to a cluttered back room full of old instruments.",
+    "requires": [
+     "f_all_keys"
+    ],
+    "establishes": []
+   },
+   "tb_photo": {
+    "function": "decision",
+    "event": "Explorer tries a dusty drum and gets a good idea about steady beats.",
+    "requires": [
+     "f_all_keys"
+    ],
+    "establishes": []
+   },
+   "e_set_doze": {
+    "function": "ending",
+    "event": "Tink wanders off after a shiny sound and Explorer must spend the afternoon finding it, with no progress.",
+    "requires": [
+     "f_all_keys"
+    ],
+    "establishes": []
+   },
+   "hm_door": {
+    "function": "decision",
+    "event": "Explorer goes to the town park where a street band is rehearsing.",
+    "requires": [
+     "f_all_keys"
+    ],
+    "establishes": []
+   },
+   "hm_echo": {
+    "function": "continue",
+    "event": "Explorer waits on a bench and listens to the band's drummer.",
+    "requires": [
+     "f_all_keys"
+    ],
+    "establishes": []
+   },
+   "hm_tall": {
+    "function": "decision",
+    "event": "The drummer shows Tink how to tap gently on a drum.",
+    "requires": [
+     "f_all_keys"
+    ],
+    "establishes": []
+   },
+   "hm_bent": {
+    "function": "decision",
+    "event": "A flute player offers to teach Tink a song, but it is very fast.",
+    "requires": [
+     "f_all_keys"
+    ],
+    "establishes": []
+   },
+   "hm_plank": {
+    "function": "decision",
+    "event": "Tink squeals along with the flute and the band laughs kindly.",
+    "requires": [
+     "f_all_keys"
+    ],
+    "establishes": []
+   },
+   "hm_rotunda": {
+    "function": "merge",
+    "event": "The band leader sits with Explorer and talks about keeping time.",
+    "requires": [
+     "f_all_keys"
+    ],
+    "establishes": []
+   },
+   "hm_behind": {
+    "function": "decision",
+    "event": "Explorer is offered a metronome to borrow.",
+    "requires": [
+     "f_all_keys"
+    ],
+    "establishes": []
+   },
+   "hm_flicker": {
+    "function": "decision",
+    "event": "Explorer is offered a lesson with the band after the rehearsal.",
+    "requires": [
+     "f_all_keys"
+    ],
+    "establishes": []
+   },
+   "e_set_lost": {
+    "function": "ending",
+    "event": "Tink bangs the band's big drum by mistake and the rehearsal stops. Everyone goes home early.",
+    "requires": [
+     "f_all_keys"
+    ],
+    "establishes": []
+   },
+   "ws_door": {
+    "function": "decision",
+    "event": "Explorer takes Tink to the library music corner.",
+    "requires": [
+     "f_all_keys"
+    ],
+    "establishes": []
+   },
+   "ws_tools": {
+    "function": "decision",
+    "event": "The librarian shows a book on how to play simple songs.",
+    "requires": [
+     "f_all_keys"
+    ],
+    "establishes": []
+   },
+   "ws_horse": {
+    "function": "decision",
+    "event": "Explorer finds a quiet listening booth with records.",
+    "requires": [
+     "f_all_keys"
+    ],
+    "establishes": []
+   },
+   "ws_bench": {
+    "function": "merge",
+    "event": "Tink listens to a slow lullaby and sways gently.",
+    "requires": [
+     "f_all_keys"
+    ],
+    "establishes": []
+   },
+   "ws_crate": {
+    "function": "decision",
+    "event": "Explorer copies the lullaby's beat onto paper.",
+    "requires": [
+     "f_all_keys"
+    ],
+    "establishes": []
+   },
+   "bw_steps": {
+    "function": "decision",
+    "event": "Explorer follows a bright tinkling sound to a garden shed.",
+    "requires": [
+     "f_all_keys"
+    ],
+    "establishes": []
+   },
+   "bw_pilings": {
+    "function": "decision",
+    "event": "Inside the shed hang rows of glass bottles that ring when touched.",
+    "requires": [
+     "f_all_keys"
+    ],
+    "establishes": []
+   },
+   "bw_catwalk": {
+    "function": "merge",
+    "event": "Explorer gently tests the bottles one by one.",
+    "requires": [
+     "f_all_keys"
+    ],
+    "establishes": []
+   },
+   "bw_footing": {
+    "function": "merge",
+    "event": "A neighbour offers to lend a few bottles for a while.",
+    "requires": [
+     "f_all_keys"
+    ],
+    "establishes": []
+   },
+   "bw_pierhead": {
+    "function": "decision",
+    "event": "Tink rings a bottle softly and seems to enjoy it.",
+    "requires": [
+     "f_all_keys"
+    ],
+    "establishes": []
+   },
+   "bw_watch": {
+    "function": "decision",
+    "event": "Explorer and Tink line up the bottles from low to high.",
+    "requires": [
+     "f_all_keys"
+    ],
+    "establishes": []
+   },
+   "bw_call": {
+    "function": "decision",
+    "event": "Tink knocks a bottle over, but it does not break.",
+    "requires": [
+     "f_all_keys"
+    ],
+    "establishes": []
+   },
+   "e_set_tide": {
+    "function": "ending",
+    "event": "Tink swings its arms and the shed shelf wobbles. Explorer tidies up and must start over.",
+    "requires": [
+     "f_all_keys"
+    ],
+    "establishes": []
+   },
+   "cv_door": {
+    "function": "merge",
+    "event": "Explorer meets a clockmaker who is fixing a tiny music box.",
+    "requires": [
+     "f_all_keys"
+    ],
+    "establishes": []
+   },
+   "cv_window": {
+    "function": "decision",
+    "event": "The clockmaker shows how small gears turn one note at a time.",
+    "requires": [
+     "f_all_keys"
+    ],
+    "establishes": []
+   },
+   "cv_knock": {
+    "function": "merge",
+    "event": "Tink watches the gears with careful interest.",
+    "requires": [
+     "f_all_keys"
+    ],
+    "establishes": []
+   },
+   "cv_table": {
+    "function": "decision",
+    "event": "The clockmaker offers Tink a small wind-up tune to study.",
+    "requires": [
+     "f_all_keys"
+    ],
+    "establishes": []
+   },
+   "cv_shims": {
+    "function": "decision",
+    "event": "Explorer asks how the music box keeps time.",
+    "requires": [
+     "f_all_keys"
+    ],
+    "establishes": []
+   },
+   "cv_ondine": {
+    "function": "merge",
+    "event": "Tink copies the slow turn of a gear with one finger.",
+    "requires": [
+     "f_all_keys"
+    ],
+    "establishes": []
+   },
+   "e_disc_stories": {
+    "function": "ending",
+    "event": "Tink and Explorer learn that Tink loves taking things apart to see how they work, which is a new talent for another day.",
+    "requires": [
+     "f_all_keys"
+    ],
+    "establishes": []
+   },
+   "ol_stairs": {
+    "function": "decision",
+    "event": "Explorer goes to the quiet old church hall with a big echoing room.",
+    "requires": [
+     "f_all_keys"
+    ],
+    "establishes": []
+   },
+   "ol_listen": {
+    "function": "decision",
+    "event": "Explorer claps and listens to the echo come back slowly.",
+    "requires": [
+     "f_all_keys"
+    ],
+    "establishes": []
+   },
+   "ol_loft": {
+    "function": "merge",
+    "event": "Tink copies the slow echo with soft taps on the floor.",
+    "requires": [
+     "f_all_keys"
+    ],
+    "establishes": []
+   },
+   "ol_key": {
+    "function": "decision",
+    "event": "Explorer finds a dusty choir stand and a box of sheet music.",
+    "requires": [
+     "f_all_keys"
+    ],
+    "establishes": []
+   },
+   "ol_after": {
+    "function": "decision",
+    "event": "Explorer picks out a short, easy tune from the sheets.",
+    "requires": [
+     "f_all_keys"
+    ],
+    "establishes": []
+   },
+   "ol_rolls": {
+    "function": "decision",
+    "event": "A caretaker offers to show a hidden cupboard.",
+    "requires": [
+     "f_all_keys"
+    ],
+    "establishes": []
+   },
+   "ol_crest": {
+    "function": "decision",
+    "event": "Tink hums along to the echo while Explorer thinks.",
+    "requires": [
+     "f_all_keys"
+    ],
+    "establishes": []
+   },
+   "e_set_bolt": {
+    "function": "ending",
+    "event": "Tink gets stuck behind the choir stand and it takes all day to free it.",
+    "requires": [
+     "f_all_keys"
+    ],
+    "establishes": []
+   },
+   "e_disc_waltz": {
+    "function": "ending",
+    "event": "The cupboard holds a box of old tuning forks, and Tink loves their hum. They are kept for another day.",
+    "requires": [
+     "f_all_keys"
+    ],
+    "establishes": []
+   },
+   "fin_approach": {
+    "function": "merge",
+    "event": "Back in the workshop Explorer taps a slow beat and Tink's fingers press one key at a time.",
+    "requires": [
+     "f_all_keys"
+    ],
+    "establishes": [
+     "f_listen"
+    ]
+   },
+   "fin_notice": {
+    "function": "decision",
+    "event": "Tink's fingers slip back to pressing everything, so Explorer thinks about looking for more help.",
+    "requires": [
+     "f_all_keys",
+     "f_listen"
+    ],
+    "establishes": []
+   },
+   "fin_climb": {
+    "function": "merge",
+    "event": "Explorer sets bottle chimes beside the piano to stand in for the three missing keys.",
+    "requires": [
+     "f_all_keys",
+     "f_listen"
+    ],
+    "establishes": [
+     "f_gap"
+    ]
+   },
+   "fin_pry": {
+    "function": "decision",
+    "event": "Mr Brisk peeks in and doubts that this will work.",
+    "requires": [
+     "f_all_keys",
+     "f_listen",
+     "f_gap"
+    ],
+    "establishes": []
+   },
+   "fin_press": {
+    "function": "merge",
+    "event": "Tink practises the tune slowly with the piano and chimes until it plays from start to finish.",
+    "requires": [
+     "f_all_keys",
+     "f_listen",
+     "f_gap"
+    ],
+    "establishes": [
+     "f_tune"
+    ]
+   },
+   "fin_drawings": {
+    "function": "decision",
+    "event": "It is music night. Explorer chooses how Tink will be introduced to the crowd.",
+    "requires": [
+     "f_listen",
+     "f_gap",
+     "f_tune"
+    ],
+    "establishes": []
+   },
+   "e_set_home": {
+    "function": "ending",
+    "event": "Mr Brisk loads Tink onto his cart before the practice is done, then agrees to wait one more day.",
+    "requires": [
+     "f_all_keys",
+     "f_listen",
+     "f_gap"
+    ],
+    "establishes": []
+   },
+   "r_caretaker": {
+    "function": "decision",
+    "event": "Explorer steps up and says a few words about Tink.",
+    "requires": [
+     "f_tune"
+    ],
+    "establishes": []
+   },
+   "r_meeting": {
+    "function": "continue",
+    "event": "The crowd goes quiet as Tink sits at the piano.",
+    "requires": [
+     "f_tune"
+    ],
+    "establishes": []
+   },
+   "r_inspector": {
+    "function": "continue",
+    "event": "Explorer counts the beat aloud for Tink.",
+    "requires": [
+     "f_tune"
+    ],
+    "establishes": []
+   },
+   "r_family": {
+    "function": "decision",
+    "event": "Explorer lets Tink go on first, all on its own.",
+    "requires": [
+     "f_tune"
+    ],
+    "establishes": []
+   },
+   "r_fund": {
+    "function": "continue",
+    "event": "Tink's fingers move gently over the keys.",
+    "requires": [
+     "f_tune"
+    ],
+    "establishes": []
+   },
+   "r_crew": {
+    "function": "continue",
+    "event": "Tink waits for the beat, then begins.",
+    "requires": [
+     "f_tune"
+    ],
+    "establishes": []
+   },
+   "r_townhall": {
+    "function": "decision",
+    "event": "Explorer invites the town to clap the slow beat.",
+    "requires": [
+     "f_tune"
+    ],
+    "establishes": []
+   },
+   "r_council": {
+    "function": "continue",
+    "event": "The whole hall claps in time and Tink plays along.",
+    "requires": [
+     "f_tune"
+    ],
+    "establishes": []
+   },
+   "r_paper": {
+    "function": "continue",
+    "event": "Explorer and Tink play side by side, one on chimes.",
+    "requires": [
+     "f_tune"
+    ],
+    "establishes": []
+   },
+   "e_festival": {
+    "function": "ending",
+    "event": "Tink plays its first tune perfectly and the crowd cheers. Mr Brisk says Tink may stay.",
+    "requires": [
+     "f_tune"
+    ],
+    "establishes": []
+   },
+   "e_permit": {
+    "function": "ending",
+    "event": "Tink finishes the tune with a flourish and Mr Brisk tips his hat.",
+    "requires": [
+     "f_tune"
+    ],
+    "establishes": []
+   },
+   "e_fund": {
+    "function": "ending",
+    "event": "Tink plays on its own and the town applauds. Tink gets a home in the workshop.",
+    "requires": [
+     "f_tune"
+    ],
+    "establishes": []
+   },
+   "e_crew": {
+    "function": "ending",
+    "event": "Tink plays gently, and a child asks to learn from it.",
+    "requires": [
+     "f_tune"
+    ],
+    "establishes": []
+   },
+   "e_council": {
+    "function": "ending",
+    "event": "The clapping crowd and Tink finish together, and Tink is proudly named the town's music robot.",
+    "requires": [
+     "f_tune"
+    ],
+    "establishes": []
+   },
+   "e_paper": {
+    "function": "ending",
+    "event": "Explorer and Tink bow together and walk home happily.",
+    "requires": [
+     "f_tune"
+    ],
+    "establishes": []
+   }
+  },
+  "choices": {
+   "c_start_out": {
+    "intent": "See what the squeaky robot is",
+    "cost": "none",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_gate_midway": {
+    "intent": "Try the old piano with Tink",
+    "cost": "none",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_notice_hub": {
+    "intent": "Hear what Mr Brisk wants",
+    "cost": "none",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_hub_booth": {
+    "intent": "Ask at the music shop",
+    "cost": "Gives up the park, library and other trips for now",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_hub_mirrors": {
+    "intent": "Visit the park band",
+    "cost": "Gives up the shop and other trips for now",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_hub_workshop": {
+    "intent": "Go to the library",
+    "cost": "Gives up quiet time elsewhere",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_hub_boardwalk": {
+    "intent": "Follow the tinkling sound",
+    "cost": "Leaves the town trips for later",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_hub_caravan": {
+    "intent": "Find the clockmaker",
+    "cost": "Leaves the other helpers waiting",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_hub_organ": {
+    "intent": "Try the church hall",
+    "cost": "Leaves the busy places behind",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_hub_carousel": {
+    "intent": "Go straight back to practise",
+    "cost": "Skips meeting any helper",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_tb_ledgers": {
+    "intent": "Talk with the tuner",
+    "cost": "Skips the back room",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_tb_office": {
+    "intent": "Look in the back room",
+    "cost": "Skips the tuner's advice",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_tb_recent": {
+    "intent": "Dig through the part box",
+    "cost": "Gives up the hammer search",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_tb_old": {
+    "intent": "Ask for the tiny hammer",
+    "cost": "Gives up the part box",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_tb_recent_hub": {
+    "intent": "Go back and choose again",
+    "cost": "Leaves with no useful part",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_tb_recent_fin": {
+    "intent": "Take the idea home to practise",
+    "cost": "Skips other places to visit",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_tb_old_hub": {
+    "intent": "Return to the start of the search",
+    "cost": "Leaves the hammer behind",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_tb_old_fin": {
+    "intent": "Rush home with the hammer",
+    "cost": "Skips asking anyone else",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_tb_photo": {
+    "intent": "Test the dusty drum",
+    "cost": "Leaves the other instruments untouched",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_tb_chair": {
+    "intent": "Let Tink explore the instruments",
+    "cost": "Risks losing track of Tink",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_tb_photo_hub": {
+    "intent": "Retry another place",
+    "cost": "Leaves the drum idea unused",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_tb_photo_fin": {
+    "intent": "Practise the steady beat at home",
+    "cost": "Gives up more exploring",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_hm_tall": {
+    "intent": "Ask the drummer for help",
+    "cost": "Gives up the flute lesson",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_hm_bent": {
+    "intent": "Ask the flute player",
+    "cost": "Gives up the drummer's lesson",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_hm_hello": {
+    "intent": "Wait and listen first",
+    "cost": "Spends time doing nothing",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_hm_echo_glint": {
+    "intent": "Join the band leader",
+    "cost": "none",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_hm_tall_rotunda": {
+    "intent": "Move on to the band leader",
+    "cost": "Ends the drum lesson early",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_hm_tall_hub": {
+    "intent": "Go back to the start",
+    "cost": "Gives up this lesson",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_hm_bent_steady": {
+    "intent": "Move on to the band leader",
+    "cost": "Gives up the flute song",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_hm_bent_plank": {
+    "intent": "Let Tink squeal along",
+    "cost": "Risks making a noise",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_hm_plank_rotunda": {
+    "intent": "Join the band leader",
+    "cost": "Leaves the flute behind",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_hm_plank_hub": {
+    "intent": "Retreat and rethink",
+    "cost": "Gives up the band",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_hm_swing": {
+    "intent": "Borrow the metronome",
+    "cost": "Gives up the lesson offer",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_hm_flicker": {
+    "intent": "Take the band lesson",
+    "cost": "Gives up the metronome",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_hm_dash": {
+    "intent": "Let Tink try the big drum",
+    "cost": "Risks upsetting the band",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_hm_behind_fin": {
+    "intent": "Take the metronome home",
+    "cost": "Skips the rest of the park",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_hm_behind_hub": {
+    "intent": "Look elsewhere",
+    "cost": "Leaves the metronome behind",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_hm_flicker_fin": {
+    "intent": "Go home to practise the lesson",
+    "cost": "Skips other places",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_hm_flicker_hub": {
+    "intent": "Go elsewhere for more ideas",
+    "cost": "Leaves the lesson unfinished",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_ws_tools": {
+    "intent": "Ask the librarian",
+    "cost": "Gives up the listening booth",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_ws_horse": {
+    "intent": "Use the listening booth",
+    "cost": "Gives up the librarian's book",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_ws_bench": {
+    "intent": "Browse the shelves",
+    "cost": "Gives up quiet focus",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_ws_tools_fin": {
+    "intent": "Borrow the book and go home",
+    "cost": "Gives up the booth",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_ws_tools_hub": {
+    "intent": "Search again",
+    "cost": "Leaves the book behind",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_ws_horse_bench": {
+    "intent": "Listen to a lullaby",
+    "cost": "Gives up other records",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_ws_horse_hub": {
+    "intent": "Go back out",
+    "cost": "Leaves the booth",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_ws_bench_fin": {
+    "intent": "Head home to practise",
+    "cost": "Gives up the paper beat",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_ws_bench_crate": {
+    "intent": "Write down the beat",
+    "cost": "Takes extra time",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_ws_bench_hub": {
+    "intent": "Search elsewhere",
+    "cost": "Leaves the lullaby",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_ws_crate_fin": {
+    "intent": "Take the paper home",
+    "cost": "Gives up further searching",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_ws_crate_hub": {
+    "intent": "Look for more help",
+    "cost": "Leaves the paper behind",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_bw_pilings": {
+    "intent": "Step carefully into the shed",
+    "cost": "Gives up the safe doorway",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_bw_catwalk": {
+    "intent": "Test the nearest bottle",
+    "cost": "Skips looking at the whole shed",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_bw_footing": {
+    "intent": "Ask the neighbour about bottles",
+    "cost": "Gives up testing them yourself",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_bw_ladder": {
+    "intent": "Test the bottles gently",
+    "cost": "Gives up asking right away",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_bw_arches": {
+    "intent": "Let Tink swing its arms",
+    "cost": "Risks knocking the shelf",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_bw_beam": {
+    "intent": "Take the neighbour's offer",
+    "cost": "Gives up more testing",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_bw_pierhead": {
+    "intent": "Let Tink ring a bottle",
+    "cost": "Gives up taking the loan",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_bw_footing_fin": {
+    "intent": "Take the bottles to the workshop",
+    "cost": "Gives up the shed",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_bw_footing_hub": {
+    "intent": "Go find another helper",
+    "cost": "Leaves the bottles behind",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_bw_watch": {
+    "intent": "Line up the bottles",
+    "cost": "Gives up more play",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_bw_call": {
+    "intent": "Let Tink keep ringing",
+    "cost": "Risks a tipped bottle",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_bw_watch_fin": {
+    "intent": "Carry the bottles home",
+    "cost": "Skips further searching",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_bw_watch_hub": {
+    "intent": "Search elsewhere",
+    "cost": "Leaves the line of bottles",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_bw_call_caravan": {
+    "intent": "Visit the clockmaker",
+    "cost": "Leaves the shed",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_bw_call_hub": {
+    "intent": "Start again",
+    "cost": "Gives up the shed idea",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_cv_knock": {
+    "intent": "Ask about the gears",
+    "cost": "Gives up the music box tour",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_cv_window": {
+    "intent": "Watch the music box",
+    "cost": "Gives up gear talk",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_cv_window_knock": {
+    "intent": "Study the gears",
+    "cost": "Leaves the music box",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_cv_window_slip": {
+    "intent": "Go back to the start",
+    "cost": "Leaves the clockmaker",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_cv_sit": {
+    "intent": "Let Tink watch",
+    "cost": "none",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_cv_favorite": {
+    "intent": "Accept the wind-up tune",
+    "cost": "Gives up asking questions",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_cv_shims": {
+    "intent": "Ask how it keeps time",
+    "cost": "Gives up the wind-up tune for now",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_cv_stories": {
+    "intent": "Let Tink take the music box apart",
+    "cost": "Risks breaking it",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_cv_shims_ondine": {
+    "intent": "Follow the gear idea",
+    "cost": "Gives up the clockmaker's talk",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_cv_shims_hub": {
+    "intent": "Leave to search elsewhere",
+    "cost": "Gives up the answer",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_cv_go": {
+    "intent": "Go home to practise",
+    "cost": "Skips the other helpers",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_cv_think": {
+    "intent": "Search again",
+    "cost": "Leaves the gear idea",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_ol_climb": {
+    "intent": "Clap and listen to the echo",
+    "cost": "Gives up exploring the hall",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_ol_listen": {
+    "intent": "Walk across the hall",
+    "cost": "Gives up the echo for now",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_ol_up": {
+    "intent": "Let Tink copy the echo",
+    "cost": "Gives up the walk",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_ol_down": {
+    "intent": "Leave the hall",
+    "cost": "Gives up the echo",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_ol_key": {
+    "intent": "Look at the choir stand",
+    "cost": "Gives up the cupboard",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_ol_rolls": {
+    "intent": "Ask the caretaker",
+    "cost": "Gives up the choir stand",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_ol_crest": {
+    "intent": "Let Tink hum along",
+    "cost": "Gives up searching",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_ol_freeze": {
+    "intent": "Read the sheet music",
+    "cost": "Gives up exploring the stand",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_ol_bolt": {
+    "intent": "Let Tink climb the stand",
+    "cost": "Risks getting stuck",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_ol_after_fin": {
+    "intent": "Take the tune home",
+    "cost": "Skips other places",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_ol_after_hub": {
+    "intent": "Go find more help",
+    "cost": "Leaves the tune",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_ol_rolls_fin": {
+    "intent": "Go home to practise",
+    "cost": "Skips the cupboard",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_ol_rolls_home": {
+    "intent": "Open the cupboard",
+    "cost": "Gives up going home yet",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_ol_rolls_hub": {
+    "intent": "Go back out",
+    "cost": "Leaves the caretaker",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_ol_crest_fin": {
+    "intent": "Carry the idea home",
+    "cost": "Gives up the hall",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_ol_crest_hub": {
+    "intent": "Go find another helper",
+    "cost": "Leaves the echo",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_fin_climb": {
+    "intent": "Carry on with the chimes",
+    "cost": "Skips resting",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_fin_notice": {
+    "intent": "Test another beat",
+    "cost": "Takes more time",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_fin_notice_climb": {
+    "intent": "Try the beat again",
+    "cost": "Gives up looking for help",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_fin_notice_hub": {
+    "intent": "Search for more help",
+    "cost": "Gives up practising now",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_fin_press": {
+    "intent": "Ignore Mr Brisk and practise",
+    "cost": "Leaves his doubt in place",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_fin_pry": {
+    "intent": "Talk to Mr Brisk",
+    "cost": "Costs practice time",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_fin_pry_press": {
+    "intent": "Show Mr Brisk what Tink can do",
+    "cost": "Takes time from practice",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_fin_pry_home": {
+    "intent": "Let Mr Brisk take Tink away now",
+    "cost": "Gives up the music night",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_fin_open": {
+    "intent": "Prepare for music night",
+    "cost": "none",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_fin_caretaker": {
+    "intent": "Speak up for Tink",
+    "cost": "Gives up letting Tink go first",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_fin_family": {
+    "intent": "Let Tink go first",
+    "cost": "Gives up your speech",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_fin_town": {
+    "intent": "Ask the crowd to clap along",
+    "cost": "Gives up Tink going alone",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_r_meeting": {
+    "intent": "Wait in silence",
+    "cost": "Gives up counting aloud",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_r_inspector": {
+    "intent": "Count the beat aloud",
+    "cost": "Gives up the silence",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_r_meeting_end": {
+    "intent": "Let the song begin",
+    "cost": "none",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_r_inspector_end": {
+    "intent": "Let the song begin",
+    "cost": "none",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_r_fund": {
+    "intent": "Let Tink start gently",
+    "cost": "Gives up waiting for the beat",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_r_crew": {
+    "intent": "Wait for the beat",
+    "cost": "Gives up an early start",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_r_fund_end": {
+    "intent": "Let the song play",
+    "cost": "none",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_r_crew_end": {
+    "intent": "Let the song play",
+    "cost": "none",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_r_council": {
+    "intent": "Let the town clap",
+    "cost": "Gives up a quiet start",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_r_paper": {
+    "intent": "Play beside Tink",
+    "cost": "Gives up the crowd's clapping",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_r_council_end": {
+    "intent": "Let the song play",
+    "cost": "none",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_r_paper_end": {
+    "intent": "Let the song play",
+    "cost": "none",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   }
+  },
+  "threads": {},
+  "endings": {
+   "e_set_doze": {
+    "gift": "A funny chase for Tink and a reason to pick a different trip next time.",
+    "valence": null,
+    "kind": null
+   },
+   "e_set_lost": {
+    "gift": "A laugh at the big drum bang and a reason to try a gentler path.",
+    "valence": null,
+    "kind": null
+   },
+   "e_set_tide": {
+    "gift": "A giggle at the wobbly shelf and a nudge to try the bottles more gently.",
+    "valence": null,
+    "kind": null
+   },
+   "e_disc_stories": {
+    "gift": "A reveal that Tink loves taking things apart, plus a reason to explore again.",
+    "valence": null,
+    "kind": null
+   },
+   "e_set_bolt": {
+    "gift": "A silly stuck robot moment and a reason to try the hall again.",
+    "valence": null,
+    "kind": null
+   },
+   "e_disc_waltz": {
+    "gift": "A reveal of hidden tuning forks that Tink loves, and a reason to look again.",
+    "valence": null,
+    "kind": null
+   },
+   "e_set_home": {
+    "gift": "A tense moment that shows how much Tink matters, and a reason to try again.",
+    "valence": null,
+    "kind": null
+   },
+   "e_festival": {
+    "gift": "A warm win as Tink plays its first tune and keeps its home.",
+    "valence": null,
+    "kind": null
+   },
+   "e_permit": {
+    "gift": "A proud finish with a tip of Mr Brisk's hat.",
+    "valence": null,
+    "kind": null
+   },
+   "e_fund": {
+    "gift": "A happy ending with a new home for Tink and a cheering crowd.",
+    "valence": null,
+    "kind": null
+   },
+   "e_crew": {
+    "gift": "A sweet ending where a child wants to learn from Tink.",
+    "valence": null,
+    "kind": null
+   },
+   "e_council": {
+    "gift": "A cheerful ending with the whole town playing along.",
+    "valence": null,
+    "kind": null
+   },
+   "e_paper": {
+    "gift": "A gentle ending of friends bowing together and walking home.",
+    "valence": null,
+    "kind": null
+   }
+  },
+  "provenance": {
+   "producer": "cyo_adventure.storyplan.generate",
+   "model": "anthropic/claude-sonnet-5.5",
+   "method": "generated",
+   "shape": {
+    "id": "the-locked-carousel",
+    "hash": "sha256:66d70a41cd1c65581a19f1c81e411ec4caf234db3939dbf5d91bb44be1c28393"
+   },
+   "book_file": null,
+   "book_sha256": null,
+   "authored": "2026-11-21",
+   "authoring_minutes": null,
+   "checks": {
+    "ok": true,
+    "errors": 0,
+    "warnings": 0
+   },
+   "approver": null,
+   "notes": [
+    "built from model pitch 1 of 3"
+   ]
+  }
+ },
+ "totals": {
+  "calls": 2,
+  "input_tokens": 7210,
+  "output_tokens": 10903,
+  "reasoning_tokens": 1507,
+  "cost_estimate_usd": 0.12345,
+  "vendor_cost_usd": 0.118571,
+  "provider_seconds": 74.5
+ },
+ "budget": {
+  "budget_usd": 7.72,
+  "spent_before_usd": 0.515924,
+  "spent_after_usd": 0.639374
+ }
+}

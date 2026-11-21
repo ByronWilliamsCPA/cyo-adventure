@@ -1,0 +1,1768 @@
+{
+ "run": 1,
+ "request": {
+  "id": "P01",
+  "source": "docs/planning/evidence/short-request-panel/panel.json requests[id=P01]",
+  "text": "a story about my dog who gets lost in the woods",
+  "band": "8-11",
+  "length": "short",
+  "style": "prose",
+  "selection_note": "panel order, band 8-11 first (panel README); length short as fixed"
+ },
+ "shape": {
+  "id": "the-locked-carousel",
+  "hash": "sha256:66d70a41cd1c65581a19f1c81e411ec4caf234db3939dbf5d91bb44be1c28393",
+  "selection": "cell pick (authoring_plan._pick_shape, seeded by request id)",
+  "cell": {
+   "band": "8-11",
+   "length": "short",
+   "style": "prose"
+  },
+  "cell_candidates": [
+   "the-cave-of-echoes",
+   "the-half-hour-call",
+   "the-locked-carousel",
+   "the-robot-fair-sabotage"
+  ],
+  "retained_in_cell": [
+   "the-locked-carousel",
+   "the-cave-of-echoes"
+  ],
+  "nodes": 71,
+  "choices": 118,
+  "variables": 0,
+  "request_seed_id": "f7ef8bd7-04cb-54e9-a23f-4d99a6ceb7a7"
+ },
+ "model": "anthropic/claude-sonnet-5.5",
+ "reasoning": "explicit: llm_effort='low' sent as reasoning.effort",
+ "max_repairs": 2,
+ "brief": {
+  "premise": "a story about my dog who gets lost in the woods",
+  "protagonist": {
+   "name": "Explorer",
+   "age": 8,
+   "role": "a curious young adventurer"
+  },
+  "point_of_view": "second",
+  "age_band": "8-11",
+  "tone": "gentle",
+  "themes_allowed": [],
+  "content_nogo": []
+ },
+ "stage0": {
+  "status": "skipped",
+  "reason": "no OPENAI_API_KEY in this environment (owner-approved skip, 2026-11-21); production classifier_screen(None) ran and called nothing",
+  "pitch_strings_offered": 5
+ },
+ "calls": [
+  {
+   "index": 0,
+   "kind": "pitch",
+   "max_tokens": 2000,
+   "prompt_chars": 2648,
+   "worst_case_usd": 0.02265,
+   "spent_before_usd": 0.0,
+   "model": "anthropic/claude-sonnet-5.5",
+   "provider": "openrouter",
+   "input_tokens": 1006,
+   "output_tokens": 514,
+   "reasoning_tokens": 0,
+   "finish_reason": "stop",
+   "cost_estimate_usd": 0.007152,
+   "vendor_cost_usd": 0.005938,
+   "latency_s": 4.9,
+   "provider_duration_ms": 4876,
+   "response_chars": 1399
+  },
+  {
+   "index": 1,
+   "kind": "plan_1",
+   "max_tokens": 32000,
+   "prompt_chars": 14415,
+   "worst_case_usd": 0.334416,
+   "spent_before_usd": 0.007152,
+   "model": "anthropic/claude-sonnet-5.5",
+   "provider": "openrouter",
+   "input_tokens": 6220,
+   "output_tokens": 9722,
+   "reasoning_tokens": 1148,
+   "finish_reason": "stop",
+   "cost_estimate_usd": 0.10966,
+   "vendor_cost_usd": 0.105995,
+   "latency_s": 61.8,
+   "provider_duration_ms": 61771,
+   "response_chars": 19641
+  }
+ ],
+ "wall_seconds": 66.7,
+ "stopped": null,
+ "story_plan_status": "checked",
+ "attempts": 1,
+ "stage_log": [
+  "pitch:1",
+  "plan:1:errors=0"
+ ],
+ "pitches": [
+  {
+   "index": 0,
+   "source": "model",
+   "passed": true,
+   "reasons": [],
+   "advisories": [],
+   "pitch": {
+    "hero": "Explorer, a curious 8-year-old adventurer with a small brown dog named Biscuit",
+    "want": "To find Biscuit and bring him safely home before dark",
+    "obstacle": "The woods have many forking trails and Biscuit's paw prints keep vanishing in the leaves",
+    "stake": "Biscuit could spend the night alone and Explorer would lose the best friend who walks beside them every day",
+    "ending_kind": "a warm reunion at home with Biscuit curled up by the fire"
+   }
+  },
+  {
+   "index": 1,
+   "source": "model",
+   "passed": false,
+   "reasons": [
+    "not screened"
+   ],
+   "advisories": [],
+   "pitch": null
+  },
+  {
+   "index": 2,
+   "source": "model",
+   "passed": false,
+   "reasons": [
+    "not screened"
+   ],
+   "advisories": [],
+   "pitch": null
+  }
+ ],
+ "attempt_findings": [
+  {
+   "attempt": 1,
+   "loaded": true,
+   "dropped_keys": [],
+   "ok": true,
+   "errors_by_rule": {},
+   "warnings_by_rule": {},
+   "findings": []
+  }
+ ],
+ "replay_consistent": true,
+ "final_checks": {
+  "ok": true,
+  "findings": []
+ },
+ "load_errors": [],
+ "plan": {
+  "plan_version": "0.1",
+  "book": null,
+  "request": {
+   "text": "a story about my dog who gets lost in the woods",
+   "band": "8-11",
+   "length": "short",
+   "style": "prose",
+   "tone": null,
+   "note": null
+  },
+  "pitch": {
+   "hero": "Explorer, a curious 8-year-old adventurer with a small brown dog named Biscuit",
+   "want": "To find Biscuit and bring him safely home before dark",
+   "obstacle": "The woods have many forking trails and Biscuit's paw prints keep vanishing in the leaves",
+   "stake": "Biscuit could spend the night alone and Explorer would lose the best friend who walks beside them every day",
+   "ending_kind": "a warm reunion at home with Biscuit curled up by the fire"
+  },
+  "cast": {
+   "explorer": {
+    "name": "Explorer",
+    "role": "curious 8-year-old adventurer, the hero",
+    "want": "Find Biscuit and bring him home before dark",
+    "voice": "Bright, brave and curious",
+    "knows": [
+     "f_lost",
+     "f_dark",
+     "f_prints"
+    ]
+   },
+   "biscuit": {
+    "name": "Biscuit",
+    "role": "Explorer's small brown dog, lost in the woods",
+    "want": "To be found and go home to the fire",
+    "voice": "Happy yips and soft whines",
+    "knows": [
+     "f_cause",
+     "f_hollow"
+    ]
+   },
+   "owl": {
+    "name": "Old Owl",
+    "role": "wise woodland helper who hints at the creek",
+    "want": "To help a worried child",
+    "voice": "Slow, kind and hooting",
+    "knows": [
+     "f_path"
+    ]
+   }
+  },
+  "truth": {
+   "statement": "Biscuit chased a rabbit, got tired and scratched a paw, and rested in a hollow log by the creek. Following the creek downstream leads Explorer and Biscuit safely home.",
+   "facts": [
+    "f_cause",
+    "f_hollow",
+    "f_path"
+   ],
+   "question": "Where did Biscuit go, and how can Explorer bring him home?"
+  },
+  "facts": {
+   "f_lost": {
+    "text": "Biscuit has run off and is lost somewhere in the woods.",
+    "contradicts": [],
+    "implicit_plant": null
+   },
+   "f_dark": {
+    "text": "Explorer must find Biscuit and be home before dark.",
+    "contradicts": [],
+    "implicit_plant": null
+   },
+   "f_prints": {
+    "text": "Biscuit's paw prints keep vanishing in the fallen leaves at the forking trails.",
+    "contradicts": [],
+    "implicit_plant": null
+   },
+   "f_cause": {
+    "text": "Biscuit chased a rabbit deep into the woods and tired himself out.",
+    "contradicts": [],
+    "implicit_plant": null
+   },
+   "f_hollow": {
+    "text": "Biscuit is resting in a hollow log beside the creek with a sore paw.",
+    "contradicts": [],
+    "implicit_plant": null
+   },
+   "f_path": {
+    "text": "Following the creek downstream leads back to home.",
+    "contradicts": [],
+    "implicit_plant": null
+   }
+  },
+  "nodes": {
+   "n_start": {
+    "function": "opening",
+    "event": "Explorer notices that Biscuit has slipped away from the garden gate toward the woods.",
+    "requires": [],
+    "establishes": [
+     "f_lost"
+    ]
+   },
+   "n_gate": {
+    "function": "continue",
+    "event": "Explorer looks at the sinking sun and knows there is only a little daylight left.",
+    "requires": [
+     "f_lost"
+    ],
+    "establishes": [
+     "f_dark"
+    ]
+   },
+   "n_notice": {
+    "function": "continue",
+    "event": "At the edge of the woods Explorer finds paw prints that fade into the leaves.",
+    "requires": [
+     "f_lost",
+     "f_dark"
+    ],
+    "establishes": [
+     "f_prints"
+    ]
+   },
+   "n_hub": {
+    "function": "merge",
+    "event": "Explorer stands at a crossroads of many forking trails and picks where to search.",
+    "requires": [
+     "f_lost",
+     "f_dark",
+     "f_prints"
+    ],
+    "establishes": []
+   },
+   "tb_booth": {
+    "function": "decision",
+    "event": "Explorer follows a trail of crunchy leaves and reaches a fork by mossy stones.",
+    "requires": [
+     "f_lost"
+    ],
+    "establishes": []
+   },
+   "tb_ledgers": {
+    "function": "decision",
+    "event": "Explorer hears a rustle and checks behind a fern, finding only a chipmunk.",
+    "requires": [
+     "f_lost"
+    ],
+    "establishes": []
+   },
+   "tb_recent": {
+    "function": "decision",
+    "event": "Explorer finds a chewed stick and wonders if Biscuit played here.",
+    "requires": [
+     "f_lost"
+    ],
+    "establishes": []
+   },
+   "tb_old": {
+    "function": "decision",
+    "event": "Explorer finds a muddy puddle with small tracks that turn out to be a bird's.",
+    "requires": [
+     "f_lost"
+    ],
+    "establishes": []
+   },
+   "tb_office": {
+    "function": "decision",
+    "event": "Explorer climbs a small slope and sees two paths below.",
+    "requires": [
+     "f_lost"
+    ],
+    "establishes": []
+   },
+   "tb_photo": {
+    "function": "decision",
+    "event": "Explorer finds a bramble patch and a way around it.",
+    "requires": [
+     "f_lost"
+    ],
+    "establishes": []
+   },
+   "e_set_doze": {
+    "function": "ending",
+    "event": "Explorer takes a wrong turn and circles back to the stones, tired but ready to try again.",
+    "requires": [
+     "f_lost"
+    ],
+    "establishes": []
+   },
+   "hm_door": {
+    "function": "decision",
+    "event": "Explorer reaches a berry thicket where three narrow trails split.",
+    "requires": [
+     "f_lost"
+    ],
+    "establishes": []
+   },
+   "hm_echo": {
+    "function": "continue",
+    "event": "Explorer pushes through the thicket and comes out on a wider path.",
+    "requires": [
+     "f_lost"
+    ],
+    "establishes": []
+   },
+   "hm_tall": {
+    "function": "decision",
+    "event": "Explorer finds a bent twig pointing along one trail.",
+    "requires": [
+     "f_lost"
+    ],
+    "establishes": []
+   },
+   "hm_bent": {
+    "function": "decision",
+    "event": "Explorer spots a tuft of brown fur on a branch.",
+    "requires": [
+     "f_lost"
+    ],
+    "establishes": []
+   },
+   "hm_plank": {
+    "function": "decision",
+    "event": "Explorer follows the fur trail to a leafy dip in the ground.",
+    "requires": [
+     "f_lost"
+    ],
+    "establishes": []
+   },
+   "hm_rotunda": {
+    "function": "merge",
+    "event": "Explorer joins a wider trail where the light is golden and the woods are quiet.",
+    "requires": [
+     "f_lost"
+    ],
+    "establishes": []
+   },
+   "hm_behind": {
+    "function": "decision",
+    "event": "Explorer calls Biscuit's name and hears an echo from the hills.",
+    "requires": [
+     "f_lost"
+    ],
+    "establishes": []
+   },
+   "hm_flicker": {
+    "function": "decision",
+    "event": "Explorer finds a hollow tree with acorns inside, but no dog.",
+    "requires": [
+     "f_lost"
+    ],
+    "establishes": []
+   },
+   "e_set_lost": {
+    "function": "ending",
+    "event": "Explorer sits to rest on a log, then decides to head back and begin again.",
+    "requires": [
+     "f_lost"
+    ],
+    "establishes": []
+   },
+   "ws_door": {
+    "function": "decision",
+    "event": "Explorer enters a pine grove where needles hide every print.",
+    "requires": [
+     "f_lost"
+    ],
+    "establishes": []
+   },
+   "ws_tools": {
+    "function": "decision",
+    "event": "Explorer follows the sound of a tiny bell, which turns out to be a distant wind chime.",
+    "requires": [
+     "f_lost"
+    ],
+    "establishes": []
+   },
+   "ws_horse": {
+    "function": "decision",
+    "event": "Explorer crosses a mossy log over a dry ditch.",
+    "requires": [
+     "f_lost"
+    ],
+    "establishes": []
+   },
+   "ws_bench": {
+    "function": "merge",
+    "event": "Explorer reaches a clearing with a big flat rock and a view of the woods.",
+    "requires": [
+     "f_lost"
+    ],
+    "establishes": []
+   },
+   "ws_crate": {
+    "function": "decision",
+    "event": "Explorer climbs the rock and sees a thin ribbon of water glinting far off.",
+    "requires": [
+     "f_lost"
+    ],
+    "establishes": []
+   },
+   "bw_steps": {
+    "function": "decision",
+    "event": "Explorer follows a faint trail past tall ferns and a leaning birch.",
+    "requires": [
+     "f_lost"
+    ],
+    "establishes": []
+   },
+   "bw_pilings": {
+    "function": "decision",
+    "event": "Explorer meets a friendly squirrel who chatters toward the hills.",
+    "requires": [
+     "f_lost"
+    ],
+    "establishes": []
+   },
+   "bw_catwalk": {
+    "function": "merge",
+    "event": "Explorer arrives at a small meadow full of buzzing bees and tall grass.",
+    "requires": [
+     "f_lost"
+    ],
+    "establishes": []
+   },
+   "bw_footing": {
+    "function": "merge",
+    "event": "Explorer finds a trail marker carved into a tree and thinks about where it leads.",
+    "requires": [
+     "f_lost"
+    ],
+    "establishes": []
+   },
+   "bw_pierhead": {
+    "function": "decision",
+    "event": "Explorer hears a soft yip that fades before it can be placed.",
+    "requires": [
+     "f_lost"
+    ],
+    "establishes": []
+   },
+   "bw_watch": {
+    "function": "decision",
+    "event": "Explorer follows the yip to a stump and finds only an echo.",
+    "requires": [
+     "f_lost"
+    ],
+    "establishes": []
+   },
+   "bw_call": {
+    "function": "decision",
+    "event": "Explorer tiptoes toward another sound and finds a family of frogs.",
+    "requires": [
+     "f_lost"
+    ],
+    "establishes": []
+   },
+   "e_set_tide": {
+    "function": "ending",
+    "event": "Explorer wanders so far that the trail vanishes, and must turn around to try again.",
+    "requires": [
+     "f_lost"
+    ],
+    "establishes": []
+   },
+   "cv_door": {
+    "function": "merge",
+    "event": "Explorer finds a trail of flattened grass that looks fresh.",
+    "requires": [
+     "f_lost"
+    ],
+    "establishes": []
+   },
+   "cv_window": {
+    "function": "decision",
+    "event": "Explorer checks a muddy bank for prints and finds smudges.",
+    "requires": [
+     "f_lost"
+    ],
+    "establishes": []
+   },
+   "cv_knock": {
+    "function": "merge",
+    "event": "Explorer reaches a spot where long ears and a white tail once bounded past.",
+    "requires": [
+     "f_lost"
+    ],
+    "establishes": []
+   },
+   "cv_table": {
+    "function": "decision",
+    "event": "Explorer faces three directions: a rabbit burrow, a rocky path and a mossy slope.",
+    "requires": [
+     "f_lost"
+    ],
+    "establishes": []
+   },
+   "cv_shims": {
+    "function": "decision",
+    "event": "Explorer peeks into a rabbit burrow and sees only a sleepy rabbit.",
+    "requires": [
+     "f_lost"
+    ],
+    "establishes": []
+   },
+   "cv_ondine": {
+    "function": "merge",
+    "event": "Explorer rests a moment and spots a bright path through the trees.",
+    "requires": [
+     "f_lost"
+    ],
+    "establishes": []
+   },
+   "e_disc_stories": {
+    "function": "ending",
+    "event": "Explorer discovers a patch of wildflowers and a rabbit's nest, a lovely secret but not the answer.",
+    "requires": [
+     "f_lost"
+    ],
+    "establishes": []
+   },
+   "ol_stairs": {
+    "function": "decision",
+    "event": "Explorer walks beside a stone wall covered in ivy.",
+    "requires": [
+     "f_lost"
+    ],
+    "establishes": []
+   },
+   "ol_listen": {
+    "function": "decision",
+    "event": "Explorer finds a gap in the wall and wonders where it goes.",
+    "requires": [
+     "f_lost"
+    ],
+    "establishes": []
+   },
+   "ol_loft": {
+    "function": "merge",
+    "event": "Explorer reaches an old orchard with fallen apples and three paths.",
+    "requires": [
+     "f_lost"
+    ],
+    "establishes": []
+   },
+   "ol_key": {
+    "function": "decision",
+    "event": "Explorer checks under an apple tree and finds a half-chewed apple.",
+    "requires": [
+     "f_lost"
+    ],
+    "establishes": []
+   },
+   "ol_after": {
+    "function": "decision",
+    "event": "Explorer follows apple cores along a trail.",
+    "requires": [
+     "f_lost"
+    ],
+    "establishes": []
+   },
+   "ol_rolls": {
+    "function": "decision",
+    "event": "Explorer finds a rope swing and listens for any sound of Biscuit.",
+    "requires": [
+     "f_lost"
+    ],
+    "establishes": []
+   },
+   "ol_crest": {
+    "function": "decision",
+    "event": "Explorer hears faint water in the distance and walks toward it.",
+    "requires": [
+     "f_lost"
+    ],
+    "establishes": []
+   },
+   "e_set_bolt": {
+    "function": "ending",
+    "event": "Explorer gets turned around in the orchard and must go back to start again.",
+    "requires": [
+     "f_lost"
+    ],
+    "establishes": []
+   },
+   "e_disc_waltz": {
+    "function": "ending",
+    "event": "Explorer discovers a hidden swing spot with a pretty view, a happy find but not the way to Biscuit.",
+    "requires": [
+     "f_lost"
+    ],
+    "establishes": []
+   },
+   "fin_approach": {
+    "function": "merge",
+    "event": "Explorer finds a rabbit's tracks and Biscuit's tracks together, and sees what happened: Biscuit chased the rabbit.",
+    "requires": [
+     "f_lost"
+    ],
+    "establishes": [
+     "f_cause"
+    ]
+   },
+   "fin_notice": {
+    "function": "decision",
+    "event": "Explorer pauses to think over the tracks and checks the way back.",
+    "requires": [
+     "f_cause"
+    ],
+    "establishes": []
+   },
+   "fin_climb": {
+    "function": "merge",
+    "event": "Explorer hears a soft whimper and finds Biscuit resting in a hollow log by the creek.",
+    "requires": [
+     "f_cause"
+    ],
+    "establishes": [
+     "f_hollow"
+    ]
+   },
+   "fin_pry": {
+    "function": "decision",
+    "event": "Explorer hesitates by the creek, thinking about whether to rush ahead or look more carefully.",
+    "requires": [
+     "f_cause",
+     "f_hollow"
+    ],
+    "establishes": []
+   },
+   "fin_press": {
+    "function": "merge",
+    "event": "Old Owl hoots that following the creek downstream leads home, and Explorer sees Biscuit's sore paw.",
+    "requires": [
+     "f_cause",
+     "f_hollow"
+    ],
+    "establishes": [
+     "f_path"
+    ]
+   },
+   "fin_drawings": {
+    "function": "decision",
+    "event": "Explorer decides how to carry Biscuit home along the creek as the sky turns pink.",
+    "requires": [
+     "f_path"
+    ],
+    "establishes": []
+   },
+   "e_set_home": {
+    "function": "ending",
+    "event": "Explorer slips on a wet stone and has to start over from the creek bank, a little wiser.",
+    "requires": [
+     "f_cause",
+     "f_hollow"
+    ],
+    "establishes": []
+   },
+   "r_caretaker": {
+    "function": "decision",
+    "event": "Explorer lifts Biscuit gently and picks a safe way along the bank.",
+    "requires": [
+     "f_path"
+    ],
+    "establishes": []
+   },
+   "r_meeting": {
+    "function": "continue",
+    "event": "Explorer walks the stepping stones carefully with Biscuit in arms.",
+    "requires": [
+     "f_path"
+    ],
+    "establishes": []
+   },
+   "r_inspector": {
+    "function": "continue",
+    "event": "Explorer takes the grassy path beside the water, humming softly.",
+    "requires": [
+     "f_path"
+    ],
+    "establishes": []
+   },
+   "r_family": {
+    "function": "decision",
+    "event": "Explorer wraps Biscuit in a jacket and heads along the creek.",
+    "requires": [
+     "f_path"
+    ],
+    "establishes": []
+   },
+   "r_fund": {
+    "function": "continue",
+    "event": "Explorer follows the creek past a waterfall and sees familiar rooftops.",
+    "requires": [
+     "f_path"
+    ],
+    "establishes": []
+   },
+   "r_crew": {
+    "function": "continue",
+    "event": "Explorer follows lantern lights along the creek toward home.",
+    "requires": [
+     "f_path"
+    ],
+    "establishes": []
+   },
+   "r_townhall": {
+    "function": "decision",
+    "event": "Explorer coaxes Biscuit to walk slowly beside them along the creek.",
+    "requires": [
+     "f_path"
+    ],
+    "establishes": []
+   },
+   "r_council": {
+    "function": "continue",
+    "event": "Explorer and Biscuit cross a little bridge and spot the garden gate.",
+    "requires": [
+     "f_path"
+    ],
+    "establishes": []
+   },
+   "r_paper": {
+    "function": "continue",
+    "event": "Explorer and Biscuit pass the old orchard and reach the home path.",
+    "requires": [
+     "f_path"
+    ],
+    "establishes": []
+   },
+   "e_festival": {
+    "function": "ending",
+    "event": "Explorer carries Biscuit home before dark, and Biscuit curls up by the warm fire.",
+    "requires": [
+     "f_path"
+    ],
+    "establishes": []
+   },
+   "e_permit": {
+    "function": "ending",
+    "event": "Explorer brings Biscuit home as the stars appear, and Biscuit dozes by the fire.",
+    "requires": [
+     "f_path"
+    ],
+    "establishes": []
+   },
+   "e_fund": {
+    "function": "ending",
+    "event": "Explorer gets home at dusk and bandages Biscuit's paw while the fire glows.",
+    "requires": [
+     "f_path"
+    ],
+    "establishes": []
+   },
+   "e_crew": {
+    "function": "ending",
+    "event": "Explorer arrives home to cheers and Biscuit snuggles by the fire.",
+    "requires": [
+     "f_path"
+    ],
+    "establishes": []
+   },
+   "e_council": {
+    "function": "ending",
+    "event": "Explorer and Biscuit trot home together, and Biscuit curls up by the fire.",
+    "requires": [
+     "f_path"
+    ],
+    "establishes": []
+   },
+   "e_paper": {
+    "function": "ending",
+    "event": "Explorer and Biscuit reach home safe, and the fire crackles around them.",
+    "requires": [
+     "f_path"
+    ],
+    "establishes": []
+   }
+  },
+  "choices": {
+   "c_start_out": {
+    "intent": "Follow Biscuit toward the woods",
+    "cost": "none",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_gate_midway": {
+    "intent": "Hurry to the woods",
+    "cost": "none",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_notice_hub": {
+    "intent": "Step onto the trail",
+    "cost": "none",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_hub_booth": {
+    "intent": "Take the leafy trail",
+    "cost": "Gives up the other six trails",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_hub_mirrors": {
+    "intent": "Try the berry thicket",
+    "cost": "Gets scratched and skips other trails",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_hub_workshop": {
+    "intent": "Search the pine grove",
+    "cost": "Gives up the other trails and loses time",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_hub_boardwalk": {
+    "intent": "Follow the faint fern trail",
+    "cost": "Gives up the other trails",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_hub_caravan": {
+    "intent": "Follow the fresh flattened grass",
+    "cost": "Gives up the other trails",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_hub_organ": {
+    "intent": "Walk beside the ivy wall",
+    "cost": "Gives up the other trails and some daylight",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_hub_carousel": {
+    "intent": "Look for tracks ahead",
+    "cost": "Skips careful searching of the trails",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_tb_ledgers": {
+    "intent": "Check behind the ferns",
+    "cost": "Gives up the slope",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_tb_office": {
+    "intent": "Climb the slope for a view",
+    "cost": "Takes more time and effort",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_tb_recent": {
+    "intent": "Follow the chewed stick",
+    "cost": "Gives up the puddle",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_tb_old": {
+    "intent": "Check the puddle tracks",
+    "cost": "Gives up the stick",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_tb_recent_hub": {
+    "intent": "Go back to the crossroads",
+    "cost": "Loses the time spent",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_tb_recent_fin": {
+    "intent": "Push on toward new tracks",
+    "cost": "Risks getting more lost",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_tb_old_hub": {
+    "intent": "Return and choose again",
+    "cost": "Loses the time spent",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_tb_old_fin": {
+    "intent": "Follow the bird tracks onward",
+    "cost": "Risks a wrong turn",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_tb_photo": {
+    "intent": "Go around the brambles",
+    "cost": "Takes a long way",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_tb_chair": {
+    "intent": "Take the other path",
+    "cost": "May lead the wrong way",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_tb_photo_hub": {
+    "intent": "Retreat to the crossroads",
+    "cost": "Loses time",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_tb_photo_fin": {
+    "intent": "Press on beyond the brambles",
+    "cost": "Gets a few scratches",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_hm_tall": {
+    "intent": "Follow the bent twig",
+    "cost": "Gives up the fur",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_hm_bent": {
+    "intent": "Look for the brown fur",
+    "cost": "Gives up the twig",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_hm_hello": {
+    "intent": "Push straight through",
+    "cost": "Gets scratched",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_hm_echo_glint": {
+    "intent": "Walk on",
+    "cost": "none",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_hm_tall_rotunda": {
+    "intent": "Follow the twig onward",
+    "cost": "Skips the crossroads",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_hm_tall_hub": {
+    "intent": "Go back to the crossroads",
+    "cost": "Loses time",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_hm_bent_steady": {
+    "intent": "Follow the fur onward",
+    "cost": "Skips the dip",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_hm_bent_plank": {
+    "intent": "Check the leafy dip",
+    "cost": "Takes extra time",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_hm_plank_rotunda": {
+    "intent": "Move on to the wide trail",
+    "cost": "Leaves the dip unexplored",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_hm_plank_hub": {
+    "intent": "Go back to the crossroads",
+    "cost": "Loses time",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_hm_swing": {
+    "intent": "Call out for Biscuit",
+    "cost": "Gives up quiet listening",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_hm_flicker": {
+    "intent": "Check the hollow tree",
+    "cost": "Gives up calling",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_hm_dash": {
+    "intent": "Rest on the log",
+    "cost": "Uses up daylight",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_hm_behind_fin": {
+    "intent": "Follow the echo",
+    "cost": "May lead the wrong way",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_hm_behind_hub": {
+    "intent": "Go back to the crossroads",
+    "cost": "Loses time",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_hm_flicker_fin": {
+    "intent": "Follow the acorn path",
+    "cost": "Skips going back",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_hm_flicker_hub": {
+    "intent": "Return to the crossroads",
+    "cost": "Loses time",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_ws_tools": {
+    "intent": "Follow the bell sound",
+    "cost": "Gives up the log",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_ws_horse": {
+    "intent": "Cross the mossy log",
+    "cost": "Gives up the bell",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_ws_bench": {
+    "intent": "Walk straight ahead",
+    "cost": "Skips clues",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_ws_tools_fin": {
+    "intent": "Follow the chime onward",
+    "cost": "May be a false lead",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_ws_tools_hub": {
+    "intent": "Go back to the crossroads",
+    "cost": "Loses time",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_ws_horse_bench": {
+    "intent": "Continue to the clearing",
+    "cost": "Gives up the ditch",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_ws_horse_hub": {
+    "intent": "Return to the crossroads",
+    "cost": "Loses time",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_ws_bench_fin": {
+    "intent": "Head toward the glints of water",
+    "cost": "Gives up the rock view",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_ws_bench_crate": {
+    "intent": "Climb the big rock",
+    "cost": "Takes time and effort",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_ws_bench_hub": {
+    "intent": "Return to the crossroads",
+    "cost": "Loses time",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_ws_crate_fin": {
+    "intent": "Go toward the water",
+    "cost": "Leaves the rock behind",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_ws_crate_hub": {
+    "intent": "Go back to the crossroads",
+    "cost": "Loses time",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_bw_pilings": {
+    "intent": "Follow the squirrel",
+    "cost": "Gives up the meadow",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_bw_catwalk": {
+    "intent": "Head to the meadow",
+    "cost": "Gives up the squirrel",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_bw_footing": {
+    "intent": "Study the trail marker",
+    "cost": "Takes time",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_bw_ladder": {
+    "intent": "Go on to the meadow",
+    "cost": "Skips the marker",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_bw_arches": {
+    "intent": "Dash deeper into the woods",
+    "cost": "Risks getting lost",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_bw_beam": {
+    "intent": "Take the marked trail",
+    "cost": "Gives up the yip",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_bw_pierhead": {
+    "intent": "Listen for the yip",
+    "cost": "Spends daylight",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_bw_footing_fin": {
+    "intent": "Follow the tracks beyond",
+    "cost": "Leaves the marker",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_bw_footing_hub": {
+    "intent": "Return to the crossroads",
+    "cost": "Loses time",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_bw_watch": {
+    "intent": "Follow the yip to the stump",
+    "cost": "Gives up the other sound",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_bw_call": {
+    "intent": "Tiptoe toward the other sound",
+    "cost": "Gives up the yip",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_bw_watch_fin": {
+    "intent": "Follow the tracks onward",
+    "cost": "Leaves the stump",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_bw_watch_hub": {
+    "intent": "Go back to the crossroads",
+    "cost": "Loses time",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_bw_call_caravan": {
+    "intent": "Follow the flattened grass",
+    "cost": "Leaves the frogs",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_bw_call_hub": {
+    "intent": "Return to the crossroads",
+    "cost": "Loses time",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_cv_knock": {
+    "intent": "Keep walking",
+    "cost": "Skips the muddy bank",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_cv_window": {
+    "intent": "Check the muddy bank",
+    "cost": "Takes extra time",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_cv_window_knock": {
+    "intent": "Move on",
+    "cost": "Leaves the smudges",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_cv_window_slip": {
+    "intent": "Return to the crossroads",
+    "cost": "Loses time",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_cv_sit": {
+    "intent": "Look around",
+    "cost": "none",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_cv_favorite": {
+    "intent": "Take the mossy slope",
+    "cost": "Skips burrow and rocks",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_cv_shims": {
+    "intent": "Check the rabbit burrow",
+    "cost": "Skips the others",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_cv_stories": {
+    "intent": "Take the rocky path",
+    "cost": "Slow, careful footing",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_cv_shims_ondine": {
+    "intent": "Move on up the slope",
+    "cost": "Leaves the burrow",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_cv_shims_hub": {
+    "intent": "Go back to the crossroads",
+    "cost": "Loses time",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_cv_go": {
+    "intent": "Follow the bright path",
+    "cost": "Skips resting longer",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_cv_think": {
+    "intent": "Return to the crossroads",
+    "cost": "Loses time",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_ol_climb": {
+    "intent": "Follow the wall to the orchard",
+    "cost": "Skips the gap",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_ol_listen": {
+    "intent": "Peek through the gap",
+    "cost": "Takes extra time",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_ol_up": {
+    "intent": "Go on to the orchard",
+    "cost": "Leaves the gap",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_ol_down": {
+    "intent": "Go back to the crossroads",
+    "cost": "Loses time",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_ol_key": {
+    "intent": "Check under the apple tree",
+    "cost": "Gives up the other paths",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_ol_rolls": {
+    "intent": "Walk to the rope swing",
+    "cost": "Gives up the apple tree",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_ol_crest": {
+    "intent": "Go toward the water sound",
+    "cost": "Gives up the others",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_ol_freeze": {
+    "intent": "Follow the apple cores",
+    "cost": "Leaves the tree",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_ol_bolt": {
+    "intent": "Wander deeper into the orchard",
+    "cost": "Risks getting lost",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_ol_after_fin": {
+    "intent": "Follow tracks onward",
+    "cost": "Leaves the cores",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_ol_after_hub": {
+    "intent": "Return to the crossroads",
+    "cost": "Loses time",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_ol_rolls_fin": {
+    "intent": "Follow tracks past the swing",
+    "cost": "Skips resting",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_ol_rolls_home": {
+    "intent": "Climb to the swing spot",
+    "cost": "Detours from the search",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_ol_rolls_hub": {
+    "intent": "Go back to the crossroads",
+    "cost": "Loses time",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_ol_crest_fin": {
+    "intent": "Follow the water sound",
+    "cost": "Leaves the orchard",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_ol_crest_hub": {
+    "intent": "Return to the crossroads",
+    "cost": "Loses time",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_fin_climb": {
+    "intent": "Follow the tracks straight on",
+    "cost": "Skips the thinking pause",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_fin_notice": {
+    "intent": "Stop and think it over",
+    "cost": "Spends daylight",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_fin_notice_climb": {
+    "intent": "Continue after thinking",
+    "cost": "none",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_fin_notice_hub": {
+    "intent": "Retrace steps to the crossroads",
+    "cost": "Loses time",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_fin_press": {
+    "intent": "Go to Biscuit at once",
+    "cost": "Skips looking carefully",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_fin_pry": {
+    "intent": "Look carefully by the creek first",
+    "cost": "Spends daylight",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_fin_pry_press": {
+    "intent": "Go to Biscuit after looking",
+    "cost": "Spends some daylight",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_fin_pry_home": {
+    "intent": "Rush across the wet stones",
+    "cost": "Risks a slip",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_fin_open": {
+    "intent": "Listen to Old Owl",
+    "cost": "none",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_fin_caretaker": {
+    "intent": "Lift Biscuit in your arms",
+    "cost": "Makes the walk tiring",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_fin_family": {
+    "intent": "Wrap Biscuit in a jacket",
+    "cost": "Slower, careful walking",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_fin_town": {
+    "intent": "Let Biscuit walk beside you",
+    "cost": "Slower, with rests",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_r_meeting": {
+    "intent": "Cross the stepping stones",
+    "cost": "Needs careful balance",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_r_inspector": {
+    "intent": "Take the grassy path",
+    "cost": "Longer way",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_r_meeting_end": {
+    "intent": "Walk on",
+    "cost": "none",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_r_inspector_end": {
+    "intent": "Walk on",
+    "cost": "none",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_r_fund": {
+    "intent": "Follow the waterfall way",
+    "cost": "Gives up the lantern way",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_r_crew": {
+    "intent": "Follow the lantern way",
+    "cost": "Gives up the waterfall way",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_r_fund_end": {
+    "intent": "Keep going",
+    "cost": "none",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_r_crew_end": {
+    "intent": "Keep going",
+    "cost": "none",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_r_council": {
+    "intent": "Cross the little bridge",
+    "cost": "Gives up the orchard way",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_r_paper": {
+    "intent": "Take the orchard way",
+    "cost": "Gives up the bridge",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_r_council_end": {
+    "intent": "Head for the gate",
+    "cost": "none",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_r_paper_end": {
+    "intent": "Head for the home path",
+    "cost": "none",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   }
+  },
+  "threads": {},
+  "endings": {
+   "e_set_doze": {
+    "gift": "A gentle setback and a reason to try another trail",
+    "valence": null,
+    "kind": null
+   },
+   "e_set_lost": {
+    "gift": "A rest and the hope of a fresh start",
+    "valence": null,
+    "kind": null
+   },
+   "e_set_tide": {
+    "gift": "A lesson about staying near the trail and trying again",
+    "valence": null,
+    "kind": null
+   },
+   "e_disc_stories": {
+    "gift": "A secret rabbit nest to discover",
+    "valence": null,
+    "kind": null
+   },
+   "e_set_bolt": {
+    "gift": "A funny tangled orchard and a reason to explore again",
+    "valence": null,
+    "kind": null
+   },
+   "e_disc_waltz": {
+    "gift": "A hidden swing spot with a lovely view",
+    "valence": null,
+    "kind": null
+   },
+   "e_set_home": {
+    "gift": "A splashy slip and a reason to go slower next time",
+    "valence": null,
+    "kind": null
+   },
+   "e_festival": {
+    "gift": "A warm reunion with Biscuit by the fire",
+    "valence": null,
+    "kind": null
+   },
+   "e_permit": {
+    "gift": "A starry homecoming and a sleepy dog",
+    "valence": null,
+    "kind": null
+   },
+   "e_fund": {
+    "gift": "A cozy bandage scene and a happy hug",
+    "valence": null,
+    "kind": null
+   },
+   "e_crew": {
+    "gift": "A cheering welcome and a snuggly dog",
+    "valence": null,
+    "kind": null
+   },
+   "e_council": {
+    "gift": "A happy trot home and a warm fire",
+    "valence": null,
+    "kind": null
+   },
+   "e_paper": {
+    "gift": "A safe arrival and a crackling fire",
+    "valence": null,
+    "kind": null
+   }
+  },
+  "provenance": {
+   "producer": "cyo_adventure.storyplan.generate",
+   "model": "anthropic/claude-sonnet-5.5",
+   "method": "generated",
+   "shape": {
+    "id": "the-locked-carousel",
+    "hash": "sha256:66d70a41cd1c65581a19f1c81e411ec4caf234db3939dbf5d91bb44be1c28393"
+   },
+   "book_file": null,
+   "book_sha256": null,
+   "authored": "2026-11-21",
+   "authoring_minutes": null,
+   "checks": {
+    "ok": true,
+    "errors": 0,
+    "warnings": 0
+   },
+   "approver": null,
+   "notes": [
+    "built from model pitch 1 of 3"
+   ]
+  }
+ },
+ "totals": {
+  "calls": 2,
+  "input_tokens": 7226,
+  "output_tokens": 10236,
+  "reasoning_tokens": 1148,
+  "cost_estimate_usd": 0.116812,
+  "vendor_cost_usd": 0.111933,
+  "provider_seconds": 66.7
+ },
+ "budget": {
+  "budget_usd": 7.72,
+  "spent_before_usd": 0.0,
+  "spent_after_usd": 0.116812
+ }
+}

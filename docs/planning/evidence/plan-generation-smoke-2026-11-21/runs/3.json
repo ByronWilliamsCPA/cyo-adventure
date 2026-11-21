@@ -1,0 +1,1666 @@
+{
+ "run": 3,
+ "request": {
+  "id": "P03",
+  "source": "docs/planning/evidence/short-request-panel/panel.json requests[id=P03]",
+  "text": "me and my sister solving a mystery in an old castle",
+  "band": "8-11",
+  "length": "short",
+  "style": "prose",
+  "selection_note": "panel order, band 8-11 first (panel README); length short as fixed"
+ },
+ "shape": {
+  "id": "the-locked-carousel",
+  "hash": "sha256:66d70a41cd1c65581a19f1c81e411ec4caf234db3939dbf5d91bb44be1c28393",
+  "selection": "cell pick (authoring_plan._pick_shape, seeded by request id)",
+  "cell": {
+   "band": "8-11",
+   "length": "short",
+   "style": "prose"
+  },
+  "cell_candidates": [
+   "the-cave-of-echoes",
+   "the-half-hour-call",
+   "the-locked-carousel",
+   "the-robot-fair-sabotage"
+  ],
+  "retained_in_cell": [
+   "the-locked-carousel",
+   "the-cave-of-echoes"
+  ],
+  "nodes": 71,
+  "choices": 118,
+  "variables": 0,
+  "request_seed_id": "753b57ee-71d6-5fb9-8fdb-f96703d875b6"
+ },
+ "model": "anthropic/claude-sonnet-5.5",
+ "reasoning": "explicit: llm_effort='low' sent as reasoning.effort",
+ "max_repairs": 2,
+ "brief": {
+  "premise": "me and my sister solving a mystery in an old castle",
+  "protagonist": {
+   "name": "Explorer",
+   "age": 8,
+   "role": "a curious young adventurer"
+  },
+  "point_of_view": "second",
+  "age_band": "8-11",
+  "tone": "mysterious",
+  "themes_allowed": [],
+  "content_nogo": []
+ },
+ "stage0": {
+  "status": "skipped",
+  "reason": "no OPENAI_API_KEY in this environment (owner-approved skip, 2026-11-21); production classifier_screen(None) ran and called nothing",
+  "pitch_strings_offered": 5
+ },
+ "calls": [
+  {
+   "index": 0,
+   "kind": "pitch",
+   "max_tokens": 2000,
+   "prompt_chars": 2656,
+   "worst_case_usd": 0.022658,
+   "spent_before_usd": 0.424234,
+   "model": "anthropic/claude-sonnet-5.5",
+   "provider": "openrouter",
+   "input_tokens": 1008,
+   "output_tokens": 488,
+   "reasoning_tokens": 0,
+   "finish_reason": "stop",
+   "cost_estimate_usd": 0.006896,
+   "vendor_cost_usd": 0.005682,
+   "latency_s": 5.2,
+   "provider_duration_ms": 5172,
+   "response_chars": 1393
+  },
+  {
+   "index": 1,
+   "kind": "plan_1",
+   "max_tokens": 32000,
+   "prompt_chars": 14420,
+   "worst_case_usd": 0.334422,
+   "spent_before_usd": 0.43113,
+   "model": "anthropic/claude-sonnet-5.5",
+   "provider": "openrouter",
+   "input_tokens": 6207,
+   "output_tokens": 7238,
+   "reasoning_tokens": 0,
+   "finish_reason": "stop",
+   "cost_estimate_usd": 0.084794,
+   "vendor_cost_usd": 0.081129,
+   "latency_s": 41.4,
+   "provider_duration_ms": 41391,
+   "response_chars": 16920
+  }
+ ],
+ "wall_seconds": 46.6,
+ "stopped": null,
+ "story_plan_status": "checked",
+ "attempts": 1,
+ "stage_log": [
+  "pitch:1",
+  "plan:1:errors=0"
+ ],
+ "pitches": [
+  {
+   "index": 0,
+   "source": "model",
+   "passed": true,
+   "reasons": [],
+   "advisories": [],
+   "pitch": {
+    "hero": "Explorer, a curious 8-year-old adventurer exploring an old castle with an older sister",
+    "want": "To find out who keeps moving the suits of armor at night and why",
+    "obstacle": "Secret passages shift and loop back, and the clues in the armor halls point in two different directions",
+    "stake": "The castle's caretaker will close the old wing for good and the mystery will stay unsolved",
+    "ending_kind": "a warm discovery shared with a sister"
+   }
+  },
+  {
+   "index": 1,
+   "source": "model",
+   "passed": false,
+   "reasons": [
+    "not screened"
+   ],
+   "advisories": [],
+   "pitch": null
+  },
+  {
+   "index": 2,
+   "source": "model",
+   "passed": false,
+   "reasons": [
+    "not screened"
+   ],
+   "advisories": [],
+   "pitch": null
+  }
+ ],
+ "attempt_findings": [
+  {
+   "attempt": 1,
+   "loaded": true,
+   "dropped_keys": [],
+   "ok": true,
+   "errors_by_rule": {},
+   "warnings_by_rule": {},
+   "findings": []
+  }
+ ],
+ "replay_consistent": true,
+ "final_checks": {
+  "ok": true,
+  "findings": []
+ },
+ "load_errors": [],
+ "plan": {
+  "plan_version": "0.1",
+  "book": null,
+  "request": {
+   "text": "me and my sister solving a mystery in an old castle",
+   "band": "8-11",
+   "length": "short",
+   "style": "prose",
+   "tone": null,
+   "note": null
+  },
+  "pitch": {
+   "hero": "Explorer, a curious 8-year-old adventurer exploring an old castle with an older sister",
+   "want": "To find out who keeps moving the suits of armor at night and why",
+   "obstacle": "Secret passages shift and loop back, and the clues in the armor halls point in two different directions",
+   "stake": "The castle's caretaker will close the old wing for good and the mystery will stay unsolved",
+   "ending_kind": "a warm discovery shared with a sister"
+  },
+  "cast": {
+   "explorer": {
+    "name": "Explorer",
+    "role": "a curious 8-year-old adventurer",
+    "want": "To find out who moves the suits of armor at night and why",
+    "voice": "eager, quick, whispers when excited",
+    "knows": [
+     "armor_moved",
+     "sister_with_you"
+    ]
+   },
+   "sister": {
+    "name": "Mara",
+    "role": "your older sister and fellow explorer",
+    "want": "To keep you safe and solve the puzzle together",
+    "voice": "calm, teasing, practical",
+    "knows": [
+     "armor_moved",
+     "sister_with_you"
+    ]
+   },
+   "caretaker": {
+    "name": "Mr. Penn",
+    "role": "castle caretaker who may close the old wing",
+    "want": "To keep the old wing safe and quiet",
+    "voice": "gruff but kind, slow speaker",
+    "knows": [
+     "wing_closing",
+     "night_visitor"
+    ]
+   },
+   "ghostly": {
+    "name": "Old Tobin",
+    "role": "retired armor polisher who moves the suits",
+    "want": "To guard a hidden music box for the castle",
+    "voice": "soft, humming, shy",
+    "knows": [
+     "night_visitor",
+     "tobin_moves",
+     "box_hidden"
+    ]
+   }
+  },
+  "truth": {
+   "statement": "Old Tobin, the retired armor polisher, moves the suits of armor at night to point the way to a hidden music box that belonged to the castle's first children. He fears the old wing closing will lose it forever. He shares it with you and your sister.",
+   "facts": [
+    "tobin_moves",
+    "box_hidden",
+    "armor_points_box"
+   ],
+   "question": "Who keeps moving the suits of armor at night, and why?"
+  },
+  "facts": {
+   "armor_moved": {
+    "text": "The suits of armor in the old wing are found in new places each morning.",
+    "contradicts": [],
+    "implicit_plant": null
+   },
+   "sister_with_you": {
+    "text": "Your older sister Mara is exploring the castle with you.",
+    "contradicts": [],
+    "implicit_plant": null
+   },
+   "wing_closing": {
+    "text": "Mr. Penn plans to close the old wing for good soon.",
+    "contradicts": [],
+    "implicit_plant": null
+   },
+   "night_visitor": {
+    "text": "Someone walks the old wing at night, humming softly.",
+    "contradicts": [],
+    "implicit_plant": null
+   },
+   "tobin_moves": {
+    "text": "Old Tobin, a retired armor polisher, is the one who moves the suits.",
+    "contradicts": [
+     "ghost_moves"
+    ],
+    "implicit_plant": null
+   },
+   "ghost_moves": {
+    "text": "A ghost moves the armor.",
+    "contradicts": [
+     "tobin_moves"
+    ],
+    "implicit_plant": null
+   },
+   "box_hidden": {
+    "text": "A music box of the castle's first children is hidden behind the old wing.",
+    "contradicts": [],
+    "implicit_plant": null
+   },
+   "armor_points_box": {
+    "text": "The suits are turned so their spears point toward the hidden music box.",
+    "contradicts": [],
+    "implicit_plant": null
+   },
+   "clues_split": {
+    "text": "The clues in the armor halls point in two different directions.",
+    "contradicts": [],
+    "implicit_plant": null
+   },
+   "passages_shift": {
+    "text": "The secret passages shift and loop back to the start hall.",
+    "contradicts": [],
+    "implicit_plant": null
+   }
+  },
+  "nodes": {
+   "n_start": {
+    "function": "opening",
+    "event": "You and Mara arrive at the old castle and see armor in a new spot.",
+    "requires": [],
+    "establishes": [
+     "sister_with_you",
+     "armor_moved"
+    ]
+   },
+   "n_gate": {
+    "function": "continue",
+    "event": "Mr. Penn warns you the old wing may close for good.",
+    "requires": [
+     "armor_moved"
+    ],
+    "establishes": [
+     "wing_closing"
+    ]
+   },
+   "n_notice": {
+    "function": "continue",
+    "event": "At night you hear soft humming in the old wing.",
+    "requires": [
+     "wing_closing"
+    ],
+    "establishes": [
+     "night_visitor"
+    ]
+   },
+   "n_hub": {
+    "function": "merge",
+    "event": "You return to the armor hall, where passages lead several ways.",
+    "requires": [],
+    "establishes": []
+   },
+   "tb_booth": {
+    "function": "decision",
+    "event": "You search the armor hall for footprints.",
+    "requires": [],
+    "establishes": []
+   },
+   "tb_ledgers": {
+    "function": "decision",
+    "event": "You follow marks on the floor.",
+    "requires": [],
+    "establishes": []
+   },
+   "tb_recent": {
+    "function": "decision",
+    "event": "The marks end at a blank wall.",
+    "requires": [],
+    "establishes": []
+   },
+   "tb_old": {
+    "function": "decision",
+    "event": "The marks circle back to the hall.",
+    "requires": [],
+    "establishes": []
+   },
+   "tb_office": {
+    "function": "decision",
+    "event": "You peek into a side room of old helmets.",
+    "requires": [],
+    "establishes": []
+   },
+   "tb_photo": {
+    "function": "decision",
+    "event": "A hidden door slides and you are sent back.",
+    "requires": [],
+    "establishes": [
+     "passages_shift"
+    ]
+   },
+   "e_set_doze": {
+    "function": "ending",
+    "event": "You wait too long and Mr. Penn sends you to bed. The mystery waits.",
+    "requires": [],
+    "establishes": []
+   },
+   "hm_door": {
+    "function": "decision",
+    "event": "You study the knights and find two sets of clues.",
+    "requires": [],
+    "establishes": [
+     "clues_split"
+    ]
+   },
+   "hm_echo": {
+    "function": "continue",
+    "event": "Mara compares the clues with you.",
+    "requires": [],
+    "establishes": []
+   },
+   "hm_tall": {
+    "function": "decision",
+    "event": "You follow the left-pointing spears.",
+    "requires": [],
+    "establishes": []
+   },
+   "hm_bent": {
+    "function": "decision",
+    "event": "You follow the right-pointing spears.",
+    "requires": [],
+    "establishes": []
+   },
+   "hm_plank": {
+    "function": "decision",
+    "event": "The right path loops back on itself.",
+    "requires": [],
+    "establishes": []
+   },
+   "hm_rotunda": {
+    "function": "merge",
+    "event": "You and Mara reach a quiet gallery and see the spears meet at one spot.",
+    "requires": [],
+    "establishes": [
+     "armor_points_box"
+    ]
+   },
+   "hm_behind": {
+    "function": "decision",
+    "event": "You examine the gallery wall.",
+    "requires": [],
+    "establishes": []
+   },
+   "hm_flicker": {
+    "function": "decision",
+    "event": "You listen for the humming.",
+    "requires": [],
+    "establishes": []
+   },
+   "e_set_lost": {
+    "function": "ending",
+    "event": "A lantern goes out and you must retreat for the night.",
+    "requires": [],
+    "establishes": []
+   },
+   "ws_door": {
+    "function": "decision",
+    "event": "You talk with Mr. Penn about the old wing.",
+    "requires": [],
+    "establishes": []
+   },
+   "ws_tools": {
+    "function": "decision",
+    "event": "He tells you of the polisher who once cared for the armor.",
+    "requires": [],
+    "establishes": []
+   },
+   "ws_horse": {
+    "function": "decision",
+    "event": "You look at old photographs.",
+    "requires": [],
+    "establishes": []
+   },
+   "ws_bench": {
+    "function": "merge",
+    "event": "You find a name on a staff list: Tobin.",
+    "requires": [],
+    "establishes": []
+   },
+   "ws_crate": {
+    "function": "decision",
+    "event": "You ask Mara what the name means.",
+    "requires": [],
+    "establishes": []
+   },
+   "bw_steps": {
+    "function": "decision",
+    "event": "You enter a winding passage.",
+    "requires": [],
+    "establishes": []
+   },
+   "bw_pilings": {
+    "function": "decision",
+    "event": "The passage splits into two.",
+    "requires": [],
+    "establishes": []
+   },
+   "bw_catwalk": {
+    "function": "merge",
+    "event": "The passage loops to where you began.",
+    "requires": [],
+    "establishes": []
+   },
+   "bw_footing": {
+    "function": "merge",
+    "event": "You find a small door with scratch marks.",
+    "requires": [],
+    "establishes": []
+   },
+   "bw_pierhead": {
+    "function": "decision",
+    "event": "You hear humming ahead.",
+    "requires": [],
+    "establishes": []
+   },
+   "bw_watch": {
+    "function": "decision",
+    "event": "You find a polishing rag.",
+    "requires": [],
+    "establishes": []
+   },
+   "bw_call": {
+    "function": "decision",
+    "event": "A stone shifts and you slide along.",
+    "requires": [],
+    "establishes": []
+   },
+   "e_set_tide": {
+    "function": "ending",
+    "event": "You rush and get lost; Mara guides you out.",
+    "requires": [],
+    "establishes": []
+   },
+   "cv_door": {
+    "function": "merge",
+    "event": "You reach a dusty workroom.",
+    "requires": [],
+    "establishes": []
+   },
+   "cv_window": {
+    "function": "decision",
+    "event": "You search the workroom shelves.",
+    "requires": [],
+    "establishes": []
+   },
+   "cv_knock": {
+    "function": "merge",
+    "event": "You find polish tins and a lamp still warm.",
+    "requires": [],
+    "establishes": []
+   },
+   "cv_table": {
+    "function": "decision",
+    "event": "You hear footsteps and choose how to meet them.",
+    "requires": [],
+    "establishes": []
+   },
+   "cv_shims": {
+    "function": "decision",
+    "event": "You hide behind a suit of armor.",
+    "requires": [],
+    "establishes": []
+   },
+   "cv_ondine": {
+    "function": "merge",
+    "event": "An old man steps out, humming.",
+    "requires": [],
+    "establishes": [
+     "tobin_moves"
+    ]
+   },
+   "e_disc_stories": {
+    "function": "ending",
+    "event": "You find a hidden note about the music box. It is a partial answer.",
+    "requires": [],
+    "establishes": []
+   },
+   "ol_stairs": {
+    "function": "decision",
+    "event": "You search the library for castle history.",
+    "requires": [],
+    "establishes": []
+   },
+   "ol_listen": {
+    "function": "decision",
+    "event": "You find a dusty book.",
+    "requires": [],
+    "establishes": []
+   },
+   "ol_loft": {
+    "function": "merge",
+    "event": "The book mentions a music box for children.",
+    "requires": [],
+    "establishes": [
+     "box_hidden"
+    ]
+   },
+   "ol_key": {
+    "function": "decision",
+    "event": "You trace the map in the book.",
+    "requires": [],
+    "establishes": []
+   },
+   "ol_after": {
+    "function": "decision",
+    "event": "The map matches the spears.",
+    "requires": [],
+    "establishes": []
+   },
+   "ol_rolls": {
+    "function": "decision",
+    "event": "You find a loose tile.",
+    "requires": [],
+    "establishes": []
+   },
+   "ol_crest": {
+    "function": "decision",
+    "event": "You ask Mara to help read the old script.",
+    "requires": [],
+    "establishes": []
+   },
+   "e_set_bolt": {
+    "function": "ending",
+    "event": "You misread the map and Mr. Penn finds you. Try again.",
+    "requires": [],
+    "establishes": []
+   },
+   "e_disc_waltz": {
+    "function": "ending",
+    "event": "You find the music box early but cannot open it. A partial answer.",
+    "requires": [],
+    "establishes": []
+   },
+   "fin_approach": {
+    "function": "merge",
+    "event": "You and Mara reach the hidden door at the end of the wing.",
+    "requires": [],
+    "establishes": []
+   },
+   "fin_notice": {
+    "function": "decision",
+    "event": "The door will not open yet.",
+    "requires": [],
+    "establishes": []
+   },
+   "fin_climb": {
+    "function": "merge",
+    "event": "You find the door's latch, shaped like a helmet.",
+    "requires": [],
+    "establishes": []
+   },
+   "fin_pry": {
+    "function": "decision",
+    "event": "You hesitate in the dark.",
+    "requires": [],
+    "establishes": []
+   },
+   "fin_press": {
+    "function": "merge",
+    "event": "The door opens to a small room.",
+    "requires": [],
+    "establishes": []
+   },
+   "fin_drawings": {
+    "function": "decision",
+    "event": "Old Tobin sits by the music box and invites you in.",
+    "requires": [],
+    "establishes": []
+   },
+   "e_set_home": {
+    "function": "ending",
+    "event": "You turn back and Mr. Penn locks the wing.",
+    "requires": [],
+    "establishes": []
+   },
+   "r_caretaker": {
+    "function": "decision",
+    "event": "You ask Tobin why he moves the armor.",
+    "requires": [],
+    "establishes": []
+   },
+   "r_meeting": {
+    "function": "continue",
+    "event": "He explains he guides people to the box.",
+    "requires": [],
+    "establishes": []
+   },
+   "r_inspector": {
+    "function": "continue",
+    "event": "He says he feared the wing would close.",
+    "requires": [],
+    "establishes": []
+   },
+   "r_family": {
+    "function": "decision",
+    "event": "You offer to help save the wing.",
+    "requires": [],
+    "establishes": []
+   },
+   "r_fund": {
+    "function": "continue",
+    "event": "You and Mara plan to tell Mr. Penn.",
+    "requires": [],
+    "establishes": []
+   },
+   "r_crew": {
+    "function": "continue",
+    "event": "You promise to keep the secret.",
+    "requires": [],
+    "establishes": []
+   },
+   "r_townhall": {
+    "function": "decision",
+    "event": "You wind up the music box together.",
+    "requires": [],
+    "establishes": []
+   },
+   "r_council": {
+    "function": "continue",
+    "event": "Music fills the room.",
+    "requires": [],
+    "establishes": []
+   },
+   "r_paper": {
+    "function": "continue",
+    "event": "Mara hums along with Tobin.",
+    "requires": [],
+    "establishes": []
+   },
+   "e_festival": {
+    "function": "ending",
+    "event": "Mr. Penn keeps the wing open, thanks to your discovery.",
+    "requires": [],
+    "establishes": []
+   },
+   "e_permit": {
+    "function": "ending",
+    "event": "Tobin becomes the wing's guide, and you and Mara visit often.",
+    "requires": [],
+    "establishes": []
+   },
+   "e_fund": {
+    "function": "ending",
+    "event": "You and Mara share the story with Mr. Penn.",
+    "requires": [],
+    "establishes": []
+   },
+   "e_crew": {
+    "function": "ending",
+    "event": "The secret stays between you three.",
+    "requires": [],
+    "establishes": []
+   },
+   "e_council": {
+    "function": "ending",
+    "event": "The music box plays and you hug Mara.",
+    "requires": [],
+    "establishes": []
+   },
+   "e_paper": {
+    "function": "ending",
+    "event": "You and Mara fall asleep to the tune.",
+    "requires": [],
+    "establishes": []
+   }
+  },
+  "choices": {
+   "c_start_out": {
+    "intent": "Keep exploring",
+    "cost": "none",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_gate_midway": {
+    "intent": "Follow the sound",
+    "cost": "none",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_notice_hub": {
+    "intent": "Go into the old wing",
+    "cost": "none",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_hub_booth": {
+    "intent": "Search for footprints",
+    "cost": "gives up other leads",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_hub_mirrors": {
+    "intent": "Study the armor",
+    "cost": "gives up other leads",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_hub_workshop": {
+    "intent": "Ask Mr. Penn",
+    "cost": "gives up other leads",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_hub_boardwalk": {
+    "intent": "Try the passage",
+    "cost": "gives up other leads",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_hub_caravan": {
+    "intent": "Seek the workroom",
+    "cost": "gives up other leads",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_hub_organ": {
+    "intent": "Go to the library",
+    "cost": "gives up other leads",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_hub_carousel": {
+    "intent": "Head to the hidden door",
+    "cost": "skips clues",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_tb_ledgers": {
+    "intent": "Follow marks",
+    "cost": "leaves the side room",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_tb_office": {
+    "intent": "Peek in the side room",
+    "cost": "leaves the marks",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_tb_recent": {
+    "intent": "Press on",
+    "cost": "leaves the circle",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_tb_old": {
+    "intent": "Circle back",
+    "cost": "leaves the wall",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_tb_recent_hub": {
+    "intent": "Go back to the hall",
+    "cost": "gives up the wall",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_tb_recent_fin": {
+    "intent": "Go to the door",
+    "cost": "skips the hall",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_tb_old_hub": {
+    "intent": "Return to the hall",
+    "cost": "gives up the circle",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_tb_old_fin": {
+    "intent": "Go to the door",
+    "cost": "skips the hall",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_tb_photo": {
+    "intent": "Open the hidden door",
+    "cost": "leaves the helmets",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_tb_chair": {
+    "intent": "Wait and watch",
+    "cost": "risks being caught",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_tb_photo_hub": {
+    "intent": "Return to the hall",
+    "cost": "loses ground",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_tb_photo_fin": {
+    "intent": "Push to the door",
+    "cost": "skips the hall",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_hm_tall": {
+    "intent": "Follow left spears",
+    "cost": "gives up right",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_hm_bent": {
+    "intent": "Follow right spears",
+    "cost": "gives up left",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_hm_hello": {
+    "intent": "Ask Mara",
+    "cost": "takes time",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_hm_echo_glint": {
+    "intent": "Continue together",
+    "cost": "none",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_hm_tall_rotunda": {
+    "intent": "Reach the gallery",
+    "cost": "gives up retreat",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_hm_tall_hub": {
+    "intent": "Retreat",
+    "cost": "gives up the gallery",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_hm_bent_steady": {
+    "intent": "Reach the gallery",
+    "cost": "gives up the loop",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_hm_bent_plank": {
+    "intent": "Test the loop",
+    "cost": "wastes time",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_hm_plank_rotunda": {
+    "intent": "Go on to the gallery",
+    "cost": "gives up retreat",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_hm_plank_hub": {
+    "intent": "Retreat",
+    "cost": "gives up the gallery",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_hm_swing": {
+    "intent": "Examine the wall",
+    "cost": "gives up listening",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_hm_flicker": {
+    "intent": "Listen for humming",
+    "cost": "gives up the wall",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_hm_dash": {
+    "intent": "Linger in the dark",
+    "cost": "risks the lantern",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_hm_behind_fin": {
+    "intent": "Go to the door",
+    "cost": "leaves the gallery",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_hm_behind_hub": {
+    "intent": "Go back",
+    "cost": "gives up the door",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_hm_flicker_fin": {
+    "intent": "Go to the door",
+    "cost": "leaves the gallery",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_hm_flicker_hub": {
+    "intent": "Go back",
+    "cost": "gives up the door",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_ws_tools": {
+    "intent": "Ask about the wing",
+    "cost": "gives up photos",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_ws_horse": {
+    "intent": "Look at photos",
+    "cost": "gives up the talk",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_ws_bench": {
+    "intent": "Check the staff list",
+    "cost": "gives up the talk",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_ws_tools_fin": {
+    "intent": "Head to the door",
+    "cost": "leaves Mr. Penn",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_ws_tools_hub": {
+    "intent": "Return to the hall",
+    "cost": "gives up the door",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_ws_horse_bench": {
+    "intent": "Check the staff list",
+    "cost": "gives up photos",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_ws_horse_hub": {
+    "intent": "Return to the hall",
+    "cost": "gives up the list",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_ws_bench_fin": {
+    "intent": "Head to the door",
+    "cost": "leaves the list",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_ws_bench_crate": {
+    "intent": "Ask Mara",
+    "cost": "takes time",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_ws_bench_hub": {
+    "intent": "Return to the hall",
+    "cost": "gives up the door",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_ws_crate_fin": {
+    "intent": "Go to the door",
+    "cost": "leaves Mara's idea",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_ws_crate_hub": {
+    "intent": "Return to the hall",
+    "cost": "gives up the door",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_bw_pilings": {
+    "intent": "Take the left fork",
+    "cost": "gives up right",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_bw_catwalk": {
+    "intent": "Take the right fork",
+    "cost": "gives up left",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_bw_footing": {
+    "intent": "Take the small door",
+    "cost": "gives up the split",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_bw_ladder": {
+    "intent": "Go along the loop",
+    "cost": "gives up the door",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_bw_arches": {
+    "intent": "Rush ahead",
+    "cost": "risks getting lost",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_bw_beam": {
+    "intent": "Take the small door",
+    "cost": "gives up humming",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_bw_pierhead": {
+    "intent": "Follow the humming",
+    "cost": "gives up the door",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_bw_footing_fin": {
+    "intent": "Go to the hidden door",
+    "cost": "skips the hall",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_bw_footing_hub": {
+    "intent": "Return to the hall",
+    "cost": "gives up the door",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_bw_watch": {
+    "intent": "Pick up the rag",
+    "cost": "gives up the shifting stone",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_bw_call": {
+    "intent": "Step on the stone",
+    "cost": "gives up the rag",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_bw_watch_fin": {
+    "intent": "Go to the door",
+    "cost": "skips the hall",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_bw_watch_hub": {
+    "intent": "Return to the hall",
+    "cost": "gives up the door",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_bw_call_caravan": {
+    "intent": "Enter the workroom",
+    "cost": "gives up the hall",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_bw_call_hub": {
+    "intent": "Retreat to the hall",
+    "cost": "gives up the workroom",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_cv_knock": {
+    "intent": "Go on to the tins",
+    "cost": "leaves the shelves",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_cv_window": {
+    "intent": "Search the shelves",
+    "cost": "leaves the tins",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_cv_window_knock": {
+    "intent": "Move to the tins",
+    "cost": "leaves the shelves",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_cv_window_slip": {
+    "intent": "Retreat to the hall",
+    "cost": "gives up the tins",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_cv_sit": {
+    "intent": "Wait for the footsteps",
+    "cost": "none",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_cv_favorite": {
+    "intent": "Step out to greet",
+    "cost": "gives up hiding",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_cv_shims": {
+    "intent": "Hide behind armor",
+    "cost": "gives up greeting",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_cv_stories": {
+    "intent": "Read the hidden note",
+    "cost": "gives up the meeting",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_cv_shims_ondine": {
+    "intent": "Step out now",
+    "cost": "gives up hiding",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_cv_shims_hub": {
+    "intent": "Slip away to the hall",
+    "cost": "gives up the meeting",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_cv_go": {
+    "intent": "Go to the hidden door",
+    "cost": "skips the hall",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_cv_think": {
+    "intent": "Return to the hall",
+    "cost": "gives up the door",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_ol_climb": {
+    "intent": "Read the history shelf",
+    "cost": "gives up the dusty book",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_ol_listen": {
+    "intent": "Open the dusty book",
+    "cost": "gives up the shelf",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_ol_up": {
+    "intent": "Read on",
+    "cost": "gives up retreat",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_ol_down": {
+    "intent": "Return to the hall",
+    "cost": "gives up the book",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_ol_key": {
+    "intent": "Trace the map",
+    "cost": "gives up other ideas",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_ol_rolls": {
+    "intent": "Check the loose tile",
+    "cost": "gives up the map",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_ol_crest": {
+    "intent": "Ask Mara for help",
+    "cost": "gives up working alone",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_ol_freeze": {
+    "intent": "Compare to spears",
+    "cost": "gives up the map misreading",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_ol_bolt": {
+    "intent": "Trust your guess",
+    "cost": "risks a mistake",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_ol_after_fin": {
+    "intent": "Go to the door",
+    "cost": "skips the hall",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_ol_after_hub": {
+    "intent": "Return to the hall",
+    "cost": "gives up the door",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_ol_rolls_fin": {
+    "intent": "Go to the door",
+    "cost": "leaves the tile",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_ol_rolls_home": {
+    "intent": "Pry the tile",
+    "cost": "gives up the door route",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_ol_rolls_hub": {
+    "intent": "Return to the hall",
+    "cost": "gives up the door",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_ol_crest_fin": {
+    "intent": "Go to the door",
+    "cost": "leaves Mara's reading",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_ol_crest_hub": {
+    "intent": "Return to the hall",
+    "cost": "gives up the door",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_fin_climb": {
+    "intent": "Try the latch",
+    "cost": "skips the lantern",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_fin_notice": {
+    "intent": "Check the lantern first",
+    "cost": "takes time",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_fin_notice_climb": {
+    "intent": "Try the latch",
+    "cost": "gives up waiting",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_fin_notice_hub": {
+    "intent": "Return to the hall",
+    "cost": "gives up the door",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_fin_press": {
+    "intent": "Open the door",
+    "cost": "gives up pausing",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_fin_pry": {
+    "intent": "Pause in the dark",
+    "cost": "gives up speed",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_fin_pry_press": {
+    "intent": "Open the door",
+    "cost": "gives up turning back",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_fin_pry_home": {
+    "intent": "Turn back",
+    "cost": "gives up the door",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_fin_open": {
+    "intent": "Step inside",
+    "cost": "none",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_fin_caretaker": {
+    "intent": "Ask why he moves the armor",
+    "cost": "gives up helping",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_fin_family": {
+    "intent": "Offer to help",
+    "cost": "gives up asking",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_fin_town": {
+    "intent": "Wind the music box",
+    "cost": "gives up talking first",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_r_meeting": {
+    "intent": "Ask about guiding",
+    "cost": "gives up asking about fear",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_r_inspector": {
+    "intent": "Ask about fear",
+    "cost": "gives up asking about guiding",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_r_meeting_end": {
+    "intent": "Listen on",
+    "cost": "none",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_r_inspector_end": {
+    "intent": "Listen on",
+    "cost": "none",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_r_fund": {
+    "intent": "Tell Mr. Penn",
+    "cost": "gives up secrecy",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_r_crew": {
+    "intent": "Keep the secret",
+    "cost": "gives up telling",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_r_fund_end": {
+    "intent": "Go on",
+    "cost": "none",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_r_crew_end": {
+    "intent": "Go on",
+    "cost": "none",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_r_council": {
+    "intent": "Let it play",
+    "cost": "gives up quiet",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_r_paper": {
+    "intent": "Hum along",
+    "cost": "gives up listening",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_r_council_end": {
+    "intent": "Enjoy it",
+    "cost": "none",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_r_paper_end": {
+    "intent": "Enjoy it",
+    "cost": "none",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   }
+  },
+  "threads": {},
+  "endings": {
+   "e_set_doze": {
+    "gift": "A reason to try again and a clue about waiting.",
+    "valence": null,
+    "kind": null
+   },
+   "e_set_lost": {
+    "gift": "A hint that the humming leads somewhere.",
+    "valence": null,
+    "kind": null
+   },
+   "e_set_tide": {
+    "gift": "A laugh at getting lost and a map of the loop.",
+    "valence": null,
+    "kind": null
+   },
+   "e_disc_stories": {
+    "gift": "A reveal of a hidden note about a music box.",
+    "valence": null,
+    "kind": null
+   },
+   "e_set_bolt": {
+    "gift": "A laugh at the misread map and a reason to retry.",
+    "valence": null,
+    "kind": null
+   },
+   "e_disc_waltz": {
+    "gift": "A glimpse of the music box to chase next time.",
+    "valence": null,
+    "kind": null
+   },
+   "e_set_home": {
+    "gift": "A reason to try again with more courage.",
+    "valence": null,
+    "kind": null
+   },
+   "e_festival": {
+    "gift": "The warm relief of saving the old wing.",
+    "valence": null,
+    "kind": null
+   },
+   "e_permit": {
+    "gift": "A new friend and a place to return to.",
+    "valence": null,
+    "kind": null
+   },
+   "e_fund": {
+    "gift": "Sharing a secret with a trusted grown-up.",
+    "valence": null,
+    "kind": null
+   },
+   "e_crew": {
+    "gift": "The cozy bond of a shared secret.",
+    "valence": null,
+    "kind": null
+   },
+   "e_council": {
+    "gift": "A hug and the music of a solved mystery.",
+    "valence": null,
+    "kind": null
+   },
+   "e_paper": {
+    "gift": "A sleepy, warm end beside your sister.",
+    "valence": null,
+    "kind": null
+   }
+  },
+  "provenance": {
+   "producer": "cyo_adventure.storyplan.generate",
+   "model": "anthropic/claude-sonnet-5.5",
+   "method": "generated",
+   "shape": {
+    "id": "the-locked-carousel",
+    "hash": "sha256:66d70a41cd1c65581a19f1c81e411ec4caf234db3939dbf5d91bb44be1c28393"
+   },
+   "book_file": null,
+   "book_sha256": null,
+   "authored": "2026-11-21",
+   "authoring_minutes": null,
+   "checks": {
+    "ok": true,
+    "errors": 0,
+    "warnings": 0
+   },
+   "approver": null,
+   "notes": [
+    "built from model pitch 1 of 3"
+   ]
+  }
+ },
+ "totals": {
+  "calls": 2,
+  "input_tokens": 7215,
+  "output_tokens": 7726,
+  "reasoning_tokens": 0,
+  "cost_estimate_usd": 0.09169,
+  "vendor_cost_usd": 0.086811,
+  "provider_seconds": 46.6
+ },
+ "budget": {
+  "budget_usd": 7.72,
+  "spent_before_usd": 0.424234,
+  "spent_after_usd": 0.515924
+ }
+}
