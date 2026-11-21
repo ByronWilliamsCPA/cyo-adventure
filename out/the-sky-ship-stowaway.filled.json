@@ -732,7 +732,7 @@
     },
     {
       "id": "f_cabin1",
-      "body": "The captain's cabin door stood open a crack. Inside, Bree could see a wide table covered in charts, and not a soul in the room. The voices came from the next door along, the one marked OFFICERS, and one of them was dry and quick. It was the voice that had called the order to cast off from the bridge. Captain Quill was in there, and she did not sound pleased. Pip sat down between the two doors and began to wash a paw, as if to say that he would wait.",
+      "body": "The captain's cabin door stood open a crack. Inside, Bree could see a wide table covered in charts, and not a soul in the room. Voices came from the next door along, the one marked OFFICERS, and one of them was dry and quick. It was the voice that had called the order to cast off from the bridge. Captain Quill was in there, and she did not sound pleased. Pip sat down between the two doors and began to wash a paw, as if to say that he would wait.",
       "is_ending": false,
       "choices": [
         {
@@ -1074,7 +1074,7 @@
     },
     {
       "id": "s_crew_dodge",
-      "body": "Bree ducked under the bosun's arm and ran for the ladder. \"Oi, small fry, I was not done asking!\" he bellowed, but the ship rolled, a rope groaned, and he had forty other things to shout at. Bree slid down the ladder with her name still safely her own. A long groan rolled up to meet her from the bottom of the ship, and it did not sound like timber. Pip wriggled in her coat and pointed his nose straight down. So Bree kept going, down three ladders, to a great door marked SEALED, where the storm had shaken the bolt loose.",
+      "body": "Bree ducked under the bosun's arm and ran for the ladder. \"Oi, small fry, I was not done asking!\" he bellowed, but the ship rolled, a rope groaned, and he had forty other things to shout at. Bree slid down the ladder with her name still safely her own. A long groan rolled up to meet her from the bottom of the ship, and it did not sound like timber. Pip wriggled in her coat and pointed his nose straight down. So Bree kept going, down three ladders, to a great door. A board nailed across it said SEALED BY ORDER OF THE CAPTAIN, but the storm had shaken the bolt loose.",
       "is_ending": false,
       "choices": [
         {
@@ -1245,7 +1245,7 @@
     },
     {
       "id": "p_save_mid",
-      "body": "Nimbus was calmer now, but the storm was not, and one more crack of thunder would set him thrashing again. Bree knew one thing that nobody on the bridge knew: he steadied when someone small stayed close and stayed gentle. \"I will be back, I promise,\" she told him. She scooped up Pip and climbed, ladder after ladder, to the wheelhouse door, and she did not stop to knock. \"Captain, I have been with your whale,\" she said, \"and I know what helps him.\"",
+      "body": "Nimbus was calmer now, but the storm was not, and one more crack of thunder would set him thrashing again. Bree knew one thing that nobody on the bridge knew: he steadied when someone small stayed close and stayed gentle. \"I will be back, I promise,\" she told him. She scooped Pip into her coat and climbed, ladder after ladder, to the wheelhouse door, and she did not stop to knock. \"Captain, I have been with your whale,\" she said, \"and I know what helps him.\"",
       "is_ending": false,
       "choices": [
         {
@@ -1257,7 +1257,7 @@
     },
     {
       "id": "p_reveal1",
-      "body": "Bree raced for the bridge with her news, but she got only as far as the main stair. The storm had jammed its door shut, and no amount of shoving would move it. That left two ways up. A long stair wound around the outside of the hull, dry and solid, with a hundred steps at least. A short service passage cut straight through the middle of the ship, but it was already ankle-deep in rainwater, and more was pouring in through a broken vent. Pip looked at the water and flattened his ears.",
+      "body": "Bree tucked Pip into her coat and raced for the bridge with her news, but she got only as far as the main stair. The storm had jammed its door shut, and no amount of shoving would move it. That left two ways up. A long stair wound around the outside of the hull, dry and solid, with a hundred steps at least. A short service passage cut straight through the middle of the ship, but it was already ankle-deep in rainwater, and more was pouring in through a broken vent. Pip peered out at the water and flattened his ears.",
       "is_ending": false,
       "choices": [
         {
@@ -1274,7 +1274,7 @@
     },
     {
       "id": "p_reveal_a",
-      "body": "The long stair was slow, but it was dry and solid under her boots, and Bree took it two steps at a time. Pip clung to her collar and said nothing, which for Pip was high praise. She practiced her speech as she climbed. \"Captain, there is a whale in your hold,\" she tried, but that sounded like a joke. \"Captain, your whale is scared of the thunder, and that is what is rocking your ship,\" she tried next, and that was the one. She said it again on every landing, so that the wind could not steal it.",
+      "body": "The long stair was slow, but it was dry and solid under her boots, and Bree took it two steps at a time. Pip rode in her coat with his chin on her collar and said nothing, which for Pip was high praise. She practiced her speech as she climbed. \"Captain, there is a whale in your hold,\" she tried, but that sounded like a joke. \"Captain, your whale is scared of the thunder, and that is what is rocking your ship,\" she tried next, and that was the one. She said it again on every landing, so that the wind could not steal it.",
       "is_ending": false,
       "choices": [
         {
@@ -1321,7 +1321,7 @@
     },
     {
       "id": "p_people1",
-      "body": "Bree ran to fetch help, because this was too big for one girl and one cat. But who would listen to a stowaway? The bosun had the loudest voice on the ship, and half the crew jumped whenever he coughed. The captain was the only one who knew what was truly in that hold. Bree burst out onto the main deck. To her left, the bosun stood roaring at the mast, and straight ahead, a tall figure in a captain's coat stood alone at a rain-streaked window.",
+      "body": "Bree tucked Pip into her coat and ran to fetch help, because this was too big for one girl and one cat. But who would listen to a stowaway? The bosun had the loudest voice on the ship, and half the crew jumped whenever he coughed. The captain knew what was truly in that hold. Bree burst out onto the main deck. To her left, the bosun stood roaring at the mast, and straight ahead, a tall figure in a captain's coat stood alone at a rain-streaked window.",
       "is_ending": false,
       "choices": [
         {
@@ -1359,7 +1359,7 @@
     },
     {
       "id": "p_people_a",
-      "body": "Bree ran to the bosun and pulled his sleeve. \"Small fry, what did you find down there?\" he asked, and she told him everything in one breath, the whale and the card and the thunder. His eyes went as round as portholes. A man who did not know her would have laughed, but this girl had told him she was a stowaway when a fib would have served her better. \"A whale in my hold, and the captain knew about it,\" he said slowly, shaking himself like a wet dog. \"Right, then, she will want to hear this from you, so stay close behind me.\" He charged up the ladder ahead of her, bellowing for the captain.",
+      "body": "Bree ran to the bosun and pulled his sleeve. \"Small fry, what did you find down there?\" he asked, and she told him everything in one breath, the whale and the card and the thunder. His eyes went as round as portholes. A man who did not know her would have laughed, but this girl had told him she was a stowaway when a fib would have served her better. \"A whale in my hold, and the captain knew about it,\" he said slowly, shaking himself like a wet dog. \"Right, then, she will want to hear this from you, so stay close behind me.\" He charged up the ladder ahead of her, bellowing for the captain to come and hear what the small fry had found in her hold.",
       "is_ending": false,
       "choices": [
         {
@@ -1371,7 +1371,7 @@
     },
     {
       "id": "p_people_cold",
-      "body": "Bree ran to the bosun and pulled his sleeve, and he looked down at her the way a mountain looks at a goat. \"A whale in my hold,\" he repeated, when she had gasped it all out, \"says a girl I do not know from a hole in the deck.\" He did not believe one word of it, but he did not let go of her, either. Instead he tucked her under one arm like a rolled-up sail. \"Tall tales and strange girls both go to the captain,\" he said. Then he carried her up the ladder, bellowing for the captain, with Pip trotting behind like a very small escort.",
+      "body": "Bree ran to the bosun and pulled his sleeve, and he looked down at her the way a mountain looks at a goat. \"A whale in my hold,\" he repeated, when she had gasped it all out, \"says a girl I do not know from a hole in the deck.\" He did not believe one word of it, but he did not let go of her, either. Instead he tucked her under one arm like a rolled-up sail. \"Tall tales and strange girls both go to the captain,\" he said. Then he carried her up the ladder, bellowing for the captain to come and hear a tall tale. Pip peered out of Bree's coat like a very small lookout.",
       "is_ending": false,
       "choices": [
         {
@@ -1510,7 +1510,7 @@
     },
     {
       "id": "b_steer_purr",
-      "body": "Bree lifted Pip out of her coat and held him up to the tube. \"A cat,\" said Captain Quill, \"your whole plan is a cat.\" \"He is full of sardines, and he purrs when he is full,\" said Bree. She scratched the spot under his chin that she had discovered in the larder, and Pip closed his eyes. The purr started, rusty and rumbling, and the brass tube swallowed it and made it enormous. It rolled down through the ship like a tiny engine the size of a house. Far below, the booming stopped, and then, up the tube, soft and steady, came the answering hoooom.",
+      "body": "Bree lifted Pip out of her coat and held him up to the tube. \"A cat,\" said Captain Quill, \"your whole plan is a cat.\" \"He is full of sardines, and he purrs when he is full,\" said Bree. She scratched him under the chin, and Pip closed his eyes. The purr started, rusty and rumbling, and the brass tube swallowed it and made it enormous. It rolled down through the ship like a tiny engine the size of a house. Far below, the booming stopped, and then, up the tube, soft and steady, came the answering hoooom.",
       "is_ending": false,
       "choices": [
         {
@@ -1724,7 +1724,7 @@
     },
     {
       "id": "e_neu_kite",
-      "body": "Bree and the captain heaved the cargo door open, and Nimbus threw himself at the sky. He got one fin out. The other was still strapped flat by the twisted harness, and no whale could fly on one fin. He did not fall, but hung there, bobbing behind the ship on the end of his own harness line, like the biggest kite in the world. He seemed to rather like it. He stopped thrashing, and the Cirrus stopped rolling, and that was how they flew out of the storm: one airship, towing one whale. \"Thirty years in the sky,\" said Captain Quill, \"and I arrive at port flying a kite.\" Every child in the harbor town cheered. But Nimbus could not swim on to the haven that way, and the keepers had to rest his sore fin for a week first. \"One twisted strap,\" the captain sighed. \"If only somebody had got close enough to free it before that door opened.\"",
+      "body": "Bree and the captain heaved the cargo door open, and Nimbus threw himself at the sky. He got one fin out. The other was pinned flat against his side by a twisted strap of his harness, and no whale could fly on one fin. He did not fall, but hung there, bobbing behind the ship on the end of his own harness line, like the biggest kite in the world. He seemed to rather like it. He stopped thrashing, and the Cirrus stopped rolling, and that was how they flew out of the storm: one airship, towing one whale. \"Thirty years in the sky,\" said Captain Quill, \"and I arrive at port flying a kite.\" Every child in the harbor town cheered. But Nimbus could not swim on to the haven that way, and the keepers had to rest his sore fin for a week first. \"One twisted strap,\" the captain sighed. \"If only somebody had got close enough to free it before that door opened.\"",
       "is_ending": true,
       "ending": {
         "id": "e_neu_kite",

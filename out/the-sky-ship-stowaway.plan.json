@@ -178,6 +178,12 @@
   },
   "cargo_door_torn": {
    "text": "The storm has torn the great cargo door of Nimbus's hold half open."
+  },
+  "pip_in_coat_storm": {
+   "text": "When the alarm bell rings, Bree tucks Pip inside her coat and carries him into the storm."
+  },
+  "pip_in_coat_bridge": {
+   "text": "Leaving Nimbus's hold, Bree carries Pip up toward the bridge inside her coat."
   }
  },
  "nodes": {
@@ -487,7 +493,9 @@
    "function": "merge",
    "event": "The ship tips, an alarm bell clangs; Pip goes inside Bree's coat.",
    "requires": [],
-   "establishes": []
+   "establishes": [
+    "pip_in_coat_storm"
+   ]
   },
   "e_set_galley": {
    "function": "ending",
@@ -497,7 +505,7 @@
   },
   "f_cabin1": {
    "function": "decision",
-   "event": "The captain's cabin is empty; her dry, quick voice comes from the officers' room.",
+   "event": "The captain's cabin is empty; voices, one of them her dry, quick voice, come from the officers' room.",
    "requires": [
     "captain_voice"
    ],
@@ -535,7 +543,9 @@
    "function": "merge",
    "event": "The ship pitches; Bree follows the running crew with Pip in her coat.",
    "requires": [],
-   "establishes": []
+   "establishes": [
+    "pip_in_coat_storm"
+   ]
   },
   "e_set_cabin": {
    "function": "ending",
@@ -579,7 +589,9 @@
    "function": "merge",
    "event": "The storm takes the ship; Bree climbs down toward the shouting with Pip in her coat.",
    "requires": [],
-   "establishes": []
+   "establishes": [
+    "pip_in_coat_storm"
+   ]
   },
   "e_set_rig": {
    "function": "ending",
@@ -590,7 +602,9 @@
   "n_storm": {
    "function": "merge",
    "event": "The storm hits; the bosun calls all hands; a long groan rises from the deep hold.",
-   "requires": [],
+   "requires": [
+    "pip_in_coat_storm"
+   ],
    "establishes": [
     "storm_hits",
     "groan_in_hold"
@@ -639,7 +653,9 @@
   "s_crew_a": {
    "function": "continue",
    "event": "Bree's weight on the rope helps make it fast.",
-   "requires": [],
+   "requires": [
+    "pip_in_coat_storm"
+   ],
    "establishes": []
   },
   "s_crew_b": {
@@ -665,11 +681,14 @@
   },
   "s_crew_dodge": {
    "function": "continue",
-   "event": "Bree dodges the bosun and follows the groan down to the sealed door.",
+   "event": "Bree dodges the bosun and follows the groan down to the door SEALED BY ORDER OF THE CAPTAIN.",
    "requires": [
-    "groan_in_hold"
+    "groan_in_hold",
+    "pip_in_coat_storm"
    ],
-   "establishes": []
+   "establishes": [
+    "captain_secret_cargo"
+   ]
   },
   "e_set_storm2": {
    "function": "ending",
@@ -681,7 +700,8 @@
    "function": "decision",
    "event": "The groan is alive and afraid; the door is SEALED BY ORDER OF THE CAPTAIN, with a glass hatch and a brass panel.",
    "requires": [
-    "groan_in_hold"
+    "groan_in_hold",
+    "pip_in_coat_storm"
    ],
    "establishes": [
     "captain_secret_cargo"
@@ -759,24 +779,29 @@
   },
   "p_save_mid": {
    "function": "merge",
-   "event": "Bree promises to come back and climbs to the wheelhouse: she knows what helps him.",
+   "event": "Bree promises to come back, tucks Pip into her coat and climbs to the wheelhouse: she knows what helps him.",
    "requires": [
     "nimbus"
    ],
-   "establishes": []
+   "establishes": [
+    "pip_in_coat_bridge"
+   ]
   },
   "p_reveal1": {
    "function": "decision",
-   "event": "The main stair to the bridge is jammed: a long dry stair or a short flooded passage.",
+   "event": "With Pip in her coat, Bree finds the main stair to the bridge jammed: a long dry stair or a short flooded passage.",
    "requires": [],
-   "establishes": []
+   "establishes": [
+    "pip_in_coat_bridge"
+   ]
   },
   "p_reveal_a": {
    "function": "continue",
    "event": "On the long stair Bree rehearses: \"your whale is scared of the thunder.\"",
    "requires": [
     "nimbus",
-    "thunder_frightens_nimbus"
+    "thunder_frightens_nimbus",
+    "pip_in_coat_bridge"
    ],
    "establishes": []
   },
@@ -802,15 +827,16 @@
   },
   "p_people1": {
    "function": "decision",
-   "event": "Who will listen to a stowaway? The bosun, or the captain, the only one who knows what is in the hold.",
+   "event": "Bree tucks Pip into her coat to fetch help: the bosun, or the captain, who knows what is in the hold.",
    "requires": [],
    "establishes": [
-    "captain_secret_cargo"
+    "captain_secret_cargo",
+    "pip_in_coat_bridge"
    ]
   },
   "p_people_a": {
    "function": "payoff",
-   "event": "The bosun believes her because she told him the truth, and charges up for the captain.",
+   "event": "The bosun believes her because she told him the truth, and charges up calling the captain to hear what she found.",
    "requires": [
     "told_bosun",
     "nimbus"
@@ -819,9 +845,10 @@
   },
   "p_people_cold": {
    "function": "payoff",
-   "event": "The bosun does not believe a stranger, but carries her to the captain.",
+   "event": "The bosun does not believe a stranger, but carries her up to the captain, calling her to hear a tall tale.",
    "requires": [
-    "nimbus"
+    "nimbus",
+    "pip_in_coat_bridge"
    ],
    "establishes": []
   },
@@ -829,7 +856,8 @@
    "function": "continue",
    "event": "Bree tells the captain \"I have seen Nimbus\"; the captain takes her along.",
    "requires": [
-    "nimbus"
+    "nimbus",
+    "pip_in_coat_bridge"
    ],
    "establishes": []
   },
@@ -855,7 +883,8 @@
    "function": "decision",
    "event": "The captain needs Nimbus still for ten minutes; Bree holds the speaking tube.",
    "requires": [
-    "speaking_tube"
+    "speaking_tube",
+    "pip_in_coat_bridge"
    ],
    "establishes": []
   },
@@ -887,7 +916,8 @@
    "function": "payoff",
    "event": "Bree holds the well-fed Pip to the tube; his purr booms down and Nimbus answers.",
    "requires": [
-    "fed_pip"
+    "fed_pip",
+    "pip_in_coat_bridge"
    ],
    "establishes": []
   },
@@ -985,11 +1015,11 @@
   },
   "e_neu_kite": {
    "function": "ending",
-   "event": "With one fin \"still strapped flat by the twisted harness,\" Nimbus flies behind the ship like a kite.",
-   "requires": [
+   "event": "One fin is pinned flat by a twisted harness strap, so Nimbus flies behind the ship like a kite.",
+   "requires": [],
+   "establishes": [
     "fin_strapped"
-   ],
-   "establishes": []
+   ]
   },
   "b_tell1": {
    "function": "decision",
@@ -1018,7 +1048,9 @@
   "b_tell_doubt": {
    "function": "payoff",
    "event": "The crew laugh at a stranger's whale; nobody moves.",
-   "requires": [],
+   "requires": [
+    "pip_in_coat_bridge"
+   ],
    "establishes": []
   },
   "b_tell_captain": {
@@ -1813,10 +1845,18 @@
   "model": "claude-opus-5-5 (agent, hand-written by reading)",
   "shape": null,
   "book_file": "out/the-sky-ship-stowaway.filled.json",
-  "book_sha256": "bb215b407e972124f4f646c194916059bd96b0c76f00fb51006ea21d2b765d24",
+  "book_sha256": "00d121855d6d7ea7ada753cf3e6319c9d4f976c72dd1c5d2264dd31c2c7fbce2",
   "authored": "2026-11-21",
   "authoring_minutes": 4,
   "checks": null,
-  "approver": null
+  "approver": null,
+  "revisions": [
+   {
+    "date": "2026-11-21",
+    "work_package": "WP-0.4",
+    "method": "second-reader continuity pass: every reachable (node, state) configuration played with StoryEngine; book prose fixed and plan updated to match",
+    "findings": "docs/planning/evidence/story-plan-retro/findings-the-sky-ship-stowaway.md"
+   }
+  ]
  }
 }
