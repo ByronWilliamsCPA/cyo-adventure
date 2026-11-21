@@ -80,8 +80,9 @@ def _beat_prose_pairs(
         filled: The candidate filled document.
 
     Returns:
-        One triple per node whose original body was a parseable FILL
-        directive and whose filled body is a string.
+        One triple per node whose original body was a parseable version-1
+        FILL directive and whose filled body is a string. A version-2 node
+        (no beats) contributes no triple.
     """
     original_nodes = original.get("nodes")
     filled_nodes = filled.get("nodes")
@@ -93,7 +94,17 @@ def _beat_prose_pairs(
     for node_id, body in _string_bodies_by_id(original_nodes).items():
         directive = parse_fill_directive(body)
         filled_body = filled_by_id.get(node_id)
-        if directive is not None and filled_body is not None:
+        # #ASSUME: data-integrity: a version-2 directive (WP-2.2) parses with
+        # no "beats" key, because a v2 shape carries no beat. Such a node is
+        # skipped here, not checked against an empty beat (which any prose
+        # would "depict"). The semantic check's v2 target is the plan's
+        # `event` plus `must_not_assert` (ADR-033 Decision 4), which WP-2.5
+        # wires in; until then a v2 node gets the pure-code Stage 1 checks
+        # (structure, word count) and no semantic check.
+        # #VERIFY: test_fidelity_review.py::
+        # test_a_v2_directive_contributes_no_beat_pair.
+        beats = directive.get("beats") if directive is not None else None
+        if beats is not None and filled_body is not None:
             # #CRITICAL: data-integrity: strip any personalization sentinel
             # from both the beats guidance and the filled body before this
             # pair reaches run_semantic_fidelity_check's prompt, mirroring
@@ -108,7 +119,7 @@ def _beat_prose_pairs(
             pairs.append(
                 (
                     node_id,
-                    strip_sentinels(directive["beats"]),
+                    strip_sentinels(beats),
                     strip_sentinels(filled_body),
                 )
             )

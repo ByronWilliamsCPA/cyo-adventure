@@ -12,6 +12,7 @@ from __future__ import annotations
 import re
 
 from cyo_adventure.generation.skeleton import has_unfilled_directives
+from cyo_adventure.storybook.fill_directive import parse_fill_v2
 
 # Matches an entire FILL-directive body exactly.
 # Greedy `.*` for beats is deliberate: a beats value may contain a literal
@@ -31,22 +32,39 @@ _WORD_COUNT_TOLERANCE = 0.4
 
 
 def parse_fill_directive(body: str) -> dict[str, str] | None:
-    """Parse a "<<FILL role=... words=... beats='...'>>" body into its parts.
+    """Parse a FILL directive body, version 1 or version 2, into its parts.
+
+    Version 1 (``<<FILL role=... words=... beats='...'>>``) returns exactly the
+    keys it always has: ``"role"``, ``"words"``, ``"beats"``. Version 2
+    (``<<FILL v=2 role=... words=... function=...>>``, WP-2.2) returns
+    ``"version"`` (``"2"``), ``"role"``, ``"words"`` and ``"function"``, and
+    deliberately **no** ``"beats"`` key: a v2 directive has no beat to check
+    prose against, and an empty string would let a beat-based check run against
+    nothing and pass. A caller that needs beats must use ``.get("beats")`` and
+    treat ``None`` as "no beat target" (``moderation/fidelity_review.py`` does).
 
     Args:
         body: A node's ``body`` string.
 
     Returns:
-        A dict with string keys "role", "words", "beats", or None if ``body``
-        is not a FILL directive.
+        The parts dict, or None if ``body`` is not a well-formed FILL directive
+        of either version. A v2 body carrying free text is not well-formed.
     """
     match = _FILL_RE.match(body)
-    if match is None:
+    if match is not None:
+        return {
+            "role": match.group("role"),
+            "words": match.group("words"),
+            "beats": match.group("beats"),
+        }
+    directive = parse_fill_v2(body)
+    if directive is None:
         return None
     return {
-        "role": match.group("role"),
-        "words": match.group("words"),
-        "beats": match.group("beats"),
+        "version": "2",
+        "role": directive.role,
+        "words": str(directive.words),
+        "function": directive.function,
     }
 
 

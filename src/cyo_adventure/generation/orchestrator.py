@@ -74,6 +74,7 @@ from cyo_adventure.generation.skeleton import (
     resolve_output_cap,
     story_fill_rate,
 )
+from cyo_adventure.storybook.fill_directive import has_v2_directives
 from cyo_adventure.utils.logging import get_logger
 from cyo_adventure.validator.gate import GateContext, GateResult, run_gate
 from cyo_adventure.validator.report import (
@@ -1513,6 +1514,32 @@ def _with_fill_rate(
     )
 
 
+def _refuse_v2_shape(skeleton: dict[str, object]) -> None:
+    """Refuse a v2 shape before any provider spend (WP-2.2).
+
+    Args:
+        skeleton: The skeleton :func:`fill_skeleton` was asked to fill.
+
+    Raises:
+        ValidationError: If any node body is a version-2 directive.
+    """
+    # #CRITICAL: data-integrity: a v2 shape (WP-2.2) carries no beats, and this
+    # pipeline's fill prompts tell the model to depict each node's beats. Filled
+    # here, a shape would yield a book whose every scene was invented from a role
+    # word and a budget, and it would pass the gate (no checker reads beats). The
+    # plan path (WP-2.5 compiler, WP-2.6 `fill_from_plan`) is what fills a shape;
+    # until then refuse it up front, before any provider spend. No caller can
+    # reach this today: the live catalog under `skeletons/` is all v1 and the
+    # shapes live under `shapes/`, which no selector reads.
+    # #VERIFY: test_fill_directive_v2.py::test_fill_skeleton_refuses_a_v2_shape.
+    if has_v2_directives(skeleton):
+        msg = (
+            "fill_skeleton cannot fill a v2 shape: it has no beats to give the "
+            "fill model; v2 shapes are filled from a Story Plan (WP-2.6)"
+        )
+        raise ValidationError(msg, field="skeleton")
+
+
 async def fill_skeleton(
     skeleton: dict[str, object],
     theme_brief: dict[str, object],
@@ -1657,8 +1684,9 @@ async def fill_skeleton(
         repair attempts, and a human-readable stage log.
 
     Raises:
-        ValidationError: If any assembled prompt contains forbidden PII. The
-            provider is never called when this occurs.
+        ValidationError: If any assembled prompt contains forbidden PII, or if
+            ``skeleton`` is a v2 shape (WP-2.2). The provider is never called
+            when either occurs.
     """
     # #ASSUME: data-integrity: `nan < x` is False for every x, so a NaN floor
     # silently disabled the fill-rate gate while reporting it configured
@@ -1667,6 +1695,7 @@ async def fill_skeleton(
     if math.isnan(min_fill_rate):
         msg = "min_fill_rate must be a number (got NaN); use 0 to measure only"
         raise ConfigurationError(msg)
+    _refuse_v2_shape(skeleton)
     stage_log: list[str] = []
     guarded_provider = PiiGuardedProvider(provider, forbidden=pii)
 

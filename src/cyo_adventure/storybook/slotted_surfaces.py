@@ -38,9 +38,13 @@ malformed node is skipped rather than raised on.
 
 from __future__ import annotations
 
-import re
 from typing import TYPE_CHECKING, Literal, NamedTuple, cast
 
+from cyo_adventure.storybook.fill_directive import (
+    FILL_DIRECTIVE_RE,
+    FILL_V2_DIRECTIVE_RE,
+    FILL_VERSION_RE,
+)
 from cyo_adventure.storybook.theme_contract import SLOT_TOKEN_RE
 
 if TYPE_CHECKING:
@@ -48,19 +52,23 @@ if TYPE_CHECKING:
 
 __all__ = [
     "FILL_DIRECTIVE_RE",
+    "FILL_V2_DIRECTIVE_RE",
+    "FILL_VERSION_RE",
     "SlottedSurface",
     "iter_slotted_surfaces",
     "slot_tokens_in_surfaces",
 ]
 
-# The production FILL directive parse. Previously copied into
-# `generation/binding.py`, `mutation/contract_gate.py` and
-# `scripts/parameterize_skeleton.py`; matches `generation/templates/fill.md`
-# and the words-target parse in `validator/policy.py`. DOTALL so a beats
-# segment containing a newline still matches as one group.
-FILL_DIRECTIVE_RE = re.compile(
-    r"^<<FILL role=(\w+) words=(\d+) beats='(.*)'>>$", re.DOTALL
-)
+# The FILL grammars live in :mod:`cyo_adventure.storybook.fill_directive`, which
+# imports nothing heavy, so the import-light generation modules can share them.
+# ``FILL_DIRECTIVE_RE`` (version 1) is the same compiled pattern this module has
+# always exported; every v1 consumer keeps importing it from here.
+#
+# It deliberately matches version 1 ONLY (WP-2.2). A version-2 directive has no
+# ``beats`` segment, so it is not a slotted surface: no walker here yields a
+# beats surface for it, and :mod:`cyo_adventure.generation.binding` leaves its
+# body untouched. That is the intended consequence, not a gap: a v2 body may
+# carry no ``{SLOT}`` token and no story text at all.
 
 SurfaceKind = Literal["beats", "title", "label"]
 

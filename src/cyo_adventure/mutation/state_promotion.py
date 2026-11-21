@@ -68,6 +68,7 @@ from typing import TYPE_CHECKING, Literal, cast
 from pydantic import ValidationError as PydanticValidationError
 
 from cyo_adventure.mutation.identity import recompute_estimated_minutes
+from cyo_adventure.storybook.fill_directive import has_v2_directives
 from cyo_adventure.storybook.models import Storybook, Valence
 from cyo_adventure.validator.band_profile import production_cell_budget
 from cyo_adventure.validator.consequence import ForkConsequence, measure_consequence
@@ -1767,6 +1768,15 @@ def promote_skeleton(
         / ``skipped`` with the reason.
     """
     story_id = str(skeleton.get("id", "?"))
+    # A v2 shape (WP-2.2) gets its state from its plan's threads, never from
+    # this tool (D4 item 3), and every plant/payoff edit below writes v1 beats.
+    # #VERIFY: test_fill_directive_v2.py::test_state_promotion_refuses_a_v2_shape.
+    if has_v2_directives(skeleton):
+        return PromotionReport(
+            story_id,
+            "refused",
+            "a v2 shape takes its state from its Story Plan's threads (D4)",
+        )
     try:
         story = Storybook.model_validate(skeleton)
     except PydanticValidationError as exc:

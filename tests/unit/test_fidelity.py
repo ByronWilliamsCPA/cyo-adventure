@@ -170,3 +170,43 @@ def test_run_fidelity_checks_clean_fill_has_no_violations() -> None:
     original = _minimal_story("<<FILL role=setup words=10 beats='go'>>")
     filled = _minimal_story(" ".join(["word"] * 10))
     assert run_fidelity_checks(original, filled) == []
+
+
+def test_parse_fill_directive_v1_keys_are_unchanged() -> None:
+    """A v1 directive still parses to exactly role, words and beats (WP-2.2)."""
+    parsed = parse_fill_directive("<<FILL role=setup words=70 beats='a fox'>>")
+    assert parsed == {"role": "setup", "words": "70", "beats": "a fox"}
+
+
+def test_parse_fill_directive_reads_a_v2_directive_without_beats() -> None:
+    """A v2 directive parses with its function and deliberately no beats key."""
+    parsed = parse_fill_directive("<<FILL v=2 role=choice words=50 function=decision>>")
+    assert parsed == {
+        "version": "2",
+        "role": "choice",
+        "words": "50",
+        "function": "decision",
+    }
+
+
+def test_parse_fill_directive_rejects_a_v2_directive_with_free_text() -> None:
+    """A v2 body carrying beats or trailing text is not a directive at all."""
+    for body in (
+        "<<FILL v=2 role=choice words=50 function=decision beats='a fox'>>",
+        "<<FILL v=2 role=choice words=50 function=decision>> and then",
+        "<<FILL v=2 role=choice words=50 function=surprise>>",
+    ):
+        assert parse_fill_directive(body) is None, body
+
+
+def test_word_count_is_checked_for_a_v2_node() -> None:
+    """The pure-code word-count check reads a v2 directive's budget."""
+    original = {
+        "nodes": [
+            {"id": "n1", "body": "<<FILL v=2 role=setup words=10 function=opening>>"}
+        ]
+    }
+    filled = {"nodes": [{"id": "n1", "body": "Too short."}]}
+    violations = word_count_violations(original, filled)
+    assert len(violations) == 1
+    assert "target 10" in violations[0]

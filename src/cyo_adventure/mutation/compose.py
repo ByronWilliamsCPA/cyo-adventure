@@ -36,6 +36,7 @@ from cyo_adventure.mutation.ops import (
     ReguideItem,
 )
 from cyo_adventure.mutation.subtree import node_ids
+from cyo_adventure.storybook.fill_directive import has_v2_directives
 
 if TYPE_CHECKING:
     from collections.abc import Callable, Mapping, Sequence
@@ -204,9 +205,22 @@ def apply_chain(
             donor slugs, and notes.
 
     Raises:
-        ValidationError: If the chain is empty or too long, an op id is unknown,
-            or any step's preconditions fail on the running candidate.
+        ValidationError: If the parent is a v2 shape, the chain is empty or too
+            long, an op id is unknown, or any step's preconditions fail on the
+            running candidate.
     """
+    # #ASSUME: data-integrity: every operator reads and writes v1 directives
+    # (beats grafts, v1 stub bodies). A v2 shape (WP-2.2) is frozen by ADR-033
+    # Decision 5 and its directive grammar forbids mixing versions, so a chain
+    # over one would either skip its bodies silently or emit a mixed document.
+    # Mutate the v1 source skeleton instead; the shape is regenerated from it.
+    # #VERIFY: test_fill_directive_v2.py::test_mutation_refuses_a_v2_shape.
+    if has_v2_directives(parent):
+        msg = (
+            "the mutation core operates on v1 skeletons; a v2 shape is frozen, "
+            "so mutate its source skeleton and regenerate the shape"
+        )
+        raise ValidationError(msg, field="parent", value=None)
     if not steps:
         msg = "an operator chain must have at least one step"
         raise ValidationError(msg, field="steps", value=None)

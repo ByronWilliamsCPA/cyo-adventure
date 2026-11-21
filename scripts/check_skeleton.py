@@ -44,8 +44,16 @@ passes it, not ``--strict``, because the rest of ``--strict`` (CG-1..CG-3, PL-23
 PL-24, PL-26, walk floor, reconvergence, endings floor) fails 66 of the 84
 committed shells (measured 2026-11-20) and would block their re-promotion.
 
-Exits 1 on a gate block, any brief mismatch, or (with ``--strict``) any
-escalated advisory or a walk-floor breach.
+Directive grammar (WP-2.2, ADR-033 Decision 4). A shell written in the typed
+version-2 grammar, ``<<FILL v=2 role=<role> words=<n> function=<function>>>``,
+is held to it in every mode: a v2 directive carrying free text (a ``beats``
+field, quoted text, anything after ``>>``), a ``function`` outside the
+vocabulary or disagreeing with the node's graph function, an unknown ``v=``
+value, or a v1 directive left beside v2 ones each FAIL the run. A version-1
+shell is untouched by this check.
+
+Exits 1 on a gate block, any brief mismatch, any v2 directive violation, or
+(with ``--strict``) any escalated advisory or a walk-floor breach.
 """
 
 from __future__ import annotations
@@ -72,6 +80,10 @@ from cyo_adventure.generation.skeleton import (
     resolve_output_cap,
 )
 from cyo_adventure.mutation.identity import recompute_estimated_minutes
+from cyo_adventure.storybook.fill_directive import (
+    has_v2_directives,
+    v2_directive_violations,
+)
 from cyo_adventure.storybook.models import (
     SATISFYING_ENDING_VALENCES,
     Storybook,
@@ -1078,6 +1090,13 @@ def main(argv: list[str] | None = None) -> int:
                         f"{min_nodes} (gate treats as warning)\n"
                     )
     failed |= _check_brief(metadata, args)
+    # #ASSUME: data-integrity: a v2 shape must carry no story text, and the gate
+    # cannot see that (every checker reads only `<<FILL` and `words=` from a
+    # directive), so this script is where free text in a v2 directive is caught.
+    # #VERIFY: test_fill_directive_v2.py::
+    # test_check_skeleton_rejects_a_v2_directive_with_free_text.
+    for violation in v2_directive_violations(skeleton):
+        failed |= _fail(f"directive: {violation}")
     if args.strict or args.strict_agency:
         violation = stateless_shell_violation(
             skeleton, metadata, load_stateless_grandfather()
@@ -1091,6 +1110,10 @@ def main(argv: list[str] | None = None) -> int:
         f"{metadata.get('narrative_style')}) topology={metadata.get('topology')} "
         f"tier={metadata.get('tier')}\n"
     )
+    if has_v2_directives(skeleton):
+        sys.stdout.write(
+            "directives: version 2 (typed role, words, function; no beats)\n"
+        )
     for line in agency_lines(skeleton):
         sys.stdout.write(f"{line}\n")
     for node_id in all_forbidden_decision_nodes(skeleton, metadata):

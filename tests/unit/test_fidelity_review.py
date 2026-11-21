@@ -369,3 +369,19 @@ async def test_sentinel_bearing_beats_and_body_never_reach_the_review_prompt() -
     assert "~}" not in prompt
     assert "{~" not in system
     assert prompt.count("Robin") == 2
+
+
+async def test_a_v2_directive_contributes_no_beat_pair() -> None:
+    """A v2 directive (WP-2.2) has no beats, so it is never checked against one.
+
+    The node with no choices has no label pair either, so the reviewer is not
+    called at all rather than being asked whether prose depicts an empty beat.
+    """
+    original = _skeleton("<<FILL v=2 role=setup words=10 function=opening>>")
+    filled = _skeleton("A fox finds a glowing lantern in the woods.")
+    provider = _ScriptedReviewProvider(json.dumps({"verdict": "pass", "notes": ""}))
+
+    result = await run_semantic_fidelity_check(original, filled, provider)
+
+    assert result is None
+    assert provider.calls == []

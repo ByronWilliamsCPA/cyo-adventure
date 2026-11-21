@@ -34,6 +34,12 @@ if TYPE_CHECKING:
 # structlog handlers, which wrap stdlib logging.
 _logger = logging.getLogger(__name__)
 
+# Matches both FILL grammars: the v1 ``<<FILL role=... beats='...'>>`` and the
+# typed v2 ``<<FILL v=2 role=... words=... function=...>>`` of ADR-033
+# Decision 4 (WP-2.2; grammar in ``storybook/fill_directive.py``). So every "is
+# this node still unfilled" probe in the pipeline (chunking, PL-27,
+# ``has_unfilled_directives``, the reading-level loop) treats a v2 body exactly
+# as a v1 one, and ``commissioned_words_by_node`` reads ``words=`` from either.
 FILL_MARKER = "<<FILL"
 
 # The sidecar filename suffixes that live next to a ``<slug>.json`` skeleton in a
