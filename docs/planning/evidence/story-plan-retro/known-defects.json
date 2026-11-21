@@ -1,0 +1,2089 @@
+{
+  "schema": "known-defects/v1",
+  "frozen": true,
+  "created": "2026-11-21",
+  "work_package": "WP-1.3",
+  "method_note": "Every entry was re-played with cyo_adventure.player.engine.StoryEngine over (node, variable state) with route constraints; every quote is asserted to be a verbatim substring of the node body in the cited file. 'witnesses' give a shortest route from the start node as node ids and choice ids plus the final variable state.",
+  "defect_classes": {
+    "unestablished_fact_on_route": "A shared node asserts a fact only some inbound routes or states establish (SP-2 / must_not_assert).",
+    "state_contradiction": "A choice or passage is visible in a variable state that the passage contradicts.",
+    "repeated_reveal": "A reveal delivered as fresh more than once on a path; no SP rule covers it.",
+    "two_backstories": "Two claim sets about one underlying truth that cannot both hold (SP-3).",
+    "plant_leak_unplanted_route": "A passage asserts the content of a plant on a route where the plant was not taken (must_not_assert).",
+    "cross_payoff_reference": "A payoff site relies on events written only into another payoff site of the same thread (SP-6).",
+    "public_plant": "The fact a thread plants is established on a route that skips the planting choice (SP-4)."
+  },
+  "dropped_or_corrected": [
+    {
+      "id": "KD-LH-S1",
+      "change": "second half dropped",
+      "why": "The read ties 'went down to the journal on its stool' to cm_leave carrying the journal. No route passes cm_leave before e_win_promise, n_journal is on every route to it, and no node has Mira set the journal down. The 'where Ferris lives' half is kept but marked weak (cm_letter_read and cm_letter_plea already put him on the moor)."
+    },
+    {
+      "id": "KD-LH-S2",
+      "change": "corrected",
+      "why": "The read says the reveal repeats several times on one path. Exhaustive search finds at most two of the listed nodes on one path; the unreproduced part is dropped. No SP rule covers a repeated establishment, so it is not a G1 miss."
+    },
+    {
+      "id": "KD-LH-S3",
+      "change": "lamp half marked weak",
+      "why": "n_open and n_light are on every route and show a lamp room and a lantern, so 'two lamps' is arguable; only the store half is asserted."
+    },
+    {
+      "id": "KD-LH-S4",
+      "change": "second clause dropped",
+      "why": "'gives back little' is an editorial judgement about setback gifts, not a route-fact defect."
+    },
+    {
+      "id": "KD-LH-B1",
+      "change": "quote corrected",
+      "why": "The file has double quotes around Ferris's line; the read gave single quotes. The map's 'a bog marked mind this' partly prepares the bog but there is still no exchange."
+    },
+    {
+      "id": "KD-LH-BS1",
+      "change": "description corrected",
+      "why": "AL-773 and the 15b14a1 message say no single path crosses the two backstories. A single path does cross claim sets A and B; only the claim-bearing endings are never co-visited."
+    },
+    {
+      "id": "KD-LH-B3-honest",
+      "change": "dependency recorded",
+      "why": "Every route to e_neutral_honest also passes cm_smug_follow, which already asserts the boat; it is a second assertion of the same leak."
+    },
+    {
+      "id": "KD-RB-O1-E05",
+      "change": "extended",
+      "why": "The sentence leaks three facts (the photo, the eleven words, the exercise book), not only the photo."
+    },
+    {
+      "id": "KD-RB-L2-OVENS",
+      "change": "extended",
+      "why": "'a second time in one afternoon' is also unestablished on the witness route."
+    },
+    {
+      "id": "KD-OS-PP-*",
+      "change": "corrected",
+      "why": "The report says n04d0 shows the signature to every reader. A route to both payoff sites exists that never shows the name; n04d0 is reached unplanted only via n03d2. SP-4 still applies because n04d0 is reachable without the plant."
+    }
+  ],
+  "negative_controls": [],
+  "negative_controls_note": "WP-1.3 specifies no negative controls. Clean books and clean plant-payoff pairs are the job of WP-3.1 (post-fix books as negatives) and WP-1.5 (false-alarm budget on the four revised books after WP-0.4); none are entered here so the corpus stays a pure answer key of defects.",
+  "entries": [
+    {
+      "id": "KD-LH-B1",
+      "source": {
+        "doc": "docs/planning/evidence/structural-verification-2026-11-20/lighthouse-continuity-read.md",
+        "section": "Blockers, B1",
+        "also": [
+          "docs/planning/story-plan-implementation-plan.md WP-1.3 item 1"
+        ]
+      },
+      "book": {
+        "file": "out/the-hollow-lighthouse.filled.json",
+        "sha256": "82817aa48b088b2d5a154d9d76589410c9af376401bde8449c984f9d06561183",
+        "title": "The Hollow Lighthouse",
+        "node_count": 162,
+        "git_revision": "15b14a1 (unchanged on this branch)"
+      },
+      "node": "e_win_keeper_word",
+      "defect_class": "unestablished_fact_on_route",
+      "severity": "blocker",
+      "expected_check": "SP-2 / must_not_assert",
+      "summary": "Shared ending has Ferris greet Mira as someone he already warned; that warning exists only in cm_cottage_wait.",
+      "trigger": "Any variable state. Route through the map to the harbour office (choice c_cm_letter_map_2), never visiting cm_cottage or cm_cottage_wait.",
+      "quotes": [
+        {
+          "node": "e_win_keeper_word",
+          "text": "\"Minded the bog, I see,\" he said."
+        },
+        {
+          "node": "cm_cottage_wait",
+          "text": "And girl, mind the bog by the second gate, for it has had better folk than you."
+        }
+      ],
+      "witnesses": [
+        {
+          "note": "Never meets Ferris: avoids cm_cottage and cm_cottage_wait, takes the map to the harbour office.",
+          "nodes": [
+            "n_open",
+            "n_start",
+            "a_office1",
+            "a_desk",
+            "a_desk_log",
+            "a_corridor",
+            "a_toward",
+            "n_journal",
+            "jr_tunnel",
+            "jr_tun_sketch",
+            "jr_tun_join",
+            "n_stairs",
+            "st_wind",
+            "st_wind_up",
+            "n_light",
+            "li_stair",
+            "li_stair_down",
+            "n_tunnel",
+            "tn_cut",
+            "n_chamber",
+            "cm_letter",
+            "cm_letter_read",
+            "cm_letter_map",
+            "e_win_keeper_word"
+          ],
+          "choices": [
+            "c_open",
+            "c_n_start_1",
+            "c_a_office1_1",
+            "c_a_desk_1",
+            "c_a_desk_log_1",
+            "c_a_corridor_1",
+            "c_a_toward_1",
+            "c_n_journal_3",
+            "c_jr_tunnel_1",
+            "c_jr_tun_sketch_1",
+            "c_jr_tun_join_1",
+            "c_n_stairs_1",
+            "c_st_wind_1",
+            "c_st_wind_up_1",
+            "c_n_light_1",
+            "c_li_stair_1",
+            "c_li_stair_down_1",
+            "c_n_tunnel_4",
+            "c_tn_cut_2",
+            "c_n_chamber_1",
+            "c_cm_letter_1",
+            "c_cm_letter_read_1",
+            "c_cm_letter_map_2"
+          ],
+          "final_state": {
+            "has_key": false,
+            "knows_code": false,
+            "knows_tunnel": true,
+            "knows_ledger": false
+          }
+        }
+      ],
+      "establishing_route": {
+        "note": "The one place the warning is spoken.",
+        "nodes": [
+          "n_open",
+          "n_start",
+          "a_office1",
+          "a_desk",
+          "a_desk_log",
+          "a_corridor",
+          "a_toward",
+          "n_journal",
+          "jr_tunnel",
+          "jr_tun_sketch",
+          "jr_tun_join",
+          "n_stairs",
+          "st_wind",
+          "st_wind_up",
+          "n_light",
+          "li_stair",
+          "li_stair_down",
+          "n_tunnel",
+          "tn_cut",
+          "tn_cut_moor",
+          "cm_cottage",
+          "cm_cottage_wait",
+          "e_win_keeper_word"
+        ],
+        "choices": [
+          "c_open",
+          "c_n_start_1",
+          "c_a_office1_1",
+          "c_a_desk_1",
+          "c_a_desk_log_1",
+          "c_a_corridor_1",
+          "c_a_toward_1",
+          "c_n_journal_3",
+          "c_jr_tunnel_1",
+          "c_jr_tun_sketch_1",
+          "c_jr_tun_join_1",
+          "c_n_stairs_1",
+          "c_st_wind_1",
+          "c_st_wind_up_1",
+          "c_n_light_1",
+          "c_li_stair_1",
+          "c_li_stair_down_1",
+          "c_n_tunnel_4",
+          "c_tn_cut_1",
+          "c_tn_cut_moor_1",
+          "c_cm_cottage_3",
+          "c_cm_cottage_wait_1"
+        ],
+        "final_state": {
+          "has_key": false,
+          "knows_code": false,
+          "knows_tunnel": true,
+          "knows_ledger": false
+        }
+      },
+      "verification": {
+        "status": "reproduced",
+        "method": "StoryEngine BFS over (node, var_state) with a route constraint.",
+        "notes": "Only cm_cottage_wait contains 'mind the bog'. Correction to the source's quote: the file has double quotes (\"Minded the bog, I see,\" he said.), the read had single quotes. Partial mitigation, not a fix: cm_letter_map shows 'a bog marked \"mind this\"' on the map, so the bog itself is introduced, but no exchange in which Ferris tells her to mind it exists on this route."
+      }
+    },
+    {
+      "id": "KD-LH-B2",
+      "source": {
+        "doc": "docs/planning/evidence/structural-verification-2026-11-20/lighthouse-continuity-read.md",
+        "section": "Blockers, B2",
+        "also": [
+          "docs/planning/story-plan-implementation-plan.md WP-1.3 item 1"
+        ]
+      },
+      "book": {
+        "file": "out/the-hollow-lighthouse.filled.json",
+        "sha256": "82817aa48b088b2d5a154d9d76589410c9af376401bde8449c984f9d06561183",
+        "title": "The Hollow Lighthouse",
+        "node_count": 162,
+        "git_revision": "15b14a1 (unchanged on this branch)"
+      },
+      "node": "e_set_gears",
+      "other_nodes": [
+        "cm_light_relight",
+        "b_lens_reflect"
+      ],
+      "defect_class": "state_contradiction",
+      "severity": "blocker",
+      "expected_check": "must_not_assert (possession) / choice visibility",
+      "summary": "Choice c_cm_light_relight_2 has no condition, so a reader holding the key sees it, forces the gear, and the ending then says she has no key and must find one.",
+      "trigger": "has_key = true (set at b_lens_reflect, a_desk_pick, a_hearth_key or d_dinghy_tin; the first three carry the 'Wind her slow' tag). At cm_light_relight the visible choices are c_cm_light_relight_1 and c_cm_light_relight_2; taking 2 reaches e_set_gears.",
+      "quotes": [
+        {
+          "node": "e_set_gears",
+          "text": "It had wanted a key with a square end, and somewhere in this lighthouse there was one."
+        },
+        {
+          "node": "cm_light_relight",
+          "text": "\"Where is your key, then?\" Mira asked the lamp."
+        },
+        {
+          "node": "cm_light_relight",
+          "text": "the socket was empty"
+        }
+      ],
+      "witnesses": [
+        {
+          "note": "Holds the tagged key from b_lens_reflect, reaches the relight choices, takes choice 2.",
+          "nodes": [
+            "n_open",
+            "n_start",
+            "b_lamp1",
+            "b_lens",
+            "b_lens_reflect",
+            "b_down",
+            "b_down_spiral",
+            "n_journal",
+            "jr_tunnel",
+            "jr_tun_sketch",
+            "jr_tun_join",
+            "n_stairs",
+            "st_wind",
+            "st_wind_up",
+            "n_light",
+            "li_stair",
+            "li_stair_down",
+            "n_tunnel",
+            "tn_cut",
+            "n_chamber",
+            "cm_light",
+            "cm_light_relight",
+            "e_set_gears"
+          ],
+          "choices": [
+            "c_open",
+            "c_n_start_2",
+            "c_b_lamp1_1",
+            "c_b_lens_2",
+            "c_b_lens_reflect_1",
+            "c_b_down_1",
+            "c_b_down_spiral_1",
+            "c_n_journal_3",
+            "c_jr_tunnel_1",
+            "c_jr_tun_sketch_1",
+            "c_jr_tun_join_1",
+            "c_n_stairs_1",
+            "c_st_wind_1",
+            "c_st_wind_up_1",
+            "c_n_light_1",
+            "c_li_stair_1",
+            "c_li_stair_down_1",
+            "c_n_tunnel_4",
+            "c_tn_cut_2",
+            "c_n_chamber_3",
+            "c_cm_light_1",
+            "c_cm_light_relight_2"
+          ],
+          "final_state": {
+            "has_key": true,
+            "knows_code": false,
+            "knows_tunnel": true,
+            "knows_ledger": false
+          }
+        }
+      ],
+      "visible_choices_at_trigger": [
+        "c_cm_light_relight_1",
+        "c_cm_light_relight_2"
+      ],
+      "verification": {
+        "status": "reproduced",
+        "method": "StoryEngine: reached cm_light_relight with has_key=True and listed visible_choices.",
+        "notes": "Tag text 'Wind her slow' is present in ['a_desk_pick', 'a_hearth_key', 'b_lens_reflect'] (the read said 'tagged key'); d_dinghy_tin carries it too. The ending line is also wrong for the has_key=true reader independent of the tag. The same ending is correct for has_key=false readers (route exists), so the defect is state-conditional: e_set_gears is shared by both states. The cm_light_relight body 'Where is your key, then?' and 'the socket was empty' are consistent for has_key=false and contradict has_key=true."
+      }
+    },
+    {
+      "id": "KD-LH-B3",
+      "source": {
+        "doc": "docs/planning/evidence/structural-verification-2026-11-20/lighthouse-continuity-read.md",
+        "section": "Blockers, B3",
+        "also": [
+          "docs/planning/story-plan-implementation-plan.md WP-1.3 item 1"
+        ]
+      },
+      "book": {
+        "file": "out/the-hollow-lighthouse.filled.json",
+        "sha256": "82817aa48b088b2d5a154d9d76589410c9af376401bde8449c984f9d06561183",
+        "title": "The Hollow Lighthouse",
+        "node_count": 162,
+        "git_revision": "15b14a1 (unchanged on this branch)"
+      },
+      "node": "e_win_harbor",
+      "defect_class": "unestablished_fact_on_route",
+      "severity": "blocker",
+      "expected_check": "SP-2 / must_not_assert",
+      "summary": "Ending asserts Mira does not know the smuggler's name and that he has a grey boat. Readers who passed jr_smug_names know the name Varley; readers who skipped b_gallery_edge and cm_cottage have never seen a grey boat.",
+      "trigger": "Route cm_smug > c_cm_smug_1 > cm_smug_photo > c_cm_smug_photo_2 > e_win_harbor (the only inbound edge, unconditional). Name half: any route that also passed jr_smug_names. Boat half: any route that visited none of b_gallery_edge, cm_cottage, cm_smug_follow. Variable state does not matter.",
+      "quotes": [
+        {
+          "node": "e_win_harbor",
+          "text": "Mira did not know the name. \"He has a grey boat,\" she said,"
+        },
+        {
+          "node": "jr_smug_names",
+          "text": "V was a man named Varley."
+        },
+        {
+          "node": "b_gallery_edge",
+          "text": "A boat lay out there, long and grey and showing one small yellow lamp"
+        }
+      ],
+      "witnesses": [
+        {
+          "note": "Passed jr_smug_names (learned the name Varley), then reaches the harbour master.",
+          "nodes": [
+            "n_open",
+            "n_start",
+            "b_lamp1",
+            "b_lens",
+            "b_lens_crack",
+            "b_down",
+            "b_down_hatch",
+            "n_journal",
+            "jr_smug",
+            "jr_smug_names",
+            "jr_smug_join",
+            "n_stairs",
+            "st_wind",
+            "st_wind_up",
+            "n_light",
+            "li_stair",
+            "li_stair_down",
+            "n_tunnel",
+            "tn_cut",
+            "n_chamber",
+            "cm_smug",
+            "cm_smug_photo",
+            "e_win_harbor"
+          ],
+          "choices": [
+            "c_open",
+            "c_n_start_2",
+            "c_b_lamp1_1",
+            "c_b_lens_1",
+            "c_b_lens_crack_1",
+            "c_b_down_2",
+            "c_b_down_hatch_1",
+            "c_n_journal_2",
+            "c_jr_smug_2",
+            "c_jr_smug_names_1",
+            "c_jr_smug_join_1",
+            "c_n_stairs_1",
+            "c_st_wind_1",
+            "c_st_wind_up_1",
+            "c_n_light_1",
+            "c_li_stair_1",
+            "c_li_stair_down_1",
+            "c_n_tunnel_4",
+            "c_tn_cut_2",
+            "c_n_chamber_2",
+            "c_cm_smug_1",
+            "c_cm_smug_photo_2"
+          ],
+          "final_state": {
+            "has_key": false,
+            "knows_code": false,
+            "knows_tunnel": true,
+            "knows_ledger": true
+          }
+        },
+        {
+          "note": "Never saw a grey boat: no b_gallery_edge, no cm_cottage, no cm_smug_follow, not the ending e_set_gate.",
+          "nodes": [
+            "n_open",
+            "n_start",
+            "a_office1",
+            "a_desk",
+            "a_desk_log",
+            "a_corridor",
+            "a_toward",
+            "n_journal",
+            "jr_tunnel",
+            "jr_tun_sketch",
+            "jr_tun_join",
+            "n_stairs",
+            "st_wind",
+            "st_wind_up",
+            "n_light",
+            "li_stair",
+            "li_stair_down",
+            "n_tunnel",
+            "tn_cut",
+            "n_chamber",
+            "cm_smug",
+            "cm_smug_photo",
+            "e_win_harbor"
+          ],
+          "choices": [
+            "c_open",
+            "c_n_start_1",
+            "c_a_office1_1",
+            "c_a_desk_1",
+            "c_a_desk_log_1",
+            "c_a_corridor_1",
+            "c_a_toward_1",
+            "c_n_journal_3",
+            "c_jr_tunnel_1",
+            "c_jr_tun_sketch_1",
+            "c_jr_tun_join_1",
+            "c_n_stairs_1",
+            "c_st_wind_1",
+            "c_st_wind_up_1",
+            "c_n_light_1",
+            "c_li_stair_1",
+            "c_li_stair_down_1",
+            "c_n_tunnel_4",
+            "c_tn_cut_2",
+            "c_n_chamber_2",
+            "c_cm_smug_1",
+            "c_cm_smug_photo_2"
+          ],
+          "final_state": {
+            "has_key": false,
+            "knows_code": false,
+            "knows_tunnel": true,
+            "knows_ledger": false
+          }
+        }
+      ],
+      "verification": {
+        "status": "reproduced",
+        "method": "StoryEngine BFS with need/avoid constraints.",
+        "notes": "Both halves reproduce independently. Grey-boat establishing nodes in the file are b_gallery_edge (the boat, no 'grey boat' wording), cm_cottage (the voice says 'the man with the grey boat'), cm_smug_follow and e_set_gate (an ending, so never before another node). The radio voice in cm_smug ('I can wait') is on every route to e_win_harbor and supports 'waiting for the light to change' but not 'a grey boat'."
+      }
+    },
+    {
+      "id": "KD-LH-B3-follow",
+      "source": {
+        "doc": "docs/planning/evidence/structural-verification-2026-11-20/lighthouse-continuity-read.md",
+        "section": "Blockers, B3 (same unseen-boat leak, listed as should-fix)"
+      },
+      "book": {
+        "file": "out/the-hollow-lighthouse.filled.json",
+        "sha256": "82817aa48b088b2d5a154d9d76589410c9af376401bde8449c984f9d06561183",
+        "title": "The Hollow Lighthouse",
+        "node_count": 162,
+        "git_revision": "15b14a1 (unchanged on this branch)"
+      },
+      "node": "cm_smug_follow",
+      "defect_class": "unestablished_fact_on_route",
+      "severity": "should-fix",
+      "expected_check": "SP-2 / must_not_assert",
+      "summary": "Same unseen-boat leak as B3, in narration.",
+      "trigger": "Reach cm_smug_follow without b_gallery_edge or cm_cottage.",
+      "quotes": [
+        {
+          "node": "cm_smug_follow",
+          "text": "The man with the grey boat had been skimming his own shipments"
+        }
+      ],
+      "witnesses": [
+        {
+          "note": "Narration names the grey boat for a reader who has not seen one.",
+          "nodes": [
+            "n_open",
+            "n_start",
+            "a_office1",
+            "a_desk",
+            "a_desk_log",
+            "a_corridor",
+            "a_toward",
+            "n_journal",
+            "jr_tunnel",
+            "jr_tun_sketch",
+            "jr_tun_join",
+            "n_stairs",
+            "st_wind",
+            "st_wind_up",
+            "n_light",
+            "li_stair",
+            "li_stair_down",
+            "n_tunnel",
+            "tn_cut",
+            "n_chamber",
+            "cm_smug",
+            "cm_smug_follow"
+          ],
+          "choices": [
+            "c_open",
+            "c_n_start_1",
+            "c_a_office1_1",
+            "c_a_desk_1",
+            "c_a_desk_log_1",
+            "c_a_corridor_1",
+            "c_a_toward_1",
+            "c_n_journal_3",
+            "c_jr_tunnel_1",
+            "c_jr_tun_sketch_1",
+            "c_jr_tun_join_1",
+            "c_n_stairs_1",
+            "c_st_wind_1",
+            "c_st_wind_up_1",
+            "c_n_light_1",
+            "c_li_stair_1",
+            "c_li_stair_down_1",
+            "c_n_tunnel_4",
+            "c_tn_cut_2",
+            "c_n_chamber_2",
+            "c_cm_smug_2"
+          ],
+          "final_state": {
+            "has_key": false,
+            "knows_code": false,
+            "knows_tunnel": true,
+            "knows_ledger": false
+          }
+        }
+      ],
+      "verification": {
+        "status": "reproduced",
+        "method": "StoryEngine BFS with avoid constraint.",
+        "notes": "cm_smug_follow is reachable from cm_smug only; both choices there are unconditional."
+      }
+    },
+    {
+      "id": "KD-LH-B3-honest",
+      "source": {
+        "doc": "docs/planning/evidence/structural-verification-2026-11-20/lighthouse-continuity-read.md",
+        "section": "Blockers, B3 (same unseen-boat leak, listed as should-fix)"
+      },
+      "book": {
+        "file": "out/the-hollow-lighthouse.filled.json",
+        "sha256": "82817aa48b088b2d5a154d9d76589410c9af376401bde8449c984f9d06561183",
+        "title": "The Hollow Lighthouse",
+        "node_count": 162,
+        "git_revision": "15b14a1 (unchanged on this branch)"
+      },
+      "node": "e_neutral_honest",
+      "defect_class": "unestablished_fact_on_route",
+      "severity": "should-fix",
+      "expected_check": "SP-2 / must_not_assert",
+      "summary": "Same unseen-boat leak in the ending.",
+      "trigger": "Reach e_neutral_honest without b_gallery_edge or cm_cottage.",
+      "quotes": [
+        {
+          "node": "e_neutral_honest",
+          "text": "\"Oh, you sneak,\" she said to the man with the grey boat."
+        }
+      ],
+      "witnesses": [
+        {
+          "note": "Reaches e_neutral_honest without b_gallery_edge or cm_cottage (cm_smug_follow is on every route in, and itself names the boat).",
+          "nodes": [
+            "n_open",
+            "n_start",
+            "a_office1",
+            "a_desk",
+            "a_desk_log",
+            "a_corridor",
+            "a_toward",
+            "n_journal",
+            "jr_tunnel",
+            "jr_tun_sketch",
+            "jr_tun_join",
+            "n_stairs",
+            "st_wind",
+            "st_wind_up",
+            "n_light",
+            "li_stair",
+            "li_stair_down",
+            "n_tunnel",
+            "tn_cut",
+            "n_chamber",
+            "cm_smug",
+            "cm_smug_follow",
+            "cm_smug_token",
+            "e_neutral_honest"
+          ],
+          "choices": [
+            "c_open",
+            "c_n_start_1",
+            "c_a_office1_1",
+            "c_a_desk_1",
+            "c_a_desk_log_1",
+            "c_a_corridor_1",
+            "c_a_toward_1",
+            "c_n_journal_3",
+            "c_jr_tunnel_1",
+            "c_jr_tun_sketch_1",
+            "c_jr_tun_join_1",
+            "c_n_stairs_1",
+            "c_st_wind_1",
+            "c_st_wind_up_1",
+            "c_n_light_1",
+            "c_li_stair_1",
+            "c_li_stair_down_1",
+            "c_n_tunnel_4",
+            "c_tn_cut_2",
+            "c_n_chamber_2",
+            "c_cm_smug_2",
+            "c_cm_smug_follow_2",
+            "c_cm_smug_token_2"
+          ],
+          "final_state": {
+            "has_key": false,
+            "knows_code": false,
+            "knows_tunnel": true,
+            "knows_ledger": false
+          }
+        }
+      ],
+      "verification": {
+        "status": "reproduced",
+        "method": "StoryEngine BFS with avoid constraint.",
+        "notes": "On every such route the reader has passed cm_smug_follow, which already asserts the boat (KD-LH-B3-follow), so this is a second assertion of the same unestablished fact, not an independent first leak. A plan that marks the boat as established only at b_gallery_edge, cm_cottage and e_set_gate should flag both nodes; one that treats cm_smug_follow's assertion as establishing it would pass e_neutral_honest."
+      }
+    },
+    {
+      "id": "KD-LH-S1",
+      "source": {
+        "doc": "docs/planning/evidence/structural-verification-2026-11-20/lighthouse-continuity-read.md",
+        "section": "Should-fix, S1"
+      },
+      "book": {
+        "file": "out/the-hollow-lighthouse.filled.json",
+        "sha256": "82817aa48b088b2d5a154d9d76589410c9af376401bde8449c984f9d06561183",
+        "title": "The Hollow Lighthouse",
+        "node_count": 162,
+        "git_revision": "15b14a1 (unchanged on this branch)"
+      },
+      "node": "e_win_promise",
+      "defect_class": "unestablished_fact_on_route",
+      "severity": "should-fix (weak)",
+      "expected_check": "SP-2 / must_not_assert",
+      "summary": "On the letter-and-plea route the ending has the harbour master fetch Ferris 'from the moor', although Mira never read the map or the confession and does not know where he lives.",
+      "trigger": "Route cm_letter > cm_letter_read > cm_letter_plea > e_win_promise (c_cm_letter_plea_1 is the only inbound edge to the ending), with cm_letter_map never visited.",
+      "quotes": [
+        {
+          "node": "e_win_promise",
+          "text": "he fetched the old man down from the moor by noon"
+        },
+        {
+          "node": "cm_letter_read",
+          "text": "a map of the moor with a cottage marked"
+        },
+        {
+          "node": "cm_letter_plea",
+          "text": "too old or too ill to walk the moor"
+        }
+      ],
+      "witnesses": [
+        {
+          "note": "Letter and plea only: never opens the map or the cottage nodes.",
+          "nodes": [
+            "n_open",
+            "n_start",
+            "a_office1",
+            "a_desk",
+            "a_desk_log",
+            "a_corridor",
+            "a_toward",
+            "n_journal",
+            "jr_tunnel",
+            "jr_tun_sketch",
+            "jr_tun_join",
+            "n_stairs",
+            "st_wind",
+            "st_wind_up",
+            "n_light",
+            "li_stair",
+            "li_stair_down",
+            "n_tunnel",
+            "tn_cut",
+            "n_chamber",
+            "cm_letter",
+            "cm_letter_read",
+            "cm_letter_plea",
+            "e_win_promise"
+          ],
+          "choices": [
+            "c_open",
+            "c_n_start_1",
+            "c_a_office1_1",
+            "c_a_desk_1",
+            "c_a_desk_log_1",
+            "c_a_corridor_1",
+            "c_a_toward_1",
+            "c_n_journal_3",
+            "c_jr_tunnel_1",
+            "c_jr_tun_sketch_1",
+            "c_jr_tun_join_1",
+            "c_n_stairs_1",
+            "c_st_wind_1",
+            "c_st_wind_up_1",
+            "c_n_light_1",
+            "c_li_stair_1",
+            "c_li_stair_down_1",
+            "c_n_tunnel_4",
+            "c_tn_cut_2",
+            "c_n_chamber_1",
+            "c_cm_letter_1",
+            "c_cm_letter_read_3",
+            "c_cm_letter_plea_1"
+          ],
+          "final_state": {
+            "has_key": false,
+            "knows_code": false,
+            "knows_tunnel": true,
+            "knows_ledger": false
+          }
+        }
+      ],
+      "verification": {
+        "status": "partly reproduced; second half dropped",
+        "method": "StoryEngine BFS plus node text search.",
+        "notes": "Reproduces: the route exists and Mira has not read the map. Weakened: cm_letter_read and cm_letter_plea both put Ferris on 'the moor', so 'from the moor' is supported; what is unearned is that Mira knows where on it, which the ending does not state. A plan-based check will flag this only if the plan records 'Ferris's location' as a fact established by cm_letter_map or the cottage. NOT reproduced as stated: the read ties 'went down to the journal on its stool' to cm_leave carrying the journal, but no route passes cm_leave before e_win_promise (BFS finds none), n_journal is on every route to the ending, and no node has Mira put the journal down. That half is dropped from the answer key."
+      }
+    },
+    {
+      "id": "KD-LH-S2",
+      "source": {
+        "doc": "docs/planning/evidence/structural-verification-2026-11-20/lighthouse-continuity-read.md",
+        "section": "Should-fix, S2"
+      },
+      "book": {
+        "file": "out/the-hollow-lighthouse.filled.json",
+        "sha256": "82817aa48b088b2d5a154d9d76589410c9af376401bde8449c984f9d06561183",
+        "title": "The Hollow Lighthouse",
+        "node_count": 162,
+        "git_revision": "15b14a1 (unchanged on this branch)"
+      },
+      "node": "jr_light_read",
+      "other_nodes": [
+        "jr_light",
+        "b_clock_chain",
+        "a_shelf_books",
+        "c_arch_marks",
+        "jr_tun_stone",
+        "d_loft_up",
+        "e_set_d_loft"
+      ],
+      "defect_class": "repeated_reveal",
+      "severity": "should-fix",
+      "expected_check": "none of SP-1..SP-9 as written (a duplicate establishes); candidate for the continuity reader",
+      "summary": "The lamp code ('steady he lands, blinking he keeps off, three short three long three short') is delivered as a fresh discovery at several nodes; jr_light and jr_light_read are reachable with knows_code already true.",
+      "trigger": "knows_code = true on entering jr_light (reachable via a_shelf_books > a_corridor > a_toward > n_journal > jr_light), then jr_light_read.",
+      "quotes": [
+        {
+          "node": "jr_light_read",
+          "text": "\"It is blinking,\" she said, \"so somebody is being told to keep off, right now.\""
+        },
+        {
+          "node": "a_shelf_books",
+          "text": "\"Keeps off who?\" she said, and she took the question with her down the hall."
+        },
+        {
+          "node": "jr_tun_stone",
+          "text": "She read it three times, until it stuck."
+        },
+        {
+          "node": "d_loft_up",
+          "text": "She said it over until it stuck."
+        }
+      ],
+      "witnesses": [
+        {
+          "note": "Learns the code at a_shelf_books, then reads it again as new at jr_light_read.",
+          "nodes": [
+            "n_open",
+            "n_start",
+            "a_office1",
+            "a_shelf",
+            "a_shelf_books",
+            "a_corridor",
+            "a_toward",
+            "n_journal",
+            "jr_light",
+            "jr_light_read"
+          ],
+          "choices": [
+            "c_open",
+            "c_n_start_1",
+            "c_a_office1_2",
+            "c_a_shelf_2",
+            "c_a_shelf_books_1",
+            "c_a_corridor_1",
+            "c_a_toward_1",
+            "c_n_journal_1",
+            "c_jr_light_1"
+          ],
+          "final_state": {
+            "has_key": false,
+            "knows_code": true,
+            "knows_tunnel": false,
+            "knows_ledger": false
+          }
+        },
+        {
+          "note": "Two of the listed reveal nodes on one path.",
+          "nodes": [
+            "n_open",
+            "n_start",
+            "d_boat1",
+            "d_loft",
+            "d_loft_up",
+            "d_hatch",
+            "d_hatch_down",
+            "n_journal",
+            "jr_tunnel",
+            "jr_tun_stone",
+            "jr_tun_sketch",
+            "jr_tun_join",
+            "n_stairs",
+            "st_wind",
+            "st_wind_up",
+            "n_light",
+            "li_stair",
+            "li_stair_down",
+            "n_tunnel",
+            "tn_cut",
+            "n_chamber"
+          ],
+          "choices": [
+            "c_open",
+            "c_n_start_4",
+            "c_d_boat1_3",
+            "c_d_loft_1",
+            "c_d_loft_up_1",
+            "c_d_hatch_1",
+            "c_d_hatch_down_1",
+            "c_n_journal_3",
+            "c_jr_tunnel_2",
+            "c_jr_tun_stone_1",
+            "c_jr_tun_sketch_1",
+            "c_jr_tun_join_1",
+            "c_n_stairs_1",
+            "c_st_wind_1",
+            "c_st_wind_up_1",
+            "c_n_light_1",
+            "c_li_stair_1",
+            "c_li_stair_down_1",
+            "c_n_tunnel_4",
+            "c_tn_cut_2"
+          ],
+          "final_state": {
+            "has_key": false,
+            "knows_code": true,
+            "knows_tunnel": true,
+            "knows_ledger": false
+          }
+        }
+      ],
+      "verification": {
+        "status": "partly reproduced (corrected)",
+        "method": "StoryEngine BFS; exhaustive combination search over the six non-ending reveal nodes, then each against e_set_d_loft.",
+        "notes": "Reproduces: jr_light and jr_light_read are reachable with knows_code true. Corrected: the source says the reveal repeats 'several times on one path'; the largest set of the six non-ending nodes found on one path to any ending is 2, not more (pairs that reach n_chamber: [['b_clock_chain', 'jr_light_read'], ['b_clock_chain', 'jr_tun_stone'], ['a_shelf_books', 'jr_light_read'], ['a_shelf_books', 'jr_tun_stone'], ['c_arch_marks', 'jr_light_read'], ['c_arch_marks', 'jr_tun_stone'], ['jr_light_read', 'd_loft_up'], ['jr_tun_stone', 'd_loft_up']]), and e_set_d_loft shares a path with none of the others (BFS: {'b_clock_chain': None, 'a_shelf_books': None, 'c_arch_marks': None, 'jr_light_read': None, 'jr_tun_stone': None, 'd_loft_up': None}). Under SP-1 to SP-9 no rule flags a repeated establishment, so do not count this as a G1 miss."
+      }
+    },
+    {
+      "id": "KD-LH-S3",
+      "source": {
+        "doc": "docs/planning/evidence/structural-verification-2026-11-20/lighthouse-continuity-read.md",
+        "section": "Should-fix, S3"
+      },
+      "book": {
+        "file": "out/the-hollow-lighthouse.filled.json",
+        "sha256": "82817aa48b088b2d5a154d9d76589410c9af376401bde8449c984f9d06561183",
+        "title": "The Hollow Lighthouse",
+        "node_count": 162,
+        "git_revision": "15b14a1 (unchanged on this branch)"
+      },
+      "node": "n_chamber",
+      "defect_class": "unestablished_fact_on_route",
+      "severity": "should-fix",
+      "expected_check": "SP-2 / must_not_assert",
+      "summary": "n_chamber says a tar-smelling store is behind Mira and two lamps are over her head; routes via tn_cut or tn_gate never entered the store.",
+      "trigger": "Enter n_chamber from tn_cut (c_tn_cut_2) or from tn_gate_open / tn_gate_wait without any tn_store* node or cm_smug.",
+      "quotes": [
+        {
+          "node": "n_chamber",
+          "text": "there was a store that smelled of tar behind her, two lamps over her head"
+        },
+        {
+          "node": "n_tunnel",
+          "text": "One opened into a wide dark room that smelled of tar and new wood."
+        }
+      ],
+      "witnesses": [
+        {
+          "note": "Via tn_cut: never enters the store.",
+          "nodes": [
+            "n_open",
+            "n_start",
+            "a_office1",
+            "a_desk",
+            "a_desk_log",
+            "a_corridor",
+            "a_toward",
+            "n_journal",
+            "jr_tunnel",
+            "jr_tun_sketch",
+            "jr_tun_join",
+            "n_stairs",
+            "st_wind",
+            "st_wind_up",
+            "n_light",
+            "li_stair",
+            "li_stair_down",
+            "n_tunnel",
+            "tn_cut",
+            "n_chamber"
+          ],
+          "choices": [
+            "c_open",
+            "c_n_start_1",
+            "c_a_office1_1",
+            "c_a_desk_1",
+            "c_a_desk_log_1",
+            "c_a_corridor_1",
+            "c_a_toward_1",
+            "c_n_journal_3",
+            "c_jr_tunnel_1",
+            "c_jr_tun_sketch_1",
+            "c_jr_tun_join_1",
+            "c_n_stairs_1",
+            "c_st_wind_1",
+            "c_st_wind_up_1",
+            "c_n_light_1",
+            "c_li_stair_1",
+            "c_li_stair_down_1",
+            "c_n_tunnel_4",
+            "c_tn_cut_2"
+          ],
+          "final_state": {
+            "has_key": false,
+            "knows_code": false,
+            "knows_tunnel": true,
+            "knows_ledger": false
+          }
+        },
+        {
+          "note": "Via tn_gate_open: never enters the store.",
+          "nodes": [
+            "n_open",
+            "n_start",
+            "a_office1",
+            "a_desk",
+            "a_desk_log",
+            "a_corridor",
+            "a_toward",
+            "n_journal",
+            "jr_light",
+            "jr_light_read",
+            "jr_light_join",
+            "n_stairs",
+            "st_wind",
+            "st_wind_up",
+            "n_light",
+            "li_stair",
+            "li_stair_down",
+            "n_tunnel",
+            "tn_gate",
+            "tn_gate_open",
+            "n_chamber"
+          ],
+          "choices": [
+            "c_open",
+            "c_n_start_1",
+            "c_a_office1_1",
+            "c_a_desk_1",
+            "c_a_desk_log_1",
+            "c_a_corridor_1",
+            "c_a_toward_1",
+            "c_n_journal_1",
+            "c_jr_light_1",
+            "c_jr_light_read_1",
+            "c_jr_light_join_1",
+            "c_n_stairs_1",
+            "c_st_wind_1",
+            "c_st_wind_up_1",
+            "c_n_light_1",
+            "c_li_stair_1",
+            "c_li_stair_down_1",
+            "c_n_tunnel_3",
+            "c_tn_gate_1",
+            "c_tn_gate_open_1"
+          ],
+          "final_state": {
+            "has_key": false,
+            "knows_code": true,
+            "knows_tunnel": false,
+            "knows_ledger": false
+          }
+        },
+        {
+          "note": "No node that shows the great lamp or lens.",
+          "nodes": [
+            "n_open",
+            "n_start",
+            "a_office1",
+            "a_shelf",
+            "a_shelf_bottle",
+            "a_corridor",
+            "a_toward",
+            "n_journal",
+            "jr_tunnel",
+            "jr_tun_sketch",
+            "jr_tun_join",
+            "n_stairs",
+            "st_wind",
+            "st_wind_up",
+            "n_light",
+            "li_stair",
+            "li_stair_down",
+            "n_tunnel",
+            "tn_cut",
+            "n_chamber"
+          ],
+          "choices": [
+            "c_open",
+            "c_n_start_1",
+            "c_a_office1_2",
+            "c_a_shelf_1",
+            "c_a_shelf_bottle_1",
+            "c_a_corridor_1",
+            "c_a_toward_1",
+            "c_n_journal_3",
+            "c_jr_tunnel_1",
+            "c_jr_tun_sketch_1",
+            "c_jr_tun_join_1",
+            "c_n_stairs_1",
+            "c_st_wind_1",
+            "c_st_wind_up_1",
+            "c_n_light_1",
+            "c_li_stair_1",
+            "c_li_stair_down_1",
+            "c_n_tunnel_4",
+            "c_tn_cut_2"
+          ],
+          "final_state": {
+            "has_key": false,
+            "knows_code": false,
+            "knows_tunnel": true,
+            "knows_ledger": false
+          }
+        }
+      ],
+      "verification": {
+        "status": "reproduced (store half); lamp half weak",
+        "method": "StoryEngine BFS with avoid constraints.",
+        "notes": "Store half: routes exist; n_tunnel (on every route) mentions the tar-smelling room, so the reader knows it exists but has not been in it, which makes 'behind her' false. Lamp half: a route exists that avoids every node that names the great lamp or lens (['a_desk_log', 'b_lamp1', 'b_lens', 'b_lens_crack', 'b_lens_reflect', 'b_clock', 'b_clock_wind', 'li_stair_cup', 'li_cup_lens', 'cm_light', 'cm_light_relight', 'cm_light_true', 'e_set_b_rail', 'e_set_gears']), but n_open ('lamp room') and n_light (a lantern behind the lamp room) are on every route, so 'two lamps' is arguable; treat only the store half as an answer-key assertion."
+      }
+    },
+    {
+      "id": "KD-LH-S4",
+      "source": {
+        "doc": "docs/planning/evidence/structural-verification-2026-11-20/lighthouse-continuity-read.md",
+        "section": "Should-fix, S4"
+      },
+      "book": {
+        "file": "out/the-hollow-lighthouse.filled.json",
+        "sha256": "82817aa48b088b2d5a154d9d76589410c9af376401bde8449c984f9d06561183",
+        "title": "The Hollow Lighthouse",
+        "node_count": 162,
+        "git_revision": "15b14a1 (unchanged on this branch)"
+      },
+      "node": "e_set_a_drawer",
+      "defect_class": "unestablished_fact_on_route",
+      "severity": "should-fix",
+      "expected_check": "SP-2 / must_not_assert",
+      "summary": "The ending has Mira try 'two forks from the kitchen' on a path that never visits the kitchen.",
+      "trigger": "Route a_office1 > a_desk > a_desk_drawer > c_a_desk_drawer_2 > e_set_a_drawer (the only inbound edge); a_kitchen and a_corridor not visited.",
+      "quotes": [
+        {
+          "node": "e_set_a_drawer",
+          "text": "then two forks from the kitchen"
+        }
+      ],
+      "witnesses": [
+        {
+          "note": "Desk drawer wrenched at once; kitchen never visited.",
+          "nodes": [
+            "n_open",
+            "n_start",
+            "a_office1",
+            "a_desk",
+            "a_desk_drawer",
+            "e_set_a_drawer"
+          ],
+          "choices": [
+            "c_open",
+            "c_n_start_1",
+            "c_a_office1_1",
+            "c_a_desk_2",
+            "c_a_desk_drawer_2"
+          ],
+          "final_state": {
+            "has_key": false,
+            "knows_code": false,
+            "knows_tunnel": false,
+            "knows_ledger": false
+          }
+        }
+      ],
+      "verification": {
+        "status": "reproduced (kitchen half); 'gives back little' not checkable",
+        "method": "StoryEngine BFS; text search for 'kitchen' (only a_corridor, a_kitchen and the ending mention it).",
+        "notes": "The source's second clause ('this ending and e_set_cellar give back little') is an editorial judgement about setback gifts (SP-7 territory), not a route-fact defect; it is not entered as an answer-key assertion."
+      }
+    },
+    {
+      "id": "KD-LH-BS1",
+      "source": {
+        "doc": "docs/planning/authoring-lessons-log.md",
+        "section": "AL-773",
+        "also": [
+          "docs/planning/story-plan-implementation-plan.md WP-1.3 item 2",
+          "docs/planning/unscheduled-work-register.md UW-C484",
+          "git show 15b14a1 (commit message: 'two incompatible backstories on branches no single path crosses')"
+        ]
+      },
+      "book": {
+        "file": "out/the-hollow-lighthouse.filled.json",
+        "sha256": "acd8740b1ee7b42da44131c7bab2a4ad745eb40e93b2af2e5409a17a59d44430",
+        "title": "The Hollow Lighthouse",
+        "node_count": 149,
+        "git_revision": "f3ba310 (identical blob to 15b14a1^)"
+      },
+      "node": "n_chamber",
+      "other_nodes": [
+        "a_desk_log",
+        "jr_light",
+        "jr_light_date",
+        "e_win_smugglers",
+        "cm_letter_read",
+        "cm_light",
+        "e_win_name_cleared",
+        "e_win_signal"
+      ],
+      "defect_class": "two_backstories",
+      "severity": "blocker",
+      "expected_check": "SP-3 (single truth)",
+      "summary": "Who lit the pale light and why. Claim set A: Ferris did not light it and it has no source he can explain, tied to the smuggling; the smuggler 'haunted the tower'. Claim set B: Ferris built and left it burning on purpose as a warning or cry for help.",
+      "trigger": "No variables (the pre-revision book has none). Claim set A is asserted from the cottage desk and journal branches (a_desk_log, jr_light*, e_win_smugglers); claim set B at the shared n_chamber, in the letter branch (cm_letter_read), the light branch (cm_light, e_win_signal) and e_win_name_cleared.",
+      "claim_set_a": [
+        {
+          "node": "a_desk_log",
+          "text": "He swore he had lit no lamp that night."
+        },
+        {
+          "node": "jr_light",
+          "text": "It climbed on nights when he swore he had lit no lamp at all. It was a light with no source he could explain."
+        },
+        {
+          "node": "jr_light_date",
+          "text": "The light and the smuggling were tied together, somehow, thread to thread."
+        },
+        {
+          "node": "e_win_smugglers",
+          "text": "The smuggler who had haunted the tower for a year was caught red-handed among his own hoard."
+        }
+      ],
+      "claim_set_b": [
+        {
+          "node": "n_chamber",
+          "text": "And here was the truth behind the false light he had left burning as a quiet warning."
+        },
+        {
+          "node": "cm_letter_read",
+          "text": "leaving the false light burning behind him so that, eventually, someone from town would come looking"
+        },
+        {
+          "node": "cm_light",
+          "text": "Ferris had built that coded warning system to alert passing ships to danger without ever giving himself away."
+        },
+        {
+          "node": "e_win_name_cleared",
+          "text": "The false light he left burning had been nothing more than a quiet cry for help all along."
+        },
+        {
+          "node": "e_win_signal",
+          "text": "It was only a clever toy, built by two patient hands."
+        }
+      ],
+      "witnesses": [
+        {
+          "note": "Reads the journal ('no source he could explain'), then is told Ferris built the signal.",
+          "nodes": [
+            "n_open",
+            "n_start",
+            "a_office1",
+            "a_desk",
+            "a_desk_log",
+            "a_corridor",
+            "a_toward",
+            "n_journal",
+            "jr_light",
+            "jr_light_read",
+            "jr_light_join",
+            "n_stairs",
+            "st_wind",
+            "st_wind_up",
+            "n_light",
+            "li_stair",
+            "li_stair_down",
+            "n_tunnel",
+            "tn_gate",
+            "tn_gate_open",
+            "n_chamber",
+            "cm_light"
+          ],
+          "choices": [
+            "c_open",
+            "c_n_start_1",
+            "c_a_office1_1",
+            "c_a_desk_1",
+            "c_a_desk_log_1",
+            "c_a_corridor_1",
+            "c_a_toward_1",
+            "c_n_journal_1",
+            "c_jr_light_1",
+            "c_jr_light_read_1",
+            "c_jr_light_join_1",
+            "c_n_stairs_1",
+            "c_st_wind_1",
+            "c_st_wind_up_1",
+            "c_n_light_1",
+            "c_li_stair_1",
+            "c_li_stair_down_1",
+            "c_n_tunnel_3",
+            "c_tn_gate_1",
+            "c_tn_gate_open_1",
+            "c_n_chamber_3"
+          ],
+          "final_state": {}
+        },
+        {
+          "note": "Reads that Ferris swore he lit no lamp, then that he left the false light burning.",
+          "nodes": [
+            "n_open",
+            "n_start",
+            "a_office1",
+            "a_desk",
+            "a_desk_log",
+            "a_corridor",
+            "a_toward",
+            "n_journal",
+            "jr_light",
+            "jr_light_read",
+            "jr_light_join",
+            "n_stairs",
+            "st_wind",
+            "st_wind_up",
+            "n_light",
+            "li_stair",
+            "li_stair_down",
+            "n_tunnel",
+            "tn_gate",
+            "tn_gate_open",
+            "n_chamber",
+            "cm_letter",
+            "cm_letter_read"
+          ],
+          "choices": [
+            "c_open",
+            "c_n_start_1",
+            "c_a_office1_1",
+            "c_a_desk_1",
+            "c_a_desk_log_1",
+            "c_a_corridor_1",
+            "c_a_toward_1",
+            "c_n_journal_1",
+            "c_jr_light_1",
+            "c_jr_light_read_1",
+            "c_jr_light_join_1",
+            "c_n_stairs_1",
+            "c_st_wind_1",
+            "c_st_wind_up_1",
+            "c_n_light_1",
+            "c_li_stair_1",
+            "c_li_stair_down_1",
+            "c_n_tunnel_3",
+            "c_tn_gate_1",
+            "c_tn_gate_open_1",
+            "c_n_chamber_1",
+            "c_cm_letter_1"
+          ],
+          "final_state": {}
+        }
+      ],
+      "verification": {
+        "status": "reproduced, with a correction to how it was described",
+        "method": "git show f3ba310 (equal to 15b14a1^), StoryEngine BFS for co-occurrence of every A node with every B node and every A node with each B ending.",
+        "notes": "Correction: the AL-773 row and the revision commit say the two backstories sit on branches no single path crosses. They do not literally: a single path can visit a_desk_log or jr_light (claim A) and then n_chamber, cm_light or cm_letter_read (claim B); every A-node by B-node pair tested was co-reachable. What no single path crosses are the claim-set-bearing ENDINGS (e_win_smugglers versus e_win_name_cleared, e_win_signal), which are terminal. The pre-revision book is also vaguer than 'two incompatible stories': a_desk_log and jr_light are first-person claims by Ferris about a year ago, so they are strictly incompatible with 'Ferris built it' only if read as the current light's origin. SP-3 will be scored on whether the plan, built blind, marks the origin of the light as one truth with these two claim sets contradicting; the answer key is the claim sets above, not the 'no single path' wording."
+      }
+    },
+    {
+      "id": "KD-RB-L2-OVENS",
+      "source": {
+        "doc": "docs/planning/structural-verification-2026-11-20.md",
+        "section": "4.2, 'Defects the instruments did not see', first bullet",
+        "also": [
+          "docs/planning/evidence/structural-verification-2026-11-20/playthroughs/B-lkl-new-2.md",
+          "docs/planning/story-plan-implementation-plan.md WP-1.3 item 3"
+        ]
+      },
+      "book": {
+        "file": "docs/planning/evidence/structural-verification-2026-11-20/runs/B-lkl-new-2/filled.json",
+        "sha256": "904b126589216729e132cd2a4b0d4325e004bbef651538c4a0beb1d99c6159ab",
+        "title": "The Lantern Keepers' List",
+        "node_count": 132,
+        "run_label": "B-lkl-new-2"
+      },
+      "node": "fn_ovens",
+      "defect_class": "plant_leak_unplanted_route",
+      "severity": "leak",
+      "expected_check": "must_not_assert (thread fact 'Wren was polite to Mr Ovens with biscuits' guaranteed only with did_start_sheepfold_turn)",
+      "summary": "Shared node refers to a biscuit-offering earlier meeting with Mr Ovens that only the did_start_sheepfold_turn plant writes.",
+      "trigger": "did_start_sheepfold_turn = false, e.g. n_open > n_list (c_n_list_0, Beacon Steps) > bs_hub > bs_brackets > bs_plugs > bs_flight > gt_oil > oil_can > oil_school > oil_line > oil_count > fn_ovens.",
+      "quotes": [
+        {
+          "node": "fn_ovens",
+          "text": "It was not the careful, biscuit-offering politeness of earlier."
+        },
+        {
+          "node": "fn_ovens",
+          "text": "Asking for it a second time in one afternoon was a different sort of asking than the first."
+        }
+      ],
+      "witnesses": [
+        {
+          "note": "Beacon Steps start, sheepfold plant never taken, sf_hub (the only earlier 'biscuit' node) never visited.",
+          "nodes": [
+            "n_open",
+            "n_list",
+            "bs_hub",
+            "bs_brackets",
+            "bs_plugs",
+            "bs_flight",
+            "gt_oil",
+            "oil_can",
+            "oil_school",
+            "oil_line",
+            "oil_count",
+            "fn_ovens"
+          ],
+          "choices": [
+            "c_n_open_0",
+            "c_n_list_0",
+            "c_bs_hub_0",
+            "c_bs_brackets_0",
+            "c_bs_plugs_0",
+            "c_bs_flight_0",
+            "c_gt_oil_0",
+            "c_oil_can_0",
+            "c_oil_school_0",
+            "c_oil_line_2",
+            "c_oil_count_0"
+          ],
+          "final_state": {
+            "did_start_beacon_steps": true,
+            "did_start_sheepfold_turn": false,
+            "did_knock_doors_that": false
+          }
+        },
+        {
+          "note": "Also visits none of the other quad-bike nodes (sf_ovens, pp_quad, fx_ankle, z_quad, the doors payoff).",
+          "nodes": [
+            "n_open",
+            "n_list",
+            "bs_hub",
+            "bs_brackets",
+            "bs_plugs",
+            "bs_flight",
+            "gt_oil",
+            "oil_can",
+            "oil_school",
+            "oil_line",
+            "oil_count",
+            "fn_ovens"
+          ],
+          "choices": [
+            "c_n_open_0",
+            "c_n_list_0",
+            "c_bs_hub_0",
+            "c_bs_brackets_0",
+            "c_bs_plugs_0",
+            "c_bs_flight_0",
+            "c_gt_oil_0",
+            "c_oil_can_0",
+            "c_oil_school_0",
+            "c_oil_line_2",
+            "c_oil_count_0"
+          ],
+          "final_state": {
+            "did_start_beacon_steps": true,
+            "did_start_sheepfold_turn": false,
+            "did_knock_doors_that": false
+          }
+        }
+      ],
+      "verification": {
+        "status": "reproduced",
+        "method": "StoryEngine BFS on the delivered fill with var and avoid constraints.",
+        "notes": "Reproduces for did_start_sheepfold_turn=false. The only other node before fn_ovens that mentions biscuits is sf_hub (the plant hub). Additional assertion in the same node, not in the source: 'a second time in one afternoon' presumes a first request for the quad, which the ov2 witness shows is also unestablished on that route (no quad node visited)."
+      }
+    },
+    {
+      "id": "KD-RB-O1-E05",
+      "source": {
+        "doc": "docs/planning/structural-verification-2026-11-20.md",
+        "section": "4.2, 'Defects the instruments did not see', second bullet",
+        "also": [
+          "docs/planning/evidence/structural-verification-2026-11-20/playthroughs/B-os-new-1.md",
+          "docs/planning/story-plan-implementation-plan.md WP-1.3 item 3"
+        ]
+      },
+      "book": {
+        "file": "docs/planning/evidence/structural-verification-2026-11-20/runs/B-os-new-1/filled.json",
+        "sha256": "e86eb8a116868732c2b953c257873343606fd6cfb5de8fb4d5e4088e75c3dba7",
+        "title": "The October Blossom",
+        "node_count": 179,
+        "run_label": "B-os-new-1"
+      },
+      "node": "e05_0",
+      "defect_class": "plant_leak_unplanted_route",
+      "severity": "leak",
+      "expected_check": "must_not_assert (fact 'Jonah photographed the notice' guaranteed only with did_go_down_read)",
+      "summary": "Ending (reachable by choosing 'Let the six weeks run out' from n04d2 without having read the notice) recalls a photo of the notice that only the did_go_down_read plant writes.",
+      "trigger": "did_go_down_read = false: n00c0 > n01d0 (c_n01d0_0) > n02c0 > n03d0 (c_n03d0_2) > n04d2 (c_n04d2_0) > e05_0. The other inbound edge, n04d2/n04c4, is the planted route (n04c4: 'Jonah photographed the notice').",
+      "quotes": [
+        {
+          "node": "e05_0",
+          "text": "What Jonah was left with was a photo of a notice on a gate, the eleven words still in the back of an exercise book, and a clear idea of what he had not done."
+        },
+        {
+          "node": "n04c4",
+          "text": "Jonah photographed the notice with the bare trees behind it."
+        }
+      ],
+      "witnesses": [
+        {
+          "note": "Notebooks start, then the 'weather notes' fork, then let the weeks run out; the notice on the gate is never read.",
+          "nodes": [
+            "n00c0",
+            "n01d0",
+            "n02c0",
+            "n03d0",
+            "n04d2",
+            "e05_0"
+          ],
+          "choices": [
+            "c_n00c0_0",
+            "c_n01d0_0",
+            "c_n02c0_0",
+            "c_n03d0_2",
+            "c_n04d2_0"
+          ],
+          "final_state": {
+            "did_ask_whether_notebooks": true,
+            "did_go_down_read": false,
+            "did_find_who_wrote": false
+          }
+        }
+      ],
+      "verification": {
+        "status": "reproduced, with an extension",
+        "method": "StoryEngine BFS plus node text search on the delivered fill.",
+        "notes": "Reproduced: e05_0 is reachable with did_go_down_read=false and none of the route's nodes mention the notice, the photo, the eleven words or an exercise book. Extension: the same sentence also asserts 'the eleven words' (from the notice) and 'an exercise book' (written only by cq_plant_did_find_who_wrote and n04c0), so three facts leak, not one. The source said the ending is 'reachable without the gate plant' and named only the photo. Note n04d2 is reached from n03d0_2 in the fill; the source gave no route."
+      }
+    },
+    {
+      "id": "KD-RB-L2-BEACON",
+      "source": {
+        "doc": "docs/planning/structural-verification-2026-11-20.md",
+        "section": "4.2, 'Defects the instruments did not see', third bullet",
+        "also": [
+          "docs/planning/evidence/structural-verification-2026-11-20/playthroughs/B-lkl-new-2.md",
+          "docs/planning/story-plan-implementation-plan.md WP-1.3 item 3"
+        ]
+      },
+      "book": {
+        "file": "docs/planning/evidence/structural-verification-2026-11-20/runs/B-lkl-new-2/filled.json",
+        "sha256": "904b126589216729e132cd2a4b0d4325e004bbef651538c4a0beb1d99c6159ab",
+        "title": "The Lantern Keepers' List",
+        "node_count": 132,
+        "run_label": "B-lkl-new-2"
+      },
+      "node": "cq_payoff_did_start_beacon_steps",
+      "other_nodes": [
+        "cq_payoff_did_start_beacon_steps_site2"
+      ],
+      "defect_class": "cross_payoff_reference",
+      "severity": "leak",
+      "expected_check": "SP-6 (payoff independence)",
+      "summary": "One payoff site opens with Arthur Tremlett 'still at the sheepfold gate', an event written only into the other payoff site of the same thread.",
+      "trigger": "did_start_beacon_steps = true, reaching cq_payoff_did_start_beacon_steps via fn_up (c_fn_up_2_cq_did_start_beacon_steps) without ever visiting cq_payoff_did_start_beacon_steps_site2.",
+      "quotes": [
+        {
+          "node": "cq_payoff_did_start_beacon_steps",
+          "text": "Arthur Tremlett was still at the sheepfold gate when Wren came back down"
+        }
+      ],
+      "witnesses": [
+        {
+          "note": "Beacon plant taken; the other payoff site (where Arthur Tremlett is introduced) is never visited.",
+          "nodes": [
+            "n_open",
+            "n_list",
+            "bs_hub",
+            "bs_brackets",
+            "bs_plugs",
+            "bs_flight",
+            "gt_oil",
+            "oil_can",
+            "oil_school",
+            "oil_line",
+            "oil_taper",
+            "fn_up",
+            "cq_payoff_did_start_beacon_steps"
+          ],
+          "choices": [
+            "c_n_open_0",
+            "c_n_list_0",
+            "c_bs_hub_0",
+            "c_bs_brackets_0",
+            "c_bs_plugs_0",
+            "c_bs_flight_0",
+            "c_gt_oil_0",
+            "c_oil_can_0",
+            "c_oil_school_0",
+            "c_oil_line_1",
+            "c_oil_taper_1",
+            "c_fn_up_2_cq_did_start_beacon_steps"
+          ],
+          "final_state": {
+            "did_start_beacon_steps": true,
+            "did_start_sheepfold_turn": false,
+            "did_knock_doors_that": false
+          }
+        }
+      ],
+      "verification": {
+        "status": "reproduced",
+        "method": "StoryEngine BFS; Tremlett and Arthur occur only in the two beacon payoff nodes.",
+        "notes": "Reproduced exactly. 'Still' presumes he was introduced earlier; his introduction is in cq_payoff_did_start_beacon_steps_site2 only."
+      }
+    },
+    {
+      "id": "KD-OS-PP-B-os-new-1-n11d1",
+      "source": {
+        "doc": "docs/planning/structural-verification-2026-11-20.md",
+        "section": "4.2 table row did_find_who_wrote and 'Worst pair'",
+        "also": [
+          "docs/planning/evidence/structural-verification-2026-11-20/playthroughs/B-os-new-1.md",
+          "docs/planning/story-plan-implementation-plan.md WP-1.3 item 4",
+          "docs/planning/authoring-lessons-log.md AL-800"
+        ]
+      },
+      "book": {
+        "file": "docs/planning/evidence/structural-verification-2026-11-20/runs/B-os-new-1/filled.json",
+        "sha256": "e86eb8a116868732c2b953c257873343606fd6cfb5de8fb4d5e4088e75c3dba7",
+        "title": "The October Blossom",
+        "node_count": 179,
+        "run_label": "B-os-new-1"
+      },
+      "node": "cq_payoff_did_find_who_wrote_site2",
+      "other_nodes": [
+        "cq_plant_did_find_who_wrote",
+        "n04d0",
+        "n04d2",
+        "n11d1"
+      ],
+      "defect_class": "public_plant",
+      "severity": "thin",
+      "expected_check": "SP-4 (plant exclusivity); payoff quality is a judgement",
+      "summary": "The thread did_find_who_wrote plants the fact 'the surveyor is D. Faulks', but n04d0 shows that signature to readers who never took the plant, and choice labels name Faulks to readers who reach n04d0 or n04d2 without the plant.",
+      "trigger": "did_find_who_wrote = false with n03d2 > c_n03d2_2 > n04d0 (name shown unconditionally); or n04d2's label 'Find out what Faulks actually looked at.'",
+      "quotes": [
+        {
+          "node": "n04d0",
+          "text": "The survey was signed D. Faulks and dated in August."
+        },
+        {
+          "node": "cq_payoff_did_find_who_wrote_site2",
+          "text": "Jonah recalled the name on the survey: D. Faulks."
+        }
+      ],
+      "witnesses": [
+        {
+          "note": "No plant: reaches n11d1 (the payoff site, where the unplanted reader gets the alternative) through the notice route n03d2 > n04d0, so the name is already known.",
+          "nodes": [
+            "n00c0",
+            "n01d0",
+            "n02c2",
+            "n03d2",
+            "n04d0",
+            "n05d0",
+            "n06d0",
+            "n07d0",
+            "n08d0",
+            "n09d0",
+            "n10d0",
+            "n11d1"
+          ],
+          "choices": [
+            "c_n00c0_0",
+            "c_n01d0_2",
+            "c_n02c2_0",
+            "c_n03d2_2",
+            "c_n04d0_0",
+            "c_n05d0_0",
+            "c_n06d0_0",
+            "c_n07d0_0",
+            "c_n08d0_0",
+            "c_n09d0_0",
+            "c_n10d0_1"
+          ],
+          "final_state": {
+            "did_ask_whether_notebooks": false,
+            "did_go_down_read": true,
+            "did_find_who_wrote": false
+          }
+        },
+        {
+          "note": "No plant and no n04d0: still shown choice labels naming Faulks (n04d2 label c_n04d2_2).",
+          "nodes": [
+            "n00c0",
+            "n01d0",
+            "n02c0",
+            "n03d0",
+            "n04d2",
+            "n05d0",
+            "n06d0",
+            "n07d0",
+            "n08d0",
+            "n09d0",
+            "n10d0",
+            "n11d1"
+          ],
+          "choices": [
+            "c_n00c0_0",
+            "c_n01d0_0",
+            "c_n02c0_0",
+            "c_n03d0_2",
+            "c_n04d2_1",
+            "c_n05d0_0",
+            "c_n06d0_0",
+            "c_n07d0_0",
+            "c_n08d0_0",
+            "c_n09d0_0",
+            "c_n10d0_1"
+          ],
+          "final_state": {
+            "did_ask_whether_notebooks": true,
+            "did_go_down_read": false,
+            "did_find_who_wrote": false
+          }
+        }
+      ],
+      "reader_judgement": "thin: recalls only the name and what it 'changed' for the talk",
+      "verification": {
+        "status": "reproduced for SP-4; severity label taken from the source and agrees with my read",
+        "method": "StoryEngine BFS with need/var constraints plus text search.",
+        "notes": "Correction: the verification report says n04d0 shows the signature to 'every reader'. Not literally: a route to both payoff sites avoiding every Faulks node exists (nothing else names him on it) and n04d0 is reached unplanted only via n03d2. The defect (SP-4) still holds because n04d0 is reachable without the planting choice, and it is the node the plant itself leads on to (so the plant adds nothing the next node does not show)."
+      }
+    },
+    {
+      "id": "KD-OS-PP-B-os-new-1-n11d5",
+      "source": {
+        "doc": "docs/planning/structural-verification-2026-11-20.md",
+        "section": "4.2 table row did_find_who_wrote and 'Worst pair'",
+        "also": [
+          "docs/planning/evidence/structural-verification-2026-11-20/playthroughs/B-os-new-1.md",
+          "docs/planning/story-plan-implementation-plan.md WP-1.3 item 4",
+          "docs/planning/authoring-lessons-log.md AL-800"
+        ]
+      },
+      "book": {
+        "file": "docs/planning/evidence/structural-verification-2026-11-20/runs/B-os-new-1/filled.json",
+        "sha256": "e86eb8a116868732c2b953c257873343606fd6cfb5de8fb4d5e4088e75c3dba7",
+        "title": "The October Blossom",
+        "node_count": 179,
+        "run_label": "B-os-new-1"
+      },
+      "node": "cq_payoff_did_find_who_wrote",
+      "other_nodes": [
+        "cq_plant_did_find_who_wrote",
+        "n04d0",
+        "n04d2",
+        "n11d5"
+      ],
+      "defect_class": "public_plant",
+      "severity": "unearned",
+      "expected_check": "SP-4 (plant exclusivity); payoff quality is a judgement",
+      "summary": "The thread did_find_who_wrote plants the fact 'the surveyor is D. Faulks', but n04d0 shows that signature to readers who never took the plant, and choice labels name Faulks to readers who reach n04d0 or n04d2 without the plant.",
+      "trigger": "did_find_who_wrote = false with n03d2 > c_n03d2_2 > n04d0 (name shown unconditionally); or n04d2's label 'Find out what Faulks actually looked at.'",
+      "quotes": [
+        {
+          "node": "n04d0",
+          "text": "The survey was signed D. Faulks and dated in August."
+        },
+        {
+          "node": "cq_payoff_did_find_who_wrote",
+          "text": "Jonah recalled what he had learned about Faulks: the surveyor's other work, the pattern of reports that always matched what the client wanted."
+        }
+      ],
+      "witnesses": [
+        {
+          "note": "No plant: reaches n11d5 (the payoff site, where the unplanted reader gets the alternative) through the notice route n03d2 > n04d0, so the name is already known.",
+          "nodes": [
+            "n00c0",
+            "n01d0",
+            "n02c2",
+            "n03d2",
+            "n04d0",
+            "n05d0",
+            "n06d0",
+            "n07d0",
+            "n08d0",
+            "n09d0",
+            "n10d1",
+            "n11d5"
+          ],
+          "choices": [
+            "c_n00c0_0",
+            "c_n01d0_2",
+            "c_n02c2_0",
+            "c_n03d2_2",
+            "c_n04d0_0",
+            "c_n05d0_0",
+            "c_n06d0_0",
+            "c_n07d0_0",
+            "c_n08d0_0",
+            "c_n09d0_1",
+            "c_n10d1_2"
+          ],
+          "final_state": {
+            "did_ask_whether_notebooks": false,
+            "did_go_down_read": true,
+            "did_find_who_wrote": false
+          }
+        },
+        {
+          "note": "No plant and no n04d0: still shown choice labels naming Faulks (n04d2 label c_n04d2_2).",
+          "nodes": [
+            "n00c0",
+            "n01d0",
+            "n02c0",
+            "n03d0",
+            "n04d2",
+            "n05d0",
+            "n06d0",
+            "n07d0",
+            "n08d0",
+            "n09d0",
+            "n10d1",
+            "n11d5"
+          ],
+          "choices": [
+            "c_n00c0_0",
+            "c_n01d0_0",
+            "c_n02c0_0",
+            "c_n03d0_2",
+            "c_n04d2_1",
+            "c_n05d0_0",
+            "c_n06d0_0",
+            "c_n07d0_0",
+            "c_n08d0_0",
+            "c_n09d0_1",
+            "c_n10d1_2"
+          ],
+          "final_state": {
+            "did_ask_whether_notebooks": true,
+            "did_go_down_read": false,
+            "did_find_who_wrote": false
+          }
+        }
+      ],
+      "reader_judgement": "unearned: claims knowledge nobody wrote ('the surveyor's other work, the pattern of reports')",
+      "verification": {
+        "status": "reproduced for SP-4; severity label taken from the source and agrees with my read",
+        "method": "StoryEngine BFS with need/var constraints plus text search.",
+        "notes": "Correction: the verification report says n04d0 shows the signature to 'every reader'. Not literally: a route to both payoff sites avoiding every Faulks node exists (nothing else names him on it) and n04d0 is reached unplanted only via n03d2. The defect (SP-4) still holds because n04d0 is reachable without the planting choice, and it is the node the plant itself leads on to (so the plant adds nothing the next node does not show)."
+      }
+    },
+    {
+      "id": "KD-OS-PP-B-os-new-2-n11d1",
+      "source": {
+        "doc": "docs/planning/structural-verification-2026-11-20.md",
+        "section": "4.2 table row did_find_who_wrote and 'Worst pair'",
+        "also": [
+          "docs/planning/evidence/structural-verification-2026-11-20/playthroughs/B-os-new-2.md",
+          "docs/planning/story-plan-implementation-plan.md WP-1.3 item 4",
+          "docs/planning/authoring-lessons-log.md AL-800"
+        ]
+      },
+      "book": {
+        "file": "docs/planning/evidence/structural-verification-2026-11-20/runs/B-os-new-2/filled.json",
+        "sha256": "d014a9e2c42bfb7de19beb7c38d18e8e32b31584bbf753b396f8cf97b644df09",
+        "title": "The Orchard Signal",
+        "node_count": 179,
+        "run_label": "B-os-new-2"
+      },
+      "node": "cq_payoff_did_find_who_wrote_site2",
+      "other_nodes": [
+        "cq_plant_did_find_who_wrote",
+        "n04d0",
+        "n04d2",
+        "n11d1"
+      ],
+      "defect_class": "public_plant",
+      "severity": "thin",
+      "expected_check": "SP-4 (plant exclusivity); payoff quality is a judgement",
+      "summary": "The thread did_find_who_wrote plants the fact 'the surveyor is D. Faulks', but n04d0 shows that signature to readers who never took the plant, and choice labels name Faulks to readers who reach n04d0 or n04d2 without the plant.",
+      "trigger": "did_find_who_wrote = false with n03d2 > c_n03d2_2 > n04d0 (name shown unconditionally); or n04d2's label 'Find out what Faulks actually looked at.'",
+      "quotes": [
+        {
+          "node": "n04d0",
+          "text": "The survey was signed *D. Faulks* at the bottom of a cover sheet"
+        },
+        {
+          "node": "cq_payoff_did_find_who_wrote_site2",
+          "text": "Before Jonah answered, he recalled the name he had written in the back of Ada's book."
+        }
+      ],
+      "witnesses": [
+        {
+          "note": "No plant: reaches n11d1 (the payoff site, where the unplanted reader gets the alternative) through the notice route n03d2 > n04d0, so the name is already known.",
+          "nodes": [
+            "n00c0",
+            "n01d0",
+            "n02c2",
+            "n03d2",
+            "n04d0",
+            "n05d0",
+            "n06d0",
+            "n07d0",
+            "n08d0",
+            "n09d0",
+            "n10d0",
+            "n11d1"
+          ],
+          "choices": [
+            "c_n00c0_0",
+            "c_n01d0_2",
+            "c_n02c2_0",
+            "c_n03d2_2",
+            "c_n04d0_0",
+            "c_n05d0_0",
+            "c_n06d0_0",
+            "c_n07d0_0",
+            "c_n08d0_0",
+            "c_n09d0_0",
+            "c_n10d0_1"
+          ],
+          "final_state": {
+            "did_ask_whether_notebooks": false,
+            "did_go_down_read": true,
+            "did_find_who_wrote": false
+          }
+        },
+        {
+          "note": "No plant and no n04d0: still shown choice labels naming Faulks (n04d2 label c_n04d2_2).",
+          "nodes": [
+            "n00c0",
+            "n01d0",
+            "n02c0",
+            "n03d0",
+            "n04d2",
+            "n05d0",
+            "n06d0",
+            "n07d0",
+            "n08d0",
+            "n09d0",
+            "n10d0",
+            "n11d1"
+          ],
+          "choices": [
+            "c_n00c0_0",
+            "c_n01d0_0",
+            "c_n02c0_0",
+            "c_n03d0_2",
+            "c_n04d2_1",
+            "c_n05d0_0",
+            "c_n06d0_0",
+            "c_n07d0_0",
+            "c_n08d0_0",
+            "c_n09d0_0",
+            "c_n10d0_1"
+          ],
+          "final_state": {
+            "did_ask_whether_notebooks": true,
+            "did_go_down_read": false,
+            "did_find_who_wrote": false
+          }
+        }
+      ],
+      "reader_judgement": "thin: recalls the name written in the notebook",
+      "verification": {
+        "status": "reproduced for SP-4; severity label taken from the source and agrees with my read",
+        "method": "StoryEngine BFS with need/var constraints plus text search.",
+        "notes": "Correction: the verification report says n04d0 shows the signature to 'every reader'. Not literally: a route to both payoff sites avoiding every Faulks node exists (nothing else names him on it) and n04d0 is reached unplanted only via n03d2. The defect (SP-4) still holds because n04d0 is reachable without the planting choice, and it is the node the plant itself leads on to (so the plant adds nothing the next node does not show)."
+      }
+    },
+    {
+      "id": "KD-OS-PP-B-os-new-2-n11d5",
+      "source": {
+        "doc": "docs/planning/structural-verification-2026-11-20.md",
+        "section": "4.2 table row did_find_who_wrote and 'Worst pair'",
+        "also": [
+          "docs/planning/evidence/structural-verification-2026-11-20/playthroughs/B-os-new-2.md",
+          "docs/planning/story-plan-implementation-plan.md WP-1.3 item 4",
+          "docs/planning/authoring-lessons-log.md AL-800"
+        ]
+      },
+      "book": {
+        "file": "docs/planning/evidence/structural-verification-2026-11-20/runs/B-os-new-2/filled.json",
+        "sha256": "d014a9e2c42bfb7de19beb7c38d18e8e32b31584bbf753b396f8cf97b644df09",
+        "title": "The Orchard Signal",
+        "node_count": 179,
+        "run_label": "B-os-new-2"
+      },
+      "node": "cq_payoff_did_find_who_wrote",
+      "other_nodes": [
+        "cq_plant_did_find_who_wrote",
+        "n04d0",
+        "n04d2",
+        "n11d5"
+      ],
+      "defect_class": "public_plant",
+      "severity": "thin",
+      "expected_check": "SP-4 (plant exclusivity); payoff quality is a judgement",
+      "summary": "The thread did_find_who_wrote plants the fact 'the surveyor is D. Faulks', but n04d0 shows that signature to readers who never took the plant, and choice labels name Faulks to readers who reach n04d0 or n04d2 without the plant.",
+      "trigger": "did_find_who_wrote = false with n03d2 > c_n03d2_2 > n04d0 (name shown unconditionally); or n04d2's label 'Find out what Faulks actually looked at.'",
+      "quotes": [
+        {
+          "node": "n04d0",
+          "text": "The survey was signed *D. Faulks* at the bottom of a cover sheet"
+        },
+        {
+          "node": "cq_payoff_did_find_who_wrote",
+          "text": "He had found out who wrote the survey, and knowing the name D. Faulks gave him a specific target for the rainfall argument."
+        }
+      ],
+      "witnesses": [
+        {
+          "note": "No plant: reaches n11d5 (the payoff site, where the unplanted reader gets the alternative) through the notice route n03d2 > n04d0, so the name is already known.",
+          "nodes": [
+            "n00c0",
+            "n01d0",
+            "n02c2",
+            "n03d2",
+            "n04d0",
+            "n05d0",
+            "n06d0",
+            "n07d0",
+            "n08d0",
+            "n09d0",
+            "n10d1",
+            "n11d5"
+          ],
+          "choices": [
+            "c_n00c0_0",
+            "c_n01d0_2",
+            "c_n02c2_0",
+            "c_n03d2_2",
+            "c_n04d0_0",
+            "c_n05d0_0",
+            "c_n06d0_0",
+            "c_n07d0_0",
+            "c_n08d0_0",
+            "c_n09d0_1",
+            "c_n10d1_2"
+          ],
+          "final_state": {
+            "did_ask_whether_notebooks": false,
+            "did_go_down_read": true,
+            "did_find_who_wrote": false
+          }
+        },
+        {
+          "note": "No plant and no n04d0: still shown choice labels naming Faulks (n04d2 label c_n04d2_2).",
+          "nodes": [
+            "n00c0",
+            "n01d0",
+            "n02c0",
+            "n03d0",
+            "n04d2",
+            "n05d0",
+            "n06d0",
+            "n07d0",
+            "n08d0",
+            "n09d0",
+            "n10d1",
+            "n11d5"
+          ],
+          "choices": [
+            "c_n00c0_0",
+            "c_n01d0_0",
+            "c_n02c0_0",
+            "c_n03d0_2",
+            "c_n04d2_1",
+            "c_n05d0_0",
+            "c_n06d0_0",
+            "c_n07d0_0",
+            "c_n08d0_0",
+            "c_n09d0_1",
+            "c_n10d1_2"
+          ],
+          "final_state": {
+            "did_ask_whether_notebooks": true,
+            "did_go_down_read": false,
+            "did_find_who_wrote": false
+          }
+        }
+      ],
+      "reader_judgement": "thin: the name plus a rainfall fact both readers already have from the site body",
+      "verification": {
+        "status": "reproduced for SP-4; severity label taken from the source and agrees with my read",
+        "method": "StoryEngine BFS with need/var constraints plus text search.",
+        "notes": "Correction: the verification report says n04d0 shows the signature to 'every reader'. Not literally: a route to both payoff sites avoiding every Faulks node exists (nothing else names him on it) and n04d0 is reached unplanted only via n03d2. The defect (SP-4) still holds because n04d0 is reachable without the planting choice, and it is the node the plant itself leads on to (so the plant adds nothing the next node does not show)."
+      }
+    }
+  ]
+}
