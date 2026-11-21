@@ -158,7 +158,7 @@ from dataclasses import dataclass
 from typing import TYPE_CHECKING, Final, TypeVar
 
 from cyo_adventure.player.engine import StoryEngine
-from cyo_adventure.storybook.models import EffectOp, Storybook, Valence
+from cyo_adventure.storybook.models import AgeBand, EffectOp, Storybook, Valence
 from cyo_adventure.storyplan.models import StoryPlan, shape_hash
 from cyo_adventure.validator.report import Severity, ValidationFinding, ValidationReport
 from cyo_adventure.validator.slots import (
@@ -194,6 +194,7 @@ __all__ = [
     "guaranteed_on_entry",
     "meet_of",
     "must_not_assert",
+    "text_floor_violations",
     "verify_witnesses",
 ]
 
@@ -1951,22 +1952,6 @@ def _check_text_floors(plan: StoryPlan, book: Storybook) -> list[PlanFinding]:
     bundles = band_mandatory_bundles(book.metadata.age_band)
     findings: list[PlanFinding] = []
     for item in _plan_strings(plan):
-        # validator.slots always applies its fixed 120-character cap; drop that
-        # one message and apply this field's own cap instead.
-        messages = [
-            violation.message
-            for violation in structural_value_violations(item.value)
-            if not violation.message.startswith(_SLOT_LENGTH_MESSAGE_PREFIX)
-        ]
-        if len(item.value) > item.cap:
-            messages.append(
-                f"value exceeds the {item.cap}-character limit "
-                f"(length {len(item.value)})"
-            )
-        messages.extend(
-            f"matches a band-mandatory denylist term in bundle {bundle!r}"
-            for bundle in sorted(_denylisted(item.value, bundles))
-        )
         findings.extend(
             _finding(
                 "SP-9",
@@ -1976,9 +1961,67 @@ def _check_text_floors(plan: StoryPlan, book: Storybook) -> list[PlanFinding]:
                 choice_id=item.choice_id,
                 fact_id=item.fact_id,
             )
-            for message in messages
+            for message in _floor_messages(item.value, bundles, item.cap)
         )
     return findings
+
+
+def _floor_messages(value: str, bundles: frozenset[str], cap: int) -> list[str]:
+    """Return SP-9's messages for one string: structure, length, denylist.
+
+    Args:
+        value: The string.
+        bundles: The band's mandatory denylist bundle ids.
+        cap: This field's length cap.
+
+    Returns:
+        list[str]: One message per violation, naming the rule, never the text.
+    """
+    # validator.slots always applies its fixed 120-character cap; drop that
+    # one message and apply this field's own cap instead.
+    messages = [
+        violation.message
+        for violation in structural_value_violations(value)
+        if not violation.message.startswith(_SLOT_LENGTH_MESSAGE_PREFIX)
+    ]
+    if len(value) > cap:
+        messages.append(
+            f"value exceeds the {cap}-character limit (length {len(value)})"
+        )
+    messages.extend(
+        f"matches a band-mandatory denylist term in bundle {bundle!r}"
+        for bundle in sorted(_denylisted(value, bundles))
+    )
+    return messages
+
+
+def text_floor_violations(
+    value: str, band: AgeBand, *, cap: int = SLOT_LENGTH_CAP
+) -> list[str]:
+    """Return the SP-9 floor violations of one string, for a plan-adjacent text.
+
+    The same floors SP-9 applies to a plan string (the slot structural floor,
+    a per-field length cap, the band-mandatory denylist with the "wound"
+    homograph mask), exposed for text that is screened before it becomes part
+    of a plan: the WP-2.3 pitch fields (:mod:`cyo_adventure.storyplan.generate`)
+    are slot-like strings and use the default 120-character cap.
+
+    Args:
+        value: The string to floor.
+        band: The age band whose mandatory denylist applies.
+        cap: The length cap; defaults to the slot-like cap.
+
+    Returns:
+        list[str]: One message per violation, naming the rule, never the text;
+            empty when the string passes.
+    """
+    # #CRITICAL: security: pitch strings are model text derived from an
+    # untrusted request and are placed verbatim in the plan prompt; this is
+    # the same floor SP-9 applies, so a pitch cannot smuggle a template token,
+    # a fence marker or a band-forbidden term that a plan string could not.
+    # #VERIFY: test_storyplan_generate.py rejects a pitch with a brace token
+    # and with a denylisted term.
+    return _floor_messages(value, band_mandatory_bundles(band), cap)
 
 
 # ---------------------------------------------------------------------------
