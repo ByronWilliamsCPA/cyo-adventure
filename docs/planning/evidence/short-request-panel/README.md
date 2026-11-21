@@ -104,5 +104,27 @@ paths. The exact commit to tag is recorded in the pull request that merges this 
 
 ## Review status
 
-The element lists have been written by one agent and **have not yet been reviewed** by the owner or a second agent.
-That review is the remaining acceptance item of WP-0.2, together with creating the tag.
+Reviewed by a second agent on 2026-11-21 (WP-0.2 acceptance item: lists reviewed by the owner or a second agent).
+The review checked each list for faithfulness to the request, coverage of what is central, markability by a blind
+adult on one path, independence between elements, and fit with a safe 8-11 or 10-13 story. No request text was
+changed; the 16 `premise_panel` texts match `PREMISE_PANEL` verbatim. The per-request changes are recorded in
+`review.changes` in [`panel.json`](./panel.json). In summary:
+
+- **Every list was rewritten into observable form.** Bare nouns ("a dog", "afraid", "a case") now say what a reader
+  would see on the page; judgment endings ("some change by the end", "the wish is honoured") now name a stated or
+  shown outcome on the path read.
+- **Duplicates removed.** P07 ("a cake" and "baking") merged; P09 ("a journey" and "arrival or return") split into
+  the flight shown and the end state; P14 ("bravery" and "some change") separated into an action and a feeling.
+- **Coverage added.** P02 and D01 now require the fear to be shown and to change, with the fire or the dark on the
+  page; P07 now requires the cake to be for her; G01 and G02 state whose nervousness and what "together" means.
+- **Safety.** No element needs anything unsafe in either band.
+
+The owner has not reviewed the lists. Items for the owner to decide, none of which blocks freezing the lists:
+
+1. **G01 and the school.** The brief mentions the daughter's worry about a new school, but the requested story is the
+   cat's. The list does not require a school scene; add one if the guardian's context should be mirrored.
+2. **G02 and the baby.** A baby cannot literally work; "together" is defined as the same task, the baby carried or
+   nearby counting. Tighten this if a stricter reading is wanted.
+3. **P01 to P16 are the children's own words**, so "main character" is read as the child or a stand-in. The panel
+   does not require the child to be named in the book.
+4. Creating the `baseline/pre-story-plan` tag remains open.

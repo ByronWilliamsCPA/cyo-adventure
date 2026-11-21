@@ -26,10 +26,33 @@
   "jobs_per_arm": 40,
   "length": "short (fixed for every job so words commissioned are comparable)",
   "narrative_style": "production default for the band",
-  "element_rules": "Elements were written from the request text alone, before any generation, and must not be edited after the first job runs. Scored present/absent by a blind adult reader on one sampled path.",
+  "element_rules": "Elements were written from the request text alone, before any generation, and reviewed by a second agent on 2026-11-21. They must not be edited after the first job runs. Each is scored present or absent by a blind adult reader on the one sampled path read; an element naming an ending is judged on that path's ending only.",
   "review": {
-    "status": "pending",
-    "note": "WP-0.2 acceptance requires review by the owner or a second agent; not yet done."
+    "status": "done",
+    "who": "second agent, 2026-11-21",
+    "note": "Independent second review for WP-0.2 acceptance. Every element list was checked for faithfulness, coverage, markability, independence and safety in the 8-11 and 10-13 bands. All 20 lists were rewritten into observable form; no request text was changed. The 16 premise_panel texts were verified identical to PREMISE_PANEL. The owner has not reviewed; the owner decisions are listed in the README.",
+    "changes": {
+      "P01": "Rewrote all four. 'A dog' and 'lost' were bare nouns; 'my dog' means the dog is the protagonist's own, now said; the ending is tied to the path read.",
+      "P02": "'Afraid' and 'fire' were nearly one element and 'some change' was a judgment call; separated the fear from fire being on the page and defined the change as a change in relation to fire.",
+      "P03": "'Two siblings' did not say they are the protagonists or that one is a sister; 'solved' now requires the siblings to find the answer.",
+      "P04": "'Learning' was abstract; now needs observable practice. 'Music' now names a concrete instrument or song so it is distinct from the ending element.",
+      "P05": "'Under the sea' now requires scenes below the surface, not a ship deck; 'the search ends' now requires a stated outcome.",
+      "P06": "'Wants to win' and 'a race' now observable; 'decided' now means the result is stated.",
+      "P07": "'A cake' and 'baking' were two halves of one thing; merged them and added that the cake is for her, which is the point of the request.",
+      "P08": "'Exploring' now needs two distinct places; 'a friend' now means accompanies throughout; ending made explicit.",
+      "P09": "'A journey' was a duplicate of 'arrival or return'; split into the flight being shown and the end state. Removed the judgment in 'arrival or return'.",
+      "P10": "'The festival goes on or changes' is now a stated outcome; the storm is now required to be present, not just named.",
+      "P11": "'Some lesson or repair' made specific: a repair or a lesson stated aloud or in narration.",
+      "P12": "'Wants to garden' and 'a garden' separated into stated wish and shown gardening; 'honoured' replaced by an observable ending.",
+      "P13": "'A case' separated from 'a detective' by requiring a specific question to answer; 'cracked' now requires the decoding to be shown.",
+      "P14": "'Bravery' and 'some change' overlapped; bravery is now an action and the change is the feeling at the end. Added the visit scene as its own element in place of 'the doctor'.",
+      "P15": "'Dinosaurs' clarified for a museum (skeletons or models count); the dawn outcome must be stated.",
+      "P16": "'Refuses to jump' made observable; ending made checkable.",
+      "D01": "Same fix as P02: the fear is the heart of the request, so it is now required to be shown and to change, with the dark itself on the page.",
+      "G01": "'Nervousness eases' was ambiguous about whose: the guardian's daughter is nervous but the story is the cat's, so the cat carries it. See the owner question on the school.",
+      "G02": "A baby cannot literally work, so the final element states what counts as 'together'; the farm and harvest are kept as one setting element.",
+      "G03": "'Clever' is a judgment and was merged into noticing; 'small clues' now needs at least two; 'good reason' now needs a stated, sympathetic reason."
+    }
   },
   "requests": [
     {
@@ -37,10 +60,10 @@
       "source": "premise_panel",
       "text": "a story about my dog who gets lost in the woods",
       "elements": [
-        "a dog",
-        "lost",
-        "the woods",
-        "found or home again by the end"
+        "the main character's own dog is a central character",
+        "the dog becomes lost: separated from its person and unable to find the way back, in a scene",
+        "the dog is lost in woods or forest (trees, undergrowth, a trail)",
+        "the dog and its person are together again, or the dog is home, by the end of the path read"
       ]
     },
     {
@@ -48,10 +71,10 @@
       "source": "premise_panel",
       "text": "a dragon who is scared of fire",
       "elements": [
-        "a dragon",
-        "afraid",
-        "fire",
-        "some change by the end"
+        "a dragon is the main character",
+        "the dragon is afraid of fire, with the fear stated or shown by behaviour (flinching, avoiding, hiding)",
+        "fire itself appears in at least one scene (a flame, a fire, or the dragon's own fire), not only mentioned",
+        "by the end the dragon's relation to fire has changed (faces it, uses it, copes, or states a new understanding)"
       ]
     },
     {
@@ -59,10 +82,10 @@
       "source": "premise_panel",
       "text": "me and my sister solving a mystery in an old castle",
       "elements": [
-        "two siblings",
-        "a mystery",
-        "an old castle",
-        "the mystery is solved"
+        "the two main characters are siblings, at least one described as the other's sister",
+        "a mystery is posed: something unexplained that the characters set out to investigate",
+        "the story is set in an old castle (the castle is where most scenes happen)",
+        "the answer to the mystery is revealed by the end of the path read, found out by the siblings themselves"
       ]
     },
     {
@@ -70,10 +93,10 @@
       "source": "premise_panel",
       "text": "a robot that learns to play music",
       "elements": [
-        "a robot",
-        "learning",
-        "music",
-        "plays music by the end"
+        "a robot is the main character",
+        "the robot is shown learning: at least two attempts or practice scenes with some improvement or struggle",
+        "music is the thing learned, with an instrument, song or kind of music named",
+        "the robot makes music (plays or sings) in a scene near the end"
       ]
     },
     {
@@ -81,10 +104,10 @@
       "source": "premise_panel",
       "text": "a pirate looking for treasure under the sea",
       "elements": [
-        "a pirate",
-        "treasure",
-        "under the sea",
-        "the search ends"
+        "a pirate is the main character",
+        "a treasure is the thing being sought",
+        "the search happens under the sea (diving, a submarine, or the sea floor shown)",
+        "the path ends with a stated outcome of the search (found, lost, or traded for something)"
       ]
     },
     {
@@ -92,10 +115,10 @@
       "source": "premise_panel",
       "text": "a kid who wants to win the big race",
       "elements": [
-        "a kid",
-        "wants to win",
-        "a race",
-        "the race is decided"
+        "a kid is the main character",
+        "the kid states or shows a wish to win (in words, thoughts or effort)",
+        "a race with other competitors takes place on the page",
+        "the result of the race is stated (won, lost or tied) before the path ends"
       ]
     },
     {
@@ -103,10 +126,10 @@
       "source": "premise_panel",
       "text": "a story about baking a cake for my grandma",
       "elements": [
-        "a cake",
-        "baking",
-        "a grandmother",
-        "the cake is given"
+        "the main character bakes a cake in a scene (ingredients, mixing or oven steps shown)",
+        "a grandmother (grandma, nana or similar) is a character",
+        "the cake is stated to be for her",
+        "she receives the cake on the page"
       ]
     },
     {
@@ -114,10 +137,10 @@
       "source": "premise_panel",
       "text": "exploring a cave with a friend",
       "elements": [
-        "a cave",
-        "exploring",
-        "a friend",
-        "both leave the cave"
+        "a cave is the main setting",
+        "the characters explore the cave, moving through at least two distinct parts and noticing things in them",
+        "a friend goes with the main character throughout",
+        "both are outside the cave at the end of the path"
       ]
     },
     {
@@ -125,10 +148,10 @@
       "source": "premise_panel",
       "text": "a rocket trip to another planet",
       "elements": [
-        "a rocket",
-        "a journey",
-        "another planet",
-        "arrival or return"
+        "a rocket is the vehicle",
+        "the flight is shown on the page (a launch, or time travelling through space)",
+        "a planet other than Earth is named or described as the destination",
+        "the rocket lands on that planet in a scene, or the path ends with the characters home again, as stated"
       ]
     },
     {
@@ -136,10 +159,10 @@
       "source": "premise_panel",
       "text": "a snowstorm on the night of the festival",
       "elements": [
-        "a snowstorm",
-        "night",
-        "a festival",
-        "the festival goes on or changes"
+        "a snowstorm is on the page, with snow and wind or similar weather described",
+        "the key events happen at night (dark, evening or night stated)",
+        "a festival is the event the night is for, named or described",
+        "what happens to the festival is stated by the end (held as planned, moved, or changed)"
       ]
     },
     {
@@ -147,10 +170,10 @@
       "source": "premise_panel",
       "text": "an invention that goes wrong at school",
       "elements": [
-        "an invention",
-        "it goes wrong",
-        "school",
-        "some lesson or repair by the end"
+        "a character builds or brings an invention, which is described",
+        "the invention goes wrong: it visibly malfunctions or causes a problem",
+        "it happens at school (classroom, playground or similar)",
+        "by the end the problem is repaired, or a character states what was learned"
       ]
     },
     {
@@ -158,10 +181,10 @@
       "source": "premise_panel",
       "text": "a knight who would rather be a gardener",
       "elements": [
-        "a knight",
-        "wants to garden",
-        "a garden",
-        "the wish is honoured"
+        "a knight is the main character",
+        "the knight says or shows they would rather garden than be a knight",
+        "the knight tends plants in a garden in a scene",
+        "by the end the knight is allowed to garden, or does so with others' agreement"
       ]
     },
     {
@@ -169,10 +192,10 @@
       "source": "premise_panel",
       "text": "a detective story with secret codes",
       "elements": [
-        "a detective",
-        "secret codes",
-        "a case",
-        "the code is cracked"
+        "a detective (named as one, or clearly acting as one) is the main character",
+        "a secret code or coded message appears on the page",
+        "a specific case is posed: something missing or unknown to find out",
+        "the code's meaning is decoded on the page, with the method or answer shown"
       ]
     },
     {
@@ -180,10 +203,10 @@
       "source": "premise_panel",
       "text": "a story about being brave at the doctor",
       "elements": [
-        "the doctor",
-        "fear",
-        "bravery",
-        "some change by the end"
+        "a visit to a doctor or clinic is a scene",
+        "the main character is nervous or afraid about it, stated or shown",
+        "the character does something brave despite the fear (lets the check-up happen, speaks up, stays calm)",
+        "by the end the character feels calmer or proud, stated or shown"
       ]
     },
     {
@@ -191,10 +214,10 @@
       "source": "premise_panel",
       "text": "dinosaurs waking up in a museum",
       "elements": [
-        "dinosaurs",
-        "a museum",
-        "waking up",
-        "what happens to them by dawn"
+        "dinosaurs (skeletons, models or statues) are characters",
+        "the setting is a museum",
+        "the dinosaurs wake up or come to life in a scene",
+        "by morning or dawn the path says what became of the dinosaurs (back in place, hidden, or other)"
       ]
     },
     {
@@ -202,10 +225,10 @@
       "source": "premise_panel",
       "text": "a horse who will not jump the fence",
       "elements": [
-        "a horse",
-        "refuses to jump",
-        "a fence",
-        "jumps, or finds another way"
+        "a horse is the main character",
+        "the horse refuses to jump: stops or balks at the fence in a scene",
+        "a fence is the obstacle",
+        "by the end the horse is on the far side of the fence (jumped or another route), or the story states what became of the fence problem"
       ]
     },
     {
@@ -213,10 +236,10 @@
       "source": "dragon_line",
       "text": "a story about a dragon who is afraid of the dark",
       "elements": [
-        "a dragon",
-        "afraid",
-        "the dark",
-        "some change by the end"
+        "a dragon is the main character",
+        "the dragon is afraid of the dark, with the fear stated or shown by behaviour",
+        "the dark itself appears in a scene (night, a dark cave, lights out), not only mentioned",
+        "by the end the dragon's relation to the dark has changed (faces it, copes, finds light, or states a new understanding)"
       ]
     },
     {
@@ -224,11 +247,11 @@
       "source": "guardian_brief",
       "text": "My daughter is moving to a new town and is nervous about starting at a new school. Please make a story about a lighthouse keeper's cat who has to find a new home and make a friend there.",
       "elements": [
-        "a cat",
-        "a lighthouse keeper",
-        "a move to a new home",
-        "making a friend",
-        "nervousness eases by the end"
+        "a cat is the main character",
+        "a lighthouse keeper is a character, or the cat is stated to belong to one",
+        "the cat leaves its old home for a new one and arrives there on the page",
+        "the cat makes a friend, a named character it befriends",
+        "the cat is nervous or unsure early and calmer or settled by the end"
       ]
     },
     {
@@ -236,11 +259,11 @@
       "source": "guardian_brief",
       "text": "We want a story about a boy who is jealous of his baby brother, set on a farm during harvest. It should end with the two of them working together.",
       "elements": [
-        "a boy",
-        "jealousy",
-        "a baby brother",
-        "a farm at harvest",
-        "the two work together at the end"
+        "a boy is the main character",
+        "the boy shows jealousy of his baby brother, in words or actions about the baby getting attention",
+        "a baby brother is a character",
+        "the story is set on a farm and shows harvest work (picking, cutting, carrying crops)",
+        "the boy and baby brother take part in the same task at the end (the baby being carried or sitting nearby counts)"
       ]
     },
     {
@@ -248,11 +271,11 @@
       "source": "guardian_brief",
       "text": "Please write a mystery about a missing school trophy, with a clever girl who notices small clues. The culprit should turn out to be someone with a good reason.",
       "elements": [
-        "a missing trophy",
-        "a clever girl",
-        "small clues",
-        "school",
-        "a culprit with a good reason"
+        "a trophy goes missing, and its disappearance is the mystery",
+        "a girl is the main investigator",
+        "she notices at least two small clues described on the page (a smudge, a dropped item, a detail others missed)",
+        "the story is set at school",
+        "the culprit is identified, and a sympathetic reason for taking the trophy is given"
       ]
     }
   ]
