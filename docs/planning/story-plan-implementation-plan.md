@@ -451,6 +451,39 @@ that had read the continuity notes, so it is not the blind test WP-1.4 and WP-1.
   byte-identical; no shell loses production eligibility in this package.
 - **Depends on.** WP-1.5 passed, D4. **Size.** M.
 
+#### WP-2.2 notes: retained shapes as built (2026-11-21)
+
+- **Grammar.** `<<FILL v=2 role=<role> words=<n> function=<function>>>`: exactly these four fields, in this order,
+  single-space separated, nothing after `>>`. `role` keeps the v1 token (lower case), `words` the v1 budget (positive
+  integer), `function` is one of `opening`, `ending`, `merge`, `decision`, `continue` (first match wins: start node,
+  ending, two or more distinct inbound nodes, two or more choices, otherwise). The vocabulary is the WP-0.3 plans' own
+  minus `payoff`, which is a plan thread, not a shape property. Grammar and conversion live in
+  `src/cyo_adventure/storybook/fill_directive.py`; `slotted_surfaces.FILL_DIRECTIVE_RE` stays v1-only and is
+  re-exported from there unchanged. `scripts/check_skeleton.py` fails, in every mode, a v2 directive with free text, a
+  function outside the vocabulary or disagreeing with the graph, an unknown `v=` value, or a v1 directive left in a v2
+  shell.
+- **Copies, not in-place edits.** All twelve D4 shells are production-eligible and selectable by the live
+  skeleton-fill path, which quotes each node's beats to the fill model. Converting in place would strip those beats
+  from on-demand fills before WP-2.5/2.6 exist, against ADR-033 Decision 5 ("skeleton fill as built stays selectable
+  until the pilot shows plan-first is not worse"). So `skeletons/` is byte-identical, and each shape is written to
+  `shapes/<band>/<slug>.json`, outside every catalog scan.
+- **Shape id and hash.** `shapes/registry.json` lists each shape: id (the skeleton slug), cell, source and shape paths,
+  and `shape_hash` (`storyplan.models.shape_hash`, which reads no body, so source, shape and registry carry one value).
+  A plan binds with `provenance.shape = {"id": <slug>, "hash": <registry hash>}`. Loader and consistency check:
+  `src/cyo_adventure/storyplan/shapes.py`. Build or check: `uv run python scripts/retain_shapes.py [--write | --add]`.
+  The Storybook schema is untouched (ADR-025).
+- **Results.** All twelve shapes pass the gate in skeleton posture with findings identical to their v1 sources, and
+  `--strict-agency` (`the-locked-carousel` through the grandfather list, keyed by story id, which the copy keeps);
+  `the-orchard-signal` and `the-quarry-signal` still pass plain `--strict`. No shell lost production eligibility.
+- **Consumers of a v2 body.** `parse_fill_directive` returns `version`, `role`, `words`, `function` and no `beats`;
+  the Stage 1 word-count check reads it; the semantic fidelity review skips a v2 node (its target becomes `event` plus
+  `must_not_assert` in WP-2.5); `fill_skeleton` refuses a v2 shape before any spend; the mutation core
+  (`apply_chain`) and `promote_skeleton` refuse it; binding, slotted-surface walkers and the theme-leak scan see no
+  beats surface; `FILL_MARKER` probes (chunking, PL-27, reading-level loop) and every `words=` reader treat it as v1.
+- **Literals left for WP-2.5.** Bodies carry no story text, but choice labels, ending titles, variable descriptions
+  and some variable names are copied verbatim (labels and titles are not compiled until WP-2.5; variable names are in
+  the shape hash). The seven shells without a contract keep native labels and titles throughout.
+
 ### WP-2.3 Pitch and plan generation, persistence
 
 - **Touches.** New `src/cyo_adventure/storyplan/generate.py`; new templates
