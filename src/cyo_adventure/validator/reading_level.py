@@ -35,6 +35,7 @@ from dataclasses import dataclass
 from typing import TYPE_CHECKING, Final
 
 from cyo_adventure.storybook.sentinels import strip_sentinels
+from cyo_adventure.utils.sentences import sentence_spans
 from cyo_adventure.validator.report import (
     Severity,
     ValidationFinding,
@@ -69,8 +70,15 @@ _FILL_MARKER = "<<FILL"
 # Numbers and standalone punctuation are not counted as words.
 _WORD_RE = re.compile(r"[A-Za-z]+(?:['\-][A-Za-z]+)*")
 
-# Sentence terminators. Runs of terminators (``...``, ``?!``) count once.
-_SENTENCE_RE = re.compile(r"[.!?]+")
+# A span that ends a sentence carries a terminator run, optionally followed by
+# closing quotes or brackets that cling to it. A trailing span without one is an
+# unterminated fragment, which the measure has never counted (WP-2.7).
+_TERMINATED_RE = re.compile(r"[.!?]+[\"')\]\u201d\u2019]*\s*$")
+
+# Opening and closing marks of a spoken line, straight and curly. A span that
+# opens and closes with one of these is a quote-only line (no narration tag).
+_OPEN_QUOTES: Final[str] = '"\u201c'
+_CLOSE_QUOTES: Final[str] = '"\u201d'
 
 # Bands where prose scoring BELOW the band is not a defect, so RL-13 warns on
 # the upper bound only.
@@ -290,6 +298,52 @@ def _has_syllabic_l(stem: str) -> bool:
     return len(stem) >= min_length and stem[-2] == "l" and stem[-3] not in _VOWELS
 
 
+def _is_quote_only(sentence: str) -> bool:
+    """Return whether *sentence* is a bare spoken line with no narration tag."""
+    stripped = sentence.strip()
+    return (
+        len(stripped) > 1
+        and stripped[0] in _OPEN_QUOTES
+        and stripped[-1] in _CLOSE_QUOTES
+    )
+
+
+def _count_sentences(text: str) -> int:
+    """Count the sentences Flesch-Kincaid should see in *text*.
+
+    Two corrections over counting every terminator run (``AL-771``, ``AL-785``),
+    both through the shared splitter in :mod:`cyo_adventure.utils.sentences`:
+
+    * An abbreviation period (``Mr.``, ``Dr.``, ``e.g.``) is not a sentence end,
+      and a spoken line followed by its own lowercase speech tag
+      (``"Run now!" she called.``) is one sentence, not two.
+    * A run of consecutive quote-only lines (``"Yes." "Go." "Now."``) is one
+      sentence: each short line is a clause of one speaker's turn, and counting
+      them separately drove dialogue-heavy nodes under the band floor with
+      prose that read at the right age.
+
+    Text without quotation marks or abbreviations counts exactly as before: one
+    per terminator run, with an unterminated trailing fragment not counted.
+
+    Args:
+        text: The prose to count, sentinels already stripped.
+
+    Returns:
+        int: The sentence count (may be ``0``; the caller floors it at one).
+    """
+    count = 0
+    previous_quote_only = False
+    for span in sentence_spans(text):
+        sentence = span.text
+        if not sentence.strip() or not _TERMINATED_RE.search(sentence):
+            continue
+        quote_only = _is_quote_only(sentence)
+        if not (quote_only and previous_quote_only):
+            count += 1
+        previous_quote_only = quote_only
+    return count
+
+
 def _flesch_kincaid_grade(text: str) -> float:
     """Compute the Flesch-Kincaid grade level for a passage of prose.
 
@@ -314,7 +368,7 @@ def _flesch_kincaid_grade(text: str) -> float:
         return 0.0
     # A passage always counts as at least one sentence even without terminal
     # punctuation, so the words-per-sentence term stays finite.
-    sentence_count = max(len(_SENTENCE_RE.findall(text)), 1)
+    sentence_count = max(_count_sentences(text), 1)
     syllable_count = sum(_count_syllables(word) for word in words)
     return (
         0.39 * (word_count / sentence_count)
