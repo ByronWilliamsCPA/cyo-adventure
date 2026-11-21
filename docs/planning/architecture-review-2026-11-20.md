@@ -34,8 +34,8 @@ surprise is a meaning defect surfacing in a system that can only see shape and s
 is why each fix lands as another prompt rule, lint or regex and the next read finds a new variant.
 
 Three changes remove the class: (1) a per-book Story Plan (cast, hidden truth, fact ledger with
-per-node requires and establishes, named plant and payoff threads) generated and human-approved
-before prose, and checked structurally; (2) replacing free-text beats with typed directives
+per-node requires and establishes, named plant and payoff threads) generated before prose (human-approved for catalog books; revised,
+see addendum) and checked structurally; (2) replacing free-text beats with typed directives
 compiled from graph plus plan, so the instruction nearest the passage is never one nobody reviewed;
 (3) evaluation led by reads (a validated model continuity reader, then child reading trails), with
 regex prose detectors demoted to smoke tests. Conditional passage text in the schema is the fourth,
@@ -320,9 +320,9 @@ Ranking is by defect classes removed per unit of cost, with dependency order res
 | 1 | Per-book Story Plan with fact ledger and threads, checked structurally | F1, most of F6, AL-773/788/790/799/800 | M | plan quality becomes the new bottleneck |
 | 2 | Typed directives compiled from graph plus plan; no free-text graph narration in beats | F2, F5 precedence, AL-797/798 | M | migration of supported shells |
 | 3 | Evaluation led by reads: validated continuity reader, path-sampled human read, reading trails | F6, F8 | S to M | reader model must be validated first |
-| 4 | Move the human to plan approval and give the final approval a quality question | F10 | S | approver time |
-| 5 | Shrink the supported catalog; generate scene by scene | F9 | S | sunk-cost reluctance |
-| 6 | Re-cut frozen versus generated: shape frozen, meaning per book | F3 | M | reopens diversity question (favourably) |
+| 4 | Move the human to plan approval (catalog books only; revised, see addendum A.5) and give the final approval a quality question | F10 | S | approver time |
+| 5 | Shrink the supported catalog without emptying any cell (revised, see addendum A.5); generate scene by scene | F9 | S | sunk-cost reluctance |
+| 6 | Re-cut frozen versus generated: shape frozen, meaning per book (revised: moves to third, see addendum A.5) | F3 | M | reopens diversity question (favourably) |
 | 7 | Conditional passage text in the schema | F4 | L | two engines, offline, moderation fan-out |
 | 8 | Rule registry rendered into prompts, guide, skill, review surface | F5 drift | S to M | low |
 | 9 | Lesson triage by layer; cap instruments | F7 | S | process change |
@@ -493,7 +493,7 @@ inverts.
    itself that it cannot separate effects from variance. Do not buy more of that design.
 7. **Vendor and model comparisons** until the plan layer exists; model differences are currently
    smaller than same-model run-to-run spread.
-8. **The reading-level repair loop as a default stage.** It optimizes a formula that penalises
+8. **(Withdrawn, see addendum A.5.) The reading-level repair loop as a default stage.** It optimizes a formula that penalises
    dialogue (AL-771, AL-785), the thing the books most lack. Fix the measure (strip speech, guard
    abbreviations), keep it advisory, and stop rewriting prose toward it automatically.
 9. **Mandatory per-observation lesson rows with register linkage.** This is a governance rule in
@@ -559,3 +559,190 @@ fill model and the unit size, not more rules.
 - The Story Plan moves difficulty rather than deleting it: a weak plan yields a coherent dull book.
   That is the right place for the difficulty to sit, because a plan is a page a person can judge, but
   it is a bet, and the pilot's kill criterion exists because it could lose.
+
+---
+
+## Addendum: generating from a short request
+
+Added 2026-11-21 at the owner's request, reviewed at commit `b1b78fa`. Same rules as the review:
+code read-only, no generation, no provider call. "Measured here" means a pure function from the
+repo was called locally with the example string; nothing was sent anywhere.
+
+The owner's question: do the changes already merged, or the changes this review recommends, reduce
+the product's ability to make a good new story from a child's one-line request or a guardian's short
+brief? Short answer: the merged changes are close to neutral for that path. Three of my
+recommendations as first written would have hurt it and are revised below (section A.5). The larger
+finding is that the short-request path as built already discards most of what the request says, so
+the baseline being protected is lower than it looks.
+
+### A.1 The short-request path as built
+
+Worked example throughout: a child at 8-11 types "a story about a dragon who is afraid of the dark".
+
+| Step | Code | What happens to the request |
+| --- | --- | --- |
+| Kid submit | `api/schemas.py:971-973`, `:984-997` | A kid can send `request_text` (1 to 500 characters), plus an optional proposed series title or an anchor book. Nothing else. Band, length and style are stamped from the profile. |
+| Guardian or admin authored | `api/schemas.py:1013-1025`, `:1051-1065` | The same 500-character text plus `age_band`, `length`, `narrative_style`, optional target child, series or anchor. No field for a hero, a setting, a wish or an ending. A guardian's "short brief" carries no more story than a child's line. |
+| Screening | `story_requests/screening.py:1-9` | PII guard and Stage 0 classifiers. Blocks or passes. Text unchanged. |
+| Approval | `story_requests/service.py:301-320`, `:456-466` | Guardian click, or auto-approve inside a pre-authorized envelope. Confirms band, length, style. Builds a concept; no job yet. |
+| Brief | `story_requests/brief.py:315-338` | `premise` is the raw text. Everything else is defaulted: protagonist name `"Explorer"` (`:95`, `:318`), age from the band, a default role; `tier=1` always (`:324`); `structure_pattern` always branch-and-bottleneck (`:328`); node count the midpoint of the band range (`:250`). |
+| Tone | `story_requests/tone.py:227-241` | Keyword lookup. Measured here: the dragon line yields `gentle` at every band. "Afraid of the dark" is not a recognised signal. |
+| Anchor | `story_requests/anchoring.py:114`, `:294` | Only for a continuation: prior title, hero names, variable names, ending excerpts. |
+| Authoring plan | `story_requests/authoring_plan.py:1-9` | **An admin** picks method (`skeleton_fill` or `fresh_generation`), mechanism and model. A human step that exists today on every request. |
+| Skeleton match | `generation/skeleton_match.py:360`, `:415-434`, `:709-749` | Candidates are the production shells in the cell. Weighting uses family recency and a theme-tag overlap bonus. Measured here: the dragon line reduces to the tag set `{dragon}`, and every candidate in the 8-11 short, 8-11 medium, 10-13 short and 10-13 medium cells scores 0.0. So the pick is uniform random among `the-cave-of-echoes`, `the-half-hour-call`, `the-locked-carousel` and `the-robot-fair-sabotage`. |
+| Bind (47 of 84 shells have a contract) | `generation/templates/interpret_bind.md`, `generation/binding.py:10-15` | A model maps the request onto the shell's noun slots and lists the request's elements with the slot each landed in, or `null`. Substitution touches beats, labels and ending titles only. |
+| Interpretation | `story_requests/interpretation.py:243-247` | What did not fit is recorded for the child and guardian as `structure_fixed` ("endings, topology and fail-states are structural, not requestable") or `not_this_story_kind` ("no slot carried it"). The system already tells the family, in a designed surface, that it dropped part of the request. |
+| Unbound fill (37 shells) | `generation/templates/fill.md` | The whole brief JSON, including the `"Explorer"` protagonist, goes in as the theme brief (`authoring_plan.py:669`), with the instruction to re-imagine while "preserving every beat exactly". |
+| Fill | `generation/orchestrator.py:1516`, `:1790-1798` | One call. Prose "MUST depict this exact beat". |
+| Fresh generation (no skeleton) | `generation/worker.py:2541`, `generation/prompts.py:366-422` | Stage A invents structure from the brief, then prose. Carries the premise whole. But the brief fixes `tier=1`, Tier 1 cannot declare variables (L1-6), and the budget block instructs branches to "RECONVERGE onto shared later nodes". So this path produces stateless merged books by construction: the exact defect ADR-011 section 12 was written against, on the one path that rule does not cover. |
+| Gate, moderation, approval | as section 1.1 | Shape, safety, then a human. None asks "is this the story that was requested". |
+
+What survives of "a dragon who is afraid of the dark" on the skeleton path: a dragon, as the value
+of the HERO slot, in the plot of (say) `the-robot-fair-sabotage`. The fear, which is the story the
+child asked for (a want, an obstacle and an implied change), has no slot and is reported back as
+"cannot carry". On an uncontracted shell the model receives a dragon premise, a protagonist named
+Explorer and a frozen plot, and resolves the conflict however it likes. The request side and the
+catalog side also barely share a vocabulary: 9 of 22 subject tags appear on no story
+(`docs/planning/story-diversity-plan-v2.md:279`).
+
+So the as-built product does not generate a story from a prompt. It reskins one of three to six
+pre-written plots chosen without regard to the prompt, or it free-generates a book that cannot carry
+consequences. This matters for the owner's question because "do not reduce the ability" has a low
+bar to clear, and because the right goal is to raise it.
+
+**Kid versus guardian.** The only differences are who confirms band, length and style, and whether
+approval is a separate step. Neither can express more story than 500 characters of free text, and
+no stage parses that text into story elements other than nouns for slots.
+
+**What the August NO-GO measured.** (`docs/planning/live-structural-round-2026-08-21.md:406-432`.)
+Same-skeleton similarity; mid-band fill rate (44 to 63 percent of commissioned words); contract
+drift in titles and frozen fields; a fifth to two-fifths of (skeleton, brief) pairs returning
+nothing on benign briefs; chunked-path readiness. It did not measure whether a delivered book
+contained what was asked, or whether it was good. Delivery rate is the one figure there that bears
+directly on a child's request, and it is the first thing any change must not worsen.
+
+**Latency today.** There is no interactive path. A request passes a guardian (or an envelope), an
+admin authoring plan, a multi-minute fill (one 16+ book took 2,810 seconds in August), moderation
+and a human approval. Any latency argument below is relative to that, not to "instant".
+
+### A.2 Merged changes of the last two days, rated for this path
+
+| Change | Rating | Mechanism |
+| --- | --- | --- |
+| Reader-agency prompt rules and per-merge notes (`6d37b8e`, `687e9cd`) | Helps, modestly | Measured in the verification run on native briefs: no `needs_review` in the new arm against three in the old, higher fill rate (0.72 against 0.60; 0.81 against 0.68), fewer seams on one of two shells. The rules sit in the drafting guide, so they reach fresh generation too. They do nothing for carrying the request, and lose wherever the shell's beat contradicts them. Not tested on reskinned briefs. |
+| Declared person governs (`687e9cd`) | Helps | Removes a contradiction (guide said second person; 59 of 84 shells are third) that the model resolved arbitrarily on every fill. |
+| Approver advisories (`c690f95`) | Neutral for generation; slight risk at approval | Nothing generated changes. The approver now sees seam and label counts, but seam recall fell to about 16 percent on new-prompt fills, so a clean advisory on an on-demand book is weak evidence and should not read as a pass. |
+| ADR-011 section 12 and `--strict-agency` on promotion (`c3a48f3`, `88638ce`, `7e2d62e`) | Neutral for matching today; slows shape growth; exposes a gap | The existing catalog is grandfathered, so no request loses a candidate. Growth slows: a mutant of a stateless 8-11+ parent is now rejected (AL-795). That costs the short-request path little, because matching is by cell and the request's content scored 0.0 against every candidate anyway, and mutants keep 100 percent of the parent's beats (AL-229). The gap: the rule binds new skeletons only, while `brief.py:324` pins every request to Tier 1, so fresh generation keeps producing what the rule forbids. |
+| State-promotion tool and the six pilots (`aa50c49`, `01cc03d`, `f42e93b`) | Unknown, leaning hurts for reskins until tested | Five of the six promoted shells have no contract and no slots (measured here), and the tool writes native-theme literals into directives and variable descriptions ("Start at the Beacon Steps", "Say you are staying with Mamgu"). On the one contracted pilot the descriptions are de-slotted strings ("the route l zone, where matriarch keeps the desk"). A dragon request filled onto these gets more native text to overcome, and plants whose content must be reinvented in a new theme. The run that validated promotion used native themes only and says so. |
+| M3 donor change | Not found | I find no such commit on this branch at `b1b78fa`; AL-795 proposes it. If built, it would restore mutant promotability and be neutral for a single request for the reason above. |
+| Edition import (`d28e008`) | Neutral | Catalog delivery only. |
+| Reader changes and reading-trail capture (`fe51b37`, `ee15a5b`, `098de0d`) | Neutral now; helps later | No effect on generation. The trail is the only planned source of evidence that an on-demand book was read to the end, so it is a precondition for A.4's measures. |
+| The four hand-revised books | Neutral, with one caution | They no longer match their shells (AL-784), so the on-demand path filling `the-hollow-lighthouse` shell still produces the old stateless book. Good catalog books do not improve generation. |
+
+Net: nothing merged makes a short request worse in a way I can show. The promotion pilots are the
+one item to test under a reskin before they are relied on for requests.
+
+### A.3 My recommendations, rated for this path
+
+| # | Recommendation | Rating as first written | Mechanism, honestly |
+| --- | --- | --- | --- |
+| 1 | Story Plan per book | Helps most, and adds one new fragility | It is the first place the request's want, fear and change can be represented at all; today they are dropped at bind. The fragility: more is invented from a thin input, and a weak plan gives a coherent, dull book. Mitigated by A.4's expansion rules; not eliminated. |
+| 2 | Typed directives | Helps if 1 exists; hurts without it | A skeleton beat supplies a ready event per node. Typed directives make the plan stage invent roughly 60 to 150 events per book that a shell used to hand over. That is more model work and a new safety surface: plan events are model text nobody has read. They must pass the same classifiers and band envelope before prose is bought. |
+| 3 | Evaluation led by reads | Helps | Adds the missing measure (was the request carried). No generation cost. |
+| 4 | Human plan approval before prose | **Hurts as written** | A third human step in front of every child request, on top of guardian approval and the admin authoring plan, with the owner as the only approver. Revised in A.5. |
+| 5 | Smaller catalog | **Hurts as written, if applied to eligibility** | Requests match by cell. Cells hold three to six shells (measured here: 75 production-eligible across 18 cells). Marking shells ineligible before change 6 would leave some cells with one plot, so two requests from one child would return the same story. Revised in A.5. |
+| 5 | Scene-by-scene generation | Mixed: helps delivery, costs input tokens | Output tokens are unchanged. Input repeats per scene (instruction, ledger slice, voices), so I estimate total input at two to four times a one-shot fill before prompt caching; at the 0.30 to 0.76 USD per fill measured on 2026-11-20 that is on the order of one to two dollars a book. This is an estimate, not a measurement. Wall-clock can fall, not rise: once the ledger fixes the facts, scenes on different branches do not depend on each other's prose and can run in parallel. Delivery should improve, since a failed scene is retried alone and a 40 percent total-loss rate per pair becomes a per-scene retry. |
+| 6 | Shape frozen, meaning per book | Helps most for this path | This is the change that turns "reskin a plot" into "write this request's story on a proven shape". It also makes catalog size a question of shapes per cell, not themes per cell. |
+| 7 | Conditional text | Neutral | Later; no effect on expanding a request. |
+| 8 | Rule registry | Neutral to helps | Shorter, per-scene instructions. |
+| 9 | Lesson triage | Neutral | Process. |
+| Stop 1 | Freeze mutation and flywheel | Neutral | Mutants carry the parent's beats; a request cannot tell them apart from the parent. |
+| Stop 8 | Drop the reading-level repair loop as a default | **Hurts** | For a child's request, reading fit is the first thing a guardian notices, and AL-292 is clear that the loop is what gets nodes in band (84 percent against 11). Withdrawn in A.5. |
+
+### A.4 Design adjustments for the short-request path
+
+**1. Expand the request into the plan in two small steps, not one.**
+
+- *Pitch.* From the request, band and tone, generate two or three one-paragraph pitches, each
+  stating the hero, the want, the obstacle, what is at risk, and the kind of ending. For the dragon
+  line: a dragon whose cave has gone dark and who must fetch a light alone; a dragon who hides the
+  fear from friends on a night flight; a dragon who learns what lives in the dark is as scared as
+  she is. Each pitch is checked deterministically for required fields and screened like any text.
+- *Plan.* The chosen pitch is expanded against a shape into cast, truth, facts, threads and node
+  obligations, then checked (merge closure, plant exclusivity, payoff reach, one truth, ending gifts).
+
+**2. What is inferred, what defaults, what is asked.**
+
+| Item | Rule |
+| --- | --- |
+| Hero | Inferred from the request. `"Explorer"` is used only when the request names no one. A real child's name is still blocked by the PII guard; "me and my sister" becomes a fictional pair, as today. |
+| Want, obstacle, change | Inferred. This is the part of the request the current path drops; a pitch with none of the three is rejected and regenerated. |
+| Tone | Inferred by the pitch model inside the band's cap table, replacing the keyword lookup, with `tone.py`'s ladder kept as the ceiling. |
+| Band, length, style | From the profile and the guardian, as now. |
+| Tier and pattern | From the shape, not pinned in the brief. Remove `tier=1` and the fixed pattern at `brief.py:324` and `:328` for 8-11 and up. This is a small, separable fix and it also closes the fresh-generation gap. |
+| Everything unstated | Invented, but only from material the plan declares, so it is consistent. |
+| Asked back | At most one thing, and it is a choice, not a question: show the pitches and let the child tap one. That suits a product about choosing, costs one tap, and gives the request a second sentence of signal. If nobody picks within the approval window, take the first. Never ask a child an open question. |
+
+**3. Catalog book versus on-demand request.**
+
+| Step | Catalog book | On-demand request |
+| --- | --- | --- |
+| Pitch | Owner writes or picks | Generated; child may pick; guardian sees the chosen pitch on the approval screen they already use |
+| Plan approval | Human, required | Automatic when all deterministic plan checks pass and screening is clean; routed to a human only on failure. No new human step. |
+| Shape | Chosen deliberately | Matched by cell and by the plan's needs (number of threads, bottleneck positions), not by theme tags |
+| Prose | Scene by scene | Same |
+| Continuity read | Model reader plus second human | Model reader only, reported to the approver |
+| Final approval | Human (ADR-005) | Human (ADR-005), unchanged, with the pitch shown beside the book so "is this what was asked" can be answered at a glance |
+| Admin authoring plan | Not needed | Becomes a default policy with an override, not a per-request click |
+
+The existing interpretation surface (K19) becomes more truthful under this design: instead of
+listing what was set aside, it shows the pitch.
+
+**4. Keep the current path as the fallback until the new one beats it.** Skeleton fill stays
+selectable in the authoring plan. Plan-first replaces it per band only after A.4.5 passes.
+
+**5. Evidence: a fixed short-request panel.**
+
+- *Panel.* The 16 requests already committed as `PREMISE_PANEL`
+  (`scripts/measure_theme_coverage.py:53-70`), plus the dragon line and three two-sentence guardian
+  briefs, at 8-11 and 10-13: 40 jobs per arm.
+- *Arms.* (a) current skeleton fill, (b) current fresh generation, (c) plan-first. Run (a) and (b)
+  once, now, before anything else changes: the baseline does not exist yet and every later claim
+  depends on it. Cost at measured rates is roughly 15 to 30 USD per arm.
+- *Measures.* Delivery (a book came out; share of commissioned words). Request fidelity: for each
+  request, a fixed list of its elements written in advance (dragon; afraid; the dark; some change by
+  the end), scored present or absent by a blind adult reader on one sampled path, plus a single
+  question, "is this the story that was asked for", from 1 to 5. Agency and continuity by the hand
+  counts and the continuity reader of change 3. Cost and wall-clock per book. Approver minutes.
+- *Kill criterion, fixed in advance.* Plan-first replaces skeleton fill for on-demand requests only
+  if all hold: delivery rate not lower than arm (a); request fidelity higher on at least two thirds
+  of requests; blind paired preference for plan-first on at least two thirds of pairs; cost no more
+  than three times arm (a). If fidelity rises but delivery falls, keep skeleton fill for requests
+  and use plan-first for catalog books only. If neither fidelity nor preference moves, the plan
+  layer does not help thin prompts and the next lever is the pitch step or the model, not more
+  structure.
+
+### A.5 What this changes in the review
+
+Marked "revised" where the text above was edited.
+
+1. **Change 4, revised.** Human plan approval is required for catalog books only. For on-demand
+   requests the plan is approved automatically when deterministic checks pass. ADR-005 final
+   approval is untouched.
+2. **Change 5, revised.** "Shrink the catalog" means stop remediating and stop growing legacy
+   shells. It does not mean removing production eligibility from any cell that would be left with
+   fewer than two shapes, and no shell should be made ineligible for on-demand matching until
+   change 6 is in place.
+3. **Change 6 moves up**, from sixth to third, ahead of the human-role and catalog changes. For
+   the short-request path it is the change that matters most, and changes 4 and 5 are only safe
+   after it.
+4. **Stop item 8, withdrawn.** Keep the reading-level loop. Fix what it measures (strip speech,
+   guard abbreviations) so it stops fighting dialogue.
+5. **Two additions to "before any more books are generated"**: run the short-request baseline
+   (A.4.5, arms a and b); and unpin `tier=1` and the fixed pattern in `brief.py` for 8-11 and up.
+6. **One addition to "stop"**: do not rely on the six promoted shells for reskinned requests until
+   one reskinned fill of each has been read. Their directives carry native-theme literals.
+
+Nothing else in the ranking changes. The diagnosis in section 2 is reinforced: the short-request
+path is where the missing meaning layer costs the most, because there the request is the meaning,
+and it is discarded at the first step that could have used it.
