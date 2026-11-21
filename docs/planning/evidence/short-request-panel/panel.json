@@ -1,0 +1,259 @@
+{
+  "schema_version": 1,
+  "name": "short-request-panel",
+  "status": "design, fixed before any generation",
+  "age_bands": [
+    "8-11",
+    "10-13"
+  ],
+  "arms": [
+    {
+      "id": "a",
+      "name": "skeleton fill",
+      "path": "current production skeleton_fill method"
+    },
+    {
+      "id": "b",
+      "name": "fresh generation",
+      "path": "current production fresh_generation method"
+    },
+    {
+      "id": "c",
+      "name": "plan-first",
+      "path": "plan_fill (WP-2.x), run in WP-4.2 only"
+    }
+  ],
+  "jobs_per_arm": 40,
+  "length": "short (fixed for every job so words commissioned are comparable)",
+  "narrative_style": "production default for the band",
+  "element_rules": "Elements were written from the request text alone, before any generation, and must not be edited after the first job runs. Scored present/absent by a blind adult reader on one sampled path.",
+  "review": {
+    "status": "pending",
+    "note": "WP-0.2 acceptance requires review by the owner or a second agent; not yet done."
+  },
+  "requests": [
+    {
+      "id": "P01",
+      "source": "premise_panel",
+      "text": "a story about my dog who gets lost in the woods",
+      "elements": [
+        "a dog",
+        "lost",
+        "the woods",
+        "found or home again by the end"
+      ]
+    },
+    {
+      "id": "P02",
+      "source": "premise_panel",
+      "text": "a dragon who is scared of fire",
+      "elements": [
+        "a dragon",
+        "afraid",
+        "fire",
+        "some change by the end"
+      ]
+    },
+    {
+      "id": "P03",
+      "source": "premise_panel",
+      "text": "me and my sister solving a mystery in an old castle",
+      "elements": [
+        "two siblings",
+        "a mystery",
+        "an old castle",
+        "the mystery is solved"
+      ]
+    },
+    {
+      "id": "P04",
+      "source": "premise_panel",
+      "text": "a robot that learns to play music",
+      "elements": [
+        "a robot",
+        "learning",
+        "music",
+        "plays music by the end"
+      ]
+    },
+    {
+      "id": "P05",
+      "source": "premise_panel",
+      "text": "a pirate looking for treasure under the sea",
+      "elements": [
+        "a pirate",
+        "treasure",
+        "under the sea",
+        "the search ends"
+      ]
+    },
+    {
+      "id": "P06",
+      "source": "premise_panel",
+      "text": "a kid who wants to win the big race",
+      "elements": [
+        "a kid",
+        "wants to win",
+        "a race",
+        "the race is decided"
+      ]
+    },
+    {
+      "id": "P07",
+      "source": "premise_panel",
+      "text": "a story about baking a cake for my grandma",
+      "elements": [
+        "a cake",
+        "baking",
+        "a grandmother",
+        "the cake is given"
+      ]
+    },
+    {
+      "id": "P08",
+      "source": "premise_panel",
+      "text": "exploring a cave with a friend",
+      "elements": [
+        "a cave",
+        "exploring",
+        "a friend",
+        "both leave the cave"
+      ]
+    },
+    {
+      "id": "P09",
+      "source": "premise_panel",
+      "text": "a rocket trip to another planet",
+      "elements": [
+        "a rocket",
+        "a journey",
+        "another planet",
+        "arrival or return"
+      ]
+    },
+    {
+      "id": "P10",
+      "source": "premise_panel",
+      "text": "a snowstorm on the night of the festival",
+      "elements": [
+        "a snowstorm",
+        "night",
+        "a festival",
+        "the festival goes on or changes"
+      ]
+    },
+    {
+      "id": "P11",
+      "source": "premise_panel",
+      "text": "an invention that goes wrong at school",
+      "elements": [
+        "an invention",
+        "it goes wrong",
+        "school",
+        "some lesson or repair by the end"
+      ]
+    },
+    {
+      "id": "P12",
+      "source": "premise_panel",
+      "text": "a knight who would rather be a gardener",
+      "elements": [
+        "a knight",
+        "wants to garden",
+        "a garden",
+        "the wish is honoured"
+      ]
+    },
+    {
+      "id": "P13",
+      "source": "premise_panel",
+      "text": "a detective story with secret codes",
+      "elements": [
+        "a detective",
+        "secret codes",
+        "a case",
+        "the code is cracked"
+      ]
+    },
+    {
+      "id": "P14",
+      "source": "premise_panel",
+      "text": "a story about being brave at the doctor",
+      "elements": [
+        "the doctor",
+        "fear",
+        "bravery",
+        "some change by the end"
+      ]
+    },
+    {
+      "id": "P15",
+      "source": "premise_panel",
+      "text": "dinosaurs waking up in a museum",
+      "elements": [
+        "dinosaurs",
+        "a museum",
+        "waking up",
+        "what happens to them by dawn"
+      ]
+    },
+    {
+      "id": "P16",
+      "source": "premise_panel",
+      "text": "a horse who will not jump the fence",
+      "elements": [
+        "a horse",
+        "refuses to jump",
+        "a fence",
+        "jumps, or finds another way"
+      ]
+    },
+    {
+      "id": "D01",
+      "source": "dragon_line",
+      "text": "a story about a dragon who is afraid of the dark",
+      "elements": [
+        "a dragon",
+        "afraid",
+        "the dark",
+        "some change by the end"
+      ]
+    },
+    {
+      "id": "G01",
+      "source": "guardian_brief",
+      "text": "My daughter is moving to a new town and is nervous about starting at a new school. Please make a story about a lighthouse keeper's cat who has to find a new home and make a friend there.",
+      "elements": [
+        "a cat",
+        "a lighthouse keeper",
+        "a move to a new home",
+        "making a friend",
+        "nervousness eases by the end"
+      ]
+    },
+    {
+      "id": "G02",
+      "source": "guardian_brief",
+      "text": "We want a story about a boy who is jealous of his baby brother, set on a farm during harvest. It should end with the two of them working together.",
+      "elements": [
+        "a boy",
+        "jealousy",
+        "a baby brother",
+        "a farm at harvest",
+        "the two work together at the end"
+      ]
+    },
+    {
+      "id": "G03",
+      "source": "guardian_brief",
+      "text": "Please write a mystery about a missing school trophy, with a clever girl who notices small clues. The culprit should turn out to be someone with a good reason.",
+      "elements": [
+        "a missing trophy",
+        "a clever girl",
+        "small clues",
+        "school",
+        "a culprit with a good reason"
+      ]
+    }
+  ]
+}
