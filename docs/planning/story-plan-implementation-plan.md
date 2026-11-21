@@ -16,7 +16,8 @@ tags:
 
 # Story Plan implementation plan
 
-> **Status**: draft for owner approval, 2026-11-21; owner decisions D1 and D2 made 2026-11-21 (section 13).
+> **Status**: draft for owner approval, 2026-11-21; owner decisions D1 and D2 made 2026-11-21 (section 13), and D11 (plans approved by a validated
+> reviewer, amending ADR-033 Decision 3) made 2026-11-21 after ratification.
 > **Decision record**:
 > [ADR-033](./adr/adr-033-story-plan-meaning-layer.md) (Accepted 2026-11-21). **Source**: [architecture review,
 > 2026-11-20](./architecture-review-2026-11-20.md) with its short-request addendum.
@@ -62,7 +63,7 @@ tags:
 | 2.1 | Brief unpinning for 8-11 and up | S | none | no |
 | 2.2 | Retained shapes and typed directive format | M | none | D4: which shells |
 | 2.3 | Pitch and plan generation, persistence | L | 5 to 15 USD | no |
-| 2.4 | Plan approval: catalog by owner, on-demand automatic | M | none | no |
+| 2.4 | Plan approval: validated reviewer, owner by exception | M | none | D11 made; D12 via WP-3.7 |
 | 2.5 | Directive compiler and single scene template | L | 5 to 10 USD | D9: recap rule per band |
 | 2.6 | Scene-by-scene fill with ledger context | L | 10 to 20 USD | no |
 | 2.7 | Reading-level measure fix | S | none | no |
@@ -72,6 +73,7 @@ tags:
 | 3.4 | Reading-trail report extensions | S | none | no |
 | 3.5 | Approver: three paths and one quality question | M | none | D8: wording |
 | 3.6 | Demote regex detectors to smoke tests | S | none | no |
+| 3.7 | Plan reviewer: validation, independence rule, exception sampling | M | 5 to 10 USD | D12: thresholds, sample rate |
 | 4.1 | Short-request panel, baseline arms | M | 30 to 60 USD | D7: budget |
 | 4.2 | Short-request panel, plan-first arm | M | 20 to 60 USD | D7 |
 | 4.3 | Ten-book pilot | L | 10 to 30 USD | D7 |
@@ -420,17 +422,39 @@ that had read the continuity notes, so it is not the blind test WP-1.4 and WP-1.
 
 ### WP-2.4 Plan approval
 
+- **Goal.** Approve plans, on both paths, by one rule: SP-0 to SP-9 pass, screening is clean, and a **validated** plan
+  reviewer (WP-3.7), a different model from the plan's writer, passes the plan. The owner reads by exception
+  (ADR-033 Decision 3 as amended 2026-11-21, owner decision D11).
 - **Touches.** `src/cyo_adventure/story_requests/authoring_plan.py` (policy default with admin override in place of a
-  per-request click), `src/cyo_adventure/generation/worker.py` (auto-approve on clean checks; route to `needs_review`
-  otherwise), `src/cyo_adventure/events/` (two event types), `docs/operations/authoring-guide.md`. No frontend in
-  version 1.
-- **Behaviour.** Catalog: the plan file is approved by review of its pull request; `scripts/check_story_plan.py` runs
-  in pre-commit on `out/*.plan.json`. On-demand: automatic when SP-1 to SP-9 pass and screening is clean. Nothing is
-  shown to the requester.
-- **Acceptance.** An on-demand job with a failing plan never reaches the fill stage; the audit event records which
-  checks passed and the plan hash; final approve-and-publish is unchanged (`publishing/` untouched, asserted by its
-  existing tests).
-- **Depends on.** WP-2.3. **Size.** M.
+  per-request click), `src/cyo_adventure/generation/worker.py` (call the reviewer after clean checks; route to
+  `needs_review` on anything but a clean `pass`, on a sampled pass, and while the reviewer is suspended or
+  unvalidated), `src/cyo_adventure/storyplan/models.py` (additive minor: `provenance.approver` as a record of reviewer
+  model, verdict, sample reason and, where the owner decided, the owner), `scripts/check_story_plan.py`
+  (`--require-approval`), `src/cyo_adventure/events/` (event types for pass, reject, unsure, sampled and owner
+  decision), `docs/operations/authoring-guide.md`. No frontend in version 1: exceptions reuse the existing
+  `needs_review` admin queue.
+- **Behaviour.**
+  - On-demand: after the checks pass and screening is clean, the worker calls the reviewer through the WP-3.7 module.
+    A clean `pass` that is not drawn for the sample proceeds to fill. A `reject`, an `unsure`, a reviewer error, a
+    malformed answer, a provider outage, a writer-equals-reviewer pairing, an unvalidated or suspended reviewer, or a
+    sampled pass routes the job to `needs_review`; the job does not reach fill until the owner clears it. The reviewer
+    fails closed.
+  - Catalog: the reviewer runs offline (`scripts/review_story_plan.py`, WP-3.7) and writes its verdict into
+    `provenance.approver`. `scripts/check_story_plan.py --require-approval` runs in pre-commit and CI on
+    `out/*.plan.json` and fails when a plan has no verdict, when writer and reviewer match, or when the verdict is
+    `reject`, `unsure` or sampled and no owner decision is recorded. The pull request is no longer where a plan is
+    approved; it is where the owner decides an exception.
+  - The sample draw is a seeded function of the plan's content hash and the configured rate (proposed 1 in 10, D12), so
+    it is auditable and cannot be re-rolled.
+  - Nothing is shown to the requester.
+- **Acceptance.** With a mock reviewer: a clean pass proceeds; each of the failure routes above sends the job to
+  `needs_review` and never to fill; a writer-equals-reviewer pairing is refused; the sample draw is deterministic and
+  hits the configured rate within a binomial tolerance over 1,000 synthetic hashes; the audit event records which
+  checks passed, the plan hash, the reviewer model and its verdict; final approve-and-publish is unchanged
+  (`publishing/` untouched, asserted by its existing tests).
+- **Depends on.** WP-2.3 **and WP-3.7 (G3b)**. It does not merge with the reviewer enabled before the reviewer's
+  validation has passed; until then the worker sends every plan to the owner.
+- **Size.** M.
 
 ### WP-2.5 Directive compiler and single scene template
 
@@ -481,6 +505,9 @@ that had read the continuity notes, so it is not the blind test WP-1.4 and WP-1.
   commit the split.
 - **Thresholds (proposed, D6).** On the held-out half: recall at least 0.8 on known defects; no more than one false
   flag per 50 nodes on the clean books; agreement between two runs at least 0.9. Fixed before WP-3.2 writes a prompt.
+- **Shared with WP-3.7.** The split by book is made once and used by both the continuity reader and the plan reviewer,
+  so neither is tuned on the other's held-out half. WP-3.1 also fixes the validation-set format (an `items` list with
+  `kind`, `expected_verdict`, `defect_class`, `severity` and `source`) that WP-3.7 adds plan-level items to.
 - **Size.** S.
 
 ### WP-3.2 Continuity reader stage
@@ -531,6 +558,51 @@ that had read the continuity notes, so it is not the blind test WP-1.4 and WP-1.
 - **Acceptance.** No detector removed; no planning document after this date cites a detector count as evidence of an
   effect. **Size.** S.
 
+### WP-3.7 Plan reviewer: validation, independence rule, exception sampling
+
+- **Goal.** Build the model that approves plans (owner decision D11) and prove it on the project's labelled ground truth
+  before anything depends on it. Moved ahead of WP-2.4 on the dependency chain so that its validation runs in
+  parallel with WP-2.2 and WP-2.3 and is ready when the plan generator is.
+- **Same call as the continuity reader, or a sibling.** A **sibling**: the same provider adapter, validation-set
+  format, held-out split and threshold harness, but a separate prompt, module, thresholds and gate. Reasons: the
+  inputs differ (a plan, a shape and a fenced request, once per book before any prose exists, against sampled
+  `(node, state)` prose passages after fill); the independence rule differs (the plan reviewer must differ from the
+  plan's writer, the continuity reader from the fill model); the defect classes and labelled data differ; and one
+  failing validation must not switch off the other (G3 and G3b have separate fallbacks). Folding them into one call
+  would also make its prompt too broad to validate per class.
+- **Touches.** New `src/cyo_adventure/storyplan/review.py` (pure: verdict model, the writer-not-reviewer check, the
+  seeded sample draw, the suspension rule); new `src/cyo_adventure/moderation/plan_reviewer.py` (the provider call,
+  beside `continuity_reader.py`); new template `src/cyo_adventure/generation/templates/plan_review.md`;
+  `src/cyo_adventure/core/config.py` (reviewer model, sample rate, suspended flag, validated-pairing record); new
+  `scripts/validate_plan_reviewer.py` and `scripts/review_story_plan.py`; the `plan_review` items of
+  `docs/planning/evidence/continuity-reader/validation-set.json` (or a sibling file, decided with WP-3.1); new
+  `docs/planning/evidence/plan-reviewer/report.md`; tests. Request text is fenced as untrusted; messages name plan
+  entries and never quote story text.
+- **Validation set.** The WP-1.3 answer key (`known-defects.json`) and findings files, joined to the WP-1.4 blind plans
+  (defective, labelled with the entry's class and severity); the post-fix plans of WP-0.3 and WP-0.4 as clean
+  negatives; and, to reach the minimum size D12 sets, plans seeded with one defect each from the WP-1.2 rule witnesses,
+  **reported separately as synthetic** and never mixed into the headline figure. Two limits are recorded in the report
+  rather than hidden: the answer key holds 17 defect entries, all in the continuity and state classes, and no negatives
+  of its own; and it holds nothing on dull or generic plans or plans that miss the request, so those classes have no
+  measured recall and the reviewer's verdict on them is advisory until the panel (WP-4.1, WP-4.2) supplies labelled
+  data.
+- **Behaviour.** The reviewer reads the plan, the shape and the fenced request and returns `pass`, `reject` or
+  `unsure` with reasons that name plan entries. A pass is allowed only if the SP checks already passed (the reviewer
+  never overrides them). Two runs per plan; a disagreement is `unsure`.
+- **Part (a): validation.** Starts after WP-1.5 and WP-3.1, in parallel with WP-2.2 and WP-2.3. Thresholds are fixed
+  before the prompt is written (D12). The prompt may be tuned on the tuning half only.
+- **Part (b): pairing check.** After the WP-2.3 paid smoke, run the reviewer over those five plans (written by the
+  production plan writer) and have the owner or a second agent read them blind, to confirm the validated reviewer
+  behaves on the production writer's output and that the writer and reviewer models in use differ.
+- **Acceptance.** Meets the D12 thresholds on the held-out half for the named writer, reviewer and prompt; part (b) shows
+  no plan the reader judges blocking that the reviewer passed. **Gate G3b.** If it does not after one prompt revision
+  on the tuning half, the reviewer is not enabled: plan approval stays with the owner for every plan, WP-2.4 ships
+  with the reviewer path disabled, and on-demand generation in the pilot runs with the owner reading every plan.
+- **Voiding.** A change of writer model, reviewer model or prompt voids the validation until `validate_plan_reviewer.py`
+  passes again for the new pairing; the worker refuses an unvalidated pairing.
+- **Depends on.** WP-1.4, WP-1.5, WP-3.1, D12; part (b) also WP-2.3. **Size.** M. **Spend.** 5 to 10 USD (two models,
+  two runs, the validation set and the smoke plans).
+
 ## 7. Phase 4: pilot
 
 Budget cap for the phase, proposed for D7: **150 USD**, hard stop.
@@ -544,18 +616,21 @@ Budget cap for the phase, proposed for D7: **150 USD**, hard stop.
 
 ### WP-4.2 Short-request panel, plan-first arm
 
-- **Method.** The same 40 jobs through `plan_fill`. Blind rating with WP-3.3; continuity by WP-3.2 plus a hand read of
-  ten books.
+- **Method.** The same 40 jobs through `plan_fill`. Plans are approved by the WP-3.7 reviewer once G3b has passed. At
+  40 plans a 1-in-10 sample is four plans and cannot show drift, so the owner reads **every** plan in this arm (a
+  shadow read, proposed for D12), which also gives the reviewer's first live agreement figure. Blind rating with
+  WP-3.3; continuity by WP-3.2 plus a hand read of ten books.
 - **Kill criterion (pre-registered).** Plan-first replaces skeleton fill for on-demand requests only if all hold:
   delivery rate not lower than arm (a); request fidelity higher on at least two thirds of requests; blind paired
   preference on at least two thirds of pairs; cost no more than three times arm (a). If fidelity rises and delivery
   falls: plan-first for catalog books only. If neither fidelity nor preference moves: the plan layer does not help
   thin prompts; stop and report.
-- **Spend.** 20 to 60 USD, to be narrowed by WP-2.6's measurement. **Size.** M.
+- **Spend.** 20 to 60 USD, to be narrowed by WP-2.6's measurement. **Owner time.** 2 to 4 hours for the shadow plan
+  reads, which D7 should include. **Depends on.** WP-2.4, WP-2.6, WP-3.3. **Size.** M.
 
 ### WP-4.3 Ten-book pilot
 
-- **Method.** Three retained shapes, ten plan-first books with owner-approved plans, including
+- **Method.** Three retained shapes, ten plan-first books whose plans pass the WP-3.7 reviewer and are also read by the owner (shadow, as in WP-4.2), including
   `the-clockwork-menagerie` and a 10-13 shape so the 2026-11-20 baselines apply. Hand counts of seams, recaps and
   label defects; an independent human continuity read of every book; blind paired read against the committed fills of
   the same shells.
@@ -593,6 +668,7 @@ Each stays `blocked` on WP-4.4 in the register (Appendix B, `UW-G39`).
 | G1 | WP-1.5 | the pass criterion of WP-1.5 | one revision, then stop |
 | G2 | WP-2.6 | five smoke books delivered within 10 percent of commissioned words; cost and latency measured | fix or re-scope before Phase 4 budgets are set |
 | G3 | WP-3.2 | reader meets D6 thresholds on held-out data | reader stays offline; pilot uses human reads only |
+| G3b | WP-3.7 | reviewer meets the D12 thresholds on held-out data for the named writer, reviewer and prompt | reviewer not enabled; the owner approves every plan; WP-2.4 ships with the reviewer path off |
 | G4 | WP-4.2, WP-4.3 | the pre-registered criteria | restrict to catalog, or stop |
 
 ## 10. Dependencies and critical path
@@ -604,20 +680,32 @@ D3 (7 books) -> 0.3 -> 0.4 -> [G0: family test]   0.5 (parallel)   0.2 (parallel
               v
 D1 -> 1.1 -> 1.2 ---------.
       0.4 -> 1.3 -> 1.4 ---+-> 1.5 [G1] -- D5
-                                  |
-        2.1, 2.7 (independent)    v
-                       D4 -> 2.2 -> 2.3 -> 2.4
-                                     |
-                              D9 ->  2.5 -> 2.6 [G2]
-                                             |
-      1.5 -> 3.1 (D6) -> 3.2 [G3]            |
-             3.3, 3.4, 3.6 (parallel)        |
-             3.5 (D8)                        v
-                    D7 -> 4.1 (any time after 0.2)   4.2 -> 4.3 -> 4.4 [G4] -- D10
+                  |              |
+                  |              +-> 3.1 (D6) -> 3.2 [G3]
+                  |              |    3.3, 3.4, 3.6 (parallel)   3.5 (D8)
+                  |              |       |
+                  +--------------+-> 3.7a (D11 made, D12; needs 1.4, 1.5, 3.1) -----.
+                                 |                                                   |
+        2.1, 2.7 (independent)   v                                                   v
+                       D4 -> 2.2 -> 2.3 -> 3.7b (pairing check) -> [G3b] ---------> 2.4
+                                     |                                               |
+                              D9 ->  2.5 -> 2.6 [G2]                                 |
+                                             |                                       |
+      D7 -> 4.1 (any time after 0.2)         +-------------> 4.2 <------------------+
+                                                              |   (4.2 also needs 3.3)
+                                                              v
+                                                       4.3 -> 4.4 [G4] -- D10
 ```
 
 **Critical path:** 0.3, 0.4, 1.3, 1.4, 1.5, 2.2, 2.3, 2.5, 2.6, 4.2, 4.3, 4.4. WP-1.1 and WP-1.2 run alongside 0.4 to
 1.4 and must finish before 1.5. Phase 3 runs alongside Phase 2 and must finish before 4.2.
+
+**Effect of D11 (2026-11-21).** The critical path is unchanged in membership. WP-2.4 now waits on WP-3.7 (G3b), which
+makes a new chain 1.5, 3.7a, 3.7b, 2.4, 4.2 that runs beside 2.5 and 2.6 and joins at 4.2. It is near-critical rather
+than critical: 3.7a (size M) starts the moment 1.5 passes and has the length of 2.2 and 2.3 to finish in, and 3.7b needs
+only the five WP-2.3 smoke plans, so 2.4 is ready by the time 2.6 is. It becomes critical if 3.7a needs more than one
+prompt revision or if the validation set cannot reach D12's minimum size. WP-4.3's catalog plans do not wait on it,
+since the owner reads them all in the pilot; only the on-demand arm (4.2) does.
 
 ## 11. Estimates
 
@@ -629,11 +717,14 @@ reports.
 | 0 | 5 to 8 | 0 | WP-0.3 (plan size and time per book) |
 | 1 | 6 to 10 | 0 | WP-1.4 (extraction time, agreement) |
 | 2 | 15 to 25 | 20 to 45 | WP-2.3 (plan yield), WP-2.6 (tokens, cost, latency) |
-| 3 | 7 to 11 | 5 to 10 | WP-3.2 |
+| 3 | 9 to 14 | 10 to 20 | WP-3.2, WP-3.7 |
 | 4 | 6 to 9, plus 8 to 12 owner hours | 60 to 150 (capped at 150) | WP-4.1 |
-| Total | 39 to 63 | 85 to 205 | |
+| Total | 41 to 66 | 90 to 215 | |
 
-Calendar time depends on how many packages run in parallel and on owner turnaround at D1, D4, D5 and D7; with two
+Phase 3 grew by WP-3.7 (2 to 3 agent days and 5 to 10 USD) when D11 was made; WP-2.4 stays inside size M. Phase 4 owner
+time gains 2 to 4 hours for the shadow plan reads (WP-4.2), outside the agent-day and spend figures.
+
+Calendar time depends on how many packages run in parallel and on owner turnaround at D1, D4, D5, D7 and D12; with two
 agents and prompt decisions, six to nine weeks is plausible and is not a commitment.
 
 ## 12. Risks
@@ -647,7 +738,9 @@ agents and prompt decisions, six to nine weeks is plausible and is not a commitm
 | Scene-by-scene cost is far above the estimate | medium | budget | G2 measures before Phase 4 budgets; three-times cap in the kill criterion |
 | The continuity reader fails validation | medium | no automated continuity signal on demand | G3 fallback: offline script, human path reads |
 | Two fill paths double maintenance | high | drag | WP-4.4 decides; v1 untouched meanwhile |
-| Owner time is the bottleneck | high | calendar | plan approval only for catalog; decisions batched (section 13) |
+| Owner time is the bottleneck | high | calendar | plans are approved by the validated reviewer and read by the owner by exception (D11); decisions batched (section 13) |
+| The plan reviewer shares the plan writer's blind spots, so a plan with a defect neither sees is approved | medium | a wasted fill; at worst a book the owner then rejects (plan approval is not the safety gate) | a different model from the writer, enforced in code; no use before validation against the labelled set (G3b, D12); a random sample read by the owner so drift is noticed, with suspension on overturns; fail-closed on error or disagreement; per-class authority, since classes without labelled data stay advisory |
+| The labelled set is too small or too narrow to validate the reviewer (17 defect entries, no negatives of its own, no plan-quality classes) | high | G3b cannot be passed honestly, or passes on synthetic data | minimum size set in D12; seeded-defect plans reported separately as synthetic; fallback is the owner approving every plan, which is the status before D11 and costs only owner time; the panel adds labelled data for request fidelity |
 | The family test slips behind this work | low | product | Phase 0 touches only the family books; nothing in Phases 1 to 4 is on its path |
 
 ## 13. Owner decisions
@@ -661,11 +754,13 @@ Dates are proposals from 2026-11-21; each is also stated as the package it block
 | D3 | Family-test book list; enable reading-trail capture for the session. **Decided 2026-11-21** (owner, in session): see the note below | WP-0.3, WP-0.5 | 2026-11-24 |
 | D4 | The retained shell set (eight to twelve, two per offered cell) | WP-2.2 | when G1 passes |
 | D5 | Accept the G1 verdict | all of Phase 2 | within two days of WP-1.5 |
-| D6 | Continuity reader thresholds | WP-3.2 | before WP-3.2 starts |
+| D6 | Continuity reader thresholds (decide with D12, which reuses the same split and harness) | WP-3.2 | before WP-3.2 starts |
 | D7 | Phase 4 budget (proposed cap 150 USD) and the kill criteria as written | WP-4.1 | before WP-4.1 starts |
 | D8 | Wording of the approver's quality question; mandatory or not | WP-3.5 | before WP-3.5 starts |
 | D9 | Per-band recap rule (AL-767) | WP-2.5 | before WP-2.5 starts |
 | D10 | Adopt for both paths, catalog only, or stop | everything in section 8 | on WP-4.4 |
+| D11 | Plans, for catalog and on-demand, are approved by a validated plan-review model (a different model from the writer, validated against the labelled ground truth before use); the owner reviews by exception, every reject and "unsure" plus a random sample. Amends ADR-033 Decision 3. **Made 2026-11-21** (owner, in session; see the note below) | WP-2.4, WP-3.7 | made |
+| D12 | Plan-reviewer thresholds, exception-sample rate and suspension rule (decided alongside D6). Proposed values and reasons in the note below | WP-3.7 | before WP-3.7 starts |
 
 **D3 as decided on 2026-11-21 (owner, in session).**
 
@@ -682,6 +777,33 @@ Dates are proposals from 2026-11-21; each is also stated as the package it block
   editing stays paused.
 - **Reading-trail capture is to be turned on** for the family tier (WP-0.5; owner step in the checklist, `B6`).
 
+**D11 as decided on 2026-11-21 (owner, in session).** Story Plans are approved by a validated plan-review model instead
+of by the owner, for catalog books and on-demand requests.
+
+- A plan is approved when SP-0 to SP-9 pass, screening is clean, and the plan-review model passes it.
+- The reviewer is a different model from the one that wrote the plan, and may not be used until it is validated against
+  the labelled ground truth (the frozen `known-defects.json` and the findings files beside it) at thresholds the owner
+  sets (D12).
+- The owner reviews by exception: every plan the model rejects or is unsure about, plus a random sample.
+- Final approve-and-publish of every book by the owner (ADR-005) and the rule that nothing generated is shown to a child
+  (ADR-015) are unchanged. Plan approval is a quality gate, not the safety gate.
+- Consequences recorded here: WP-2.4 depends on a validated reviewer; WP-3.7 is new; the effort and spend totals,
+  critical path, gates and risk table are updated; the pilot reads every plan in shadow because its volume is too low
+  for a sample to measure drift. ADR-033 carries the amendment note.
+
+**D12 as proposed (not yet decided).** One decision, taken with D6 because both use the WP-3.1 split and harness.
+Values are the proposer's choice and are the owner's to change; each is explained.
+
+| Item | Proposed | Why |
+| --- | --- | --- |
+| Defect recall, held-out half | reject or `unsure` on at least 90 percent of labelled defective plans, and on every blocker-severity entry | the costly error is a pass on a defective plan (a wasted fill, a bad book for the owner to read); blockers are the defects the family-test books actually carried. Higher than D6's 0.8 because a plan reviewer sees a short structured document, and because a miss here is passed unseen where a continuity-reader miss is still read by the approver |
+| Flag rate on clean plans | reject or `unsure` on at most 20 percent | flags are owner time. With a 10 percent sample the owner then reads at most about 28 percent of plans; above that, "by exception" stops being true |
+| Run agreement | identical verdicts on at least 90 percent of plans across two runs | the same bar as D6, and a disagreement is routed as `unsure` anyway |
+| Minimum validation size | at least 15 defective and 15 clean held-out plans, supplemented with seeded-defect plans reported as synthetic | the answer key has 17 defect entries and no negatives, so about half that are held out; on 15 cases a measured 0.9 is statistically close to 0.7, and the report must show the counts and intervals so the owner decides knowing it. If the minimum cannot be met the reviewer is not validated |
+| Sample rate | 1 in 10 in steady state; 100 percent through the pilot (WP-4.2, WP-4.3) | at pilot volume (about 50 plans) a 1-in-10 sample is five plans and measures nothing; reading all of them is cheap and gives the first live agreement figure |
+| Suspension | the owner overturns any blocker-class pass, or more than 1 in 5 of the last 10 sampled passes (at least 5 sampled) | a defined trigger for sending every plan back to the owner and revalidating, instead of drift being noticed by feel |
+| Scope of authority | per defect class: only classes with measured recall; others advisory | the labelled set has no plan-quality classes, so claiming authority over them would be unmeasured |
+
 ## Appendix A: mapping to existing planning identifiers
 
 | WP | Capability ids | Roadmap home | Existing rows touched |
@@ -693,11 +815,12 @@ Dates are proposals from 2026-11-21; each is also stated as the package it block
 | 1.1 to 1.5 | S3, S4, A11 | `content` | `UW-C498` (AL-799), AL-800 |
 | 2.1 | K3, K11 | `content` | none |
 | 2.2, 2.5 | A11, S3 | `content` | `UW-C496` (AL-797), `UW-C497` (AL-798), AL-780 |
-| 2.3, 2.4 | K11, G4, A10, A6 | `content` | none |
+| 2.3, 2.4 | K11, G4, A10, A6 | `content` | none; WP-2.4 waits on WP-3.7 (D11) |
 | 2.6 | A7, A8 | `content` | `UW-C500` (AL-801), `UW-C269` |
 | 2.7 | A11 | `content` | AL-771, AL-785 |
 | 3.1, 3.2, 3.6 | A11, G5 | `content` | `UW-C495` (AL-796), `UW-C479` |
 | 3.5 | G5, A6 | `content` | AL-764 (open half) |
+| 3.7 | A11, G5, A6 | `content` | none |
 | 4.3, 4.4 | K3, A10 | `content` | none |
 | L-4 | G6 | `content` | `UW-M14` |
 
@@ -734,6 +857,7 @@ current text before it is applied.
 | UW-G40 | G | WP-2.7: reading-level measure fix (AL-771, AL-785). | content | unscheduled |
 | UW-G41 | G | WP-0.5 and WP-3.4: family-test instrumentation and reading-trail report extensions. | now | unscheduled |
 | UW-G42 | G | WP-3.6: label the regex agency detectors as smoke tests. | content | unscheduled |
+| UW-G43 | G | WP-3.7: plan reviewer (a different model from the writer), its validation against the labelled ground truth, its independence rule and exception sampling. Added 2026-11-21 with owner decision D11. Blocked on `UW-G30` (WP-1.4, WP-1.5) and decision D12. | content | blocked |
 
 **Proposed changes to existing rows** (disposition and the evidence it needs).
 

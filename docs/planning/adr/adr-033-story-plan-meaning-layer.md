@@ -25,6 +25,9 @@ tags:
 > generation. The first evidence gate (Phase 1 of the [implementation plan](../story-plan-implementation-plan.md)) is
 > retrospective and costs nothing, and this ADR should be revised or withdrawn if that gate fails.
 > **Date**: 2026-11-21
+> **Amended**: 2026-11-21 (same day), by owner decision D11 of the [implementation
+> plan](../story-plan-implementation-plan.md): Decision 3 and every passage that had the owner approving plans. See the
+> amendment note below. The ADR stays Accepted.
 > **Amends in part**: [ADR-011](./adr-011-story-scale-framework.md) (section 12 and the role of skeleton beats),
 > [ADR-020](./adr-020-mutation-derived-skeletons-and-catalog-growth.md) (catalog growth by mutation is paused, not
 > revoked).
@@ -54,8 +57,38 @@ detectors over prose remain as free smoke tests and are no longer cited as evide
 
 The request brief stops pinning every request to Tier 1 and branch-and-bottleneck at 8-11 and up.
 
-Final human approval (ADR-005) is untouched. The owner approves plans for catalog books. On-demand plans are approved
-automatically when the deterministic checks pass. No plan, pitch or other model text is shown to the requesting child.
+Final human approval (ADR-005) is untouched. Plans, for catalog books and on-demand requests alike, are approved by a
+**validated plan-review model**, a different model from the one that wrote the plan, after the deterministic checks pass
+and screening is clean. The owner reads plans by exception (every reject, every "unsure", and a random sample). No plan,
+pitch or other model text is shown to the requesting child.
+
+## Amendment note (2026-11-21, same day): plans are approved by a validated reviewer, not by the owner
+
+The owner approved an amendment the same day the ADR was ratified. As first accepted, Decision 3 had the owner approve
+every catalog plan by reading the plan file in a pull request, and approved on-demand plans automatically on the
+deterministic checks alone. The amendment changes both:
+
+- **One rule for both paths.** A plan is approved when SP-0 to SP-9 pass (`scripts/check_story_plan.py`), screening is
+  clean, **and** the plan-review model passes it. The deterministic checks alone no longer approve an on-demand plan;
+  the owner no longer approves a catalog plan as a matter of course.
+- **The reviewer must be a different model** from the one that wrote the plan.
+- **It may not be used until it is validated** against the project's labelled ground truth (the frozen answer key
+  `docs/planning/evidence/story-plan-retro/known-defects.json` and the findings files beside it), meeting thresholds
+  the owner sets (new owner decision D12 of the implementation plan, decided alongside the continuity-reader thresholds
+  of D6). Until then no plan is approved by a model: every plan goes to the owner, and an on-demand plan that has not
+  been approved does not reach the fill stage.
+- **The owner reviews by exception**: every plan the model rejects or is unsure about, plus a random sample, proposed
+  at 1 in 10 (the owner may change the rate), so that drift is noticed.
+- **Unchanged**: final approve-and-publish of every book by the owner ([ADR-005](./adr-005-mandatory-human-approval.md));
+  nothing generated is shown to a child ([ADR-015](./adr-015-story-request-initiation-and-gating.md)). Plan approval
+  is a **quality gate, not the safety gate**: a plan the reviewer passes publishes nothing, shows nothing to a child,
+  and is still moderated, validated and read by the owner as a book before any child sees it.
+
+Passages changed: the TL;DR, Decision 1 (where a plan lives, the `pitch` and `provenance` rows), Decision 3 (table and
+text), Decision 6 (a pointer), Decision 9 (a new failure case), Consequences, Follow-on work. The cost is a reviewer that
+may share the writer's blind spots; the implementation plan's risk table names it, and the different-model rule, the
+validation precondition and the exception sample are its mitigations. Nothing in the amendment has been tested against
+a model.
 
 ## Context
 
@@ -112,7 +145,7 @@ Contents (schema `plan_version` 0, to be fixed by work package WP-1.1):
 | Section | Holds | Notes |
 | --- | --- | --- |
 | `request` | the request text, band, length, style, tone | untrusted text, fenced wherever it is reused |
-| `pitch` | hero, want, obstacle, stake, kind of ending | five required fields; the unit the owner reads for a catalog book |
+| `pitch` | hero, want, obstacle, stake, kind of ending | five required fields; the unit the plan reviewer reads first, and the owner on exception or sample |
 | `cast` | per character: role, want, voice notes, what they know | names pass the existing slot and PII floors |
 | `truth` | the one canonical answer to the book's question | closes the two-backstory class (AL-773) |
 | `facts` | id plus one sentence each | the ledger |
@@ -120,10 +153,11 @@ Contents (schema `plan_version` 0, to be fixed by work package WP-1.1):
 | `choices` | per choice: `intent`, `cost`, optional `plants` | labels are generated from `intent` |
 | `threads` | per thread: variable, planting choice, the concrete thing planted, payoff sites, what each payoff shows | replaces button-named variables |
 | `endings` | per negative ending: `gift` | what the ending reveals, the laugh, or the reason to retry |
-| `provenance` | producer, model, shape id and hash, check results, approver | audit |
+| `provenance` | producer, model, shape id and hash, check results, approver | audit; `approver` records the reviewing model, its verdict and the sample reason, or the owner when the owner decided |
 
-**Where it lives.** For catalog books, a file beside the book: `out/<slug>.plan.json`, committed and reviewed in the
-same pull request as the book. For on-demand books, a JSON column on `StorybookVersion` (`db/models.py:1466`), added
+**Where it lives.** For catalog books, a file beside the book: `out/<slug>.plan.json`, committed in the same pull request as
+the book, carrying the reviewer's verdict in `provenance`; the owner reads the plan in that pull request only when it was
+rejected, unsure or sampled, and reads the book itself at final approval as before. For on-demand books, a JSON column on `StorybookVersion` (`db/models.py:1466`), added
 by a Supabase migration, written by the worker and never returned by any kid-surface route.
 
 **Versioning.** `plan_version` is `MAJOR.MINOR`, additive within a major, following the rule ADR-025 set for the
@@ -156,15 +190,46 @@ These block. None reads prose.
 Prose is then compared with the plan by one narrow question per node, "does this passage assert any fact on this
 list", answered by the continuity reader of Decision 6.
 
-### 3. Who produces a plan, and how it is approved
+### 3. Who produces a plan, and how it is approved (amended 2026-11-21)
 
 | | Catalog book | On-demand request |
 | --- | --- | --- |
-| Pitch | written or picked by the owner | generated; the first pitch that passes its checks is used |
+| Pitch | written or picked by the owner (initiation, not approval) | generated; the first pitch that passes its checks is used |
 | Plan | generated from the pitch, or hand-written | generated from the pitch |
-| Plan approval | **owner**, required, by reviewing the plan file in a pull request | **automatic** when SP-1 to SP-9 pass and screening is clean; a failure routes the job to the admin queue as `needs_review` |
+| Plan approval | **validated plan-review model**, after SP-0 to SP-9 pass and screening is clean | the same |
+| Owner reads the plan | when the model rejects it or is unsure, and for a random sample | the same |
+| A plan that fails or is not passed | routed to the owner as `needs_review` | routed to the admin queue as `needs_review`; the job does not reach fill |
 | Requester sees | nothing generated | nothing generated |
 | Final approve-and-publish | owner (ADR-005) | owner (ADR-005) |
+
+**The approval rule.** A plan is approved when all three hold: the deterministic checks pass, screening is clean, and
+the plan-review model passes it. The reviewer reads the plan, the shape it is built for and the fenced request text. It
+returns one of `pass`, `reject` or `unsure`, with reasons that name plan entries and never quote story text. Anything
+other than a clean `pass` goes to the owner, including a reviewer error, a malformed answer, an unavailable provider and
+two runs that disagree. The reviewer fails closed.
+
+**Independence.** The reviewer must be a different model from the one that wrote the plan, compared by recorded model
+id in `provenance`, and enforced in code: a plan whose writer and reviewer match is not approved. For a hand-written
+plan the writer is a person or the agent that wrote it, and any validated reviewer model may be used.
+
+**Validation before use.** The reviewer may not approve any plan until it has been validated against the labelled
+ground truth: the frozen answer key `docs/planning/evidence/story-plan-retro/known-defects.json` and the findings files
+in that directory, with clean plans as negatives, split once into a tuning half and a held-out half by book. The owner
+sets the thresholds on the held-out half (decision D12, decided with the continuity-reader thresholds of D6). The
+validation covers a named pairing of writer model, reviewer model and prompt; changing any of the three voids it until
+the pairing is revalidated. Authority is per defect class: a class the labelled set does not contain (a dull or generic
+plan, a plan that does not serve the request) has no measured recall, so the reviewer's verdict on it is advisory and
+those classes are covered by the owner's sample until labelled data exists. Until validation passes, every plan goes to
+the owner.
+
+**Review by exception.** The owner reads every plan the model rejects or is unsure about, and a random sample of the
+plans it passed, proposed at 1 in 10. The draw is seeded from the plan's content hash so it can be audited, and the
+rate is the owner's to change. The sample exists to notice drift: if the owner overturns more than the D12 limit of
+sampled passes, the reviewer is suspended, every plan goes to the owner, and the pairing is revalidated.
+
+**What this is not.** Plan approval is a quality gate. It is not the safety gate: moderation, the validator, ADR-005's
+approve-and-publish and ADR-015's rule that a child never sees model output are unchanged and do not depend on the
+reviewer. A reviewer that passes a bad plan costs a wasted fill and, at worst, a book the owner then rejects.
 
 From a one-line request the plan stage infers the hero, want, obstacle and change; takes band, length and style from
 the profile and the guardian as today; uses the default protagonist only when the request names no one; and invents
@@ -194,7 +259,7 @@ one whole-book completion. Skeleton fill as built stays selectable until the pil
 
 1. **Exact and blocking**: Layer 1, Layer 2, policy, and SP-1 to SP-9.
 2. **Model continuity reader**: per sampled `(node, state)` path, against the ledger. Advisory until its agreement
-   with human reads is measured on a labelled set fixed in advance. It never blocks on its own before that.
+   with human reads is measured on a labelled set fixed in advance. It never blocks on its own before that. The plan reviewer of Decision 3 is a separate stage with its own validation.
 3. **Reader data**: reading trails (finish, rewind, choice split, payoffs seen), owner-only.
 
 `validator/agency.py` and `scripts/check_prose_craft.py` are kept as smoke tests. Their counts are not evidence for or
@@ -222,6 +287,9 @@ removed. The reading-level repair loop stays.
 - The pilot shows plan-first books are not preferred to fills of the same shells in blind reads, or contradictions
   persist in more than two of ten books.
 - The short-request panel shows lower delivery or no gain in request fidelity.
+- The plan reviewer cannot be validated against the labelled set, or is suspended by the exception sample more than
+  once. Plan approval then stays with the owner, which is the amendment's fallback and is stricter than the
+  ratified text; the rest of the ADR is unaffected.
 
 In the first case the ADR is revised once and re-tested, then withdrawn if it fails again. In the others plan-first is
 kept for catalog books only, or not at all, as the pre-registered criteria in the implementation plan state.
@@ -232,7 +300,7 @@ kept for catalog books only, or not at all, as the pre-registered criteria in th
 
 Addresses the cause. Reuses the validated shapes, the gate, the configuration walk and the August narrative-contract
 checker. Cost is a new stage and a migration of the retained shells. Risk: a weak plan yields a coherent, dull book;
-the difficulty moves to a page a person can judge.
+the difficulty moves to a page a person, or a validated reviewer, can judge.
 
 ### Option 2: Status quo plus more detectors, lints and prompt rules
 
@@ -263,11 +331,16 @@ request-driven stories, which the vision and ADR-015 commit to.
 
 - Continuity, plant and payoff properties become exact set checks.
 - The request's want and obstacle have somewhere to live.
-- The human judges a page before prose is bought (catalog) and three paths after.
+- A validated reviewer screens a page before prose is bought, the owner reads the exceptions and a sample, and the
+  owner reads three paths after.
 - Scene-level retries replace whole-book loss.
 - The shared artifact carries no words, which removes the main cross-book sameness channel as a side effect.
 
 ### Trade-offs
+
+- A reviewer model may share the writer's blind spots, and the labelled set holds only the defect classes already
+  found, so it can pass a plan the owner would reject. Mitigations: a different model, validation before use, the
+  exception sample, and fail-closed handling. The cost is owner time on exceptions and the sample, which D12 bounds.
 
 - A new stage with its own failure modes, cost and latency. Input tokens rise; the review's estimate of two to four
   times is untested and is measured in WP-2.6.
@@ -294,9 +367,11 @@ drafting this ADR was not permitted to edit the register. This ADR must not merg
 - **`UW-G30`** (proposed): Story Plan schema, checks and the retrospective gate (WP-1.1 to WP-1.5).
 - **`UW-G31`** (proposed): brief unpinning (WP-2.1).
 - **`UW-G32`** (proposed): retained shapes and typed directives (WP-2.2, WP-2.5).
-- **`UW-G33`** (proposed): plan generation, persistence and approval (WP-2.3, WP-2.4).
+- **`UW-G33`** (proposed): plan generation, persistence and approval (WP-2.3, WP-2.4); WP-2.4 now waits on the
+  validated plan reviewer (amendment of 2026-11-21).
 - **`UW-G34`** (proposed): scene-by-scene fill (WP-2.6).
 - **`UW-G35`** (proposed): continuity reader with its validation set (WP-3.1, WP-3.2).
+- **`UW-G43`** (amendment of 2026-11-21): the plan reviewer, its validation and its exception sampling (WP-3.7).
 - **`UW-G36`** (proposed): request-fidelity measure and short-request panel (WP-0.2, WP-3.3, WP-4.1, WP-4.2).
 - **`UW-G37`** (proposed): approver path sampling and quality question (WP-3.5).
 - **`UW-G38`** (proposed): ten-book pilot and decision report (WP-4.3, WP-4.4).
