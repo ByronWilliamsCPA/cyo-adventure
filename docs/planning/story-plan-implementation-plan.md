@@ -518,9 +518,11 @@ that had read the continuity notes, so it is not the blind test WP-1.4 and WP-1.
   `20261121120000_add_storybook_version_story_plan.sql`, which must be applied before an image with this ORM is
   deployed); WP-2.3 jobs create no book, so the plan lives on the admin-only job report (`STORY_PLAN_REPORT_KEYS`). No
   kid-surface response schema carries a plan (tested). OpenAPI: `AuthoringMethod` gains `plan_fill`.
-- **Paid smoke: not yet run.** Estimate for five 8-11 short requests: 0.9 to 2.8 USD at the Sonnet price row; it
-  exercises no thread rules unless a stateful medium request is added (`AL-843`), and the largest 8-11 shape's plan is
-  about 21k output tokens (`AL-844`).
+- **Paid smoke: run 2026-11-21** ([evidence](./evidence/plan-generation-smoke-2026-11-21/README.md)), Sonnet 5.5 via
+  OpenRouter, Stage 0 skipped: 6 of 6 plans pass SP-1 to SP-9 within the repair budget (3 first time, 4 of 12 repairs
+  used), 1.28 USD plus a 0.28 USD configuration probe, 47 to 197 seconds per plan; the stateful medium request passed
+  SP-4 to SP-6 on three threads. The plans are thin (`AL-848`): most nodes record no facts and choice intents and
+  costs repeat, so they pass largely by recording little. Plan density needs addressing before WP-2.5 and WP-2.6.
 
 ### WP-2.4 Plan approval
 
