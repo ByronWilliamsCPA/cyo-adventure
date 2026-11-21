@@ -80,6 +80,7 @@ from cyo_adventure.generation.prompts import (
     build_plan_prompt,
     build_plan_repair_prompt,
 )
+from cyo_adventure.generation.reasoning import explicit_reasoning
 from cyo_adventure.generation.skeleton import resolve_output_cap
 from cyo_adventure.moderation.classifiers import run_classifiers
 from cyo_adventure.moderation.report import Verdict
@@ -116,6 +117,7 @@ if TYPE_CHECKING:
     from cyo_adventure.generation.concept import ConceptBrief
     from cyo_adventure.generation.pii import PiiContext
     from cyo_adventure.generation.provider import GenerationProvider
+    from cyo_adventure.generation.reasoning import ReasoningControl
     from cyo_adventure.moderation.report import Finding
     from cyo_adventure.storybook.models import Choice, Variable
     from cyo_adventure.storyplan.shapes import RetainedShape
@@ -1674,6 +1676,7 @@ async def generate_story_plan(  # noqa: PLR0913 - keyword-only job inputs
     chosen_pitch: Pitch | None = None,
     model_label: str | None = None,
     repair_density_warnings: bool = DEFAULT_REPAIR_DENSITY_WARNINGS,
+    reasoning: ReasoningControl | None = None,
 ) -> PlanGenerationResult:
     """Run pitches, plan, checks and bounded repair for one request.
 
@@ -1694,6 +1697,12 @@ async def generate_story_plan(  # noqa: PLR0913 - keyword-only job inputs
             (:data:`DEFAULT_REPAIR_DENSITY_WARNINGS`). The job still ends
             ``checked`` when that repair cannot be made or does not check
             cleanly; warnings never fail a plan.
+        reasoning: The explicit reasoning setting every pitch and plan call
+            sends on OpenRouter (AL-847), applied through
+            :func:`~cyo_adventure.generation.reasoning.explicit_reasoning`
+            so it reaches the adapter through any wrapper or cascade. None
+            leaves each leg's own setting. The worker passes the
+            ``Settings.story_plan_reasoning_*`` values.
 
     Returns:
         PlanGenerationResult: The outcome. A checked plan awaits approval; it
@@ -1704,6 +1713,58 @@ async def generate_story_plan(  # noqa: PLR0913 - keyword-only job inputs
             request carries a child name or PII-shaped content; no provider
             call is made for the blocked prompt.
     """
+    inputs = _JobInputs(
+        pii=pii,
+        screen=screen,
+        max_repairs=max_repairs,
+        chosen_pitch=chosen_pitch,
+        model_label=model_label,
+        repair_density_warnings=repair_density_warnings,
+    )
+    if reasoning is None:
+        return await _generate_story_plan(request, view, provider, inputs)
+    # #CRITICAL: payment/financial: the reasoning setting decides how many
+    # paid reasoning tokens each call may spend (AL-847); it is scoped to this
+    # job's calls by a ContextVar and reset when the block exits.
+    # #VERIFY: test_storyplan_generate.py::
+    # test_every_plan_job_call_carries_the_explicit_reasoning_setting.
+    with explicit_reasoning(reasoning):
+        return await _generate_story_plan(request, view, provider, inputs)
+
+
+@dataclass(frozen=True, slots=True)
+class _JobInputs:
+    """The keyword-only inputs of :func:`generate_story_plan`, passed through."""
+
+    pii: PiiContext
+    screen: PitchScreen
+    max_repairs: int
+    chosen_pitch: Pitch | None
+    model_label: str | None
+    repair_density_warnings: bool
+
+
+async def _generate_story_plan(
+    request: PlanRequestInput,
+    view: ShapeView,
+    provider: GenerationProvider,
+    inputs: _JobInputs,
+) -> PlanGenerationResult:
+    """Run one plan job; see :func:`generate_story_plan`.
+
+    Args:
+        request: The request side.
+        view: The shape.
+        provider: The generation provider.
+        inputs: The job's keyword inputs.
+
+    Returns:
+        PlanGenerationResult: The outcome.
+    """
+    pii, screen = inputs.pii, inputs.screen
+    max_repairs, chosen_pitch = inputs.max_repairs, inputs.chosen_pitch
+    model_label = inputs.model_label
+    repair_density_warnings = inputs.repair_density_warnings
     shape = {"id": view.shape_id, "hash": view.shape_hash}
     stage_log: list[str] = []
     if chosen_pitch is not None:

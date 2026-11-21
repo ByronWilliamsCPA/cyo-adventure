@@ -24,7 +24,7 @@ from typing import TYPE_CHECKING, Final, Literal, cast
 
 import httpx
 
-from cyo_adventure.core.exceptions import ProviderError
+from cyo_adventure.core.exceptions import ConfigurationError, ProviderError
 from cyo_adventure.generation.providers._base import (
     DEFAULT_BACKOFF_BASE_SECONDS,
     DEFAULT_MAX_RETRIES,
@@ -37,6 +37,7 @@ from cyo_adventure.generation.providers._base import (
     run_with_retries,
     strip_code_fences,
 )
+from cyo_adventure.generation.reasoning import ReasoningControl, current_reasoning
 from cyo_adventure.generation.usage import Completion, TokenUsage
 from cyo_adventure.utils.logging import get_logger
 
@@ -59,6 +60,10 @@ _LEG_FATAL_STATUS: Final[frozenset[int]] = frozenset({400, 401, 402, 403, 404})
 # so an out-of-range value is a type error at the call site, not a silent
 # forward of an invalid ``reasoning.effort`` to the API.
 _Effort = Literal["off", "low", "medium", "high"]
+
+# The default for ``reasoning_capable_models``: no model is listed, so no
+# request changes until an operator lists one (AL-847).
+_NO_MODELS: Final[frozenset[str]] = frozenset()
 
 # Longest provider diagnostic carried into the operator log line. Long enough
 # for a context-overflow message with its token arithmetic, short enough that a
@@ -189,7 +194,11 @@ class OpenRouterProvider:
         effort: Reasoning effort. ``"off"`` omits the ``reasoning`` param entirely
             (correct for structured-JSON generation); any other value is
             forwarded as OpenRouter's ``reasoning.effort`` to opt the model into
-            extended thinking.
+            extended thinking. Omitting the field does NOT stop a model that
+            reasons by default (AL-847): use ``reasoning``,
+            ``reasoning_capable_models`` or
+            :func:`~cyo_adventure.generation.reasoning.explicit_reasoning`
+            for an explicit setting.
         max_retries: Number of attempts for transient failures (default 3).
         backoff_base_seconds: Base for exponential backoff between transient
             retries; attempt *n* waits ``backoff_base_seconds * 2**n`` seconds.
@@ -223,6 +232,21 @@ class OpenRouterProvider:
             between two reads of the same passage, and a reviewer sampling at
             the vendor default returns a different answer to the same prose on
             a re-run, which is indistinguishable from the prose having changed.
+        reasoning: An explicit reasoning setting for every call on this leg
+            (AL-847), overriding ``effort``. ``None`` (the default) keeps the
+            ``effort`` behaviour.
+        reasoning_capable_models: Model ids that reason by default. A leg for
+            one of them never omits ``reasoning``: when nothing else sets it
+            and ``effort`` is ``"off"`` it sends the explicit disable
+            ``{"effort": "none"}``. Empty (the default, and
+            ``Settings.llm_reasoning_capable_models``' default) changes no
+            request. Do not list a model whose reasoning is mandatory: it
+            rejects ``"none"``.
+
+    Precedence for the ``reasoning`` field, first match wins: a control set by
+    an enclosing ``explicit_reasoning`` block, then ``reasoning``, then a
+    non-``"off"`` ``effort``, then the explicit disable for a model in
+    ``reasoning_capable_models``; otherwise the field is omitted.
     """
 
     def __init__(
@@ -239,6 +263,8 @@ class OpenRouterProvider:
         provider_order: tuple[str, ...] = (),
         temperature: float | None = None,
         report_vendor_cost: bool = False,
+        reasoning: ReasoningControl | None = None,
+        reasoning_capable_models: frozenset[str] = _NO_MODELS,
     ) -> None:
         self._api_key: Final[str] = api_key
         self._model: Final[str] = model
@@ -251,6 +277,8 @@ class OpenRouterProvider:
         self._provider_order: Final[tuple[str, ...]] = provider_order
         self._temperature: Final[float | None] = temperature
         self._report_vendor_cost: Final[bool] = report_vendor_cost
+        self._reasoning: Final[ReasoningControl | None] = reasoning
+        self._reasoning_capable: Final[frozenset[str]] = reasoning_capable_models
 
     @property
     def temperature(self) -> float | None:
@@ -398,12 +426,9 @@ class OpenRouterProvider:
             "messages": messages,
             "max_tokens": max_tokens,
         }
-        # Only request reasoning when explicitly opted in. Story generation is
-        # structured-JSON output; enabling reasoning on Claude spends the whole
-        # max_tokens budget on thinking tokens and returns empty content
-        # (finish_reason=length). "off" therefore omits the param entirely.
-        if self._effort != "off":
-            body["reasoning"] = {"effort": self._effort}
+        reasoning = self._reasoning_field(max_tokens)
+        if reasoning is not None:
+            body["reasoning"] = reasoning
         # #ASSUME: external-resources: an unpinned slug can be served by several
         # backends at different quantizations, so two runs of "the same model"
         # are not the same measurement. When a pin is supplied we also forbid
@@ -444,6 +469,50 @@ class OpenRouterProvider:
         }
         url = f"{self._base_url}/chat/completions"
         return body, headers, url
+
+    def _reasoning_field(self, max_tokens: int) -> dict[str, object] | None:
+        """Return the ``reasoning`` request object, or None to omit it.
+
+        Only request reasoning when explicitly asked. Story generation is
+        structured-JSON output; enabling reasoning on Claude can spend the
+        whole max_tokens budget on thinking tokens and return empty content
+        (finish_reason=length). But omitting the field does not stop a model
+        that reasons by default (AL-847: Sonnet 5.5 spent 11,490 reasoning
+        tokens on one plan call with it omitted), so an explicit control wins
+        over the ``effort`` setting, and a model listed as reasoning-capable
+        is sent an explicit disable rather than nothing.
+
+        Args:
+            max_tokens: The request's output ceiling (a budget must be below it).
+
+        Returns:
+            dict[str, object] | None: The field, or None when it is omitted.
+
+        Raises:
+            ConfigurationError: If a reasoning token budget is not strictly
+                below ``max_tokens``, which OpenRouter requires so the model
+                has room to answer.
+        """
+        # #ASSUME: external-resources: the request shapes follow OpenRouter's
+        # reasoning-tokens documentation (read 2026-11-21); only the effort
+        # form ("low") has been measured from this codebase, the "none"
+        # disable and the max_tokens budget have not.
+        # #VERIFY: test_reasoning_control.py pins the body for every listed
+        # model, every effort and every control.
+        control = current_reasoning() or self._reasoning
+        if control is not None:
+            if control.max_tokens is not None and control.max_tokens >= max_tokens:
+                msg = (
+                    f"reasoning budget {control.max_tokens} must be below the "
+                    f"request max_tokens {max_tokens}"
+                )
+                raise ConfigurationError(msg)
+            return control.to_openrouter()
+        if self._effort != "off":
+            return {"effort": self._effort}
+        if self._model in self._reasoning_capable:
+            return ReasoningControl.disabled().to_openrouter()
+        return None
 
     async def complete_with_image(
         self,

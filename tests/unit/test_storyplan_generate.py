@@ -13,6 +13,7 @@ import re
 from pathlib import Path
 from typing import TYPE_CHECKING, Any, cast
 
+import httpx
 import pytest
 
 from cyo_adventure.core.config import Settings
@@ -24,6 +25,8 @@ from cyo_adventure.generation.prompts import (
     build_plan_repair_prompt,
 )
 from cyo_adventure.generation.provider import MockProvider
+from cyo_adventure.generation.providers import OpenRouterProvider
+from cyo_adventure.generation.reasoning import ReasoningControl, current_reasoning
 from cyo_adventure.moderation.report import Finding, Source, Verdict
 from cyo_adventure.storybook.fill_directive import derive_node_functions
 from cyo_adventure.storybook.models import AgeBand, Length, NarrativeStyle, Storybook
@@ -48,7 +51,7 @@ from cyo_adventure.storyplan.shapes import (
 )
 
 if TYPE_CHECKING:
-    from collections.abc import Sequence
+    from collections.abc import Callable, Sequence
 
 _SECTIONS = ("cast", "truth", "facts", "nodes", "choices", "threads", "endings")
 _CONVENTIONS = (
@@ -949,3 +952,77 @@ async def test_a_story_change_repair_is_not_mark_only(witness_view: ShapeView) -
     assert diff.contradicts_removed == ()
     assert diff.fact_uses_changed == 1
     assert not diff.only_removed_marks
+
+
+@pytest.mark.asyncio
+async def test_every_plan_job_call_carries_the_explicit_reasoning_setting(
+    witness_view: ShapeView,
+) -> None:
+    """AL-847: pitch and plan calls on OpenRouter send the job's reasoning."""
+    answers = iter(
+        [
+            _pitches(_GOOD_PITCH),
+            json.dumps(_thin_sections(witness_view)),
+            json.dumps(_witness_sections(witness_view)),
+        ]
+    )
+    bodies: list[dict[str, object]] = []
+
+    def handler(request: httpx.Request) -> httpx.Response:
+        bodies.append(json.loads(request.content.decode("utf-8")))
+        return httpx.Response(
+            200, json={"choices": [{"message": {"content": next(answers)}}]}
+        )
+
+    provider = OpenRouterProvider(
+        api_key="k",
+        model="anthropic/claude-sonnet-5.5",
+        base_url="https://openrouter.test/api/v1",
+        timeout_seconds=5,
+        effort="off",
+        backoff_base_seconds=0.0,
+        client=httpx.AsyncClient(transport=httpx.MockTransport(handler)),
+    )
+    control = ReasoningControl.disabled()
+    result = await generate_story_plan(
+        _request(witness_view),
+        witness_view,
+        provider,
+        pii=_NO_PII,
+        screen=_clean_screen,
+        reasoning=control,
+    )
+    assert result.status == "checked"
+    assert len(bodies) == 3  # pitch, plan, density repair
+    assert all(body["reasoning"] == {"effort": "none"} for body in bodies)
+    assert current_reasoning() is None
+
+
+@pytest.mark.asyncio
+async def test_without_a_reasoning_setting_the_leg_decides(
+    witness_view: ShapeView,
+) -> None:
+    seen: list[ReasoningControl | None] = []
+
+    def answer(text: str) -> Callable[[str], str]:
+        def respond(_prompt: str) -> str:
+            seen.append(current_reasoning())
+            return text
+
+        return respond
+
+    provider = MockProvider(
+        responses=[
+            answer(_pitches(_GOOD_PITCH)),
+            answer(json.dumps(_witness_sections(witness_view))),
+        ]
+    )
+    result = await generate_story_plan(
+        _request(witness_view),
+        witness_view,
+        provider,
+        pii=_NO_PII,
+        screen=_clean_screen,
+    )
+    assert result.status == "checked"
+    assert seen == [None, None]

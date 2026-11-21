@@ -12,6 +12,7 @@ from cyo_adventure.core.exceptions import ResourceNotFoundError, ValidationError
 from cyo_adventure.db.models import Concept, GenerationJob
 from cyo_adventure.generation import worker as worker_module
 from cyo_adventure.generation.provider import MockProvider
+from cyo_adventure.generation.reasoning import ReasoningControl
 from cyo_adventure.storyplan.generate import ShapeView, build_shape_view
 from cyo_adventure.storyplan.shapes import load_registry, load_shape, shape_entry_for
 
@@ -316,7 +317,7 @@ async def test_plan_job_without_a_shape_binding_fails() -> None:
 async def test_plan_job_passes_the_plan_settings_to_the_generator(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    """The worker forwards the density-repair setting (AL-848)."""
+    """The worker forwards the density-repair (AL-848) and reasoning (AL-847) settings."""
     view = _view()
     seen: dict[str, object] = {}
     original = worker_module.generate_story_plan
@@ -342,6 +343,7 @@ async def test_plan_job_passes_the_plan_settings_to_the_generator(
         session_factory=_factory(session),  # pyright: ignore[reportArgumentType]
     )
     assert seen["repair_density_warnings"] is False
+    assert seen["reasoning"] == ReasoningControl(effort="low")
     report = cast("dict[str, object]", job.report)
     summaries = cast("list[dict[str, object]]", report["story_plan_attempt_summaries"])
     assert [s["outcome"] for s in summaries] == ["checked"]

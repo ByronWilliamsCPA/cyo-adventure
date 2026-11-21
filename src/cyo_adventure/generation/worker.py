@@ -74,6 +74,7 @@ from cyo_adventure.generation.persistence import StorybookParams, persist_storyb
 from cyo_adventure.generation.pii import PiiContext
 from cyo_adventure.generation.prompts import build_differentiation_directive
 from cyo_adventure.generation.provider import build_provider
+from cyo_adventure.generation.reasoning import ReasoningControl
 from cyo_adventure.generation.series_link import (
     embed_series_block,
     link_series_position,
@@ -1401,6 +1402,12 @@ async def _run_plan_generation(ctx: _PlanGenerationContext) -> GenerationOutcome
         max_repairs=_PLAN_MAX_REPAIRS,
         model_label=_model_label(ctx.effective_provider),
         repair_density_warnings=_default_settings.story_plan_repair_density_warnings,
+        # AL-847: omitting `reasoning` does not stop a reasoning model, so the
+        # plan path always sends an explicit setting.
+        reasoning=ReasoningControl.from_settings(
+            _default_settings.story_plan_reasoning_effort,
+            _default_settings.story_plan_reasoning_max_tokens,
+        ),
     )
     logger.info(
         "generation_job.story_plan",

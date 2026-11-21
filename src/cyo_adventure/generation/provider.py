@@ -514,6 +514,7 @@ def build_openrouter_leg(
         effort=settings.llm_effort,
         provider_order=resolved_order,
         temperature=temperature,
+        reasoning_capable_models=frozenset(settings.llm_reasoning_capable_models),
     )
 
 
@@ -555,6 +556,7 @@ def build_openrouter_cost_reporting_leg(
         effort=settings.llm_effort,
         provider_order=resolved_order,
         report_vendor_cost=True,
+        reasoning_capable_models=frozenset(settings.llm_reasoning_capable_models),
     )
 
 

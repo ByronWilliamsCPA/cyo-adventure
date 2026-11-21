@@ -528,6 +528,28 @@ class Settings(BaseSettings):
     # on ERRORs).
     story_plan_repair_density_warnings: bool = True
 
+    # AL-847: omitting `reasoning` (llm_effort="off") does not stop a model
+    # that reasons by default; Sonnet 5.5 spent 11,490 reasoning tokens on one
+    # plan call that way. The Story Plan path (pitch and plan calls) therefore
+    # always sends an explicit OpenRouter `reasoning` setting: this effort, or
+    # this token budget when set (at least 1,024, and below the call's
+    # max_tokens). "low" is the measured setting from the WP-2.3 paid smoke
+    # (0 to 3,078 reasoning tokens per plan call, no call hit max_tokens);
+    # "none" is OpenRouter's documented disable, not yet run from this
+    # codebase, and a model with mandatory reasoning rejects it. Other paths
+    # keep llm_effort.
+    story_plan_reasoning_effort: Literal["none", "minimal", "low", "medium", "high"] = (
+        "low"
+    )
+    story_plan_reasoning_max_tokens: int | None = Field(default=None, ge=1024)
+
+    # OpenRouter model ids that reason by default. A leg for one of them never
+    # omits `reasoning`: with llm_effort="off" and no explicit control it
+    # sends the documented disable {"effort": "none"}. Empty by default, so no
+    # request on any path changes until an operator lists a model; do not list
+    # a model whose reasoning is mandatory (it rejects "none").
+    llm_reasoning_capable_models: list[str] = Field(default_factory=list)
+
     # Per-call wall-clock timeout for a single live provider completion. Generation
     # responses are large (a full story is thousands of tokens), so the default is
     # generous; the adapter's transient-retry backoff stacks on top of this.
