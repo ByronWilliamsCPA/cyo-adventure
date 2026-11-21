@@ -577,6 +577,12 @@ that had read the continuity notes, so it is not the blind test WP-1.4 and WP-1.
 - **Acceptance.** The first-draft `hollow-lighthouse` dialogue case no longer puts dialogue-heavy nodes under the band
   floor; no change in score for speech-free nodes across `out/`.
 - **Independent.** **Size.** S.
+- **Built 2026-11-21 (`ddacb46`).** The measure uses `utils/sentences.py`'s splitter (its abbreviation guard is a
+  superset of `naming.py`'s) and joins quote-only runs and a quote with its lowercase speech tag. Acceptance as
+  measured: the dialogue edition at `15b14a1` (not `15b14a1^`, which has no speech) moves five dialogue nodes up by 0.7
+  to 1.1 grade; AL-771's "43 of 161" could not be reproduced (`AL-839`). Across `out/`, 78 of 4,596 nodes changed, 14
+  of them quote-free: 9 use unquoted speech tags and 5 contain an abbreviation (`AL-840`, `AL-841`). No node with
+  neither speech nor an abbreviation changed.
 
 ## 6. Phase 3: evaluation
 

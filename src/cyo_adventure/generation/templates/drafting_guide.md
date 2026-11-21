@@ -201,13 +201,11 @@ its own centre landed a full grade outside the window RL-13 measures (`UW-C281`)
 `storybook/models.py`'s `ReadingLevel.tolerance` default of `1.0`. See "Craft for Delight" below
 for why the 3-5 window should not be drafted to as a literal, line-by-line target.
 
-**Dialogue lowers the measured grade.** Flesch-Kincaid counts every short spoken line as a
-sentence, so a scene of quick exchanges can score under the band floor (RL-13) even when the prose
-suits the age: the first dialogue draft of `the-hollow-lighthouse` put 43 of 161 nodes out of band
-this way. Keep the speech and join a speaker's short lines into one fuller sentence ("Wait, the
-lamp should be green, not white," Ada said, already climbing.) rather than stacking "Wait." "Look."
-"Green." At 10-13 that means roughly 13 to 16 words per sentence across a passage that carries
-dialogue.
+**Dialogue and the measured grade.** The reading-level measure (RL-13) counts a run of quote-only
+lines, and a quoted line with its speech tag, as one sentence, so quick exchanges no longer pull a
+node under the band floor by themselves. Still prefer a speaker's fuller sentence ("Wait, the lamp
+should be green, not white," Ada said, already climbing.) to a stack of "Wait." "Look." "Green."
+At 10-13 that means roughly 13 to 16 words per sentence across a passage that carries dialogue.
 
 ### Node body length
 

@@ -221,13 +221,11 @@ spread from 3-5 to 16+. A 3-5 book and a 16+ book are built from words of nearly
 difficulty; what separates them is how many of those words are asked to arrive at once. So when a
 node scores high, split its sentences first and reach for shorter words second.
 
-**Dialogue lowers the measured grade.** Flesch-Kincaid counts every short spoken line as a
-sentence, so a scene of quick exchanges can score under the band floor (RL-13) even when the prose
-suits the age: the first dialogue draft of `the-hollow-lighthouse` put 43 of 161 nodes out of band
-this way. Keep the speech and join a speaker's short lines into one fuller sentence ("Wait, the
-lamp should be green, not white," Ada said, already climbing.) rather than stacking "Wait." "Look."
-"Green." At 10-13 that means roughly 13 to 16 words per sentence across a passage that carries
-dialogue.
+**Dialogue and the measured grade.** The reading-level measure (RL-13) counts a run of quote-only
+lines, and a quoted line with its speech tag, as one sentence, so quick exchanges no longer pull a
+node under the band floor by themselves. Still prefer a speaker's fuller sentence ("Wait, the lamp
+should be green, not white," Ada said, already climbing.) to a stack of "Wait." "Look." "Green."
+At 10-13 that means roughly 13 to 16 words per sentence across a passage that carries dialogue.
 
 **Draft, then measure, then repair.** Prose written to a stated FK target lands out of band
 essentially every time: all eight books drafted on 2026-08-14 did, one at 57 of 57 nodes with
