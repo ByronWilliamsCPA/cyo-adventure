@@ -81,6 +81,9 @@ class StorybookParams:
             for a guardian-authored or imported book with no requester. Ring
             1 never reads it: own-family values follow the reading child
             (``api/personalization.py::get_personalization_values``).
+        story_plan: The Story Plan the blob was written from (WP-2.3,
+            ``StoryPlan.model_dump(mode="json")``), or None for every path not
+            built from a plan. Authoring-side only; never served to a child.
         status: Storybook lifecycle status (default ``"draft"``).
         version: Version number (default 1).
     """
@@ -97,6 +100,7 @@ class StorybookParams:
     sentinel_manifest: dict[str, object] | None = None
     personalization_eligible: bool = False
     personalization_subject_profile_id: uuid.UUID | None = None
+    story_plan: dict[str, object] | None = None
     status: str = "draft"
     version: int = _FIRST_VERSION
 
@@ -140,6 +144,8 @@ async def persist_storybook(session: AsyncSession, params: StorybookParams) -> s
     # caller passing an unrelated dict, not a limit expected to fire.
     if params.sentinel_manifest is not None:
         _check_byte_budget(params.sentinel_manifest, field="sentinel_manifest")
+    if params.story_plan is not None:
+        _check_byte_budget(params.story_plan, field="story_plan")
 
     storybook_row = Storybook(
         id=params.story_id,
@@ -187,6 +193,7 @@ async def persist_storybook(session: AsyncSession, params: StorybookParams) -> s
         # test_fill_stamps_personalization_eligible_when_contract_declares_slots
         # and its sibling false cases.
         personalization_eligible=params.personalization_eligible,
+        story_plan=params.story_plan,
     )
     session.add(version_row)
     await session.flush()

@@ -218,6 +218,11 @@ class GenerationOutcome:
             for any fill whose document the reinsertion transform actually
             rewrites. This field survives every such rebuild, so recording the
             diagnostics anywhere stays a diagnostic act.
+        story_plan: The Story Plan (WP-2.3) the outcome was built from, as
+            JSON, or ``None`` for every path not built from a plan.
+            ``generation/worker.py`` hands it to ``persist_storybook`` when a
+            storybook is persisted; a WP-2.3 plan job produces no storybook,
+            so its plan is recorded on the job report only.
     """
 
     status: Literal["passed", "needs_review", "failed"]
@@ -228,6 +233,7 @@ class GenerationOutcome:
     sentinel_manifest: dict[str, object] | None = None
     personalization_eligible: bool = False
     clean_downgrade: bool = False
+    story_plan: dict[str, object] | None = None
 
 
 @dataclass(frozen=True, slots=True)

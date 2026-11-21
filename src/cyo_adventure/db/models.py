@@ -1609,6 +1609,15 @@ class StorybookVersion(CreatedAtMixin, Base):
     sentinel_manifest: Mapped[dict[str, object] | None] = mapped_column(
         JSONB, default=None
     )
+    # WP-2.3 (ADR-033 Decision 1): the Story Plan this version was written from,
+    # as ``StoryPlan.model_dump(mode="json")``, for an on-demand book. NULL for
+    # every version not built from a plan (all of them until the WP-2.6 fill
+    # exists). An authoring-side record: it holds request-derived text and the
+    # plan's facts and threads, so it is NEVER selected into a kid-surface
+    # response (api/library.py, api/reading.py and the offline download carry
+    # explicit response models without it; tests/unit/test_story_plan_not_on_kid_routes.py
+    # pins that). WRITTEN by generation/persistence.py::persist_storybook.
+    story_plan: Mapped[dict[str, object] | None] = mapped_column(JSONB, default=None)
 
     __table_args__ = (
         CheckConstraint(
@@ -2665,6 +2674,22 @@ class ProviderModelAllowlistAudit(UUIDPrimaryKeyMixin, Base):
     changed_at: Mapped[datetime] = mapped_column(_TS, server_default=func.now())
 
 
+# WP-2.3: the GenerationJob.report keys a plan_fill job writes. Mirrors
+# storyplan.generate.REPORT_KEYS, which a unit test pins to this tuple, so a key
+# added on one side without the other fails the build rather than drifting.
+STORY_PLAN_REPORT_KEYS: tuple[str, ...] = (
+    "authoring_method",
+    "story_plan_status",
+    "story_plan",
+    "story_plan_checks",
+    "story_plan_load_errors",
+    "story_plan_attempts",
+    "story_plan_shape",
+    "story_plan_pitches",
+    "story_plan_approval",
+)
+
+
 class GenerationJob(UUIDPrimaryKeyMixin, CreatedAtMixin, UpdatedAtMixin, Base):
     """Tracks a single staged-generation attempt for a Concept.
 
@@ -2688,6 +2713,15 @@ class GenerationJob(UUIDPrimaryKeyMixin, CreatedAtMixin, UpdatedAtMixin, Base):
         provider: LLM provider name (e.g. ``anthropic``, ``openai``).
         prompt_version: Semver-style tag for the prompt template revision.
         report: Full ``GenerationOutcome`` JSON including metrics and flags.
+            A ``plan_fill`` job (WP-2.3, ADR-033) writes the keys listed in
+            :data:`STORY_PLAN_REPORT_KEYS` instead of a gate report: the
+            authoring method, the plan status (``checked``,
+            ``failed_checks`` or ``no_passing_pitch``), the plan itself, its
+            SP check report, load errors, the number of plan calls, the shape
+            binding, every pitch with its screening verdict, and the approval
+            state (``pending_owner`` until WP-2.4). Admin-only: the job
+            endpoint returns ``report`` to admins and no kid-surface route
+            reads it.
         storybook_id: String key of the produced storybook row, set only when
             the job reaches ``passed`` or ``needs_review``. Not a FK -- see
             class docstring.

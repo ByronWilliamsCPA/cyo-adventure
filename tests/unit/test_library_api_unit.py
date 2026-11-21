@@ -779,6 +779,43 @@ class TestGetStorybookVersion:
 
     @pytest.mark.unit
     @pytest.mark.asyncio
+    async def test_story_plan_is_never_returned_with_the_blob(self) -> None:
+        """WP-2.3: a version's story_plan column never reaches a reader.
+
+        ADR-033 Decision 1: the plan is an authoring-side record "never returned
+        by any kid-surface route". The handler returns the blob alone, so a
+        plan stamped on the row (with a marker fact a leak would carry) must
+        not appear anywhere in the response.
+        """
+        family_id = uuid.uuid4()
+        profile_id = uuid.uuid4()
+        book = _published_book("story-1", family_id, version=1)
+        blob: dict[str, object] = {"title": "Test", "nodes": []}
+        expected = copy.deepcopy(blob)
+        version = _version_row("story-1", 1, blob=blob)
+        version.approved_by = uuid.uuid4()
+        version.story_plan = {
+            "facts": {"plan_marker": {"text": "PLAN-ONLY-MARKER"}},
+            "truth": {"statement": "PLAN-ONLY-MARKER"},
+        }
+        session = _FakeSession(
+            get_map={
+                (Storybook, "story-1"): book,
+                (StorybookVersion, ("story-1", 1)): version,
+            },
+            assigned_profile_ids=[profile_id],
+            assigned_profiles=[_assigned_profile(profile_id, family_id)],
+        )
+        principal = _child_principal(family_id, profile_id)
+
+        result = await get_storybook_version("story-1", 1, principal, session)
+
+        assert result == expected
+        assert "PLAN-ONLY-MARKER" not in json.dumps(result)
+        assert "story_plan" not in result
+
+    @pytest.mark.unit
+    @pytest.mark.asyncio
     async def test_blob_sentinels_survive_verbatim(self) -> None:
         """The version-blob endpoint is the artifact the client resolves
         personalization against; sentinels MUST survive it untouched, unlike

@@ -227,6 +227,37 @@ async def test_persist_records_the_personalization_subject() -> None:
 
 @pytest.mark.unit
 @pytest.mark.asyncio
+async def test_persist_records_the_story_plan() -> None:
+    """WP-2.3: a plan reaches StorybookVersion.story_plan; absent means NULL."""
+    session = _FakeSession()
+    plan: dict[str, object] = {"plan_version": "0.1", "facts": {}}
+    await persist_storybook(
+        session,
+        StorybookParams(
+            story_id="s_plan",
+            blob={"id": "ignored", "title": "T", "nodes": []},
+            family_id=uuid.uuid4(),
+            provider="mock",
+            story_plan=plan,
+        ),
+    )
+    await persist_storybook(
+        session,
+        StorybookParams(
+            story_id="s_no_plan",
+            blob={"id": "ignored", "title": "T", "nodes": []},
+            family_id=uuid.uuid4(),
+            provider="mock",
+        ),
+    )
+
+    versions = _added(session, StorybookVersion)
+    assert versions[0].story_plan == plan
+    assert versions[1].story_plan is None
+
+
+@pytest.mark.unit
+@pytest.mark.asyncio
 async def test_persist_personalization_subject_defaults_to_none() -> None:
     """An import or guardian-authored book carries no subject."""
     session = _FakeSession()
