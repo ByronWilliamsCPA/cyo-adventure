@@ -755,7 +755,7 @@ Dates are proposals from 2026-11-21; each is also stated as the package it block
 | D2 | Confirm the freeze list in WP-0.1. **Approved 2026-11-21** (owner, in session) | WP-0.1 | 2026-11-24 |
 | D3 | Family-test book list; enable reading-trail capture for the session. **Decided 2026-11-21** (owner, in session): see the note below | WP-0.3, WP-0.5 | 2026-11-24 |
 | D4 | The retained shell set (eight to twelve, two per offered cell) | WP-2.2 | when G1 passes |
-| D5 | Accept the G1 verdict | all of Phase 2 | within two days of WP-1.5 |
+| D5 | Accept the G1 verdict. **Decided 2026-11-21** (owner, in session): G1 failed as scored ([report](./evidence/story-plan-retro/report.md)); take the single permitted revision and one re-run. The SP-9 length change made before the first run (`29c0ff8`) does not count as the revision. Revision scope: `AL-817` to `AL-819` and `AL-822` (SP-4 independent of which half of a thread is declared the plant, SP-4 exempts endings, SP-8 symmetric opportunity costs, SP-9 'wound' homograph, state negations recorded at the asserting node), plus `AL-821`. Fresh blind re-extraction of the scored books; the criterion and answer key are unchanged. A second failure stops Phase 2 | all of Phase 2 | done |
 | D6 | Continuity reader thresholds (decide with D12, which reuses the same split and harness) | WP-3.2 | before WP-3.2 starts |
 | D7 | Phase 4 budget (proposed cap 150 USD) and the kill criteria as written | WP-4.1 | before WP-4.1 starts |
 | D8 | Wording of the approver's quality question; mandatory or not | WP-3.5 | before WP-3.5 starts |
