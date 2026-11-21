@@ -1,0 +1,2512 @@
+{
+ "run": 3,
+ "request": {
+  "id": "P03",
+  "source": "docs/planning/evidence/short-request-panel/panel.json requests[id=P03]",
+  "text": "me and my sister solving a mystery in an old castle",
+  "band": "8-11",
+  "length": "short",
+  "style": "prose",
+  "selection_note": "panel order, band 8-11 first (panel README); length short as fixed"
+ },
+ "shape": {
+  "id": "the-locked-carousel",
+  "hash": "sha256:66d70a41cd1c65581a19f1c81e411ec4caf234db3939dbf5d91bb44be1c28393",
+  "selection": "cell pick (authoring_plan._pick_shape, seeded by request id)",
+  "cell": {
+   "band": "8-11",
+   "length": "short",
+   "style": "prose"
+  },
+  "cell_candidates": [
+   "the-cave-of-echoes",
+   "the-half-hour-call",
+   "the-locked-carousel",
+   "the-robot-fair-sabotage"
+  ],
+  "retained_in_cell": [
+   "the-locked-carousel",
+   "the-cave-of-echoes"
+  ],
+  "nodes": 71,
+  "choices": 118,
+  "variables": 0,
+  "request_seed_id": "753b57ee-71d6-5fb9-8fdb-f96703d875b6"
+ },
+ "model": "anthropic/claude-sonnet-5.5",
+ "reasoning": "explicit: llm_effort='low' sent as reasoning.effort",
+ "max_repairs": 2,
+ "brief": {
+  "premise": "me and my sister solving a mystery in an old castle",
+  "protagonist": {
+   "name": "Explorer",
+   "age": 8,
+   "role": "a curious young adventurer"
+  },
+  "point_of_view": "second",
+  "age_band": "8-11",
+  "tone": "mysterious",
+  "themes_allowed": [],
+  "content_nogo": []
+ },
+ "stage0": {
+  "status": "skipped",
+  "reason": "no OPENAI_API_KEY in this environment (owner-approved skip, 2026-11-21); production classifier_screen(None) ran and called nothing",
+  "pitch_strings_offered": 5
+ },
+ "calls": [
+  {
+   "index": 0,
+   "kind": "pitch",
+   "max_tokens": 2000,
+   "prompt_chars": 2656,
+   "worst_case_usd": 0.022658,
+   "spent_before_usd": 0.285664,
+   "model": "anthropic/claude-sonnet-5.5",
+   "provider": "openrouter",
+   "input_tokens": 1008,
+   "output_tokens": 449,
+   "reasoning_tokens": 0,
+   "finish_reason": "stop",
+   "cost_estimate_usd": 0.006506,
+   "vendor_cost_usd": 0.005292,
+   "latency_s": 4.8,
+   "provider_duration_ms": 4794,
+   "response_chars": 1275
+  },
+  {
+   "index": 1,
+   "kind": "plan_1",
+   "max_tokens": 32000,
+   "prompt_chars": 17918,
+   "worst_case_usd": 0.33792,
+   "spent_before_usd": 0.29217,
+   "model": "anthropic/claude-sonnet-5.5",
+   "provider": "openrouter",
+   "input_tokens": 7462,
+   "output_tokens": 14886,
+   "reasoning_tokens": 1791,
+   "finish_reason": "stop",
+   "cost_estimate_usd": 0.163784,
+   "vendor_cost_usd": 0.157725,
+   "latency_s": 92.3,
+   "provider_duration_ms": 92296,
+   "response_chars": 31377
+  },
+  {
+   "index": 2,
+   "kind": "plan_2",
+   "max_tokens": 32000,
+   "prompt_chars": 61923,
+   "worst_case_usd": 0.381924,
+   "spent_before_usd": 0.455954,
+   "model": "anthropic/claude-sonnet-5.5",
+   "provider": "openrouter",
+   "input_tokens": 26493,
+   "output_tokens": 14328,
+   "reasoning_tokens": 849,
+   "finish_reason": "stop",
+   "cost_estimate_usd": 0.196266,
+   "vendor_cost_usd": 0.197982,
+   "latency_s": 64.0,
+   "provider_duration_ms": 64020,
+   "response_chars": 32304
+  },
+  {
+   "index": 3,
+   "kind": "plan_3",
+   "max_tokens": 32000,
+   "prompt_chars": 70986,
+   "worst_case_usd": 0.390988,
+   "spent_before_usd": 0.65222,
+   "model": "anthropic/claude-sonnet-5.5",
+   "provider": "openrouter",
+   "input_tokens": 30285,
+   "output_tokens": 14290,
+   "reasoning_tokens": 675,
+   "finish_reason": "stop",
+   "cost_estimate_usd": 0.20347,
+   "vendor_cost_usd": 0.196951,
+   "latency_s": 63.9,
+   "provider_duration_ms": 63946,
+   "response_chars": 32686
+  }
+ ],
+ "wall_seconds": 225.3,
+ "stopped": null,
+ "story_plan_status": "checked",
+ "attempts": 3,
+ "stage_log": [
+  "pitch:1",
+  "plan:1:load_errors=1",
+  "plan:2:errors=1",
+  "plan:3:errors=0"
+ ],
+ "pitches": [
+  {
+   "index": 0,
+   "source": "model",
+   "passed": true,
+   "reasons": [],
+   "advisories": [],
+   "pitch": {
+    "hero": "Explorer, a curious 8-year-old adventurer, and their older sister",
+    "want": "To find out who keeps leaving chalk arrows on the walls of the old castle",
+    "obstacle": "The arrows lead through a maze of locked rooms, and the only keys are hidden in riddles",
+    "stake": "The castle's last tour closes for good and the secret stays buried forever",
+    "ending_kind": "a warm discovery shared with a sister"
+   }
+  },
+  {
+   "index": 1,
+   "source": "model",
+   "passed": false,
+   "reasons": [
+    "not screened"
+   ],
+   "advisories": [],
+   "pitch": null
+  },
+  {
+   "index": 2,
+   "source": "model",
+   "passed": false,
+   "reasons": [
+    "not screened"
+   ],
+   "advisories": [],
+   "pitch": null
+  }
+ ],
+ "attempt_findings": [
+  {
+   "attempt": 1,
+   "loaded": false,
+   "dropped_keys": [],
+   "load_errors": [
+    "plan: Value error, nodes.N3.establishes names undeclared fact 'hero_resolve_follow'; nodes.N37.establishes names undeclared fact 'organ_pipes_seen'; nodes.N38.requires names undeclared fact 'organ_pipes_seen'; nodes.N39.requires names undeclared fact 'organ_pipes_seen'; nodes.N40.requires names undeclared fact 'organ_pipes_seen'; nodes.N57.establishes names undeclared fact 'letters_shelf_seen'; nodes.N58.requires names undeclared fact 'letters_shelf_seen'; nodes.N59.requires names undeclared fact 'letters_shelf_seen'; nodes.N60.establishes names undeclared fact 'music_box_seen'; nodes.N61.requires names undeclared fact 'music_box_seen'; nodes.N62.requires names undeclared fact 'music_box_seen'; nodes.N67.establishes names undeclared fact 'tour_saved_with_laugh'; nodes.N68.establishes names undeclared fact 'quiet_ending_content'; nodes.N69.establishes names undeclared fact 'walk_out_arm_in_arm'; nodes.N70.establishes names undeclared fact 'planning_next_visit'; nodes.N71.establishes names undeclared fact 'secret_room_locked'"
+   ],
+   "response_text": "{\"cast\":{\"explorer\":{\"name\":\"Explorer\",\"role\":\"curious 8-year-old adventurer, the hero\",\"want\":\"Find out who leaves chalk arrows in the old castle\",\"voice\":\"eager and wondering\",\"knows\":[\"chalk_arrow_seen\",\"tour_closing\"]},\"mia\":{\"name\":\"Mia\",\"role\":\"Explorer's older sister and partner\",\"want\":\"Keep Explorer safe and solve the riddles together\",\"voice\":\"calm, dry, quietly funny\",\"knows\":[\"sister_mia_along\"]},\"wren\":{\"name\":\"Aunt Wren\",\"role\":\"retired castle guide who draws the arrows\",\"want\":\"Have the children find the hidden music room\",\"voice\":\"soft and playful\",\"knows\":[\"arrows_by_wren\",\"music_room_holds_letters\",\"wren_wants_kids_find_room\"]}},\"truth\":{\"statement\":\"Great-aunt Wren, the old castle guide, drew the chalk arrows and hid the keys in riddles so Explorer and Mia would find the hidden music room full of family letters.\",\"question\":\"Who keeps leaving chalk arrows on the castle walls?\",\"facts\":[\"arrows_by_wren\",\"wren_wants_kids_find_room\",\"music_room_holds_letters\"]},\"facts\":{\"sister_mia_along\":{\"text\":\"Explorer's older sister Mia comes along on the castle tour.\",\"contradicts\":[]},\"chalk_arrow_seen\":{\"text\":\"Explorer spots a fresh white chalk arrow on a castle wall.\",\"contradicts\":[]},\"tour_closing\":{\"text\":\"The castle's last tour closes for good at sunset.\",\"contradicts\":[]},\"keys_in_riddles\":{\"text\":\"The arrows lead past locked rooms whose keys are hidden in riddles.\",\"contradicts\":[]},\"ask_guide_hint\":{\"text\":\"Explorer asks about the arrows and learns the guide never draws them.\",\"contradicts\":[]},\"kitchen_riddle_read\":{\"text\":\"A riddle about bread and fire is scratched by the kitchen hearth.\",\"contradicts\":[]},\"hearth_soot_clue\":{\"text\":\"Soot on the hearth has a small chalky handprint in it.\",\"contradicts\":[]},\"oven_key_found\":{\"text\":\"A small iron key sits inside the cold bread oven.\",\"contradicts\":[]},\"cellar_stairs_seen\":{\"text\":\"Narrow cellar stairs are marked by a chalk arrow.\",\"contradicts\":[]},\"cellar_door_stuck\":{\"text\":\"The cellar door is stuck and gives way only with a shove.\",\"contradicts\":[]},\"ghost_fear_choice\":{\"text\":\"Explorer decides the arrows must be drawn by a castle ghost.\",\"contradicts\":[\"arrows_by_wren\"]},\"brass_door_found\":{\"text\":\"A brass-handled door with a riddle plate stands in the gallery.\",\"contradicts\":[]},\"portrait_eyes_riddle\":{\"text\":\"A portrait's painted eyes hold a riddle about looking up.\",\"contradicts\":[]},\"mia_reads_riddle\":{\"text\":\"Mia reads the riddle aloud and guesses it means the clock.\",\"contradicts\":[]},\"clock_hides_key\":{\"text\":\"A brass key is taped behind the gallery clock.\",\"contradicts\":[]},\"mirror_hall_seen\":{\"text\":\"A hall of tall mirrors repeats the chalk arrows.\",\"contradicts\":[]},\"wrong_key_tried\":{\"text\":\"A wrong key fails in the brass door lock.\",\"contradicts\":[]},\"mia_hums_tune\":{\"text\":\"Mia hums a tune that matches the riddle's rhythm.\",\"contradicts\":[]},\"door_opens_gallery\":{\"text\":\"The brass door swings open onto a dusty side passage.\",\"contradicts\":[]},\"armory_arrow\":{\"text\":\"A chalk arrow points through the armory.\",\"contradicts\":[]},\"helmet_riddle\":{\"text\":\"A knight's helmet holds a rhyme about a hollow head.\",\"contradicts\":[]},\"helmet_key_found\":{\"text\":\"A silver key is tucked inside the knight's helmet.\",\"contradicts\":[]},\"shield_wall_hint\":{\"text\":\"A shield on the wall hides a smudged chalk number three.\",\"contradicts\":[]},\"armory_locked_in\":{\"text\":\"The armory gate clanks shut and Explorer must wait for Mia.\",\"contradicts\":[]},\"mia_lifts_gate\":{\"text\":\"Mia finds the lever that lifts the armory gate.\",\"contradicts\":[]},\"tower_stairs_seen\":{\"text\":\"Spiral tower stairs climb behind a tapestry.\",\"contradicts\":[]},\"tapestry_clue\":{\"text\":\"The tapestry shows a bird holding a tiny key.\",\"contradicts\":[]},\"tower_window_view\":{\"text\":\"From the tower window the courtyard shows a chalk arrow pattern.\",\"contradicts\":[]},\"courtyard_pattern\":{\"text\":\"Arrows in the courtyard form a loop around the well.\",\"contradicts\":[]},\"well_rope_found\":{\"text\":\"A rope hangs in the well with a note tied to it.\",\"contradicts\":[]},\"note_in_well\":{\"text\":\"The note says the number of steps to the next room is twelve.\",\"contradicts\":[]},\"steps_counted\":{\"text\":\"Explorer and Mia count twelve steps to a hidden alcove.\",\"contradicts\":[]},\"alcove_cold\":{\"text\":\"The alcove is cold and has a small keyhole in the wall.\",\"contradicts\":[]},\"keyhole_fits_silver\":{\"text\":\"The silver key fits the alcove keyhole.\",\"contradicts\":[]},\"stuck_in_alcove\":{\"text\":\"Explorer wastes time in the alcove and the tour bell rings.\",\"contradicts\":[]},\"chapel_seen\":{\"text\":\"A small chapel has chalk arrows around its altar.\",\"contradicts\":[]},\"hymn_riddle\":{\"text\":\"A hymn book is open to a riddle about silence.\",\"contradicts\":[]},\"candle_clue\":{\"text\":\"A candle stub has chalk dust on its holder.\",\"contradicts\":[]},\"organ_pipe_key\":{\"text\":\"A key rolls out of a dusty organ pipe.\",\"contradicts\":[]},\"mia_blows_pipe\":{\"text\":\"Mia blows a pipe and a note echoes through the wall.\",\"contradicts\":[]},\"echo_points_north\":{\"text\":\"The echo seems to come from the north wall.\",\"contradicts\":[]},\"crypt_arrow\":{\"text\":\"A chalk arrow points toward a low arch of old stone.\",\"contradicts\":[]},\"arch_too_low\":{\"text\":\"The low arch is too tight and the lantern flickers out.\",\"contradicts\":[]},\"dark_turn_back\":{\"text\":\"Explorer turns back from the dark arch.\",\"contradicts\":[]},\"library_seen\":{\"text\":\"A dim library has chalk arrows on its ladder.\",\"contradicts\":[]},\"book_riddle\":{\"text\":\"A book on the top shelf has a riddle on its spine.\",\"contradicts\":[]},\"ladder_climbed\":{\"text\":\"Explorer climbs the ladder to reach the book.\",\"contradicts\":[]},\"book_key_found\":{\"text\":\"A bronze key is hidden in a hollow book.\",\"contradicts\":[]},\"mia_steadies_ladder\":{\"text\":\"Mia holds the ladder steady below.\",\"contradicts\":[]},\"secret_shelf_moves\":{\"text\":\"A shelf slides aside to reveal a narrow door.\",\"contradicts\":[]},\"narrow_corridor\":{\"text\":\"A narrow corridor behind the shelf has fresh chalk marks.\",\"contradicts\":[]},\"dust_footprints\":{\"text\":\"Small footprints in the dust lead onward, not toward the exit.\",\"contradicts\":[]},\"lost_in_corridor\":{\"text\":\"The corridor splits and Explorer takes a dead end.\",\"contradicts\":[]},\"sunset_near\":{\"text\":\"The window light turns orange; sunset is close.\",\"contradicts\":[]},\"final_arrow_pair\":{\"text\":\"Two chalk arrows point at one low door with a three-part lock.\",\"contradicts\":[]},\"three_keys_gathered\":{\"text\":\"Explorer and Mia hold enough keys for the three-part lock.\",\"contradicts\":[]},\"lock_clicks_open\":{\"text\":\"The three-part lock clicks open.\",\"contradicts\":[]},\"bell_rings_warning\":{\"text\":\"The guide's bell rings to say the tour is ending.\",\"contradicts\":[]},\"hurry_resolve\":{\"text\":\"Explorer and Mia decide to hurry to the last door.\",\"contradicts\":[]},\"locked_out\":{\"text\":\"The last door stays locked and the guide leads the children out.\",\"contradicts\":[]},\"hidden_stair_found\":{\"text\":\"A hidden stair leads down behind the last door.\",\"contradicts\":[]},\"warm_light_seen\":{\"text\":\"Warm lamplight glows at the bottom of the hidden stair.\",\"contradicts\":[]},\"arrows_by_wren\":{\"text\":\"Great-aunt Wren, the old castle guide, drew the chalk arrows.\",\"contradicts\":[\"ghost_fear_choice\"]},\"wren_wants_kids_find_room\":{\"text\":\"Wren hid the keys in riddles so the children would earn the room.\",\"contradicts\":[]},\"music_room_holds_letters\":{\"text\":\"The hidden music room holds family letters and an old music box.\",\"contradicts\":[]},\"explorer_takes_letter\":{\"text\":\"Explorer picks up a letter addressed to both sisters.\",\"contradicts\":[]},\"mia_reads_letter\":{\"text\":\"Mia reads the letter aloud: the castle belongs to their family story.\",\"contradicts\":[]},\"music_box_played\":{\"text\":\"Explorer winds the music box and Mia hums along.\",\"contradicts\":[]},\"wren_hugs_kids\":{\"text\":\"Wren hugs both children and promises to keep the tour open.\",\"contradicts\":[]},\"map_found\":{\"text\":\"Wren gives the sisters a map of every secret room.\",\"contradicts\":[]},\"promise_return\":{\"text\":\"The sisters promise to come back and explore together.\",\"contradicts\":[]},\"sisters_share_secret\":{\"text\":\"The sisters agree to keep the secret room safe together.\",\"contradicts\":[]},\"tour_saved\":{\"text\":\"The castle tour will stay open thanks to the letters.\",\"contradicts\":[]},\"ghost_story_ends\":{\"text\":\"Explorer leaves still believing in the castle ghost.\",\"contradicts\":[]},\"mia_laughs_locked\":{\"text\":\"Mia laughs and promises to try another day.\",\"contradicts\":[]},\"half_answer\":{\"text\":\"Explorer learns the arrows were drawn by someone who knows the castle well.\",\"contradicts\":[]},\"chalk_dust_trail\":{\"text\":\"Chalk dust on a doorknob shows the artist is left-handed.\",\"contradicts\":[]},\"tour_ends_early\":{\"text\":\"The tour ends before the secret is found.\",\"contradicts\":[]},\"wren_footprints_seen\":{\"text\":\"Explorer sees a woman's shoe prints beside the chalk.\",\"contradicts\":[]},\"hidden_wren_glimpse\":{\"text\":\"Explorer glimpses a gray-haired woman with chalk on her fingers.\",\"contradicts\":[]},\"wren_waves\":{\"text\":\"The woman waves and vanishes down a side hall.\",\"contradicts\":[]}},\"nodes\":{\"N1\":{\"event\":\"Explorer and older sister Mia arrive at the old castle for its last tour.\",\"requires\":[],\"establishes\":[\"sister_mia_along\",\"tour_closing\"]},\"N2\":{\"event\":\"In a stone hall Explorer spots a fresh white chalk arrow on the wall.\",\"requires\":[\"sister_mia_along\"],\"establishes\":[\"chalk_arrow_seen\"]},\"N3\":{\"event\":\"Mia shrugs it off but Explorer wants to follow it before the tour ends.\",\"requires\":[\"chalk_arrow_seen\"],\"establishes\":[\"hero_resolve_follow\"]},\"N4\":{\"event\":\"At a crossroads of halls, arrows point several ways past locked doors with riddles.\",\"requires\":[\"chalk_arrow_seen\",\"tour_closing\"],\"establishes\":[\"keys_in_riddles\"]},\"N5\":{\"event\":\"Explorer asks a guide about the arrows and learns the guide never draws them.\",\"requires\":[\"keys_in_riddles\"],\"establishes\":[\"ask_guide_hint\"]},\"N6\":{\"event\":\"The guide points toward the kitchen where a riddle is scratched by the hearth.\",\"requires\":[\"ask_guide_hint\"],\"establishes\":[\"kitchen_riddle_read\"]},\"N7\":{\"event\":\"Soot on the hearth shows a chalky handprint.\",\"requires\":[\"kitchen_riddle_read\"],\"establishes\":[\"hearth_soot_clue\"]},\"N8\":{\"event\":\"Mia works out the riddle and finds a small iron key in the cold oven.\",\"requires\":[\"kitchen_riddle_read\"],\"establishes\":[\"oven_key_found\"]},\"N9\":{\"event\":\"The guide hints at the cellar, where narrow stairs are marked with an arrow.\",\"requires\":[\"ask_guide_hint\"],\"establishes\":[\"cellar_stairs_seen\"]},\"N10\":{\"event\":\"The cellar door sticks until Explorer shoves it open.\",\"requires\":[\"cellar_stairs_seen\"],\"establishes\":[\"cellar_door_stuck\"]},\"N11\":{\"event\":\"In the dark cellar Explorer panics and decides a ghost must be drawing the arrows.\",\"requires\":[\"cellar_stairs_seen\"],\"establishes\":[\"ghost_fear_choice\",\"ghost_story_ends\"]},\"N12\":{\"event\":\"Following an arrow, the children reach a gallery with a brass door and a riddle plate.\",\"requires\":[\"keys_in_riddles\"],\"establishes\":[\"brass_door_found\"]},\"N13\":{\"event\":\"Mia reads the riddle plate aloud and guesses it means the clock.\",\"requires\":[\"brass_door_found\"],\"establishes\":[\"mia_reads_riddle\"]},\"N14\":{\"event\":\"A portrait's painted eyes hold a riddle about looking up.\",\"requires\":[\"brass_door_found\"],\"establishes\":[\"portrait_eyes_riddle\"]},\"N15\":{\"event\":\"A hall of tall mirrors repeats the chalk arrows.\",\"requires\":[\"brass_door_found\"],\"establishes\":[\"mirror_hall_seen\"]},\"N16\":{\"event\":\"Explorer tries a wrong key in the brass lock and it will not turn.\",\"requires\":[\"mirror_hall_seen\"],\"establishes\":[\"wrong_key_tried\"]},\"N17\":{\"event\":\"The children find a brass key taped behind the gallery clock.\",\"requires\":[\"brass_door_found\"],\"establishes\":[\"clock_hides_key\"]},\"N18\":{\"event\":\"Mia hums a tune matching the riddle rhythm, which helps them open the door.\",\"requires\":[\"clock_hides_key\"],\"establishes\":[\"mia_hums_tune\"]},\"N19\":{\"event\":\"The brass door swings open onto a dusty side passage.\",\"requires\":[\"clock_hides_key\"],\"establishes\":[\"door_opens_gallery\"]},\"N20\":{\"event\":\"The side passage ends in a locked grate and the bell rings, so the tour pulls them out.\",\"requires\":[\"clock_hides_key\"],\"establishes\":[\"mia_laughs_locked\",\"tour_ends_early\"]},\"N21\":{\"event\":\"A chalk arrow leads into the armory with a helmet bearing a rhyme.\",\"requires\":[\"keys_in_riddles\"],\"establishes\":[\"armory_arrow\",\"helmet_riddle\"]},\"N22\":{\"event\":\"A silver key is tucked inside the knight's helmet.\",\"requires\":[\"helmet_riddle\"],\"establishes\":[\"helmet_key_found\"]},\"N23\":{\"event\":\"A shield on the wall hides a smudged chalk number three.\",\"requires\":[\"armory_arrow\"],\"establishes\":[\"shield_wall_hint\"]},\"N24\":{\"event\":\"The armory gate clanks shut behind Explorer.\",\"requires\":[\"armory_arrow\"],\"establishes\":[\"armory_locked_in\"]},\"N25\":{\"event\":\"Mia finds the lever that lifts the gate.\",\"requires\":[\"armory_locked_in\"],\"establishes\":[\"mia_lifts_gate\"]},\"N26\":{\"event\":\"Spiral tower stairs climb behind a tapestry of a bird holding a key.\",\"requires\":[\"keys_in_riddles\"],\"establishes\":[\"tower_stairs_seen\",\"tapestry_clue\"]},\"N27\":{\"event\":\"From the tower window the courtyard shows arrows in a loop around the well.\",\"requires\":[\"tower_stairs_seen\"],\"establishes\":[\"tower_window_view\",\"courtyard_pattern\"]},\"N28\":{\"event\":\"A rope hangs in the well with a note tied to it.\",\"requires\":[\"tower_stairs_seen\"],\"establishes\":[\"well_rope_found\"]},\"N29\":{\"event\":\"The note says it is twelve steps to the next room.\",\"requires\":[\"tower_stairs_seen\"],\"establishes\":[\"note_in_well\"]},\"N30\":{\"event\":\"The sisters count twelve steps to a hidden alcove.\",\"requires\":[\"well_rope_found\"],\"establishes\":[\"steps_counted\"]},\"N31\":{\"event\":\"The alcove is cold and has a small keyhole in the wall.\",\"requires\":[\"steps_counted\"],\"establishes\":[\"alcove_cold\"]},\"N32\":{\"event\":\"The silver key fits the alcove keyhole.\",\"requires\":[\"steps_counted\"],\"establishes\":[\"keyhole_fits_silver\"]},\"N33\":{\"event\":\"Explorer dawdles in the alcove until the tour bell rings and Mia pulls them out.\",\"requires\":[\"tower_stairs_seen\"],\"establishes\":[\"stuck_in_alcove\",\"tour_ends_early\"]},\"N34\":{\"event\":\"A small chapel has chalk arrows around its altar.\",\"requires\":[\"keys_in_riddles\"],\"establishes\":[\"chapel_seen\"]},\"N35\":{\"event\":\"A hymn book lies open to a riddle about silence.\",\"requires\":[\"chapel_seen\"],\"establishes\":[\"hymn_riddle\"]},\"N36\":{\"event\":\"A candle stub has chalk dust on its holder.\",\"requires\":[\"chapel_seen\"],\"establishes\":[\"candle_clue\"]},\"N37\":{\"event\":\"Dusty organ pipes line the wall near the altar.\",\"requires\":[\"candle_clue\"],\"establishes\":[\"organ_pipes_seen\"]},\"N38\":{\"event\":\"A key rolls out of a dusty organ pipe.\",\"requires\":[\"organ_pipes_seen\"],\"establishes\":[\"organ_pipe_key\"]},\"N39\":{\"event\":\"Mia blows a pipe and the echo seems to come from the north wall.\",\"requires\":[\"organ_pipes_seen\"],\"establishes\":[\"mia_blows_pipe\",\"echo_points_north\"]},\"N40\":{\"event\":\"Behind the pipes Explorer finds a chalk-marked panel and learns the artist knows the castle well.\",\"requires\":[\"organ_pipes_seen\"],\"establishes\":[\"half_answer\"]},\"N41\":{\"event\":\"A chalk arrow points toward a low arch of old stone.\",\"requires\":[\"keys_in_riddles\"],\"establishes\":[\"crypt_arrow\"]},\"N42\":{\"event\":\"The low arch is tight and the lantern flickers.\",\"requires\":[\"crypt_arrow\"],\"establishes\":[\"arch_too_low\"]},\"N43\":{\"event\":\"A dim library lies beyond with arrows on its ladder.\",\"requires\":[\"crypt_arrow\"],\"establishes\":[\"library_seen\"]},\"N44\":{\"event\":\"A book on the top shelf has a riddle on its spine.\",\"requires\":[\"library_seen\"],\"establishes\":[\"book_riddle\"]},\"N45\":{\"event\":\"Explorer climbs the ladder while Mia steadies it.\",\"requires\":[\"book_riddle\"],\"establishes\":[\"ladder_climbed\",\"mia_steadies_ladder\"]},\"N46\":{\"event\":\"A bronze key is hidden in a hollow book.\",\"requires\":[\"library_seen\"],\"establishes\":[\"book_key_found\"]},\"N47\":{\"event\":\"A shelf slides aside to reveal a narrow door.\",\"requires\":[\"library_seen\"],\"establishes\":[\"secret_shelf_moves\"]},\"N48\":{\"event\":\"Explorer takes a wrong turn in the corridor and is led back out by Mia.\",\"requires\":[\"book_riddle\"],\"establishes\":[\"lost_in_corridor\",\"tour_ends_early\"]},\"N49\":{\"event\":\"At the corridor's end Explorer sees a woman with chalk on her fingers who waves and slips away.\",\"requires\":[\"library_seen\"],\"establishes\":[\"hidden_wren_glimpse\",\"wren_waves\"]},\"N50\":{\"event\":\"Two chalk arrows point at one low door with a three-part lock.\",\"requires\":[\"keys_in_riddles\"],\"establishes\":[\"final_arrow_pair\"]},\"N51\":{\"event\":\"The guide's bell rings to say the tour is ending.\",\"requires\":[\"final_arrow_pair\"],\"establishes\":[\"bell_rings_warning\"]},\"N52\":{\"event\":\"Explorer and Mia gather the keys they have and decide to hurry.\",\"requires\":[\"final_arrow_pair\"],\"establishes\":[\"three_keys_gathered\",\"hurry_resolve\"]},\"N53\":{\"event\":\"Light through the window turns orange as sunset nears.\",\"requires\":[\"three_keys_gathered\"],\"establishes\":[\"sunset_near\"]},\"N54\":{\"event\":\"The three-part lock clicks open.\",\"requires\":[\"three_keys_gathered\"],\"establishes\":[\"lock_clicks_open\"]},\"N55\":{\"event\":\"Behind the door a stair leads down to lamplight where Wren waits and explains everything.\",\"requires\":[\"lock_clicks_open\"],\"establishes\":[\"hidden_stair_found\",\"warm_light_seen\",\"arrows_by_wren\",\"wren_wants_kids_find_room\",\"music_room_holds_letters\"]},\"N56\":{\"event\":\"The door stays shut and the guide leads the children out as the castle closes.\",\"requires\":[\"three_keys_gathered\"],\"establishes\":[\"locked_out\"]},\"N57\":{\"event\":\"Wren shows the sisters shelves of family letters in the music room.\",\"requires\":[\"music_room_holds_letters\"],\"establishes\":[\"letters_shelf_seen\"]},\"N58\":{\"event\":\"Explorer picks up a letter addressed to both sisters.\",\"requires\":[\"letters_shelf_seen\"],\"establishes\":[\"explorer_takes_letter\"]},\"N59\":{\"event\":\"Mia reads another letter aloud about the castle family story.\",\"requires\":[\"letters_shelf_seen\"],\"establishes\":[\"mia_reads_letter\"]},\"N60\":{\"event\":\"Wren winds an old music box and shows the sisters its tune.\",\"requires\":[\"music_room_holds_letters\"],\"establishes\":[\"music_box_seen\"]},\"N61\":{\"event\":\"Explorer winds the box while Mia hums along.\",\"requires\":[\"music_box_seen\"],\"establishes\":[\"music_box_played\"]},\"N62\":{\"event\":\"Wren hugs both children and promises the tour will stay open.\",\"requires\":[\"music_box_seen\"],\"establishes\":[\"wren_hugs_kids\"]},\"N63\":{\"event\":\"Wren unrolls a map of all the castle's secret rooms.\",\"requires\":[\"music_room_holds_letters\"],\"establishes\":[\"map_found\"]},\"N64\":{\"event\":\"The sisters promise to come back and explore together.\",\"requires\":[\"map_found\"],\"establishes\":[\"promise_return\"]},\"N65\":{\"event\":\"The sisters agree to keep the room safe together.\",\"requires\":[\"map_found\"],\"establishes\":[\"sisters_share_secret\"]},\"N66\":{\"event\":\"Explorer and Mia read the letter together as Wren smiles; the mystery is solved.\",\"requires\":[\"explorer_takes_letter\",\"arrows_by_wren\"],\"establishes\":[\"tour_saved\"]},\"N67\":{\"event\":\"Mia finishes reading and the sisters laugh together over the secret.\",\"requires\":[\"mia_reads_letter\",\"arrows_by_wren\"],\"establishes\":[\"tour_saved_with_laugh\"]},\"N68\":{\"event\":\"The music box plays and the sisters sit side by side, content.\",\"requires\":[\"music_box_played\",\"arrows_by_wren\"],\"establishes\":[\"quiet_ending_content\"]},\"N69\":{\"event\":\"Wren walks the sisters out arm in arm as the castle lamps glow.\",\"requires\":[\"wren_hugs_kids\",\"arrows_by_wren\"],\"establishes\":[\"walk_out_arm_in_arm\"]},\"N70\":{\"event\":\"The sisters step out into evening with the map, already planning the next visit.\",\"requires\":[\"promise_return\",\"arrows_by_wren\"],\"establishes\":[\"planning_next_visit\"]},\"N71\":{\"event\":\"The sisters lock the room with Wren's blessing and share a secret grin.\",\"requires\":[\"sisters_share_secret\",\"arrows_by_wren\"],\"establishes\":[\"secret_room_locked\"]}},\"choices\":{\"C1\":{\"intent\":\"step further into the hall\",\"cost\":\"leaves the entrance unexplored\"},\"C2\":{\"intent\":\"follow the arrow with Mia\",\"cost\":\"skips the tour guide's opening talk\"},\"C3\":{\"intent\":\"head for the crossroads of halls\",\"cost\":\"leaves the first hall behind\"},\"C4\":{\"intent\":\"ask the guide about the arrows\",\"cost\":\"gives up following arrows yourself right now\"},\"C5\":{\"intent\":\"follow arrows to the gallery\",\"cost\":\"leaves the guide unasked\"},\"C6\":{\"intent\":\"take the arrow into the armory\",\"cost\":\"skips the gallery and chapel\"},\"C7\":{\"intent\":\"climb the tower stairs\",\"cost\":\"leaves the lower halls behind\"},\"C8\":{\"intent\":\"investigate the chapel\",\"cost\":\"leaves the tower stairs unclimbed\"},\"C9\":{\"intent\":\"head toward the low stone arch\",\"cost\":\"gives up the chapel's quiet\"},\"C10\":{\"intent\":\"rush straight to the arrow pair door\",\"cost\":\"skips every riddle on the way\"},\"C11\":{\"intent\":\"go to the kitchen the guide mentioned\",\"cost\":\"leaves the cellar stairs alone\"},\"C12\":{\"intent\":\"try the cellar the guide hinted at\",\"cost\":\"leaves the kitchen riddle unread\"},\"C13\":{\"intent\":\"look closely at the hearth soot\",\"cost\":\"leaves the cold oven unchecked\"},\"C14\":{\"intent\":\"solve the riddle and check the oven\",\"cost\":\"leaves the soot unstudied\"},\"C15\":{\"intent\":\"go back to the crossroads with the handprint clue\",\"cost\":\"skips the quick route to the arrow pair\"},\"C16\":{\"intent\":\"run to the arrow pair door\",\"cost\":\"leaves the crossroads' other halls unvisited\"},\"C17\":{\"intent\":\"return to the crossroads with the iron key\",\"cost\":\"gives up heading straight on\"},\"C18\":{\"intent\":\"take the iron key to the arrow pair door\",\"cost\":\"skips more clues at the crossroads\"},\"C19\":{\"intent\":\"push the stuck cellar door\",\"cost\":\"gives up the safe way back at once\"},\"C20\":{\"intent\":\"go down in the dark alone\",\"cost\":\"leaves Mia and the lantern behind\"},\"C21\":{\"intent\":\"retreat upstairs to the crossroads\",\"cost\":\"leaves the cellar's secrets unexplored\"},\"C22\":{\"intent\":\"follow the cellar arrow to the final door\",\"cost\":\"skips the crossroads halls\"},\"C23\":{\"intent\":\"study the portrait's eyes\",\"cost\":\"leaves the mirrors unseen\"},\"C24\":{\"intent\":\"walk into the hall of mirrors\",\"cost\":\"leaves the portrait unstudied\"},\"C25\":{\"intent\":\"let Mia read the riddle plate\",\"cost\":\"gives up trying your own guess\"},\"C26\":{\"intent\":\"go for the clock Mia guessed\",\"cost\":\"leaves the gallery's other riddles\"},\"C27\":{\"intent\":\"follow the portrait's hint to the clock\",\"cost\":\"gives up searching the walls\"},\"C28\":{\"intent\":\"return to the crossroads\",\"cost\":\"gives up the gallery clue\"},\"C29\":{\"intent\":\"check the mirrors' reflections for the clock\",\"cost\":\"skips trying keys right away\"},\"C30\":{\"intent\":\"try a spare key on the brass lock\",\"cost\":\"gives up searching more mirrors\"},\"C31\":{\"intent\":\"give up the lock and look for the clock\",\"cost\":\"abandons the key you tried\"},\"C32\":{\"intent\":\"retreat to the crossroads\",\"cost\":\"leaves the gallery door locked\"},\"C33\":{\"intent\":\"hum Mia's tune to open the way\",\"cost\":\"leaves the lock unforced\"},\"C34\":{\"intent\":\"turn the brass key directly\",\"cost\":\"leaves Mia's tune unused\"},\"C35\":{\"intent\":\"slip down the side grate\",\"cost\":\"leaves the open door behind you\"},\"C36\":{\"intent\":\"hurry on to the final door\",\"cost\":\"gives up checking the passage\"},\"C37\":{\"intent\":\"return to the crossroads\",\"cost\":\"leaves the tune's secret unfollowed\"},\"C38\":{\"intent\":\"take the passage to the final door\",\"cost\":\"skips looking in side rooms\"},\"C39\":{\"intent\":\"go back to the crossroads\",\"cost\":\"leaves the passage unexplored\"},\"C40\":{\"intent\":\"search the helmet for a key\",\"cost\":\"leaves the shield wall unchecked\"},\"C41\":{\"intent\":\"inspect the shield on the wall\",\"cost\":\"leaves the helmet unsearched\"},\"C42\":{\"intent\":\"step further into the armory\",\"cost\":\"leaves both clues unfollowed\"},\"C43\":{\"intent\":\"take the silver key to the final door\",\"cost\":\"skips the rest of the armory\"},\"C44\":{\"intent\":\"go back with the silver key\",\"cost\":\"gives up the final door for now\"},\"C45\":{\"intent\":\"follow the number three deeper in\",\"cost\":\"gives up leaving the armory\"},\"C46\":{\"intent\":\"walk back to the crossroads\",\"cost\":\"leaves the shield's number unused\"},\"C47\":{\"intent\":\"push past the gate to the final door\",\"cost\":\"gives up finding the lever yourself\"},\"C48\":{\"intent\":\"call for Mia to find the lever\",\"cost\":\"waits while time slips away\"},\"C49\":{\"intent\":\"retreat to the crossroads\",\"cost\":\"leaves the armory gate shut\"},\"C50\":{\"intent\":\"go to the final door with Mia\",\"cost\":\"skips the crossroads\"},\"C51\":{\"intent\":\"return to the crossroads with Mia\",\"cost\":\"leaves the armory behind\"},\"C52\":{\"intent\":\"climb to the tower window\",\"cost\":\"leaves the well unexamined\"},\"C53\":{\"intent\":\"head to the well in the courtyard\",\"cost\":\"skips the tower view\"},\"C54\":{\"intent\":\"read the note from the tower view\",\"cost\":\"leaves the well rope untouched\"},\"C55\":{\"intent\":\"climb down to the well\",\"cost\":\"gives up the high view\"},\"C56\":{\"intent\":\"linger by the tower window\",\"cost\":\"loses time to the tour bell\"},\"C57\":{\"intent\":\"read the note tied to the rope\",\"cost\":\"leaves the well's depths unchecked\"},\"C58\":{\"intent\":\"count steps toward the alcove\",\"cost\":\"leaves the note unread\"},\"C59\":{\"intent\":\"go to the final door with the note's clue\",\"cost\":\"skips the crossroads\"},\"C60\":{\"intent\":\"go back to the crossroads\",\"cost\":\"leaves the note's steps uncounted\"},\"C61\":{\"intent\":\"examine the cold alcove\",\"cost\":\"leaves the keys untried\"},\"C62\":{\"intent\":\"try the silver key in the keyhole\",\"cost\":\"leaves the alcove unexamined\"},\"C63\":{\"intent\":\"take the alcove's clue to the final door\",\"cost\":\"gives up the crossroads\"},\"C64\":{\"intent\":\"retreat to the crossroads\",\"cost\":\"leaves the alcove unopened\"},\"C65\":{\"intent\":\"follow the silver key's passage to the chapel\",\"cost\":\"leaves the alcove behind\"},\"C66\":{\"intent\":\"give up and return to the crossroads\",\"cost\":\"gives up the silver key's door\"},\"C67\":{\"intent\":\"inspect the altar candles\",\"cost\":\"leaves the hymn book closed\"},\"C68\":{\"intent\":\"open the hymn book\",\"cost\":\"leaves the candles unexamined\"},\"C69\":{\"intent\":\"follow the hymn's hint to the candles\",\"cost\":\"gives up the book's other pages\"},\"C70\":{\"intent\":\"leave the chapel for the crossroads\",\"cost\":\"leaves the hymn riddle unsolved\"},\"C71\":{\"intent\":\"look toward the organ along the wall\",\"cost\":\"leaves the altar behind\"},\"C72\":{\"intent\":\"blow into the organ pipes with Mia\",\"cost\":\"leaves the lower pipes unchecked\"},\"C73\":{\"intent\":\"shake the dusty pipes for a key\",\"cost\":\"leaves the sound unheard\"},\"C74\":{\"intent\":\"press the chalk-marked panel\",\"cost\":\"leaves the pipes unplayed\"},\"C75\":{\"intent\":\"carry the pipe key to the north wall\",\"cost\":\"gives up searching more pipes\"},\"C76\":{\"intent\":\"go back to the crossroads\",\"cost\":\"leaves the pipe key behind\"},\"C77\":{\"intent\":\"take the echo to the final door\",\"cost\":\"skips the crossroads\"},\"C78\":{\"intent\":\"return to the crossroads\",\"cost\":\"leaves the north wall unopened\"},\"C79\":{\"intent\":\"duck under the low arch\",\"cost\":\"leaves the lantern's light thin\"},\"C80\":{\"intent\":\"hold the lantern high and look first\",\"cost\":\"waits while the light shakes\"},\"C81\":{\"intent\":\"push on past the flicker\",\"cost\":\"risks the lantern going out\"},\"C82\":{\"intent\":\"turn back to the crossroads\",\"cost\":\"gives up the arch for now\"},\"C83\":{\"intent\":\"climb the library ladder\",\"cost\":\"leaves the shelves unsearched\"},\"C84\":{\"intent\":\"search the hollow books\",\"cost\":\"leaves the ladder unclimbed\"},\"C85\":{\"intent\":\"feel along the shelves for a catch\",\"cost\":\"leaves the books unopened\"},\"C86\":{\"intent\":\"read the spine riddle with Mia\",\"cost\":\"skips shaking the shelves\"},\"C87\":{\"intent\":\"rush down the corridor ignoring the riddle\",\"cost\":\"leaves the riddle unread\"},\"C88\":{\"intent\":\"take the book's clue to the final door\",\"cost\":\"skips the crossroads\"},\"C89\":{\"intent\":\"go back to the crossroads\",\"cost\":\"leaves the book's clue unused\"},\"C90\":{\"intent\":\"go to the final door with the bronze key\",\"cost\":\"leaves the other shelves unsearched\"},\"C91\":{\"intent\":\"follow the faint footprints\",\"cost\":\"gives up the bronze key's door\"},\"C92\":{\"intent\":\"return to the crossroads\",\"cost\":\"leaves the bronze key unused\"},\"C93\":{\"intent\":\"slip through the narrow door to the final door\",\"cost\":\"skips the library\"},\"C94\":{\"intent\":\"go back to the crossroads\",\"cost\":\"leaves the narrow door unopened\"},\"C95\":{\"intent\":\"try the three-part lock now\",\"cost\":\"ignores the ringing bell\"},\"C96\":{\"intent\":\"check on the guide's bell first\",\"cost\":\"loses a moment before the lock\"},\"C97\":{\"intent\":\"hurry back to the lock\",\"cost\":\"leaves the guide waiting\"},\"C98\":{\"intent\":\"retreat to the crossroads\",\"cost\":\"gives up the final door\"},\"C99\":{\"intent\":\"use every key you hold\",\"cost\":\"leaves the sunset unwatched\"},\"C100\":{\"intent\":\"glance at the setting sun\",\"cost\":\"burns a few of the last minutes\"},\"C101\":{\"intent\":\"stop watching and try the lock\",\"cost\":\"gives up the view\"},\"C102\":{\"intent\":\"give up and walk out with the guide\",\"cost\":\"lets the last tour close\"},\"C103\":{\"intent\":\"step down the opened stair\",\"cost\":\"leaves the mystery door behind\"},\"C104\":{\"intent\":\"read the family letters with Wren\",\"cost\":\"leaves the music box and map for now\"},\"C105\":{\"intent\":\"play the music box with Wren\",\"cost\":\"leaves the letters and map for now\"},\"C106\":{\"intent\":\"study the map of secret rooms\",\"cost\":\"leaves the letters and box for now\"},\"C107\":{\"intent\":\"read the letter addressed to you both\",\"cost\":\"leaves the other letters unread\"},\"C108\":{\"intent\":\"let Mia read a letter aloud\",\"cost\":\"leaves the sisters' own letter unread\"},\"C109\":{\"intent\":\"keep the letter close\",\"cost\":\"gives up another round of reading\"},\"C110\":{\"intent\":\"laugh over the letter together\",\"cost\":\"gives up a quiet moment alone\"},\"C111\":{\"intent\":\"wind the music box yourself\",\"cost\":\"leaves Wren to wind it\"},\"C112\":{\"intent\":\"let Wren tell the music box's story\",\"cost\":\"leaves the winding to Wren\"},\"C113\":{\"intent\":\"sit and listen with Mia\",\"cost\":\"gives up exploring more\"},\"C114\":{\"intent\":\"accept Wren's hug and promise\",\"cost\":\"leaves the music box unwound\"},\"C115\":{\"intent\":\"plan the next visit with Mia\",\"cost\":\"leaves the secret unprotected for now\"},\"C116\":{\"intent\":\"promise to guard the secret room\",\"cost\":\"leaves the next visit unplanned\"},\"C117\":{\"intent\":\"head out into the evening with the map\",\"cost\":\"gives up staying in the room\"},\"C118\":{\"intent\":\"lock the room with Wren's blessing\",\"cost\":\"gives up taking the map out\"}},\"threads\":{},\"endings\":{\"N11\":{\"gift\":\"Reason to try again: the ghost was a guess, and a braver look may find the truth.\"},\"N20\":{\"gift\":\"A laugh with Mia and a reason to find the real way next time.\"},\"N33\":{\"gift\":\"A gentle nudge to try again and not linger in the alcove.\"},\"N40\":{\"gift\":\"A reveal that a real hand draws the arrows, a clue for the next try.\"},\"N48\":{\"gift\":\"A laugh at the wrong turn and a reason to read the riddle properly.\"},\"N49\":{\"gift\":\"A glimpse of the chalk artist, who waves, so you must come back.\"},\"N56\":{\"gift\":\"A reason to return before sunset with the keys ready.\"},\"N66\":{\"gift\":\"A warm reveal that Wren drew the arrows, shared with your sister.\"},\"N67\":{\"gift\":\"A shared laugh and the cozy truth about the arrows.\"},\"N68\":{\"gift\":\"A quiet music-box tune and a secret solved side by side.\"},\"N69\":{\"gift\":\"A hug from Wren and a tour saved for good.\"},\"N70\":{\"gift\":\"A map in hand and a promise of more adventures with Mia.\"},\"N71\":{\"gift\":\"A secret room kept safe together as sisters.\"}}}"
+  },
+  {
+   "attempt": 2,
+   "loaded": true,
+   "dropped_keys": [],
+   "ok": false,
+   "errors_by_rule": {
+    "SP-9": 1
+   },
+   "warnings_by_rule": {
+    "SP-3": 1,
+    "SP-D": 5
+   },
+   "findings": [
+    {
+     "rule_id": "SP-3",
+     "severity": "warning",
+     "story_id": "sk_locked_carousel",
+     "node_id": "e_set_doze",
+     "choice_id": null,
+     "message": "failure fact 'ghost_fear_choice' (at e_set_doze) and 'arrows_by_wren' (at fin_drawings) sit on routes no single reading crosses, and every route establishing 'ghost_fear_choice' ends in a negative or neutral ending: a failed route marked against the truth, which convention 1 asks for, so keep the mark (advisory)",
+     "state": null,
+     "fact_id": "ghost_fear_choice",
+     "route": null
+    },
+    {
+     "rule_id": "SP-9",
+     "severity": "error",
+     "story_id": "sk_locked_carousel",
+     "node_id": null,
+     "choice_id": null,
+     "message": "facts.lost_in_corridor.text: matches a band-mandatory denylist term in bundle 'lethal'",
+     "state": null,
+     "fact_id": "lost_in_corridor",
+     "route": null
+    },
+    {
+     "rule_id": "SP-D",
+     "severity": "warning",
+     "story_id": "sk_locked_carousel",
+     "node_id": null,
+     "choice_id": null,
+     "message": "fact 'dark_turn_back' is in the ledger but no passage or choice requires or establishes it and no thread plants it",
+     "state": null,
+     "fact_id": "dark_turn_back",
+     "route": null
+    },
+    {
+     "rule_id": "SP-D",
+     "severity": "warning",
+     "story_id": "sk_locked_carousel",
+     "node_id": null,
+     "choice_id": null,
+     "message": "fact 'narrow_corridor' is in the ledger but no passage or choice requires or establishes it and no thread plants it",
+     "state": null,
+     "fact_id": "narrow_corridor",
+     "route": null
+    },
+    {
+     "rule_id": "SP-D",
+     "severity": "warning",
+     "story_id": "sk_locked_carousel",
+     "node_id": null,
+     "choice_id": null,
+     "message": "fact 'dust_footprints' is in the ledger but no passage or choice requires or establishes it and no thread plants it",
+     "state": null,
+     "fact_id": "dust_footprints",
+     "route": null
+    },
+    {
+     "rule_id": "SP-D",
+     "severity": "warning",
+     "story_id": "sk_locked_carousel",
+     "node_id": null,
+     "choice_id": null,
+     "message": "fact 'chalk_dust_trail' is in the ledger but no passage or choice requires or establishes it and no thread plants it",
+     "state": null,
+     "fact_id": "chalk_dust_trail",
+     "route": null
+    },
+    {
+     "rule_id": "SP-D",
+     "severity": "warning",
+     "story_id": "sk_locked_carousel",
+     "node_id": null,
+     "choice_id": null,
+     "message": "fact 'wren_footprints_seen' is in the ledger but no passage or choice requires or establishes it and no thread plants it",
+     "state": null,
+     "fact_id": "wren_footprints_seen",
+     "route": null
+    }
+   ]
+  },
+  {
+   "attempt": 3,
+   "loaded": true,
+   "dropped_keys": [],
+   "ok": true,
+   "errors_by_rule": {},
+   "warnings_by_rule": {
+    "SP-3": 1
+   },
+   "findings": [
+    {
+     "rule_id": "SP-3",
+     "severity": "warning",
+     "story_id": "sk_locked_carousel",
+     "node_id": "e_set_doze",
+     "choice_id": null,
+     "message": "failure fact 'ghost_fear_choice' (at e_set_doze) and 'arrows_by_wren' (at fin_drawings) sit on routes no single reading crosses, and every route establishing 'ghost_fear_choice' ends in a negative or neutral ending: a failed route marked against the truth, which convention 1 asks for, so keep the mark (advisory)",
+     "state": null,
+     "fact_id": "ghost_fear_choice",
+     "route": null
+    }
+   ]
+  }
+ ],
+ "replay_consistent": true,
+ "final_checks": {
+  "ok": true,
+  "findings": [
+   {
+    "rule_id": "SP-3",
+    "severity": "warning",
+    "story_id": "sk_locked_carousel",
+    "node_id": "e_set_doze",
+    "choice_id": null,
+    "message": "failure fact 'ghost_fear_choice' (at e_set_doze) and 'arrows_by_wren' (at fin_drawings) sit on routes no single reading crosses, and every route establishing 'ghost_fear_choice' ends in a negative or neutral ending: a failed route marked against the truth, which convention 1 asks for, so keep the mark (advisory)",
+    "state": null,
+    "fact_id": "ghost_fear_choice",
+    "route": null
+   }
+  ]
+ },
+ "load_errors": [],
+ "plan": {
+  "plan_version": "0.1",
+  "book": null,
+  "request": {
+   "text": "me and my sister solving a mystery in an old castle",
+   "band": "8-11",
+   "length": "short",
+   "style": "prose",
+   "tone": null,
+   "note": null
+  },
+  "pitch": {
+   "hero": "Explorer, a curious 8-year-old adventurer, and their older sister",
+   "want": "To find out who keeps leaving chalk arrows on the walls of the old castle",
+   "obstacle": "The arrows lead through a maze of locked rooms, and the only keys are hidden in riddles",
+   "stake": "The castle's last tour closes for good and the secret stays buried forever",
+   "ending_kind": "a warm discovery shared with a sister"
+  },
+  "cast": {
+   "explorer": {
+    "name": "Explorer",
+    "role": "curious 8-year-old adventurer, the hero",
+    "want": "Find out who leaves chalk arrows in the old castle",
+    "voice": "eager and wondering",
+    "knows": [
+     "chalk_arrow_seen",
+     "tour_closing"
+    ]
+   },
+   "mia": {
+    "name": "Mia",
+    "role": "Explorer's older sister and partner",
+    "want": "Keep Explorer safe and solve the riddles together",
+    "voice": "calm, dry, quietly funny",
+    "knows": [
+     "sister_mia_along"
+    ]
+   },
+   "wren": {
+    "name": "Aunt Wren",
+    "role": "retired castle guide who draws the arrows",
+    "want": "Have the children find the hidden music room",
+    "voice": "soft and playful",
+    "knows": [
+     "arrows_by_wren",
+     "music_room_holds_letters",
+     "wren_wants_kids_find_room"
+    ]
+   }
+  },
+  "truth": {
+   "statement": "Great-aunt Wren, the old castle guide, drew the chalk arrows and hid the keys in riddles so Explorer and Mia would find the hidden music room full of family letters.",
+   "facts": [
+    "arrows_by_wren",
+    "wren_wants_kids_find_room",
+    "music_room_holds_letters"
+   ],
+   "question": "Who keeps leaving chalk arrows on the castle walls?"
+  },
+  "facts": {
+   "sister_mia_along": {
+    "text": "Explorer's older sister Mia comes along on the castle tour.",
+    "contradicts": [],
+    "implicit_plant": null
+   },
+   "chalk_arrow_seen": {
+    "text": "Explorer spots a fresh white chalk arrow on a castle wall.",
+    "contradicts": [],
+    "implicit_plant": null
+   },
+   "tour_closing": {
+    "text": "The castle's last tour closes for good at sunset.",
+    "contradicts": [],
+    "implicit_plant": null
+   },
+   "hero_resolve_follow": {
+    "text": "Explorer decides to follow the arrow before the tour ends.",
+    "contradicts": [],
+    "implicit_plant": null
+   },
+   "keys_in_riddles": {
+    "text": "The arrows lead past locked rooms whose keys are hidden in riddles.",
+    "contradicts": [],
+    "implicit_plant": null
+   },
+   "ask_guide_hint": {
+    "text": "Explorer asks about the arrows and learns the guide never draws them.",
+    "contradicts": [],
+    "implicit_plant": null
+   },
+   "kitchen_riddle_read": {
+    "text": "A riddle about bread and fire is scratched by the kitchen hearth.",
+    "contradicts": [],
+    "implicit_plant": null
+   },
+   "hearth_soot_clue": {
+    "text": "Soot on the hearth has a small chalky handprint in it.",
+    "contradicts": [],
+    "implicit_plant": null
+   },
+   "oven_key_found": {
+    "text": "A small iron key sits inside the cold bread oven.",
+    "contradicts": [],
+    "implicit_plant": null
+   },
+   "cellar_stairs_seen": {
+    "text": "Narrow cellar stairs are marked by a chalk arrow.",
+    "contradicts": [],
+    "implicit_plant": null
+   },
+   "cellar_door_stuck": {
+    "text": "The cellar door is stuck and gives way only with a shove.",
+    "contradicts": [],
+    "implicit_plant": null
+   },
+   "ghost_fear_choice": {
+    "text": "Explorer decides the arrows must be drawn by a castle ghost.",
+    "contradicts": [
+     "arrows_by_wren"
+    ],
+    "implicit_plant": null
+   },
+   "brass_door_found": {
+    "text": "A brass-handled door with a riddle plate stands in the gallery.",
+    "contradicts": [],
+    "implicit_plant": null
+   },
+   "portrait_eyes_riddle": {
+    "text": "A portrait's painted eyes hold a riddle about looking up.",
+    "contradicts": [],
+    "implicit_plant": null
+   },
+   "mia_reads_riddle": {
+    "text": "Mia reads the riddle aloud and guesses it means the clock.",
+    "contradicts": [],
+    "implicit_plant": null
+   },
+   "clock_hides_key": {
+    "text": "A brass key is taped behind the gallery clock.",
+    "contradicts": [],
+    "implicit_plant": null
+   },
+   "mirror_hall_seen": {
+    "text": "A hall of tall mirrors repeats the chalk arrows.",
+    "contradicts": [],
+    "implicit_plant": null
+   },
+   "wrong_key_tried": {
+    "text": "A wrong key fails in the brass door lock.",
+    "contradicts": [],
+    "implicit_plant": null
+   },
+   "mia_hums_tune": {
+    "text": "Mia hums a tune that matches the riddle's rhythm.",
+    "contradicts": [],
+    "implicit_plant": null
+   },
+   "door_opens_gallery": {
+    "text": "The brass door swings open onto a dusty side passage.",
+    "contradicts": [],
+    "implicit_plant": null
+   },
+   "armory_arrow": {
+    "text": "A chalk arrow points through the armory.",
+    "contradicts": [],
+    "implicit_plant": null
+   },
+   "helmet_riddle": {
+    "text": "A knight's helmet holds a rhyme about a hollow head.",
+    "contradicts": [],
+    "implicit_plant": null
+   },
+   "helmet_key_found": {
+    "text": "A silver key is tucked inside the knight's helmet.",
+    "contradicts": [],
+    "implicit_plant": null
+   },
+   "shield_wall_hint": {
+    "text": "A shield on the wall hides a smudged chalk number three.",
+    "contradicts": [],
+    "implicit_plant": null
+   },
+   "armory_locked_in": {
+    "text": "The armory gate clanks shut and Explorer must wait for Mia.",
+    "contradicts": [],
+    "implicit_plant": null
+   },
+   "mia_lifts_gate": {
+    "text": "Mia finds the lever that lifts the armory gate.",
+    "contradicts": [],
+    "implicit_plant": null
+   },
+   "tower_stairs_seen": {
+    "text": "Spiral tower stairs climb behind a tapestry.",
+    "contradicts": [],
+    "implicit_plant": null
+   },
+   "tapestry_clue": {
+    "text": "The tapestry shows a bird holding a tiny key.",
+    "contradicts": [],
+    "implicit_plant": null
+   },
+   "tower_window_view": {
+    "text": "From the tower window the courtyard shows a chalk arrow pattern.",
+    "contradicts": [],
+    "implicit_plant": null
+   },
+   "courtyard_pattern": {
+    "text": "Arrows in the courtyard form a loop around the well.",
+    "contradicts": [],
+    "implicit_plant": null
+   },
+   "well_rope_found": {
+    "text": "A rope hangs in the well with a note tied to it.",
+    "contradicts": [],
+    "implicit_plant": null
+   },
+   "note_in_well": {
+    "text": "The note says the number of steps to the next room is twelve.",
+    "contradicts": [],
+    "implicit_plant": null
+   },
+   "steps_counted": {
+    "text": "Explorer and Mia count twelve steps to a hidden alcove.",
+    "contradicts": [],
+    "implicit_plant": null
+   },
+   "alcove_cold": {
+    "text": "The alcove is cold and has a small keyhole in the wall.",
+    "contradicts": [],
+    "implicit_plant": null
+   },
+   "keyhole_fits_silver": {
+    "text": "The silver key fits the alcove keyhole.",
+    "contradicts": [],
+    "implicit_plant": null
+   },
+   "stuck_in_alcove": {
+    "text": "Explorer wastes time in the alcove and the tour bell rings.",
+    "contradicts": [],
+    "implicit_plant": null
+   },
+   "chapel_seen": {
+    "text": "A small chapel has chalk arrows around its altar.",
+    "contradicts": [],
+    "implicit_plant": null
+   },
+   "hymn_riddle": {
+    "text": "A hymn book is open to a riddle about silence.",
+    "contradicts": [],
+    "implicit_plant": null
+   },
+   "candle_clue": {
+    "text": "A candle stub has chalk dust on its holder.",
+    "contradicts": [],
+    "implicit_plant": null
+   },
+   "organ_pipes_seen": {
+    "text": "Dusty organ pipes line the chapel wall near the altar.",
+    "contradicts": [],
+    "implicit_plant": null
+   },
+   "organ_pipe_key": {
+    "text": "A key rolls out of a dusty organ pipe.",
+    "contradicts": [],
+    "implicit_plant": null
+   },
+   "mia_blows_pipe": {
+    "text": "Mia blows a pipe and a note echoes through the wall.",
+    "contradicts": [],
+    "implicit_plant": null
+   },
+   "echo_points_north": {
+    "text": "The echo seems to come from the north wall.",
+    "contradicts": [],
+    "implicit_plant": null
+   },
+   "crypt_arrow": {
+    "text": "A chalk arrow points toward a low arch of old stone.",
+    "contradicts": [],
+    "implicit_plant": null
+   },
+   "arch_too_low": {
+    "text": "The low arch is too tight and the lantern flickers out.",
+    "contradicts": [],
+    "implicit_plant": null
+   },
+   "dark_turn_back": {
+    "text": "Explorer turns back from the dark arch.",
+    "contradicts": [],
+    "implicit_plant": null
+   },
+   "library_seen": {
+    "text": "A dim library has chalk arrows on its ladder.",
+    "contradicts": [],
+    "implicit_plant": null
+   },
+   "book_riddle": {
+    "text": "A book on the top shelf has a riddle on its spine.",
+    "contradicts": [],
+    "implicit_plant": null
+   },
+   "ladder_climbed": {
+    "text": "Explorer climbs the ladder to reach the book.",
+    "contradicts": [],
+    "implicit_plant": null
+   },
+   "book_key_found": {
+    "text": "A bronze key is hidden in a hollow book.",
+    "contradicts": [],
+    "implicit_plant": null
+   },
+   "mia_steadies_ladder": {
+    "text": "Mia holds the ladder steady below.",
+    "contradicts": [],
+    "implicit_plant": null
+   },
+   "secret_shelf_moves": {
+    "text": "A shelf slides aside to reveal a narrow door.",
+    "contradicts": [],
+    "implicit_plant": null
+   },
+   "narrow_corridor": {
+    "text": "A narrow corridor behind the shelf has fresh chalk marks.",
+    "contradicts": [],
+    "implicit_plant": null
+   },
+   "dust_footprints": {
+    "text": "Small footprints in the dust lead onward, not toward the exit.",
+    "contradicts": [],
+    "implicit_plant": null
+   },
+   "lost_in_corridor": {
+    "text": "The corridor splits and Explorer takes a wrong turn.",
+    "contradicts": [],
+    "implicit_plant": null
+   },
+   "sunset_near": {
+    "text": "The window light turns orange; sunset is close.",
+    "contradicts": [],
+    "implicit_plant": null
+   },
+   "final_arrow_pair": {
+    "text": "Two chalk arrows point at one low door with a three-part lock.",
+    "contradicts": [],
+    "implicit_plant": null
+   },
+   "three_keys_gathered": {
+    "text": "Explorer and Mia hold enough keys for the three-part lock.",
+    "contradicts": [],
+    "implicit_plant": null
+   },
+   "lock_clicks_open": {
+    "text": "The three-part lock clicks open.",
+    "contradicts": [],
+    "implicit_plant": null
+   },
+   "bell_rings_warning": {
+    "text": "The guide's bell rings to say the tour is ending.",
+    "contradicts": [],
+    "implicit_plant": null
+   },
+   "hurry_resolve": {
+    "text": "Explorer and Mia decide to hurry to the last door.",
+    "contradicts": [],
+    "implicit_plant": null
+   },
+   "locked_out": {
+    "text": "The last door stays locked and the guide leads the children out.",
+    "contradicts": [],
+    "implicit_plant": null
+   },
+   "hidden_stair_found": {
+    "text": "A hidden stair leads down behind the last door.",
+    "contradicts": [],
+    "implicit_plant": null
+   },
+   "warm_light_seen": {
+    "text": "Warm lamplight glows at the bottom of the hidden stair.",
+    "contradicts": [],
+    "implicit_plant": null
+   },
+   "arrows_by_wren": {
+    "text": "Great-aunt Wren, the old castle guide, drew the chalk arrows.",
+    "contradicts": [
+     "ghost_fear_choice"
+    ],
+    "implicit_plant": null
+   },
+   "wren_wants_kids_find_room": {
+    "text": "Wren hid the keys in riddles so the children would earn the room.",
+    "contradicts": [],
+    "implicit_plant": null
+   },
+   "music_room_holds_letters": {
+    "text": "The hidden music room holds family letters and an old music box.",
+    "contradicts": [],
+    "implicit_plant": null
+   },
+   "letters_shelf_seen": {
+    "text": "Wren shows the sisters shelves of family letters.",
+    "contradicts": [],
+    "implicit_plant": null
+   },
+   "music_box_seen": {
+    "text": "Wren shows the sisters an old music box and its tune.",
+    "contradicts": [],
+    "implicit_plant": null
+   },
+   "explorer_takes_letter": {
+    "text": "Explorer picks up a letter addressed to both sisters.",
+    "contradicts": [],
+    "implicit_plant": null
+   },
+   "mia_reads_letter": {
+    "text": "Mia reads the letter aloud: the castle belongs to their family story.",
+    "contradicts": [],
+    "implicit_plant": null
+   },
+   "music_box_played": {
+    "text": "Explorer winds the music box and Mia hums along.",
+    "contradicts": [],
+    "implicit_plant": null
+   },
+   "wren_hugs_kids": {
+    "text": "Wren hugs both children and promises to keep the tour open.",
+    "contradicts": [],
+    "implicit_plant": null
+   },
+   "map_found": {
+    "text": "Wren gives the sisters a map of every secret room.",
+    "contradicts": [],
+    "implicit_plant": null
+   },
+   "promise_return": {
+    "text": "The sisters promise to come back and explore together.",
+    "contradicts": [],
+    "implicit_plant": null
+   },
+   "sisters_share_secret": {
+    "text": "The sisters agree to keep the secret room safe together.",
+    "contradicts": [],
+    "implicit_plant": null
+   },
+   "tour_saved": {
+    "text": "The castle tour will stay open thanks to the letters.",
+    "contradicts": [],
+    "implicit_plant": null
+   },
+   "tour_saved_with_laugh": {
+    "text": "The sisters laugh together over the secret and the tour stays open.",
+    "contradicts": [],
+    "implicit_plant": null
+   },
+   "quiet_ending_content": {
+    "text": "The sisters sit side by side, content, as the music box plays.",
+    "contradicts": [],
+    "implicit_plant": null
+   },
+   "walk_out_arm_in_arm": {
+    "text": "Wren walks the sisters out arm in arm.",
+    "contradicts": [],
+    "implicit_plant": null
+   },
+   "planning_next_visit": {
+    "text": "The sisters plan their next visit with the map.",
+    "contradicts": [],
+    "implicit_plant": null
+   },
+   "secret_room_locked": {
+    "text": "The sisters lock the room with Wren's blessing.",
+    "contradicts": [],
+    "implicit_plant": null
+   },
+   "ghost_story_ends": {
+    "text": "Explorer leaves still believing in the castle ghost.",
+    "contradicts": [],
+    "implicit_plant": null
+   },
+   "mia_laughs_locked": {
+    "text": "Mia laughs and promises to try another day.",
+    "contradicts": [],
+    "implicit_plant": null
+   },
+   "half_answer": {
+    "text": "Explorer learns the arrows were drawn by someone who knows the castle well.",
+    "contradicts": [],
+    "implicit_plant": null
+   },
+   "chalk_dust_trail": {
+    "text": "Chalk dust on a doorknob shows the artist is left-handed.",
+    "contradicts": [],
+    "implicit_plant": null
+   },
+   "tour_ends_early": {
+    "text": "The tour ends before the secret is found.",
+    "contradicts": [],
+    "implicit_plant": null
+   },
+   "wren_footprints_seen": {
+    "text": "Explorer sees a woman's shoe prints beside the chalk.",
+    "contradicts": [],
+    "implicit_plant": null
+   },
+   "hidden_wren_glimpse": {
+    "text": "Explorer glimpses a gray-haired woman with chalk on her fingers.",
+    "contradicts": [],
+    "implicit_plant": null
+   },
+   "wren_waves": {
+    "text": "The woman waves and vanishes down a side hall.",
+    "contradicts": [],
+    "implicit_plant": null
+   }
+  },
+  "nodes": {
+   "n_start": {
+    "function": "opening",
+    "event": "Explorer and older sister Mia arrive at the old castle for its last tour.",
+    "requires": [],
+    "establishes": [
+     "sister_mia_along",
+     "tour_closing"
+    ]
+   },
+   "n_gate": {
+    "function": "continue",
+    "event": "In a stone hall Explorer spots a fresh white chalk arrow on the wall.",
+    "requires": [
+     "sister_mia_along"
+    ],
+    "establishes": [
+     "chalk_arrow_seen"
+    ]
+   },
+   "n_notice": {
+    "function": "continue",
+    "event": "Mia shrugs it off but Explorer wants to follow it before the tour ends.",
+    "requires": [
+     "chalk_arrow_seen"
+    ],
+    "establishes": [
+     "hero_resolve_follow"
+    ]
+   },
+   "n_hub": {
+    "function": "merge",
+    "event": "At a crossroads of halls, arrows point several ways past locked doors with riddles.",
+    "requires": [
+     "chalk_arrow_seen",
+     "tour_closing"
+    ],
+    "establishes": [
+     "keys_in_riddles"
+    ]
+   },
+   "tb_booth": {
+    "function": "decision",
+    "event": "Explorer asks a guide about the arrows and learns the guide never draws them.",
+    "requires": [
+     "keys_in_riddles"
+    ],
+    "establishes": [
+     "ask_guide_hint"
+    ]
+   },
+   "tb_ledgers": {
+    "function": "decision",
+    "event": "The guide points toward the kitchen where a riddle is scratched by the hearth.",
+    "requires": [
+     "ask_guide_hint"
+    ],
+    "establishes": [
+     "kitchen_riddle_read"
+    ]
+   },
+   "tb_recent": {
+    "function": "decision",
+    "event": "Soot on the hearth shows a chalky handprint.",
+    "requires": [
+     "kitchen_riddle_read"
+    ],
+    "establishes": [
+     "hearth_soot_clue"
+    ]
+   },
+   "tb_old": {
+    "function": "decision",
+    "event": "Mia works out the riddle and finds a small iron key in the cold oven.",
+    "requires": [
+     "kitchen_riddle_read"
+    ],
+    "establishes": [
+     "oven_key_found"
+    ]
+   },
+   "tb_office": {
+    "function": "decision",
+    "event": "The guide hints at the cellar, where narrow stairs are marked with an arrow.",
+    "requires": [
+     "ask_guide_hint"
+    ],
+    "establishes": [
+     "cellar_stairs_seen"
+    ]
+   },
+   "tb_photo": {
+    "function": "decision",
+    "event": "The cellar door sticks until Explorer shoves it open.",
+    "requires": [
+     "cellar_stairs_seen"
+    ],
+    "establishes": [
+     "cellar_door_stuck"
+    ]
+   },
+   "e_set_doze": {
+    "function": "ending",
+    "event": "In the dark cellar Explorer panics and decides a ghost must be drawing the arrows.",
+    "requires": [
+     "cellar_stairs_seen"
+    ],
+    "establishes": [
+     "ghost_fear_choice",
+     "ghost_story_ends"
+    ]
+   },
+   "hm_door": {
+    "function": "decision",
+    "event": "Following an arrow, the children reach a gallery with a brass door and a riddle plate.",
+    "requires": [
+     "keys_in_riddles"
+    ],
+    "establishes": [
+     "brass_door_found"
+    ]
+   },
+   "hm_echo": {
+    "function": "continue",
+    "event": "Mia reads the riddle plate aloud and guesses it means the clock.",
+    "requires": [
+     "brass_door_found"
+    ],
+    "establishes": [
+     "mia_reads_riddle"
+    ]
+   },
+   "hm_tall": {
+    "function": "decision",
+    "event": "A portrait's painted eyes hold a riddle about looking up.",
+    "requires": [
+     "brass_door_found"
+    ],
+    "establishes": [
+     "portrait_eyes_riddle"
+    ]
+   },
+   "hm_bent": {
+    "function": "decision",
+    "event": "A hall of tall mirrors repeats the chalk arrows.",
+    "requires": [
+     "brass_door_found"
+    ],
+    "establishes": [
+     "mirror_hall_seen"
+    ]
+   },
+   "hm_plank": {
+    "function": "decision",
+    "event": "Explorer tries a wrong key in the brass lock and it will not turn.",
+    "requires": [
+     "mirror_hall_seen"
+    ],
+    "establishes": [
+     "wrong_key_tried"
+    ]
+   },
+   "hm_rotunda": {
+    "function": "merge",
+    "event": "The children find a brass key taped behind the gallery clock.",
+    "requires": [
+     "brass_door_found"
+    ],
+    "establishes": [
+     "clock_hides_key"
+    ]
+   },
+   "hm_behind": {
+    "function": "decision",
+    "event": "Mia hums a tune matching the riddle rhythm, which helps them open the door.",
+    "requires": [
+     "clock_hides_key"
+    ],
+    "establishes": [
+     "mia_hums_tune"
+    ]
+   },
+   "hm_flicker": {
+    "function": "decision",
+    "event": "The brass door swings open onto a dusty side passage.",
+    "requires": [
+     "clock_hides_key"
+    ],
+    "establishes": [
+     "door_opens_gallery"
+    ]
+   },
+   "e_set_lost": {
+    "function": "ending",
+    "event": "The side passage ends in a locked grate and the bell rings, so the tour pulls them out.",
+    "requires": [
+     "clock_hides_key"
+    ],
+    "establishes": [
+     "mia_laughs_locked",
+     "tour_ends_early"
+    ]
+   },
+   "ws_door": {
+    "function": "decision",
+    "event": "A chalk arrow leads into the armory with a helmet bearing a rhyme.",
+    "requires": [
+     "keys_in_riddles"
+    ],
+    "establishes": [
+     "armory_arrow",
+     "helmet_riddle"
+    ]
+   },
+   "ws_tools": {
+    "function": "decision",
+    "event": "A silver key is tucked inside the knight's helmet.",
+    "requires": [
+     "helmet_riddle"
+    ],
+    "establishes": [
+     "helmet_key_found"
+    ]
+   },
+   "ws_horse": {
+    "function": "decision",
+    "event": "A shield on the wall hides a smudged chalk number three.",
+    "requires": [
+     "armory_arrow"
+    ],
+    "establishes": [
+     "shield_wall_hint"
+    ]
+   },
+   "ws_bench": {
+    "function": "merge",
+    "event": "The armory gate clanks shut behind Explorer.",
+    "requires": [
+     "armory_arrow"
+    ],
+    "establishes": [
+     "armory_locked_in"
+    ]
+   },
+   "ws_crate": {
+    "function": "decision",
+    "event": "Mia finds the lever that lifts the gate.",
+    "requires": [
+     "armory_locked_in"
+    ],
+    "establishes": [
+     "mia_lifts_gate"
+    ]
+   },
+   "bw_steps": {
+    "function": "decision",
+    "event": "Spiral tower stairs climb behind a tapestry of a bird holding a key.",
+    "requires": [
+     "keys_in_riddles"
+    ],
+    "establishes": [
+     "tower_stairs_seen",
+     "tapestry_clue"
+    ]
+   },
+   "bw_pilings": {
+    "function": "decision",
+    "event": "From the tower window the courtyard shows arrows in a loop around the well.",
+    "requires": [
+     "tower_stairs_seen"
+    ],
+    "establishes": [
+     "tower_window_view",
+     "courtyard_pattern"
+    ]
+   },
+   "bw_catwalk": {
+    "function": "merge",
+    "event": "A rope hangs in the well with a note tied to it.",
+    "requires": [
+     "tower_stairs_seen"
+    ],
+    "establishes": [
+     "well_rope_found"
+    ]
+   },
+   "bw_footing": {
+    "function": "merge",
+    "event": "The note says it is twelve steps to the next room.",
+    "requires": [
+     "tower_stairs_seen"
+    ],
+    "establishes": [
+     "note_in_well"
+    ]
+   },
+   "bw_pierhead": {
+    "function": "decision",
+    "event": "The sisters count twelve steps to a hidden alcove.",
+    "requires": [
+     "well_rope_found"
+    ],
+    "establishes": [
+     "steps_counted"
+    ]
+   },
+   "bw_watch": {
+    "function": "decision",
+    "event": "The alcove is cold and has a small keyhole in the wall.",
+    "requires": [
+     "steps_counted"
+    ],
+    "establishes": [
+     "alcove_cold"
+    ]
+   },
+   "bw_call": {
+    "function": "decision",
+    "event": "The silver key fits the alcove keyhole.",
+    "requires": [
+     "steps_counted"
+    ],
+    "establishes": [
+     "keyhole_fits_silver"
+    ]
+   },
+   "e_set_tide": {
+    "function": "ending",
+    "event": "Explorer dawdles in the alcove until the tour bell rings and Mia pulls them out.",
+    "requires": [
+     "tower_stairs_seen"
+    ],
+    "establishes": [
+     "stuck_in_alcove",
+     "tour_ends_early"
+    ]
+   },
+   "cv_door": {
+    "function": "merge",
+    "event": "A small chapel has chalk arrows around its altar.",
+    "requires": [
+     "keys_in_riddles"
+    ],
+    "establishes": [
+     "chapel_seen"
+    ]
+   },
+   "cv_window": {
+    "function": "decision",
+    "event": "A hymn book lies open to a riddle about silence.",
+    "requires": [
+     "chapel_seen"
+    ],
+    "establishes": [
+     "hymn_riddle"
+    ]
+   },
+   "cv_knock": {
+    "function": "merge",
+    "event": "A candle stub has chalk dust on its holder.",
+    "requires": [
+     "chapel_seen"
+    ],
+    "establishes": [
+     "candle_clue"
+    ]
+   },
+   "cv_table": {
+    "function": "decision",
+    "event": "Dusty organ pipes line the wall near the altar.",
+    "requires": [
+     "candle_clue"
+    ],
+    "establishes": [
+     "organ_pipes_seen"
+    ]
+   },
+   "cv_shims": {
+    "function": "decision",
+    "event": "A key rolls out of a dusty organ pipe.",
+    "requires": [
+     "organ_pipes_seen"
+    ],
+    "establishes": [
+     "organ_pipe_key"
+    ]
+   },
+   "cv_ondine": {
+    "function": "merge",
+    "event": "Mia blows a pipe and the echo seems to come from the north wall.",
+    "requires": [
+     "organ_pipes_seen"
+    ],
+    "establishes": [
+     "mia_blows_pipe",
+     "echo_points_north"
+    ]
+   },
+   "e_disc_stories": {
+    "function": "ending",
+    "event": "Behind the pipes Explorer finds a chalk-marked panel and a chalky doorknob, and learns the artist knows the castle well.",
+    "requires": [
+     "organ_pipes_seen"
+    ],
+    "establishes": [
+     "half_answer",
+     "chalk_dust_trail"
+    ]
+   },
+   "ol_stairs": {
+    "function": "decision",
+    "event": "A chalk arrow points toward a low arch of old stone.",
+    "requires": [
+     "keys_in_riddles"
+    ],
+    "establishes": [
+     "crypt_arrow"
+    ]
+   },
+   "ol_listen": {
+    "function": "decision",
+    "event": "The low arch is tight and the lantern flickers.",
+    "requires": [
+     "crypt_arrow"
+    ],
+    "establishes": [
+     "arch_too_low"
+    ]
+   },
+   "ol_loft": {
+    "function": "merge",
+    "event": "A dim library lies beyond with arrows on its ladder.",
+    "requires": [
+     "crypt_arrow"
+    ],
+    "establishes": [
+     "library_seen"
+    ]
+   },
+   "ol_key": {
+    "function": "decision",
+    "event": "A book on the top shelf has a riddle on its spine.",
+    "requires": [
+     "library_seen"
+    ],
+    "establishes": [
+     "book_riddle"
+    ]
+   },
+   "ol_after": {
+    "function": "decision",
+    "event": "Explorer climbs the ladder while Mia steadies it.",
+    "requires": [
+     "book_riddle"
+    ],
+    "establishes": [
+     "ladder_climbed",
+     "mia_steadies_ladder"
+    ]
+   },
+   "ol_rolls": {
+    "function": "decision",
+    "event": "A bronze key is hidden in a hollow book.",
+    "requires": [
+     "library_seen"
+    ],
+    "establishes": [
+     "book_key_found"
+    ]
+   },
+   "ol_crest": {
+    "function": "decision",
+    "event": "A shelf slides aside to reveal a narrow door.",
+    "requires": [
+     "library_seen"
+    ],
+    "establishes": [
+     "secret_shelf_moves"
+    ]
+   },
+   "e_set_bolt": {
+    "function": "ending",
+    "event": "Explorer takes a wrong turn in the corridor and is led back out by Mia.",
+    "requires": [
+     "book_riddle"
+    ],
+    "establishes": [
+     "lost_in_corridor",
+     "tour_ends_early"
+    ]
+   },
+   "e_disc_waltz": {
+    "function": "ending",
+    "event": "In a narrow chalk-marked corridor Explorer follows small footprints and sees a woman with chalk on her fingers who waves and slips away.",
+    "requires": [
+     "library_seen"
+    ],
+    "establishes": [
+     "hidden_wren_glimpse",
+     "wren_waves",
+     "narrow_corridor",
+     "dust_footprints",
+     "wren_footprints_seen"
+    ]
+   },
+   "fin_approach": {
+    "function": "merge",
+    "event": "Two chalk arrows point at one low door with a three-part lock.",
+    "requires": [
+     "keys_in_riddles"
+    ],
+    "establishes": [
+     "final_arrow_pair"
+    ]
+   },
+   "fin_notice": {
+    "function": "decision",
+    "event": "The guide's bell rings to say the tour is ending.",
+    "requires": [
+     "final_arrow_pair"
+    ],
+    "establishes": [
+     "bell_rings_warning"
+    ]
+   },
+   "fin_climb": {
+    "function": "merge",
+    "event": "Explorer and Mia gather the keys they have and decide to hurry.",
+    "requires": [
+     "final_arrow_pair"
+    ],
+    "establishes": [
+     "three_keys_gathered",
+     "hurry_resolve"
+    ]
+   },
+   "fin_pry": {
+    "function": "decision",
+    "event": "Light through the window turns orange as sunset nears.",
+    "requires": [
+     "three_keys_gathered"
+    ],
+    "establishes": [
+     "sunset_near"
+    ]
+   },
+   "fin_press": {
+    "function": "merge",
+    "event": "The three-part lock clicks open.",
+    "requires": [
+     "three_keys_gathered"
+    ],
+    "establishes": [
+     "lock_clicks_open"
+    ]
+   },
+   "fin_drawings": {
+    "function": "decision",
+    "event": "Behind the door a stair leads down to lamplight where Wren waits and explains everything.",
+    "requires": [
+     "lock_clicks_open"
+    ],
+    "establishes": [
+     "hidden_stair_found",
+     "warm_light_seen",
+     "arrows_by_wren",
+     "wren_wants_kids_find_room",
+     "music_room_holds_letters"
+    ]
+   },
+   "e_set_home": {
+    "function": "ending",
+    "event": "The door stays shut and the guide leads the children out as the castle closes.",
+    "requires": [
+     "three_keys_gathered"
+    ],
+    "establishes": [
+     "locked_out"
+    ]
+   },
+   "r_caretaker": {
+    "function": "decision",
+    "event": "Wren shows the sisters shelves of family letters in the music room.",
+    "requires": [
+     "music_room_holds_letters"
+    ],
+    "establishes": [
+     "letters_shelf_seen"
+    ]
+   },
+   "r_meeting": {
+    "function": "continue",
+    "event": "Explorer picks up a letter addressed to both sisters.",
+    "requires": [
+     "letters_shelf_seen"
+    ],
+    "establishes": [
+     "explorer_takes_letter"
+    ]
+   },
+   "r_inspector": {
+    "function": "continue",
+    "event": "Mia reads another letter aloud about the castle family story.",
+    "requires": [
+     "letters_shelf_seen"
+    ],
+    "establishes": [
+     "mia_reads_letter"
+    ]
+   },
+   "r_family": {
+    "function": "decision",
+    "event": "Wren winds an old music box and shows the sisters its tune.",
+    "requires": [
+     "music_room_holds_letters"
+    ],
+    "establishes": [
+     "music_box_seen"
+    ]
+   },
+   "r_fund": {
+    "function": "continue",
+    "event": "Explorer winds the box while Mia hums along.",
+    "requires": [
+     "music_box_seen"
+    ],
+    "establishes": [
+     "music_box_played"
+    ]
+   },
+   "r_crew": {
+    "function": "continue",
+    "event": "Wren hugs both children and promises the tour will stay open.",
+    "requires": [
+     "music_box_seen"
+    ],
+    "establishes": [
+     "wren_hugs_kids"
+    ]
+   },
+   "r_townhall": {
+    "function": "decision",
+    "event": "Wren unrolls a map of all the castle's secret rooms.",
+    "requires": [
+     "music_room_holds_letters"
+    ],
+    "establishes": [
+     "map_found"
+    ]
+   },
+   "r_council": {
+    "function": "continue",
+    "event": "The sisters promise to come back and explore together.",
+    "requires": [
+     "map_found"
+    ],
+    "establishes": [
+     "promise_return"
+    ]
+   },
+   "r_paper": {
+    "function": "continue",
+    "event": "The sisters agree to keep the room safe together.",
+    "requires": [
+     "map_found"
+    ],
+    "establishes": [
+     "sisters_share_secret"
+    ]
+   },
+   "e_festival": {
+    "function": "ending",
+    "event": "Explorer and Mia read the letter together as Wren smiles; the mystery is solved.",
+    "requires": [
+     "explorer_takes_letter",
+     "arrows_by_wren"
+    ],
+    "establishes": [
+     "tour_saved"
+    ]
+   },
+   "e_permit": {
+    "function": "ending",
+    "event": "Mia finishes reading and the sisters laugh together over the secret.",
+    "requires": [
+     "mia_reads_letter",
+     "arrows_by_wren"
+    ],
+    "establishes": [
+     "tour_saved_with_laugh"
+    ]
+   },
+   "e_fund": {
+    "function": "ending",
+    "event": "The music box plays and the sisters sit side by side, content.",
+    "requires": [
+     "music_box_played",
+     "arrows_by_wren"
+    ],
+    "establishes": [
+     "quiet_ending_content"
+    ]
+   },
+   "e_crew": {
+    "function": "ending",
+    "event": "Wren walks the sisters out arm in arm as the castle lamps glow.",
+    "requires": [
+     "wren_hugs_kids",
+     "arrows_by_wren"
+    ],
+    "establishes": [
+     "walk_out_arm_in_arm"
+    ]
+   },
+   "e_council": {
+    "function": "ending",
+    "event": "The sisters step out into evening with the map, already planning the next visit.",
+    "requires": [
+     "promise_return",
+     "arrows_by_wren"
+    ],
+    "establishes": [
+     "planning_next_visit"
+    ]
+   },
+   "e_paper": {
+    "function": "ending",
+    "event": "The sisters lock the room with Wren's blessing and share a secret grin.",
+    "requires": [
+     "sisters_share_secret",
+     "arrows_by_wren"
+    ],
+    "establishes": [
+     "secret_room_locked"
+    ]
+   }
+  },
+  "choices": {
+   "c_start_out": {
+    "intent": "step further into the hall",
+    "cost": "leaves the entrance unexplored",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_gate_midway": {
+    "intent": "follow the arrow with Mia",
+    "cost": "skips the tour guide's opening talk",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_notice_hub": {
+    "intent": "head for the crossroads of halls",
+    "cost": "leaves the first hall behind",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_hub_booth": {
+    "intent": "ask the guide about the arrows",
+    "cost": "gives up following arrows yourself right now",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_hub_mirrors": {
+    "intent": "follow arrows to the gallery",
+    "cost": "leaves the guide unasked",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_hub_workshop": {
+    "intent": "take the arrow into the armory",
+    "cost": "skips the gallery and chapel",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_hub_boardwalk": {
+    "intent": "climb the tower stairs",
+    "cost": "leaves the lower halls behind",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_hub_caravan": {
+    "intent": "investigate the chapel",
+    "cost": "leaves the tower stairs unclimbed",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_hub_organ": {
+    "intent": "head toward the low stone arch",
+    "cost": "gives up the chapel's quiet",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_hub_carousel": {
+    "intent": "rush straight to the arrow pair door",
+    "cost": "skips every riddle on the way",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_tb_ledgers": {
+    "intent": "go to the kitchen the guide mentioned",
+    "cost": "leaves the cellar stairs alone",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_tb_office": {
+    "intent": "try the cellar the guide hinted at",
+    "cost": "leaves the kitchen riddle unread",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_tb_recent": {
+    "intent": "look closely at the hearth soot",
+    "cost": "leaves the cold oven unchecked",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_tb_old": {
+    "intent": "solve the riddle and check the oven",
+    "cost": "leaves the soot unstudied",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_tb_recent_hub": {
+    "intent": "go back to the crossroads with the handprint clue",
+    "cost": "skips the quick route to the arrow pair",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_tb_recent_fin": {
+    "intent": "run to the arrow pair door",
+    "cost": "leaves the crossroads' other halls unvisited",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_tb_old_hub": {
+    "intent": "return to the crossroads with the iron key",
+    "cost": "gives up heading straight on",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_tb_old_fin": {
+    "intent": "take the iron key to the arrow pair door",
+    "cost": "skips more clues at the crossroads",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_tb_photo": {
+    "intent": "push the stuck cellar door",
+    "cost": "gives up the safe way back at once",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_tb_chair": {
+    "intent": "go down in the dark alone",
+    "cost": "leaves Mia and the lantern behind",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_tb_photo_hub": {
+    "intent": "retreat upstairs to the crossroads",
+    "cost": "leaves the cellar's secrets unexplored",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_tb_photo_fin": {
+    "intent": "follow the cellar arrow to the final door",
+    "cost": "skips the crossroads halls",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_hm_tall": {
+    "intent": "study the portrait's eyes",
+    "cost": "leaves the mirrors unseen",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_hm_bent": {
+    "intent": "walk into the hall of mirrors",
+    "cost": "leaves the portrait unstudied",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_hm_hello": {
+    "intent": "let Mia read the riddle plate",
+    "cost": "gives up trying your own guess",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_hm_echo_glint": {
+    "intent": "go for the clock Mia guessed",
+    "cost": "leaves the gallery's other riddles",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_hm_tall_rotunda": {
+    "intent": "follow the portrait's hint to the clock",
+    "cost": "gives up searching the walls",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_hm_tall_hub": {
+    "intent": "return to the crossroads from the portrait",
+    "cost": "gives up the gallery clue",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_hm_bent_steady": {
+    "intent": "check the mirrors' reflections for the clock",
+    "cost": "skips trying keys right away",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_hm_bent_plank": {
+    "intent": "try a spare key on the brass lock",
+    "cost": "gives up searching more mirrors",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_hm_plank_rotunda": {
+    "intent": "give up the lock and look for the clock",
+    "cost": "abandons the key you tried",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_hm_plank_hub": {
+    "intent": "retreat to the crossroads from the mirrors",
+    "cost": "leaves the gallery door locked",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_hm_swing": {
+    "intent": "hum Mia's tune to open the way",
+    "cost": "leaves the lock unforced",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_hm_flicker": {
+    "intent": "turn the brass key directly",
+    "cost": "leaves Mia's tune unused",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_hm_dash": {
+    "intent": "slip down the side grate",
+    "cost": "leaves the open door behind you",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_hm_behind_fin": {
+    "intent": "hurry on to the final door",
+    "cost": "gives up checking the passage",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_hm_behind_hub": {
+    "intent": "return to the crossroads after the tune",
+    "cost": "leaves the tune's secret unfollowed",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_hm_flicker_fin": {
+    "intent": "take the passage to the final door",
+    "cost": "skips looking in side rooms",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_hm_flicker_hub": {
+    "intent": "go back to the crossroads from the passage",
+    "cost": "leaves the passage unexplored",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_ws_tools": {
+    "intent": "search the helmet for a key",
+    "cost": "leaves the shield wall unchecked",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_ws_horse": {
+    "intent": "inspect the shield on the wall",
+    "cost": "leaves the helmet unsearched",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_ws_bench": {
+    "intent": "step further into the armory",
+    "cost": "leaves both clues unfollowed",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_ws_tools_fin": {
+    "intent": "take the silver key to the final door",
+    "cost": "skips the rest of the armory",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_ws_tools_hub": {
+    "intent": "go back with the silver key",
+    "cost": "gives up the final door for now",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_ws_horse_bench": {
+    "intent": "follow the number three deeper in",
+    "cost": "gives up leaving the armory",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_ws_horse_hub": {
+    "intent": "walk back to the crossroads",
+    "cost": "leaves the shield's number unused",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_ws_bench_fin": {
+    "intent": "push past the gate to the final door",
+    "cost": "gives up finding the lever yourself",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_ws_bench_crate": {
+    "intent": "call for Mia to find the lever",
+    "cost": "waits while time slips away",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_ws_bench_hub": {
+    "intent": "retreat to the crossroads from the gate",
+    "cost": "leaves the armory gate shut",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_ws_crate_fin": {
+    "intent": "go to the final door with Mia",
+    "cost": "skips the crossroads",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_ws_crate_hub": {
+    "intent": "return to the crossroads with Mia",
+    "cost": "leaves the armory behind",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_bw_pilings": {
+    "intent": "climb to the tower window",
+    "cost": "leaves the well unexamined",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_bw_catwalk": {
+    "intent": "head to the well in the courtyard",
+    "cost": "skips the tower view",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_bw_footing": {
+    "intent": "read the note from the tower view",
+    "cost": "leaves the well rope untouched",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_bw_ladder": {
+    "intent": "climb down to the well",
+    "cost": "gives up the high view",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_bw_arches": {
+    "intent": "linger by the tower window",
+    "cost": "loses time to the tour bell",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_bw_beam": {
+    "intent": "read the note tied to the rope",
+    "cost": "leaves the well's depths unchecked",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_bw_pierhead": {
+    "intent": "count steps toward the alcove",
+    "cost": "leaves the note unread",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_bw_footing_fin": {
+    "intent": "go to the final door with the note's clue",
+    "cost": "skips the crossroads",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_bw_footing_hub": {
+    "intent": "go back to the crossroads from the well",
+    "cost": "leaves the note's steps uncounted",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_bw_watch": {
+    "intent": "examine the cold alcove",
+    "cost": "leaves the keys untried",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_bw_call": {
+    "intent": "try the silver key in the keyhole",
+    "cost": "leaves the alcove unexamined",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_bw_watch_fin": {
+    "intent": "take the alcove's clue to the final door",
+    "cost": "gives up the crossroads",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_bw_watch_hub": {
+    "intent": "retreat to the crossroads from the alcove",
+    "cost": "leaves the alcove unopened",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_bw_call_caravan": {
+    "intent": "follow the silver key's passage to the chapel",
+    "cost": "leaves the alcove behind",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_bw_call_hub": {
+    "intent": "give up and return to the crossroads",
+    "cost": "gives up the silver key's door",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_cv_knock": {
+    "intent": "inspect the altar candles",
+    "cost": "leaves the hymn book closed",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_cv_window": {
+    "intent": "open the hymn book",
+    "cost": "leaves the candles unexamined",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_cv_window_knock": {
+    "intent": "follow the hymn's hint to the candles",
+    "cost": "gives up the book's other pages",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_cv_window_slip": {
+    "intent": "leave the chapel for the crossroads",
+    "cost": "leaves the hymn riddle unsolved",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_cv_sit": {
+    "intent": "look toward the organ along the wall",
+    "cost": "leaves the altar behind",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_cv_favorite": {
+    "intent": "blow into the organ pipes with Mia",
+    "cost": "leaves the lower pipes unchecked",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_cv_shims": {
+    "intent": "shake the dusty pipes for a key",
+    "cost": "leaves the sound unheard",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_cv_stories": {
+    "intent": "press the chalk-marked panel",
+    "cost": "leaves the pipes unplayed",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_cv_shims_ondine": {
+    "intent": "carry the pipe key to the north wall",
+    "cost": "gives up searching more pipes",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_cv_shims_hub": {
+    "intent": "go back to the crossroads from the pipes",
+    "cost": "leaves the pipe key behind",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_cv_go": {
+    "intent": "take the echo to the final door",
+    "cost": "skips the crossroads",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_cv_think": {
+    "intent": "return to the crossroads from the echo",
+    "cost": "leaves the north wall unopened",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_ol_climb": {
+    "intent": "duck under the low arch",
+    "cost": "leaves the lantern's light thin",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_ol_listen": {
+    "intent": "hold the lantern high and look first",
+    "cost": "waits while the light shakes",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_ol_up": {
+    "intent": "push on past the flicker",
+    "cost": "risks the lantern going out",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_ol_down": {
+    "intent": "turn back to the crossroads",
+    "cost": "gives up the arch for now",
+    "requires": [],
+    "establishes": [
+     "dark_turn_back"
+    ],
+    "plants": []
+   },
+   "c_ol_key": {
+    "intent": "climb the library ladder",
+    "cost": "leaves the shelves unsearched",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_ol_rolls": {
+    "intent": "search the hollow books",
+    "cost": "leaves the ladder unclimbed",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_ol_crest": {
+    "intent": "feel along the shelves for a catch",
+    "cost": "leaves the books unopened",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_ol_freeze": {
+    "intent": "read the spine riddle with Mia",
+    "cost": "skips shaking the shelves",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_ol_bolt": {
+    "intent": "rush down the corridor ignoring the riddle",
+    "cost": "leaves the riddle unread",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_ol_after_fin": {
+    "intent": "take the book's clue to the final door",
+    "cost": "skips the crossroads",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_ol_after_hub": {
+    "intent": "go back to the crossroads from the ladder",
+    "cost": "leaves the book's clue unused",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_ol_rolls_fin": {
+    "intent": "go to the final door with the bronze key",
+    "cost": "leaves the other shelves unsearched",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_ol_rolls_home": {
+    "intent": "follow the faint footprints",
+    "cost": "gives up the bronze key's door",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_ol_rolls_hub": {
+    "intent": "return to the crossroads with the bronze key",
+    "cost": "leaves the bronze key unused",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_ol_crest_fin": {
+    "intent": "slip through the narrow door to the final door",
+    "cost": "skips the library",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_ol_crest_hub": {
+    "intent": "go back to the crossroads from the shelf",
+    "cost": "leaves the narrow door unopened",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_fin_climb": {
+    "intent": "try the three-part lock now",
+    "cost": "ignores the ringing bell",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_fin_notice": {
+    "intent": "check on the guide's bell first",
+    "cost": "loses a moment before the lock",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_fin_notice_climb": {
+    "intent": "hurry back to the lock",
+    "cost": "leaves the guide waiting",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_fin_notice_hub": {
+    "intent": "retreat to the crossroads from the bell",
+    "cost": "gives up the final door",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_fin_press": {
+    "intent": "use every key you hold",
+    "cost": "leaves the sunset unwatched",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_fin_pry": {
+    "intent": "glance at the setting sun",
+    "cost": "burns a few of the last minutes",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_fin_pry_press": {
+    "intent": "stop watching and try the lock",
+    "cost": "gives up the view",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_fin_pry_home": {
+    "intent": "give up and walk out with the guide",
+    "cost": "lets the last tour close",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_fin_open": {
+    "intent": "step down the opened stair",
+    "cost": "leaves the mystery door behind",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_fin_caretaker": {
+    "intent": "read the family letters with Wren",
+    "cost": "leaves the music box and map for now",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_fin_family": {
+    "intent": "play the music box with Wren",
+    "cost": "leaves the letters and map for now",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_fin_town": {
+    "intent": "study the map of secret rooms",
+    "cost": "leaves the letters and box for now",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_r_meeting": {
+    "intent": "read the letter addressed to you both",
+    "cost": "leaves the other letters unread",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_r_inspector": {
+    "intent": "let Mia read a letter aloud",
+    "cost": "leaves the sisters' own letter unread",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_r_meeting_end": {
+    "intent": "keep the letter close",
+    "cost": "gives up another round of reading",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_r_inspector_end": {
+    "intent": "laugh over the letter together",
+    "cost": "gives up a quiet moment alone",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_r_fund": {
+    "intent": "wind the music box yourself",
+    "cost": "leaves Wren to wind it",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_r_crew": {
+    "intent": "let Wren tell the music box's story",
+    "cost": "leaves the winding to Wren",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_r_fund_end": {
+    "intent": "sit and listen with Mia",
+    "cost": "gives up exploring more",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_r_crew_end": {
+    "intent": "accept Wren's hug and promise",
+    "cost": "leaves the music box unwound",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_r_council": {
+    "intent": "plan the next visit with Mia",
+    "cost": "leaves the secret unprotected for now",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_r_paper": {
+    "intent": "promise to guard the secret room",
+    "cost": "leaves the next visit unplanned",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_r_council_end": {
+    "intent": "head out into the evening with the map",
+    "cost": "gives up staying in the room",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_r_paper_end": {
+    "intent": "lock the room with Wren's blessing",
+    "cost": "gives up taking the map out",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   }
+  },
+  "threads": {},
+  "endings": {
+   "e_set_doze": {
+    "gift": "Reason to try again: the ghost was a guess, and a braver look may find the truth.",
+    "valence": null,
+    "kind": null
+   },
+   "e_set_lost": {
+    "gift": "A laugh with Mia and a reason to find the real way next time.",
+    "valence": null,
+    "kind": null
+   },
+   "e_set_tide": {
+    "gift": "A gentle nudge to try again and not linger in the alcove.",
+    "valence": null,
+    "kind": null
+   },
+   "e_disc_stories": {
+    "gift": "A reveal that a real hand draws the arrows, a clue for the next try.",
+    "valence": null,
+    "kind": null
+   },
+   "e_set_bolt": {
+    "gift": "A laugh at the wrong turn and a reason to read the riddle properly.",
+    "valence": null,
+    "kind": null
+   },
+   "e_disc_waltz": {
+    "gift": "A glimpse of the chalk artist, who waves, so you must come back.",
+    "valence": null,
+    "kind": null
+   },
+   "e_set_home": {
+    "gift": "A reason to return before sunset with the keys ready.",
+    "valence": null,
+    "kind": null
+   },
+   "e_festival": {
+    "gift": "A warm reveal that Wren drew the arrows, shared with your sister.",
+    "valence": null,
+    "kind": null
+   },
+   "e_permit": {
+    "gift": "A shared laugh and the cozy truth about the arrows.",
+    "valence": null,
+    "kind": null
+   },
+   "e_fund": {
+    "gift": "A quiet music-box tune and a secret solved side by side.",
+    "valence": null,
+    "kind": null
+   },
+   "e_crew": {
+    "gift": "A hug from Wren and a tour saved for good.",
+    "valence": null,
+    "kind": null
+   },
+   "e_council": {
+    "gift": "A map in hand and a promise of more adventures with Mia.",
+    "valence": null,
+    "kind": null
+   },
+   "e_paper": {
+    "gift": "A secret room kept safe together as sisters.",
+    "valence": null,
+    "kind": null
+   }
+  },
+  "provenance": {
+   "producer": "cyo_adventure.storyplan.generate",
+   "model": "anthropic/claude-sonnet-5.5",
+   "method": "generated",
+   "shape": {
+    "id": "the-locked-carousel",
+    "hash": "sha256:66d70a41cd1c65581a19f1c81e411ec4caf234db3939dbf5d91bb44be1c28393"
+   },
+   "book_file": null,
+   "book_sha256": null,
+   "authored": "2026-11-21",
+   "authoring_minutes": null,
+   "checks": {
+    "ok": true,
+    "errors": 0,
+    "warnings": 1
+   },
+   "approver": null,
+   "notes": [
+    "built from model pitch 1 of 3"
+   ]
+  }
+ },
+ "totals": {
+  "calls": 4,
+  "input_tokens": 65248,
+  "output_tokens": 43953,
+  "reasoning_tokens": 3315,
+  "cost_estimate_usd": 0.570026,
+  "vendor_cost_usd": 0.55795,
+  "provider_seconds": 225.0
+ },
+ "budget": {
+  "budget_usd": 8.0,
+  "spent_before_usd": 0.285664,
+  "spent_after_usd": 0.85569
+ }
+}

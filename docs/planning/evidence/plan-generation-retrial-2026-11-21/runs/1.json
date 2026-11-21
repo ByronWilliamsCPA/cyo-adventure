@@ -1,0 +1,2124 @@
+{
+ "run": 1,
+ "request": {
+  "id": "P01",
+  "source": "docs/planning/evidence/short-request-panel/panel.json requests[id=P01]",
+  "text": "a story about my dog who gets lost in the woods",
+  "band": "8-11",
+  "length": "short",
+  "style": "prose",
+  "selection_note": "panel order, band 8-11 first (panel README); length short as fixed"
+ },
+ "shape": {
+  "id": "the-locked-carousel",
+  "hash": "sha256:66d70a41cd1c65581a19f1c81e411ec4caf234db3939dbf5d91bb44be1c28393",
+  "selection": "cell pick (authoring_plan._pick_shape, seeded by request id)",
+  "cell": {
+   "band": "8-11",
+   "length": "short",
+   "style": "prose"
+  },
+  "cell_candidates": [
+   "the-cave-of-echoes",
+   "the-half-hour-call",
+   "the-locked-carousel",
+   "the-robot-fair-sabotage"
+  ],
+  "retained_in_cell": [
+   "the-locked-carousel",
+   "the-cave-of-echoes"
+  ],
+  "nodes": 71,
+  "choices": 118,
+  "variables": 0,
+  "request_seed_id": "f7ef8bd7-04cb-54e9-a23f-4d99a6ceb7a7"
+ },
+ "model": "anthropic/claude-sonnet-5.5",
+ "reasoning": "explicit: llm_effort='low' sent as reasoning.effort",
+ "max_repairs": 2,
+ "brief": {
+  "premise": "a story about my dog who gets lost in the woods",
+  "protagonist": {
+   "name": "Explorer",
+   "age": 8,
+   "role": "a curious young adventurer"
+  },
+  "point_of_view": "second",
+  "age_band": "8-11",
+  "tone": "gentle",
+  "themes_allowed": [],
+  "content_nogo": []
+ },
+ "stage0": {
+  "status": "skipped",
+  "reason": "no OPENAI_API_KEY in this environment (owner-approved skip, 2026-11-21); production classifier_screen(None) ran and called nothing",
+  "pitch_strings_offered": 5
+ },
+ "calls": [
+  {
+   "index": 0,
+   "kind": "pitch",
+   "max_tokens": 2000,
+   "prompt_chars": 2648,
+   "worst_case_usd": 0.02265,
+   "spent_before_usd": 0.0,
+   "model": "anthropic/claude-sonnet-5.5",
+   "provider": "openrouter",
+   "input_tokens": 1006,
+   "output_tokens": 532,
+   "reasoning_tokens": 0,
+   "finish_reason": "stop",
+   "cost_estimate_usd": 0.007332,
+   "vendor_cost_usd": 0.007652,
+   "latency_s": 5.3,
+   "provider_duration_ms": 5256,
+   "response_chars": 1430
+  },
+  {
+   "index": 1,
+   "kind": "plan_1",
+   "max_tokens": 32000,
+   "prompt_chars": 17948,
+   "worst_case_usd": 0.33795,
+   "spent_before_usd": 0.007652,
+   "model": "anthropic/claude-sonnet-5.5",
+   "provider": "openrouter",
+   "input_tokens": 7484,
+   "output_tokens": 12302,
+   "reasoning_tokens": 1657,
+   "finish_reason": "stop",
+   "cost_estimate_usd": 0.137988,
+   "vendor_cost_usd": 0.139582,
+   "latency_s": 77.4,
+   "provider_duration_ms": 77368,
+   "response_chars": 24966
+  }
+ ],
+ "wall_seconds": 82.7,
+ "stopped": null,
+ "story_plan_status": "checked",
+ "attempts": 1,
+ "stage_log": [
+  "pitch:1",
+  "plan:1:errors=0"
+ ],
+ "pitches": [
+  {
+   "index": 0,
+   "source": "model",
+   "passed": true,
+   "reasons": [],
+   "advisories": [],
+   "pitch": {
+    "hero": "Explorer, a curious 8-year-old adventurer, and their dog Biscuit",
+    "want": "To find Biscuit, who ran off into the woods, and bring him home before dark",
+    "obstacle": "Trails fork again and again, and a thick afternoon mist hides the paw prints Explorer is following",
+    "stake": "If Explorer is not home by dusk, Biscuit must spend the night alone in the cold woods",
+    "ending_kind": "a warm reunion with Biscuit at the edge of the woods"
+   }
+  },
+  {
+   "index": 1,
+   "source": "model",
+   "passed": false,
+   "reasons": [
+    "not screened"
+   ],
+   "advisories": [],
+   "pitch": null
+  },
+  {
+   "index": 2,
+   "source": "model",
+   "passed": false,
+   "reasons": [
+    "not screened"
+   ],
+   "advisories": [],
+   "pitch": null
+  }
+ ],
+ "attempt_findings": [
+  {
+   "attempt": 1,
+   "loaded": true,
+   "dropped_keys": [],
+   "ok": true,
+   "errors_by_rule": {},
+   "warnings_by_rule": {},
+   "findings": []
+  }
+ ],
+ "replay_consistent": true,
+ "final_checks": {
+  "ok": true,
+  "findings": []
+ },
+ "load_errors": [],
+ "plan": {
+  "plan_version": "0.1",
+  "book": null,
+  "request": {
+   "text": "a story about my dog who gets lost in the woods",
+   "band": "8-11",
+   "length": "short",
+   "style": "prose",
+   "tone": null,
+   "note": null
+  },
+  "pitch": {
+   "hero": "Explorer, a curious 8-year-old adventurer, and their dog Biscuit",
+   "want": "To find Biscuit, who ran off into the woods, and bring him home before dark",
+   "obstacle": "Trails fork again and again, and a thick afternoon mist hides the paw prints Explorer is following",
+   "stake": "If Explorer is not home by dusk, Biscuit must spend the night alone in the cold woods",
+   "ending_kind": "a warm reunion with Biscuit at the edge of the woods"
+  },
+  "cast": {
+   "explorer": {
+    "name": "Explorer",
+    "role": "a curious 8-year-old adventurer",
+    "want": "find Biscuit and bring him home before dark",
+    "voice": "brave, curious and kind",
+    "knows": [
+     "f1",
+     "f2",
+     "f3"
+    ]
+   },
+   "biscuit": {
+    "name": "Biscuit",
+    "role": "Explorer's loyal, wandering dog",
+    "want": "to chase scents and then get back to Explorer",
+    "voice": "barks, whines and a jingling collar bell",
+    "knows": [
+     "t_hollow"
+    ]
+   },
+   "gran": {
+    "name": "Gran",
+    "role": "Explorer's grandmother waiting at the gate",
+    "want": "to see both of them home safe",
+    "voice": "warm and calm",
+    "knows": [
+     "f2"
+    ]
+   }
+  },
+  "truth": {
+   "statement": "Biscuit chased a rabbit's scent, got turned around in the mist, and is sheltering in the hollow under the fallen oak, where his collar bell can be heard.",
+   "facts": [
+    "t_bell",
+    "t_hollow"
+   ],
+   "question": "Where did Biscuit go when he ran into the woods?"
+  },
+  "facts": {
+   "f1": {
+    "text": "Biscuit ran into the woods after something and Explorer must find him.",
+    "contradicts": [],
+    "implicit_plant": null
+   },
+   "f2": {
+    "text": "Gran said Explorer must be home by dusk.",
+    "contradicts": [],
+    "implicit_plant": null
+   },
+   "f3": {
+    "text": "A thick afternoon mist hides the paw prints Explorer is following.",
+    "contradicts": [],
+    "implicit_plant": null
+   },
+   "f4": {
+    "text": "Explorer stands at a fork where many trails leave the clearing.",
+    "contradicts": [],
+    "implicit_plant": null
+   },
+   "f5": {
+    "text": "Explorer finds a trail marked by a mossy stump.",
+    "contradicts": [],
+    "implicit_plant": null
+   },
+   "f6": {
+    "text": "Explorer sees a half-hidden paw print by the stump.",
+    "contradicts": [],
+    "implicit_plant": null
+   },
+   "f7": {
+    "text": "Explorer finds a bent fern that might mark a dog's path.",
+    "contradicts": [],
+    "implicit_plant": null
+   },
+   "f8": {
+    "text": "Explorer finds a bramble gap too narrow to follow.",
+    "contradicts": [],
+    "implicit_plant": null
+   },
+   "f9": {
+    "text": "Explorer hears a distant bark that echoes off the trees.",
+    "contradicts": [],
+    "implicit_plant": null
+   },
+   "f10": {
+    "text": "Explorer finds a muddy track that circles back to the fork.",
+    "contradicts": [],
+    "implicit_plant": null
+   },
+   "f12": {
+    "text": "Explorer reaches a stream with stepping stones.",
+    "contradicts": [],
+    "implicit_plant": null
+   },
+   "f13": {
+    "text": "Explorer finds a wet paw print on a stone and a loose branch.",
+    "contradicts": [],
+    "implicit_plant": null
+   },
+   "f14": {
+    "text": "Explorer crosses the stones and sees a fox-sized shape in the mist.",
+    "contradicts": [],
+    "implicit_plant": null
+   },
+   "f15": {
+    "text": "Explorer follows the stream bank and finds a drift of ferns.",
+    "contradicts": [],
+    "implicit_plant": null
+   },
+   "f16": {
+    "text": "Explorer finds a fallen scrap of Biscuit's blue ribbon on the bank.",
+    "contradicts": [],
+    "implicit_plant": null
+   },
+   "f17": {
+    "text": "Explorer stands at a clearing where the stream trail meets another path.",
+    "contradicts": [],
+    "implicit_plant": null
+   },
+   "f18": {
+    "text": "Explorer finds fresh rabbit tracks beside the stream path.",
+    "contradicts": [],
+    "implicit_plant": null
+   },
+   "f19": {
+    "text": "Explorer finds a leaf pile that Biscuit has clearly dug in.",
+    "contradicts": [],
+    "implicit_plant": null
+   },
+   "f21": {
+    "text": "Explorer reaches a pine grove with soft needles.",
+    "contradicts": [],
+    "implicit_plant": null
+   },
+   "f22": {
+    "text": "Explorer finds a pinecone trail that fades into the needles.",
+    "contradicts": [],
+    "implicit_plant": null
+   },
+   "f23": {
+    "text": "Explorer finds a squirrel's nest and a faint scratch on a trunk.",
+    "contradicts": [],
+    "implicit_plant": null
+   },
+   "f24": {
+    "text": "Explorer reaches a ring of tall pines where paths cross.",
+    "contradicts": [],
+    "implicit_plant": null
+   },
+   "f25": {
+    "text": "Explorer finds a hint of Biscuit's fur on a low branch.",
+    "contradicts": [],
+    "implicit_plant": null
+   },
+   "f26": {
+    "text": "Explorer climbs a rocky rise above the mist.",
+    "contradicts": [],
+    "implicit_plant": null
+   },
+   "f27": {
+    "text": "Explorer sees treetops and a far-off hollow from the rise.",
+    "contradicts": [],
+    "implicit_plant": null
+   },
+   "f28": {
+    "text": "Explorer reaches a ledge where two ways run on.",
+    "contradicts": [],
+    "implicit_plant": null
+   },
+   "f29": {
+    "text": "Explorer finds a dry creek bed crossing the path.",
+    "contradicts": [],
+    "implicit_plant": null
+   },
+   "f30": {
+    "text": "Explorer finds a wide mossy path leading down.",
+    "contradicts": [],
+    "implicit_plant": null
+   },
+   "f31": {
+    "text": "Explorer finds a muddy dip with one small paw print.",
+    "contradicts": [],
+    "implicit_plant": null
+   },
+   "f32": {
+    "text": "Explorer finds a crooked sign that points two ways.",
+    "contradicts": [],
+    "implicit_plant": null
+   },
+   "f34": {
+    "text": "Explorer reaches a meadow of tall grass wet with mist.",
+    "contradicts": [],
+    "implicit_plant": null
+   },
+   "f35": {
+    "text": "Explorer finds a trampled patch where Biscuit may have rolled.",
+    "contradicts": [],
+    "implicit_plant": null
+   },
+   "f36": {
+    "text": "Explorer meets an old stone bridge over a gully.",
+    "contradicts": [],
+    "implicit_plant": null
+   },
+   "f37": {
+    "text": "Explorer hears a faint jingle like a collar bell near the bridge.",
+    "contradicts": [],
+    "implicit_plant": null
+   },
+   "f38": {
+    "text": "Explorer checks under the bridge and finds only a duck feather.",
+    "contradicts": [],
+    "implicit_plant": null
+   },
+   "f39": {
+    "text": "Explorer finds a path beyond the bridge heading toward a big oak.",
+    "contradicts": [],
+    "implicit_plant": null
+   },
+   "f41": {
+    "text": "Explorer finds a berry thicket with chewed stems.",
+    "contradicts": [],
+    "implicit_plant": null
+   },
+   "f42": {
+    "text": "Explorer finds berry juice on a rock that looks like a paw smudge.",
+    "contradicts": [],
+    "implicit_plant": null
+   },
+   "f43": {
+    "text": "Explorer reaches a ferny dell with three exits.",
+    "contradicts": [],
+    "implicit_plant": null
+   },
+   "f44": {
+    "text": "Explorer takes the left exit and finds a log with a pawprint.",
+    "contradicts": [],
+    "implicit_plant": null
+   },
+   "f45": {
+    "text": "Explorer follows the log trail and finds a damp knot of leaves.",
+    "contradicts": [],
+    "implicit_plant": null
+   },
+   "f46": {
+    "text": "Explorer takes the middle exit and finds a heap of old branches.",
+    "contradicts": [],
+    "implicit_plant": null
+   },
+   "f47": {
+    "text": "Explorer takes the right exit and finds a rusty gate post.",
+    "contradicts": [],
+    "implicit_plant": null
+   },
+   "f50": {
+    "text": "Explorer reaches the big oak clearing as the light turns gold.",
+    "contradicts": [],
+    "implicit_plant": null
+   },
+   "f51": {
+    "text": "Explorer stops to rest and lets the mist drift while listening.",
+    "contradicts": [],
+    "implicit_plant": null
+   },
+   "f52": {
+    "text": "Explorer hears the woods grow quiet and knows dusk is near.",
+    "contradicts": [],
+    "implicit_plant": null
+   },
+   "f53": {
+    "text": "Explorer calls out Biscuit's name and waits for an answer.",
+    "contradicts": [],
+    "implicit_plant": null
+   },
+   "t_bell": {
+    "text": "A faint collar bell jingles from under the fallen oak.",
+    "contradicts": [],
+    "implicit_plant": null
+   },
+   "t_hollow": {
+    "text": "Biscuit is sheltering in the hollow under the fallen oak.",
+    "contradicts": [],
+    "implicit_plant": null
+   },
+   "f57": {
+    "text": "Explorer decides to crawl in by the root side of the hollow.",
+    "contradicts": [],
+    "implicit_plant": null
+   },
+   "f58": {
+    "text": "Explorer reaches in gently and feels Biscuit's wet nose.",
+    "contradicts": [],
+    "implicit_plant": null
+   },
+   "f59": {
+    "text": "Explorer coaxes Biscuit out with a soft whistle.",
+    "contradicts": [],
+    "implicit_plant": null
+   },
+   "f60": {
+    "text": "Explorer decides to call from the top of the log.",
+    "contradicts": [],
+    "implicit_plant": null
+   },
+   "f61": {
+    "text": "Explorer hears Biscuit's tail thump inside the hollow.",
+    "contradicts": [],
+    "implicit_plant": null
+   },
+   "f62": {
+    "text": "Explorer sees two bright eyes peek out of the hollow.",
+    "contradicts": [],
+    "implicit_plant": null
+   },
+   "f63": {
+    "text": "Explorer decides to share the last biscuit from a pocket.",
+    "contradicts": [],
+    "implicit_plant": null
+   },
+   "f64": {
+    "text": "Explorer holds out the treat and Biscuit sniffs it.",
+    "contradicts": [],
+    "implicit_plant": null
+   },
+   "f65": {
+    "text": "Explorer sits still until Biscuit creeps out on his own.",
+    "contradicts": [],
+    "implicit_plant": null
+   }
+  },
+  "nodes": {
+   "n_start": {
+    "function": "opening",
+    "event": "Biscuit bolts into the woods after something and Explorer watches him vanish.",
+    "requires": [],
+    "establishes": [
+     "f1"
+    ]
+   },
+   "n_gate": {
+    "function": "continue",
+    "event": "Gran tells Explorer to be home by dusk and Explorer sets out.",
+    "requires": [
+     "f1"
+    ],
+    "establishes": [
+     "f2"
+    ]
+   },
+   "n_notice": {
+    "function": "continue",
+    "event": "Mist rolls over the trees and hides the paw prints Explorer follows.",
+    "requires": [
+     "f2"
+    ],
+    "establishes": [
+     "f3"
+    ]
+   },
+   "n_hub": {
+    "function": "merge",
+    "event": "Explorer stands at a fork in the trails with many ways to go.",
+    "requires": [
+     "f3"
+    ],
+    "establishes": [
+     "f4"
+    ]
+   },
+   "tb_booth": {
+    "function": "decision",
+    "event": "Explorer takes the mossy stump trail and looks for signs.",
+    "requires": [
+     "f4"
+    ],
+    "establishes": [
+     "f5"
+    ]
+   },
+   "tb_ledgers": {
+    "function": "decision",
+    "event": "Explorer spots a half-hidden paw print by the stump.",
+    "requires": [
+     "f4"
+    ],
+    "establishes": [
+     "f6"
+    ]
+   },
+   "tb_recent": {
+    "function": "decision",
+    "event": "Explorer finds a bent fern and wonders if a dog passed.",
+    "requires": [
+     "f4"
+    ],
+    "establishes": [
+     "f7"
+    ]
+   },
+   "tb_old": {
+    "function": "decision",
+    "event": "Explorer finds a bramble gap too narrow to push through.",
+    "requires": [
+     "f4"
+    ],
+    "establishes": [
+     "f8"
+    ]
+   },
+   "tb_office": {
+    "function": "decision",
+    "event": "A bark echoes through the trees from an unclear direction.",
+    "requires": [
+     "f4"
+    ],
+    "establishes": [
+     "f9"
+    ]
+   },
+   "tb_photo": {
+    "function": "decision",
+    "event": "Explorer follows a muddy track that bends back toward the fork.",
+    "requires": [
+     "f4"
+    ],
+    "establishes": [
+     "f10"
+    ]
+   },
+   "e_set_doze": {
+    "function": "ending",
+    "event": "Explorer follows the echo in circles until the trail is lost and returns to rest, a little behind.",
+    "requires": [
+     "f4"
+    ],
+    "establishes": []
+   },
+   "hm_door": {
+    "function": "decision",
+    "event": "Explorer reaches a stream with stepping stones.",
+    "requires": [
+     "f4"
+    ],
+    "establishes": [
+     "f12"
+    ]
+   },
+   "hm_echo": {
+    "function": "continue",
+    "event": "Explorer finds a wet paw print on a stone.",
+    "requires": [
+     "f4"
+    ],
+    "establishes": [
+     "f13"
+    ]
+   },
+   "hm_tall": {
+    "function": "decision",
+    "event": "Explorer crosses the stones and sees a shape in the mist.",
+    "requires": [
+     "f4"
+    ],
+    "establishes": [
+     "f14"
+    ]
+   },
+   "hm_bent": {
+    "function": "decision",
+    "event": "Explorer follows the bank into a drift of ferns.",
+    "requires": [
+     "f4"
+    ],
+    "establishes": [
+     "f15"
+    ]
+   },
+   "hm_plank": {
+    "function": "decision",
+    "event": "Explorer finds a scrap of Biscuit's blue ribbon on the bank.",
+    "requires": [
+     "f4"
+    ],
+    "establishes": [
+     "f16"
+    ]
+   },
+   "hm_rotunda": {
+    "function": "merge",
+    "event": "Stream trails meet at a clearing with several paths.",
+    "requires": [
+     "f4"
+    ],
+    "establishes": [
+     "f17"
+    ]
+   },
+   "hm_behind": {
+    "function": "decision",
+    "event": "Explorer finds fresh rabbit tracks beside the path.",
+    "requires": [
+     "f4"
+    ],
+    "establishes": [
+     "f18"
+    ]
+   },
+   "hm_flicker": {
+    "function": "decision",
+    "event": "Explorer finds a leaf pile Biscuit has dug in.",
+    "requires": [
+     "f4"
+    ],
+    "establishes": [
+     "f19"
+    ]
+   },
+   "e_set_lost": {
+    "function": "ending",
+    "event": "The shape was only a stump; Explorer slips and has to dry off and head back.",
+    "requires": [
+     "f4"
+    ],
+    "establishes": []
+   },
+   "ws_door": {
+    "function": "decision",
+    "event": "Explorer enters a pine grove with soft needles.",
+    "requires": [
+     "f4"
+    ],
+    "establishes": [
+     "f21"
+    ]
+   },
+   "ws_tools": {
+    "function": "decision",
+    "event": "A pinecone trail fades into the needles.",
+    "requires": [
+     "f4"
+    ],
+    "establishes": [
+     "f22"
+    ]
+   },
+   "ws_horse": {
+    "function": "decision",
+    "event": "Explorer finds a squirrel nest and scratches on a trunk.",
+    "requires": [
+     "f4"
+    ],
+    "establishes": [
+     "f23"
+    ]
+   },
+   "ws_bench": {
+    "function": "merge",
+    "event": "Explorer reaches a ring of pines where paths cross.",
+    "requires": [
+     "f4"
+    ],
+    "establishes": [
+     "f24"
+    ]
+   },
+   "ws_crate": {
+    "function": "decision",
+    "event": "Explorer finds a tuft of Biscuit's fur on a low branch.",
+    "requires": [
+     "f4"
+    ],
+    "establishes": [
+     "f25"
+    ]
+   },
+   "bw_steps": {
+    "function": "decision",
+    "event": "Explorer climbs a rocky rise above the mist.",
+    "requires": [
+     "f4"
+    ],
+    "establishes": [
+     "f26"
+    ]
+   },
+   "bw_pilings": {
+    "function": "decision",
+    "event": "From the rise Explorer sees treetops and a distant hollow.",
+    "requires": [
+     "f4"
+    ],
+    "establishes": [
+     "f27"
+    ]
+   },
+   "bw_catwalk": {
+    "function": "merge",
+    "event": "Explorer reaches a ledge where two ways run on.",
+    "requires": [
+     "f4"
+    ],
+    "establishes": [
+     "f28"
+    ]
+   },
+   "bw_footing": {
+    "function": "merge",
+    "event": "A dry creek bed crosses the path.",
+    "requires": [
+     "f4"
+    ],
+    "establishes": [
+     "f29"
+    ]
+   },
+   "bw_pierhead": {
+    "function": "decision",
+    "event": "Explorer takes a wide mossy path leading down.",
+    "requires": [
+     "f4"
+    ],
+    "establishes": [
+     "f30"
+    ]
+   },
+   "bw_watch": {
+    "function": "decision",
+    "event": "Explorer finds a muddy dip with one small paw print.",
+    "requires": [
+     "f4"
+    ],
+    "establishes": [
+     "f31"
+    ]
+   },
+   "bw_call": {
+    "function": "decision",
+    "event": "Explorer finds a crooked sign pointing two ways.",
+    "requires": [
+     "f4"
+    ],
+    "establishes": [
+     "f32"
+    ]
+   },
+   "e_set_tide": {
+    "function": "ending",
+    "event": "Explorer slides down a slope, scrapes a knee, and must climb back and rest.",
+    "requires": [
+     "f4"
+    ],
+    "establishes": []
+   },
+   "cv_door": {
+    "function": "merge",
+    "event": "Explorer enters a meadow of tall wet grass.",
+    "requires": [
+     "f4"
+    ],
+    "establishes": [
+     "f34"
+    ]
+   },
+   "cv_window": {
+    "function": "decision",
+    "event": "Explorer finds a trampled patch where Biscuit may have rolled.",
+    "requires": [
+     "f4"
+    ],
+    "establishes": [
+     "f35"
+    ]
+   },
+   "cv_knock": {
+    "function": "merge",
+    "event": "Explorer reaches an old stone bridge over a gully.",
+    "requires": [
+     "f4"
+    ],
+    "establishes": [
+     "f36"
+    ]
+   },
+   "cv_table": {
+    "function": "decision",
+    "event": "Explorer hears a faint jingle near the bridge.",
+    "requires": [
+     "f4"
+    ],
+    "establishes": [
+     "f37"
+    ]
+   },
+   "cv_shims": {
+    "function": "decision",
+    "event": "Explorer checks under the bridge and finds a duck feather.",
+    "requires": [
+     "f4"
+    ],
+    "establishes": [
+     "f38"
+    ]
+   },
+   "cv_ondine": {
+    "function": "merge",
+    "event": "Explorer finds a path beyond the bridge toward a big oak.",
+    "requires": [
+     "f4"
+    ],
+    "establishes": [
+     "f39"
+    ]
+   },
+   "e_disc_stories": {
+    "function": "ending",
+    "event": "Explorer follows the jingle to a wind chime on a branch and learns the woods can trick the ear.",
+    "requires": [
+     "f4"
+    ],
+    "establishes": []
+   },
+   "ol_stairs": {
+    "function": "decision",
+    "event": "Explorer finds a berry thicket with chewed stems.",
+    "requires": [
+     "f4"
+    ],
+    "establishes": [
+     "f41"
+    ]
+   },
+   "ol_listen": {
+    "function": "decision",
+    "event": "Berry juice smudges a rock like a paw print.",
+    "requires": [
+     "f4"
+    ],
+    "establishes": [
+     "f42"
+    ]
+   },
+   "ol_loft": {
+    "function": "merge",
+    "event": "Explorer reaches a ferny dell with three exits.",
+    "requires": [
+     "f4"
+    ],
+    "establishes": [
+     "f43"
+    ]
+   },
+   "ol_key": {
+    "function": "decision",
+    "event": "Explorer takes the left exit and finds a log with a paw print.",
+    "requires": [
+     "f4"
+    ],
+    "establishes": [
+     "f44"
+    ]
+   },
+   "ol_after": {
+    "function": "decision",
+    "event": "Explorer follows the log trail to a knot of damp leaves.",
+    "requires": [
+     "f4"
+    ],
+    "establishes": [
+     "f45"
+    ]
+   },
+   "ol_rolls": {
+    "function": "decision",
+    "event": "Explorer takes the middle exit and finds a heap of old branches.",
+    "requires": [
+     "f4"
+    ],
+    "establishes": [
+     "f46"
+    ]
+   },
+   "ol_crest": {
+    "function": "decision",
+    "event": "Explorer takes the right exit and finds a rusty gate post.",
+    "requires": [
+     "f4"
+    ],
+    "establishes": [
+     "f47"
+    ]
+   },
+   "e_set_bolt": {
+    "function": "ending",
+    "event": "The left trail ends at a muddy pond and Explorer returns tired and muddy.",
+    "requires": [
+     "f4"
+    ],
+    "establishes": []
+   },
+   "e_disc_waltz": {
+    "function": "ending",
+    "event": "Behind the branches Explorer finds a quiet nook and a new view of the woods.",
+    "requires": [
+     "f4"
+    ],
+    "establishes": []
+   },
+   "fin_approach": {
+    "function": "merge",
+    "event": "Explorer reaches the big oak clearing as the light turns gold.",
+    "requires": [
+     "f4"
+    ],
+    "establishes": [
+     "f50"
+    ]
+   },
+   "fin_notice": {
+    "function": "decision",
+    "event": "Explorer rests and listens while the mist drifts.",
+    "requires": [
+     "f4"
+    ],
+    "establishes": [
+     "f51"
+    ]
+   },
+   "fin_climb": {
+    "function": "merge",
+    "event": "The woods grow quiet and dusk draws near.",
+    "requires": [
+     "f4"
+    ],
+    "establishes": [
+     "f52"
+    ]
+   },
+   "fin_pry": {
+    "function": "decision",
+    "event": "Explorer calls Biscuit's name and waits.",
+    "requires": [
+     "f4"
+    ],
+    "establishes": [
+     "f53"
+    ]
+   },
+   "fin_press": {
+    "function": "merge",
+    "event": "A faint collar bell jingles from beneath the fallen oak.",
+    "requires": [
+     "f4"
+    ],
+    "establishes": [
+     "t_bell"
+    ]
+   },
+   "fin_drawings": {
+    "function": "decision",
+    "event": "Explorer finds the hollow under the fallen oak where Biscuit is hiding.",
+    "requires": [
+     "t_bell"
+    ],
+    "establishes": [
+     "t_hollow"
+    ]
+   },
+   "e_set_home": {
+    "function": "ending",
+    "event": "Explorer waits too long, the light fades, and Gran's lantern signal calls Explorer back to try again tomorrow.",
+    "requires": [
+     "f4"
+    ],
+    "establishes": []
+   },
+   "r_caretaker": {
+    "function": "decision",
+    "event": "Explorer chooses to crawl in by the root side.",
+    "requires": [
+     "t_hollow"
+    ],
+    "establishes": [
+     "f57"
+    ]
+   },
+   "r_meeting": {
+    "function": "continue",
+    "event": "Explorer reaches in and feels Biscuit's wet nose.",
+    "requires": [
+     "f57"
+    ],
+    "establishes": [
+     "f58"
+    ]
+   },
+   "r_inspector": {
+    "function": "continue",
+    "event": "Explorer whistles softly and coaxes Biscuit out.",
+    "requires": [
+     "f57"
+    ],
+    "establishes": [
+     "f59"
+    ]
+   },
+   "r_family": {
+    "function": "decision",
+    "event": "Explorer climbs on the log and decides to call down.",
+    "requires": [
+     "t_hollow"
+    ],
+    "establishes": [
+     "f60"
+    ]
+   },
+   "r_fund": {
+    "function": "continue",
+    "event": "Biscuit's tail thumps inside the hollow.",
+    "requires": [
+     "f60"
+    ],
+    "establishes": [
+     "f61"
+    ]
+   },
+   "r_crew": {
+    "function": "continue",
+    "event": "Two bright eyes peek out of the hollow.",
+    "requires": [
+     "f60"
+    ],
+    "establishes": [
+     "f62"
+    ]
+   },
+   "r_townhall": {
+    "function": "decision",
+    "event": "Explorer finds a biscuit treat in a pocket and decides to share it.",
+    "requires": [
+     "t_hollow"
+    ],
+    "establishes": [
+     "f63"
+    ]
+   },
+   "r_council": {
+    "function": "continue",
+    "event": "Explorer holds out the treat and Biscuit sniffs it.",
+    "requires": [
+     "f63"
+    ],
+    "establishes": [
+     "f64"
+    ]
+   },
+   "r_paper": {
+    "function": "continue",
+    "event": "Explorer sits still until Biscuit creeps out.",
+    "requires": [
+     "f63"
+    ],
+    "establishes": [
+     "f65"
+    ]
+   },
+   "e_festival": {
+    "function": "ending",
+    "event": "Explorer hugs Biscuit and they walk home before dark.",
+    "requires": [
+     "f58"
+    ],
+    "establishes": []
+   },
+   "e_permit": {
+    "function": "ending",
+    "event": "Biscuit leaps out and they race to the woods' edge together.",
+    "requires": [
+     "f59"
+    ],
+    "establishes": []
+   },
+   "e_fund": {
+    "function": "ending",
+    "event": "Biscuit tumbles out and licks Explorer's face at the woods' edge.",
+    "requires": [
+     "f61"
+    ],
+    "establishes": []
+   },
+   "e_crew": {
+    "function": "ending",
+    "event": "Biscuit trots out and Gran waves from the gate at dusk.",
+    "requires": [
+     "f62"
+    ],
+    "establishes": []
+   },
+   "e_council": {
+    "function": "ending",
+    "event": "Biscuit gobbles the treat and follows Explorer home in the last light.",
+    "requires": [
+     "f64"
+    ],
+    "establishes": []
+   },
+   "e_paper": {
+    "function": "ending",
+    "event": "Biscuit curls into Explorer's arms and they reach the gate together.",
+    "requires": [
+     "f65"
+    ],
+    "establishes": []
+   }
+  },
+  "choices": {
+   "c_start_out": {
+    "intent": "watch Biscuit run and then follow",
+    "cost": "leaves no time to call him back first",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_gate_midway": {
+    "intent": "promise Gran to be home by dusk",
+    "cost": "starts a clock on the search",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_notice_hub": {
+    "intent": "step into the mist after the prints",
+    "cost": "leaves the safe yard behind",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_hub_booth": {
+    "intent": "try the mossy stump trail",
+    "cost": "leaves the stream, pines, rise and meadow untried",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_hub_mirrors": {
+    "intent": "follow the sound of running water",
+    "cost": "leaves the dry trails unexplored",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_hub_workshop": {
+    "intent": "head into the dark pine grove",
+    "cost": "leaves the open trails unexplored",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_hub_boardwalk": {
+    "intent": "climb the rocky rise for a view",
+    "cost": "uses up time and energy",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_hub_caravan": {
+    "intent": "cross the tall wet meadow",
+    "cost": "soaks shoes and skips the rise",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_hub_organ": {
+    "intent": "check the berry thicket",
+    "cost": "leaves the other forks unchecked",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_hub_carousel": {
+    "intent": "go straight toward the big oak",
+    "cost": "skips clues along the other trails",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_tb_ledgers": {
+    "intent": "study the stump for prints",
+    "cost": "gives up following the echo",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_tb_office": {
+    "intent": "follow the distant bark",
+    "cost": "leaves the stump unsearched",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_tb_recent": {
+    "intent": "inspect the half-hidden print",
+    "cost": "leaves the ferns by the stump unseen",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_tb_old": {
+    "intent": "push through the bent ferns",
+    "cost": "scratches arms and skips the print",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_tb_recent_hub": {
+    "intent": "retrace the fern path to the fork",
+    "cost": "loses the progress made on this trail",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_tb_recent_fin": {
+    "intent": "press ahead to the oak",
+    "cost": "leaves the fern trail unfinished",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_tb_old_hub": {
+    "intent": "give up on the brambles and go back",
+    "cost": "wastes the minutes spent here",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_tb_old_fin": {
+    "intent": "find another way around to the oak",
+    "cost": "risks losing track of the paw prints",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_tb_photo": {
+    "intent": "trust the echo and keep going",
+    "cost": "leaves the other directions unchecked",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_tb_chair": {
+    "intent": "call back and chase the sound in circles",
+    "cost": "loses the trail in the mist",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_tb_photo_hub": {
+    "intent": "follow the muddy track back to the fork",
+    "cost": "returns to where Explorer began",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_tb_photo_fin": {
+    "intent": "cut across to the oak clearing",
+    "cost": "leaves the mud track unfollowed",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_hm_tall": {
+    "intent": "cross the stepping stones",
+    "cost": "risks wet feet and leaves the bank unchecked",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_hm_bent": {
+    "intent": "follow the bank downstream",
+    "cost": "leaves the far side unsearched",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_hm_hello": {
+    "intent": "look at the wet print on the stone",
+    "cost": "gives up the other routes here",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_hm_echo_glint": {
+    "intent": "go on to the path meeting",
+    "cost": "leaves the stone unexamined further",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_hm_tall_rotunda": {
+    "intent": "head on to the clearing",
+    "cost": "leaves the shape in the mist unchecked",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_hm_tall_hub": {
+    "intent": "go back to the fork",
+    "cost": "gives up the far side of the stream",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_hm_bent_steady": {
+    "intent": "head for the clearing",
+    "cost": "leaves the ferns unsearched",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_hm_bent_plank": {
+    "intent": "search the ferns",
+    "cost": "takes more time before dusk",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_hm_plank_rotunda": {
+    "intent": "carry the ribbon scrap to the clearing",
+    "cost": "skips looking further along the bank",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_hm_plank_hub": {
+    "intent": "return to the fork with the ribbon",
+    "cost": "gives up the stream trail",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_hm_swing": {
+    "intent": "check the rabbit tracks",
+    "cost": "leaves the leaf pile and the other paths",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_hm_flicker": {
+    "intent": "check the dug leaf pile",
+    "cost": "leaves the rabbit tracks unfollowed",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_hm_dash": {
+    "intent": "investigate the shape in the mist",
+    "cost": "may cost time and a slip",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_hm_behind_fin": {
+    "intent": "follow the tracks to the oak",
+    "cost": "leaves the other paths here unchecked",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_hm_behind_hub": {
+    "intent": "go back to the fork with news",
+    "cost": "leaves the oak path untried",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_hm_flicker_fin": {
+    "intent": "follow the digging toward the oak",
+    "cost": "gives up the tracks",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_hm_flicker_hub": {
+    "intent": "retreat to the fork",
+    "cost": "loses ground before dusk",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_ws_tools": {
+    "intent": "follow the pinecone trail",
+    "cost": "leaves the squirrel trunk unchecked",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_ws_horse": {
+    "intent": "inspect the squirrel nest",
+    "cost": "leaves the pinecone trail unfollowed",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_ws_bench": {
+    "intent": "head to the ring of pines",
+    "cost": "skips the nest and cones",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_ws_tools_fin": {
+    "intent": "follow the cones toward the oak",
+    "cost": "gives up the grove",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_ws_tools_hub": {
+    "intent": "turn back to the fork",
+    "cost": "leaves the cones behind",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_ws_horse_bench": {
+    "intent": "follow the scratches to the ring",
+    "cost": "leaves the nest behind",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_ws_horse_hub": {
+    "intent": "go back to the fork",
+    "cost": "leaves the scratched trunk unfollowed",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_ws_bench_fin": {
+    "intent": "head straight to the oak",
+    "cost": "leaves the fur on the branch unchecked",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_ws_bench_crate": {
+    "intent": "check the low branch for fur",
+    "cost": "leaves the oak path for later",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_ws_bench_hub": {
+    "intent": "return to the fork",
+    "cost": "gives up the pine ring",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_ws_crate_fin": {
+    "intent": "follow the fur clue to the oak",
+    "cost": "gives up the grove's other paths",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_ws_crate_hub": {
+    "intent": "retreat to the fork",
+    "cost": "leaves the fur clue behind",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_bw_pilings": {
+    "intent": "look from the high rock",
+    "cost": "leaves the ledge unexplored",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_bw_catwalk": {
+    "intent": "take the ledge path",
+    "cost": "skips the view from the rock",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_bw_footing": {
+    "intent": "head for the dry creek bed",
+    "cost": "skips the ledge",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_bw_ladder": {
+    "intent": "walk to the ledge",
+    "cost": "leaves the distant hollow unvisited",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_bw_arches": {
+    "intent": "slide down the steep side",
+    "cost": "risks a scraped knee and a lost trail",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_bw_beam": {
+    "intent": "cross the dry creek",
+    "cost": "leaves the mossy path untaken",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_bw_pierhead": {
+    "intent": "take the wide mossy path",
+    "cost": "leaves the creek crossing untried",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_bw_footing_fin": {
+    "intent": "follow the creek toward the oak",
+    "cost": "skips the path back",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_bw_footing_hub": {
+    "intent": "go back to the fork",
+    "cost": "gives up the creek bed",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_bw_watch": {
+    "intent": "look at the muddy dip",
+    "cost": "leaves the sign unread",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_bw_call": {
+    "intent": "read the crooked sign",
+    "cost": "leaves the print unexamined",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_bw_watch_fin": {
+    "intent": "follow the paw print to the oak",
+    "cost": "gives up the sign",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_bw_watch_hub": {
+    "intent": "return to the fork",
+    "cost": "leaves the print behind",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_bw_call_caravan": {
+    "intent": "follow the sign toward the meadow",
+    "cost": "leaves the other arrow untaken",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_bw_call_hub": {
+    "intent": "turn back to the fork",
+    "cost": "gives up the sign's arrows",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_cv_knock": {
+    "intent": "head on to the bridge",
+    "cost": "skips searching the trampled grass",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_cv_window": {
+    "intent": "search the trampled patch",
+    "cost": "leaves the bridge for later",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_cv_window_knock": {
+    "intent": "move on to the bridge",
+    "cost": "gives up the grass clue",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_cv_window_slip": {
+    "intent": "retreat to the fork",
+    "cost": "loses the meadow progress",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_cv_sit": {
+    "intent": "cross onto the bridge",
+    "cost": "leaves the meadow behind",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_cv_favorite": {
+    "intent": "cross the bridge toward the oak",
+    "cost": "leaves under the bridge unchecked",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_cv_shims": {
+    "intent": "look under the bridge",
+    "cost": "delays the crossing",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_cv_stories": {
+    "intent": "follow the jingle",
+    "cost": "leaves the path to the oak",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_cv_shims_ondine": {
+    "intent": "cross and go on to the oak",
+    "cost": "gives up searching the gully",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_cv_shims_hub": {
+    "intent": "go back to the fork",
+    "cost": "leaves the bridge behind",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_cv_go": {
+    "intent": "follow the path to the oak",
+    "cost": "gives up the other bridge side",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_cv_think": {
+    "intent": "turn back to the fork",
+    "cost": "leaves the oak path untaken",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_ol_climb": {
+    "intent": "look at the chewed stems",
+    "cost": "leaves the smudged rock unchecked",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_ol_listen": {
+    "intent": "look at the smudged rock",
+    "cost": "leaves the stems unexamined",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_ol_up": {
+    "intent": "head to the dell",
+    "cost": "gives up the smudge clue",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_ol_down": {
+    "intent": "go back to the fork",
+    "cost": "leaves the smudge unexplained",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_ol_key": {
+    "intent": "take the left exit",
+    "cost": "leaves the middle and right exits",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_ol_rolls": {
+    "intent": "take the middle exit",
+    "cost": "leaves the left and right exits",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_ol_crest": {
+    "intent": "take the right exit",
+    "cost": "leaves the left and middle exits",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_ol_freeze": {
+    "intent": "follow the log trail",
+    "cost": "leaves the pond path",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_ol_bolt": {
+    "intent": "follow the muddy pond path",
+    "cost": "leaves the log trail",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_ol_after_fin": {
+    "intent": "carry on to the oak",
+    "cost": "leaves the damp leaves unsearched",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_ol_after_hub": {
+    "intent": "return to the fork",
+    "cost": "gives up the left exit",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_ol_rolls_fin": {
+    "intent": "push on to the oak",
+    "cost": "leaves the branch heap alone",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_ol_rolls_home": {
+    "intent": "look behind the branches",
+    "cost": "leaves the quick route to the oak",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_ol_rolls_hub": {
+    "intent": "go back to the fork",
+    "cost": "gives up the middle exit",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_ol_crest_fin": {
+    "intent": "follow the gate post line to the oak",
+    "cost": "leaves the gate unexplored",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_ol_crest_hub": {
+    "intent": "go back to the fork",
+    "cost": "gives up the right exit",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_fin_climb": {
+    "intent": "call out right away",
+    "cost": "skips resting to listen",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_fin_notice": {
+    "intent": "rest and listen first",
+    "cost": "uses precious light",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_fin_notice_climb": {
+    "intent": "go on after listening",
+    "cost": "leaves the rest unfinished",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_fin_notice_hub": {
+    "intent": "go back to the fork",
+    "cost": "gives up the oak clearing",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_fin_press": {
+    "intent": "follow the faint jingle",
+    "cost": "skips calling again",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_fin_pry": {
+    "intent": "call Biscuit's name again",
+    "cost": "uses more of the fading light",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_fin_pry_press": {
+    "intent": "listen closely to the jingle",
+    "cost": "gives up waiting for an answer",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_fin_pry_home": {
+    "intent": "keep waiting in place",
+    "cost": "lets the dusk close in",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_fin_open": {
+    "intent": "step toward the fallen oak",
+    "cost": "leaves the clearing behind",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_fin_caretaker": {
+    "intent": "crawl in by the roots",
+    "cost": "leaves the log top and treat options",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_fin_family": {
+    "intent": "call from the top of the log",
+    "cost": "leaves the crawl and treat options",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_fin_town": {
+    "intent": "offer the pocket treat",
+    "cost": "leaves the crawl and call options",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_r_meeting": {
+    "intent": "reach in gently",
+    "cost": "gives up whistling him out",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_r_inspector": {
+    "intent": "whistle softly",
+    "cost": "gives up reaching in",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_r_meeting_end": {
+    "intent": "hug Biscuit and lead him home",
+    "cost": "none",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_r_inspector_end": {
+    "intent": "race home together",
+    "cost": "none",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_r_fund": {
+    "intent": "listen to the thump",
+    "cost": "gives up peeking in",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_r_crew": {
+    "intent": "peek down the hollow",
+    "cost": "gives up listening",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_r_fund_end": {
+    "intent": "greet Biscuit at the opening",
+    "cost": "none",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_r_crew_end": {
+    "intent": "wave to Gran with Biscuit",
+    "cost": "none",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_r_council": {
+    "intent": "hold the treat out",
+    "cost": "gives up waiting quietly",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_r_paper": {
+    "intent": "sit and wait quietly",
+    "cost": "gives up holding the treat out",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_r_council_end": {
+    "intent": "feed Biscuit and head home",
+    "cost": "none",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_r_paper_end": {
+    "intent": "cuddle Biscuit and head home",
+    "cost": "none",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   }
+  },
+  "threads": {},
+  "endings": {
+   "e_set_doze": {
+    "gift": "A giggle at chasing an echo in circles, and a reason to try another trail.",
+    "valence": null,
+    "kind": null
+   },
+   "e_set_lost": {
+    "gift": "A laugh that the scary shape was a stump, and a reason to try another trail.",
+    "valence": null,
+    "kind": null
+   },
+   "e_set_tide": {
+    "gift": "A lesson about careful footing and a reason to climb again.",
+    "valence": null,
+    "kind": null
+   },
+   "e_disc_stories": {
+    "gift": "The reveal that a wind chime fooled the ear, and a reason to listen again.",
+    "valence": null,
+    "kind": null
+   },
+   "e_set_bolt": {
+    "gift": "A muddy giggle and a reason to pick a different exit.",
+    "valence": null,
+    "kind": null
+   },
+   "e_disc_waltz": {
+    "gift": "A secret quiet nook discovered, and a reason to look for more.",
+    "valence": null,
+    "kind": null
+   },
+   "e_set_home": {
+    "gift": "A cozy promise to search again at dawn, and a reason to go faster.",
+    "valence": null,
+    "kind": null
+   },
+   "e_festival": {
+    "gift": "A warm reunion hug at the edge of the woods.",
+    "valence": null,
+    "kind": null
+   },
+   "e_permit": {
+    "gift": "A joyful race home with Biscuit before dark.",
+    "valence": null,
+    "kind": null
+   },
+   "e_fund": {
+    "gift": "A happy lick and a gentle reunion at the woods' edge.",
+    "valence": null,
+    "kind": null
+   },
+   "e_crew": {
+    "gift": "A reunion in view of Gran's wave at dusk.",
+    "valence": null,
+    "kind": null
+   },
+   "e_council": {
+    "gift": "A sweet treat shared and a happy walk home.",
+    "valence": null,
+    "kind": null
+   },
+   "e_paper": {
+    "gift": "A snuggly reunion and a safe arrival home.",
+    "valence": null,
+    "kind": null
+   }
+  },
+  "provenance": {
+   "producer": "cyo_adventure.storyplan.generate",
+   "model": "anthropic/claude-sonnet-5.5",
+   "method": "generated",
+   "shape": {
+    "id": "the-locked-carousel",
+    "hash": "sha256:66d70a41cd1c65581a19f1c81e411ec4caf234db3939dbf5d91bb44be1c28393"
+   },
+   "book_file": null,
+   "book_sha256": null,
+   "authored": "2026-11-21",
+   "authoring_minutes": null,
+   "checks": {
+    "ok": true,
+    "errors": 0,
+    "warnings": 0
+   },
+   "approver": null,
+   "notes": [
+    "built from model pitch 1 of 3"
+   ]
+  }
+ },
+ "totals": {
+  "calls": 2,
+  "input_tokens": 8490,
+  "output_tokens": 12834,
+  "reasoning_tokens": 1657,
+  "cost_estimate_usd": 0.14532,
+  "vendor_cost_usd": 0.147234,
+  "provider_seconds": 82.7
+ },
+ "budget": {
+  "budget_usd": 8.0,
+  "spent_before_usd": 0.0,
+  "spent_after_usd": 0.147234
+ }
+}

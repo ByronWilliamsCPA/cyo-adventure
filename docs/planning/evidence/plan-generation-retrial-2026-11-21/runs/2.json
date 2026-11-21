@@ -1,0 +1,1953 @@
+{
+ "run": 2,
+ "request": {
+  "id": "P02",
+  "source": "docs/planning/evidence/short-request-panel/panel.json requests[id=P02]",
+  "text": "a dragon who is scared of fire",
+  "band": "8-11",
+  "length": "short",
+  "style": "prose",
+  "selection_note": "panel order, band 8-11 first (panel README); length short as fixed"
+ },
+ "shape": {
+  "id": "the-cave-of-echoes",
+  "hash": "sha256:70c334341d9e40bc1b272bcb9254c354308a798799ecafe3c75e0564f017a628",
+  "selection": "cell pick (authoring_plan._pick_shape, seeded by request id)",
+  "cell": {
+   "band": "8-11",
+   "length": "short",
+   "style": "prose"
+  },
+  "cell_candidates": [
+   "the-cave-of-echoes",
+   "the-half-hour-call",
+   "the-locked-carousel",
+   "the-robot-fair-sabotage"
+  ],
+  "retained_in_cell": [
+   "the-locked-carousel",
+   "the-cave-of-echoes"
+  ],
+  "nodes": 65,
+  "choices": 64,
+  "variables": 0,
+  "request_seed_id": "6842e60d-5079-5275-b388-cce4e576b74a"
+ },
+ "model": "anthropic/claude-sonnet-5.5",
+ "reasoning": "explicit: llm_effort='low' sent as reasoning.effort",
+ "max_repairs": 2,
+ "brief": {
+  "premise": "a dragon who is scared of fire",
+  "protagonist": {
+   "name": "Explorer",
+   "age": 8,
+   "role": "a curious young adventurer"
+  },
+  "point_of_view": "second",
+  "age_band": "8-11",
+  "tone": "gentle",
+  "themes_allowed": [],
+  "content_nogo": []
+ },
+ "stage0": {
+  "status": "skipped",
+  "reason": "no OPENAI_API_KEY in this environment (owner-approved skip, 2026-11-21); production classifier_screen(None) ran and called nothing",
+  "pitch_strings_offered": 5
+ },
+ "calls": [
+  {
+   "index": 0,
+   "kind": "pitch",
+   "max_tokens": 2000,
+   "prompt_chars": 2632,
+   "worst_case_usd": 0.022634,
+   "spent_before_usd": 0.147234,
+   "model": "anthropic/claude-sonnet-5.5",
+   "provider": "openrouter",
+   "input_tokens": 1002,
+   "output_tokens": 468,
+   "reasoning_tokens": 0,
+   "finish_reason": "stop",
+   "cost_estimate_usd": 0.006684,
+   "vendor_cost_usd": 0.00547,
+   "latency_s": 5.4,
+   "provider_duration_ms": 5354,
+   "response_chars": 1266
+  },
+  {
+   "index": 1,
+   "kind": "plan_1",
+   "max_tokens": 32000,
+   "prompt_chars": 16372,
+   "worst_case_usd": 0.336374,
+   "spent_before_usd": 0.152704,
+   "model": "anthropic/claude-sonnet-5.5",
+   "provider": "openrouter",
+   "input_tokens": 6535,
+   "output_tokens": 12059,
+   "reasoning_tokens": 3200,
+   "finish_reason": "stop",
+   "cost_estimate_usd": 0.13366,
+   "vendor_cost_usd": 0.127601,
+   "latency_s": 73.9,
+   "provider_duration_ms": 73879,
+   "response_chars": 20433
+  }
+ ],
+ "wall_seconds": 79.3,
+ "stopped": null,
+ "story_plan_status": "checked",
+ "attempts": 1,
+ "stage_log": [
+  "pitch:1",
+  "plan:1:errors=0"
+ ],
+ "pitches": [
+  {
+   "index": 0,
+   "source": "model",
+   "passed": true,
+   "reasons": [],
+   "advisories": [],
+   "pitch": {
+    "hero": "Ember, a young dragon who flinches at her own sparks",
+    "want": "To light the lantern for her village's Night of Lights like other dragons",
+    "obstacle": "Each time a spark flickers she freezes, and the festival lantern sits atop a windy hill",
+    "stake": "The village lanterns stay dark and Ember keeps hiding from the festival she loves",
+    "ending_kind": "a warm win where a friend helps her light the lantern"
+   }
+  },
+  {
+   "index": 1,
+   "source": "model",
+   "passed": false,
+   "reasons": [
+    "not screened"
+   ],
+   "advisories": [],
+   "pitch": null
+  },
+  {
+   "index": 2,
+   "source": "model",
+   "passed": false,
+   "reasons": [
+    "not screened"
+   ],
+   "advisories": [],
+   "pitch": null
+  }
+ ],
+ "attempt_findings": [
+  {
+   "attempt": 1,
+   "loaded": true,
+   "dropped_keys": [],
+   "ok": true,
+   "errors_by_rule": {},
+   "warnings_by_rule": {
+    "SP-3": 12
+   },
+   "findings": [
+    {
+     "rule_id": "SP-3",
+     "severity": "warning",
+     "story_id": "sk_cave_of_echoes",
+     "node_id": "la_retreat_pool",
+     "choice_id": null,
+     "message": "failure fact 'a_ember_goes_home' (at la_retreat_pool) and 'truth_friend_steadies' (at la_squeeze) sit on routes no single reading crosses, and every route establishing 'a_ember_goes_home' ends in a negative or neutral ending: a failed route marked against the truth, which convention 1 asks for, so keep the mark (advisory)",
+     "state": null,
+     "fact_id": "a_ember_goes_home",
+     "route": null
+    },
+    {
+     "rule_id": "SP-3",
+     "severity": "warning",
+     "story_id": "sk_cave_of_echoes",
+     "node_id": "la_retreat_pool",
+     "choice_id": null,
+     "message": "failure fact 'a_ember_goes_home' (at la_retreat_pool) and 'truth_lit_together' (at la_crystal_out, la_song, la_bell4, ra_row, ra_islet, ra_starfish2, ra_pool_deep2, da_skylight, da_compass2, da_coins2) sit on routes no single reading crosses, and every route establishing 'a_ember_goes_home' ends in a negative or neutral ending: a failed route marked against the truth, which convention 1 asks for, so keep the mark (advisory)",
+     "state": null,
+     "fact_id": "a_ember_goes_home",
+     "route": null
+    },
+    {
+     "rule_id": "SP-3",
+     "severity": "warning",
+     "story_id": "sk_cave_of_echoes",
+     "node_id": "la_hum_back",
+     "choice_id": null,
+     "message": "failure fact 'a_ember_still_hides' (at la_hum_back) and 'truth_friend_steadies' (at la_squeeze) sit on routes no single reading crosses, and every route establishing 'a_ember_still_hides' ends in a negative or neutral ending: a failed route marked against the truth, which convention 1 asks for, so keep the mark (advisory)",
+     "state": null,
+     "fact_id": "a_ember_still_hides",
+     "route": null
+    },
+    {
+     "rule_id": "SP-3",
+     "severity": "warning",
+     "story_id": "sk_cave_of_echoes",
+     "node_id": "la_hum_back",
+     "choice_id": null,
+     "message": "failure fact 'a_ember_still_hides' (at la_hum_back) and 'truth_lit_together' (at la_crystal_out, la_song, la_bell4, ra_row, ra_islet, ra_starfish2, ra_pool_deep2, da_skylight, da_compass2, da_coins2) sit on routes no single reading crosses, and every route establishing 'a_ember_still_hides' ends in a negative or neutral ending: a failed route marked against the truth, which convention 1 asks for, so keep the mark (advisory)",
+     "state": null,
+     "fact_id": "a_ember_still_hides",
+     "route": null
+    },
+    {
+     "rule_id": "SP-3",
+     "severity": "warning",
+     "story_id": "sk_cave_of_echoes",
+     "node_id": "ra_pool_back",
+     "choice_id": null,
+     "message": "failure fact 'b_rested_too_long' (at ra_pool_back) and 'truth_friend_steadies' (at la_squeeze) sit on routes no single reading crosses, and every route establishing 'b_rested_too_long' ends in a negative or neutral ending: a failed route marked against the truth, which convention 1 asks for, so keep the mark (advisory)",
+     "state": null,
+     "fact_id": "b_rested_too_long",
+     "route": null
+    },
+    {
+     "rule_id": "SP-3",
+     "severity": "warning",
+     "story_id": "sk_cave_of_echoes",
+     "node_id": "ra_pool_back",
+     "choice_id": null,
+     "message": "failure fact 'b_rested_too_long' (at ra_pool_back) and 'truth_lit_together' (at la_crystal_out, la_song, la_bell4, ra_row, ra_islet, ra_starfish2, ra_pool_deep2, da_skylight, da_compass2, da_coins2) sit on routes no single reading crosses, and every route establishing 'b_rested_too_long' ends in a negative or neutral ending: a failed route marked against the truth, which convention 1 asks for, so keep the mark (advisory)",
+     "state": null,
+     "fact_id": "b_rested_too_long",
+     "route": null
+    },
+    {
+     "rule_id": "SP-3",
+     "severity": "warning",
+     "story_id": "sk_cave_of_echoes",
+     "node_id": "ra_lake_back",
+     "choice_id": null,
+     "message": "failure fact 'b_waited_too_long' (at ra_lake_back) and 'truth_friend_steadies' (at la_squeeze) sit on routes no single reading crosses, and every route establishing 'b_waited_too_long' ends in a negative or neutral ending: a failed route marked against the truth, which convention 1 asks for, so keep the mark (advisory)",
+     "state": null,
+     "fact_id": "b_waited_too_long",
+     "route": null
+    },
+    {
+     "rule_id": "SP-3",
+     "severity": "warning",
+     "story_id": "sk_cave_of_echoes",
+     "node_id": "ra_lake_back",
+     "choice_id": null,
+     "message": "failure fact 'b_waited_too_long' (at ra_lake_back) and 'truth_lit_together' (at la_crystal_out, la_song, la_bell4, ra_row, ra_islet, ra_starfish2, ra_pool_deep2, da_skylight, da_compass2, da_coins2) sit on routes no single reading crosses, and every route establishing 'b_waited_too_long' ends in a negative or neutral ending: a failed route marked against the truth, which convention 1 asks for, so keep the mark (advisory)",
+     "state": null,
+     "fact_id": "b_waited_too_long",
+     "route": null
+    },
+    {
+     "rule_id": "SP-3",
+     "severity": "warning",
+     "story_id": "sk_cave_of_echoes",
+     "node_id": "da_bat_back",
+     "choice_id": null,
+     "message": "failure fact 'c_coal_cooled' (at da_bat_back) and 'truth_friend_steadies' (at la_squeeze) sit on routes no single reading crosses, and every route establishing 'c_coal_cooled' ends in a negative or neutral ending: a failed route marked against the truth, which convention 1 asks for, so keep the mark (advisory)",
+     "state": null,
+     "fact_id": "c_coal_cooled",
+     "route": null
+    },
+    {
+     "rule_id": "SP-3",
+     "severity": "warning",
+     "story_id": "sk_cave_of_echoes",
+     "node_id": "da_bat_back",
+     "choice_id": null,
+     "message": "failure fact 'c_coal_cooled' (at da_bat_back) and 'truth_lit_together' (at la_crystal_out, la_song, la_bell4, ra_row, ra_islet, ra_starfish2, ra_pool_deep2, da_skylight, da_compass2, da_coins2) sit on routes no single reading crosses, and every route establishing 'c_coal_cooled' ends in a negative or neutral ending: a failed route marked against the truth, which convention 1 asks for, so keep the mark (advisory)",
+     "state": null,
+     "fact_id": "c_coal_cooled",
+     "route": null
+    },
+    {
+     "rule_id": "SP-3",
+     "severity": "warning",
+     "story_id": "sk_cave_of_echoes",
+     "node_id": "da_cache_back",
+     "choice_id": null,
+     "message": "failure fact 'c_drum_alone' (at da_cache_back) and 'truth_friend_steadies' (at la_squeeze) sit on routes no single reading crosses, and every route establishing 'c_drum_alone' ends in a negative or neutral ending: a failed route marked against the truth, which convention 1 asks for, so keep the mark (advisory)",
+     "state": null,
+     "fact_id": "c_drum_alone",
+     "route": null
+    },
+    {
+     "rule_id": "SP-3",
+     "severity": "warning",
+     "story_id": "sk_cave_of_echoes",
+     "node_id": "da_cache_back",
+     "choice_id": null,
+     "message": "failure fact 'c_drum_alone' (at da_cache_back) and 'truth_lit_together' (at la_crystal_out, la_song, la_bell4, ra_row, ra_islet, ra_starfish2, ra_pool_deep2, da_skylight, da_compass2, da_coins2) sit on routes no single reading crosses, and every route establishing 'c_drum_alone' ends in a negative or neutral ending: a failed route marked against the truth, which convention 1 asks for, so keep the mark (advisory)",
+     "state": null,
+     "fact_id": "c_drum_alone",
+     "route": null
+    }
+   ]
+  }
+ ],
+ "replay_consistent": true,
+ "final_checks": {
+  "ok": true,
+  "findings": [
+   {
+    "rule_id": "SP-3",
+    "severity": "warning",
+    "story_id": "sk_cave_of_echoes",
+    "node_id": "la_retreat_pool",
+    "choice_id": null,
+    "message": "failure fact 'a_ember_goes_home' (at la_retreat_pool) and 'truth_friend_steadies' (at la_squeeze) sit on routes no single reading crosses, and every route establishing 'a_ember_goes_home' ends in a negative or neutral ending: a failed route marked against the truth, which convention 1 asks for, so keep the mark (advisory)",
+    "state": null,
+    "fact_id": "a_ember_goes_home",
+    "route": null
+   },
+   {
+    "rule_id": "SP-3",
+    "severity": "warning",
+    "story_id": "sk_cave_of_echoes",
+    "node_id": "la_retreat_pool",
+    "choice_id": null,
+    "message": "failure fact 'a_ember_goes_home' (at la_retreat_pool) and 'truth_lit_together' (at la_crystal_out, la_song, la_bell4, ra_row, ra_islet, ra_starfish2, ra_pool_deep2, da_skylight, da_compass2, da_coins2) sit on routes no single reading crosses, and every route establishing 'a_ember_goes_home' ends in a negative or neutral ending: a failed route marked against the truth, which convention 1 asks for, so keep the mark (advisory)",
+    "state": null,
+    "fact_id": "a_ember_goes_home",
+    "route": null
+   },
+   {
+    "rule_id": "SP-3",
+    "severity": "warning",
+    "story_id": "sk_cave_of_echoes",
+    "node_id": "la_hum_back",
+    "choice_id": null,
+    "message": "failure fact 'a_ember_still_hides' (at la_hum_back) and 'truth_friend_steadies' (at la_squeeze) sit on routes no single reading crosses, and every route establishing 'a_ember_still_hides' ends in a negative or neutral ending: a failed route marked against the truth, which convention 1 asks for, so keep the mark (advisory)",
+    "state": null,
+    "fact_id": "a_ember_still_hides",
+    "route": null
+   },
+   {
+    "rule_id": "SP-3",
+    "severity": "warning",
+    "story_id": "sk_cave_of_echoes",
+    "node_id": "la_hum_back",
+    "choice_id": null,
+    "message": "failure fact 'a_ember_still_hides' (at la_hum_back) and 'truth_lit_together' (at la_crystal_out, la_song, la_bell4, ra_row, ra_islet, ra_starfish2, ra_pool_deep2, da_skylight, da_compass2, da_coins2) sit on routes no single reading crosses, and every route establishing 'a_ember_still_hides' ends in a negative or neutral ending: a failed route marked against the truth, which convention 1 asks for, so keep the mark (advisory)",
+    "state": null,
+    "fact_id": "a_ember_still_hides",
+    "route": null
+   },
+   {
+    "rule_id": "SP-3",
+    "severity": "warning",
+    "story_id": "sk_cave_of_echoes",
+    "node_id": "ra_pool_back",
+    "choice_id": null,
+    "message": "failure fact 'b_rested_too_long' (at ra_pool_back) and 'truth_friend_steadies' (at la_squeeze) sit on routes no single reading crosses, and every route establishing 'b_rested_too_long' ends in a negative or neutral ending: a failed route marked against the truth, which convention 1 asks for, so keep the mark (advisory)",
+    "state": null,
+    "fact_id": "b_rested_too_long",
+    "route": null
+   },
+   {
+    "rule_id": "SP-3",
+    "severity": "warning",
+    "story_id": "sk_cave_of_echoes",
+    "node_id": "ra_pool_back",
+    "choice_id": null,
+    "message": "failure fact 'b_rested_too_long' (at ra_pool_back) and 'truth_lit_together' (at la_crystal_out, la_song, la_bell4, ra_row, ra_islet, ra_starfish2, ra_pool_deep2, da_skylight, da_compass2, da_coins2) sit on routes no single reading crosses, and every route establishing 'b_rested_too_long' ends in a negative or neutral ending: a failed route marked against the truth, which convention 1 asks for, so keep the mark (advisory)",
+    "state": null,
+    "fact_id": "b_rested_too_long",
+    "route": null
+   },
+   {
+    "rule_id": "SP-3",
+    "severity": "warning",
+    "story_id": "sk_cave_of_echoes",
+    "node_id": "ra_lake_back",
+    "choice_id": null,
+    "message": "failure fact 'b_waited_too_long' (at ra_lake_back) and 'truth_friend_steadies' (at la_squeeze) sit on routes no single reading crosses, and every route establishing 'b_waited_too_long' ends in a negative or neutral ending: a failed route marked against the truth, which convention 1 asks for, so keep the mark (advisory)",
+    "state": null,
+    "fact_id": "b_waited_too_long",
+    "route": null
+   },
+   {
+    "rule_id": "SP-3",
+    "severity": "warning",
+    "story_id": "sk_cave_of_echoes",
+    "node_id": "ra_lake_back",
+    "choice_id": null,
+    "message": "failure fact 'b_waited_too_long' (at ra_lake_back) and 'truth_lit_together' (at la_crystal_out, la_song, la_bell4, ra_row, ra_islet, ra_starfish2, ra_pool_deep2, da_skylight, da_compass2, da_coins2) sit on routes no single reading crosses, and every route establishing 'b_waited_too_long' ends in a negative or neutral ending: a failed route marked against the truth, which convention 1 asks for, so keep the mark (advisory)",
+    "state": null,
+    "fact_id": "b_waited_too_long",
+    "route": null
+   },
+   {
+    "rule_id": "SP-3",
+    "severity": "warning",
+    "story_id": "sk_cave_of_echoes",
+    "node_id": "da_bat_back",
+    "choice_id": null,
+    "message": "failure fact 'c_coal_cooled' (at da_bat_back) and 'truth_friend_steadies' (at la_squeeze) sit on routes no single reading crosses, and every route establishing 'c_coal_cooled' ends in a negative or neutral ending: a failed route marked against the truth, which convention 1 asks for, so keep the mark (advisory)",
+    "state": null,
+    "fact_id": "c_coal_cooled",
+    "route": null
+   },
+   {
+    "rule_id": "SP-3",
+    "severity": "warning",
+    "story_id": "sk_cave_of_echoes",
+    "node_id": "da_bat_back",
+    "choice_id": null,
+    "message": "failure fact 'c_coal_cooled' (at da_bat_back) and 'truth_lit_together' (at la_crystal_out, la_song, la_bell4, ra_row, ra_islet, ra_starfish2, ra_pool_deep2, da_skylight, da_compass2, da_coins2) sit on routes no single reading crosses, and every route establishing 'c_coal_cooled' ends in a negative or neutral ending: a failed route marked against the truth, which convention 1 asks for, so keep the mark (advisory)",
+    "state": null,
+    "fact_id": "c_coal_cooled",
+    "route": null
+   },
+   {
+    "rule_id": "SP-3",
+    "severity": "warning",
+    "story_id": "sk_cave_of_echoes",
+    "node_id": "da_cache_back",
+    "choice_id": null,
+    "message": "failure fact 'c_drum_alone' (at da_cache_back) and 'truth_friend_steadies' (at la_squeeze) sit on routes no single reading crosses, and every route establishing 'c_drum_alone' ends in a negative or neutral ending: a failed route marked against the truth, which convention 1 asks for, so keep the mark (advisory)",
+    "state": null,
+    "fact_id": "c_drum_alone",
+    "route": null
+   },
+   {
+    "rule_id": "SP-3",
+    "severity": "warning",
+    "story_id": "sk_cave_of_echoes",
+    "node_id": "da_cache_back",
+    "choice_id": null,
+    "message": "failure fact 'c_drum_alone' (at da_cache_back) and 'truth_lit_together' (at la_crystal_out, la_song, la_bell4, ra_row, ra_islet, ra_starfish2, ra_pool_deep2, da_skylight, da_compass2, da_coins2) sit on routes no single reading crosses, and every route establishing 'c_drum_alone' ends in a negative or neutral ending: a failed route marked against the truth, which convention 1 asks for, so keep the mark (advisory)",
+    "state": null,
+    "fact_id": "c_drum_alone",
+    "route": null
+   }
+  ]
+ },
+ "load_errors": [],
+ "plan": {
+  "plan_version": "0.1",
+  "book": null,
+  "request": {
+   "text": "a dragon who is scared of fire",
+   "band": "8-11",
+   "length": "short",
+   "style": "prose",
+   "tone": null,
+   "note": null
+  },
+  "pitch": {
+   "hero": "Ember, a young dragon who flinches at her own sparks",
+   "want": "To light the lantern for her village's Night of Lights like other dragons",
+   "obstacle": "Each time a spark flickers she freezes, and the festival lantern sits atop a windy hill",
+   "stake": "The village lanterns stay dark and Ember keeps hiding from the festival she loves",
+   "ending_kind": "a warm win where a friend helps her light the lantern"
+  },
+  "cast": {
+   "explorer": {
+    "name": "Explorer",
+    "role": "a curious 8-year-old adventurer, the hero (you)",
+    "want": "To help Ember light the Night of Lights lantern",
+    "voice": "Kind, curious and brave",
+    "knows": [
+     "night_of_lights",
+     "ember_flinches"
+    ]
+   },
+   "ember": {
+    "name": "Ember",
+    "role": "a young dragon afraid of her own sparks",
+    "want": "To light the festival lantern like other dragons",
+    "voice": "Soft, shy and hopeful",
+    "knows": [
+     "ember_flinches",
+     "ember_wants_lantern"
+    ]
+   },
+   "moss": {
+    "name": "Moss",
+    "role": "the old village lamplighter",
+    "want": "To see every lantern lit",
+    "voice": "Slow, warm and wise",
+    "knows": [
+     "a_lamplighter_moss"
+    ]
+   },
+   "pip": {
+    "name": "Pip",
+    "role": "a friendly firefly by the pond",
+    "want": "To keep Ember company",
+    "voice": "Tiny, bright and chirpy",
+    "knows": [
+     "b_pip_glows"
+    ]
+   },
+   "tilly": {
+    "name": "Tilly",
+    "role": "the market baker",
+    "want": "To share her warm oven",
+    "voice": "Cheery and chatty",
+    "knows": [
+     "c_tilly_offers_coal"
+    ]
+   },
+   "roo": {
+    "name": "Roo",
+    "role": "a village girl with a drum",
+    "want": "To play at the festival",
+    "voice": "Bouncy and bold",
+    "knows": [
+     "c_roo_drums"
+    ]
+   }
+  },
+  "truth": {
+   "statement": "Ember can light the lantern when a friend stays beside her, shelters the spark from the wind and steadies her fear, so the lantern is lit together.",
+   "facts": [
+    "ember_flinches",
+    "truth_friend_steadies",
+    "truth_lit_together"
+   ],
+   "question": "What helps Ember light the festival lantern despite her fear of sparks?"
+  },
+  "facts": {
+   "night_of_lights": {
+    "text": "The village Night of Lights is tonight.",
+    "contradicts": [],
+    "implicit_plant": null
+   },
+   "ember_flinches": {
+    "text": "Ember the young dragon freezes whenever a spark flickers.",
+    "contradicts": [],
+    "implicit_plant": null
+   },
+   "ember_wants_lantern": {
+    "text": "Ember wants to light the festival lantern but hides in the barn.",
+    "contradicts": [],
+    "implicit_plant": null
+   },
+   "a_lantern_on_hill": {
+    "text": "The festival lantern sits atop a windy hill.",
+    "contradicts": [],
+    "implicit_plant": null
+   },
+   "a_climb_with_ember": {
+    "text": "You walk up the hill beside Ember.",
+    "contradicts": [],
+    "implicit_plant": null
+   },
+   "a_wind_snuffs_spark": {
+    "text": "The wind snuffs out Ember's first small spark.",
+    "contradicts": [],
+    "implicit_plant": null
+   },
+   "a_hands_shelter_spark": {
+    "text": "You cup your hands around Ember's spark to shelter it.",
+    "contradicts": [],
+    "implicit_plant": null
+   },
+   "truth_friend_steadies": {
+    "text": "A friend beside Ember shelters the spark and steadies her fear.",
+    "contradicts": [
+     "a_ember_goes_home",
+     "a_ember_still_hides",
+     "b_waited_too_long",
+     "b_rested_too_long",
+     "c_coal_cooled",
+     "c_drum_alone"
+    ],
+    "implicit_plant": null
+   },
+   "a_ember_goes_home": {
+    "text": "Ember freezes, thinks she cannot do it and goes home alone.",
+    "contradicts": [
+     "truth_lit_together"
+    ],
+    "implicit_plant": null
+   },
+   "a_slow_breath": {
+    "text": "Ember breathes slowly while you stay by her side.",
+    "contradicts": [],
+    "implicit_plant": null
+   },
+   "a_counts_breaths": {
+    "text": "Ember counts her breaths and her flinching eases.",
+    "contradicts": [],
+    "implicit_plant": null
+   },
+   "a_spark_catches_wick": {
+    "text": "A steady spark catches the lantern wick.",
+    "contradicts": [],
+    "implicit_plant": null
+   },
+   "truth_lit_together": {
+    "text": "The lantern is lit with a friend's help.",
+    "contradicts": [
+     "a_ember_goes_home",
+     "a_ember_still_hides",
+     "b_waited_too_long",
+     "b_rested_too_long",
+     "c_coal_cooled",
+     "c_drum_alone"
+    ],
+    "implicit_plant": null
+   },
+   "a_lamplighter_moss": {
+    "text": "The old lamplighter Moss lives in a cottage at the hill's foot.",
+    "contradicts": [],
+    "implicit_plant": null
+   },
+   "a_glass_shield": {
+    "text": "Moss lends you a glass shield that keeps wind off a flame.",
+    "contradicts": [],
+    "implicit_plant": null
+   },
+   "a_ember_still_hides": {
+    "text": "Moss lights the lantern alone and Ember keeps hiding.",
+    "contradicts": [
+     "truth_lit_together"
+    ],
+    "implicit_plant": null
+   },
+   "a_shield_carried": {
+    "text": "You carry the glass shield to Ember.",
+    "contradicts": [],
+    "implicit_plant": null
+   },
+   "a_tries_behind_glass": {
+    "text": "Ember tries a spark behind the glass and flinches less.",
+    "contradicts": [],
+    "implicit_plant": null
+   },
+   "a_spark_stays_lit": {
+    "text": "The spark stays lit inside the glass shield.",
+    "contradicts": [],
+    "implicit_plant": null
+   },
+   "b_frog_pond": {
+    "text": "Ember sits by the frog pond, where a firefly named Pip lives.",
+    "contradicts": [],
+    "implicit_plant": null
+   },
+   "b_pip_glows": {
+    "text": "Pip glows beside Ember.",
+    "contradicts": [],
+    "implicit_plant": null
+   },
+   "b_glow_calms": {
+    "text": "Pip's gentle glow calms Ember's flinch.",
+    "contradicts": [],
+    "implicit_plant": null
+   },
+   "b_waited_too_long": {
+    "text": "You wait too long and the festival begins with a dark lantern.",
+    "contradicts": [
+     "truth_lit_together"
+    ],
+    "implicit_plant": null
+   },
+   "b_hill_climbed": {
+    "text": "You, Ember and Pip climb the windy hill.",
+    "contradicts": [],
+    "implicit_plant": null
+   },
+   "b_pip_on_wick": {
+    "text": "Pip rests on the wick and glows to guide the spark.",
+    "contradicts": [],
+    "implicit_plant": null
+   },
+   "b_spark_near_pip": {
+    "text": "Ember makes a spark near Pip and does not freeze.",
+    "contradicts": [],
+    "implicit_plant": null
+   },
+   "b_stone_ring": {
+    "text": "You and Ember build a ring of stones at the pond.",
+    "contradicts": [],
+    "implicit_plant": null
+   },
+   "b_stones_block_wind": {
+    "text": "The ring of stones blocks the wind from a spark.",
+    "contradicts": [],
+    "implicit_plant": null
+   },
+   "b_rested_too_long": {
+    "text": "You rest while the sky darkens and the lantern stays unlit.",
+    "contradicts": [
+     "truth_lit_together"
+    ],
+    "implicit_plant": null
+   },
+   "b_stones_on_hill": {
+    "text": "You carry the stones up and ring the lantern.",
+    "contradicts": [],
+    "implicit_plant": null
+   },
+   "b_gentle_breath": {
+    "text": "Ember breathes out a gentle spark inside the stones.",
+    "contradicts": [],
+    "implicit_plant": null
+   },
+   "b_claw_held": {
+    "text": "You hold Ember's claw while she sparks.",
+    "contradicts": [],
+    "implicit_plant": null
+   },
+   "c_market_stall": {
+    "text": "Baker Tilly sells honey cakes at the market square.",
+    "contradicts": [],
+    "implicit_plant": null
+   },
+   "c_tilly_offers_coal": {
+    "text": "Tilly offers a pot of warm oven coals.",
+    "contradicts": [],
+    "implicit_plant": null
+   },
+   "c_coal_in_pot": {
+    "text": "You carry the pot of coals with a lid.",
+    "contradicts": [],
+    "implicit_plant": null
+   },
+   "c_coal_cooled": {
+    "text": "The coals cool while you wait and cannot light the wick.",
+    "contradicts": [
+     "truth_lit_together"
+    ],
+    "implicit_plant": null
+   },
+   "c_ember_sees_coal": {
+    "text": "Ember sees the coals glowing and finds them less scary than sparks.",
+    "contradicts": [],
+    "implicit_plant": null
+   },
+   "c_taper_lit": {
+    "text": "A taper is lit from the coals, not from a spark.",
+    "contradicts": [],
+    "implicit_plant": null
+   },
+   "c_roo_drums": {
+    "text": "Roo plays her drum by the fountain.",
+    "contradicts": [],
+    "implicit_plant": null
+   },
+   "c_beat_steadies": {
+    "text": "The slow drum beat steadies Ember's nerves.",
+    "contradicts": [],
+    "implicit_plant": null
+   },
+   "c_drum_alone": {
+    "text": "You drum alone in the square and Ember never leaves the barn.",
+    "contradicts": [
+     "truth_lit_together"
+    ],
+    "implicit_plant": null
+   },
+   "c_hill_with_drum": {
+    "text": "Roo, Ember and you climb the hill to the lantern.",
+    "contradicts": [],
+    "implicit_plant": null
+   },
+   "c_beat_kept": {
+    "text": "Roo keeps the beat while Ember sparks.",
+    "contradicts": [],
+    "implicit_plant": null
+   },
+   "c_song_sung": {
+    "text": "You sing a counting song and Ember sparks on the last count.",
+    "contradicts": [],
+    "implicit_plant": null
+   }
+  },
+  "nodes": {
+   "n_open": {
+    "function": "opening",
+    "event": "You arrive in the village on the Night of Lights and hear a young dragon sniffle in the barn.",
+    "requires": [],
+    "establishes": [
+     "night_of_lights",
+     "ember_flinches"
+    ]
+   },
+   "n_start": {
+    "function": "decision",
+    "event": "Ember tells you she longs to light the lantern but is afraid of her sparks.",
+    "requires": [
+     "ember_flinches"
+    ],
+    "establishes": [
+     "ember_wants_lantern"
+    ]
+   },
+   "la_tunnel": {
+    "function": "continue",
+    "event": "You look out and see the festival lantern high on the windy hill.",
+    "requires": [
+     "ember_wants_lantern"
+    ],
+    "establishes": [
+     "a_lantern_on_hill"
+    ]
+   },
+   "la_fork": {
+    "function": "decision",
+    "event": "You must choose whether to climb with Ember or first find help in the village.",
+    "requires": [
+     "a_lantern_on_hill"
+    ],
+    "establishes": []
+   },
+   "la_glitter": {
+    "function": "continue",
+    "event": "You and Ember walk up the hill side by side.",
+    "requires": [
+     "a_lantern_on_hill"
+    ],
+    "establishes": [
+     "a_climb_with_ember"
+    ]
+   },
+   "la_glitter2": {
+    "function": "continue",
+    "event": "At the top Ember tries a spark and the wind blows it out.",
+    "requires": [
+     "a_climb_with_ember"
+    ],
+    "establishes": [
+     "a_wind_snuffs_spark"
+    ]
+   },
+   "la_grotto_app": {
+    "function": "decision",
+    "event": "Ember trembles and you decide how to help.",
+    "requires": [
+     "a_wind_snuffs_spark"
+    ],
+    "establishes": []
+   },
+   "la_retreat_pool": {
+    "function": "ending",
+    "event": "You urge her to hurry, she freezes and walks home sadly.",
+    "requires": [
+     "a_wind_snuffs_spark"
+    ],
+    "establishes": [
+     "a_ember_goes_home"
+    ]
+   },
+   "la_squeeze": {
+    "function": "continue",
+    "event": "You cup your hands around the next little spark and it stays alight.",
+    "requires": [
+     "a_wind_snuffs_spark"
+    ],
+    "establishes": [
+     "a_hands_shelter_spark",
+     "truth_friend_steadies"
+    ]
+   },
+   "la_grotto": {
+    "function": "decision",
+    "event": "Ember is nervous again and you pick how to steady her.",
+    "requires": [
+     "a_hands_shelter_spark"
+    ],
+    "establishes": []
+   },
+   "la_crystal_take": {
+    "function": "continue",
+    "event": "You tell Ember to breathe slowly and she does, with you beside her.",
+    "requires": [
+     "a_hands_shelter_spark"
+    ],
+    "establishes": [
+     "a_slow_breath"
+    ]
+   },
+   "la_crystal_out": {
+    "function": "ending",
+    "event": "Ember lights the lantern and the whole village cheers.",
+    "requires": [
+     "a_slow_breath"
+    ],
+    "establishes": [
+     "truth_lit_together"
+    ]
+   },
+   "la_crystal_deeper": {
+    "function": "continue",
+    "event": "Ember counts her breaths aloud and her flinching eases.",
+    "requires": [
+     "a_hands_shelter_spark"
+    ],
+    "establishes": [
+     "a_counts_breaths"
+    ]
+   },
+   "la_song_app": {
+    "function": "continue",
+    "event": "A steady spark touches the wick and it catches.",
+    "requires": [
+     "a_counts_breaths"
+    ],
+    "establishes": [
+     "a_spark_catches_wick"
+    ]
+   },
+   "la_song": {
+    "function": "ending",
+    "event": "The lantern glows and Ember beams, ready to try again next year too.",
+    "requires": [
+     "a_spark_catches_wick"
+    ],
+    "establishes": [
+     "truth_lit_together"
+    ]
+   },
+   "la_hum": {
+    "function": "continue",
+    "event": "You hurry to the cottage of old Moss the lamplighter.",
+    "requires": [
+     "a_lantern_on_hill"
+    ],
+    "establishes": [
+     "a_lamplighter_moss"
+    ]
+   },
+   "la_hum2": {
+    "function": "continue",
+    "event": "Moss lends you a glass shield that guards a flame from wind.",
+    "requires": [
+     "a_lamplighter_moss"
+    ],
+    "establishes": [
+     "a_glass_shield"
+    ]
+   },
+   "la_bell_app": {
+    "function": "decision",
+    "event": "You decide whether to bring the shield to Ember or ask Moss to light the lantern.",
+    "requires": [
+     "a_glass_shield"
+    ],
+    "establishes": []
+   },
+   "la_hum_back": {
+    "function": "ending",
+    "event": "Moss lights the lantern alone and Ember watches from the barn, still hiding.",
+    "requires": [
+     "a_glass_shield"
+    ],
+    "establishes": [
+     "a_ember_still_hides"
+    ]
+   },
+   "la_bell": {
+    "function": "continue",
+    "event": "You carry the shield back to Ember in the barn.",
+    "requires": [
+     "a_glass_shield"
+    ],
+    "establishes": [
+     "a_shield_carried"
+    ]
+   },
+   "la_bell2": {
+    "function": "continue",
+    "event": "Behind the glass Ember tries a spark and flinches less.",
+    "requires": [
+     "a_shield_carried"
+    ],
+    "establishes": [
+     "a_tries_behind_glass"
+    ]
+   },
+   "la_bell3": {
+    "function": "continue",
+    "event": "The spark stays lit inside the shield as you climb the hill.",
+    "requires": [
+     "a_tries_behind_glass"
+    ],
+    "establishes": [
+     "a_spark_stays_lit"
+    ]
+   },
+   "la_bell4": {
+    "function": "ending",
+    "event": "With you holding the shield, Ember lights the lantern.",
+    "requires": [
+     "a_spark_stays_lit"
+    ],
+    "establishes": [
+     "truth_lit_together"
+    ]
+   },
+   "ra_drip": {
+    "function": "continue",
+    "event": "You find Ember by the frog pond, where a firefly named Pip hovers.",
+    "requires": [
+     "ember_wants_lantern"
+    ],
+    "establishes": [
+     "b_frog_pond"
+    ]
+   },
+   "ra_fork": {
+    "function": "decision",
+    "event": "You choose between asking Pip to glow with Ember or building a stone ring.",
+    "requires": [
+     "b_frog_pond"
+    ],
+    "establishes": []
+   },
+   "ra_lake_way": {
+    "function": "continue",
+    "event": "Pip glows right beside Ember's shoulder.",
+    "requires": [
+     "b_frog_pond"
+    ],
+    "establishes": [
+     "b_pip_glows"
+    ]
+   },
+   "ra_lake2": {
+    "function": "continue",
+    "event": "The soft glow calms Ember's flinching.",
+    "requires": [
+     "b_pip_glows"
+    ],
+    "establishes": [
+     "b_glow_calms"
+    ]
+   },
+   "ra_lake_app": {
+    "function": "decision",
+    "event": "You decide whether to go up now or wait.",
+    "requires": [
+     "b_glow_calms"
+    ],
+    "establishes": []
+   },
+   "ra_lake_back": {
+    "function": "ending",
+    "event": "You wait too long and the festival starts with the lantern dark.",
+    "requires": [
+     "b_glow_calms"
+    ],
+    "establishes": [
+     "b_waited_too_long"
+    ]
+   },
+   "ra_descend": {
+    "function": "continue",
+    "event": "You, Ember and Pip climb the windy hill.",
+    "requires": [
+     "b_glow_calms"
+    ],
+    "establishes": [
+     "b_hill_climbed"
+    ]
+   },
+   "ra_lakeshore": {
+    "function": "decision",
+    "event": "At the lantern you choose how Pip will help.",
+    "requires": [
+     "b_hill_climbed"
+    ],
+    "establishes": []
+   },
+   "ra_boat": {
+    "function": "continue",
+    "event": "Pip rests on the wick and glows to guide the spark.",
+    "requires": [
+     "b_hill_climbed"
+    ],
+    "establishes": [
+     "b_pip_on_wick"
+    ]
+   },
+   "ra_row": {
+    "function": "ending",
+    "event": "Ember lights the wick where Pip glows and the lantern shines.",
+    "requires": [
+     "b_pip_on_wick"
+    ],
+    "establishes": [
+     "truth_lit_together"
+    ]
+   },
+   "ra_wade": {
+    "function": "continue",
+    "event": "Ember makes a spark near Pip and does not freeze.",
+    "requires": [
+     "b_hill_climbed"
+    ],
+    "establishes": [
+     "b_spark_near_pip"
+    ]
+   },
+   "ra_islet": {
+    "function": "ending",
+    "event": "The lantern is lit and Pip dances in the light.",
+    "requires": [
+     "b_spark_near_pip"
+    ],
+    "establishes": [
+     "truth_lit_together"
+    ]
+   },
+   "ra_pool_way": {
+    "function": "continue",
+    "event": "You and Ember stack a ring of stones at the pond.",
+    "requires": [
+     "b_frog_pond"
+    ],
+    "establishes": [
+     "b_stone_ring"
+    ]
+   },
+   "ra_pool2": {
+    "function": "continue",
+    "event": "A test spark is safe from the wind inside the ring.",
+    "requires": [
+     "b_stone_ring"
+    ],
+    "establishes": [
+     "b_stones_block_wind"
+    ]
+   },
+   "ra_pool_app": {
+    "function": "decision",
+    "event": "You decide whether to carry the stones up the hill or rest.",
+    "requires": [
+     "b_stones_block_wind"
+    ],
+    "establishes": []
+   },
+   "ra_pool_back": {
+    "function": "ending",
+    "event": "You rest too long and the lantern stays unlit.",
+    "requires": [
+     "b_stones_block_wind"
+    ],
+    "establishes": [
+     "b_rested_too_long"
+    ]
+   },
+   "ra_pool_enter": {
+    "function": "continue",
+    "event": "You carry the stones up and ring the lantern.",
+    "requires": [
+     "b_stones_block_wind"
+    ],
+    "establishes": [
+     "b_stones_on_hill"
+    ]
+   },
+   "ra_pool_chamber": {
+    "function": "decision",
+    "event": "You choose how to help Ember spark inside the ring.",
+    "requires": [
+     "b_stones_on_hill"
+    ],
+    "establishes": []
+   },
+   "ra_starfish": {
+    "function": "continue",
+    "event": "Ember breathes out a gentle spark inside the stones.",
+    "requires": [
+     "b_stones_on_hill"
+    ],
+    "establishes": [
+     "b_gentle_breath"
+    ]
+   },
+   "ra_starfish2": {
+    "function": "ending",
+    "event": "The wick catches and the lantern lights.",
+    "requires": [
+     "b_gentle_breath"
+    ],
+    "establishes": [
+     "truth_lit_together"
+    ]
+   },
+   "ra_pool_deep": {
+    "function": "continue",
+    "event": "You hold Ember's claw while she sparks.",
+    "requires": [
+     "b_stones_on_hill"
+    ],
+    "establishes": [
+     "b_claw_held"
+    ]
+   },
+   "ra_pool_deep2": {
+    "function": "ending",
+    "event": "Hand in claw, you light the lantern together.",
+    "requires": [
+     "b_claw_held"
+    ],
+    "establishes": [
+     "truth_lit_together"
+    ]
+   },
+   "da_dark": {
+    "function": "continue",
+    "event": "You wander to the market square where Baker Tilly sells honey cakes.",
+    "requires": [
+     "ember_wants_lantern"
+    ],
+    "establishes": [
+     "c_market_stall"
+    ]
+   },
+   "da_fork": {
+    "function": "decision",
+    "event": "You choose between asking Tilly for help and following a drum beat.",
+    "requires": [
+     "c_market_stall"
+    ],
+    "establishes": []
+   },
+   "da_bat_way": {
+    "function": "continue",
+    "event": "Tilly offers a pot of warm oven coals.",
+    "requires": [
+     "c_market_stall"
+    ],
+    "establishes": [
+     "c_tilly_offers_coal"
+    ]
+   },
+   "da_bat2": {
+    "function": "continue",
+    "event": "You carry the lidded pot of coals away.",
+    "requires": [
+     "c_tilly_offers_coal"
+    ],
+    "establishes": [
+     "c_coal_in_pot"
+    ]
+   },
+   "da_bat_app": {
+    "function": "decision",
+    "event": "You choose whether to bring the pot to Ember now or set it down.",
+    "requires": [
+     "c_coal_in_pot"
+    ],
+    "establishes": []
+   },
+   "da_bat_back": {
+    "function": "ending",
+    "event": "The coals cool and cannot light the wick.",
+    "requires": [
+     "c_coal_in_pot"
+    ],
+    "establishes": [
+     "c_coal_cooled"
+    ]
+   },
+   "da_bat_enter": {
+    "function": "continue",
+    "event": "Ember sees the glowing coals and finds them less scary.",
+    "requires": [
+     "c_coal_in_pot"
+    ],
+    "establishes": [
+     "c_ember_sees_coal"
+    ]
+   },
+   "da_roost": {
+    "function": "continue",
+    "event": "Ember lights a taper from the coals with you beside her.",
+    "requires": [
+     "c_ember_sees_coal"
+    ],
+    "establishes": [
+     "c_taper_lit"
+    ]
+   },
+   "da_roost2": {
+    "function": "continue",
+    "event": "You both walk the taper up the hill.",
+    "requires": [
+     "c_taper_lit"
+    ],
+    "establishes": []
+   },
+   "da_skylight": {
+    "function": "ending",
+    "event": "Ember touches the taper to the wick and the lantern glows.",
+    "requires": [
+     "c_taper_lit"
+    ],
+    "establishes": [
+     "truth_lit_together"
+    ]
+   },
+   "da_cache_way": {
+    "function": "continue",
+    "event": "You follow the drum beat to Roo by the fountain.",
+    "requires": [
+     "c_market_stall"
+    ],
+    "establishes": [
+     "c_roo_drums"
+    ]
+   },
+   "da_cache2": {
+    "function": "continue",
+    "event": "Roo plays a slow beat that would calm anyone.",
+    "requires": [
+     "c_roo_drums"
+    ],
+    "establishes": [
+     "c_beat_steadies"
+    ]
+   },
+   "da_cache_app": {
+    "function": "decision",
+    "event": "You choose whether to bring Roo's drum to Ember or play on here.",
+    "requires": [
+     "c_beat_steadies"
+    ],
+    "establishes": []
+   },
+   "da_cache_back": {
+    "function": "ending",
+    "event": "You drum in the square and Ember never leaves the barn.",
+    "requires": [
+     "c_beat_steadies"
+    ],
+    "establishes": [
+     "c_drum_alone"
+    ]
+   },
+   "da_cache_enter": {
+    "function": "continue",
+    "event": "Roo, Ember and you climb the hill to the lantern.",
+    "requires": [
+     "c_beat_steadies"
+    ],
+    "establishes": [
+     "c_hill_with_drum"
+    ]
+   },
+   "da_cache_room": {
+    "function": "decision",
+    "event": "You decide how to keep Ember calm at the lantern.",
+    "requires": [
+     "c_hill_with_drum"
+    ],
+    "establishes": []
+   },
+   "da_compass": {
+    "function": "continue",
+    "event": "Roo keeps the beat while Ember sparks.",
+    "requires": [
+     "c_hill_with_drum"
+    ],
+    "establishes": [
+     "c_beat_kept"
+    ]
+   },
+   "da_compass2": {
+    "function": "ending",
+    "event": "The lantern lights in time with the drum.",
+    "requires": [
+     "c_beat_kept"
+    ],
+    "establishes": [
+     "truth_lit_together"
+    ]
+   },
+   "da_coins": {
+    "function": "continue",
+    "event": "You sing a counting song and Ember sparks on the last count.",
+    "requires": [
+     "c_hill_with_drum"
+    ],
+    "establishes": [
+     "c_song_sung"
+    ]
+   },
+   "da_coins2": {
+    "function": "ending",
+    "event": "The lantern lights and everyone sings along.",
+    "requires": [
+     "c_song_sung"
+    ],
+    "establishes": [
+     "truth_lit_together"
+    ]
+   }
+  },
+  "choices": {
+   "c_open": {
+    "intent": "step into the village to see the sniffling",
+    "cost": "none",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_left": {
+    "intent": "look for the festival lantern first",
+    "cost": "leaves the pond and the market unexplored",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_right": {
+    "intent": "seek Ember by the quiet pond",
+    "cost": "leaves the hill and the market unexplored",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_down": {
+    "intent": "go to the busy market for ideas",
+    "cost": "leaves the hill and the pond unexplored",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_la_fork": {
+    "intent": "think about how to reach the lantern",
+    "cost": "none",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_glitter": {
+    "intent": "climb the hill with Ember now",
+    "cost": "skips asking the lamplighter for tools",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_hum": {
+    "intent": "ask the village lamplighter for help",
+    "cost": "leaves Ember waiting alone in the barn",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_la_slope": {
+    "intent": "reach the hilltop",
+    "cost": "none",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_la_crack": {
+    "intent": "let Ember try her first spark",
+    "cost": "none",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_squeeze": {
+    "intent": "cup your hands around the spark",
+    "cost": "leaves hurrying her unused",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_retreat": {
+    "intent": "tell her to hurry before the wind grows",
+    "cost": "puts pressure on a frightened dragon",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_la_room": {
+    "intent": "stay close as she tries again",
+    "cost": "none",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_take": {
+    "intent": "ask her to breathe slowly",
+    "cost": "skips holding the wick for her",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_deeper": {
+    "intent": "offer to hold the wick steady",
+    "cost": "skips the slow breathing",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_la_up": {
+    "intent": "keep breathing together",
+    "cost": "none",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_la_chord": {
+    "intent": "count breaths with her",
+    "cost": "none",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_la_sing": {
+    "intent": "bring the spark to the wick",
+    "cost": "none",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_la_ring": {
+    "intent": "hurry to Moss's cottage",
+    "cost": "none",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_la_chime": {
+    "intent": "accept the glass shield",
+    "cost": "none",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_bell": {
+    "intent": "carry the shield back to Ember",
+    "cost": "leaves Moss's own lighting offer unused",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_humback": {
+    "intent": "ask Moss to light it for her",
+    "cost": "leaves Ember out of the lighting",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_la_bell2": {
+    "intent": "let Ember try behind the glass",
+    "cost": "none",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_la_bell3": {
+    "intent": "carry the lit spark up the hill",
+    "cost": "none",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_la_bell4": {
+    "intent": "reach the lantern with Ember",
+    "cost": "none",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_ra_fork": {
+    "intent": "talk with Ember and Pip",
+    "cost": "none",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_lake": {
+    "intent": "ask Pip to glow beside her",
+    "cost": "leaves the stone ring unbuilt",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_pool": {
+    "intent": "build a stone ring against the wind",
+    "cost": "leaves Pip's glow unasked",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_ra_pebbles": {
+    "intent": "let Pip settle by her shoulder",
+    "cost": "none",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_ra_shelf": {
+    "intent": "notice her flinch fading",
+    "cost": "none",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_descend": {
+    "intent": "head up the hill together",
+    "cost": "gives up waiting for full dark",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_lakeback": {
+    "intent": "wait for darker sky first",
+    "cost": "risks missing the festival",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_ra_shore": {
+    "intent": "reach the lantern",
+    "cost": "none",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_boat": {
+    "intent": "let Pip sit on the wick",
+    "cost": "skips Ember sparking by herself",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_wade": {
+    "intent": "let Ember spark with Pip near",
+    "cost": "leaves Pip off the wick",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_ra_row": {
+    "intent": "watch Ember spark",
+    "cost": "none",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_ra_islet": {
+    "intent": "bring the spark to the wick",
+    "cost": "none",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_ra_crouch": {
+    "intent": "test a spark in the ring",
+    "cost": "none",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_ra_channel": {
+    "intent": "see the wind blocked",
+    "cost": "none",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_enter": {
+    "intent": "carry the stones up the hill",
+    "cost": "gives up resting at the pond",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_poolback": {
+    "intent": "rest by the pond a while",
+    "cost": "gives up reaching the hill in time",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_ra_kneel": {
+    "intent": "set the ring around the lantern",
+    "cost": "none",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_star": {
+    "intent": "ask Ember to blow a gentle spark",
+    "cost": "leaves holding her claw undone",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_deep": {
+    "intent": "hold her claw as she sparks",
+    "cost": "leaves the gentle-breath advice unsaid",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_ra_sketch": {
+    "intent": "watch the wick catch",
+    "cost": "none",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_ra_reach": {
+    "intent": "light the lantern hand in claw",
+    "cost": "none",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_da_fork": {
+    "intent": "look around the market stalls",
+    "cost": "none",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_bat": {
+    "intent": "ask Tilly for help",
+    "cost": "leaves the drum beat unfollowed",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_cache": {
+    "intent": "follow the drum beat",
+    "cost": "leaves Tilly's oven unvisited",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_da_creep": {
+    "intent": "take the pot of coals",
+    "cost": "none",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_da_grey": {
+    "intent": "head for the barn",
+    "cost": "none",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_batenter": {
+    "intent": "bring the coals to Ember at once",
+    "cost": "leaves no time to rest",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_batback": {
+    "intent": "set the pot down for a while",
+    "cost": "lets the coals cool",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_da_stair": {
+    "intent": "show Ember the glowing coals",
+    "cost": "none",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_da_climb": {
+    "intent": "carry the taper up the hill",
+    "cost": "none",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_da_push": {
+    "intent": "reach the lantern",
+    "cost": "none",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_da_door": {
+    "intent": "listen to Roo's drum",
+    "cost": "none",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_da_peer": {
+    "intent": "feel the slow beat",
+    "cost": "none",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_cacheenter": {
+    "intent": "bring Roo and the drum to Ember",
+    "cost": "leaves the square crowd without the drum",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_cacheback": {
+    "intent": "keep drumming in the square",
+    "cost": "leaves Ember alone in the barn",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_da_boxes": {
+    "intent": "climb the hill with Roo",
+    "cost": "none",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_compass": {
+    "intent": "ask Roo to keep a steady beat",
+    "cost": "leaves the counting song unused",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_coins": {
+    "intent": "sing a counting song",
+    "cost": "leaves Roo's beat unused",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_da_out": {
+    "intent": "watch Ember spark in rhythm",
+    "cost": "none",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   },
+   "c_da_carry": {
+    "intent": "finish the song on the last count",
+    "cost": "none",
+    "requires": [],
+    "establishes": [],
+    "plants": []
+   }
+  },
+  "threads": {},
+  "endings": {
+   "la_retreat_pool": {
+    "gift": "A reason to try again: patience matters more than hurrying.",
+    "valence": null,
+    "kind": null
+   },
+   "la_crystal_out": {
+    "gift": "The warm joy of a lantern lit with a friend.",
+    "valence": null,
+    "kind": null
+   },
+   "la_song": {
+    "gift": "A calm breathing trick Ember can use again.",
+    "valence": null,
+    "kind": null
+   },
+   "la_hum_back": {
+    "gift": "A reason to try again and bring Ember along.",
+    "valence": null,
+    "kind": null
+   },
+   "la_bell4": {
+    "gift": "The clever reveal that glass can shelter a spark.",
+    "valence": null,
+    "kind": null
+   },
+   "ra_lake_back": {
+    "gift": "A reason to try again and not wait so long.",
+    "valence": null,
+    "kind": null
+   },
+   "ra_row": {
+    "gift": "A giggle at Pip riding the wick.",
+    "valence": null,
+    "kind": null
+   },
+   "ra_islet": {
+    "gift": "The sweet reveal that a friend's glow can calm fear.",
+    "valence": null,
+    "kind": null
+   },
+   "ra_pool_back": {
+    "gift": "A reason to try again and carry the stones.",
+    "valence": null,
+    "kind": null
+   },
+   "ra_starfish2": {
+    "gift": "The reveal that a stone ring shelters sparks.",
+    "valence": null,
+    "kind": null
+   },
+   "ra_pool_deep2": {
+    "gift": "A warm moment of holding claws.",
+    "valence": null,
+    "kind": null
+   },
+   "da_bat_back": {
+    "gift": "A reason to try again with warm coals.",
+    "valence": null,
+    "kind": null
+   },
+   "da_skylight": {
+    "gift": "The surprise that coals can light a lantern.",
+    "valence": null,
+    "kind": null
+   },
+   "da_cache_back": {
+    "gift": "A reason to try again and bring the drum.",
+    "valence": null,
+    "kind": null
+   },
+   "da_compass2": {
+    "gift": "A happy rhythm to hum afterwards.",
+    "valence": null,
+    "kind": null
+   },
+   "da_coins2": {
+    "gift": "A cheerful counting song to sing.",
+    "valence": null,
+    "kind": null
+   }
+  },
+  "provenance": {
+   "producer": "cyo_adventure.storyplan.generate",
+   "model": "anthropic/claude-sonnet-5.5",
+   "method": "generated",
+   "shape": {
+    "id": "the-cave-of-echoes",
+    "hash": "sha256:70c334341d9e40bc1b272bcb9254c354308a798799ecafe3c75e0564f017a628"
+   },
+   "book_file": null,
+   "book_sha256": null,
+   "authored": "2026-11-21",
+   "authoring_minutes": null,
+   "checks": {
+    "ok": true,
+    "errors": 0,
+    "warnings": 12
+   },
+   "approver": null,
+   "notes": [
+    "built from model pitch 1 of 3"
+   ]
+  }
+ },
+ "totals": {
+  "calls": 2,
+  "input_tokens": 7537,
+  "output_tokens": 12527,
+  "reasoning_tokens": 3200,
+  "cost_estimate_usd": 0.140344,
+  "vendor_cost_usd": 0.133071,
+  "provider_seconds": 79.3
+ },
+ "budget": {
+  "budget_usd": 8.0,
+  "spent_before_usd": 0.147234,
+  "spent_after_usd": 0.285664
+ }
+}
