@@ -27,9 +27,15 @@ node; every payoff site's ``choice`` is a choice of its ``node``; every thread's
 variable is declared in the book and every book variable has exactly one
 thread; a thread's ``planting_choices`` equal the set of book choices whose
 effects move that variable off its initial value. A variable moved by an
-``on_enter`` effect is a warning (ADR-033 plants on choices). When SP-1
-reports an error the graph rules SP-2 to SP-8 are skipped, because a plan that
-does not cover its book would make them report noise.
+``on_enter`` effect is a warning (ADR-033 plants on choices). When the plan's
+nodes or choices do not cover the book's (or the reverse) the graph rules SP-2
+to SP-8 are skipped, because they index the plan by every book node and
+choice. G1 revision (2026-11-21, AL-821): any other SP-1 error no longer
+switches the graph rules off. A thread with an error (an undeclared variable,
+a ``planting_choices`` mismatch, a payoff choice that is not its node's) is
+excluded from the thread rules SP-4 to SP-6, its plants still feed the
+must-analysis as the plan declares them, and every other rule runs and is
+reported alongside SP-1.
 
 ``SP-2`` merge closure: in every reachable configuration ``(node, state)``,
 each fact the node ``requires`` is guaranteed on entry, and each fact a visible
@@ -65,10 +71,26 @@ two sides are both established at some reachable site (a node's
   one side in ``truth``.
 
 Separately, every ``truth`` fact must be established at some reachable site.
+A negation is recorded as a positive fact that contradicts its opposite, so a
+node asserting "she has no key" reached on a route whose choice planted the
+key is the first case above; the G1 revision (2026-11-21, AL-822) pins this
+with a test and changes nothing here: the fix is that the plan records the
+negation at the node whose prose asserts it.
 
 ``SP-4`` plant exclusivity: walking every configuration reachable from the
-start without traversing any of a thread's planting choices, no node
-establishes that thread's ``plant``.
+start without traversing any of a thread's planting choices (the unplanted
+subgraph), no node establishes what the planting choice makes known. G1
+revision (2026-11-21, AL-817 and AL-818): the facts checked are the declared
+``plant`` plus every other fact the planting edge makes known (the planting
+choice's ``establishes``, and its target's ``establishes`` when only planted
+readers arrive there, less what the reader already had guaranteed) that a
+payoff of the thread relies on (a payoff choice's ``requires`` or its
+passage's). A checked fact is reported at a configuration of the unplanted
+subgraph that establishes it, by its node or by the non-planting choice
+entering it, only when a payoff site of the thread is still reachable from
+there without a planting choice. So a public plant is caught whichever half of
+a two-part plant the plan names as ``plant``, and an ending, from which no
+payoff follows, is never reported.
 
 ``SP-5`` payoff reach: each payoff site ``node`` has a reachable
 configuration where the thread's variable differs from its declared initial
@@ -90,7 +112,12 @@ guaranteed state-wise, which SP-2 alone would accept.
 
 ``SP-8`` every reachable configuration with two or more visible choices offers
 at least two distinct ``cost`` values (case-folded, whitespace-collapsed,
-trailing punctuation stripped).
+trailing punctuation stripped; "none", "nothing" and "no cost" are one value).
+G1 revision (2026-11-21, AL-819): a decision whose options share one cost is
+an ERROR only when that cost is "none" (no option gives anything up, so no
+trade-off separates them: the fork with one right answer); a shared real cost
+(each option's cost is giving up the others, "leaves the other wings") is a
+WARNING, since a symmetric opportunity cost is a trade-off.
 
 ``SP-9`` every plan string except ``request.text``, ``request.note``, ``book``
 and ``provenance`` (verbatim untrusted input and metadata) passes the
@@ -100,7 +127,14 @@ denylist for the book's age band, both reused from
 :mod:`cyo_adventure.validator.slots`. The length cap is per field (amended
 2026-11-21): 120 characters for slot-like strings (pitch, cast, choice-level
 strings, endings, payoff ``shows``, tone), 240 for ``facts.*.text`` and node
-``event`` (record prose), 600 for ``truth.statement``.
+``event`` (record prose), 600 for ``truth.statement``. G1 revision
+(2026-11-21, AL-811): before the denylist, SP-9 alone masks the bare word
+"wound" where it is the past tense of "wind": the string names a winding
+context (clockwork, clock, spring, key, crank, wind and their listed forms, or
+"wound up"/"wound tight") and the word before it is not a determiner,
+possessive, injury adjective, "to" or a modal. ``validator.slots`` is
+unchanged for its other callers; "wounded", the injury noun and every other
+term still trip the floor.
 
 ``SP-A`` (optional, only when an assertion map is supplied): a fact the
 prose of a node is recorded as asserting must not be in that node's computed
@@ -144,6 +178,7 @@ if TYPE_CHECKING:
     )
 
     from cyo_adventure.storybook.models import Effect, Variable
+    from cyo_adventure.storyplan.models import Thread
 
 __all__ = [
     "ASSERT_RULE",
@@ -426,15 +461,28 @@ class _Context:
     node_gen: dict[str, frozenset[str]]
     choice_gen: dict[str, frozenset[str]]
     entry: dict[int, frozenset[str]]
+    threads: dict[str, Thread]
 
     @classmethod
-    def build(cls, plan: StoryPlan, book: Storybook, *, cap: int) -> _Context:
+    def build(
+        cls,
+        plan: StoryPlan,
+        book: Storybook,
+        *,
+        cap: int,
+        excluded_threads: frozenset[str] = _EMPTY,
+    ) -> _Context:
         """Walk the book and run the plan's must-analysis over it.
 
         Args:
-            plan: The plan, already SP-1 clean.
+            plan: The plan. Its nodes and choices must cover the book's (SP-1
+                node and choice coverage clean); thread errors are allowed and
+                handled through ``excluded_threads``.
             book: The book it plans.
             cap: The walk's configuration cap.
+            excluded_threads: Threads SP-1 found broken. The thread rules
+                (SP-4 to SP-6) skip them; their plants still feed the
+                must-analysis exactly as the plan declares them.
 
         Returns:
             _Context: The shared analysis state.
@@ -453,6 +501,11 @@ class _Context:
             node_gen=node_gen,
             choice_gen=choice_gen,
             entry={},
+            threads={
+                thread_id: thread
+                for thread_id, thread in plan.threads.items()
+                if thread_id not in excluded_threads
+            },
         )
         context.entry.update(context.entry_sets(node_gen, choice_gen))
         return context
@@ -745,7 +798,25 @@ def _plants_variable(effect: Effect, variable: Variable) -> bool:
     return effect.value != 0
 
 
-def _check_coverage(plan: StoryPlan, book: Storybook) -> list[PlanFinding]:
+@dataclass(frozen=True, slots=True)
+class _Coverage:
+    """SP-1's findings and what they mean for the graph rules.
+
+    Attributes:
+        findings: Every SP-1 finding.
+        blocking: True when the plan's nodes or choices do not cover the
+            book's (or the reverse). The graph rules index the plan by every
+            book node and choice, so they cannot run.
+        excluded_threads: Threads with an SP-1 error. The graph rules still
+            run (G1 revision, AL-821); the thread rules SP-4 to SP-6 skip these.
+    """
+
+    findings: list[PlanFinding]
+    blocking: bool
+    excluded_threads: frozenset[str]
+
+
+def _check_coverage(plan: StoryPlan, book: Storybook) -> _Coverage:
     """SP-1: the plan covers exactly the book's nodes, choices and variables.
 
     Args:
@@ -753,7 +824,8 @@ def _check_coverage(plan: StoryPlan, book: Storybook) -> list[PlanFinding]:
         book: The book.
 
     Returns:
-        list[PlanFinding]: The findings.
+        _Coverage: The findings, whether node or choice coverage failed, and
+            the threads with an error.
     """
     story = book.id
     findings: list[PlanFinding] = []
@@ -779,6 +851,7 @@ def _check_coverage(plan: StoryPlan, book: Storybook) -> list[PlanFinding]:
         for c in plan.choices
         if c not in set(choice_ids)
     )
+    blocking = bool(findings)
     ending_nodes = {node.id for node in book.nodes if node.is_ending}
     findings.extend(
         _finding(
@@ -791,9 +864,11 @@ def _check_coverage(plan: StoryPlan, book: Storybook) -> list[PlanFinding]:
     choices_of = {
         node.id: {choice.id for choice in node.choices} for node in book.nodes
     }
+    excluded: set[str] = set()
     for thread_id, thread in plan.threads.items():
         for index, site in enumerate(thread.payoff_sites):
             if site.node in choices_of and site.choice not in choices_of[site.node]:
+                excluded.add(thread_id)
                 findings.append(
                     _finding(
                         "SP-1",
@@ -805,8 +880,13 @@ def _check_coverage(plan: StoryPlan, book: Storybook) -> list[PlanFinding]:
                         fact_id=thread.plant,
                     )
                 )
-    findings.extend(_check_thread_variables(plan, book))
-    return findings
+    variable_findings, broken = _check_thread_variables(plan, book)
+    findings.extend(variable_findings)
+    return _Coverage(
+        findings=findings,
+        blocking=blocking,
+        excluded_threads=frozenset(excluded | broken),
+    )
 
 
 def _check_ending_entries(plan: StoryPlan, book: Storybook) -> list[PlanFinding]:
@@ -848,7 +928,9 @@ def _check_ending_entries(plan: StoryPlan, book: Storybook) -> list[PlanFinding]
     return findings
 
 
-def _check_thread_variables(plan: StoryPlan, book: Storybook) -> list[PlanFinding]:
+def _check_thread_variables(
+    plan: StoryPlan, book: Storybook
+) -> tuple[list[PlanFinding], set[str]]:
     """SP-1, variables: threads and book variables correspond one to one.
 
     Args:
@@ -856,10 +938,14 @@ def _check_thread_variables(plan: StoryPlan, book: Storybook) -> list[PlanFindin
         book: The book.
 
     Returns:
-        list[PlanFinding]: The findings.
+        tuple[list[PlanFinding], set[str]]: The findings, and the ids of the
+            threads with an ERROR among them (an undeclared variable or a
+            ``planting_choices`` mismatch). A book variable with no thread is
+            an error that names no thread, so it excludes nothing.
     """
     story = book.id
     findings: list[PlanFinding] = []
+    broken: set[str] = set()
     variables = {variable.name: variable for variable in book.variables}
     threaded = {thread.variable for thread in plan.threads.values()}
     findings.extend(
@@ -870,6 +956,7 @@ def _check_thread_variables(plan: StoryPlan, book: Storybook) -> list[PlanFindin
     for thread_id, thread in plan.threads.items():
         variable = variables.get(thread.variable)
         if variable is None:
+            broken.add(thread_id)
             findings.append(
                 _finding(
                     "SP-1",
@@ -886,30 +973,35 @@ def _check_thread_variables(plan: StoryPlan, book: Storybook) -> list[PlanFindin
             for choice in node.choices
             if any(_plants_variable(effect, variable) for effect in choice.effects)
         ]
-        findings.extend(
-            _finding(
-                "SP-1",
-                story,
-                f"choice {c!r} sets {variable.name!r} but threads.{thread_id}"
-                ".planting_choices omit it",
-                choice_id=c,
-                fact_id=thread.plant,
-            )
-            for c in setters
-            if c not in thread.planting_choices
-        )
-        findings.extend(
-            _finding(
-                "SP-1",
-                story,
-                f"threads.{thread_id}.planting_choices lists {c!r}, which does not set "
-                f"{variable.name!r} in the book",
-                choice_id=c,
-                fact_id=thread.plant,
-            )
-            for c in thread.planting_choices
-            if c not in setters
-        )
+        mismatched = [
+            *(
+                _finding(
+                    "SP-1",
+                    story,
+                    f"choice {c!r} sets {variable.name!r} but threads.{thread_id}"
+                    ".planting_choices omit it",
+                    choice_id=c,
+                    fact_id=thread.plant,
+                )
+                for c in setters
+                if c not in thread.planting_choices
+            ),
+            *(
+                _finding(
+                    "SP-1",
+                    story,
+                    f"threads.{thread_id}.planting_choices lists {c!r}, which does "
+                    f"not set {variable.name!r} in the book",
+                    choice_id=c,
+                    fact_id=thread.plant,
+                )
+                for c in thread.planting_choices
+                if c not in setters
+            ),
+        ]
+        if mismatched:
+            broken.add(thread_id)
+        findings.extend(mismatched)
         findings.extend(
             _finding(
                 "SP-1",
@@ -923,7 +1015,7 @@ def _check_thread_variables(plan: StoryPlan, book: Storybook) -> list[PlanFindin
             for node in book.nodes
             if any(_plants_variable(effect, variable) for effect in node.on_enter)
         )
-    return findings
+    return findings, broken
 
 
 # ---------------------------------------------------------------------------
@@ -1176,48 +1268,178 @@ def _check_single_truth(ctx: _Context) -> list[PlanFinding]:
     return findings
 
 
+def _planting_edge_facts(
+    ctx: _Context, thread: Thread, unplanted_nodes: frozenset[str]
+) -> dict[str, str]:
+    """Return the facts a thread's planting choices make known, with a source.
+
+    A planting choice often makes several facts known at once: the declared
+    ``plant``, what the choice itself ``establishes``, and what its target
+    passage establishes when only planted readers arrive there (a dedicated
+    planting scene). A fact counts when at least one reader taking a planting
+    choice did not already have it guaranteed: re-stating background the
+    reader holds is not part of the plant. The declared plant always counts.
+
+    Args:
+        ctx: The analysis context.
+        thread: The thread.
+        unplanted_nodes: The nodes some route reaches without any of the
+            thread's planting choices. A target among them is shared with
+            unplanted readers, so its facts are not the planting edge's.
+
+    Returns:
+        dict[str, str]: Fact id to the planting choice that first made it
+            known (walk order), the declared plant mapped to its first
+            planting choice.
+    """
+    planting = set(thread.planting_choices)
+    made: dict[str, str] = {}
+    for config, edges in enumerate(ctx.graph.succ):
+        held = ctx.entry[config] | ctx.node_gen.get(ctx.graph.node_of[config], _EMPTY)
+        for choice_id, target in edges:
+            if choice_id not in planting:
+                continue
+            target_node = ctx.graph.node_of[target]
+            gained = {thread.plant, *ctx.plan.choices[choice_id].establishes}
+            if target_node not in unplanted_nodes:
+                gained |= ctx.node_gen.get(target_node, _EMPTY)
+            for fact in sorted(gained):
+                if fact == thread.plant or fact not in held:
+                    made.setdefault(fact, choice_id)
+    if thread.plant not in made and thread.planting_choices:
+        made[thread.plant] = thread.planting_choices[0]
+    return made
+
+
+def _payoff_reliance(ctx: _Context, thread: Thread) -> frozenset[str]:
+    """Return the facts a thread's payoffs rely on.
+
+    Args:
+        ctx: The analysis context.
+        thread: The thread.
+
+    Returns:
+        frozenset[str]: Every payoff choice's ``requires`` plus every payoff
+            passage's (the choice's book target) ``requires``.
+    """
+    target_of = {c.id: c.target for node in ctx.book.nodes for c in node.choices}
+    relied: set[str] = set()
+    for site in thread.payoff_sites:
+        relied.update(ctx.plan.choices[site.choice].requires)
+        relied.update(ctx.plan.nodes[target_of[site.choice]].requires)
+    return frozenset(relied)
+
+
+def _feeds_payoff(
+    ctx: _Context,
+    thread: Thread,
+    unplanted: Mapping[int, tuple[int, str] | None],
+) -> set[int]:
+    """Return the unplanted configurations that can still reach a payoff site.
+
+    Args:
+        ctx: The analysis context.
+        thread: The thread.
+        unplanted: The configurations reached without the thread's planting
+            choices (the output of :meth:`_Context.reach`).
+
+    Returns:
+        set[int]: Those from which some route, still skipping every planting
+            choice, arrives at a payoff site node. An ending, which has no
+            successor, is never among them unless it is itself a site.
+    """
+    planting = set(thread.planting_choices)
+    sites = {site.node for site in thread.payoff_sites}
+    found = {c for c in unplanted if ctx.graph.node_of[c] in sites}
+    queue: deque[int] = deque(found)
+    while queue:
+        current = queue.popleft()
+        for source, choice_id in ctx.preds.get(current, ()):
+            if (
+                source in unplanted
+                and source not in found
+                and choice_id not in planting
+            ):
+                found.add(source)
+                queue.append(source)
+    return found
+
+
 def _check_plant_exclusivity(ctx: _Context) -> list[PlanFinding]:
-    """SP-4: a planted fact is established on no route that skips the plant.
+    """SP-4: what a planting choice makes known stays private to its readers.
+
+    G1 revision (2026-11-21, AL-817 and AL-818). For each thread let the
+    *unplanted subgraph* be the configurations reached from the start without
+    traversing any of the thread's planting choices. The facts checked are the
+    declared ``plant`` plus every other fact the planting edge makes known
+    (:func:`_planting_edge_facts`) that a payoff of the thread relies on
+    (:func:`_payoff_reliance`). One of them is a public plant at a
+    configuration of the unplanted subgraph that establishes it (by its node's
+    ``establishes`` or by the non-planting choice entering it) when, from that
+    configuration, a payoff site of the thread is still reachable without a
+    planting choice (:func:`_feeds_payoff`). So the rule no longer depends on
+    which half of a two-part plant the plan names as ``plant``, and a node no
+    payoff can follow (an ending above all) is not reported: it cannot leak
+    the plant to a payoff.
 
     Args:
         ctx: The analysis context.
 
     Returns:
-        list[PlanFinding]: One finding per (thread, node), with a witness.
+        list[PlanFinding]: One finding per (thread, node, fact), with a witness.
     """
     findings: list[PlanFinding] = []
-    for thread_id, thread in ctx.plan.threads.items():
+    for thread_id, thread in ctx.threads.items():
         planting = set(thread.planting_choices)
         parents = ctx.reach(
             blocked=lambda choice_id, planting=planting: choice_id in planting,
             stop=lambda _config: False,
         )
-        leaked: dict[str, int] = {}
+        unplanted_nodes = frozenset(ctx.graph.node_of[c] for c in parents)
+        made = _planting_edge_facts(ctx, thread, unplanted_nodes)
+        relied = _payoff_reliance(ctx, thread)
+        checked = {
+            fact: source
+            for fact, source in made.items()
+            if fact == thread.plant or fact in relied
+        }
+        feeds = _feeds_payoff(ctx, thread, parents)
+        leaked: dict[tuple[str, str], int] = {}
         for config in sorted(parents):
             node_id = ctx.graph.node_of[config]
-            if thread.plant in ctx.node_gen.get(node_id, _EMPTY):
-                leaked.setdefault(node_id, config)
-            # A non-planting choice whose own ``establishes`` names the plant
-            # leaks it just as a node does; attribute it to the arrival node.
+            if config in feeds:
+                for fact in sorted(checked.keys() & ctx.node_gen.get(node_id, _EMPTY)):
+                    leaked.setdefault((node_id, fact), config)
+            # A non-planting choice whose own ``establishes`` names a checked
+            # fact leaks it just as a node does; attribute it to the arrival.
             for choice_id, target in ctx.graph.succ[config]:
-                if choice_id not in planting and thread.plant in ctx.choice_gen.get(
-                    choice_id, _EMPTY
-                ):
-                    leaked.setdefault(ctx.graph.node_of[target], target)
-        leaked = dict(sorted(leaked.items(), key=lambda item: item[1]))
-        findings.extend(
-            _finding(
-                "SP-4",
-                ctx.book.id,
-                f"{node_id!r} establishes {thread.plant!r}, the plant of "
-                f"thread {thread_id!r}, on a route that skips every planting choice",
-                node_id=node_id,
-                state=ctx.state(config),
-                fact_id=thread.plant,
-                route=ctx.route(parents, config),
+                if choice_id in planting or target not in feeds:
+                    continue
+                gained = ctx.choice_gen.get(choice_id, _EMPTY)
+                for fact in sorted(checked.keys() & gained):
+                    leaked.setdefault((ctx.graph.node_of[target], fact), target)
+        for (node_id, fact), config in sorted(
+            leaked.items(), key=lambda item: (item[1], item[0][1])
+        ):
+            what = (
+                f"the plant of thread {thread_id!r}"
+                if fact == thread.plant
+                else f"which planting choice {checked[fact]!r} of thread "
+                f"{thread_id!r} makes known with its plant {thread.plant!r} and "
+                "a payoff of that thread relies on"
             )
-            for node_id, config in leaked.items()
-        )
+            findings.append(
+                _finding(
+                    "SP-4",
+                    ctx.book.id,
+                    f"{node_id!r} establishes {fact!r}, {what}, on a route that "
+                    "skips every planting choice and can still reach a payoff site",
+                    node_id=node_id,
+                    state=ctx.state(config),
+                    fact_id=fact,
+                    route=ctx.route(parents, config),
+                )
+            )
     return findings
 
 
@@ -1251,7 +1473,7 @@ def _check_payoff_reach(ctx: _Context) -> list[PlanFinding]:
     story = ctx.book.id
     variables = {variable.name: variable for variable in ctx.book.variables}
     findings: list[PlanFinding] = []
-    for thread_id, thread in ctx.plan.threads.items():
+    for thread_id, thread in ctx.threads.items():
         variable = variables[thread.variable]
         for site in thread.payoff_sites:
             configs = ctx.at.get(site.node, [])
@@ -1299,9 +1521,9 @@ def _check_payoff_independence(ctx: _Context) -> list[PlanFinding]:
     target_of = {c.id: c.target for node in ctx.book.nodes for c in node.choices}
     passages = {
         thread_id: {target_of[site.choice] for site in thread.payoff_sites}
-        for thread_id, thread in ctx.plan.threads.items()
+        for thread_id, thread in ctx.threads.items()
     }
-    for thread_id, thread in ctx.plan.threads.items():
+    for thread_id, thread in ctx.threads.items():
         own = passages[thread_id]
         others = set[str]().union(
             *(nodes for t, nodes in passages.items() if t != thread_id)
@@ -1405,6 +1627,10 @@ _DECISION_MIN: Final = 2
 """A decision offers at least this many visible choices, and SP-8 wants this many costs."""
 
 
+_NO_COST: Final[frozenset[str]] = frozenset({"none", "nothing", "no cost"})
+"""Normalised costs that mean the option gives up nothing (SP-8's costless case)."""
+
+
 def _normal_cost(cost: str) -> str:
     """Normalise a cost for SP-8's distinctness comparison.
 
@@ -1412,21 +1638,35 @@ def _normal_cost(cost: str) -> str:
         cost: The raw cost string.
 
     Returns:
-        str: Case-folded, whitespace-collapsed, trailing punctuation stripped.
+        str: Case-folded, whitespace-collapsed, trailing punctuation stripped,
+            and every no-cost spelling (:data:`_NO_COST`) read as ``"none"``.
     """
-    return _COST_SPACE.sub(" ", cost.casefold()).strip().rstrip(".!?;:,").strip()
+    normal = _COST_SPACE.sub(" ", cost.casefold()).strip().rstrip(".!?;:,").strip()
+    return "none" if normal in _NO_COST else normal
 
 
 def _check_distinct_costs(ctx: _Context) -> list[PlanFinding]:
     """SP-8: every decision offers at least two different costs.
 
+    G1 revision (2026-11-21, AL-819). A configuration whose visible choices
+    (two or more) share one normalised cost fails. The severity depends on
+    that shared cost. When it is a no-cost value (:data:`_NO_COST`) no option
+    gives anything up, so nothing in the plan separates the options and the
+    decision has no trade-off: the "fork with one right answer" ADR-033 names,
+    an ERROR. When it is a real cost every option pays alike (the symmetric
+    opportunity cost of a hub, "leaves the other wings"), each option's price
+    is giving up the others, which is a trade-off rather than a right answer,
+    so it is a WARNING. The convention plan writers follow is in the WP-1.4
+    re-extraction prompt: "none" only when an option truly costs nothing.
+
     Args:
         ctx: The analysis context.
 
     Returns:
-        list[PlanFinding]: One finding per node, with a witness state.
+        list[PlanFinding]: One finding per node and severity, with a witness
+            state.
     """
-    failing: dict[str, list[int]] = {}
+    failing: dict[tuple[str, bool], list[int]] = {}
     for config, edges in enumerate(ctx.graph.succ):
         if len(edges) < _DECISION_MIN:
             continue
@@ -1434,24 +1674,35 @@ def _check_distinct_costs(ctx: _Context) -> list[PlanFinding]:
             _normal_cost(ctx.plan.choices[choice_id].cost) for choice_id, _ in edges
         }
         if len(costs) < _DECISION_MIN:
-            failing.setdefault(ctx.graph.node_of[config], []).append(config)
+            costless = costs == {"none"}
+            failing.setdefault((ctx.graph.node_of[config], costless), []).append(config)
     findings: list[PlanFinding] = []
     for node in ctx.book.nodes:
-        configs = failing.get(node.id)
-        if not configs:
-            continue
-        witness = configs[0]
-        visible = [choice_id for choice_id, _ in ctx.graph.succ[witness]]
-        findings.append(
-            _finding(
-                "SP-8",
-                ctx.book.id,
-                f"decision {node.id!r} offers {', '.join(visible)} at one cost "
-                f"({ctx.plan.choices[visible[0]].cost!r}) in {len(configs)} state(s)",
-                node_id=node.id,
-                state=ctx.state(witness),
+        for costless in (True, False):
+            configs = failing.get((node.id, costless))
+            if not configs:
+                continue
+            witness = configs[0]
+            visible = [choice_id for choice_id, _ in ctx.graph.succ[witness]]
+            cost = ctx.plan.choices[visible[0]].cost
+            findings.append(
+                _finding(
+                    "SP-8",
+                    ctx.book.id,
+                    (
+                        f"decision {node.id!r} offers {', '.join(visible)} and none "
+                        f"of them costs anything ({cost!r}) in {len(configs)} "
+                        "state(s): no trade-off separates the options"
+                        if costless
+                        else f"decision {node.id!r} offers {', '.join(visible)} at "
+                        f"one shared cost ({cost!r}) in {len(configs)} state(s); "
+                        "a symmetric opportunity cost is advisory"
+                    ),
+                    severity=Severity.ERROR if costless else Severity.WARNING,
+                    node_id=node.id,
+                    state=ctx.state(witness),
+                )
             )
-        )
     return findings
 
 
@@ -1470,6 +1721,121 @@ SLOT_LENGTH_CAP = 120
 RECORD_LENGTH_CAP = 240
 TRUTH_LENGTH_CAP = 600
 _SLOT_LENGTH_MESSAGE_PREFIX = "value exceeds the 120-character limit"
+
+
+# SP-9 "wound" homograph (G1 revision, 2026-11-21, AL-811). "wound" is both the
+# injury noun (the `graphic` bundle's target) and the past tense of "wind", the
+# usual verb for clockwork, springs and keys. Plan strings are internal records,
+# never shown to a child, but SP-9 reuses validator.slots, whose behaviour for
+# its other callers must not change. So SP-9 alone masks an occurrence of the
+# bare word "wound" before the denylist runs when, and only when, (a) the same
+# string names a winding context (a word in _WINDING_CUES, or "wound" is
+# directly followed by "up" or "tight") and (b) the word before it is not a
+# determiner, possessive or injury adjective, which is how the noun is
+# introduced ("a wound", "her wound", "a deep wound"), nor "to" or a modal,
+# which is how the verb "to wound" (injure) appears ("could wound her"); both
+# lists are _WOUND_INJURY_CUES. "wounded" and every other term of every bundle
+# are untouched, and the structural floors and length caps apply as before.
+# The cost of the narrowness: "the wound spring" still fails (the determiner
+# reads as the noun), which a writer avoids with "the spring was wound".
+_WINDING_CUES: Final[frozenset[str]] = frozenset(
+    {
+        "clock",
+        "clocks",
+        "clockwork",
+        "crank",
+        "cranked",
+        "key",
+        "mainspring",
+        "spring",
+        "springs",
+        "wind",
+        "winding",
+        "winds",
+    }
+)
+_WOUND_INJURY_CUES: Final[frozenset[str]] = frozenset(
+    {
+        "a",
+        "an",
+        "bad",
+        "can",
+        "could",
+        "deep",
+        "fresh",
+        "gaping",
+        "her",
+        "his",
+        "its",
+        "may",
+        "might",
+        "must",
+        "my",
+        "nasty",
+        "open",
+        "our",
+        "shall",
+        "should",
+        "that",
+        "the",
+        "their",
+        "this",
+        "to",
+        "will",
+        "would",
+        "your",
+    }
+)
+_WORD = re.compile(r"[a-z]+")
+_BARE_WOUND = re.compile(r"\bwound\b", re.IGNORECASE)
+_WOUND_FOLLOWER = re.compile(r"\s+(up|tight)\b", re.IGNORECASE)
+_PREVIOUS_WORD = re.compile(r"([a-z]+)[^a-z]*$", re.IGNORECASE)
+
+
+def _mask_winding_wound(value: str) -> str:
+    """Mask "wound" where it is the past tense of "wind" (SP-9 only).
+
+    Args:
+        value: A plan string.
+
+    Returns:
+        str: ``value`` with each "wound" that meets the rule above replaced by
+            a neutral placeholder, and unchanged otherwise.
+    """
+    words = set(_WORD.findall(value.casefold()))
+    winding_string = bool(words & _WINDING_CUES)
+
+    def replace(match: re.Match[str]) -> str:
+        follower = _WOUND_FOLLOWER.match(value, match.end()) is not None
+        if not (winding_string or follower):
+            return match.group(0)
+        previous = _PREVIOUS_WORD.search(value, 0, match.start())
+        if previous is not None and previous.group(1).casefold() in _WOUND_INJURY_CUES:
+            return match.group(0)
+        return "wnd"
+
+    return _BARE_WOUND.sub(replace, value)
+
+
+def _denylisted(value: str, bundles: frozenset[str]) -> frozenset[str]:
+    """Return the band-mandatory bundles a plan string trips, for SP-9.
+
+    Args:
+        value: The plan string.
+        bundles: The band's mandatory bundle ids.
+
+    Returns:
+        frozenset[str]: :func:`~cyo_adventure.validator.slots.denylisted_bundles`
+            of the string after :func:`_mask_winding_wound`.
+    """
+    # #CRITICAL: security: this is the only place SP-9 departs from the shared
+    # denylist, and only for the bare word "wound" in a winding context not
+    # introduced as a noun; every other term, and "wound" in the injury sense,
+    # still trips the band floor.
+    # #VERIFY: test_storyplan_checks.py asserts the injury sense fails even
+    # beside a winding cue ("a wound from the clock key"), "wounded" fails, and
+    # another graphic term in the same string still fails.
+    return denylisted_bundles(_mask_winding_wound(value), bundles)
 
 
 @dataclass(frozen=True, slots=True)
@@ -1599,7 +1965,7 @@ def _check_text_floors(plan: StoryPlan, book: Storybook) -> list[PlanFinding]:
             )
         messages.extend(
             f"matches a band-mandatory denylist term in bundle {bundle!r}"
-            for bundle in sorted(denylisted_bundles(item.value, bundles))
+            for bundle in sorted(_denylisted(item.value, bundles))
         )
         findings.extend(
             _finding(
@@ -1646,8 +2012,14 @@ def check_plan(
     binding = _check_binding(plan, book, book_digest)
     coverage = _check_coverage(plan, book)
     graph_findings: list[PlanFinding] = []
-    if not any(f.severity is Severity.ERROR for f in coverage):
-        ctx = _Context.build(plan, book, cap=cap)
+    # G1 revision (2026-11-21, AL-821): only a node or choice coverage gap
+    # stops the graph rules. A thread error excludes that thread from SP-4 to
+    # SP-6 and everything else still runs, so one slip in a thread no longer
+    # hides every merge, truth and cost finding in the plan.
+    if not coverage.blocking:
+        ctx = _Context.build(
+            plan, book, cap=cap, excluded_threads=coverage.excluded_threads
+        )
         if ctx.graph.capped:
             binding.append(
                 _finding(
@@ -1668,7 +2040,7 @@ def check_plan(
         ]
     for finding in (
         *binding,
-        *coverage,
+        *coverage.findings,
         *graph_findings,
         *_check_text_floors(plan, book),
     ):
@@ -2179,8 +2551,29 @@ def _witness_sp7() -> tuple[dict[str, object], dict[str, object]]:
     return book, plan
 
 
+def _witness_sp4_named_half() -> tuple[dict[str, object], dict[str, object]]:
+    """Name the private half of a two-part plant and show the public half to all.
+
+    The map thread's ``plant`` becomes Wren keeping the map; the planting choice
+    also makes known what the map marks, which the payoff passage relies on,
+    and the shared path shows that to every reader. SP-4 must not depend on
+    which half the plan calls the plant (G1 revision, AL-817).
+
+    Returns:
+        tuple[dict[str, object], dict[str, object]]: ``(book, plan)``.
+    """
+    book, plan = base_example()
+    _section(plan, "facts")["wren_keeps_map"] = {
+        "text": "Wren folds the map into her pocket."
+    }
+    _section(plan, "threads", "t_map")["plant"] = "wren_keeps_map"
+    _section(plan, "choices", "c_take_map")["establishes"] = ["map_marks_cave"]
+    _section(plan, "nodes", "n_path")["establishes"] = ["map_marks_cave"]
+    return book, plan
+
+
 def _witness_sp8() -> tuple[dict[str, object], dict[str, object]]:
-    """Give both opening choices the same cost.
+    """Make the opening decision costless: both choices cost nothing.
 
     Returns:
         tuple[dict[str, object], dict[str, object]]: ``(book, plan)``.
@@ -2201,6 +2594,22 @@ def _witness_sp9() -> tuple[dict[str, object], dict[str, object]]:
     return book, plan
 
 
+def _witness_sp9_injury_wound() -> tuple[dict[str, object], dict[str, object]]:
+    """Use "wound" in the injury sense beside a winding word.
+
+    The SP-9 homograph exemption (G1 revision) must not let the injury noun
+    through just because the string also mentions a clock key.
+
+    Returns:
+        tuple[dict[str, object], dict[str, object]]: ``(book, plan)``.
+    """
+    book, plan = base_example()
+    _section(plan, "facts", "cave_drawing")["text"] = (
+        "The cave wall shows a wound from the clock key."
+    )
+    return book, plan
+
+
 WITNESSES: Final[tuple[RuleWitness, ...]] = (
     RuleWitness("SP-0", _witness_sp0),
     RuleWitness("SP-1", _witness_sp1),
@@ -2212,6 +2621,10 @@ WITNESSES: Final[tuple[RuleWitness, ...]] = (
     RuleWitness("SP-7", _witness_sp7),
     RuleWitness("SP-8", _witness_sp8),
     RuleWitness("SP-9", _witness_sp9),
+    # Extra witnesses for rules the G1 revision (2026-11-21) changed; the
+    # first ten stay one per rule in RULE_IDS order.
+    RuleWitness("SP-4", _witness_sp4_named_half),
+    RuleWitness("SP-9", _witness_sp9_injury_wound),
 )
 
 

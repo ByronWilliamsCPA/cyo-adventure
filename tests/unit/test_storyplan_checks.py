@@ -115,7 +115,10 @@ def test_the_clean_example_passes_every_rule() -> None:
 
 @pytest.mark.unit
 def test_there_is_one_witness_per_rule() -> None:
-    assert tuple(w.rule_id for w in WITNESSES) == RULE_IDS
+    # The first ten are one per rule in order; any extra witness (added by the
+    # G1 revision for a changed rule) names a known rule.
+    assert tuple(w.rule_id for w in WITNESSES[: len(RULE_IDS)]) == RULE_IDS
+    assert {w.rule_id for w in WITNESSES} == set(RULE_IDS)
 
 
 @pytest.mark.unit
@@ -322,6 +325,48 @@ def test_sp1_skips_graph_rules_but_still_floors_text() -> None:
 
 
 @pytest.mark.unit
+def test_sp1_thread_error_still_runs_graph_rules_without_that_thread() -> None:
+    # G1 revision (AL-821): a mislabelled planting choice is an SP-1 error on
+    # its thread, but SP-2 to SP-8 still run; only that thread's SP-4 to SP-6
+    # are skipped.
+    book, plan = _pair()
+    plan["threads"]["t_lamp"]["planting_choices"] = ["c_skip_lamp"]
+    plan["choices"]["c_skip_lamp"]["plants"] = ["t_lamp"]
+    del plan["choices"]["c_take_lamp"]["plants"]
+    plan["nodes"]["n_home"]["requires"].append("map_marks_cave")  # SP-2 defect
+    plan["nodes"]["n_fork"]["establishes"] = ["map_marks_cave"]  # SP-4 on t_map
+    plan["nodes"]["n_cave"]["establishes"] = ["cave_drawing", "lamp_lit"]
+    report = _check(book, plan)
+    assert {f.rule_id for f in report.errors} == {"SP-1", "SP-2", "SP-4"}
+    sp1 = _findings(report, "SP-1")
+    assert {f.choice_id for f in sp1} == {"c_take_lamp", "c_skip_lamp"}
+    sp4 = _findings(report, "SP-4")
+    # n_cave leaks t_lamp's plant to the tunnel payoff, but t_lamp is excluded.
+    assert {(f.node_id, f.fact_id) for f in sp4} == {("n_fork", "map_marks_cave")}
+
+
+@pytest.mark.unit
+def test_sp1_an_undeclared_thread_variable_excludes_only_that_thread() -> None:
+    book, plan = _pair()
+    plan["threads"]["t_lamp"]["variable"] = "has_rope"
+    report = _check(book, plan)
+    messages = {f.message for f in _findings(report, "SP-1")}
+    assert "book variable 'has_lamp' has no thread" in messages
+    assert any("names variable 'has_rope'" in m for m in messages)
+    # SP-5 would index the missing variable; the excluded thread is skipped.
+    assert {f.rule_id for f in report.errors} == {"SP-1"}
+
+
+@pytest.mark.unit
+def test_sp1_a_payoff_choice_of_another_node_excludes_its_thread() -> None:
+    book, plan = _pair()
+    plan["threads"]["t_lamp"]["payoff_sites"][0]["choice"] = "c_cave_on"
+    plan["nodes"]["n_path"]["establishes"] = ["lamp_lit"]  # SP-4 on t_lamp
+    report = _check(book, plan)
+    assert {f.rule_id for f in report.errors} == {"SP-1"}
+
+
+@pytest.mark.unit
 def test_sp1_ending_entry_on_a_non_ending_node() -> None:
     book, plan = _pair()
     plan["endings"]["n_path"] = {"gift": "a laugh"}
@@ -514,6 +559,28 @@ def test_sp3_one_reading_meeting_both_sides_via_a_plant_is_an_error() -> None:
 
 
 @pytest.mark.unit
+def test_sp3_a_negation_asserted_where_the_opposite_was_planted() -> None:
+    # AL-822 pin: a node asserting "Wren has no lamp" (a positive fact that
+    # contradicts the plant) reached by a reader whose choice planted the lamp
+    # is one reading meeting both sides: an SP-3 ERROR, no checker change.
+    book, plan = _pair()
+    plan["facts"]["wren_lacks_lamp"] = {
+        "text": "Wren has no lamp with her.",
+        "contradicts": ["lamp_lit"],
+    }
+    plan["nodes"]["n_home"]["establishes"] = ["grandpa_left_map", "wren_lacks_lamp"]
+    [finding] = _findings(_check(book, plan), "SP-3")
+    assert finding.severity is Severity.ERROR
+    assert "one reading meets both" in finding.message
+    assert finding.fact_id == "lamp_lit" or finding.fact_id == "wren_lacks_lamp"
+    assert finding.node_id == "n_home"
+    assert finding.route is not None
+    assert "c_take_lamp" in finding.route.split(" > ")
+    assert finding.state is not None
+    assert "has_lamp=true" in finding.state
+
+
+@pytest.mark.unit
 def test_sp3_exclusive_routes_without_truth_is_a_warning() -> None:
     # The Museum cipher shape: two versions of one detail on routes no single
     # reading crosses.
@@ -589,6 +656,101 @@ def test_sp4_a_node_only_reached_through_the_plant_may_restate_it() -> None:
     book, plan = _pair()
     plan["nodes"]["n_cave"]["establishes"] = ["cave_drawing", "map_marks_cave"]
     assert not _findings(_check(book, plan), "SP-4")
+
+
+@pytest.mark.unit
+def test_sp4_is_independent_of_which_half_is_declared_the_plant() -> None:
+    # G1 revision (AL-817): the plan names the private act as the plant; the
+    # public half, made known by the same planting choice and relied on by the
+    # payoff passage, is shown on a route that skips the plant.
+    book, plan = WITNESSES[10].build()
+    [finding] = _findings(_check(cast("Any", book), cast("Any", plan)), "SP-4")
+    assert finding.node_id == "n_path"
+    assert finding.fact_id == "map_marks_cave"
+    assert finding.route == "n_start > c_skip_map > n_path"
+    assert "planting choice 'c_take_map'" in finding.message
+
+
+@pytest.mark.unit
+def test_sp4_a_dedicated_planting_scene_counts_as_the_planting_edge() -> None:
+    # The planting choice leads to a scene only planted readers see; what that
+    # scene establishes is made known by planting, whichever fact is the plant.
+    book, plan = _pair()
+    _node(book, "n_start")["choices"][0]["target"] = "n_study"
+    book["nodes"].append(
+        {
+            "id": "n_study",
+            "body": "Body of n_study.",
+            "choices": [{"id": "c_study_on", "label": "Go on.", "target": "n_path"}],
+        }
+    )
+    _rebind(book, plan)
+    plan["facts"]["wren_keeps_map"] = {"text": "Wren folds the map away."}
+    plan["threads"]["t_map"]["plant"] = "wren_keeps_map"
+    plan["nodes"]["n_study"] = {
+        "function": "plant",
+        "event": "Wren studies the map.",
+        "establishes": ["map_marks_cave", "map_is_old"],
+    }
+    plan["facts"]["map_is_old"] = {"text": "The map is very old."}
+    plan["choices"]["c_study_on"] = {"intent": "walk on", "cost": "none"}
+    plan["nodes"]["n_fall"]["establishes"] = ["map_marks_cave"]  # an ending
+    report = _check(book, plan)
+    assert not _findings(report, "SP-4")
+    # Now let the public road show it too.
+    plan["choices"]["c_skip_map"]["establishes"] = ["map_marks_cave"]
+    [finding] = _findings(_check(book, plan), "SP-4")
+    assert (finding.node_id, finding.fact_id) == ("n_path", "map_marks_cave")
+    assert "planting choice 'c_take_map'" in finding.message
+
+
+@pytest.mark.unit
+def test_sp4_planting_edge_facts_no_payoff_relies_on_are_not_checked() -> None:
+    book, plan = WITNESSES[10].build()
+    plan_doc = cast("Any", plan)
+    plan_doc["nodes"]["n_cave"]["requires"] = []
+    assert not _findings(_check(cast("Any", book), plan_doc), "SP-4")
+
+
+@pytest.mark.unit
+def test_sp4_a_shared_planting_target_is_not_part_of_the_plant() -> None:
+    # c_take_map and c_skip_map both arrive at n_path, so what n_path
+    # establishes is shown to every reader, not made known by planting.
+    book, plan = _pair()
+    plan["facts"]["gate_creaks"] = {"text": "The gate creaks."}
+    plan["nodes"]["n_path"]["establishes"] = ["gate_creaks"]
+    plan["nodes"]["n_cave"]["requires"] = ["map_marks_cave", "gate_creaks"]
+    assert not _findings(_check(book, plan), "SP-4")
+
+
+@pytest.mark.unit
+def test_sp4_background_already_held_when_planting_is_not_part_of_the_plant() -> None:
+    book, plan = _pair()
+    plan["choices"]["c_take_map"]["establishes"] = ["well_seen"]
+    plan["nodes"]["n_cave"]["requires"] = ["map_marks_cave", "well_seen"]
+    assert not _findings(_check(book, plan), "SP-4")
+
+
+@pytest.mark.unit
+def test_sp4_exempts_an_ending_that_reveals_the_plant() -> None:
+    # G1 revision (AL-818): nothing follows an ending, so it cannot leak the
+    # plant to a payoff.
+    book, plan = _pair()
+    plan["nodes"]["n_fall"]["establishes"] = ["map_marks_cave"]
+    assert not _findings(_check(book, plan), "SP-4")
+
+
+@pytest.mark.unit
+def test_sp4_exempts_a_node_no_payoff_site_follows() -> None:
+    # n_tunnel is reached without the map plant but leads only to an ending,
+    # so the map's payoff site n_fork is behind it.
+    book, plan = _pair()
+    plan["nodes"]["n_tunnel"]["establishes"] = ["map_marks_cave"]
+    assert not _findings(_check(book, plan), "SP-4")
+    # The same fact on the payoff site itself is a public plant.
+    plan["nodes"]["n_fork"]["establishes"] = ["map_marks_cave"]
+    [finding] = _findings(_check(book, plan), "SP-4")
+    assert finding.node_id == "n_fork"
 
 
 # ---------------------------------------------------------------------------
@@ -739,11 +901,44 @@ def test_sp8_costs_compare_after_normalisation() -> None:
 def test_sp8_is_judged_on_visible_choices_per_state() -> None:
     book, plan = _pair()
     # Without either plant n_fork shows only the road and the cliff.
-    plan["choices"]["c_cliff"]["cost"] = "a long walk"
+    plan["choices"]["c_cliff"]["cost"] = "none"
+    plan["choices"]["c_road"]["cost"] = "Nothing."
     [finding] = _findings(_check(book, plan), "SP-8")
+    assert finding.severity is Severity.ERROR
     assert finding.node_id == "n_fork"
     assert finding.state == "has_lamp=false, has_map=false"
     assert "in 1 state(s)" in finding.message
+
+
+@pytest.mark.unit
+def test_sp8_a_shared_real_cost_is_a_symmetric_opportunity_cost_warning() -> None:
+    # G1 revision (AL-819): options that each cost giving up the others are a
+    # trade-off, not a fork with one right answer.
+    book, plan = _pair()
+    plan["choices"]["c_cliff"]["cost"] = "leaves the other paths"
+    plan["choices"]["c_road"]["cost"] = "Leaves the other paths."
+    report = _check(book, plan)
+    assert report.ok
+    [finding] = _findings(report, "SP-8")
+    assert finding.severity is Severity.WARNING
+    assert finding.node_id == "n_fork"
+    assert "symmetric opportunity cost" in finding.message
+
+
+@pytest.mark.unit
+def test_sp8_no_cost_spellings_are_one_cost() -> None:
+    book, plan = _pair()
+    plan["choices"]["c_take_map"]["cost"] = "no cost"
+    [finding] = _findings(_check(book, plan), "SP-8")
+    assert finding.severity is Severity.ERROR
+    assert "costs anything" in finding.message
+
+
+@pytest.mark.unit
+def test_sp8_one_free_option_beside_a_costly_one_passes() -> None:
+    book, plan = _pair()
+    assert plan["choices"]["c_skip_map"]["cost"] == "none"
+    assert not _findings(_check(book, plan), "SP-8")
 
 
 @pytest.mark.unit
@@ -826,6 +1021,56 @@ def test_sp9_floors_tone_and_payoff_text_with_locations() -> None:
     assert set(by_path) == {"request.tone", shows, "truth.question"}
     assert by_path[shows].node_id == "n_fork"
     assert by_path[shows].choice_id == "c_cave"
+
+
+@pytest.mark.unit
+@pytest.mark.parametrize(
+    "value",
+    [
+        "a clockwork shutter, wound and filled tonight",
+        "the spring freshly wound: someone was here",
+        "Mira hears wound clockwork in the rock.",
+        "The great lamp cannot be wound or lit without its key.",
+        "Somebody wound up the music box.",
+        "the rope wound tight around the post",
+    ],
+)
+def test_sp9_wound_as_the_past_of_wind_passes(value: str) -> None:
+    book, plan = _pair()
+    plan["nodes"]["n_path"]["event"] = value
+    assert not _findings(_check(book, plan), "SP-9")
+
+
+@pytest.mark.unit
+@pytest.mark.parametrize(
+    "value",
+    [
+        "a deep wound on her arm",
+        "a wound from the clock key",  # a winding cue does not excuse the noun
+        "Her wound ached as the clock struck.",
+        "the falling crank could wound her",
+        "the clockwork bird was wounded",  # only the bare word is considered
+        "the spring was wound and blood ran",  # other graphic terms still trip
+        "A price paid by one is a wound.",
+    ],
+)
+def test_sp9_wound_in_the_injury_sense_still_fails(value: str) -> None:
+    book, plan = _pair()
+    plan["nodes"]["n_path"]["event"] = value
+    [finding] = _findings(_check(book, plan), "SP-9")
+    assert "'graphic'" in finding.message
+
+
+@pytest.mark.unit
+def test_sp9_wound_exemption_leaves_the_shared_slot_denylist_unchanged() -> None:
+    from cyo_adventure.storybook.models import AgeBand
+    from cyo_adventure.validator.slots import (
+        band_mandatory_bundles,
+        denylisted_bundles,
+    )
+
+    bundles = band_mandatory_bundles(AgeBand.BAND_8_11)
+    assert "graphic" in denylisted_bundles("a clockwork shutter, wound", bundles)
 
 
 @pytest.mark.unit

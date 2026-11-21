@@ -23,8 +23,9 @@ not assert (ADR-033's computed ``must_not_assert``).
 node's prose asserts (the WP-1.4 assertion file) and adds an SP-A finding for
 each asserted fact some route enters the node without.
 
-``--verify-witnesses`` runs the built-in clean plan and one witness per rule
-and fails if any rule stopped firing or fires where it should not.
+``--verify-witnesses`` runs the built-in clean plan and at least one witness
+per rule (two for SP-4 and SP-9 since the G1 revision of 2026-11-21) and fails
+if any rule stopped firing or fires where it should not.
 
 Exit codes: 0 no ERROR finding; 1 ERROR findings or a plan that fails schema
 validation; 2 a file that cannot be read or parsed, or a book that fails the
