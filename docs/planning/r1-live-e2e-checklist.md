@@ -97,10 +97,65 @@ help, and write down what you see with a timestamp and the child's name or initi
 - **Comfort with content.** Any moment a child seems uneasy, and in which book. Report it on the guardian surface
   afterward rather than interrupting.
 
-Ask each child two questions afterward, separately, and write down the answers verbatim:
+Ask each child five questions afterward, separately, and write down the answers verbatim. Do not say which books
+were revised and which are controls, before or after.
 
 1. "What was the best moment in the story you read, and why?"
 2. "Was there a time you wanted to do something the story didn't let you do?"
+3. "Did anything not add up, or did anyone know something they shouldn't have known yet?"
+4. "How did your ending feel? Did you earn it, and would you go back and try another way?"
+5. "If you could read one of these again, or pick one for a friend, which would it be and why?"
+
+### Family-test books: capture, debrief and reading the comparison
+
+Added 2026-11-21 (owner decision D3, WP-0.5 of the story-plan implementation plan). **Capture decision: reading-trail
+capture is on for this session**; the owner step is in `B6`, and the report command and its caveats are in `H4`.
+
+**The seven books.** Each child reads books from their own band. Revised books are marked R, unrevised controls C.
+
+| Band | Revised (R) | Control (C) |
+| --- | --- | --- |
+| 8-11 | `the-sky-ship-stowaway` | `the-cave-of-echoes` (original edition) |
+| 10-13 | `the-hollow-lighthouse`, `the-midnight-museum` | `the-mapmakers-island` |
+| 13-16 | `the-signal-in-the-static` | `the-vanishing-orchard` |
+
+Pair notes: `the-mapmakers-island` and `the-signal-in-the-static` both have a hero named Wren, and
+`the-vanishing-orchard` and `the-hollow-lighthouse` both open on a last bus. Give each of those pairs to different
+children where possible. Where one child reads both an R and a C book in a band, alternate which they read first
+across children, so book order does not line up with revised versus control.
+
+**Signals to read from `scripts/report_reading_trail.py`** (run it as in `H4`, with `--by-profile`; the report is
+per book, not per band, so group the books by the table above yourself):
+
+1. **Finish rate.** "Reads started" against "finished" per book. A low rate on one book is the first thing to look at.
+2. **Stop nodes.** "Stopped without an ending (last node)": where unfinished reads were left, how many left versus
+   restarted, and the median time on that node. A cluster at one node is a stall, a confusing page, or a dead end.
+3. **Choice split per decision.** Picks per choice at every node with two or more choices. A split near all-one-way
+   means the other choice was not tempting or did not look real; this is the signal that corresponds to an agency
+   problem, and it is the one the controls are expected to show more of.
+4. **Rewinds.** "Rewinds back to here" per decision: a child going back to try the other branch. Rewinds at a fork
+   mean the fork mattered to them.
+5. **Endings reached.** The spread of endings across reads of a book. One ending taking every read means the
+   others are hard to reach or less appealing.
+6. **Replays.** "Resumed sessions" and "restarted" per book, and in the `--by-profile` block any child whose
+   "started" is greater than one for a book (a deliberate second read). The report has no separate replay count, so
+   read these three together.
+
+**The comparison: revised versus control, per band.** For each band, set the revised book(s) beside the control and
+ask, in this order: did children finish it as often; did they stall at a single node; were the decisions split
+rather than one-sided; did they rewind to forks; did they reach more than one ending; did they replay. Then read
+the debrief answers (especially 2, 3 and 4) against the numbers: a number is only worth acting on when what the
+child said points the same way.
+
+**How to read it honestly at four children.** There are four readers, so each book has roughly one to three reads,
+and a band can have a single child. Treat every figure as a description of those reads, not an estimate of
+anything: no percentages, no p-values, no claim that revised "beat" control. Read for **direction**, and trust a
+direction only when several independent signals agree, the debrief agrees, and it holds in more than one band. Treat
+these as confounds, not noise to average out: which child read the book (compare the same child's R and C books via
+`--by-profile` where one read both), which was read first, the child's mood and the sibling in the room, and book
+length and topic. A single read that stops at a node is an anecdote to look at in the book, not a rate. The right
+use of this session is to decide where to look next and which revised books to trust, not to prove the revision
+worked.
 
 ## How to use this checklist
 
@@ -644,14 +699,18 @@ Read these from the production env files `A3` checked, plus the readiness JSON f
       argument in the homelab frontend build. `frontend/Dockerfile` declares no such `ARG`, so it is off unless
       the out-of-repo build injects it, and `frontend/src/env.ts` records that it must not be enabled where a
       real family can reach it until its gating task has merged. Evidence: the build arguments you checked.
-- [ ] **B6.** *Applies once deployed.* Decide whether the reading-trail capture (reads started, choices taken,
-      rewinds, endings reached, where a read was left) is on for this session. It ships off. To turn it on, apply
-      migration `20261120120000_add_reading_trail` (step `A5` does this) and set `READING_TRAIL_ENABLED=true` on
-      the backend container, then restart it. Expected: the setting matches your decision. What it stores is
+- [ ] **B6.** *Applies once deployed.* **Decision made 2026-11-21: capture is ON for the family session** (owner
+      decision D3). The reading-trail capture (reads started, choices taken, rewinds, endings reached, where a
+      read was left) ships off, so this is an owner step on the production host: apply migration
+      `20261120120000_add_reading_trail` (step `A5` does this) with the normal deploy, set
+      `READING_TRAIL_ENABLED=true` on the production backend container, then restart it. Expected: the setting is
+      `true` and the `reading_trail` table exists. Not yet done as of 2026-11-21. Skip or record "not deployed" only
+      if the deployed revision predates it. What it stores is
       described in `docs/planning/privacy-model.md` ("Reading Trail"): per read, an ordered list of node and
       choice ids with whole seconds since the read began and one date; no free text, device, or network data;
       first-party only; erased with the profile; purged after 30 days. It is data about your own children, and it
-      is not yet described on any in-app privacy page, which is why it must stay off for any other family.
+      is not yet described on any in-app privacy page, which is why it must stay off for any other family, and
+      why it should be set back to `false` once this family's session reports are saved.
 
 ### C. Adult accounts
 

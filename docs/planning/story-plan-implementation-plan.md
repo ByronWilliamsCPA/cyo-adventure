@@ -137,8 +137,11 @@ tags:
 
 - **Goal.** One plan per book going to the children, written by reading the book, in the draft shape of ADR-033
   Decision 1.
-- **Touches.** New `out/<slug>.plan.json` for each of `the-hollow-lighthouse`, `the-sky-ship-stowaway`,
-  `the-midnight-museum`, `the-signal-in-the-static` (and `the-sunken-signal` if D3 includes it). Nothing else.
+- **Touches.** New `out/<slug>.plan.json` for each of the seven family-test books fixed by D3 (2026-11-21): the four
+  revised books `the-sky-ship-stowaway` (8-11), `the-hollow-lighthouse` (10-13), `the-midnight-museum` (10-13) and
+  `the-signal-in-the-static` (13-16), and the three unrevised controls `the-cave-of-echoes` (8-11, the original
+  edition; the partial revision on branch `wt/book-cave` stays parked), `the-mapmakers-island` (10-13) and
+  `the-vanishing-orchard` (13-16). Nothing else. `the-sunken-signal` is not in the list.
 - **Method.** Per book: cast with wants and voices; the truth; facts with ids; per node `establishes` and `requires`
   as the prose actually has them; threads from the declared variables; ending gifts. Record facts as written,
   including any that contradict each other: do not tidy the book while writing its plan.
@@ -146,12 +149,13 @@ tags:
   **This is the first measurement of plan size and authoring time**, which sections 11 and WP-2.3 depend on.
 - **Acceptance.** Every node and choice id in the book appears in its plan; JSON parses; a second agent can answer
   "what does the reader know on entering node X" from the plan alone for ten sampled nodes.
-- **Depends on.** D3. **Size.** M (the review's guess is two to four hours per book; untested).
+- **Depends on.** D3 (decided 2026-11-21). **Size.** M (the review's guess is two to four hours per book; untested;
+  seven plans, not four).
 
 ### WP-0.4 Second-reader continuity pass and fixes
 
 - **Goal.** Close AL-790 for the books the children will read, and create labelled defect data.
-- **Touches.** The same `out/<slug>.filled.json` and `.plan.json` files; new
+- **Touches.** The same `out/<slug>.filled.json` and `.plan.json` files for the seven D3 books; new
   `docs/planning/evidence/story-plan-retro/findings-<slug>.md`. Books are re-imported with
   `generation/import_catalog.py --only --edition`.
 - **Method.** A reader that did not write the plan plays every `(node, state)` reachable configuration (the
@@ -163,7 +167,15 @@ tags:
   B3 from that file. They are unfixed in `out/the-hollow-lighthouse.filled.json` (unchanged since `15b14a1`) because book
   editing is paused (`UW-M20`); this pass applies the fixes once the owner lifts that pause, and keeps the file as the
   pre-fix record.
-- **Acceptance.** Zero open findings per book; findings files committed; gate and `check_fill_integrity.py` pass on
+- **Controls (D3, 2026-11-21).** The three unrevised controls (`the-cave-of-echoes`, `the-mapmakers-island`,
+  `the-vanishing-orchard`) get a plan (WP-0.3) and the same continuity read, so their defects are known and labelled.
+  Only plain contradictions found in a control are fixed (a fact asserted that the book itself contradicts). Agency
+  problems (dominated choices, choices that change nothing, endings reachable by one route) are recorded in the
+  findings file and **never fixed**, so each control stays a valid unrevised comparison for the family test.
+- **Edit pause (2026-11-21).** The owner lifted the book-editing pause (`UW-M20`) **for these seven books only**:
+  WP-0.4 fixes may proceed on them. All other book editing stays paused.
+- **Acceptance.** Zero open findings per book (for a control, zero open plain contradictions; recorded agency
+  problems stay open by design); findings files committed; gate and `check_fill_integrity.py` pass on
   each revised book.
 - **Gate (family test).** A book goes to the children only with a plan and a clean second read.
 
@@ -174,8 +186,16 @@ tags:
   `READING_TRAIL_ENABLED` (owner action, D3).
 - **Outputs.** A five-question spoken debrief; the list of signals to read from `scripts/report_reading_trail.py`
   (finish rate, stop nodes, choice split per decision, rewinds, endings reached, replays). Output stays on the owner's
-  machine (ADR-030 Decision 6).
+  machine (ADR-030 Decision 6). With D3 the session compares **revised against control books, per band**, so the
+  checklist also frames that comparison and how to read it honestly at four children (direction, not significance).
 - **Acceptance.** Checklist updated; one dry run of the report against a local database.
+- **Status (2026-11-21).** Checklist section written ("Family-test books: capture, debrief and reading the
+  comparison" in the family-session section). Dry run done against a local Postgres 17 migrated with the real
+  `supabase/migrations` chain and seeded with synthetic trails for two books: the report printed per-book started and
+  finished counts, endings, stop nodes, per-decision picks and rewinds, and the per-profile split. Turning capture on
+  in production is an **owner step** (see the checklist, step `B6`): apply migration
+  `20261120120000_add_reading_trail` with the normal deploy, set `READING_TRAIL_ENABLED=true` on the production
+  backend container, restart it. It has not been done.
 
 ## 4. Phase 1: Story Plan schema and structural checks, validated retrospectively
 
@@ -487,7 +507,7 @@ Each stays `blocked` on WP-4.4 in the register (Appendix B, `UW-G39`).
 
 ```text
 D2 -> 0.1
-D3 -> 0.3 -> 0.4 -> [G0: family test]        0.5 (parallel)        0.2 (parallel)
+D3 (7 books) -> 0.3 -> 0.4 -> [G0: family test]   0.5 (parallel)   0.2 (parallel)
               |
               v
 D1 -> 1.1 -> 1.2 ---------.
@@ -546,7 +566,7 @@ Dates are proposals from 2026-11-21; each is also stated as the package it block
 | --- | --- | --- | --- |
 | D1 | Ratify ADR-033 (or return it). **Ratified 2026-11-21** (owner, in session) | WP-1.1 merging to `main` | 2026-11-28 |
 | D2 | Confirm the freeze list in WP-0.1. **Approved 2026-11-21** (owner, in session) | WP-0.1 | 2026-11-24 |
-| D3 | Family-test book list; enable reading-trail capture for the session | WP-0.3, WP-0.5 | 2026-11-24 |
+| D3 | Family-test book list; enable reading-trail capture for the session. **Decided 2026-11-21** (owner, in session): see the note below | WP-0.3, WP-0.5 | 2026-11-24 |
 | D4 | The retained shell set (eight to twelve, two per offered cell) | WP-2.2 | when G1 passes |
 | D5 | Accept the G1 verdict | all of Phase 2 | within two days of WP-1.5 |
 | D6 | Continuity reader thresholds | WP-3.2 | before WP-3.2 starts |
@@ -554,6 +574,21 @@ Dates are proposals from 2026-11-21; each is also stated as the package it block
 | D8 | Wording of the approver's quality question; mandatory or not | WP-3.5 | before WP-3.5 starts |
 | D9 | Per-band recap rule (AL-767) | WP-2.5 | before WP-2.5 starts |
 | D10 | Adopt for both paths, catalog only, or stop | everything in section 8 | on WP-4.4 |
+
+**D3 as decided on 2026-11-21 (owner, in session).**
+
+- **Seven books go to the children.** Four revised: `the-sky-ship-stowaway` (8-11), `the-hollow-lighthouse` (10-13),
+  `the-midnight-museum` (10-13), `the-signal-in-the-static` (13-16). Three unrevised controls: `the-cave-of-echoes`
+  (8-11, the original edition; the partial revision on branch `wt/book-cave` stays parked), `the-mapmakers-island`
+  (10-13), `the-vanishing-orchard` (13-16). The comparison is revised against control, per band.
+- **Controls** get a plan and a continuity read. Only plain contradictions are fixed in them, never agency problems,
+  so they stay valid controls (WP-0.4).
+- **Pairing notes for the owner.** `the-mapmakers-island` and `the-signal-in-the-static` both have a hero named
+  Wren, and `the-vanishing-orchard` and `the-hollow-lighthouse` both open on a last bus: give each of those pairs to
+  different children where possible, so one child does not blur two books.
+- **Edit pause lifted for these seven books only** (`UW-M20`): WP-0.4 fixes may proceed on them; all other book
+  editing stays paused.
+- **Reading-trail capture is to be turned on** for the family tier (WP-0.5; owner step in the checklist, `B6`).
 
 ## Appendix A: mapping to existing planning identifiers
 
