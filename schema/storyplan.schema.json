@@ -1,0 +1,594 @@
+{
+  "$defs": {
+    "AgeBand": {
+      "description": "The reading age band a story targets.",
+      "enum": [
+        "3-5",
+        "5-8",
+        "8-11",
+        "10-13",
+        "13-16",
+        "16+"
+      ],
+      "title": "AgeBand",
+      "type": "string"
+    },
+    "CastMember": {
+      "additionalProperties": false,
+      "description": "One character: role, want, voice notes and what they know (fact ids).",
+      "properties": {
+        "knows": {
+          "items": {
+            "maxLength": 64,
+            "pattern": "^[a-z][a-z0-9_]*$",
+            "type": "string"
+          },
+          "title": "Knows",
+          "type": "array"
+        },
+        "name": {
+          "minLength": 1,
+          "title": "Name",
+          "type": "string"
+        },
+        "role": {
+          "minLength": 1,
+          "title": "Role",
+          "type": "string"
+        },
+        "voice": {
+          "minLength": 1,
+          "title": "Voice",
+          "type": "string"
+        },
+        "want": {
+          "minLength": 1,
+          "title": "Want",
+          "type": "string"
+        }
+      },
+      "required": [
+        "name",
+        "role",
+        "want",
+        "voice"
+      ],
+      "title": "CastMember",
+      "type": "object"
+    },
+    "CheckRecord": {
+      "additionalProperties": false,
+      "description": "Summary of the last structural check run recorded on a plan.",
+      "properties": {
+        "errors": {
+          "minimum": 0,
+          "title": "Errors",
+          "type": "integer"
+        },
+        "ok": {
+          "title": "Ok",
+          "type": "boolean"
+        },
+        "warnings": {
+          "minimum": 0,
+          "title": "Warnings",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "ok",
+        "errors",
+        "warnings"
+      ],
+      "title": "CheckRecord",
+      "type": "object"
+    },
+    "ChoicePlan": {
+      "additionalProperties": false,
+      "description": "A choice's meaning: why a reader takes it, what it costs, what it plants.",
+      "properties": {
+        "cost": {
+          "minLength": 1,
+          "title": "Cost",
+          "type": "string"
+        },
+        "intent": {
+          "minLength": 1,
+          "title": "Intent",
+          "type": "string"
+        },
+        "plants": {
+          "items": {
+            "maxLength": 64,
+            "pattern": "^[a-z][a-z0-9_]*$",
+            "type": "string"
+          },
+          "title": "Plants",
+          "type": "array"
+        }
+      },
+      "required": [
+        "intent",
+        "cost"
+      ],
+      "title": "ChoicePlan",
+      "type": "object"
+    },
+    "EndingPlan": {
+      "additionalProperties": false,
+      "description": "What an ending gives the reader: the reveal, the laugh, or the reason to retry.",
+      "properties": {
+        "gift": {
+          "minLength": 1,
+          "title": "Gift",
+          "type": "string"
+        }
+      },
+      "required": [
+        "gift"
+      ],
+      "title": "EndingPlan",
+      "type": "object"
+    },
+    "Fact": {
+      "additionalProperties": false,
+      "description": "One ledger fact: a sentence plus the facts it contradicts.",
+      "properties": {
+        "contradicts": {
+          "items": {
+            "maxLength": 64,
+            "pattern": "^[a-z][a-z0-9_]*$",
+            "type": "string"
+          },
+          "title": "Contradicts",
+          "type": "array"
+        },
+        "text": {
+          "minLength": 1,
+          "title": "Text",
+          "type": "string"
+        }
+      },
+      "required": [
+        "text"
+      ],
+      "title": "Fact",
+      "type": "object"
+    },
+    "Length": {
+      "description": "The story-scale (length) tier: a total-word budget, world size.\n\nProduction stories place themselves on the ``(band, length, style)`` matrix\nfrom ADR-011; the node-count envelope is derived per cell. Young bands cap\nat ``MEDIUM``; epic scale is a series, not a fourth tier. A story that\ndeclares no length is not scale-classified and keeps the band-level budget.",
+      "enum": [
+        "short",
+        "medium",
+        "long"
+      ],
+      "title": "Length",
+      "type": "string"
+    },
+    "NarrativeStyle": {
+      "description": "Prose vs gamebook chunking of one word budget (ADR-011).\n\nMeaningful only for ``13-16`` and ``16+``; lower bands are implicitly\n``PROSE``. Gamebook packs the same total words into more, shorter nodes.",
+      "enum": [
+        "prose",
+        "gamebook"
+      ],
+      "title": "NarrativeStyle",
+      "type": "string"
+    },
+    "NodePlan": {
+      "additionalProperties": false,
+      "description": "A node's obligations: what happens, what it presupposes and adds.",
+      "properties": {
+        "establishes": {
+          "items": {
+            "maxLength": 64,
+            "pattern": "^[a-z][a-z0-9_]*$",
+            "type": "string"
+          },
+          "title": "Establishes",
+          "type": "array"
+        },
+        "event": {
+          "minLength": 1,
+          "title": "Event",
+          "type": "string"
+        },
+        "function": {
+          "minLength": 1,
+          "title": "Function",
+          "type": "string"
+        },
+        "requires": {
+          "items": {
+            "maxLength": 64,
+            "pattern": "^[a-z][a-z0-9_]*$",
+            "type": "string"
+          },
+          "title": "Requires",
+          "type": "array"
+        }
+      },
+      "required": [
+        "function",
+        "event"
+      ],
+      "title": "NodePlan",
+      "type": "object"
+    },
+    "Payoff": {
+      "additionalProperties": false,
+      "description": "Where a thread returns: the shared site, the showing passage, and what it shows.",
+      "properties": {
+        "node": {
+          "minLength": 1,
+          "title": "Node",
+          "type": "string"
+        },
+        "shows": {
+          "minLength": 1,
+          "title": "Shows",
+          "type": "string"
+        },
+        "site": {
+          "minLength": 1,
+          "title": "Site",
+          "type": "string"
+        }
+      },
+      "required": [
+        "site",
+        "node",
+        "shows"
+      ],
+      "title": "Payoff",
+      "type": "object"
+    },
+    "Pitch": {
+      "additionalProperties": false,
+      "description": "The five-field pitch the owner reads for a catalog book.",
+      "properties": {
+        "ending_kind": {
+          "minLength": 1,
+          "title": "Ending Kind",
+          "type": "string"
+        },
+        "hero": {
+          "minLength": 1,
+          "title": "Hero",
+          "type": "string"
+        },
+        "obstacle": {
+          "minLength": 1,
+          "title": "Obstacle",
+          "type": "string"
+        },
+        "stake": {
+          "minLength": 1,
+          "title": "Stake",
+          "type": "string"
+        },
+        "want": {
+          "minLength": 1,
+          "title": "Want",
+          "type": "string"
+        }
+      },
+      "required": [
+        "hero",
+        "want",
+        "obstacle",
+        "stake",
+        "ending_kind"
+      ],
+      "title": "Pitch",
+      "type": "object"
+    },
+    "PlanRequest": {
+      "additionalProperties": false,
+      "description": "The request the book answers. ``text`` is untrusted when present.",
+      "properties": {
+        "band": {
+          "$ref": "#/$defs/AgeBand"
+        },
+        "length": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Length"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "style": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/NarrativeStyle"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "text": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Text"
+        },
+        "tone": {
+          "anyOf": [
+            {
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Tone"
+        }
+      },
+      "required": [
+        "band"
+      ],
+      "title": "PlanRequest",
+      "type": "object"
+    },
+    "Provenance": {
+      "additionalProperties": false,
+      "description": "Who produced the plan, from what shape, and who approved it.",
+      "properties": {
+        "approver": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Approver"
+        },
+        "checks": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/CheckRecord"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "model": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Model"
+        },
+        "producer": {
+          "minLength": 1,
+          "title": "Producer",
+          "type": "string"
+        },
+        "shape_hash": {
+          "anyOf": [
+            {
+              "pattern": "^sha256:[0-9a-f]{64}$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Shape Hash"
+        },
+        "shape_id": {
+          "minLength": 1,
+          "title": "Shape Id",
+          "type": "string"
+        }
+      },
+      "required": [
+        "producer",
+        "shape_id"
+      ],
+      "title": "Provenance",
+      "type": "object"
+    },
+    "Thread": {
+      "additionalProperties": false,
+      "description": "A plant and its payoffs, bound to one Storybook variable.",
+      "properties": {
+        "payoffs": {
+          "items": {
+            "$ref": "#/$defs/Payoff"
+          },
+          "minItems": 1,
+          "title": "Payoffs",
+          "type": "array"
+        },
+        "planted_by": {
+          "items": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "minItems": 1,
+          "title": "Planted By",
+          "type": "array"
+        },
+        "planted_fact": {
+          "maxLength": 64,
+          "pattern": "^[a-z][a-z0-9_]*$",
+          "title": "Planted Fact",
+          "type": "string"
+        },
+        "variable": {
+          "maxLength": 64,
+          "pattern": "^[a-z][a-z0-9_]*$",
+          "title": "Variable",
+          "type": "string"
+        }
+      },
+      "required": [
+        "variable",
+        "planted_fact",
+        "planted_by",
+        "payoffs"
+      ],
+      "title": "Thread",
+      "type": "object"
+    },
+    "Truth": {
+      "additionalProperties": false,
+      "description": "The book's question and its one canonical answer.",
+      "properties": {
+        "answer": {
+          "minLength": 1,
+          "title": "Answer",
+          "type": "string"
+        },
+        "facts": {
+          "items": {
+            "maxLength": 64,
+            "pattern": "^[a-z][a-z0-9_]*$",
+            "type": "string"
+          },
+          "minItems": 1,
+          "title": "Facts",
+          "type": "array"
+        },
+        "question": {
+          "minLength": 1,
+          "title": "Question",
+          "type": "string"
+        }
+      },
+      "required": [
+        "question",
+        "answer",
+        "facts"
+      ],
+      "title": "Truth",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "description": "A complete Story Plan (ADR-033 Decision 1). See the module docstring.",
+  "properties": {
+    "cast": {
+      "minProperties": 1,
+      "patternProperties": {
+        "^[a-z][a-z0-9_]*$": {
+          "$ref": "#/$defs/CastMember"
+        }
+      },
+      "propertyNames": {
+        "maxLength": 64
+      },
+      "title": "Cast",
+      "type": "object"
+    },
+    "choices": {
+      "additionalProperties": {
+        "$ref": "#/$defs/ChoicePlan"
+      },
+      "propertyNames": {
+        "minLength": 1
+      },
+      "title": "Choices",
+      "type": "object"
+    },
+    "endings": {
+      "additionalProperties": {
+        "$ref": "#/$defs/EndingPlan"
+      },
+      "propertyNames": {
+        "minLength": 1
+      },
+      "title": "Endings",
+      "type": "object"
+    },
+    "facts": {
+      "minProperties": 1,
+      "patternProperties": {
+        "^[a-z][a-z0-9_]*$": {
+          "$ref": "#/$defs/Fact"
+        }
+      },
+      "propertyNames": {
+        "maxLength": 64
+      },
+      "title": "Facts",
+      "type": "object"
+    },
+    "nodes": {
+      "additionalProperties": {
+        "$ref": "#/$defs/NodePlan"
+      },
+      "minProperties": 1,
+      "propertyNames": {
+        "minLength": 1
+      },
+      "title": "Nodes",
+      "type": "object"
+    },
+    "pitch": {
+      "$ref": "#/$defs/Pitch"
+    },
+    "plan_version": {
+      "default": "0.1",
+      "title": "Plan Version",
+      "type": "string"
+    },
+    "provenance": {
+      "$ref": "#/$defs/Provenance"
+    },
+    "request": {
+      "$ref": "#/$defs/PlanRequest"
+    },
+    "threads": {
+      "patternProperties": {
+        "^[a-z][a-z0-9_]*$": {
+          "$ref": "#/$defs/Thread"
+        }
+      },
+      "propertyNames": {
+        "maxLength": 64
+      },
+      "title": "Threads",
+      "type": "object"
+    },
+    "truth": {
+      "$ref": "#/$defs/Truth"
+    }
+  },
+  "required": [
+    "request",
+    "pitch",
+    "cast",
+    "truth",
+    "facts",
+    "nodes",
+    "provenance"
+  ],
+  "title": "StoryPlan",
+  "type": "object"
+}

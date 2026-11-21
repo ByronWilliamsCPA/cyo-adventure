@@ -50,6 +50,7 @@ from pathlib import Path
 from typing import Any, cast
 
 from cyo_adventure.storybook.models import AgeBand
+from cyo_adventure.storyplan.checks import guaranteed_on_entry, meet_of
 from cyo_adventure.validator.slots import band_mandatory_bundles, denylisted_bundles
 
 
@@ -114,15 +115,12 @@ def _meet(guaranteed: dict[str, frozenset[str]], parents: list[str]) -> frozense
 
     Returns:
         The set intersection of ``guaranteed[parent]`` for every parent, or
-        an empty frozenset when ``parents`` is empty. NC-1 and NC-2 both rely
-        on this single definition of "meet" so they cannot silently diverge.
+        an empty frozenset when ``parents`` is empty. NC-1, NC-2 and the Story
+        Plan's SP-2 all rely on this single definition of "meet"
+        (:func:`cyo_adventure.storyplan.checks.meet_of`) so they cannot
+        silently diverge.
     """
-    if not parents:
-        return frozenset()
-    meet = guaranteed[parents[0]]
-    for parent in parents[1:]:
-        meet = meet & guaranteed[parent]
-    return meet
+    return meet_of(guaranteed[parent] for parent in parents)
 
 
 def _guaranteed_facts(
@@ -132,26 +130,21 @@ def _guaranteed_facts(
     contracts: dict[str, dict[str, Any]],
     all_facts: frozenset[str],
 ) -> dict[str, frozenset[str]]:
-    """Must-analysis fixpoint: facts guaranteed on every path into each node."""
+    """Must-analysis fixpoint: facts guaranteed after each node on every path.
+
+    The fixpoint itself moved into the package as
+    :func:`cyo_adventure.storyplan.checks.guaranteed_on_entry` (ADR-033 SP-2
+    runs the same analysis over configurations); this wrapper keeps NC-1's
+    node-level view: what is guaranteed on entry plus what the node
+    establishes.
+    """
     est = {
         n: frozenset(cast("list[str]", c.get("establishes") or []))
         for n, c in contracts.items()
     }
-    guaranteed: dict[str, frozenset[str]] = dict.fromkeys(succ, all_facts)
-    guaranteed[start] = est.get(start, frozenset())
-    changed = True
-    while changed:
-        changed = False
-        for node in succ:
-            if node == start:
-                incoming = est.get(start, frozenset())
-            else:
-                parents = pred.get(node) or []
-                incoming = _meet(guaranteed, parents) | est.get(node, frozenset())
-            if incoming != guaranteed[node]:
-                guaranteed[node] = incoming
-                changed = True
-    return guaranteed
+    incoming = {n: [(p, frozenset[str]()) for p in pred.get(n) or []] for n in succ}
+    entry = guaranteed_on_entry(list(succ), incoming, start, est, all_facts)
+    return {n: entry[n] | est.get(n, frozenset()) for n in succ}
 
 
 _BIBLE_MAX_CHARS = 120
