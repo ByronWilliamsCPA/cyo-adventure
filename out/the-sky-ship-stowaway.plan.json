@@ -1,0 +1,1822 @@
+{
+ "plan_version": "0.1",
+ "book": {
+  "slug": "the-sky-ship-stowaway",
+  "storybook_id": "sk_sky_ship_stowaway",
+  "storybook_version": 1,
+  "title": "The Sky-Ship Stowaway"
+ },
+ "request": {
+  "text": null,
+  "band": "8-11",
+  "length": "medium",
+  "style": "prose",
+  "tone": "cosy, funny airship adventure with a gentle secret; warm adults, a scene-stealing cat",
+  "note": "Catalog book authored by hand; there is no request text. Band, length and style are copied from the book metadata; tone is the plan author's reading."
+ },
+ "pitch": {
+  "hero": "Bree, a girl who has stowed away on the airship Cirrus",
+  "want": "to fly and not be caught, and then to help the frightened creature groaning in the sealed hold",
+  "obstacle": "she is a stowaway nobody should listen to, a storm is coming, and the captain's cargo is a secret",
+  "stake": "if the frightened sky-whale calf thrashes in the storm, the ship and the calf are both in danger",
+  "ending_kind": "success: the ship saved and Bree taken on as crew, or Nimbus flying free to the haven"
+ },
+ "cast": {
+  "bree": {
+   "name": "Bree",
+   "role": "protagonist, stowaway",
+   "want": "to fly in the sky without being sent home, then to keep Nimbus and the ship safe",
+   "voice": "quietly bold, polite and literal (\"Thank you, clip\"), talks to boxes and cats as if they understood",
+   "knows": [
+    "bree_stowaway"
+   ]
+  },
+  "pip": {
+   "name": "Pip",
+   "role": "companion, thin grey stray cat",
+   "want": "food, and somebody his size to trust",
+   "voice": "\"Mrrp\"; a rusty purr once fed; calm and unimpressed by danger",
+   "knows": []
+  },
+  "quill": {
+   "name": "Captain Quill",
+   "role": "captain of the Cirrus, keeper of the secret",
+   "want": "to get Nimbus to the haven without hunters or gossip finding out",
+   "voice": "dry and quick; calls Bree \"Stowaway\"; half a note off when she hums",
+   "knows": [
+    "nimbus",
+    "he_in_hold",
+    "captain_secret_cargo",
+    "thunder_frightens_nimbus"
+   ]
+  },
+  "bosun": {
+   "name": "the bosun",
+   "role": "head of the crew",
+   "want": "to know every hand on his ship, and to be told the truth",
+   "voice": "foghorn voice, \"small fry\", laughs like a foghorn with the hiccups",
+   "knows": [
+    "crew_unaware"
+   ]
+  },
+  "rigger": {
+   "name": "the wiry rigger",
+   "role": "rigging hand",
+   "want": "ropes respected and the envelope whole",
+   "voice": "\"Low and slow\"; gruff, kind, notices who crosses his bridge",
+   "knows": [
+    "live_rope_sign",
+    "tired_seam"
+   ]
+  },
+  "nimbus": {
+   "name": "Nimbus",
+   "role": "sky-whale calf in the sealed hold",
+   "want": "safety from the thunder, and the open sky",
+   "voice": "sings \"hoooom\", shaky when afraid, steady when calm",
+   "knows": []
+  }
+ },
+ "truth": {
+  "statement": "The Cirrus is secretly carrying Nimbus, a sky-whale calf cut from a hunter's net, to the haven where his kind live. Captain Quill keeps him hidden from the crew because hunters pay well and sailors talk. He is terrified of thunder and loud noise, and soft sound and small gentle company calm him.",
+  "facts": [
+   "nimbus",
+   "he_in_hold",
+   "thunder_frightens_nimbus"
+  ]
+ },
+ "facts": {
+  "bree_stowaway": {
+   "text": "Bree has stowed away aboard the airship Cirrus, which has just cast off."
+  },
+  "captain_voice": {
+   "text": "Captain Quill commands the Cirrus, and her voice is dry and quick."
+  },
+  "feed_40_sacks": {
+   "text": "The cargo includes forty sacks of feed."
+  },
+  "hold_kept_warm": {
+   "text": "By the captain's order the hold must be kept warm; the engine-room HOLD dial reads WARM."
+  },
+  "haven_crest": {
+   "text": "Crates bound for HAVEN bear a crest of a fish with sail-wide fins over clouds, and hold sea-smelling feed."
+  },
+  "tired_seam": {
+   "text": "One seam near the stern of the balloon looks puckered and tired."
+  },
+  "hidden_deck": {
+   "text": "The cut-away model of the Cirrus has its lowest deck painted over."
+  },
+  "pip_named": {
+   "text": "Bree has befriended a thin grey stray cat and named him Pip."
+  },
+  "fish_mash": {
+   "text": "The cook makes forty buckets of fish mash a day for the cargo, on the captain's order."
+  },
+  "he_in_hold": {
+   "text": "The captain keeps a \"he\" in the sealed hold who has stopped eating, hates thunder and loud noise, and could kick the ship apart in a storm."
+  },
+  "storm_ahead": {
+   "text": "A storm lies across the Cirrus's course."
+  },
+  "whale_home_doodle": {
+   "text": "The captain's storm chart has a pencilled whale marked HOME with an arrow pointing east."
+  },
+  "seasick_calf": {
+   "text": "The first officer grumbles about losing a day \"for one seasick calf.\""
+  },
+  "live_rope_sign": {
+   "text": "A board at the rope-bridge says LIVE ROPE, CROSS LOW AND SLOW."
+  },
+  "fed_pip": {
+   "text": "Bree fed Pip sardines from the galley larder, and now he purrs."
+  },
+  "knows_ropes": {
+   "text": "Bree crossed the live rope-bridge low and slow in a gust, and a rigger saw her do it."
+  },
+  "told_bosun": {
+   "text": "Bree told the bosun the truth: she is a stowaway."
+  },
+  "fin_free": {
+   "text": "Bree untangled the twisted harness strap from Nimbus's fin."
+  },
+  "storm_hits": {
+   "text": "The storm has hit the Cirrus and all hands are called to the lines."
+  },
+  "groan_in_hold": {
+   "text": "A long groan that is not timber comes from the deep hold."
+  },
+  "captain_secret_cargo": {
+   "text": "The captain is keeping something secret in the sealed hold."
+  },
+  "hold_panel_care": {
+   "text": "A brass panel by the hold door gives the captain's care orders: forty buckets of mash, check the harness, speak low, never shout or bang."
+  },
+  "nimbus": {
+   "text": "The sealed hold holds Nimbus, a sky-whale calf cut from a hunter's net and bound for the haven."
+  },
+  "thunder_frightens_nimbus": {
+   "text": "Thunder makes Nimbus thrash and rock the ship; a small gentle presence steadies him."
+  },
+  "fin_strapped": {
+   "text": "A twisted harness strap pins Nimbus's left fin flat."
+  },
+  "our_song": {
+   "text": "Bree made up a three-note song, and Nimbus hums it back."
+  },
+  "pip_calms_nimbus": {
+   "text": "Pip's purr calms Nimbus."
+  },
+  "speaking_tube": {
+   "text": "A speaking tube runs from the wheelhouse straight down to Nimbus's hold."
+  },
+  "envelope_tearing": {
+   "text": "The envelope is tearing aft."
+  },
+  "crew_unaware": {
+   "text": "The crew do not know what they are carrying or fighting."
+  },
+  "cargo_door_torn": {
+   "text": "The storm has torn the great cargo door of Nimbus's hold half open."
+  }
+ },
+ "nodes": {
+  "n_open": {
+   "function": "opening",
+   "event": "Bree, hidden in a rope coil, is a stowaway at last as the Cirrus casts off to Captain Quill's dry, quick order.",
+   "requires": [],
+   "establishes": [
+    "bree_stowaway",
+    "captain_voice"
+   ]
+  },
+  "n_start": {
+   "function": "decision",
+   "event": "Four ways lead off the boarding deck: engine room, cargo hold, crow's nest, grand saloon; a sailor is coming.",
+   "requires": [
+    "bree_stowaway"
+   ],
+   "establishes": []
+  },
+  "a_eng1": {
+   "function": "decision",
+   "event": "The engine room roars; a catwalk the long way round, or the open floor behind the singing stoker.",
+   "requires": [],
+   "establishes": []
+  },
+  "a_eng_deep": {
+   "function": "merge",
+   "event": "Among the pipes, dials read STEAM, LIFT and HOLD; something small scuffles in the bunkers.",
+   "requires": [],
+   "establishes": []
+  },
+  "a_eng_a": {
+   "function": "continue",
+   "event": "The HOLD dial reads WARM: keep it warm down there, by order of the captain. Why would cargo need warmth?",
+   "requires": [],
+   "establishes": [
+    "hold_kept_warm",
+    "captain_secret_cargo"
+   ]
+  },
+  "a_eng_a2": {
+   "function": "continue",
+   "event": "A curious mew ahead along a lamplit passage.",
+   "requires": [],
+   "establishes": []
+  },
+  "a_eng_b": {
+   "function": "continue",
+   "event": "Tiny sooty paw prints lead to a loose hatch, and a mew-chirp answers.",
+   "requires": [],
+   "establishes": []
+  },
+  "a_eng_b2": {
+   "function": "continue",
+   "event": "The sooty prints lead on, then fade at the lamplight.",
+   "requires": [],
+   "establishes": []
+  },
+  "a_eng_conv": {
+   "function": "merge",
+   "event": "Bright, curious eyes behind a SAILCLOTH crate.",
+   "requires": [],
+   "establishes": []
+  },
+  "a_eng_risk": {
+   "function": "decision",
+   "event": "Halfway across, the stoker notices; a chute to hide behind or a bucket to look busy with.",
+   "requires": [],
+   "establishes": []
+  },
+  "a_eng_recover": {
+   "function": "continue",
+   "event": "Hidden behind the chute, Bree waits until the stoker goes back to shovelling.",
+   "requires": [],
+   "establishes": []
+  },
+  "e_set_eng": {
+   "function": "ending",
+   "event": "Caught with the ash bucket upside down, Bree waits on the purser's bench and hears a long, sad note through the wood.",
+   "requires": [],
+   "establishes": []
+  },
+  "b_hold1": {
+   "function": "decision",
+   "event": "The cargo hold: a deckhand counts forty sacks of feed; a tidy aisle or a loose net.",
+   "requires": [],
+   "establishes": [
+    "feed_40_sacks"
+   ]
+  },
+  "b_hold_deep": {
+   "function": "merge",
+   "event": "A stack of crates with a silver crest; a barrel tunnel with grey fur on its rim.",
+   "requires": [],
+   "establishes": []
+  },
+  "b_hold_a": {
+   "function": "continue",
+   "event": "The crest: a fish with sail-wide fins over clouds, HAVEN, FEED 40 SACKS, smelling of the sea.",
+   "requires": [],
+   "establishes": [
+    "haven_crest",
+    "feed_40_sacks"
+   ]
+  },
+  "b_hold_a2": {
+   "function": "continue",
+   "event": "Something small and low crosses the walkway and seems to want her to follow.",
+   "requires": [],
+   "establishes": []
+  },
+  "b_hold_b": {
+   "function": "continue",
+   "event": "In the barrel tunnel, a nest of rags and a licked sardine tin: somebody small lives here.",
+   "requires": [],
+   "establishes": []
+  },
+  "b_hold_b2": {
+   "function": "continue",
+   "event": "A mew-chirp leads her on past a second sardine tin.",
+   "requires": [],
+   "establishes": []
+  },
+  "b_hold_conv": {
+   "function": "merge",
+   "event": "Two bright eyes blink a slow hello behind a crate.",
+   "requires": [],
+   "establishes": []
+  },
+  "b_hold_risk": {
+   "function": "decision",
+   "event": "Unlashed crates lean toward her; the open aisle or a narrow gap.",
+   "requires": [],
+   "establishes": []
+  },
+  "b_hold_recover": {
+   "function": "continue",
+   "event": "Bree scrambles clear, steadies the crates and takes the safer aisle.",
+   "requires": [],
+   "establishes": []
+  },
+  "e_set_hold": {
+   "function": "ending",
+   "event": "Boxed in by crates, Bree is found when a grey cat fetches a deckhand; she is put ashore not knowing his name.",
+   "requires": [],
+   "establishes": []
+  },
+  "c_nest1": {
+   "function": "decision",
+   "event": "The mast ladder splits into a sheltered inner ladder and open outer rungs with a loose safety clip.",
+   "requires": [],
+   "establishes": []
+  },
+  "c_nest_deep": {
+   "function": "merge",
+   "event": "Under the lookout's boots: a spare spyglass and a rope run.",
+   "requires": [],
+   "establishes": []
+  },
+  "c_nest_a": {
+   "function": "continue",
+   "event": "Through the spyglass Bree learns how the gasbags hold the ship, and spots a tired seam near the stern.",
+   "requires": [],
+   "establishes": [
+    "tired_seam"
+   ]
+  },
+  "c_nest_a2": {
+   "function": "continue",
+   "event": "A curious sound draws her down toward the middle of the ship.",
+   "requires": [],
+   "establishes": []
+  },
+  "c_nest_b": {
+   "function": "continue",
+   "event": "Bree slides the rope run down the mast into a warm passage.",
+   "requires": [],
+   "establishes": []
+  },
+  "c_nest_b2": {
+   "function": "continue",
+   "event": "A hopeful mew guides her inward.",
+   "requires": [],
+   "establishes": []
+  },
+  "c_nest_conv": {
+   "function": "merge",
+   "event": "Patient eyes watch her from behind a crate.",
+   "requires": [],
+   "establishes": []
+  },
+  "c_nest_risk": {
+   "function": "decision",
+   "event": "A gust on the open rungs; the safety clip swings out of reach.",
+   "requires": [],
+   "establishes": []
+  },
+  "c_nest_recover": {
+   "function": "continue",
+   "event": "Clipped on in time, Bree goes back to the sheltered ladder.",
+   "requires": [],
+   "establishes": []
+  },
+  "e_set_nest": {
+   "function": "ending",
+   "event": "Hauled into the crow's nest, Bree hears the lookout say the ship flies heavy, as if a whale were aboard.",
+   "requires": [],
+   "establishes": []
+  },
+  "d_salon1": {
+   "function": "decision",
+   "event": "The grand saloon: curtains along a wall, or a tunnel under the tablecloths.",
+   "requires": [],
+   "establishes": []
+  },
+  "d_salon_deep": {
+   "function": "merge",
+   "event": "A service room with model ships and a STEWARDS ONLY door.",
+   "requires": [],
+   "establishes": []
+  },
+  "d_salon_a": {
+   "function": "continue",
+   "event": "The model Cirrus's lowest deck is painted over, as if it were not there.",
+   "requires": [],
+   "establishes": [
+    "hidden_deck"
+   ]
+  },
+  "d_salon_a2": {
+   "function": "continue",
+   "event": "A mew-chirp draws her toward the middle of the ship.",
+   "requires": [],
+   "establishes": []
+  },
+  "d_salon_b": {
+   "function": "continue",
+   "event": "A crust in the pantry; the steward denies a mouse aboard.",
+   "requires": [],
+   "establishes": []
+  },
+  "d_salon_b2": {
+   "function": "continue",
+   "event": "A mew that smells bread draws her deeper in.",
+   "requires": [],
+   "establishes": []
+  },
+  "d_salon_conv": {
+   "function": "merge",
+   "event": "Hopeful eyes shine from behind a crate.",
+   "requires": [],
+   "establishes": []
+  },
+  "d_salon_risk": {
+   "function": "decision",
+   "event": "Under the tables, a waiter's boot; the trolley's shadow or a dash for the door.",
+   "requires": [],
+   "establishes": []
+  },
+  "d_salon_recover": {
+   "function": "continue",
+   "event": "Behind the trolley, then behind the curtains to a room.",
+   "requires": [],
+   "establishes": []
+  },
+  "e_set_salon": {
+   "function": "ending",
+   "event": "Caught in the saloon, Bree is fed buns and told she is not the oddest thing aboard.",
+   "requires": [],
+   "establishes": []
+  },
+  "n_friend": {
+   "function": "merge",
+   "event": "A starving grey cat makes friends and Bree names him Pip; ways lead to the galley, the captain's cabin and the rigging.",
+   "requires": [],
+   "establishes": [
+    "pip_named"
+   ]
+  },
+  "f_galley1": {
+   "function": "decision",
+   "event": "The cook grumbles about forty buckets of fish mash for cargo that the captain orders; the larder is open.",
+   "requires": [],
+   "establishes": [
+    "fish_mash",
+    "captain_secret_cargo"
+   ]
+  },
+  "f_galley_a": {
+   "function": "continue",
+   "event": "Bree feeds Pip the sardines and he purrs for the first time; the floor lurches.",
+   "requires": [],
+   "establishes": [
+    "fed_pip"
+   ]
+  },
+  "f_galley_b": {
+   "function": "decision",
+   "event": "Pip sneezes at the flour, and the cook turns.",
+   "requires": [
+    "pip_named"
+   ],
+   "establishes": []
+  },
+  "f_galley_mid": {
+   "function": "merge",
+   "event": "The ship tips, an alarm bell clangs; Pip goes inside Bree's coat.",
+   "requires": [],
+   "establishes": []
+  },
+  "e_set_galley": {
+   "function": "ending",
+   "event": "The cook catches them, feeds them, keeps Pip as galley cat, and jokes about a whale; Bree is put ashore wondering about forty buckets.",
+   "requires": [],
+   "establishes": []
+  },
+  "f_cabin1": {
+   "function": "decision",
+   "event": "The captain's cabin is empty; her dry, quick voice comes from the officers' room.",
+   "requires": [
+    "captain_voice"
+   ],
+   "establishes": []
+  },
+  "f_cabin_a": {
+   "function": "continue",
+   "event": "The captain: \"he\" has not eaten, will kick the ship apart in a storm, hates thunder and noise; the crew think they haul tea.",
+   "requires": [],
+   "establishes": [
+    "he_in_hold",
+    "storm_ahead",
+    "captain_secret_cargo",
+    "crew_unaware"
+   ]
+  },
+  "f_cabin_b": {
+   "function": "decision",
+   "event": "The storm chart bends around a storm; a pencil whale marked HOME points east; boots come.",
+   "requires": [],
+   "establishes": [
+    "storm_ahead",
+    "whale_home_doodle"
+   ]
+  },
+  "f_cabin_b2": {
+   "function": "continue",
+   "event": "From behind the curtain Bree hears the first officer grumble about losing a day for \"one seasick calf.\"",
+   "requires": [],
+   "establishes": [
+    "seasick_calf"
+   ]
+  },
+  "f_cabin_mid": {
+   "function": "merge",
+   "event": "The ship pitches; Bree follows the running crew with Pip in her coat.",
+   "requires": [],
+   "establishes": []
+  },
+  "e_set_cabin": {
+   "function": "ending",
+   "event": "Caught under the chart table, Bree sees a pinned sketch of a sail-finned whale named NIMBUS.",
+   "requires": [],
+   "establishes": []
+  },
+  "f_rig1": {
+   "function": "decision",
+   "event": "In the inner rigging: a steady catwalk or a rope-bridge marked LIVE ROPE, CROSS LOW AND SLOW.",
+   "requires": [],
+   "establishes": [
+    "live_rope_sign"
+   ]
+  },
+  "f_rig_a": {
+   "function": "continue",
+   "event": "Riggers shout about the glass dropping and the old seam that always goes; the first gust hits.",
+   "requires": [],
+   "establishes": [
+    "storm_ahead"
+   ]
+  },
+  "f_rig_b": {
+   "function": "decision",
+   "event": "A gust kicks the rope-bridge with six planks to go.",
+   "requires": [],
+   "establishes": []
+  },
+  "f_rig_b2": {
+   "function": "continue",
+   "event": "Low and slow, Bree crosses the live rope in the gust; a watching rigger whistles well done.",
+   "requires": [
+    "live_rope_sign"
+   ],
+   "establishes": [
+    "knows_ropes"
+   ]
+  },
+  "f_rig_mid": {
+   "function": "merge",
+   "event": "The storm takes the ship; Bree climbs down toward the shouting with Pip in her coat.",
+   "requires": [],
+   "establishes": []
+  },
+  "e_set_rig": {
+   "function": "ending",
+   "event": "Rushing, Bree ends up tangled in the bridge; the rigger keeps her clipped to him and mutters about an old seam.",
+   "requires": [],
+   "establishes": []
+  },
+  "n_storm": {
+   "function": "merge",
+   "event": "The storm hits; the bosun calls all hands; a long groan rises from the deep hold.",
+   "requires": [],
+   "establishes": [
+    "storm_hits",
+    "groan_in_hold"
+   ]
+  },
+  "s_deck1": {
+   "function": "decision",
+   "event": "On the weather deck a loose control line lashes about; a rail post is in reach.",
+   "requires": [],
+   "establishes": []
+  },
+  "s_deck_a": {
+   "function": "continue",
+   "event": "Bree belays the line; the officer sends her below to find out what is groaning.",
+   "requires": [],
+   "establishes": []
+  },
+  "s_deck_b": {
+   "function": "decision",
+   "event": "Hugging the post, a crate skids toward her; the hatch or a dash to the wheelhouse.",
+   "requires": [],
+   "establishes": []
+  },
+  "s_deck_mid": {
+   "function": "merge",
+   "event": "Following the same groan down, Bree finds the sealed door shaken open.",
+   "requires": [
+    "groan_in_hold"
+   ],
+   "establishes": [
+    "captain_secret_cargo"
+   ]
+  },
+  "e_set_storm1": {
+   "function": "ending",
+   "event": "Blown off her feet and shut in a safe cabin, Bree hears a sad note under the floor all night.",
+   "requires": [],
+   "establishes": []
+  },
+  "s_crew1": {
+   "function": "decision",
+   "event": "The crew haul a rope to the balloon; the bosun wants more hands and sand on the deck.",
+   "requires": [],
+   "establishes": []
+  },
+  "s_crew_a": {
+   "function": "continue",
+   "event": "Bree's weight on the rope helps make it fast.",
+   "requires": [],
+   "establishes": []
+  },
+  "s_crew_b": {
+   "function": "decision",
+   "event": "The sand-buckets tip as the deck heaves.",
+   "requires": [],
+   "establishes": []
+  },
+  "s_crew_mid": {
+   "function": "merge",
+   "event": "The bosun, who knows every hand, asks who she is; the truth or the ladder.",
+   "requires": [],
+   "establishes": []
+  },
+  "s_crew_truth": {
+   "function": "continue",
+   "event": "Bree tells the bosun she is a stowaway; he laughs, keeps her secret, and sends her to look in the sealed hold.",
+   "requires": [],
+   "establishes": [
+    "told_bosun",
+    "captain_secret_cargo"
+   ]
+  },
+  "s_crew_dodge": {
+   "function": "continue",
+   "event": "Bree dodges the bosun and follows the groan down to the sealed door.",
+   "requires": [
+    "groan_in_hold"
+   ],
+   "establishes": []
+  },
+  "e_set_storm2": {
+   "function": "ending",
+   "event": "Knocked down by the buckets and made to sit, Bree hears the bosun wonder what is in the sealed hold.",
+   "requires": [],
+   "establishes": []
+  },
+  "s_hold1": {
+   "function": "decision",
+   "event": "The groan is alive and afraid; the door is SEALED BY ORDER OF THE CAPTAIN, with a glass hatch and a brass panel.",
+   "requires": [
+    "groan_in_hold"
+   ],
+   "establishes": [
+    "captain_secret_cargo"
+   ]
+  },
+  "s_hold_a": {
+   "function": "continue",
+   "event": "Through the glass a cloud-pale shape longer than a lifeboat shakes, and answers Pip with a low note.",
+   "requires": [],
+   "establishes": []
+  },
+  "s_hold_b": {
+   "function": "continue",
+   "event": "The captain's brass panel: feeding forty buckets of mash, tending the harness, calming, never shout or bang.",
+   "requires": [],
+   "establishes": [
+    "hold_panel_care",
+    "captain_secret_cargo"
+   ]
+  },
+  "s_hold_mid": {
+   "function": "merge",
+   "event": "Thunder jolts the sealed door open; Pip leads her in.",
+   "requires": [],
+   "establishes": []
+  },
+  "n_secret": {
+   "function": "merge",
+   "event": "Inside is Nimbus, a sky-whale calf bound for the haven, \"the captain's secret\"; thunder makes him thrash, Pip's mew stills him.",
+   "requires": [
+    "captain_secret_cargo"
+   ],
+   "establishes": [
+    "nimbus",
+    "thunder_frightens_nimbus"
+   ]
+  },
+  "p_save1": {
+   "function": "decision",
+   "event": "Up close, a twisted harness strap pins Nimbus's left fin, and every jerk rocks the ship.",
+   "requires": [
+    "nimbus"
+   ],
+   "establishes": [
+    "fin_strapped"
+   ]
+  },
+  "p_save_a": {
+   "function": "continue",
+   "event": "Bree hums a made-up three-note song and Nimbus hums it back.",
+   "requires": [],
+   "establishes": [
+    "our_song"
+   ]
+  },
+  "p_save_b": {
+   "function": "continue",
+   "event": "Bree frees the strap and Nimbus's fin unfolds like a sail.",
+   "requires": [
+    "fin_strapped"
+   ],
+   "establishes": [
+    "fin_free"
+   ]
+  },
+  "p_pip1": {
+   "function": "payoff",
+   "event": "Well fed, Pip lies against Nimbus's nose and purrs; the whale and the ship go still.",
+   "requires": [
+    "fed_pip"
+   ],
+   "establishes": [
+    "pip_calms_nimbus"
+   ]
+  },
+  "p_save_mid": {
+   "function": "merge",
+   "event": "Bree promises to come back and climbs to the wheelhouse: she knows what helps him.",
+   "requires": [
+    "nimbus"
+   ],
+   "establishes": []
+  },
+  "p_reveal1": {
+   "function": "decision",
+   "event": "The main stair to the bridge is jammed: a long dry stair or a short flooded passage.",
+   "requires": [],
+   "establishes": []
+  },
+  "p_reveal_a": {
+   "function": "continue",
+   "event": "On the long stair Bree rehearses: \"your whale is scared of the thunder.\"",
+   "requires": [
+    "nimbus",
+    "thunder_frightens_nimbus"
+   ],
+   "establishes": []
+  },
+  "p_reveal_a2": {
+   "function": "continue",
+   "event": "Bree ducks past a mate to the wheelhouse door.",
+   "requires": [],
+   "establishes": []
+  },
+  "p_reveal_mid": {
+   "function": "continue",
+   "event": "Bree tells the captain her whale is scared of the thunder.",
+   "requires": [
+    "thunder_frightens_nimbus"
+   ],
+   "establishes": []
+  },
+  "e_set_reveal": {
+   "function": "ending",
+   "event": "The flooded passage turns her back; she arrives too late, and the captain dries her by the stove.",
+   "requires": [],
+   "establishes": []
+  },
+  "p_people1": {
+   "function": "decision",
+   "event": "Who will listen to a stowaway? The bosun, or the captain, the only one who knows what is in the hold.",
+   "requires": [],
+   "establishes": [
+    "captain_secret_cargo"
+   ]
+  },
+  "p_people_a": {
+   "function": "payoff",
+   "event": "The bosun believes her because she told him the truth, and charges up for the captain.",
+   "requires": [
+    "told_bosun",
+    "nimbus"
+   ],
+   "establishes": []
+  },
+  "p_people_cold": {
+   "function": "payoff",
+   "event": "The bosun does not believe a stranger, but carries her to the captain.",
+   "requires": [
+    "nimbus"
+   ],
+   "establishes": []
+  },
+  "p_people_b": {
+   "function": "continue",
+   "event": "Bree tells the captain \"I have seen Nimbus\"; the captain takes her along.",
+   "requires": [
+    "nimbus"
+   ],
+   "establishes": []
+  },
+  "p_people_mid": {
+   "function": "merge",
+   "event": "Into the storm-tossed wheelhouse.",
+   "requires": [],
+   "establishes": []
+  },
+  "n_bridge": {
+   "function": "merge",
+   "event": "The ship drops; the captain names the cause, shows the speaking tube to his hold; the envelope tears aft; the crew are in the dark; where will Bree stand?",
+   "requires": [
+    "nimbus"
+   ],
+   "establishes": [
+    "speaking_tube",
+    "envelope_tearing",
+    "crew_unaware"
+   ]
+  },
+  "b_steer1": {
+   "function": "decision",
+   "event": "The captain needs Nimbus still for ten minutes; Bree holds the speaking tube.",
+   "requires": [
+    "speaking_tube"
+   ],
+   "establishes": []
+  },
+  "b_steer_ok": {
+   "function": "continue",
+   "event": "Humming low down the tube, Bree hears Nimbus answer; the ship answers the helm.",
+   "requires": [],
+   "establishes": []
+  },
+  "b_steer_ok2": {
+   "function": "continue",
+   "event": "Bree hums through the worst of it and the Cirrus rises into calm air.",
+   "requires": [],
+   "establishes": []
+  },
+  "e_set_final": {
+   "function": "ending",
+   "event": "Shouting down the tube sounds like thunder; the crew fight the storm the hard way and Bree is put ashore.",
+   "requires": [],
+   "establishes": []
+  },
+  "e_win_save_ship": {
+   "function": "ending",
+   "event": "Forty minutes of humming; Bree is called one of the ship's own; Nimbus reaches the haven.",
+   "requires": [],
+   "establishes": []
+  },
+  "b_steer_purr": {
+   "function": "payoff",
+   "event": "Bree holds the well-fed Pip to the tube; his purr booms down and Nimbus answers.",
+   "requires": [
+    "fed_pip"
+   ],
+   "establishes": []
+  },
+  "e_win_purr": {
+   "function": "ending",
+   "event": "Pip purrs for an hour; he is made ship's cat and Bree his keeper.",
+   "requires": [],
+   "establishes": []
+  },
+  "b_patch1": {
+   "function": "decision",
+   "event": "Under the tear, the rigger asks if she has crossed live rope; or work the winch.",
+   "requires": [
+    "envelope_tearing"
+   ],
+   "establishes": []
+  },
+  "b_patch_ok": {
+   "function": "payoff",
+   "event": "The rigger recognises the girl who crossed his bridge low and slow; she climbs and threads the patch.",
+   "requires": [
+    "knows_ropes"
+   ],
+   "establishes": []
+  },
+  "b_patch_alt": {
+   "function": "continue",
+   "event": "Bree cranks the winch while a ship's boy threads the patch.",
+   "requires": [],
+   "establishes": []
+  },
+  "e_win_patch": {
+   "function": "ending",
+   "event": "The patch holds; Bree is signed on as rigger's mate.",
+   "requires": [
+    "knows_ropes"
+   ],
+   "establishes": []
+  },
+  "e_win_steer": {
+   "function": "ending",
+   "event": "The winch holds; Bree is offered a berth, and the captain thanks her for her \"cargo.\"",
+   "requires": [],
+   "establishes": []
+  },
+  "e_set_aloft": {
+   "function": "ending",
+   "event": "Never having crossed live rope, Bree freezes in the rigging; the ship limps to an emergency mooring.",
+   "requires": [],
+   "establishes": []
+  },
+  "b_free1": {
+   "function": "decision",
+   "event": "In the hold the cargo door is torn open; Nimbus wants out; the captain cannot reach his harness.",
+   "requires": [
+    "nimbus"
+   ],
+   "establishes": [
+    "cargo_door_torn"
+   ]
+  },
+  "b_free_ok": {
+   "function": "payoff",
+   "event": "\"His fin is free, because I untangled the strap myself\"; Nimbus rises on both fins.",
+   "requires": [
+    "fin_free"
+   ],
+   "establishes": []
+  },
+  "b_free_ok2": {
+   "function": "continue",
+   "event": "Nimbus swims ahead through the storm and leads the ship east.",
+   "requires": [],
+   "establishes": []
+  },
+  "e_win_free": {
+   "function": "ending",
+   "event": "Nimbus leads the ship to the haven and joins his kind because somebody freed his fin.",
+   "requires": [
+    "fin_free"
+   ],
+   "establishes": []
+  },
+  "b_free_alt": {
+   "function": "continue",
+   "event": "Bree hums Nimbus into the quiet padded bay.",
+   "requires": [],
+   "establishes": []
+  },
+  "e_win_friend": {
+   "function": "ending",
+   "event": "Nimbus rides out the storm calm in his bay and joins his kind at the haven.",
+   "requires": [],
+   "establishes": []
+  },
+  "e_neu_kite": {
+   "function": "ending",
+   "event": "With one fin \"still strapped flat by the twisted harness,\" Nimbus flies behind the ship like a kite.",
+   "requires": [
+    "fin_strapped"
+   ],
+   "establishes": []
+  },
+  "b_tell1": {
+   "function": "decision",
+   "event": "Bree argues the crew should know; the captain fears hunters and gossip.",
+   "requires": [
+    "crew_unaware"
+   ],
+   "establishes": []
+  },
+  "b_tell_crew": {
+   "function": "payoff",
+   "event": "The bosun vouches for the girl who told him the truth; the crew run to help.",
+   "requires": [
+    "told_bosun"
+   ],
+   "establishes": []
+  },
+  "e_win_crew": {
+   "function": "ending",
+   "event": "The port watch hums Nimbus through the night; Bree is made a shipmate.",
+   "requires": [
+    "told_bosun"
+   ],
+   "establishes": []
+  },
+  "b_tell_doubt": {
+   "function": "payoff",
+   "event": "The crew laugh at a stranger's whale; nobody moves.",
+   "requires": [],
+   "establishes": []
+  },
+  "b_tell_captain": {
+   "function": "decision",
+   "event": "The captain tells the crew herself and offers Bree a place at his side or a warm bunk.",
+   "requires": [],
+   "establishes": []
+  },
+  "e_win_captain": {
+   "function": "ending",
+   "event": "Bree hums at Nimbus's side with the captain; she is written into the log as crew.",
+   "requires": [],
+   "establishes": []
+  },
+  "e_neu_home": {
+   "function": "ending",
+   "event": "Bree sleeps through the end of the storm; the captain asks her to come back when taller.",
+   "requires": [],
+   "establishes": []
+  },
+  "b_tell_reveal": {
+   "function": "merge",
+   "event": "Bree drags the bosun down; the crew see the calf and begin to hum.",
+   "requires": [],
+   "establishes": []
+  },
+  "e_win_discovery": {
+   "function": "ending",
+   "event": "The whole crew hums Nimbus through; the cook learns where his forty buckets go.",
+   "requires": [],
+   "establishes": []
+  }
+ },
+ "choices": {
+  "c_open": {
+   "intent": "continue",
+   "cost": "none"
+  },
+  "c_start_eng": {
+   "intent": "hide below in the engine room",
+   "cost": "noise, heat and a stoker"
+  },
+  "c_start_hold": {
+   "intent": "hide in the cargo hold",
+   "cost": "dark and unlashed cargo"
+  },
+  "c_start_nest": {
+   "intent": "climb toward the sky",
+   "cost": "height and wind"
+  },
+  "c_start_salon": {
+   "intent": "sneak into the saloon",
+   "cost": "full of people who might see her"
+  },
+  "c_eng_deep": {
+   "intent": "take the safe long way round",
+   "cost": "slower"
+  },
+  "c_eng_risk": {
+   "intent": "dart across behind the stoker",
+   "cost": "may be seen"
+  },
+  "c_eng_a": {
+   "intent": "read the dials",
+   "cost": "leaves the scuffling"
+  },
+  "c_eng_b": {
+   "intent": "follow the scuffling",
+   "cost": "leaves the dials"
+  },
+  "c_eng_a_go": {
+   "intent": "continue",
+   "cost": "none"
+  },
+  "c_eng_a2_go": {
+   "intent": "continue",
+   "cost": "none"
+  },
+  "c_eng_b_go": {
+   "intent": "continue",
+   "cost": "none"
+  },
+  "c_eng_b2_go": {
+   "intent": "continue",
+   "cost": "none"
+  },
+  "c_eng_conv_go": {
+   "intent": "continue",
+   "cost": "none"
+  },
+  "c_eng_recover": {
+   "intent": "hide behind the chute",
+   "cost": "none"
+  },
+  "c_eng_fail": {
+   "intent": "bluff with the bucket",
+   "cost": "ends the voyage: caught by the stoker"
+  },
+  "c_eng_recover_go": {
+   "intent": "continue",
+   "cost": "none"
+  },
+  "c_hold_deep": {
+   "intent": "take the tidy aisle",
+   "cost": "slower"
+  },
+  "c_hold_risk": {
+   "intent": "go through the loose net",
+   "cost": "unlashed cargo"
+  },
+  "c_hold_a": {
+   "intent": "read the crest",
+   "cost": "leaves the tunnel"
+  },
+  "c_hold_b": {
+   "intent": "crawl the barrel tunnel",
+   "cost": "leaves the crest"
+  },
+  "c_hold_a_go": {
+   "intent": "continue",
+   "cost": "none"
+  },
+  "c_hold_a2_go": {
+   "intent": "continue",
+   "cost": "none"
+  },
+  "c_hold_b_go": {
+   "intent": "continue",
+   "cost": "none"
+  },
+  "c_hold_b2_go": {
+   "intent": "continue",
+   "cost": "none"
+  },
+  "c_hold_conv_go": {
+   "intent": "continue",
+   "cost": "none"
+  },
+  "c_hold_recover": {
+   "intent": "scramble clear",
+   "cost": "none"
+  },
+  "c_hold_fail": {
+   "intent": "squeeze into the gap",
+   "cost": "ends the voyage: boxed in and found"
+  },
+  "c_hold_recover_go": {
+   "intent": "continue",
+   "cost": "none"
+  },
+  "c_nest_deep": {
+   "intent": "take the sheltered ladder",
+   "cost": "slower"
+  },
+  "c_nest_risk": {
+   "intent": "climb the open rungs",
+   "cost": "the wind"
+  },
+  "c_nest_a": {
+   "intent": "study the balloon",
+   "cost": "leaves the rope run"
+  },
+  "c_nest_b": {
+   "intent": "slide the rope run",
+   "cost": "leaves the spyglass"
+  },
+  "c_nest_a_go": {
+   "intent": "continue",
+   "cost": "none"
+  },
+  "c_nest_a2_go": {
+   "intent": "continue",
+   "cost": "none"
+  },
+  "c_nest_b_go": {
+   "intent": "continue",
+   "cost": "none"
+  },
+  "c_nest_b2_go": {
+   "intent": "continue",
+   "cost": "none"
+  },
+  "c_nest_conv_go": {
+   "intent": "continue",
+   "cost": "none"
+  },
+  "c_nest_recover": {
+   "intent": "clip on and hold",
+   "cost": "none"
+  },
+  "c_nest_fail": {
+   "intent": "race the gust",
+   "cost": "ends the voyage: hauled in by the lookout"
+  },
+  "c_nest_recover_go": {
+   "intent": "continue",
+   "cost": "none"
+  },
+  "c_salon_deep": {
+   "intent": "edge along the curtains",
+   "cost": "slower"
+  },
+  "c_salon_risk": {
+   "intent": "crawl under the tables",
+   "cost": "feet everywhere"
+  },
+  "c_salon_a": {
+   "intent": "look at the model ships",
+   "cost": "leaves the pantry"
+  },
+  "c_salon_b": {
+   "intent": "go through the stewards' door",
+   "cost": "leaves the models"
+  },
+  "c_salon_a_go": {
+   "intent": "continue",
+   "cost": "none"
+  },
+  "c_salon_a2_go": {
+   "intent": "continue",
+   "cost": "none"
+  },
+  "c_salon_b_go": {
+   "intent": "continue",
+   "cost": "none"
+  },
+  "c_salon_b2_go": {
+   "intent": "continue",
+   "cost": "none"
+  },
+  "c_salon_conv_go": {
+   "intent": "continue",
+   "cost": "none"
+  },
+  "c_salon_recover": {
+   "intent": "roll behind the trolley",
+   "cost": "none"
+  },
+  "c_salon_fail": {
+   "intent": "bolt for the door",
+   "cost": "ends the voyage: caught in the saloon"
+  },
+  "c_salon_recover_go": {
+   "intent": "continue",
+   "cost": "none"
+  },
+  "c_friend_galley": {
+   "intent": "find Pip food",
+   "cost": "the cook"
+  },
+  "c_friend_cabin": {
+   "intent": "go to the captain's cabin",
+   "cost": "the captain herself is near"
+  },
+  "c_friend_rig": {
+   "intent": "climb into the rigging",
+   "cost": "live rope"
+  },
+  "c_galley_a": {
+   "intent": "creep to the larder and feed Pip",
+   "cost": "three steps behind the cook",
+   "plants": "t_pip"
+  },
+  "c_galley_b": {
+   "intent": "hide behind the flour sacks",
+   "cost": "Pip stays hungry"
+  },
+  "c_galley_a_go": {
+   "intent": "continue",
+   "cost": "none"
+  },
+  "c_galley_b_go": {
+   "intent": "grab Pip and run",
+   "cost": "none"
+  },
+  "c_galley_fail": {
+   "intent": "hold still",
+   "cost": "ends the voyage: caught by the cook"
+  },
+  "c_galley_mid_go": {
+   "intent": "continue",
+   "cost": "none"
+  },
+  "c_cabin_a": {
+   "intent": "listen at the officers' door",
+   "cost": "leaves the charts"
+  },
+  "c_cabin_b": {
+   "intent": "look at the charts",
+   "cost": "could be trapped in the cabin"
+  },
+  "c_cabin_a_go": {
+   "intent": "continue",
+   "cost": "none"
+  },
+  "c_cabin_b_go": {
+   "intent": "dash for the curtain",
+   "cost": "none"
+  },
+  "c_cabin_fail": {
+   "intent": "hide under the table",
+   "cost": "ends the voyage: caught by the first officer"
+  },
+  "c_cabin_b2_go": {
+   "intent": "continue",
+   "cost": "none"
+  },
+  "c_cabin_mid_go": {
+   "intent": "continue",
+   "cost": "none"
+  },
+  "c_rig_a": {
+   "intent": "take the catwalk",
+   "cost": "she learns nothing about live rope"
+  },
+  "c_rig_b": {
+   "intent": "cross the rope-bridge",
+   "cost": "a swaying bridge in the wind"
+  },
+  "c_rig_a_go": {
+   "intent": "continue",
+   "cost": "none"
+  },
+  "c_rig_b_go": {
+   "intent": "crouch low and inch across",
+   "cost": "slow, in the gust",
+   "plants": "t_ropes"
+  },
+  "c_rig_fail": {
+   "intent": "run the last planks",
+   "cost": "ends the voyage: tangled in the bridge"
+  },
+  "c_rig_b2_go": {
+   "intent": "continue",
+   "cost": "none"
+  },
+  "c_rig_mid_go": {
+   "intent": "continue",
+   "cost": "none"
+  },
+  "c_storm_deck": {
+   "intent": "go out on the weather deck",
+   "cost": "the wind and the loose line"
+  },
+  "c_storm_crew": {
+   "intent": "help the crew haul",
+   "cost": "the bosun will see her"
+  },
+  "c_storm_hold": {
+   "intent": "go toward the groan",
+   "cost": "leaves the crew to it"
+  },
+  "c_deck_a": {
+   "intent": "catch the loose line",
+   "cost": "dangerous"
+  },
+  "c_deck_b": {
+   "intent": "hold the rail post",
+   "cost": "leaves the line loose"
+  },
+  "c_deck_a_go": {
+   "intent": "continue",
+   "cost": "none"
+  },
+  "c_deck_b_go": {
+   "intent": "drop down the hatch",
+   "cost": "none"
+  },
+  "c_deck_fail": {
+   "intent": "dash for the wheelhouse",
+   "cost": "ends the voyage: shut in a cabin"
+  },
+  "c_deck_mid_go": {
+   "intent": "continue",
+   "cost": "none"
+  },
+  "c_crew_a": {
+   "intent": "pull on the rope",
+   "cost": "leaves the sand"
+  },
+  "c_crew_b": {
+   "intent": "fetch sand",
+   "cost": "heavy buckets on a tilting deck"
+  },
+  "c_crew_a_go": {
+   "intent": "continue",
+   "cost": "none"
+  },
+  "c_crew_b_go": {
+   "intent": "hug the bucket and keep going",
+   "cost": "none"
+  },
+  "c_crew_fail": {
+   "intent": "drop the buckets",
+   "cost": "ends the voyage: knocked down and told to sit"
+  },
+  "c_crew_mid_go": {
+   "intent": "tell the bosun the truth",
+   "cost": "risks being sent to the purser",
+   "plants": "t_bosun"
+  },
+  "c_crew_dodge": {
+   "intent": "duck away down the ladder",
+   "cost": "the bosun does not learn to trust her"
+  },
+  "c_crew_truth_go": {
+   "intent": "continue",
+   "cost": "none"
+  },
+  "c_crew_dodge_go": {
+   "intent": "continue",
+   "cost": "none"
+  },
+  "c_hold_hatch": {
+   "intent": "look through the glass",
+   "cost": "leaves the panel"
+  },
+  "c_hold_panel": {
+   "intent": "read the panel",
+   "cost": "leaves the glass"
+  },
+  "c_shold_a_go": {
+   "intent": "continue",
+   "cost": "none"
+  },
+  "c_shold_b_go": {
+   "intent": "continue",
+   "cost": "none"
+  },
+  "c_hold_mid_go": {
+   "intent": "continue",
+   "cost": "none"
+  },
+  "c_secret_save": {
+   "intent": "stay and calm Nimbus",
+   "cost": "the bridge does not know yet"
+  },
+  "c_secret_pip": {
+   "intent": "let Pip go to him",
+   "cost": "none",
+   "requires": [
+    "fed_pip"
+   ]
+  },
+  "c_secret_reveal": {
+   "intent": "race to tell the bridge",
+   "cost": "leaves Nimbus alone"
+  },
+  "c_secret_people": {
+   "intent": "fetch help from the crew",
+   "cost": "must be believed"
+  },
+  "c_save_a": {
+   "intent": "hum to him",
+   "cost": "leaves the strap twisted"
+  },
+  "c_save_b": {
+   "intent": "untangle the strap",
+   "cost": "close to a frightened giant",
+   "plants": "t_fin"
+  },
+  "c_save_a_go": {
+   "intent": "continue",
+   "cost": "none"
+  },
+  "c_save_b_go": {
+   "intent": "continue",
+   "cost": "none"
+  },
+  "c_pip_go": {
+   "intent": "continue",
+   "cost": "none"
+  },
+  "c_save_mid_go": {
+   "intent": "continue",
+   "cost": "none"
+  },
+  "c_reveal_a": {
+   "intent": "take the long dry stair",
+   "cost": "slow"
+  },
+  "c_reveal_fail": {
+   "intent": "wade the flooded passage",
+   "cost": "ends the voyage: too slow and too wet"
+  },
+  "c_reveal_a_go": {
+   "intent": "continue",
+   "cost": "none"
+  },
+  "c_reveal_a2_go": {
+   "intent": "continue",
+   "cost": "none"
+  },
+  "c_reveal_mid_go": {
+   "intent": "continue",
+   "cost": "none"
+  },
+  "c_people_a": {
+   "intent": "run to the bosun, who trusts her",
+   "cost": "none",
+   "requires": [
+    "told_bosun"
+   ]
+  },
+  "c_people_cold": {
+   "intent": "run to the bosun, who does not know her",
+   "cost": "she may not be believed"
+  },
+  "c_people_b": {
+   "intent": "go straight to the captain",
+   "cost": "must face the captain"
+  },
+  "c_people_a_go": {
+   "intent": "continue",
+   "cost": "none"
+  },
+  "c_people_cold_go": {
+   "intent": "continue",
+   "cost": "none"
+  },
+  "c_people_b_go": {
+   "intent": "continue",
+   "cost": "none"
+  },
+  "c_people_mid_go": {
+   "intent": "continue",
+   "cost": "none"
+  },
+  "c_bridge_steer": {
+   "intent": "steady Nimbus by the speaking tube",
+   "cost": "the storm is loud and the hold far away"
+  },
+  "c_bridge_patch": {
+   "intent": "go mend the envelope",
+   "cost": "live rope in a storm"
+  },
+  "c_bridge_free": {
+   "intent": "go below to move Nimbus",
+   "cost": "close to a thrashing calf"
+  },
+  "c_bridge_tell": {
+   "intent": "tell the crew the captain's secret",
+   "cost": "breaks the captain's secret"
+  },
+  "c_steer_ok": {
+   "intent": "hum low and slow",
+   "cost": "none"
+  },
+  "c_steer_fail": {
+   "intent": "shout to beat the storm",
+   "cost": "ends the voyage: her shout sounds like thunder"
+  },
+  "c_steer_purr": {
+   "intent": "let Pip purr down the tube",
+   "cost": "none",
+   "requires": [
+    "fed_pip"
+   ]
+  },
+  "c_steer_ok_go": {
+   "intent": "continue",
+   "cost": "none"
+  },
+  "c_steer_win": {
+   "intent": "continue",
+   "cost": "none"
+  },
+  "c_steer_purr_win": {
+   "intent": "continue",
+   "cost": "none"
+  },
+  "c_patch_ok": {
+   "intent": "climb to the tear, having crossed live rope",
+   "cost": "none",
+   "requires": [
+    "knows_ropes"
+   ]
+  },
+  "c_patch_green": {
+   "intent": "climb to the tear without having crossed live rope",
+   "cost": "ends the voyage: she freezes in the rigging"
+  },
+  "c_patch_alt": {
+   "intent": "work the winch",
+   "cost": "somebody else goes up"
+  },
+  "c_patch_win": {
+   "intent": "continue",
+   "cost": "none"
+  },
+  "c_patch_alt_win": {
+   "intent": "continue",
+   "cost": "none"
+  },
+  "c_free_ok": {
+   "intent": "open the door and let him fly, fin free",
+   "cost": "none",
+   "requires": [
+    "fin_free"
+   ]
+  },
+  "c_free_tangled": {
+   "intent": "open the door and let him fly, fin still strapped",
+   "cost": "he cannot fly properly"
+  },
+  "c_free_alt": {
+   "intent": "coax him into the quiet bay",
+   "cost": "he does not fly yet"
+  },
+  "c_free_ok_go": {
+   "intent": "continue",
+   "cost": "none"
+  },
+  "c_free_win": {
+   "intent": "continue",
+   "cost": "none"
+  },
+  "c_free_alt_win": {
+   "intent": "continue",
+   "cost": "none"
+  },
+  "c_tell_crew": {
+   "intent": "tell the crew, with the bosun's trust",
+   "cost": "none",
+   "requires": [
+    "told_bosun"
+   ]
+  },
+  "c_tell_crew_cold": {
+   "intent": "tell the crew as a stranger",
+   "cost": "may be laughed at"
+  },
+  "c_tell_captain": {
+   "intent": "ask the captain to tell them",
+   "cost": "none"
+  },
+  "c_tell_reveal": {
+   "intent": "take the crew to see him",
+   "cost": "none"
+  },
+  "c_tell_crew_win": {
+   "intent": "continue",
+   "cost": "none"
+  },
+  "c_tell_doubt_go": {
+   "intent": "continue",
+   "cost": "none"
+  },
+  "c_tell_cap_win": {
+   "intent": "take the place at his side",
+   "cost": "not safe or dry"
+  },
+  "c_tell_cap_home": {
+   "intent": "take the warm bunk",
+   "cost": "misses the end of the storm"
+  },
+  "c_tell_reveal_win": {
+   "intent": "continue",
+   "cost": "none"
+  }
+ },
+ "threads": {
+  "t_pip": {
+   "variable": "fed_pip",
+   "planting_choices": [
+    "c_galley_a"
+   ],
+   "plant": "fed_pip",
+   "payoff_sites": [
+    {
+     "node": "n_secret",
+     "choice": "c_secret_pip",
+     "shows": "the well-fed Pip purrs against Nimbus and stills him"
+    },
+    {
+     "node": "b_steer1",
+     "choice": "c_steer_purr",
+     "shows": "Pip's purr down the speaking tube calms Nimbus and saves the ship"
+    }
+   ]
+  },
+  "t_ropes": {
+   "variable": "knows_ropes",
+   "planting_choices": [
+    "c_rig_b_go"
+   ],
+   "plant": "knows_ropes",
+   "payoff_sites": [
+    {
+     "node": "b_patch1",
+     "choice": "c_patch_ok",
+     "shows": "the rigger trusts the girl who crossed his bridge and she mends the tear"
+    },
+    {
+     "node": "b_patch1",
+     "choice": "c_patch_green",
+     "shows": "without it she freezes in the rigging"
+    }
+   ]
+  },
+  "t_bosun": {
+   "variable": "told_bosun",
+   "planting_choices": [
+    "c_crew_mid_go"
+   ],
+   "plant": "told_bosun",
+   "payoff_sites": [
+    {
+     "node": "p_people1",
+     "choice": "c_people_a",
+     "shows": "the bosun believes her whale report"
+    },
+    {
+     "node": "b_tell1",
+     "choice": "c_tell_crew",
+     "shows": "the bosun vouches for her and the crew believe"
+    },
+    {
+     "node": "b_tell1",
+     "choice": "c_tell_crew_cold",
+     "shows": "without it the crew laugh"
+    }
+   ]
+  },
+  "t_fin": {
+   "variable": "fin_free",
+   "planting_choices": [
+    "c_save_b"
+   ],
+   "plant": "fin_free",
+   "payoff_sites": [
+    {
+     "node": "b_free1",
+     "choice": "c_free_ok",
+     "shows": "Nimbus flies free on both fins"
+    },
+    {
+     "node": "b_free1",
+     "choice": "c_free_tangled",
+     "shows": "with the fin still strapped he flies as a kite"
+    }
+   ]
+  }
+ },
+ "endings": {
+  "e_set_eng": {
+   "gift": "a long, sad note hums up through the purser's bench: something alive is aboard"
+  },
+  "e_set_hold": {
+   "gift": "a grey cat fetches help for her: there is a friend aboard to come back for"
+  },
+  "e_set_nest": {
+   "gift": "the lookout says the ship flies heavy, as if a whale were aboard"
+  },
+  "e_set_salon": {
+   "gift": "buns, and \"you are not the oddest thing aboard this trip\""
+  },
+  "e_set_galley": {
+   "gift": "Pip gets a home as galley cat, and the cook's forty buckets point at the secret"
+  },
+  "e_set_cabin": {
+   "gift": "a sketch of a sail-finned whale named NIMBUS under the chart table"
+  },
+  "e_set_rig": {
+   "gift": "the rigger's lesson, \"low and slow\", and a hint about the old seam near the stern"
+  },
+  "e_set_storm1": {
+   "gift": "a low sad note rises with each thunderclap: the answer was under the hatch"
+  },
+  "e_set_storm2": {
+   "gift": "the bosun would give his whistle to know what is in the sealed hold"
+  },
+  "e_set_reveal": {
+   "gift": "the captain herself dries her: \"a slow messenger still arrives\""
+  },
+  "e_set_final": {
+   "gift": "\"he has never liked a raised voice\": the way to reach him is softly"
+  },
+  "e_set_aloft": {
+   "gift": "ropes are learned in calm air, and a rope-bridge was there all night to teach her"
+  },
+  "e_neu_kite": {
+   "gift": "the funniest landing in the harbour, and the reason it happened: one strap nobody freed"
+  },
+  "e_neu_home": {
+   "gift": "she looked a sky-whale in the eye, and is told to come back taller with the cat"
+  }
+ },
+ "provenance": {
+  "producer": "hand-written",
+  "method": "WP-0.3: written by reading the book as it stands; facts recorded as written, contradictions kept",
+  "model": "claude-opus-5-5 (agent, hand-written by reading)",
+  "shape": null,
+  "book_file": "out/the-sky-ship-stowaway.filled.json",
+  "book_sha256": "bb215b407e972124f4f646c194916059bd96b0c76f00fb51006ea21d2b765d24",
+  "authored": "2026-11-21",
+  "authoring_minutes": 4,
+  "checks": null,
+  "approver": null
+ }
+}
