@@ -864,13 +864,13 @@ Dates are proposals from 2026-11-21; each is also stated as the package it block
 | D3 | Family-test book list; enable reading-trail capture for the session. **Decided 2026-11-21** (owner, in session): see the note below | WP-0.3, WP-0.5 | 2026-11-24 |
 | D4 | The retained shell set (eight to twelve, two per offered cell). **Decided 2026-11-21** (owner, in session), on the [proposal](./d4-retained-shell-proposal.md): (1) Tier 1, twelve shells, two shapes in each of the six short and medium family cells (8-11 short: locked-carousel, cave-of-echoes; 8-11 medium: lantern-keepers-list, storm-chasers-club; 10-13 short: glass-comet, cinderwick-exchange; 10-13 medium: orchard-signal, flooded-quarter; 13-16 medium prose: undertow-season, conservatory-wars; 13-16 medium gamebook: quarry-signal, iron-spire-trial); the four long cells keep the current catalog unconverted, Tier 2 deferred. (2) A stateless tree counts as a retained shape where a cell has no second stateful shell. (3) The WP-0.1 freeze on the consequence tool stays: retained shells are not given state; a book's variables come from its plan's threads (ADR-033 Decision 1). (4) Shells behind family-test books may be converted, the shell file only; filled books and imported editions are untouched | WP-2.2 | done |
 | D5 | Accept the G1 verdict. **Decided 2026-11-21** (owner, in session): G1 failed as scored ([report](./evidence/story-plan-retro/report.md)); take the single permitted revision and one re-run. The SP-9 length change made before the first run (`29c0ff8`) does not count as the revision. Revision scope: `AL-817` to `AL-819` and `AL-822` (SP-4 independent of which half of a thread is declared the plant, SP-4 exempts endings, SP-8 symmetric opportunity costs, SP-9 'wound' homograph, state negations recorded at the asserting node), plus `AL-821`. Fresh blind re-extraction of the scored books; the criterion and answer key are unchanged. A second failure stops Phase 2 **Re-run verdict accepted 2026-11-21** (owner, in session): G1 passes ([re-run report](./evidence/story-plan-retro/rerun/report.md)), on two conditions. (1) The plan-writing conventions of ADR-033 Decision 1 bind every plan, hand-written or generated. (2) The WP-0.4 second read stays the standing continuity control for catalog books until the fresh-corpus confirmation (WP-1.6) passes; the pass was earned after a revision designed with the answer key in view, so it is weaker evidence than a first-time pass. Phase 2 may start | all of Phase 2 | done |
-| D6 | Continuity reader thresholds (decide with D12, which reuses the same split and harness) | WP-3.2 | before WP-3.2 starts |
+| D6 | Continuity reader thresholds (decide with D12, which reuses the same split and harness). **Decided 2026-11-21** (owner, in session): as proposed in WP-3.1, recall at least 0.8 on known defects, no more than one false flag per 50 nodes on clean books, two-run agreement at least 0.9, on the held-out half | WP-3.2 | done |
 | D7 | Phase 4 budget (proposed cap 150 USD) and the kill criteria as written | WP-4.1 | before WP-4.1 starts |
 | D8 | Wording of the approver's quality question; mandatory or not | WP-3.5 | before WP-3.5 starts |
 | D9 | Per-band recap rule (AL-767) | WP-2.5 | before WP-2.5 starts |
 | D10 | Adopt for both paths, catalog only, or stop | everything in section 8 | on WP-4.4 |
 | D11 | Plans, for catalog and on-demand, are approved by a validated plan-review model (a different model from the writer, validated against the labelled ground truth before use); the owner reviews by exception, every reject and "unsure" plus a random sample. Amends ADR-033 Decision 3. **Made 2026-11-21** (owner, in session; see the note below) | WP-2.4, WP-3.7 | made |
-| D12 | Plan-reviewer thresholds, exception-sample rate and suspension rule (decided alongside D6). Proposed values and reasons in the note below | WP-3.7 | before WP-3.7 starts |
+| D12 | Plan-reviewer thresholds, exception-sample rate and suspension rule (decided alongside D6). **Decided 2026-11-21** (owner, in session): every value as proposed in the note below, including the minimum validation size met with seeded-defect plans reported separately as synthetic | WP-3.7 | done |
 
 **D3 as decided on 2026-11-21 (owner, in session).**
 
@@ -901,7 +901,11 @@ of by the owner, for catalog books and on-demand requests.
   critical path, gates and risk table are updated; the pilot reads every plan in shadow because its volume is too low
   for a sample to measure drift. ADR-033 carries the amendment note.
 
-**D12 as proposed (not yet decided).** One decision, taken with D6 because both use the WP-3.1 split and harness.
+**D12 as decided 2026-11-21 (owner, in session; every value below adopted as proposed).** Context given to the owner at
+the decision: real labelled data supplies about 6 defective books and 3 or 4 clean plans to the held-out half, so the
+minimum is reached only with seeded-defect plans, reported separately; the 2026-11-21 Sonnet pilot flagged nearly every
+plan, clean ones included, so the flag-rate bar will need prompt work; generated plans are thin today (`AL-848`), so
+plan-quality classes stay advisory under the scope-of-authority row. One decision, taken with D6 because both use the WP-3.1 split and harness.
 Values are the proposer's choice and are the owner's to change; each is explained.
 
 | Item | Proposed | Why |
