@@ -184,6 +184,9 @@
   },
   "pip_in_coat_bridge": {
    "text": "Leaving Nimbus's hold, Bree carries Pip up toward the bridge inside her coat."
+  },
+  "storm_opened_hold_door": {
+   "text": "The storm has shaken loose the bolt of the sealed hold's door, and Bree went in through the gap."
   }
  },
  "nodes": {
@@ -635,7 +638,8 @@
     "groan_in_hold"
    ],
    "establishes": [
-    "captain_secret_cargo"
+    "captain_secret_cargo",
+    "storm_opened_hold_door"
    ]
   },
   "e_set_storm1": {
@@ -676,7 +680,8 @@
    "requires": [],
    "establishes": [
     "told_bosun",
-    "captain_secret_cargo"
+    "captain_secret_cargo",
+    "storm_opened_hold_door"
    ]
   },
   "s_crew_dodge": {
@@ -687,7 +692,8 @@
     "pip_in_coat_storm"
    ],
    "establishes": [
-    "captain_secret_cargo"
+    "captain_secret_cargo",
+    "storm_opened_hold_door"
    ]
   },
   "e_set_storm2": {
@@ -726,7 +732,9 @@
    "function": "merge",
    "event": "Thunder jolts the sealed door open; Pip leads her in.",
    "requires": [],
-   "establishes": []
+   "establishes": [
+    "storm_opened_hold_door"
+   ]
   },
   "n_secret": {
    "function": "merge",
@@ -845,7 +853,7 @@
   },
   "p_people_cold": {
    "function": "payoff",
-   "event": "The bosun does not believe a stranger, but carries her up to the captain, calling her to hear a tall tale.",
+   "event": "The bosun does not believe a stranger, but carries her up to the captain, bellowing for her to hear this one.",
    "requires": [
     "nimbus",
     "pip_in_coat_bridge"
@@ -854,10 +862,11 @@
   },
   "p_people_b": {
    "function": "continue",
-   "event": "Bree tells the captain \"I have seen Nimbus\"; the captain takes her along.",
+   "event": "Bree tells the captain \"I have seen Nimbus\" and that the storm shook the sealed door open; the captain takes her along.",
    "requires": [
     "nimbus",
-    "pip_in_coat_bridge"
+    "pip_in_coat_bridge",
+    "storm_opened_hold_door"
    ],
    "establishes": []
   },
@@ -1845,7 +1854,7 @@
   "model": "claude-opus-5-5 (agent, hand-written by reading)",
   "shape": null,
   "book_file": "out/the-sky-ship-stowaway.filled.json",
-  "book_sha256": "00d121855d6d7ea7ada753cf3e6319c9d4f976c72dd1c5d2264dd31c2c7fbce2",
+  "book_sha256": "73a5c0d5d1976891b1f4e1f773344ac3698ac230e517d3c6b3144cb6da1f1441",
   "authored": "2026-11-21",
   "authoring_minutes": 4,
   "checks": null,
