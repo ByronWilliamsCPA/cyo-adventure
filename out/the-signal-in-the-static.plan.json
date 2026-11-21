@@ -18,7 +18,7 @@
   "hero": "Wren Callahan, a girl who cannot sleep and keeps switching on her late grandfather's shortwave",
   "want": "to find out who is sending the numbers loop and why",
   "obstacle": "a station everyone says is dead, a code, a stubborn old man who has stopped hoping, and a deadline she only discovers late",
-  "stake": "at twenty to midnight the relay's dying cell will play an old man's last goodbye to a daughter who is not listening, and erase thirty years of tape",
+  "stake": "at twenty to midnight the relay's dying cell will play an old man's last goodbye to a daughter who may not be listening, and erase thirty years of tape",
   "ending_kind": "success: father and daughter reconnected, or the channel and its tapes saved for later"
  },
  "cast": {
@@ -90,7 +90,7 @@
  },
  "facts": {
   "loop_nightly": {
-   "text": "For a week Wren has heard a loop on her late grandfather's shortwave: a woman's careful voice reading numbers, then a falling tone, then the cycle restarts."
+   "text": "For a week Wren has heard a loop on her late grandfather's shortwave: a young woman's careful voice reading numbers, then a falling tone, then the cycle restarts."
   },
   "grandpa_dead_year": {
    "text": "Wren's grandfather, a radio operator, died about a year ago, and only she still comes up to his attic."
@@ -177,7 +177,7 @@
    "text": "After each cycle there is a four-second gap: the sender stops and listens for an answer."
   },
   "voice_is_daughter": {
-   "text": "The voice reading the numbers is Kell Alder's daughter, recorded as a girl."
+   "text": "The voice reading the numbers is Kell Alder's daughter Marin, recorded at seventeen."
   },
   "m_is_marin": {
    "text": "M is Marin, Kell Alder's daughter."
@@ -205,12 +205,15 @@
   },
   "second_terminals": {
    "text": "Beside the dying cell are bare terminals for a second cell that was never fitted."
+  },
+  "station_register": {
+   "text": "Tucked inside the back cover of her grandfather's logbook is the club's printed station register, the one book every operator on this coast once owned."
   }
  },
  "nodes": {
   "n_open": {
    "function": "opening",
-   "event": "Sleepless, Wren switches on her late grandfather's shortwave and hears the numbers loop again.",
+   "event": "Sleepless, Wren switches on her late grandfather's shortwave and hears the numbers loop again, read in a young woman's careful voice.",
    "requires": [],
    "establishes": [
     "loop_nightly",
@@ -397,7 +400,7 @@
   },
   "e_re_photo": {
    "function": "ending",
-   "event": "She photographs the mast and goes home; one blurred photo shows a man with a mug; the loop stops before she returns.",
+   "event": "She photographs the mast and goes home; one blurred photo shows a man with a mug; the loop stops the very next night, before she returns.",
    "requires": [],
    "establishes": []
   },
@@ -650,21 +653,25 @@
   },
   "m_numbers_1": {
    "function": "decision",
-   "event": "A book cipher on the logbook, or timing the groups.",
+   "event": "A book cipher keyed to the station register tucked in Grandpa's logbook, or timing the groups.",
    "requires": [
     "grandpa_logbook"
    ],
-   "establishes": []
+   "establishes": [
+    "station_register"
+   ]
   },
   "m_num_cipher": {
    "function": "decision",
-   "event": "HOLDING, ANSWER and M appear; one cluster refuses.",
-   "requires": [],
+   "event": "Against the station register, HOLDING, ANSWER and M appear; one cluster refuses.",
+   "requires": [
+    "station_register"
+   ],
    "establishes": []
   },
   "m_num_cracked": {
    "function": "continue",
-   "event": "STILL HOLDING THE CHANNEL OPEN FOR M; the final figure is a count going down.",
+   "event": "The register key holds: STILL HOLDING THE CHANNEL OPEN FOR M; the final figure is a count going down.",
    "requires": [],
    "establishes": [
     "message_for_m",
@@ -778,7 +785,7 @@
   },
   "e_who_warn": {
    "function": "ending",
-   "event": "Told \"school project,\" Okafor sends her home: why would a man keep a girl's voice on the air for thirty years?",
+   "event": "Not for a school project: Okafor sends her home with a question, why would a man keep a girl's voice on the air for thirty years?",
    "requires": [],
    "establishes": [
     "voice_is_daughter"
@@ -795,7 +802,7 @@
   },
   "n_b2_under": {
    "function": "payoff",
-   "event": "Under the voice through his headset, an old recording: a girl answering \"Dad.\"",
+   "event": "Under the voice through his headset, an old recording: the numbers girl, not much older than Wren, answering \"Dad.\"",
    "requires": [
     "has_headset"
    ],
@@ -822,7 +829,7 @@
   },
   "mm_listener_1": {
    "function": "decision",
-   "event": "M could be a person in the records or a place on Grandpa's chart.",
+   "event": "The loop gives only a letter: M could be a person in the records or a place on Grandpa's chart.",
    "requires": [
     "m_in_morse"
    ],
@@ -880,7 +887,7 @@
   },
   "mm_count_1": {
    "function": "decision",
-   "event": "Follow the falling line, or check the tide table and forecast.",
+   "event": "Follow the falling line, or check this year's tide table and the forecast.",
    "requires": [
     "count_going_down"
    ],
@@ -913,7 +920,7 @@
   },
   "mm_count_tide": {
    "function": "decision",
-   "event": "Tonight's spring tide tops out at eighteen to midnight, with a gale warning.",
+   "event": "Tonight's spring tide tops out at eighteen to midnight, with a gale warning; she knows what a spring tide does to the low road under the headland.",
    "requires": [],
    "establishes": [
     "spring_tide_tonight",
@@ -968,7 +975,7 @@
   },
   "n_b3_choice": {
    "function": "decision",
-   "event": "Fifty-nine minutes: ride out, use Grandpa's transmitter, or telephone someone.",
+   "event": "Fifty-nine minutes, an old man beside a failing cell, a daughter who may not be listening: ride out, use Grandpa's transmitter, or telephone someone.",
    "requires": [
     "ends_tonight"
    ],
@@ -1056,7 +1063,7 @@
   },
   "e_st_record": {
    "function": "ending",
-   "event": "Nursing the cell gets one word, \"Marin,\" before it dies; the spare battery was the case.",
+   "event": "Nursing the cell gets one word, \"Marin,\" onto the phone she set recording in the yard, before it dies; the spare battery was the case.",
    "requires": [
     "battery_on_shelf",
     "second_terminals"
@@ -1077,7 +1084,7 @@
   },
   "f_st_alder": {
    "function": "decision",
-   "event": "Kell Alder lets her in: Marin is not listening; tonight he is only saying goodbye.",
+   "event": "Kell Alder lets her in: he believes Marin is not listening; tonight he is only saying goodbye.",
    "requires": [],
    "establishes": []
   },
@@ -1103,7 +1110,7 @@
   },
   "e_st_wait": {
    "function": "ending",
-   "event": "Hammering unheard at the steel door, she hears his goodbye: \"Marin, I kept your voice on the air.\"",
+   "event": "Hammering unheard at the steel door, she hears his goodbye in the voice from the tape an hour ago: \"Marin, I kept your voice on the air.\"",
    "requires": [],
    "establishes": [
     "voice_is_daughter"
@@ -1133,12 +1140,13 @@
   },
   "e_re_answer": {
    "function": "ending",
-   "event": "Wren speaks to the carrier; Marin answers and hears her father \"kept her voice on a loop.\"",
+   "event": "Wren speaks to the carrier; Marin answers in the numbers voice grown older, which settles whose voice the loop kept, and hears her father \"kept her voice on a loop.\"",
    "requires": [
-    "voice_is_daughter",
     "m_is_marin"
    ],
-   "establishes": []
+   "establishes": [
+    "voice_is_daughter"
+   ]
   },
   "e_re_neighbor": {
    "function": "ending",
@@ -1212,19 +1220,19 @@
   },
   "f_he_cg": {
    "function": "decision",
-   "event": "The duty officer wants location and emergency; she has a girl's voice counting and an old man.",
-   "requires": [
-    "voice_is_daughter"
-   ],
+   "event": "The duty officer wants location and emergency; she has that careful voice counting and an old man.",
+   "requires": [],
    "establishes": []
   },
   "f_he_act": {
    "function": "decision",
-   "event": "\"Occupied building, headland, spring tide plus gale\": the crew reaches Alder with hands for one job.",
+   "event": "She gives place, hazard and hour; the officer works out the spring tide himself (\"Occupied building, headland, spring tide plus gale\"), and the crew reaches Alder with hands for one job.",
    "requires": [
-    "spring_tide_tonight"
+    "gale_tonight"
    ],
-   "establishes": []
+   "establishes": [
+    "spring_tide_tonight"
+   ]
   },
   "e_he_escort": {
    "function": "ending",
@@ -1236,7 +1244,7 @@
   },
   "e_he_safe": {
    "function": "ending",
-   "event": "Sandbags, a generator, HOLD at four seconds; a missing-relative file for Marin; \"how did a schoolgirl know to start with the tide?\"",
+   "event": "Sandbags, a generator, HOLD at four seconds; a missing-relative file for Marin; \"how did a schoolgirl know to give the place, the danger and the hour first?\"",
    "requires": [
     "spring_tide_tonight"
    ],
@@ -1262,7 +1270,7 @@
   },
   "e_he_complete": {
    "function": "ending",
-   "event": "With Ruiz and Kell, Wren dials the circled number and Marin answers.",
+   "event": "It takes all three: Ruiz wires a spare cell, Kell holds the count, and Wren dials the circled number; Marin answers.",
    "requires": [],
    "establishes": []
   },
@@ -1580,7 +1588,7 @@
    "cost": "leaves the numbers"
   },
   "c_m_numbers_1_1": {
-   "intent": "try the logbook as a book cipher",
+   "intent": "try the station register as a book cipher",
    "cost": "one long job"
   },
   "c_m_numbers_1_2": {
@@ -1588,7 +1596,7 @@
    "cost": "one long job"
   },
   "c_m_num_cipher_1": {
-   "intent": "recheck the logbook key",
+   "intent": "recheck the register key",
    "cost": "patience"
   },
   "c_m_num_cipher_2": {
@@ -2116,10 +2124,17 @@
   "model": "claude-opus-5-5 (agent, hand-written by reading)",
   "shape": null,
   "book_file": "out/the-signal-in-the-static.filled.json",
-  "book_sha256": "f0c851f90618cb43b7a7891e3e13cd6e8c3c9ac5c59ff337f6643be7cb1da5db",
+  "book_sha256": "d701b7891ff2141196634800c84e0f2565c8df2d389dbd994f6ba495ebcc7cd8",
   "authored": "2026-11-21",
   "authoring_minutes": 5,
   "checks": null,
-  "approver": null
+  "approver": null,
+  "continuity_pass": {
+   "work_package": "WP-0.4",
+   "date": "2026-11-21",
+   "findings": "docs/planning/evidence/story-plan-retro/findings-the-signal-in-the-static.md",
+   "pre_fix_book_sha256": "f0c851f90618cb43b7a7891e3e13cd6e8c3c9ac5c59ff337f6643be7cb1da5db",
+   "note": "Book and plan updated together; every node's requires is guaranteed on entry on every reachable route and state."
+  }
  }
 }
