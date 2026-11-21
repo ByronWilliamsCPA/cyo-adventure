@@ -10,6 +10,7 @@ from __future__ import annotations
 import copy
 import json
 import re
+from pathlib import Path
 from typing import TYPE_CHECKING, cast
 
 import pytest
@@ -45,7 +46,6 @@ from cyo_adventure.storyplan.shapes import (
 
 if TYPE_CHECKING:
     from collections.abc import Sequence
-    from pathlib import Path
 
 _SECTIONS = ("cast", "truth", "facts", "nodes", "choices", "threads", "endings")
 _CONVENTIONS = (
@@ -300,6 +300,72 @@ def test_plan_prompt_states_the_conventions_and_fences_the_request() -> None:
     assert "END_UNTRUSTED_USER_INPUT_NEUTRALIZED" in prompt.user
     request_at = prompt.user.index("## The request")
     assert prompt.user.index(hostile.split(" >>>", maxsplit=1)[0]) > request_at
+
+
+_EVIDENCE = Path(__file__).resolve().parents[2] / "docs" / "planning" / "evidence"
+
+
+def _shingles(text: str, size: int = 6) -> set[tuple[str, ...]]:
+    words = re.findall(r"[a-z']+", text.casefold())
+    return {tuple(words[i : i + size]) for i in range(len(words) - size + 1)}
+
+
+def _json_strings(value: object) -> list[str]:
+    if isinstance(value, dict):
+        return [
+            s
+            for v in cast("dict[str, object]", value).values()
+            for s in _json_strings(v)
+        ]
+    if isinstance(value, list):
+        return [s for v in cast("list[object]", value) for s in _json_strings(v)]
+    return [value] if isinstance(value, str) else []
+
+
+def test_plan_prompt_asks_for_dense_facts_and_decision_specific_choices() -> None:
+    """Convention 1 in practice (AL-848): per-passage facts, a worked example."""
+    system = build_plan_prompt('{"nodes": []}', _GOOD_PITCH, {"premise": "x"}).system
+    assert "Recording what each passage says (convention 1 in practice)" in system
+    for item in ("every clue found", "every name learned", "what the hero has"):
+        assert item in system
+    assert "A passage that neither requires nor establishes anything should" in system
+    assert "Expect at least one fact for every passage" in system
+    assert "Intents and costs belong to their own decision." in system
+    assert "### A worked example" in system
+    assert '"establishes": ["pawprint_on_step", "cat_is_pip"' in system
+    assert "keep the mark" in system
+
+
+def test_plan_prompt_example_borrows_no_wording_from_the_defect_corpus() -> None:
+    """The worked example must not teach to the WP-1.3 or WP-1.6 answer keys."""
+    known = json.loads(
+        (_EVIDENCE / "story-plan-retro" / "known-defects.json").read_text("utf-8")
+    )
+    sources = _json_strings(known)
+    sources += [
+        path.read_text(encoding="utf-8")
+        for path in (_EVIDENCE / "fresh-corpus-2026-11-21").glob("second-read-*.md")
+    ]
+    assert len(sources) > 3
+    corpus: set[tuple[str, ...]] = set()
+    for text in sources:
+        corpus |= _shingles(text)
+    system = build_plan_prompt('{"nodes": []}', _GOOD_PITCH, {"premise": "x"}).system
+    assert _shingles(system) & corpus == set()
+
+
+def test_repair_prompt_answers_density_by_adding_not_deleting() -> None:
+    """SP-D warnings are answered by recording more, never by deleting marks."""
+    prompt = build_plan_repair_prompt(
+        '{"nodes": []}',
+        _GOOD_PITCH,
+        {"premise": "a cave"},
+        previous_plan="{}",
+        findings=["SP-D warning: the ledger records 2 referenced facts"],
+    )
+    assert "An SP-D warning means the plan records too little" in prompt.system
+    assert "Never answer it, or any other finding, by" in prompt.system
+    assert "a true `contradicts` mark" in prompt.system
 
 
 def test_repair_prompt_carries_conventions_findings_and_fence() -> None:

@@ -89,6 +89,67 @@ Respond with one JSON object with exactly these seven keys.
 3. A choice's cost is "none" only when the option truly costs nothing; when
    its cost is giving up the other options, the cost says so.
 
+## Recording what each passage says (convention 1 in practice)
+
+The checker can only test what the plan records. A plan that records little
+passes every rule because nothing in it can contradict anything, and the book
+written from it then drifts. So record densely.
+
+- For every passage, list what it introduces, and make each item a fact the
+  passage `establishes`: every clue found, every object picked up, handed
+  over, used up or lost, every name learned, every place discovered, and every
+  change in what the hero has, knows, believes or feels.
+- List what the passage relies on from earlier in its `requires`: a clue it
+  mentions again, an object the hero uses, a person it calls by name. Merge
+  closure still applies: require only what every route into it established.
+- A passage that neither requires nor establishes anything should be rare.
+  Check each one you write: if something happens in it, something is learned
+  or changed, and that is a fact.
+- If a choice's intent or cost mentions a thing (a clue, an object, a
+  person), that thing is a fact somewhere on the route to that choice.
+- What the hero believes or does on a route that ends badly is also a fact.
+  When it is the opposite of the truth, mark it `contradicts` against the
+  truth fact and keep the mark.
+- Expect at least one fact for every passage that is not an ending, across
+  the plan. A ledger of a handful of facts for dozens of passages is too thin
+  to check.
+
+Intents and costs belong to their own decision. Write each choice's `intent`
+as what this option is for here, and its `cost` as what this option gives up
+here. The same intent or the same cost on choices that lead to different
+passages means the plan has stopped saying what each decision is about. When
+an option's cost is giving up the others, name what is given up at this
+decision ("leaves the flour sacks unsearched"), not a phrase that would fit
+any decision.
+
+### A worked example
+
+A different book, for illustration only: Ada helps at her aunt's bakery on
+the morning a ribbon-tied basket goes missing. One passage, `N4`, reads: Ada
+finds a floury pawprint on the back step, learns the bakery cat is called
+Pip, and her aunt hands her a spare apron with a deep pocket, telling her to
+keep away from the hot oven. Its record:
+
+- `facts` gains `pawprint_on_step` ("A floury pawprint is on the back
+  step."), `cat_is_pip` ("The bakery cat is called Pip."), `ada_has_apron`
+  ("Ada wears the spare apron, which has a deep pocket.") and
+  `aunt_warned_oven` ("Ada's aunt told her to keep away from the hot oven.",
+  convention 2).
+- `N4` is `{"event": "Ada finds a floury pawprint on the back step and her
+  aunt gives her a spare apron.", "requires": ["basket_missing"],
+  "establishes": ["pawprint_on_step", "cat_is_pip", "ada_has_apron",
+  "aunt_warned_oven"]}`.
+- A later passage where Ada follows the prints requires `pawprint_on_step`
+  and establishes what she finds there. On a route where Ada turned the apron
+  down, a passage that says she has nowhere to carry the ribbon establishes
+  `ada_has_no_pocket` ("Ada has no pocket to carry the ribbon."), marked
+  `contradicts` against `ada_has_apron` (convention 1).
+- The two choices out of `N4` are `{"intent": "follow the pawprints to the
+  flour sacks", "cost": "leaves the queue at the counter waiting"}` and
+  `{"intent": "ask the aunt whether Pip was out last night", "cost": "the
+  prints on the step dry and fade"}`, not `{"intent": "investigate", "cost":
+  "gives up the other paths"}` repeated at every decision.
+
 ## Output
 
 Respond with valid JSON only: the single object described above. No markdown

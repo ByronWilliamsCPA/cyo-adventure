@@ -9,6 +9,11 @@ with the seven keys, fixing every ERROR finding. Fix a WARNING where you can
 without breaking anything else. Keep what was not reported: change only what a
 finding names, plus whatever that change forces elsewhere.
 
+An SP-D warning means the plan records too little to be checked. Answer it by
+adding: the facts the named passages introduce or rely on, and intents and
+costs written for each decision. Never answer it, or any other finding, by
+deleting a true fact or a true `contradicts` mark.
+
 <!-- @user -->
 
 ## The checker's findings
