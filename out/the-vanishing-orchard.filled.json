@@ -4,7 +4,6 @@
   "version": 1,
   "title": "The Vanishing Orchard",
   "metadata": {
-    "narrative_person": "third",
     "age_band": "13-16",
     "reading_level": {
       "scheme": "flesch_kincaid",
@@ -408,7 +407,7 @@
     },
     {
       "id": "kee_b_p1",
-      "body": "Rowan asked about the knotted cord at Odile's belt, worn soft with handling, and the old keeper's face softened. It was the keeper's cord, she explained, and it held one knot for every keeper who had ever tended the orchard, all the way back to the founders themselves. Its oldest coils had been rubbed smooth and pale by generations of hands. Odile unhooked it and laid it in Rowan's lap, and Rowan lifted it carefully. It was heavier than it looked, and longer, coil upon coil of knots running back through the centuries. Each small knot was a life spent in service to a hungry tree. Holding it, Rowan felt the enormous weight of all those quiet, forgotten guardians, and understood that the cord itself was a kind of memory the town no longer knew it owned.",
+      "body": "Rowan asked about the knotted cord at Odile's belt, worn soft with handling, and the old keeper's face softened. It was the keeper's cord, she explained, and it held one knot for every keeper who had ever tended the orchard, all the way back to the founders themselves. Its coils had been rubbed pale by generations of hands. Odile unhooked it and laid it in Rowan's lap, and Rowan lifted it carefully. It was heavier than it looked, and longer, coil upon coil of knots running back through the centuries. Each small knot was a life spent in service to a hungry tree. Holding it, Rowan felt the enormous weight of all those quiet, forgotten guardians, and understood that the cord itself was a kind of memory the town no longer knew it owned.",
       "is_ending": false,
       "choices": [
         {
@@ -520,7 +519,7 @@
     },
     {
       "id": "kee_t_p3",
-      "body": "Rowan asked the old keeper to come with her, but Odile shook her head. Her legs would no longer carry her down the steep hill at any speed, she said, and she would only slow Rowan when speed was everything. But she would not send the girl to the water alone. She promised to send Teo down to the cider house before the frost, so that Rowan would have at least one living hand beside her when she faced the spring. Teo still remembered, Odile said, better than most in the town, and his stubbornness would be worth having in the dark. Go on ahead, the keeper told her. Do not wait for me. I will make sure your cousin finds you, and you will not have to stand at that water by yourself when the time comes.",
+      "body": "Rowan asked the old keeper to come with her, but Odile shook her head. Her legs could manage the steep hill only slowly now, she said, and she would hold Rowan back when speed was everything. But she would not send the girl to the water alone. She promised to send Teo down to the cider house before the frost, so that Rowan would have at least one living hand beside her when she faced the spring. Teo still remembered, Odile said, better than most in the town, and his stubbornness would be worth having in the dark. Go on ahead, the keeper told her. Do not wait for me. I will make sure your cousin finds you, and you will not have to stand at that water by yourself when the time comes.",
       "is_ending": false,
       "choices": [
         {
@@ -785,7 +784,7 @@
     },
     {
       "id": "pho_clue",
-      "body": "Rowan came down the attic ladder with her arms full of photographs, and her mind was made up. The changing pictures and the whole ones told a single story between them. The tree fattened while the town faded, a keeper's face had been swallowed from a christening portrait, and her grandmother had left a message pointing straight down into the dark. The answer waited below the cider house, at the root where the years were kept and the water drank them slowly. There was a frost coming, and a deadline pressing close, and no more attic dust left to sift through. When Rowan slid the grandmother's photograph out of its frame, something small and hard dropped from behind it into her palm: a withered seed, dark as a peppercorn, the twin of the one in the picture. She buttoned the photograph safe inside her coat, closed her fist on the seed, and stepped out into the cooling afternoon. It was time to carry what she had found to the cider house and go down to the root at last.",
+      "body": "Rowan came down the attic ladder with her arms full of photographs, and her mind was made up. The changing pictures and the whole ones told a single story between them. The tree fattened while the town faded, a keeper's face had been swallowed from a christening portrait, and her grandmother had left a message pointing straight down into the dark. The answer waited below the cider house, at the root where the years were kept and the water drank them slowly. There was a frost coming, and a deadline pressing close, and no more attic dust left to sift through. Rowan pulled the last frame apart to take her grandmother's picture with her. Something small and hard dropped out of it: a withered seed, dark as a peppercorn, the twin of the one in her grandmother's hand. She buttoned the photograph safe inside her coat, closed her fist on the seed, and stepped out into the cooling afternoon. It was time to carry what she had found to the cider house and go down to the root at last.",
       "is_ending": false,
       "choices": [
         {
@@ -838,7 +837,7 @@
     },
     {
       "id": "cel_a_p3",
-      "body": "At last the gap grew wide enough to see through, and Rowan lifted her lamp to it. Beyond the door a flight of stone steps went down into blackness, and the first few steps were slick and shining. It took her a moment to understand why, and then she saw that they were coated in frost. Real white frost furred the cold stone, here in the closed cellar, though the orchard above lay warm and mild in the last of the autumn sun. There was no reason for it, since frost had no business gathering in an underground stair in September. Rowan felt the hair rise on her arms, and she saw that the cold below was not weather at all but something the root itself made.",
+      "body": "At last the gap grew wide enough to see through, and Rowan lifted her lamp to it. Beyond the door a flight of stone steps went down into blackness, and the first few steps were slick and shining. It took her a moment to understand why, and then she saw that they were coated in frost. Real white frost furred the cold stone, here in the closed cellar, though the orchard above lay warm and mild in the last of the autumn sun. There was no reason for it, since frost had no business gathering in an underground stair in September. Rowan felt the hair rise on her arms, and she saw that the cold below was not weather at all but something rising from whatever lay beneath.",
       "is_ending": false,
       "choices": [
         {
@@ -2039,7 +2038,7 @@
     },
     {
       "id": "n_b4",
-      "body": "Every path had brought Rowan to the same place at last. She knelt at the black spring beneath the oldest tree, and far above, through the cellar and the orchard, the first frost was silvering the grass. Behind her stood the gathered town, or else a single beloved face was held steady in her mind. The withered seed in her palm was green and whole now, a living shoot, the keeper's token woken and ready at last. And the root waited, ancient and patient, prepared to make its bargain. This was the hinge of everything. Here the Quiet could be turned from a hunger into a keeping, from a theft into a shared remembering. Or else it could be lost again, and the town would go on thinning for another forty years. Whatever Rowan had chosen to carry down to the water, the town's whole memory, a single name, an honest grief, she had to offer it here and now. Then she would see what the orchard would choose to give her back in return.",
+      "body": "Every path had brought Rowan to the same place at last. She knelt at the black spring beneath the oldest tree, and far above, through the cellar and the orchard, the first frost was silvering the grass. Odile and Teo were with her. The withered seed in her palm was green and whole now, a living shoot, the keeper's token woken and ready at last. And the root waited, ancient and patient, prepared to make its bargain. This was the hinge of everything. Here the Quiet could be turned from a hunger into a keeping, from a theft into a shared remembering. Or else it could be lost again, and the town would go on thinning for another forty years. Whatever Rowan had chosen to carry down to the water, the town's whole memory, a single name, an honest grief, she had to offer it here and now. Then she would see what the orchard would choose to give her back in return.",
       "is_ending": false,
       "choices": [
         {
@@ -2066,7 +2065,7 @@
     },
     {
       "id": "fin_all_1",
-      "body": "Rowan pressed the greening seed to the black water and spoke the founders' bargain backward. Not the orchard keeps for us, she said aloud, her voice steady in the cold, but we keep for the orchard. The words rang off the wet stone. The root shuddered at them, the whole taproot trembling in the spring as though she had touched a nerve. And then it answered. A hundred living memories came pouring down the cellar stair at once, rushing from the town above toward the water, a torrent of held remembering flooding into the chamber. It was more than Rowan had bargained for, a great river of the town's love and grief and history breaking loose all together. She could feel it dragging at her, enormous and wild. She could steer this flood if she had help, or be swept under by a current far too strong for one girl alone.",
+      "body": "Rowan pressed the greening seed to the black water and spoke the founders' bargain backward. Not the orchard keeps for us, she said aloud, her voice steady in the cold, but we keep for the orchard. The words rang off the wet stone. The root shuddered at them, the whole taproot trembling in the spring as though she had touched a nerve. And then it answered. A hundred living memories came pouring down the cellar stair at once, rushing from the town toward the water, a torrent of held remembering flooding into the chamber. It was more than Rowan had bargained for, a great river of the town's love and grief and history breaking loose all together. She could feel it dragging at her, enormous and wild. She could steer this flood if she had help, or be swept under by a current far too strong for one girl alone.",
       "is_ending": false,
       "choices": [
         {
@@ -2191,7 +2190,7 @@
     },
     {
       "id": "e_all_grandmother",
-      "body": "Rowan reached one last time into the deep. She sank her greening hand into the healing spring, down past the settling water, and found her grandmother waiting at the very bottom of the dark. She took hold, and she lifted, and the old keeper came up out of the black water at last. Her grandmother opened her eyes in an orchard that suddenly remembered loving her. Forty years of forgotten devotion came flooding warm through the whole town. The two of them stood together in the restored orchard under the silvering frost. The long debt was finally paid in full, the broken line mended, the family whole again. Rowan held her grandmother's hand and did not let go, and above them the oldest tree stood quiet and content, keeping nothing now that anyone still needed back.",
+      "body": "Rowan reached one last time into the deep. She sank her greening hand into the healing spring, down past the settling water, and found her grandmother waiting at the very bottom of the dark. She took hold, and she lifted, and the lost keeper came up out of the black water at last. Her grandmother opened her eyes in an orchard that suddenly remembered loving her. Forty years of forgotten devotion came flooding warm through the whole town. The two of them stood together in the restored orchard under the silvering frost. The long debt was finally paid in full, the broken line mended, the family whole again. Rowan held her grandmother's hand and did not let go, and above them the oldest tree stood quiet and content, keeping nothing now that anyone still needed back.",
       "is_ending": true,
       "ending": {
         "id": "e_all_grandmother",
