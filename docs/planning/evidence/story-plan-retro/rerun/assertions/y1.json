@@ -1,0 +1,1144 @@
+{
+  "n00c0": [
+    "late_october",
+    "bramley_top_of_hill",
+    "bramley_october_bloom",
+    "other_trees_bare",
+    "jonah"
+  ],
+  "n01d0": [
+    "jonah",
+    "bramley_october_bloom",
+    "ada_daily_notebook",
+    "shed_heater",
+    "ada_already_knew",
+    "hives_on_orchard",
+    "notice_on_gate"
+  ],
+  "n02c0": [
+    "jonah_asked_notebooks",
+    "ada_daily_notebook",
+    "bramley_october_bloom",
+    "no_prior_october_bloom",
+    "loose_sheet_1952",
+    "shed_heater"
+  ],
+  "n02c1": [
+    "bramley_october_bloom",
+    "hives_on_orchard",
+    "bees_out_in_october",
+    "mrs_cassar_beekeeper",
+    "cassar_never_seen"
+  ],
+  "n02c2": [
+    "jonah_went_to_notice",
+    "notice_on_gate",
+    "notice_is_survey_summary",
+    "notice_appeared_today",
+    "jonah_photo_of_notice",
+    "photo_only_record",
+    "other_trees_bare"
+  ],
+  "n03d0": [
+    "jonah",
+    "notebooks_six_shelves",
+    "notebooks_1911_to_now",
+    "record_114_years",
+    "nine_hands",
+    "several_hands",
+    "notebooks_no_index",
+    "notebooks_contents",
+    "survey_exists"
+  ],
+  "cq_plant_did_find_who_wrote": [
+    "jonah_sought_author",
+    "survey_exists",
+    "survey_signed_faulks",
+    "survey_dated_august",
+    "faulks_name_in_book"
+  ],
+  "n03d1": [
+    "mrs_cassar_beekeeper",
+    "cassar_spiral_records",
+    "bee_count_mismatch",
+    "survey_no_interest"
+  ],
+  "n03d2": [
+    "notice_on_gate",
+    "nine_hands",
+    "notebooks_six_shelves",
+    "notice_is_survey_summary",
+    "survey_exists",
+    "survey_dated_august",
+    "survey_no_interest",
+    "sentence_eleven_words",
+    "record_114_years",
+    "bramley_october_bloom",
+    "ada_daily_notebook"
+  ],
+  "n04d0": [
+    "survey_exists",
+    "survey_signed_faulks",
+    "survey_dated_august",
+    "august_orchard_looks_empty",
+    "orchard_pond"
+  ],
+  "n04d1": [
+    "survey_exists",
+    "sentence_eleven_words",
+    "record_114_years",
+    "survey_four_visits",
+    "survey_under_four_hours",
+    "developer_exists",
+    "tobe_known"
+  ],
+  "n04d2": [
+    "ada_daily_notebook",
+    "ada_doubts_notebooks",
+    "ada_sixty_years",
+    "bramley_october_bloom",
+    "shed_heater",
+    "window_six_weeks",
+    "survey_exists",
+    "survey_signed_faulks"
+  ],
+  "n04c0": [
+    "survey_no_interest",
+    "sentence_eleven_words",
+    "exercise_book_eleven_words"
+  ],
+  "n04c1": [
+    "ada_daily_notebook",
+    "shed_one_bulb"
+  ],
+  "n04c2": [
+    "tree_count_unsteady",
+    "orchard_pond",
+    "developer_exists"
+  ],
+  "n04c3": [
+    "ada_daily_notebook",
+    "nine_hands",
+    "several_hands",
+    "eight_named_hands",
+    "ninth_hand_unknown",
+    "tobe_known"
+  ],
+  "n04c4": [
+    "notice_on_gate",
+    "jonah_photo_of_notice",
+    "notice_zip_tied",
+    "notice_later_removed",
+    "photo_only_record",
+    "window_six_weeks"
+  ],
+  "n05d0": [
+    "survey_exists",
+    "window_six_weeks",
+    "form_needs_proof",
+    "notebooks_six_shelves",
+    "several_hands"
+  ],
+  "n05d1": [
+    "survey_four_visits",
+    "survey_under_four_hours",
+    "development_82_homes",
+    "road_through_bramley_row",
+    "developer_exists",
+    "notebooks_six_shelves"
+  ],
+  "n05d2": [
+    "jonah",
+    "city_archive",
+    "okonkwo_archivist",
+    "notebooks_1911_to_now",
+    "tobe_laptop"
+  ],
+  "n05d3": [
+    "bramley_october_bloom",
+    "abara",
+    "ada_daily_notebook",
+    "missing_years"
+  ],
+  "n05d4": [
+    "developer_exists",
+    "development_82_homes",
+    "road_through_bramley_row",
+    "notebooks_six_shelves"
+  ],
+  "n05d5": [
+    "notebooks_six_shelves",
+    "tobe_known",
+    "tobe_laptop",
+    "several_hands"
+  ],
+  "e05_0": [
+    "jonah_photo_of_notice",
+    "exercise_book_eleven_words",
+    "window_six_weeks",
+    "bramley_top_of_hill",
+    "window_closed_unused"
+  ],
+  "n06d0": [
+    "tobe_known",
+    "window_six_weeks",
+    "forty_thousand_lines",
+    "notebooks_contents",
+    "four_lines_plan",
+    "cassar_spiral_records"
+  ],
+  "n06d1": [
+    "tobe_known",
+    "record_114_years",
+    "four_lines_plan",
+    "four_lines_bloom_frost",
+    "city_archive",
+    "abara"
+  ],
+  "n06d2": [
+    "survey_signed_faulks",
+    "hard_1920s_hand",
+    "one_error_enough",
+    "unreadable_figures",
+    "school_class",
+    "ada_daily_notebook"
+  ],
+  "n06d3": [
+    "city_archive",
+    "notebooks_six_shelves",
+    "notebooks_never_left_shed",
+    "archive_checks_in_person",
+    "shed_one_bulb",
+    "ada_sixty_years",
+    "bloom_chart",
+    "four_lines_plan"
+  ],
+  "cq_payoff_did_go_down_read": [
+    "jonah_photo_of_notice",
+    "notice_zip_tied",
+    "tobe_known",
+    "sentence_eleven_words",
+    "notice_posted_late",
+    "four_lines_plan"
+  ],
+  "n06d4": [
+    "ada_daily_notebook",
+    "school_hall_thursdays",
+    "cassar_spiral_records",
+    "city_archive"
+  ],
+  "n06d5": [
+    "tobe_known",
+    "notebooks_six_shelves",
+    "photo_every_page",
+    "abara",
+    "school_class"
+  ],
+  "n06c0": [
+    "city_archive",
+    "notebook_at_archive",
+    "first_entry_1911"
+  ],
+  "n06c1": [
+    "tobe_laptop",
+    "ada_daily_notebook"
+  ],
+  "n06c2": [
+    "tobe_laptop",
+    "orchard_pond",
+    "city_archive"
+  ],
+  "n06c3": [
+    "tobe_laptop",
+    "hard_1920s_hand",
+    "bloom_chart"
+  ],
+  "n06c4": [
+    "four_lines_plan"
+  ],
+  "n06c5": [
+    "notebooks_six_shelves",
+    "missing_years",
+    "missing_1917_1918"
+  ],
+  "n06c6": [
+    "tobe_laptop",
+    "cassar_spiral_records"
+  ],
+  "e06_0": [
+    "tobe_laptop",
+    "window_six_weeks",
+    "typed_twelve_years"
+  ],
+  "n07d0": [
+    "tobe_known",
+    "four_lines_plan",
+    "four_dates_with_picking",
+    "spreadsheet",
+    "record_114_years",
+    "unreadable_figures",
+    "mrs_cassar_beekeeper"
+  ],
+  "n07d1": [
+    "abara",
+    "school_class",
+    "missing_1917_1918"
+  ],
+  "n07d2": [
+    "mrs_cassar_beekeeper",
+    "cassar_hive_30_years",
+    "cassar_method_changes",
+    "raval",
+    "bloom_chart",
+    "frost_pocket"
+  ],
+  "n07d3": [
+    "okonkwo_archivist",
+    "archive_offer",
+    "nine_hands",
+    "cassar_carrier_bags"
+  ],
+  "n07d4": [
+    "abara",
+    "record_114_years",
+    "needs_method",
+    "record_unbroken",
+    "spreadsheet",
+    "bloom_chart"
+  ],
+  "n07d5": [
+    "tobe_known",
+    "bloom_chart",
+    "bloom_eleven_days",
+    "unreadable_figures"
+  ],
+  "n07d6": [
+    "school_class",
+    "mrs_cassar_beekeeper",
+    "abara"
+  ],
+  "n07d7": [
+    "survey_signed_faulks",
+    "one_error_enough",
+    "raval",
+    "missing_1917_1918",
+    "bloom_chart"
+  ],
+  "n07d8": [
+    "ada_daily_notebook",
+    "ada_since_21",
+    "ada_weapon_unease",
+    "frost_pocket",
+    "nine_hands"
+  ],
+  "e07_0": [
+    "okonkwo_archivist",
+    "notebooks_archived",
+    "window_closed_unused"
+  ],
+  "e07_1": [
+    "bloom_chart",
+    "tobe_laptop",
+    "chart_sent_unchecked"
+  ],
+  "n08d0": [
+    "tobe_laptop",
+    "double_typing",
+    "school_hall_thursdays",
+    "raval",
+    "abara",
+    "frost_pocket",
+    "city_archive"
+  ],
+  "n08d1": [
+    "four_lines_plan",
+    "unclear_marked",
+    "unreadable_figures",
+    "cassar_method_changes",
+    "survey_signed_faulks",
+    "local_paper"
+  ],
+  "n08d2": [
+    "mrs_cassar_beekeeper",
+    "cassar_carrier_bags",
+    "cassar_no_pretending",
+    "developer_exists",
+    "missing_1917_1918",
+    "school_hall_thursdays"
+  ],
+  "n08d3": [
+    "abara",
+    "orchard_pond",
+    "abara_visit",
+    "frost_pocket",
+    "newspaper_offer",
+    "survey_signed_faulks",
+    "raval"
+  ],
+  "cq_payoff_did_ask_whether_notebooks": [
+    "loose_sheet_1952",
+    "abara",
+    "survey_signed_faulks",
+    "mother_list_details",
+    "odd_events_pattern",
+    "raval"
+  ],
+  "n08d4": [
+    "school_hall_thursdays",
+    "mrs_cassar_beekeeper",
+    "class_typed_1930s",
+    "abara",
+    "frost_pocket",
+    "city_archive",
+    "cassar_method_changes"
+  ],
+  "n08d5": [
+    "missing_years",
+    "missing_1917_1918",
+    "other_buildings",
+    "survey_signed_faulks",
+    "local_paper",
+    "developer_exists"
+  ],
+  "n08d6": [
+    "raval",
+    "raval_not_ready",
+    "missing_1917_1918",
+    "school_hall_thursdays",
+    "newspaper_offer"
+  ],
+  "n08c0": [
+    "bloom_chart",
+    "chart_on_door",
+    "survey_signed_faulks"
+  ],
+  "n08c1": [
+    "bramley_top_of_hill",
+    "orchard_pond",
+    "frost_pocket",
+    "bramley_above_frost",
+    "raval"
+  ],
+  "n08c2": [
+    "nine_hands",
+    "four_periods",
+    "abara",
+    "frost_pocket"
+  ],
+  "n08c3": [
+    "raval",
+    "council_corridor_wait",
+    "city_archive"
+  ],
+  "n08c4": [
+    "cassar_carrier_bags",
+    "mrs_cassar_beekeeper",
+    "cassar_method_changes"
+  ],
+  "n08c5": [
+    "spreadsheet",
+    "tobe_known",
+    "ada_father_shop",
+    "survey_signed_faulks"
+  ],
+  "n08c6": [
+    "bloom_chart",
+    "bloom_eleven_days",
+    "local_paper"
+  ],
+  "e08_0": [
+    "bloom_chart",
+    "method_section",
+    "custody_note",
+    "double_typing",
+    "sentence_eleven_words",
+    "chart_sent_alone",
+    "window_closed_unused"
+  ],
+  "e08_1": [
+    "survey_signed_faulks",
+    "four_lines_plan",
+    "tobe_laptop",
+    "three_guesses_wrong"
+  ],
+  "n09d0": [
+    "raval",
+    "raval_three_things",
+    "frost_pocket",
+    "survey_exists"
+  ],
+  "n09d1": [
+    "abara",
+    "frost_pocket",
+    "abara_cold_air",
+    "eight_named_hands",
+    "missing_1917_1918",
+    "newspaper_offer"
+  ],
+  "n09d2": [
+    "okonkwo_archivist",
+    "custody_note",
+    "dawn_readings",
+    "survey_exists"
+  ],
+  "n09d3": [
+    "mrs_cassar_beekeeper",
+    "raval_not_ready",
+    "cassar_three_blocks",
+    "four_letters",
+    "city_archive"
+  ],
+  "n09d4": [
+    "tobe_laptop",
+    "survey_signed_faulks",
+    "four_objections",
+    "chart_on_door",
+    "dawn_readings"
+  ],
+  "n09d5": [
+    "ada_daily_notebook",
+    "bramley_october_bloom",
+    "local_paper",
+    "newspaper_offer",
+    "frost_pocket",
+    "survey_exists"
+  ],
+  "n09d6": [
+    "developer_exists",
+    "sentence_eleven_words",
+    "window_six_weeks",
+    "data_request",
+    "eight_named_hands",
+    "missing_1917_1918"
+  ],
+  "n09d7": [
+    "missing_1917_1918",
+    "horse_story",
+    "newspaper_offer",
+    "dawn_readings"
+  ],
+  "n09d8": [
+    "school_hall_thursdays",
+    "class_typed_1930s",
+    "jonah_twelve",
+    "jonah_signed_hall",
+    "survey_exists",
+    "four_letters"
+  ],
+  "e09_0": [
+    "newspaper_offer",
+    "sentence_eleven_words",
+    "road_through_bramley_row",
+    "paper_photo_ran",
+    "window_closed_unused"
+  ],
+  "e09_1": [
+    "survey_signed_faulks",
+    "developer_exists",
+    "jonah_accused_faulks"
+  ],
+  "n10d0": [
+    "frost_pocket",
+    "thermometers_two",
+    "dawn_readings",
+    "frost_four_degrees",
+    "blue_notebook",
+    "data_request",
+    "survey_four_visits",
+    "survey_data_thin"
+  ],
+  "n10d1": [
+    "data_request",
+    "missing_1917_1918",
+    "four_objections"
+  ],
+  "n10d2": [
+    "tobe_laptop",
+    "method_section",
+    "halvor",
+    "developer_exists",
+    "abara",
+    "raval"
+  ],
+  "n10d3": [
+    "nine_hands",
+    "eight_named_hands",
+    "writers_family",
+    "plaque_offer",
+    "survey_signed_faulks",
+    "data_request"
+  ],
+  "cq_payoff_did_ask_whether_notebooks_site2": [
+    "loose_sheet_1952",
+    "data_request",
+    "survey_four_visits",
+    "oddities_cluster",
+    "august_driest"
+  ],
+  "n10d4": [
+    "okonkwo_archivist",
+    "missing_1917_1918",
+    "parish_records",
+    "city_archive",
+    "survey_four_visits",
+    "survey_data_thin"
+  ],
+  "n10d5": [
+    "newspaper_offer",
+    "carver_editor",
+    "missing_1917_1918",
+    "four_objections",
+    "abara"
+  ],
+  "n10d6": [
+    "ada_daily_notebook",
+    "ada_81",
+    "halvor",
+    "developer_exists",
+    "raval",
+    "plaque_offer"
+  ],
+  "n10c0": [
+    "dawn_readings",
+    "tobe_known",
+    "tobe_readings",
+    "survey_signed_faulks"
+  ],
+  "n10c1": [
+    "data_request",
+    "window_six_weeks"
+  ],
+  "n10c2": [
+    "abara",
+    "method_why",
+    "survey_four_visits"
+  ],
+  "n10c3": [
+    "four_letters",
+    "survey_data_thin"
+  ],
+  "n10c4": [
+    "okonkwo_archivist",
+    "missing_1917_1918",
+    "parish_records"
+  ],
+  "n10c5": [
+    "dawn_readings",
+    "chart_on_door",
+    "bloom_eleven_days",
+    "frost_chart",
+    "missing_1917_1918"
+  ],
+  "n10c6": [
+    "ada_daily_notebook",
+    "ada_father_contract",
+    "four_objections"
+  ],
+  "e10_0": [
+    "file_online_unanswered",
+    "window_closed_unused"
+  ],
+  "e10_1": [
+    "raval",
+    "four_lines_plan",
+    "method_section",
+    "numbers_returned"
+  ],
+  "n11d0": [
+    "data_request",
+    "survey_data_thin",
+    "survey_site_dry",
+    "board_basement"
+  ],
+  "n11d1": [
+    "survey_four_visits",
+    "tobe_laptop",
+    "sentence_eleven_words",
+    "survey_driest_days",
+    "rainfall_record",
+    "halvor",
+    "frost_pocket",
+    "ada_daily_notebook"
+  ],
+  "cq_payoff_did_find_who_wrote_site2": [
+    "survey_signed_faulks",
+    "faulks_name_in_book",
+    "halvor"
+  ],
+  "n11d2": [
+    "survey_data_thin",
+    "species_36",
+    "orchard_pond",
+    "board_basement",
+    "rainfall_record"
+  ],
+  "n11d3": [
+    "parish_records",
+    "receipt_1917",
+    "survey_data_thin",
+    "halvor_coffee"
+  ],
+  "n11d4": [
+    "receipt_1917",
+    "okonkwo_archivist",
+    "board_basement",
+    "missing_1917_1918",
+    "volumes_found"
+  ],
+  "n11d5": [
+    "four_objections",
+    "method_section",
+    "custody_note",
+    "survey_site_dry",
+    "board_basement"
+  ],
+  "cq_payoff_did_find_who_wrote": [
+    "survey_signed_faulks",
+    "faulks_pattern",
+    "survey_site_dry"
+  ],
+  "n11d6": [
+    "abara",
+    "survey_data_thin",
+    "halvor",
+    "frost_pocket"
+  ],
+  "n11d7": [
+    "raval",
+    "ada_daily_notebook",
+    "board_basement"
+  ],
+  "n11d8": [
+    "sentence_eleven_words",
+    "developer_exists",
+    "halvor",
+    "halvor_coffee",
+    "halvor_question",
+    "rainfall_record",
+    "survey_data_thin"
+  ],
+  "e11_0": [
+    "development_82_homes",
+    "road_through_bramley_row",
+    "plaque_offer"
+  ],
+  "e11_1": [
+    "survey_signed_faulks",
+    "local_paper",
+    "jonah_accused_faulks"
+  ],
+  "n12d0": [
+    "survey_four_visits",
+    "method_section",
+    "survey_signed_faulks",
+    "rainfall_record",
+    "survey_driest_days",
+    "orchard_trust",
+    "hearing"
+  ],
+  "n12d1": [
+    "board_basement",
+    "card_index",
+    "developer_exists",
+    "volumes_found",
+    "abara",
+    "hearing"
+  ],
+  "n12d2": [
+    "survey_data_thin",
+    "species_36",
+    "now_november",
+    "spring_survey_needed",
+    "mrs_cassar_beekeeper",
+    "hearing",
+    "ada_daily_notebook"
+  ],
+  "n12d3": [
+    "halvor",
+    "halvor_question"
+  ],
+  "n12d4": [
+    "dawn_readings",
+    "frost_pocket",
+    "abara",
+    "frost_four_degrees",
+    "orchard_trust",
+    "hearing",
+    "developer_exists"
+  ],
+  "n12d5": [
+    "ada_daily_notebook",
+    "ada_81",
+    "hearing",
+    "volumes_found",
+    "abara",
+    "mrs_cassar_beekeeper"
+  ],
+  "n12d6": [
+    "ada_daily_notebook",
+    "hearing"
+  ],
+  "n12c0": [
+    "board_basement",
+    "card_index"
+  ],
+  "n12c1": [
+    "tobe_laptop",
+    "survey_four_visits",
+    "rainfall_record",
+    "survey_driest_days"
+  ],
+  "n12c2": [
+    "now_november",
+    "nine_species_sure",
+    "orchard_trust"
+  ],
+  "n12c3": [
+    "halvor",
+    "halvor_coffee",
+    "hearing"
+  ],
+  "n12c4": [
+    "developer_exists"
+  ],
+  "n12c5": [
+    "four_objections",
+    "volumes_found"
+  ],
+  "n12c6": [
+    "board_basement",
+    "missing_1917_1918",
+    "volumes_found",
+    "found_both_1917",
+    "abara",
+    "hearing"
+  ],
+  "e12_0": [
+    "volumes_found",
+    "volumes_kept_secret"
+  ],
+  "e12_1": [
+    "survey_signed_faulks",
+    "faulks_name_in_book",
+    "dossier_rushed"
+  ],
+  "n13d0": [
+    "custody_note",
+    "method_section",
+    "nine_species_sure",
+    "record_114_years",
+    "objection_submitted",
+    "new_eleven_words",
+    "hearing",
+    "survey_driest_days",
+    "dawn_readings"
+  ],
+  "n13d1": [
+    "mrs_cassar_beekeeper",
+    "orchard_trust",
+    "jonah_twelve",
+    "survey_signed_faulks",
+    "hearing",
+    "ada_daily_notebook"
+  ],
+  "n13d2": [
+    "survey_signed_faulks",
+    "hearing",
+    "hearing_public",
+    "bloom_chart",
+    "frost_chart"
+  ],
+  "n13d3": [
+    "tobe_known",
+    "hearing",
+    "cassar_frame"
+  ],
+  "n13d4": [
+    "volumes_found",
+    "receipt_1917",
+    "hearing",
+    "survey_driest_days"
+  ],
+  "n13d5": [
+    "abara",
+    "dawn_readings",
+    "hearing",
+    "survey_signed_faulks"
+  ],
+  "n13d6": [
+    "mrs_cassar_beekeeper",
+    "cassar_frame",
+    "cassar_no_pretending",
+    "hearing",
+    "ada_daily_notebook"
+  ],
+  "n13d7": [
+    "ada_daily_notebook",
+    "hearing",
+    "bloom_chart",
+    "frost_chart",
+    "cassar_frame"
+  ],
+  "e13_0": [
+    "objection_accepted",
+    "record_unbroken"
+  ],
+  "e13_1": [
+    "okonkwo_archivist",
+    "tobe_known",
+    "record_114_years",
+    "copy_lodged",
+    "custody_note"
+  ],
+  "e13_2": [
+    "nine_hands",
+    "notebooks_contents",
+    "record_114_years"
+  ],
+  "n14d0": [
+    "survey_four_visits",
+    "rainfall_record",
+    "hearing",
+    "survey_driest_days",
+    "development_82_homes"
+  ],
+  "n14d1": [
+    "custody_note",
+    "double_typing",
+    "unclear_marked",
+    "hearing",
+    "class_typed_1930s",
+    "dawn_readings"
+  ],
+  "n14d2": [
+    "dawn_readings",
+    "hearing",
+    "halvor",
+    "city_archive",
+    "road_through_bramley_row"
+  ],
+  "n14d3": [
+    "survey_signed_faulks",
+    "hearing",
+    "faulks_timing",
+    "bramley_october_bloom"
+  ],
+  "n14d4": [
+    "hearing",
+    "page_1947",
+    "development_82_homes",
+    "class_typed_1930s"
+  ],
+  "n14d5": [
+    "developer_exists",
+    "dawn_readings",
+    "halvor",
+    "city_archive"
+  ],
+  "n14c0": [
+    "hearing",
+    "road_through_bramley_row"
+  ],
+  "n14c1": [
+    "bloom_chart",
+    "dawn_readings",
+    "hearing",
+    "frost_chart",
+    "bramley_october_bloom"
+  ],
+  "n14c2": [
+    "abara",
+    "tobe_known",
+    "hearing",
+    "record_unbroken"
+  ],
+  "n14c3": [
+    "cassar_frame"
+  ],
+  "n14c4": [
+    "page_1947",
+    "hearing",
+    "development_82_homes"
+  ],
+  "n14c5": [
+    "council_corridor_wait",
+    "mrs_cassar_beekeeper"
+  ],
+  "e14_0": [
+    "hearing",
+    "decision_against"
+  ],
+  "e14_1": [
+    "hearing",
+    "six_answers"
+  ],
+  "n15d0": [
+    "survey_no_interest",
+    "officer_report",
+    "dawn_readings",
+    "nine_hands",
+    "orchard_trust"
+  ],
+  "n15d1": [
+    "three_conditions",
+    "dawn_readings",
+    "rota"
+  ],
+  "n15d2": [
+    "road_through_bramley_row",
+    "officer_report",
+    "road_could_move",
+    "volumes_found",
+    "three_conditions",
+    "record_114_years"
+  ],
+  "n15d3": [
+    "orchard_trust",
+    "archive_offer",
+    "ada_sixty_years",
+    "rota",
+    "dawn_readings",
+    "nine_hands"
+  ],
+  "n15d4": [
+    "class_typed_1930s",
+    "road_could_move",
+    "orchard_trust",
+    "dawn_readings"
+  ],
+  "n15d5": [
+    "dawn_readings",
+    "rota",
+    "volumes_found",
+    "three_conditions"
+  ],
+  "n15d6": [
+    "halvor_question",
+    "halvor_coffee",
+    "record_114_years",
+    "rota",
+    "dawn_readings"
+  ],
+  "e15_0": [
+    "okonkwo_archivist",
+    "volumes_found",
+    "record_114_years",
+    "deed_of_gift",
+    "notebooks_archived"
+  ],
+  "e15_1": [
+    "orchard_trust",
+    "dawn_readings",
+    "road_moved"
+  ],
+  "e15_2": [
+    "abara",
+    "nine_hands",
+    "notebooks_six_shelves",
+    "record_114_years",
+    "abara_attention"
+  ],
+  "n16d0": [
+    "dawn_readings",
+    "one_thermometer",
+    "three_conditions"
+  ],
+  "n16d1": [
+    "nine_hands",
+    "bramley_top_of_hill"
+  ],
+  "n16d2": [
+    "orchard_trust",
+    "three_conditions"
+  ],
+  "n16d3": [
+    "ada_sixty_years",
+    "shed_heater",
+    "shed_one_bulb",
+    "bramley_top_of_hill"
+  ],
+  "n16c0": [
+    "dawn_readings",
+    "one_thermometer",
+    "three_conditions"
+  ],
+  "n16c1": [
+    "chart_on_door",
+    "rota"
+  ],
+  "n16c2": [
+    "volumes_found",
+    "horse_story",
+    "war_volume_horse_line"
+  ],
+  "n16c3": [
+    "three_conditions",
+    "sentence_eleven_words",
+    "resurvey_61",
+    "bramley_top_of_hill"
+  ],
+  "e16_0": [
+    "notebooks_six_shelves",
+    "jonah_continues"
+  ],
+  "e16_1": [
+    "rota",
+    "dawn_readings",
+    "eleven_day_gap"
+  ],
+  "n17d0": [
+    "frost_pocket",
+    "resurvey_61",
+    "exercise_book_eleven_words"
+  ],
+  "n17d1": [
+    "ada_daily_notebook",
+    "argument_cost",
+    "ada_grandmother",
+    "ada_new_notebook"
+  ],
+  "n17d2": [
+    "jonah_accused_faulks",
+    "four_letters",
+    "class_typed_1930s",
+    "dawn_readings",
+    "exercise_book_eleven_words"
+  ],
+  "n17d3": [
+    "bramley_october_bloom",
+    "record_114_years",
+    "spring_normal_bloom",
+    "exercise_book_eleven_words"
+  ],
+  "e17_0": [
+    "tobe_laptop",
+    "notebooks_contents",
+    "orchard_watched"
+  ],
+  "e17_1": [
+    "frost_pocket",
+    "ada_daily_notebook"
+  ],
+  "e18_0": [
+    "notebooks_six_shelves",
+    "first_index",
+    "road_moved"
+  ],
+  "e18_1": [
+    "bramley_october_bloom",
+    "next_october_no_bloom",
+    "road_moved"
+  ],
+  "e18_2": [
+    "exercise_book_eleven_words",
+    "orchard_trust",
+    "dawn_readings",
+    "road_moved"
+  ],
+  "e18_3": [
+    "ada_daily_notebook",
+    "bramley_october_bloom",
+    "record_closed",
+    "notebooks_archived"
+  ]
+}

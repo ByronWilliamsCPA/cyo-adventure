@@ -1,0 +1,779 @@
+{
+  "n_open": [
+    "mira_missed_bus",
+    "fog_tonight",
+    "lighthouse_dark_empty",
+    "ferris_keeper",
+    "ferris_vanished",
+    "pale_light"
+  ],
+  "n_start": [
+    "fog_tonight",
+    "pale_light",
+    "no_phone_signal",
+    "mira_has_phone",
+    "next_bus_morning",
+    "bus_shelter",
+    "keepers_cottage",
+    "tower_stair",
+    "sea_caves",
+    "old_boathouse"
+  ],
+  "a_office1": [
+    "ferris_keeper",
+    "ferris_vanished",
+    "keepers_cottage",
+    "pale_light",
+    "cottage_left_suddenly"
+  ],
+  "a_desk": [
+    "log_unfinished",
+    "drawer_locked"
+  ],
+  "a_desk_log": [
+    "ferris_keeper",
+    "pale_light",
+    "log_unfinished",
+    "ferris_square_hand",
+    "ferris_weather_first",
+    "log_light_not_his",
+    "smuggler_wants_tower"
+  ],
+  "a_desk_drawer": [
+    "drawer_locked"
+  ],
+  "a_desk_pick": [
+    "brass_tower_key",
+    "key_square_end",
+    "wind_her_slow",
+    "mira_has_key"
+  ],
+  "a_shelf": [],
+  "a_shelf_bottle": [
+    "tower_sketch_door",
+    "nobody_came_looking"
+  ],
+  "a_shelf_books": [
+    "pale_light",
+    "ferris_square_hand",
+    "pale_light_his",
+    "code_steady_lands",
+    "code_blinking_keeps_off",
+    "code_sos",
+    "mira_knows_code"
+  ],
+  "a_hearth": [],
+  "a_hearth_ash": [
+    "photo_keeper_and_v",
+    "mira_has_photo"
+  ],
+  "a_hearth_brick": [
+    "hearth_bundle"
+  ],
+  "a_hearth_key": [
+    "hearth_bundle",
+    "brass_tower_key",
+    "key_square_end",
+    "wind_her_slow",
+    "mira_has_key"
+  ],
+  "a_corridor": [
+    "pale_light",
+    "sea_draught_kitchen"
+  ],
+  "a_kitchen": [
+    "sea_draught_kitchen",
+    "under_tower_plan",
+    "my_way_to_moor",
+    "my_way_behind_bracket",
+    "mira_knows_tunnel_plan"
+  ],
+  "a_toward": [
+    "journal_on_stool",
+    "someone_here_tonight"
+  ],
+  "b_lamp1": [
+    "pale_light",
+    "tower_stair",
+    "light_from_below",
+    "great_lens",
+    "lamp_clockwork"
+  ],
+  "b_lens": [
+    "great_lens",
+    "light_from_below",
+    "hidden_mirror"
+  ],
+  "b_lens_crack": [
+    "figure_in_shaft",
+    "someone_here_tonight"
+  ],
+  "b_lens_reflect": [
+    "hidden_mirror",
+    "brass_tower_key",
+    "key_square_end",
+    "wind_her_slow",
+    "mira_has_key"
+  ],
+  "b_gallery": [
+    "light_on_water"
+  ],
+  "b_gallery_out": [
+    "light_on_water"
+  ],
+  "b_gallery_edge": [
+    "grey_boat_watching"
+  ],
+  "b_gallery_fog": [
+    "pale_light",
+    "light_from_below"
+  ],
+  "b_clock": [
+    "lamp_clockwork",
+    "lamp_socket_empty"
+  ],
+  "b_clock_wind": [
+    "great_lamp_needs_key",
+    "someone_here_tonight"
+  ],
+  "b_clock_chain": [
+    "pale_light",
+    "pale_light_his",
+    "code_steady_lands",
+    "code_blinking_keeps_off",
+    "code_sos",
+    "mira_knows_code",
+    "light_means_keep_off_now"
+  ],
+  "b_down": [
+    "pipe_smoke"
+  ],
+  "b_down_spiral": [
+    "journal_on_stool",
+    "someone_here_tonight"
+  ],
+  "b_down_hatch": [
+    "under_tower_plan",
+    "my_way_to_moor",
+    "mira_knows_tunnel_plan",
+    "journal_on_stool"
+  ],
+  "c_cave1": [
+    "sea_caves",
+    "tide_rising"
+  ],
+  "c_pass": [
+    "tide_rising"
+  ],
+  "c_pass_deep": [
+    "fresh_bootprints",
+    "someone_here_tonight"
+  ],
+  "c_pool": [
+    "pale_light",
+    "glowing_weed",
+    "someone_collects_weed"
+  ],
+  "c_pool_glow": [
+    "glowing_weed",
+    "someone_collects_weed",
+    "light_is_lamp_and_weed"
+  ],
+  "c_pool_metal": [
+    "brass_tower_key",
+    "key_square_end",
+    "key_tide_badge",
+    "mira_has_key"
+  ],
+  "c_arch": [],
+  "c_arch_marks": [
+    "pale_light",
+    "tally_forty_three",
+    "forty_three_nights",
+    "code_steady_lands",
+    "code_blinking_keeps_off",
+    "code_sos",
+    "mira_knows_code",
+    "someone_here_tonight"
+  ],
+  "c_arch_gap": [],
+  "c_gather": [
+    "someone_here_tonight"
+  ],
+  "c_steps": [
+    "fresh_bootprints",
+    "journal_on_stool",
+    "someone_here_tonight"
+  ],
+  "c_ladder": [
+    "under_tower_plan",
+    "my_way_to_moor",
+    "mira_knows_tunnel_plan",
+    "journal_on_stool"
+  ],
+  "d_boat1": [
+    "old_boathouse"
+  ],
+  "d_dinghy": [
+    "pipe_smoke"
+  ],
+  "d_dinghy_tarp": [
+    "boathouse_passage",
+    "under_tower_plan",
+    "my_way_to_moor",
+    "mira_knows_tunnel_plan"
+  ],
+  "d_dinghy_tin": [
+    "brass_tower_key",
+    "key_square_end",
+    "wind_her_slow",
+    "light_is_signal",
+    "mira_has_key"
+  ],
+  "d_locker": [],
+  "d_locker_rope": [],
+  "d_locker_lantern": [
+    "cargo_landed_v",
+    "nothing_taken_away",
+    "mira_knows_ledger"
+  ],
+  "d_loft": [],
+  "d_loft_up": [
+    "pale_light_his",
+    "code_steady_lands",
+    "code_blinking_keeps_off",
+    "code_sos",
+    "mira_knows_code"
+  ],
+  "d_hatch": [],
+  "d_hatch_down": [
+    "boathouse_passage",
+    "pipe_smoke",
+    "journal_on_stool"
+  ],
+  "n_journal": [
+    "journal_on_stool",
+    "ferris_keeper",
+    "pale_light",
+    "journal_is_ferris",
+    "ferris_square_hand",
+    "cargo_after_dark",
+    "journal_tunnel_sketch"
+  ],
+  "jr_light": [
+    "journal_is_ferris",
+    "ferris_weather_first",
+    "log_light_not_his"
+  ],
+  "jr_light_read": [
+    "journal_is_ferris",
+    "pale_light",
+    "light_is_lantern_mirrors",
+    "pale_light_his",
+    "code_steady_lands",
+    "code_blinking_keeps_off",
+    "code_sos",
+    "mira_knows_code",
+    "light_means_keep_off_now",
+    "panel_stair"
+  ],
+  "jr_light_date": [
+    "journal_is_ferris",
+    "ferris_vanished",
+    "cargo_landed_v",
+    "nothing_taken_away",
+    "mira_knows_ledger",
+    "journal_blinking_year",
+    "keeper_here_tonight",
+    "panel_stair"
+  ],
+  "jr_light_join": [
+    "panel_stair"
+  ],
+  "jr_smug": [
+    "cargo_landed_v",
+    "nothing_taken_away",
+    "mira_knows_ledger"
+  ],
+  "jr_smug_ledger": [
+    "cargo_landed_v",
+    "crates_412",
+    "nothing_taken_away",
+    "torn_page_store",
+    "harbour_office"
+  ],
+  "jr_smug_copy": [
+    "crates_412",
+    "ledger_photos",
+    "panel_stair"
+  ],
+  "jr_smug_torn": [
+    "torn_page_store",
+    "ferris_never_looked_store",
+    "under_tower_plan",
+    "my_way_to_moor",
+    "mira_knows_tunnel_plan",
+    "panel_stair"
+  ],
+  "jr_smug_names": [
+    "cargo_landed_v",
+    "smuggler_named_varley",
+    "ferris_paid_look_away",
+    "smuggler_wants_tower",
+    "ferris_refused_tower",
+    "panel_stair"
+  ],
+  "jr_smug_join": [
+    "panel_stair",
+    "padlocked_door"
+  ],
+  "jr_tunnel": [
+    "journal_tunnel_sketch",
+    "flagstone_cross"
+  ],
+  "jr_tun_sketch": [
+    "journal_tunnel_sketch",
+    "under_tower_plan",
+    "my_way_to_moor",
+    "my_way_behind_bracket",
+    "panel_stair",
+    "mira_knows_tunnel_plan"
+  ],
+  "jr_tun_stone": [
+    "flagstone_cross",
+    "journal_tunnel_sketch",
+    "code_steady_lands",
+    "code_blinking_keeps_off",
+    "code_sos",
+    "mira_knows_code"
+  ],
+  "jr_tun_heave": [
+    "flagstone_cross",
+    "someone_here_tonight"
+  ],
+  "jr_tun_join": [
+    "panel_stair",
+    "pipe_smoke"
+  ],
+  "n_stairs": [
+    "shutter_blinks"
+  ],
+  "st_wind": [
+    "hollow_step"
+  ],
+  "st_wind_up": [
+    "hollow_step"
+  ],
+  "st_outer": [],
+  "st_outer_wait": [
+    "lantern_to_moor"
+  ],
+  "st_outer_up": [],
+  "n_light": [
+    "pale_light",
+    "light_rig",
+    "rig_wound_tonight",
+    "someone_here_tonight"
+  ],
+  "li_stair": [
+    "pipe_smoke",
+    "someone_here_tonight"
+  ],
+  "li_stair_down": [
+    "light_rig"
+  ],
+  "li_stair_cup": [
+    "keepers_coat",
+    "pipe_smoke"
+  ],
+  "li_cup_lens": [
+    "light_rig",
+    "rig_maintained"
+  ],
+  "li_cup_coat": [
+    "keepers_coat",
+    "my_way_behind_bracket",
+    "card_gone_not_lost",
+    "someone_here_tonight"
+  ],
+  "li_shaft": [],
+  "li_shaft_down": [],
+  "li_shaft_rope": [
+    "frayed_rope"
+  ],
+  "li_rope_staples": [
+    "frayed_rope"
+  ],
+  "li_ladder": [],
+  "li_ladder_down": [],
+  "n_tunnel": [
+    "tunnel_three_ways",
+    "bootprints_at_bracket",
+    "someone_here_tonight",
+    "my_way_behind_bracket"
+  ],
+  "tn_keeper": [],
+  "tn_keep_door": [],
+  "tn_keep_open": [
+    "keeper_room_door"
+  ],
+  "tn_keep_stuck": [],
+  "tn_keep_ease": [
+    "keeper_room_door"
+  ],
+  "tn_keep_beam": [
+    "keeper_room_door"
+  ],
+  "tn_keep_side": [
+    "side_door_bootprints",
+    "someone_here_tonight"
+  ],
+  "tn_store": [
+    "pale_light",
+    "store_crates",
+    "radio_voice"
+  ],
+  "tn_store_crate": [
+    "cargo_untouched"
+  ],
+  "tn_store_box": [
+    "cargo_landed_v",
+    "nothing_taken_away",
+    "mira_knows_ledger",
+    "cargo_untouched"
+  ],
+  "tn_store_join": [
+    "radio_voice"
+  ],
+  "tn_store_relight": [
+    "cargo_landed_v",
+    "nothing_taken_away",
+    "mira_knows_ledger",
+    "cargo_untouched"
+  ],
+  "tn_gate": [
+    "light_on_water",
+    "tide_rising"
+  ],
+  "tn_gate_open": [],
+  "tn_gate_wait": [
+    "light_on_water",
+    "cargo_landed_v",
+    "nothing_taken_away",
+    "mira_knows_ledger"
+  ],
+  "tn_cut": [
+    "bootprints_at_bracket",
+    "keeper_room_door",
+    "keeper_left_by_moor"
+  ],
+  "tn_cut_moor": [
+    "keeper_left_by_moor",
+    "moor_cottage",
+    "lantern_to_moor"
+  ],
+  "n_chamber": [
+    "store_crates",
+    "light_rig",
+    "great_lens",
+    "bus_shelter",
+    "keeper_room_door",
+    "keeper_room",
+    "lamp_key_hook_empty",
+    "sealed_letter"
+  ],
+  "cm_letter": [
+    "sealed_letter",
+    "harbour_office"
+  ],
+  "cm_letter_read": [
+    "sealed_letter",
+    "mira_read_letter",
+    "ferris_weather_first",
+    "ferris_paid_look_away",
+    "smuggler_wants_tower",
+    "ferris_ran",
+    "ferris_returns_blinking",
+    "code_blinking_keeps_off",
+    "mira_first"
+  ],
+  "cm_letter_map": [
+    "moor_cottage",
+    "ferris_on_moor",
+    "bog_second_gate",
+    "harbour_office",
+    "harbour_opens_six"
+  ],
+  "cm_cottage": [
+    "moor_cottage",
+    "smuggler_grey_boat",
+    "ferris_said_nothing",
+    "cottage_man_keeps_light",
+    "mira_missed_bus",
+    "code_blinking_keeps_off"
+  ],
+  "cm_cottage_bus": [
+    "mira_missed_bus"
+  ],
+  "cm_cottage_light": [
+    "code_steady_lands",
+    "code_blinking_keeps_off",
+    "forty_three_nights",
+    "mira_first"
+  ],
+  "cm_cottage_wait": [
+    "ferris_on_moor",
+    "ferris_returns_blinking",
+    "bog_second_gate",
+    "harbour_office"
+  ],
+  "cm_letter_conf": [
+    "hollow_step",
+    "ferris_initial_r",
+    "smuggler_named_varley",
+    "ferris_paid_look_away",
+    "bribe_under_step"
+  ],
+  "cm_letter_plea": [
+    "ferris_apology",
+    "clockwork_forty_turns",
+    "ferris_on_moor"
+  ],
+  "cm_letter_keep": [
+    "sealed_letter",
+    "letter_unopened"
+  ],
+  "cm_smug": [
+    "store_crates",
+    "store_drag_marks",
+    "cargo_untouched"
+  ],
+  "cm_smug_photo": [
+    "code_blinking_keeps_off",
+    "light_rig",
+    "mira_has_photos",
+    "code_sos",
+    "harbour_office"
+  ],
+  "cm_smug_follow": [
+    "store_drag_marks",
+    "smuggler_grey_boat",
+    "hoard_room",
+    "jewelled_compass",
+    "cargo_landed_v",
+    "nothing_taken_away"
+  ],
+  "cm_smug_hoard": [
+    "hoard_room",
+    "mira_has_photos"
+  ],
+  "cm_smug_token": [
+    "jewelled_compass"
+  ],
+  "cm_light": [
+    "light_rig",
+    "light_is_lamp_and_weed",
+    "lighthouse_dark_empty",
+    "shutter_blinks"
+  ],
+  "cm_light_relight": [
+    "lamp_socket_empty",
+    "great_lamp_needs_key",
+    "mira_has_key",
+    "brass_tower_key"
+  ],
+  "cm_light_back": [
+    "keepers_cottage",
+    "old_boathouse",
+    "sea_caves",
+    "key_hid_patient",
+    "key_hidden_somewhere",
+    "mira_has_no_key"
+  ],
+  "cm_light_true": [
+    "mira_has_key",
+    "wind_her_slow",
+    "great_lamp_lit"
+  ],
+  "cm_light_study": [
+    "light_rig",
+    "hand_lever",
+    "code_sos",
+    "mira_has_notebook"
+  ],
+  "cm_leave": [
+    "panel_stair",
+    "light_rig",
+    "journal_is_ferris",
+    "bus_shelter"
+  ],
+  "cm_leave_town": [
+    "sealed_letter",
+    "light_rig",
+    "bus_shelter",
+    "letter_unopened"
+  ],
+  "cm_leave_mark": [
+    "journal_is_ferris",
+    "sealed_letter"
+  ],
+  "e_set_a_drawer": [
+    "brass_tower_key",
+    "mira_has_no_key"
+  ],
+  "e_set_a_brick": [
+    "hearth_bundle",
+    "gently_does_it"
+  ],
+  "e_set_b_rail": [
+    "light_on_water"
+  ],
+  "e_set_c_tide": [
+    "glowing_weed",
+    "dry_way_arrows"
+  ],
+  "e_set_c_stuck": [
+    "rig_wound_tonight"
+  ],
+  "e_set_d_loft": [
+    "code_steady_lands",
+    "code_blinking_keeps_off"
+  ],
+  "e_set_d_storm": [
+    "forty_three_nights",
+    "pipe_smoke",
+    "someone_here_tonight"
+  ],
+  "e_set_cellar": [
+    "padlocked_door",
+    "light_keeper_fled"
+  ],
+  "e_set_stair": [
+    "hollow_step",
+    "bribe_under_step"
+  ],
+  "e_set_shaft": [
+    "light_rig",
+    "frayed_rope",
+    "rig_maintained",
+    "rig_wound_tonight"
+  ],
+  "e_set_fog": [
+    "lantern_to_moor"
+  ],
+  "e_set_door": [
+    "sealed_letter"
+  ],
+  "e_set_beam": [
+    "fresh_bootprints",
+    "someone_here_tonight"
+  ],
+  "e_set_gate": [
+    "grey_boat_watching"
+  ],
+  "e_set_token": [
+    "jewelled_compass",
+    "hoard_room",
+    "compass_bait_wire",
+    "hoard_cleared"
+  ],
+  "e_set_gears": [
+    "lamp_socket_empty",
+    "socket_wind_slow",
+    "key_square_end",
+    "key_hidden_somewhere",
+    "mira_has_no_key"
+  ],
+  "e_win_keeper_found": [
+    "ferris_paid_look_away",
+    "code_steady_lands",
+    "code_blinking_keeps_off",
+    "ferris_returns_blinking",
+    "forty_three_nights",
+    "mira_first",
+    "ferris_on_moor"
+  ],
+  "e_win_keeper_word": [
+    "ferris_on_moor",
+    "moor_cottage",
+    "ferris_returns_blinking",
+    "bog_second_gate",
+    "town_thinks_dead"
+  ],
+  "e_win_name_cleared": [
+    "smuggler_named_varley",
+    "bribe_under_step",
+    "ferris_returns_blinking",
+    "ferris_on_moor"
+  ],
+  "e_win_promise": [
+    "clockwork_forty_turns",
+    "journal_is_ferris",
+    "journal_on_stool",
+    "ferris_on_moor"
+  ],
+  "e_win_smugglers": [
+    "code_sos",
+    "hand_lever",
+    "coastguard_caught"
+  ],
+  "e_win_harbor": [
+    "mira_has_photos",
+    "smuggler_grey_boat",
+    "mira_unaware_name"
+  ],
+  "e_win_hoard": [
+    "mira_has_photos",
+    "hoard_room",
+    "jewelled_compass",
+    "compass_bait_wire"
+  ],
+  "e_win_ledger": [
+    "cargo_landed_v",
+    "nothing_taken_away",
+    "hoard_room",
+    "cargo_untouched"
+  ],
+  "e_win_light_restored": [
+    "mira_has_key",
+    "great_lamp_lit",
+    "cottage_man_keeps_light"
+  ],
+  "e_win_rescue": [
+    "code_sos",
+    "hand_lever",
+    "mira_missed_bus",
+    "search_party"
+  ],
+  "e_win_signal": [
+    "light_rig",
+    "light_is_lamp_and_weed",
+    "mira_has_notebook",
+    "rig_wound_tonight"
+  ],
+  "e_neutral_letter": [
+    "sealed_letter",
+    "letter_unopened"
+  ],
+  "e_neutral_honest": [
+    "jewelled_compass",
+    "smuggler_grey_boat",
+    "compass_bait_wire"
+  ],
+  "e_neutral_town": [
+    "mira_missed_bus",
+    "pale_light"
+  ],
+  "e_neutral_evidence": [
+    "journal_tunnel_sketch",
+    "sealed_letter",
+    "panel_stair",
+    "older_arrow"
+  ],
+  "e_neutral_museum": [
+    "ferris_vanished",
+    "journal_is_ferris",
+    "journal_blinking_year",
+    "keeper_here_tonight"
+  ]
+}

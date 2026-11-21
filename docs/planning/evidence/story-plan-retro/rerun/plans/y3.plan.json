@@ -1,0 +1,4790 @@
+{
+  "plan_version": "0.1",
+  "book": {
+    "slug": "the-orchard-signal",
+    "storybook_id": "sk_orchard_signal",
+    "storybook_version": 1,
+    "title": "The Orchard Signal"
+  },
+  "request": {
+    "text": null,
+    "band": "10-13",
+    "length": "medium",
+    "style": "prose",
+    "tone": "quiet persistence and civic stakes; peril mild, scariness mild, violence none",
+    "note": "catalog book read blind; no request exists"
+  },
+  "pitch": {
+    "hero": "Jonah, twelve, who helps Ada at a hill orchard where she keeps daily notebooks begun in 1911",
+    "want": "to prove the orchard matters after its Bramley blooms wrongly in October",
+    "obstacle": "an August survey calls it of no particular scientific interest; six weeks, forty thousand lines, nine hands",
+    "stake": "a spine road for eighty-two homes along the Bramley row, and whether the record means anything",
+    "ending_kind": "branching outcomes: careful evidence wins reviews or keeps the record; haste, publicity or attacks fail"
+  },
+  "cast": {
+    "jonah": {
+      "name": "Jonah",
+      "role": "protagonist; a twelve-year-old who helps at the hill orchard",
+      "want": "to prove the orchard is of real scientific interest before the objection window closes",
+      "voice": "third person past; earnest, careful, counts and copies things, quick to feel the weight of a choice",
+      "knows": [
+        "bramley_blooms_october",
+        "notice_on_gate"
+      ]
+    },
+    "ada": {
+      "name": "Ada",
+      "role": "keeper of the orchard notebooks, eighty-one",
+      "want": "for the record to go on being kept honestly, and not to become a weapon",
+      "voice": "quiet, plain, certain; speaks in short true sentences, keeps writing while she talks",
+      "knows": [
+        "ada_notebooks",
+        "ada_found_no_october",
+        "ada_mother_hand",
+        "ada_names_eight",
+        "horse_story"
+      ]
+    },
+    "tobe": {
+      "name": "Tobe",
+      "role": "runs the school weather club; Jonah's data partner",
+      "want": "to plot a hundred years of bloom dates properly",
+      "voice": "flat, exact, excited by good problems; explains rules for checkable data",
+      "knows": [
+        "forty_thousand_lines",
+        "photograph_every_page",
+        "tobe_four_objections"
+      ]
+    },
+    "mrs_cassar": {
+      "name": "Mrs Cassar",
+      "role": "beekeeper with thirty years of hive records",
+      "want": "for her records to be used honestly, early guesses kept apart from later counts",
+      "voice": "no-nonsense; sets one firm rule; tells long bee stories on purpose",
+      "knows": [
+        "cassar_method_changes",
+        "cassar_dates_month",
+        "cassar_early_guesses"
+      ]
+    },
+    "faulks": {
+      "name": "D. Faulks",
+      "role": "author of the August ecology survey",
+      "want": "unstated; defends a standard method at the hearing",
+      "voice": "steady and expert at the hearing; pauses over what he is not saying",
+      "knows": [
+        "four_short_visits"
+      ]
+    },
+    "okonkwo": {
+      "name": "Mrs Okonkwo",
+      "role": "city archivist at the Tuesday desk",
+      "want": "to see records in person and keep them safe under proper terms",
+      "voice": "patient, formal, unimpressed until shown the real thing",
+      "knows": [
+        "custody_note"
+      ]
+    },
+    "abara": {
+      "name": "Dr Ines Abara",
+      "role": "university ecologist in long-term monitoring",
+      "want": "evidence with its method and custody written down",
+      "voice": "careful, gentle but firm; says only what she can defend",
+      "knows": [
+        "abara_treasure_not_proof",
+        "frost_pocket_unmeasured"
+      ]
+    },
+    "raval": {
+      "name": "Priya Raval",
+      "role": "council ecology officer",
+      "want": "data with a clear method, a named keeper and a way to check it",
+      "voice": "tired but clear; plain about rules, cannot take sides",
+      "knows": [
+        "raval_three_rules"
+      ]
+    },
+    "halvor": {
+      "name": "Halvor",
+      "role": "representative of the developer",
+      "want": "to learn what outcome would make Jonah stop",
+      "voice": "polite, reasonable, businesslike",
+      "knows": [
+        "developer_plan"
+      ]
+    },
+    "reporter": {
+      "name": "the reporter",
+      "role": "local paper reporter, heard by phone",
+      "want": "a photo story of Ada and the notebooks",
+      "voice": "friendly but persistent on the phone",
+      "knows": [
+        "paper_interested"
+      ]
+    }
+  },
+  "truth": {
+    "statement": "The orchard is not of no particular scientific interest. The survey that said so rested on four short visits in the driest fortnight of August, while the shed holds an unbroken notebook record from 1911, one hundred and fourteen years in nine hands, in which bloom moves eleven days earlier and no October bloom has ever been written down. What makes the case believable is the care with which the record was kept.",
+    "facts": [
+      "key_sentence",
+      "four_short_visits",
+      "survey_in_driest_fortnight",
+      "notebooks_since_1911",
+      "record_114_years",
+      "bloom_eleven_days_earlier",
+      "ada_found_no_october",
+      "record_chain_of_care"
+    ],
+    "question": "Is the orchard really of no particular scientific interest, and what can show otherwise?"
+  },
+  "facts": {
+    "late_october": {
+      "text": "It is the last week of October."
+    },
+    "bramley_blooms_october": {
+      "text": "The big Bramley at the top of the orchard is in full white bloom in late October."
+    },
+    "other_trees_bare": {
+      "text": "Every other tree on the hill stands bare and dark, waiting for winter."
+    },
+    "ada_notebooks": {
+      "text": "Ada writes the day up in a ruled notebook in the shed every evening, and has since before Jonah was born."
+    },
+    "ada_saw_bloom": {
+      "text": "Ada had already seen the October bloom that morning and was not surprised."
+    },
+    "notice_on_gate": {
+      "text": "A notice has been zip-tied to the orchard gate."
+    },
+    "notice_yesterday": {
+      "text": "The notice on the gate appeared yesterday.",
+      "contradicts": [
+        "notice_today"
+      ]
+    },
+    "notice_today": {
+      "text": "The notice appeared on the gate this morning, since Jonah last looked."
+    },
+    "jonah_read_notice": {
+      "text": "Jonah went down to the gate and read the notice himself."
+    },
+    "words_on_hand": {
+      "text": "Jonah wrote the key sentence of the notice on the back of his hand with a pencil stub."
+    },
+    "ada_found_no_october": {
+      "text": "Ada searched decades of her notebooks (1947, 1952, 1961 and on) and found no other October bloom."
+    },
+    "october_bloom_margin": {
+      "text": "Ada wrote the words October bloom in the margin of the current volume, the first time anyone wrote it down."
+    },
+    "hives_busy": {
+      "text": "The hives along the south fence are as busy as on a June afternoon, though it is October."
+    },
+    "bees_misread_spring": {
+      "text": "The bees are reading the October blossom as spring, a worrying sign."
+    },
+    "cassar_intro": {
+      "text": "Mrs Cassar is a beekeeper who keeps hive records and knows bees."
+    },
+    "notebooks_since_1911": {
+      "text": "The shed holds six shelves of notebooks running from 1911 to the present."
+    },
+    "nine_hands": {
+      "text": "The notebooks are written in nine different hands."
+    },
+    "no_index": {
+      "text": "The notebooks have no index."
+    },
+    "survey_on_notice": {
+      "text": "The notice on the gate is an ecology survey of the orchard."
+    },
+    "survey_dated_august": {
+      "text": "The survey is dated August."
+    },
+    "key_sentence": {
+      "text": "The survey's key sentence says the site is of no particular scientific interest."
+    },
+    "key_sentence_eleven_words": {
+      "text": "The key sentence of the survey is called eleven words long."
+    },
+    "survey_signed_faulks": {
+      "text": "The survey was written and signed by D. Faulks."
+    },
+    "jonah_learned_author": {
+      "text": "Jonah has found out for himself that D. Faulks wrote the survey.",
+      "contradicts": [
+        "author_not_tracked"
+      ]
+    },
+    "author_not_tracked": {
+      "text": "Jonah did not track down the name of the survey's author in time."
+    },
+    "faulks_name_in_ada_book": {
+      "text": "Jonah wrote D. Faulks, August in the back of Ada's current notebook and underlined it twice."
+    },
+    "consultancy_logo": {
+      "text": "The survey cover sheet carries the printed logo of an ecological consultancy."
+    },
+    "cassar_counts_mismatch": {
+      "text": "Mrs Cassar's working count (pollen loads) and Jonah's traffic count do not match; one of them counted the wrong thing."
+    },
+    "cassar_30_years_records": {
+      "text": "Mrs Cassar has thirty years of her own hive records."
+    },
+    "four_short_visits": {
+      "text": "The survey rests on four site visits inside eleven days in August, all dry, none longer than an hour."
+    },
+    "ada_says_only_weather": {
+      "text": "Ada says the notebooks are only the weather; Jonah answers that the weather is the entire argument."
+    },
+    "developer_wants_site": {
+      "text": "A developer wants to build on the orchard."
+    },
+    "words_in_exercise_book": {
+      "text": "Jonah copied the eleven words into the back of his school exercise book."
+    },
+    "trees_counted": {
+      "text": "Jonah counted the orchard trees twice and got 391 then 393."
+    },
+    "ada_names_eight": {
+      "text": "Ada can name eight of the nine hands in the notebooks."
+    },
+    "ninth_hand_1943": {
+      "text": "The ninth hand is a small neat pencil that stops in 1943 without explanation."
+    },
+    "photo_of_notice": {
+      "text": "Jonah photographed the notice still zip-tied to the gate."
+    },
+    "photo_only_one": {
+      "text": "Jonah's photo turns out to be the only photo anyone has of the notice in place."
+    },
+    "six_week_deadline": {
+      "text": "Objections to the development close in six weeks."
+    },
+    "objection_form_language": {
+      "text": "The council objection form demands proof of scientific interest, in the survey's own language."
+    },
+    "forty_thousand_lines": {
+      "text": "The notebooks hold roughly forty thousand daily lines, too many to type in six weeks."
+    },
+    "visit_times": {
+      "text": "The four survey visits are logged to the half hour, each under an hour long."
+    },
+    "city_archive": {
+      "text": "The city archive keeps a Tuesday desk where an archivist looks at people's old records."
+    },
+    "okonkwo_name": {
+      "text": "The archivist at the Tuesday desk is Mrs Okonkwo."
+    },
+    "archivist_wants_originals": {
+      "text": "The archivist wants to see the notebooks themselves, in person, before she will take an interest."
+    },
+    "abara_intro": {
+      "text": "Dr Ines Abara at the university works in Long Term Ecological Monitoring."
+    },
+    "abara_cautious": {
+      "text": "Dr Abara answered Jonah's email carefully, asking how the records were kept, by whom, and whether the method changed."
+    },
+    "developer_plan": {
+      "text": "The plan is eighty-two homes and a spine road running straight along the big Bramley's row."
+    },
+    "tobe_intro": {
+      "text": "Tobe runs the school weather club and has a laptop that works."
+    },
+    "tobe_excited": {
+      "text": "Tobe is thrilled by a hundred years of bloom dates and starts a spreadsheet at once."
+    },
+    "objection_window_missed": {
+      "text": "The objection window passed without Jonah taking part."
+    },
+    "four_lines_a_year": {
+      "text": "Only four dates a year are needed (first bloom, full bloom, last frost, first picking): 456 numbers."
+    },
+    "record_114_years": {
+      "text": "The record covers one hundred and fourteen years."
+    },
+    "sloping_1920s_hand": {
+      "text": "The 1920s hand slopes so a three and a five look alike; it runs three books and gives way to a rounder hand in 1931.",
+      "contradicts": [
+        "sloping_hand_1930s"
+      ]
+    },
+    "sloping_hand_1930s": {
+      "text": "The 1930s figures are written in the sloping hand."
+    },
+    "ada_never_let_leave": {
+      "text": "Ada has never let a notebook leave the shed."
+    },
+    "archive_needs_in_person": {
+      "text": "The archive will not accept anything it cannot see in person and check."
+    },
+    "shed_one_plug": {
+      "text": "The shed is cold and has only one plug."
+    },
+    "ada_no_books_in_house": {
+      "text": "Ada does not want the notebooks in the house."
+    },
+    "school_hall_thursdays": {
+      "text": "The school hall is free on Thursdays, with heating that cuts out at eight."
+    },
+    "photograph_every_page": {
+      "text": "Tobe's rule: photograph every typed page and keep the photos where anyone can check them."
+    },
+    "volume_1911_first_page": {
+      "text": "The 1911 volume opens with the price of ladders and a first bloom date of April the twenty-third."
+    },
+    "laptop_in_shed": {
+      "text": "The laptop is set up on the shed bench, its cord run across the grass to the house."
+    },
+    "table_by_pond": {
+      "text": "Jonah worked at a folding table by the pond with the 1928 book weighted by stones."
+    },
+    "ada_reads_1920s": {
+      "text": "Ada reads the sloping 1920s pages aloud without hesitating."
+    },
+    "ada_mother_hand": {
+      "text": "The sloping 1920s hand is Ada's mother's."
+    },
+    "page_photo_skill": {
+      "text": "Jonah learned to photograph a page standing to the side of the light."
+    },
+    "missing_1917_1918": {
+      "text": "There are no 1917 and 1918 volumes; a gap two fingers wide is on the shelf."
+    },
+    "work_is_toast": {
+      "text": "Ada says the work is mostly standing in the cold eating toast, and always was."
+    },
+    "typing_all_failed": {
+      "text": "Trying to type all forty thousand lines at once wore Jonah out and got nothing done."
+    },
+    "spreadsheet_set_up": {
+      "text": "Tobe has set up the spreadsheet for the dates."
+    },
+    "bramleys_oldest_complete": {
+      "text": "The Bramleys are the oldest trees in the orchard and have the most complete records."
+    },
+    "cassar_method_changes": {
+      "text": "Mrs Cassar changed her counting method twice: in 1998 (frame types) and in 2007 (pollen loads)."
+    },
+    "archive_shelf_offer": {
+      "text": "The archive offers a steady-temperature shelf, a receipt, and weekday access for Ada."
+    },
+    "ada_walks_out_six": {
+      "text": "Ada has walked out to the notebooks at six in the morning for sixty years."
+    },
+    "abara_treasure_not_proof": {
+      "text": "Dr Abara: a long local record is rare, but it is only proof with its method and custody written down."
+    },
+    "bloom_eleven_days_earlier": {
+      "text": "Charted, the bloom dates move eleven days earlier across the century."
+    },
+    "class_help_offer": {
+      "text": "The head teacher will let a class of thirty help type for two afternoons."
+    },
+    "one_error_risk": {
+      "text": "A single wrong date would open the whole chart to attack by Faulks."
+    },
+    "ada_60_years": {
+      "text": "Ada has written the day up every evening for sixty years."
+    },
+    "ada_not_argument": {
+      "text": "Ada never thought of the notebooks as an argument and is unsure she likes them becoming weapons."
+    },
+    "notebooks_archived": {
+      "text": "The notebooks were placed in the archive's steady room with a receipt and a catalogue number."
+    },
+    "resurveyed_same_way": {
+      "text": "The orchard was surveyed again in August by the same method."
+    },
+    "chart_sent_unchecked": {
+      "text": "Jonah's chart circulated around the neighbourhood before it was checked."
+    },
+    "error_1947_date": {
+      "text": "The chart listed the 1947 bloom date as April the fifteenth; the original reads April the twenty-fifth."
+    },
+    "double_typing": {
+      "text": "Every page is typed twice by different people and compared; the first hundred pages had eleven clashes."
+    },
+    "unreadable_marked": {
+      "text": "Unreadable figures are marked in a separate open list rather than guessed."
+    },
+    "cassar_bags": {
+      "text": "Mrs Cassar brought her hive records in two carrier bags."
+    },
+    "cassar_early_guesses": {
+      "text": "Mrs Cassar insists her early hive records are less exact than her later counts."
+    },
+    "frost_pocket": {
+      "text": "By the pond is a frost pocket, a dip where cold air pools on clear nights."
+    },
+    "frost_pocket_unmeasured": {
+      "text": "Nobody has ever measured the temperature in the frost pocket."
+    },
+    "jonah_stopped_faulks": {
+      "text": "Jonah stopped himself before saying the unsupported thing about Faulks.",
+      "contradicts": [
+        "jonah_accused_faulks"
+      ]
+    },
+    "jonah_accused_faulks": {
+      "text": "Jonah publicly accused Faulks of writing the survey to order, without proof."
+    },
+    "class_typed_1930s": {
+      "text": "Thirty people typed up the 1930s in the school hall on a Thursday."
+    },
+    "volumes_taken": {
+      "text": "Someone took the 1917 and 1918 volumes out of the shed."
+    },
+    "raval_intro": {
+      "text": "Priya Raval is the council ecology officer."
+    },
+    "raval_not_evidence": {
+      "text": "Priya Raval says a shed full of notebooks is not yet evidence."
+    },
+    "chart_on_shed_door": {
+      "text": "The printed colour chart is pinned to the shed door."
+    },
+    "frost_line_dawn": {
+      "text": "At dawn a frost line splits the orchard, leaving the Bramley row on the cold side."
+    },
+    "hands_relay": {
+      "text": "The nine hands fall into time blocks, with changeovers such as spring 1943 and autumn 1967: a relay."
+    },
+    "council_wait": {
+      "text": "Jonah waited forty minutes in the council hall, by a poster about reuse, listing what to say to Raval."
+    },
+    "ada_ledger": {
+      "text": "Ada understood Tobe's spreadsheet once he called it a ledger."
+    },
+    "smooth_line": {
+      "text": "The bloom line is troublingly smooth for hand-measured data."
+    },
+    "chart_sent_alone": {
+      "text": "Jonah sent the chart alone, without method notes or custody note; it was admired and filed."
+    },
+    "custody_note": {
+      "text": "The archive writes a custody note recording where every notebook has been: an unbroken chain of care."
+    },
+    "deadline_passed": {
+      "text": "The objection deadline passed without a working objection."
+    },
+    "guesses_wrong": {
+      "text": "Faulks found three of Jonah's guessed 1920s dates were wrong, and the argument collapsed."
+    },
+    "raval_three_rules": {
+      "text": "Raval can accept data with a clear method, a named keeper, and a way for anyone to check it."
+    },
+    "abara_frost_offer": {
+      "text": "Dr Abara will write two pages on cold air flow if the frost pocket is measured at dawn for six weeks."
+    },
+    "cassar_dates_month": {
+      "text": "Mrs Cassar dates her method changes to April 1998 and March 2007."
+    },
+    "tobe_four_objections": {
+      "text": "Tobe lists Faulks's likely objections: inconsistent hands, no stated method, unmeasured frost pocket, unexplained 1917 gap."
+    },
+    "paper_interested": {
+      "text": "The local paper wants to run a story with a photo of Ada and the notebooks."
+    },
+    "photo_front_page": {
+      "text": "The reporter says the photo of Ada would run on the front page.",
+      "contradicts": [
+        "photo_page_five"
+      ]
+    },
+    "photo_page_five": {
+      "text": "The photo of Ada with the 1911 notebook ran on page five."
+    },
+    "eir_request": {
+      "text": "The developer's survey data can be requested formally; the reply takes twenty working days."
+    },
+    "horse_story": {
+      "text": "Ada's grandmother spoke of 1917 only once, about a farm group horse kept in the old barn for two winters."
+    },
+    "hall_booked": {
+      "text": "Jonah signed to book the school hall for the term and is responsible for it."
+    },
+    "developer_advanced": {
+      "text": "The developer's bid moved ahead without a pause."
+    },
+    "thermometer_rota": {
+      "text": "Two thermometers, pocket and hilltop, are read at dawn by a rota: Tobe, Mrs Cassar, Ada and Jonah."
+    },
+    "request_filed": {
+      "text": "The formal data request was filed and acknowledged with a case number."
+    },
+    "method_section_written": {
+      "text": "A three-page method section on how the notebooks were kept, copied, checked and stored is written."
+    },
+    "four_letters": {
+      "text": "Jonah wrote four letters by hand to the living families of four of the notebook writers."
+    },
+    "parish_1917_box": {
+      "text": "The archive's 1917 parish box may explain where the two volumes went."
+    },
+    "ada_81": {
+      "text": "Ada is eighty-one."
+    },
+    "objection_one_name": {
+      "text": "The objection form has a single line for one name."
+    },
+    "frost_readings_six_weeks": {
+      "text": "Six weeks of dawn readings have been taken in the frost pocket (forty-two readings)."
+    },
+    "tobe_most_readings": {
+      "text": "Tobe did nineteen of the forty-two dawn readings and never mentioned it."
+    },
+    "data_two_weeks_left": {
+      "text": "If the developer takes the full twenty days, the data arrives with two weeks left."
+    },
+    "abara_why": {
+      "text": "Dr Abara returned the first method draft with one word: why."
+    },
+    "letters_posted": {
+      "text": "Jonah posted the four letters at the postbox at the bottom of the hill."
+    },
+    "frost_later_bloom_earlier": {
+      "text": "The second chart shows frost coming later and bloom earlier, the gap shrinking."
+    },
+    "ada_wont_sign_yet": {
+      "text": "Ada will sign only when there is something worth signing."
+    },
+    "dossier_online": {
+      "text": "The unchecked dossier went online; four hundred people read it and nobody with power answered."
+    },
+    "method_less_rejected": {
+      "text": "Raval rejected the numbers sent without a method section."
+    },
+    "survey_data_thin": {
+      "text": "The survey's base data is thin: four visits, one transect line, twenty-two species, site noted dry."
+    },
+    "survey_in_driest_fortnight": {
+      "text": "The survey visits fell in the driest two weeks of that August."
+    },
+    "ada_14_species": {
+      "text": "Ada added fourteen species from memory but will not swear to them without looking."
+    },
+    "receipt_1917": {
+      "text": "A September 1917 receipt records two orchard books lent to the farm group and never marked returned."
+    },
+    "farm_group_market_hall": {
+      "text": "The farm group's successor uses the old market hall, whose cellar holds an old card index."
+    },
+    "abara_read_dossier": {
+      "text": "Dr Abara will read the dossier once, properly, before putting her name near it."
+    },
+    "raval_explains_rules": {
+      "text": "Raval cannot help an objector but tells Jonah what the board will look for."
+    },
+    "halvor_intro": {
+      "text": "Halvor works for the developer."
+    },
+    "halvor_question": {
+      "text": "Halvor bought Jonah a coffee and asked what would make him stop."
+    },
+    "plaque_offer": {
+      "text": "The developer offered a saved corner with a plaque in Ada's name, not including the Bramley row."
+    },
+    "jonah_twelve": {
+      "text": "Jonah is twelve years old."
+    },
+    "card_index_war_committee": {
+      "text": "The market hall cellar card index holds, under War Committee, a record of two books that left the shed in 1917."
+    },
+    "species_needs_may": {
+      "text": "A proper species list needs an expert in May, and it is November."
+    },
+    "microclimate_point": {
+      "text": "The frost pocket readings show the site has unmeasured microclimates."
+    },
+    "ada_kindness_hard": {
+      "text": "Ada says the hard part of speaking is the kindness afterwards."
+    },
+    "jonah_sure_of_nine": {
+      "text": "Walking the rows in November, Jonah could be sure of only nine species."
+    },
+    "halvor_paid_coffee": {
+      "text": "Halvor paid for the untouched coffee on his way out."
+    },
+    "jonah_wont_stop": {
+      "text": "The honest answer to Halvor is that nothing would make Jonah stop."
+    },
+    "dossier_numbered": {
+      "text": "Every page of the dossier is numbered and every figure sourced."
+    },
+    "volumes_found": {
+      "text": "The two 1917 notebooks were found undamaged in a WAR COMMITTEE MISC box in the market hall basement."
+    },
+    "volumes_pencil_hand": {
+      "text": "The found 1917 notebooks are in the same small neat pencil hand that stopped in 1943."
+    },
+    "volumes_returned_secretly": {
+      "text": "Jonah put the found volumes back on the shelf and told no one."
+    },
+    "deadline_version": {
+      "text": "The objection that went in was whatever was finished on the Friday of the deadline."
+    },
+    "objection_submitted": {
+      "text": "The objection went in with the full dataset, method, custody note and a cover sentence signed by Ada."
+    },
+    "orchard_hill_trust": {
+      "text": "The Orchard Hill Trust was set up, signed by Ada, Mrs Cassar and Tobe."
+    },
+    "public_hearing": {
+      "text": "The hearing is public, so Faulks must defend his survey aloud."
+    },
+    "volumes_in_dossier": {
+      "text": "The two war volumes and the receipt went into the dossier."
+    },
+    "abara_attend": {
+      "text": "Dr Abara will attend the hearing and say only what she can defend."
+    },
+    "cassar_frame": {
+      "text": "Mrs Cassar brings a 1998 hive frame with an unusual comb in a glass case."
+    },
+    "ada_page_1947_plan": {
+      "text": "Ada will read one page from 1947 aloud: ice on the water butt and eleven days of nothing."
+    },
+    "resurvey_ordered": {
+      "text": "The survey was ordered redone in May by a new assessor."
+    },
+    "may_resurvey": {
+      "text": "A new survey of the orchard is to be done in the growing season."
+    },
+    "typed_copy_archived": {
+      "text": "A checked typed copy of the record is lodged with the archive."
+    },
+    "record_chain_of_care": {
+      "text": "The notebooks are about people turning up in order: a chain of care."
+    },
+    "panel_rainfall_answer": {
+      "text": "Jonah answered the panel's first question with the rainfall record."
+    },
+    "amateur_answer": {
+      "text": "Jonah answered the amateur charge with the custody note, double typing and marked doubts."
+    },
+    "frost_short_honest": {
+      "text": "Jonah told the panel first that six weeks of frost readings is short."
+    },
+    "faulks_explains_method": {
+      "text": "At the hearing Faulks explained his standard August walk-over survey."
+    },
+    "ada_read_page": {
+      "text": "Ada read her 1947 page aloud at the hearing."
+    },
+    "dataset_shared_same_day": {
+      "text": "Jonah gave the file to the panel, developer and public on the same day."
+    },
+    "hearing_late": {
+      "text": "The hearing ran an hour late."
+    },
+    "charts_on_easel": {
+      "text": "The bloom and frost charts stood side by side on the easel."
+    },
+    "long_series_minuted": {
+      "text": "The note taker recorded Abara's phrase long unbroken local series."
+    },
+    "frame_passed": {
+      "text": "Every panel member handled Mrs Cassar's frame."
+    },
+    "eight_seconds": {
+      "text": "After Ada read, the room was silent for eight seconds."
+    },
+    "cassar_swarm_1994": {
+      "text": "Mrs Cassar told Jonah about a 1994 swarm in the old pear tree."
+    },
+    "chair_careful": {
+      "text": "Jonah answered a fair question as if unfair, and the chair turned careful."
+    },
+    "six_answers_one_no": {
+      "text": "Jonah answered six questions with proof and honestly said no to a seventh."
+    },
+    "officer_report": {
+      "text": "The officer's report cites the bloom chart, custody note and frost readings and drops the no-interest phrase."
+    },
+    "permission_conditions": {
+      "text": "Permission came with conditions: May survey, a winter frost study, and the series lodged with the archive."
+    },
+    "road_could_move": {
+      "text": "The spine road could be moved forty metres east, at a cost."
+    },
+    "keeper_choice": {
+      "text": "The notebooks could be kept by the archive, the trust, or the shed."
+    },
+    "class_told": {
+      "text": "Jonah gave the class an honest account of what their work had done."
+    },
+    "readings_continue": {
+      "text": "Jonah keeps the dawn readings going after the hearing."
+    },
+    "jonah_wants_orchard": {
+      "text": "Jonah now tells Halvor he does not want the builder to lose, only the orchard to carry on."
+    },
+    "deed_of_gift": {
+      "text": "The notebooks were given to the archive by deed of gift, Ada keeping the right to read them."
+    },
+    "road_moved_east": {
+      "text": "The road was moved forty metres east and the Bramley row stood."
+    },
+    "abara_question": {
+      "text": "Dr Abara: one October bloom proves nothing; it is a question, and the notebooks are the answer."
+    },
+    "winter_rota": {
+      "text": "A full-winter dawn rota of nine people is pinned to the shed door."
+    },
+    "ada_teaches_hands": {
+      "text": "Ada teaches the old hands to new readers that winter."
+    },
+    "trust_purpose": {
+      "text": "The trust is to look after both the notebooks and the trees."
+    },
+    "jonah_writes_entry": {
+      "text": "Jonah writes the evening entry in a new notebook."
+    },
+    "second_thermometer": {
+      "text": "Jonah bought a second thermometer for eleven pounds."
+    },
+    "rota_alive": {
+      "text": "The rota on the shed door kept changing hands through January."
+    },
+    "horse_line_1917": {
+      "text": "The 1917 volume notes the horse lent to the committee and returned in good shape."
+    },
+    "resurvey_species": {
+      "text": "The May resurvey found sixty-one species, including a fern never recorded on the hill."
+    },
+    "december_gap": {
+      "text": "The December readings stopped for eleven days over Christmas."
+    },
+    "resurvey_report": {
+      "text": "The resurvey report recommends the orchard be monitored rather than cleared."
+    },
+    "argument_cost": {
+      "text": "The work cost strained friendships and a letter Jonah should not have sent."
+    },
+    "ada_grandmother_tired": {
+      "text": "Ada's grandmother is much more tired than she was in October."
+    },
+    "jonah_carries_notebooks": {
+      "text": "Ada now lets Jonah carry the notebooks."
+    },
+    "jonah_regrets_faulks": {
+      "text": "Jonah would not repeat what he said about Faulks."
+    },
+    "april_normal_bloom": {
+      "text": "In April the whole row, the big Bramley included, blossomed at the normal time."
+    },
+    "orchard_protected": {
+      "text": "The orchard is now watched over and its data public."
+    },
+    "record_reason_believed": {
+      "text": "A record is not proof; it is the reason a person can be believed."
+    },
+    "first_index": {
+      "text": "Jonah indexed the six shelves for the first time; it took a year."
+    },
+    "ordinary_autumn": {
+      "text": "The next October the Bramley did not bloom and the harvest was normal."
+    },
+    "words_proved_wrong": {
+      "text": "The eleven words were proved wrong."
+    },
+    "series_closed": {
+      "text": "The series ended in the year of the hearing and nobody added to it."
+    }
+  },
+  "nodes": {
+    "n00c0": {
+      "function": "open",
+      "event": "Jonah sees the big Bramley in full bloom in the last week of October while every other tree is bare.",
+      "requires": [],
+      "establishes": [
+        "late_october",
+        "bramley_blooms_october",
+        "other_trees_bare"
+      ]
+    },
+    "n01d0": {
+      "function": "decision",
+      "event": "Jonah tells Ada, who already saw the bloom; he can ask about the notebooks, go to the hives, or read the new notice on the gate.",
+      "requires": [
+        "bramley_blooms_october"
+      ],
+      "establishes": [
+        "ada_notebooks",
+        "ada_saw_bloom",
+        "notice_on_gate",
+        "notice_yesterday"
+      ]
+    },
+    "n02c0": {
+      "function": "plant",
+      "event": "Ada searches her notebooks for another October bloom, finds none, and writes October bloom in the margin.",
+      "requires": [
+        "ada_notebooks"
+      ],
+      "establishes": [
+        "ada_found_no_october",
+        "october_bloom_margin"
+      ]
+    },
+    "n02c1": {
+      "function": "continue",
+      "event": "Jonah watches the hives working as if it were June; the bees are reading the blossom as spring.",
+      "requires": [
+        "bramley_blooms_october"
+      ],
+      "establishes": [
+        "hives_busy",
+        "bees_misread_spring",
+        "cassar_intro"
+      ]
+    },
+    "n02c2": {
+      "function": "plant",
+      "event": "Jonah reads the notice zip-tied to the gate that morning and writes the key sentence on his hand.",
+      "requires": [
+        "notice_on_gate"
+      ],
+      "establishes": [
+        "notice_today",
+        "jonah_read_notice",
+        "words_on_hand"
+      ]
+    },
+    "n03d0": {
+      "function": "decision",
+      "event": "Jonah faces six shelves of notebooks in nine hands and chooses where to start on the survey from the gate.",
+      "requires": [
+        "ada_notebooks",
+        "survey_on_notice"
+      ],
+      "establishes": [
+        "notebooks_since_1911",
+        "nine_hands",
+        "no_index"
+      ]
+    },
+    "cq_plant_did_find_who_wrote": {
+      "function": "plant",
+      "event": "Jonah finds the survey signed D. Faulks, August, and writes the name in the back of Ada's notebook.",
+      "requires": [
+        "survey_on_notice"
+      ],
+      "establishes": [
+        "survey_signed_faulks",
+        "survey_dated_august",
+        "jonah_learned_author",
+        "faulks_name_in_ada_book"
+      ]
+    },
+    "n03d1": {
+      "function": "decision",
+      "event": "Mrs Cassar's working count and Jonah's traffic count of bees do not match.",
+      "requires": [
+        "cassar_intro"
+      ],
+      "establishes": [
+        "cassar_counts_mismatch",
+        "cassar_30_years_records"
+      ]
+    },
+    "n03d2": {
+      "function": "decision",
+      "event": "The notice is an August ecology survey whose eleven-word key sentence calls the site of no particular scientific interest.",
+      "requires": [
+        "notice_on_gate"
+      ],
+      "establishes": [
+        "survey_on_notice",
+        "survey_dated_august",
+        "key_sentence",
+        "key_sentence_eleven_words"
+      ]
+    },
+    "n04d0": {
+      "function": "decision",
+      "event": "The survey cover sheet is signed D. Faulks in August under a consultancy logo.",
+      "requires": [
+        "survey_on_notice"
+      ],
+      "establishes": [
+        "survey_signed_faulks",
+        "survey_dated_august",
+        "consultancy_logo",
+        "jonah_learned_author"
+      ]
+    },
+    "n04d1": {
+      "function": "decision",
+      "event": "The survey's method section shows four dry visits of under an hour inside eleven days in August.",
+      "requires": [
+        "survey_on_notice"
+      ],
+      "establishes": [
+        "four_short_visits",
+        "survey_dated_august"
+      ]
+    },
+    "n04d2": {
+      "function": "decision",
+      "event": "Ada says the notebooks are only the weather; Jonah says the weather is the entire argument.",
+      "requires": [
+        "ada_notebooks"
+      ],
+      "establishes": [
+        "ada_says_only_weather"
+      ]
+    },
+    "n04c0": {
+      "function": "continue",
+      "event": "Jonah copies the eleven words from the notice into the back of his exercise book.",
+      "requires": [
+        "notice_on_gate",
+        "key_sentence",
+        "key_sentence_eleven_words"
+      ],
+      "establishes": [
+        "words_in_exercise_book"
+      ]
+    },
+    "n04c1": {
+      "function": "continue",
+      "event": "Jonah stays alone in the shed after dark looking up at the oldest notebooks.",
+      "requires": [
+        "ada_notebooks"
+      ],
+      "establishes": []
+    },
+    "n04c2": {
+      "function": "continue",
+      "event": "Jonah counts the orchard trees twice and gets two different totals.",
+      "requires": [],
+      "establishes": [
+        "trees_counted"
+      ]
+    },
+    "n04c3": {
+      "function": "continue",
+      "event": "Ada names eight of the nine hands; the ninth is a pencil that stops in 1943.",
+      "requires": [
+        "ada_notebooks"
+      ],
+      "establishes": [
+        "nine_hands",
+        "ada_names_eight",
+        "ninth_hand_1943"
+      ]
+    },
+    "n04c4": {
+      "function": "continue",
+      "event": "Jonah photographs the notice on the gate, the only photo that will exist of it in place.",
+      "requires": [
+        "notice_on_gate"
+      ],
+      "establishes": [
+        "photo_of_notice",
+        "photo_only_one"
+      ]
+    },
+    "n05d0": {
+      "function": "decision",
+      "event": "Objections close in six weeks and the council form demands proof in the survey's own language.",
+      "requires": [
+        "key_sentence",
+        "forty_thousand_lines"
+      ],
+      "establishes": [
+        "six_week_deadline",
+        "objection_form_language"
+      ]
+    },
+    "n05d1": {
+      "function": "decision",
+      "event": "Jonah and Tobe log the four survey visits to the half hour; none was long enough to see the orchard.",
+      "requires": [
+        "four_short_visits",
+        "tobe_intro"
+      ],
+      "establishes": [
+        "visit_times"
+      ]
+    },
+    "n05d2": {
+      "function": "decision",
+      "event": "Mrs Okonkwo at the city archive's Tuesday desk is unimpressed and wants to see the notebooks in person.",
+      "requires": [
+        "photo_of_notice",
+        "notebooks_since_1911"
+      ],
+      "establishes": [
+        "city_archive",
+        "okonkwo_name",
+        "archivist_wants_originals"
+      ]
+    },
+    "n05d3": {
+      "function": "decision",
+      "event": "Jonah emails Dr Abara, who replies carefully asking how the records were kept.",
+      "requires": [
+        "notebooks_since_1911"
+      ],
+      "establishes": [
+        "abara_intro",
+        "abara_cautious"
+      ]
+    },
+    "n05d4": {
+      "function": "decision",
+      "event": "The developer's plan is eighty-two homes and a spine road along the Bramley row.",
+      "requires": [],
+      "establishes": [
+        "developer_wants_site",
+        "developer_plan"
+      ]
+    },
+    "n05d5": {
+      "function": "decision",
+      "event": "Tobe of the school weather club seizes on a hundred years of bloom dates and starts a spreadsheet.",
+      "requires": [
+        "ada_notebooks"
+      ],
+      "establishes": [
+        "tobe_intro",
+        "tobe_excited"
+      ]
+    },
+    "e05_0": {
+      "function": "ending",
+      "event": "Jonah lets the six weeks run out; the notebooks go back on the shelf unused.",
+      "requires": [
+        "six_week_deadline",
+        "photo_of_notice",
+        "words_in_exercise_book",
+        "four_short_visits"
+      ],
+      "establishes": [
+        "objection_window_missed"
+      ]
+    },
+    "n06d0": {
+      "function": "decision",
+      "event": "Tobe estimates about forty thousand daily lines, far too many for the six weeks left.",
+      "requires": [
+        "tobe_intro",
+        "six_week_deadline"
+      ],
+      "establishes": [
+        "forty_thousand_lines"
+      ]
+    },
+    "n06d1": {
+      "function": "decision",
+      "event": "Jonah reduces the argument to four dates a year over 114 years, 456 numbers.",
+      "requires": [
+        "ada_notebooks"
+      ],
+      "establishes": [
+        "four_lines_a_year",
+        "record_114_years"
+      ]
+    },
+    "n06d2": {
+      "function": "decision",
+      "event": "The 1920s hand makes threes and fives alike, the kind of error Faulks would need to find once.",
+      "requires": [
+        "survey_signed_faulks"
+      ],
+      "establishes": [
+        "sloping_1920s_hand"
+      ]
+    },
+    "n06d3": {
+      "function": "decision",
+      "event": "Ada will not let a notebook leave the shed and the archive will not accept what it cannot see: deadlock.",
+      "requires": [
+        "city_archive"
+      ],
+      "establishes": [
+        "ada_never_let_leave",
+        "archive_needs_in_person"
+      ]
+    },
+    "cq_payoff_did_go_down_read": {
+      "function": "payoff",
+      "event": "Jonah rereads the eleven words in his exercise book and the four-lines plan becomes a strike back.",
+      "requires": [
+        "words_in_exercise_book",
+        "jonah_read_notice",
+        "key_sentence_eleven_words",
+        "four_lines_a_year"
+      ],
+      "establishes": []
+    },
+    "n06d4": {
+      "function": "decision",
+      "event": "Shed, kitchen or school hall: each place to do the work is flawed.",
+      "requires": [],
+      "establishes": [
+        "shed_one_plug",
+        "ada_no_books_in_house",
+        "school_hall_thursdays"
+      ]
+    },
+    "n06d5": {
+      "function": "decision",
+      "event": "Tobe insists every typed page be photographed so each figure points to its source.",
+      "requires": [
+        "tobe_intro"
+      ],
+      "establishes": [
+        "photograph_every_page",
+        "spreadsheet_set_up"
+      ]
+    },
+    "n06c0": {
+      "function": "continue",
+      "event": "Jonah opens the 1911 volume: ladder prices and a first bloom on April the twenty-third.",
+      "requires": [],
+      "establishes": [
+        "volume_1911_first_page"
+      ]
+    },
+    "n06c1": {
+      "function": "continue",
+      "event": "The laptop goes on the shed bench with its cord run to the house.",
+      "requires": [],
+      "establishes": [
+        "laptop_in_shed"
+      ]
+    },
+    "n06c2": {
+      "function": "continue",
+      "event": "Jonah works at a folding table by the pond on the 1928 book until his fingers go numb.",
+      "requires": [],
+      "establishes": [
+        "table_by_pond"
+      ]
+    },
+    "n06c3": {
+      "function": "continue",
+      "event": "Ada reads the sloping 1920s pages aloud fluently: it is her mother's hand.",
+      "requires": [
+        "sloping_1920s_hand"
+      ],
+      "establishes": [
+        "ada_reads_1920s",
+        "ada_mother_hand"
+      ]
+    },
+    "n06c4": {
+      "function": "continue",
+      "event": "Jonah learns to photograph a page without his shadow on it.",
+      "requires": [],
+      "establishes": [
+        "page_photo_skill"
+      ]
+    },
+    "n06c5": {
+      "function": "continue",
+      "event": "Jonah finds there are no 1917 or 1918 volumes and no note why.",
+      "requires": [],
+      "establishes": [
+        "missing_1917_1918"
+      ]
+    },
+    "n06c6": {
+      "function": "continue",
+      "event": "Jonah eats toast at nine at night; Ada says this is what the work mostly is.",
+      "requires": [],
+      "establishes": [
+        "work_is_toast"
+      ]
+    },
+    "e06_0": {
+      "function": "ending",
+      "event": "Jonah tries to type everything from 1911 and burns out within days.",
+      "requires": [
+        "six_week_deadline"
+      ],
+      "establishes": [
+        "typing_all_failed"
+      ]
+    },
+    "n07d0": {
+      "function": "decision",
+      "event": "Tobe sets up a spreadsheet for four dates a year, 456 numbers instead of forty thousand.",
+      "requires": [
+        "tobe_intro",
+        "forty_thousand_lines"
+      ],
+      "establishes": [
+        "four_lines_a_year",
+        "spreadsheet_set_up"
+      ]
+    },
+    "n07d1": {
+      "function": "decision",
+      "event": "Jonah narrows the record to the Bramleys, the oldest and most complete row.",
+      "requires": [],
+      "establishes": [
+        "bramleys_oldest_complete",
+        "record_114_years"
+      ]
+    },
+    "n07d2": {
+      "function": "decision",
+      "event": "Mrs Cassar shares thirty years of hive records on condition her two method changes are written down.",
+      "requires": [
+        "cassar_intro"
+      ],
+      "establishes": [
+        "cassar_30_years_records",
+        "cassar_method_changes"
+      ]
+    },
+    "n07d3": {
+      "function": "decision",
+      "event": "Mrs Okonkwo offers the archive's steady shelf; accepting would end Ada's dawn visits to the notebooks.",
+      "requires": [
+        "city_archive"
+      ],
+      "establishes": [
+        "archive_shelf_offer",
+        "okonkwo_name",
+        "ada_walks_out_six"
+      ]
+    },
+    "n07d4": {
+      "function": "decision",
+      "event": "Dr Abara explains that the notebooks are a treasure but not proof without method and custody.",
+      "requires": [
+        "abara_intro"
+      ],
+      "establishes": [
+        "abara_treasure_not_proof"
+      ]
+    },
+    "n07d5": {
+      "function": "decision",
+      "event": "Tobe charts the bloom dates: the line moves eleven days earlier across the century.",
+      "requires": [
+        "tobe_intro",
+        "ada_notebooks"
+      ],
+      "establishes": [
+        "bloom_eleven_days_earlier"
+      ]
+    },
+    "n07d6": {
+      "function": "decision",
+      "event": "The head teacher offers a class of thirty; Jonah weighs speed against accuracy.",
+      "requires": [],
+      "establishes": [
+        "class_help_offer"
+      ]
+    },
+    "n07d7": {
+      "function": "decision",
+      "event": "One wrong date could sink the chart, and Faulks only needs one.",
+      "requires": [
+        "survey_signed_faulks",
+        "tobe_intro",
+        "four_lines_a_year"
+      ],
+      "establishes": [
+        "one_error_risk"
+      ]
+    },
+    "n07d8": {
+      "function": "decision",
+      "event": "Ada says she never thought of the notebooks as an argument and dislikes them becoming weapons.",
+      "requires": [],
+      "establishes": [
+        "ada_60_years",
+        "ada_not_argument"
+      ]
+    },
+    "e07_0": {
+      "function": "ending",
+      "event": "The notebooks go safely into the archive but nobody makes the argument, and the orchard is resurveyed the same way.",
+      "requires": [],
+      "establishes": [
+        "notebooks_archived",
+        "resurveyed_same_way"
+      ]
+    },
+    "e07_1": {
+      "function": "ending",
+      "event": "The unchecked chart circulates and an anonymous note exposes a wrong 1947 date.",
+      "requires": [],
+      "establishes": [
+        "chart_sent_unchecked",
+        "error_1947_date"
+      ]
+    },
+    "n08d0": {
+      "function": "decision",
+      "event": "Double typing compared by machine catches eleven clashes in the first hundred pages.",
+      "requires": [
+        "tobe_intro"
+      ],
+      "establishes": [
+        "double_typing"
+      ]
+    },
+    "n08d1": {
+      "function": "decision",
+      "event": "Jonah marks unreadable figures in an open list rather than guessing them.",
+      "requires": [
+        "survey_signed_faulks"
+      ],
+      "establishes": [
+        "unreadable_marked"
+      ]
+    },
+    "n08d2": {
+      "function": "decision",
+      "event": "Mrs Cassar arrives with two bags of hive records and one rule: no pretending early counts are sharp.",
+      "requires": [
+        "cassar_intro"
+      ],
+      "establishes": [
+        "cassar_bags",
+        "cassar_early_guesses",
+        "cassar_30_years_records"
+      ]
+    },
+    "n08d3": {
+      "function": "decision",
+      "event": "Dr Abara walks the rows in rain and asks whether anyone has measured the frost pocket; nobody has.",
+      "requires": [
+        "abara_intro"
+      ],
+      "establishes": [
+        "frost_pocket",
+        "frost_pocket_unmeasured"
+      ]
+    },
+    "cq_payoff_did_ask_whether_notebooks": {
+      "function": "payoff",
+      "event": "Remembering Ada's search, Jonah stops himself from accusing Faulks and has the notebooks' silence for Raval.",
+      "requires": [
+        "ada_found_no_october",
+        "october_bloom_margin",
+        "survey_signed_faulks",
+        "raval_intro"
+      ],
+      "establishes": [
+        "jonah_stopped_faulks"
+      ]
+    },
+    "n08d4": {
+      "function": "decision",
+      "event": "Thirty people type up the 1930s in the school hall in one Thursday afternoon.",
+      "requires": [
+        "tobe_intro"
+      ],
+      "establishes": [
+        "class_typed_1930s",
+        "sloping_hand_1930s"
+      ]
+    },
+    "n08d5": {
+      "function": "decision",
+      "event": "Jonah realises someone took the 1917 and 1918 volumes and thinks of the hill's other buildings.",
+      "requires": [],
+      "establishes": [
+        "missing_1917_1918",
+        "volumes_taken"
+      ]
+    },
+    "n08d6": {
+      "function": "decision",
+      "event": "Priya Raval, the ecology officer, says a shed of notebooks is not yet evidence.",
+      "requires": [],
+      "establishes": [
+        "raval_intro",
+        "raval_not_evidence"
+      ]
+    },
+    "n08c0": {
+      "function": "continue",
+      "event": "The printed colour chart is pinned to the shed door and people stop to read it.",
+      "requires": [
+        "bloom_eleven_days_earlier"
+      ],
+      "establishes": [
+        "chart_on_shed_door"
+      ]
+    },
+    "n08c1": {
+      "function": "continue",
+      "event": "At dawn a frost line splits the orchard and leaves the Bramley row on the cold side.",
+      "requires": [],
+      "establishes": [
+        "frost_pocket",
+        "frost_line_dawn"
+      ]
+    },
+    "n08c2": {
+      "function": "continue",
+      "event": "Jonah sorts the notebooks by hand and sees the hands form a relay with clean changeovers.",
+      "requires": [],
+      "establishes": [
+        "nine_hands",
+        "hands_relay",
+        "ninth_hand_1943"
+      ]
+    },
+    "n08c3": {
+      "function": "continue",
+      "event": "Jonah waits forty minutes outside the council office, listing what to tell Raval.",
+      "requires": [
+        "raval_intro"
+      ],
+      "establishes": [
+        "council_wait"
+      ]
+    },
+    "n08c4": {
+      "function": "continue",
+      "event": "Jonah and Mrs Cassar carry two bags of hive records up the hill in silence.",
+      "requires": [
+        "cassar_intro"
+      ],
+      "establishes": [
+        "cassar_bags",
+        "cassar_30_years_records"
+      ]
+    },
+    "n08c5": {
+      "function": "continue",
+      "event": "Tobe explains the spreadsheet to Ada, who gets it once he calls it a ledger.",
+      "requires": [
+        "tobe_intro",
+        "spreadsheet_set_up"
+      ],
+      "establishes": [
+        "ada_ledger"
+      ]
+    },
+    "n08c6": {
+      "function": "continue",
+      "event": "Jonah stares at the chart and finds its smoothness troubling.",
+      "requires": [
+        "bloom_eleven_days_earlier"
+      ],
+      "establishes": [
+        "smooth_line"
+      ]
+    },
+    "e08_0": {
+      "function": "ending",
+      "event": "Jonah sends the chart alone; it is admired and filed and the deadline passes.",
+      "requires": [
+        "custody_note"
+      ],
+      "establishes": [
+        "chart_sent_alone",
+        "deadline_passed"
+      ]
+    },
+    "e08_1": {
+      "function": "ending",
+      "event": "Jonah's guessed 1920s figures fail when Faulks finds three wrong dates.",
+      "requires": [
+        "survey_signed_faulks",
+        "unreadable_marked"
+      ],
+      "establishes": [
+        "guesses_wrong"
+      ]
+    },
+    "n09d0": {
+      "function": "decision",
+      "event": "Raval says she can accept data with a clear method, a named keeper and a way to check it.",
+      "requires": [
+        "raval_intro"
+      ],
+      "establishes": [
+        "raval_three_rules"
+      ]
+    },
+    "n09d1": {
+      "function": "decision",
+      "event": "Dr Abara offers two pages on cold air flow if the frost pocket is read at dawn for six weeks.",
+      "requires": [
+        "abara_intro",
+        "frost_pocket"
+      ],
+      "establishes": [
+        "abara_frost_offer"
+      ]
+    },
+    "n09d2": {
+      "function": "decision",
+      "event": "Mrs Okonkwo drafts a custody note proving an unbroken chain of care.",
+      "requires": [
+        "city_archive"
+      ],
+      "establishes": [
+        "okonkwo_name",
+        "custody_note"
+      ]
+    },
+    "n09d3": {
+      "function": "decision",
+      "event": "Mrs Cassar dates her method changes to the month, giving three clean periods.",
+      "requires": [
+        "cassar_intro",
+        "cassar_method_changes"
+      ],
+      "establishes": [
+        "cassar_dates_month"
+      ]
+    },
+    "n09d4": {
+      "function": "decision",
+      "event": "Tobe lists the four objections Faulks would make, all fair.",
+      "requires": [
+        "tobe_intro",
+        "survey_signed_faulks",
+        "missing_1917_1918"
+      ],
+      "establishes": [
+        "tobe_four_objections",
+        "frost_pocket_unmeasured"
+      ]
+    },
+    "n09d5": {
+      "function": "decision",
+      "event": "The local paper offers a front-page photo of Ada with the notebooks.",
+      "requires": [],
+      "establishes": [
+        "paper_interested",
+        "photo_front_page"
+      ]
+    },
+    "n09d6": {
+      "function": "decision",
+      "event": "Jonah can formally request the developer's survey data, but the reply takes twenty working days.",
+      "requires": [
+        "key_sentence_eleven_words",
+        "developer_wants_site",
+        "six_week_deadline"
+      ],
+      "establishes": [
+        "eir_request"
+      ]
+    },
+    "n09d7": {
+      "function": "decision",
+      "event": "Ada recalls her grandmother's only story of 1917: a farm group horse kept in the old barn.",
+      "requires": [],
+      "establishes": [
+        "horse_story"
+      ]
+    },
+    "n09d8": {
+      "function": "decision",
+      "event": "Jonah signs to book the school hall for the term and takes responsibility.",
+      "requires": [],
+      "establishes": [
+        "hall_booked"
+      ]
+    },
+    "e09_0": {
+      "function": "ending",
+      "event": "The lovely photo of Ada runs on page five while the deadline passes.",
+      "requires": [
+        "paper_interested"
+      ],
+      "establishes": [
+        "photo_page_five",
+        "deadline_passed",
+        "developer_advanced"
+      ]
+    },
+    "e09_1": {
+      "function": "ending",
+      "event": "Jonah publicly says the survey was written to order and every honest point is tainted.",
+      "requires": [
+        "survey_signed_faulks"
+      ],
+      "establishes": [
+        "jonah_accused_faulks"
+      ]
+    },
+    "n10d0": {
+      "function": "decision",
+      "event": "Two thermometers arrive and a dawn rota fills with Tobe, Mrs Cassar, Ada and Jonah.",
+      "requires": [
+        "tobe_intro",
+        "cassar_intro",
+        "frost_pocket"
+      ],
+      "establishes": [
+        "thermometer_rota"
+      ]
+    },
+    "n10d1": {
+      "function": "decision",
+      "event": "The formal data request is filed and acknowledged with a case number.",
+      "requires": [
+        "developer_wants_site"
+      ],
+      "establishes": [
+        "request_filed"
+      ]
+    },
+    "n10d2": {
+      "function": "decision",
+      "event": "Jonah writes the three-page method section, the hardest writing of all.",
+      "requires": [
+        "tobe_intro",
+        "survey_signed_faulks"
+      ],
+      "establishes": [
+        "method_section_written"
+      ]
+    },
+    "n10d3": {
+      "function": "decision",
+      "event": "Jonah writes four letters to the living families of notebook writers.",
+      "requires": [
+        "nine_hands"
+      ],
+      "establishes": [
+        "four_letters"
+      ]
+    },
+    "cq_payoff_did_ask_whether_notebooks_site2": {
+      "function": "payoff",
+      "event": "With Ada's October bloom margin beside him, Jonah reads the survey data as weather the notebooks never saw.",
+      "requires": [
+        "ada_found_no_october",
+        "october_bloom_margin",
+        "eir_request"
+      ],
+      "establishes": []
+    },
+    "n10d4": {
+      "function": "decision",
+      "event": "Mrs Okonkwo brings the 1917 parish box that may explain the missing volumes.",
+      "requires": [
+        "missing_1917_1918",
+        "city_archive"
+      ],
+      "establishes": [
+        "okonkwo_name",
+        "parish_1917_box"
+      ]
+    },
+    "n10d5": {
+      "function": "decision",
+      "event": "The reporter presses; Jonah must decide when the story runs.",
+      "requires": [
+        "paper_interested"
+      ],
+      "establishes": []
+    },
+    "n10d6": {
+      "function": "decision",
+      "event": "The objection form has one name line; Ada, eighty-one, has signed the notebooks six thousand times.",
+      "requires": [
+        "ada_notebooks"
+      ],
+      "establishes": [
+        "objection_one_name",
+        "ada_81"
+      ]
+    },
+    "n10c0": {
+      "function": "continue",
+      "event": "Jonah stands in the frost pocket at dawn; Tobe does nineteen of the forty-two readings.",
+      "requires": [
+        "frost_pocket",
+        "tobe_intro"
+      ],
+      "establishes": [
+        "frost_readings_six_weeks",
+        "tobe_most_readings"
+      ]
+    },
+    "n10c1": {
+      "function": "continue",
+      "event": "Twenty working days against a six-week window leaves only two weeks to study the data.",
+      "requires": [
+        "eir_request",
+        "six_week_deadline"
+      ],
+      "establishes": [
+        "data_two_weeks_left"
+      ]
+    },
+    "n10c2": {
+      "function": "continue",
+      "event": "Dr Abara returns the first method draft marked with one word: why.",
+      "requires": [
+        "abara_intro"
+      ],
+      "establishes": [
+        "abara_why"
+      ]
+    },
+    "n10c3": {
+      "function": "continue",
+      "event": "Jonah posts the four letters at the bottom of the hill.",
+      "requires": [
+        "four_letters"
+      ],
+      "establishes": [
+        "letters_posted"
+      ]
+    },
+    "n10c4": {
+      "function": "continue",
+      "event": "Jonah is left alone with the brittle 1917 parish box.",
+      "requires": [
+        "missing_1917_1918",
+        "city_archive"
+      ],
+      "establishes": [
+        "parish_1917_box"
+      ]
+    },
+    "n10c5": {
+      "function": "continue",
+      "event": "The frost chart goes up beside the bloom chart; frost later, bloom earlier.",
+      "requires": [
+        "bloom_eleven_days_earlier",
+        "frost_readings_six_weeks"
+      ],
+      "establishes": [
+        "frost_later_bloom_earlier"
+      ]
+    },
+    "n10c6": {
+      "function": "continue",
+      "event": "Ada says she will sign when there is something worth signing.",
+      "requires": [
+        "objection_one_name"
+      ],
+      "establishes": [
+        "ada_wont_sign_yet"
+      ]
+    },
+    "e10_0": {
+      "function": "ending",
+      "event": "The unchecked dossier goes online, is praised by four hundred readers and answered by no one with power.",
+      "requires": [
+        "frost_readings_six_weeks"
+      ],
+      "establishes": [
+        "dossier_online"
+      ]
+    },
+    "e10_1": {
+      "function": "ending",
+      "event": "Jonah sends the numbers without a method and Raval rejects them.",
+      "requires": [
+        "raval_intro"
+      ],
+      "establishes": [
+        "method_less_rejected",
+        "four_lines_a_year"
+      ]
+    },
+    "n11d0": {
+      "function": "decision",
+      "event": "The developer's survey data proves thin: four visits, one transect, twenty-two species, site dry.",
+      "requires": [
+        "eir_request"
+      ],
+      "establishes": [
+        "survey_data_thin"
+      ]
+    },
+    "n11d1": {
+      "function": "decision",
+      "event": "Tobe's rain records show the visits fell in the driest days of that August.",
+      "requires": [
+        "tobe_intro",
+        "four_short_visits"
+      ],
+      "establishes": [
+        "survey_in_driest_fortnight"
+      ]
+    },
+    "cq_payoff_did_find_who_wrote_site2": {
+      "function": "payoff",
+      "event": "Recalling the name D. Faulks he wrote in Ada's book, Jonah sharpens his answer to Halvor.",
+      "requires": [
+        "faulks_name_in_ada_book",
+        "halvor_intro"
+      ],
+      "establishes": []
+    },
+    "n11d2": {
+      "function": "decision",
+      "event": "Ada adds fourteen species to the survey's list from memory but will not swear to them.",
+      "requires": [
+        "survey_data_thin"
+      ],
+      "establishes": [
+        "ada_14_species"
+      ]
+    },
+    "n11d3": {
+      "function": "decision",
+      "event": "A September 1917 receipt shows two orchard books lent to the farm group and never returned.",
+      "requires": [
+        "parish_1917_box"
+      ],
+      "establishes": [
+        "receipt_1917"
+      ]
+    },
+    "n11d4": {
+      "function": "decision",
+      "event": "Jonah traces the farm group to the old market hall and its cellar card index.",
+      "requires": [
+        "receipt_1917"
+      ],
+      "establishes": [
+        "farm_group_market_hall"
+      ]
+    },
+    "n11d5": {
+      "function": "decision",
+      "event": "Jonah answers Tobe's four objections in writing; the fourth still needs facts.",
+      "requires": [
+        "tobe_four_objections",
+        "unreadable_marked",
+        "method_section_written",
+        "frost_readings_six_weeks"
+      ],
+      "establishes": []
+    },
+    "cq_payoff_did_find_who_wrote": {
+      "function": "payoff",
+      "event": "Knowing the name D. Faulks, Jonah refuses to let the deadline decide and aims at the driest fortnight.",
+      "requires": [
+        "jonah_learned_author",
+        "survey_signed_faulks"
+      ],
+      "establishes": [
+        "survey_in_driest_fortnight"
+      ]
+    },
+    "n11d6": {
+      "function": "decision",
+      "event": "Dr Abara agrees to read the dossier once, properly, before endorsing it.",
+      "requires": [
+        "abara_intro"
+      ],
+      "establishes": [
+        "abara_read_dossier"
+      ]
+    },
+    "n11d7": {
+      "function": "decision",
+      "event": "Raval cannot help an objector but explains what the board will look for.",
+      "requires": [
+        "raval_intro"
+      ],
+      "establishes": [
+        "raval_explains_rules"
+      ]
+    },
+    "n11d8": {
+      "function": "decision",
+      "event": "Halvor from the developer buys Jonah a coffee and asks what would make him stop.",
+      "requires": [
+        "developer_wants_site"
+      ],
+      "establishes": [
+        "halvor_intro",
+        "halvor_question"
+      ]
+    },
+    "e11_0": {
+      "function": "ending",
+      "event": "The developer offers a saved corner and a plaque for Ada, but not the Bramley row.",
+      "requires": [
+        "developer_plan",
+        "ada_notebooks"
+      ],
+      "establishes": [
+        "plaque_offer"
+      ]
+    },
+    "e11_1": {
+      "function": "ending",
+      "event": "Jonah's letter attacking Faulks is published and the argument becomes about him.",
+      "requires": [
+        "survey_signed_faulks"
+      ],
+      "establishes": [
+        "jonah_accused_faulks",
+        "jonah_twelve"
+      ]
+    },
+    "n12d0": {
+      "function": "decision",
+      "event": "The visits, rain log and method all show the survey was done in a dry spell.",
+      "requires": [
+        "four_short_visits",
+        "method_section_written"
+      ],
+      "establishes": [
+        "survey_in_driest_fortnight"
+      ]
+    },
+    "n12d1": {
+      "function": "decision",
+      "event": "Jonah reaches the market hall cellar, whose card index notes two borrowed books in 1917.",
+      "requires": [
+        "farm_group_market_hall"
+      ],
+      "establishes": [
+        "card_index_war_committee"
+      ]
+    },
+    "n12d2": {
+      "function": "decision",
+      "event": "A proper species list needs May, and it is November.",
+      "requires": [
+        "abara_intro",
+        "survey_data_thin"
+      ],
+      "establishes": [
+        "species_needs_may"
+      ]
+    },
+    "n12d3": {
+      "function": "decision",
+      "event": "Jonah weighs his honest answer to Halvor: nothing would make him stop.",
+      "requires": [
+        "halvor_question"
+      ],
+      "establishes": [
+        "jonah_wont_stop"
+      ]
+    },
+    "n12d4": {
+      "function": "decision",
+      "event": "The short frost series is weak but shows the site has unmeasured microclimates.",
+      "requires": [
+        "frost_readings_six_weeks",
+        "abara_intro"
+      ],
+      "establishes": [
+        "microclimate_point"
+      ]
+    },
+    "n12d5": {
+      "function": "decision",
+      "event": "Jonah weighs whether to ask Ada, eighty-one, to speak before forty people.",
+      "requires": [
+        "ada_60_years"
+      ],
+      "establishes": [
+        "ada_81"
+      ]
+    },
+    "n12d6": {
+      "function": "decision",
+      "event": "Jonah weighs releasing the dossier early or late.",
+      "requires": [],
+      "establishes": []
+    },
+    "n12c0": {
+      "function": "continue",
+      "event": "In the market hall basement Jonah works the card index in the dark between timer clicks.",
+      "requires": [
+        "missing_1917_1918"
+      ],
+      "establishes": [
+        "card_index_war_committee"
+      ]
+    },
+    "n12c1": {
+      "function": "continue",
+      "event": "Jonah reads the rainfall record twice: the survey fell in the driest two weeks.",
+      "requires": [
+        "survey_data_thin"
+      ],
+      "establishes": [
+        "survey_in_driest_fortnight"
+      ]
+    },
+    "n12c2": {
+      "function": "continue",
+      "event": "Walking the rows in November, Jonah can be sure of only nine species.",
+      "requires": [
+        "survey_data_thin"
+      ],
+      "establishes": [
+        "jonah_sure_of_nine"
+      ]
+    },
+    "n12c3": {
+      "function": "continue",
+      "event": "The coffee goes cold between Jonah and Halvor, who pays for it on the way out.",
+      "requires": [
+        "halvor_question"
+      ],
+      "establishes": [
+        "halvor_paid_coffee"
+      ]
+    },
+    "n12c4": {
+      "function": "continue",
+      "event": "Ada tells Jonah the hard part of speaking is the kindness afterwards.",
+      "requires": [],
+      "establishes": [
+        "ada_kindness_hard"
+      ]
+    },
+    "n12c5": {
+      "function": "continue",
+      "event": "Jonah numbers and sources every page of the dossier and prints it at school.",
+      "requires": [
+        "tobe_intro"
+      ],
+      "establishes": [
+        "dossier_numbered"
+      ]
+    },
+    "n12c6": {
+      "function": "continue",
+      "event": "Jonah finds the two 1917 notebooks in a WAR COMMITTEE MISC box, in the 1943 pencil hand.",
+      "requires": [
+        "missing_1917_1918",
+        "ninth_hand_1943"
+      ],
+      "establishes": [
+        "volumes_found",
+        "volumes_pencil_hand"
+      ]
+    },
+    "e12_0": {
+      "function": "ending",
+      "event": "Jonah quietly puts the found volumes back on the shelf and tells no one.",
+      "requires": [
+        "volumes_found"
+      ],
+      "establishes": [
+        "volumes_returned_secretly"
+      ]
+    },
+    "e12_1": {
+      "function": "ending",
+      "event": "The deadline decides; the unfinished version goes in and Jonah wishes he had tracked down the author.",
+      "requires": [
+        "tobe_four_objections",
+        "frost_readings_six_weeks"
+      ],
+      "establishes": [
+        "deadline_version",
+        "author_not_tracked"
+      ]
+    },
+    "n13d0": {
+      "function": "decision",
+      "event": "The full objection goes in: 114 years of dates, method, custody note, nine species, a cover sentence signed by Ada.",
+      "requires": [
+        "custody_note",
+        "jonah_sure_of_nine",
+        "tobe_intro",
+        "abara_intro"
+      ],
+      "establishes": [
+        "objection_submitted",
+        "record_114_years"
+      ]
+    },
+    "n13d1": {
+      "function": "decision",
+      "event": "The Orchard Hill Trust is set up so the objection is in the orchard's name.",
+      "requires": [
+        "cassar_intro",
+        "tobe_intro"
+      ],
+      "establishes": [
+        "orchard_hill_trust"
+      ]
+    },
+    "n13d2": {
+      "function": "decision",
+      "event": "A public hearing will force Faulks to defend his survey aloud.",
+      "requires": [
+        "survey_signed_faulks"
+      ],
+      "establishes": [
+        "public_hearing"
+      ]
+    },
+    "n13d3": {
+      "function": "decision",
+      "event": "Ada and Tobe disagree on giving the developer the dossier before the hearing.",
+      "requires": [
+        "tobe_intro"
+      ],
+      "establishes": []
+    },
+    "n13d4": {
+      "function": "decision",
+      "event": "The two war volumes and the receipt go into the dossier, closing the gap.",
+      "requires": [
+        "volumes_found",
+        "receipt_1917"
+      ],
+      "establishes": [
+        "volumes_in_dossier"
+      ]
+    },
+    "n13d5": {
+      "function": "decision",
+      "event": "Dr Abara will attend the hearing and say only what she can defend.",
+      "requires": [
+        "abara_intro"
+      ],
+      "establishes": [
+        "abara_attend"
+      ]
+    },
+    "n13d6": {
+      "function": "decision",
+      "event": "Mrs Cassar packs thirty years of counts and a 1998 frame in a glass case.",
+      "requires": [
+        "cassar_intro"
+      ],
+      "establishes": [
+        "cassar_30_years_records",
+        "cassar_early_guesses",
+        "cassar_frame"
+      ]
+    },
+    "n13d7": {
+      "function": "decision",
+      "event": "Jonah weighs having Ada read one 1947 page aloud at the hearing.",
+      "requires": [],
+      "establishes": [
+        "ada_page_1947_plan"
+      ]
+    },
+    "e13_0": {
+      "function": "ending",
+      "event": "The objection is accepted and the survey ordered redone in May by a new assessor.",
+      "requires": [],
+      "establishes": [
+        "resurvey_ordered",
+        "may_resurvey"
+      ]
+    },
+    "e13_1": {
+      "function": "ending",
+      "event": "A checked typed copy of the 114 years is lodged with the archive.",
+      "requires": [
+        "record_114_years"
+      ],
+      "establishes": [
+        "typed_copy_archived"
+      ]
+    },
+    "e13_2": {
+      "function": "ending",
+      "event": "Reading the dossier, Jonah sees the notebooks are a chain of care across nine hands.",
+      "requires": [
+        "record_114_years"
+      ],
+      "establishes": [
+        "record_chain_of_care",
+        "nine_hands"
+      ]
+    },
+    "n14d0": {
+      "function": "decision",
+      "event": "Jonah answers the panel's first question with the rainfall record.",
+      "requires": [
+        "survey_in_driest_fortnight"
+      ],
+      "establishes": [
+        "panel_rainfall_answer"
+      ]
+    },
+    "n14d1": {
+      "function": "decision",
+      "event": "Jonah answers the amateur charge with the custody note, double typing and marked doubts.",
+      "requires": [
+        "custody_note",
+        "double_typing",
+        "unreadable_marked"
+      ],
+      "establishes": [
+        "amateur_answer"
+      ]
+    },
+    "n14d2": {
+      "function": "decision",
+      "event": "Jonah tells the panel first that the frost series is short.",
+      "requires": [
+        "frost_readings_six_weeks"
+      ],
+      "establishes": [
+        "frost_short_honest"
+      ]
+    },
+    "n14d3": {
+      "function": "decision",
+      "event": "Faulks explains his standard August survey and his pause reveals the wrong conditions.",
+      "requires": [
+        "survey_signed_faulks"
+      ],
+      "establishes": [
+        "faulks_explains_method",
+        "four_short_visits"
+      ]
+    },
+    "n14d4": {
+      "function": "decision",
+      "event": "Ada reads her March 1947 page and the room falls silent.",
+      "requires": [
+        "ada_notebooks"
+      ],
+      "establishes": [
+        "ada_read_page"
+      ]
+    },
+    "n14d5": {
+      "function": "decision",
+      "event": "Jonah gives the file to the panel, developer and public on the same day.",
+      "requires": [],
+      "establishes": [
+        "dataset_shared_same_day"
+      ]
+    },
+    "n14c0": {
+      "function": "continue",
+      "event": "The hearing runs an hour late and the waiting steadies Jonah.",
+      "requires": [],
+      "establishes": [
+        "hearing_late"
+      ]
+    },
+    "n14c1": {
+      "function": "continue",
+      "event": "The bloom and frost charts stand on the easel all afternoon.",
+      "requires": [
+        "bloom_eleven_days_earlier",
+        "frost_readings_six_weeks"
+      ],
+      "establishes": [
+        "charts_on_easel"
+      ]
+    },
+    "n14c2": {
+      "function": "continue",
+      "event": "The note taker writes Abara's phrase long unbroken local series.",
+      "requires": [
+        "abara_intro",
+        "tobe_intro"
+      ],
+      "establishes": [
+        "long_series_minuted"
+      ]
+    },
+    "n14c3": {
+      "function": "continue",
+      "event": "Every panel member handles Mrs Cassar's 1998 frame.",
+      "requires": [
+        "cassar_frame"
+      ],
+      "establishes": [
+        "frame_passed"
+      ]
+    },
+    "n14c4": {
+      "function": "continue",
+      "event": "After Ada finishes reading, the room is silent for eight seconds.",
+      "requires": [
+        "ada_page_1947_plan"
+      ],
+      "establishes": [
+        "eight_seconds"
+      ]
+    },
+    "n14c5": {
+      "function": "continue",
+      "event": "Waiting in the hall again, Mrs Cassar tells Jonah about a 1994 swarm.",
+      "requires": [
+        "council_wait",
+        "cassar_intro"
+      ],
+      "establishes": [
+        "cassar_swarm_1994"
+      ]
+    },
+    "e14_0": {
+      "function": "ending",
+      "event": "Jonah answers a fair question as unfair and the chair becomes careful.",
+      "requires": [],
+      "establishes": [
+        "chair_careful"
+      ]
+    },
+    "e14_1": {
+      "function": "ending",
+      "event": "Jonah answers six questions with proof and one honest no; the officer asks for a growing-season resurvey.",
+      "requires": [],
+      "establishes": [
+        "six_answers_one_no",
+        "may_resurvey"
+      ]
+    },
+    "n15d0": {
+      "function": "decision",
+      "event": "The officer's report cites the bloom chart, custody note and frost readings and drops the no-interest phrase.",
+      "requires": [
+        "bloom_eleven_days_earlier",
+        "custody_note",
+        "frost_readings_six_weeks",
+        "key_sentence"
+      ],
+      "establishes": [
+        "officer_report"
+      ]
+    },
+    "n15d1": {
+      "function": "decision",
+      "event": "Permission comes with three conditions: May survey, winter frost study, series lodged with the archive.",
+      "requires": [],
+      "establishes": [
+        "permission_conditions",
+        "may_resurvey"
+      ]
+    },
+    "n15d2": {
+      "function": "decision",
+      "event": "The spine road could move forty metres east at a cost.",
+      "requires": [
+        "developer_plan"
+      ],
+      "establishes": [
+        "road_could_move"
+      ]
+    },
+    "n15d3": {
+      "function": "decision",
+      "event": "Jonah weighs whether the archive, the trust or the shed should keep the notebooks.",
+      "requires": [
+        "orchard_hill_trust"
+      ],
+      "establishes": [
+        "keeper_choice"
+      ]
+    },
+    "n15d4": {
+      "function": "decision",
+      "event": "Jonah gives the class that typed the 1930s an honest account.",
+      "requires": [
+        "class_typed_1930s"
+      ],
+      "establishes": [
+        "class_told"
+      ]
+    },
+    "n15d5": {
+      "function": "decision",
+      "event": "Jonah keeps the dawn readings going so the short series becomes long.",
+      "requires": [
+        "frost_readings_six_weeks"
+      ],
+      "establishes": [
+        "readings_continue"
+      ]
+    },
+    "n15d6": {
+      "function": "decision",
+      "event": "Halvor asks again and Jonah now says he only wants the orchard to carry on.",
+      "requires": [
+        "halvor_question"
+      ],
+      "establishes": [
+        "jonah_wants_orchard"
+      ]
+    },
+    "e15_0": {
+      "function": "ending",
+      "event": "The notebooks go to the archive by deed of gift, Ada keeping the right to read them.",
+      "requires": [
+        "okonkwo_name"
+      ],
+      "establishes": [
+        "deed_of_gift"
+      ]
+    },
+    "e15_1": {
+      "function": "ending",
+      "event": "The road moves forty metres east and the Bramley row stands.",
+      "requires": [
+        "developer_plan"
+      ],
+      "establishes": [
+        "road_moved_east"
+      ]
+    },
+    "e15_2": {
+      "function": "ending",
+      "event": "Dr Abara tells Jonah the October bloom was a question and the notebooks the answer.",
+      "requires": [
+        "abara_intro"
+      ],
+      "establishes": [
+        "abara_question",
+        "record_114_years"
+      ]
+    },
+    "n16d0": {
+      "function": "decision",
+      "event": "A winter dawn rota of nine people goes on the shed door.",
+      "requires": [
+        "frost_pocket"
+      ],
+      "establishes": [
+        "winter_rota"
+      ]
+    },
+    "n16d1": {
+      "function": "decision",
+      "event": "Ada teaches the old hands to new readers.",
+      "requires": [
+        "nine_hands"
+      ],
+      "establishes": [
+        "ada_teaches_hands"
+      ]
+    },
+    "n16d2": {
+      "function": "decision",
+      "event": "The trust decides to look after both the notebooks and the trees.",
+      "requires": [
+        "orchard_hill_trust"
+      ],
+      "establishes": [
+        "trust_purpose"
+      ]
+    },
+    "n16d3": {
+      "function": "decision",
+      "event": "Jonah writes his first evening entry in a new notebook.",
+      "requires": [
+        "ada_60_years"
+      ],
+      "establishes": [
+        "jonah_writes_entry"
+      ]
+    },
+    "n16c0": {
+      "function": "continue",
+      "event": "Jonah buys a second thermometer for eleven pounds.",
+      "requires": [
+        "frost_pocket"
+      ],
+      "establishes": [
+        "second_thermometer"
+      ]
+    },
+    "n16c1": {
+      "function": "continue",
+      "event": "The rota replaces the chart on the shed door and changes hands through January.",
+      "requires": [
+        "chart_on_shed_door"
+      ],
+      "establishes": [
+        "rota_alive"
+      ]
+    },
+    "n16c2": {
+      "function": "continue",
+      "event": "Jonah reads the 1917 volumes; one line notes the horse returned in good shape.",
+      "requires": [
+        "volumes_found",
+        "horse_story"
+      ],
+      "establishes": [
+        "horse_line_1917"
+      ]
+    },
+    "n16c3": {
+      "function": "continue",
+      "event": "The May resurvey finds sixty-one species including a new fern.",
+      "requires": [
+        "may_resurvey"
+      ],
+      "establishes": [
+        "resurvey_species"
+      ]
+    },
+    "e16_0": {
+      "function": "ending",
+      "event": "Jonah writes the hundred and fifteenth year, badly but faithfully.",
+      "requires": [
+        "record_114_years"
+      ],
+      "establishes": [
+        "jonah_writes_entry"
+      ]
+    },
+    "e16_1": {
+      "function": "ending",
+      "event": "The December readings stop for eleven days and leave a permanent gap.",
+      "requires": [
+        "winter_rota"
+      ],
+      "establishes": [
+        "december_gap"
+      ]
+    },
+    "n17d0": {
+      "function": "decision",
+      "event": "The resurvey report recommends monitoring rather than clearing.",
+      "requires": [
+        "may_resurvey",
+        "survey_signed_faulks"
+      ],
+      "establishes": [
+        "resurvey_report",
+        "resurvey_species"
+      ]
+    },
+    "n17d1": {
+      "function": "decision",
+      "event": "Jonah counts the costs: strained friendships, a bad letter, Ada's tiredness.",
+      "requires": [
+        "ada_notebooks"
+      ],
+      "establishes": [
+        "argument_cost",
+        "ada_grandmother_tired",
+        "jonah_carries_notebooks"
+      ]
+    },
+    "n17d2": {
+      "function": "decision",
+      "event": "Jonah would do it all again except what he said about Faulks.",
+      "requires": [
+        "jonah_accused_faulks",
+        "survey_signed_faulks"
+      ],
+      "establishes": [
+        "jonah_regrets_faulks"
+      ]
+    },
+    "n17d3": {
+      "function": "decision",
+      "event": "In April the whole row, the big Bramley included, blossoms on time.",
+      "requires": [
+        "bramley_blooms_october",
+        "record_114_years"
+      ],
+      "establishes": [
+        "april_normal_bloom"
+      ]
+    },
+    "e17_0": {
+      "function": "ending",
+      "event": "The orchard is protected by a hundred and fourteen ordinary evenings of record.",
+      "requires": [
+        "record_114_years"
+      ],
+      "establishes": [
+        "orchard_protected"
+      ]
+    },
+    "e17_1": {
+      "function": "ending",
+      "event": "Jonah understands a record is the reason to be believed, not proof.",
+      "requires": [
+        "record_114_years"
+      ],
+      "establishes": [
+        "record_reason_believed"
+      ]
+    },
+    "e18_0": {
+      "function": "ending",
+      "event": "Jonah indexes the six shelves for the first time.",
+      "requires": [
+        "notebooks_since_1911",
+        "horse_story"
+      ],
+      "establishes": [
+        "first_index"
+      ]
+    },
+    "e18_1": {
+      "function": "ending",
+      "event": "The next October is ordinary, the road runs east, and Jonah writes the last picking day.",
+      "requires": [],
+      "establishes": [
+        "ordinary_autumn",
+        "road_moved_east"
+      ]
+    },
+    "e18_2": {
+      "function": "ending",
+      "event": "Jonah rereads the eleven words in his exercise book the day the resurvey report arrives.",
+      "requires": [
+        "words_in_exercise_book",
+        "key_sentence",
+        "key_sentence_eleven_words"
+      ],
+      "establishes": [
+        "words_proved_wrong",
+        "resurvey_report"
+      ]
+    },
+    "e18_3": {
+      "function": "ending",
+      "event": "The notebooks are archived and closed; the series ends in the year of the hearing.",
+      "requires": [
+        "custody_note"
+      ],
+      "establishes": [
+        "series_closed"
+      ]
+    }
+  },
+  "choices": {
+    "c_n00c0_0": {
+      "intent": "share the wrong bloom with Ada",
+      "cost": "none (single continue)"
+    },
+    "c_n01d0_0": {
+      "intent": "check the record for a precedent",
+      "cost": "gives up the other two routes; stays in the shed",
+      "plants": [
+        "t_asked_notebooks"
+      ]
+    },
+    "c_n01d0_1": {
+      "intent": "read the bees rather than the books",
+      "cost": "gives up the other two routes; leaves the record and the notice"
+    },
+    "c_n01d0_2": {
+      "intent": "read the threat in its own words",
+      "cost": "gives up the other two routes; leaves Ada and the notebooks",
+      "plants": [
+        "t_read_notice"
+      ]
+    },
+    "c_n02c0_0": {
+      "intent": "start from the notebooks",
+      "cost": "none (single continue)"
+    },
+    "c_n02c1_0": {
+      "intent": "start from the hive counts",
+      "cost": "none (single continue)"
+    },
+    "c_n02c2_0": {
+      "intent": "start from the survey's wording",
+      "cost": "none (single continue)"
+    },
+    "c_n03d0_0": {
+      "intent": "name the survey's author",
+      "cost": "gives up the other two routes; spends time on a person, not the data",
+      "plants": [
+        "t_found_author"
+      ]
+    },
+    "c_n03d0_1": {
+      "intent": "audit the survey's method",
+      "cost": "gives up the other two routes; leaves the author unnamed"
+    },
+    "c_n03d0_2": {
+      "intent": "test the notebooks' value with Ada",
+      "cost": "gives up the other two routes; risks a hard talk with Ada"
+    },
+    "c_cq_plant_did_find_who_wrote": {
+      "intent": "name the survey's author",
+      "cost": "none (single continue)"
+    },
+    "c_n03d1_0": {
+      "intent": "keep the survey's words exactly",
+      "cost": "gives up the other two routes; leaves the hive mismatch unsolved",
+      "requires": [
+        "key_sentence"
+      ]
+    },
+    "c_n03d1_1": {
+      "intent": "sit with the oldest notebooks",
+      "cost": "gives up the other two routes; an evening spent looking, not doing"
+    },
+    "c_n03d1_2": {
+      "intent": "measure the orchard itself",
+      "cost": "gives up the other two routes; uses the last light on a count"
+    },
+    "c_n03d2_0": {
+      "intent": "learn who kept the record",
+      "cost": "gives up the other two routes; leaves the gate and the notice",
+      "requires": [
+        "ada_notebooks"
+      ]
+    },
+    "c_n03d2_1": {
+      "intent": "preserve the notice as evidence",
+      "cost": "gives up the other two routes; leads only to letting the deadline go"
+    },
+    "c_n03d2_2": {
+      "intent": "name the survey's author",
+      "cost": "gives up the other two routes; spends time on a person, not the data"
+    },
+    "c_n04d0_0": {
+      "intent": "learn the objection rules",
+      "cost": "gives up the other two routes; spends time on forms"
+    },
+    "c_n04d0_1": {
+      "intent": "examine the survey visits",
+      "cost": "gives up the other two routes; leaves the process and records aside",
+      "requires": [
+        "survey_signed_faulks"
+      ]
+    },
+    "c_n04d0_2": {
+      "intent": "seek an archivist",
+      "cost": "gives up the other two routes; must win over a sceptic"
+    },
+    "c_n04d1_0": {
+      "intent": "seek an ecologist",
+      "cost": "gives up the other two routes; must win over a sceptic"
+    },
+    "c_n04d1_1": {
+      "intent": "learn the development plan",
+      "cost": "gives up the other two routes; looks at the threat, not the evidence",
+      "requires": [
+        "developer_wants_site"
+      ]
+    },
+    "c_n04d1_2": {
+      "intent": "recruit Tobe and his laptop",
+      "cost": "gives up the other two routes; brings in a helper",
+      "requires": [
+        "tobe_intro"
+      ]
+    },
+    "c_n04d2_0": {
+      "intent": "give up the objection",
+      "cost": "ends the story: the objection window passes unused",
+      "requires": [
+        "six_week_deadline"
+      ]
+    },
+    "c_n04d2_1": {
+      "intent": "learn the objection rules",
+      "cost": "gives up the other two routes; spends time on forms"
+    },
+    "c_n04d2_2": {
+      "intent": "examine the survey visits",
+      "cost": "gives up the other two routes; leaves the process and records aside",
+      "requires": [
+        "survey_signed_faulks"
+      ]
+    },
+    "c_n04c0_0": {
+      "intent": "seek an archivist",
+      "cost": "none (single continue)"
+    },
+    "c_n04c1_0": {
+      "intent": "seek an ecologist",
+      "cost": "none (single continue)"
+    },
+    "c_n04c2_0": {
+      "intent": "learn the development plan",
+      "cost": "none (single continue)",
+      "requires": [
+        "developer_wants_site"
+      ]
+    },
+    "c_n04c3_0": {
+      "intent": "recruit Tobe and his laptop",
+      "cost": "none (single continue)",
+      "requires": [
+        "tobe_intro"
+      ]
+    },
+    "c_n04c4_0": {
+      "intent": "give up the objection",
+      "cost": "forced single option; ends the story: the objection window passes unused",
+      "requires": [
+        "six_week_deadline"
+      ]
+    },
+    "c_n05d0_0": {
+      "intent": "size the transcription job",
+      "cost": "gives up the other routes; faces a daunting number"
+    },
+    "c_n05d0_1": {
+      "intent": "cut the record to what matters",
+      "cost": "gives up the other two routes; leaves most of the record untyped"
+    },
+    "c_n05d0_2": {
+      "intent": "tackle the hard handwriting",
+      "cost": "gives up the other two routes; slow, error-prone work"
+    },
+    "c_n05d1_0": {
+      "intent": "settle custody of the notebooks",
+      "cost": "gives up the other two routes; walks into a deadlock"
+    },
+    "c_n05d1_1": {
+      "intent": "choose a workplace",
+      "cost": "gives up the other two routes; every place is flawed"
+    },
+    "c_n05d1_2": {
+      "intent": "make the copy checkable",
+      "cost": "gives up the other two routes; doubles the work with photos"
+    },
+    "c_n05d2_0": {
+      "intent": "start at the beginning",
+      "cost": "gives up the other two routes; slow start"
+    },
+    "c_n05d2_1": {
+      "intent": "work in the shed",
+      "cost": "gives up the other two routes; a poor cold setup"
+    },
+    "c_n05d2_2": {
+      "intent": "work outdoors by the pond",
+      "cost": "gives up the other two routes; cold, and leads to handing the notebooks away"
+    },
+    "c_n05d3_0": {
+      "intent": "use Ada's memory for the hard hand",
+      "cost": "gives up the other two routes; leads to sending the chart out unchecked"
+    },
+    "c_n05d3_1": {
+      "intent": "trial the photo method",
+      "cost": "gives up the other two routes; time spent learning a small skill"
+    },
+    "c_n05d3_2": {
+      "intent": "audit the record's gaps",
+      "cost": "gives up the other two routes; uncovers a gap that weakens the record"
+    },
+    "c_n05d4_0": {
+      "intent": "rest before going on",
+      "cost": "gives up the other two routes; loses an evening"
+    },
+    "c_n05d4_1": {
+      "intent": "type the entire record",
+      "cost": "ends the story: burnout and nothing finished"
+    },
+    "c_n05d4_2": {
+      "intent": "size the transcription job",
+      "cost": "gives up the other routes; faces a daunting number"
+    },
+    "c_n05d5_0": {
+      "intent": "cut the record to what matters",
+      "cost": "gives up the other two routes; leaves most of the record untyped"
+    },
+    "c_n05d5_1": {
+      "intent": "tackle the hard handwriting",
+      "cost": "gives up the other two routes; slow, error-prone work"
+    },
+    "c_n05d5_2": {
+      "intent": "settle custody of the notebooks",
+      "cost": "gives up the other two routes; walks into a deadlock"
+    },
+    "c_n06d0_0": {
+      "intent": "type only four key dates a year",
+      "cost": "gives up the other routes; drops most of the record"
+    },
+    "c_n06d0_1": {
+      "intent": "narrow to one row of trees",
+      "cost": "gives up the other routes; drops the rest of the orchard"
+    },
+    "c_n06d0_2": {
+      "intent": "add Mrs Cassar's bee data",
+      "cost": "gives up the other routes; takes on her method caveats"
+    },
+    "c_n06d1_0": {
+      "intent": "seek safe storage",
+      "cost": "gives up the other routes; risks Ada losing daily access"
+    },
+    "c_n06d1_1": {
+      "intent": "learn the standard of proof",
+      "cost": "gives up the other two routes; hears that the treasure is not proof",
+      "requires": [
+        "abara_intro"
+      ]
+    },
+    "c_n06d1_2": {
+      "intent": "see the pattern",
+      "cost": "gives up the other two routes; a chart before it is checked",
+      "requires": [
+        "tobe_intro"
+      ]
+    },
+    "c_n06d2_0": {
+      "intent": "get many hands for typing",
+      "cost": "gives up the other two routes; trades accuracy for speed"
+    },
+    "c_n06d2_1": {
+      "intent": "face the error risk",
+      "cost": "gives up the other two routes; confronts the chart's weakest point"
+    },
+    "c_n06d2_2": {
+      "intent": "hear Ada's view",
+      "cost": "gives up the other two routes; may unsettle Ada"
+    },
+    "c_n06d3_0": {
+      "intent": "pass the notebooks to safekeeping",
+      "cost": "ends the story: notebooks safe but no argument made"
+    },
+    "c_n06d3_1": {
+      "intent": "publicise the chart now",
+      "cost": "ends the story: an error discredits the chart"
+    },
+    "c_n06d3_2": {
+      "intent": "type only four key dates a year",
+      "cost": "gives up the other routes; drops most of the record"
+    },
+    "c_n06d3_2_cq_did_go_down_read": {
+      "intent": "type only four key dates a year",
+      "cost": "gives up the other routes; drops most of the record"
+    },
+    "c_cq_payoff_did_go_down_read": {
+      "intent": "type only four key dates a year",
+      "cost": "none (single continue)"
+    },
+    "c_n06d4_0": {
+      "intent": "narrow to one row of trees",
+      "cost": "gives up the other routes; drops the rest of the orchard"
+    },
+    "c_n06d4_1": {
+      "intent": "add Mrs Cassar's bee data",
+      "cost": "gives up the other routes; takes on her method caveats"
+    },
+    "c_n06d4_2": {
+      "intent": "seek safe storage",
+      "cost": "gives up the other routes; risks Ada losing daily access"
+    },
+    "c_n06d5_0": {
+      "intent": "learn the standard of proof",
+      "cost": "gives up the other two routes; hears that the treasure is not proof",
+      "requires": [
+        "abara_intro"
+      ]
+    },
+    "c_n06d5_1": {
+      "intent": "see the pattern",
+      "cost": "gives up the other two routes; a chart before it is checked",
+      "requires": [
+        "tobe_intro"
+      ]
+    },
+    "c_n06d5_2": {
+      "intent": "get many hands for typing",
+      "cost": "gives up the other two routes; trades accuracy for speed"
+    },
+    "c_n06c0_0": {
+      "intent": "face the error risk",
+      "cost": "none (single continue)"
+    },
+    "c_n06c1_0": {
+      "intent": "hear Ada's view",
+      "cost": "none (single continue)"
+    },
+    "c_n06c2_0": {
+      "intent": "pass the notebooks to safekeeping",
+      "cost": "forced single option; ends the story: notebooks safe but no argument made"
+    },
+    "c_n06c3_0": {
+      "intent": "publicise the chart now",
+      "cost": "forced single option; ends the story: an error discredits the chart"
+    },
+    "c_n06c4_0": {
+      "intent": "type only four key dates a year",
+      "cost": "none (single continue)"
+    },
+    "c_n06c5_0": {
+      "intent": "narrow to one row of trees",
+      "cost": "none (single continue)"
+    },
+    "c_n06c6_0": {
+      "intent": "add Mrs Cassar's bee data",
+      "cost": "none (single continue)"
+    },
+    "c_n07d0_0": {
+      "intent": "double-type and compare",
+      "cost": "gives up the other two routes; doubles the typing"
+    },
+    "c_n07d0_1": {
+      "intent": "mark rather than guess doubts",
+      "cost": "gives up the other two routes; shows weak spots openly"
+    },
+    "c_n07d0_2": {
+      "intent": "add the hive records under her rules",
+      "cost": "gives up the other two routes; accepts her conditions",
+      "requires": [
+        "cassar_intro"
+      ]
+    },
+    "c_n07d1_0": {
+      "intent": "get expert eyes on the site",
+      "cost": "gives up the other two routes; may reveal new gaps",
+      "requires": [
+        "abara_intro"
+      ]
+    },
+    "c_n07d1_1": {
+      "intent": "use the class to type",
+      "cost": "gives up the other two routes; risks errors from many hands"
+    },
+    "c_n07d1_2": {
+      "intent": "chase the 1917 gap",
+      "cost": "gives up the other two routes; a search that may find nothing"
+    },
+    "c_n07d2_0": {
+      "intent": "consult the ecology officer",
+      "cost": "gives up the other two routes; hears the notebooks are not yet evidence"
+    },
+    "c_n07d2_1": {
+      "intent": "show the chart in public",
+      "cost": "gives up the other two routes; leads to an unsupported accusation"
+    },
+    "c_n07d2_2": {
+      "intent": "see the frost line",
+      "cost": "gives up the other two routes; an early cold start"
+    },
+    "c_n07d3_0": {
+      "intent": "group the hands",
+      "cost": "gives up the other two routes; slow sorting"
+    },
+    "c_n07d3_1": {
+      "intent": "prepare to see Raval",
+      "cost": "gives up the other two routes; forty dull minutes",
+      "requires": [
+        "raval_intro"
+      ]
+    },
+    "c_n07d3_2": {
+      "intent": "help Mrs Cassar bring her records",
+      "cost": "gives up the other two routes; a heavy climb",
+      "requires": [
+        "cassar_30_years_records"
+      ]
+    },
+    "c_n07d4_0": {
+      "intent": "bring Ada into the data",
+      "cost": "gives up the other two routes; time spent explaining",
+      "requires": [
+        "tobe_intro",
+        "spreadsheet_set_up"
+      ]
+    },
+    "c_n07d4_1": {
+      "intent": "study the pattern",
+      "cost": "gives up the other two routes; raises a doubt about the data",
+      "requires": [
+        "bloom_eleven_days_earlier"
+      ]
+    },
+    "c_n07d4_2": {
+      "intent": "rely on the chart alone",
+      "cost": "ends the story: admired, filed, deadline missed",
+      "requires": [
+        "bloom_eleven_days_earlier"
+      ]
+    },
+    "c_n07d5_0": {
+      "intent": "fill gaps by guessing",
+      "cost": "ends the story: wrong guesses sink the argument"
+    },
+    "c_n07d5_1": {
+      "intent": "double-type and compare",
+      "cost": "gives up the other two routes; doubles the typing"
+    },
+    "c_n07d5_2": {
+      "intent": "mark rather than guess doubts",
+      "cost": "gives up the other two routes; shows weak spots openly"
+    },
+    "c_n07d6_0": {
+      "intent": "add the hive records under her rules",
+      "cost": "gives up the other two routes; accepts her conditions",
+      "requires": [
+        "cassar_intro"
+      ]
+    },
+    "c_n07d6_1": {
+      "intent": "get expert eyes on the site",
+      "cost": "gives up the other two routes; may reveal new gaps",
+      "requires": [
+        "abara_intro"
+      ]
+    },
+    "c_n07d6_2": {
+      "intent": "use the class to type",
+      "cost": "gives up the other two routes; risks errors from many hands"
+    },
+    "c_n07d7_0": {
+      "intent": "chase the 1917 gap",
+      "cost": "gives up the other two routes; a search that may find nothing"
+    },
+    "c_n07d7_1": {
+      "intent": "consult the ecology officer",
+      "cost": "gives up the other two routes; hears the notebooks are not yet evidence"
+    },
+    "c_n07d7_2": {
+      "intent": "show the chart in public",
+      "cost": "gives up the other two routes; leads to an unsupported accusation"
+    },
+    "c_n07d8_0": {
+      "intent": "see the frost line",
+      "cost": "gives up the other two routes; an early cold start"
+    },
+    "c_n07d8_1": {
+      "intent": "group the hands",
+      "cost": "gives up the other two routes; slow sorting"
+    },
+    "c_n07d8_2": {
+      "intent": "prepare to see Raval",
+      "cost": "gives up the other two routes; forty dull minutes",
+      "requires": [
+        "raval_intro"
+      ]
+    },
+    "c_n08d0_0": {
+      "intent": "learn the council's standard",
+      "cost": "gives up the other routes; narrows the path",
+      "requires": [
+        "raval_intro"
+      ]
+    },
+    "c_n08d0_1": {
+      "intent": "get an expert note on frost",
+      "cost": "gives up the other two routes; commits to six weeks of dawn readings",
+      "requires": [
+        "abara_intro",
+        "frost_pocket"
+      ]
+    },
+    "c_n08d0_2": {
+      "intent": "document the chain of care",
+      "cost": "gives up the other two routes; dull paperwork",
+      "requires": [
+        "city_archive"
+      ]
+    },
+    "c_n08d1_0": {
+      "intent": "clean up the hive data",
+      "cost": "gives up the other two routes; time on one dataset",
+      "requires": [
+        "cassar_method_changes"
+      ]
+    },
+    "c_n08d1_1": {
+      "intent": "anticipate objections",
+      "cost": "gives up the other two routes; exposes every weakness",
+      "requires": [
+        "survey_signed_faulks"
+      ]
+    },
+    "c_n08d1_2": {
+      "intent": "seek publicity",
+      "cost": "gives up the other two routes; publicity may help or not"
+    },
+    "c_n08d2_0": {
+      "intent": "see the survey's raw data",
+      "cost": "gives up the other two routes; a reply that eats most of the window",
+      "requires": [
+        "developer_wants_site"
+      ]
+    },
+    "c_n08d2_1": {
+      "intent": "learn about the missing years",
+      "cost": "gives up the other two routes; stirs old family memory",
+      "requires": [
+        "missing_1917_1918"
+      ]
+    },
+    "c_n08d2_2": {
+      "intent": "secure a workplace",
+      "cost": "gives up the other two routes; takes on responsibility",
+      "requires": [
+        "school_hall_thursdays"
+      ]
+    },
+    "c_n08d3_0": {
+      "intent": "settle for a newspaper story",
+      "cost": "ends the story: a lovely photo and a missed deadline",
+      "requires": [
+        "paper_interested"
+      ]
+    },
+    "c_n08d3_1": {
+      "intent": "attack the surveyor",
+      "cost": "risks the argument becoming personal; may end the story",
+      "requires": [
+        "survey_signed_faulks"
+      ]
+    },
+    "c_n08d3_1_cq_did_ask_whether_notebooks": {
+      "intent": "attack the surveyor",
+      "cost": "risks the argument becoming personal; may end the story",
+      "requires": [
+        "survey_signed_faulks"
+      ]
+    },
+    "c_n08d3_2": {
+      "intent": "learn the council's standard",
+      "cost": "gives up the other routes; narrows the path",
+      "requires": [
+        "raval_intro"
+      ]
+    },
+    "c_cq_payoff_did_ask_whether_notebooks": {
+      "intent": "learn the council's standard",
+      "cost": "none (single continue)",
+      "requires": [
+        "raval_intro"
+      ]
+    },
+    "c_n08d4_0": {
+      "intent": "get an expert note on frost",
+      "cost": "gives up the other two routes; commits to six weeks of dawn readings",
+      "requires": [
+        "abara_intro",
+        "frost_pocket"
+      ]
+    },
+    "c_n08d4_1": {
+      "intent": "document the chain of care",
+      "cost": "gives up the other two routes; dull paperwork",
+      "requires": [
+        "city_archive"
+      ]
+    },
+    "c_n08d4_2": {
+      "intent": "clean up the hive data",
+      "cost": "gives up the other two routes; time on one dataset",
+      "requires": [
+        "cassar_method_changes"
+      ]
+    },
+    "c_n08d5_0": {
+      "intent": "anticipate objections",
+      "cost": "gives up the other two routes; exposes every weakness",
+      "requires": [
+        "survey_signed_faulks"
+      ]
+    },
+    "c_n08d5_1": {
+      "intent": "seek publicity",
+      "cost": "gives up the other two routes; publicity may help or not"
+    },
+    "c_n08d5_2": {
+      "intent": "see the survey's raw data",
+      "cost": "gives up the other two routes; a reply that eats most of the window",
+      "requires": [
+        "developer_wants_site"
+      ]
+    },
+    "c_n08d6_0": {
+      "intent": "learn about the missing years",
+      "cost": "gives up the other two routes; stirs old family memory",
+      "requires": [
+        "missing_1917_1918"
+      ]
+    },
+    "c_n08d6_1": {
+      "intent": "secure a workplace",
+      "cost": "gives up the other two routes; takes on responsibility",
+      "requires": [
+        "school_hall_thursdays"
+      ]
+    },
+    "c_n08d6_2": {
+      "intent": "settle for a newspaper story",
+      "cost": "ends the story: a lovely photo and a missed deadline",
+      "requires": [
+        "paper_interested"
+      ]
+    },
+    "c_n08c0_0": {
+      "intent": "attack the surveyor",
+      "cost": "forced single option; ends the story: the argument becomes personal",
+      "requires": [
+        "survey_signed_faulks"
+      ]
+    },
+    "c_n08c1_0": {
+      "intent": "learn the council's standard",
+      "cost": "none (single continue)",
+      "requires": [
+        "raval_intro"
+      ]
+    },
+    "c_n08c2_0": {
+      "intent": "get an expert note on frost",
+      "cost": "none (single continue)",
+      "requires": [
+        "abara_intro",
+        "frost_pocket"
+      ]
+    },
+    "c_n08c3_0": {
+      "intent": "document the chain of care",
+      "cost": "none (single continue)",
+      "requires": [
+        "city_archive"
+      ]
+    },
+    "c_n08c4_0": {
+      "intent": "clean up the hive data",
+      "cost": "none (single continue)",
+      "requires": [
+        "cassar_method_changes"
+      ]
+    },
+    "c_n08c5_0": {
+      "intent": "anticipate objections",
+      "cost": "none (single continue)",
+      "requires": [
+        "survey_signed_faulks"
+      ]
+    },
+    "c_n08c6_0": {
+      "intent": "seek publicity",
+      "cost": "none (single continue)"
+    },
+    "c_n09d0_0": {
+      "intent": "measure the frost pocket",
+      "cost": "gives up the other routes; six weeks of dawn readings",
+      "requires": [
+        "frost_pocket"
+      ]
+    },
+    "c_n09d0_1": {
+      "intent": "demand the raw data",
+      "cost": "gives up the other routes; twenty working days of waiting",
+      "requires": [
+        "developer_wants_site"
+      ]
+    },
+    "c_n09d0_2": {
+      "intent": "state how the record was kept",
+      "cost": "gives up the other two routes; the hardest writing"
+    },
+    "c_n09d1_0": {
+      "intent": "reach the writers' families",
+      "cost": "gives up the other two routes; letters may intrude",
+      "requires": [
+        "ada_names_eight"
+      ]
+    },
+    "c_n09d1_1": {
+      "intent": "search for the missing volumes",
+      "cost": "gives up the other two routes; hours in an archive box",
+      "requires": [
+        "missing_1917_1918"
+      ]
+    },
+    "c_n09d1_2": {
+      "intent": "settle the press timing",
+      "cost": "gives up the other two routes; a timing gamble",
+      "requires": [
+        "paper_interested"
+      ]
+    },
+    "c_n09d2_0": {
+      "intent": "choose the objector's name",
+      "cost": "gives up the other two routes; puts someone in the firing line"
+    },
+    "c_n09d2_1": {
+      "intent": "take the frost readings",
+      "cost": "gives up the other two routes; cold dull mornings; leads to attacking Faulks",
+      "requires": [
+        "frost_pocket"
+      ]
+    },
+    "c_n09d2_2": {
+      "intent": "request data and wait",
+      "cost": "gives up the other two routes; the clock runs down",
+      "requires": [
+        "eir_request"
+      ]
+    },
+    "c_n09d3_0": {
+      "intent": "get a first draft down",
+      "cost": "gives up the other two routes; a draft that needs redoing"
+    },
+    "c_n09d3_1": {
+      "intent": "send the letters",
+      "cost": "gives up the other two routes; cannot be called back",
+      "requires": [
+        "four_letters"
+      ]
+    },
+    "c_n09d3_2": {
+      "intent": "search the archive",
+      "cost": "gives up the other two routes; hours reading brittle papers",
+      "requires": [
+        "city_archive"
+      ]
+    },
+    "c_n09d4_0": {
+      "intent": "pair frost with bloom",
+      "cost": "gives up the other two routes; shows a short series",
+      "requires": [
+        "chart_on_shed_door",
+        "frost_readings_six_weeks"
+      ]
+    },
+    "c_n09d4_1": {
+      "intent": "respect Ada's timing",
+      "cost": "gives up the other two routes; leaves the name line blank"
+    },
+    "c_n09d4_2": {
+      "intent": "release the dossier unchecked",
+      "cost": "ends the story: read widely, answered by no one"
+    },
+    "c_n09d5_0": {
+      "intent": "send numbers without method",
+      "cost": "ends the story: rejected by the officer"
+    },
+    "c_n09d5_1": {
+      "intent": "measure the frost pocket",
+      "cost": "gives up the other routes; six weeks of dawn readings",
+      "requires": [
+        "frost_pocket"
+      ]
+    },
+    "c_n09d5_2": {
+      "intent": "demand the raw data",
+      "cost": "gives up the other routes; twenty working days of waiting",
+      "requires": [
+        "developer_wants_site"
+      ]
+    },
+    "c_n09d6_0": {
+      "intent": "state how the record was kept",
+      "cost": "gives up the other two routes; the hardest writing"
+    },
+    "c_n09d6_1": {
+      "intent": "reach the writers' families",
+      "cost": "gives up the other two routes; letters may intrude",
+      "requires": [
+        "ada_names_eight"
+      ]
+    },
+    "c_n09d6_2": {
+      "intent": "search for the missing volumes",
+      "cost": "gives up the other two routes; hours in an archive box",
+      "requires": [
+        "missing_1917_1918"
+      ]
+    },
+    "c_n09d7_0": {
+      "intent": "settle the press timing",
+      "cost": "gives up the other two routes; a timing gamble",
+      "requires": [
+        "paper_interested"
+      ]
+    },
+    "c_n09d7_1": {
+      "intent": "choose the objector's name",
+      "cost": "gives up the other two routes; puts someone in the firing line"
+    },
+    "c_n09d7_2": {
+      "intent": "take the frost readings",
+      "cost": "gives up the other two routes; cold dull mornings; leads to attacking Faulks",
+      "requires": [
+        "frost_pocket"
+      ]
+    },
+    "c_n09d8_0": {
+      "intent": "request data and wait",
+      "cost": "gives up the other two routes; the clock runs down",
+      "requires": [
+        "eir_request"
+      ]
+    },
+    "c_n09d8_1": {
+      "intent": "get a first draft down",
+      "cost": "gives up the other two routes; a draft that needs redoing"
+    },
+    "c_n09d8_2": {
+      "intent": "send the letters",
+      "cost": "gives up the other two routes; cannot be called back",
+      "requires": [
+        "four_letters"
+      ]
+    },
+    "c_n10d0_0": {
+      "intent": "examine the developer's data",
+      "cost": "gives up the other routes; waits for the reply",
+      "requires": [
+        "eir_request"
+      ]
+    },
+    "c_n10d0_1": {
+      "intent": "check the visits against rainfall",
+      "cost": "gives up the other two routes; time on rain records"
+    },
+    "c_n10d0_2": {
+      "intent": "test the species list",
+      "cost": "gives up the other two routes; relies on memory",
+      "requires": [
+        "survey_data_thin"
+      ]
+    },
+    "c_n10d1_0": {
+      "intent": "trace the borrowed volumes",
+      "cost": "gives up the other two routes; a slow paper chase",
+      "requires": [
+        "missing_1917_1918"
+      ]
+    },
+    "c_n10d1_1": {
+      "intent": "search for the volumes in person",
+      "cost": "gives up the other two routes; a search that may fail",
+      "requires": [
+        "missing_1917_1918"
+      ]
+    },
+    "c_n10d1_2": {
+      "intent": "rebut the likely objections",
+      "cost": "gives up the other two routes; exposes what is still unanswered",
+      "requires": [
+        "tobe_four_objections"
+      ]
+    },
+    "c_n10d2_0": {
+      "intent": "get expert review",
+      "cost": "gives up the other two routes; risks a refusal",
+      "requires": [
+        "abara_intro"
+      ]
+    },
+    "c_n10d2_1": {
+      "intent": "learn the board's standard",
+      "cost": "gives up the other two routes; she cannot say if it passes",
+      "requires": [
+        "raval_intro"
+      ]
+    },
+    "c_n10d2_2": {
+      "intent": "meet the other side",
+      "cost": "gives up the other two routes; a tricky question to answer",
+      "requires": [
+        "developer_wants_site"
+      ]
+    },
+    "c_n10d3_0": {
+      "intent": "settle for a compromise",
+      "cost": "ends the story: a plaque but the Bramley row lost",
+      "requires": [
+        "plaque_offer"
+      ]
+    },
+    "c_n10d3_1": {
+      "intent": "attack the surveyor in print",
+      "cost": "ends the story: the argument becomes about Jonah",
+      "requires": [
+        "survey_signed_faulks"
+      ]
+    },
+    "c_n10d3_2": {
+      "intent": "examine the developer's data",
+      "cost": "gives up the other routes; waits for the reply",
+      "requires": [
+        "eir_request"
+      ]
+    },
+    "c_n10d3_2_cq_did_ask_whether_notebooks": {
+      "intent": "examine the developer's data",
+      "cost": "gives up the other routes; waits for the reply",
+      "requires": [
+        "eir_request"
+      ]
+    },
+    "c_cq_payoff_did_ask_whether_notebooks_site2": {
+      "intent": "examine the developer's data",
+      "cost": "none (single continue)",
+      "requires": [
+        "eir_request"
+      ]
+    },
+    "c_n10d4_0": {
+      "intent": "check the visits against rainfall",
+      "cost": "gives up the other two routes; time on rain records"
+    },
+    "c_n10d4_1": {
+      "intent": "test the species list",
+      "cost": "gives up the other two routes; relies on memory",
+      "requires": [
+        "survey_data_thin"
+      ]
+    },
+    "c_n10d4_2": {
+      "intent": "trace the borrowed volumes",
+      "cost": "gives up the other two routes; a slow paper chase",
+      "requires": [
+        "missing_1917_1918"
+      ]
+    },
+    "c_n10d5_0": {
+      "intent": "search for the volumes in person",
+      "cost": "gives up the other two routes; a search that may fail",
+      "requires": [
+        "missing_1917_1918"
+      ]
+    },
+    "c_n10d5_1": {
+      "intent": "rebut the likely objections",
+      "cost": "gives up the other two routes; exposes what is still unanswered",
+      "requires": [
+        "tobe_four_objections"
+      ]
+    },
+    "c_n10d5_2": {
+      "intent": "get expert review",
+      "cost": "gives up the other two routes; risks a refusal",
+      "requires": [
+        "abara_intro"
+      ]
+    },
+    "c_n10d6_0": {
+      "intent": "learn the board's standard",
+      "cost": "gives up the other two routes; she cannot say if it passes",
+      "requires": [
+        "raval_intro"
+      ]
+    },
+    "c_n10d6_1": {
+      "intent": "meet the other side",
+      "cost": "gives up the other two routes; a tricky question to answer",
+      "requires": [
+        "developer_wants_site"
+      ]
+    },
+    "c_n10d6_2": {
+      "intent": "settle for a compromise",
+      "cost": "ends the story: a plaque but the Bramley row lost",
+      "requires": [
+        "plaque_offer"
+      ]
+    },
+    "c_n10c0_0": {
+      "intent": "attack the surveyor in print",
+      "cost": "forced single option; ends the story: the argument becomes about Jonah",
+      "requires": [
+        "survey_signed_faulks"
+      ]
+    },
+    "c_n10c1_0": {
+      "intent": "examine the developer's data",
+      "cost": "none (single continue)",
+      "requires": [
+        "eir_request"
+      ]
+    },
+    "c_n10c2_0": {
+      "intent": "check the visits against rainfall",
+      "cost": "none (single continue)"
+    },
+    "c_n10c3_0": {
+      "intent": "test the species list",
+      "cost": "none (single continue)",
+      "requires": [
+        "survey_data_thin"
+      ]
+    },
+    "c_n10c4_0": {
+      "intent": "trace the borrowed volumes",
+      "cost": "none (single continue)",
+      "requires": [
+        "missing_1917_1918"
+      ]
+    },
+    "c_n10c5_0": {
+      "intent": "search for the volumes in person",
+      "cost": "none (single continue)",
+      "requires": [
+        "missing_1917_1918"
+      ]
+    },
+    "c_n10c6_0": {
+      "intent": "rebut the likely objections",
+      "cost": "none (single continue)",
+      "requires": [
+        "tobe_four_objections"
+      ]
+    },
+    "c_n11d0_0": {
+      "intent": "make the drought argument",
+      "cost": "gives up the other routes; rests on one point"
+    },
+    "c_n11d0_1": {
+      "intent": "search the farm group's cellar",
+      "cost": "gives up the other routes; a long search",
+      "requires": [
+        "farm_group_market_hall"
+      ]
+    },
+    "c_n11d0_2": {
+      "intent": "fix the species evidence",
+      "cost": "gives up the other two routes; the season is wrong for it"
+    },
+    "c_n11d1_0": {
+      "intent": "answer Halvor's question",
+      "cost": "gives up the other routes; an answer that may close doors",
+      "requires": [
+        "halvor_question"
+      ]
+    },
+    "c_n11d1_0_cq_did_find_who_wrote": {
+      "intent": "answer Halvor's question",
+      "cost": "gives up the other routes; an answer that may close doors",
+      "requires": [
+        "halvor_question"
+      ]
+    },
+    "c_n11d1_1": {
+      "intent": "weigh the frost data",
+      "cost": "gives up the other two routes; pushes the weakest evidence",
+      "requires": [
+        "frost_readings_six_weeks"
+      ]
+    },
+    "c_n11d1_2": {
+      "intent": "weigh asking Ada to speak",
+      "cost": "gives up the other two routes; may ask too much of Ada"
+    },
+    "c_cq_payoff_did_find_who_wrote_site2": {
+      "intent": "answer Halvor's question",
+      "cost": "none (single continue)",
+      "requires": [
+        "halvor_question"
+      ]
+    },
+    "c_n11d2_0": {
+      "intent": "choose the release timing",
+      "cost": "gives up the other two routes; no safe date"
+    },
+    "c_n11d2_1": {
+      "intent": "search the card index",
+      "cost": "gives up the other two routes; slow work in the dark",
+      "requires": [
+        "farm_group_market_hall"
+      ]
+    },
+    "c_n11d2_2": {
+      "intent": "confirm the drought",
+      "cost": "gives up the other two routes; time spent rechecking"
+    },
+    "c_n11d3_0": {
+      "intent": "check species on the ground",
+      "cost": "gives up the other two routes; November hides most species"
+    },
+    "c_n11d3_1": {
+      "intent": "keep distance from Halvor",
+      "cost": "gives up the other two routes; an awkward silence",
+      "requires": [
+        "halvor_question"
+      ]
+    },
+    "c_n11d3_2": {
+      "intent": "hear Ada out",
+      "cost": "gives up the other two routes; time away from the dossier"
+    },
+    "c_n11d4_0": {
+      "intent": "make the dossier complete",
+      "cost": "gives up the other two routes; two evenings of checking"
+    },
+    "c_n11d4_1": {
+      "intent": "recover the missing volumes",
+      "cost": "gives up the other two routes; hours in a basement",
+      "requires": [
+        "missing_1917_1918"
+      ]
+    },
+    "c_n11d4_2": {
+      "intent": "quietly restore the volumes",
+      "cost": "ends the story: the gap filled but its story untold",
+      "requires": [
+        "volumes_found"
+      ]
+    },
+    "c_n11d5_0": {
+      "intent": "stop choosing a release date",
+      "cost": "may end the story with an unfinished objection"
+    },
+    "c_n11d5_0_cq_did_find_who_wrote": {
+      "intent": "stop choosing a release date",
+      "cost": "may end the story with an unfinished objection"
+    },
+    "c_n11d5_1": {
+      "intent": "make the drought argument",
+      "cost": "gives up the other routes; rests on one point"
+    },
+    "c_n11d5_2": {
+      "intent": "search the farm group's cellar",
+      "cost": "gives up the other routes; a long search",
+      "requires": [
+        "farm_group_market_hall"
+      ]
+    },
+    "c_cq_payoff_did_find_who_wrote": {
+      "intent": "make the drought argument",
+      "cost": "none (single continue)"
+    },
+    "c_n11d6_0": {
+      "intent": "fix the species evidence",
+      "cost": "gives up the other two routes; the season is wrong for it"
+    },
+    "c_n11d6_1": {
+      "intent": "answer Halvor's question",
+      "cost": "gives up the other routes; an answer that may close doors",
+      "requires": [
+        "halvor_question"
+      ]
+    },
+    "c_n11d6_2": {
+      "intent": "weigh the frost data",
+      "cost": "gives up the other two routes; pushes the weakest evidence",
+      "requires": [
+        "frost_readings_six_weeks"
+      ]
+    },
+    "c_n11d7_0": {
+      "intent": "weigh asking Ada to speak",
+      "cost": "gives up the other two routes; may ask too much of Ada"
+    },
+    "c_n11d7_1": {
+      "intent": "choose the release timing",
+      "cost": "gives up the other two routes; no safe date"
+    },
+    "c_n11d7_2": {
+      "intent": "search the card index",
+      "cost": "gives up the other two routes; slow work in the dark",
+      "requires": [
+        "farm_group_market_hall"
+      ]
+    },
+    "c_n11d8_0": {
+      "intent": "confirm the drought",
+      "cost": "gives up the other two routes; time spent rechecking"
+    },
+    "c_n11d8_1": {
+      "intent": "check species on the ground",
+      "cost": "gives up the other two routes; November hides most species"
+    },
+    "c_n11d8_2": {
+      "intent": "keep distance from Halvor",
+      "cost": "gives up the other two routes; an awkward silence",
+      "requires": [
+        "halvor_question"
+      ]
+    },
+    "c_n12d0_0": {
+      "intent": "file the complete objection",
+      "cost": "gives up the other routes; it is final once posted"
+    },
+    "c_n12d0_1": {
+      "intent": "file under a trust's name",
+      "cost": "gives up the other routes; a trust must be set up",
+      "requires": [
+        "orchard_hill_trust"
+      ]
+    },
+    "c_n12d0_2": {
+      "intent": "make Faulks answer aloud",
+      "cost": "gives up the other routes; neighbours watch every slip"
+    },
+    "c_n12d1_0": {
+      "intent": "show the developer what is coming",
+      "cost": "gives up the other routes; loses surprise"
+    },
+    "c_n12d1_1": {
+      "intent": "close the 1917 gap",
+      "cost": "gives up the other routes; the volumes must be found first",
+      "requires": [
+        "volumes_found"
+      ]
+    },
+    "c_n12d1_2": {
+      "intent": "bring expert testimony",
+      "cost": "gives up the other two routes; she will say only what she can defend",
+      "requires": [
+        "abara_intro"
+      ]
+    },
+    "c_n12d2_0": {
+      "intent": "bring the hive evidence",
+      "cost": "gives up the other two routes; admits early counts are rough",
+      "requires": [
+        "cassar_intro"
+      ]
+    },
+    "c_n12d2_1": {
+      "intent": "let Ada's voice carry the record",
+      "cost": "gives up the other two routes; may look like a trick"
+    },
+    "c_n12d2_2": {
+      "intent": "submit without performance",
+      "cost": "ends the story: the objection is judged on its proof"
+    },
+    "c_n12d3_0": {
+      "intent": "prioritise the typed record",
+      "cost": "ends the story: the record secured outside the shed"
+    },
+    "c_n12d3_1": {
+      "intent": "review the dossier end to end",
+      "cost": "ends the story with a reflection rather than a hearing"
+    },
+    "c_n12d3_2": {
+      "intent": "file the complete objection",
+      "cost": "gives up the other routes; it is final once posted"
+    },
+    "c_n12d4_0": {
+      "intent": "file under a trust's name",
+      "cost": "gives up the other routes; a trust must be set up",
+      "requires": [
+        "orchard_hill_trust"
+      ]
+    },
+    "c_n12d4_1": {
+      "intent": "make Faulks answer aloud",
+      "cost": "gives up the other routes; neighbours watch every slip"
+    },
+    "c_n12d4_2": {
+      "intent": "show the developer what is coming",
+      "cost": "gives up the other routes; loses surprise"
+    },
+    "c_n12d5_0": {
+      "intent": "close the 1917 gap",
+      "cost": "gives up the other routes; the volumes must be found first",
+      "requires": [
+        "volumes_found"
+      ]
+    },
+    "c_n12d5_1": {
+      "intent": "bring expert testimony",
+      "cost": "gives up the other two routes; she will say only what she can defend",
+      "requires": [
+        "abara_intro"
+      ]
+    },
+    "c_n12d5_2": {
+      "intent": "bring the hive evidence",
+      "cost": "gives up the other two routes; admits early counts are rough",
+      "requires": [
+        "cassar_intro"
+      ]
+    },
+    "c_n12d6_0": {
+      "intent": "let Ada's voice carry the record",
+      "cost": "gives up the other two routes; may look like a trick"
+    },
+    "c_n12d6_1": {
+      "intent": "submit without performance",
+      "cost": "ends the story: the objection is judged on its proof"
+    },
+    "c_n12d6_2": {
+      "intent": "prioritise the typed record",
+      "cost": "ends the story: the record secured outside the shed"
+    },
+    "c_n12c0_0": {
+      "intent": "review the dossier end to end",
+      "cost": "forced single option; ends the story with a reflection rather than a hearing"
+    },
+    "c_n12c1_0": {
+      "intent": "file the complete objection",
+      "cost": "none (single continue)"
+    },
+    "c_n12c2_0": {
+      "intent": "file under a trust's name",
+      "cost": "none (single continue)",
+      "requires": [
+        "orchard_hill_trust"
+      ]
+    },
+    "c_n12c3_0": {
+      "intent": "make Faulks answer aloud",
+      "cost": "none (single continue)"
+    },
+    "c_n12c4_0": {
+      "intent": "show the developer what is coming",
+      "cost": "none (single continue)"
+    },
+    "c_n12c5_0": {
+      "intent": "close the 1917 gap",
+      "cost": "none (single continue)",
+      "requires": [
+        "volumes_found"
+      ]
+    },
+    "c_n12c6_0": {
+      "intent": "bring expert testimony",
+      "cost": "none (single continue)",
+      "requires": [
+        "abara_intro"
+      ]
+    },
+    "c_n13d0_0": {
+      "intent": "lead with the rainfall record",
+      "cost": "gives up the other routes; one point first",
+      "requires": [
+        "survey_in_driest_fortnight"
+      ]
+    },
+    "c_n13d0_1": {
+      "intent": "defend the notebooks' rigour",
+      "cost": "gives up the other two routes; must defend non-scientists"
+    },
+    "c_n13d0_2": {
+      "intent": "admit the frost series is short",
+      "cost": "gives up the other two routes; concedes a weakness",
+      "requires": [
+        "frost_readings_six_weeks"
+      ]
+    },
+    "c_n13d1_0": {
+      "intent": "let the surveyor reveal himself",
+      "cost": "gives up the other two routes; gives Faulks the floor",
+      "requires": [
+        "survey_signed_faulks"
+      ]
+    },
+    "c_n13d1_1": {
+      "intent": "have Ada read aloud",
+      "cost": "gives up the other two routes; puts Ada on the spot",
+      "requires": [
+        "ada_page_1947_plan"
+      ]
+    },
+    "c_n13d1_2": {
+      "intent": "open the data to all",
+      "cost": "gives up the other two routes; loses the edge of surprise"
+    },
+    "c_n13d2_0": {
+      "intent": "wait for the item",
+      "cost": "gives up the other two routes; a long wait"
+    },
+    "c_n13d2_1": {
+      "intent": "show both charts",
+      "cost": "gives up the other two routes; puts a short series on display",
+      "requires": [
+        "frost_readings_six_weeks"
+      ]
+    },
+    "c_n13d2_2": {
+      "intent": "watch the record form",
+      "cost": "gives up the other two routes; silent watching"
+    },
+    "c_n13d3_0": {
+      "intent": "let the panel handle the frame",
+      "cost": "gives up the other two routes; hands over a fragile object",
+      "requires": [
+        "cassar_frame"
+      ]
+    },
+    "c_n13d3_1": {
+      "intent": "let Ada's reading land",
+      "cost": "gives up the other two routes; silence is a risk"
+    },
+    "c_n13d3_2": {
+      "intent": "step out during deliberation",
+      "cost": "gives up the other two routes; out of the room"
+    },
+    "c_n13d4_0": {
+      "intent": "fight the panel's questions",
+      "cost": "ends the story: the chair turns careful"
+    },
+    "c_n13d4_1": {
+      "intent": "answer strictly from proof",
+      "cost": "ends the story: the best result the facts allow"
+    },
+    "c_n13d4_2": {
+      "intent": "lead with the rainfall record",
+      "cost": "gives up the other routes; one point first",
+      "requires": [
+        "survey_in_driest_fortnight"
+      ]
+    },
+    "c_n13d5_0": {
+      "intent": "defend the notebooks' rigour",
+      "cost": "gives up the other two routes; must defend non-scientists"
+    },
+    "c_n13d5_1": {
+      "intent": "admit the frost series is short",
+      "cost": "gives up the other two routes; concedes a weakness",
+      "requires": [
+        "frost_readings_six_weeks"
+      ]
+    },
+    "c_n13d5_2": {
+      "intent": "let the surveyor reveal himself",
+      "cost": "gives up the other two routes; gives Faulks the floor",
+      "requires": [
+        "survey_signed_faulks"
+      ]
+    },
+    "c_n13d6_0": {
+      "intent": "have Ada read aloud",
+      "cost": "gives up the other two routes; puts Ada on the spot",
+      "requires": [
+        "ada_page_1947_plan"
+      ]
+    },
+    "c_n13d6_1": {
+      "intent": "open the data to all",
+      "cost": "gives up the other two routes; loses the edge of surprise"
+    },
+    "c_n13d6_2": {
+      "intent": "wait for the item",
+      "cost": "gives up the other two routes; a long wait"
+    },
+    "c_n13d7_0": {
+      "intent": "show both charts",
+      "cost": "gives up the other two routes; puts a short series on display",
+      "requires": [
+        "frost_readings_six_weeks"
+      ]
+    },
+    "c_n13d7_1": {
+      "intent": "watch the record form",
+      "cost": "gives up the other two routes; silent watching"
+    },
+    "c_n13d7_2": {
+      "intent": "let the panel handle the frame",
+      "cost": "gives up the other two routes; hands over a fragile object",
+      "requires": [
+        "cassar_frame"
+      ]
+    },
+    "c_n14d0_0": {
+      "intent": "see the official verdict",
+      "cost": "gives up the other routes; waits for the report"
+    },
+    "c_n14d0_1": {
+      "intent": "see the permission terms",
+      "cost": "gives up the other routes; a partial outcome"
+    },
+    "c_n14d0_2": {
+      "intent": "face the road decision",
+      "cost": "gives up the other routes; the row may not survive",
+      "requires": [
+        "developer_plan"
+      ]
+    },
+    "c_n14d1_0": {
+      "intent": "settle custody",
+      "cost": "gives up the other two routes; disappoints someone"
+    },
+    "c_n14d1_1": {
+      "intent": "account to the helpers",
+      "cost": "gives up the other two routes; must not oversell",
+      "requires": [
+        "class_typed_1930s"
+      ]
+    },
+    "c_n14d1_2": {
+      "intent": "keep the readings going",
+      "cost": "gives up the other two routes; cold dark mornings"
+    },
+    "c_n14d2_0": {
+      "intent": "answer Halvor again",
+      "cost": "gives up the other two routes; opens a door kept shut",
+      "requires": [
+        "halvor_intro"
+      ]
+    },
+    "c_n14d2_1": {
+      "intent": "give the notebooks to the archive",
+      "cost": "ends the story: safe forever, the shed lighter",
+      "requires": [
+        "city_archive"
+      ]
+    },
+    "c_n14d2_2": {
+      "intent": "press for the road to move",
+      "cost": "ends the story: the road goes forty metres east"
+    },
+    "c_n14d3_0": {
+      "intent": "understand the bloom",
+      "cost": "ends the story with Abara's answer rather than a ruling"
+    },
+    "c_n14d3_1": {
+      "intent": "see the official verdict",
+      "cost": "gives up the other routes; waits for the report"
+    },
+    "c_n14d3_2": {
+      "intent": "see the permission terms",
+      "cost": "gives up the other routes; a partial outcome"
+    },
+    "c_n14d4_0": {
+      "intent": "face the road decision",
+      "cost": "gives up the other routes; the row may not survive",
+      "requires": [
+        "developer_plan"
+      ]
+    },
+    "c_n14d4_1": {
+      "intent": "settle custody",
+      "cost": "gives up the other two routes; disappoints someone"
+    },
+    "c_n14d4_2": {
+      "intent": "account to the helpers",
+      "cost": "gives up the other two routes; must not oversell",
+      "requires": [
+        "class_typed_1930s"
+      ]
+    },
+    "c_n14d5_0": {
+      "intent": "keep the readings going",
+      "cost": "gives up the other two routes; cold dark mornings"
+    },
+    "c_n14d5_1": {
+      "intent": "answer Halvor again",
+      "cost": "gives up the other two routes; opens a door kept shut",
+      "requires": [
+        "halvor_intro"
+      ]
+    },
+    "c_n14d5_2": {
+      "intent": "give the notebooks to the archive",
+      "cost": "ends the story: safe forever, the shed lighter",
+      "requires": [
+        "city_archive"
+      ]
+    },
+    "c_n14c0_0": {
+      "intent": "press for the road to move",
+      "cost": "forced single option; ends the story: the road goes forty metres east"
+    },
+    "c_n14c1_0": {
+      "intent": "understand the bloom",
+      "cost": "forced single option; ends the story with Abara's answer rather than a ruling"
+    },
+    "c_n14c2_0": {
+      "intent": "see the official verdict",
+      "cost": "none (single continue)"
+    },
+    "c_n14c3_0": {
+      "intent": "see the permission terms",
+      "cost": "none (single continue)"
+    },
+    "c_n14c4_0": {
+      "intent": "face the road decision",
+      "cost": "none (single continue)",
+      "requires": [
+        "developer_plan"
+      ]
+    },
+    "c_n14c5_0": {
+      "intent": "settle custody",
+      "cost": "none (single continue)"
+    },
+    "c_n15d0_0": {
+      "intent": "run the full winter study",
+      "cost": "gives up the other routes; nine people and dark mornings",
+      "requires": [
+        "frost_pocket"
+      ]
+    },
+    "c_n15d0_1": {
+      "intent": "pass on the old hands",
+      "cost": "gives up the other routes; Ada's afternoons",
+      "requires": [
+        "nine_hands"
+      ]
+    },
+    "c_n15d0_2": {
+      "intent": "give the trust a purpose",
+      "cost": "gives up the other routes; four talks and one fight",
+      "requires": [
+        "orchard_hill_trust"
+      ]
+    },
+    "c_n15d1_0": {
+      "intent": "take up the evening entry",
+      "cost": "gives up the other routes; a nightly duty"
+    },
+    "c_n15d1_1": {
+      "intent": "extend the frost study",
+      "cost": "gives up the other two routes; eleven pounds",
+      "requires": [
+        "frost_pocket"
+      ]
+    },
+    "c_n15d1_2": {
+      "intent": "organise the readers",
+      "cost": "gives up the other two routes; depends on people showing up",
+      "requires": [
+        "thermometer_rota"
+      ]
+    },
+    "c_n15d2_0": {
+      "intent": "read the recovered volumes",
+      "cost": "gives up the other two routes; time on old pages",
+      "requires": [
+        "volumes_found"
+      ]
+    },
+    "c_n15d2_1": {
+      "intent": "witness the resurvey",
+      "cost": "gives up the other two routes; a passive role",
+      "requires": [
+        "may_resurvey"
+      ]
+    },
+    "c_n15d2_2": {
+      "intent": "continue the record himself",
+      "cost": "ends the story: the record goes on in Jonah's hand",
+      "requires": [
+        "record_114_years"
+      ]
+    },
+    "c_n15d3_0": {
+      "intent": "let the readings slip",
+      "cost": "ends the story: an eleven-day gap forever",
+      "requires": [
+        "winter_rota"
+      ]
+    },
+    "c_n15d3_1": {
+      "intent": "run the full winter study",
+      "cost": "gives up the other routes; nine people and dark mornings",
+      "requires": [
+        "frost_pocket"
+      ]
+    },
+    "c_n15d3_2": {
+      "intent": "pass on the old hands",
+      "cost": "gives up the other routes; Ada's afternoons",
+      "requires": [
+        "nine_hands"
+      ]
+    },
+    "c_n15d4_0": {
+      "intent": "give the trust a purpose",
+      "cost": "gives up the other routes; four talks and one fight",
+      "requires": [
+        "orchard_hill_trust"
+      ]
+    },
+    "c_n15d4_1": {
+      "intent": "take up the evening entry",
+      "cost": "gives up the other routes; a nightly duty"
+    },
+    "c_n15d4_2": {
+      "intent": "extend the frost study",
+      "cost": "gives up the other two routes; eleven pounds",
+      "requires": [
+        "frost_pocket"
+      ]
+    },
+    "c_n15d5_0": {
+      "intent": "organise the readers",
+      "cost": "gives up the other two routes; depends on people showing up",
+      "requires": [
+        "thermometer_rota"
+      ]
+    },
+    "c_n15d5_1": {
+      "intent": "read the recovered volumes",
+      "cost": "gives up the other two routes; time on old pages",
+      "requires": [
+        "volumes_found"
+      ]
+    },
+    "c_n15d5_2": {
+      "intent": "witness the resurvey",
+      "cost": "gives up the other two routes; a passive role",
+      "requires": [
+        "may_resurvey"
+      ]
+    },
+    "c_n15d6_0": {
+      "intent": "continue the record himself",
+      "cost": "ends the story: the record goes on in Jonah's hand",
+      "requires": [
+        "record_114_years"
+      ]
+    },
+    "c_n15d6_1": {
+      "intent": "let the readings slip",
+      "cost": "ends the story: an eleven-day gap forever",
+      "requires": [
+        "winter_rota"
+      ]
+    },
+    "c_n15d6_2": {
+      "intent": "run the full winter study",
+      "cost": "gives up the other routes; nine people and dark mornings",
+      "requires": [
+        "frost_pocket"
+      ]
+    },
+    "c_n16d0_0": {
+      "intent": "review the new survey",
+      "cost": "gives up the other routes",
+      "requires": [
+        "may_resurvey"
+      ]
+    },
+    "c_n16d0_1": {
+      "intent": "count the cost",
+      "cost": "gives up the other routes; faces the losses"
+    },
+    "c_n16d0_2": {
+      "intent": "reflect on choices",
+      "cost": "gives up the other routes; faces regrets"
+    },
+    "c_n16d1_0": {
+      "intent": "see the spring bloom",
+      "cost": "gives up the other two routes; waits for April"
+    },
+    "c_n16d1_1": {
+      "intent": "rest on the long record",
+      "cost": "ends the story: protected by ordinary evenings"
+    },
+    "c_n16d1_2": {
+      "intent": "accept what a record is",
+      "cost": "ends the story with an understanding, not a win"
+    },
+    "c_n16d2_0": {
+      "intent": "review the new survey",
+      "cost": "gives up the other routes",
+      "requires": [
+        "may_resurvey"
+      ]
+    },
+    "c_n16d2_1": {
+      "intent": "count the cost",
+      "cost": "gives up the other routes; faces the losses"
+    },
+    "c_n16d2_2": {
+      "intent": "reflect on choices",
+      "cost": "gives up the other routes; faces regrets"
+    },
+    "c_n16d3_0": {
+      "intent": "see the spring bloom",
+      "cost": "gives up the other two routes; waits for April"
+    },
+    "c_n16d3_1": {
+      "intent": "rest on the long record",
+      "cost": "ends the story: protected by ordinary evenings"
+    },
+    "c_n16d3_2": {
+      "intent": "accept what a record is",
+      "cost": "ends the story with an understanding, not a win"
+    },
+    "c_n16c0_0": {
+      "intent": "review the new survey",
+      "cost": "none (single continue)",
+      "requires": [
+        "may_resurvey"
+      ]
+    },
+    "c_n16c1_0": {
+      "intent": "count the cost",
+      "cost": "none (single continue)"
+    },
+    "c_n16c2_0": {
+      "intent": "reflect on choices",
+      "cost": "none (single continue)"
+    },
+    "c_n16c3_0": {
+      "intent": "see the spring bloom",
+      "cost": "none (single continue)"
+    },
+    "c_n17d0_0": {
+      "intent": "index the notebooks",
+      "cost": "ends the story: a year of indexing"
+    },
+    "c_n17d0_1": {
+      "intent": "stay for the next harvest",
+      "cost": "ends the story with an ordinary autumn"
+    },
+    "c_n17d0_2": {
+      "intent": "revisit the survey's sentence",
+      "cost": "ends the story with a reflection",
+      "requires": [
+        "key_sentence_eleven_words"
+      ]
+    },
+    "c_n17d1_0": {
+      "intent": "let the record close",
+      "cost": "ends the story: the series closes"
+    },
+    "c_n17d1_1": {
+      "intent": "index the notebooks",
+      "cost": "ends the story: a year of indexing"
+    },
+    "c_n17d1_2": {
+      "intent": "stay for the next harvest",
+      "cost": "ends the story with an ordinary autumn"
+    },
+    "c_n17d2_0": {
+      "intent": "revisit the survey's sentence",
+      "cost": "ends the story with a reflection",
+      "requires": [
+        "key_sentence_eleven_words"
+      ]
+    },
+    "c_n17d2_1": {
+      "intent": "let the record close",
+      "cost": "ends the story: the series closes"
+    },
+    "c_n17d2_2": {
+      "intent": "index the notebooks",
+      "cost": "ends the story: a year of indexing"
+    },
+    "c_n17d3_0": {
+      "intent": "stay for the next harvest",
+      "cost": "ends the story with an ordinary autumn"
+    },
+    "c_n17d3_1": {
+      "intent": "revisit the survey's sentence",
+      "cost": "ends the story with a reflection",
+      "requires": [
+        "key_sentence_eleven_words"
+      ]
+    },
+    "c_n17d3_2": {
+      "intent": "let the record close",
+      "cost": "ends the story: the series closes"
+    }
+  },
+  "threads": {
+    "t_asked_notebooks": {
+      "variable": "did_ask_whether_notebooks",
+      "plant": "ada_found_no_october",
+      "planting_choices": [
+        "c_n01d0_0"
+      ],
+      "payoff_sites": [
+        {
+          "node": "n08d3",
+          "choice": "c_n08d3_1_cq_did_ask_whether_notebooks",
+          "shows": "Remembering Ada's empty search, Jonah stops short of an unsupported attack on Faulks."
+        },
+        {
+          "node": "n10d3",
+          "choice": "c_n10d3_2_cq_did_ask_whether_notebooks",
+          "shows": "Ada's October bloom margin lets Jonah read the survey data as weather the notebooks never saw."
+        }
+      ]
+    },
+    "t_read_notice": {
+      "variable": "did_go_down_read",
+      "plant": "jonah_read_notice",
+      "planting_choices": [
+        "c_n01d0_2"
+      ],
+      "payoff_sites": [
+        {
+          "node": "n06d3",
+          "choice": "c_n06d3_2_cq_did_go_down_read",
+          "shows": "Having the survey's exact words makes the four-lines plan feel like a strike back."
+        }
+      ]
+    },
+    "t_found_author": {
+      "variable": "did_find_who_wrote",
+      "plant": "faulks_name_in_ada_book",
+      "planting_choices": [
+        "c_n03d0_0"
+      ],
+      "payoff_sites": [
+        {
+          "node": "n11d1",
+          "choice": "c_n11d1_0_cq_did_find_who_wrote",
+          "shows": "The underlined name D. Faulks sharpens Jonah's answer to Halvor into a point about one surveyor."
+        },
+        {
+          "node": "n11d5",
+          "choice": "c_n11d5_0_cq_did_find_who_wrote",
+          "shows": "Knowing Faulks's name, Jonah refuses to let the deadline decide and targets the driest fortnight."
+        }
+      ]
+    }
+  },
+  "endings": {
+    "e05_0": {
+      "gift": "the shape of the argument, understood too late: a reason to act next time",
+      "valence": "neutral",
+      "kind": "discovery"
+    },
+    "e06_0": {
+      "gift": "the hard lesson that doing it all at once is doing none of it",
+      "valence": "negative",
+      "kind": "setback"
+    },
+    "e07_0": {
+      "gift": "the notebooks safe forever, and the lesson that safety is not an argument",
+      "valence": "neutral",
+      "kind": "discovery"
+    },
+    "e07_1": {
+      "gift": "one wrong date shows why checking comes before sending",
+      "valence": "neutral",
+      "kind": "setback"
+    },
+    "e08_0": {
+      "gift": "a pretty chart praised and filed: proof needs its method beside it",
+      "valence": "neutral",
+      "kind": "discovery"
+    },
+    "e08_1": {
+      "gift": "three wrong guesses show that marking doubt beats guessing",
+      "valence": "negative",
+      "kind": "setback"
+    },
+    "e09_0": {
+      "gift": "a lovely photo of Ada that everyone keeps, and a missed deadline",
+      "valence": "neutral",
+      "kind": "discovery"
+    },
+    "e09_1": {
+      "gift": "an unprovable accusation taints every honest point after it",
+      "valence": "negative",
+      "kind": "setback"
+    },
+    "e10_0": {
+      "gift": "four hundred readers and no answer: publishing is not persuading",
+      "valence": "neutral",
+      "kind": "discovery"
+    },
+    "e10_1": {
+      "gift": "numbers without a method are just numbers",
+      "valence": "neutral",
+      "kind": "setback"
+    },
+    "e11_0": {
+      "gift": "a plaque for Ada and a saved corner, but the Bramley row lost",
+      "valence": "neutral",
+      "kind": "discovery"
+    },
+    "e11_1": {
+      "gift": "the argument becomes about Jonah: a lesson in keeping it about the facts",
+      "valence": "negative",
+      "kind": "setback"
+    },
+    "e12_0": {
+      "gift": "a quiet secret: the gap filled, its century-old story known only to Jonah",
+      "valence": "neutral",
+      "kind": "discovery"
+    },
+    "e12_1": {
+      "gift": "the version the deadline made, and a wish he had found the author's name",
+      "valence": "negative",
+      "kind": "setback"
+    },
+    "e13_0": {
+      "gift": "the objection accepted and the survey ordered redone in May",
+      "valence": "positive",
+      "kind": "success"
+    },
+    "e13_1": {
+      "gift": "the hundred and fourteen years copied and safe outside the shed",
+      "valence": "positive",
+      "kind": "completion"
+    },
+    "e13_2": {
+      "gift": "the insight that the record is people turning up, in order",
+      "valence": "neutral",
+      "kind": "discovery"
+    },
+    "e14_0": {
+      "gift": "a chair turned careful: a fair question deserves a fair answer",
+      "valence": "negative",
+      "kind": "setback"
+    },
+    "e14_1": {
+      "gift": "six answers and one honest no, and a growing-season resurvey",
+      "valence": "positive",
+      "kind": "success"
+    },
+    "e15_0": {
+      "gift": "the notebooks given to the archive for good, Ada free to read them",
+      "valence": "positive",
+      "kind": "completion"
+    },
+    "e15_1": {
+      "gift": "the road moved forty metres east and the Bramley row saved",
+      "valence": "positive",
+      "kind": "success"
+    },
+    "e15_2": {
+      "gift": "Abara's answer: the bloom was a question and the notebooks the answer",
+      "valence": "neutral",
+      "kind": "discovery"
+    },
+    "e16_0": {
+      "gift": "the hundred and fifteenth year begun in Jonah's own uneven hand",
+      "valence": "positive",
+      "kind": "completion"
+    },
+    "e16_1": {
+      "gift": "an eleven-day gap that shows a record lives only if people show up",
+      "valence": "neutral",
+      "kind": "setback"
+    },
+    "e17_0": {
+      "gift": "the orchard protected by a hundred and fourteen ordinary evenings",
+      "valence": "positive",
+      "kind": "success"
+    },
+    "e17_1": {
+      "gift": "understanding that a record is the reason to be believed",
+      "valence": "neutral",
+      "kind": "discovery"
+    },
+    "e18_0": {
+      "gift": "the first index of the six shelves, with Jonah's name on page one",
+      "valence": "positive",
+      "kind": "completion"
+    },
+    "e18_1": {
+      "gift": "an ordinary enormous harvest and Jonah's steadier hand in the record",
+      "valence": "positive",
+      "kind": "success"
+    },
+    "e18_2": {
+      "gift": "the eleven words, proved wrong, reread with new meaning",
+      "valence": "neutral",
+      "kind": "discovery"
+    },
+    "e18_3": {
+      "gift": "the notebooks safe but closed: a document instead of a habit",
+      "valence": "neutral",
+      "kind": "setback"
+    }
+  },
+  "provenance": {
+    "producer": "wp-1.4 blind extraction",
+    "model": "claude-opus-5-5",
+    "method": "read-book",
+    "book_file": "tmp_cleanup/blind/y3.book.json",
+    "book_sha256": "d014a9e2c42bfb7de19beb7c38d18e8e32b31584bbf753b396f8cf97b644df09",
+    "authored": "2026-11-21",
+    "authoring_minutes": 12,
+    "notes": [
+      "Notice timing: n01d0 says the notice appeared yesterday; n02c2, n04c4 and e18_2 say it appeared that morning. Recorded as contradicting facts notice_yesterday and notice_today.",
+      "On the gate route (n02c2) Jonah writes the sentence on his hand; the exercise-book copy is made only at n04c0 (bees route), yet cq_payoff_did_go_down_read, e05_0 and e18_2 presuppose the exercise-book copy.",
+      "The key sentence is called eleven words long throughout but as quoted (the site is of no particular scientific interest) it has eight; recorded as stated.",
+      "n06d2 says the sloping hand gives way in 1931; n08d4 says the 1930s were pulled from the sloping hand. Marked as contradicting.",
+      "n09d5 promises a front-page photo; e09_0 runs it on page five. Marked as contradicting.",
+      "cq_payoff_did_ask_whether_notebooks has Jonah stop himself before accusing Faulks; n17d2 presupposes he said it, though the only accusation passages (e09_1, e11_1) are endings. Marked as contradicting.",
+      "n17d1 says Ada's grandmother is more tired than in October; Ada is eighty-one and n09d7 speaks of the grandmother in the past. Recorded as written (likely meant Ada herself).",
+      "e12_1 regrets not tracking down the survey author's name, but on the gate route (n03d2 to n04d0) Jonah reads the Faulks signature without the variable being set. Marked author_not_tracked against jonah_learned_author.",
+      "The payoff texts at cq_payoff_did_find_who_wrote_site2 and n12d3 assume a cafe meeting with Halvor that only n11d8 shows.",
+      "book.slug is derived from the title; the book file carries no slug."
+    ]
+  }
+}

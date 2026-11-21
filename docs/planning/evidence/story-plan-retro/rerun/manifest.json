@@ -1,0 +1,63 @@
+{
+  "wp": "WP-1.5 re-run (D5)",
+  "date": "2026-11-21",
+  "prompt": "../plans/EXTRACTION-PROMPT-v2.md",
+  "staging": "Inputs staged as tmp_cleanup/blind/<id>.book.json in a rebuilt blind worktree (docs/planning, tests, skills reference, out/*.plan.json and current revised books deleted from the working tree). Fresh agents, all opus; none saw the first-run plans.",
+  "extractions": {
+    "y1": {
+      "source_file": "docs/planning/evidence/structural-verification-2026-11-20/runs/B-os-new-1/filled.json",
+      "revision": "worktree",
+      "first_run_id": "x5",
+      "answer_key_entries": "KD-RB-O1-E05; KD-OS-PP-B-os-new-1-*",
+      "book_sha256": "e86eb8a116868732c2b953c257873343606fd6cfb5de8fb4d5e4088e75c3dba7",
+      "title": "The October Blossom",
+      "model_family": "opus",
+      "authoring_minutes": 70,
+      "note": "Instructions name inputs x<N>; assignment used y-ids (agents followed the assignment)."
+    },
+    "y2": {
+      "source_file": "out/the-hollow-lighthouse.filled.json",
+      "revision": "git:15b14a1",
+      "first_run_id": "x1",
+      "answer_key_entries": "KD-LH-B1..S4",
+      "book_sha256": "82817aa48b088b2d5a154d9d76589410c9af376401bde8449c984f9d06561183",
+      "title": "The Hollow Lighthouse",
+      "model_family": "opus",
+      "authoring_minutes": 75,
+      "note": "Recorded e_set_gears as asserting mira_has_no_key under the v2 negation instruction."
+    },
+    "y3": {
+      "source_file": "docs/planning/evidence/structural-verification-2026-11-20/runs/B-os-new-2/filled.json",
+      "revision": "worktree",
+      "first_run_id": "x6",
+      "answer_key_entries": "KD-OS-PP-B-os-new-2-*",
+      "book_sha256": "d014a9e2c42bfb7de19beb7c38d18e8e32b31584bbf753b396f8cf97b644df09",
+      "title": "The Orchard Signal",
+      "model_family": "opus",
+      "authoring_minutes": 12,
+      "note": "authoring_minutes recorded as 12; the agent itself flagged this as likely too short."
+    },
+    "y4": {
+      "source_file": "out/the-hollow-lighthouse.filled.json",
+      "revision": "git:f3ba310",
+      "first_run_id": "x2",
+      "answer_key_entries": "KD-LH-BS1",
+      "book_sha256": "acd8740b1ee7b42da44131c7bab2a4ad745eb40e93b2af2e5409a17a59d44430",
+      "title": "The Hollow Lighthouse",
+      "model_family": "opus",
+      "authoring_minutes": 75,
+      "note": ""
+    },
+    "y5": {
+      "source_file": "docs/planning/evidence/structural-verification-2026-11-20/runs/B-lkl-new-2/filled.json",
+      "revision": "worktree",
+      "first_run_id": "x4",
+      "answer_key_entries": "KD-RB-L2-OVENS, KD-RB-L2-BEACON",
+      "book_sha256": "904b126589216729e132cd2a4b0d4325e004bbef651538c4a0beb1d99c6159ab",
+      "title": "The Lantern Keepers' List",
+      "model_family": "opus",
+      "authoring_minutes": 70,
+      "note": "Plant facts are the decisions themselves; objects (glove, biscuits) separate facts."
+    }
+  }
+}
