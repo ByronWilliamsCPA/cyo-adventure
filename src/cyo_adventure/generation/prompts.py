@@ -401,9 +401,12 @@ def _budget_block(brief: ConceptBrief, scale: Scale = "standard") -> str:
         raise BusinessLogicError(msg, rule="band_budget_missing")
     min_nodes, max_nodes, max_depth = budget
     ending_count = brief.ending_count
+    # An unpinned brief (tier None, WP-2.1) states no tier at all; a set tier
+    # keeps the original wording byte-for-byte.
+    tier_clause = f" and tier ({brief.tier})" if brief.tier is not None else ""
     return (
         f"Your skeleton MUST satisfy ALL of these hard limits for this brief's age "
-        f"band ({brief.age_band}) and tier ({brief.tier}). Exceeding any of them "
+        f"band ({brief.age_band}){tier_clause}. Exceeding any of them "
         f"fails validation (rule L1-7) and the story is rejected:\n\n"
         f"- Node count: produce between {min_nodes} and {max_nodes} nodes total. "
         f"Do not exceed {max_nodes} nodes.\n"

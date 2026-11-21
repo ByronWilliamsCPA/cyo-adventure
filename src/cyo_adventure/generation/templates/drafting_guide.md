@@ -122,7 +122,8 @@ in nodes at every level. A 6-level tree has 63 nodes; a 10-level tree has 1,023.
 let you write distinctive experiences on each branch while keeping total node count inside
 the budget.
 
-Other supported structure patterns (for the concept brief `structure_pattern` field):
+Other supported structure patterns (for the concept brief `structure_pattern` field, which may be absent for bands 8-11 and up,
+where the shape or the story plan supplies it):
 
 - `time_cave`: the reader loops back to a central hub from multiple branches; useful for
   exploration stories. Every hub exit must lead toward an ending to pass the loop-escape
@@ -413,13 +414,13 @@ generation prompt as `{concept_brief}`. Fields marked with `?` are optional.
 | `point_of_view` | string | Narrative POV; free text, default `"second"` (not an enum) |
 | `age_band` | enum | `"3-5"`, `"5-8"`, `"8-11"`, `"10-13"`, `"13-16"`, or `"16+"` |
 | `reading_level_target` | float | Target Flesch-Kincaid grade level, e.g. `4.0` |
-| `tier` | int | `1` (branching only) or `2` (state-tracking) |
+| `tier` | int? | `1` (branching only) or `2` (state-tracking); may be absent for bands 8-11 and up, the shape or plan supplies it |
 | `tone` | string | e.g. "adventurous", "gentle mystery", "tense survival" |
 | `themes_allowed` | string[] | e.g. `["friendship", "courage", "nature"]` |
 | `content_nogo` | string[] | e.g. `["graphic violence", "romantic content"]` |
 | `target_node_count` | int | Target total node count (see budgets above) |
 | `ending_count` | int | Number of distinct endings (minimum 2) |
-| `structure_pattern` | enum | `time_cave`, `gauntlet`, `branch_and_bottleneck`, `quest`, `loop_and_grow` |
+| `structure_pattern` | enum? | May be absent for bands 8-11 and up (the shape or plan supplies it). One of `time_cave`, `gauntlet`, `branch_and_bottleneck`, `quest`, `loop_and_grow` |
 | `desired_variables[]?` | string[] | For Tier 2: bounded variable-name strings (1-200 chars each); no nested type/initial/min/max/description |
 | `special_constraints[]?` | string[] | Freeform constraints for the LLM; length-limited; no real PII |
 

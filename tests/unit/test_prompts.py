@@ -1203,3 +1203,23 @@ class TestFailureFeedbackCannotForgeTheMarker:
         assert isinstance(prompt, StagePrompt)
         assert _USER_MARKER not in prompt.user
         assert "Rosa" in prompt.user, "the node id must still reach the model"
+
+
+def test_budget_block_omits_tier_when_unpinned(minimal_brief: ConceptBrief) -> None:
+    """WP-2.1: an unpinned 8-11 brief's Stage A prompt states no tier."""
+    unpinned = minimal_brief.model_copy(
+        update={"tier": None, "structure_pattern": None}
+    )
+    block = _budget_block(unpinned)
+    assert "tier" not in block.lower()
+    prompt = build_structure_prompt(unpinned)
+    assert "tier (1)" not in prompt.user
+    assert "tier (1)" in _budget_block(minimal_brief)
+
+
+def test_budget_block_set_tier_wording_unchanged(minimal_brief: ConceptBrief) -> None:
+    """A pinned brief keeps the original budget sentence byte-for-byte."""
+    assert (
+        "age band (8-11) and tier (1). Exceeding any of them fails validation"
+        in _budget_block(minimal_brief)
+    )

@@ -631,3 +631,29 @@ def test_resolve_node_budget_precedence() -> None:
     assert resolve_node_budget(
         "3-5", ScalePlacement(length="long"), scale="standard"
     ) == band_budget("3-5")
+
+
+@pytest.mark.unit
+@pytest.mark.parametrize("tier", [2, None])
+def test_variables_allowed_at_tier_2_or_unset(tier: int | None) -> None:
+    """WP-2.1: variables do not trip L1-6 unless the story is tier 1."""
+    node = _link("n_start", "n_end")
+    variables = [{"name": "k", "type": "bool", "initial": False}]
+    meta = _meta(tier=2)
+    if tier is None:
+        meta = {k: v for k, v in meta.items() if k != "tier"}
+    report = validate_layer1(_story([node, _ending()], variables=variables, meta=meta))
+    assert not any(
+        f.rule_id == "L1-6" and "tier-1" in f.message for f in report.findings
+    )
+
+
+@pytest.mark.unit
+def test_variables_at_tier_1_still_l1_6() -> None:
+    """Tier 1 with declared variables still trips L1-6."""
+    node = _link("n_start", "n_end")
+    variables = [{"name": "k", "type": "bool", "initial": False}]
+    report = validate_layer1(
+        _story([node, _ending()], variables=variables, meta=_meta(tier=1))
+    )
+    assert "L1-6" in report.rule_ids()

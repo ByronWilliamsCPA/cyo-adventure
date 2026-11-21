@@ -23,8 +23,12 @@ W2.2 unforce (design review finding 2.5): tone is derived from the request's
 own text (``story_requests/tone.py::derive_tone``, D5/D18) instead of the
 former hardcoded ``"gentle"``, and the structural target is the middle of the
 band's node envelope with the ending count scaled to match, instead of the
-band floor. ``tier`` stays fixed at 1 and ``structure_pattern`` stays
-``BRANCH_AND_BOTTLENECK``; both are out of this change's scope.
+band floor.
+
+WP-2.1 brief unpinning (ADR-033 Decision 7): for bands 8-11, 10-13 and 13-16
+(and 16+) ``tier`` and ``structure_pattern`` are left ``None``; the chosen shape
+(skeleton path) or story plan (fresh path) supplies them. Bands 3-5 and 5-8
+keep ``tier=1`` and ``BRANCH_AND_BOTTLENECK``.
 """
 
 from __future__ import annotations
@@ -79,6 +83,10 @@ _READING_CAP_SENTINEL = 99.0
 # rather than a silent default, since a wrong FK target reaches a child as prose
 # at the wrong difficulty.
 # #VERIFY: test_reading_level_sources.py::test_reading_level_target_covers_every_band.
+
+# Bands whose briefs still fix tier=1 and the branch-and-bottleneck pattern;
+# every later band is unpinned (WP-2.1, ADR-033 Decision 7).
+_PINNED_BANDS: frozenset[AgeBand] = frozenset({AgeBand.BAND_3_5, AgeBand.BAND_5_8})
 
 # #ASSUME: data-integrity: band lower-bound protagonist age, mirroring the
 # frontend default; a fictional character age, not a real child's age.
@@ -311,6 +319,10 @@ def brief_from_request(
     narrative_style_str = narrative_style_value or NarrativeStyle.PROSE.value
     node_count, ending_count = _budget_for(request, age_band, band, narrative_style_str)
     reading_target = _reading_target_for(age_band, profile)
+    # #CRITICAL: data integrity: the two earliest bands stay pinned so their
+    # briefs are byte-identical; every later band is unpinned (WP-2.1).
+    # #VERIFY: test_story_requests.py brief tier/pattern tests per band.
+    pinned = age_band in _PINNED_BANDS
     content_nogo, content_flag_constraints = _content_controls(profile, age_band)
     return ConceptBrief(
         premise=request.request_text,
@@ -321,11 +333,11 @@ def brief_from_request(
         ),
         age_band=age_band,
         reading_level_target=reading_target,
-        tier=1,
+        tier=1 if pinned else None,
         tone=derive_tone(request.request_text, age_band),
         target_node_count=node_count,
         ending_count=ending_count,
-        structure_pattern=StructurePattern.BRANCH_AND_BOTTLENECK,
+        structure_pattern=(StructurePattern.BRANCH_AND_BOTTLENECK if pinned else None),
         content_nogo=content_nogo,
         special_constraints=content_flag_constraints,
         length=Length(request.length) if request.length is not None else None,

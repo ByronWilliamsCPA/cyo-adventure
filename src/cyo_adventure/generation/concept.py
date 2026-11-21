@@ -251,10 +251,19 @@ class ConceptBrief(BaseModel):
         ge=0.0,
         description="Target Flesch-Kincaid grade level.",
     )
-    tier: int = Field(
+    # #ASSUME: data integrity: None means "not pinned by the brief"; for bands
+    # 8-11 and up the chosen shape (skeleton path) or story plan (fresh path)
+    # supplies tier and pattern (ADR-033 Decision 7).
+    # #VERIFY: prompts._budget_block states no tier when None;
+    # test_prompts.py::test_budget_block_omits_tier_when_unpinned.
+    tier: int | None = Field(
+        default=None,
         ge=1,
         le=2,
-        description="Story tier: 1 = simple (no variables), 2 = stateful.",
+        description=(
+            "Story tier: 1 = simple (no variables), 2 = stateful. "
+            "None = supplied later by the shape or plan."
+        ),
     )
 
     # Tone and content guidance.
@@ -293,8 +302,12 @@ class ConceptBrief(BaseModel):
         le=MAX_ENDING_COUNT,
         description="Number of distinct endings to generate.",
     )
-    structure_pattern: StructurePattern = Field(
-        description="Narrative-structure template to apply.",
+    structure_pattern: StructurePattern | None = Field(
+        default=None,
+        description=(
+            "Narrative-structure template to apply. "
+            "None = supplied later by the shape or plan."
+        ),
     )
 
     # Optional ADR-011 story-scale placement. When ``length`` names an offered

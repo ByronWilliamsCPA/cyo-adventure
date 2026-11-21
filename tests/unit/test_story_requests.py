@@ -131,7 +131,9 @@ def test_brief_from_request_uses_band_budget_and_generic_protagonist() -> None:
         "the midpoint derivation is the defect; this must not silently return to it"
     )
     assert brief.protagonist.name == "Explorer"  # never a real child name
-    assert brief.tier == 1
+    # WP-2.1: 8-11 is unpinned; the shape or plan supplies tier and pattern.
+    assert brief.tier is None
+    assert brief.structure_pattern is None
 
 
 def test_brief_from_request_band_comes_from_request_not_profile() -> None:
@@ -1531,3 +1533,34 @@ def test_brief_ending_count_satisfies_the_gate_in_every_cell() -> None:
             f"{brief.ending_count} endings, PL-17 floors at {floor_at_max} "
             f"for a compliant {max_nodes}-node story"
         )
+
+
+@pytest.mark.parametrize("band", ["3-5", "5-8"])
+def test_brief_pins_tier_and_pattern_for_early_bands(band: str) -> None:
+    """WP-2.1: 3-5 and 5-8 keep tier=1 and branch-and-bottleneck."""
+    request = StoryRequest(
+        family_id=uuid.uuid4(),
+        profile_id=uuid.uuid4(),
+        request_text="a story about a brave fox",
+        status="pending",
+        age_band=band,
+    )
+    brief = brief_from_request(request, _profile(band))
+    assert brief.tier == 1
+    assert brief.structure_pattern is not None
+    assert brief.structure_pattern.value == "branch_and_bottleneck"
+
+
+@pytest.mark.parametrize("band", ["8-11", "10-13", "13-16"])
+def test_brief_unpins_tier_and_pattern_for_later_bands(band: str) -> None:
+    """WP-2.1: 8-11 and up leave tier and pattern to the shape or plan."""
+    request = StoryRequest(
+        family_id=uuid.uuid4(),
+        profile_id=uuid.uuid4(),
+        request_text="a story about a brave fox",
+        status="pending",
+        age_band=band,
+    )
+    brief = brief_from_request(request, _profile(band))
+    assert brief.tier is None
+    assert brief.structure_pattern is None

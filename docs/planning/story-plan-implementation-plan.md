@@ -429,6 +429,11 @@ that had read the continuity notes, so it is not the blind test WP-1.4 and WP-1.
   skeleton's tier); a fresh-generation brief at 8-11 may declare variables without tripping L1-6; no API schema change
   (verify with the `contract` CI job).
 - **Independent of Phase 1.** May run any time after D1. **Size.** S.
+- **Amendment (2026-11-21).** Acceptance item 3 is replaced by: the API schema change is limited to
+  `ConceptBrief.tier` and `ConceptBrief.structure_pattern` becoming optional (a relaxation; existing clients keep
+  working), and the regenerated client is committed in the same change so the contract job passes. Acceptance item 1 is
+  read as: the skeleton-fill prompt builders are byte-identical for a given `theme_brief`, persisted concepts are
+  unaffected, and 3-5 and 5-8 briefs are byte-identical end to end; a new 8-11+ brief's JSON differs by design.
 
 ### WP-2.2 Retained shapes and typed directive format
 

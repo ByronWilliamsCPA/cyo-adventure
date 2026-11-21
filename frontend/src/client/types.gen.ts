@@ -1126,9 +1126,9 @@ export type ConceptBrief = {
     /**
      * Tier
      *
-     * Story tier: 1 = simple (no variables), 2 = stateful.
+     * Story tier: 1 = simple (no variables), 2 = stateful. None = supplied later by the shape or plan.
      */
-    tier: number;
+    tier?: number | null;
     /**
      * Tone
      *
@@ -1160,9 +1160,9 @@ export type ConceptBrief = {
      */
     ending_count: number;
     /**
-     * Narrative-structure template to apply.
+     * Narrative-structure template to apply. None = supplied later by the shape or plan.
      */
-    structure_pattern: StructurePattern;
+    structure_pattern?: StructurePattern | null;
     /**
      * Story-scale length tier (short/medium/long); None = band budget.
      */
