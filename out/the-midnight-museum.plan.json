@@ -146,13 +146,7 @@
    "text": "Nadia has found a way to read the founder's code."
   },
   "cipher_shift_three": {
-   "text": "The founder's code is a shift: every letter steps three places on."
-  },
-  "cipher_substitution_table": {
-   "text": "The founder's code is read with a table of the alphabet against a shuffled alphabet.",
-   "contradicts": [
-    "cipher_shift_three"
-   ]
+   "text": "The founder's code is a three-place shift: each letter stands three places along the alphabet from the one it means, so every D is really an A."
   },
   "reading_lamp_bulb": {
    "text": "The green lamp on the founder's reading table still lights, so someone has been changing the bulb."
@@ -172,20 +166,14 @@
   "quarter_to_four_rule": {
    "text": "The founder's rule in the rounds book: at a quarter to four, if the heart is awake, clockwork sets the rings by itself."
   },
-  "floor_opens_one_minute": {
-   "text": "The floor beside the globe opens for one minute, then closes."
-  },
-  "floor_left_open": {
-   "text": "The marble beside the globe still stands open hours after Nadia went down.",
-   "contradicts": [
-    "floor_opens_one_minute"
-   ]
+  "floor_opens_by_clockwork": {
+   "text": "When the rings come home (by hand, by the tile picture, or by the quarter-to-four clockwork) a slab beside the globe slides back, and it stays open until someone pushes it shut by hand."
   },
   "pym_note": {
    "text": "Pym saw her board, searched every room twice, and left a note: he is at the front desk with the kettle on."
   },
   "vault_room": {
-   "text": "Under the rotunda is the founder's hidden room, stop 38, full of the town's treasures, with a sealed letter, the other half of the map and a jewelled owl."
+   "text": "Under the rotunda is the founder's hidden room, stop 38, full of the town's treasures, with a sealed letter marked \"To the finder\", the other half of the map and a jewelled owl."
   },
   "treasures_belong_to_town": {
    "text": "Every piece in the hidden room belongs to the town; the founder hid it from men who meant to sell it."
@@ -207,6 +195,15 @@
   },
   "owl_shelf_counts": {
    "text": "Lifting the owl starts a spring under the shelf; the velvet shows a coin-sized hollow stamped with the mark."
+  },
+  "staff_door_morning": {
+   "text": "The museum stays locked all night; Nadia can leave only once the first keys of the morning open the staff door, which lets out by the garden gate."
+  },
+  "slab_closed_by_hand": {
+   "text": "Nadia pushes the marble slab back over the stair, so the floor looks as if it had never moved."
+  },
+  "east_wing_paintings": {
+   "text": "The lost east wing is a long gallery hung with paintings the town was told were sold and lost."
   }
  },
  "nodes": {
@@ -508,10 +505,10 @@
   },
   "k_cabinet": {
    "function": "continue",
-   "event": "The ledger's marked page: the alphabet against a shuffled alphabet, a table for the code.",
+   "event": "The ledger's marked page: the alphabet against the alphabet starting at D, a three-place table for the code.",
    "requires": [],
    "establishes": [
-    "cipher_substitution_table",
+    "cipher_shift_three",
     "cipher_tool"
    ]
   },
@@ -523,10 +520,10 @@
   },
   "k_display_careful": {
    "function": "continue",
-   "event": "Letting the lid down and trying gently, Nadia gets the ledger's swap table and lights the reading lamp.",
+   "event": "Letting the lid down and trying gently, Nadia gets the ledger's three-place table and lights the reading lamp, whose bulb someone has kept changing.",
    "requires": [],
    "establishes": [
-    "cipher_substitution_table",
+    "cipher_shift_three",
     "cipher_tool",
     "reading_lamp_bulb"
    ]
@@ -571,12 +568,13 @@
   },
   "n_cipher": {
    "function": "merge",
-   "event": "Decoded: follow the stars to the heart of the house by one of three roads, then set the rings to four, nine, two.",
+   "event": "Each letter stepped three places back, the note reads: follow the stars to the heart of the house by one of three roads, then set the rings to four, nine, two.",
    "requires": [
     "cipher_tool",
     "globe_heart"
    ],
    "establishes": [
+    "cipher_shift_three",
     "globe_combo"
    ]
   },
@@ -654,7 +652,7 @@
   },
   "ci_clock_pendulum": {
    "function": "decision",
-   "event": "The pendulum swings across the only doorway; learn its beat or dash.",
+   "event": "The pendulum swings across the far doorway; learn its beat or dash.",
    "requires": [],
    "establishes": []
   },
@@ -739,11 +737,11 @@
   },
   "ro_records_guard": {
    "function": "merge",
-   "event": "The founder's rule: at a quarter to four the clockwork sets the rings and the floor opens for one minute; it is sixteen to four, and she runs.",
+   "event": "The founder's rule: at a quarter to four, if the heart is awake, the clockwork sets the rings and opens the floor; it is sixteen to four, and she runs.",
    "requires": [],
    "establishes": [
     "quarter_to_four_rule",
-    "floor_opens_one_minute"
+    "floor_opens_by_clockwork"
    ]
   },
   "ro_records_note": {
@@ -830,15 +828,17 @@
   },
   "v_letter_keep": {
    "function": "continue",
-   "event": "Nadia keeps the letter for the right day and plan.",
+   "event": "Nadia keeps the letter for the right day and plan, and closes the slab behind her.",
    "requires": [
     "founder_letter"
    ],
-   "establishes": []
+   "establishes": [
+    "slab_closed_by_hand"
+   ]
   },
   "v_map": {
    "function": "decision",
-   "event": "The two halves join: the lost east wing, bricked up but standing, through the back of the last shelf.",
+   "event": "The two halves join: the lost east wing, bricked up but standing, through the back of the last shelf; the night is wearing thin.",
    "requires": [
     "half_map",
     "vault_room"
@@ -853,7 +853,9 @@
    "requires": [
     "whole_map_east_wing"
    ],
-   "establishes": []
+   "establishes": [
+    "east_wing_paintings"
+   ]
   },
   "v_map_photo": {
    "function": "continue",
@@ -877,39 +879,44 @@
   },
   "v_share": {
    "function": "decision",
-   "event": "Nadia climbs up with the sealed letter, the marble open behind her; curator, Tess, or leave it for the museum.",
+   "event": "Nadia climbs up with the sealed letter; curator, Tess, or leave it for the museum.",
    "requires": [
     "vault_room"
    ],
-   "establishes": [
-    "floor_left_open"
-   ]
+   "establishes": []
   },
   "v_share_curator": {
    "function": "continue",
-   "event": "The curator arrives to a sealed letter and the open floor beside the globe.",
+   "event": "The curator arrives at eight to a sealed letter, then sees the open floor beside the globe.",
    "requires": [
     "vault_room"
    ],
-   "establishes": [
-    "floor_left_open"
-   ]
+   "establishes": []
   },
   "v_share_secret": {
    "function": "continue",
-   "event": "Nadia tells Tess first.",
+   "event": "Nadia closes the slab, slips out with the morning's first keys, and tells Tess first.",
    "requires": [
-    "nadia_locked_in"
+    "nadia_locked_in",
+    "globe_combo",
+    "vault_room"
    ],
-   "establishes": []
+   "establishes": [
+    "slab_closed_by_hand",
+    "staff_door_morning"
+   ]
   },
   "v_share_museum": {
    "function": "continue",
-   "event": "Nadia leaves the map, the combination, the sealed letter and the key on the guard's desk.",
+   "event": "Nadia leaves both map halves, the combination, the sealed letter and the key on the guard's desk, and closes the slab.",
    "requires": [
-    "globe_combo"
+    "globe_combo",
+    "vault_room",
+    "half_map"
    ],
-   "establishes": []
+   "establishes": [
+    "slab_closed_by_hand"
+   ]
   },
   "v_grab": {
    "function": "decision",
@@ -980,7 +987,7 @@
    "requires": [],
    "establishes": [
     "guard_31_years",
-    "cipher_substitution_table"
+    "cipher_tool"
    ]
   },
   "e_set_stuck_dome": {
@@ -1017,7 +1024,9 @@
    "requires": [
     "whole_map_east_wing"
    ],
-   "establishes": []
+   "establishes": [
+    "staff_door_morning"
+   ]
   },
   "e_win_secret_workshop": {
    "function": "ending",
@@ -1050,7 +1059,9 @@
     "founder_letter",
     "globe_combo"
    ],
-   "establishes": []
+   "establishes": [
+    "staff_door_morning"
+   ]
   },
   "e_win_lost_wing": {
    "function": "ending",
@@ -1066,7 +1077,9 @@
    "requires": [
     "map_back_whole"
    ],
-   "establishes": []
+   "establishes": [
+    "east_wing_paintings"
+   ]
   },
   "e_win_owl_witness": {
    "function": "ending",
@@ -1100,7 +1113,9 @@
    "requires": [
     "globe_combo"
    ],
-   "establishes": []
+   "establishes": [
+    "staff_door_morning"
+   ]
   },
   "e_neutral_call_home": {
    "function": "ending",
@@ -1117,7 +1132,9 @@
    "requires": [
     "globe_combo"
    ],
-   "establishes": []
+   "establishes": [
+    "staff_door_morning"
+   ]
   },
   "e_neutral_wiser": {
    "function": "ending",
@@ -1806,10 +1823,18 @@
   "model": "claude-opus-5-5 (agent, hand-written by reading)",
   "shape": null,
   "book_file": "out/the-midnight-museum.filled.json",
-  "book_sha256": "39ee5a8c474b157f214a80497e63e47ff55405930996061bc33af7f75c556cd4",
+  "book_sha256": "31c4a07d296f586b5188f87a6b37389793829e113e8dbd66a7cd23073edd087c",
   "authored": "2026-11-21",
   "authoring_minutes": 4,
   "checks": null,
-  "approver": null
+  "approver": null,
+  "revisions": [
+   {
+    "date": "2026-11-21",
+    "work_package": "WP-0.4",
+    "by": "claude-opus-5-5 (second reader, did not write this plan)",
+    "note": "Updated to match the book after the continuity fixes in docs/planning/evidence/story-plan-retro/findings-the-midnight-museum.md. Removed the contradicting facts cipher_substitution_table and floor_left_open; renamed floor_opens_one_minute to floor_opens_by_clockwork; added staff_door_morning, slab_closed_by_hand and east_wing_paintings."
+   }
+  ]
  }
 }
