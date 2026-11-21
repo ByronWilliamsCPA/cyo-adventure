@@ -35,7 +35,7 @@
    "name": "R. Ferris",
    "role": "the vanished keeper, alive on the moor",
    "want": "to keep the smuggler off by turning his own signal against him, and to be forgiven for six winters of looking away",
-   "voice": "begins every entry with the weather; small square handwriting; plain, ashamed, gently funny in person (\"Minded the bog, I see\")",
+   "voice": "begins every entry with the weather; small square hand; plain, ashamed, gently funny in person (\"Minded the bog, I see\")",
    "knows": [
     "truth_ferris_took_money",
     "truth_smuggler_wanted_tower",
@@ -2723,7 +2723,8 @@
   "approver": null,
   "notes": [
    "revisions: {\"date\": \"2026-11-21\", \"work_package\": \"WP-0.4\", \"by\": \"claude-opus-5-5 (second-reader continuity agent)\", \"note\": \"Plan updated to match the fixed book; findings in docs/planning/evidence/story-plan-retro/findings-the-hollow-lighthouse.md.\"}",
-   "choices.c_cm_light_relight_2.note: gated has_key == false since WP-0.4: a key-holder sees only the winding choice"
+   "choices.c_cm_light_relight_2.note: gated has_key == false since WP-0.4: a key-holder sees only the winding choice",
+   "sp9_condensed 2026-11-21: cast.ferris.voice; pre-condensation text at commit 51532b2"
   ]
  }
 }

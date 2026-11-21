@@ -26,7 +26,7 @@
       "name": "Maya",
       "role": "protagonist",
       "want": "to explore the echoing caves and find something wonderful before the tide turns",
-      "voice": "third person present; curious, careful, kind to wild animals; acts with her hands (traces carvings, copies names, sketches)",
+      "voice": "third person present; curious, careful, kind to animals; acts with her hands (traces carvings, copies names, sketches)",
       "knows": [
         "aunt_knows_plan",
         "one_hour_deadline"
@@ -1533,7 +1533,8 @@
       "continuity_notes: SOFT, logic: la_bell4 has Maya climb 'the good rope' back up, though she came down a rope ladder that held firm and a loose coil cannot anchor itself at the top; the lantern is 'lit' with nothing established to light it.",
       "continuity_notes: UNPAID SETUP: la_tunnel's rustle 'like wind through paper' is never explained on any route (left_glow_rustle).",
       "continuity_notes: Props introduced in passing by possessive, recorded as established where first named: notebook (la_bell3, ra_starfish), map (da_cache_back), a camera or phone for the photo (ra_starfish, not recorded as a fact), a jar (ra_islet).",
-      "continuity_notes: WP-0.4 (2026-11-21): the plain contradictions above (lapping, compass, keeper/ranger, carved initials, rope/lantern, map, photo, jar, passage direction) were fixed in the book; the soft cross-route home_elsewhere vs home_near_cove item and the unexplained rustle were left as recorded, as they are taste items on no single route. See docs/planning/evidence/story-plan-retro/findings-the-cave-of-echoes.md."
+      "continuity_notes: WP-0.4 (2026-11-21): the plain contradictions above (lapping, compass, keeper/ranger, carved initials, rope/lantern, map, photo, jar, passage direction) were fixed in the book; the soft cross-route home_elsewhere vs home_near_cove item and the unexplained rustle were left as recorded, as they are taste items on no single route. See docs/planning/evidence/story-plan-retro/findings-the-cave-of-echoes.md.",
+      "sp9_condensed 2026-11-21: cast.maya.voice; pre-condensation text at commit 315a79d"
     ]
   }
 }

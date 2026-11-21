@@ -17,9 +17,9 @@
   "pitch": {
     "hero": "Rowan Ashby, a teenager born in Alderwick but raised elsewhere, back in her orchard hometown",
     "want": "to find out why the town is forgetting its people and bring them back",
-    "obstacle": "the Quiet, a forgetting fed by the oldest tree's root under a founders' bargain, and the frost that will set that bargain for another forty years",
+    "obstacle": "the Quiet, a forgetting fed by the oldest tree under a founders' bargain, and the frost that seals it for forty years",
     "stake": "the town's lost years and people, and the memories (or the self) Rowan would have to pay",
-    "ending_kind": "a bargain at the black spring: the town restored by shared remembering, one soul saved, an even trade, or a setback where nerve, force or greed fails"
+    "ending_kind": "a black-spring bargain: town restored by remembering, a soul saved, an even trade, or a setback of nerve, force or greed"
   },
   "cast": {
     "rowan": {
@@ -105,7 +105,7 @@
       "rowan_immune",
       "frost_deadline"
     ],
-    "statement": "The Quiet is the hunger of the orchard's oldest tree, whose taproot pushed through the split founding wall under the cider house into a black spring. In a starving winter the founders begged it to take their grief; to take grief it took memory, and the town's harvests stayed fruitful. The orchard lease renews the bargain once every fortieth year; under it the tree was given one willing name a year, a keeper remembered by the orchard and forgotten by everyone else. The line broke forty years ago when Rowan's grandmother, named in that year's renewal, went down into the spring; she has been held there since, so Rowan never met her and knows her only from photographs. Since then the Quiet takes what it pleases, and the lost turn in the spring. Rowan was born in Alderwick but carried away as a small child and raised elsewhere, so the root has no hold on her. This year's first frost will set the bargain for another forty years. The bargain's motive is told two ways (grief relief, a fruitful harvest); the book treats them as two faces of one trade."
+    "statement": "The Quiet is the hunger of the orchard's oldest tree, whose taproot pushed through the cider house's split founding wall into a black spring. Starving founders begged it to take their grief; it took memory, and harvests stayed fruitful (one trade). The lease renews it every fortieth year with one willing name a year, a keeper only the orchard remembers. Forty years ago Rowan's grandmother went into the spring and is held there; Rowan knows her only from photos. Since then it takes what it pleases. Raised elsewhere, Rowan is beyond its hold. The first frost seals the bargain for forty years."
   },
   "facts": {
     "rowan_arrives_by_bus": {
@@ -255,7 +255,7 @@
       "text": "Past the grandmother's knot waits one fresh empty knot, ready for a name that never came."
     },
     "rowan_has_seed": {
-      "text": "Rowan holds a withered seed, hard and dark as a peppercorn: Odile gives it (keeper route), it slips from the cellar-photo envelope (records), from behind her grandmother's photograph (photographs), or lies beside the carved words at the spring (cellar)."
+      "text": "Rowan holds a withered seed, hard and dark as a peppercorn: Odile gives it (keeper), it slips from the cellar-photo envelope (records) or from behind her grandmother's photo (photographs), or lies by the carved words at the spring (cellar)."
     },
     "black_spring_below_cellar": {
       "text": "Beneath the cider house, past the cellar, is the black spring where the founding root first learned to drink."
@@ -3524,7 +3524,8 @@
       "continuity_resolution.pass: WP-0.4 second-reader continuity pass, 2026-11-21 (control book: continuity only, no agency changes)",
       "continuity_resolution.findings: docs/planning/evidence/story-plan-retro/findings-the-vanishing-orchard.md",
       "continuity_resolution.backstory_decision: Grandmother went into the spring forty years ago and Rowan never met her (supported by both grandmother endings, n_b5_2, kee_a_p3, kee_conv, rec_conv, b2k/b2kt, cel_t_p3); Rowan was born in Alderwick, carried away as a small child, raised elsewhere (supported by n_open on every route, b3v_p2, fin_one_1, fin_one_2, e_b3wn, and every 'grew up elsewhere' line); cadence: lease renewed every fortieth year, one willing name a year.",
-      "continuity_resolution.note: continuity_notes below are the pre-fix record written in WP-0.3; every PLAIN CONTRADICTION, UNESTABLISHED and MERGE DEFECT entry is resolved in the book. SOFT 'last keeper' wording, the two-faced motive, the unpaid setups and the n_b5 conkers callback are not plain contradictions and stay as written (control)."
+      "continuity_resolution.note: continuity_notes below are the pre-fix record written in WP-0.3; every PLAIN CONTRADICTION, UNESTABLISHED and MERGE DEFECT entry is resolved in the book. SOFT 'last keeper' wording, the two-faced motive, the unpaid setups and the n_b5 conkers callback are not plain contradictions and stay as written (control).",
+      "sp9_condensed 2026-11-21: pitch.obstacle, pitch.ending_kind, truth.statement, facts.rowan_has_seed.text; pre-condensation text at commit 315a79d"
     ]
   }
 }

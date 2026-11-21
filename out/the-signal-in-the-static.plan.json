@@ -11,14 +11,14 @@
   "band": "13-16",
   "length": "medium",
   "style": "prose",
-  "tone": "quiet, aching radio mystery about grief and listening; present tense, rain and static, an ending that hinges on telling the truth",
+  "tone": "quiet, aching radio mystery of grief and listening; present tense, rain, static, an ending that turns on the truth",
   "note": "Catalog book authored by hand; there is no request text. Band, length and style are copied from the book metadata; tone is the plan author's reading."
  },
  "pitch": {
   "hero": "Wren Callahan, a girl who cannot sleep and keeps switching on her late grandfather's shortwave",
   "want": "to find out who is sending the numbers loop and why",
-  "obstacle": "a station everyone says is dead, a code, a stubborn old man who has stopped hoping, and a deadline she only discovers late",
-  "stake": "at twenty to midnight the relay's dying cell will play an old man's last goodbye to a daughter who may not be listening, and erase thirty years of tape",
+  "obstacle": "a station everyone says is dead, a code, a stubborn old man who has stopped hoping, and a deadline she finds late",
+  "stake": "at 11:40 a dying relay cell plays an old man's last goodbye to a daughter who may not listen, then erases 30 yrs of tape",
   "ending_kind": "success: father and daughter reconnected, or the channel and its tapes saved for later"
  },
  "cast": {
@@ -2130,7 +2130,8 @@
   "checks": null,
   "approver": null,
   "notes": [
-   "continuity_pass: {\"work_package\": \"WP-0.4\", \"date\": \"2026-11-21\", \"findings\": \"docs/planning/evidence/story-plan-retro/findings-the-signal-in-the-static.md\", \"pre_fix_book_sha256\": \"f0c851f90618cb43b7a7891e3e13cd6e8c3c9ac5c59ff337f6643be7cb1da5db\", \"note\": \"Book and plan updated together; every node's requires is guaranteed on entry on every reachable route and state.\"}"
+   "continuity_pass: {\"work_package\": \"WP-0.4\", \"date\": \"2026-11-21\", \"findings\": \"docs/planning/evidence/story-plan-retro/findings-the-signal-in-the-static.md\", \"pre_fix_book_sha256\": \"f0c851f90618cb43b7a7891e3e13cd6e8c3c9ac5c59ff337f6643be7cb1da5db\", \"note\": \"Book and plan updated together; every node's requires is guaranteed on entry on every reachable route and state.\"}",
+   "sp9_condensed 2026-11-21: request.tone, pitch.obstacle, pitch.stake; pre-condensation text at commit 51532b2"
   ]
  }
 }

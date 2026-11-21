@@ -19,7 +19,7 @@
     "want": "to fill one blank sheet with a true chart of the island before the ship returns at dusk and so win the apprenticeship",
     "obstacle": "tides, mud, caves, cliffs and heights, a short day, and endless lovely distractions that eat the light",
     "stake": "the apprenticeship; and, once found, finishing the work of Alder, the mapmaker who came before and never returned",
-    "ending_kind": "branch and bottleneck: a finished and named chart at the summit, a rescue called in by signal, or an honest partial map or lesson where the day ran out"
+    "ending_kind": "branch and bottleneck: a named chart at the summit, a rescue by signal, or an honest partial map or lesson at day's end"
   },
   "cast": {
     "wren": {
@@ -4569,7 +4569,8 @@
       "continuity_notes: UNPAID SETUP: cf_box's locket holds a girl who 'looked a little like Wren's own' eyes; no route returns to it. Wren's marked turtle or pup (turtle_marked, pup_marked, tangled_pup_marked) are only paid off at meet_boat, and the net-tangled pup on the flats (tf_seals) is never mentioned again.",
       "continuity_notes: PROSE BUG (not continuity): e_cove_tin ends 'and could not bring itself to mind', a pronoun slip for Wren, who otherwise never takes a pronoun.",
       "continuity_notes: Authoring note: intents for 39 of the 40 single-continue choices were derived mechanically from their labels; every multi-choice intent is the label paraphrased and its cost hand-written.",
-      "wp04_second_read: 2026-11-21: WP-0.4 second reader (control book, continuity only) fixed every continuity note above except the items marked SOFT time, UNPAID SETUP and PROSE BUG, which are recorded in docs/planning/evidence/story-plan-retro/findings-the-mapmakers-island.md and left as written. Facts, requires and establishes updated to the fixed book; continuity_notes are kept as the pre-fix record."
+      "wp04_second_read: 2026-11-21: WP-0.4 second reader (control book, continuity only) fixed every continuity note above except the items marked SOFT time, UNPAID SETUP and PROSE BUG, which are recorded in docs/planning/evidence/story-plan-retro/findings-the-mapmakers-island.md and left as written. Facts, requires and establishes updated to the fixed book; continuity_notes are kept as the pre-fix record.",
+      "sp9_condensed 2026-11-21: pitch.ending_kind; pre-condensation text at commit 315a79d"
     ]
   }
 }
