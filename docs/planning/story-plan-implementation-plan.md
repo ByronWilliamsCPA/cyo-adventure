@@ -143,9 +143,11 @@ tags:
   `StoryEngine` snippet in `.claude/skills/cyo-author/reference/story-agency-revision.md`) and lists each passage that
   asserts a fact the plan does not guarantee on entry, each contradiction with `truth`, and each payoff that leans on
   another. Fix the book; update the plan; keep the pre-fix finding with node id, state and quoted sentence.
-- **Also.** Recover the three `hollow-lighthouse` blockers AL-790 refers to. The review could not find their text in
-  the tree. If they are not recoverable from the session that found them, this pass re-derives them and says so;
-  WP-1.3 must not claim a known-answer test on defects nobody wrote down.
+- **Also.** The three `hollow-lighthouse` blockers AL-790 refers to are now written down in `docs/planning/evidence/structural-verification-2026-11-20/lighthouse-continuity-read.md` (B1 to B3,
+  with should-fix S1 to S4 and minor M1 to M8), each with node, route, state and quoted sentence. WP-1.3 takes B1 to
+  B3 from that file. They are unfixed in `out/the-hollow-lighthouse.filled.json` (unchanged since `15b14a1`) because book
+  editing is paused (`UW-M20`); this pass applies the fixes once the owner lifts that pause, and keeps the file as the
+  pre-fix record.
 - **Acceptance.** Zero open findings per book; findings files committed; gate and `check_fill_integrity.py` pass on
   each revised book.
 - **Gate (family test).** A book goes to the children only with a plan and a clean second read.
@@ -195,7 +197,8 @@ Nothing in Phase 2 is built until WP-1.5 passes.
 
 - **Touches.** New `docs/planning/evidence/story-plan-retro/known-defects.json` and `README.md`.
 - **Contents**, each with source, book file or git revision, node id, state, quoted sentence and defect class:
-  1. The three `hollow-lighthouse` continuity blockers (AL-790), from WP-0.4.
+  1. The three `hollow-lighthouse` continuity blockers B1 to B3 (AL-790), from `docs/planning/evidence/structural-verification-2026-11-20/lighthouse-continuity-read.md`; S1 to S4 as
+     should-fix entries. The file is already committed, so this item does not wait on WP-0.4.
   2. The two-backstory contradiction in the original `hollow-lighthouse` fill (AL-773); the pre-revision book is `git
      show 15b14a1^:out/the-hollow-lighthouse.filled.json`.
   3. The three leaks in the 2026-11-20 Run B fills: `B-lkl-new-2` node `fn_ovens`; `B-os-new-1` ending `e05_0`;
@@ -229,8 +232,8 @@ Nothing in Phase 2 is built until WP-1.5 passes.
 - **Pass criterion (pre-registered here).**
   - Exact classes, must be 100 percent: the public plant (SP-4), the cross-payoff reference (SP-6), the two
     backstories (SP-3).
-  - Assertion classes: all three Run B leaks found; at least two of the three Lighthouse blockers found, with a
-    written reason for any miss.
+  - Assertion classes: all three Run B leaks found; at least two of the three Lighthouse blockers (B1 to B3 in
+    `docs/planning/evidence/structural-verification-2026-11-20/lighthouse-continuity-read.md`) found, with a written reason for any miss.
   - False alarms: on the four revised books after WP-0.4, no more than one ERROR finding per book that a human judges
     wrong.
 - **If it fails.** One revision of the schema or checks, time-boxed to size M, then one re-run on the same frozen
@@ -511,7 +514,7 @@ agents and prompt decisions, six to nine weeks is plausible and is not a commitm
 | Risk | Likelihood | Effect | Mitigation |
 | --- | --- | --- | --- |
 | The retrospective cannot be made non-circular (the extractor has seen the defects) | medium | G1 means nothing | WP-1.4's committed prompt and a fresh agent; two extractions of one book |
-| The Lighthouse blockers were never written down | medium | weaker known-answer set | WP-0.4 re-derives and says so; G1 leans on the documented Run B defects |
+| The Lighthouse blockers were not in the repo | low (resolved) | weaker known-answer set | Written down in `docs/planning/evidence/structural-verification-2026-11-20/lighthouse-continuity-read.md` (B1 to B3, S1 to S4); WP-1.3 cites it. Residual risk: they were recorded after the fact, so G1 still pairs them with the documented Run B defects |
 | Plans from one line are generic | medium | coherent, dull books | pitch step with required want and obstacle; WP-4.2 measures; kill criterion |
 | Plan strings carry injected or unsafe text into prompts | low to medium | safety | SP-9 floors, classifier screening, fencing; test with the adversarial harness |
 | Scene-by-scene cost is far above the estimate | medium | budget | G2 measures before Phase 4 budgets; three-times cap in the kill criterion |
@@ -561,8 +564,12 @@ variants) are expected to be overtaken if G4 passes; that disposition is the own
 
 ## Appendix B: register and lessons-log changes for the orchestrator to apply
 
-The drafting agent did not edit the register or the lessons log. Ids below are the next free ones at commit time (`A`
-ends at 63, `G` at 27); renumber if they have been taken. Every existing-row change must be checked against the row's
+The drafting agent did not edit the register or the lessons log. Ids below were the next free ones at drafting time (`A`
+ended at 63, `G` at 27). **Applied 2026-11-21:** the ids were still free, so `UW-A64` and `UW-G28` to `UW-G42` were
+created unrenumbered. Existing rows below received dated notes recording the proposed disposition rather than a status
+change, because each disposition's evidence (ADR-033 ratified, or a work package's commits) does not exist yet; the
+status changes are applied when that evidence lands. The Lighthouse blockers are now written down, so no row below
+depends on their absence. Every existing-row change must be checked against the row's
 current text before it is applied.
 
 **Proposed new rows.**
@@ -590,7 +597,7 @@ current text before it is applied.
 
 | Row | Proposed disposition | Evidence required before applying |
 | --- | --- | --- |
-| `UW-C493` (AL-790) | done when WP-0.4 lands for all family books | the findings files and commits |
+| `UW-C493` (AL-790) | done when WP-0.4 lands for all family books (the blockers themselves are recorded in the Lighthouse read file) | the findings files and commits |
 | `UW-C495` (AL-796) | `blocked` on `UW-G35`; close as superseded if G3 passes | the WP-3.2 validation report |
 | `UW-C496` (AL-797), `UW-C497` (AL-798) | keep; re-scope to shells not converted to v2; superseded for converted shells by `UW-G32` | the WP-2.2 conversion commits |
 | `UW-C498` (AL-799) | `blocked` on `UW-G30`; superseded by SP-4 and SP-6 if G1 passes | the WP-1.5 report |
