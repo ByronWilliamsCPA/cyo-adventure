@@ -1,0 +1,876 @@
+{
+  "schema_version": "2.0",
+  "id": "sk_cave_of_echoes",
+  "version": 1,
+  "title": "The Cave of Echoes",
+  "metadata": {
+    "narrative_person": "third",
+    "age_band": "8-11",
+    "reading_level": {
+      "scheme": "flesch_kincaid",
+      "target": 4.5,
+      "tolerance": 1.5
+    },
+    "tier": 1,
+    "themes": [
+      "exploration",
+      "courage",
+      "wonder",
+      "nature"
+    ],
+    "estimated_minutes": 8,
+    "ending_count": 16,
+    "content_flags": {
+      "violence": "none",
+      "scariness": "mild",
+      "peril": "moderate"
+    },
+    "topology": "time_cave",
+    "length": "short",
+    "narrative_style": "prose",
+    "production_eligible": true
+  },
+  "variables": [],
+  "start_node": "n_open",
+  "nodes": [
+    {
+      "id": "n_open",
+      "body": "<<FILL v=2 role=setup words=70 function=opening>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_open",
+          "label": "Listen for which one carries.",
+          "target": "n_start"
+        }
+      ]
+    },
+    {
+      "id": "n_start",
+      "body": "<<FILL v=2 role=choice words=50 function=decision>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_left",
+          "label": "Follow {ROUTE_A_LURE} to the left.",
+          "target": "la_tunnel"
+        },
+        {
+          "id": "c_right",
+          "label": "Follow {ROUTE_B_LURE} to the right.",
+          "target": "ra_drip"
+        },
+        {
+          "id": "c_down",
+          "label": "Follow {ROUTE_C_LURE} straight down.",
+          "target": "da_dark"
+        }
+      ]
+    },
+    {
+      "id": "la_tunnel",
+      "body": "<<FILL v=2 role=rising words=95 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_la_fork",
+          "label": "Press on toward the glow.",
+          "target": "la_fork"
+        }
+      ]
+    },
+    {
+      "id": "la_fork",
+      "body": "<<FILL v=2 role=choice words=100 function=decision>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_glitter",
+          "label": "Go toward {A1_SIGN}.",
+          "target": "la_glitter"
+        },
+        {
+          "id": "c_hum",
+          "label": "Go toward {A2_SIGN}.",
+          "target": "la_hum"
+        }
+      ]
+    },
+    {
+      "id": "la_glitter",
+      "body": "<<FILL v=2 role=rising words=95 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_la_slope",
+          "label": "Follow the sloping floor down.",
+          "target": "la_glitter2"
+        }
+      ]
+    },
+    {
+      "id": "la_glitter2",
+      "body": "<<FILL v=2 role=rising words=95 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_la_crack",
+          "label": "Approach {A1_GATE}.",
+          "target": "la_grotto_app"
+        }
+      ]
+    },
+    {
+      "id": "la_grotto_app",
+      "body": "<<FILL v=2 role=choice words=100 function=decision>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_squeeze",
+          "label": "Squeeze through {A1_GATE}.",
+          "target": "la_squeeze"
+        },
+        {
+          "id": "c_retreat",
+          "label": "Turn back before {DEADLINE_SIGN} rises.",
+          "target": "la_retreat_pool"
+        }
+      ]
+    },
+    {
+      "id": "la_retreat_pool",
+      "body": "<<FILL v=2 role=ending words=85 function=ending>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_set_left_pool",
+        "valence": "neutral",
+        "kind": "setback",
+        "title": "Turned Back at {A1_GATE}"
+      }
+    },
+    {
+      "id": "la_squeeze",
+      "body": "<<FILL v=2 role=rising words=95 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_la_room",
+          "label": "Step into {A1_ZONE}.",
+          "target": "la_grotto"
+        }
+      ]
+    },
+    {
+      "id": "la_grotto",
+      "body": "<<FILL v=2 role=choice words=105 function=decision>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_take",
+          "label": "Gently take {A1_OFFER1}.",
+          "target": "la_crystal_take"
+        },
+        {
+          "id": "c_deeper",
+          "label": "Follow {A1_OFFER2} deeper.",
+          "target": "la_crystal_deeper"
+        }
+      ]
+    },
+    {
+      "id": "la_crystal_take",
+      "body": "<<FILL v=2 role=rising words=90 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_la_up",
+          "label": "Follow {A1_OFFER1}'s light back up.",
+          "target": "la_crystal_out"
+        }
+      ]
+    },
+    {
+      "id": "la_crystal_out",
+      "body": "<<FILL v=2 role=completion words=90 function=ending>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_crystal",
+        "valence": "positive",
+        "kind": "success",
+        "title": "{A1_PRIZE1}"
+      }
+    },
+    {
+      "id": "la_crystal_deeper",
+      "body": "<<FILL v=2 role=rising words=95 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_la_chord",
+          "label": "Follow the chord toward the sound.",
+          "target": "la_song_app"
+        }
+      ]
+    },
+    {
+      "id": "la_song_app",
+      "body": "<<FILL v=2 role=rising words=95 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_la_sing",
+          "label": "Step into {A1_PRIZE2_ZONE}.",
+          "target": "la_song"
+        }
+      ]
+    },
+    {
+      "id": "la_song",
+      "body": "<<FILL v=2 role=completion words=90 function=ending>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_song",
+        "valence": "positive",
+        "kind": "completion",
+        "title": "{A1_PRIZE2}"
+      }
+    },
+    {
+      "id": "la_hum",
+      "body": "<<FILL v=2 role=rising words=95 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_la_ring",
+          "label": "Follow {A2_LANDMARK} downward.",
+          "target": "la_hum2"
+        }
+      ]
+    },
+    {
+      "id": "la_hum2",
+      "body": "<<FILL v=2 role=rising words=95 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_la_chime",
+          "label": "Climb down toward {A2_ZONE_HINT}.",
+          "target": "la_bell_app"
+        }
+      ]
+    },
+    {
+      "id": "la_bell_app",
+      "body": "<<FILL v=2 role=choice words=100 function=decision>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_bell",
+          "label": "Climb down {A2_GATE}.",
+          "target": "la_bell"
+        },
+        {
+          "id": "c_humback",
+          "label": "Scramble back up to be safe.",
+          "target": "la_hum_back"
+        }
+      ]
+    },
+    {
+      "id": "la_hum_back",
+      "body": "<<FILL v=2 role=ending words=85 function=ending>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_set_left_hum",
+        "valence": "neutral",
+        "kind": "setback",
+        "title": "Turned Back at {A2_GATE}"
+      }
+    },
+    {
+      "id": "la_bell",
+      "body": "<<FILL v=2 role=rising words=95 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_la_bell2",
+          "label": "Walk up to {A2_FIND}.",
+          "target": "la_bell2"
+        }
+      ]
+    },
+    {
+      "id": "la_bell2",
+      "body": "<<FILL v=2 role=rising words=90 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_la_bell3",
+          "label": "Read {A2_DETAIL1} and look behind {A2_FIND}.",
+          "target": "la_bell3"
+        }
+      ]
+    },
+    {
+      "id": "la_bell3",
+      "body": "<<FILL v=2 role=rising words=90 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_la_bell4",
+          "label": "Take {A2_DETAIL2} and head out.",
+          "target": "la_bell4"
+        }
+      ]
+    },
+    {
+      "id": "la_bell4",
+      "body": "<<FILL v=2 role=completion words=95 function=ending>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_bell",
+        "valence": "positive",
+        "kind": "success",
+        "title": "{A2_PRIZE}"
+      }
+    },
+    {
+      "id": "ra_drip",
+      "body": "<<FILL v=2 role=rising words=95 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ra_fork",
+          "label": "Follow {ROUTE_B_LURE} deeper.",
+          "target": "ra_fork"
+        }
+      ]
+    },
+    {
+      "id": "ra_fork",
+      "body": "<<FILL v=2 role=choice words=100 function=decision>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_lake",
+          "label": "Head toward {B1_SIGN}.",
+          "target": "ra_lake_way"
+        },
+        {
+          "id": "c_pool",
+          "label": "Follow {B2_SIGN}.",
+          "target": "ra_pool_way"
+        }
+      ]
+    },
+    {
+      "id": "ra_lake_way",
+      "body": "<<FILL v=2 role=rising words=95 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ra_pebbles",
+          "label": "Cross {B1_LANDMARK1}.",
+          "target": "ra_lake2"
+        }
+      ]
+    },
+    {
+      "id": "ra_lake2",
+      "body": "<<FILL v=2 role=rising words=95 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ra_shelf",
+          "label": "Edge along {B1_LANDMARK2}.",
+          "target": "ra_lake_app"
+        }
+      ]
+    },
+    {
+      "id": "ra_lake_app",
+      "body": "<<FILL v=2 role=choice words=105 function=decision>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_descend",
+          "label": "Climb down to {B1_ZONE}.",
+          "target": "ra_descend"
+        },
+        {
+          "id": "c_lakeback",
+          "label": "Back off {B1_GATE}.",
+          "target": "ra_lake_back"
+        }
+      ]
+    },
+    {
+      "id": "ra_lake_back",
+      "body": "<<FILL v=2 role=ending words=85 function=ending>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_set_lake",
+        "valence": "neutral",
+        "kind": "setback",
+        "title": "Turned Back at {B1_GATE}"
+      }
+    },
+    {
+      "id": "ra_descend",
+      "body": "<<FILL v=2 role=rising words=95 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ra_shore",
+          "label": "Walk along the gravel shore.",
+          "target": "ra_lakeshore"
+        }
+      ]
+    },
+    {
+      "id": "ra_lakeshore",
+      "body": "<<FILL v=2 role=choice words=105 function=decision>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_boat",
+          "label": "Examine {B1_OFFER1}.",
+          "target": "ra_boat"
+        },
+        {
+          "id": "c_wade",
+          "label": "Wade into {B1_OFFER2}.",
+          "target": "ra_wade"
+        }
+      ]
+    },
+    {
+      "id": "ra_boat",
+      "body": "<<FILL v=2 role=rising words=95 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ra_row",
+          "label": "Climb in and push off.",
+          "target": "ra_row"
+        }
+      ]
+    },
+    {
+      "id": "ra_row",
+      "body": "<<FILL v=2 role=completion words=95 function=ending>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_rowboat",
+        "valence": "positive",
+        "kind": "success",
+        "title": "{B1_PRIZE1}"
+      }
+    },
+    {
+      "id": "ra_wade",
+      "body": "<<FILL v=2 role=rising words=95 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ra_islet",
+          "label": "Follow {B1_PRIZE2_PATH}.",
+          "target": "ra_islet"
+        }
+      ]
+    },
+    {
+      "id": "ra_islet",
+      "body": "<<FILL v=2 role=completion words=90 function=ending>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_islet",
+        "valence": "positive",
+        "kind": "completion",
+        "title": "{B1_PRIZE2}"
+      }
+    },
+    {
+      "id": "ra_pool_way",
+      "body": "<<FILL v=2 role=rising words=95 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ra_crouch",
+          "label": "Crouch through toward {B2_LANDMARK1}.",
+          "target": "ra_pool2"
+        }
+      ]
+    },
+    {
+      "id": "ra_pool2",
+      "body": "<<FILL v=2 role=rising words=95 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ra_channel",
+          "label": "Follow {B2_LANDMARK2}.",
+          "target": "ra_pool_app"
+        }
+      ]
+    },
+    {
+      "id": "ra_pool_app",
+      "body": "<<FILL v=2 role=choice words=100 function=decision>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_enter",
+          "label": "Push through {B2_GATE}.",
+          "target": "ra_pool_enter"
+        },
+        {
+          "id": "c_poolback",
+          "label": "Hurry back before {DEADLINE_SIGN} rises.",
+          "target": "ra_pool_back"
+        }
+      ]
+    },
+    {
+      "id": "ra_pool_back",
+      "body": "<<FILL v=2 role=ending words=85 function=ending>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_set_pool",
+        "valence": "neutral",
+        "kind": "setback",
+        "title": "Turned Back at {B2_GATE}"
+      }
+    },
+    {
+      "id": "ra_pool_enter",
+      "body": "<<FILL v=2 role=rising words=95 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ra_kneel",
+          "label": "Kneel by {B2_ZONE}.",
+          "target": "ra_pool_chamber"
+        }
+      ]
+    },
+    {
+      "id": "ra_pool_chamber",
+      "body": "<<FILL v=2 role=choice words=105 function=decision>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_star",
+          "label": "Look closely at {B2_OFFER1}.",
+          "target": "ra_starfish"
+        },
+        {
+          "id": "c_deep",
+          "label": "Follow {B2_OFFER2}.",
+          "target": "ra_pool_deep"
+        }
+      ]
+    },
+    {
+      "id": "ra_starfish",
+      "body": "<<FILL v=2 role=rising words=95 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ra_sketch",
+          "label": "Finish the sketch and slip out.",
+          "target": "ra_starfish2"
+        }
+      ]
+    },
+    {
+      "id": "ra_starfish2",
+      "body": "<<FILL v=2 role=completion words=90 function=ending>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_starfish",
+        "valence": "positive",
+        "kind": "success",
+        "title": "{B2_PRIZE1}"
+      }
+    },
+    {
+      "id": "ra_pool_deep",
+      "body": "<<FILL v=2 role=rising words=95 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ra_reach",
+          "label": "Reach into the green basin.",
+          "target": "ra_pool_deep2"
+        }
+      ]
+    },
+    {
+      "id": "ra_pool_deep2",
+      "body": "<<FILL v=2 role=completion words=95 function=ending>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_shell",
+        "valence": "positive",
+        "kind": "success",
+        "title": "{B2_PRIZE2}"
+      }
+    },
+    {
+      "id": "da_dark",
+      "body": "<<FILL v=2 role=rising words=95 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_da_fork",
+          "label": "Feel along the wall downward.",
+          "target": "da_fork"
+        }
+      ]
+    },
+    {
+      "id": "da_fork",
+      "body": "<<FILL v=2 role=choice words=100 function=decision>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_bat",
+          "label": "Go toward {C1_SIGN}.",
+          "target": "da_bat_way"
+        },
+        {
+          "id": "c_cache",
+          "label": "Go toward {C2_SIGN}.",
+          "target": "da_cache_way"
+        }
+      ]
+    },
+    {
+      "id": "da_bat_way",
+      "body": "<<FILL v=2 role=rising words=95 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_da_creep",
+          "label": "Creep on under {C1_LANDMARK}.",
+          "target": "da_bat2"
+        }
+      ]
+    },
+    {
+      "id": "da_bat2",
+      "body": "<<FILL v=2 role=rising words=95 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_da_grey",
+          "label": "Move quietly toward {C1_ZONE_HINT}.",
+          "target": "da_bat_app"
+        }
+      ]
+    },
+    {
+      "id": "da_bat_app",
+      "body": "<<FILL v=2 role=choice words=105 function=decision>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_batenter",
+          "label": "Tiptoe across under {C1_LANDMARK}.",
+          "target": "da_bat_enter"
+        },
+        {
+          "id": "c_batback",
+          "label": "Back away and leave {C1_LANDMARK} be.",
+          "target": "da_bat_back"
+        }
+      ]
+    },
+    {
+      "id": "da_bat_back",
+      "body": "<<FILL v=2 role=ending words=85 function=ending>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_set_bat",
+        "valence": "neutral",
+        "kind": "setback",
+        "title": "Turned Back at {C1_GATE}"
+      }
+    },
+    {
+      "id": "da_bat_enter",
+      "body": "<<FILL v=2 role=rising words=95 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_da_stair",
+          "label": "Start up {C1_CLIMB1}.",
+          "target": "da_roost"
+        }
+      ]
+    },
+    {
+      "id": "da_roost",
+      "body": "<<FILL v=2 role=rising words=95 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_da_climb",
+          "label": "Climb on past {C1_CLIMB2}.",
+          "target": "da_roost2"
+        }
+      ]
+    },
+    {
+      "id": "da_roost2",
+      "body": "<<FILL v=2 role=rising words=90 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_da_push",
+          "label": "Push up through {C1_CLIMB3}.",
+          "target": "da_skylight"
+        }
+      ]
+    },
+    {
+      "id": "da_skylight",
+      "body": "<<FILL v=2 role=completion words=95 function=ending>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_bats",
+        "valence": "positive",
+        "kind": "completion",
+        "title": "{C1_PRIZE}"
+      }
+    },
+    {
+      "id": "da_cache_way",
+      "body": "<<FILL v=2 role=rising words=95 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_da_door",
+          "label": "Approach {C2_LANDMARK1}.",
+          "target": "da_cache2"
+        }
+      ]
+    },
+    {
+      "id": "da_cache2",
+      "body": "<<FILL v=2 role=rising words=95 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_da_peer",
+          "label": "Peer into {C2_LANDMARK2}.",
+          "target": "da_cache_app"
+        }
+      ]
+    },
+    {
+      "id": "da_cache_app",
+      "body": "<<FILL v=2 role=choice words=105 function=decision>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_cacheenter",
+          "label": "Step in for a quick look.",
+          "target": "da_cache_enter"
+        },
+        {
+          "id": "c_cacheback",
+          "label": "Leave {C2_ZONE} before {DEADLINE_SIGN}.",
+          "target": "da_cache_back"
+        }
+      ]
+    },
+    {
+      "id": "da_cache_back",
+      "body": "<<FILL v=2 role=ending words=85 function=ending>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_set_cache",
+        "valence": "neutral",
+        "kind": "setback",
+        "title": "Turned Back at {C2_GATE}"
+      }
+    },
+    {
+      "id": "da_cache_enter",
+      "body": "<<FILL v=2 role=rising words=95 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_da_boxes",
+          "label": "Open the two dry boxes.",
+          "target": "da_cache_room"
+        }
+      ]
+    },
+    {
+      "id": "da_cache_room",
+      "body": "<<FILL v=2 role=choice words=105 function=decision>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_compass",
+          "label": "Take {C2_OFFER1}.",
+          "target": "da_compass"
+        },
+        {
+          "id": "c_coins",
+          "label": "Take {C2_OFFER2}.",
+          "target": "da_coins"
+        }
+      ]
+    },
+    {
+      "id": "da_compass",
+      "body": "<<FILL v=2 role=rising words=95 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_da_out",
+          "label": "Follow {C2_OFFER1} out.",
+          "target": "da_compass2"
+        }
+      ]
+    },
+    {
+      "id": "da_compass2",
+      "body": "<<FILL v=2 role=completion words=95 function=ending>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_compass",
+        "valence": "positive",
+        "kind": "success",
+        "title": "{C2_PRIZE1}"
+      }
+    },
+    {
+      "id": "da_coins",
+      "body": "<<FILL v=2 role=rising words=95 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_da_carry",
+          "label": "Carry {C2_OFFER2} out quickly.",
+          "target": "da_coins2"
+        }
+      ]
+    },
+    {
+      "id": "da_coins2",
+      "body": "<<FILL v=2 role=completion words=95 function=ending>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_coins",
+        "valence": "positive",
+        "kind": "success",
+        "title": "{C2_PRIZE2}"
+      }
+    }
+  ]
+}

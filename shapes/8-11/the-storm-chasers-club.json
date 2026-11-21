@@ -1,0 +1,1609 @@
+{
+  "schema_version": "2.0",
+  "id": "sk_storm_chasers_club",
+  "title": "The Storm Chasers Club",
+  "version": 1,
+  "metadata": {
+    "narrative_person": "second",
+    "age_band": "8-11",
+    "reading_level": {
+      "scheme": "flesch_kincaid",
+      "target": 4.5,
+      "tolerance": 1.5
+    },
+    "tier": 1,
+    "themes": [
+      "weather",
+      "teamwork",
+      "science",
+      "courage",
+      "community"
+    ],
+    "estimated_minutes": 10,
+    "ending_count": 25,
+    "content_flags": {
+      "violence": "none",
+      "scariness": "moderate",
+      "peril": "moderate"
+    },
+    "topology": "sorting_hat",
+    "length": "medium",
+    "narrative_style": "prose",
+    "production_eligible": true
+  },
+  "variables": [],
+  "start_node": "n_start",
+  "nodes": [
+    {
+      "id": "n_start",
+      "body": "<<FILL v=2 role=setup words=115 function=opening>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_start_in",
+          "label": "Head inside for the morning briefing.",
+          "target": "n_brief"
+        }
+      ]
+    },
+    {
+      "id": "n_brief",
+      "body": "<<FILL v=2 role=rising words=112 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_brief_up",
+          "label": "Step up when she calls for volunteers.",
+          "target": "n_sort"
+        }
+      ]
+    },
+    {
+      "id": "n_sort",
+      "body": "<<FILL v=2 role=choice words=125 function=decision>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_sort_radio",
+          "label": "Join {ROUTE_A_TEAM} in {ROUTE_A_POST}.",
+          "target": "r_post"
+        },
+        {
+          "id": "c_sort_maps",
+          "label": "Join {ROUTE_B_TEAM} at {ROUTE_B_POST}.",
+          "target": "m_table"
+        },
+        {
+          "id": "c_sort_field",
+          "label": "Join {ROUTE_C_TEAM} in {ROUTE_C_POST}.",
+          "target": "f_van"
+        }
+      ]
+    },
+    {
+      "id": "r_post",
+      "body": "<<FILL v=2 role=rising words=105 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_rpost_sit",
+          "label": "Take the second seat and put on a headset.",
+          "target": "r_net"
+        }
+      ]
+    },
+    {
+      "id": "r_net",
+      "body": "<<FILL v=2 role=rising words=100 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_rnet_log",
+          "label": "Keep logging as the net wakes up.",
+          "target": "r_split"
+        }
+      ]
+    },
+    {
+      "id": "r_split",
+      "body": "<<FILL v=2 role=choice words=112 function=decision>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_rsplit_cable",
+          "label": "Help trace the crackling antenna cable.",
+          "target": "r_a_trace"
+        },
+        {
+          "id": "c_rsplit_net",
+          "label": "Take the logbook and run check-ins while {ROUTE_A_MENTOR} traces it.",
+          "target": "r_n_seat"
+        }
+      ]
+    },
+    {
+      "id": "r_a_trace",
+      "body": "<<FILL v=2 role=rising words=96 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ratrace_follow",
+          "label": "Follow the line to where it moves the most.",
+          "target": "r_a_finds"
+        }
+      ]
+    },
+    {
+      "id": "r_a_finds",
+      "body": "<<FILL v=2 role=rising words=100 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_rafinds_report",
+          "label": "Weigh the two fixes with {ROUTE_A_MENTOR}.",
+          "target": "r_a_pick"
+        }
+      ]
+    },
+    {
+      "id": "r_a_pick",
+      "body": "<<FILL v=2 role=choice words=112 function=decision>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_rapick_window",
+          "label": "Clean and reseat the corroded connector at {ROUTE_A_WINDOW}.",
+          "target": "r_a_fix"
+        },
+        {
+          "id": "c_rapick_bypass",
+          "label": "Run the spare cable over the rafters to bypass the damage.",
+          "target": "r_b_spool"
+        }
+      ]
+    },
+    {
+      "id": "r_a_fix",
+      "body": "<<FILL v=2 role=rising words=96 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_rafix_desk",
+          "label": "Head back to the radio desk.",
+          "target": "r_a_meter"
+        }
+      ]
+    },
+    {
+      "id": "r_a_meter",
+      "body": "<<FILL v=2 role=rising words=100 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_rameter_decide",
+          "label": "Decide how much you trust your fix.",
+          "target": "r_a_test"
+        }
+      ]
+    },
+    {
+      "id": "r_a_test",
+      "body": "<<FILL v=2 role=choice words=112 function=decision>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ratest_check",
+          "label": "Run a radio check with far-off {PLACE_PINE}.",
+          "target": "r_a_check1"
+        },
+        {
+          "id": "c_ratest_trust",
+          "label": "Trust the meter and dive back into the net.",
+          "target": "r_a_mid"
+        }
+      ]
+    },
+    {
+      "id": "r_a_check1",
+      "body": "<<FILL v=2 role=rising words=96 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_racheck_net",
+          "label": "Rejoin the net with a proven antenna.",
+          "target": "r_a_check2"
+        }
+      ]
+    },
+    {
+      "id": "r_a_check2",
+      "body": "<<FILL v=2 role=climax words=100 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_racheck_ride",
+          "label": "Ride the storm at the radio until it passes.",
+          "target": "r_end_clear"
+        }
+      ]
+    },
+    {
+      "id": "r_end_clear",
+      "body": "<<FILL v=2 role=completion words=92 function=ending>>",
+      "is_ending": true,
+      "ending": {
+        "id": "r_end_clear",
+        "valence": "positive",
+        "kind": "success",
+        "title": "{A11_PRIZE1}"
+      }
+    },
+    {
+      "id": "r_a_mid",
+      "body": "<<FILL v=2 role=rising words=96 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ramid_scramble",
+          "label": "Scramble to catch what you can.",
+          "target": "r_end_crackle"
+        }
+      ]
+    },
+    {
+      "id": "r_end_crackle",
+      "body": "<<FILL v=2 role=failure words=92 function=ending>>",
+      "is_ending": true,
+      "ending": {
+        "id": "r_end_crackle",
+        "valence": "neutral",
+        "kind": "setback",
+        "title": "{A11_PRIZE2}"
+      }
+    },
+    {
+      "id": "r_b_spool",
+      "body": "<<FILL v=2 role=rising words=96 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_rbspool_crimp",
+          "label": "Crimp the connectors and hook it to the radio.",
+          "target": "r_b_crimp"
+        }
+      ]
+    },
+    {
+      "id": "r_b_crimp",
+      "body": "<<FILL v=2 role=rising words=100 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_rbcrimp_bin",
+          "label": "Look at what the parts bin offers.",
+          "target": "r_b_amp"
+        }
+      ]
+    },
+    {
+      "id": "r_b_amp",
+      "body": "<<FILL v=2 role=choice words=112 function=decision>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_rbamp_add",
+          "label": "Wire in the inline amplifier.",
+          "target": "r_b_hum"
+        },
+        {
+          "id": "c_rbamp_plain",
+          "label": "Keep it simple and plug straight in.",
+          "target": "r_b_faint"
+        }
+      ]
+    },
+    {
+      "id": "r_b_hum",
+      "body": "<<FILL v=2 role=rising words=96 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_rbhum_scud",
+          "label": "Help sort out the scary-looking report.",
+          "target": "r_b_scud"
+        }
+      ]
+    },
+    {
+      "id": "r_b_scud",
+      "body": "<<FILL v=2 role=climax words=100 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_rbscud_finish",
+          "label": "See the net through to the storm's end.",
+          "target": "r_end_longway"
+        }
+      ]
+    },
+    {
+      "id": "r_end_longway",
+      "body": "<<FILL v=2 role=completion words=92 function=ending>>",
+      "is_ending": true,
+      "ending": {
+        "id": "r_end_longway",
+        "valence": "positive",
+        "kind": "success",
+        "title": "{A12_PRIZE1}"
+      }
+    },
+    {
+      "id": "r_b_faint",
+      "body": "<<FILL v=2 role=rising words=96 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_rbfaint_strain",
+          "label": "Copy everything you possibly can.",
+          "target": "r_end_quiet"
+        }
+      ]
+    },
+    {
+      "id": "r_end_quiet",
+      "body": "<<FILL v=2 role=failure words=92 function=ending>>",
+      "is_ending": true,
+      "ending": {
+        "id": "r_end_quiet",
+        "valence": "neutral",
+        "kind": "setback",
+        "title": "{A12_PRIZE2}"
+      }
+    },
+    {
+      "id": "r_n_seat",
+      "body": "<<FILL v=2 role=rising words=96 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_rnseat_flow",
+          "label": "Find your rhythm as the reports come in.",
+          "target": "r_n_line"
+        }
+      ]
+    },
+    {
+      "id": "r_n_line",
+      "body": "<<FILL v=2 role=rising words=100 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_rnline_next",
+          "label": "Answer the next call on the repeater.",
+          "target": "r_n_voice"
+        }
+      ]
+    },
+    {
+      "id": "r_n_voice",
+      "body": "<<FILL v=2 role=rising words=100 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_rnvoice_act",
+          "label": "Act the way the club trained you to.",
+          "target": "r_n_call"
+        }
+      ],
+      "safety_scope": [
+        "peril"
+      ]
+    },
+    {
+      "id": "r_n_call",
+      "body": "<<FILL v=2 role=choice words=115 function=decision>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_rncall_answer",
+          "label": "Answer the caller yourself, calm and slow.",
+          "target": "r_h_copy"
+        },
+        {
+          "id": "c_rncall_marisol",
+          "label": "Wave {ROUTE_A_MENTOR} over and back her up on the log.",
+          "target": "r_m_second"
+        }
+      ]
+    },
+    {
+      "id": "r_h_copy",
+      "body": "<<FILL v=2 role=rising words=100 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_rhcopy_facts",
+          "label": "Get the facts, one question at a time.",
+          "target": "r_h_name"
+        }
+      ]
+    },
+    {
+      "id": "r_h_name",
+      "body": "<<FILL v=2 role=rising words=100 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_rhname_plan",
+          "label": "Work out the fastest way to get {HIKER_NAME} safe.",
+          "target": "r_h_plan"
+        }
+      ]
+    },
+    {
+      "id": "r_h_plan",
+      "body": "<<FILL v=2 role=choice words=115 function=decision>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_rhplan_relay",
+          "label": "Relay {HIKER_NAME}'s position to the sheriff's net.",
+          "target": "r_h_card"
+        },
+        {
+          "id": "c_rhplan_guide",
+          "label": "Guide {HIKER_NAME} to {LANDMARK_TOWER} shelter by the map.",
+          "target": "r_h_tower"
+        }
+      ],
+      "safety_scope": [
+        "peril"
+      ]
+    },
+    {
+      "id": "r_h_card",
+      "body": "<<FILL v=2 role=rising words=100 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_rhcard_hold",
+          "label": "Hold the net steady while help rolls.",
+          "target": "r_h_deputy"
+        }
+      ]
+    },
+    {
+      "id": "r_h_deputy",
+      "body": "<<FILL v=2 role=climax words=100 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_rhdeputy_meet",
+          "label": "Log the moment they meet.",
+          "target": "r_end_relay"
+        }
+      ]
+    },
+    {
+      "id": "r_end_relay",
+      "body": "<<FILL v=2 role=completion words=95 function=ending>>",
+      "is_ending": true,
+      "ending": {
+        "id": "r_end_relay",
+        "valence": "positive",
+        "kind": "success",
+        "title": "{A21_PRIZE1}"
+      }
+    },
+    {
+      "id": "r_h_tower",
+      "body": "<<FILL v=2 role=climax words=100 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_rhtower_last",
+          "label": "Stay on the mic until {HIKER_NAME} is through the door.",
+          "target": "r_end_voice"
+        }
+      ],
+      "safety_scope": [
+        "peril"
+      ]
+    },
+    {
+      "id": "r_end_voice",
+      "body": "<<FILL v=2 role=completion words=95 function=ending>>",
+      "is_ending": true,
+      "ending": {
+        "id": "r_end_voice",
+        "valence": "positive",
+        "kind": "completion",
+        "title": "{A21_PRIZE2}"
+      }
+    },
+    {
+      "id": "r_m_second",
+      "body": "<<FILL v=2 role=rising words=100 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_rmsecond_use",
+          "label": "Make yourself exactly as useful as possible.",
+          "target": "r_m_task"
+        }
+      ]
+    },
+    {
+      "id": "r_m_task",
+      "body": "<<FILL v=2 role=choice words=112 function=decision>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_rmtask_pin",
+          "label": "Plot the landmarks and work out a bearing.",
+          "target": "r_m_pin"
+        },
+        {
+          "id": "c_rmtask_log",
+          "label": "Keep the storm net alive on radio two.",
+          "target": "r_m_log"
+        }
+      ]
+    },
+    {
+      "id": "r_m_pin",
+      "body": "<<FILL v=2 role=climax words=100 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_rmpin_watch",
+          "label": "Watch your bearing do its work.",
+          "target": "r_end_bearing"
+        }
+      ]
+    },
+    {
+      "id": "r_end_bearing",
+      "body": "<<FILL v=2 role=completion words=92 function=ending>>",
+      "is_ending": true,
+      "ending": {
+        "id": "r_end_bearing",
+        "valence": "positive",
+        "kind": "completion",
+        "title": "{A22_PRIZE1}"
+      }
+    },
+    {
+      "id": "r_m_log",
+      "body": "<<FILL v=2 role=rising words=96 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_rmlog_carry",
+          "label": "Carry the net through the height of the storm.",
+          "target": "r_end_log"
+        }
+      ]
+    },
+    {
+      "id": "r_end_log",
+      "body": "<<FILL v=2 role=ending words=95 function=ending>>",
+      "is_ending": true,
+      "ending": {
+        "id": "r_end_log",
+        "valence": "neutral",
+        "kind": "discovery",
+        "title": "{A22_PRIZE2}"
+      }
+    },
+    {
+      "id": "m_table",
+      "body": "<<FILL v=2 role=rising words=105 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_mtable_learn",
+          "label": "Learn the plotter's job.",
+          "target": "m_plot"
+        }
+      ]
+    },
+    {
+      "id": "m_plot",
+      "body": "<<FILL v=2 role=rising words=100 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_mplot_notice",
+          "label": "Notice what the marks are starting to say.",
+          "target": "m_split"
+        }
+      ]
+    },
+    {
+      "id": "m_split",
+      "body": "<<FILL v=2 role=choice words=112 function=decision>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_msplit_test",
+          "label": "Re-plot the last hour and test the forecast track.",
+          "target": "m_a_replot"
+        },
+        {
+          "id": "c_msplit_board",
+          "label": "Run the timeline board for the room.",
+          "target": "m_b_board"
+        }
+      ]
+    },
+    {
+      "id": "m_a_replot",
+      "body": "<<FILL v=2 role=rising words=100 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_mareplot_extend",
+          "label": "Extend the line forward in time.",
+          "target": "m_a_fair"
+        }
+      ]
+    },
+    {
+      "id": "m_a_fair",
+      "body": "<<FILL v=2 role=rising words=100 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_mafair_breathe",
+          "label": "Take a breath, because this is a big claim.",
+          "target": "m_a_verify"
+        }
+      ]
+    },
+    {
+      "id": "m_a_verify",
+      "body": "<<FILL v=2 role=choice words=115 function=decision>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_maverify_spotters",
+          "label": "Get fresh fixes from the south spotters.",
+          "target": "m_a_ask"
+        },
+        {
+          "id": "c_maverify_radar",
+          "label": "Measure the storm's motion on radar with {ROUTE_B_SIDEKICK}.",
+          "target": "m_a_frames"
+        }
+      ]
+    },
+    {
+      "id": "m_a_ask",
+      "body": "<<FILL v=2 role=rising words=96 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_maask_land",
+          "label": "See where the new marks land.",
+          "target": "m_a_fresh"
+        }
+      ]
+    },
+    {
+      "id": "m_a_fresh",
+      "body": "<<FILL v=2 role=rising words=100 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_mafresh_present",
+          "label": "Get ready to present.",
+          "target": "m_a_show"
+        }
+      ]
+    },
+    {
+      "id": "m_a_show",
+      "body": "<<FILL v=2 role=choice words=112 function=decision>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_mashow_walk",
+          "label": "Walk her through the marks and let the map argue.",
+          "target": "m_a_walk"
+        },
+        {
+          "id": "c_mashow_bold",
+          "label": "Lead with the headline, then show the work.",
+          "target": "m_a_bold"
+        }
+      ]
+    },
+    {
+      "id": "m_a_walk",
+      "body": "<<FILL v=2 role=rising words=100 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_mawalk_call",
+          "label": "Listen to the call your map started.",
+          "target": "m_a_barns"
+        }
+      ]
+    },
+    {
+      "id": "m_a_barns",
+      "body": "<<FILL v=2 role=climax words=100 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_mabarns_clock",
+          "label": "Watch the clock you predicted.",
+          "target": "m_end_343"
+        }
+      ]
+    },
+    {
+      "id": "m_end_343",
+      "body": "<<FILL v=2 role=completion words=95 function=ending>>",
+      "is_ending": true,
+      "ending": {
+        "id": "m_end_343",
+        "valence": "positive",
+        "kind": "success",
+        "title": "{B11_PRIZE1}"
+      }
+    },
+    {
+      "id": "m_a_bold",
+      "body": "<<FILL v=2 role=climax words=100 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_mabold_call",
+          "label": "Stand by while she makes the call.",
+          "target": "m_end_sayit"
+        }
+      ]
+    },
+    {
+      "id": "m_end_sayit",
+      "body": "<<FILL v=2 role=completion words=92 function=ending>>",
+      "is_ending": true,
+      "ending": {
+        "id": "m_end_sayit",
+        "valence": "positive",
+        "kind": "completion",
+        "title": "{B11_PRIZE2}"
+      }
+    },
+    {
+      "id": "m_a_frames",
+      "body": "<<FILL v=2 role=rising words=96 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_maframes_check",
+          "label": "Check the numbers twice.",
+          "target": "m_a_stale"
+        }
+      ]
+    },
+    {
+      "id": "m_a_stale",
+      "body": "<<FILL v=2 role=rising words=100 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_mastale_answer",
+          "label": "Decide what your answer will be.",
+          "target": "m_a_call"
+        }
+      ]
+    },
+    {
+      "id": "m_a_call",
+      "body": "<<FILL v=2 role=choice words=112 function=decision>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_macall_combine",
+          "label": "Add fresh spotter plots before calling it in.",
+          "target": "m_a_agree"
+        },
+        {
+          "id": "c_macall_now",
+          "label": "Call it in now on the radar math alone.",
+          "target": "m_a_fuzzy"
+        }
+      ]
+    },
+    {
+      "id": "m_a_agree",
+      "body": "<<FILL v=2 role=climax words=100 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_maagree_out",
+          "label": "Follow your nowcast out into the world.",
+          "target": "m_end_agree"
+        }
+      ]
+    },
+    {
+      "id": "m_end_agree",
+      "body": "<<FILL v=2 role=completion words=95 function=ending>>",
+      "is_ending": true,
+      "ending": {
+        "id": "m_end_agree",
+        "valence": "positive",
+        "kind": "success",
+        "title": "{B12_PRIZE1}"
+      }
+    },
+    {
+      "id": "m_a_fuzzy",
+      "body": "<<FILL v=2 role=rising words=100 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_mafuzzy_recover",
+          "label": "Help win the lost minutes back.",
+          "target": "m_end_fuzzy"
+        }
+      ]
+    },
+    {
+      "id": "m_end_fuzzy",
+      "body": "<<FILL v=2 role=failure words=95 function=ending>>",
+      "is_ending": true,
+      "ending": {
+        "id": "m_end_fuzzy",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "{B12_PRIZE2}"
+      }
+    },
+    {
+      "id": "m_b_board",
+      "body": "<<FILL v=2 role=rising words=100 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_mbboard_code",
+          "label": "Make the board even easier to read.",
+          "target": "m_b_colors"
+        }
+      ]
+    },
+    {
+      "id": "m_b_colors",
+      "body": "<<FILL v=2 role=rising words=96 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_mbcolors_see",
+          "label": "Say out loud what the board is showing.",
+          "target": "m_b_gap"
+        }
+      ]
+    },
+    {
+      "id": "m_b_gap",
+      "body": "<<FILL v=2 role=choice words=118 function=decision>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_mbgap_warn",
+          "label": "Draft the warning and get it signed.",
+          "target": "m_b_draft"
+        },
+        {
+          "id": "c_mbgap_board",
+          "label": "Hand the warning to {ROUTE_B_SIDEKICK} and keep the board current.",
+          "target": "m_b_columns"
+        }
+      ]
+    },
+    {
+      "id": "m_b_draft",
+      "body": "<<FILL v=2 role=rising words=100 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_mbdraft_send",
+          "label": "Now get it to the right ears.",
+          "target": "m_b_phone"
+        }
+      ]
+    },
+    {
+      "id": "m_b_phone",
+      "body": "<<FILL v=2 role=choice words=112 function=decision>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_mbphone_cell",
+          "label": "Track down the athletic director's cell with {ROUTE_B_SIDEKICK}.",
+          "target": "m_b_ad"
+        },
+        {
+          "id": "c_mbphone_stand",
+          "label": "Call the snack stand and send the warning by hand.",
+          "target": "m_b_note"
+        }
+      ]
+    },
+    {
+      "id": "m_b_ad",
+      "body": "<<FILL v=2 role=choice words=112 function=decision>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_mbad_evidence",
+          "label": "Give him the evidence, plain and clear.",
+          "target": "m_b_hailfact"
+        },
+        {
+          "id": "c_mbad_deal",
+          "label": "Offer him the club's deal.",
+          "target": "m_b_deal"
+        }
+      ]
+    },
+    {
+      "id": "m_b_hailfact",
+      "body": "<<FILL v=2 role=rising words=100 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_mbhail_land",
+          "label": "Let the upstream fact land.",
+          "target": "m_b_gustfront"
+        }
+      ]
+    },
+    {
+      "id": "m_b_gustfront",
+      "body": "<<FILL v=2 role=climax words=96 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_mbgust_watch",
+          "label": "Stay on the line while the field clears.",
+          "target": "m_end_called"
+        }
+      ]
+    },
+    {
+      "id": "m_end_called",
+      "body": "<<FILL v=2 role=completion words=95 function=ending>>",
+      "is_ending": true,
+      "ending": {
+        "id": "m_end_called",
+        "valence": "positive",
+        "kind": "success",
+        "title": "{B211_PRIZE1}"
+      }
+    },
+    {
+      "id": "m_b_deal",
+      "body": "<<FILL v=2 role=climax words=96 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_mbdeal_keep",
+          "label": "Keep the club's side of the bargain.",
+          "target": "m_end_delay"
+        }
+      ]
+    },
+    {
+      "id": "m_end_delay",
+      "body": "<<FILL v=2 role=completion words=95 function=ending>>",
+      "is_ending": true,
+      "ending": {
+        "id": "m_end_delay",
+        "valence": "positive",
+        "kind": "completion",
+        "title": "{B211_PRIZE2}"
+      }
+    },
+    {
+      "id": "m_b_note",
+      "body": "<<FILL v=2 role=rising words=100 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_mbnote_pa",
+          "label": "Listen for the announcement.",
+          "target": "m_end_note"
+        }
+      ]
+    },
+    {
+      "id": "m_end_note",
+      "body": "<<FILL v=2 role=completion words=92 function=ending>>",
+      "is_ending": true,
+      "ending": {
+        "id": "m_end_note",
+        "valence": "positive",
+        "kind": "completion",
+        "title": "{B212_PRIZE}"
+      }
+    },
+    {
+      "id": "m_b_columns",
+      "body": "<<FILL v=2 role=rising words=100 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_mbcolumns_hold",
+          "label": "Hold the county picture together.",
+          "target": "m_b_conflict"
+        }
+      ]
+    },
+    {
+      "id": "m_b_conflict",
+      "body": "<<FILL v=2 role=choice words=115 function=decision>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_mbconflict_marks",
+          "label": "Plot both with question marks and ask for a tiebreaker.",
+          "target": "m_b_tiebreak"
+        },
+        {
+          "id": "c_mbconflict_pick",
+          "label": "Pick {PLACE_BELLCREEK} and keep the board clean.",
+          "target": "m_b_wrong"
+        }
+      ]
+    },
+    {
+      "id": "m_b_tiebreak",
+      "body": "<<FILL v=2 role=climax words=96 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_mbtie_rule",
+          "label": "Notice what the question marks just did.",
+          "target": "m_end_qmark"
+        }
+      ]
+    },
+    {
+      "id": "m_end_qmark",
+      "body": "<<FILL v=2 role=ending words=95 function=ending>>",
+      "is_ending": true,
+      "ending": {
+        "id": "m_end_qmark",
+        "valence": "neutral",
+        "kind": "discovery",
+        "title": "{B22_PRIZE1}"
+      }
+    },
+    {
+      "id": "m_b_wrong",
+      "body": "<<FILL v=2 role=rising words=100 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_mbwrong_fix",
+          "label": "Fix the board fast.",
+          "target": "m_end_sure"
+        }
+      ]
+    },
+    {
+      "id": "m_end_sure",
+      "body": "<<FILL v=2 role=failure words=95 function=ending>>",
+      "is_ending": true,
+      "ending": {
+        "id": "m_end_sure",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "{B22_PRIZE2}"
+      }
+    },
+    {
+      "id": "f_van",
+      "body": "<<FILL v=2 role=rising words=105 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fvan_roll",
+          "label": "Roll out with the field team.",
+          "target": "f_load"
+        }
+      ]
+    },
+    {
+      "id": "f_load",
+      "body": "<<FILL v=2 role=rising words=100 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fload_sheet",
+          "label": "Check the route sheet with {ROUTE_C_MENTOR}.",
+          "target": "f_route"
+        }
+      ]
+    },
+    {
+      "id": "f_route",
+      "body": "<<FILL v=2 role=choice words=118 function=decision>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_froute_gauges",
+          "label": "Start with the gauge run along {C1_ROAD}.",
+          "target": "f_g_stops"
+        },
+        {
+          "id": "c_froute_hill",
+          "label": "Set up the {C2_LANDMARK} post before the sky closes in.",
+          "target": "f_h_hill"
+        }
+      ]
+    },
+    {
+      "id": "f_g_stops",
+      "body": "<<FILL v=2 role=rising words=100 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fgstops_third",
+          "label": "Head for the third farm.",
+          "target": "f_g_farm"
+        }
+      ]
+    },
+    {
+      "id": "f_g_farm",
+      "body": "<<FILL v=2 role=rising words=100 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fgfarm_out",
+          "label": "Pile out and size it up.",
+          "target": "f_g_pick"
+        }
+      ]
+    },
+    {
+      "id": "f_g_pick",
+      "body": "<<FILL v=2 role=choice words=115 function=decision>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fgpick_farm",
+          "label": "Help with the animals and the tarp first.",
+          "target": "f_g_goats"
+        },
+        {
+          "id": "c_fgpick_gauge",
+          "label": "Swap the gauge fast, then help the farm.",
+          "target": "f_g_swap"
+        }
+      ]
+    },
+    {
+      "id": "f_g_goats",
+      "body": "<<FILL v=2 role=rising words=100 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fggoats_tarp",
+          "label": "Now the flapping tarp.",
+          "target": "f_g_tarp"
+        }
+      ]
+    },
+    {
+      "id": "f_g_tarp",
+      "body": "<<FILL v=2 role=rising words=100 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fgtarp_count",
+          "label": "Help {C1_FARMER} count the goats.",
+          "target": "f_g_count"
+        }
+      ]
+    },
+    {
+      "id": "f_g_count",
+      "body": "<<FILL v=2 role=choice words=115 function=decision>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fgcount_look",
+          "label": "Take a fast two-minute look at the willows with {ROUTE_C_SIDEKICK}.",
+          "target": "f_g_willow"
+        },
+        {
+          "id": "c_fgcount_shelter",
+          "label": "Get everyone inside now, people before goats.",
+          "target": "f_g_cellar"
+        }
+      ],
+      "safety_scope": [
+        "peril"
+      ]
+    },
+    {
+      "id": "f_g_willow",
+      "body": "<<FILL v=2 role=rising words=100 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fgwillow_run",
+          "label": "Look for {C1_GOAT} once the line has passed.",
+          "target": "f_g_inside"
+        }
+      ],
+      "safety_scope": [
+        "peril"
+      ]
+    },
+    {
+      "id": "f_g_inside",
+      "body": "<<FILL v=2 role=climax words=100 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fginside_watch",
+          "label": "Watch the storm do its worst to a ready farm.",
+          "target": "f_end_goats"
+        }
+      ]
+    },
+    {
+      "id": "f_end_goats",
+      "body": "<<FILL v=2 role=completion words=95 function=ending>>",
+      "is_ending": true,
+      "ending": {
+        "id": "f_end_goats",
+        "valence": "positive",
+        "kind": "success",
+        "title": "{C11_PRIZE1}"
+      }
+    },
+    {
+      "id": "f_g_cellar",
+      "body": "<<FILL v=2 role=climax words=100 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fgcellar_after",
+          "label": "Look for {C1_GOAT} once the line has passed.",
+          "target": "f_end_people"
+        }
+      ]
+    },
+    {
+      "id": "f_end_people",
+      "body": "<<FILL v=2 role=completion words=95 function=ending>>",
+      "is_ending": true,
+      "ending": {
+        "id": "f_end_people",
+        "valence": "positive",
+        "kind": "completion",
+        "title": "{C11_PRIZE2}"
+      }
+    },
+    {
+      "id": "f_g_swap",
+      "body": "<<FILL v=2 role=rising words=96 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fgswap_yard",
+          "label": "Throw everything at the yard.",
+          "target": "f_g_horn"
+        }
+      ]
+    },
+    {
+      "id": "f_g_horn",
+      "body": "<<FILL v=2 role=rising words=100 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fghorn_call",
+          "label": "Make the call on the tarp.",
+          "target": "f_g_tarp2"
+        }
+      ]
+    },
+    {
+      "id": "f_g_tarp2",
+      "body": "<<FILL v=2 role=choice words=112 function=decision>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fgtarp2_leave",
+          "label": "Leave the tarp, everyone inside now.",
+          "target": "f_g_peel"
+        },
+        {
+          "id": "c_fgtarp2_minute",
+          "label": "Take one more minute and finish it with {ROUTE_C_MENTOR}.",
+          "target": "f_g_minute"
+        }
+      ],
+      "safety_scope": [
+        "peril"
+      ]
+    },
+    {
+      "id": "f_g_peel",
+      "body": "<<FILL v=2 role=climax words=96 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fgpeel_tally",
+          "label": "Tally what was lost and what was not.",
+          "target": "f_end_dry"
+        }
+      ]
+    },
+    {
+      "id": "f_end_dry",
+      "body": "<<FILL v=2 role=completion words=95 function=ending>>",
+      "is_ending": true,
+      "ending": {
+        "id": "f_end_dry",
+        "valence": "positive",
+        "kind": "completion",
+        "title": "{C12_PRIZE1}"
+      }
+    },
+    {
+      "id": "f_g_minute",
+      "body": "<<FILL v=2 role=rising words=100 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fgminute_breathe",
+          "label": "Catch your breath inside.",
+          "target": "f_end_margin"
+        }
+      ],
+      "safety_scope": [
+        "peril"
+      ]
+    },
+    {
+      "id": "f_end_margin",
+      "body": "<<FILL v=2 role=failure words=95 function=ending>>",
+      "is_ending": true,
+      "ending": {
+        "id": "f_end_margin",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "{C12_PRIZE2}"
+      }
+    },
+    {
+      "id": "f_h_hill",
+      "body": "<<FILL v=2 role=rising words=100 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fhhill_build",
+          "label": "Build the observation post.",
+          "target": "f_h_live"
+        }
+      ]
+    },
+    {
+      "id": "f_h_live",
+      "body": "<<FILL v=2 role=rising words=104 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fhlive_jobs",
+          "label": "Split the post's two jobs.",
+          "target": "f_h_job"
+        }
+      ]
+    },
+    {
+      "id": "f_h_job",
+      "body": "<<FILL v=2 role=choice words=112 function=decision>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fhjob_wind",
+          "label": "Take the instruments and call the readings.",
+          "target": "f_h_calls"
+        },
+        {
+          "id": "c_fhjob_camera",
+          "label": "Take the camera and document the storm.",
+          "target": "f_h_frame"
+        }
+      ]
+    },
+    {
+      "id": "f_h_calls",
+      "body": "<<FILL v=2 role=rising words=100 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fhcalls_rise",
+          "label": "Keep calling as the numbers climb.",
+          "target": "f_h_hail"
+        }
+      ]
+    },
+    {
+      "id": "f_h_hail",
+      "body": "<<FILL v=2 role=rising words=100 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fhhail_mast",
+          "label": "Settle the mast question.",
+          "target": "f_h_mast"
+        }
+      ],
+      "safety_scope": [
+        "peril"
+      ]
+    },
+    {
+      "id": "f_h_mast",
+      "body": "<<FILL v=2 role=choice words=115 function=decision>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fhmast_keep",
+          "label": "Leave the mast up till {ROUTE_C_MENTOR}'s deadline and log the peak.",
+          "target": "f_h_peak"
+        },
+        {
+          "id": "c_fhmast_strike",
+          "label": "Strike the mast now and switch to the handheld.",
+          "target": "f_h_hand"
+        }
+      ]
+    },
+    {
+      "id": "f_h_peak",
+      "body": "<<FILL v=2 role=climax words=104 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fhpeak_home",
+          "label": "Ride home with the number.",
+          "target": "f_h_report"
+        }
+      ]
+    },
+    {
+      "id": "f_h_report",
+      "body": "<<FILL v=2 role=rising words=96 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fhreport_share",
+          "label": "Hand the data over.",
+          "target": "f_end_58"
+        }
+      ]
+    },
+    {
+      "id": "f_end_58",
+      "body": "<<FILL v=2 role=completion words=95 function=ending>>",
+      "is_ending": true,
+      "ending": {
+        "id": "f_end_58",
+        "valence": "positive",
+        "kind": "success",
+        "title": "{C21_PRIZE1}"
+      }
+    },
+    {
+      "id": "f_h_hand",
+      "body": "<<FILL v=2 role=rising words=100 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fhhand_pads",
+          "label": "Collect the hail pads after the all-clear.",
+          "target": "f_end_gotaway"
+        }
+      ]
+    },
+    {
+      "id": "f_end_gotaway",
+      "body": "<<FILL v=2 role=ending words=95 function=ending>>",
+      "is_ending": true,
+      "ending": {
+        "id": "f_end_gotaway",
+        "valence": "neutral",
+        "kind": "discovery",
+        "title": "{C21_PRIZE2}"
+      }
+    },
+    {
+      "id": "f_h_frame",
+      "body": "<<FILL v=2 role=rising words=100 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fhframe_hail",
+          "label": "Keep shooting as the hail arrives.",
+          "target": "f_h_van"
+        }
+      ]
+    },
+    {
+      "id": "f_h_van",
+      "body": "<<FILL v=2 role=choice words=118 function=decision>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fhvan_measure",
+          "label": "Measure the hail on the pad before it melts.",
+          "target": "f_h_ruler"
+        },
+        {
+          "id": "c_fhvan_light",
+          "label": "Chase the light for the club's best-ever photo.",
+          "target": "f_h_light"
+        }
+      ]
+    },
+    {
+      "id": "f_h_ruler",
+      "body": "<<FILL v=2 role=climax words=96 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fhruler_file",
+          "label": "File the archive's first calibrated hail record.",
+          "target": "f_end_19mm"
+        }
+      ]
+    },
+    {
+      "id": "f_end_19mm",
+      "body": "<<FILL v=2 role=completion words=95 function=ending>>",
+      "is_ending": true,
+      "ending": {
+        "id": "f_end_19mm",
+        "valence": "positive",
+        "kind": "success",
+        "title": "{C22_PRIZE1}"
+      }
+    },
+    {
+      "id": "f_h_light",
+      "body": "<<FILL v=2 role=climax words=96 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fhlight_cost",
+          "label": "Bring your treasure back to the van.",
+          "target": "f_end_photo"
+        }
+      ]
+    },
+    {
+      "id": "f_end_photo",
+      "body": "<<FILL v=2 role=failure words=95 function=ending>>",
+      "is_ending": true,
+      "ending": {
+        "id": "f_end_photo",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "{C22_PRIZE2}"
+      }
+    }
+  ]
+}

@@ -1,0 +1,115 @@
+{
+  "registry_version": 1,
+  "directive_version": 2,
+  "decision": "D4, decided 2026-11-21 (docs/planning/story-plan-implementation-plan.md decision table; docs/planning/d4-retained-shell-proposal.md)",
+  "shapes": [
+    {
+      "id": "the-locked-carousel",
+      "band": "8-11",
+      "length": "short",
+      "narrative_style": "prose",
+      "source": "skeletons/8-11/the-locked-carousel.json",
+      "file": "shapes/8-11/the-locked-carousel.json",
+      "hash": "sha256:66d70a41cd1c65581a19f1c81e411ec4caf234db3939dbf5d91bb44be1c28393"
+    },
+    {
+      "id": "the-cave-of-echoes",
+      "band": "8-11",
+      "length": "short",
+      "narrative_style": "prose",
+      "source": "skeletons/8-11/the-cave-of-echoes.json",
+      "file": "shapes/8-11/the-cave-of-echoes.json",
+      "hash": "sha256:70c334341d9e40bc1b272bcb9254c354308a798799ecafe3c75e0564f017a628"
+    },
+    {
+      "id": "the-lantern-keepers-list",
+      "band": "8-11",
+      "length": "medium",
+      "narrative_style": "prose",
+      "source": "skeletons/8-11/the-lantern-keepers-list.json",
+      "file": "shapes/8-11/the-lantern-keepers-list.json",
+      "hash": "sha256:11bb80d9d3a5f2ad3c57ce42b8430f4f98e30e2a2d1c473f97a424ae05474b51"
+    },
+    {
+      "id": "the-storm-chasers-club",
+      "band": "8-11",
+      "length": "medium",
+      "narrative_style": "prose",
+      "source": "skeletons/8-11/the-storm-chasers-club.json",
+      "file": "shapes/8-11/the-storm-chasers-club.json",
+      "hash": "sha256:e375d2713f2ed30649b491384a6e52fc1b98d61f27ca1188380e033e58a22200"
+    },
+    {
+      "id": "the-glass-comet",
+      "band": "10-13",
+      "length": "short",
+      "narrative_style": "prose",
+      "source": "skeletons/10-13/the-glass-comet.json",
+      "file": "shapes/10-13/the-glass-comet.json",
+      "hash": "sha256:4fa36219b117179ec24920bf3739b75df0f197c3198ac2b7c8e8bae7e833d7bc"
+    },
+    {
+      "id": "the-cinderwick-exchange",
+      "band": "10-13",
+      "length": "short",
+      "narrative_style": "prose",
+      "source": "skeletons/10-13/the-cinderwick-exchange.json",
+      "file": "shapes/10-13/the-cinderwick-exchange.json",
+      "hash": "sha256:da2ad88213e87aac7ad294837c1a4a33332f3a4069bd141039e1b10c160799f9"
+    },
+    {
+      "id": "the-orchard-signal",
+      "band": "10-13",
+      "length": "medium",
+      "narrative_style": "prose",
+      "source": "skeletons/10-13/the-orchard-signal.json",
+      "file": "shapes/10-13/the-orchard-signal.json",
+      "hash": "sha256:41c1304a9941b23eb5c2e7e258f2edae7b944b1ed326633a21382ef5b9dd04b8"
+    },
+    {
+      "id": "the-flooded-quarter",
+      "band": "10-13",
+      "length": "medium",
+      "narrative_style": "prose",
+      "source": "skeletons/10-13/the-flooded-quarter.json",
+      "file": "shapes/10-13/the-flooded-quarter.json",
+      "hash": "sha256:ff513ea6b5ba1e4f316184cffdb00c47d6b7f9e71312a331bf2758ae4fa470de"
+    },
+    {
+      "id": "the-undertow-season",
+      "band": "13-16",
+      "length": "medium",
+      "narrative_style": "prose",
+      "source": "skeletons/13-16/the-undertow-season.json",
+      "file": "shapes/13-16/the-undertow-season.json",
+      "hash": "sha256:93e88e641a9882612ac4e8ab03b77aa594a100d2e6d22d31b20dbf25fef62798"
+    },
+    {
+      "id": "the-conservatory-wars",
+      "band": "13-16",
+      "length": "medium",
+      "narrative_style": "prose",
+      "source": "skeletons/13-16/the-conservatory-wars.json",
+      "file": "shapes/13-16/the-conservatory-wars.json",
+      "hash": "sha256:be95e2930b7b322f9ebbcf1b36b365ecc34930344b45fceebb0ce637fa11220d"
+    },
+    {
+      "id": "the-quarry-signal",
+      "band": "13-16",
+      "length": "medium",
+      "narrative_style": "gamebook",
+      "source": "skeletons/13-16/the-quarry-signal.json",
+      "file": "shapes/13-16/the-quarry-signal.json",
+      "hash": "sha256:747b403ece2b531d2b638490ec523edff00e24425797a399f87c8a181ec5f0ec"
+    },
+    {
+      "id": "the-iron-spire-trial",
+      "band": "13-16",
+      "length": "medium",
+      "narrative_style": "gamebook",
+      "source": "skeletons/13-16/the-iron-spire-trial.json",
+      "file": "shapes/13-16/the-iron-spire-trial.json",
+      "hash": "sha256:b1d51766f6ba6b7993fc5325acb73a92e2f2fa1eee2f5f620204d890267aa511"
+    }
+  ]
+}

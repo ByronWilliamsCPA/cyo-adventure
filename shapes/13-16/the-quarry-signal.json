@@ -1,0 +1,5556 @@
+{
+  "schema_version": "2.0",
+  "id": "sk_quarry_signal",
+  "version": 1,
+  "title": "The Quarry Signal",
+  "metadata": {
+    "narrative_person": "second",
+    "age_band": "13-16",
+    "reading_level": {
+      "scheme": "flesch_kincaid",
+      "target": 7.0,
+      "tolerance": 1.5
+    },
+    "tier": 2,
+    "themes": [
+      "rescue",
+      "trust earned in the dark",
+      "the cost of a shortcut",
+      "a storm race"
+    ],
+    "estimated_minutes": 10,
+    "ending_count": 36,
+    "content_flags": {
+      "violence": "moderate",
+      "scariness": "moderate",
+      "peril": "intense"
+    },
+    "topology": "branch_and_bottleneck",
+    "length": "medium",
+    "narrative_style": "gamebook",
+    "production_eligible": true
+  },
+  "variables": [
+    {
+      "name": "light",
+      "type": "int",
+      "initial": 3,
+      "min": 0,
+      "max": 3,
+      "description": "Oil-lamp reserve. Decreases by 1 at each of three lit-shortcut checkpoints (a culvert, a failing stope, a slab-choked drift). Reachable set at the tower is {0,1,2,3}; read only in ending prose flavor, not gated by condition (the transmitter/trust gates carry the finale)."
+    },
+    {
+      "name": "trust",
+      "type": "int",
+      "initial": 0,
+      "min": 0,
+      "max": 2,
+      "description": "Dell Voss's confidence in you, built at three checkpoints where you look out for Dell over yourself (a failing rail, a catwalk gap, a switchback). Reachable set at the tower is {0,1,2}. Gates the finale's second resolution: trust==2 opens the together ending, ==1 a creditable solo ending, ==0 the estranged ending, on both the fixed and flare branches."
+    },
+    {
+      "name": "transmitter",
+      "type": "bool",
+      "initial": false,
+      "description": "Whether you recovered the tower's spare valve, wedged behind a rockfall at exactly one node partway down. Both values are reachable at the tower. Gates the finale's first resolution: true opens the clean-call branch, false forces the improvised flare branch."
+    }
+  ],
+  "start_node": "n_open",
+  "nodes": [
+    {
+      "id": "n_open",
+      "body": "<<FILL v=2 role=setup words=64 function=opening>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n_open_0",
+          "label": "Follow Dell through the gate.",
+          "target": "n_gather"
+        }
+      ]
+    },
+    {
+      "id": "n_gather",
+      "body": "<<FILL v=2 role=choice words=70 function=decision>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n_gather_0",
+          "label": "Take the spoil terraces down.",
+          "target": "t_terrace"
+        },
+        {
+          "id": "c_n_gather_1",
+          "label": "Wade the flooded cut.",
+          "target": "t_flood"
+        },
+        {
+          "id": "c_n_gather_2",
+          "label": "Follow the crane road.",
+          "target": "t_crane"
+        }
+      ]
+    },
+    {
+      "id": "t_terrace",
+      "body": "<<FILL v=2 role=rising words=72 function=decision>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_t_terrace_0",
+          "label": "Push straight on down.",
+          "target": "p0_00"
+        },
+        {
+          "id": "c_t_terrace_1",
+          "label": "Go carefully and save the lamp.",
+          "target": "p0_01"
+        },
+        {
+          "id": "c_t_terrace_2",
+          "label": "Push straight on down.",
+          "target": "p0_02"
+        }
+      ]
+    },
+    {
+      "id": "t_flood",
+      "body": "<<FILL v=2 role=rising words=72 function=decision>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_t_flood_0",
+          "label": "Go carefully and save the lamp.",
+          "target": "p0_03"
+        },
+        {
+          "id": "c_t_flood_1",
+          "label": "Push straight on down.",
+          "target": "p0_04"
+        },
+        {
+          "id": "c_t_flood_2",
+          "label": "Go carefully and save the lamp.",
+          "target": "p0_05"
+        }
+      ]
+    },
+    {
+      "id": "t_crane",
+      "body": "<<FILL v=2 role=rising words=72 function=decision>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_t_crane_0",
+          "label": "Push straight on down.",
+          "target": "p0_00"
+        },
+        {
+          "id": "c_t_crane_1",
+          "label": "Go carefully and save the lamp.",
+          "target": "p0_01"
+        },
+        {
+          "id": "c_t_crane_2",
+          "label": "Push straight on down.",
+          "target": "p0_02"
+        }
+      ]
+    },
+    {
+      "id": "p0_00",
+      "body": "<<FILL v=2 role=rising words=72 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_p0_00_0",
+          "label": "Press on.",
+          "target": "d0_n0"
+        },
+        {
+          "id": "c_p0_00_1",
+          "label": "Keep going.",
+          "target": "d0_n1"
+        },
+        {
+          "id": "c_p0_00_2",
+          "label": "Push forward.",
+          "target": "d0_n2"
+        }
+      ]
+    },
+    {
+      "id": "p0_01",
+      "body": "<<FILL v=2 role=rising words=72 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_p0_01_0",
+          "label": "Press on.",
+          "target": "d0_n3"
+        },
+        {
+          "id": "c_p0_01_1",
+          "label": "Keep going.",
+          "target": "d0_n4"
+        },
+        {
+          "id": "c_p0_01_2",
+          "label": "Push forward.",
+          "target": "d0_n5"
+        }
+      ]
+    },
+    {
+      "id": "p0_02",
+      "body": "<<FILL v=2 role=rising words=72 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_p0_02_0",
+          "label": "Press on.",
+          "target": "d0_n6"
+        },
+        {
+          "id": "c_p0_02_1",
+          "label": "Keep going.",
+          "target": "d0_n7"
+        },
+        {
+          "id": "c_p0_02_2",
+          "label": "Push forward.",
+          "target": "d0_n8"
+        }
+      ]
+    },
+    {
+      "id": "p0_03",
+      "body": "<<FILL v=2 role=rising words=72 function=decision>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_p0_03_0",
+          "label": "Press on.",
+          "target": "d0_n0"
+        },
+        {
+          "id": "c_p0_03_1",
+          "label": "Keep going.",
+          "target": "d0_n1"
+        },
+        {
+          "id": "c_p0_03_2",
+          "label": "Push forward.",
+          "target": "d0_n2"
+        }
+      ]
+    },
+    {
+      "id": "p0_04",
+      "body": "<<FILL v=2 role=rising words=72 function=decision>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_p0_04_0",
+          "label": "Press on.",
+          "target": "d0_n3"
+        },
+        {
+          "id": "c_p0_04_1",
+          "label": "Keep going.",
+          "target": "d0_n4"
+        },
+        {
+          "id": "c_p0_04_2",
+          "label": "Push forward.",
+          "target": "d0_n5"
+        }
+      ]
+    },
+    {
+      "id": "p0_05",
+      "body": "<<FILL v=2 role=rising words=72 function=decision>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_p0_05_0",
+          "label": "Press on.",
+          "target": "d0_n6"
+        },
+        {
+          "id": "c_p0_05_1",
+          "label": "Keep going.",
+          "target": "d0_n7"
+        },
+        {
+          "id": "c_p0_05_2",
+          "label": "Push forward.",
+          "target": "d0_n8"
+        }
+      ]
+    },
+    {
+      "id": "d0_n0",
+      "body": "<<FILL v=2 role=rising words=72 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_d0_n0_0",
+          "label": "Press on.",
+          "target": "d1_n0"
+        },
+        {
+          "id": "c_d0_n0_1",
+          "label": "Keep going.",
+          "target": "d1_n1"
+        },
+        {
+          "id": "c_d0_n0_2",
+          "label": "Push forward.",
+          "target": "d1_n2"
+        }
+      ]
+    },
+    {
+      "id": "d0_n1",
+      "body": "<<FILL v=2 role=rising words=72 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_d0_n1_0",
+          "label": "Press on.",
+          "target": "d1_n3"
+        },
+        {
+          "id": "c_d0_n1_1",
+          "label": "Keep going.",
+          "target": "d1_n4"
+        },
+        {
+          "id": "c_d0_n1_2",
+          "label": "Push forward.",
+          "target": "d1_n5"
+        }
+      ]
+    },
+    {
+      "id": "d0_n2",
+      "body": "<<FILL v=2 role=rising words=72 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_d0_n2_0",
+          "label": "Press on.",
+          "target": "d1_n6"
+        },
+        {
+          "id": "c_d0_n2_1",
+          "label": "Keep going.",
+          "target": "d1_n7"
+        },
+        {
+          "id": "c_d0_n2_2",
+          "label": "Push forward.",
+          "target": "d1_n8"
+        }
+      ]
+    },
+    {
+      "id": "d0_n3",
+      "body": "<<FILL v=2 role=rising words=72 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_d0_n3_0",
+          "label": "Press on.",
+          "target": "d1_n0"
+        },
+        {
+          "id": "c_d0_n3_1",
+          "label": "Keep going.",
+          "target": "d1_n1"
+        },
+        {
+          "id": "c_d0_n3_2",
+          "label": "Push forward.",
+          "target": "d1_n2"
+        }
+      ]
+    },
+    {
+      "id": "d0_n4",
+      "body": "<<FILL v=2 role=rising words=72 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_d0_n4_0",
+          "label": "Press on.",
+          "target": "d1_n3"
+        },
+        {
+          "id": "c_d0_n4_1",
+          "label": "Keep going.",
+          "target": "d1_n4"
+        },
+        {
+          "id": "c_d0_n4_2",
+          "label": "Push forward.",
+          "target": "d1_n5"
+        }
+      ]
+    },
+    {
+      "id": "d0_n5",
+      "body": "<<FILL v=2 role=rising words=72 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_d0_n5_0",
+          "label": "Press on.",
+          "target": "d1_n6"
+        },
+        {
+          "id": "c_d0_n5_1",
+          "label": "Keep going.",
+          "target": "d1_n7"
+        },
+        {
+          "id": "c_d0_n5_2",
+          "label": "Push forward.",
+          "target": "d1_n8"
+        }
+      ]
+    },
+    {
+      "id": "d0_n6",
+      "body": "<<FILL v=2 role=rising words=72 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_d0_n6_0",
+          "label": "Press on.",
+          "target": "d1_n0"
+        },
+        {
+          "id": "c_d0_n6_1",
+          "label": "Keep going.",
+          "target": "d1_n1"
+        },
+        {
+          "id": "c_d0_n6_2",
+          "label": "Push forward.",
+          "target": "d1_n2"
+        }
+      ]
+    },
+    {
+      "id": "d0_n7",
+      "body": "<<FILL v=2 role=rising words=72 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_d0_n7_0",
+          "label": "Press on.",
+          "target": "d1_n3"
+        },
+        {
+          "id": "c_d0_n7_1",
+          "label": "Keep going.",
+          "target": "d1_n4"
+        },
+        {
+          "id": "c_d0_n7_2",
+          "label": "Push forward.",
+          "target": "d1_n5"
+        }
+      ]
+    },
+    {
+      "id": "d0_n8",
+      "body": "<<FILL v=2 role=rising words=72 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_d0_n8_0",
+          "label": "Press on.",
+          "target": "d1_n6"
+        },
+        {
+          "id": "c_d0_n8_1",
+          "label": "Keep going.",
+          "target": "d1_n7"
+        },
+        {
+          "id": "c_d0_n8_2",
+          "label": "Push forward.",
+          "target": "d1_n8"
+        }
+      ]
+    },
+    {
+      "id": "d1_n0",
+      "body": "<<FILL v=2 role=rising words=72 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_d1_n0_0",
+          "label": "Press on.",
+          "target": "d2_n0"
+        },
+        {
+          "id": "c_d1_n0_1",
+          "label": "Keep going.",
+          "target": "d2_n1"
+        },
+        {
+          "id": "c_d1_n0_2",
+          "label": "Push forward.",
+          "target": "d2_n2"
+        }
+      ]
+    },
+    {
+      "id": "d1_n1",
+      "body": "<<FILL v=2 role=rising words=72 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_d1_n1_0",
+          "label": "Press on.",
+          "target": "d2_n3"
+        },
+        {
+          "id": "c_d1_n1_1",
+          "label": "Keep going.",
+          "target": "d2_n4"
+        },
+        {
+          "id": "c_d1_n1_2",
+          "label": "Push forward.",
+          "target": "d2_n5"
+        }
+      ]
+    },
+    {
+      "id": "d1_n2",
+      "body": "<<FILL v=2 role=rising words=72 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_d1_n2_0",
+          "label": "Press on.",
+          "target": "d2_n6"
+        },
+        {
+          "id": "c_d1_n2_1",
+          "label": "Keep going.",
+          "target": "d2_n7"
+        },
+        {
+          "id": "c_d1_n2_2",
+          "label": "Push forward.",
+          "target": "d2_n8"
+        }
+      ]
+    },
+    {
+      "id": "d1_n3",
+      "body": "<<FILL v=2 role=rising words=72 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_d1_n3_0",
+          "label": "Press on.",
+          "target": "d2_n0"
+        },
+        {
+          "id": "c_d1_n3_1",
+          "label": "Keep going.",
+          "target": "d2_n1"
+        },
+        {
+          "id": "c_d1_n3_2",
+          "label": "Push forward.",
+          "target": "d2_n2"
+        }
+      ]
+    },
+    {
+      "id": "d1_n4",
+      "body": "<<FILL v=2 role=rising words=72 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_d1_n4_0",
+          "label": "Press on.",
+          "target": "d2_n3"
+        },
+        {
+          "id": "c_d1_n4_1",
+          "label": "Keep going.",
+          "target": "d2_n4"
+        },
+        {
+          "id": "c_d1_n4_2",
+          "label": "Push forward.",
+          "target": "d2_n5"
+        }
+      ]
+    },
+    {
+      "id": "d1_n5",
+      "body": "<<FILL v=2 role=rising words=72 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_d1_n5_0",
+          "label": "Press on.",
+          "target": "d2_n6"
+        },
+        {
+          "id": "c_d1_n5_1",
+          "label": "Keep going.",
+          "target": "d2_n7"
+        },
+        {
+          "id": "c_d1_n5_2",
+          "label": "Push forward.",
+          "target": "d2_n8"
+        }
+      ]
+    },
+    {
+      "id": "d1_n6",
+      "body": "<<FILL v=2 role=rising words=72 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_d1_n6_0",
+          "label": "Press on.",
+          "target": "d2_n0"
+        },
+        {
+          "id": "c_d1_n6_1",
+          "label": "Keep going.",
+          "target": "d2_n1"
+        },
+        {
+          "id": "c_d1_n6_2",
+          "label": "Push forward.",
+          "target": "d2_n2"
+        }
+      ]
+    },
+    {
+      "id": "d1_n7",
+      "body": "<<FILL v=2 role=rising words=72 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_d1_n7_0",
+          "label": "Press on.",
+          "target": "d2_n3"
+        },
+        {
+          "id": "c_d1_n7_1",
+          "label": "Keep going.",
+          "target": "d2_n4"
+        },
+        {
+          "id": "c_d1_n7_2",
+          "label": "Push forward.",
+          "target": "d2_n5"
+        }
+      ]
+    },
+    {
+      "id": "d1_n8",
+      "body": "<<FILL v=2 role=rising words=72 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_d1_n8_0",
+          "label": "Press on.",
+          "target": "d2_n6"
+        },
+        {
+          "id": "c_d1_n8_1",
+          "label": "Keep going.",
+          "target": "d2_n7"
+        },
+        {
+          "id": "c_d1_n8_2",
+          "label": "Push forward.",
+          "target": "d2_n8"
+        }
+      ]
+    },
+    {
+      "id": "d2_n0",
+      "body": "<<FILL v=2 role=rising words=72 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_d2_n0_0",
+          "label": "Press on.",
+          "target": "d3_n0"
+        },
+        {
+          "id": "c_d2_n0_1",
+          "label": "Keep going.",
+          "target": "d3_n1"
+        },
+        {
+          "id": "c_d2_n0_2",
+          "label": "Push forward.",
+          "target": "d3_n2"
+        }
+      ]
+    },
+    {
+      "id": "d2_n1",
+      "body": "<<FILL v=2 role=rising words=72 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_d2_n1_0",
+          "label": "Press on.",
+          "target": "d3_n3"
+        },
+        {
+          "id": "c_d2_n1_1",
+          "label": "Keep going.",
+          "target": "d3_n4"
+        },
+        {
+          "id": "c_d2_n1_2",
+          "label": "Push forward.",
+          "target": "d3_n5"
+        }
+      ]
+    },
+    {
+      "id": "d2_n2",
+      "body": "<<FILL v=2 role=rising words=72 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_d2_n2_0",
+          "label": "Press on.",
+          "target": "d3_n6"
+        },
+        {
+          "id": "c_d2_n2_1",
+          "label": "Keep going.",
+          "target": "d3_n7"
+        },
+        {
+          "id": "c_d2_n2_2",
+          "label": "Push forward.",
+          "target": "d3_n8"
+        }
+      ]
+    },
+    {
+      "id": "d2_n3",
+      "body": "<<FILL v=2 role=rising words=72 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_d2_n3_0",
+          "label": "Press on.",
+          "target": "d3_n0"
+        },
+        {
+          "id": "c_d2_n3_1",
+          "label": "Keep going.",
+          "target": "d3_n1"
+        },
+        {
+          "id": "c_d2_n3_2",
+          "label": "Push forward.",
+          "target": "d3_n2"
+        }
+      ],
+      "on_enter": [
+        {
+          "op": "dec",
+          "var": "light",
+          "value": 1
+        }
+      ]
+    },
+    {
+      "id": "d2_n4",
+      "body": "<<FILL v=2 role=rising words=72 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_d2_n4_0",
+          "label": "Press on.",
+          "target": "d3_n3"
+        },
+        {
+          "id": "c_d2_n4_1",
+          "label": "Keep going.",
+          "target": "d3_n4"
+        },
+        {
+          "id": "c_d2_n4_2",
+          "label": "Push forward.",
+          "target": "d3_n5"
+        }
+      ]
+    },
+    {
+      "id": "d2_n5",
+      "body": "<<FILL v=2 role=rising words=72 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_d2_n5_0",
+          "label": "Press on.",
+          "target": "d3_n6"
+        },
+        {
+          "id": "c_d2_n5_1",
+          "label": "Keep going.",
+          "target": "d3_n7"
+        },
+        {
+          "id": "c_d2_n5_2",
+          "label": "Push forward.",
+          "target": "d3_n8"
+        }
+      ]
+    },
+    {
+      "id": "d2_n6",
+      "body": "<<FILL v=2 role=rising words=72 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_d2_n6_0",
+          "label": "Press on.",
+          "target": "d3_n0"
+        },
+        {
+          "id": "c_d2_n6_1",
+          "label": "Keep going.",
+          "target": "d3_n1"
+        },
+        {
+          "id": "c_d2_n6_2",
+          "label": "Push forward.",
+          "target": "d3_n2"
+        }
+      ]
+    },
+    {
+      "id": "d2_n7",
+      "body": "<<FILL v=2 role=rising words=72 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_d2_n7_0",
+          "label": "Press on.",
+          "target": "d3_n3"
+        },
+        {
+          "id": "c_d2_n7_1",
+          "label": "Keep going.",
+          "target": "d3_n4"
+        },
+        {
+          "id": "c_d2_n7_2",
+          "label": "Push forward.",
+          "target": "d3_n5"
+        }
+      ]
+    },
+    {
+      "id": "d2_n8",
+      "body": "<<FILL v=2 role=rising words=72 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_d2_n8_0",
+          "label": "Press on.",
+          "target": "d3_n6"
+        },
+        {
+          "id": "c_d2_n8_1",
+          "label": "Keep going.",
+          "target": "d3_n7"
+        },
+        {
+          "id": "c_d2_n8_2",
+          "label": "Push forward.",
+          "target": "d3_n8"
+        }
+      ]
+    },
+    {
+      "id": "d3_n0",
+      "body": "<<FILL v=2 role=rising words=72 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_d3_n0_0",
+          "label": "Press on.",
+          "target": "d4_n0"
+        },
+        {
+          "id": "c_d3_n0_1",
+          "label": "Keep going.",
+          "target": "d4_n1"
+        },
+        {
+          "id": "c_d3_n0_2",
+          "label": "Push forward.",
+          "target": "d4_n2"
+        }
+      ]
+    },
+    {
+      "id": "d3_n1",
+      "body": "<<FILL v=2 role=rising words=72 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_d3_n1_0",
+          "label": "Press on.",
+          "target": "d4_n3"
+        },
+        {
+          "id": "c_d3_n1_1",
+          "label": "Keep going.",
+          "target": "d4_n4"
+        },
+        {
+          "id": "c_d3_n1_2",
+          "label": "Push forward.",
+          "target": "d4_n5"
+        }
+      ]
+    },
+    {
+      "id": "d3_n2",
+      "body": "<<FILL v=2 role=rising words=72 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_d3_n2_0",
+          "label": "Press on.",
+          "target": "d4_n6"
+        },
+        {
+          "id": "c_d3_n2_1",
+          "label": "Keep going.",
+          "target": "d4_n7"
+        },
+        {
+          "id": "c_d3_n2_2",
+          "label": "Push forward.",
+          "target": "d4_n8"
+        }
+      ]
+    },
+    {
+      "id": "d3_n3",
+      "body": "<<FILL v=2 role=rising words=72 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_d3_n3_0",
+          "label": "Press on.",
+          "target": "d4_n0"
+        },
+        {
+          "id": "c_d3_n3_1",
+          "label": "Keep going.",
+          "target": "d4_n1"
+        },
+        {
+          "id": "c_d3_n3_2",
+          "label": "Push forward.",
+          "target": "d4_n2"
+        }
+      ]
+    },
+    {
+      "id": "d3_n4",
+      "body": "<<FILL v=2 role=rising words=72 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_d3_n4_0",
+          "label": "Press on.",
+          "target": "d4_n3"
+        },
+        {
+          "id": "c_d3_n4_1",
+          "label": "Keep going.",
+          "target": "d4_n4"
+        },
+        {
+          "id": "c_d3_n4_2",
+          "label": "Push forward.",
+          "target": "d4_n5"
+        }
+      ]
+    },
+    {
+      "id": "d3_n5",
+      "body": "<<FILL v=2 role=rising words=72 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_d3_n5_0",
+          "label": "Press on.",
+          "target": "d4_n6"
+        },
+        {
+          "id": "c_d3_n5_1",
+          "label": "Keep going.",
+          "target": "d4_n7"
+        },
+        {
+          "id": "c_d3_n5_2",
+          "label": "Push forward.",
+          "target": "d4_n8"
+        }
+      ]
+    },
+    {
+      "id": "d3_n6",
+      "body": "<<FILL v=2 role=rising words=72 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_d3_n6_0",
+          "label": "Press on.",
+          "target": "d4_n0"
+        },
+        {
+          "id": "c_d3_n6_1",
+          "label": "Keep going.",
+          "target": "d4_n1"
+        },
+        {
+          "id": "c_d3_n6_2",
+          "label": "Push forward.",
+          "target": "d4_n2"
+        }
+      ]
+    },
+    {
+      "id": "d3_n7",
+      "body": "<<FILL v=2 role=rising words=72 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_d3_n7_0",
+          "label": "Press on.",
+          "target": "d4_n3"
+        },
+        {
+          "id": "c_d3_n7_1",
+          "label": "Keep going.",
+          "target": "d4_n4"
+        },
+        {
+          "id": "c_d3_n7_2",
+          "label": "Push forward.",
+          "target": "d4_n5"
+        }
+      ]
+    },
+    {
+      "id": "d3_n8",
+      "body": "<<FILL v=2 role=rising words=72 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_d3_n8_0",
+          "label": "Press on.",
+          "target": "d4_n6"
+        },
+        {
+          "id": "c_d3_n8_1",
+          "label": "Keep going.",
+          "target": "d4_n7"
+        },
+        {
+          "id": "c_d3_n8_2",
+          "label": "Push forward.",
+          "target": "d4_n8"
+        }
+      ]
+    },
+    {
+      "id": "d4_n0",
+      "body": "<<FILL v=2 role=rising words=72 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_d4_n0_0",
+          "label": "Press on.",
+          "target": "d5_n0"
+        },
+        {
+          "id": "c_d4_n0_1",
+          "label": "Keep going.",
+          "target": "d5_n1"
+        },
+        {
+          "id": "c_d4_n0_2",
+          "label": "Push forward.",
+          "target": "d5_n2"
+        }
+      ]
+    },
+    {
+      "id": "d4_n1",
+      "body": "<<FILL v=2 role=rising words=72 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_d4_n1_0",
+          "label": "Press on.",
+          "target": "d5_n3"
+        },
+        {
+          "id": "c_d4_n1_1",
+          "label": "Keep going.",
+          "target": "d5_n4"
+        },
+        {
+          "id": "c_d4_n1_2",
+          "label": "Push forward.",
+          "target": "d5_n5"
+        }
+      ]
+    },
+    {
+      "id": "d4_n2",
+      "body": "<<FILL v=2 role=rising words=72 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_d4_n2_0",
+          "label": "Press on.",
+          "target": "d5_n6"
+        },
+        {
+          "id": "c_d4_n2_1",
+          "label": "Keep going.",
+          "target": "d5_n7"
+        },
+        {
+          "id": "c_d4_n2_2",
+          "label": "Push forward.",
+          "target": "d5_n8"
+        }
+      ]
+    },
+    {
+      "id": "d4_n3",
+      "body": "<<FILL v=2 role=rising words=72 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_d4_n3_0",
+          "label": "Press on.",
+          "target": "d5_n0"
+        },
+        {
+          "id": "c_d4_n3_1",
+          "label": "Keep going.",
+          "target": "d5_n1"
+        },
+        {
+          "id": "c_d4_n3_2",
+          "label": "Push forward.",
+          "target": "d5_n2"
+        }
+      ]
+    },
+    {
+      "id": "d4_n4",
+      "body": "<<FILL v=2 role=rising words=72 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_d4_n4_0",
+          "label": "Press on.",
+          "target": "d5_n3"
+        },
+        {
+          "id": "c_d4_n4_1",
+          "label": "Keep going.",
+          "target": "d5_n4"
+        },
+        {
+          "id": "c_d4_n4_2",
+          "label": "Push forward.",
+          "target": "d5_n5"
+        }
+      ]
+    },
+    {
+      "id": "d4_n5",
+      "body": "<<FILL v=2 role=rising words=72 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_d4_n5_0",
+          "label": "Press on.",
+          "target": "d5_n6"
+        },
+        {
+          "id": "c_d4_n5_1",
+          "label": "Keep going.",
+          "target": "d5_n7"
+        },
+        {
+          "id": "c_d4_n5_2",
+          "label": "Push forward.",
+          "target": "d5_n8"
+        }
+      ],
+      "on_enter": [
+        {
+          "op": "inc",
+          "var": "trust",
+          "value": 1
+        }
+      ]
+    },
+    {
+      "id": "d4_n6",
+      "body": "<<FILL v=2 role=rising words=72 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_d4_n6_0",
+          "label": "Press on.",
+          "target": "d5_n0"
+        },
+        {
+          "id": "c_d4_n6_1",
+          "label": "Keep going.",
+          "target": "d5_n1"
+        },
+        {
+          "id": "c_d4_n6_2",
+          "label": "Push forward.",
+          "target": "d5_n2"
+        }
+      ]
+    },
+    {
+      "id": "d4_n7",
+      "body": "<<FILL v=2 role=rising words=72 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_d4_n7_0",
+          "label": "Press on.",
+          "target": "d5_n3"
+        },
+        {
+          "id": "c_d4_n7_1",
+          "label": "Keep going.",
+          "target": "d5_n4"
+        },
+        {
+          "id": "c_d4_n7_2",
+          "label": "Push forward.",
+          "target": "d5_n5"
+        }
+      ]
+    },
+    {
+      "id": "d4_n8",
+      "body": "<<FILL v=2 role=rising words=72 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_d4_n8_0",
+          "label": "Press on.",
+          "target": "d5_n6"
+        },
+        {
+          "id": "c_d4_n8_1",
+          "label": "Keep going.",
+          "target": "d5_n7"
+        },
+        {
+          "id": "c_d4_n8_2",
+          "label": "Push forward.",
+          "target": "d5_n8"
+        }
+      ]
+    },
+    {
+      "id": "d5_n0",
+      "body": "<<FILL v=2 role=rising words=72 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_d5_n0_0",
+          "label": "Press on.",
+          "target": "d6_n0"
+        },
+        {
+          "id": "c_d5_n0_1",
+          "label": "Keep going.",
+          "target": "d6_n1"
+        },
+        {
+          "id": "c_d5_n0_2",
+          "label": "Push forward.",
+          "target": "d6_n2"
+        }
+      ]
+    },
+    {
+      "id": "d5_n1",
+      "body": "<<FILL v=2 role=rising words=72 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_d5_n1_0",
+          "label": "Press on.",
+          "target": "d6_n3"
+        },
+        {
+          "id": "c_d5_n1_1",
+          "label": "Keep going.",
+          "target": "d6_n4"
+        },
+        {
+          "id": "c_d5_n1_2",
+          "label": "Push forward.",
+          "target": "d6_n5"
+        }
+      ]
+    },
+    {
+      "id": "d5_n2",
+      "body": "<<FILL v=2 role=rising words=72 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_d5_n2_0",
+          "label": "Press on.",
+          "target": "d6_n6"
+        },
+        {
+          "id": "c_d5_n2_1",
+          "label": "Keep going.",
+          "target": "d6_n7"
+        },
+        {
+          "id": "c_d5_n2_2",
+          "label": "Push forward.",
+          "target": "d6_n8"
+        }
+      ]
+    },
+    {
+      "id": "d5_n3",
+      "body": "<<FILL v=2 role=rising words=72 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_d5_n3_0",
+          "label": "Press on.",
+          "target": "d6_n0"
+        },
+        {
+          "id": "c_d5_n3_1",
+          "label": "Keep going.",
+          "target": "d6_n1"
+        },
+        {
+          "id": "c_d5_n3_2",
+          "label": "Push forward.",
+          "target": "d6_n2"
+        }
+      ]
+    },
+    {
+      "id": "d5_n4",
+      "body": "<<FILL v=2 role=rising words=72 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_d5_n4_0",
+          "label": "Press on.",
+          "target": "d6_n3"
+        },
+        {
+          "id": "c_d5_n4_1",
+          "label": "Keep going.",
+          "target": "d6_n4"
+        },
+        {
+          "id": "c_d5_n4_2",
+          "label": "Push forward.",
+          "target": "d6_n5"
+        }
+      ]
+    },
+    {
+      "id": "d5_n5",
+      "body": "<<FILL v=2 role=rising words=72 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_d5_n5_0",
+          "label": "Press on.",
+          "target": "d6_n6"
+        },
+        {
+          "id": "c_d5_n5_1",
+          "label": "Keep going.",
+          "target": "d6_n7"
+        },
+        {
+          "id": "c_d5_n5_2",
+          "label": "Push forward.",
+          "target": "d6_n8"
+        }
+      ]
+    },
+    {
+      "id": "d5_n6",
+      "body": "<<FILL v=2 role=rising words=72 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_d5_n6_0",
+          "label": "Press on.",
+          "target": "d6_n0"
+        },
+        {
+          "id": "c_d5_n6_1",
+          "label": "Keep going.",
+          "target": "d6_n1"
+        },
+        {
+          "id": "c_d5_n6_2",
+          "label": "Push forward.",
+          "target": "d6_n2"
+        }
+      ]
+    },
+    {
+      "id": "d5_n7",
+      "body": "<<FILL v=2 role=rising words=72 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_d5_n7_0",
+          "label": "Press on.",
+          "target": "d6_n3"
+        },
+        {
+          "id": "c_d5_n7_1",
+          "label": "Keep going.",
+          "target": "d6_n4"
+        },
+        {
+          "id": "c_d5_n7_2",
+          "label": "Push forward.",
+          "target": "d6_n5"
+        }
+      ]
+    },
+    {
+      "id": "d5_n8",
+      "body": "<<FILL v=2 role=rising words=72 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_d5_n8_0",
+          "label": "Press on.",
+          "target": "d6_n6"
+        },
+        {
+          "id": "c_d5_n8_1",
+          "label": "Keep going.",
+          "target": "d6_n7"
+        },
+        {
+          "id": "c_d5_n8_2",
+          "label": "Push forward.",
+          "target": "d6_n8"
+        }
+      ]
+    },
+    {
+      "id": "d6_n0",
+      "body": "<<FILL v=2 role=rising words=72 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_d6_n0_0",
+          "label": "Press on.",
+          "target": "d7_n0"
+        },
+        {
+          "id": "c_d6_n0_1",
+          "label": "Keep going.",
+          "target": "d7_n1"
+        },
+        {
+          "id": "c_d6_n0_2",
+          "label": "Push forward.",
+          "target": "d7_n2"
+        }
+      ]
+    },
+    {
+      "id": "d6_n1",
+      "body": "<<FILL v=2 role=rising words=72 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_d6_n1_0",
+          "label": "Press on.",
+          "target": "d7_n3"
+        },
+        {
+          "id": "c_d6_n1_1",
+          "label": "Keep going.",
+          "target": "d7_n4"
+        },
+        {
+          "id": "c_d6_n1_2",
+          "label": "Push forward.",
+          "target": "d7_n5"
+        }
+      ]
+    },
+    {
+      "id": "d6_n2",
+      "body": "<<FILL v=2 role=rising words=72 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_d6_n2_0",
+          "label": "Press on.",
+          "target": "d7_n6"
+        },
+        {
+          "id": "c_d6_n2_1",
+          "label": "Keep going.",
+          "target": "d7_n7"
+        },
+        {
+          "id": "c_d6_n2_2",
+          "label": "Push forward.",
+          "target": "d7_n8"
+        }
+      ]
+    },
+    {
+      "id": "d6_n3",
+      "body": "<<FILL v=2 role=rising words=72 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_d6_n3_0",
+          "label": "Press on.",
+          "target": "d7_n0"
+        },
+        {
+          "id": "c_d6_n3_1",
+          "label": "Keep going.",
+          "target": "d7_n1"
+        },
+        {
+          "id": "c_d6_n3_2",
+          "label": "Push forward.",
+          "target": "d7_n2"
+        }
+      ]
+    },
+    {
+      "id": "d6_n4",
+      "body": "<<FILL v=2 role=rising words=72 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_d6_n4_0",
+          "label": "Press on.",
+          "target": "d7_n3"
+        },
+        {
+          "id": "c_d6_n4_1",
+          "label": "Keep going.",
+          "target": "d7_n4"
+        },
+        {
+          "id": "c_d6_n4_2",
+          "label": "Push forward.",
+          "target": "d7_n5"
+        }
+      ]
+    },
+    {
+      "id": "d6_n5",
+      "body": "<<FILL v=2 role=rising words=72 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_d6_n5_0",
+          "label": "Press on.",
+          "target": "d7_n6"
+        },
+        {
+          "id": "c_d6_n5_1",
+          "label": "Keep going.",
+          "target": "d7_n7"
+        },
+        {
+          "id": "c_d6_n5_2",
+          "label": "Push forward.",
+          "target": "d7_n8"
+        }
+      ]
+    },
+    {
+      "id": "d6_n6",
+      "body": "<<FILL v=2 role=rising words=72 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_d6_n6_0",
+          "label": "Press on.",
+          "target": "d7_n0"
+        },
+        {
+          "id": "c_d6_n6_1",
+          "label": "Keep going.",
+          "target": "d7_n1"
+        },
+        {
+          "id": "c_d6_n6_2",
+          "label": "Push forward.",
+          "target": "d7_n2"
+        }
+      ]
+    },
+    {
+      "id": "d6_n7",
+      "body": "<<FILL v=2 role=rising words=72 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_d6_n7_0",
+          "label": "Press on.",
+          "target": "d7_n3"
+        },
+        {
+          "id": "c_d6_n7_1",
+          "label": "Keep going.",
+          "target": "d7_n4"
+        },
+        {
+          "id": "c_d6_n7_2",
+          "label": "Push forward.",
+          "target": "d7_n5"
+        }
+      ]
+    },
+    {
+      "id": "d6_n8",
+      "body": "<<FILL v=2 role=rising words=72 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_d6_n8_0",
+          "label": "Press on.",
+          "target": "d7_n6"
+        },
+        {
+          "id": "c_d6_n8_1",
+          "label": "Keep going.",
+          "target": "d7_n7"
+        },
+        {
+          "id": "c_d6_n8_2",
+          "label": "Push forward.",
+          "target": "d7_n8"
+        }
+      ]
+    },
+    {
+      "id": "d7_n0",
+      "body": "<<FILL v=2 role=rising words=72 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_d7_n0_0",
+          "label": "Press on.",
+          "target": "d8_n0"
+        },
+        {
+          "id": "c_d7_n0_1",
+          "label": "Keep going.",
+          "target": "d8_n1"
+        },
+        {
+          "id": "c_d7_n0_2",
+          "label": "Push forward.",
+          "target": "d8_n2"
+        }
+      ]
+    },
+    {
+      "id": "d7_n1",
+      "body": "<<FILL v=2 role=rising words=72 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_d7_n1_0",
+          "label": "Press on.",
+          "target": "d8_n3"
+        },
+        {
+          "id": "c_d7_n1_1",
+          "label": "Keep going.",
+          "target": "d8_n4"
+        },
+        {
+          "id": "c_d7_n1_2",
+          "label": "Push forward.",
+          "target": "d8_n5"
+        }
+      ]
+    },
+    {
+      "id": "d7_n2",
+      "body": "<<FILL v=2 role=rising words=72 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_d7_n2_0",
+          "label": "Press on.",
+          "target": "d8_n6"
+        },
+        {
+          "id": "c_d7_n2_1",
+          "label": "Keep going.",
+          "target": "d8_n7"
+        },
+        {
+          "id": "c_d7_n2_2",
+          "label": "Push forward.",
+          "target": "d8_n8"
+        }
+      ]
+    },
+    {
+      "id": "d7_n3",
+      "body": "<<FILL v=2 role=rising words=72 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_d7_n3_0",
+          "label": "Press on.",
+          "target": "d8_n0"
+        },
+        {
+          "id": "c_d7_n3_1",
+          "label": "Keep going.",
+          "target": "d8_n1"
+        },
+        {
+          "id": "c_d7_n3_2",
+          "label": "Push forward.",
+          "target": "d8_n2"
+        }
+      ]
+    },
+    {
+      "id": "d7_n4",
+      "body": "<<FILL v=2 role=rising words=72 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_d7_n4_0",
+          "label": "Press on.",
+          "target": "d8_n3"
+        },
+        {
+          "id": "c_d7_n4_1",
+          "label": "Keep going.",
+          "target": "d8_n4"
+        },
+        {
+          "id": "c_d7_n4_2",
+          "label": "Push forward.",
+          "target": "d8_n5"
+        }
+      ]
+    },
+    {
+      "id": "d7_n5",
+      "body": "<<FILL v=2 role=rising words=72 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_d7_n5_0",
+          "label": "Press on.",
+          "target": "d8_n6"
+        },
+        {
+          "id": "c_d7_n5_1",
+          "label": "Keep going.",
+          "target": "d8_n7"
+        },
+        {
+          "id": "c_d7_n5_2",
+          "label": "Push forward.",
+          "target": "d8_n8"
+        }
+      ]
+    },
+    {
+      "id": "d7_n6",
+      "body": "<<FILL v=2 role=rising words=72 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_d7_n6_0",
+          "label": "Press on.",
+          "target": "d8_n0"
+        },
+        {
+          "id": "c_d7_n6_1",
+          "label": "Keep going.",
+          "target": "d8_n1"
+        },
+        {
+          "id": "c_d7_n6_2",
+          "label": "Push forward.",
+          "target": "d8_n2"
+        }
+      ]
+    },
+    {
+      "id": "d7_n7",
+      "body": "<<FILL v=2 role=rising words=72 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_d7_n7_0",
+          "label": "Press on.",
+          "target": "d8_n3"
+        },
+        {
+          "id": "c_d7_n7_1",
+          "label": "Keep going.",
+          "target": "d8_n4"
+        },
+        {
+          "id": "c_d7_n7_2",
+          "label": "Push forward.",
+          "target": "d8_n5"
+        }
+      ]
+    },
+    {
+      "id": "d7_n8",
+      "body": "<<FILL v=2 role=rising words=72 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_d7_n8_0",
+          "label": "Press on.",
+          "target": "d8_n6"
+        },
+        {
+          "id": "c_d7_n8_1",
+          "label": "Keep going.",
+          "target": "d8_n7"
+        },
+        {
+          "id": "c_d7_n8_2",
+          "label": "Push forward.",
+          "target": "d8_n8"
+        }
+      ]
+    },
+    {
+      "id": "d8_n0",
+      "body": "<<FILL v=2 role=rising words=72 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_d8_n0_0",
+          "label": "Press on.",
+          "target": "d9_n0"
+        },
+        {
+          "id": "c_d8_n0_1",
+          "label": "Keep going.",
+          "target": "d9_n1"
+        },
+        {
+          "id": "c_d8_n0_2",
+          "label": "Push forward.",
+          "target": "d9_n2"
+        }
+      ]
+    },
+    {
+      "id": "d8_n1",
+      "body": "<<FILL v=2 role=rising words=72 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_d8_n1_0",
+          "label": "Press on.",
+          "target": "d9_n3"
+        },
+        {
+          "id": "c_d8_n1_1",
+          "label": "Keep going.",
+          "target": "d9_n4"
+        },
+        {
+          "id": "c_d8_n1_2",
+          "label": "Push forward.",
+          "target": "d9_n5"
+        }
+      ]
+    },
+    {
+      "id": "d8_n2",
+      "body": "<<FILL v=2 role=rising words=72 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_d8_n2_0",
+          "label": "Press on.",
+          "target": "d9_n6"
+        },
+        {
+          "id": "c_d8_n2_1",
+          "label": "Keep going.",
+          "target": "d9_n7"
+        },
+        {
+          "id": "c_d8_n2_2",
+          "label": "Push forward.",
+          "target": "d9_n8"
+        }
+      ]
+    },
+    {
+      "id": "d8_n3",
+      "body": "<<FILL v=2 role=rising words=72 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_d8_n3_0",
+          "label": "Press on.",
+          "target": "d9_n0"
+        },
+        {
+          "id": "c_d8_n3_1",
+          "label": "Keep going.",
+          "target": "d9_n1"
+        },
+        {
+          "id": "c_d8_n3_2",
+          "label": "Push forward.",
+          "target": "d9_n2"
+        }
+      ]
+    },
+    {
+      "id": "d8_n4",
+      "body": "<<FILL v=2 role=rising words=72 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_d8_n4_0",
+          "label": "Press on.",
+          "target": "d9_n3"
+        },
+        {
+          "id": "c_d8_n4_1",
+          "label": "Keep going.",
+          "target": "d9_n4"
+        },
+        {
+          "id": "c_d8_n4_2",
+          "label": "Push forward.",
+          "target": "d9_n5"
+        }
+      ]
+    },
+    {
+      "id": "d8_n5",
+      "body": "<<FILL v=2 role=rising words=72 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_d8_n5_0",
+          "label": "Press on.",
+          "target": "d9_n6"
+        },
+        {
+          "id": "c_d8_n5_1",
+          "label": "Keep going.",
+          "target": "d9_n7"
+        },
+        {
+          "id": "c_d8_n5_2",
+          "label": "Push forward.",
+          "target": "d9_n8"
+        }
+      ]
+    },
+    {
+      "id": "d8_n6",
+      "body": "<<FILL v=2 role=rising words=72 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_d8_n6_0",
+          "label": "Press on.",
+          "target": "d9_n0"
+        },
+        {
+          "id": "c_d8_n6_1",
+          "label": "Keep going.",
+          "target": "d9_n1"
+        },
+        {
+          "id": "c_d8_n6_2",
+          "label": "Push forward.",
+          "target": "d9_n2"
+        }
+      ]
+    },
+    {
+      "id": "d8_n7",
+      "body": "<<FILL v=2 role=rising words=72 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_d8_n7_0",
+          "label": "Press on.",
+          "target": "d9_n3"
+        },
+        {
+          "id": "c_d8_n7_1",
+          "label": "Keep going.",
+          "target": "d9_n4"
+        },
+        {
+          "id": "c_d8_n7_2",
+          "label": "Push forward.",
+          "target": "d9_n5"
+        }
+      ]
+    },
+    {
+      "id": "d8_n8",
+      "body": "<<FILL v=2 role=rising words=72 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_d8_n8_0",
+          "label": "Press on.",
+          "target": "d9_n6"
+        },
+        {
+          "id": "c_d8_n8_1",
+          "label": "Keep going.",
+          "target": "d9_n7"
+        },
+        {
+          "id": "c_d8_n8_2",
+          "label": "Push forward.",
+          "target": "d9_n8"
+        }
+      ]
+    },
+    {
+      "id": "d9_n0",
+      "body": "<<FILL v=2 role=rising words=72 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_d9_n0_0",
+          "label": "Press on.",
+          "target": "d10_n0"
+        },
+        {
+          "id": "c_d9_n0_1",
+          "label": "Keep going.",
+          "target": "d10_n1"
+        },
+        {
+          "id": "c_d9_n0_2",
+          "label": "Push forward.",
+          "target": "d10_n2"
+        }
+      ]
+    },
+    {
+      "id": "d9_n1",
+      "body": "<<FILL v=2 role=rising words=72 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_d9_n1_0",
+          "label": "Press on.",
+          "target": "d10_n3"
+        },
+        {
+          "id": "c_d9_n1_1",
+          "label": "Keep going.",
+          "target": "d10_n4"
+        },
+        {
+          "id": "c_d9_n1_2",
+          "label": "Push forward.",
+          "target": "d10_n5"
+        }
+      ]
+    },
+    {
+      "id": "d9_n2",
+      "body": "<<FILL v=2 role=rising words=72 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_d9_n2_0",
+          "label": "Press on.",
+          "target": "d10_n6"
+        },
+        {
+          "id": "c_d9_n2_1",
+          "label": "Keep going.",
+          "target": "d10_n7"
+        },
+        {
+          "id": "c_d9_n2_2",
+          "label": "Push forward.",
+          "target": "d10_n8"
+        }
+      ]
+    },
+    {
+      "id": "d9_n3",
+      "body": "<<FILL v=2 role=rising words=72 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_d9_n3_0",
+          "label": "Press on.",
+          "target": "d10_n0"
+        },
+        {
+          "id": "c_d9_n3_1",
+          "label": "Keep going.",
+          "target": "d10_n1"
+        },
+        {
+          "id": "c_d9_n3_2",
+          "label": "Push forward.",
+          "target": "d10_n2"
+        }
+      ]
+    },
+    {
+      "id": "d9_n4",
+      "body": "<<FILL v=2 role=rising words=72 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_d9_n4_0",
+          "label": "Press on.",
+          "target": "d10_n3"
+        },
+        {
+          "id": "c_d9_n4_1",
+          "label": "Keep going.",
+          "target": "d10_n4"
+        },
+        {
+          "id": "c_d9_n4_2",
+          "label": "Push forward.",
+          "target": "d10_n5"
+        }
+      ]
+    },
+    {
+      "id": "d9_n5",
+      "body": "<<FILL v=2 role=rising words=72 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_d9_n5_0",
+          "label": "Press on.",
+          "target": "d10_n6"
+        },
+        {
+          "id": "c_d9_n5_1",
+          "label": "Keep going.",
+          "target": "d10_n7"
+        },
+        {
+          "id": "c_d9_n5_2",
+          "label": "Push forward.",
+          "target": "d10_n8"
+        }
+      ]
+    },
+    {
+      "id": "d9_n6",
+      "body": "<<FILL v=2 role=rising words=72 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_d9_n6_0",
+          "label": "Press on.",
+          "target": "d10_n0"
+        },
+        {
+          "id": "c_d9_n6_1",
+          "label": "Keep going.",
+          "target": "d10_n1"
+        },
+        {
+          "id": "c_d9_n6_2",
+          "label": "Push forward.",
+          "target": "d10_n2"
+        }
+      ],
+      "on_enter": [
+        {
+          "op": "dec",
+          "var": "light",
+          "value": 1
+        }
+      ]
+    },
+    {
+      "id": "d9_n7",
+      "body": "<<FILL v=2 role=rising words=72 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_d9_n7_0",
+          "label": "Press on.",
+          "target": "d10_n3"
+        },
+        {
+          "id": "c_d9_n7_1",
+          "label": "Keep going.",
+          "target": "d10_n4"
+        },
+        {
+          "id": "c_d9_n7_2",
+          "label": "Push forward.",
+          "target": "d10_n5"
+        }
+      ]
+    },
+    {
+      "id": "d9_n8",
+      "body": "<<FILL v=2 role=rising words=72 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_d9_n8_0",
+          "label": "Press on.",
+          "target": "d10_n6"
+        },
+        {
+          "id": "c_d9_n8_1",
+          "label": "Keep going.",
+          "target": "d10_n7"
+        },
+        {
+          "id": "c_d9_n8_2",
+          "label": "Push forward.",
+          "target": "d10_n8"
+        }
+      ]
+    },
+    {
+      "id": "d10_n0",
+      "body": "<<FILL v=2 role=rising words=72 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_d10_n0_0",
+          "label": "Press on.",
+          "target": "d11_n0"
+        },
+        {
+          "id": "c_d10_n0_1",
+          "label": "Keep going.",
+          "target": "d11_n1"
+        },
+        {
+          "id": "c_d10_n0_2",
+          "label": "Push forward.",
+          "target": "d11_n2"
+        }
+      ]
+    },
+    {
+      "id": "d10_n1",
+      "body": "<<FILL v=2 role=rising words=72 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_d10_n1_0",
+          "label": "Press on.",
+          "target": "d11_n3"
+        },
+        {
+          "id": "c_d10_n1_1",
+          "label": "Keep going.",
+          "target": "d11_n4"
+        },
+        {
+          "id": "c_d10_n1_2",
+          "label": "Push forward.",
+          "target": "d11_n5"
+        }
+      ]
+    },
+    {
+      "id": "d10_n2",
+      "body": "<<FILL v=2 role=rising words=72 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_d10_n2_0",
+          "label": "Press on.",
+          "target": "d11_n6"
+        },
+        {
+          "id": "c_d10_n2_1",
+          "label": "Keep going.",
+          "target": "d11_n7"
+        },
+        {
+          "id": "c_d10_n2_2",
+          "label": "Push forward.",
+          "target": "d11_n8"
+        }
+      ]
+    },
+    {
+      "id": "d10_n3",
+      "body": "<<FILL v=2 role=rising words=72 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_d10_n3_0",
+          "label": "Press on.",
+          "target": "d11_n0"
+        },
+        {
+          "id": "c_d10_n3_1",
+          "label": "Keep going.",
+          "target": "d11_n1"
+        },
+        {
+          "id": "c_d10_n3_2",
+          "label": "Push forward.",
+          "target": "d11_n2"
+        }
+      ]
+    },
+    {
+      "id": "d10_n4",
+      "body": "<<FILL v=2 role=rising words=72 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_d10_n4_0",
+          "label": "Press on.",
+          "target": "d11_n3"
+        },
+        {
+          "id": "c_d10_n4_1",
+          "label": "Keep going.",
+          "target": "d11_n4"
+        },
+        {
+          "id": "c_d10_n4_2",
+          "label": "Push forward.",
+          "target": "d11_n5"
+        }
+      ]
+    },
+    {
+      "id": "d10_n5",
+      "body": "<<FILL v=2 role=rising words=72 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_d10_n5_0",
+          "label": "Press on.",
+          "target": "d11_n6"
+        },
+        {
+          "id": "c_d10_n5_1",
+          "label": "Keep going.",
+          "target": "d11_n7"
+        },
+        {
+          "id": "c_d10_n5_2",
+          "label": "Push forward.",
+          "target": "d11_n8"
+        }
+      ]
+    },
+    {
+      "id": "d10_n6",
+      "body": "<<FILL v=2 role=rising words=72 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_d10_n6_0",
+          "label": "Press on.",
+          "target": "d11_n0"
+        },
+        {
+          "id": "c_d10_n6_1",
+          "label": "Keep going.",
+          "target": "d11_n1"
+        },
+        {
+          "id": "c_d10_n6_2",
+          "label": "Push forward.",
+          "target": "d11_n2"
+        }
+      ]
+    },
+    {
+      "id": "d10_n7",
+      "body": "<<FILL v=2 role=rising words=72 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_d10_n7_0",
+          "label": "Press on.",
+          "target": "d11_n3"
+        },
+        {
+          "id": "c_d10_n7_1",
+          "label": "Keep going.",
+          "target": "d11_n4"
+        },
+        {
+          "id": "c_d10_n7_2",
+          "label": "Push forward.",
+          "target": "d11_n5"
+        }
+      ]
+    },
+    {
+      "id": "d10_n8",
+      "body": "<<FILL v=2 role=rising words=72 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_d10_n8_0",
+          "label": "Press on.",
+          "target": "d11_n6"
+        },
+        {
+          "id": "c_d10_n8_1",
+          "label": "Keep going.",
+          "target": "d11_n7"
+        },
+        {
+          "id": "c_d10_n8_2",
+          "label": "Push forward.",
+          "target": "d11_n8"
+        }
+      ]
+    },
+    {
+      "id": "d11_n0",
+      "body": "<<FILL v=2 role=rising words=72 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_d11_n0_0",
+          "label": "Press on.",
+          "target": "d12_n0"
+        },
+        {
+          "id": "c_d11_n0_1",
+          "label": "Keep going.",
+          "target": "d12_n1"
+        },
+        {
+          "id": "c_d11_n0_2",
+          "label": "Push forward.",
+          "target": "d12_n2"
+        }
+      ]
+    },
+    {
+      "id": "d11_n1",
+      "body": "<<FILL v=2 role=rising words=72 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_d11_n1_0",
+          "label": "Press on.",
+          "target": "d12_n3"
+        },
+        {
+          "id": "c_d11_n1_1",
+          "label": "Keep going.",
+          "target": "d12_n4"
+        },
+        {
+          "id": "c_d11_n1_2",
+          "label": "Push forward.",
+          "target": "d12_n5"
+        }
+      ]
+    },
+    {
+      "id": "d11_n2",
+      "body": "<<FILL v=2 role=rising words=72 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_d11_n2_0",
+          "label": "Press on.",
+          "target": "d12_n6"
+        },
+        {
+          "id": "c_d11_n2_1",
+          "label": "Keep going.",
+          "target": "d12_n7"
+        },
+        {
+          "id": "c_d11_n2_2",
+          "label": "Push forward.",
+          "target": "d12_n8"
+        }
+      ],
+      "on_enter": [
+        {
+          "op": "inc",
+          "var": "trust",
+          "value": 1
+        }
+      ]
+    },
+    {
+      "id": "d11_n3",
+      "body": "<<FILL v=2 role=rising words=72 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_d11_n3_0",
+          "label": "Press on.",
+          "target": "d12_n0"
+        },
+        {
+          "id": "c_d11_n3_1",
+          "label": "Keep going.",
+          "target": "d12_n1"
+        },
+        {
+          "id": "c_d11_n3_2",
+          "label": "Push forward.",
+          "target": "d12_n2"
+        }
+      ]
+    },
+    {
+      "id": "d11_n4",
+      "body": "<<FILL v=2 role=rising words=72 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_d11_n4_0",
+          "label": "Press on.",
+          "target": "d12_n3"
+        },
+        {
+          "id": "c_d11_n4_1",
+          "label": "Keep going.",
+          "target": "d12_n4"
+        },
+        {
+          "id": "c_d11_n4_2",
+          "label": "Push forward.",
+          "target": "d12_n5"
+        }
+      ]
+    },
+    {
+      "id": "d11_n5",
+      "body": "<<FILL v=2 role=rising words=72 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_d11_n5_0",
+          "label": "Press on.",
+          "target": "d12_n6"
+        },
+        {
+          "id": "c_d11_n5_1",
+          "label": "Keep going.",
+          "target": "d12_n7"
+        },
+        {
+          "id": "c_d11_n5_2",
+          "label": "Push forward.",
+          "target": "d12_n8"
+        }
+      ]
+    },
+    {
+      "id": "d11_n6",
+      "body": "<<FILL v=2 role=rising words=72 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_d11_n6_0",
+          "label": "Press on.",
+          "target": "d12_n0"
+        },
+        {
+          "id": "c_d11_n6_1",
+          "label": "Keep going.",
+          "target": "d12_n1"
+        },
+        {
+          "id": "c_d11_n6_2",
+          "label": "Push forward.",
+          "target": "d12_n2"
+        }
+      ]
+    },
+    {
+      "id": "d11_n7",
+      "body": "<<FILL v=2 role=rising words=72 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_d11_n7_0",
+          "label": "Press on.",
+          "target": "d12_n3"
+        },
+        {
+          "id": "c_d11_n7_1",
+          "label": "Keep going.",
+          "target": "d12_n4"
+        },
+        {
+          "id": "c_d11_n7_2",
+          "label": "Push forward.",
+          "target": "d12_n5"
+        }
+      ]
+    },
+    {
+      "id": "d11_n8",
+      "body": "<<FILL v=2 role=rising words=72 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_d11_n8_0",
+          "label": "Press on.",
+          "target": "d12_n6"
+        },
+        {
+          "id": "c_d11_n8_1",
+          "label": "Keep going.",
+          "target": "d12_n7"
+        },
+        {
+          "id": "c_d11_n8_2",
+          "label": "Push forward.",
+          "target": "d12_n8"
+        }
+      ]
+    },
+    {
+      "id": "d12_n0",
+      "body": "<<FILL v=2 role=rising words=72 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_d12_n0_0",
+          "label": "Press on.",
+          "target": "d13_n0"
+        },
+        {
+          "id": "c_d12_n0_1",
+          "label": "Keep going.",
+          "target": "d13_n1"
+        },
+        {
+          "id": "c_d12_n0_2",
+          "label": "Push forward.",
+          "target": "d13_n2"
+        }
+      ]
+    },
+    {
+      "id": "d12_n1",
+      "body": "<<FILL v=2 role=rising words=72 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_d12_n1_0",
+          "label": "Press on.",
+          "target": "d13_n3"
+        },
+        {
+          "id": "c_d12_n1_1",
+          "label": "Keep going.",
+          "target": "d13_n4"
+        },
+        {
+          "id": "c_d12_n1_2",
+          "label": "Push forward.",
+          "target": "d13_n5"
+        }
+      ]
+    },
+    {
+      "id": "d12_n2",
+      "body": "<<FILL v=2 role=rising words=72 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_d12_n2_0",
+          "label": "Press on.",
+          "target": "d13_n6"
+        },
+        {
+          "id": "c_d12_n2_1",
+          "label": "Keep going.",
+          "target": "d13_n7"
+        },
+        {
+          "id": "c_d12_n2_2",
+          "label": "Push forward.",
+          "target": "d13_n8"
+        }
+      ]
+    },
+    {
+      "id": "d12_n3",
+      "body": "<<FILL v=2 role=rising words=72 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_d12_n3_0",
+          "label": "Press on.",
+          "target": "d13_n0"
+        },
+        {
+          "id": "c_d12_n3_1",
+          "label": "Keep going.",
+          "target": "d13_n1"
+        },
+        {
+          "id": "c_d12_n3_2",
+          "label": "Push forward.",
+          "target": "d13_n2"
+        }
+      ]
+    },
+    {
+      "id": "d12_n4",
+      "body": "<<FILL v=2 role=rising words=72 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_d12_n4_0",
+          "label": "Press on.",
+          "target": "d13_n3"
+        },
+        {
+          "id": "c_d12_n4_1",
+          "label": "Keep going.",
+          "target": "d13_n4"
+        },
+        {
+          "id": "c_d12_n4_2",
+          "label": "Push forward.",
+          "target": "d13_n5"
+        }
+      ]
+    },
+    {
+      "id": "d12_n5",
+      "body": "<<FILL v=2 role=rising words=72 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_d12_n5_0",
+          "label": "Press on.",
+          "target": "d13_n6"
+        },
+        {
+          "id": "c_d12_n5_1",
+          "label": "Keep going.",
+          "target": "d13_n7"
+        },
+        {
+          "id": "c_d12_n5_2",
+          "label": "Push forward.",
+          "target": "d13_n8"
+        }
+      ]
+    },
+    {
+      "id": "d12_n6",
+      "body": "<<FILL v=2 role=rising words=72 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_d12_n6_0",
+          "label": "Press on.",
+          "target": "d13_n0"
+        },
+        {
+          "id": "c_d12_n6_1",
+          "label": "Keep going.",
+          "target": "d13_n1"
+        },
+        {
+          "id": "c_d12_n6_2",
+          "label": "Push forward.",
+          "target": "d13_n2"
+        }
+      ]
+    },
+    {
+      "id": "d12_n7",
+      "body": "<<FILL v=2 role=rising words=72 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_d12_n7_0",
+          "label": "Press on.",
+          "target": "d13_n3"
+        },
+        {
+          "id": "c_d12_n7_1",
+          "label": "Keep going.",
+          "target": "d13_n4"
+        },
+        {
+          "id": "c_d12_n7_2",
+          "label": "Push forward.",
+          "target": "d13_n5"
+        }
+      ]
+    },
+    {
+      "id": "d12_n8",
+      "body": "<<FILL v=2 role=rising words=72 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_d12_n8_0",
+          "label": "Press on.",
+          "target": "d13_n6"
+        },
+        {
+          "id": "c_d12_n8_1",
+          "label": "Keep going.",
+          "target": "d13_n7"
+        },
+        {
+          "id": "c_d12_n8_2",
+          "label": "Push forward.",
+          "target": "d13_n8"
+        }
+      ]
+    },
+    {
+      "id": "d13_n0",
+      "body": "<<FILL v=2 role=rising words=72 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_d13_n0_0",
+          "label": "Press on.",
+          "target": "d14_n0"
+        },
+        {
+          "id": "c_d13_n0_1",
+          "label": "Keep going.",
+          "target": "d14_n1"
+        },
+        {
+          "id": "c_d13_n0_2",
+          "label": "Push forward.",
+          "target": "d14_n2"
+        }
+      ]
+    },
+    {
+      "id": "d13_n1",
+      "body": "<<FILL v=2 role=rising words=72 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_d13_n1_0",
+          "label": "Press on.",
+          "target": "d14_n3"
+        },
+        {
+          "id": "c_d13_n1_1",
+          "label": "Keep going.",
+          "target": "d14_n4"
+        },
+        {
+          "id": "c_d13_n1_2",
+          "label": "Push forward.",
+          "target": "d14_n5"
+        }
+      ]
+    },
+    {
+      "id": "d13_n2",
+      "body": "<<FILL v=2 role=rising words=72 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_d13_n2_0",
+          "label": "Press on.",
+          "target": "d14_n6"
+        },
+        {
+          "id": "c_d13_n2_1",
+          "label": "Keep going.",
+          "target": "d14_n7"
+        },
+        {
+          "id": "c_d13_n2_2",
+          "label": "Push forward.",
+          "target": "d14_n8"
+        }
+      ]
+    },
+    {
+      "id": "d13_n3",
+      "body": "<<FILL v=2 role=rising words=72 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_d13_n3_0",
+          "label": "Press on.",
+          "target": "d14_n0"
+        },
+        {
+          "id": "c_d13_n3_1",
+          "label": "Keep going.",
+          "target": "d14_n1"
+        },
+        {
+          "id": "c_d13_n3_2",
+          "label": "Push forward.",
+          "target": "d14_n2"
+        }
+      ]
+    },
+    {
+      "id": "d13_n4",
+      "body": "<<FILL v=2 role=rising words=72 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_d13_n4_0",
+          "label": "Press on.",
+          "target": "d14_n3"
+        },
+        {
+          "id": "c_d13_n4_1",
+          "label": "Keep going.",
+          "target": "d14_n4"
+        },
+        {
+          "id": "c_d13_n4_2",
+          "label": "Push forward.",
+          "target": "d14_n5"
+        }
+      ],
+      "on_enter": [
+        {
+          "op": "set",
+          "var": "transmitter",
+          "value": true
+        }
+      ]
+    },
+    {
+      "id": "d13_n5",
+      "body": "<<FILL v=2 role=rising words=72 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_d13_n5_0",
+          "label": "Press on.",
+          "target": "d14_n6"
+        },
+        {
+          "id": "c_d13_n5_1",
+          "label": "Keep going.",
+          "target": "d14_n7"
+        },
+        {
+          "id": "c_d13_n5_2",
+          "label": "Push forward.",
+          "target": "d14_n8"
+        }
+      ]
+    },
+    {
+      "id": "d13_n6",
+      "body": "<<FILL v=2 role=rising words=72 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_d13_n6_0",
+          "label": "Press on.",
+          "target": "d14_n0"
+        },
+        {
+          "id": "c_d13_n6_1",
+          "label": "Keep going.",
+          "target": "d14_n1"
+        },
+        {
+          "id": "c_d13_n6_2",
+          "label": "Push forward.",
+          "target": "d14_n2"
+        }
+      ]
+    },
+    {
+      "id": "d13_n7",
+      "body": "<<FILL v=2 role=rising words=72 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_d13_n7_0",
+          "label": "Press on.",
+          "target": "d14_n3"
+        },
+        {
+          "id": "c_d13_n7_1",
+          "label": "Keep going.",
+          "target": "d14_n4"
+        },
+        {
+          "id": "c_d13_n7_2",
+          "label": "Push forward.",
+          "target": "d14_n5"
+        }
+      ]
+    },
+    {
+      "id": "d13_n8",
+      "body": "<<FILL v=2 role=rising words=72 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_d13_n8_0",
+          "label": "Press on.",
+          "target": "d14_n6"
+        },
+        {
+          "id": "c_d13_n8_1",
+          "label": "Keep going.",
+          "target": "d14_n7"
+        },
+        {
+          "id": "c_d13_n8_2",
+          "label": "Push forward.",
+          "target": "d14_n8"
+        }
+      ]
+    },
+    {
+      "id": "d14_n0",
+      "body": "<<FILL v=2 role=rising words=72 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_d14_n0_0",
+          "label": "Press on.",
+          "target": "d15_n0"
+        },
+        {
+          "id": "c_d14_n0_1",
+          "label": "Keep going.",
+          "target": "d15_n1"
+        },
+        {
+          "id": "c_d14_n0_2",
+          "label": "Push forward.",
+          "target": "d15_n2"
+        }
+      ]
+    },
+    {
+      "id": "d14_n1",
+      "body": "<<FILL v=2 role=rising words=72 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_d14_n1_0",
+          "label": "Press on.",
+          "target": "d15_n3"
+        },
+        {
+          "id": "c_d14_n1_1",
+          "label": "Keep going.",
+          "target": "d15_n4"
+        },
+        {
+          "id": "c_d14_n1_2",
+          "label": "Push forward.",
+          "target": "d15_n5"
+        }
+      ]
+    },
+    {
+      "id": "d14_n2",
+      "body": "<<FILL v=2 role=rising words=72 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_d14_n2_0",
+          "label": "Press on.",
+          "target": "d15_n6"
+        },
+        {
+          "id": "c_d14_n2_1",
+          "label": "Keep going.",
+          "target": "d15_n7"
+        },
+        {
+          "id": "c_d14_n2_2",
+          "label": "Push forward.",
+          "target": "d15_n8"
+        }
+      ]
+    },
+    {
+      "id": "d14_n3",
+      "body": "<<FILL v=2 role=rising words=72 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_d14_n3_0",
+          "label": "Press on.",
+          "target": "d15_n0"
+        },
+        {
+          "id": "c_d14_n3_1",
+          "label": "Keep going.",
+          "target": "d15_n1"
+        },
+        {
+          "id": "c_d14_n3_2",
+          "label": "Push forward.",
+          "target": "d15_n2"
+        }
+      ]
+    },
+    {
+      "id": "d14_n4",
+      "body": "<<FILL v=2 role=rising words=72 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_d14_n4_0",
+          "label": "Press on.",
+          "target": "d15_n3"
+        },
+        {
+          "id": "c_d14_n4_1",
+          "label": "Keep going.",
+          "target": "d15_n4"
+        },
+        {
+          "id": "c_d14_n4_2",
+          "label": "Push forward.",
+          "target": "d15_n5"
+        }
+      ]
+    },
+    {
+      "id": "d14_n5",
+      "body": "<<FILL v=2 role=rising words=72 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_d14_n5_0",
+          "label": "Press on.",
+          "target": "d15_n6"
+        },
+        {
+          "id": "c_d14_n5_1",
+          "label": "Keep going.",
+          "target": "d15_n7"
+        },
+        {
+          "id": "c_d14_n5_2",
+          "label": "Push forward.",
+          "target": "d15_n8"
+        }
+      ]
+    },
+    {
+      "id": "d14_n6",
+      "body": "<<FILL v=2 role=rising words=72 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_d14_n6_0",
+          "label": "Press on.",
+          "target": "d15_n0"
+        },
+        {
+          "id": "c_d14_n6_1",
+          "label": "Keep going.",
+          "target": "d15_n1"
+        },
+        {
+          "id": "c_d14_n6_2",
+          "label": "Push forward.",
+          "target": "d15_n2"
+        }
+      ]
+    },
+    {
+      "id": "d14_n7",
+      "body": "<<FILL v=2 role=rising words=72 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_d14_n7_0",
+          "label": "Press on.",
+          "target": "d15_n3"
+        },
+        {
+          "id": "c_d14_n7_1",
+          "label": "Keep going.",
+          "target": "d15_n4"
+        },
+        {
+          "id": "c_d14_n7_2",
+          "label": "Push forward.",
+          "target": "d15_n5"
+        }
+      ]
+    },
+    {
+      "id": "d14_n8",
+      "body": "<<FILL v=2 role=rising words=72 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_d14_n8_0",
+          "label": "Press on.",
+          "target": "d15_n6"
+        },
+        {
+          "id": "c_d14_n8_1",
+          "label": "Keep going.",
+          "target": "d15_n7"
+        },
+        {
+          "id": "c_d14_n8_2",
+          "label": "Push forward.",
+          "target": "d15_n8"
+        }
+      ]
+    },
+    {
+      "id": "d15_n0",
+      "body": "<<FILL v=2 role=rising words=72 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_d15_n0_0",
+          "label": "Press on.",
+          "target": "d16_n0"
+        },
+        {
+          "id": "c_d15_n0_1",
+          "label": "Keep going.",
+          "target": "d16_n1"
+        },
+        {
+          "id": "c_d15_n0_2",
+          "label": "Push forward.",
+          "target": "d16_n2"
+        }
+      ]
+    },
+    {
+      "id": "d15_n1",
+      "body": "<<FILL v=2 role=rising words=72 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_d15_n1_0",
+          "label": "Press on.",
+          "target": "d16_n3"
+        },
+        {
+          "id": "c_d15_n1_1",
+          "label": "Keep going.",
+          "target": "d16_n4"
+        },
+        {
+          "id": "c_d15_n1_2",
+          "label": "Push forward.",
+          "target": "d16_n5"
+        }
+      ]
+    },
+    {
+      "id": "d15_n2",
+      "body": "<<FILL v=2 role=rising words=72 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_d15_n2_0",
+          "label": "Press on.",
+          "target": "d16_n6"
+        },
+        {
+          "id": "c_d15_n2_1",
+          "label": "Keep going.",
+          "target": "d16_n7"
+        },
+        {
+          "id": "c_d15_n2_2",
+          "label": "Push forward.",
+          "target": "d16_n8"
+        }
+      ]
+    },
+    {
+      "id": "d15_n3",
+      "body": "<<FILL v=2 role=rising words=72 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_d15_n3_0",
+          "label": "Press on.",
+          "target": "d16_n0"
+        },
+        {
+          "id": "c_d15_n3_1",
+          "label": "Keep going.",
+          "target": "d16_n1"
+        },
+        {
+          "id": "c_d15_n3_2",
+          "label": "Push forward.",
+          "target": "d16_n2"
+        }
+      ]
+    },
+    {
+      "id": "d15_n4",
+      "body": "<<FILL v=2 role=rising words=72 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_d15_n4_0",
+          "label": "Press on.",
+          "target": "d16_n3"
+        },
+        {
+          "id": "c_d15_n4_1",
+          "label": "Keep going.",
+          "target": "d16_n4"
+        },
+        {
+          "id": "c_d15_n4_2",
+          "label": "Push forward.",
+          "target": "d16_n5"
+        }
+      ]
+    },
+    {
+      "id": "d15_n5",
+      "body": "<<FILL v=2 role=rising words=72 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_d15_n5_0",
+          "label": "Press on.",
+          "target": "d16_n6"
+        },
+        {
+          "id": "c_d15_n5_1",
+          "label": "Keep going.",
+          "target": "d16_n7"
+        },
+        {
+          "id": "c_d15_n5_2",
+          "label": "Push forward.",
+          "target": "d16_n8"
+        }
+      ]
+    },
+    {
+      "id": "d15_n6",
+      "body": "<<FILL v=2 role=rising words=72 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_d15_n6_0",
+          "label": "Press on.",
+          "target": "d16_n0"
+        },
+        {
+          "id": "c_d15_n6_1",
+          "label": "Keep going.",
+          "target": "d16_n1"
+        },
+        {
+          "id": "c_d15_n6_2",
+          "label": "Push forward.",
+          "target": "d16_n2"
+        }
+      ]
+    },
+    {
+      "id": "d15_n7",
+      "body": "<<FILL v=2 role=rising words=72 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_d15_n7_0",
+          "label": "Press on.",
+          "target": "d16_n3"
+        },
+        {
+          "id": "c_d15_n7_1",
+          "label": "Keep going.",
+          "target": "d16_n4"
+        },
+        {
+          "id": "c_d15_n7_2",
+          "label": "Push forward.",
+          "target": "d16_n5"
+        }
+      ]
+    },
+    {
+      "id": "d15_n8",
+      "body": "<<FILL v=2 role=rising words=72 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_d15_n8_0",
+          "label": "Press on.",
+          "target": "d16_n6"
+        },
+        {
+          "id": "c_d15_n8_1",
+          "label": "Keep going.",
+          "target": "d16_n7"
+        },
+        {
+          "id": "c_d15_n8_2",
+          "label": "Push forward.",
+          "target": "d16_n8"
+        }
+      ]
+    },
+    {
+      "id": "d16_n0",
+      "body": "<<FILL v=2 role=rising words=72 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_d16_n0_0",
+          "label": "Press on.",
+          "target": "d17_n0"
+        },
+        {
+          "id": "c_d16_n0_1",
+          "label": "Keep going.",
+          "target": "d17_n1"
+        },
+        {
+          "id": "c_d16_n0_2",
+          "label": "Push forward.",
+          "target": "d17_n2"
+        }
+      ]
+    },
+    {
+      "id": "d16_n1",
+      "body": "<<FILL v=2 role=rising words=72 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_d16_n1_0",
+          "label": "Press on.",
+          "target": "d17_n3"
+        },
+        {
+          "id": "c_d16_n1_1",
+          "label": "Keep going.",
+          "target": "d17_n4"
+        },
+        {
+          "id": "c_d16_n1_2",
+          "label": "Push forward.",
+          "target": "d17_n5"
+        }
+      ],
+      "on_enter": [
+        {
+          "op": "dec",
+          "var": "light",
+          "value": 1
+        }
+      ]
+    },
+    {
+      "id": "d16_n2",
+      "body": "<<FILL v=2 role=rising words=72 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_d16_n2_0",
+          "label": "Press on.",
+          "target": "d17_n6"
+        },
+        {
+          "id": "c_d16_n2_1",
+          "label": "Keep going.",
+          "target": "d17_n7"
+        },
+        {
+          "id": "c_d16_n2_2",
+          "label": "Push forward.",
+          "target": "d17_n8"
+        }
+      ]
+    },
+    {
+      "id": "d16_n3",
+      "body": "<<FILL v=2 role=rising words=72 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_d16_n3_0",
+          "label": "Press on.",
+          "target": "d17_n0"
+        },
+        {
+          "id": "c_d16_n3_1",
+          "label": "Keep going.",
+          "target": "d17_n1"
+        },
+        {
+          "id": "c_d16_n3_2",
+          "label": "Push forward.",
+          "target": "d17_n2"
+        }
+      ]
+    },
+    {
+      "id": "d16_n4",
+      "body": "<<FILL v=2 role=rising words=72 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_d16_n4_0",
+          "label": "Press on.",
+          "target": "d17_n3"
+        },
+        {
+          "id": "c_d16_n4_1",
+          "label": "Keep going.",
+          "target": "d17_n4"
+        },
+        {
+          "id": "c_d16_n4_2",
+          "label": "Push forward.",
+          "target": "d17_n5"
+        }
+      ]
+    },
+    {
+      "id": "d16_n5",
+      "body": "<<FILL v=2 role=rising words=72 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_d16_n5_0",
+          "label": "Press on.",
+          "target": "d17_n6"
+        },
+        {
+          "id": "c_d16_n5_1",
+          "label": "Keep going.",
+          "target": "d17_n7"
+        },
+        {
+          "id": "c_d16_n5_2",
+          "label": "Push forward.",
+          "target": "d17_n8"
+        }
+      ]
+    },
+    {
+      "id": "d16_n6",
+      "body": "<<FILL v=2 role=rising words=72 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_d16_n6_0",
+          "label": "Press on.",
+          "target": "d17_n0"
+        },
+        {
+          "id": "c_d16_n6_1",
+          "label": "Keep going.",
+          "target": "d17_n1"
+        },
+        {
+          "id": "c_d16_n6_2",
+          "label": "Push forward.",
+          "target": "d17_n2"
+        }
+      ]
+    },
+    {
+      "id": "d16_n7",
+      "body": "<<FILL v=2 role=rising words=72 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_d16_n7_0",
+          "label": "Press on.",
+          "target": "d17_n3"
+        },
+        {
+          "id": "c_d16_n7_1",
+          "label": "Keep going.",
+          "target": "d17_n4"
+        },
+        {
+          "id": "c_d16_n7_2",
+          "label": "Push forward.",
+          "target": "d17_n5"
+        }
+      ]
+    },
+    {
+      "id": "d16_n8",
+      "body": "<<FILL v=2 role=rising words=72 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_d16_n8_0",
+          "label": "Press on.",
+          "target": "d17_n6"
+        },
+        {
+          "id": "c_d16_n8_1",
+          "label": "Keep going.",
+          "target": "d17_n7"
+        },
+        {
+          "id": "c_d16_n8_2",
+          "label": "Push forward.",
+          "target": "d17_n8"
+        }
+      ]
+    },
+    {
+      "id": "d17_n0",
+      "body": "<<FILL v=2 role=rising words=72 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_d17_n0_0",
+          "label": "Press on.",
+          "target": "d18_n0"
+        },
+        {
+          "id": "c_d17_n0_1",
+          "label": "Keep going.",
+          "target": "d18_n1"
+        },
+        {
+          "id": "c_d17_n0_2",
+          "label": "Push forward.",
+          "target": "d18_n2"
+        }
+      ]
+    },
+    {
+      "id": "d17_n1",
+      "body": "<<FILL v=2 role=rising words=72 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_d17_n1_0",
+          "label": "Press on.",
+          "target": "d18_n3"
+        },
+        {
+          "id": "c_d17_n1_1",
+          "label": "Keep going.",
+          "target": "d18_n4"
+        },
+        {
+          "id": "c_d17_n1_2",
+          "label": "Push forward.",
+          "target": "d18_n5"
+        }
+      ]
+    },
+    {
+      "id": "d17_n2",
+      "body": "<<FILL v=2 role=rising words=72 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_d17_n2_0",
+          "label": "Press on.",
+          "target": "d18_n6"
+        },
+        {
+          "id": "c_d17_n2_1",
+          "label": "Keep going.",
+          "target": "d18_n7"
+        },
+        {
+          "id": "c_d17_n2_2",
+          "label": "Push forward.",
+          "target": "d18_n8"
+        }
+      ]
+    },
+    {
+      "id": "d17_n3",
+      "body": "<<FILL v=2 role=rising words=72 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_d17_n3_0",
+          "label": "Press on.",
+          "target": "d18_n0"
+        },
+        {
+          "id": "c_d17_n3_1",
+          "label": "Keep going.",
+          "target": "d18_n1"
+        },
+        {
+          "id": "c_d17_n3_2",
+          "label": "Push forward.",
+          "target": "d18_n2"
+        }
+      ]
+    },
+    {
+      "id": "d17_n4",
+      "body": "<<FILL v=2 role=rising words=72 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_d17_n4_0",
+          "label": "Press on.",
+          "target": "d18_n3"
+        },
+        {
+          "id": "c_d17_n4_1",
+          "label": "Keep going.",
+          "target": "d18_n4"
+        },
+        {
+          "id": "c_d17_n4_2",
+          "label": "Push forward.",
+          "target": "d18_n5"
+        }
+      ]
+    },
+    {
+      "id": "d17_n5",
+      "body": "<<FILL v=2 role=rising words=72 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_d17_n5_0",
+          "label": "Press on.",
+          "target": "d18_n6"
+        },
+        {
+          "id": "c_d17_n5_1",
+          "label": "Keep going.",
+          "target": "d18_n7"
+        },
+        {
+          "id": "c_d17_n5_2",
+          "label": "Push forward.",
+          "target": "d18_n8"
+        }
+      ]
+    },
+    {
+      "id": "d17_n6",
+      "body": "<<FILL v=2 role=rising words=72 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_d17_n6_0",
+          "label": "Press on.",
+          "target": "d18_n0"
+        },
+        {
+          "id": "c_d17_n6_1",
+          "label": "Keep going.",
+          "target": "d18_n1"
+        },
+        {
+          "id": "c_d17_n6_2",
+          "label": "Push forward.",
+          "target": "d18_n2"
+        }
+      ]
+    },
+    {
+      "id": "d17_n7",
+      "body": "<<FILL v=2 role=rising words=72 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_d17_n7_0",
+          "label": "Press on.",
+          "target": "d18_n3"
+        },
+        {
+          "id": "c_d17_n7_1",
+          "label": "Keep going.",
+          "target": "d18_n4"
+        },
+        {
+          "id": "c_d17_n7_2",
+          "label": "Push forward.",
+          "target": "d18_n5"
+        }
+      ]
+    },
+    {
+      "id": "d17_n8",
+      "body": "<<FILL v=2 role=rising words=72 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_d17_n8_0",
+          "label": "Press on.",
+          "target": "d18_n6"
+        },
+        {
+          "id": "c_d17_n8_1",
+          "label": "Keep going.",
+          "target": "d18_n7"
+        },
+        {
+          "id": "c_d17_n8_2",
+          "label": "Push forward.",
+          "target": "d18_n8"
+        }
+      ]
+    },
+    {
+      "id": "d18_n0",
+      "body": "<<FILL v=2 role=rising words=72 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_d18_n0_0",
+          "label": "Press on.",
+          "target": "d19_n0"
+        },
+        {
+          "id": "c_d18_n0_1",
+          "label": "Keep going.",
+          "target": "d19_n1"
+        },
+        {
+          "id": "c_d18_n0_2",
+          "label": "Push forward.",
+          "target": "d19_n2"
+        }
+      ]
+    },
+    {
+      "id": "d18_n1",
+      "body": "<<FILL v=2 role=rising words=72 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_d18_n1_0",
+          "label": "Press on.",
+          "target": "d19_n3"
+        },
+        {
+          "id": "c_d18_n1_1",
+          "label": "Keep going.",
+          "target": "d19_n4"
+        },
+        {
+          "id": "c_d18_n1_2",
+          "label": "Push forward.",
+          "target": "d19_n5"
+        }
+      ]
+    },
+    {
+      "id": "d18_n2",
+      "body": "<<FILL v=2 role=rising words=72 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_d18_n2_0",
+          "label": "Press on.",
+          "target": "d19_n6"
+        },
+        {
+          "id": "c_d18_n2_1",
+          "label": "Keep going.",
+          "target": "d19_n7"
+        },
+        {
+          "id": "c_d18_n2_2",
+          "label": "Push forward.",
+          "target": "d19_n8"
+        }
+      ]
+    },
+    {
+      "id": "d18_n3",
+      "body": "<<FILL v=2 role=rising words=72 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_d18_n3_0",
+          "label": "Press on.",
+          "target": "d19_n0"
+        },
+        {
+          "id": "c_d18_n3_1",
+          "label": "Keep going.",
+          "target": "d19_n1"
+        },
+        {
+          "id": "c_d18_n3_2",
+          "label": "Push forward.",
+          "target": "d19_n2"
+        }
+      ]
+    },
+    {
+      "id": "d18_n4",
+      "body": "<<FILL v=2 role=rising words=72 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_d18_n4_0",
+          "label": "Press on.",
+          "target": "d19_n3"
+        },
+        {
+          "id": "c_d18_n4_1",
+          "label": "Keep going.",
+          "target": "d19_n4"
+        },
+        {
+          "id": "c_d18_n4_2",
+          "label": "Push forward.",
+          "target": "d19_n5"
+        }
+      ]
+    },
+    {
+      "id": "d18_n5",
+      "body": "<<FILL v=2 role=rising words=72 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_d18_n5_0",
+          "label": "Press on.",
+          "target": "d19_n6"
+        },
+        {
+          "id": "c_d18_n5_1",
+          "label": "Keep going.",
+          "target": "d19_n7"
+        },
+        {
+          "id": "c_d18_n5_2",
+          "label": "Push forward.",
+          "target": "d19_n8"
+        }
+      ]
+    },
+    {
+      "id": "d18_n6",
+      "body": "<<FILL v=2 role=rising words=72 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_d18_n6_0",
+          "label": "Press on.",
+          "target": "d19_n0"
+        },
+        {
+          "id": "c_d18_n6_1",
+          "label": "Keep going.",
+          "target": "d19_n1"
+        },
+        {
+          "id": "c_d18_n6_2",
+          "label": "Push forward.",
+          "target": "d19_n2"
+        }
+      ]
+    },
+    {
+      "id": "d18_n7",
+      "body": "<<FILL v=2 role=rising words=72 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_d18_n7_0",
+          "label": "Press on.",
+          "target": "d19_n3"
+        },
+        {
+          "id": "c_d18_n7_1",
+          "label": "Keep going.",
+          "target": "d19_n4"
+        },
+        {
+          "id": "c_d18_n7_2",
+          "label": "Push forward.",
+          "target": "d19_n5"
+        }
+      ],
+      "on_enter": [
+        {
+          "op": "inc",
+          "var": "trust",
+          "value": 1
+        }
+      ]
+    },
+    {
+      "id": "d18_n8",
+      "body": "<<FILL v=2 role=rising words=72 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_d18_n8_0",
+          "label": "Press on.",
+          "target": "d19_n6"
+        },
+        {
+          "id": "c_d18_n8_1",
+          "label": "Keep going.",
+          "target": "d19_n7"
+        },
+        {
+          "id": "c_d18_n8_2",
+          "label": "Push forward.",
+          "target": "d19_n8"
+        }
+      ]
+    },
+    {
+      "id": "d19_n0",
+      "body": "<<FILL v=2 role=rising words=72 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_d19_n0_0",
+          "label": "Press on.",
+          "target": "d20_n0"
+        },
+        {
+          "id": "c_d19_n0_1",
+          "label": "Keep going.",
+          "target": "d20_n1"
+        },
+        {
+          "id": "c_d19_n0_2",
+          "label": "Push forward.",
+          "target": "d20_n2"
+        }
+      ]
+    },
+    {
+      "id": "d19_n1",
+      "body": "<<FILL v=2 role=rising words=72 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_d19_n1_0",
+          "label": "Press on.",
+          "target": "d20_n3"
+        },
+        {
+          "id": "c_d19_n1_1",
+          "label": "Keep going.",
+          "target": "d20_n4"
+        },
+        {
+          "id": "c_d19_n1_2",
+          "label": "Push forward.",
+          "target": "d20_n5"
+        }
+      ]
+    },
+    {
+      "id": "d19_n2",
+      "body": "<<FILL v=2 role=rising words=72 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_d19_n2_0",
+          "label": "Press on.",
+          "target": "d20_n6"
+        },
+        {
+          "id": "c_d19_n2_1",
+          "label": "Keep going.",
+          "target": "d20_n7"
+        },
+        {
+          "id": "c_d19_n2_2",
+          "label": "Push forward.",
+          "target": "d20_n8"
+        }
+      ]
+    },
+    {
+      "id": "d19_n3",
+      "body": "<<FILL v=2 role=rising words=72 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_d19_n3_0",
+          "label": "Press on.",
+          "target": "d20_n0"
+        },
+        {
+          "id": "c_d19_n3_1",
+          "label": "Keep going.",
+          "target": "d20_n1"
+        },
+        {
+          "id": "c_d19_n3_2",
+          "label": "Push forward.",
+          "target": "d20_n2"
+        }
+      ]
+    },
+    {
+      "id": "d19_n4",
+      "body": "<<FILL v=2 role=rising words=72 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_d19_n4_0",
+          "label": "Press on.",
+          "target": "d20_n3"
+        },
+        {
+          "id": "c_d19_n4_1",
+          "label": "Keep going.",
+          "target": "d20_n4"
+        },
+        {
+          "id": "c_d19_n4_2",
+          "label": "Push forward.",
+          "target": "d20_n5"
+        }
+      ]
+    },
+    {
+      "id": "d19_n5",
+      "body": "<<FILL v=2 role=rising words=72 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_d19_n5_0",
+          "label": "Press on.",
+          "target": "d20_n6"
+        },
+        {
+          "id": "c_d19_n5_1",
+          "label": "Keep going.",
+          "target": "d20_n7"
+        },
+        {
+          "id": "c_d19_n5_2",
+          "label": "Push forward.",
+          "target": "d20_n8"
+        }
+      ]
+    },
+    {
+      "id": "d19_n6",
+      "body": "<<FILL v=2 role=rising words=72 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_d19_n6_0",
+          "label": "Press on.",
+          "target": "d20_n0"
+        },
+        {
+          "id": "c_d19_n6_1",
+          "label": "Keep going.",
+          "target": "d20_n1"
+        },
+        {
+          "id": "c_d19_n6_2",
+          "label": "Push forward.",
+          "target": "d20_n2"
+        }
+      ]
+    },
+    {
+      "id": "d19_n7",
+      "body": "<<FILL v=2 role=rising words=72 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_d19_n7_0",
+          "label": "Press on.",
+          "target": "d20_n3"
+        },
+        {
+          "id": "c_d19_n7_1",
+          "label": "Keep going.",
+          "target": "d20_n4"
+        },
+        {
+          "id": "c_d19_n7_2",
+          "label": "Push forward.",
+          "target": "d20_n5"
+        }
+      ]
+    },
+    {
+      "id": "d19_n8",
+      "body": "<<FILL v=2 role=rising words=72 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_d19_n8_0",
+          "label": "Press on.",
+          "target": "d20_n6"
+        },
+        {
+          "id": "c_d19_n8_1",
+          "label": "Keep going.",
+          "target": "d20_n7"
+        },
+        {
+          "id": "c_d19_n8_2",
+          "label": "Push forward.",
+          "target": "d20_n8"
+        }
+      ]
+    },
+    {
+      "id": "d20_n0",
+      "body": "<<FILL v=2 role=rising words=72 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_d20_n0_0",
+          "label": "Press on.",
+          "target": "tail0_c0"
+        },
+        {
+          "id": "c_d20_n0_1",
+          "label": "Keep going.",
+          "target": "tail0_c1"
+        },
+        {
+          "id": "c_d20_n0_2",
+          "label": "Push forward.",
+          "target": "tail0_c2"
+        }
+      ]
+    },
+    {
+      "id": "d20_n1",
+      "body": "<<FILL v=2 role=rising words=72 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_d20_n1_0",
+          "label": "Press on.",
+          "target": "tail0_c3"
+        },
+        {
+          "id": "c_d20_n1_1",
+          "label": "Trust the wrong hazard.",
+          "target": "tail0_death"
+        },
+        {
+          "id": "c_d20_n1_2",
+          "label": "Get pinned trying.",
+          "target": "tail0_capture"
+        }
+      ]
+    },
+    {
+      "id": "d20_n2",
+      "body": "<<FILL v=2 role=rising words=72 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_d20_n2_0",
+          "label": "Turn back for the gate.",
+          "target": "tail0_setback"
+        },
+        {
+          "id": "c_d20_n2_1",
+          "label": "Back away and search instead.",
+          "target": "tail0_discover"
+        },
+        {
+          "id": "c_d20_n2_2",
+          "label": "Find the miners' bypass.",
+          "target": "tail0_complete"
+        }
+      ]
+    },
+    {
+      "id": "d20_n3",
+      "body": "<<FILL v=2 role=rising words=72 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_d20_n3_0",
+          "label": "Press on.",
+          "target": "tail0_c0"
+        },
+        {
+          "id": "c_d20_n3_1",
+          "label": "Keep going.",
+          "target": "tail0_c1"
+        },
+        {
+          "id": "c_d20_n3_2",
+          "label": "Push forward.",
+          "target": "tail0_c2"
+        }
+      ]
+    },
+    {
+      "id": "d20_n4",
+      "body": "<<FILL v=2 role=rising words=72 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_d20_n4_0",
+          "label": "Press on.",
+          "target": "tail0_c3"
+        },
+        {
+          "id": "c_d20_n4_1",
+          "label": "Trust the wrong hazard.",
+          "target": "tail0_death"
+        },
+        {
+          "id": "c_d20_n4_2",
+          "label": "Get pinned trying.",
+          "target": "tail0_capture"
+        }
+      ]
+    },
+    {
+      "id": "d20_n5",
+      "body": "<<FILL v=2 role=rising words=72 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_d20_n5_0",
+          "label": "Turn back for the gate.",
+          "target": "tail0_setback"
+        },
+        {
+          "id": "c_d20_n5_1",
+          "label": "Back away and search instead.",
+          "target": "tail0_discover"
+        },
+        {
+          "id": "c_d20_n5_2",
+          "label": "Find the miners' bypass.",
+          "target": "tail0_complete"
+        }
+      ]
+    },
+    {
+      "id": "d20_n6",
+      "body": "<<FILL v=2 role=rising words=72 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_d20_n6_0",
+          "label": "Press on.",
+          "target": "tail0_c0"
+        },
+        {
+          "id": "c_d20_n6_1",
+          "label": "Keep going.",
+          "target": "tail0_c1"
+        },
+        {
+          "id": "c_d20_n6_2",
+          "label": "Push forward.",
+          "target": "tail0_c2"
+        }
+      ]
+    },
+    {
+      "id": "d20_n7",
+      "body": "<<FILL v=2 role=rising words=72 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_d20_n7_0",
+          "label": "Press on.",
+          "target": "tail0_c3"
+        },
+        {
+          "id": "c_d20_n7_1",
+          "label": "Trust the wrong hazard.",
+          "target": "tail0_death"
+        },
+        {
+          "id": "c_d20_n7_2",
+          "label": "Get pinned trying.",
+          "target": "tail0_capture"
+        }
+      ]
+    },
+    {
+      "id": "d20_n8",
+      "body": "<<FILL v=2 role=rising words=72 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_d20_n8_0",
+          "label": "Turn back for the gate.",
+          "target": "tail0_setback"
+        },
+        {
+          "id": "c_d20_n8_1",
+          "label": "Back away and search instead.",
+          "target": "tail0_discover"
+        },
+        {
+          "id": "c_d20_n8_2",
+          "label": "Find the miners' bypass.",
+          "target": "tail0_complete"
+        }
+      ]
+    },
+    {
+      "id": "tail0_c0",
+      "body": "<<FILL v=2 role=rising words=72 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_tail0_c0_0",
+          "label": "Press on.",
+          "target": "tail1_c0"
+        },
+        {
+          "id": "c_tail0_c0_1",
+          "label": "Keep going.",
+          "target": "tail1_c1"
+        },
+        {
+          "id": "c_tail0_c0_2",
+          "label": "Push forward.",
+          "target": "tail1_c2"
+        }
+      ]
+    },
+    {
+      "id": "tail0_c1",
+      "body": "<<FILL v=2 role=rising words=72 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_tail0_c1_0",
+          "label": "Press on.",
+          "target": "tail1_c3"
+        },
+        {
+          "id": "c_tail0_c1_1",
+          "label": "Trust the wrong hazard.",
+          "target": "tail1_death"
+        },
+        {
+          "id": "c_tail0_c1_2",
+          "label": "Get pinned trying.",
+          "target": "tail1_capture"
+        }
+      ]
+    },
+    {
+      "id": "tail0_c2",
+      "body": "<<FILL v=2 role=rising words=72 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_tail0_c2_0",
+          "label": "Turn back for the gate.",
+          "target": "tail1_setback"
+        },
+        {
+          "id": "c_tail0_c2_1",
+          "label": "Back away and search instead.",
+          "target": "tail1_discover"
+        },
+        {
+          "id": "c_tail0_c2_2",
+          "label": "Find the miners' bypass.",
+          "target": "tail1_complete"
+        }
+      ]
+    },
+    {
+      "id": "tail0_c3",
+      "body": "<<FILL v=2 role=rising words=72 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_tail0_c3_0",
+          "label": "Press on.",
+          "target": "tail1_c0"
+        },
+        {
+          "id": "c_tail0_c3_1",
+          "label": "Keep going.",
+          "target": "tail1_c1"
+        },
+        {
+          "id": "c_tail0_c3_2",
+          "label": "Push forward.",
+          "target": "tail1_c2"
+        }
+      ]
+    },
+    {
+      "id": "tail0_death",
+      "body": "<<FILL v=2 role=death words=66 function=ending>>",
+      "is_ending": true,
+      "ending": {
+        "id": "tail0_death",
+        "valence": "negative",
+        "kind": "death",
+        "title": "Sealed by the Fall"
+      }
+    },
+    {
+      "id": "tail0_capture",
+      "body": "<<FILL v=2 role=capture words=66 function=ending>>",
+      "is_ending": true,
+      "ending": {
+        "id": "tail0_capture",
+        "valence": "negative",
+        "kind": "capture",
+        "title": "Pinned in the Working"
+      }
+    },
+    {
+      "id": "tail0_setback",
+      "body": "<<FILL v=2 role=setback words=66 function=ending>>",
+      "is_ending": true,
+      "ending": {
+        "id": "tail0_setback",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "Turned Back Underground"
+      }
+    },
+    {
+      "id": "tail0_discover",
+      "body": "<<FILL v=2 role=discovery words=66 function=ending>>",
+      "is_ending": true,
+      "ending": {
+        "id": "tail0_discover",
+        "valence": "neutral",
+        "kind": "discovery",
+        "title": "The Surveyor's Cache"
+      }
+    },
+    {
+      "id": "tail0_complete",
+      "body": "<<FILL v=2 role=completion words=66 function=ending>>",
+      "is_ending": true,
+      "ending": {
+        "id": "tail0_complete",
+        "valence": "positive",
+        "kind": "completion",
+        "title": "The Long Way Round"
+      }
+    },
+    {
+      "id": "tail1_c0",
+      "body": "<<FILL v=2 role=rising words=72 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_tail1_c0_0",
+          "label": "Press on.",
+          "target": "tail2_c0"
+        },
+        {
+          "id": "c_tail1_c0_1",
+          "label": "Keep going.",
+          "target": "tail2_c1"
+        },
+        {
+          "id": "c_tail1_c0_2",
+          "label": "Push forward.",
+          "target": "tail2_c2"
+        }
+      ]
+    },
+    {
+      "id": "tail1_c1",
+      "body": "<<FILL v=2 role=rising words=72 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_tail1_c1_0",
+          "label": "Press on.",
+          "target": "tail2_c3"
+        },
+        {
+          "id": "c_tail1_c1_1",
+          "label": "Trust the wrong hazard.",
+          "target": "tail2_death"
+        },
+        {
+          "id": "c_tail1_c1_2",
+          "label": "Get pinned trying.",
+          "target": "tail2_capture"
+        }
+      ]
+    },
+    {
+      "id": "tail1_c2",
+      "body": "<<FILL v=2 role=rising words=72 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_tail1_c2_0",
+          "label": "Turn back for the gate.",
+          "target": "tail2_setback"
+        },
+        {
+          "id": "c_tail1_c2_1",
+          "label": "Back away and search instead.",
+          "target": "tail2_discover"
+        },
+        {
+          "id": "c_tail1_c2_2",
+          "label": "Find the miners' bypass.",
+          "target": "tail2_complete"
+        }
+      ]
+    },
+    {
+      "id": "tail1_c3",
+      "body": "<<FILL v=2 role=rising words=72 function=decision>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_tail1_c3_0",
+          "label": "Press on.",
+          "target": "tail2_c0"
+        },
+        {
+          "id": "c_tail1_c3_1",
+          "label": "Keep going.",
+          "target": "tail2_c1"
+        },
+        {
+          "id": "c_tail1_c3_2",
+          "label": "Push forward.",
+          "target": "tail2_c2"
+        }
+      ]
+    },
+    {
+      "id": "tail1_death",
+      "body": "<<FILL v=2 role=death words=66 function=ending>>",
+      "is_ending": true,
+      "ending": {
+        "id": "tail1_death",
+        "valence": "negative",
+        "kind": "death",
+        "title": "Over the Safe Depth"
+      }
+    },
+    {
+      "id": "tail1_capture",
+      "body": "<<FILL v=2 role=capture words=66 function=ending>>",
+      "is_ending": true,
+      "ending": {
+        "id": "tail1_capture",
+        "valence": "negative",
+        "kind": "capture",
+        "title": "Pinned in the Working"
+      }
+    },
+    {
+      "id": "tail1_setback",
+      "body": "<<FILL v=2 role=setback words=66 function=ending>>",
+      "is_ending": true,
+      "ending": {
+        "id": "tail1_setback",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "Turned Back Underground"
+      }
+    },
+    {
+      "id": "tail1_discover",
+      "body": "<<FILL v=2 role=discovery words=66 function=ending>>",
+      "is_ending": true,
+      "ending": {
+        "id": "tail1_discover",
+        "valence": "neutral",
+        "kind": "discovery",
+        "title": "The Surveyor's Cache"
+      }
+    },
+    {
+      "id": "tail1_complete",
+      "body": "<<FILL v=2 role=completion words=66 function=ending>>",
+      "is_ending": true,
+      "ending": {
+        "id": "tail1_complete",
+        "valence": "positive",
+        "kind": "completion",
+        "title": "The Channel That Held"
+      }
+    },
+    {
+      "id": "tail2_c0",
+      "body": "<<FILL v=2 role=rising words=72 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_tail2_c0_0",
+          "label": "Press on.",
+          "target": "tail3_c0"
+        },
+        {
+          "id": "c_tail2_c0_1",
+          "label": "Keep going.",
+          "target": "tail3_c1"
+        },
+        {
+          "id": "c_tail2_c0_2",
+          "label": "Push forward.",
+          "target": "tail3_c2"
+        }
+      ]
+    },
+    {
+      "id": "tail2_c1",
+      "body": "<<FILL v=2 role=rising words=72 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_tail2_c1_0",
+          "label": "Press on.",
+          "target": "tail3_c3"
+        },
+        {
+          "id": "c_tail2_c1_1",
+          "label": "Trust the wrong hazard.",
+          "target": "tail3_death"
+        },
+        {
+          "id": "c_tail2_c1_2",
+          "label": "Get pinned trying.",
+          "target": "tail3_capture"
+        }
+      ]
+    },
+    {
+      "id": "tail2_c2",
+      "body": "<<FILL v=2 role=rising words=72 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_tail2_c2_0",
+          "label": "Turn back for the gate.",
+          "target": "tail3_setback"
+        },
+        {
+          "id": "c_tail2_c2_1",
+          "label": "Back away and search instead.",
+          "target": "tail3_discover"
+        },
+        {
+          "id": "c_tail2_c2_2",
+          "label": "Find the miners' bypass.",
+          "target": "tail3_complete"
+        }
+      ]
+    },
+    {
+      "id": "tail2_c3",
+      "body": "<<FILL v=2 role=rising words=72 function=decision>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_tail2_c3_0",
+          "label": "Press on.",
+          "target": "tail3_c0"
+        },
+        {
+          "id": "c_tail2_c3_1",
+          "label": "Keep going.",
+          "target": "tail3_c1"
+        },
+        {
+          "id": "c_tail2_c3_2",
+          "label": "Push forward.",
+          "target": "tail3_c2"
+        }
+      ]
+    },
+    {
+      "id": "tail2_death",
+      "body": "<<FILL v=2 role=death words=66 function=ending>>",
+      "is_ending": true,
+      "ending": {
+        "id": "tail2_death",
+        "valence": "negative",
+        "kind": "death",
+        "title": "Under the Cradle"
+      }
+    },
+    {
+      "id": "tail2_capture",
+      "body": "<<FILL v=2 role=capture words=66 function=ending>>",
+      "is_ending": true,
+      "ending": {
+        "id": "tail2_capture",
+        "valence": "negative",
+        "kind": "capture",
+        "title": "Pinned in the Working"
+      }
+    },
+    {
+      "id": "tail2_setback",
+      "body": "<<FILL v=2 role=setback words=66 function=ending>>",
+      "is_ending": true,
+      "ending": {
+        "id": "tail2_setback",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "Turned Back Underground"
+      }
+    },
+    {
+      "id": "tail2_discover",
+      "body": "<<FILL v=2 role=discovery words=66 function=ending>>",
+      "is_ending": true,
+      "ending": {
+        "id": "tail2_discover",
+        "valence": "neutral",
+        "kind": "discovery",
+        "title": "The Surveyor's Cache"
+      }
+    },
+    {
+      "id": "tail2_complete",
+      "body": "<<FILL v=2 role=completion words=66 function=ending>>",
+      "is_ending": true,
+      "ending": {
+        "id": "tail2_complete",
+        "valence": "positive",
+        "kind": "completion",
+        "title": "The Swing That Missed"
+      }
+    },
+    {
+      "id": "tail3_c0",
+      "body": "<<FILL v=2 role=rising words=72 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_tail3_c0_0",
+          "label": "Press on.",
+          "target": "tail4_c0"
+        },
+        {
+          "id": "c_tail3_c0_1",
+          "label": "Keep going.",
+          "target": "tail4_c1"
+        },
+        {
+          "id": "c_tail3_c0_2",
+          "label": "Push forward.",
+          "target": "tail4_c2"
+        }
+      ]
+    },
+    {
+      "id": "tail3_c1",
+      "body": "<<FILL v=2 role=rising words=72 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_tail3_c1_0",
+          "label": "Press on.",
+          "target": "tail4_c3"
+        },
+        {
+          "id": "c_tail3_c1_1",
+          "label": "Trust the wrong hazard.",
+          "target": "tail4_death"
+        },
+        {
+          "id": "c_tail3_c1_2",
+          "label": "Get pinned trying.",
+          "target": "tail4_capture"
+        }
+      ]
+    },
+    {
+      "id": "tail3_c2",
+      "body": "<<FILL v=2 role=rising words=72 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_tail3_c2_0",
+          "label": "Turn back for the gate.",
+          "target": "tail4_setback"
+        },
+        {
+          "id": "c_tail3_c2_1",
+          "label": "Back away and search instead.",
+          "target": "tail4_discover"
+        },
+        {
+          "id": "c_tail3_c2_2",
+          "label": "Find the miners' bypass.",
+          "target": "tail4_complete"
+        }
+      ]
+    },
+    {
+      "id": "tail3_c3",
+      "body": "<<FILL v=2 role=rising words=72 function=decision>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_tail3_c3_0",
+          "label": "Press on.",
+          "target": "tail4_c0"
+        },
+        {
+          "id": "c_tail3_c3_1",
+          "label": "Keep going.",
+          "target": "tail4_c1"
+        },
+        {
+          "id": "c_tail3_c3_2",
+          "label": "Push forward.",
+          "target": "tail4_c2"
+        }
+      ]
+    },
+    {
+      "id": "tail3_death",
+      "body": "<<FILL v=2 role=death words=66 function=ending>>",
+      "is_ending": true,
+      "ending": {
+        "id": "tail3_death",
+        "valence": "negative",
+        "kind": "death",
+        "title": "Under the Timbers"
+      }
+    },
+    {
+      "id": "tail3_capture",
+      "body": "<<FILL v=2 role=capture words=66 function=ending>>",
+      "is_ending": true,
+      "ending": {
+        "id": "tail3_capture",
+        "valence": "negative",
+        "kind": "capture",
+        "title": "Pinned in the Working"
+      }
+    },
+    {
+      "id": "tail3_setback",
+      "body": "<<FILL v=2 role=setback words=66 function=ending>>",
+      "is_ending": true,
+      "ending": {
+        "id": "tail3_setback",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "Turned Back Underground"
+      }
+    },
+    {
+      "id": "tail3_discover",
+      "body": "<<FILL v=2 role=discovery words=66 function=ending>>",
+      "is_ending": true,
+      "ending": {
+        "id": "tail3_discover",
+        "valence": "neutral",
+        "kind": "discovery",
+        "title": "The Surveyor's Cache"
+      }
+    },
+    {
+      "id": "tail3_complete",
+      "body": "<<FILL v=2 role=completion words=66 function=ending>>",
+      "is_ending": true,
+      "ending": {
+        "id": "tail3_complete",
+        "valence": "positive",
+        "kind": "completion",
+        "title": "The Roof That Held"
+      }
+    },
+    {
+      "id": "tail4_c0",
+      "body": "<<FILL v=2 role=rising words=72 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_tail4_c0_0",
+          "label": "Press on.",
+          "target": "tail5_c0"
+        },
+        {
+          "id": "c_tail4_c0_1",
+          "label": "Keep going.",
+          "target": "tail5_c1"
+        },
+        {
+          "id": "c_tail4_c0_2",
+          "label": "Push forward.",
+          "target": "tail5_c2"
+        }
+      ]
+    },
+    {
+      "id": "tail4_c1",
+      "body": "<<FILL v=2 role=rising words=72 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_tail4_c1_0",
+          "label": "Press on.",
+          "target": "tail5_c3"
+        },
+        {
+          "id": "c_tail4_c1_1",
+          "label": "Trust the wrong hazard.",
+          "target": "tail5_death"
+        },
+        {
+          "id": "c_tail4_c1_2",
+          "label": "Get pinned trying.",
+          "target": "tail5_capture"
+        }
+      ]
+    },
+    {
+      "id": "tail4_c2",
+      "body": "<<FILL v=2 role=rising words=72 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_tail4_c2_0",
+          "label": "Turn back for the gate.",
+          "target": "tail5_setback"
+        },
+        {
+          "id": "c_tail4_c2_1",
+          "label": "Back away and search instead.",
+          "target": "tail5_discover"
+        },
+        {
+          "id": "c_tail4_c2_2",
+          "label": "Find the miners' bypass.",
+          "target": "tail5_complete"
+        }
+      ]
+    },
+    {
+      "id": "tail4_c3",
+      "body": "<<FILL v=2 role=rising words=72 function=decision>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_tail4_c3_0",
+          "label": "Press on.",
+          "target": "tail5_c0"
+        },
+        {
+          "id": "c_tail4_c3_1",
+          "label": "Keep going.",
+          "target": "tail5_c1"
+        },
+        {
+          "id": "c_tail4_c3_2",
+          "label": "Push forward.",
+          "target": "tail5_c2"
+        }
+      ]
+    },
+    {
+      "id": "tail4_death",
+      "body": "<<FILL v=2 role=death words=66 function=ending>>",
+      "is_ending": true,
+      "ending": {
+        "id": "tail4_death",
+        "valence": "negative",
+        "kind": "death",
+        "title": "Into the Side Shaft"
+      }
+    },
+    {
+      "id": "tail4_capture",
+      "body": "<<FILL v=2 role=capture words=66 function=ending>>",
+      "is_ending": true,
+      "ending": {
+        "id": "tail4_capture",
+        "valence": "negative",
+        "kind": "capture",
+        "title": "Pinned in the Working"
+      }
+    },
+    {
+      "id": "tail4_setback",
+      "body": "<<FILL v=2 role=setback words=66 function=ending>>",
+      "is_ending": true,
+      "ending": {
+        "id": "tail4_setback",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "Turned Back Underground"
+      }
+    },
+    {
+      "id": "tail4_discover",
+      "body": "<<FILL v=2 role=discovery words=66 function=ending>>",
+      "is_ending": true,
+      "ending": {
+        "id": "tail4_discover",
+        "valence": "neutral",
+        "kind": "discovery",
+        "title": "The Surveyor's Cache"
+      }
+    },
+    {
+      "id": "tail4_complete",
+      "body": "<<FILL v=2 role=completion words=66 function=ending>>",
+      "is_ending": true,
+      "ending": {
+        "id": "tail4_complete",
+        "valence": "positive",
+        "kind": "completion",
+        "title": "Light at the Shaft Mouth"
+      }
+    },
+    {
+      "id": "tail5_c0",
+      "body": "<<FILL v=2 role=rising words=42 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_tail5_c0_0",
+          "label": "Climb out onto the scree shelf.",
+          "target": "n_scree"
+        }
+      ]
+    },
+    {
+      "id": "tail5_c1",
+      "body": "<<FILL v=2 role=rising words=42 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_tail5_c1_0",
+          "label": "Climb out onto the scree shelf.",
+          "target": "n_scree"
+        }
+      ]
+    },
+    {
+      "id": "tail5_c2",
+      "body": "<<FILL v=2 role=rising words=42 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_tail5_c2_0",
+          "label": "Climb out onto the scree shelf.",
+          "target": "n_scree"
+        }
+      ]
+    },
+    {
+      "id": "tail5_c3",
+      "body": "<<FILL v=2 role=rising words=42 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_tail5_c3_0",
+          "label": "Climb out onto the scree shelf.",
+          "target": "n_scree"
+        }
+      ]
+    },
+    {
+      "id": "tail5_death",
+      "body": "<<FILL v=2 role=death words=66 function=ending>>",
+      "is_ending": true,
+      "ending": {
+        "id": "tail5_death",
+        "valence": "negative",
+        "kind": "death",
+        "title": "Caught by the Gust"
+      }
+    },
+    {
+      "id": "tail5_capture",
+      "body": "<<FILL v=2 role=capture words=66 function=ending>>",
+      "is_ending": true,
+      "ending": {
+        "id": "tail5_capture",
+        "valence": "negative",
+        "kind": "capture",
+        "title": "Pinned in the Working"
+      }
+    },
+    {
+      "id": "tail5_setback",
+      "body": "<<FILL v=2 role=setback words=66 function=ending>>",
+      "is_ending": true,
+      "ending": {
+        "id": "tail5_setback",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "Turned Back Underground"
+      }
+    },
+    {
+      "id": "tail5_discover",
+      "body": "<<FILL v=2 role=discovery words=66 function=ending>>",
+      "is_ending": true,
+      "ending": {
+        "id": "tail5_discover",
+        "valence": "neutral",
+        "kind": "discovery",
+        "title": "The Surveyor's Cache"
+      }
+    },
+    {
+      "id": "tail5_complete",
+      "body": "<<FILL v=2 role=completion words=66 function=ending>>",
+      "is_ending": true,
+      "ending": {
+        "id": "tail5_complete",
+        "valence": "positive",
+        "kind": "completion",
+        "title": "Ahead of the Gust"
+      }
+    },
+    {
+      "id": "n_scree",
+      "body": "<<FILL v=2 role=rising words=40 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n_scree",
+          "label": "Start the climb to the tower.",
+          "target": "tower_gate"
+        }
+      ]
+    },
+    {
+      "id": "tower_gate",
+      "body": "<<FILL v=2 role=choice words=43 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_tower_gate",
+          "label": "Climb to the transmitter room.",
+          "target": "tower_resolve_1"
+        }
+      ]
+    },
+    {
+      "id": "tower_resolve_1",
+      "body": "<<FILL v=2 role=choice words=65 function=decision>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_tr1_fixed",
+          "label": "Fit the valve you carried down.",
+          "target": "tower_fixed",
+          "condition": {
+            "==": [
+              {
+                "var": "transmitter"
+              },
+              true
+            ]
+          }
+        },
+        {
+          "id": "c_tr1_flare",
+          "label": "Rig a flare from the lamp instead.",
+          "target": "tower_flare",
+          "condition": {
+            "==": [
+              {
+                "var": "transmitter"
+              },
+              false
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "tower_fixed",
+      "body": "<<FILL v=2 role=rising words=72 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_tower_fixed",
+          "label": "Send the call.",
+          "target": "tower_resolve_2_fixed"
+        }
+      ]
+    },
+    {
+      "id": "tower_flare",
+      "body": "<<FILL v=2 role=rising words=72 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_tower_flare",
+          "label": "Light the flare.",
+          "target": "tower_resolve_2_flare"
+        }
+      ]
+    },
+    {
+      "id": "tower_resolve_2_fixed",
+      "body": "<<FILL v=2 role=choice words=76 function=decision>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_trf_2",
+          "label": "Trust carried you both this far.",
+          "target": "end_fixed_trust2",
+          "condition": {
+            "==": [
+              {
+                "var": "trust"
+              },
+              2
+            ]
+          }
+        },
+        {
+          "id": "c_trf_1",
+          "label": "Trust carried you partway.",
+          "target": "end_fixed_trust1",
+          "condition": {
+            "==": [
+              {
+                "var": "trust"
+              },
+              1
+            ]
+          }
+        },
+        {
+          "id": "c_trf_0",
+          "label": "Trust never got a foothold.",
+          "target": "end_fixed_trust0",
+          "condition": {
+            "==": [
+              {
+                "var": "trust"
+              },
+              0
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "tower_resolve_2_flare",
+      "body": "<<FILL v=2 role=choice words=76 function=decision>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_trr_2",
+          "label": "Trust carried you both this far.",
+          "target": "end_flare_trust2",
+          "condition": {
+            "==": [
+              {
+                "var": "trust"
+              },
+              2
+            ]
+          }
+        },
+        {
+          "id": "c_trr_1",
+          "label": "Trust carried you partway.",
+          "target": "end_flare_trust1",
+          "condition": {
+            "==": [
+              {
+                "var": "trust"
+              },
+              1
+            ]
+          }
+        },
+        {
+          "id": "c_trr_0",
+          "label": "Trust never got a foothold.",
+          "target": "end_flare_trust0",
+          "condition": {
+            "==": [
+              {
+                "var": "trust"
+              },
+              0
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "end_fixed_trust2",
+      "body": "<<FILL v=2 role=success words=80 function=ending>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_fixed_trust2",
+        "valence": "positive",
+        "kind": "success",
+        "title": "The Clean Call"
+      }
+    },
+    {
+      "id": "end_fixed_trust1",
+      "body": "<<FILL v=2 role=completion words=78 function=ending>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_fixed_trust1",
+        "valence": "positive",
+        "kind": "completion",
+        "title": "The Call Alone"
+      }
+    },
+    {
+      "id": "end_fixed_trust0",
+      "body": "<<FILL v=2 role=completion words=78 function=ending>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_fixed_trust0",
+        "valence": "neutral",
+        "kind": "completion",
+        "title": "The Empty Tower"
+      }
+    },
+    {
+      "id": "end_flare_trust2",
+      "body": "<<FILL v=2 role=success words=78 function=ending>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_flare_trust2",
+        "valence": "positive",
+        "kind": "success",
+        "title": "Timed to the Storm"
+      }
+    },
+    {
+      "id": "end_flare_trust1",
+      "body": "<<FILL v=2 role=discovery words=76 function=ending>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_flare_trust1",
+        "valence": "neutral",
+        "kind": "discovery",
+        "title": "Ten Seconds Against the Cloud"
+      }
+    },
+    {
+      "id": "end_flare_trust0",
+      "body": "<<FILL v=2 role=setback words=76 function=ending>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_flare_trust0",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "Lost Against the Gust"
+      }
+    }
+  ]
+}

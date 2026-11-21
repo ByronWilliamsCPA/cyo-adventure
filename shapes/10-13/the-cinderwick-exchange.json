@@ -1,0 +1,1340 @@
+{
+  "schema_version": "2.0",
+  "id": "sk_cinderwick_exchange",
+  "version": 1,
+  "title": "The Cinderwick Exchange",
+  "metadata": {
+    "narrative_person": "third",
+    "age_band": "10-13",
+    "reading_level": {
+      "scheme": "flesch_kincaid",
+      "target": 5.5,
+      "tolerance": 1.5
+    },
+    "tier": 1,
+    "themes": [
+      "mystery",
+      "craft",
+      "responsibility",
+      "courage",
+      "listening"
+    ],
+    "estimated_minutes": 12,
+    "ending_count": 20,
+    "content_flags": {
+      "violence": "none",
+      "scariness": "moderate",
+      "peril": "moderate"
+    },
+    "topology": "sorting_hat",
+    "length": "short",
+    "narrative_style": "prose",
+    "production_eligible": true
+  },
+  "variables": [],
+  "start_node": "n_start",
+  "nodes": [
+    {
+      "id": "n_start",
+      "body": "<<FILL v=2 role=setup words=122 function=opening>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n_start_1",
+          "label": "Push open the {ENTRANCE_DOOR} and go in.",
+          "target": "n_arrival"
+        }
+      ]
+    },
+    {
+      "id": "n_arrival",
+      "body": "<<FILL v=2 role=rising words=116 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n_arrival_1",
+          "label": "Ask {NIGHTMASTER} about the four halls.",
+          "target": "n_sort"
+        }
+      ]
+    },
+    {
+      "id": "n_sort",
+      "body": "<<FILL v=2 role=choice words=134 function=decision>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n_sort_1",
+          "label": "Keep {T1_HALL} and mend the {T1_ARTIFACT}.",
+          "target": "t1_root"
+        },
+        {
+          "id": "c_n_sort_2",
+          "label": "Keep {T2_HALL} and find the {T2_ARTIFACT}.",
+          "target": "t2_root"
+        },
+        {
+          "id": "c_n_sort_3",
+          "label": "Keep {T3_HALL} and hold back the {T3_ARTIFACT}.",
+          "target": "t3_root"
+        },
+        {
+          "id": "c_n_sort_4",
+          "label": "Keep {T4_HALL} and free the {T4_CAPSULE}.",
+          "target": "t4_root"
+        }
+      ]
+    },
+    {
+      "id": "t1_root",
+      "body": "<<FILL v=2 role=rising words=116 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_t1_root_1",
+          "label": "Follow {T1_MENTOR} to the mechanism.",
+          "target": "t1_intro"
+        }
+      ]
+    },
+    {
+      "id": "t1_intro",
+      "body": "<<FILL v=2 role=rising words=114 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_t1_intro_1",
+          "label": "Study the three faults with {T1_MENTOR}.",
+          "target": "t1_survey"
+        }
+      ]
+    },
+    {
+      "id": "t1_survey",
+      "body": "<<FILL v=2 role=rising words=112 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_t1_survey_1",
+          "label": "Decide where to begin.",
+          "target": "t1_hub"
+        }
+      ]
+    },
+    {
+      "id": "t1_hub",
+      "body": "<<FILL v=2 role=choice words=130 function=decision>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_t1_hub_1",
+          "label": "Re-cut the {T1A_TOOL} at the bench.",
+          "target": "t1_a1"
+        },
+        {
+          "id": "c_t1_hub_2",
+          "label": "Climb the frame to free the jammed {T1B_TOOL}.",
+          "target": "t1_b1"
+        },
+        {
+          "id": "c_t1_hub_3",
+          "label": "Rebalance the pendulum bob with {T1C_TOOL}.",
+          "target": "t1_c1"
+        }
+      ]
+    },
+    {
+      "id": "t1_a1",
+      "body": "<<FILL v=2 role=rising words=114 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_t1_a1_1",
+          "label": "Ready the finished {T1A_TOOL}.",
+          "target": "t1_a2"
+        }
+      ]
+    },
+    {
+      "id": "t1_a2",
+      "body": "<<FILL v=2 role=choice words=126 function=decision>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_t1_a2_1",
+          "label": "Temper it in the quench, the slow sure way.",
+          "target": "t1_aa1"
+        },
+        {
+          "id": "c_t1_a2_2",
+          "label": "Fit it green and race the clock.",
+          "target": "t1_ab1"
+        }
+      ]
+    },
+    {
+      "id": "t1_aa1",
+      "body": "<<FILL v=2 role=rising words=112 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_t1_aa1_1",
+          "label": "Set the hardened {T1A_TOOL} and watch the tick.",
+          "target": "t1_aa2"
+        }
+      ]
+    },
+    {
+      "id": "t1_aa2",
+      "body": "<<FILL v=2 role=climax words=102 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_t1_aa2_1",
+          "label": "Ring in the mended {DEADLINE}.",
+          "target": "t1_aa_end"
+        }
+      ]
+    },
+    {
+      "id": "t1_aa_end",
+      "body": "<<FILL v=2 role=success words=96 function=ending>>",
+      "is_ending": true,
+      "ending": {
+        "id": "t1_aa_end",
+        "valence": "positive",
+        "kind": "success",
+        "title": "{T1A_END1}"
+      }
+    },
+    {
+      "id": "t1_ab1",
+      "body": "<<FILL v=2 role=rising words=110 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_t1_ab1_1",
+          "label": "Nurse the failing {T1A_TOOL} toward {DEADLINE}.",
+          "target": "t1_ab_end"
+        }
+      ]
+    },
+    {
+      "id": "t1_ab_end",
+      "body": "<<FILL v=2 role=setback words=96 function=ending>>",
+      "is_ending": true,
+      "ending": {
+        "id": "t1_ab_end",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "{T1A_END2}"
+      }
+    },
+    {
+      "id": "t1_b1",
+      "body": "<<FILL v=2 role=rising words=114 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_t1_b1_1",
+          "label": "Reach the stuck {T1B_TOOL}.",
+          "target": "t1_b2"
+        }
+      ]
+    },
+    {
+      "id": "t1_b2",
+      "body": "<<FILL v=2 role=rising words=112 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_t1_b2_1",
+          "label": "Work the wedged {T1B_PIN} loose.",
+          "target": "t1_b3"
+        }
+      ]
+    },
+    {
+      "id": "t1_b3",
+      "body": "<<FILL v=2 role=rising words=112 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_t1_b3_1",
+          "label": "Climb down and read the {T1B_MARKS}.",
+          "target": "t1_b4"
+        }
+      ]
+    },
+    {
+      "id": "t1_b4",
+      "body": "<<FILL v=2 role=climax words=102 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_t1_b4_1",
+          "label": "Add a name to the {T1B_LOGBOOK}.",
+          "target": "t1_b_end"
+        }
+      ]
+    },
+    {
+      "id": "t1_b_end",
+      "body": "<<FILL v=2 role=discovery words=96 function=ending>>",
+      "is_ending": true,
+      "ending": {
+        "id": "t1_b_end",
+        "valence": "neutral",
+        "kind": "discovery",
+        "title": "{T1B_END}"
+      }
+    },
+    {
+      "id": "t1_c1",
+      "body": "<<FILL v=2 role=rising words=114 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_t1_c1_1",
+          "label": "Begin trimming the bob.",
+          "target": "t1_c2"
+        }
+      ]
+    },
+    {
+      "id": "t1_c2",
+      "body": "<<FILL v=2 role=rising words=112 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_t1_c2_1",
+          "label": "Approach the true swing.",
+          "target": "t1_c3"
+        }
+      ]
+    },
+    {
+      "id": "t1_c3",
+      "body": "<<FILL v=2 role=choice words=126 function=decision>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_t1_c3_1",
+          "label": "Trust the math and lock the weights.",
+          "target": "t1_cc1"
+        },
+        {
+          "id": "c_t1_c3_2",
+          "label": "Chase perfection with one more weight.",
+          "target": "t1_cd1"
+        }
+      ]
+    },
+    {
+      "id": "t1_cc1",
+      "body": "<<FILL v=2 role=rising words=112 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_t1_cc1_1",
+          "label": "Watch the pendulum find its stride.",
+          "target": "t1_cc2"
+        }
+      ]
+    },
+    {
+      "id": "t1_cc2",
+      "body": "<<FILL v=2 role=climax words=102 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_t1_cc2_1",
+          "label": "Send the {DEADLINE} signal.",
+          "target": "t1_cc_end"
+        }
+      ]
+    },
+    {
+      "id": "t1_cc_end",
+      "body": "<<FILL v=2 role=completion words=96 function=ending>>",
+      "is_ending": true,
+      "ending": {
+        "id": "t1_cc_end",
+        "valence": "positive",
+        "kind": "completion",
+        "title": "{T1C_END1}"
+      }
+    },
+    {
+      "id": "t1_cd1",
+      "body": "<<FILL v=2 role=rising words=110 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_t1_cd1_1",
+          "label": "Grab for the runaway weight.",
+          "target": "t1_cd_end"
+        }
+      ],
+      "safety_scope": [
+        "peril"
+      ]
+    },
+    {
+      "id": "t1_cd_end",
+      "body": "<<FILL v=2 role=capture words=96 function=ending>>",
+      "is_ending": true,
+      "ending": {
+        "id": "t1_cd_end",
+        "valence": "negative",
+        "kind": "capture",
+        "title": "{T1C_END2}"
+      },
+      "safety_scope": [
+        "peril",
+        "scary_imagery"
+      ]
+    },
+    {
+      "id": "t2_root",
+      "body": "<<FILL v=2 role=rising words=116 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_t2_root_1",
+          "label": "Follow {T2_MENTOR} into the {T2_DOME}.",
+          "target": "t2_intro"
+        }
+      ]
+    },
+    {
+      "id": "t2_intro",
+      "body": "<<FILL v=2 role=rising words=114 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_t2_intro_1",
+          "label": "Learn the three ways to catch the true echo.",
+          "target": "t2_survey"
+        }
+      ]
+    },
+    {
+      "id": "t2_survey",
+      "body": "<<FILL v=2 role=rising words=112 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_t2_survey_1",
+          "label": "Choose a method.",
+          "target": "t2_hub"
+        }
+      ]
+    },
+    {
+      "id": "t2_hub",
+      "body": "<<FILL v=2 role=choice words=130 function=decision>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_t2_hub_1",
+          "label": "Trace the {T2_FALSEECHO} to its source horn.",
+          "target": "t2_a1"
+        },
+        {
+          "id": "c_t2_hub_2",
+          "label": "Sit the {T2_FOCUSSTONE} and sift the words by ear.",
+          "target": "t2_b1"
+        },
+        {
+          "id": "c_t2_hub_3",
+          "label": "Climb the catwalk to the {T2C_TOOL}.",
+          "target": "t2_c1"
+        }
+      ]
+    },
+    {
+      "id": "t2_a1",
+      "body": "<<FILL v=2 role=rising words=114 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_t2_a1_1",
+          "label": "Close in on the loud horn.",
+          "target": "t2_a2"
+        }
+      ]
+    },
+    {
+      "id": "t2_a2",
+      "body": "<<FILL v=2 role=choice words=126 function=decision>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_t2_a2_1",
+          "label": "Re-aim the horn to cancel the {T2_FALSEECHO}.",
+          "target": "t2_aa1"
+        },
+        {
+          "id": "c_t2_a2_2",
+          "label": "Pull the baffle and silence the {T2A_TOOL}.",
+          "target": "t2_ab1"
+        }
+      ]
+    },
+    {
+      "id": "t2_aa1",
+      "body": "<<FILL v=2 role=rising words=112 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_t2_aa1_1",
+          "label": "Find the cancelling angle.",
+          "target": "t2_aa2"
+        }
+      ]
+    },
+    {
+      "id": "t2_aa2",
+      "body": "<<FILL v=2 role=climax words=102 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_t2_aa2_1",
+          "label": "Carry the {T2_ARTIFACT} to the sender.",
+          "target": "t2_aa_end"
+        }
+      ]
+    },
+    {
+      "id": "t2_aa_end",
+      "body": "<<FILL v=2 role=completion words=96 function=ending>>",
+      "is_ending": true,
+      "ending": {
+        "id": "t2_aa_end",
+        "valence": "positive",
+        "kind": "completion",
+        "title": "{T2A_END1}"
+      }
+    },
+    {
+      "id": "t2_ab1",
+      "body": "<<FILL v=2 role=rising words=110 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_t2_ab1_1",
+          "label": "Reconstruct the blurred message with {T2_MENTOR}.",
+          "target": "t2_ab_end"
+        }
+      ]
+    },
+    {
+      "id": "t2_ab_end",
+      "body": "<<FILL v=2 role=discovery words=96 function=ending>>",
+      "is_ending": true,
+      "ending": {
+        "id": "t2_ab_end",
+        "valence": "neutral",
+        "kind": "discovery",
+        "title": "{T2A_END2}"
+      }
+    },
+    {
+      "id": "t2_b1",
+      "body": "<<FILL v=2 role=rising words=114 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_t2_b1_1",
+          "label": "Let every echo arrive together.",
+          "target": "t2_b2"
+        }
+      ]
+    },
+    {
+      "id": "t2_b2",
+      "body": "<<FILL v=2 role=rising words=112 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_t2_b2_1",
+          "label": "Lock onto the breathing voice.",
+          "target": "t2_b3"
+        }
+      ]
+    },
+    {
+      "id": "t2_b3",
+      "body": "<<FILL v=2 role=rising words=112 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_t2_b3_1",
+          "label": "Call the last of the message.",
+          "target": "t2_b4"
+        }
+      ]
+    },
+    {
+      "id": "t2_b4",
+      "body": "<<FILL v=2 role=climax words=102 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_t2_b4_1",
+          "label": "Send the listened message.",
+          "target": "t2_b_end"
+        }
+      ]
+    },
+    {
+      "id": "t2_b_end",
+      "body": "<<FILL v=2 role=success words=96 function=ending>>",
+      "is_ending": true,
+      "ending": {
+        "id": "t2_b_end",
+        "valence": "positive",
+        "kind": "success",
+        "title": "{T2B_END}"
+      }
+    },
+    {
+      "id": "t2_c1",
+      "body": "<<FILL v=2 role=rising words=114 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_t2_c1_1",
+          "label": "Climb toward the {T2C_TOOL}.",
+          "target": "t2_c2"
+        }
+      ]
+    },
+    {
+      "id": "t2_c2",
+      "body": "<<FILL v=2 role=rising words=112 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_t2_c2_1",
+          "label": "Weigh the coaxing voice.",
+          "target": "t2_c3"
+        }
+      ]
+    },
+    {
+      "id": "t2_c3",
+      "body": "<<FILL v=2 role=choice words=126 function=decision>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_t2_c3_1",
+          "label": "Trust {T2_MENTOR} and stay inside the rail.",
+          "target": "t2_cc1"
+        },
+        {
+          "id": "c_t2_c3_2",
+          "label": "Trust the voice and cross onto the old gantry.",
+          "target": "t2_cd1"
+        }
+      ]
+    },
+    {
+      "id": "t2_cc1",
+      "body": "<<FILL v=2 role=rising words=112 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_t2_cc1_1",
+          "label": "Reach the {T2C_TOOL} safely.",
+          "target": "t2_cc2"
+        }
+      ],
+      "safety_scope": [
+        "peril"
+      ]
+    },
+    {
+      "id": "t2_cc2",
+      "body": "<<FILL v=2 role=climax words=102 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_t2_cc2_1",
+          "label": "Read the freed true message.",
+          "target": "t2_cc_end"
+        }
+      ]
+    },
+    {
+      "id": "t2_cc_end",
+      "body": "<<FILL v=2 role=discovery words=96 function=ending>>",
+      "is_ending": true,
+      "ending": {
+        "id": "t2_cc_end",
+        "valence": "neutral",
+        "kind": "discovery",
+        "title": "{T2C_END1}"
+      }
+    },
+    {
+      "id": "t2_cd1",
+      "body": "<<FILL v=2 role=rising words=110 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_t2_cd1_1",
+          "label": "Grab for the rail as the gantry gives.",
+          "target": "t2_cd_end"
+        }
+      ],
+      "safety_scope": [
+        "peril",
+        "scary_imagery"
+      ]
+    },
+    {
+      "id": "t2_cd_end",
+      "body": "<<FILL v=2 role=capture words=96 function=ending>>",
+      "is_ending": true,
+      "ending": {
+        "id": "t2_cd_end",
+        "valence": "negative",
+        "kind": "capture",
+        "title": "{T2C_END2}"
+      },
+      "safety_scope": [
+        "peril",
+        "scary_imagery"
+      ]
+    },
+    {
+      "id": "t3_root",
+      "body": "<<FILL v=2 role=rising words=116 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_t3_root_1",
+          "label": "Wade in after {T3_MENTOR}.",
+          "target": "t3_intro"
+        }
+      ]
+    },
+    {
+      "id": "t3_intro",
+      "body": "<<FILL v=2 role=rising words=114 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_t3_intro_1",
+          "label": "Look over the failing works with {T3_MENTOR}.",
+          "target": "t3_survey"
+        }
+      ]
+    },
+    {
+      "id": "t3_survey",
+      "body": "<<FILL v=2 role=rising words=112 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_t3_survey_1",
+          "label": "Pick a way to hold the pressure.",
+          "target": "t3_hub"
+        }
+      ]
+    },
+    {
+      "id": "t3_hub",
+      "body": "<<FILL v=2 role=choice words=130 function=decision>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_t3_hub_1",
+          "label": "Dive to find and plug the leaking seam.",
+          "target": "t3_a1"
+        },
+        {
+          "id": "c_t3_hub_2",
+          "label": "Work the hand-pumps to refill the tank.",
+          "target": "t3_b1"
+        },
+        {
+          "id": "c_t3_hub_3",
+          "label": "Shut the {T3C_TOOL} on the leaking section.",
+          "target": "t3_c1"
+        }
+      ]
+    },
+    {
+      "id": "t3_a1",
+      "body": "<<FILL v=2 role=rising words=114 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_t3_a1_1",
+          "label": "Feel along the main for the leak.",
+          "target": "t3_a2"
+        }
+      ]
+    },
+    {
+      "id": "t3_a2",
+      "body": "<<FILL v=2 role=choice words=126 function=decision>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_t3_a2_1",
+          "label": "Set the {T3A_CLAMP}, the strong slow fix.",
+          "target": "t3_aa1"
+        },
+        {
+          "id": "c_t3_a2_2",
+          "label": "Pack it fast with {T3A_WOOL}.",
+          "target": "t3_ab1"
+        }
+      ]
+    },
+    {
+      "id": "t3_aa1",
+      "body": "<<FILL v=2 role=rising words=112 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_t3_aa1_1",
+          "label": "Draw the last bolt tight.",
+          "target": "t3_aa2"
+        }
+      ],
+      "safety_scope": [
+        "peril"
+      ]
+    },
+    {
+      "id": "t3_aa2",
+      "body": "<<FILL v=2 role=climax words=102 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_t3_aa2_1",
+          "label": "Watch the pressure climb home.",
+          "target": "t3_aa_end"
+        }
+      ]
+    },
+    {
+      "id": "t3_aa_end",
+      "body": "<<FILL v=2 role=success words=96 function=ending>>",
+      "is_ending": true,
+      "ending": {
+        "id": "t3_aa_end",
+        "valence": "positive",
+        "kind": "success",
+        "title": "{T3A_END1}"
+      }
+    },
+    {
+      "id": "t3_ab1",
+      "body": "<<FILL v=2 role=rising words=110 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_t3_ab1_1",
+          "label": "Nurse the half-pressure toward {DEADLINE}.",
+          "target": "t3_ab_end"
+        }
+      ],
+      "safety_scope": [
+        "peril"
+      ]
+    },
+    {
+      "id": "t3_ab_end",
+      "body": "<<FILL v=2 role=setback words=96 function=ending>>",
+      "is_ending": true,
+      "ending": {
+        "id": "t3_ab_end",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "{T3A_END2}"
+      }
+    },
+    {
+      "id": "t3_b1",
+      "body": "<<FILL v=2 role=rising words=114 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_t3_b1_1",
+          "label": "Set the pumping rhythm with {T3_MENTOR}.",
+          "target": "t3_b2"
+        }
+      ]
+    },
+    {
+      "id": "t3_b2",
+      "body": "<<FILL v=2 role=rising words=112 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_t3_b2_1",
+          "label": "Hold the pace against the clock.",
+          "target": "t3_b3"
+        }
+      ]
+    },
+    {
+      "id": "t3_b3",
+      "body": "<<FILL v=2 role=rising words=112 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_t3_b3_1",
+          "label": "Pump the tank the last of the way full.",
+          "target": "t3_b4"
+        }
+      ],
+      "safety_scope": [
+        "peril"
+      ]
+    },
+    {
+      "id": "t3_b4",
+      "body": "<<FILL v=2 role=climax words=102 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_t3_b4_1",
+          "label": "Let the full tank feed the signal.",
+          "target": "t3_b_end"
+        }
+      ]
+    },
+    {
+      "id": "t3_b_end",
+      "body": "<<FILL v=2 role=completion words=96 function=ending>>",
+      "is_ending": true,
+      "ending": {
+        "id": "t3_b_end",
+        "valence": "positive",
+        "kind": "completion",
+        "title": "{T3B_END}"
+      }
+    },
+    {
+      "id": "t3_c1",
+      "body": "<<FILL v=2 role=rising words=114 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_t3_c1_1",
+          "label": "Reach the {T3C_TOOL}.",
+          "target": "t3_c2"
+        }
+      ]
+    },
+    {
+      "id": "t3_c2",
+      "body": "<<FILL v=2 role=rising words=112 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_t3_c2_1",
+          "label": "Set both hands to the frozen wheel.",
+          "target": "t3_c3"
+        }
+      ]
+    },
+    {
+      "id": "t3_c3",
+      "body": "<<FILL v=2 role=choice words=126 function=decision>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_t3_c3_1",
+          "label": "Brace it slow and steady with {T3_MENTOR}.",
+          "target": "t3_cc1"
+        },
+        {
+          "id": "c_t3_c3_2",
+          "label": "Throw all your weight against it at once.",
+          "target": "t3_cd1"
+        }
+      ]
+    },
+    {
+      "id": "t3_cc1",
+      "body": "<<FILL v=2 role=rising words=112 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_t3_cc1_1",
+          "label": "Walk the wheel around, turn by turn.",
+          "target": "t3_cc2"
+        }
+      ]
+    },
+    {
+      "id": "t3_cc2",
+      "body": "<<FILL v=2 role=climax words=102 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_t3_cc2_1",
+          "label": "Confirm the pressure holds.",
+          "target": "t3_cc_end"
+        }
+      ]
+    },
+    {
+      "id": "t3_cc_end",
+      "body": "<<FILL v=2 role=discovery words=96 function=ending>>",
+      "is_ending": true,
+      "ending": {
+        "id": "t3_cc_end",
+        "valence": "neutral",
+        "kind": "discovery",
+        "title": "{T3C_END1}"
+      }
+    },
+    {
+      "id": "t3_cd1",
+      "body": "<<FILL v=2 role=rising words=110 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_t3_cd1_1",
+          "label": "Scramble back from the failing valve.",
+          "target": "t3_cd_end"
+        }
+      ],
+      "safety_scope": [
+        "peril"
+      ]
+    },
+    {
+      "id": "t3_cd_end",
+      "body": "<<FILL v=2 role=setback words=96 function=ending>>",
+      "is_ending": true,
+      "ending": {
+        "id": "t3_cd_end",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "{T3C_END2}"
+      }
+    },
+    {
+      "id": "t4_root",
+      "body": "<<FILL v=2 role=rising words=116 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_t4_root_1",
+          "label": "Join {T4_MENTOR} at the tube board.",
+          "target": "t4_intro"
+        }
+      ]
+    },
+    {
+      "id": "t4_intro",
+      "body": "<<FILL v=2 role=rising words=114 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_t4_intro_1",
+          "label": "Read the {T4_BOARD} with {T4_MENTOR}.",
+          "target": "t4_survey"
+        }
+      ]
+    },
+    {
+      "id": "t4_survey",
+      "body": "<<FILL v=2 role=rising words=112 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_t4_survey_1",
+          "label": "Choose a route to the jammed capsule.",
+          "target": "t4_hub"
+        }
+      ]
+    },
+    {
+      "id": "t4_hub",
+      "body": "<<FILL v=2 role=choice words=130 function=decision>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_t4_hub_1",
+          "label": "Crawl the service duct and clear the jam by hand.",
+          "target": "t4_a1"
+        },
+        {
+          "id": "c_t4_hub_2",
+          "label": "Reroute the air pressure to blow it free.",
+          "target": "t4_b1"
+        },
+        {
+          "id": "c_t4_hub_3",
+          "label": "Send a {T4C_TOOL} to knock it loose.",
+          "target": "t4_c1"
+        }
+      ]
+    },
+    {
+      "id": "t4_a1",
+      "body": "<<FILL v=2 role=rising words=114 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_t4_a1_1",
+          "label": "Crawl to the wedged capsule.",
+          "target": "t4_a2"
+        }
+      ]
+    },
+    {
+      "id": "t4_a2",
+      "body": "<<FILL v=2 role=choice words=126 function=decision>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_t4_a2_1",
+          "label": "Ease the {T4A_TOOL} and free the capsule whole.",
+          "target": "t4_aa1"
+        },
+        {
+          "id": "c_t4_a2_2",
+          "label": "Shove it through hard and fast.",
+          "target": "t4_ab1"
+        }
+      ]
+    },
+    {
+      "id": "t4_aa1",
+      "body": "<<FILL v=2 role=rising words=112 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_t4_aa1_1",
+          "label": "Cradle the freed capsule and back out.",
+          "target": "t4_aa2"
+        }
+      ],
+      "safety_scope": [
+        "peril"
+      ]
+    },
+    {
+      "id": "t4_aa2",
+      "body": "<<FILL v=2 role=climax words=102 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_t4_aa2_1",
+          "label": "Send the capsule to the station.",
+          "target": "t4_aa_end"
+        }
+      ]
+    },
+    {
+      "id": "t4_aa_end",
+      "body": "<<FILL v=2 role=completion words=96 function=ending>>",
+      "is_ending": true,
+      "ending": {
+        "id": "t4_aa_end",
+        "valence": "positive",
+        "kind": "completion",
+        "title": "{T4A_END1}"
+      }
+    },
+    {
+      "id": "t4_ab1",
+      "body": "<<FILL v=2 role=rising words=110 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_t4_ab1_1",
+          "label": "Grope after the loose token.",
+          "target": "t4_ab_end"
+        }
+      ],
+      "safety_scope": [
+        "peril"
+      ]
+    },
+    {
+      "id": "t4_ab_end",
+      "body": "<<FILL v=2 role=capture words=96 function=ending>>",
+      "is_ending": true,
+      "ending": {
+        "id": "t4_ab_end",
+        "valence": "negative",
+        "kind": "capture",
+        "title": "{T4A_END2}"
+      },
+      "safety_scope": [
+        "peril"
+      ]
+    },
+    {
+      "id": "t4_b1",
+      "body": "<<FILL v=2 role=rising words=114 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_t4_b1_1",
+          "label": "Close the branch valves one by one.",
+          "target": "t4_b2"
+        }
+      ]
+    },
+    {
+      "id": "t4_b2",
+      "body": "<<FILL v=2 role=rising words=112 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_t4_b2_1",
+          "label": "Bank the pressure behind the jam.",
+          "target": "t4_b3"
+        }
+      ]
+    },
+    {
+      "id": "t4_b3",
+      "body": "<<FILL v=2 role=rising words=112 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_t4_b3_1",
+          "label": "Track the freed capsule down the board.",
+          "target": "t4_b4"
+        }
+      ]
+    },
+    {
+      "id": "t4_b4",
+      "body": "<<FILL v=2 role=climax words=102 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_t4_b4_1",
+          "label": "Send the recovered capsule.",
+          "target": "t4_b_end"
+        }
+      ]
+    },
+    {
+      "id": "t4_b_end",
+      "body": "<<FILL v=2 role=success words=96 function=ending>>",
+      "is_ending": true,
+      "ending": {
+        "id": "t4_b_end",
+        "valence": "positive",
+        "kind": "success",
+        "title": "{T4B_END}"
+      }
+    },
+    {
+      "id": "t4_c1",
+      "body": "<<FILL v=2 role=rising words=114 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_t4_c1_1",
+          "label": "Ready the {T4C_TOOL}.",
+          "target": "t4_c2"
+        }
+      ]
+    },
+    {
+      "id": "t4_c2",
+      "body": "<<FILL v=2 role=rising words=112 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_t4_c2_1",
+          "label": "Set the chaser's force.",
+          "target": "t4_c3"
+        }
+      ]
+    },
+    {
+      "id": "t4_c3",
+      "body": "<<FILL v=2 role=choice words=126 function=decision>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_t4_c3_1",
+          "label": "Send the {T4C_TOOL} soft and true.",
+          "target": "t4_cc1"
+        },
+        {
+          "id": "c_t4_c3_2",
+          "label": "Send the {T4C_TOOL} hard, one shot to settle it.",
+          "target": "t4_cd1"
+        }
+      ]
+    },
+    {
+      "id": "t4_cc1",
+      "body": "<<FILL v=2 role=rising words=112 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_t4_cc1_1",
+          "label": "Wait on the gentle tap.",
+          "target": "t4_cc2"
+        }
+      ]
+    },
+    {
+      "id": "t4_cc2",
+      "body": "<<FILL v=2 role=climax words=102 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_t4_cc2_1",
+          "label": "Send the loosened capsule home.",
+          "target": "t4_cc_end"
+        }
+      ]
+    },
+    {
+      "id": "t4_cc_end",
+      "body": "<<FILL v=2 role=discovery words=96 function=ending>>",
+      "is_ending": true,
+      "ending": {
+        "id": "t4_cc_end",
+        "valence": "neutral",
+        "kind": "discovery",
+        "title": "{T4C_END1}"
+      }
+    },
+    {
+      "id": "t4_cd1",
+      "body": "<<FILL v=2 role=rising words=110 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_t4_cd1_1",
+          "label": "Search the board for any sign of the capsules.",
+          "target": "t4_cd_end"
+        }
+      ]
+    },
+    {
+      "id": "t4_cd_end",
+      "body": "<<FILL v=2 role=setback words=96 function=ending>>",
+      "is_ending": true,
+      "ending": {
+        "id": "t4_cd_end",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "{T4C_END2}"
+      }
+    }
+  ]
+}

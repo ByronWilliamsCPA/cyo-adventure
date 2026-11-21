@@ -1,0 +1,2087 @@
+{
+  "schema_version": "2.0",
+  "id": "sk_conservatory_wars",
+  "version": 1,
+  "title": "The Conservatory Wars",
+  "metadata": {
+    "narrative_person": "third",
+    "age_band": "13-16",
+    "reading_level": {
+      "scheme": "flesch_kincaid",
+      "target": 7.0,
+      "tolerance": 1.5
+    },
+    "tier": 1,
+    "themes": [
+      "talent and work",
+      "pressure from home",
+      "rivalry into friendship",
+      "integrity",
+      "music"
+    ],
+    "estimated_minutes": 11,
+    "ending_count": 26,
+    "content_flags": {
+      "violence": "none",
+      "scariness": "mild",
+      "peril": "mild"
+    },
+    "topology": "sorting_hat",
+    "length": "medium",
+    "narrative_style": "prose",
+    "production_eligible": true
+  },
+  "variables": [],
+  "start_node": "n_start",
+  "nodes": [
+    {
+      "id": "n_start",
+      "body": "<<FILL v=2 role=setup words=150 function=opening>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n_start_1",
+          "label": "Follow {CUSTODIAN} up to the {OPENING_EVENT}.",
+          "target": "n_recital"
+        }
+      ]
+    },
+    {
+      "id": "n_recital",
+      "body": "<<FILL v=2 role=rising words=168 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n_recital_1",
+          "label": "Join the line at the registrar's table.",
+          "target": "n_sort"
+        }
+      ]
+    },
+    {
+      "id": "n_sort",
+      "body": "<<FILL v=2 role=choice words=178 function=decision>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n_sort_1",
+          "label": "Sign for {ROUTE_A_STUDIO} under {TEACHER_A}.",
+          "target": "st01"
+        },
+        {
+          "id": "c_n_sort_2",
+          "label": "Sign for {ROUTE_B_STUDIO} under {TEACHER_B}.",
+          "target": "cm01"
+        },
+        {
+          "id": "c_n_sort_3",
+          "label": "Sign for {ROUTE_C_STUDIO} under {TEACHER_C}.",
+          "target": "vo01"
+        }
+      ]
+    },
+    {
+      "id": "st01",
+      "body": "<<FILL v=2 role=choice words=158 function=decision>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_st01_1",
+          "label": "Give {ROUTE_A_DISCIPLINE} everything and shelve all else.",
+          "target": "st02"
+        },
+        {
+          "id": "c_st01_2",
+          "label": "Work {ROUTE_A_DISCIPLINE} but keep the margin tunes alive.",
+          "target": "st38"
+        }
+      ]
+    },
+    {
+      "id": "st02",
+      "body": "<<FILL v=2 role=rising words=136 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_st02_1",
+          "label": "Keep at it until Thursday.",
+          "target": "st03"
+        }
+      ]
+    },
+    {
+      "id": "st03",
+      "body": "<<FILL v=2 role=choice words=152 function=decision>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_st03_1",
+          "label": "Take {SENIOR_PEER}'s help and learn the trick.",
+          "target": "st04"
+        },
+        {
+          "id": "c_st03_2",
+          "label": "Thank her, and prove the bar alone.",
+          "target": "st25"
+        }
+      ]
+    },
+    {
+      "id": "st04",
+      "body": "<<FILL v=2 role=rising words=138 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_st04_1",
+          "label": "Prepare for {ROUTE_A_CHALLENGE}.",
+          "target": "st05"
+        }
+      ]
+    },
+    {
+      "id": "st05",
+      "body": "<<FILL v=2 role=rising words=140 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_st05_1",
+          "label": "Play the blind hearing.",
+          "target": "st06"
+        }
+      ]
+    },
+    {
+      "id": "st06",
+      "body": "<<FILL v=2 role=rising words=134 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_st06_1",
+          "label": "Walk into Monday.",
+          "target": "st07"
+        }
+      ]
+    },
+    {
+      "id": "st07",
+      "body": "<<FILL v=2 role=rising words=156 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_st07_1",
+          "label": "Face the section on its worst day.",
+          "target": "st08"
+        }
+      ]
+    },
+    {
+      "id": "st08",
+      "body": "<<FILL v=2 role=choice words=150 function=decision>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_st08_1",
+          "label": "Speak for {SENIOR_PEER}, straight to {TEACHER_A}.",
+          "target": "st09"
+        },
+        {
+          "id": "c_st08_2",
+          "label": "Say less, and re-check the facts yourself.",
+          "target": "st13"
+        }
+      ]
+    },
+    {
+      "id": "st09",
+      "body": "<<FILL v=2 role=rising words=138 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_st09_1",
+          "label": "Stand with the section at assembly.",
+          "target": "st10"
+        }
+      ]
+    },
+    {
+      "id": "st10",
+      "body": "<<FILL v=2 role=rising words=140 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_st10_1",
+          "label": "Welcome {SENIOR_PEER} back.",
+          "target": "st11"
+        }
+      ]
+    },
+    {
+      "id": "st11",
+      "body": "<<FILL v=2 role=rising words=144 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_st11_1",
+          "label": "Give December to the {COMBINED_PIECE}.",
+          "target": "st12"
+        }
+      ]
+    },
+    {
+      "id": "st12",
+      "body": "<<FILL v=2 role=success words=132 function=ending>>",
+      "is_ending": true,
+      "ending": {
+        "id": "st12",
+        "valence": "positive",
+        "kind": "success",
+        "title": "Two Names on One Desk"
+      }
+    },
+    {
+      "id": "st13",
+      "body": "<<FILL v=2 role=rising words=142 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_st13_1",
+          "label": "Decide what to do with what you found.",
+          "target": "st14"
+        }
+      ]
+    },
+    {
+      "id": "st14",
+      "body": "<<FILL v=2 role=choice words=150 function=decision>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_st14_1",
+          "label": "Bring it all to {TEACHER_A}.",
+          "target": "st15"
+        },
+        {
+          "id": "c_st14_2",
+          "label": "Climb to the {HIDING_PLACE} tonight.",
+          "target": "st18"
+        }
+      ]
+    },
+    {
+      "id": "st15",
+      "body": "<<FILL v=2 role=rising words=140 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_st15_1",
+          "label": "Watch the search turn kind.",
+          "target": "st16"
+        }
+      ]
+    },
+    {
+      "id": "st16",
+      "body": "<<FILL v=2 role=rising words=144 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_st16_1",
+          "label": "Carry the term to its last Friday.",
+          "target": "st17"
+        }
+      ]
+    },
+    {
+      "id": "st17",
+      "body": "<<FILL v=2 role=success words=130 function=ending>>",
+      "is_ending": true,
+      "ending": {
+        "id": "st17",
+        "valence": "positive",
+        "kind": "success",
+        "title": "The True Bar"
+      }
+    },
+    {
+      "id": "st18",
+      "body": "<<FILL v=2 role=rising words=146 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_st18_1",
+          "label": "Choose what happens next.",
+          "target": "st19"
+        }
+      ],
+      "safety_scope": [
+        "sad_moment"
+      ]
+    },
+    {
+      "id": "st19",
+      "body": "<<FILL v=2 role=choice words=148 function=decision>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_st19_1",
+          "label": "Stay, and walk him to the truth.",
+          "target": "st20"
+        },
+        {
+          "id": "c_st19_2",
+          "label": "Go to {PROVOST} tonight.",
+          "target": "st23"
+        }
+      ]
+    },
+    {
+      "id": "st20",
+      "body": "<<FILL v=2 role=rising words=142 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_st20_1",
+          "label": "Let December do its work.",
+          "target": "st21"
+        }
+      ]
+    },
+    {
+      "id": "st21",
+      "body": "<<FILL v=2 role=climax words=136 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_st21_1",
+          "label": "Take your desk for the {CONCERT_EVENT}.",
+          "target": "st22"
+        }
+      ]
+    },
+    {
+      "id": "st22",
+      "body": "<<FILL v=2 role=completion words=128 function=ending>>",
+      "is_ending": true,
+      "ending": {
+        "id": "st22",
+        "valence": "positive",
+        "kind": "completion",
+        "title": "The Weight He Carried"
+      }
+    },
+    {
+      "id": "st23",
+      "body": "<<FILL v=2 role=rising words=144 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_st23_1",
+          "label": "Finish the term honestly.",
+          "target": "st24"
+        }
+      ],
+      "safety_scope": [
+        "sad_moment"
+      ]
+    },
+    {
+      "id": "st24",
+      "body": "<<FILL v=2 role=discovery words=126 function=ending>>",
+      "is_ending": true,
+      "ending": {
+        "id": "st24",
+        "valence": "neutral",
+        "kind": "discovery",
+        "title": "A Colder Door"
+      }
+    },
+    {
+      "id": "st25",
+      "body": "<<FILL v=2 role=rising words=138 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_st25_1",
+          "label": "Decide what the ache is telling you.",
+          "target": "st26"
+        }
+      ]
+    },
+    {
+      "id": "st26",
+      "body": "<<FILL v=2 role=choice words=148 function=decision>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_st26_1",
+          "label": "Rest the wrist as told.",
+          "target": "st27"
+        },
+        {
+          "id": "c_st26_2",
+          "label": "Practice through the ache.",
+          "target": "st34"
+        }
+      ]
+    },
+    {
+      "id": "st27",
+      "body": "<<FILL v=2 role=rising words=136 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_st27_1",
+          "label": "Meet the Monday after {FROST_MARKER}.",
+          "target": "st28"
+        }
+      ]
+    },
+    {
+      "id": "st28",
+      "body": "<<FILL v=2 role=rising words=152 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_st28_1",
+          "label": "Hold steady through the accusation week.",
+          "target": "st29"
+        }
+      ]
+    },
+    {
+      "id": "st29",
+      "body": "<<FILL v=2 role=rising words=146 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_st29_1",
+          "label": "Hear the truth on Friday.",
+          "target": "st30"
+        }
+      ]
+    },
+    {
+      "id": "st30",
+      "body": "<<FILL v=2 role=rising words=140 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_st30_1",
+          "label": "Take the quartet chair.",
+          "target": "st31"
+        }
+      ]
+    },
+    {
+      "id": "st31",
+      "body": "<<FILL v=2 role=rising words=134 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_st31_1",
+          "label": "Play the final rehearsal.",
+          "target": "st32"
+        }
+      ]
+    },
+    {
+      "id": "st32",
+      "body": "<<FILL v=2 role=climax words=132 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_st32_1",
+          "label": "Walk out for the {CONCERT_EVENT}.",
+          "target": "st33"
+        }
+      ]
+    },
+    {
+      "id": "st33",
+      "body": "<<FILL v=2 role=success words=130 function=ending>>",
+      "is_ending": true,
+      "ending": {
+        "id": "st33",
+        "valence": "positive",
+        "kind": "success",
+        "title": "Late and True"
+      }
+    },
+    {
+      "id": "st34",
+      "body": "<<FILL v=2 role=rising words=142 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_st34_1",
+          "label": "Let the term reshape itself.",
+          "target": "st35"
+        }
+      ],
+      "safety_scope": [
+        "sad_moment"
+      ]
+    },
+    {
+      "id": "st35",
+      "body": "<<FILL v=2 role=rising words=140 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_st35_1",
+          "label": "Mark the parts for December.",
+          "target": "st36"
+        }
+      ]
+    },
+    {
+      "id": "st36",
+      "body": "<<FILL v=2 role=rising words=130 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_st36_1",
+          "label": "Take your seat in the audience.",
+          "target": "st37"
+        }
+      ]
+    },
+    {
+      "id": "st37",
+      "body": "<<FILL v=2 role=failure words=134 function=ending>>",
+      "is_ending": true,
+      "ending": {
+        "id": "st37",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "Pain Is Information"
+      }
+    },
+    {
+      "id": "st38",
+      "body": "<<FILL v=2 role=rising words=138 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_st38_1",
+          "label": "Stand there while {TEACHER_A} reads.",
+          "target": "st39"
+        }
+      ]
+    },
+    {
+      "id": "st39",
+      "body": "<<FILL v=2 role=rising words=140 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_st39_1",
+          "label": "Play the tune truly.",
+          "target": "st40"
+        }
+      ]
+    },
+    {
+      "id": "st40",
+      "body": "<<FILL v=2 role=rising words=144 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_st40_1",
+          "label": "Hear what {TEACHER_B} is asking.",
+          "target": "st41"
+        }
+      ]
+    },
+    {
+      "id": "st41",
+      "body": "<<FILL v=2 role=choice words=154 function=decision>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_st41_1",
+          "label": "Give the tune to the {COMBINED_PIECE}.",
+          "target": "st42"
+        },
+        {
+          "id": "c_st41_2",
+          "label": "Keep it for the spring recital.",
+          "target": "st49"
+        }
+      ]
+    },
+    {
+      "id": "st42",
+      "body": "<<FILL v=2 role=rising words=142 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_st42_1",
+          "label": "Keep working toward mid-term.",
+          "target": "st43"
+        }
+      ]
+    },
+    {
+      "id": "st43",
+      "body": "<<FILL v=2 role=rising words=148 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_st43_1",
+          "label": "Watch the accusation week unfold.",
+          "target": "st44"
+        }
+      ]
+    },
+    {
+      "id": "st44",
+      "body": "<<FILL v=2 role=rising words=138 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_st44_1",
+          "label": "Be there on Friday.",
+          "target": "st45"
+        }
+      ]
+    },
+    {
+      "id": "st45",
+      "body": "<<FILL v=2 role=rising words=146 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_st45_1",
+          "label": "Go where the repair is happening.",
+          "target": "st46"
+        }
+      ],
+      "safety_scope": [
+        "sad_moment"
+      ]
+    },
+    {
+      "id": "st46",
+      "body": "<<FILL v=2 role=rising words=136 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_st46_1",
+          "label": "Play the last rehearsal.",
+          "target": "st47"
+        }
+      ]
+    },
+    {
+      "id": "st47",
+      "body": "<<FILL v=2 role=climax words=132 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_st47_1",
+          "label": "Take your desk for the concert.",
+          "target": "st48"
+        }
+      ]
+    },
+    {
+      "id": "st48",
+      "body": "<<FILL v=2 role=completion words=130 function=ending>>",
+      "is_ending": true,
+      "ending": {
+        "id": "st48",
+        "valence": "positive",
+        "kind": "completion",
+        "title": "The Margin Tune, Voiced"
+      }
+    },
+    {
+      "id": "st49",
+      "body": "<<FILL v=2 role=rising words=134 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_st49_1",
+          "label": "Carry the true bar into ensemble week.",
+          "target": "st49b"
+        }
+      ]
+    },
+    {
+      "id": "st49b",
+      "body": "<<FILL v=2 role=rising words=140 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_st49b_1",
+          "label": "Meet the frost Monday.",
+          "target": "st50"
+        }
+      ]
+    },
+    {
+      "id": "st50",
+      "body": "<<FILL v=2 role=rising words=150 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_st50_1",
+          "label": "Decide what the thread is worth.",
+          "target": "st51"
+        }
+      ]
+    },
+    {
+      "id": "st51",
+      "body": "<<FILL v=2 role=rising words=148 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_st51_1",
+          "label": "Let the kind search work.",
+          "target": "st52"
+        }
+      ]
+    },
+    {
+      "id": "st52",
+      "body": "<<FILL v=2 role=rising words=140 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_st52_1",
+          "label": "Give December to the {SHOWCASE_PIECE}.",
+          "target": "st53"
+        }
+      ]
+    },
+    {
+      "id": "st53",
+      "body": "<<FILL v=2 role=climax words=136 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_st53_1",
+          "label": "Play the {CONCERT_EVENT}.",
+          "target": "st54"
+        }
+      ]
+    },
+    {
+      "id": "st54",
+      "body": "<<FILL v=2 role=discovery words=132 function=ending>>",
+      "is_ending": true,
+      "ending": {
+        "id": "st54",
+        "valence": "positive",
+        "kind": "discovery",
+        "title": "The Hour of the Tune"
+      }
+    },
+    {
+      "id": "cm01",
+      "body": "<<FILL v=2 role=rising words=144 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_cm01_1",
+          "label": "Take the riddle back to your room.",
+          "target": "cm02"
+        }
+      ]
+    },
+    {
+      "id": "cm02",
+      "body": "<<FILL v=2 role=rising words=138 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_cm02_1",
+          "label": "Bring the drizzle to {TEACHER_B}.",
+          "target": "cm03"
+        }
+      ]
+    },
+    {
+      "id": "cm03",
+      "body": "<<FILL v=2 role=choice words=150 function=decision>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_cm03_1",
+          "label": "Ask {TEACHER_B} straight out what the riddle means.",
+          "target": "cm04"
+        },
+        {
+          "id": "c_cm03_2",
+          "label": "Sit with the riddle another week.",
+          "target": "cm30"
+        }
+      ]
+    },
+    {
+      "id": "cm04",
+      "body": "<<FILL v=2 role=rising words=142 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_cm04_1",
+          "label": "Report to the workshop as copyist.",
+          "target": "cm05"
+        }
+      ]
+    },
+    {
+      "id": "cm05",
+      "body": "<<FILL v=2 role=rising words=140 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_cm05_1",
+          "label": "Keep copying toward mid-term.",
+          "target": "cm06"
+        }
+      ]
+    },
+    {
+      "id": "cm06",
+      "body": "<<FILL v=2 role=rising words=136 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_cm06_1",
+          "label": "Come in on the frost Monday.",
+          "target": "cm07"
+        }
+      ]
+    },
+    {
+      "id": "cm07",
+      "body": "<<FILL v=2 role=rising words=154 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_cm07_1",
+          "label": "Sit with the studio in the wreckage.",
+          "target": "cm08"
+        }
+      ]
+    },
+    {
+      "id": "cm08",
+      "body": "<<FILL v=2 role=choice words=150 function=decision>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_cm08_1",
+          "label": "Answer the riddle with facts.",
+          "target": "cm09"
+        },
+        {
+          "id": "c_cm08_2",
+          "label": "Answer it with charity first.",
+          "target": "cm22"
+        }
+      ]
+    },
+    {
+      "id": "cm09",
+      "body": "<<FILL v=2 role=rising words=146 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_cm09_1",
+          "label": "Follow the key.",
+          "target": "cm10"
+        }
+      ]
+    },
+    {
+      "id": "cm10",
+      "body": "<<FILL v=2 role=rising words=138 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_cm10_1",
+          "label": "Stand at {TEACHER_B}'s three doors.",
+          "target": "cm11"
+        }
+      ]
+    },
+    {
+      "id": "cm11",
+      "body": "<<FILL v=2 role=choice words=162 function=decision>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_cm11_1",
+          "label": "Go to {CULPRIT} alone.",
+          "target": "cm12"
+        },
+        {
+          "id": "c_cm11_2",
+          "label": "Bring {TEACHER_B} with you.",
+          "target": "cm15"
+        },
+        {
+          "id": "c_cm11_3",
+          "label": "Put it before {PROVOST}.",
+          "target": "cm19"
+        }
+      ]
+    },
+    {
+      "id": "cm12",
+      "body": "<<FILL v=2 role=rising words=150 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_cm12_1",
+          "label": "Hear him to the end.",
+          "target": "cm13"
+        }
+      ],
+      "safety_scope": [
+        "sad_moment"
+      ]
+    },
+    {
+      "id": "cm13",
+      "body": "<<FILL v=2 role=rising words=142 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_cm13_1",
+          "label": "Give December to the middle movement.",
+          "target": "cm14"
+        }
+      ]
+    },
+    {
+      "id": "cm14",
+      "body": "<<FILL v=2 role=completion words=134 function=ending>>",
+      "is_ending": true,
+      "ending": {
+        "id": "cm14",
+        "valence": "positive",
+        "kind": "completion",
+        "title": "Four Bars of Weather"
+      }
+    },
+    {
+      "id": "cm15",
+      "body": "<<FILL v=2 role=rising words=146 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_cm15_1",
+          "label": "Stand by while the truth walks.",
+          "target": "cm16"
+        }
+      ]
+    },
+    {
+      "id": "cm16",
+      "body": "<<FILL v=2 role=rising words=142 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_cm16_1",
+          "label": "Come to the last week of term.",
+          "target": "cm17"
+        }
+      ]
+    },
+    {
+      "id": "cm17",
+      "body": "<<FILL v=2 role=climax words=132 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_cm17_1",
+          "label": "Take your seat for the concert.",
+          "target": "cm18"
+        }
+      ]
+    },
+    {
+      "id": "cm18",
+      "body": "<<FILL v=2 role=success words=130 function=ending>>",
+      "is_ending": true,
+      "ending": {
+        "id": "cm18",
+        "valence": "positive",
+        "kind": "success",
+        "title": "The Door He Opened"
+      }
+    },
+    {
+      "id": "cm19",
+      "body": "<<FILL v=2 role=rising words=148 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_cm19_1",
+          "label": "See the hearing through.",
+          "target": "cm20"
+        }
+      ],
+      "safety_scope": [
+        "sad_moment"
+      ]
+    },
+    {
+      "id": "cm20",
+      "body": "<<FILL v=2 role=rising words=140 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_cm20_1",
+          "label": "Finish the term with open eyes.",
+          "target": "cm21"
+        }
+      ]
+    },
+    {
+      "id": "cm21",
+      "body": "<<FILL v=2 role=discovery words=134 function=ending>>",
+      "is_ending": true,
+      "ending": {
+        "id": "cm21",
+        "valence": "neutral",
+        "kind": "discovery",
+        "title": "Procedure Before Mercy"
+      }
+    },
+    {
+      "id": "cm22",
+      "body": "<<FILL v=2 role=rising words=140 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_cm22_1",
+          "label": "Run the copy night.",
+          "target": "cm23"
+        }
+      ]
+    },
+    {
+      "id": "cm23",
+      "body": "<<FILL v=2 role=rising words=144 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_cm23_1",
+          "label": "Deliver the scores and wait.",
+          "target": "cm24"
+        }
+      ]
+    },
+    {
+      "id": "cm24",
+      "body": "<<FILL v=2 role=rising words=146 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_cm24_1",
+          "label": "Sit in the studio circle after.",
+          "target": "cm25"
+        }
+      ],
+      "safety_scope": [
+        "sad_moment"
+      ]
+    },
+    {
+      "id": "cm25",
+      "body": "<<FILL v=2 role=choice words=152 function=decision>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_cm25_1",
+          "label": "Speak to what he did.",
+          "target": "cm26"
+        },
+        {
+          "id": "c_cm25_2",
+          "label": "Speak to why he did it.",
+          "target": "cm28"
+        }
+      ]
+    },
+    {
+      "id": "cm26",
+      "body": "<<FILL v=2 role=rising words=142 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_cm26_1",
+          "label": "Let the term mend toward December.",
+          "target": "cm27"
+        }
+      ]
+    },
+    {
+      "id": "cm27",
+      "body": "<<FILL v=2 role=success words=132 function=ending>>",
+      "is_ending": true,
+      "ending": {
+        "id": "cm27",
+        "valence": "positive",
+        "kind": "success",
+        "title": "Say the True Thing First"
+      }
+    },
+    {
+      "id": "cm28",
+      "body": "<<FILL v=2 role=rising words=144 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_cm28_1",
+          "label": "Carry both halves to December.",
+          "target": "cm29"
+        }
+      ]
+    },
+    {
+      "id": "cm29",
+      "body": "<<FILL v=2 role=discovery words=130 function=ending>>",
+      "is_ending": true,
+      "ending": {
+        "id": "cm29",
+        "valence": "positive",
+        "kind": "discovery",
+        "title": "Both Halves of Kindness"
+      }
+    },
+    {
+      "id": "cm30",
+      "body": "<<FILL v=2 role=rising words=136 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_cm30_1",
+          "label": "Bring {ROUTE_B_TASK} back grown.",
+          "target": "cm31"
+        }
+      ]
+    },
+    {
+      "id": "cm31",
+      "body": "<<FILL v=2 role=rising words=142 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_cm31_1",
+          "label": "Join the workshop.",
+          "target": "cm32"
+        }
+      ]
+    },
+    {
+      "id": "cm32",
+      "body": "<<FILL v=2 role=rising words=140 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_cm32_1",
+          "label": "Come in on the frost Monday.",
+          "target": "cm33"
+        }
+      ]
+    },
+    {
+      "id": "cm33",
+      "body": "<<FILL v=2 role=rising words=150 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_cm33_1",
+          "label": "Hold the studio together that week.",
+          "target": "cm34"
+        }
+      ]
+    },
+    {
+      "id": "cm34",
+      "body": "<<FILL v=2 role=rising words=146 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_cm34_1",
+          "label": "Take the riddle seriously.",
+          "target": "cm35"
+        }
+      ]
+    },
+    {
+      "id": "cm35",
+      "body": "<<FILL v=2 role=choice words=148 function=decision>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_cm35_1",
+          "label": "Search where music sleeps.",
+          "target": "cm36"
+        },
+        {
+          "id": "c_cm35_2",
+          "label": "Let the adults carry it, and write.",
+          "target": "cm41"
+        }
+      ]
+    },
+    {
+      "id": "cm36",
+      "body": "<<FILL v=2 role=rising words=144 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_cm36_1",
+          "label": "Carry it all to {TEACHER_B}.",
+          "target": "cm37"
+        }
+      ]
+    },
+    {
+      "id": "cm37",
+      "body": "<<FILL v=2 role=rising words=142 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_cm37_1",
+          "label": "Watch the bridge get written.",
+          "target": "cm38"
+        }
+      ]
+    },
+    {
+      "id": "cm38",
+      "body": "<<FILL v=2 role=rising words=138 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_cm38_1",
+          "label": "Come to concert day.",
+          "target": "cm39"
+        }
+      ]
+    },
+    {
+      "id": "cm39",
+      "body": "<<FILL v=2 role=climax words=134 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_cm39_1",
+          "label": "Hear the {COMBINED_PIECE} whole.",
+          "target": "cm40"
+        }
+      ]
+    },
+    {
+      "id": "cm40",
+      "body": "<<FILL v=2 role=success words=130 function=ending>>",
+      "is_ending": true,
+      "ending": {
+        "id": "cm40",
+        "valence": "positive",
+        "kind": "success",
+        "title": "Where Music Sleeps"
+      }
+    },
+    {
+      "id": "cm41",
+      "body": "<<FILL v=2 role=rising words=146 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_cm41_1",
+          "label": "Meet the aftermath.",
+          "target": "cm42"
+        }
+      ]
+    },
+    {
+      "id": "cm42",
+      "body": "<<FILL v=2 role=rising words=144 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_cm42_1",
+          "label": "Face the commission question.",
+          "target": "cm43"
+        }
+      ]
+    },
+    {
+      "id": "cm43",
+      "body": "<<FILL v=2 role=choice words=150 function=decision>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_cm43_1",
+          "label": "Accept the nomination.",
+          "target": "cm44"
+        },
+        {
+          "id": "c_cm43_2",
+          "label": "Ask that it go unawarded this term.",
+          "target": "cm47"
+        }
+      ]
+    },
+    {
+      "id": "cm44",
+      "body": "<<FILL v=2 role=rising words=140 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_cm44_1",
+          "label": "Rehearse it into the movement.",
+          "target": "cm45"
+        }
+      ]
+    },
+    {
+      "id": "cm45",
+      "body": "<<FILL v=2 role=climax words=132 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_cm45_1",
+          "label": "Take your seat for the concert.",
+          "target": "cm46"
+        }
+      ]
+    },
+    {
+      "id": "cm46",
+      "body": "<<FILL v=2 role=success words=130 function=ending>>",
+      "is_ending": true,
+      "ending": {
+        "id": "cm46",
+        "valence": "positive",
+        "kind": "success",
+        "title": "A Shared Credit"
+      }
+    },
+    {
+      "id": "cm47",
+      "body": "<<FILL v=2 role=rising words=142 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_cm47_1",
+          "label": "Finish the movement with the studio.",
+          "target": "cm48"
+        }
+      ]
+    },
+    {
+      "id": "cm48",
+      "body": "<<FILL v=2 role=climax words=134 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_cm48_1",
+          "label": "Hear it played that way.",
+          "target": "cm49"
+        }
+      ]
+    },
+    {
+      "id": "cm49",
+      "body": "<<FILL v=2 role=completion words=130 function=ending>>",
+      "is_ending": true,
+      "ending": {
+        "id": "cm49",
+        "valence": "positive",
+        "kind": "completion",
+        "title": "The Studio's Name"
+      }
+    },
+    {
+      "id": "vo01",
+      "body": "<<FILL v=2 role=rising words=140 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_vo01_1",
+          "label": "Learn the {CHORAL_PIECE} from the inside.",
+          "target": "vo02"
+        }
+      ]
+    },
+    {
+      "id": "vo02",
+      "body": "<<FILL v=2 role=rising words=144 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_vo02_1",
+          "label": "Settle into sectionals.",
+          "target": "vo03"
+        }
+      ]
+    },
+    {
+      "id": "vo03",
+      "body": "<<FILL v=2 role=choice words=148 function=decision>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_vo03_1",
+          "label": "Audition for {ROUTE_C_TASK}.",
+          "target": "vo04"
+        },
+        {
+          "id": "c_vo03_2",
+          "label": "Anchor {ROUTE_C_ANCHOR}.",
+          "target": "vo34"
+        }
+      ]
+    },
+    {
+      "id": "vo04",
+      "body": "<<FILL v=2 role=rising words=136 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_vo04_1",
+          "label": "Sing into the cold weeks.",
+          "target": "vo05"
+        }
+      ]
+    },
+    {
+      "id": "vo05",
+      "body": "<<FILL v=2 role=rising words=138 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_vo05_1",
+          "label": "Come in on Monday.",
+          "target": "vo06"
+        }
+      ]
+    },
+    {
+      "id": "vo06",
+      "body": "<<FILL v=2 role=rising words=152 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_vo06_1",
+          "label": "Gather with the choir at noon.",
+          "target": "vo07"
+        }
+      ]
+    },
+    {
+      "id": "vo07",
+      "body": "<<FILL v=2 role=choice words=150 function=decision>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_vo07_1",
+          "label": "Help {TEACHER_C} answer the memo with facts.",
+          "target": "vo08"
+        },
+        {
+          "id": "c_vo07_2",
+          "label": "Rally the choir to re-mark scores overnight.",
+          "target": "vo25"
+        }
+      ]
+    },
+    {
+      "id": "vo08",
+      "body": "<<FILL v=2 role=rising words=142 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_vo08_1",
+          "label": "Be in the office when the board writes back.",
+          "target": "vo09"
+        }
+      ]
+    },
+    {
+      "id": "vo09",
+      "body": "<<FILL v=2 role=choice words=152 function=decision>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_vo09_1",
+          "label": "Urge {TEACHER_C} to sign and protect the program.",
+          "target": "vo10"
+        },
+        {
+          "id": "c_vo09_2",
+          "label": "Urge her to wait for the infirmary log.",
+          "target": "vo17"
+        }
+      ]
+    },
+    {
+      "id": "vo10",
+      "body": "<<FILL v=2 role=rising words=148 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_vo10_1",
+          "label": "Own what traveled.",
+          "target": "vo11"
+        }
+      ]
+    },
+    {
+      "id": "vo11",
+      "body": "<<FILL v=2 role=choice words=146 function=decision>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_vo11_1",
+          "label": "Apologize to {SENIOR_PEER}, face to face.",
+          "target": "vo12"
+        },
+        {
+          "id": "c_vo11_2",
+          "label": "Let it fade into the term's noise.",
+          "target": "vo15"
+        }
+      ]
+    },
+    {
+      "id": "vo12",
+      "body": "<<FILL v=2 role=rising words=144 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_vo12_1",
+          "label": "Sing toward December.",
+          "target": "vo13"
+        }
+      ]
+    },
+    {
+      "id": "vo13",
+      "body": "<<FILL v=2 role=climax words=134 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_vo13_1",
+          "label": "Sing the {CONCERT_EVENT}.",
+          "target": "vo14"
+        }
+      ]
+    },
+    {
+      "id": "vo14",
+      "body": "<<FILL v=2 role=success words=130 function=ending>>",
+      "is_ending": true,
+      "ending": {
+        "id": "vo14",
+        "valence": "positive",
+        "kind": "success",
+        "title": "The Weathervane"
+      }
+    },
+    {
+      "id": "vo15",
+      "body": "<<FILL v=2 role=rising words=146 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_vo15_1",
+          "label": "Sing the concert with the letter sent.",
+          "target": "vo16"
+        }
+      ],
+      "safety_scope": [
+        "sad_moment"
+      ]
+    },
+    {
+      "id": "vo16",
+      "body": "<<FILL v=2 role=discovery words=132 function=ending>>",
+      "is_ending": true,
+      "ending": {
+        "id": "vo16",
+        "valence": "neutral",
+        "kind": "discovery",
+        "title": "Letters Sent Late"
+      }
+    },
+    {
+      "id": "vo17",
+      "body": "<<FILL v=2 role=rising words=148 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_vo17_1",
+          "label": "Watch the politics turn.",
+          "target": "vo18"
+        }
+      ]
+    },
+    {
+      "id": "vo18",
+      "body": "<<FILL v=2 role=rising words=144 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_vo18_1",
+          "label": "Plan the argument with {TEACHER_C}.",
+          "target": "vo19"
+        }
+      ]
+    },
+    {
+      "id": "vo19",
+      "body": "<<FILL v=2 role=choice words=152 function=decision>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_vo19_1",
+          "label": "Back the lantern verse.",
+          "target": "vo20"
+        },
+        {
+          "id": "c_vo19_2",
+          "label": "Back the flawless program.",
+          "target": "vo23"
+        }
+      ]
+    },
+    {
+      "id": "vo20",
+      "body": "<<FILL v=2 role=rising words=140 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_vo20_1",
+          "label": "Come to concert night.",
+          "target": "vo21"
+        }
+      ]
+    },
+    {
+      "id": "vo21",
+      "body": "<<FILL v=2 role=climax words=138 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_vo21_1",
+          "label": "Hold the verse to the end.",
+          "target": "vo22"
+        }
+      ]
+    },
+    {
+      "id": "vo22",
+      "body": "<<FILL v=2 role=success words=132 function=ending>>",
+      "is_ending": true,
+      "ending": {
+        "id": "vo22",
+        "valence": "positive",
+        "kind": "success",
+        "title": "The Lantern Verse"
+      }
+    },
+    {
+      "id": "vo23",
+      "body": "<<FILL v=2 role=rising words=140 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_vo23_1",
+          "label": "Finish in the dark, steady.",
+          "target": "vo24"
+        }
+      ]
+    },
+    {
+      "id": "vo24",
+      "body": "<<FILL v=2 role=completion words=130 function=ending>>",
+      "is_ending": true,
+      "ending": {
+        "id": "vo24",
+        "valence": "positive",
+        "kind": "completion",
+        "title": "Steady in the Dark"
+      }
+    },
+    {
+      "id": "vo25",
+      "body": "<<FILL v=2 role=rising words=146 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_vo25_1",
+          "label": "Work beside him till the urn runs dry.",
+          "target": "vo26"
+        }
+      ]
+    },
+    {
+      "id": "vo26",
+      "body": "<<FILL v=2 role=choice words=148 function=decision>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_vo26_1",
+          "label": "Ask him, kindly, how he knows the markings.",
+          "target": "vo27"
+        },
+        {
+          "id": "c_vo26_2",
+          "label": "Say nothing and finish the scores.",
+          "target": "vo31"
+        }
+      ]
+    },
+    {
+      "id": "vo27",
+      "body": "<<FILL v=2 role=rising words=146 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_vo27_1",
+          "label": "Hold the door open through the week.",
+          "target": "vo28"
+        }
+      ],
+      "safety_scope": [
+        "sad_moment"
+      ]
+    },
+    {
+      "id": "vo28",
+      "body": "<<FILL v=2 role=rising words=144 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_vo28_1",
+          "label": "Bring the scores home to December.",
+          "target": "vo29"
+        }
+      ]
+    },
+    {
+      "id": "vo29",
+      "body": "<<FILL v=2 role=climax words=136 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_vo29_1",
+          "label": "Sing the {CONCERT_EVENT}.",
+          "target": "vo30"
+        }
+      ]
+    },
+    {
+      "id": "vo30",
+      "body": "<<FILL v=2 role=success words=130 function=ending>>",
+      "is_ending": true,
+      "ending": {
+        "id": "vo30",
+        "valence": "positive",
+        "kind": "success",
+        "title": "The Second Set of Scores"
+      }
+    },
+    {
+      "id": "vo31",
+      "body": "<<FILL v=2 role=rising words=146 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_vo31_1",
+          "label": "Carry the arithmetic to {TEACHER_C}.",
+          "target": "vo32"
+        }
+      ],
+      "safety_scope": [
+        "sad_moment"
+      ]
+    },
+    {
+      "id": "vo32",
+      "body": "<<FILL v=2 role=rising words=138 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_vo32_1",
+          "label": "Sing the concert with clear eyes.",
+          "target": "vo33"
+        }
+      ]
+    },
+    {
+      "id": "vo33",
+      "body": "<<FILL v=2 role=discovery words=130 function=ending>>",
+      "is_ending": true,
+      "ending": {
+        "id": "vo33",
+        "valence": "neutral",
+        "kind": "discovery",
+        "title": "The Unasked Question"
+      }
+    },
+    {
+      "id": "vo34",
+      "body": "<<FILL v=2 role=rising words=136 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_vo34_1",
+          "label": "Sing into the schedule fight.",
+          "target": "vo35"
+        }
+      ]
+    },
+    {
+      "id": "vo35",
+      "body": "<<FILL v=2 role=rising words=142 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_vo35_1",
+          "label": "Come in on Monday.",
+          "target": "vo36"
+        }
+      ]
+    },
+    {
+      "id": "vo36",
+      "body": "<<FILL v=2 role=rising words=150 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_vo36_1",
+          "label": "Meet with the choir that evening.",
+          "target": "vo37"
+        }
+      ]
+    },
+    {
+      "id": "vo37",
+      "body": "<<FILL v=2 role=choice words=152 function=decision>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_vo37_1",
+          "label": "Back {HEAD_CHORISTER}'s plan.",
+          "target": "vo38"
+        },
+        {
+          "id": "c_vo37_2",
+          "label": "Back {TEACHER_C}'s patience.",
+          "target": "vo46"
+        }
+      ]
+    },
+    {
+      "id": "vo38",
+      "body": "<<FILL v=2 role=rising words=142 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_vo38_1",
+          "label": "Ride the ripples.",
+          "target": "vo39"
+        }
+      ]
+    },
+    {
+      "id": "vo39",
+      "body": "<<FILL v=2 role=rising words=148 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_vo39_1",
+          "label": "Weigh the compromise with the choir.",
+          "target": "vo40"
+        }
+      ]
+    },
+    {
+      "id": "vo40",
+      "body": "<<FILL v=2 role=choice words=150 function=decision>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_vo40_1",
+          "label": "Pour everything into the {COMBINED_PIECE}.",
+          "target": "vo41"
+        },
+        {
+          "id": "c_vo40_2",
+          "label": "Keep fighting the schedule fight.",
+          "target": "vo44"
+        }
+      ]
+    },
+    {
+      "id": "vo41",
+      "body": "<<FILL v=2 role=rising words=140 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_vo41_1",
+          "label": "Sing the final rehearsal.",
+          "target": "vo42"
+        }
+      ]
+    },
+    {
+      "id": "vo42",
+      "body": "<<FILL v=2 role=climax words=134 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_vo42_1",
+          "label": "Sing the {CONCERT_EVENT}.",
+          "target": "vo43"
+        }
+      ]
+    },
+    {
+      "id": "vo43",
+      "body": "<<FILL v=2 role=success words=130 function=ending>>",
+      "is_ending": true,
+      "ending": {
+        "id": "vo43",
+        "valence": "positive",
+        "kind": "success",
+        "title": "The Join"
+      }
+    },
+    {
+      "id": "vo44",
+      "body": "<<FILL v=2 role=rising words=144 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_vo44_1",
+          "label": "Sing the concert you rehearsed.",
+          "target": "vo45"
+        }
+      ]
+    },
+    {
+      "id": "vo45",
+      "body": "<<FILL v=2 role=failure words=136 function=ending>>",
+      "is_ending": true,
+      "ending": {
+        "id": "vo45",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "The Wrong War"
+      }
+    },
+    {
+      "id": "vo46",
+      "body": "<<FILL v=2 role=rising words=142 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_vo46_1",
+          "label": "Let the term turn under you.",
+          "target": "vo47"
+        }
+      ]
+    },
+    {
+      "id": "vo47",
+      "body": "<<FILL v=2 role=rising words=152 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_vo47_1",
+          "label": "Hear {TEACHER_C}'s offer.",
+          "target": "vo48"
+        }
+      ]
+    },
+    {
+      "id": "vo48",
+      "body": "<<FILL v=2 role=choice words=150 function=decision>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_vo48_1",
+          "label": "Take the solo verse.",
+          "target": "vo49"
+        },
+        {
+          "id": "c_vo48_2",
+          "label": "Ask to sing it as a duet with {HEAD_CHORISTER}.",
+          "target": "vo52"
+        }
+      ]
+    },
+    {
+      "id": "vo49",
+      "body": "<<FILL v=2 role=rising words=138 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_vo49_1",
+          "label": "Walk out under the lanterns.",
+          "target": "vo50"
+        }
+      ]
+    },
+    {
+      "id": "vo50",
+      "body": "<<FILL v=2 role=climax words=134 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_vo50_1",
+          "label": "Finish the verse.",
+          "target": "vo51"
+        }
+      ]
+    },
+    {
+      "id": "vo51",
+      "body": "<<FILL v=2 role=success words=130 function=ending>>",
+      "is_ending": true,
+      "ending": {
+        "id": "vo51",
+        "valence": "positive",
+        "kind": "success",
+        "title": "The {SIGNATURE_TUNE}, Carried"
+      }
+    },
+    {
+      "id": "vo52",
+      "body": "<<FILL v=2 role=rising words=138 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_vo52_1",
+          "label": "Sing it together.",
+          "target": "vo53"
+        }
+      ]
+    },
+    {
+      "id": "vo53",
+      "body": "<<FILL v=2 role=completion words=132 function=ending>>",
+      "is_ending": true,
+      "ending": {
+        "id": "vo53",
+        "valence": "positive",
+        "kind": "completion",
+        "title": "Two Voices, One {SIGNATURE_TUNE}"
+      }
+    }
+  ]
+}

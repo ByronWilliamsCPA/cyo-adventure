@@ -1,0 +1,2117 @@
+{
+  "schema_version": "2.0",
+  "id": "sk_undertow_season",
+  "version": 1,
+  "title": "The Undertow Season",
+  "metadata": {
+    "narrative_person": "third",
+    "age_band": "13-16",
+    "reading_level": {
+      "scheme": "flesch_kincaid",
+      "target": 7.0,
+      "tolerance": 1.5
+    },
+    "tier": 2,
+    "themes": [
+      "truth",
+      "community",
+      "grief and repair",
+      "the sea"
+    ],
+    "estimated_minutes": 11,
+    "ending_count": 28,
+    "content_flags": {
+      "violence": "none",
+      "scariness": "mild",
+      "peril": "mild"
+    },
+    "topology": "open_map",
+    "length": "medium",
+    "narrative_style": "prose",
+    "production_eligible": true
+  },
+  "variables": [
+    {
+      "name": "trust",
+      "type": "int",
+      "initial": 0,
+      "min": 0,
+      "max": 2,
+      "description": "How far Graywater's quiet circle has opened to Cass: 0 stranger, 1 vouched-for, 2 trusted with the season's weight. It rises once per completed kindness (a spoke seen through with care) and never falls. The full public truth at the remembrance needs 2."
+    },
+    {
+      "name": "duty",
+      "type": "bool",
+      "initial": true,
+      "description": "Whether Cass has kept every posted lifeguard shift. Trading one away (only ever a posted shift, never an active watch) buys archive time and honestly costs standing; it never resets within the season."
+    }
+  ],
+  "start_node": "n_start",
+  "nodes": [
+    {
+      "id": "n_start",
+      "body": "<<FILL v=2 role=setup words=160 function=opening>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n_start_1",
+          "label": "Sign the roster and follow Dane out to the chair line.",
+          "target": "n_chair"
+        }
+      ]
+    },
+    {
+      "id": "n_chair",
+      "body": "<<FILL v=2 role=setup words=150 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n_chair_1",
+          "label": "Watch the beach, and watch him watching the pier.",
+          "target": "n_spark"
+        }
+      ]
+    },
+    {
+      "id": "n_spark",
+      "body": "<<FILL v=2 role=setup words=150 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n_spark_1",
+          "label": "Let the season begin, and keep your eyes open.",
+          "target": "n_hub"
+        }
+      ]
+    },
+    {
+      "id": "n_hub",
+      "body": "<<FILL v=2 role=choice words=145 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n_hub_1",
+          "label": "Walk the old pier at dusk, where the fisherman always is.",
+          "target": "pr_pier"
+        },
+        {
+          "id": "c_n_hub_2",
+          "label": "Catch the tide-chart shop before Ida flips her sign.",
+          "target": "td_shop"
+        },
+        {
+          "id": "c_n_hub_3",
+          "label": "Take the bluff path up to the radio cottage and its wires.",
+          "target": "rd_cottage"
+        },
+        {
+          "id": "c_n_hub_4",
+          "label": "Spend a free morning at the record office, where the old Gazette sleeps.",
+          "target": "mg_office"
+        },
+        {
+          "id": "c_n_hub_5",
+          "label": "Stay after close and help Dane shut the beach down.",
+          "target": "dn_close"
+        },
+        {
+          "id": "c_n_hub_6",
+          "label": "Duck into the guard room and catch your breath.",
+          "target": "n_break"
+        },
+        {
+          "id": "c_n_hub_7",
+          "label": "Let the posted weeks run out toward the season's end.",
+          "target": "fin_eve"
+        }
+      ]
+    },
+    {
+      "id": "n_break",
+      "body": "<<FILL v=2 role=choice words=132 function=decision>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n_break_1",
+          "label": "Rinse the mug and get back out into the evening.",
+          "target": "n_hub"
+        },
+        {
+          "id": "c_n_break_2",
+          "label": "Admit to Vega the summer has gotten heavier than the job you signed for.",
+          "target": "e_season_out"
+        }
+      ]
+    },
+    {
+      "id": "e_season_out",
+      "body": "<<FILL v=2 role=failure words=132 function=ending>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_season_out",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "The Short Season"
+      }
+    },
+    {
+      "id": "pr_pier",
+      "body": "<<FILL v=2 role=choice words=135 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pr_pier_1",
+          "label": "Carry his bait bucket up the boards unasked.",
+          "target": "pr_gear"
+        },
+        {
+          "id": "c_pr_pier_2",
+          "label": "Stand at the rail short of him and read the water.",
+          "target": "pr_rail"
+        },
+        {
+          "id": "c_pr_pier_3",
+          "label": "Study the carvings in the rail wood on the way out.",
+          "target": "pr_carve"
+        }
+      ]
+    },
+    {
+      "id": "pr_gear",
+      "body": "<<FILL v=2 role=rising words=130 function=decision>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pr_gear_1",
+          "label": "Take the second rod he nudges toward you.",
+          "target": "pr_bait"
+        },
+        {
+          "id": "c_pr_gear_2",
+          "label": "Ask about the water while your hands work.",
+          "target": "pr_rail"
+        }
+      ]
+    },
+    {
+      "id": "pr_bait",
+      "body": "<<FILL v=2 role=rising words=126 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pr_bait_1",
+          "label": "Fish beside him while the light goes.",
+          "target": "pr_lines"
+        }
+      ]
+    },
+    {
+      "id": "pr_rail",
+      "body": "<<FILL v=2 role=rising words=130 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pr_rail_1",
+          "label": "Ask him how long that seam has run there.",
+          "target": "pr_tide"
+        },
+        {
+          "id": "c_pr_rail_2",
+          "label": "Join him at the rods without pressing.",
+          "target": "pr_lines"
+        }
+      ]
+    },
+    {
+      "id": "pr_tide",
+      "body": "<<FILL v=2 role=rising words=130 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pr_tide_1",
+          "label": "Let that last line settle, and fish.",
+          "target": "pr_lines"
+        }
+      ]
+    },
+    {
+      "id": "pr_carve",
+      "body": "<<FILL v=2 role=rising words=132 function=decision>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pr_carve_1",
+          "label": "Ask him who keeps the wax fresh in T.R.",
+          "target": "pr_moor"
+        },
+        {
+          "id": "c_pr_carve_2",
+          "label": "Say nothing yet and join him at the rods.",
+          "target": "pr_lines"
+        }
+      ]
+    },
+    {
+      "id": "pr_moor",
+      "body": "<<FILL v=2 role=rising words=132 function=decision>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pr_moor_1",
+          "label": "Ask what happened to the boat.",
+          "target": "pr_ask"
+        },
+        {
+          "id": "c_pr_moor_2",
+          "label": "Take the card as given and fish beside him.",
+          "target": "pr_lines"
+        }
+      ]
+    },
+    {
+      "id": "pr_lines",
+      "body": "<<FILL v=2 role=choice words=140 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pr_lines_1",
+          "label": "Let the question rise: ask about the summer nobody names.",
+          "target": "pr_ask"
+        },
+        {
+          "id": "c_pr_lines_2",
+          "label": "Help him strike the gear as a squall line walks in.",
+          "target": "pr_storm"
+        }
+      ]
+    },
+    {
+      "id": "pr_ask",
+      "body": "<<FILL v=2 role=choice words=145 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pr_ask_1",
+          "label": "Ask him straight what happened the night the town went quiet.",
+          "target": "pr_straight",
+          "condition": {
+            ">=": [
+              {
+                "var": "trust"
+              },
+              1
+            ]
+          }
+        },
+        {
+          "id": "c_pr_ask_2",
+          "label": "Ask sideways: who keeps the wax fresh in the T.R. initials.",
+          "target": "pr_slant"
+        },
+        {
+          "id": "c_pr_ask_3",
+          "label": "Ask nothing; bait the hook he hands you.",
+          "target": "pr_fish"
+        },
+        {
+          "id": "c_pr_ask_4",
+          "label": "Repeat the story the kids tell and ask him if it is true.",
+          "target": "pr_push"
+        }
+      ]
+    },
+    {
+      "id": "pr_straight",
+      "body": "<<FILL v=2 role=rising words=170 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pr_straight_1",
+          "label": "Walk him to the pier head in the dark.",
+          "target": "pr_done"
+        }
+      ],
+      "safety_scope": [
+        "sad_moment"
+      ]
+    },
+    {
+      "id": "pr_slant",
+      "body": "<<FILL v=2 role=rising words=145 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pr_slant_1",
+          "label": "Carry the name off the pier with care.",
+          "target": "pr_done"
+        }
+      ],
+      "safety_scope": [
+        "sad_moment"
+      ]
+    },
+    {
+      "id": "pr_fish",
+      "body": "<<FILL v=2 role=rising words=130 function=decision>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pr_fish_1",
+          "label": "Call it an evening and walk back down the boards.",
+          "target": "pr_done"
+        },
+        {
+          "id": "c_pr_fish_2",
+          "label": "Let the evenings themselves become the whole answer.",
+          "target": "e_pr_quiet"
+        }
+      ]
+    },
+    {
+      "id": "pr_push",
+      "body": "<<FILL v=2 role=rising words=132 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pr_push_1",
+          "label": "Watch him pack, and understand the size of the mistake.",
+          "target": "pr_cold"
+        }
+      ],
+      "safety_scope": [
+        "conflict"
+      ]
+    },
+    {
+      "id": "pr_cold",
+      "body": "<<FILL v=2 role=choice words=132 function=decision>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pr_cold_1",
+          "label": "Apologize once, simply, and leave him the pier.",
+          "target": "n_hub"
+        },
+        {
+          "id": "c_pr_cold_2",
+          "label": "Try to explain what you actually meant by it.",
+          "target": "e_pr_shut"
+        }
+      ],
+      "safety_scope": [
+        "conflict"
+      ]
+    },
+    {
+      "id": "pr_storm",
+      "body": "<<FILL v=2 role=rising words=130 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pr_storm_1",
+          "label": "See the gear stowed and the chain re-hooked behind you.",
+          "target": "pr_done"
+        }
+      ]
+    },
+    {
+      "id": "pr_done",
+      "body": "<<FILL v=2 role=choice words=150 function=merge>>",
+      "on_enter": [
+        {
+          "op": "inc",
+          "var": "trust",
+          "value": 1,
+          "once": true
+        }
+      ],
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pr_done_1",
+          "label": "Back along the seafront to the station.",
+          "target": "n_hub"
+        },
+        {
+          "id": "c_pr_done_2",
+          "label": "The tide shop's window is still lit on Quay Street.",
+          "target": "td_shop"
+        },
+        {
+          "id": "c_pr_done_3",
+          "label": "The season's last week is posted; let it come.",
+          "target": "fin_eve"
+        },
+        {
+          "id": "c_pr_done_4",
+          "label": "Stay for the whole night tide at his shoulder.",
+          "target": "e_pr_watch"
+        }
+      ]
+    },
+    {
+      "id": "e_pr_shut",
+      "body": "<<FILL v=2 role=failure words=132 function=ending>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_pr_shut",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "The Closed Door"
+      }
+    },
+    {
+      "id": "e_pr_quiet",
+      "body": "<<FILL v=2 role=ending words=136 function=ending>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_pr_quiet",
+        "valence": "neutral",
+        "kind": "discovery",
+        "title": "The Second Rod"
+      }
+    },
+    {
+      "id": "e_pr_watch",
+      "body": "<<FILL v=2 role=ending words=135 function=ending>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_pr_watch",
+        "valence": "positive",
+        "kind": "discovery",
+        "title": "Night Tide"
+      }
+    },
+    {
+      "id": "td_shop",
+      "body": "<<FILL v=2 role=choice words=135 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_td_shop_1",
+          "label": "Carry her delivery cartons in from the step first.",
+          "target": "td_boxes"
+        },
+        {
+          "id": "c_td_shop_2",
+          "label": "Ask her to teach the tide arithmetic a guard should know.",
+          "target": "td_rips"
+        },
+        {
+          "id": "c_td_shop_3",
+          "label": "Browse the chart wall back toward the oldest years.",
+          "target": "td_charts"
+        }
+      ]
+    },
+    {
+      "id": "td_boxes",
+      "body": "<<FILL v=2 role=rising words=126 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_td_boxes_1",
+          "label": "Take the tea she pours and the stool she points at.",
+          "target": "td_kettle"
+        }
+      ]
+    },
+    {
+      "id": "td_kettle",
+      "body": "<<FILL v=2 role=rising words=130 function=decision>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_td_kettle_1",
+          "label": "Answer the question she has not asked yet.",
+          "target": "td_talk"
+        },
+        {
+          "id": "c_td_kettle_2",
+          "label": "Ask about the oldest drawers on the wall.",
+          "target": "td_charts"
+        }
+      ]
+    },
+    {
+      "id": "td_rips",
+      "body": "<<FILL v=2 role=rising words=140 function=decision>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_td_rips_1",
+          "label": "Ask what a junior guard should ask next.",
+          "target": "td_talk"
+        },
+        {
+          "id": "c_td_rips_2",
+          "label": "Follow the wall of drawers back through the years.",
+          "target": "td_charts"
+        }
+      ]
+    },
+    {
+      "id": "td_charts",
+      "body": "<<FILL v=2 role=rising words=132 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_td_charts_1",
+          "label": "Rest a hand on the worn pull and see what happens.",
+          "target": "td_drawer"
+        }
+      ]
+    },
+    {
+      "id": "td_drawer",
+      "body": "<<FILL v=2 role=rising words=132 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_td_drawer_1",
+          "label": "Answer her straight, or do not.",
+          "target": "td_talk"
+        }
+      ]
+    },
+    {
+      "id": "td_talk",
+      "body": "<<FILL v=2 role=choice words=145 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_td_talk_1",
+          "label": "Tell the truth: you want to understand the night nobody talks about.",
+          "target": "td_august"
+        },
+        {
+          "id": "c_td_talk_2",
+          "label": "Keep it professional: current tables, for the chair.",
+          "target": "td_job"
+        }
+      ]
+    },
+    {
+      "id": "td_job",
+      "body": "<<FILL v=2 role=choice words=128 function=decision>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_td_job_1",
+          "label": "Turn at the door and tell her the real reason.",
+          "target": "td_august"
+        },
+        {
+          "id": "c_td_job_2",
+          "label": "Let Saturdays at her counter become their own apprenticeship.",
+          "target": "e_td_counter"
+        }
+      ]
+    },
+    {
+      "id": "td_august",
+      "body": "<<FILL v=2 role=rising words=150 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_td_august_1",
+          "label": "Ask why this page matters so much.",
+          "target": "td_vault"
+        }
+      ],
+      "safety_scope": [
+        "sad_moment"
+      ]
+    },
+    {
+      "id": "td_vault",
+      "body": "<<FILL v=2 role=choice words=150 function=decision>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_td_vault_1",
+          "label": "Ask why she kept it all these years.",
+          "target": "td_kept"
+        },
+        {
+          "id": "c_td_vault_2",
+          "label": "Ask what the paper printed instead.",
+          "target": "td_paper"
+        },
+        {
+          "id": "c_td_vault_3",
+          "label": "Reach for your phone to photograph the sheet uninvited.",
+          "target": "e_td_pry"
+        }
+      ]
+    },
+    {
+      "id": "td_kept",
+      "body": "<<FILL v=2 role=rising words=140 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_td_kept_1",
+          "label": "Thank her the way the sheet deserves.",
+          "target": "td_done"
+        }
+      ],
+      "safety_scope": [
+        "sad_moment"
+      ]
+    },
+    {
+      "id": "td_paper",
+      "body": "<<FILL v=2 role=rising words=145 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_td_paper_1",
+          "label": "Fold the fact away carefully and take your leave.",
+          "target": "td_done"
+        }
+      ]
+    },
+    {
+      "id": "td_done",
+      "body": "<<FILL v=2 role=choice words=150 function=merge>>",
+      "on_enter": [
+        {
+          "op": "inc",
+          "var": "trust",
+          "value": 1,
+          "once": true
+        }
+      ],
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_td_done_1",
+          "label": "Back to the station through the gold streets.",
+          "target": "n_hub"
+        },
+        {
+          "id": "c_td_done_2",
+          "label": "The bluff path behind her shop climbs toward the mast light.",
+          "target": "rd_cottage"
+        },
+        {
+          "id": "c_td_done_3",
+          "label": "The season's last week is posted; let it come.",
+          "target": "fin_eve"
+        },
+        {
+          "id": "c_td_done_4",
+          "label": "Go out at dead low with her to walk the pier channel's bones.",
+          "target": "e_td_tide"
+        }
+      ]
+    },
+    {
+      "id": "e_td_pry",
+      "body": "<<FILL v=2 role=failure words=132 function=ending>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_td_pry",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "Not Yours to Take"
+      }
+    },
+    {
+      "id": "e_td_counter",
+      "body": "<<FILL v=2 role=ending words=132 function=ending>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_td_counter",
+        "valence": "neutral",
+        "kind": "discovery",
+        "title": "Saturdays on Quay Street"
+      }
+    },
+    {
+      "id": "e_td_tide",
+      "body": "<<FILL v=2 role=ending words=135 function=ending>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_td_tide",
+        "valence": "positive",
+        "kind": "discovery",
+        "title": "Dead Low"
+      }
+    },
+    {
+      "id": "rd_cottage",
+      "body": "<<FILL v=2 role=choice words=135 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_rd_cottage_1",
+          "label": "Right the sagging guy-wire on the path before knocking.",
+          "target": "rd_wire"
+        },
+        {
+          "id": "c_rd_cottage_2",
+          "label": "Wait out the six o'clock weather on the step.",
+          "target": "rd_listen"
+        },
+        {
+          "id": "c_rd_cottage_3",
+          "label": "Knock and lead with the badge and your question.",
+          "target": "rd_gruff"
+        }
+      ]
+    },
+    {
+      "id": "rd_wire",
+      "body": "<<FILL v=2 role=rising words=130 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_rd_wire_1",
+          "label": "Step into the cottage of wires.",
+          "target": "rd_mast"
+        }
+      ]
+    },
+    {
+      "id": "rd_mast",
+      "body": "<<FILL v=2 role=rising words=130 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_rd_mast_1",
+          "label": "Follow him inside at last.",
+          "target": "rd_door"
+        }
+      ]
+    },
+    {
+      "id": "rd_listen",
+      "body": "<<FILL v=2 role=rising words=132 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_rd_listen_1",
+          "label": "Come in out of the wind when he offers.",
+          "target": "rd_door"
+        }
+      ]
+    },
+    {
+      "id": "rd_gruff",
+      "body": "<<FILL v=2 role=choice words=132 function=decision>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_rd_gruff_1",
+          "label": "Take the hint: sit down on the step and listen properly.",
+          "target": "rd_listen"
+        },
+        {
+          "id": "c_rd_gruff_2",
+          "label": "Press the question again over the forecast.",
+          "target": "e_rd_off"
+        }
+      ],
+      "safety_scope": [
+        "conflict"
+      ]
+    },
+    {
+      "id": "rd_door",
+      "body": "<<FILL v=2 role=choice words=136 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_rd_door_1",
+          "label": "Ask him to teach the log discipline first.",
+          "target": "rd_teach"
+        },
+        {
+          "id": "c_rd_door_2",
+          "label": "Accept tea and the story of the wall of cards.",
+          "target": "rd_tea"
+        },
+        {
+          "id": "c_rd_door_3",
+          "label": "Ask him plainly for the year everyone circles.",
+          "target": "rd_direct",
+          "condition": {
+            ">=": [
+              {
+                "var": "trust"
+              },
+              1
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "rd_tea",
+      "body": "<<FILL v=2 role=rising words=132 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_rd_tea_1",
+          "label": "Ask about the cards until he trusts your patience.",
+          "target": "rd_cards"
+        }
+      ]
+    },
+    {
+      "id": "rd_cards",
+      "body": "<<FILL v=2 role=rising words=130 function=decision>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_rd_cards_1",
+          "label": "Ask him to teach you the discipline behind the wall.",
+          "target": "rd_teach"
+        },
+        {
+          "id": "c_rd_cards_2",
+          "label": "Let your eyes rest on the backwards spine, and let him see.",
+          "target": "rd_back"
+        }
+      ]
+    },
+    {
+      "id": "rd_teach",
+      "body": "<<FILL v=2 role=choice words=140 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_rd_teach_1",
+          "label": "Look up from the practice page to the backwards spine.",
+          "target": "rd_back"
+        },
+        {
+          "id": "c_rd_teach_2",
+          "label": "Let the log craft itself be the season's lesson.",
+          "target": "e_rd_net"
+        }
+      ]
+    },
+    {
+      "id": "rd_back",
+      "body": "<<FILL v=2 role=choice words=135 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_rd_back_1",
+          "label": "Ask nothing; let him take it down in his own time.",
+          "target": "rd_truth"
+        },
+        {
+          "id": "c_rd_back_2",
+          "label": "Offer out loud to leave it alone if it is his to keep.",
+          "target": "rd_respect"
+        }
+      ]
+    },
+    {
+      "id": "rd_respect",
+      "body": "<<FILL v=2 role=rising words=132 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_rd_respect_1",
+          "label": "Stand beside him as he finds the page.",
+          "target": "rd_truth"
+        }
+      ]
+    },
+    {
+      "id": "rd_direct",
+      "body": "<<FILL v=2 role=rising words=135 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_rd_direct_1",
+          "label": "Sit, and watch him find the page.",
+          "target": "rd_truth"
+        }
+      ]
+    },
+    {
+      "id": "rd_truth",
+      "body": "<<FILL v=2 role=rising words=170 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_rd_truth_1",
+          "label": "Close the book the way he taught you, carefully.",
+          "target": "rd_done"
+        }
+      ],
+      "safety_scope": [
+        "sad_moment"
+      ]
+    },
+    {
+      "id": "rd_done",
+      "body": "<<FILL v=2 role=choice words=150 function=decision>>",
+      "on_enter": [
+        {
+          "op": "inc",
+          "var": "trust",
+          "value": 1,
+          "once": true
+        }
+      ],
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_rd_done_1",
+          "label": "Back to the station under the first stars.",
+          "target": "n_hub"
+        },
+        {
+          "id": "c_rd_done_2",
+          "label": "The pier lights show at the north end below.",
+          "target": "pr_pier"
+        },
+        {
+          "id": "c_rd_done_3",
+          "label": "The season's last week is posted; let it come.",
+          "target": "fin_eve"
+        },
+        {
+          "id": "c_rd_done_4",
+          "label": "Stay for the night watch with the headphones on.",
+          "target": "e_rd_key"
+        }
+      ]
+    },
+    {
+      "id": "e_rd_off",
+      "body": "<<FILL v=2 role=failure words=128 function=ending>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_rd_off",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "Weather Only"
+      }
+    },
+    {
+      "id": "e_rd_net",
+      "body": "<<FILL v=2 role=ending words=136 function=ending>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_rd_net",
+        "valence": "neutral",
+        "kind": "discovery",
+        "title": "The Listening Watch"
+      }
+    },
+    {
+      "id": "e_rd_key",
+      "body": "<<FILL v=2 role=ending words=135 function=ending>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_rd_key",
+        "valence": "positive",
+        "kind": "discovery",
+        "title": "Fist on the Key"
+      }
+    },
+    {
+      "id": "mg_office",
+      "body": "<<FILL v=2 role=choice words=140 function=decision>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_mg_office_1",
+          "label": "Ask for the Gazette's August of the drowning year.",
+          "target": "mg_clerk"
+        },
+        {
+          "id": "c_mg_office_2",
+          "label": "Ask for everything on the old pier itself.",
+          "target": "mg_pier"
+        },
+        {
+          "id": "c_mg_office_3",
+          "label": "Start sideways with the harbormaster's ledgers.",
+          "target": "mg_ledger"
+        }
+      ]
+    },
+    {
+      "id": "mg_clerk",
+      "body": "<<FILL v=2 role=rising words=130 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_mg_clerk_1",
+          "label": "Follow her back through the stacks.",
+          "target": "mg_stacks"
+        }
+      ]
+    },
+    {
+      "id": "mg_stacks",
+      "body": "<<FILL v=2 role=rising words=130 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_mg_stacks_1",
+          "label": "Thread the reel under the green lamp.",
+          "target": "mg_film"
+        }
+      ]
+    },
+    {
+      "id": "mg_pier",
+      "body": "<<FILL v=2 role=rising words=130 function=decision>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_mg_pier_1",
+          "label": "Now the newspaper itself.",
+          "target": "mg_film"
+        },
+        {
+          "id": "c_mg_pier_2",
+          "label": "Cross-check the harbormaster's ledgers first.",
+          "target": "mg_ledger"
+        }
+      ]
+    },
+    {
+      "id": "mg_ledger",
+      "body": "<<FILL v=2 role=rising words=130 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_mg_ledger_1",
+          "label": "Now the newspaper's version of the same night.",
+          "target": "mg_film"
+        }
+      ]
+    },
+    {
+      "id": "mg_film",
+      "body": "<<FILL v=2 role=rising words=145 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_mg_film_1",
+          "label": "Look closer at the photograph.",
+          "target": "mg_photo"
+        }
+      ]
+    },
+    {
+      "id": "mg_photo",
+      "body": "<<FILL v=2 role=rising words=130 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_mg_photo_1",
+          "label": "Ask Amaro about the byline.",
+          "target": "mg_byline"
+        }
+      ]
+    },
+    {
+      "id": "mg_byline",
+      "body": "<<FILL v=2 role=choice words=140 function=decision>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_mg_byline_1",
+          "label": "Pull the Castellan boxes and dig properly.",
+          "target": "mg_box"
+        },
+        {
+          "id": "c_mg_byline_2",
+          "label": "Read just the follow-up issues on the reel.",
+          "target": "mg_quick"
+        },
+        {
+          "id": "c_mg_byline_3",
+          "label": "Stop here: note the reel numbers and make your shift.",
+          "target": "mg_done"
+        }
+      ]
+    },
+    {
+      "id": "mg_quick",
+      "body": "<<FILL v=2 role=rising words=130 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_mg_quick_1",
+          "label": "The boxes, then; the reel has said all it can.",
+          "target": "mg_noon"
+        }
+      ]
+    },
+    {
+      "id": "mg_box",
+      "body": "<<FILL v=2 role=rising words=145 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_mg_box_1",
+          "label": "Read it standing up, twice, and check the clock.",
+          "target": "mg_noon"
+        }
+      ]
+    },
+    {
+      "id": "mg_noon",
+      "body": "<<FILL v=2 role=choice words=150 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_mg_noon_1",
+          "label": "Trade the shift: call Vega to cover, and stay with the boxes.",
+          "target": "mg_deep",
+          "effects": [
+            {
+              "op": "set",
+              "var": "duty",
+              "value": false
+            }
+          ]
+        },
+        {
+          "id": "c_mg_noon_2",
+          "label": "Note the box numbers, sign a request slip for next time, and make your shift.",
+          "target": "mg_done"
+        },
+        {
+          "id": "c_mg_noon_3",
+          "label": "Slide the proof-sheet into your bag to show people tonight.",
+          "target": "e_mg_bell"
+        }
+      ]
+    },
+    {
+      "id": "mg_deep",
+      "body": "<<FILL v=2 role=rising words=160 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_mg_deep_1",
+          "label": "Hold the sealed letter and decide what it is owed.",
+          "target": "mg_letter"
+        }
+      ],
+      "safety_scope": [
+        "sad_moment"
+      ]
+    },
+    {
+      "id": "mg_letter",
+      "body": "<<FILL v=2 role=choice words=145 function=decision>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_mg_letter_1",
+          "label": "Leave it sealed; log it with Amaro so it is found, never taken.",
+          "target": "mg_done"
+        },
+        {
+          "id": "c_mg_letter_2",
+          "label": "Stay past closing while she locks around you, reading the paper's last October.",
+          "target": "e_mg_dark"
+        }
+      ],
+      "safety_scope": [
+        "sad_moment"
+      ]
+    },
+    {
+      "id": "mg_done",
+      "body": "<<FILL v=2 role=choice words=150 function=merge>>",
+      "on_enter": [
+        {
+          "op": "inc",
+          "var": "trust",
+          "value": 1,
+          "once": true
+        }
+      ],
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_mg_done_1",
+          "label": "Back toward the station and the afternoon.",
+          "target": "n_hub"
+        },
+        {
+          "id": "c_mg_done_2",
+          "label": "Carry what the morgue holds toward the pier at dusk.",
+          "target": "pr_pier"
+        },
+        {
+          "id": "c_mg_done_3",
+          "label": "The season's last week is posted; let it come.",
+          "target": "fin_eve"
+        },
+        {
+          "id": "c_mg_done_4",
+          "label": "Come back every free morning until the Castellan papers are formally accessioned.",
+          "target": "e_mg_return"
+        }
+      ]
+    },
+    {
+      "id": "e_mg_bell",
+      "body": "<<FILL v=2 role=failure words=130 function=ending>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_mg_bell",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "Out the Door"
+      }
+    },
+    {
+      "id": "e_mg_dark",
+      "body": "<<FILL v=2 role=ending words=135 function=ending>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_mg_dark",
+        "valence": "neutral",
+        "kind": "discovery",
+        "title": "The Last October"
+      }
+    },
+    {
+      "id": "e_mg_return",
+      "body": "<<FILL v=2 role=ending words=136 function=ending>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_mg_return",
+        "valence": "positive",
+        "kind": "discovery",
+        "title": "Accession"
+      }
+    },
+    {
+      "id": "dn_close",
+      "body": "<<FILL v=2 role=choice words=135 function=decision>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_dn_close_1",
+          "label": "Take half the closing list unasked.",
+          "target": "dn_list"
+        },
+        {
+          "id": "c_dn_close_2",
+          "label": "Ask the junior's forbidden question: why does no guard ever walk the old pier.",
+          "target": "dn_rule"
+        },
+        {
+          "id": "c_dn_close_3",
+          "label": "Write the day into the station log honestly while he watches.",
+          "target": "dn_log"
+        }
+      ]
+    },
+    {
+      "id": "dn_list",
+      "body": "<<FILL v=2 role=rising words=130 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_dn_list_1",
+          "label": "Fold the last flag with him.",
+          "target": "dn_flags"
+        }
+      ]
+    },
+    {
+      "id": "dn_flags",
+      "body": "<<FILL v=2 role=rising words=130 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_dn_flags_1",
+          "label": "Walk the beach with him while the light goes.",
+          "target": "dn_walk"
+        }
+      ]
+    },
+    {
+      "id": "dn_rule",
+      "body": "<<FILL v=2 role=rising words=130 function=decision>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_dn_rule_1",
+          "label": "Let the log cabinet ask the next question.",
+          "target": "dn_log"
+        },
+        {
+          "id": "c_dn_rule_2",
+          "label": "Leave it and walk the beach with him.",
+          "target": "dn_walk"
+        }
+      ]
+    },
+    {
+      "id": "dn_log",
+      "body": "<<FILL v=2 role=choice words=135 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_dn_log_1",
+          "label": "Ask him, not the cabinet.",
+          "target": "dn_walk"
+        },
+        {
+          "id": "c_dn_log_2",
+          "label": "Ask to read his old season book.",
+          "target": "dn_cab"
+        }
+      ]
+    },
+    {
+      "id": "dn_cab",
+      "body": "<<FILL v=2 role=rising words=140 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_dn_cab_1",
+          "label": "Close the book and go find him on the sand.",
+          "target": "dn_walk"
+        }
+      ],
+      "safety_scope": [
+        "sad_moment"
+      ]
+    },
+    {
+      "id": "dn_walk",
+      "body": "<<FILL v=2 role=choice words=145 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_dn_walk_1",
+          "label": "Tell him plainly what the summer has been teaching you around town.",
+          "target": "dn_open"
+        },
+        {
+          "id": "c_dn_walk_2",
+          "label": "Ask him straight why he never told anyone what he saw.",
+          "target": "dn_why"
+        },
+        {
+          "id": "c_dn_walk_3",
+          "label": "Match his silence step for step and let the water talk.",
+          "target": "dn_quiet"
+        },
+        {
+          "id": "c_dn_walk_4",
+          "label": "Repeat the street's version: people say a guard was on duty and froze.",
+          "target": "dn_flat"
+        }
+      ]
+    },
+    {
+      "id": "dn_open",
+      "body": "<<FILL v=2 role=rising words=170 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_dn_open_1",
+          "label": "Walk the rest of the beach with him in changed silence.",
+          "target": "dn_done"
+        }
+      ],
+      "safety_scope": [
+        "sad_moment"
+      ]
+    },
+    {
+      "id": "dn_why",
+      "body": "<<FILL v=2 role=rising words=160 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_dn_why_1",
+          "label": "Carry the answer down the beach beside him.",
+          "target": "dn_done"
+        }
+      ],
+      "safety_scope": [
+        "sad_moment"
+      ]
+    },
+    {
+      "id": "dn_quiet",
+      "body": "<<FILL v=2 role=choice words=136 function=decision>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_dn_quiet_1",
+          "label": "Let the evening end at the station steps.",
+          "target": "dn_done"
+        },
+        {
+          "id": "c_dn_quiet_2",
+          "label": "Make the dusk walk the season's standing appointment.",
+          "target": "e_dn_dusk"
+        }
+      ]
+    },
+    {
+      "id": "dn_flat",
+      "body": "<<FILL v=2 role=choice words=136 function=decision>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_dn_flat_1",
+          "label": "Withdraw it plainly and take the silence as your answer.",
+          "target": "n_hub"
+        },
+        {
+          "id": "c_dn_flat_2",
+          "label": "Stand on the street's version and ask again.",
+          "target": "e_dn_push"
+        }
+      ],
+      "safety_scope": [
+        "conflict"
+      ]
+    },
+    {
+      "id": "dn_done",
+      "body": "<<FILL v=2 role=choice words=150 function=merge>>",
+      "on_enter": [
+        {
+          "op": "inc",
+          "var": "trust",
+          "value": 1,
+          "once": true
+        }
+      ],
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_dn_done_1",
+          "label": "Goodnight, and back into the season.",
+          "target": "n_hub"
+        },
+        {
+          "id": "c_dn_done_2",
+          "label": "The season's last week is posted; let it come.",
+          "target": "fin_eve"
+        },
+        {
+          "id": "c_dn_done_3",
+          "label": "Ask him, before goodnight, who Tomas actually was.",
+          "target": "e_dn_first"
+        }
+      ]
+    },
+    {
+      "id": "e_dn_push",
+      "body": "<<FILL v=2 role=failure words=132 function=ending>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_dn_push",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "Chief and Junior"
+      }
+    },
+    {
+      "id": "e_dn_dusk",
+      "body": "<<FILL v=2 role=ending words=132 function=ending>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_dn_dusk",
+        "valence": "neutral",
+        "kind": "discovery",
+        "title": "The Dusk Round"
+      }
+    },
+    {
+      "id": "e_dn_first",
+      "body": "<<FILL v=2 role=ending words=140 function=ending>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_dn_first",
+        "valence": "positive",
+        "kind": "discovery",
+        "title": "His Name Was Tomas"
+      }
+    },
+    {
+      "id": "fin_eve",
+      "body": "<<FILL v=2 role=rising words=150 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fin_eve_1",
+          "label": "Stay at the table and hear the plan.",
+          "target": "fin_brief"
+        }
+      ]
+    },
+    {
+      "id": "fin_brief",
+      "body": "<<FILL v=2 role=choice words=150 function=decision>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fin_brief_1",
+          "label": "Take the sign and the plaque.",
+          "target": "fin_sign"
+        },
+        {
+          "id": "c_fin_brief_2",
+          "label": "Carry the word through town.",
+          "target": "fin_word"
+        },
+        {
+          "id": "c_fin_brief_3",
+          "label": "Hold the shore and close the season right.",
+          "target": "fin_shore"
+        }
+      ]
+    },
+    {
+      "id": "fin_sign",
+      "body": "<<FILL v=2 role=choice words=136 function=decision>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fin_sign_1",
+          "label": "Set the posts at the pier head with the harbor crew.",
+          "target": "fin_sign_a"
+        },
+        {
+          "id": "c_fin_sign_2",
+          "label": "Letter the plaque with Dane at the bench.",
+          "target": "fin_sign_b"
+        }
+      ]
+    },
+    {
+      "id": "fin_sign_a",
+      "body": "<<FILL v=2 role=choice words=136 function=decision>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fin_sign_a_1",
+          "label": "Bolt the last brace and get back for the evening briefing.",
+          "target": "fin_sign_j"
+        },
+        {
+          "id": "c_fin_sign_a_2",
+          "label": "Stay with the crew until the concrete cures in the dark.",
+          "target": "e_sign_posts"
+        }
+      ]
+    },
+    {
+      "id": "fin_sign_b",
+      "body": "<<FILL v=2 role=choice words=140 function=decision>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fin_sign_b_1",
+          "label": "Rack the finished plaque for Sunday and go.",
+          "target": "fin_sign_j"
+        },
+        {
+          "id": "c_fin_sign_b_2",
+          "label": "Sit with Dane until the lacquer sets, saying nothing much.",
+          "target": "e_sign_words"
+        }
+      ],
+      "safety_scope": [
+        "sad_moment"
+      ]
+    },
+    {
+      "id": "fin_sign_j",
+      "body": "<<FILL v=2 role=rising words=126 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fin_sign_j_1",
+          "label": "Report the job done.",
+          "target": "fin_sign_r"
+        }
+      ]
+    },
+    {
+      "id": "fin_sign_r",
+      "body": "<<FILL v=2 role=rising words=124 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fin_sign_r_1",
+          "label": "Sunday comes on the ebb.",
+          "target": "fin_tide"
+        }
+      ]
+    },
+    {
+      "id": "e_sign_posts",
+      "body": "<<FILL v=2 role=ending words=132 function=ending>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_sign_posts",
+        "valence": "neutral",
+        "kind": "discovery",
+        "title": "Set in Concrete"
+      }
+    },
+    {
+      "id": "e_sign_words",
+      "body": "<<FILL v=2 role=ending words=135 function=ending>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_sign_words",
+        "valence": "positive",
+        "kind": "discovery",
+        "title": "The Right Words"
+      }
+    },
+    {
+      "id": "fin_word",
+      "body": "<<FILL v=2 role=choice words=136 function=decision>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fin_word_1",
+          "label": "Make the rounds of shops and sheds till the yes is general.",
+          "target": "fin_word_a"
+        },
+        {
+          "id": "c_fin_word_2",
+          "label": "Walk out the boards and ask Pruitt himself.",
+          "target": "fin_word_b"
+        }
+      ]
+    },
+    {
+      "id": "fin_word_a",
+      "body": "<<FILL v=2 role=choice words=136 function=decision>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fin_word_a_1",
+          "label": "Enough doors; carry the count back.",
+          "target": "fin_word_j"
+        },
+        {
+          "id": "c_fin_word_a_2",
+          "label": "Keep going till every last house on the sea road is told in person.",
+          "target": "e_word_town"
+        }
+      ]
+    },
+    {
+      "id": "fin_word_b",
+      "body": "<<FILL v=2 role=choice words=145 function=decision>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fin_word_b_1",
+          "label": "Leave him with it; the asking was the errand.",
+          "target": "fin_word_j"
+        },
+        {
+          "id": "c_fin_word_b_2",
+          "label": "Stay the evening; let him decide out loud in his own time.",
+          "target": "e_word_pier"
+        }
+      ],
+      "safety_scope": [
+        "sad_moment"
+      ]
+    },
+    {
+      "id": "fin_word_j",
+      "body": "<<FILL v=2 role=rising words=124 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fin_word_j_1",
+          "label": "Bring the count back to the station.",
+          "target": "fin_word_r"
+        }
+      ]
+    },
+    {
+      "id": "fin_word_r",
+      "body": "<<FILL v=2 role=rising words=124 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fin_word_r_1",
+          "label": "Sunday comes on the ebb.",
+          "target": "fin_tide"
+        }
+      ]
+    },
+    {
+      "id": "e_word_town",
+      "body": "<<FILL v=2 role=ending words=132 function=ending>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_word_town",
+        "valence": "neutral",
+        "kind": "discovery",
+        "title": "House by House"
+      }
+    },
+    {
+      "id": "e_word_pier",
+      "body": "<<FILL v=2 role=ending words=135 function=ending>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_word_pier",
+        "valence": "positive",
+        "kind": "discovery",
+        "title": "He Says He Will Come"
+      }
+    },
+    {
+      "id": "fin_shore",
+      "body": "<<FILL v=2 role=choice words=136 function=decision>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fin_shore_1",
+          "label": "Run the last patrol sweep with Vega, end to end.",
+          "target": "fin_shore_a"
+        },
+        {
+          "id": "c_fin_shore_2",
+          "label": "Set the pier approach for Sunday: rope lines and chairs from the church hall.",
+          "target": "fin_shore_b"
+        }
+      ]
+    },
+    {
+      "id": "fin_shore_a",
+      "body": "<<FILL v=2 role=choice words=132 function=decision>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fin_shore_a_1",
+          "label": "Rack the flags and rejoin the crew.",
+          "target": "fin_shore_j"
+        },
+        {
+          "id": "c_fin_shore_a_2",
+          "label": "Sit the empty chair through the very last posted hour of the season.",
+          "target": "e_shore_last"
+        }
+      ]
+    },
+    {
+      "id": "fin_shore_b",
+      "body": "<<FILL v=2 role=choice words=132 function=decision>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fin_shore_b_1",
+          "label": "Walk the setup once more and rejoin the crew.",
+          "target": "fin_shore_j"
+        },
+        {
+          "id": "c_fin_shore_b_2",
+          "label": "Ask Dane to teach you the station's flag fold, and do it right at dusk.",
+          "target": "e_shore_flag"
+        }
+      ]
+    },
+    {
+      "id": "fin_shore_j",
+      "body": "<<FILL v=2 role=rising words=124 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fin_shore_j_1",
+          "label": "Report the shore ready.",
+          "target": "fin_shore_r"
+        }
+      ]
+    },
+    {
+      "id": "fin_shore_r",
+      "body": "<<FILL v=2 role=rising words=124 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fin_shore_r_1",
+          "label": "Sunday comes on the ebb.",
+          "target": "fin_tide"
+        }
+      ]
+    },
+    {
+      "id": "e_shore_last",
+      "body": "<<FILL v=2 role=ending words=132 function=ending>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_shore_last",
+        "valence": "neutral",
+        "kind": "discovery",
+        "title": "Last Posted Hour"
+      }
+    },
+    {
+      "id": "e_shore_flag",
+      "body": "<<FILL v=2 role=ending words=136 function=ending>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_shore_flag",
+        "valence": "positive",
+        "kind": "discovery",
+        "title": "The Flag Fold"
+      }
+    },
+    {
+      "id": "fin_tide",
+      "body": "<<FILL v=2 role=rising words=150 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fin_tide_1",
+          "label": "Walk out the boards with the town.",
+          "target": "fin_gather"
+        }
+      ]
+    },
+    {
+      "id": "fin_gather",
+      "body": "<<FILL v=2 role=rising words=160 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fin_gather_1",
+          "label": "Find a place at the rail as Dane steps up.",
+          "target": "fin_speak"
+        }
+      ],
+      "safety_scope": [
+        "sad_moment"
+      ]
+    },
+    {
+      "id": "fin_speak",
+      "body": "<<FILL v=2 role=choice words=155 function=decision>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fin_speak_1",
+          "label": "Stand up beside Dane and ask the keepers to read what they kept.",
+          "target": "fin_truth",
+          "condition": {
+            ">=": [
+              {
+                "var": "trust"
+              },
+              2
+            ]
+          }
+        },
+        {
+          "id": "c_fin_speak_2",
+          "label": "Hold the silence and let Dane say what one man saw.",
+          "target": "fin_half"
+        },
+        {
+          "id": "c_fin_speak_3",
+          "label": "Slip back and take the chair line so every senior guard can stand in the crowd.",
+          "target": "fin_watch"
+        }
+      ]
+    },
+    {
+      "id": "fin_truth",
+      "body": "<<FILL v=2 role=rising words=175 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fin_truth_1",
+          "label": "Look at Pruitt as the record finishes.",
+          "target": "fin_mend"
+        }
+      ],
+      "safety_scope": [
+        "sad_moment"
+      ]
+    },
+    {
+      "id": "fin_mend",
+      "body": "<<FILL v=2 role=rising words=160 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fin_mend_1",
+          "label": "Let the gathering loosen into the morning.",
+          "target": "fin_close"
+        }
+      ],
+      "safety_scope": [
+        "sad_moment"
+      ]
+    },
+    {
+      "id": "fin_close",
+      "body": "<<FILL v=2 role=choice words=150 function=decision>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fin_close_1",
+          "label": "Take the winter-crew place he offers, chair to boat, the year round.",
+          "target": "e_fin_crew",
+          "condition": {
+            "==": [
+              {
+                "var": "duty"
+              },
+              true
+            ]
+          }
+        },
+        {
+          "id": "c_fin_close_2",
+          "label": "Before he says anything, square the ledger: name the shift you traded away.",
+          "target": "e_fin_square",
+          "condition": {
+            "==": [
+              {
+                "var": "duty"
+              },
+              false
+            ]
+          }
+        },
+        {
+          "id": "c_fin_close_3",
+          "label": "Shake his hand and let the season be what it was: enough.",
+          "target": "e_fin_season"
+        }
+      ]
+    },
+    {
+      "id": "fin_half",
+      "body": "<<FILL v=2 role=rising words=160 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fin_half_1",
+          "label": "Stay while the boards empty.",
+          "target": "fin_after"
+        }
+      ],
+      "safety_scope": [
+        "sad_moment"
+      ]
+    },
+    {
+      "id": "fin_after",
+      "body": "<<FILL v=2 role=choice words=140 function=decision>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fin_after_1",
+          "label": "Walk Pruitt down the pier at his own pace.",
+          "target": "e_fin_walk"
+        },
+        {
+          "id": "c_fin_after_2",
+          "label": "Stay folding chairs with Dane while the tide turns.",
+          "target": "e_fin_fold"
+        }
+      ]
+    },
+    {
+      "id": "fin_watch",
+      "body": "<<FILL v=2 role=choice words=140 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fin_watch_1",
+          "label": "Keep the watch to the last word and the last wave.",
+          "target": "e_fin_watch"
+        }
+      ]
+    },
+    {
+      "id": "e_fin_crew",
+      "body": "<<FILL v=2 role=success words=150 function=ending>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_fin_crew",
+        "valence": "positive",
+        "kind": "success",
+        "title": "The Winter Crew"
+      }
+    },
+    {
+      "id": "e_fin_square",
+      "body": "<<FILL v=2 role=ending words=145 function=ending>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_fin_square",
+        "valence": "neutral",
+        "kind": "completion",
+        "title": "The Squared Ledger"
+      }
+    },
+    {
+      "id": "e_fin_season",
+      "body": "<<FILL v=2 role=ending words=140 function=ending>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_fin_season",
+        "valence": "positive",
+        "kind": "completion",
+        "title": "Enough"
+      }
+    },
+    {
+      "id": "e_fin_walk",
+      "body": "<<FILL v=2 role=ending words=140 function=ending>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_fin_walk",
+        "valence": "positive",
+        "kind": "completion",
+        "title": "Down the Boards"
+      }
+    },
+    {
+      "id": "e_fin_fold",
+      "body": "<<FILL v=2 role=ending words=140 function=ending>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_fin_fold",
+        "valence": "neutral",
+        "kind": "completion",
+        "title": "Folding Chairs"
+      }
+    },
+    {
+      "id": "e_fin_watch",
+      "body": "<<FILL v=2 role=success words=145 function=ending>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_fin_watch",
+        "valence": "positive",
+        "kind": "success",
+        "title": "The Season's Watch"
+      }
+    }
+  ]
+}

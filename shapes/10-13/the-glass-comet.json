@@ -1,0 +1,2018 @@
+{
+  "schema_version": "2.0",
+  "id": "sk_glass_comet",
+  "version": 1,
+  "title": "The Glass Comet",
+  "metadata": {
+    "narrative_person": "third",
+    "age_band": "10-13",
+    "reading_level": {
+      "scheme": "flesch_kincaid",
+      "target": 5.5,
+      "tolerance": 1.5
+    },
+    "tier": 2,
+    "themes": [
+      "astronomy",
+      "patience",
+      "craft",
+      "resource-management"
+    ],
+    "estimated_minutes": 7,
+    "ending_count": 20,
+    "content_flags": {
+      "violence": "none",
+      "scariness": "mild",
+      "peril": "mild"
+    },
+    "topology": "branch_and_bottleneck",
+    "length": "short",
+    "narrative_style": "prose",
+    "production_eligible": true
+  },
+  "variables": [
+    {
+      "name": "plates",
+      "type": "int",
+      "initial": 3,
+      "min": 0,
+      "max": 3,
+      "description": "Unexposed photographic plates remaining in the felt box."
+    },
+    {
+      "name": "dome_oiled",
+      "type": "bool",
+      "initial": false,
+      "description": "Whether the dome shutter mechanism has been oiled; gates smooth tracking and the perfect shot."
+    },
+    {
+      "name": "clock",
+      "type": "int",
+      "initial": 0,
+      "min": 0,
+      "max": 4,
+      "description": "Night phase: 0 dusk, 1 first hours, 2 the clear gap (prime window), 3 late, 4 dawn edge."
+    }
+  ],
+  "start_node": "n_start",
+  "nodes": [
+    {
+      "id": "n_start",
+      "body": "<<FILL v=2 role=setup words=120 function=opening>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_start_in",
+          "label": "Step inside before your nerve changes its mind.",
+          "target": "n_plate_box"
+        }
+      ]
+    },
+    {
+      "id": "n_plate_box",
+      "body": "<<FILL v=2 role=setup words=115 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_box_nod",
+          "label": "Nod, and ask where to start.",
+          "target": "n_prep_hub"
+        }
+      ]
+    },
+    {
+      "id": "n_prep_hub",
+      "body": "<<FILL v=2 role=choice words=110 function=decision>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_hub_dome",
+          "label": "Climb to the dome and check the shutter mechanism.",
+          "target": "a1_dome_floor"
+        },
+        {
+          "id": "c_hub_darkroom",
+          "label": "Learn the darkroom and the plate holders.",
+          "target": "b1_darkroom"
+        },
+        {
+          "id": "c_hub_charts",
+          "label": "Sit down with the charts and the ephemeris.",
+          "target": "c1_charts"
+        }
+      ]
+    },
+    {
+      "id": "a1_dome_floor",
+      "body": "<<FILL v=2 role=rising words=100 function=decision>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_a1_runners",
+          "label": "Run a thumb along the shutter runners.",
+          "target": "a2_runners"
+        },
+        {
+          "id": "c_a1_crank",
+          "label": "Try the crank, one careful notch.",
+          "target": "a3_crank"
+        },
+        {
+          "id": "c_a1_log",
+          "label": "Read the maintenance log first.",
+          "target": "a4_log"
+        }
+      ]
+    },
+    {
+      "id": "a2_runners",
+      "body": "<<FILL v=2 role=choice words=100 function=decision>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_a2_oil",
+          "label": "Spend the hour oiling the runners properly.",
+          "target": "a5_oiled",
+          "effects": [
+            {
+              "op": "set",
+              "var": "dome_oiled",
+              "value": true
+            }
+          ]
+        },
+        {
+          "id": "c_a2_leave",
+          "label": "Note it and leave the iron as it is.",
+          "target": "a6_left"
+        }
+      ]
+    },
+    {
+      "id": "a3_crank",
+      "body": "<<FILL v=2 role=choice words=95 function=decision>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_a3_oil",
+          "label": "Fetch the tin and oil the ring before dark.",
+          "target": "a5_oiled",
+          "effects": [
+            {
+              "op": "set",
+              "var": "dome_oiled",
+              "value": true
+            }
+          ]
+        },
+        {
+          "id": "c_a3_enough",
+          "label": "One notch worked; that is enough for now.",
+          "target": "a6_left"
+        }
+      ]
+    },
+    {
+      "id": "a4_log",
+      "body": "<<FILL v=2 role=choice words=100 function=decision>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_a4_heed",
+          "label": "Heed the log; oil the mechanism now.",
+          "target": "a5_oiled",
+          "effects": [
+            {
+              "op": "set",
+              "var": "dome_oiled",
+              "value": true
+            }
+          ]
+        },
+        {
+          "id": "c_a4_later",
+          "label": "Pocket the advice for later; dusk is short.",
+          "target": "a6_left"
+        }
+      ]
+    },
+    {
+      "id": "a5_oiled",
+      "body": "<<FILL v=2 role=rising words=95 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_a5_down",
+          "label": "Wipe your hands and head down the ladder.",
+          "target": "a7_down"
+        }
+      ]
+    },
+    {
+      "id": "a6_left",
+      "body": "<<FILL v=2 role=choice words=95 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_a6_down",
+          "label": "Shrug the doubt off and climb down.",
+          "target": "a7_down"
+        },
+        {
+          "id": "c_a6_return",
+          "label": "Turn back and oil the runners after all.",
+          "target": "a5_oiled",
+          "effects": [
+            {
+              "op": "set",
+              "var": "dome_oiled",
+              "value": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "a7_down",
+      "body": "<<FILL v=2 role=rising words=90 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_a7_night",
+          "label": "Tell him it is time to open up.",
+          "target": "n_nightfall"
+        }
+      ]
+    },
+    {
+      "id": "b1_darkroom",
+      "body": "<<FILL v=2 role=choice words=110 function=decision>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_b1_real",
+          "label": "Sacrifice a real plate to learn it properly.",
+          "target": "b2_spent",
+          "effects": [
+            {
+              "op": "dec",
+              "var": "plates",
+              "value": 1
+            }
+          ]
+        },
+        {
+          "id": "c_b1_dud",
+          "label": "Drill with the cracked dud plate.",
+          "target": "b3_dud"
+        },
+        {
+          "id": "c_b1_watch",
+          "label": "Keep your hands still and just watch.",
+          "target": "b4_watch"
+        }
+      ]
+    },
+    {
+      "id": "b2_spent",
+      "body": "<<FILL v=2 role=rising words=100 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_b2_count",
+          "label": "Open the felt box and count what is left.",
+          "target": "b7_two_left"
+        }
+      ]
+    },
+    {
+      "id": "b7_two_left",
+      "body": "<<FILL v=2 role=rising words=90 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_b7_out",
+          "label": "Close the box gently and head out.",
+          "target": "b5_out"
+        }
+      ]
+    },
+    {
+      "id": "b3_dud",
+      "body": "<<FILL v=2 role=choice words=100 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_b3_again",
+          "label": "Run the drill until it feels like a card trick.",
+          "target": "b5_out"
+        },
+        {
+          "id": "c_b3_story",
+          "label": "Ask about the framed 1910 comet plate on the wall.",
+          "target": "b6_story"
+        }
+      ]
+    },
+    {
+      "id": "b4_watch",
+      "body": "<<FILL v=2 role=choice words=95 function=decision>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_b4_dryrun",
+          "label": "Admit you need one dry run with the dud.",
+          "target": "b3_dud"
+        },
+        {
+          "id": "c_b4_trust",
+          "label": "Trust your eyes and call it learned.",
+          "target": "b5_out"
+        }
+      ]
+    },
+    {
+      "id": "b6_story",
+      "body": "<<FILL v=2 role=rising words=95 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_b6_out",
+          "label": "Carry the story out into the dark.",
+          "target": "b5_out"
+        }
+      ]
+    },
+    {
+      "id": "b5_out",
+      "body": "<<FILL v=2 role=rising words=90 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_b5_night",
+          "label": "Join Halloran; it is time to open the dome.",
+          "target": "n_nightfall"
+        }
+      ]
+    },
+    {
+      "id": "c1_charts",
+      "body": "<<FILL v=2 role=choice words=105 function=decision>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_c1_math",
+          "label": "Work the crossing out yourself from the ephemeris.",
+          "target": "c2_own_math"
+        },
+        {
+          "id": "c_c1_notes",
+          "label": "Use the club notebook's penciled positions.",
+          "target": "c3_notes"
+        },
+        {
+          "id": "c_c1_ask",
+          "label": "Ask Halloran to work it through with you.",
+          "target": "c4_check"
+        }
+      ]
+    },
+    {
+      "id": "c2_own_math",
+      "body": "<<FILL v=2 role=choice words=100 function=decision>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_c2_again",
+          "label": "Check it a third time, every column.",
+          "target": "c5_linger",
+          "effects": [
+            {
+              "op": "inc",
+              "var": "clock",
+              "value": 1
+            }
+          ]
+        },
+        {
+          "id": "c_c2_lock",
+          "label": "Trust it; set the circles and wind the drive.",
+          "target": "c6_set"
+        }
+      ]
+    },
+    {
+      "id": "c3_notes",
+      "body": "<<FILL v=2 role=choice words=100 function=decision>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_c3_red",
+          "label": "Trust the red ink and set the circles.",
+          "target": "c6_set"
+        },
+        {
+          "id": "c_c3_redo",
+          "label": "Redo the whole calculation from scratch.",
+          "target": "c5_linger",
+          "effects": [
+            {
+              "op": "inc",
+              "var": "clock",
+              "value": 1
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "c4_check",
+      "body": "<<FILL v=2 role=rising words=95 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_c4_set",
+          "label": "Set the circles while the tea is still warm.",
+          "target": "c6_set"
+        }
+      ]
+    },
+    {
+      "id": "c5_linger",
+      "body": "<<FILL v=2 role=rising words=95 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_c5_set",
+          "label": "Enough; set the circles by lamplight.",
+          "target": "c6_set"
+        }
+      ]
+    },
+    {
+      "id": "c6_set",
+      "body": "<<FILL v=2 role=rising words=90 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_c6_finder",
+          "label": "Take one look through the finder scope.",
+          "target": "c7_first_sight"
+        }
+      ]
+    },
+    {
+      "id": "c7_first_sight",
+      "body": "<<FILL v=2 role=rising words=95 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_c7_night",
+          "label": "Call Halloran; the dome has to open now.",
+          "target": "n_nightfall"
+        }
+      ]
+    },
+    {
+      "id": "n_nightfall",
+      "body": "<<FILL v=2 role=choice words=120 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_night_glide",
+          "label": "Ease the crank; let the oiled shutter glide open.",
+          "target": "n_open_glide",
+          "condition": {
+            "==": [
+              {
+                "var": "dome_oiled"
+              },
+              true
+            ]
+          }
+        },
+        {
+          "id": "c_night_heave",
+          "label": "Heave the crank hard and fast, dry iron or not.",
+          "target": "n_dome_jam",
+          "condition": {
+            "==": [
+              {
+                "var": "dome_oiled"
+              },
+              false
+            ]
+          }
+        },
+        {
+          "id": "c_night_slow",
+          "label": "Work it open slow and steady, notch by patient notch.",
+          "target": "n_open_slow",
+          "effects": [
+            {
+              "op": "inc",
+              "var": "clock",
+              "value": 1
+            }
+          ]
+        }
+      ],
+      "on_enter": [
+        {
+          "op": "inc",
+          "var": "clock",
+          "value": 1
+        }
+      ]
+    },
+    {
+      "id": "n_open_glide",
+      "body": "<<FILL v=2 role=rising words=95 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_glide_look",
+          "label": "Step to the rail and let the sky in.",
+          "target": "n_first_light"
+        }
+      ]
+    },
+    {
+      "id": "n_first_light",
+      "body": "<<FILL v=2 role=rising words=90 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_first_band",
+          "label": "Find the west; watch for the comet's field.",
+          "target": "n_band_watch"
+        }
+      ]
+    },
+    {
+      "id": "n_open_slow",
+      "body": "<<FILL v=2 role=rising words=95 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_slow_west",
+          "label": "Open at last; check the western sky.",
+          "target": "n_slow_clouds"
+        }
+      ]
+    },
+    {
+      "id": "n_slow_clouds",
+      "body": "<<FILL v=2 role=rising words=90 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_slowc_band",
+          "label": "Settle in; the cloud band owns the sky for now.",
+          "target": "n_band_watch"
+        }
+      ]
+    },
+    {
+      "id": "n_dome_jam",
+      "body": "<<FILL v=2 role=choice words=115 function=decision>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_jam_bang",
+          "label": "Throw your whole weight on the crank.",
+          "target": "n_jam_bang"
+        },
+        {
+          "id": "c_jam_warden",
+          "label": "Swallow your pride; go down and fetch Halloran.",
+          "target": "n_jam_warden",
+          "effects": [
+            {
+              "op": "inc",
+              "var": "clock",
+              "value": 1
+            }
+          ]
+        },
+        {
+          "id": "c_jam_force",
+          "label": "Pull the emergency lever, hard.",
+          "target": "n_jam_forced"
+        }
+      ],
+      "safety_scope": [
+        "peril"
+      ]
+    },
+    {
+      "id": "n_jam_bang",
+      "body": "<<FILL v=2 role=rising words=95 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_bang_band",
+          "label": "Shake out your hands and check the west.",
+          "target": "n_band_watch"
+        }
+      ]
+    },
+    {
+      "id": "n_jam_warden",
+      "body": "<<FILL v=2 role=rising words=100 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_warden_band",
+          "label": "Thank him and turn to the western sky.",
+          "target": "n_band_watch"
+        }
+      ],
+      "on_enter": [
+        {
+          "op": "set",
+          "var": "dome_oiled",
+          "value": true
+        }
+      ]
+    },
+    {
+      "id": "n_jam_forced",
+      "body": "<<FILL v=2 role=rising words=100 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_forced_stare",
+          "label": "Stare at the bent track and breathe.",
+          "target": "s1_bent"
+        }
+      ]
+    },
+    {
+      "id": "n_band_watch",
+      "body": "<<FILL v=2 role=choice words=120 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_band_vigil",
+          "label": "Keep vigil at the rail and wait it out.",
+          "target": "w1_vigil"
+        },
+        {
+          "id": "c_band_stage",
+          "label": "Use the wait: stage the darkroom for speed.",
+          "target": "d1_staging"
+        },
+        {
+          "id": "c_band_gauze",
+          "label": "Line up on the comet through the cloud's thin edge.",
+          "target": "g0_gauze"
+        },
+        {
+          "id": "c_band_doze",
+          "label": "Doze in the warm room until the sky clears.",
+          "target": "w4_doze",
+          "effects": [
+            {
+              "op": "inc",
+              "var": "clock",
+              "value": 1
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "w1_vigil",
+      "body": "<<FILL v=2 role=choice words=100 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_w1_story",
+          "label": "Ask about the plate he never got.",
+          "target": "w2_story"
+        },
+        {
+          "id": "c_w1_seams",
+          "label": "Study the cloud for its seams and tears.",
+          "target": "w3_seams"
+        },
+        {
+          "id": "c_w1_clouds",
+          "label": "Have him name the kinds of cloud, one by one.",
+          "target": "w5_clouds"
+        }
+      ]
+    },
+    {
+      "id": "w2_story",
+      "body": "<<FILL v=2 role=rising words=100 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_w2_gap",
+          "label": "The west is tearing open; stand ready.",
+          "target": "n_gap_opens"
+        }
+      ]
+    },
+    {
+      "id": "w3_seams",
+      "body": "<<FILL v=2 role=rising words=95 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_w3_gap",
+          "label": "There, a rip of clear black; move.",
+          "target": "n_gap_opens"
+        }
+      ]
+    },
+    {
+      "id": "w5_clouds",
+      "body": "<<FILL v=2 role=rising words=95 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_w5_gap",
+          "label": "The band's trailing edge; get to the eyepiece.",
+          "target": "n_gap_opens"
+        }
+      ]
+    },
+    {
+      "id": "w4_doze",
+      "body": "<<FILL v=2 role=rising words=100 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_w4_gap",
+          "label": "Up the stairs, heart pounding.",
+          "target": "n_gap_opens"
+        }
+      ]
+    },
+    {
+      "id": "d1_staging",
+      "body": "<<FILL v=2 role=choice words=100 function=decision>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_d1_swap",
+          "label": "Rehearse the plate swap once more.",
+          "target": "d2_swap"
+        },
+        {
+          "id": "c_d1_bath",
+          "label": "Check the developer bath and its thermometer.",
+          "target": "d4_bath"
+        }
+      ]
+    },
+    {
+      "id": "d2_swap",
+      "body": "<<FILL v=2 role=rising words=90 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_d2_up",
+          "label": "Halloran is calling; the sky is tearing.",
+          "target": "d3_stairs"
+        }
+      ]
+    },
+    {
+      "id": "d4_bath",
+      "body": "<<FILL v=2 role=rising words=90 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_d4_up",
+          "label": "The sky is clearing; take the stairs.",
+          "target": "d3_stairs"
+        }
+      ]
+    },
+    {
+      "id": "d3_stairs",
+      "body": "<<FILL v=2 role=rising words=90 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_d3_gap",
+          "label": "To the eyepiece; here it comes.",
+          "target": "n_gap_opens"
+        }
+      ]
+    },
+    {
+      "id": "g0_gauze",
+      "body": "<<FILL v=2 role=choice words=105 function=decision>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_g0_shoot",
+          "label": "Take the shot through the gauze; spend the plate.",
+          "target": "g1_gamble",
+          "effects": [
+            {
+              "op": "dec",
+              "var": "plates",
+              "value": 1
+            }
+          ]
+        },
+        {
+          "id": "c_g0_lower",
+          "label": "Lower the cable; save the plate for clear sky.",
+          "target": "w1_vigil"
+        }
+      ]
+    },
+    {
+      "id": "g1_gamble",
+      "body": "<<FILL v=2 role=choice words=100 function=decision>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_g1_race",
+          "label": "Race the plate down and develop it right now.",
+          "target": "g2_ghost_dev",
+          "effects": [
+            {
+              "op": "inc",
+              "var": "clock",
+              "value": 1
+            }
+          ]
+        },
+        {
+          "id": "c_g1_rack",
+          "label": "Rack the holder for later; stay with the sky.",
+          "target": "n_gap_opens"
+        }
+      ]
+    },
+    {
+      "id": "g2_ghost_dev",
+      "body": "<<FILL v=2 role=choice words=110 function=decision>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_g2_stay",
+          "label": "Stay with the ghost; call Halloran down to see.",
+          "target": "n_end_ghost"
+        },
+        {
+          "id": "c_g2_up",
+          "label": "Pin the ghost to dry and race back up.",
+          "target": "g4_race_up"
+        }
+      ]
+    },
+    {
+      "id": "g4_race_up",
+      "body": "<<FILL v=2 role=rising words=90 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_g4_gap",
+          "label": "Get to the eyepiece before the door opens fully.",
+          "target": "n_gap_opens"
+        }
+      ]
+    },
+    {
+      "id": "n_gap_opens",
+      "body": "<<FILL v=2 role=choice words=125 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_gap_look",
+          "label": "Take one long look with your own eyes first.",
+          "target": "n_look"
+        },
+        {
+          "id": "c_gap_warden",
+          "label": "Wave Halloran to the eyepiece to see her first.",
+          "target": "n_warden_look"
+        },
+        {
+          "id": "c_gap_work",
+          "label": "Straight to work; load a plate now.",
+          "target": "n_load1"
+        }
+      ],
+      "on_enter": [
+        {
+          "op": "inc",
+          "var": "clock",
+          "value": 1
+        }
+      ]
+    },
+    {
+      "id": "n_look",
+      "body": "<<FILL v=2 role=rising words=95 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_look_load",
+          "label": "Now the camera: load the first plate.",
+          "target": "n_attempt1"
+        }
+      ]
+    },
+    {
+      "id": "n_warden_look",
+      "body": "<<FILL v=2 role=rising words=95 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_warden_load",
+          "label": "Load the first plate with steady hands.",
+          "target": "n_attempt1"
+        }
+      ]
+    },
+    {
+      "id": "n_load1",
+      "body": "<<FILL v=2 role=rising words=95 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_load_begin",
+          "label": "Open the shutter and begin the exposure.",
+          "target": "n_attempt1"
+        }
+      ]
+    },
+    {
+      "id": "n_attempt1",
+      "body": "<<FILL v=2 role=climax words=115 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_att1_hold",
+          "label": "Hold the star. Breathe. Count the whole eight minutes.",
+          "target": "n_done1",
+          "effects": [
+            {
+              "op": "dec",
+              "var": "plates",
+              "value": 1
+            }
+          ]
+        },
+        {
+          "id": "c_att1_peek",
+          "label": "Halfway in, peek at the plate to be sure it is catching.",
+          "target": "n_fog1",
+          "effects": [
+            {
+              "op": "dec",
+              "var": "plates",
+              "value": 1
+            }
+          ]
+        },
+        {
+          "id": "c_att1_nudge",
+          "label": "The star drifts a hair; nudge the tube to fix it.",
+          "target": "n_smear1",
+          "effects": [
+            {
+              "op": "dec",
+              "var": "plates",
+              "value": 1
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "n_done1",
+      "body": "<<FILL v=2 role=climax words=115 function=decision>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_d1_perfect",
+          "label": "Carry the plate down like a relic; the night was perfect for it.",
+          "target": "p1_descent",
+          "condition": {
+            "and": [
+              {
+                "==": [
+                  {
+                    "var": "dome_oiled"
+                  },
+                  true
+                ]
+              },
+              {
+                "<=": [
+                  {
+                    "var": "clock"
+                  },
+                  2
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "id": "c_d1_shiver",
+          "label": "Carry it down hoping the dome's dry shudder stayed out of the glass.",
+          "target": "q1_shudder",
+          "condition": {
+            "and": [
+              {
+                "==": [
+                  {
+                    "var": "dome_oiled"
+                  },
+                  false
+                ]
+              },
+              {
+                "<=": [
+                  {
+                    "var": "clock"
+                  },
+                  2
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "id": "c_d1_late",
+          "label": "Carry it down knowing the comet sat low in thickening air.",
+          "target": "l1_low",
+          "condition": {
+            "==": [
+              {
+                "var": "clock"
+              },
+              3
+            ]
+          }
+        },
+        {
+          "id": "c_d1_dawn",
+          "label": "Carry it down through a sky already going grey at the edge.",
+          "target": "z1_pale",
+          "condition": {
+            ">=": [
+              {
+                "var": "clock"
+              },
+              4
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "n_fog1",
+      "body": "<<FILL v=2 role=climax words=110 function=decision>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fog_retry",
+          "label": "Load the next plate. Slower. You know the mistake now.",
+          "target": "n_reload",
+          "condition": {
+            "and": [
+              {
+                ">=": [
+                  {
+                    "var": "plates"
+                  },
+                  1
+                ]
+              },
+              {
+                "<=": [
+                  {
+                    "var": "clock"
+                  },
+                  3
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "id": "c_fog_lesson",
+          "label": "Take the fogged plate down and develop the lesson.",
+          "target": "n_lesson_dev"
+        },
+        {
+          "id": "c_fog_step",
+          "label": "Step back from the camera and let the night have it.",
+          "target": "n_stepback"
+        }
+      ]
+    },
+    {
+      "id": "n_smear1",
+      "body": "<<FILL v=2 role=climax words=110 function=decision>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_smear_retry",
+          "label": "Load another plate and trust the drive this time.",
+          "target": "n_reload",
+          "condition": {
+            "and": [
+              {
+                ">=": [
+                  {
+                    "var": "plates"
+                  },
+                  1
+                ]
+              },
+              {
+                "<=": [
+                  {
+                    "var": "clock"
+                  },
+                  3
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "id": "c_smear_lesson",
+          "label": "Develop the smear anyway; motion tells its own story.",
+          "target": "n_lesson_dev"
+        },
+        {
+          "id": "c_smear_step",
+          "label": "Step back from the camera; enough harm done.",
+          "target": "n_stepback"
+        }
+      ]
+    },
+    {
+      "id": "n_reload",
+      "body": "<<FILL v=2 role=climax words=100 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_reload_go",
+          "label": "Back to the eyepiece; begin again.",
+          "target": "n_attempt2"
+        }
+      ],
+      "on_enter": [
+        {
+          "op": "inc",
+          "var": "clock",
+          "value": 1
+        }
+      ]
+    },
+    {
+      "id": "n_attempt2",
+      "body": "<<FILL v=2 role=climax words=110 function=decision>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_att2_hold",
+          "label": "Hold steady the full eight minutes; you know the count.",
+          "target": "n_done2",
+          "effects": [
+            {
+              "op": "dec",
+              "var": "plates",
+              "value": 1
+            }
+          ]
+        },
+        {
+          "id": "c_att2_rush",
+          "label": "Cut the exposure short to beat the sinking sky.",
+          "target": "n_short2",
+          "effects": [
+            {
+              "op": "dec",
+              "var": "plates",
+              "value": 1
+            }
+          ]
+        },
+        {
+          "id": "c_att2_cap",
+          "label": "Cap the lens unspent; your nerve is gone. Step back.",
+          "target": "n_stepback"
+        }
+      ]
+    },
+    {
+      "id": "n_done2",
+      "body": "<<FILL v=2 role=climax words=105 function=decision>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_d2_late",
+          "label": "Carry it down; the comet was low but the sky still held.",
+          "target": "l1_low",
+          "condition": {
+            "<=": [
+              {
+                "var": "clock"
+              },
+              3
+            ]
+          }
+        },
+        {
+          "id": "c_d2_dawn",
+          "label": "Carry it down under a sky already paling at the rim.",
+          "target": "z1_pale",
+          "condition": {
+            ">=": [
+              {
+                "var": "clock"
+              },
+              4
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "n_short2",
+      "body": "<<FILL v=2 role=climax words=110 function=decision>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_short_retry",
+          "label": "One more plate, the full count this time, glow be damned.",
+          "target": "n_attempt3",
+          "condition": {
+            "and": [
+              {
+                ">=": [
+                  {
+                    "var": "plates"
+                  },
+                  1
+                ]
+              },
+              {
+                "<=": [
+                  {
+                    "var": "clock"
+                  },
+                  3
+                ]
+              }
+            ]
+          },
+          "effects": [
+            {
+              "op": "inc",
+              "var": "clock",
+              "value": 1
+            }
+          ]
+        },
+        {
+          "id": "c_short_dev",
+          "label": "Develop the thin plate; something beats nothing.",
+          "target": "n_thin_dev"
+        },
+        {
+          "id": "c_short_step",
+          "label": "Step back; the night has taken enough.",
+          "target": "n_stepback"
+        }
+      ]
+    },
+    {
+      "id": "n_attempt3",
+      "body": "<<FILL v=2 role=climax words=105 function=decision>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_att3_hold",
+          "label": "Expose it. Steady. Give it the whole count.",
+          "target": "n_done3",
+          "effects": [
+            {
+              "op": "dec",
+              "var": "plates",
+              "value": 1
+            }
+          ]
+        },
+        {
+          "id": "c_att3_cap",
+          "label": "Cap it; keep the last plate for another year.",
+          "target": "n_stepback"
+        }
+      ]
+    },
+    {
+      "id": "n_done3",
+      "body": "<<FILL v=2 role=climax words=95 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_d3_down",
+          "label": "Down to the red light with the dawn plate.",
+          "target": "z1_pale"
+        }
+      ]
+    },
+    {
+      "id": "n_stepback",
+      "body": "<<FILL v=2 role=choice words=110 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_step_eyes",
+          "label": "Watch her with your own eyes until she sets.",
+          "target": "n_end_eyes"
+        },
+        {
+          "id": "c_step_sketch",
+          "label": "Open the logbook and sketch her, tail angle and all.",
+          "target": "n_end_sketch"
+        },
+        {
+          "id": "c_step_ask",
+          "label": "Ask Halloran what he would have done.",
+          "target": "n_end_words"
+        }
+      ]
+    },
+    {
+      "id": "n_lesson_dev",
+      "body": "<<FILL v=2 role=choice words=110 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_lesson_retry",
+          "label": "Lesson learned; get back up there while sky remains.",
+          "target": "n_reload",
+          "condition": {
+            "and": [
+              {
+                ">=": [
+                  {
+                    "var": "plates"
+                  },
+                  1
+                ]
+              },
+              {
+                "<=": [
+                  {
+                    "var": "clock"
+                  },
+                  3
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "id": "c_lesson_study",
+          "label": "Measure the failure with him, edge to edge.",
+          "target": "n_end_lesson"
+        },
+        {
+          "id": "c_lesson_stay",
+          "label": "Stay in the warm red light; the night is done for you.",
+          "target": "n_end_redlight"
+        }
+      ]
+    },
+    {
+      "id": "n_thin_dev",
+      "body": "<<FILL v=2 role=choice words=105 function=decision>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_thin_save",
+          "label": "Try the old intensifier trick together.",
+          "target": "n_end_thin_saved"
+        },
+        {
+          "id": "c_thin_honest",
+          "label": "Leave it honest and faint, exactly as shot.",
+          "target": "n_end_thin_honest"
+        }
+      ]
+    },
+    {
+      "id": "p1_descent",
+      "body": "<<FILL v=2 role=climax words=105 function=decision>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_p1_self",
+          "label": "Develop it yourself: your plate, your hands.",
+          "target": "p2_self"
+        },
+        {
+          "id": "c_p1_with",
+          "label": "Ask him to stand at your shoulder while you work.",
+          "target": "p3_with"
+        }
+      ]
+    },
+    {
+      "id": "p2_self",
+      "body": "<<FILL v=2 role=climax words=110 function=decision>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_p2_full",
+          "label": "Full time. Count every second. Lift only when it is done.",
+          "target": "n_end_perfect"
+        },
+        {
+          "id": "c_p2_early",
+          "label": "You cannot bear it; lift the plate early to see.",
+          "target": "n_end_pulled"
+        }
+      ]
+    },
+    {
+      "id": "p3_with",
+      "body": "<<FILL v=2 role=climax words=105 function=decision>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_p3_count",
+          "label": "Count it out loud together to the last second.",
+          "target": "n_end_shared"
+        },
+        {
+          "id": "c_p3_early",
+          "label": "Your nerve breaks; you lift it early despite him.",
+          "target": "n_end_pulled"
+        }
+      ]
+    },
+    {
+      "id": "q1_shudder",
+      "body": "<<FILL v=2 role=climax words=105 function=decision>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_q1_dev",
+          "label": "Develop it and face whatever the shudder wrote.",
+          "target": "q2_doubled"
+        },
+        {
+          "id": "c_q1_ask",
+          "label": "Ask Halloran first whether a shiver can ruin a plate.",
+          "target": "q3_ask"
+        }
+      ]
+    },
+    {
+      "id": "q3_ask",
+      "body": "<<FILL v=2 role=rising words=90 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_q3_dev",
+          "label": "Into the developer, then, and no more guessing.",
+          "target": "q2_doubled"
+        }
+      ]
+    },
+    {
+      "id": "q2_doubled",
+      "body": "<<FILL v=2 role=climax words=110 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_q2_claim",
+          "label": "Claim it: title it honestly, tremor and all.",
+          "target": "n_end_shiver"
+        },
+        {
+          "id": "c_q2_compare",
+          "label": "Set it against the 1910 plate and measure the tremor.",
+          "target": "n_end_tremor"
+        }
+      ]
+    },
+    {
+      "id": "l1_low",
+      "body": "<<FILL v=2 role=climax words=105 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_l1_now",
+          "label": "Develop it now, before doubt gets a vote.",
+          "target": "l2_amber"
+        },
+        {
+          "id": "c_l1_hands",
+          "label": "Warm your hands first; steady beats fast.",
+          "target": "l3_hands"
+        }
+      ]
+    },
+    {
+      "id": "l3_hands",
+      "body": "<<FILL v=2 role=rising words=85 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_l3_dev",
+          "label": "Now the developer, with hands that obey.",
+          "target": "l2_amber"
+        }
+      ]
+    },
+    {
+      "id": "l2_amber",
+      "body": "<<FILL v=2 role=climax words=105 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_l2_proud",
+          "label": "Print it proud: the eleventh-hour plate.",
+          "target": "n_end_late"
+        },
+        {
+          "id": "c_l2_log",
+          "label": "Log the seeing conditions beside it like a scientist.",
+          "target": "n_end_provenance"
+        }
+      ]
+    },
+    {
+      "id": "z1_pale",
+      "body": "<<FILL v=2 role=climax words=105 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_z1_dev",
+          "label": "Develop it; even dawn writes something.",
+          "target": "z2_wash"
+        },
+        {
+          "id": "c_z1_carry",
+          "label": "Leave it sealed; carry it to the club's better darkroom.",
+          "target": "n_end_carried"
+        }
+      ]
+    },
+    {
+      "id": "z2_wash",
+      "body": "<<FILL v=2 role=climax words=100 function=decision>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_z2_mask",
+          "label": "Mask the fogged half and print the clear half.",
+          "target": "n_end_dawn"
+        },
+        {
+          "id": "c_z2_archive",
+          "label": "Give it whole to the club's archive of honest failures.",
+          "target": "n_end_archive"
+        }
+      ]
+    },
+    {
+      "id": "s1_bent",
+      "body": "<<FILL v=2 role=choice words=105 function=decision>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_s1_confess",
+          "label": "Go down and confess to Halloran now.",
+          "target": "s2_confess"
+        },
+        {
+          "id": "c_s1_geometry",
+          "label": "First work out what the crooked slit can still see.",
+          "target": "s3_geometry"
+        }
+      ]
+    },
+    {
+      "id": "s2_confess",
+      "body": "<<FILL v=2 role=rising words=100 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_s2_plan",
+          "label": "Then let us use the slice we have.",
+          "target": "s4_lane"
+        }
+      ]
+    },
+    {
+      "id": "s3_geometry",
+      "body": "<<FILL v=2 role=rising words=100 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_s3_plan",
+          "label": "Show him the lane and the crossing time.",
+          "target": "s4_lane"
+        }
+      ]
+    },
+    {
+      "id": "s4_lane",
+      "body": "<<FILL v=2 role=choice words=115 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_s4_wait",
+          "label": "Load a plate and wait dead-still on the lane.",
+          "target": "s_watch"
+        },
+        {
+          "id": "c_s4_test",
+          "label": "Spend one plate first to test the lane's exact edge.",
+          "target": "s6_test",
+          "condition": {
+            ">=": [
+              {
+                "var": "plates"
+              },
+              3
+            ]
+          },
+          "effects": [
+            {
+              "op": "dec",
+              "var": "plates",
+              "value": 1
+            }
+          ]
+        },
+        {
+          "id": "c_s4_away",
+          "label": "Put the plates away; tonight is for repairs.",
+          "target": "n_stepback"
+        }
+      ],
+      "on_enter": [
+        {
+          "op": "inc",
+          "var": "clock",
+          "value": 1
+        }
+      ]
+    },
+    {
+      "id": "s_watch",
+      "body": "<<FILL v=2 role=rising words=95 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_swatch_cross",
+          "label": "A brightening at the lane's edge: she is coming.",
+          "target": "s5_crossing"
+        }
+      ]
+    },
+    {
+      "id": "s6_test",
+      "body": "<<FILL v=2 role=rising words=100 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_s6_cross",
+          "label": "Re-aim on the corrected lane and wait for her.",
+          "target": "s5_crossing"
+        }
+      ]
+    },
+    {
+      "id": "s5_crossing",
+      "body": "<<FILL v=2 role=climax words=110 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_s5_head",
+          "label": "Expose the moment her head enters the lane.",
+          "target": "s7_head",
+          "effects": [
+            {
+              "op": "dec",
+              "var": "plates",
+              "value": 1
+            },
+            {
+              "op": "inc",
+              "var": "clock",
+              "value": 1
+            }
+          ]
+        },
+        {
+          "id": "c_s5_tail",
+          "label": "Wait, and give the plate to the whole tail or nothing.",
+          "target": "s8_tail_wait",
+          "effects": [
+            {
+              "op": "dec",
+              "var": "plates",
+              "value": 1
+            },
+            {
+              "op": "inc",
+              "var": "clock",
+              "value": 1
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "s7_head",
+      "body": "<<FILL v=2 role=choice words=105 function=decision>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_s7_develop",
+          "label": "Develop it with Halloran, and face the track tomorrow.",
+          "target": "n_end_slit"
+        },
+        {
+          "id": "c_s7_second",
+          "label": "Spend one more plate at the lane's far edge for her tail.",
+          "target": "s_second",
+          "condition": {
+            ">=": [
+              {
+                "var": "plates"
+              },
+              2
+            ]
+          },
+          "effects": [
+            {
+              "op": "dec",
+              "var": "plates",
+              "value": 1
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "s8_tail_wait",
+      "body": "<<FILL v=2 role=climax words=100 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_s8_dev",
+          "label": "Down to the red light to see what the ribbon holds.",
+          "target": "n_end_tail"
+        }
+      ]
+    },
+    {
+      "id": "s_second",
+      "body": "<<FILL v=2 role=climax words=95 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ssec_dev",
+          "label": "Develop the pair together and lay them edge to edge.",
+          "target": "n_end_tail"
+        }
+      ]
+    },
+    {
+      "id": "n_end_perfect",
+      "body": "<<FILL v=2 role=completion words=120 function=ending>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_perfect",
+        "valence": "positive",
+        "kind": "completion",
+        "title": "The Glass Comet"
+      }
+    },
+    {
+      "id": "n_end_shared",
+      "body": "<<FILL v=2 role=completion words=115 function=ending>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_shared",
+        "valence": "positive",
+        "kind": "completion",
+        "title": "Two Counts, One Comet"
+      }
+    },
+    {
+      "id": "n_end_pulled",
+      "body": "<<FILL v=2 role=failure words=105 function=ending>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_pulled",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "Pulled Too Soon"
+      }
+    },
+    {
+      "id": "n_end_shiver",
+      "body": "<<FILL v=2 role=completion words=110 function=ending>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_shiver",
+        "valence": "positive",
+        "kind": "success",
+        "title": "The Shivered Star"
+      }
+    },
+    {
+      "id": "n_end_tremor",
+      "body": "<<FILL v=2 role=completion words=105 function=ending>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_tremor",
+        "valence": "neutral",
+        "kind": "discovery",
+        "title": "The Tremor Study"
+      }
+    },
+    {
+      "id": "n_end_late",
+      "body": "<<FILL v=2 role=completion words=110 function=ending>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_late",
+        "valence": "positive",
+        "kind": "success",
+        "title": "The Eleventh-Hour Plate"
+      }
+    },
+    {
+      "id": "n_end_provenance",
+      "body": "<<FILL v=2 role=completion words=105 function=ending>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_provenance",
+        "valence": "neutral",
+        "kind": "discovery",
+        "title": "Plate and Provenance"
+      }
+    },
+    {
+      "id": "n_end_dawn",
+      "body": "<<FILL v=2 role=completion words=105 function=ending>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_dawn",
+        "valence": "neutral",
+        "kind": "success",
+        "title": "Half Past Dawn"
+      }
+    },
+    {
+      "id": "n_end_archive",
+      "body": "<<FILL v=2 role=failure words=105 function=ending>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_archive",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "The Honest Archive"
+      }
+    },
+    {
+      "id": "n_end_carried",
+      "body": "<<FILL v=2 role=failure words=100 function=ending>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_carried",
+        "valence": "neutral",
+        "kind": "setback",
+        "title": "The Unopened Letter"
+      }
+    },
+    {
+      "id": "n_end_ghost",
+      "body": "<<FILL v=2 role=completion words=110 function=ending>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_ghost",
+        "valence": "neutral",
+        "kind": "discovery",
+        "title": "The Ghost of Vitrea"
+      }
+    },
+    {
+      "id": "n_end_lesson",
+      "body": "<<FILL v=2 role=failure words=105 function=ending>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_lesson",
+        "valence": "neutral",
+        "kind": "discovery",
+        "title": "The Teaching Plate"
+      }
+    },
+    {
+      "id": "n_end_redlight",
+      "body": "<<FILL v=2 role=failure words=100 function=ending>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_redlight",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "Red Light, Long Night"
+      }
+    },
+    {
+      "id": "n_end_thin_saved",
+      "body": "<<FILL v=2 role=completion words=105 function=ending>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_thin_saved",
+        "valence": "neutral",
+        "kind": "discovery",
+        "title": "Saved in the Bath"
+      }
+    },
+    {
+      "id": "n_end_thin_honest",
+      "body": "<<FILL v=2 role=completion words=100 function=ending>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_thin_honest",
+        "valence": "neutral",
+        "kind": "discovery",
+        "title": "Faint but True"
+      }
+    },
+    {
+      "id": "n_end_eyes",
+      "body": "<<FILL v=2 role=failure words=105 function=ending>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_eyes",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "Eyes Only"
+      }
+    },
+    {
+      "id": "n_end_sketch",
+      "body": "<<FILL v=2 role=completion words=105 function=ending>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_sketch",
+        "valence": "neutral",
+        "kind": "discovery",
+        "title": "The Logbook Page"
+      }
+    },
+    {
+      "id": "n_end_words",
+      "body": "<<FILL v=2 role=failure words=100 function=ending>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_words",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "Halloran's Lesson"
+      }
+    },
+    {
+      "id": "n_end_slit",
+      "body": "<<FILL v=2 role=completion words=110 function=ending>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_slit",
+        "valence": "neutral",
+        "kind": "discovery",
+        "title": "The Crooked Window"
+      }
+    },
+    {
+      "id": "n_end_tail",
+      "body": "<<FILL v=2 role=completion words=105 function=ending>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_tail",
+        "valence": "neutral",
+        "kind": "discovery",
+        "title": "The Headless Banner"
+      }
+    }
+  ]
+}

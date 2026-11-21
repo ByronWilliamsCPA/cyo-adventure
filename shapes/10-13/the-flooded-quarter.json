@@ -1,0 +1,2769 @@
+{
+  "schema_version": "2.0",
+  "id": "sk_flooded_quarter",
+  "version": 1,
+  "title": "The Flooded Quarter",
+  "metadata": {
+    "narrative_person": "third",
+    "age_band": "10-13",
+    "reading_level": {
+      "scheme": "flesch_kincaid",
+      "target": 5.5,
+      "tolerance": 1.5
+    },
+    "tier": 2,
+    "themes": [
+      "community",
+      "courage",
+      "responsibility",
+      "the river"
+    ],
+    "estimated_minutes": 10,
+    "ending_count": 28,
+    "content_flags": {
+      "violence": "none",
+      "scariness": "mild",
+      "peril": "moderate"
+    },
+    "topology": "open_map",
+    "length": "medium",
+    "narrative_style": "prose",
+    "production_eligible": true
+  },
+  "variables": [
+    {
+      "name": "water",
+      "type": "int",
+      "initial": 0,
+      "min": 0,
+      "max": 2,
+      "description": "How high the flood stands in the quarter: 0 rising, 1 high, 2 cresting. It climbs one mark each time a street's errand is finished and never falls back before dawn."
+    },
+    {
+      "name": "oil",
+      "type": "int",
+      "initial": 3,
+      "min": 0,
+      "max": 3,
+      "description": "Lantern oil in the skiff's stern lamp, in quarter-marks. Dark interiors and night signals burn it; Warden Brice's stores refill it."
+    },
+    {
+      "name": "laden",
+      "type": "bool",
+      "initial": false,
+      "description": "Whether the skiff already carries a heavy load or a passenger. A laden skiff takes no one and nothing else aboard until dockhands unload it at the granary or the muster."
+    }
+  ],
+  "start_node": "n_start",
+  "nodes": [
+    {
+      "id": "n_start",
+      "body": "<<FILL v=2 role=setup words=125 function=opening>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n_start_1",
+          "label": "Pull on boots and oilskin and go down to the skiff.",
+          "target": "n_skiff"
+        }
+      ]
+    },
+    {
+      "id": "n_skiff",
+      "body": "<<FILL v=2 role=setup words=110 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n_skiff_1",
+          "label": "Pole down the drowned lane toward the Old Granary.",
+          "target": "n_granary"
+        }
+      ]
+    },
+    {
+      "id": "n_granary",
+      "body": "<<FILL v=2 role=setup words=115 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n_granary_1",
+          "label": "Step out to the granary dock and read the tally board.",
+          "target": "n_hub"
+        }
+      ]
+    },
+    {
+      "id": "n_hub",
+      "body": "<<FILL v=2 role=choice words=110 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n_hub_1",
+          "label": "Take the Binder's Row errand: Master Fen will not leave his shop.",
+          "target": "bk_row"
+        },
+        {
+          "id": "c_n_hub_2",
+          "label": "Take Bakery Lane: the bakery cat colony is stranded above the water.",
+          "target": "ct_lane"
+        },
+        {
+          "id": "c_n_hub_3",
+          "label": "Take Chandler's Cross: Salma the pharmacist needs her cold-chest moved.",
+          "target": "ph_cross"
+        },
+        {
+          "id": "c_n_hub_4",
+          "label": "Take Weaver's Stair: Grandmother Osei is on her rooftop and will not signal.",
+          "target": "os_stair"
+        },
+        {
+          "id": "c_n_hub_5",
+          "label": "Take Mill Lane while the low arch still clears: two lamplighter apprentices are stuck on the gantry.",
+          "target": "lp_arch",
+          "condition": {
+            "<": [
+              {
+                "var": "water"
+              },
+              2
+            ]
+          }
+        },
+        {
+          "id": "c_n_hub_6",
+          "label": "Step into the stores to refit and catch your breath.",
+          "target": "n_stores"
+        },
+        {
+          "id": "c_n_hub_7",
+          "label": "Answer the dawn muster forming at the seawall stair.",
+          "target": "fin_muster"
+        }
+      ],
+      "on_enter": [
+        {
+          "op": "set",
+          "var": "laden",
+          "value": false
+        }
+      ]
+    },
+    {
+      "id": "n_stores",
+      "body": "<<FILL v=2 role=choice words=95 function=decision>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n_stores_1",
+          "label": "Top the stern lamp from the oil drum and get back out.",
+          "target": "n_hub",
+          "effects": [
+            {
+              "op": "set",
+              "var": "oil",
+              "value": 3
+            }
+          ]
+        },
+        {
+          "id": "c_n_stores_2",
+          "label": "Just soup, two minutes of warm, and back to the dock.",
+          "target": "n_hub"
+        },
+        {
+          "id": "c_n_stores_3",
+          "label": "Admit to Brice that your arms are done for the night.",
+          "target": "e_benched"
+        }
+      ]
+    },
+    {
+      "id": "e_benched",
+      "body": "<<FILL v=2 role=failure words=95 function=ending>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_benched",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "Benched at the Granary"
+      }
+    },
+    {
+      "id": "bk_row",
+      "body": "<<FILL v=2 role=choice words=105 function=decision>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_bk_row_1",
+          "label": "Pole straight up the front lane.",
+          "target": "bk_lane"
+        },
+        {
+          "id": "c_bk_row_2",
+          "label": "Swing around behind the shops to the courtyard.",
+          "target": "bk_court"
+        },
+        {
+          "id": "c_bk_row_3",
+          "label": "Stand off and hail the lit window.",
+          "target": "bk_hail"
+        }
+      ]
+    },
+    {
+      "id": "bk_lane",
+      "body": "<<FILL v=2 role=choice words=100 function=decision>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_bk_lane_1",
+          "label": "Hold the slack water and tie up at Fen's door ring.",
+          "target": "bk_ring"
+        },
+        {
+          "id": "c_bk_lane_2",
+          "label": "Drift the shopfront line further along the row first.",
+          "target": "bk_row2"
+        },
+        {
+          "id": "c_bk_lane_3",
+          "label": "Judge the pull too strong for a loaded return and turn back to report it.",
+          "target": "e_bk_turnback"
+        }
+      ],
+      "safety_scope": [
+        "peril"
+      ]
+    },
+    {
+      "id": "bk_row2",
+      "body": "<<FILL v=2 role=rising words=90 function=decision>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_bk_row2_1",
+          "label": "Cut through to the courtyard.",
+          "target": "bk_court"
+        },
+        {
+          "id": "c_bk_row2_2",
+          "label": "Come back and hail the lit window.",
+          "target": "bk_hail"
+        }
+      ]
+    },
+    {
+      "id": "bk_ring",
+      "body": "<<FILL v=2 role=rising words=90 function=decision>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_bk_ring_1",
+          "label": "Ease in through the swollen door onto the dry counter.",
+          "target": "bk_quiet"
+        },
+        {
+          "id": "c_bk_ring_2",
+          "label": "Call up to the window before going in.",
+          "target": "bk_hail"
+        }
+      ]
+    },
+    {
+      "id": "bk_quiet",
+      "body": "<<FILL v=2 role=rising words=85 function=decision>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_bk_quiet_1",
+          "label": "Head for the dark stacks and the loft stair.",
+          "target": "bk_door"
+        },
+        {
+          "id": "c_bk_quiet_2",
+          "label": "Go back out and hail him properly first.",
+          "target": "bk_hail"
+        }
+      ]
+    },
+    {
+      "id": "bk_court",
+      "body": "<<FILL v=2 role=rising words=90 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_bk_court_1",
+          "label": "Work the wedged loading door loose with the pole hook.",
+          "target": "bk_gate"
+        },
+        {
+          "id": "c_bk_court_2",
+          "label": "Call up to the lit window instead.",
+          "target": "bk_hail"
+        }
+      ]
+    },
+    {
+      "id": "bk_gate",
+      "body": "<<FILL v=2 role=rising words=90 function=decision>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_bk_gate_1",
+          "label": "Go in along the landing to the stacks.",
+          "target": "bk_door"
+        },
+        {
+          "id": "c_bk_gate_2",
+          "label": "Stop to read the carved flood marks first.",
+          "target": "bk_marks"
+        }
+      ]
+    },
+    {
+      "id": "bk_marks",
+      "body": "<<FILL v=2 role=rising words=95 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_bk_marks_1",
+          "label": "Carry that understanding into the shop.",
+          "target": "bk_door"
+        }
+      ]
+    },
+    {
+      "id": "bk_hail",
+      "body": "<<FILL v=2 role=choice words=95 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_bk_hail_1",
+          "label": "Catch the key and let yourself in.",
+          "target": "bk_door"
+        },
+        {
+          "id": "c_bk_hail_2",
+          "label": "Argue it straight: books float, people don't.",
+          "target": "bk_terms"
+        }
+      ]
+    },
+    {
+      "id": "bk_terms",
+      "body": "<<FILL v=2 role=choice words=95 function=decision>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_bk_terms_1",
+          "label": "Agree: one crate, then he leaves with you.",
+          "target": "bk_door"
+        },
+        {
+          "id": "c_bk_terms_2",
+          "label": "Refuse to load anything until he is in the skiff.",
+          "target": "bk_stand"
+        }
+      ]
+    },
+    {
+      "id": "bk_stand",
+      "body": "<<FILL v=2 role=choice words=95 function=decision>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_bk_stand_1",
+          "label": "Hold the lamp and wait him out.",
+          "target": "bk_relent",
+          "effects": [
+            {
+              "op": "set",
+              "var": "laden",
+              "value": true
+            }
+          ]
+        },
+        {
+          "id": "c_bk_stand_2",
+          "label": "Give in and go up for the crate.",
+          "target": "bk_door"
+        }
+      ]
+    },
+    {
+      "id": "bk_relent",
+      "body": "<<FILL v=2 role=rising words=90 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_bk_relent_1",
+          "label": "Push off gently and let the row slide behind.",
+          "target": "bk_done"
+        }
+      ]
+    },
+    {
+      "id": "bk_door",
+      "body": "<<FILL v=2 role=choice words=100 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_bk_door_1",
+          "label": "Burn lamp oil and light the stacks properly.",
+          "target": "bk_stacks",
+          "condition": {
+            ">=": [
+              {
+                "var": "oil"
+              },
+              1
+            ]
+          },
+          "effects": [
+            {
+              "op": "dec",
+              "var": "oil",
+              "value": 1
+            }
+          ]
+        },
+        {
+          "id": "c_bk_door_2",
+          "label": "Feel along the shelf line by touch, saving the lamp.",
+          "target": "bk_feel"
+        },
+        {
+          "id": "c_bk_door_3",
+          "label": "Call Fen down to talk you through his shop by heart.",
+          "target": "bk_guide"
+        }
+      ]
+    },
+    {
+      "id": "bk_stacks",
+      "body": "<<FILL v=2 role=choice words=95 function=decision>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_bk_stacks_1",
+          "label": "Go on up for the folio crate.",
+          "target": "bk_crate"
+        },
+        {
+          "id": "c_bk_stacks_2",
+          "label": "Stop over the river atlas and let it teach you.",
+          "target": "e_bk_lore"
+        }
+      ]
+    },
+    {
+      "id": "bk_feel",
+      "body": "<<FILL v=2 role=choice words=95 function=decision>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_bk_feel_1",
+          "label": "Freeze, then ease past the leaning shelf.",
+          "target": "bk_slip"
+        },
+        {
+          "id": "c_bk_feel_2",
+          "label": "Wedge the shelf steady with a scrap block first.",
+          "target": "bk_shelf"
+        }
+      ]
+    },
+    {
+      "id": "bk_shelf",
+      "body": "<<FILL v=2 role=rising words=85 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_bk_shelf_1",
+          "label": "On to the loft stair.",
+          "target": "bk_crate"
+        }
+      ]
+    },
+    {
+      "id": "bk_slip",
+      "body": "<<FILL v=2 role=rising words=90 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_bk_slip_1",
+          "label": "Steady everything and climb to the loft.",
+          "target": "bk_crate"
+        }
+      ]
+    },
+    {
+      "id": "bk_guide",
+      "body": "<<FILL v=2 role=choice words=95 function=decision>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_bk_guide_1",
+          "label": "Follow his voice up to the folio crate.",
+          "target": "bk_crate"
+        },
+        {
+          "id": "c_bk_guide_2",
+          "label": "Ask him about the open river atlas on the bench.",
+          "target": "e_bk_lore"
+        }
+      ]
+    },
+    {
+      "id": "bk_crate",
+      "body": "<<FILL v=2 role=choice words=105 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_bk_crate_1",
+          "label": "Load the crate; Fen waits dry in the loft for the brigade barge.",
+          "target": "bk_lower",
+          "effects": [
+            {
+              "op": "set",
+              "var": "laden",
+              "value": true
+            }
+          ]
+        },
+        {
+          "id": "c_bk_crate_2",
+          "label": "Take Fen; the crate stays high on the strongest shelf.",
+          "target": "bk_fen",
+          "effects": [
+            {
+              "op": "set",
+              "var": "laden",
+              "value": true
+            }
+          ]
+        },
+        {
+          "id": "c_bk_crate_3",
+          "label": "Wrap everything in double oilcloth first, then decide at the window.",
+          "target": "bk_wrap"
+        }
+      ]
+    },
+    {
+      "id": "bk_wrap",
+      "body": "<<FILL v=2 role=choice words=95 function=decision>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_bk_wrap_1",
+          "label": "Lower the crate; Fen stays for the barge.",
+          "target": "bk_lower",
+          "effects": [
+            {
+              "op": "set",
+              "var": "laden",
+              "value": true
+            }
+          ]
+        },
+        {
+          "id": "c_bk_wrap_2",
+          "label": "Leave the crate high; hand Fen down instead.",
+          "target": "bk_fen",
+          "effects": [
+            {
+              "op": "set",
+              "var": "laden",
+              "value": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "bk_lower",
+      "body": "<<FILL v=2 role=rising words=95 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_bk_lower_1",
+          "label": "Cast off careful with the crate lashed level.",
+          "target": "bk_done"
+        }
+      ]
+    },
+    {
+      "id": "bk_fen",
+      "body": "<<FILL v=2 role=rising words=95 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_bk_fen_1",
+          "label": "Push off and give the shop a moment of silence.",
+          "target": "bk_done"
+        }
+      ]
+    },
+    {
+      "id": "bk_done",
+      "body": "<<FILL v=2 role=choice words=110 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_bk_done_1",
+          "label": "Pole back to the granary dock and hand over.",
+          "target": "n_hub"
+        },
+        {
+          "id": "c_bk_done_2",
+          "label": "Cut across to Mill Lane while the low arch still clears.",
+          "target": "lp_arch",
+          "condition": {
+            "<": [
+              {
+                "var": "water"
+              },
+              2
+            ]
+          }
+        },
+        {
+          "id": "c_bk_done_3",
+          "label": "Make for the seawall muster as the sky greys.",
+          "target": "fin_muster"
+        },
+        {
+          "id": "c_bk_done_4",
+          "label": "Stay a while first, pressing wet pages flat with Fen's methods.",
+          "target": "e_bk_pages"
+        }
+      ],
+      "on_enter": [
+        {
+          "op": "inc",
+          "var": "water",
+          "value": 1,
+          "once": true
+        }
+      ]
+    },
+    {
+      "id": "e_bk_turnback",
+      "body": "<<FILL v=2 role=failure words=95 function=ending>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_bk_turnback",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "The Street Too Fast"
+      }
+    },
+    {
+      "id": "e_bk_lore",
+      "body": "<<FILL v=2 role=ending words=95 function=ending>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_bk_lore",
+        "valence": "positive",
+        "kind": "discovery",
+        "title": "The Book of the River"
+      }
+    },
+    {
+      "id": "e_bk_pages",
+      "body": "<<FILL v=2 role=ending words=95 function=ending>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_bk_pages",
+        "valence": "neutral",
+        "kind": "discovery",
+        "title": "The Wet-Paper Vigil"
+      }
+    },
+    {
+      "id": "ct_lane",
+      "body": "<<FILL v=2 role=choice words=105 function=decision>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ct_lane_1",
+          "label": "Read the chalk sign on the bakery door on your way to the hatch.",
+          "target": "ct_sign"
+        },
+        {
+          "id": "c_ct_lane_2",
+          "label": "Pole to the outside stair up to the loft door.",
+          "target": "ct_stair"
+        },
+        {
+          "id": "c_ct_lane_3",
+          "label": "Sit still in the lane and listen before choosing.",
+          "target": "ct_listen"
+        },
+        {
+          "id": "c_ct_lane_4",
+          "label": "Judge the lane's racing gutters wrong for boatwork tonight and go report it.",
+          "target": "e_ct_wait"
+        }
+      ]
+    },
+    {
+      "id": "ct_sign",
+      "body": "<<FILL v=2 role=rising words=90 function=decision>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ct_sign_1",
+          "label": "In through the delivery hatch.",
+          "target": "ct_hatch"
+        },
+        {
+          "id": "c_ct_sign_2",
+          "label": "Hold up and listen for where they all are.",
+          "target": "ct_listen"
+        }
+      ]
+    },
+    {
+      "id": "ct_listen",
+      "body": "<<FILL v=2 role=rising words=90 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ct_listen_1",
+          "label": "The young cry first: in through the hatch toward the ovens.",
+          "target": "ct_hatch"
+        },
+        {
+          "id": "c_ct_listen_2",
+          "label": "The crowd first: up the outside stair to the loft.",
+          "target": "ct_stair"
+        }
+      ]
+    },
+    {
+      "id": "ct_hatch",
+      "body": "<<FILL v=2 role=rising words=95 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ct_hatch_1",
+          "label": "Follow the counter road toward the ovens.",
+          "target": "ct_counter"
+        },
+        {
+          "id": "c_ct_hatch_2",
+          "label": "Cross to the great ovens directly.",
+          "target": "ct_ovens"
+        }
+      ]
+    },
+    {
+      "id": "ct_counter",
+      "body": "<<FILL v=2 role=rising words=90 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ct_counter_1",
+          "label": "To the ovens and the young cry.",
+          "target": "ct_ovens"
+        },
+        {
+          "id": "c_ct_counter_2",
+          "label": "Up the inner stair to the loft crowd.",
+          "target": "ct_loft"
+        }
+      ]
+    },
+    {
+      "id": "ct_stair",
+      "body": "<<FILL v=2 role=rising words=95 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ct_stair_1",
+          "label": "In among the loft colony.",
+          "target": "ct_loft"
+        },
+        {
+          "id": "c_ct_stair_2",
+          "label": "Down the inner stair first, toward the crying near the ovens.",
+          "target": "ct_counter"
+        }
+      ]
+    },
+    {
+      "id": "ct_ovens",
+      "body": "<<FILL v=2 role=choice words=100 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ct_ovens_1",
+          "label": "Burn lamp oil and light the oven mouth to work by.",
+          "target": "ct_kits",
+          "condition": {
+            ">=": [
+              {
+                "var": "oil"
+              },
+              1
+            ]
+          },
+          "effects": [
+            {
+              "op": "dec",
+              "var": "oil",
+              "value": 1
+            }
+          ]
+        },
+        {
+          "id": "c_ct_ovens_2",
+          "label": "Coax her out with the sardine tin from your oilskin pocket.",
+          "target": "ct_coax"
+        },
+        {
+          "id": "c_ct_ovens_3",
+          "label": "Reach in on faith and hurry.",
+          "target": "ct_scratch"
+        }
+      ]
+    },
+    {
+      "id": "ct_kits",
+      "body": "<<FILL v=2 role=rising words=90 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ct_kits_1",
+          "label": "Settle them in the basket, queen last, and back along the counter.",
+          "target": "ct_warm"
+        }
+      ]
+    },
+    {
+      "id": "ct_warm",
+      "body": "<<FILL v=2 role=rising words=85 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ct_warm_1",
+          "label": "Now the loft crowd; carry the basket up.",
+          "target": "ct_basket"
+        }
+      ]
+    },
+    {
+      "id": "ct_coax",
+      "body": "<<FILL v=2 role=rising words=90 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ct_coax_1",
+          "label": "Carry the young family up toward the loft crowd.",
+          "target": "ct_basket"
+        }
+      ]
+    },
+    {
+      "id": "ct_scratch",
+      "body": "<<FILL v=2 role=rising words=85 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ct_scratch_1",
+          "label": "Kneel back and try it her way, with the sardine tin.",
+          "target": "ct_coax"
+        }
+      ]
+    },
+    {
+      "id": "ct_loft",
+      "body": "<<FILL v=2 role=choice words=100 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ct_loft_1",
+          "label": "Pay respects to the old tom first and win the room.",
+          "target": "ct_tom"
+        },
+        {
+          "id": "c_ct_loft_2",
+          "label": "Open the loft shutter and rig the gangplank to the skiff.",
+          "target": "ct_plank"
+        }
+      ]
+    },
+    {
+      "id": "ct_tom",
+      "body": "<<FILL v=2 role=choice words=95 function=decision>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ct_tom_1",
+          "label": "Basket the willing ones while the treaty holds.",
+          "target": "ct_basket"
+        },
+        {
+          "id": "c_ct_tom_2",
+          "label": "Open the shutter and let him lead them down the plank himself.",
+          "target": "ct_plank"
+        }
+      ]
+    },
+    {
+      "id": "ct_plank",
+      "body": "<<FILL v=2 role=rising words=95 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ct_plank_1",
+          "label": "Steady the plank and count them aboard.",
+          "target": "ct_basket"
+        }
+      ]
+    },
+    {
+      "id": "ct_basket",
+      "body": "<<FILL v=2 role=choice words=105 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ct_basket_1",
+          "label": "Push off with the ark and trust the barge for stragglers.",
+          "target": "ct_ferry"
+        },
+        {
+          "id": "c_ct_basket_2",
+          "label": "One more patient try for the two under the table.",
+          "target": "ct_hiders"
+        }
+      ]
+    },
+    {
+      "id": "ct_hiders",
+      "body": "<<FILL v=2 role=choice words=95 function=decision>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ct_hiders_1",
+          "label": "Wait them out with the last of the sardines.",
+          "target": "ct_bowl"
+        },
+        {
+          "id": "c_ct_hiders_2",
+          "label": "Leave the tin open for them and mark the spot for the brigade.",
+          "target": "e_ct_two"
+        }
+      ]
+    },
+    {
+      "id": "ct_bowl",
+      "body": "<<FILL v=2 role=rising words=90 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ct_bowl_1",
+          "label": "Thirteen aboard; push off for the granary.",
+          "target": "ct_ferry"
+        }
+      ]
+    },
+    {
+      "id": "ct_ferry",
+      "body": "<<FILL v=2 role=rising words=100 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ct_ferry_1",
+          "label": "Bring the ark alongside the granary dock.",
+          "target": "ct_done"
+        }
+      ]
+    },
+    {
+      "id": "ct_done",
+      "body": "<<FILL v=2 role=choice words=110 function=decision>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ct_done_1",
+          "label": "Back to the tally board for the next street.",
+          "target": "n_hub"
+        },
+        {
+          "id": "c_ct_done_2",
+          "label": "Head for the seawall muster forming in the grey.",
+          "target": "fin_muster"
+        },
+        {
+          "id": "c_ct_done_3",
+          "label": "Stay in the loft a moment among the settling fur.",
+          "target": "e_ct_ark"
+        }
+      ],
+      "on_enter": [
+        {
+          "op": "inc",
+          "var": "water",
+          "value": 1,
+          "once": true
+        }
+      ]
+    },
+    {
+      "id": "e_ct_wait",
+      "body": "<<FILL v=2 role=failure words=95 function=ending>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_ct_wait",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "A Lane Left for the Barge"
+      }
+    },
+    {
+      "id": "e_ct_two",
+      "body": "<<FILL v=2 role=ending words=95 function=ending>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_ct_two",
+        "valence": "neutral",
+        "kind": "setback",
+        "title": "The Two Who Stayed"
+      }
+    },
+    {
+      "id": "e_ct_ark",
+      "body": "<<FILL v=2 role=ending words=95 function=ending>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_ct_ark",
+        "valence": "positive",
+        "kind": "discovery",
+        "title": "The Ark of Bakery Lane"
+      }
+    },
+    {
+      "id": "ph_cross",
+      "body": "<<FILL v=2 role=choice words=105 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ph_cross_1",
+          "label": "Read the braided cross-current before committing the skiff.",
+          "target": "ph_current"
+        },
+        {
+          "id": "c_ph_cross_2",
+          "label": "Have Salma talk the route and the shop's insides first.",
+          "target": "ph_plan"
+        },
+        {
+          "id": "c_ph_cross_3",
+          "label": "Skip the cross entirely and slip up the side alley.",
+          "target": "ph_alley"
+        }
+      ]
+    },
+    {
+      "id": "ph_current",
+      "body": "<<FILL v=2 role=choice words=95 function=decision>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ph_current_1",
+          "label": "Take the slack lane to the front steps and the ring bolt.",
+          "target": "ph_ring"
+        },
+        {
+          "id": "c_ph_current_2",
+          "label": "Call it past saving by skiff and go report for the brigade.",
+          "target": "e_ph_shy"
+        }
+      ],
+      "safety_scope": [
+        "peril"
+      ]
+    },
+    {
+      "id": "ph_plan",
+      "body": "<<FILL v=2 role=rising words=95 function=decision>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ph_plan_1",
+          "label": "In by the front steps and the ring bolt.",
+          "target": "ph_ring"
+        },
+        {
+          "id": "c_ph_plan_2",
+          "label": "In by the alley window she unlatches.",
+          "target": "ph_alley"
+        }
+      ]
+    },
+    {
+      "id": "ph_ring",
+      "body": "<<FILL v=2 role=rising words=90 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ph_ring_1",
+          "label": "Along the counter road toward the back dispensary.",
+          "target": "ph_shelf"
+        },
+        {
+          "id": "c_ph_ring_2",
+          "label": "Pause under the ceiling boards where Salma is talking.",
+          "target": "ph_boy"
+        }
+      ]
+    },
+    {
+      "id": "ph_alley",
+      "body": "<<FILL v=2 role=rising words=90 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ph_alley_1",
+          "label": "Work along the shelf tops to the back dispensary.",
+          "target": "ph_shelf"
+        },
+        {
+          "id": "c_ph_alley_2",
+          "label": "Stop beneath the stairwell where Salma waits with instructions.",
+          "target": "ph_boy"
+        }
+      ]
+    },
+    {
+      "id": "ph_shelf",
+      "body": "<<FILL v=2 role=rising words=90 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ph_shelf_1",
+          "label": "Into the dark dispensary.",
+          "target": "ph_dispensary"
+        },
+        {
+          "id": "c_ph_shelf_2",
+          "label": "A word with Salma first, through the stair rail.",
+          "target": "ph_boy"
+        }
+      ]
+    },
+    {
+      "id": "ph_boy",
+      "body": "<<FILL v=2 role=rising words=95 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ph_boy_1",
+          "label": "Into the dark dispensary with the facts for company.",
+          "target": "ph_dispensary"
+        }
+      ]
+    },
+    {
+      "id": "ph_dispensary",
+      "body": "<<FILL v=2 role=choice words=105 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ph_dispensary_1",
+          "label": "Burn lamp oil and light the room properly.",
+          "target": "ph_lampin",
+          "condition": {
+            ">=": [
+              {
+                "var": "oil"
+              },
+              1
+            ]
+          },
+          "effects": [
+            {
+              "op": "dec",
+              "var": "oil",
+              "value": 1
+            }
+          ]
+        },
+        {
+          "id": "c_ph_dispensary_2",
+          "label": "Have Salma call the shelf numbers blind from the stair.",
+          "target": "ph_call"
+        },
+        {
+          "id": "c_ph_dispensary_3",
+          "label": "Lay her stock-taking plank and cross by feel and balance.",
+          "target": "ph_plank"
+        }
+      ]
+    },
+    {
+      "id": "ph_lampin",
+      "body": "<<FILL v=2 role=rising words=90 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ph_lampin_1",
+          "label": "To the chest, hands sure in the light.",
+          "target": "ph_chest"
+        }
+      ]
+    },
+    {
+      "id": "ph_call",
+      "body": "<<FILL v=2 role=rising words=95 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ph_call_1",
+          "label": "Hands on the chest; now the moving of it.",
+          "target": "ph_chest"
+        }
+      ]
+    },
+    {
+      "id": "ph_plank",
+      "body": "<<FILL v=2 role=rising words=95 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ph_plank_1",
+          "label": "Steady on the shelf end; now the chest.",
+          "target": "ph_chest"
+        }
+      ]
+    },
+    {
+      "id": "ph_chest",
+      "body": "<<FILL v=2 role=choice words=105 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ph_chest_1",
+          "label": "Slide it along the counter road and out the transom.",
+          "target": "ph_slide",
+          "condition": {
+            "==": [
+              {
+                "var": "laden"
+              },
+              false
+            ]
+          },
+          "effects": [
+            {
+              "op": "set",
+              "var": "laden",
+              "value": true
+            }
+          ]
+        },
+        {
+          "id": "c_ph_chest_2",
+          "label": "Rope it down from the stair window like a crane-man.",
+          "target": "ph_rope",
+          "condition": {
+            "==": [
+              {
+                "var": "laden"
+              },
+              false
+            ]
+          },
+          "effects": [
+            {
+              "op": "set",
+              "var": "laden",
+              "value": true
+            }
+          ]
+        },
+        {
+          "id": "c_ph_chest_3",
+          "label": "Take only the urgent-doses satchel Salma packs; the chest rides the barge later.",
+          "target": "ph_satchel"
+        }
+      ]
+    },
+    {
+      "id": "ph_slide",
+      "body": "<<FILL v=2 role=rising words=90 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ph_slide_1",
+          "label": "Now the cold packs, before anything else.",
+          "target": "ph_pack"
+        }
+      ]
+    },
+    {
+      "id": "ph_rope",
+      "body": "<<FILL v=2 role=rising words=90 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ph_rope_1",
+          "label": "Now the cold packs, quick.",
+          "target": "ph_pack"
+        }
+      ]
+    },
+    {
+      "id": "ph_satchel",
+      "body": "<<FILL v=2 role=rising words=90 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ph_satchel_1",
+          "label": "Cold packs around the vials, then go.",
+          "target": "ph_pack"
+        }
+      ]
+    },
+    {
+      "id": "ph_pack",
+      "body": "<<FILL v=2 role=rising words=95 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ph_pack_1",
+          "label": "Lash it and double-check before pushing off.",
+          "target": "ph_check"
+        }
+      ]
+    },
+    {
+      "id": "ph_check",
+      "body": "<<FILL v=2 role=rising words=90 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ph_check_1",
+          "label": "Out to the window for a last word with Salma.",
+          "target": "ph_ice"
+        }
+      ]
+    },
+    {
+      "id": "ph_ice",
+      "body": "<<FILL v=2 role=choice words=100 function=decision>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ph_ice_1",
+          "label": "Urge her once to ride along anyway.",
+          "target": "ph_stay"
+        },
+        {
+          "id": "c_ph_ice_2",
+          "label": "Push off careful for the granary, cold and level.",
+          "target": "ph_done"
+        },
+        {
+          "id": "c_ph_ice_3",
+          "label": "Offer to stay instead and run her list of neighbors all night.",
+          "target": "e_ph_ledger"
+        }
+      ]
+    },
+    {
+      "id": "ph_stay",
+      "body": "<<FILL v=2 role=rising words=90 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ph_stay_1",
+          "label": "Pole for the granary, cold and level.",
+          "target": "ph_done"
+        }
+      ]
+    },
+    {
+      "id": "ph_done",
+      "body": "<<FILL v=2 role=choice words=110 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ph_done_1",
+          "label": "Straight to the granary dock and the shelter nurse.",
+          "target": "n_hub"
+        },
+        {
+          "id": "c_ph_done_2",
+          "label": "Two streets on to Weaver's Stair first, since the skiff is this side.",
+          "target": "os_stair"
+        },
+        {
+          "id": "c_ph_done_3",
+          "label": "Make for the seawall muster in the greying light.",
+          "target": "fin_muster"
+        },
+        {
+          "id": "c_ph_done_4",
+          "label": "Pole straight in and stay to help the nurse rig the cold-store.",
+          "target": "e_ph_cold"
+        }
+      ],
+      "on_enter": [
+        {
+          "op": "inc",
+          "var": "water",
+          "value": 1,
+          "once": true
+        }
+      ]
+    },
+    {
+      "id": "e_ph_shy",
+      "body": "<<FILL v=2 role=failure words=95 function=ending>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_ph_shy",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "Reported, Not Reached"
+      }
+    },
+    {
+      "id": "e_ph_ledger",
+      "body": "<<FILL v=2 role=ending words=95 function=ending>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_ph_ledger",
+        "valence": "neutral",
+        "kind": "discovery",
+        "title": "The List-Runner"
+      }
+    },
+    {
+      "id": "e_ph_cold",
+      "body": "<<FILL v=2 role=ending words=95 function=ending>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_ph_cold",
+        "valence": "positive",
+        "kind": "discovery",
+        "title": "The Cold Chain"
+      }
+    },
+    {
+      "id": "os_stair",
+      "body": "<<FILL v=2 role=choice words=105 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_os_stair_1",
+          "label": "Pick the line up the stepped pools of the lane side.",
+          "target": "os_water"
+        },
+        {
+          "id": "c_os_stair_2",
+          "label": "Go around by the garden side and the wash-house eave.",
+          "target": "os_garden"
+        },
+        {
+          "id": "c_os_stair_3",
+          "label": "Call up to her from open water first.",
+          "target": "os_call"
+        }
+      ]
+    },
+    {
+      "id": "os_water",
+      "body": "<<FILL v=2 role=rising words=90 function=decision>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_os_water_1",
+          "label": "Come in under her eaves on the lane side.",
+          "target": "os_lane"
+        },
+        {
+          "id": "c_os_water_2",
+          "label": "Hail her while working closer.",
+          "target": "os_call"
+        }
+      ]
+    },
+    {
+      "id": "os_call",
+      "body": "<<FILL v=2 role=choice words=95 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_os_call_1",
+          "label": "Work in close under the lane-side eaves while she talks.",
+          "target": "os_lane"
+        },
+        {
+          "id": "c_os_call_2",
+          "label": "Come at the garden side where the low eave sits.",
+          "target": "os_garden"
+        }
+      ]
+    },
+    {
+      "id": "os_lane",
+      "body": "<<FILL v=2 role=rising words=90 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_os_lane_1",
+          "label": "Alongside the roof edge to talk terms.",
+          "target": "os_roof"
+        },
+        {
+          "id": "c_os_lane_2",
+          "label": "Ask her first which neighbors' windows have gone dark.",
+          "target": "os_neighbors"
+        }
+      ]
+    },
+    {
+      "id": "os_garden",
+      "body": "<<FILL v=2 role=rising words=90 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_os_garden_1",
+          "label": "Along the wash-house eave to the roof edge.",
+          "target": "os_roof"
+        },
+        {
+          "id": "c_os_garden_2",
+          "label": "Ask after the neighbors while working closer.",
+          "target": "os_neighbors"
+        }
+      ]
+    },
+    {
+      "id": "os_neighbors",
+      "body": "<<FILL v=2 role=rising words=95 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_os_neighbors_1",
+          "label": "Alongside the roof edge to settle her own question.",
+          "target": "os_roof"
+        }
+      ]
+    },
+    {
+      "id": "os_roof",
+      "body": "<<FILL v=2 role=choice words=110 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_os_roof_1",
+          "label": "Bring the gunwale level with the eaves and hold it there.",
+          "target": "os_eaves",
+          "condition": {
+            ">=": [
+              {
+                "var": "water"
+              },
+              1
+            ]
+          }
+        },
+        {
+          "id": "c_os_roof_2",
+          "label": "Rig the rope ladder to the ring bolt, proper and tested.",
+          "target": "os_ladder"
+        },
+        {
+          "id": "c_os_roof_3",
+          "label": "Ship the pole and simply talk with her first.",
+          "target": "os_talk"
+        }
+      ]
+    },
+    {
+      "id": "os_eaves",
+      "body": "<<FILL v=2 role=choice words=100 function=decision>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_os_eaves_1",
+          "label": "Take her aboard across the rail, one steady step.",
+          "target": "os_aboard",
+          "condition": {
+            "==": [
+              {
+                "var": "laden"
+              },
+              false
+            ]
+          },
+          "effects": [
+            {
+              "op": "set",
+              "var": "laden",
+              "value": true
+            }
+          ]
+        },
+        {
+          "id": "c_os_eaves_2",
+          "label": "Steady her while she hands down the hatbox and the photograph tin first.",
+          "target": "os_things"
+        }
+      ]
+    },
+    {
+      "id": "os_ladder",
+      "body": "<<FILL v=2 role=choice words=100 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_os_ladder_1",
+          "label": "Steady the ladder and hand her down into the skiff.",
+          "target": "os_aboard",
+          "condition": {
+            "==": [
+              {
+                "var": "laden"
+              },
+              false
+            ]
+          },
+          "effects": [
+            {
+              "op": "set",
+              "var": "laden",
+              "value": true
+            }
+          ]
+        },
+        {
+          "id": "c_os_ladder_2",
+          "label": "The skiff is carrying all it can; make her warm and set the signal instead.",
+          "target": "os_signal"
+        }
+      ]
+    },
+    {
+      "id": "os_things",
+      "body": "<<FILL v=2 role=choice words=95 function=decision>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_os_things_1",
+          "label": "Hand her down after them, slow and sure.",
+          "target": "os_aboard",
+          "condition": {
+            "==": [
+              {
+                "var": "laden"
+              },
+              false
+            ]
+          },
+          "effects": [
+            {
+              "op": "set",
+              "var": "laden",
+              "value": true
+            }
+          ]
+        },
+        {
+          "id": "c_os_things_2",
+          "label": "No room left aboard tonight; wrap her warm and set the signal.",
+          "target": "os_signal"
+        }
+      ]
+    },
+    {
+      "id": "os_talk",
+      "body": "<<FILL v=2 role=choice words=95 function=decision>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_os_talk_1",
+          "label": "Accept the tea and let her take the long way to yes.",
+          "target": "os_brazier"
+        },
+        {
+          "id": "c_os_talk_2",
+          "label": "Insist, gently: the river is not done rising; rig the ladder.",
+          "target": "os_ladder"
+        }
+      ]
+    },
+    {
+      "id": "os_brazier",
+      "body": "<<FILL v=2 role=choice words=95 function=decision>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_os_brazier_1",
+          "label": "Rig the ladder now, while the agreeing lasts.",
+          "target": "os_ladder"
+        },
+        {
+          "id": "c_os_brazier_2",
+          "label": "Accept instead her list of neighbors to check on all night.",
+          "target": "e_os_list"
+        }
+      ]
+    },
+    {
+      "id": "os_signal",
+      "body": "<<FILL v=2 role=choice words=100 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_os_signal_1",
+          "label": "Burn the lamp bright in the three-and-one pattern Brice taught.",
+          "target": "os_brigade",
+          "condition": {
+            ">=": [
+              {
+                "var": "oil"
+              },
+              1
+            ]
+          },
+          "effects": [
+            {
+              "op": "dec",
+              "var": "oil",
+              "value": 1
+            }
+          ]
+        },
+        {
+          "id": "c_os_signal_2",
+          "label": "Strike the old roof bell and let it carry.",
+          "target": "os_bell"
+        },
+        {
+          "id": "c_os_signal_3",
+          "label": "Your hands are past managing more tonight; wait with her for the brigade.",
+          "target": "e_os_hold"
+        }
+      ]
+    },
+    {
+      "id": "os_brigade",
+      "body": "<<FILL v=2 role=rising words=95 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_os_brigade_1",
+          "label": "Hand over to the brigade and take your leave of her.",
+          "target": "os_done"
+        }
+      ]
+    },
+    {
+      "id": "os_bell",
+      "body": "<<FILL v=2 role=rising words=95 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_os_bell_1",
+          "label": "Keep station and keep her talking till the lights come.",
+          "target": "os_wait"
+        }
+      ]
+    },
+    {
+      "id": "os_wait",
+      "body": "<<FILL v=2 role=rising words=90 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_os_wait_1",
+          "label": "Leave her in brigade hands and pole away.",
+          "target": "os_done"
+        }
+      ]
+    },
+    {
+      "id": "os_aboard",
+      "body": "<<FILL v=2 role=choice words=100 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_os_aboard_1",
+          "label": "Rig her great green umbrella as a canopy first.",
+          "target": "os_umbrella"
+        },
+        {
+          "id": "c_os_aboard_2",
+          "label": "Pole for the granary under her direction.",
+          "target": "os_done"
+        }
+      ]
+    },
+    {
+      "id": "os_umbrella",
+      "body": "<<FILL v=2 role=rising words=85 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_os_umbrella_1",
+          "label": "Proceed, stately, for the granary.",
+          "target": "os_done"
+        }
+      ]
+    },
+    {
+      "id": "os_done",
+      "body": "<<FILL v=2 role=choice words=110 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_os_done_1",
+          "label": "Back to the granary dock.",
+          "target": "n_hub"
+        },
+        {
+          "id": "c_os_done_2",
+          "label": "Swing past Chandler's Cross on the way, since the skiff is this side.",
+          "target": "ph_cross"
+        },
+        {
+          "id": "c_os_done_3",
+          "label": "Make for the seawall muster in the first grey.",
+          "target": "fin_muster"
+        },
+        {
+          "id": "c_os_done_4",
+          "label": "Let her flood-lore fill the whole slow pole home.",
+          "target": "e_os_stories"
+        }
+      ],
+      "on_enter": [
+        {
+          "op": "inc",
+          "var": "water",
+          "value": 1,
+          "once": true
+        }
+      ]
+    },
+    {
+      "id": "e_os_list",
+      "body": "<<FILL v=2 role=ending words=95 function=ending>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_os_list",
+        "valence": "neutral",
+        "kind": "discovery",
+        "title": "Osei's List"
+      }
+    },
+    {
+      "id": "e_os_hold",
+      "body": "<<FILL v=2 role=failure words=95 function=ending>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_os_hold",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "The Long Cold Wait"
+      },
+      "safety_scope": [
+        "peril"
+      ]
+    },
+    {
+      "id": "e_os_stories",
+      "body": "<<FILL v=2 role=ending words=95 function=ending>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_os_stories",
+        "valence": "positive",
+        "kind": "discovery",
+        "title": "Four Floods Deep"
+      }
+    },
+    {
+      "id": "lp_arch",
+      "body": "<<FILL v=2 role=choice words=100 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_lp_arch_1",
+          "label": "Duck low and take the arch slow and level.",
+          "target": "lp_echo"
+        },
+        {
+          "id": "c_lp_arch_2",
+          "label": "Back-water at the mouth and listen through first.",
+          "target": "lp_listen"
+        }
+      ],
+      "safety_scope": [
+        "peril"
+      ]
+    },
+    {
+      "id": "lp_echo",
+      "body": "<<FILL v=2 role=rising words=90 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_lp_echo_1",
+          "label": "Out into Mill Lane proper.",
+          "target": "lp_lane"
+        }
+      ],
+      "safety_scope": [
+        "peril"
+      ]
+    },
+    {
+      "id": "lp_listen",
+      "body": "<<FILL v=2 role=choice words=90 function=decision>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_lp_listen_1",
+          "label": "Through the arch to them.",
+          "target": "lp_lane"
+        },
+        {
+          "id": "c_lp_listen_2",
+          "label": "They are safe enough perched; mark the spot and fetch the brigade to it.",
+          "target": "e_lp_fetch"
+        }
+      ]
+    },
+    {
+      "id": "lp_lane",
+      "body": "<<FILL v=2 role=choice words=105 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_lp_lane_1",
+          "label": "Hail them and get names and steadiness going.",
+          "target": "lp_hail"
+        },
+        {
+          "id": "c_lp_lane_2",
+          "label": "Burn lamp oil and pole the dark line under the gantry to read its bones.",
+          "target": "lp_under",
+          "condition": {
+            ">=": [
+              {
+                "var": "oil"
+              },
+              1
+            ]
+          },
+          "effects": [
+            {
+              "op": "dec",
+              "var": "oil",
+              "value": 1
+            }
+          ]
+        },
+        {
+          "id": "c_lp_lane_3",
+          "label": "Stand off in open water and read the whole span first.",
+          "target": "lp_survey"
+        }
+      ]
+    },
+    {
+      "id": "lp_hail",
+      "body": "<<FILL v=2 role=choice words=95 function=decision>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_lp_hail_1",
+          "label": "Let Tick's chatter map the gantry while it steadies them both.",
+          "target": "lp_tick"
+        },
+        {
+          "id": "c_lp_hail_2",
+          "label": "Enough talk; weigh the ways down.",
+          "target": "lp_plan"
+        }
+      ]
+    },
+    {
+      "id": "lp_tick",
+      "body": "<<FILL v=2 role=rising words=95 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_lp_tick_1",
+          "label": "Weigh the ways down with the map in hand.",
+          "target": "lp_plan"
+        }
+      ]
+    },
+    {
+      "id": "lp_under",
+      "body": "<<FILL v=2 role=rising words=95 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_lp_under_1",
+          "label": "Surface the facts and weigh the ways down.",
+          "target": "lp_plan"
+        }
+      ]
+    },
+    {
+      "id": "lp_survey",
+      "body": "<<FILL v=2 role=choice words=95 function=decision>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_lp_survey_1",
+          "label": "Weigh the ways down.",
+          "target": "lp_plan"
+        },
+        {
+          "id": "c_lp_survey_2",
+          "label": "Watch their guttering lamp a moment; minutes matter now.",
+          "target": "lp_gutter"
+        }
+      ]
+    },
+    {
+      "id": "lp_gutter",
+      "body": "<<FILL v=2 role=rising words=90 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_lp_gutter_1",
+          "label": "Decide now.",
+          "target": "lp_plan"
+        }
+      ]
+    },
+    {
+      "id": "lp_plan",
+      "body": "<<FILL v=2 role=choice words=110 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_lp_plan_1",
+          "label": "Rope work: make the skiff their landing and bring both aboard.",
+          "target": "lp_knots",
+          "condition": {
+            "==": [
+              {
+                "var": "laden"
+              },
+              false
+            ]
+          }
+        },
+        {
+          "id": "c_lp_plan_2",
+          "label": "Walk them the catwalk to the far stair stub, pacing alongside.",
+          "target": "lp_walk"
+        },
+        {
+          "id": "c_lp_plan_3",
+          "label": "Their lamp first: talk Tick through relighting it so all this happens in light.",
+          "target": "lp_lamp"
+        },
+        {
+          "id": "c_lp_plan_4",
+          "label": "The sag is getting worse as you watch; this is brigade work, signal and hold.",
+          "target": "e_lp_brigade"
+        }
+      ]
+    },
+    {
+      "id": "lp_knots",
+      "body": "<<FILL v=2 role=rising words=95 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_lp_knots_1",
+          "label": "Bram lowers Tick first, then follows; hand each one down to the boards.",
+          "target": "lp_rope",
+          "effects": [
+            {
+              "op": "set",
+              "var": "laden",
+              "value": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "lp_rope",
+      "body": "<<FILL v=2 role=choice words=100 function=decision>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_lp_rope_1",
+          "label": "Pole for home with both of them aboard.",
+          "target": "lp_done"
+        },
+        {
+          "id": "c_lp_rope_2",
+          "label": "Let them name the lane's lamps to you as you go.",
+          "target": "lp_lamps"
+        }
+      ]
+    },
+    {
+      "id": "lp_lamps",
+      "body": "<<FILL v=2 role=rising words=90 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_lp_lamps_1",
+          "label": "Home with the lamplighters and their litany.",
+          "target": "lp_done"
+        }
+      ]
+    },
+    {
+      "id": "lp_walk",
+      "body": "<<FILL v=2 role=rising words=100 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_lp_walk_1",
+          "label": "See them onto the dry stair stub at the mill footing.",
+          "target": "lp_stub"
+        }
+      ],
+      "safety_scope": [
+        "peril"
+      ]
+    },
+    {
+      "id": "lp_stub",
+      "body": "<<FILL v=2 role=rising words=95 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_lp_stub_1",
+          "label": "Turn for the arch and call it done.",
+          "target": "lp_done"
+        }
+      ]
+    },
+    {
+      "id": "lp_lamp",
+      "body": "<<FILL v=2 role=choice words=95 function=decision>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_lp_lamp_1",
+          "label": "Now the rope: skiff under the ring bolt, both boys aboard.",
+          "target": "lp_knots",
+          "condition": {
+            "==": [
+              {
+                "var": "laden"
+              },
+              false
+            ]
+          }
+        },
+        {
+          "id": "c_lp_lamp_2",
+          "label": "Now the catwalk: walk them to the far stair stub in the new light.",
+          "target": "lp_walk"
+        }
+      ]
+    },
+    {
+      "id": "lp_done",
+      "body": "<<FILL v=2 role=choice words=110 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_lp_done_1",
+          "label": "Back through to the granary dock.",
+          "target": "n_hub"
+        },
+        {
+          "id": "c_lp_done_2",
+          "label": "Make for the seawall muster.",
+          "target": "fin_muster"
+        },
+        {
+          "id": "c_lp_done_3",
+          "label": "Let Bram and Tick teach you the lamplighters' round on the way.",
+          "target": "e_lp_lampsong"
+        }
+      ],
+      "on_enter": [
+        {
+          "op": "inc",
+          "var": "water",
+          "value": 1,
+          "once": true
+        }
+      ]
+    },
+    {
+      "id": "e_lp_fetch",
+      "body": "<<FILL v=2 role=ending words=95 function=ending>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_lp_fetch",
+        "valence": "neutral",
+        "kind": "setback",
+        "title": "The Fetcher"
+      }
+    },
+    {
+      "id": "e_lp_brigade",
+      "body": "<<FILL v=2 role=failure words=95 function=ending>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_lp_brigade",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "Held for the Brigade"
+      },
+      "safety_scope": [
+        "peril"
+      ]
+    },
+    {
+      "id": "e_lp_lampsong",
+      "body": "<<FILL v=2 role=ending words=95 function=ending>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_lp_lampsong",
+        "valence": "positive",
+        "kind": "discovery",
+        "title": "Keepers of the Lamps"
+      }
+    },
+    {
+      "id": "fin_muster",
+      "body": "<<FILL v=2 role=choice words=110 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fin_muster_1",
+          "label": "Tie into the raft and report to Brice at the head of the stair.",
+          "target": "fin_signal"
+        }
+      ],
+      "on_enter": [
+        {
+          "op": "set",
+          "var": "laden",
+          "value": false
+        }
+      ]
+    },
+    {
+      "id": "fin_signal",
+      "body": "<<FILL v=2 role=choice words=100 function=decision>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fin_signal_1",
+          "label": "Join the watch line walking the seawall parapet.",
+          "target": "fin_wall"
+        },
+        {
+          "id": "c_fin_signal_2",
+          "label": "Take a turn in the pump relay in the granary undercroft.",
+          "target": "fin_pump"
+        },
+        {
+          "id": "c_fin_signal_3",
+          "label": "Sit to the tally desk and help bring the count square.",
+          "target": "fin_count"
+        }
+      ]
+    },
+    {
+      "id": "fin_wall",
+      "body": "<<FILL v=2 role=choice words=100 function=decision>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fin_wall_1",
+          "label": "Take the empty lamp station mid-wall.",
+          "target": "fin_wall_a"
+        },
+        {
+          "id": "c_fin_wall_2",
+          "label": "Run the inch-mark messages between stations.",
+          "target": "fin_wall_b"
+        }
+      ]
+    },
+    {
+      "id": "fin_wall_a",
+      "body": "<<FILL v=2 role=choice words=95 function=decision>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fin_wall_a_1",
+          "label": "Pass your watch to the relief and rejoin the muster.",
+          "target": "fin_wall_j"
+        },
+        {
+          "id": "c_fin_wall_a_2",
+          "label": "Stand the station straight through to full light.",
+          "target": "e_wall_dawn"
+        }
+      ]
+    },
+    {
+      "id": "fin_wall_b",
+      "body": "<<FILL v=2 role=choice words=95 function=decision>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fin_wall_b_1",
+          "label": "Hand the route to a fresh runner and rejoin the muster.",
+          "target": "fin_wall_j"
+        },
+        {
+          "id": "c_fin_wall_b_2",
+          "label": "Keep the route through the slack turn of the tide.",
+          "target": "e_wall_lull"
+        }
+      ]
+    },
+    {
+      "id": "fin_wall_j",
+      "body": "<<FILL v=2 role=rising words=90 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fin_wall_j_1",
+          "label": "Report the wall steady to the muster head.",
+          "target": "fin_wall_r"
+        }
+      ]
+    },
+    {
+      "id": "fin_wall_r",
+      "body": "<<FILL v=2 role=rising words=85 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fin_wall_r_1",
+          "label": "Stand with the muster as the word comes down the valley.",
+          "target": "fin_crest"
+        }
+      ]
+    },
+    {
+      "id": "fin_pump",
+      "body": "<<FILL v=2 role=choice words=100 function=decision>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fin_pump_1",
+          "label": "Take the pump bar in the relay.",
+          "target": "fin_pump_a"
+        },
+        {
+          "id": "c_fin_pump_2",
+          "label": "Set the pace on the bucket-chain.",
+          "target": "fin_pump_b"
+        }
+      ]
+    },
+    {
+      "id": "fin_pump_a",
+      "body": "<<FILL v=2 role=choice words=95 function=decision>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fin_pump_a_1",
+          "label": "Swap out on the turn and rejoin the muster.",
+          "target": "fin_pump_j"
+        },
+        {
+          "id": "c_fin_pump_a_2",
+          "label": "Refuse the swap once too often and spend what's left.",
+          "target": "e_pump_out"
+        }
+      ]
+    },
+    {
+      "id": "fin_pump_b",
+      "body": "<<FILL v=2 role=choice words=95 function=decision>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fin_pump_b_1",
+          "label": "Hand the pace to the next singer and rejoin the muster.",
+          "target": "fin_pump_j"
+        },
+        {
+          "id": "c_fin_pump_b_2",
+          "label": "Keep the song going till the level visibly drops.",
+          "target": "e_pump_song"
+        }
+      ]
+    },
+    {
+      "id": "fin_pump_j",
+      "body": "<<FILL v=2 role=rising words=90 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fin_pump_j_1",
+          "label": "Report the pumps holding to the muster head.",
+          "target": "fin_pump_r"
+        }
+      ]
+    },
+    {
+      "id": "fin_pump_r",
+      "body": "<<FILL v=2 role=rising words=85 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fin_pump_r_1",
+          "label": "Stand with the muster as the word comes down the valley.",
+          "target": "fin_crest"
+        }
+      ]
+    },
+    {
+      "id": "fin_count",
+      "body": "<<FILL v=2 role=choice words=100 function=decision>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fin_count_1",
+          "label": "Call the roll of streets aloud while Brice chalks.",
+          "target": "fin_count_a"
+        },
+        {
+          "id": "c_fin_count_2",
+          "label": "Cross-check the shelter ledger against the board.",
+          "target": "fin_count_b"
+        }
+      ]
+    },
+    {
+      "id": "fin_count_a",
+      "body": "<<FILL v=2 role=choice words=95 function=decision>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fin_count_a_1",
+          "label": "Finish the roll and carry the board to the muster head.",
+          "target": "fin_count_j"
+        },
+        {
+          "id": "c_fin_count_a_2",
+          "label": "Stay on the roll until every last street answers.",
+          "target": "e_count_names"
+        }
+      ]
+    },
+    {
+      "id": "fin_count_b",
+      "body": "<<FILL v=2 role=choice words=95 function=decision>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fin_count_b_1",
+          "label": "Rule the last line and carry the ledger up.",
+          "target": "fin_count_j"
+        },
+        {
+          "id": "c_fin_count_b_2",
+          "label": "Keep the quiet arithmetic going till both books agree everywhere.",
+          "target": "e_count_quiet"
+        }
+      ]
+    },
+    {
+      "id": "fin_count_j",
+      "body": "<<FILL v=2 role=rising words=90 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fin_count_j_1",
+          "label": "Take the squared count to the muster head.",
+          "target": "fin_count_r"
+        }
+      ]
+    },
+    {
+      "id": "fin_count_r",
+      "body": "<<FILL v=2 role=rising words=85 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fin_count_r_1",
+          "label": "Stand with the muster as the word comes down the valley.",
+          "target": "fin_crest"
+        }
+      ]
+    },
+    {
+      "id": "fin_crest",
+      "body": "<<FILL v=2 role=rising words=105 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fin_crest_1",
+          "label": "Watch the marks start their first slow retreat.",
+          "target": "fin_dawn"
+        }
+      ]
+    },
+    {
+      "id": "fin_dawn",
+      "body": "<<FILL v=2 role=rising words=95 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fin_dawn_1",
+          "label": "Turn from the wall toward Brice and the board.",
+          "target": "fin_sun"
+        }
+      ]
+    },
+    {
+      "id": "fin_sun",
+      "body": "<<FILL v=2 role=rising words=85 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fin_sun_1",
+          "label": "Answer when Brice calls the runners to the board.",
+          "target": "fin_tally"
+        }
+      ]
+    },
+    {
+      "id": "fin_tally",
+      "body": "<<FILL v=2 role=choice words=110 function=decision>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fin_tally_1",
+          "label": "Stand for the full night's reckoning, street after street of your own chalk.",
+          "target": "fin_full",
+          "condition": {
+            ">=": [
+              {
+                "var": "water"
+              },
+              2
+            ]
+          }
+        },
+        {
+          "id": "c_fin_tally_2",
+          "label": "Stand with the muster for whatever the night held.",
+          "target": "fin_good"
+        },
+        {
+          "id": "c_fin_tally_3",
+          "label": "Slip out early and pole home through the waking quarter.",
+          "target": "fin_home"
+        }
+      ]
+    },
+    {
+      "id": "fin_full",
+      "body": "<<FILL v=2 role=choice words=100 function=decision>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fin_full_1",
+          "label": "Take the lantern she holds out, the warden's own, to carry home.",
+          "target": "e_lantern"
+        },
+        {
+          "id": "c_fin_full_2",
+          "label": "Just nod, and go stand where the ferry-keeper's kid stands, by the boats.",
+          "target": "e_keeper"
+        }
+      ]
+    },
+    {
+      "id": "fin_good",
+      "body": "<<FILL v=2 role=choice words=100 function=decision>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fin_good_1",
+          "label": "Take the dock-tea and the place by the brazier that the runners keep for their own.",
+          "target": "e_steady"
+        },
+        {
+          "id": "c_fin_good_2",
+          "label": "Ask her, honestly, how to be readier the next time the river tries.",
+          "target": "e_first_flood"
+        }
+      ]
+    },
+    {
+      "id": "fin_home",
+      "body": "<<FILL v=2 role=choice words=100 function=decision>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fin_home_1",
+          "label": "Take the long way past the quarter's lanes once more.",
+          "target": "e_home_water"
+        },
+        {
+          "id": "c_fin_home_2",
+          "label": "Make straight for the ferry-house landing.",
+          "target": "e_ferry_light"
+        }
+      ]
+    },
+    {
+      "id": "e_wall_dawn",
+      "body": "<<FILL v=2 role=ending words=95 function=ending>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_wall_dawn",
+        "valence": "positive",
+        "kind": "discovery",
+        "title": "Dawn on the Seawall"
+      }
+    },
+    {
+      "id": "e_wall_lull",
+      "body": "<<FILL v=2 role=ending words=95 function=ending>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_wall_lull",
+        "valence": "neutral",
+        "kind": "discovery",
+        "title": "The Slack-Water Turn"
+      }
+    },
+    {
+      "id": "e_pump_out",
+      "body": "<<FILL v=2 role=failure words=95 function=ending>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_pump_out",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "Pumped Out"
+      }
+    },
+    {
+      "id": "e_pump_song",
+      "body": "<<FILL v=2 role=ending words=95 function=ending>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_pump_song",
+        "valence": "positive",
+        "kind": "discovery",
+        "title": "The Relay Song"
+      }
+    },
+    {
+      "id": "e_count_names",
+      "body": "<<FILL v=2 role=ending words=95 function=ending>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_count_names",
+        "valence": "positive",
+        "kind": "discovery",
+        "title": "Every Name Answered"
+      }
+    },
+    {
+      "id": "e_count_quiet",
+      "body": "<<FILL v=2 role=ending words=95 function=ending>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_count_quiet",
+        "valence": "neutral",
+        "kind": "discovery",
+        "title": "The Quiet Arithmetic"
+      }
+    },
+    {
+      "id": "e_lantern",
+      "body": "<<FILL v=2 role=completion words=100 function=ending>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_lantern",
+        "valence": "positive",
+        "kind": "completion",
+        "title": "Lantern of the Quarter"
+      }
+    },
+    {
+      "id": "e_keeper",
+      "body": "<<FILL v=2 role=success words=100 function=ending>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_keeper",
+        "valence": "positive",
+        "kind": "success",
+        "title": "The Ferry-Keeper's Kid"
+      }
+    },
+    {
+      "id": "e_steady",
+      "body": "<<FILL v=2 role=success words=100 function=ending>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_steady",
+        "valence": "positive",
+        "kind": "success",
+        "title": "Steady Hands"
+      }
+    },
+    {
+      "id": "e_first_flood",
+      "body": "<<FILL v=2 role=completion words=100 function=ending>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_first_flood",
+        "valence": "neutral",
+        "kind": "completion",
+        "title": "First Flood"
+      }
+    },
+    {
+      "id": "e_home_water",
+      "body": "<<FILL v=2 role=completion words=100 function=ending>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_home_water",
+        "valence": "neutral",
+        "kind": "completion",
+        "title": "Home by Water"
+      }
+    },
+    {
+      "id": "e_ferry_light",
+      "body": "<<FILL v=2 role=ending words=95 function=ending>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_ferry_light",
+        "valence": "positive",
+        "kind": "discovery",
+        "title": "The Ferry Lamp"
+      }
+    }
+  ]
+}

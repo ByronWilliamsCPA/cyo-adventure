@@ -231,6 +231,7 @@ SPDX-FileCopyrightText = "2026 Byron Williams"
 [[annotations]]
 path = [
     "skeletons/**/*.json",  # Pre-authored story skeleton files
+    "shapes/**/*.json",     # Retained v2 shapes and their registry (WP-2.2)
     "out/**/*.json",        # Generated story output files from the yield harness
     "out/reports/*.md",         # Authoring-run summary reports
     "out/reports/**/*.md",      # Story design and compliance review reports

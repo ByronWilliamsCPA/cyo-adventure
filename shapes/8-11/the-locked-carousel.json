@@ -1,0 +1,1176 @@
+{
+  "schema_version": "2.0",
+  "id": "sk_locked_carousel",
+  "version": 1,
+  "title": "The Locked Carousel",
+  "metadata": {
+    "narrative_person": "third",
+    "age_band": "8-11",
+    "reading_level": {
+      "scheme": "flesch_kincaid",
+      "target": 4.5,
+      "tolerance": 1.5
+    },
+    "tier": 1,
+    "themes": [
+      "heritage",
+      "community",
+      "courage",
+      "mystery"
+    ],
+    "estimated_minutes": 8,
+    "ending_count": 13,
+    "content_flags": {
+      "violence": "none",
+      "scariness": "moderate",
+      "peril": "mild"
+    },
+    "topology": "open_map",
+    "length": "short",
+    "narrative_style": "prose",
+    "production_eligible": true
+  },
+  "variables": [],
+  "start_node": "n_start",
+  "nodes": [
+    {
+      "id": "n_start",
+      "body": "<<FILL v=2 role=setup words=105 function=opening>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_start_out",
+          "label": "Pull on your coat, pocket {KEEPSAKE}, and slip out into the moonlight.",
+          "target": "n_gate"
+        }
+      ]
+    },
+    {
+      "id": "n_gate",
+      "body": "<<FILL v=2 role=setup words=95 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_gate_midway",
+          "label": "Head down the midway to the carousel.",
+          "target": "n_notice"
+        }
+      ]
+    },
+    {
+      "id": "n_notice",
+      "body": "<<FILL v=2 role=setup words=110 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_notice_hub",
+          "label": "Step back to the midway crossroads and choose where to search.",
+          "target": "n_hub"
+        }
+      ]
+    },
+    {
+      "id": "n_hub",
+      "body": "<<FILL v=2 role=choice words=100 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_hub_booth",
+          "label": "Try {ROUTE_TB}.",
+          "target": "tb_booth"
+        },
+        {
+          "id": "c_hub_mirrors",
+          "label": "Slip into {ROUTE_HM}.",
+          "target": "hm_door"
+        },
+        {
+          "id": "c_hub_workshop",
+          "label": "Unlock {ANCESTOR}'s carousel workshop.",
+          "target": "ws_door"
+        },
+        {
+          "id": "c_hub_boardwalk",
+          "label": "Take {ROUTE_BW}.",
+          "target": "bw_steps"
+        },
+        {
+          "id": "c_hub_caravan",
+          "label": "Follow the lamplight to {ROUTE_CV}.",
+          "target": "cv_door"
+        },
+        {
+          "id": "c_hub_organ",
+          "label": "Climb toward {ROUTE_OL}.",
+          "target": "ol_stairs"
+        },
+        {
+          "id": "c_hub_carousel",
+          "label": "Go straight to {MONUMENT}.",
+          "target": "fin_approach"
+        }
+      ]
+    },
+    {
+      "id": "tb_booth",
+      "body": "<<FILL v=2 role=choice words=95 function=decision>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_tb_ledgers",
+          "label": "Slide behind the counter to the ledger shelf.",
+          "target": "tb_ledgers"
+        },
+        {
+          "id": "c_tb_office",
+          "label": "Ease open the little back office.",
+          "target": "tb_office"
+        }
+      ]
+    },
+    {
+      "id": "tb_ledgers",
+      "body": "<<FILL v=2 role=choice words=95 function=decision>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_tb_recent",
+          "label": "Open the newest ledger at the paper bookmark.",
+          "target": "tb_recent"
+        },
+        {
+          "id": "c_tb_old",
+          "label": "Take down the 1968 ledger.",
+          "target": "tb_old"
+        }
+      ]
+    },
+    {
+      "id": "tb_recent",
+      "body": "<<FILL v=2 role=choice words=105 function=decision>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_tb_recent_hub",
+          "label": "Take what you've learned back to the crossroads.",
+          "target": "n_hub"
+        },
+        {
+          "id": "c_tb_recent_fin",
+          "label": "Go look at {MONUMENT} itself with new eyes.",
+          "target": "fin_approach"
+        }
+      ]
+    },
+    {
+      "id": "tb_old",
+      "body": "<<FILL v=2 role=choice words=105 function=decision>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_tb_old_hub",
+          "label": "Carry the clue back to the crossroads.",
+          "target": "n_hub"
+        },
+        {
+          "id": "c_tb_old_fin",
+          "label": "If the measures stay with the herd, go to the {CREATURE_KIND}s.",
+          "target": "fin_approach"
+        }
+      ]
+    },
+    {
+      "id": "tb_office",
+      "body": "<<FILL v=2 role=choice words=100 function=decision>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_tb_photo",
+          "label": "Hold your torch close to the photograph.",
+          "target": "tb_photo"
+        },
+        {
+          "id": "c_tb_chair",
+          "label": "Sink into the big chair and sort through the drawer papers.",
+          "target": "e_set_doze"
+        }
+      ]
+    },
+    {
+      "id": "tb_photo",
+      "body": "<<FILL v=2 role=choice words=95 function=decision>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_tb_photo_hub",
+          "label": "Head back to the crossroads to search on.",
+          "target": "n_hub"
+        },
+        {
+          "id": "c_tb_photo_fin",
+          "label": "Go straight to {ICON} and {MAKERS_MARK}.",
+          "target": "fin_approach"
+        }
+      ]
+    },
+    {
+      "id": "e_set_doze",
+      "body": "<<FILL v=2 role=ending words=95 function=ending>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_set_doze",
+        "valence": "neutral",
+        "kind": "setback",
+        "title": "The Chair That Was Too Comfortable"
+      }
+    },
+    {
+      "id": "hm_door",
+      "body": "<<FILL v=2 role=choice words=100 function=decision>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_hm_tall",
+          "label": "Take the left passage of tall mirrors.",
+          "target": "hm_tall"
+        },
+        {
+          "id": "c_hm_bent",
+          "label": "Take the right passage of bent mirrors.",
+          "target": "hm_bent"
+        },
+        {
+          "id": "c_hm_hello",
+          "label": "Call a brave hello into the dark.",
+          "target": "hm_echo"
+        }
+      ]
+    },
+    {
+      "id": "hm_echo",
+      "body": "<<FILL v=2 role=rising words=90 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_hm_echo_glint",
+          "label": "Follow the glint deeper in.",
+          "target": "hm_rotunda"
+        }
+      ]
+    },
+    {
+      "id": "hm_tall",
+      "body": "<<FILL v=2 role=choice words=95 function=decision>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_hm_tall_rotunda",
+          "label": "Follow the bend to the mirrored rotunda.",
+          "target": "hm_rotunda"
+        },
+        {
+          "id": "c_hm_tall_hub",
+          "label": "Slip back out to the midway crossroads.",
+          "target": "n_hub"
+        }
+      ]
+    },
+    {
+      "id": "hm_bent",
+      "body": "<<FILL v=2 role=choice words=90 function=decision>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_hm_bent_steady",
+          "label": "Steady yourself and keep on toward the rotunda.",
+          "target": "hm_rotunda"
+        },
+        {
+          "id": "c_hm_bent_plank",
+          "label": "Kneel and lift the loose plank.",
+          "target": "hm_plank"
+        }
+      ]
+    },
+    {
+      "id": "hm_plank",
+      "body": "<<FILL v=2 role=choice words=95 function=decision>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_hm_plank_rotunda",
+          "label": "Go on to the mirrored rotunda.",
+          "target": "hm_rotunda"
+        },
+        {
+          "id": "c_hm_plank_hub",
+          "label": "Head back out to the crossroads.",
+          "target": "n_hub"
+        }
+      ]
+    },
+    {
+      "id": "hm_rotunda",
+      "body": "<<FILL v=2 role=choice words=105 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_hm_swing",
+          "label": "Swing the crooked mirror aside.",
+          "target": "hm_behind"
+        },
+        {
+          "id": "c_hm_flicker",
+          "label": "Track the flicker moving up high.",
+          "target": "hm_flicker"
+        },
+        {
+          "id": "c_hm_dash",
+          "label": "Hurry along the painted arrows the way you hope is out.",
+          "target": "e_set_lost"
+        }
+      ]
+    },
+    {
+      "id": "hm_behind",
+      "body": "<<FILL v=2 role=choice words=100 function=decision>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_hm_behind_fin",
+          "label": "Go ask {ICON} her secret yourself.",
+          "target": "fin_approach"
+        },
+        {
+          "id": "c_hm_behind_hub",
+          "label": "Return to the crossroads first.",
+          "target": "n_hub"
+        }
+      ]
+    },
+    {
+      "id": "hm_flicker",
+      "body": "<<FILL v=2 role=choice words=95 function=decision>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_hm_flicker_fin",
+          "label": "Climb down and go to that saddle.",
+          "target": "fin_approach"
+        },
+        {
+          "id": "c_hm_flicker_hub",
+          "label": "Climb down and go back to the crossroads.",
+          "target": "n_hub"
+        }
+      ]
+    },
+    {
+      "id": "e_set_lost",
+      "body": "<<FILL v=2 role=ending words=90 function=ending>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_set_lost",
+        "valence": "neutral",
+        "kind": "setback",
+        "title": "Fresh Batteries and a Ball of String"
+      }
+    },
+    {
+      "id": "ws_door",
+      "body": "<<FILL v=2 role=choice words=100 function=decision>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ws_tools",
+          "label": "Open the long tool chest.",
+          "target": "ws_tools"
+        },
+        {
+          "id": "c_ws_horse",
+          "label": "Lift the dust sheet from the horse-sized shape.",
+          "target": "ws_horse"
+        },
+        {
+          "id": "c_ws_bench",
+          "label": "Search the paper-strewn drafting bench.",
+          "target": "ws_bench"
+        }
+      ]
+    },
+    {
+      "id": "ws_tools",
+      "body": "<<FILL v=2 role=choice words=95 function=decision>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ws_tools_fin",
+          "label": "Carry {WS_CHISEL} to {MONUMENT} itself.",
+          "target": "fin_approach"
+        },
+        {
+          "id": "c_ws_tools_hub",
+          "label": "Close the chest and head back to the crossroads.",
+          "target": "n_hub"
+        }
+      ]
+    },
+    {
+      "id": "ws_horse",
+      "body": "<<FILL v=2 role=choice words=100 function=decision>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ws_horse_bench",
+          "label": "Look over the drafting bench.",
+          "target": "ws_bench"
+        },
+        {
+          "id": "c_ws_horse_hub",
+          "label": "Cover the colt gently and go back out.",
+          "target": "n_hub"
+        }
+      ]
+    },
+    {
+      "id": "ws_bench",
+      "body": "<<FILL v=2 role=choice words=105 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ws_bench_fin",
+          "label": "O is for {ICON_NAME}. Go find {ICON}.",
+          "target": "fin_approach"
+        },
+        {
+          "id": "c_ws_bench_crate",
+          "label": "Dig through the crate of offcuts.",
+          "target": "ws_crate"
+        },
+        {
+          "id": "c_ws_bench_hub",
+          "label": "Go back to the crossroads to think.",
+          "target": "n_hub"
+        }
+      ]
+    },
+    {
+      "id": "ws_crate",
+      "body": "<<FILL v=2 role=choice words=95 function=decision>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ws_crate_fin",
+          "label": "Go find the finished hiding place on {MONUMENT}.",
+          "target": "fin_approach"
+        },
+        {
+          "id": "c_ws_crate_hub",
+          "label": "Head back to the crossroads.",
+          "target": "n_hub"
+        }
+      ]
+    },
+    {
+      "id": "bw_steps",
+      "body": "<<FILL v=2 role=choice words=100 function=decision>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_bw_pilings",
+          "label": "Pick your way between the pilings.",
+          "target": "bw_pilings"
+        },
+        {
+          "id": "c_bw_catwalk",
+          "label": "Climb up to the dry catwalk.",
+          "target": "bw_catwalk"
+        }
+      ]
+    },
+    {
+      "id": "bw_pilings",
+      "body": "<<FILL v=2 role=choice words=105 function=decision>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_bw_footing",
+          "label": "Wade on to the carousel's center footing.",
+          "target": "bw_footing"
+        },
+        {
+          "id": "c_bw_ladder",
+          "label": "Climb the rusty ladder up to the catwalk.",
+          "target": "bw_catwalk"
+        },
+        {
+          "id": "c_bw_arches",
+          "label": "Explore out toward the dark arches.",
+          "target": "e_set_tide"
+        }
+      ]
+    },
+    {
+      "id": "bw_catwalk",
+      "body": "<<FILL v=2 role=choice words=95 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_bw_beam",
+          "label": "Shine your torch on the big center beam.",
+          "target": "bw_footing"
+        },
+        {
+          "id": "c_bw_pierhead",
+          "label": "Follow the catwalk toward the pier head.",
+          "target": "bw_pierhead"
+        }
+      ]
+    },
+    {
+      "id": "bw_footing",
+      "body": "<<FILL v=2 role=choice words=105 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_bw_footing_fin",
+          "label": "Climb back up and look at {MONUMENT} with new eyes.",
+          "target": "fin_approach"
+        },
+        {
+          "id": "c_bw_footing_hub",
+          "label": "Head back up to the crossroads.",
+          "target": "n_hub"
+        }
+      ]
+    },
+    {
+      "id": "bw_pierhead",
+      "body": "<<FILL v=2 role=choice words=95 function=decision>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_bw_watch",
+          "label": "Keep still and watch the figure.",
+          "target": "bw_watch"
+        },
+        {
+          "id": "c_bw_call",
+          "label": "Call out across the water.",
+          "target": "bw_call"
+        }
+      ]
+    },
+    {
+      "id": "bw_watch",
+      "body": "<<FILL v=2 role=choice words=95 function=decision>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_bw_watch_fin",
+          "label": "Go to {MONUMENT} he cares for so much.",
+          "target": "fin_approach"
+        },
+        {
+          "id": "c_bw_watch_hub",
+          "label": "Head up to the crossroads.",
+          "target": "n_hub"
+        }
+      ]
+    },
+    {
+      "id": "bw_call",
+      "body": "<<FILL v=2 role=choice words=100 function=decision>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_bw_call_caravan",
+          "label": "Follow the bobbing lantern toward the caravan.",
+          "target": "cv_door"
+        },
+        {
+          "id": "c_bw_call_hub",
+          "label": "Thank him and head for the crossroads.",
+          "target": "n_hub"
+        }
+      ]
+    },
+    {
+      "id": "e_set_tide",
+      "body": "<<FILL v=2 role=ending words=95 function=ending>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_set_tide",
+        "valence": "neutral",
+        "kind": "setback",
+        "title": "Soaked to the Knees"
+      }
+    },
+    {
+      "id": "cv_door",
+      "body": "<<FILL v=2 role=choice words=95 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_cv_knock",
+          "label": "Knock on the caravan door.",
+          "target": "cv_knock"
+        },
+        {
+          "id": "c_cv_window",
+          "label": "Peep through the curtain gap first.",
+          "target": "cv_window"
+        }
+      ]
+    },
+    {
+      "id": "cv_window",
+      "body": "<<FILL v=2 role=choice words=100 function=decision>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_cv_window_knock",
+          "label": "Knock, gently.",
+          "target": "cv_knock"
+        },
+        {
+          "id": "c_cv_window_slip",
+          "label": "Slip away to the crossroads and think.",
+          "target": "n_hub"
+        }
+      ]
+    },
+    {
+      "id": "cv_knock",
+      "body": "<<FILL v=2 role=rising words=90 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_cv_sit",
+          "label": "Sit down at his little table.",
+          "target": "cv_table"
+        }
+      ]
+    },
+    {
+      "id": "cv_table",
+      "body": "<<FILL v=2 role=choice words=115 function=decision>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_cv_favorite",
+          "label": "Ask which {CREATURE_KIND} was {ANCESTOR}'s favorite.",
+          "target": "cv_ondine"
+        },
+        {
+          "id": "c_cv_shims",
+          "label": "Ask about the shims under the pier.",
+          "target": "cv_shims"
+        },
+        {
+          "id": "c_cv_stories",
+          "label": "Ask for every story about {ANCESTOR}, all of them.",
+          "target": "e_disc_stories"
+        }
+      ]
+    },
+    {
+      "id": "cv_shims",
+      "body": "<<FILL v=2 role=choice words=95 function=decision>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_cv_shims_ondine",
+          "label": "So where would {ANCESTOR} hide her measures? Ask about her {CREATURE_KIND}s.",
+          "target": "cv_ondine"
+        },
+        {
+          "id": "c_cv_shims_hub",
+          "label": "Say goodnight and go back to the crossroads.",
+          "target": "n_hub"
+        }
+      ]
+    },
+    {
+      "id": "cv_ondine",
+      "body": "<<FILL v=2 role=choice words=100 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_cv_go",
+          "label": "Go to {ICON_NAME} together, lantern and all.",
+          "target": "fin_approach"
+        },
+        {
+          "id": "c_cv_think",
+          "label": "Step out to the crossroads to steady yourself first.",
+          "target": "n_hub"
+        }
+      ]
+    },
+    {
+      "id": "e_disc_stories",
+      "body": "<<FILL v=2 role=ending words=95 function=ending>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_disc_stories",
+        "valence": "neutral",
+        "kind": "discovery",
+        "title": "A Night of Stories"
+      }
+    },
+    {
+      "id": "ol_stairs",
+      "body": "<<FILL v=2 role=choice words=90 function=decision>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ol_climb",
+          "label": "Climb toward the sound.",
+          "target": "ol_loft"
+        },
+        {
+          "id": "c_ol_listen",
+          "label": "Stop on the bottom step and just listen.",
+          "target": "ol_listen"
+        }
+      ]
+    },
+    {
+      "id": "ol_listen",
+      "body": "<<FILL v=2 role=rising words=90 function=decision>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ol_up",
+          "label": "Climb up, braver now.",
+          "target": "ol_loft"
+        },
+        {
+          "id": "c_ol_down",
+          "label": "Leave the organ to its humming and go back to the crossroads.",
+          "target": "n_hub"
+        }
+      ]
+    },
+    {
+      "id": "ol_loft",
+      "body": "<<FILL v=2 role=choice words=105 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ol_key",
+          "label": "Press one yellowed key.",
+          "target": "ol_key"
+        },
+        {
+          "id": "c_ol_rolls",
+          "label": "Open the music roll cabinet.",
+          "target": "ol_rolls"
+        },
+        {
+          "id": "c_ol_crest",
+          "label": "Lift the crest panel with the carved rose.",
+          "target": "ol_crest"
+        }
+      ]
+    },
+    {
+      "id": "ol_key",
+      "body": "<<FILL v=2 role=choice words=100 function=decision>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ol_freeze",
+          "label": "Freeze and count slowly to fifty.",
+          "target": "ol_after"
+        },
+        {
+          "id": "c_ol_bolt",
+          "label": "Bolt down the stairs and away.",
+          "target": "e_set_bolt"
+        }
+      ]
+    },
+    {
+      "id": "ol_after",
+      "body": "<<FILL v=2 role=choice words=95 function=decision>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ol_after_fin",
+          "label": "Take the hint and go to {ICON_NAME}.",
+          "target": "fin_approach"
+        },
+        {
+          "id": "c_ol_after_hub",
+          "label": "Pocket the program and return to the crossroads.",
+          "target": "n_hub"
+        }
+      ]
+    },
+    {
+      "id": "ol_rolls",
+      "body": "<<FILL v=2 role=choice words=105 function=decision>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ol_rolls_fin",
+          "label": "Take the tracing straight to {ICON}.",
+          "target": "fin_approach"
+        },
+        {
+          "id": "c_ol_rolls_home",
+          "label": "Carry the waltz roll home to learn its story first.",
+          "target": "e_disc_waltz"
+        },
+        {
+          "id": "c_ol_rolls_hub",
+          "label": "Put the roll back carefully and go down to the crossroads.",
+          "target": "n_hub"
+        }
+      ]
+    },
+    {
+      "id": "ol_crest",
+      "body": "<<FILL v=2 role=choice words=95 function=decision>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ol_crest_fin",
+          "label": "Go down to that winking seam.",
+          "target": "fin_approach"
+        },
+        {
+          "id": "c_ol_crest_hub",
+          "label": "Go down and back to the crossroads.",
+          "target": "n_hub"
+        }
+      ]
+    },
+    {
+      "id": "e_set_bolt",
+      "body": "<<FILL v=2 role=ending words=95 function=ending>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_set_bolt",
+        "valence": "neutral",
+        "kind": "setback",
+        "title": "The Loudest Note in Town"
+      }
+    },
+    {
+      "id": "e_disc_waltz",
+      "body": "<<FILL v=2 role=ending words=95 function=ending>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_disc_waltz",
+        "valence": "neutral",
+        "kind": "discovery",
+        "title": "{ICON_NAME}'s Waltz"
+      }
+    },
+    {
+      "id": "fin_approach",
+      "body": "<<FILL v=2 role=choice words=120 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fin_climb",
+          "label": "Duck under the chain and climb up to {ICON_NAME}.",
+          "target": "fin_climb"
+        },
+        {
+          "id": "c_fin_notice",
+          "label": "Circle the platform and read the notice properly first.",
+          "target": "fin_notice"
+        }
+      ]
+    },
+    {
+      "id": "fin_notice",
+      "body": "<<FILL v=2 role=choice words=100 function=decision>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fin_notice_climb",
+          "label": "Climb up to {ICON_NAME}.",
+          "target": "fin_climb"
+        },
+        {
+          "id": "c_fin_notice_hub",
+          "label": "Step back to the crossroads first.",
+          "target": "n_hub"
+        }
+      ]
+    },
+    {
+      "id": "fin_climb",
+      "body": "<<FILL v=2 role=choice words=105 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fin_press",
+          "label": "Press the smooth center of {MAKERS_MARK}.",
+          "target": "fin_press"
+        },
+        {
+          "id": "c_fin_pry",
+          "label": "Try to pry the seam open with {KEEPSAKE}'s little blade.",
+          "target": "fin_pry"
+        }
+      ]
+    },
+    {
+      "id": "fin_pry",
+      "body": "<<FILL v=2 role=choice words=100 function=decision>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fin_pry_press",
+          "label": "Press it with your thumb, the way {ANCESTOR} must have.",
+          "target": "fin_press"
+        },
+        {
+          "id": "c_fin_pry_home",
+          "label": "Whisper sorry to {ICON_NAME} and save it for daylight.",
+          "target": "e_set_home"
+        }
+      ]
+    },
+    {
+      "id": "fin_press",
+      "body": "<<FILL v=2 role=rising words=105 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fin_open",
+          "label": "Unroll the drawings right there by torchlight.",
+          "target": "fin_drawings"
+        }
+      ]
+    },
+    {
+      "id": "fin_drawings",
+      "body": "<<FILL v=2 role=choice words=120 function=decision>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fin_caretaker",
+          "label": "Knock at the caretaker's caravan with the tube.",
+          "target": "r_caretaker"
+        },
+        {
+          "id": "c_fin_family",
+          "label": "Run home and wake your family.",
+          "target": "r_family"
+        },
+        {
+          "id": "c_fin_town",
+          "label": "Wait for morning and carry it to the town hall.",
+          "target": "r_townhall"
+        }
+      ]
+    },
+    {
+      "id": "e_set_home",
+      "body": "<<FILL v=2 role=ending words=95 function=ending>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_set_home",
+        "valence": "neutral",
+        "kind": "setback",
+        "title": "Prying When You Should Press"
+      }
+    },
+    {
+      "id": "r_caretaker",
+      "body": "<<FILL v=2 role=choice words=105 function=decision>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_r_meeting",
+          "label": "Call the town to a meeting at the fair itself.",
+          "target": "r_meeting"
+        },
+        {
+          "id": "c_r_inspector",
+          "label": "Go with him to the town surveyor at opening time.",
+          "target": "r_inspector"
+        }
+      ]
+    },
+    {
+      "id": "r_meeting",
+      "body": "<<FILL v=2 role=rising words=100 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_r_meeting_end",
+          "label": "Watch the pledge board fill to the bottom.",
+          "target": "e_festival"
+        }
+      ]
+    },
+    {
+      "id": "r_inspector",
+      "body": "<<FILL v=2 role=rising words=100 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_r_inspector_end",
+          "label": "Shake on it and start that same week.",
+          "target": "e_permit"
+        }
+      ]
+    },
+    {
+      "id": "r_family",
+      "body": "<<FILL v=2 role=choice words=105 function=decision>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_r_fund",
+          "label": "Start a Pennies for {ICON_NAME} drive at school.",
+          "target": "r_fund"
+        },
+        {
+          "id": "c_r_crew",
+          "label": "Sign the whole family up as repair crew.",
+          "target": "r_crew"
+        }
+      ]
+    },
+    {
+      "id": "r_fund",
+      "body": "<<FILL v=2 role=rising words=95 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_r_fund_end",
+          "label": "Paint the thermometer to the top.",
+          "target": "e_fund"
+        }
+      ]
+    },
+    {
+      "id": "r_crew",
+      "body": "<<FILL v=2 role=rising words=95 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_r_crew_end",
+          "label": "Carve the finishing touch.",
+          "target": "e_crew"
+        }
+      ]
+    },
+    {
+      "id": "r_townhall",
+      "body": "<<FILL v=2 role=choice words=105 function=decision>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_r_council",
+          "label": "Present the drawings at the public council session.",
+          "target": "r_council"
+        },
+        {
+          "id": "c_r_paper",
+          "label": "Show the story to the local paper first.",
+          "target": "r_paper"
+        }
+      ]
+    },
+    {
+      "id": "r_council",
+      "body": "<<FILL v=2 role=rising words=100 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_r_council_end",
+          "label": "Watch the vote go up.",
+          "target": "e_council"
+        }
+      ]
+    },
+    {
+      "id": "r_paper",
+      "body": "<<FILL v=2 role=rising words=100 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_r_paper_end",
+          "label": "Pin the front page to the ticket booth.",
+          "target": "e_paper"
+        }
+      ]
+    },
+    {
+      "id": "e_festival",
+      "body": "<<FILL v=2 role=completion words=105 function=ending>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_festival",
+        "valence": "positive",
+        "kind": "success",
+        "title": "{FESTIVAL_TITLE}"
+      }
+    },
+    {
+      "id": "e_permit",
+      "body": "<<FILL v=2 role=completion words=100 function=ending>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_permit",
+        "valence": "positive",
+        "kind": "success",
+        "title": "Mended by Many Hands"
+      }
+    },
+    {
+      "id": "e_fund",
+      "body": "<<FILL v=2 role=completion words=100 function=ending>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_fund",
+        "valence": "positive",
+        "kind": "completion",
+        "title": "Pennies for {ICON_NAME}"
+      }
+    },
+    {
+      "id": "e_crew",
+      "body": "<<FILL v=2 role=completion words=100 function=ending>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_crew",
+        "valence": "positive",
+        "kind": "completion",
+        "title": "{ANCESTOR_MOTTO}"
+      }
+    },
+    {
+      "id": "e_council",
+      "body": "<<FILL v=2 role=completion words=100 function=ending>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_council",
+        "valence": "positive",
+        "kind": "success",
+        "title": "From Unsafe to Protected"
+      }
+    },
+    {
+      "id": "e_paper",
+      "body": "<<FILL v=2 role=completion words=100 function=ending>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_paper",
+        "valence": "positive",
+        "kind": "completion",
+        "title": "Front Page for {ICON}"
+      }
+    }
+  ]
+}

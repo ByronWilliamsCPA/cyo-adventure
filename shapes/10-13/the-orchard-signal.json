@@ -1,0 +1,3260 @@
+{
+  "schema_version": "2.0",
+  "id": "sk_orchard_signal",
+  "version": 1,
+  "title": "The Orchard Signal",
+  "metadata": {
+    "narrative_person": "third",
+    "age_band": "10-13",
+    "reading_level": {
+      "scheme": "flesch_kincaid",
+      "target": 5.5,
+      "tolerance": 1.5
+    },
+    "tier": 2,
+    "themes": [
+      "record keeping",
+      "evidence",
+      "persistence",
+      "community"
+    ],
+    "estimated_minutes": 7,
+    "ending_count": 30,
+    "content_flags": {
+      "violence": "none",
+      "scariness": "mild",
+      "peril": "mild"
+    },
+    "topology": "branch_and_bottleneck",
+    "length": "medium",
+    "narrative_style": "prose",
+    "production_eligible": true
+  },
+  "variables": [
+    {
+      "name": "did_ask_whether_notebooks",
+      "type": "bool",
+      "initial": false,
+      "description": "Set when the reader chooses \"Ask whether the notebooks have seen this before\" at n01d0; pays off at n08d3 and n10d3."
+    },
+    {
+      "name": "did_go_down_read",
+      "type": "bool",
+      "initial": false,
+      "description": "Set when the reader chooses \"Go down and read the notice on the gate\" at n01d0; pays off at n06d3."
+    },
+    {
+      "name": "did_find_who_wrote",
+      "type": "bool",
+      "initial": false,
+      "description": "Set when the reader chooses \"Find out who wrote the survey\" at n03d0; pays off at n11d5 and n11d1."
+    }
+  ],
+  "start_node": "n00c0",
+  "nodes": [
+    {
+      "id": "n00c0",
+      "body": "<<FILL v=2 role=setup words=36 function=opening>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n00c0_0",
+          "label": "Go and tell Ada what you have seen.",
+          "target": "n01d0"
+        }
+      ]
+    },
+    {
+      "id": "n01d0",
+      "body": "<<FILL v=2 role=setup words=100 function=decision>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n01d0_0",
+          "label": "Ask whether the notebooks have seen this before.",
+          "target": "n02c0",
+          "effects": [
+            {
+              "op": "set",
+              "var": "did_ask_whether_notebooks",
+              "value": true
+            }
+          ]
+        },
+        {
+          "id": "c_n01d0_1",
+          "label": "Go and stand by the hives instead.",
+          "target": "n02c1"
+        },
+        {
+          "id": "c_n01d0_2",
+          "label": "Go down and read the notice on the gate.",
+          "target": "n02c2",
+          "effects": [
+            {
+              "op": "set",
+              "var": "did_go_down_read",
+              "value": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "n02c0",
+      "body": "<<FILL v=2 role=bridge words=36 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n02c0_0",
+          "label": "Begin with what the record already holds.",
+          "target": "n03d0"
+        }
+      ]
+    },
+    {
+      "id": "n02c1",
+      "body": "<<FILL v=2 role=bridge words=36 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n02c1_0",
+          "label": "Begin with what the bees are doing.",
+          "target": "n03d1"
+        }
+      ]
+    },
+    {
+      "id": "n02c2",
+      "body": "<<FILL v=2 role=bridge words=36 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n02c2_0",
+          "label": "Begin with the notice itself.",
+          "target": "n03d2"
+        }
+      ]
+    },
+    {
+      "id": "n03d0",
+      "body": "<<FILL v=2 role=rising words=112 function=decision>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n03d0_0",
+          "label": "Find out who wrote the survey.",
+          "target": "cq_plant_did_find_who_wrote",
+          "effects": [
+            {
+              "op": "set",
+              "var": "did_find_who_wrote",
+              "value": true
+            }
+          ]
+        },
+        {
+          "id": "c_n03d0_1",
+          "label": "Find out what the survey left out.",
+          "target": "n04d1"
+        },
+        {
+          "id": "c_n03d0_2",
+          "label": "Ask what a hundred years of weather notes are worth.",
+          "target": "n04d2"
+        }
+      ]
+    },
+    {
+      "id": "cq_plant_did_find_who_wrote",
+      "body": "<<FILL v=2 role=plant words=50 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_cq_plant_did_find_who_wrote",
+          "label": "Find out who wrote the survey.",
+          "target": "n04d0"
+        }
+      ]
+    },
+    {
+      "id": "n03d1",
+      "body": "<<FILL v=2 role=rising words=112 function=decision>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n03d1_0",
+          "label": "Copy the sentence out and take it home.",
+          "target": "n04c0"
+        },
+        {
+          "id": "c_n03d1_1",
+          "label": "Stay in the shed until the light goes.",
+          "target": "n04c1"
+        },
+        {
+          "id": "c_n03d1_2",
+          "label": "Walk the rows and count the trees.",
+          "target": "n04c2"
+        }
+      ]
+    },
+    {
+      "id": "n03d2",
+      "body": "<<FILL v=2 role=rising words=112 function=decision>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n03d2_0",
+          "label": "Ask Ada who else wrote in these.",
+          "target": "n04c3"
+        },
+        {
+          "id": "c_n03d2_1",
+          "label": "Photograph the notice before anything happens to it.",
+          "target": "n04c4"
+        },
+        {
+          "id": "c_n03d2_2",
+          "label": "Find out who wrote the survey.",
+          "target": "n04d0"
+        }
+      ]
+    },
+    {
+      "id": "n04d0",
+      "body": "<<FILL v=2 role=rising words=100 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n04d0_0",
+          "label": "Find out how a survey gets challenged.",
+          "target": "n05d0"
+        },
+        {
+          "id": "c_n04d0_1",
+          "label": "Find out what Faulks actually looked at.",
+          "target": "n05d1"
+        },
+        {
+          "id": "c_n04d0_2",
+          "label": "Find somebody who reads old records for a living.",
+          "target": "n05d2"
+        }
+      ]
+    },
+    {
+      "id": "n04d1",
+      "body": "<<FILL v=2 role=rising words=100 function=decision>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n04d1_0",
+          "label": "Find somebody who studies the ground itself.",
+          "target": "n05d3"
+        },
+        {
+          "id": "c_n04d1_1",
+          "label": "Find out what the developer actually wants.",
+          "target": "n05d4"
+        },
+        {
+          "id": "c_n04d1_2",
+          "label": "Ask Tobe to help with the numbers.",
+          "target": "n05d5"
+        }
+      ]
+    },
+    {
+      "id": "n04d2",
+      "body": "<<FILL v=2 role=rising words=100 function=decision>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n04d2_0",
+          "label": "Let the six weeks run out.",
+          "target": "e05_0"
+        },
+        {
+          "id": "c_n04d2_1",
+          "label": "Find out how a survey gets challenged.",
+          "target": "n05d0"
+        },
+        {
+          "id": "c_n04d2_2",
+          "label": "Find out what Faulks actually looked at.",
+          "target": "n05d1"
+        }
+      ]
+    },
+    {
+      "id": "n04c0",
+      "body": "<<FILL v=2 role=bridge words=36 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n04c0_0",
+          "label": "Find somebody who reads old records for a living.",
+          "target": "n05d2"
+        }
+      ]
+    },
+    {
+      "id": "n04c1",
+      "body": "<<FILL v=2 role=bridge words=36 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n04c1_0",
+          "label": "Find somebody who studies the ground itself.",
+          "target": "n05d3"
+        }
+      ]
+    },
+    {
+      "id": "n04c2",
+      "body": "<<FILL v=2 role=bridge words=36 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n04c2_0",
+          "label": "Find out what the developer actually wants.",
+          "target": "n05d4"
+        }
+      ]
+    },
+    {
+      "id": "n04c3",
+      "body": "<<FILL v=2 role=bridge words=36 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n04c3_0",
+          "label": "Ask Tobe to help with the numbers.",
+          "target": "n05d5"
+        }
+      ]
+    },
+    {
+      "id": "n04c4",
+      "body": "<<FILL v=2 role=bridge words=36 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n04c4_0",
+          "label": "Let the six weeks run out.",
+          "target": "e05_0"
+        }
+      ]
+    },
+    {
+      "id": "n05d0",
+      "body": "<<FILL v=2 role=rising words=106 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n05d0_0",
+          "label": "Work out how many pages there actually are.",
+          "target": "n06d0"
+        },
+        {
+          "id": "c_n05d0_1",
+          "label": "Work out which years matter most.",
+          "target": "n06d1"
+        },
+        {
+          "id": "c_n05d0_2",
+          "label": "Work out how to read the difficult hands.",
+          "target": "n06d2"
+        }
+      ]
+    },
+    {
+      "id": "n05d1",
+      "body": "<<FILL v=2 role=rising words=106 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n05d1_0",
+          "label": "Work out who is allowed to touch them.",
+          "target": "n06d3"
+        },
+        {
+          "id": "c_n05d1_1",
+          "label": "Work out where to do the work.",
+          "target": "n06d4"
+        },
+        {
+          "id": "c_n05d1_2",
+          "label": "Work out how to prove you copied it right.",
+          "target": "n06d5"
+        }
+      ]
+    },
+    {
+      "id": "n05d2",
+      "body": "<<FILL v=2 role=rising words=106 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n05d2_0",
+          "label": "Open the 1911 volume first.",
+          "target": "n06c0"
+        },
+        {
+          "id": "c_n05d2_1",
+          "label": "Set the laptop up on the shed bench.",
+          "target": "n06c1"
+        },
+        {
+          "id": "c_n05d2_2",
+          "label": "Take the folding table down to the orchard.",
+          "target": "n06c2"
+        }
+      ]
+    },
+    {
+      "id": "n05d3",
+      "body": "<<FILL v=2 role=rising words=106 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n05d3_0",
+          "label": "Ask Ada to read the hard pages aloud.",
+          "target": "n06c3"
+        },
+        {
+          "id": "c_n05d3_1",
+          "label": "Photograph one page as a test.",
+          "target": "n06c4"
+        },
+        {
+          "id": "c_n05d3_2",
+          "label": "Make a list of every year that is missing.",
+          "target": "n06c5"
+        }
+      ]
+    },
+    {
+      "id": "n05d4",
+      "body": "<<FILL v=2 role=rising words=106 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n05d4_0",
+          "label": "Stop and eat something.",
+          "target": "n06c6"
+        },
+        {
+          "id": "c_n05d4_1",
+          "label": "Try to do all of it at once.",
+          "target": "e06_0"
+        },
+        {
+          "id": "c_n05d4_2",
+          "label": "Work out how many pages there actually are.",
+          "target": "n06d0"
+        }
+      ]
+    },
+    {
+      "id": "n05d5",
+      "body": "<<FILL v=2 role=rising words=106 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n05d5_0",
+          "label": "Work out which years matter most.",
+          "target": "n06d1"
+        },
+        {
+          "id": "c_n05d5_1",
+          "label": "Work out how to read the difficult hands.",
+          "target": "n06d2"
+        },
+        {
+          "id": "c_n05d5_2",
+          "label": "Work out who is allowed to touch them.",
+          "target": "n06d3"
+        }
+      ]
+    },
+    {
+      "id": "e05_0",
+      "body": "<<FILL v=2 role=discovery words=106 function=ending>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e05_0",
+        "valence": "neutral",
+        "kind": "discovery",
+        "title": "The Six Weeks Run Out"
+      }
+    },
+    {
+      "id": "n06d0",
+      "body": "<<FILL v=2 role=rising words=112 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n06d0_0",
+          "label": "Take the four lines a year approach.",
+          "target": "n07d0"
+        },
+        {
+          "id": "c_n06d0_1",
+          "label": "Take the whole record but only for the Bramleys.",
+          "target": "n07d1"
+        },
+        {
+          "id": "c_n06d0_2",
+          "label": "Take the hive counts as well.",
+          "target": "n07d2"
+        }
+      ]
+    },
+    {
+      "id": "n06d1",
+      "body": "<<FILL v=2 role=rising words=112 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n06d1_0",
+          "label": "Ask the archive to hold the originals.",
+          "target": "n07d3"
+        },
+        {
+          "id": "c_n06d1_1",
+          "label": "Ask Dr Abara what would count as evidence.",
+          "target": "n07d4"
+        },
+        {
+          "id": "c_n06d1_2",
+          "label": "Ask Tobe to build the chart.",
+          "target": "n07d5"
+        }
+      ]
+    },
+    {
+      "id": "n06d2",
+      "body": "<<FILL v=2 role=rising words=112 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n06d2_0",
+          "label": "Ask the school if the class can help.",
+          "target": "n07d6"
+        },
+        {
+          "id": "c_n06d2_1",
+          "label": "Ask what happens if you are wrong.",
+          "target": "n07d7"
+        },
+        {
+          "id": "c_n06d2_2",
+          "label": "Ask Ada what she wants out of this.",
+          "target": "n07d8"
+        }
+      ]
+    },
+    {
+      "id": "n06d3",
+      "body": "<<FILL v=2 role=rising words=112 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n06d3_0",
+          "label": "Hand the whole thing to the archive and step back.",
+          "target": "e07_0"
+        },
+        {
+          "id": "c_n06d3_1",
+          "label": "Send the chart out before it is checked.",
+          "target": "e07_1"
+        },
+        {
+          "id": "c_n06d3_2",
+          "label": "Take the four lines a year approach.",
+          "target": "n07d0",
+          "condition": {
+            "==": [
+              {
+                "var": "did_go_down_read"
+              },
+              false
+            ]
+          }
+        },
+        {
+          "id": "c_n06d3_2_cq_did_go_down_read",
+          "label": "Take the four lines a year approach.",
+          "target": "cq_payoff_did_go_down_read",
+          "condition": {
+            "==": [
+              {
+                "var": "did_go_down_read"
+              },
+              true
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "cq_payoff_did_go_down_read",
+      "body": "<<FILL v=2 role=payoff words=50 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_cq_payoff_did_go_down_read",
+          "label": "Take the four lines a year approach.",
+          "target": "n07d0"
+        }
+      ]
+    },
+    {
+      "id": "n06d4",
+      "body": "<<FILL v=2 role=rising words=112 function=decision>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n06d4_0",
+          "label": "Take the whole record but only for the Bramleys.",
+          "target": "n07d1"
+        },
+        {
+          "id": "c_n06d4_1",
+          "label": "Take the hive counts as well.",
+          "target": "n07d2"
+        },
+        {
+          "id": "c_n06d4_2",
+          "label": "Ask the archive to hold the originals.",
+          "target": "n07d3"
+        }
+      ]
+    },
+    {
+      "id": "n06d5",
+      "body": "<<FILL v=2 role=rising words=112 function=decision>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n06d5_0",
+          "label": "Ask Dr Abara what would count as evidence.",
+          "target": "n07d4"
+        },
+        {
+          "id": "c_n06d5_1",
+          "label": "Ask Tobe to build the chart.",
+          "target": "n07d5"
+        },
+        {
+          "id": "c_n06d5_2",
+          "label": "Ask the school if the class can help.",
+          "target": "n07d6"
+        }
+      ]
+    },
+    {
+      "id": "n06c0",
+      "body": "<<FILL v=2 role=bridge words=36 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n06c0_0",
+          "label": "Ask what happens if you are wrong.",
+          "target": "n07d7"
+        }
+      ]
+    },
+    {
+      "id": "n06c1",
+      "body": "<<FILL v=2 role=bridge words=36 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n06c1_0",
+          "label": "Ask Ada what she wants out of this.",
+          "target": "n07d8"
+        }
+      ]
+    },
+    {
+      "id": "n06c2",
+      "body": "<<FILL v=2 role=bridge words=36 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n06c2_0",
+          "label": "Hand the whole thing to the archive and step back.",
+          "target": "e07_0"
+        }
+      ]
+    },
+    {
+      "id": "n06c3",
+      "body": "<<FILL v=2 role=bridge words=36 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n06c3_0",
+          "label": "Send the chart out before it is checked.",
+          "target": "e07_1"
+        }
+      ]
+    },
+    {
+      "id": "n06c4",
+      "body": "<<FILL v=2 role=bridge words=36 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n06c4_0",
+          "label": "Take the four lines a year approach.",
+          "target": "n07d0"
+        }
+      ]
+    },
+    {
+      "id": "n06c5",
+      "body": "<<FILL v=2 role=bridge words=36 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n06c5_0",
+          "label": "Take the whole record but only for the Bramleys.",
+          "target": "n07d1"
+        }
+      ]
+    },
+    {
+      "id": "n06c6",
+      "body": "<<FILL v=2 role=bridge words=36 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n06c6_0",
+          "label": "Take the hive counts as well.",
+          "target": "n07d2"
+        }
+      ]
+    },
+    {
+      "id": "e06_0",
+      "body": "<<FILL v=2 role=setback words=112 function=ending>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e06_0",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "Forty Thousand Lines"
+      }
+    },
+    {
+      "id": "n07d0",
+      "body": "<<FILL v=2 role=rising words=100 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n07d0_0",
+          "label": "Set up a check by two people.",
+          "target": "n08d0"
+        },
+        {
+          "id": "c_n07d0_1",
+          "label": "Set up a rule for unreadable figures.",
+          "target": "n08d1"
+        },
+        {
+          "id": "c_n07d0_2",
+          "label": "Bring Mrs Cassar in properly.",
+          "target": "n08d2"
+        }
+      ]
+    },
+    {
+      "id": "n07d1",
+      "body": "<<FILL v=2 role=rising words=100 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n07d1_0",
+          "label": "Bring Dr Abara up the hill.",
+          "target": "n08d3"
+        },
+        {
+          "id": "c_n07d1_1",
+          "label": "Bring the school class in.",
+          "target": "n08d4"
+        },
+        {
+          "id": "c_n07d1_2",
+          "label": "Go and find the missing volumes.",
+          "target": "n08d5"
+        }
+      ]
+    },
+    {
+      "id": "n07d2",
+      "body": "<<FILL v=2 role=rising words=100 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n07d2_0",
+          "label": "Go and see Priya Raval at the council.",
+          "target": "n08d6"
+        },
+        {
+          "id": "c_n07d2_1",
+          "label": "Print the first proper chart.",
+          "target": "n08c0"
+        },
+        {
+          "id": "c_n07d2_2",
+          "label": "Walk the frost pocket at dawn.",
+          "target": "n08c1"
+        }
+      ]
+    },
+    {
+      "id": "n07d3",
+      "body": "<<FILL v=2 role=rising words=100 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n07d3_0",
+          "label": "Sort the notebooks by hand.",
+          "target": "n08c2"
+        },
+        {
+          "id": "c_n07d3_1",
+          "label": "Wait outside the council office.",
+          "target": "n08c3"
+        },
+        {
+          "id": "c_n07d3_2",
+          "label": "Carry the carrier bags up the hill.",
+          "target": "n08c4"
+        }
+      ]
+    },
+    {
+      "id": "n07d4",
+      "body": "<<FILL v=2 role=rising words=100 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n07d4_0",
+          "label": "Let Tobe explain the spreadsheet.",
+          "target": "n08c5"
+        },
+        {
+          "id": "c_n07d4_1",
+          "label": "Look at the chart for a long time.",
+          "target": "n08c6"
+        },
+        {
+          "id": "c_n07d4_2",
+          "label": "Decide the chart is enough on its own.",
+          "target": "e08_0"
+        }
+      ]
+    },
+    {
+      "id": "n07d5",
+      "body": "<<FILL v=2 role=rising words=100 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n07d5_0",
+          "label": "Guess at the unreadable figures.",
+          "target": "e08_1"
+        },
+        {
+          "id": "c_n07d5_1",
+          "label": "Set up a check by two people.",
+          "target": "n08d0"
+        },
+        {
+          "id": "c_n07d5_2",
+          "label": "Set up a rule for unreadable figures.",
+          "target": "n08d1"
+        }
+      ]
+    },
+    {
+      "id": "n07d6",
+      "body": "<<FILL v=2 role=rising words=100 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n07d6_0",
+          "label": "Bring Mrs Cassar in properly.",
+          "target": "n08d2"
+        },
+        {
+          "id": "c_n07d6_1",
+          "label": "Bring Dr Abara up the hill.",
+          "target": "n08d3"
+        },
+        {
+          "id": "c_n07d6_2",
+          "label": "Bring the school class in.",
+          "target": "n08d4"
+        }
+      ]
+    },
+    {
+      "id": "n07d7",
+      "body": "<<FILL v=2 role=rising words=100 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n07d7_0",
+          "label": "Go and find the missing volumes.",
+          "target": "n08d5"
+        },
+        {
+          "id": "c_n07d7_1",
+          "label": "Go and see Priya Raval at the council.",
+          "target": "n08d6"
+        },
+        {
+          "id": "c_n07d7_2",
+          "label": "Print the first proper chart.",
+          "target": "n08c0"
+        }
+      ]
+    },
+    {
+      "id": "n07d8",
+      "body": "<<FILL v=2 role=rising words=100 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n07d8_0",
+          "label": "Walk the frost pocket at dawn.",
+          "target": "n08c1"
+        },
+        {
+          "id": "c_n07d8_1",
+          "label": "Sort the notebooks by hand.",
+          "target": "n08c2"
+        },
+        {
+          "id": "c_n07d8_2",
+          "label": "Wait outside the council office.",
+          "target": "n08c3"
+        }
+      ]
+    },
+    {
+      "id": "e07_0",
+      "body": "<<FILL v=2 role=discovery words=100 function=ending>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e07_0",
+        "valence": "neutral",
+        "kind": "discovery",
+        "title": "Safe on a Better Shelf"
+      }
+    },
+    {
+      "id": "e07_1",
+      "body": "<<FILL v=2 role=setback words=100 function=ending>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e07_1",
+        "valence": "neutral",
+        "kind": "setback",
+        "title": "Sent Before It Was Checked"
+      }
+    },
+    {
+      "id": "n08d0",
+      "body": "<<FILL v=2 role=rising words=106 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n08d0_0",
+          "label": "Ask Raval exactly what she can accept.",
+          "target": "n09d0"
+        },
+        {
+          "id": "c_n08d0_1",
+          "label": "Ask Abara to write about the frost pocket.",
+          "target": "n09d1"
+        },
+        {
+          "id": "c_n08d0_2",
+          "label": "Ask the archive to write a custody note.",
+          "target": "n09d2"
+        }
+      ]
+    },
+    {
+      "id": "n08d1",
+      "body": "<<FILL v=2 role=rising words=106 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n08d1_0",
+          "label": "Ask Mrs Cassar to date her method changes.",
+          "target": "n09d3"
+        },
+        {
+          "id": "c_n08d1_1",
+          "label": "Ask what Faulks would say to this.",
+          "target": "n09d4"
+        },
+        {
+          "id": "c_n08d1_2",
+          "label": "Ask the paper to run something.",
+          "target": "n09d5"
+        }
+      ]
+    },
+    {
+      "id": "n08d2",
+      "body": "<<FILL v=2 role=rising words=106 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n08d2_0",
+          "label": "Ask the developer for their survey data.",
+          "target": "n09d6"
+        },
+        {
+          "id": "c_n08d2_1",
+          "label": "Ask Ada about 1917.",
+          "target": "n09d7"
+        },
+        {
+          "id": "c_n08d2_2",
+          "label": "Ask the school to keep the Thursday hall.",
+          "target": "n09d8"
+        }
+      ]
+    },
+    {
+      "id": "n08d3",
+      "body": "<<FILL v=2 role=rising words=106 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n08d3_0",
+          "label": "Take the newspaper offer and stop there.",
+          "target": "e09_0"
+        },
+        {
+          "id": "c_n08d3_1",
+          "label": "Say something about Faulks you cannot support.",
+          "target": "e09_1",
+          "condition": {
+            "==": [
+              {
+                "var": "did_ask_whether_notebooks"
+              },
+              false
+            ]
+          }
+        },
+        {
+          "id": "c_n08d3_1_cq_did_ask_whether_notebooks",
+          "label": "Say something about Faulks you cannot support.",
+          "target": "cq_payoff_did_ask_whether_notebooks",
+          "condition": {
+            "==": [
+              {
+                "var": "did_ask_whether_notebooks"
+              },
+              true
+            ]
+          }
+        },
+        {
+          "id": "c_n08d3_2",
+          "label": "Ask Raval exactly what she can accept.",
+          "target": "n09d0"
+        }
+      ]
+    },
+    {
+      "id": "cq_payoff_did_ask_whether_notebooks",
+      "body": "<<FILL v=2 role=payoff words=38 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_cq_payoff_did_ask_whether_notebooks",
+          "label": "Ask Raval exactly what she can accept.",
+          "target": "n09d0"
+        }
+      ]
+    },
+    {
+      "id": "n08d4",
+      "body": "<<FILL v=2 role=rising words=106 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n08d4_0",
+          "label": "Ask Abara to write about the frost pocket.",
+          "target": "n09d1"
+        },
+        {
+          "id": "c_n08d4_1",
+          "label": "Ask the archive to write a custody note.",
+          "target": "n09d2"
+        },
+        {
+          "id": "c_n08d4_2",
+          "label": "Ask Mrs Cassar to date her method changes.",
+          "target": "n09d3"
+        }
+      ]
+    },
+    {
+      "id": "n08d5",
+      "body": "<<FILL v=2 role=rising words=106 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n08d5_0",
+          "label": "Ask what Faulks would say to this.",
+          "target": "n09d4"
+        },
+        {
+          "id": "c_n08d5_1",
+          "label": "Ask the paper to run something.",
+          "target": "n09d5"
+        },
+        {
+          "id": "c_n08d5_2",
+          "label": "Ask the developer for their survey data.",
+          "target": "n09d6"
+        }
+      ]
+    },
+    {
+      "id": "n08d6",
+      "body": "<<FILL v=2 role=rising words=106 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n08d6_0",
+          "label": "Ask Ada about 1917.",
+          "target": "n09d7"
+        },
+        {
+          "id": "c_n08d6_1",
+          "label": "Ask the school to keep the Thursday hall.",
+          "target": "n09d8"
+        },
+        {
+          "id": "c_n08d6_2",
+          "label": "Take the newspaper offer and stop there.",
+          "target": "e09_0"
+        }
+      ]
+    },
+    {
+      "id": "n08c0",
+      "body": "<<FILL v=2 role=bridge words=36 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n08c0_0",
+          "label": "Say something about Faulks you cannot support.",
+          "target": "e09_1"
+        }
+      ]
+    },
+    {
+      "id": "n08c1",
+      "body": "<<FILL v=2 role=bridge words=36 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n08c1_0",
+          "label": "Ask Raval exactly what she can accept.",
+          "target": "n09d0"
+        }
+      ]
+    },
+    {
+      "id": "n08c2",
+      "body": "<<FILL v=2 role=bridge words=36 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n08c2_0",
+          "label": "Ask Abara to write about the frost pocket.",
+          "target": "n09d1"
+        }
+      ]
+    },
+    {
+      "id": "n08c3",
+      "body": "<<FILL v=2 role=bridge words=36 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n08c3_0",
+          "label": "Ask the archive to write a custody note.",
+          "target": "n09d2"
+        }
+      ]
+    },
+    {
+      "id": "n08c4",
+      "body": "<<FILL v=2 role=bridge words=36 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n08c4_0",
+          "label": "Ask Mrs Cassar to date her method changes.",
+          "target": "n09d3"
+        }
+      ]
+    },
+    {
+      "id": "n08c5",
+      "body": "<<FILL v=2 role=bridge words=36 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n08c5_0",
+          "label": "Ask what Faulks would say to this.",
+          "target": "n09d4"
+        }
+      ]
+    },
+    {
+      "id": "n08c6",
+      "body": "<<FILL v=2 role=bridge words=36 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n08c6_0",
+          "label": "Ask the paper to run something.",
+          "target": "n09d5"
+        }
+      ]
+    },
+    {
+      "id": "e08_0",
+      "body": "<<FILL v=2 role=discovery words=106 function=ending>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e08_0",
+        "valence": "neutral",
+        "kind": "discovery",
+        "title": "Admired and Filed"
+      }
+    },
+    {
+      "id": "e08_1",
+      "body": "<<FILL v=2 role=setback words=106 function=ending>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e08_1",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "Three Wrong Numbers"
+      }
+    },
+    {
+      "id": "n09d0",
+      "body": "<<FILL v=2 role=rising words=112 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n09d0_0",
+          "label": "Put a thermometer in the frost pocket.",
+          "target": "n10d0"
+        },
+        {
+          "id": "c_n09d0_1",
+          "label": "Request the survey data formally.",
+          "target": "n10d1"
+        },
+        {
+          "id": "c_n09d0_2",
+          "label": "Write the method section.",
+          "target": "n10d2"
+        }
+      ]
+    },
+    {
+      "id": "n09d1",
+      "body": "<<FILL v=2 role=rising words=112 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n09d1_0",
+          "label": "Write to the eight named hands.",
+          "target": "n10d3"
+        },
+        {
+          "id": "c_n09d1_1",
+          "label": "Go through the parish records for 1917.",
+          "target": "n10d4"
+        },
+        {
+          "id": "c_n09d1_2",
+          "label": "Decide what to do about the paper.",
+          "target": "n10d5"
+        }
+      ]
+    },
+    {
+      "id": "n09d2",
+      "body": "<<FILL v=2 role=rising words=112 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n09d2_0",
+          "label": "Decide who signs the objection.",
+          "target": "n10d6"
+        },
+        {
+          "id": "c_n09d2_1",
+          "label": "Read at dawn in the rain.",
+          "target": "n10c0"
+        },
+        {
+          "id": "c_n09d2_2",
+          "label": "File the request and wait.",
+          "target": "n10c1"
+        }
+      ]
+    },
+    {
+      "id": "n09d3",
+      "body": "<<FILL v=2 role=rising words=112 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n09d3_0",
+          "label": "Draft the method section badly.",
+          "target": "n10c2"
+        },
+        {
+          "id": "c_n09d3_1",
+          "label": "Post the four letters.",
+          "target": "n10c3"
+        },
+        {
+          "id": "c_n09d3_2",
+          "label": "Sit at the Tuesday desk.",
+          "target": "n10c4"
+        }
+      ]
+    },
+    {
+      "id": "n09d4",
+      "body": "<<FILL v=2 role=rising words=112 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n09d4_0",
+          "label": "Pin the second chart beside the first.",
+          "target": "n10c5"
+        },
+        {
+          "id": "c_n09d4_1",
+          "label": "Let Ada sign nothing yet.",
+          "target": "n10c6"
+        },
+        {
+          "id": "c_n09d4_2",
+          "label": "Publish everything the moment you have it.",
+          "target": "e10_0"
+        }
+      ]
+    },
+    {
+      "id": "n09d5",
+      "body": "<<FILL v=2 role=rising words=112 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n09d5_0",
+          "label": "Skip the method section.",
+          "target": "e10_1"
+        },
+        {
+          "id": "c_n09d5_1",
+          "label": "Put a thermometer in the frost pocket.",
+          "target": "n10d0"
+        },
+        {
+          "id": "c_n09d5_2",
+          "label": "Request the survey data formally.",
+          "target": "n10d1"
+        }
+      ]
+    },
+    {
+      "id": "n09d6",
+      "body": "<<FILL v=2 role=rising words=112 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n09d6_0",
+          "label": "Write the method section.",
+          "target": "n10d2"
+        },
+        {
+          "id": "c_n09d6_1",
+          "label": "Write to the eight named hands.",
+          "target": "n10d3"
+        },
+        {
+          "id": "c_n09d6_2",
+          "label": "Go through the parish records for 1917.",
+          "target": "n10d4"
+        }
+      ]
+    },
+    {
+      "id": "n09d7",
+      "body": "<<FILL v=2 role=rising words=112 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n09d7_0",
+          "label": "Decide what to do about the paper.",
+          "target": "n10d5"
+        },
+        {
+          "id": "c_n09d7_1",
+          "label": "Decide who signs the objection.",
+          "target": "n10d6"
+        },
+        {
+          "id": "c_n09d7_2",
+          "label": "Read at dawn in the rain.",
+          "target": "n10c0"
+        }
+      ]
+    },
+    {
+      "id": "n09d8",
+      "body": "<<FILL v=2 role=rising words=112 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n09d8_0",
+          "label": "File the request and wait.",
+          "target": "n10c1"
+        },
+        {
+          "id": "c_n09d8_1",
+          "label": "Draft the method section badly.",
+          "target": "n10c2"
+        },
+        {
+          "id": "c_n09d8_2",
+          "label": "Post the four letters.",
+          "target": "n10c3"
+        }
+      ]
+    },
+    {
+      "id": "e09_0",
+      "body": "<<FILL v=2 role=discovery words=112 function=ending>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e09_0",
+        "valence": "neutral",
+        "kind": "discovery",
+        "title": "Page Five, Lovely Photograph"
+      }
+    },
+    {
+      "id": "e09_1",
+      "body": "<<FILL v=2 role=setback words=112 function=ending>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e09_1",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "The Thing You Could Not Show"
+      }
+    },
+    {
+      "id": "n10d0",
+      "body": "<<FILL v=2 role=rising words=100 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n10d0_0",
+          "label": "Read the survey data when it arrives.",
+          "target": "n11d0"
+        },
+        {
+          "id": "c_n10d0_1",
+          "label": "Compare the survey dates to the weather.",
+          "target": "n11d1"
+        },
+        {
+          "id": "c_n10d0_2",
+          "label": "Compare the species list to Ada.",
+          "target": "n11d2"
+        }
+      ]
+    },
+    {
+      "id": "n10d1",
+      "body": "<<FILL v=2 role=rising words=100 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n10d1_0",
+          "label": "Find out where the 1917 volumes went.",
+          "target": "n11d3"
+        },
+        {
+          "id": "c_n10d1_1",
+          "label": "Go and look for the volumes.",
+          "target": "n11d4"
+        },
+        {
+          "id": "c_n10d1_2",
+          "label": "Answer the four objections in writing.",
+          "target": "n11d5"
+        }
+      ]
+    },
+    {
+      "id": "n10d2",
+      "body": "<<FILL v=2 role=rising words=100 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n10d2_0",
+          "label": "Ask Abara to read the whole dossier.",
+          "target": "n11d6"
+        },
+        {
+          "id": "c_n10d2_1",
+          "label": "Ask Raval to look at a draft.",
+          "target": "n11d7"
+        },
+        {
+          "id": "c_n10d2_2",
+          "label": "Ask Halvor from the developer what he wants.",
+          "target": "n11d8"
+        }
+      ]
+    },
+    {
+      "id": "n10d3",
+      "body": "<<FILL v=2 role=rising words=100 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n10d3_0",
+          "label": "Accept the offer of a plaque.",
+          "target": "e11_0"
+        },
+        {
+          "id": "c_n10d3_1",
+          "label": "Go after Faulks personally.",
+          "target": "e11_1"
+        },
+        {
+          "id": "c_n10d3_2",
+          "label": "Read the survey data when it arrives.",
+          "target": "n11d0",
+          "condition": {
+            "==": [
+              {
+                "var": "did_ask_whether_notebooks"
+              },
+              false
+            ]
+          }
+        },
+        {
+          "id": "c_n10d3_2_cq_did_ask_whether_notebooks",
+          "label": "Read the survey data when it arrives.",
+          "target": "cq_payoff_did_ask_whether_notebooks_site2",
+          "condition": {
+            "==": [
+              {
+                "var": "did_ask_whether_notebooks"
+              },
+              true
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "cq_payoff_did_ask_whether_notebooks_site2",
+      "body": "<<FILL v=2 role=payoff words=44 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_cq_payoff_did_ask_whether_notebooks_site2",
+          "label": "Read the survey data when it arrives.",
+          "target": "n11d0"
+        }
+      ]
+    },
+    {
+      "id": "n10d4",
+      "body": "<<FILL v=2 role=rising words=100 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n10d4_0",
+          "label": "Compare the survey dates to the weather.",
+          "target": "n11d1"
+        },
+        {
+          "id": "c_n10d4_1",
+          "label": "Compare the species list to Ada.",
+          "target": "n11d2"
+        },
+        {
+          "id": "c_n10d4_2",
+          "label": "Find out where the 1917 volumes went.",
+          "target": "n11d3"
+        }
+      ]
+    },
+    {
+      "id": "n10d5",
+      "body": "<<FILL v=2 role=rising words=100 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n10d5_0",
+          "label": "Go and look for the volumes.",
+          "target": "n11d4"
+        },
+        {
+          "id": "c_n10d5_1",
+          "label": "Answer the four objections in writing.",
+          "target": "n11d5"
+        },
+        {
+          "id": "c_n10d5_2",
+          "label": "Ask Abara to read the whole dossier.",
+          "target": "n11d6"
+        }
+      ]
+    },
+    {
+      "id": "n10d6",
+      "body": "<<FILL v=2 role=rising words=100 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n10d6_0",
+          "label": "Ask Raval to look at a draft.",
+          "target": "n11d7"
+        },
+        {
+          "id": "c_n10d6_1",
+          "label": "Ask Halvor from the developer what he wants.",
+          "target": "n11d8"
+        },
+        {
+          "id": "c_n10d6_2",
+          "label": "Accept the offer of a plaque.",
+          "target": "e11_0"
+        }
+      ]
+    },
+    {
+      "id": "n10c0",
+      "body": "<<FILL v=2 role=bridge words=36 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n10c0_0",
+          "label": "Go after Faulks personally.",
+          "target": "e11_1"
+        }
+      ]
+    },
+    {
+      "id": "n10c1",
+      "body": "<<FILL v=2 role=bridge words=36 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n10c1_0",
+          "label": "Read the survey data when it arrives.",
+          "target": "n11d0"
+        }
+      ]
+    },
+    {
+      "id": "n10c2",
+      "body": "<<FILL v=2 role=bridge words=36 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n10c2_0",
+          "label": "Compare the survey dates to the weather.",
+          "target": "n11d1"
+        }
+      ]
+    },
+    {
+      "id": "n10c3",
+      "body": "<<FILL v=2 role=bridge words=36 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n10c3_0",
+          "label": "Compare the species list to Ada.",
+          "target": "n11d2"
+        }
+      ]
+    },
+    {
+      "id": "n10c4",
+      "body": "<<FILL v=2 role=bridge words=36 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n10c4_0",
+          "label": "Find out where the 1917 volumes went.",
+          "target": "n11d3"
+        }
+      ]
+    },
+    {
+      "id": "n10c5",
+      "body": "<<FILL v=2 role=bridge words=36 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n10c5_0",
+          "label": "Go and look for the volumes.",
+          "target": "n11d4"
+        }
+      ]
+    },
+    {
+      "id": "n10c6",
+      "body": "<<FILL v=2 role=bridge words=36 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n10c6_0",
+          "label": "Answer the four objections in writing.",
+          "target": "n11d5"
+        }
+      ]
+    },
+    {
+      "id": "e10_0",
+      "body": "<<FILL v=2 role=discovery words=100 function=ending>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e10_0",
+        "valence": "neutral",
+        "kind": "discovery",
+        "title": "Four Hundred Readers, No Answer"
+      }
+    },
+    {
+      "id": "e10_1",
+      "body": "<<FILL v=2 role=setback words=100 function=ending>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e10_1",
+        "valence": "neutral",
+        "kind": "setback",
+        "title": "Numbers Without a Method"
+      }
+    },
+    {
+      "id": "n11d0",
+      "body": "<<FILL v=2 role=rising words=106 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n11d0_0",
+          "label": "Show that the survey was done in a drought.",
+          "target": "n12d0"
+        },
+        {
+          "id": "c_n11d0_1",
+          "label": "Go to the agricultural committee building.",
+          "target": "n12d1"
+        },
+        {
+          "id": "c_n11d0_2",
+          "label": "Get the species list checked properly.",
+          "target": "n12d2"
+        }
+      ]
+    },
+    {
+      "id": "n11d1",
+      "body": "<<FILL v=2 role=rising words=106 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n11d1_0",
+          "label": "Decide what to say to Halvor.",
+          "target": "n12d3",
+          "condition": {
+            "==": [
+              {
+                "var": "did_find_who_wrote"
+              },
+              false
+            ]
+          }
+        },
+        {
+          "id": "c_n11d1_0_cq_did_find_who_wrote",
+          "label": "Decide what to say to Halvor.",
+          "target": "cq_payoff_did_find_who_wrote_site2",
+          "condition": {
+            "==": [
+              {
+                "var": "did_find_who_wrote"
+              },
+              true
+            ]
+          }
+        },
+        {
+          "id": "c_n11d1_1",
+          "label": "Decide how hard to push the frost pocket.",
+          "target": "n12d4"
+        },
+        {
+          "id": "c_n11d1_2",
+          "label": "Decide whether Ada should speak.",
+          "target": "n12d5"
+        }
+      ]
+    },
+    {
+      "id": "cq_payoff_did_find_who_wrote_site2",
+      "body": "<<FILL v=2 role=payoff words=38 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_cq_payoff_did_find_who_wrote_site2",
+          "label": "Decide what to say to Halvor.",
+          "target": "n12d3"
+        }
+      ]
+    },
+    {
+      "id": "n11d2",
+      "body": "<<FILL v=2 role=rising words=106 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n11d2_0",
+          "label": "Decide when to release the dossier.",
+          "target": "n12d6"
+        },
+        {
+          "id": "c_n11d2_1",
+          "label": "Go down into the basement.",
+          "target": "n12c0"
+        },
+        {
+          "id": "c_n11d2_2",
+          "label": "Read the rainfall record twice.",
+          "target": "n12c1"
+        }
+      ]
+    },
+    {
+      "id": "n11d3",
+      "body": "<<FILL v=2 role=rising words=106 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n11d3_0",
+          "label": "Walk the rows with a list in hand.",
+          "target": "n12c2"
+        },
+        {
+          "id": "c_n11d3_1",
+          "label": "Leave the coffee untouched.",
+          "target": "n12c3"
+        },
+        {
+          "id": "c_n11d3_2",
+          "label": "Sit with Ada in the shed.",
+          "target": "n12c4"
+        }
+      ]
+    },
+    {
+      "id": "n11d4",
+      "body": "<<FILL v=2 role=rising words=106 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n11d4_0",
+          "label": "Number every page of the dossier.",
+          "target": "n12c5"
+        },
+        {
+          "id": "c_n11d4_1",
+          "label": "Find the two volumes in a box.",
+          "target": "n12c6"
+        },
+        {
+          "id": "c_n11d4_2",
+          "label": "Keep the found volumes to yourself.",
+          "target": "e12_0"
+        }
+      ]
+    },
+    {
+      "id": "n11d5",
+      "body": "<<FILL v=2 role=rising words=106 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n11d5_0",
+          "label": "Let the deadline decide for you.",
+          "target": "e12_1",
+          "condition": {
+            "==": [
+              {
+                "var": "did_find_who_wrote"
+              },
+              false
+            ]
+          }
+        },
+        {
+          "id": "c_n11d5_0_cq_did_find_who_wrote",
+          "label": "Let the deadline decide for you.",
+          "target": "cq_payoff_did_find_who_wrote",
+          "condition": {
+            "==": [
+              {
+                "var": "did_find_who_wrote"
+              },
+              true
+            ]
+          }
+        },
+        {
+          "id": "c_n11d5_1",
+          "label": "Show that the survey was done in a drought.",
+          "target": "n12d0"
+        },
+        {
+          "id": "c_n11d5_2",
+          "label": "Go to the agricultural committee building.",
+          "target": "n12d1"
+        }
+      ]
+    },
+    {
+      "id": "cq_payoff_did_find_who_wrote",
+      "body": "<<FILL v=2 role=payoff words=38 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_cq_payoff_did_find_who_wrote",
+          "label": "Show that the survey was done in a drought.",
+          "target": "n12d0"
+        }
+      ]
+    },
+    {
+      "id": "n11d6",
+      "body": "<<FILL v=2 role=rising words=106 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n11d6_0",
+          "label": "Get the species list checked properly.",
+          "target": "n12d2"
+        },
+        {
+          "id": "c_n11d6_1",
+          "label": "Decide what to say to Halvor.",
+          "target": "n12d3"
+        },
+        {
+          "id": "c_n11d6_2",
+          "label": "Decide how hard to push the frost pocket.",
+          "target": "n12d4"
+        }
+      ]
+    },
+    {
+      "id": "n11d7",
+      "body": "<<FILL v=2 role=rising words=106 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n11d7_0",
+          "label": "Decide whether Ada should speak.",
+          "target": "n12d5"
+        },
+        {
+          "id": "c_n11d7_1",
+          "label": "Decide when to release the dossier.",
+          "target": "n12d6"
+        },
+        {
+          "id": "c_n11d7_2",
+          "label": "Go down into the basement.",
+          "target": "n12c0"
+        }
+      ]
+    },
+    {
+      "id": "n11d8",
+      "body": "<<FILL v=2 role=rising words=106 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n11d8_0",
+          "label": "Read the rainfall record twice.",
+          "target": "n12c1"
+        },
+        {
+          "id": "c_n11d8_1",
+          "label": "Walk the rows with a list in hand.",
+          "target": "n12c2"
+        },
+        {
+          "id": "c_n11d8_2",
+          "label": "Leave the coffee untouched.",
+          "target": "n12c3"
+        }
+      ]
+    },
+    {
+      "id": "e11_0",
+      "body": "<<FILL v=2 role=discovery words=106 function=ending>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e11_0",
+        "valence": "neutral",
+        "kind": "discovery",
+        "title": "A Corner and a Plaque"
+      }
+    },
+    {
+      "id": "e11_1",
+      "body": "<<FILL v=2 role=setback words=106 function=ending>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e11_1",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "The Argument Becomes About You"
+      }
+    },
+    {
+      "id": "n12d0",
+      "body": "<<FILL v=2 role=rising words=112 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n12d0_0",
+          "label": "Submit the objection with the full method.",
+          "target": "n13d0"
+        },
+        {
+          "id": "c_n12d0_1",
+          "label": "Submit it in the name of the orchard trust.",
+          "target": "n13d1"
+        },
+        {
+          "id": "c_n12d0_2",
+          "label": "Ask for the hearing to be public.",
+          "target": "n13d2"
+        }
+      ]
+    },
+    {
+      "id": "n12d1",
+      "body": "<<FILL v=2 role=rising words=112 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n12d1_0",
+          "label": "Give the developer the dossier first.",
+          "target": "n13d3"
+        },
+        {
+          "id": "c_n12d1_1",
+          "label": "Put the found volumes into the record.",
+          "target": "n13d4"
+        },
+        {
+          "id": "c_n12d1_2",
+          "label": "Ask Abara to attend in person.",
+          "target": "n13d5"
+        }
+      ]
+    },
+    {
+      "id": "n12d2",
+      "body": "<<FILL v=2 role=rising words=112 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n12d2_0",
+          "label": "Ask Mrs Cassar to bring the hives.",
+          "target": "n13d6"
+        },
+        {
+          "id": "c_n12d2_1",
+          "label": "Ask Ada to read one page aloud.",
+          "target": "n13d7"
+        },
+        {
+          "id": "c_n12d2_2",
+          "label": "Hand it in and let the work speak.",
+          "target": "e13_0"
+        }
+      ]
+    },
+    {
+      "id": "n12d3",
+      "body": "<<FILL v=2 role=rising words=112 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n12d3_0",
+          "label": "Finish the record before you finish the fight.",
+          "target": "e13_1"
+        },
+        {
+          "id": "c_n12d3_1",
+          "label": "Read the whole thing through one last time.",
+          "target": "e13_2"
+        },
+        {
+          "id": "c_n12d3_2",
+          "label": "Submit the objection with the full method.",
+          "target": "n13d0"
+        }
+      ]
+    },
+    {
+      "id": "n12d4",
+      "body": "<<FILL v=2 role=rising words=112 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n12d4_0",
+          "label": "Submit it in the name of the orchard trust.",
+          "target": "n13d1"
+        },
+        {
+          "id": "c_n12d4_1",
+          "label": "Ask for the hearing to be public.",
+          "target": "n13d2"
+        },
+        {
+          "id": "c_n12d4_2",
+          "label": "Give the developer the dossier first.",
+          "target": "n13d3"
+        }
+      ]
+    },
+    {
+      "id": "n12d5",
+      "body": "<<FILL v=2 role=rising words=112 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n12d5_0",
+          "label": "Put the found volumes into the record.",
+          "target": "n13d4"
+        },
+        {
+          "id": "c_n12d5_1",
+          "label": "Ask Abara to attend in person.",
+          "target": "n13d5"
+        },
+        {
+          "id": "c_n12d5_2",
+          "label": "Ask Mrs Cassar to bring the hives.",
+          "target": "n13d6"
+        }
+      ]
+    },
+    {
+      "id": "n12d6",
+      "body": "<<FILL v=2 role=rising words=112 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n12d6_0",
+          "label": "Ask Ada to read one page aloud.",
+          "target": "n13d7"
+        },
+        {
+          "id": "c_n12d6_1",
+          "label": "Hand it in and let the work speak.",
+          "target": "e13_0"
+        },
+        {
+          "id": "c_n12d6_2",
+          "label": "Finish the record before you finish the fight.",
+          "target": "e13_1"
+        }
+      ]
+    },
+    {
+      "id": "n12c0",
+      "body": "<<FILL v=2 role=bridge words=36 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n12c0_0",
+          "label": "Read the whole thing through one last time.",
+          "target": "e13_2"
+        }
+      ]
+    },
+    {
+      "id": "n12c1",
+      "body": "<<FILL v=2 role=bridge words=36 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n12c1_0",
+          "label": "Submit the objection with the full method.",
+          "target": "n13d0"
+        }
+      ]
+    },
+    {
+      "id": "n12c2",
+      "body": "<<FILL v=2 role=bridge words=36 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n12c2_0",
+          "label": "Submit it in the name of the orchard trust.",
+          "target": "n13d1"
+        }
+      ]
+    },
+    {
+      "id": "n12c3",
+      "body": "<<FILL v=2 role=bridge words=36 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n12c3_0",
+          "label": "Ask for the hearing to be public.",
+          "target": "n13d2"
+        }
+      ]
+    },
+    {
+      "id": "n12c4",
+      "body": "<<FILL v=2 role=bridge words=36 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n12c4_0",
+          "label": "Give the developer the dossier first.",
+          "target": "n13d3"
+        }
+      ]
+    },
+    {
+      "id": "n12c5",
+      "body": "<<FILL v=2 role=bridge words=36 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n12c5_0",
+          "label": "Put the found volumes into the record.",
+          "target": "n13d4"
+        }
+      ]
+    },
+    {
+      "id": "n12c6",
+      "body": "<<FILL v=2 role=bridge words=36 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n12c6_0",
+          "label": "Ask Abara to attend in person.",
+          "target": "n13d5"
+        }
+      ]
+    },
+    {
+      "id": "e12_0",
+      "body": "<<FILL v=2 role=discovery words=112 function=ending>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e12_0",
+        "valence": "neutral",
+        "kind": "discovery",
+        "title": "The Gap You Filled Quietly"
+      }
+    },
+    {
+      "id": "e12_1",
+      "body": "<<FILL v=2 role=setback words=112 function=ending>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e12_1",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "The Version That Was Finished"
+      }
+    },
+    {
+      "id": "n13d0",
+      "body": "<<FILL v=2 role=rising words=100 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n13d0_0",
+          "label": "Answer the drought question first.",
+          "target": "n14d0"
+        },
+        {
+          "id": "c_n13d0_1",
+          "label": "Answer the amateur question.",
+          "target": "n14d1"
+        },
+        {
+          "id": "c_n13d0_2",
+          "label": "Answer the too short question.",
+          "target": "n14d2"
+        }
+      ]
+    },
+    {
+      "id": "n13d1",
+      "body": "<<FILL v=2 role=rising words=100 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n13d1_0",
+          "label": "Let Faulks speak without interrupting.",
+          "target": "n14d3"
+        },
+        {
+          "id": "c_n13d1_1",
+          "label": "Let Ada read her page.",
+          "target": "n14d4"
+        },
+        {
+          "id": "c_n13d1_2",
+          "label": "Offer the panel the whole dataset.",
+          "target": "n14d5"
+        }
+      ]
+    },
+    {
+      "id": "n13d2",
+      "body": "<<FILL v=2 role=rising words=100 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n13d2_0",
+          "label": "Sit in the front row and wait.",
+          "target": "n14c0"
+        },
+        {
+          "id": "c_n13d2_1",
+          "label": "Set the two charts on the easel.",
+          "target": "n14c1"
+        },
+        {
+          "id": "c_n13d2_2",
+          "label": "Watch the note taker write.",
+          "target": "n14c2"
+        }
+      ]
+    },
+    {
+      "id": "n13d3",
+      "body": "<<FILL v=2 role=rising words=100 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n13d3_0",
+          "label": "Pass the frame along the table.",
+          "target": "n14c3"
+        },
+        {
+          "id": "c_n13d3_1",
+          "label": "Let the room go quiet.",
+          "target": "n14c4"
+        },
+        {
+          "id": "c_n13d3_2",
+          "label": "Wait outside while they decide.",
+          "target": "n14c5"
+        }
+      ]
+    },
+    {
+      "id": "n13d4",
+      "body": "<<FILL v=2 role=rising words=100 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n13d4_0",
+          "label": "Argue with the panel.",
+          "target": "e14_0"
+        },
+        {
+          "id": "c_n13d4_1",
+          "label": "Say only what you can support.",
+          "target": "e14_1"
+        },
+        {
+          "id": "c_n13d4_2",
+          "label": "Answer the drought question first.",
+          "target": "n14d0"
+        }
+      ]
+    },
+    {
+      "id": "n13d5",
+      "body": "<<FILL v=2 role=rising words=100 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n13d5_0",
+          "label": "Answer the amateur question.",
+          "target": "n14d1"
+        },
+        {
+          "id": "c_n13d5_1",
+          "label": "Answer the too short question.",
+          "target": "n14d2"
+        },
+        {
+          "id": "c_n13d5_2",
+          "label": "Let Faulks speak without interrupting.",
+          "target": "n14d3"
+        }
+      ]
+    },
+    {
+      "id": "n13d6",
+      "body": "<<FILL v=2 role=rising words=100 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n13d6_0",
+          "label": "Let Ada read her page.",
+          "target": "n14d4"
+        },
+        {
+          "id": "c_n13d6_1",
+          "label": "Offer the panel the whole dataset.",
+          "target": "n14d5"
+        },
+        {
+          "id": "c_n13d6_2",
+          "label": "Sit in the front row and wait.",
+          "target": "n14c0"
+        }
+      ]
+    },
+    {
+      "id": "n13d7",
+      "body": "<<FILL v=2 role=rising words=100 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n13d7_0",
+          "label": "Set the two charts on the easel.",
+          "target": "n14c1"
+        },
+        {
+          "id": "c_n13d7_1",
+          "label": "Watch the note taker write.",
+          "target": "n14c2"
+        },
+        {
+          "id": "c_n13d7_2",
+          "label": "Pass the frame along the table.",
+          "target": "n14c3"
+        }
+      ]
+    },
+    {
+      "id": "e13_0",
+      "body": "<<FILL v=2 role=success words=100 function=ending>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e13_0",
+        "valence": "positive",
+        "kind": "success",
+        "title": "Redone in May"
+      }
+    },
+    {
+      "id": "e13_1",
+      "body": "<<FILL v=2 role=completion words=100 function=ending>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e13_1",
+        "valence": "positive",
+        "kind": "completion",
+        "title": "It Exists Outside the Shed"
+      }
+    },
+    {
+      "id": "e13_2",
+      "body": "<<FILL v=2 role=discovery words=100 function=ending>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e13_2",
+        "valence": "neutral",
+        "kind": "discovery",
+        "title": "People Turning Up, In Order"
+      }
+    },
+    {
+      "id": "n14d0",
+      "body": "<<FILL v=2 role=rising words=106 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n14d0_0",
+          "label": "Read the officer report when it lands.",
+          "target": "n15d0"
+        },
+        {
+          "id": "c_n14d0_1",
+          "label": "Read the conditions attached.",
+          "target": "n15d1"
+        },
+        {
+          "id": "c_n14d0_2",
+          "label": "Decide what to do about the spine road.",
+          "target": "n15d2"
+        }
+      ]
+    },
+    {
+      "id": "n14d1",
+      "body": "<<FILL v=2 role=rising words=106 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n14d1_0",
+          "label": "Decide who keeps the notebooks now.",
+          "target": "n15d3"
+        },
+        {
+          "id": "c_n14d1_1",
+          "label": "Decide what to tell the class.",
+          "target": "n15d4"
+        },
+        {
+          "id": "c_n14d1_2",
+          "label": "Decide what to do next year.",
+          "target": "n15d5"
+        }
+      ]
+    },
+    {
+      "id": "n14d2",
+      "body": "<<FILL v=2 role=rising words=106 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n14d2_0",
+          "label": "Decide what to say to Halvor now.",
+          "target": "n15d6"
+        },
+        {
+          "id": "c_n14d2_1",
+          "label": "Hand the series over to the archive for good.",
+          "target": "e15_0"
+        },
+        {
+          "id": "c_n14d2_2",
+          "label": "Hold out for the road to move.",
+          "target": "e15_1"
+        }
+      ]
+    },
+    {
+      "id": "n14d3",
+      "body": "<<FILL v=2 role=rising words=106 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n14d3_0",
+          "label": "Ask what the early bloom was actually telling you.",
+          "target": "e15_2"
+        },
+        {
+          "id": "c_n14d3_1",
+          "label": "Read the officer report when it lands.",
+          "target": "n15d0"
+        },
+        {
+          "id": "c_n14d3_2",
+          "label": "Read the conditions attached.",
+          "target": "n15d1"
+        }
+      ]
+    },
+    {
+      "id": "n14d4",
+      "body": "<<FILL v=2 role=rising words=106 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n14d4_0",
+          "label": "Decide what to do about the spine road.",
+          "target": "n15d2"
+        },
+        {
+          "id": "c_n14d4_1",
+          "label": "Decide who keeps the notebooks now.",
+          "target": "n15d3"
+        },
+        {
+          "id": "c_n14d4_2",
+          "label": "Decide what to tell the class.",
+          "target": "n15d4"
+        }
+      ]
+    },
+    {
+      "id": "n14d5",
+      "body": "<<FILL v=2 role=rising words=106 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n14d5_0",
+          "label": "Decide what to do next year.",
+          "target": "n15d5"
+        },
+        {
+          "id": "c_n14d5_1",
+          "label": "Decide what to say to Halvor now.",
+          "target": "n15d6"
+        },
+        {
+          "id": "c_n14d5_2",
+          "label": "Hand the series over to the archive for good.",
+          "target": "e15_0"
+        }
+      ]
+    },
+    {
+      "id": "n14c0",
+      "body": "<<FILL v=2 role=bridge words=36 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n14c0_0",
+          "label": "Hold out for the road to move.",
+          "target": "e15_1"
+        }
+      ]
+    },
+    {
+      "id": "n14c1",
+      "body": "<<FILL v=2 role=bridge words=36 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n14c1_0",
+          "label": "Ask what the early bloom was actually telling you.",
+          "target": "e15_2"
+        }
+      ]
+    },
+    {
+      "id": "n14c2",
+      "body": "<<FILL v=2 role=bridge words=36 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n14c2_0",
+          "label": "Read the officer report when it lands.",
+          "target": "n15d0"
+        }
+      ]
+    },
+    {
+      "id": "n14c3",
+      "body": "<<FILL v=2 role=bridge words=36 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n14c3_0",
+          "label": "Read the conditions attached.",
+          "target": "n15d1"
+        }
+      ]
+    },
+    {
+      "id": "n14c4",
+      "body": "<<FILL v=2 role=bridge words=36 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n14c4_0",
+          "label": "Decide what to do about the spine road.",
+          "target": "n15d2"
+        }
+      ]
+    },
+    {
+      "id": "n14c5",
+      "body": "<<FILL v=2 role=bridge words=36 function=continue>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n14c5_0",
+          "label": "Decide who keeps the notebooks now.",
+          "target": "n15d3"
+        }
+      ]
+    },
+    {
+      "id": "e14_0",
+      "body": "<<FILL v=2 role=setback words=106 function=ending>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e14_0",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "The Chair Becomes Careful"
+      }
+    },
+    {
+      "id": "e14_1",
+      "body": "<<FILL v=2 role=success words=106 function=ending>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e14_1",
+        "valence": "positive",
+        "kind": "success",
+        "title": "Six Answers and One Honest No"
+      }
+    },
+    {
+      "id": "n15d0",
+      "body": "<<FILL v=2 role=rising words=112 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n15d0_0",
+          "label": "Start the winter frost study properly.",
+          "target": "n16d0"
+        },
+        {
+          "id": "c_n15d0_1",
+          "label": "Train somebody to read the hands.",
+          "target": "n16d1"
+        },
+        {
+          "id": "c_n15d0_2",
+          "label": "Decide what the trust is for.",
+          "target": "n16d2"
+        }
+      ]
+    },
+    {
+      "id": "n15d1",
+      "body": "<<FILL v=2 role=rising words=112 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n15d1_0",
+          "label": "Decide how the record continues.",
+          "target": "n16d3"
+        },
+        {
+          "id": "c_n15d1_1",
+          "label": "Buy a second thermometer.",
+          "target": "n16c0"
+        },
+        {
+          "id": "c_n15d1_2",
+          "label": "Put the rota on the shed door.",
+          "target": "n16c1"
+        }
+      ]
+    },
+    {
+      "id": "n15d2",
+      "body": "<<FILL v=2 role=rising words=112 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n15d2_0",
+          "label": "Sit with the 1917 volumes.",
+          "target": "n16c2"
+        },
+        {
+          "id": "c_n15d2_1",
+          "label": "Watch the May resurvey happen.",
+          "target": "n16c3"
+        },
+        {
+          "id": "c_n15d2_2",
+          "label": "Write the hundred and fifteenth year.",
+          "target": "e16_0"
+        }
+      ]
+    },
+    {
+      "id": "n15d3",
+      "body": "<<FILL v=2 role=rising words=112 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n15d3_0",
+          "label": "Let the rota lapse in December.",
+          "target": "e16_1"
+        },
+        {
+          "id": "c_n15d3_1",
+          "label": "Start the winter frost study properly.",
+          "target": "n16d0"
+        },
+        {
+          "id": "c_n15d3_2",
+          "label": "Train somebody to read the hands.",
+          "target": "n16d1"
+        }
+      ]
+    },
+    {
+      "id": "n15d4",
+      "body": "<<FILL v=2 role=rising words=112 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n15d4_0",
+          "label": "Decide what the trust is for.",
+          "target": "n16d2"
+        },
+        {
+          "id": "c_n15d4_1",
+          "label": "Decide how the record continues.",
+          "target": "n16d3"
+        },
+        {
+          "id": "c_n15d4_2",
+          "label": "Buy a second thermometer.",
+          "target": "n16c0"
+        }
+      ]
+    },
+    {
+      "id": "n15d5",
+      "body": "<<FILL v=2 role=rising words=112 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n15d5_0",
+          "label": "Put the rota on the shed door.",
+          "target": "n16c1"
+        },
+        {
+          "id": "c_n15d5_1",
+          "label": "Sit with the 1917 volumes.",
+          "target": "n16c2"
+        },
+        {
+          "id": "c_n15d5_2",
+          "label": "Watch the May resurvey happen.",
+          "target": "n16c3"
+        }
+      ]
+    },
+    {
+      "id": "n15d6",
+      "body": "<<FILL v=2 role=rising words=112 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n15d6_0",
+          "label": "Write the hundred and fifteenth year.",
+          "target": "e16_0"
+        },
+        {
+          "id": "c_n15d6_1",
+          "label": "Let the rota lapse in December.",
+          "target": "e16_1"
+        },
+        {
+          "id": "c_n15d6_2",
+          "label": "Start the winter frost study properly.",
+          "target": "n16d0"
+        }
+      ]
+    },
+    {
+      "id": "e15_0",
+      "body": "<<FILL v=2 role=completion words=112 function=ending>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e15_0",
+        "valence": "positive",
+        "kind": "completion",
+        "title": "A Deed of Gift"
+      }
+    },
+    {
+      "id": "e15_1",
+      "body": "<<FILL v=2 role=success words=112 function=ending>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e15_1",
+        "valence": "positive",
+        "kind": "success",
+        "title": "Forty Metres East"
+      }
+    },
+    {
+      "id": "e15_2",
+      "body": "<<FILL v=2 role=discovery words=112 function=ending>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e15_2",
+        "valence": "neutral",
+        "kind": "discovery",
+        "title": "Not a Signal, a Question"
+      }
+    },
+    {
+      "id": "n16d0",
+      "body": "<<FILL v=2 role=rising words=100 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n16d0_0",
+          "label": "Look at what the resurvey found.",
+          "target": "n17d0"
+        },
+        {
+          "id": "c_n16d0_1",
+          "label": "Look at what the argument cost.",
+          "target": "n17d1"
+        },
+        {
+          "id": "c_n16d0_2",
+          "label": "Look at what you would do again.",
+          "target": "n17d2"
+        }
+      ]
+    },
+    {
+      "id": "n16d1",
+      "body": "<<FILL v=2 role=rising words=100 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n16d1_0",
+          "label": "Look at the Bramley in April.",
+          "target": "n17d3"
+        },
+        {
+          "id": "c_n16d1_1",
+          "label": "Take the long view on purpose.",
+          "target": "e17_0"
+        },
+        {
+          "id": "c_n16d1_2",
+          "label": "Take the record for what it is.",
+          "target": "e17_1"
+        }
+      ]
+    },
+    {
+      "id": "n16d2",
+      "body": "<<FILL v=2 role=rising words=100 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n16d2_0",
+          "label": "Look at what the resurvey found.",
+          "target": "n17d0"
+        },
+        {
+          "id": "c_n16d2_1",
+          "label": "Look at what the argument cost.",
+          "target": "n17d1"
+        },
+        {
+          "id": "c_n16d2_2",
+          "label": "Look at what you would do again.",
+          "target": "n17d2"
+        }
+      ]
+    },
+    {
+      "id": "n16d3",
+      "body": "<<FILL v=2 role=rising words=100 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n16d3_0",
+          "label": "Look at the Bramley in April.",
+          "target": "n17d3"
+        },
+        {
+          "id": "c_n16d3_1",
+          "label": "Take the long view on purpose.",
+          "target": "e17_0"
+        },
+        {
+          "id": "c_n16d3_2",
+          "label": "Take the record for what it is.",
+          "target": "e17_1"
+        }
+      ]
+    },
+    {
+      "id": "n16c0",
+      "body": "<<FILL v=2 role=bridge words=36 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n16c0_0",
+          "label": "Look at what the resurvey found.",
+          "target": "n17d0"
+        }
+      ]
+    },
+    {
+      "id": "n16c1",
+      "body": "<<FILL v=2 role=bridge words=36 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n16c1_0",
+          "label": "Look at what the argument cost.",
+          "target": "n17d1"
+        }
+      ]
+    },
+    {
+      "id": "n16c2",
+      "body": "<<FILL v=2 role=bridge words=36 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n16c2_0",
+          "label": "Look at what you would do again.",
+          "target": "n17d2"
+        }
+      ]
+    },
+    {
+      "id": "n16c3",
+      "body": "<<FILL v=2 role=bridge words=36 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n16c3_0",
+          "label": "Look at the Bramley in April.",
+          "target": "n17d3"
+        }
+      ]
+    },
+    {
+      "id": "e16_0",
+      "body": "<<FILL v=2 role=completion words=100 function=ending>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e16_0",
+        "valence": "positive",
+        "kind": "completion",
+        "title": "The Hundred and Fifteenth Year"
+      }
+    },
+    {
+      "id": "e16_1",
+      "body": "<<FILL v=2 role=setback words=100 function=ending>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e16_1",
+        "valence": "neutral",
+        "kind": "setback",
+        "title": "Eleven Days Missing"
+      }
+    },
+    {
+      "id": "n17d0",
+      "body": "<<FILL v=2 role=rising words=106 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n17d0_0",
+          "label": "Finish it the way it was started.",
+          "target": "e18_0"
+        },
+        {
+          "id": "c_n17d0_1",
+          "label": "See the orchard through to the following autumn.",
+          "target": "e18_1"
+        },
+        {
+          "id": "c_n17d0_2",
+          "label": "Look back at the eleven words.",
+          "target": "e18_2"
+        }
+      ]
+    },
+    {
+      "id": "n17d1",
+      "body": "<<FILL v=2 role=rising words=106 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n17d1_0",
+          "label": "Stop keeping it.",
+          "target": "e18_3"
+        },
+        {
+          "id": "c_n17d1_1",
+          "label": "Finish it the way it was started.",
+          "target": "e18_0"
+        },
+        {
+          "id": "c_n17d1_2",
+          "label": "See the orchard through to the following autumn.",
+          "target": "e18_1"
+        }
+      ]
+    },
+    {
+      "id": "n17d2",
+      "body": "<<FILL v=2 role=rising words=106 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n17d2_0",
+          "label": "Look back at the eleven words.",
+          "target": "e18_2"
+        },
+        {
+          "id": "c_n17d2_1",
+          "label": "Stop keeping it.",
+          "target": "e18_3"
+        },
+        {
+          "id": "c_n17d2_2",
+          "label": "Finish it the way it was started.",
+          "target": "e18_0"
+        }
+      ]
+    },
+    {
+      "id": "n17d3",
+      "body": "<<FILL v=2 role=rising words=106 function=merge>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n17d3_0",
+          "label": "See the orchard through to the following autumn.",
+          "target": "e18_1"
+        },
+        {
+          "id": "c_n17d3_1",
+          "label": "Look back at the eleven words.",
+          "target": "e18_2"
+        },
+        {
+          "id": "c_n17d3_2",
+          "label": "Stop keeping it.",
+          "target": "e18_3"
+        }
+      ]
+    },
+    {
+      "id": "e17_0",
+      "body": "<<FILL v=2 role=success words=106 function=ending>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e17_0",
+        "valence": "positive",
+        "kind": "success",
+        "title": "A Hundred and Fourteen Evenings"
+      }
+    },
+    {
+      "id": "e17_1",
+      "body": "<<FILL v=2 role=discovery words=106 function=ending>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e17_1",
+        "valence": "neutral",
+        "kind": "discovery",
+        "title": "The Reason to Be Believed"
+      }
+    },
+    {
+      "id": "e18_0",
+      "body": "<<FILL v=2 role=completion words=112 function=ending>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e18_0",
+        "valence": "positive",
+        "kind": "completion",
+        "title": "The First Index"
+      }
+    },
+    {
+      "id": "e18_1",
+      "body": "<<FILL v=2 role=success words=112 function=ending>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e18_1",
+        "valence": "positive",
+        "kind": "success",
+        "title": "An Ordinary Enormous Autumn"
+      }
+    },
+    {
+      "id": "e18_2",
+      "body": "<<FILL v=2 role=discovery words=112 function=ending>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e18_2",
+        "valence": "neutral",
+        "kind": "discovery",
+        "title": "The Eleven Words"
+      }
+    },
+    {
+      "id": "e18_3",
+      "body": "<<FILL v=2 role=setback words=112 function=ending>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e18_3",
+        "valence": "neutral",
+        "kind": "setback",
+        "title": "A Closed Thing"
+      }
+    }
+  ]
+}
