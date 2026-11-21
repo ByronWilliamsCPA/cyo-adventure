@@ -119,6 +119,15 @@ trade-off separates them: the fork with one right answer); a shared real cost
 (each option's cost is giving up the others, "leaves the other wings") is a
 WARNING, since a symmetric opportunity cost is a trade-off.
 
+``SP-D`` plan density (WP-2.3 follow-on, 2026-11-21, AL-848), WARNING only,
+never ERROR, so it is not in :data:`RULE_IDS` and changes no ERROR count: it
+advises when a plan records too little to be checked. Over the reachable book
+it measures the share of non-ending passages with no ``requires`` and no
+``establishes``, referenced facts per non-ending passage, the share of
+decision choices whose intent or cost is reused by a decision choice leading
+to another passage, and ledger facts nothing references. See
+:func:`_check_density` for the thresholds and the data they were set from.
+
 ``SP-9`` every plan string except ``request.text``, ``request.note``, ``book``
 and ``provenance`` (verbatim untrusted input and metadata) passes the
 slot structural floor (non-empty, single line, no braces, no ``<<``/``>>``, no
@@ -182,9 +191,17 @@ if TYPE_CHECKING:
 
 __all__ = [
     "ASSERT_RULE",
+    "COST_REUSE_MAX",
+    "DENSITY_MIN_DECISION_CHOICES",
+    "DENSITY_MIN_NODES",
+    "DENSITY_RULE",
+    "EMPTY_NODE_SHARE_MAX",
+    "INTENT_REUSE_MAX",
+    "LEDGER_DENSITY_MIN",
     "RULE_IDS",
     "WITNESSES",
     "ConfigGraph",
+    "PlanDensity",
     "PlanFinding",
     "RuleWitness",
     "base_example",
@@ -194,6 +211,7 @@ __all__ = [
     "guaranteed_on_entry",
     "meet_of",
     "must_not_assert",
+    "plan_density",
     "text_floor_violations",
     "verify_witnesses",
 ]
@@ -211,6 +229,8 @@ RULE_IDS: Final[tuple[str, ...]] = (
     "SP-9",
 )
 ASSERT_RULE: Final = "SP-A"
+DENSITY_RULE: Final = "SP-D"
+"""The plan-density rule: WARNING only, so it is not in :data:`RULE_IDS`."""
 
 _EMPTY: Final[frozenset[str]] = frozenset()
 
@@ -1708,6 +1728,415 @@ def _check_distinct_costs(ctx: _Context) -> list[PlanFinding]:
 
 
 # ---------------------------------------------------------------------------
+# SP-D: plan density (advisory only; WP-2.3 follow-on, AL-848)
+# ---------------------------------------------------------------------------
+
+
+DENSITY_MIN_NODES: Final = 10
+"""The passage-based density metrics advise only on a plan with at least this many."""
+
+DENSITY_MIN_DECISION_CHOICES: Final = 10
+"""The intent and cost reuse metrics advise only on at least this many decision choices."""
+
+EMPTY_NODE_SHARE_MAX: Final = 0.60
+"""Above this share of non-ending passages with no ``requires`` and no ``establishes``, SP-D warns.
+
+Measured 2026-11-21: the seven hand-written plans reach at most 0.48
+(the-sky-ship-stowaway); the thin WP-2.3 smoke plans 3 and 6 reach 0.86 and 0.98.
+"""
+
+LEDGER_DENSITY_MIN: Final = 0.25
+"""Below this many referenced facts per non-ending passage, SP-D warns.
+
+Measured 2026-11-21: hand-written plans at least 0.34, blind extractions at least
+0.52, every WP-2.3 smoke plan at most 0.20 (run 1 recorded 6 facts for 58
+passages that are not endings).
+"""
+
+INTENT_REUSE_MAX: Final = 0.10
+"""Above this share of decision choices reusing another destination's intent, SP-D warns.
+
+Measured 2026-11-21: hand-written plans 0.00, blind extractions at most 0.07
+except one (z1, 0.89); smoke plans 2, 5 and 6 reach 0.31, 0.17 and 0.97.
+"""
+
+COST_REUSE_MAX: Final = 0.25
+"""Above this share of decision choices reusing another destination's cost, SP-D warns.
+
+"none" is not counted (a shared "none" is SP-8's concern). Measured 2026-11-21:
+hand-written plans at most 0.12, blind extractions at most 0.18 except z1
+(0.96); smoke plans 2, 3, 5 and 6 reach 0.69, 0.39, 0.34 and 1.00.
+"""
+
+_DENSITY_EXAMPLES: Final = 5
+"""How many example ids an SP-D message names."""
+
+
+@dataclass(frozen=True, slots=True)
+class PlanDensity:
+    """How much a plan records, measured over the reachable book.
+
+    A plan that records almost nothing passes SP-1 to SP-9, because nothing in
+    it can contradict anything (AL-848). These numbers say how thin it is. They
+    are what SP-D compares against its thresholds, and what WP-2.4 and WP-3.7
+    can measure across generated plans.
+
+    Attributes:
+        passages: Reachable passages that are not endings.
+        empty_passages: Those whose plan entry has no ``requires`` and no
+            ``establishes``, in book order.
+        referenced_facts: Ledger facts some node or choice requires or
+            establishes, or a thread plants.
+        unreferenced_facts: Ledger facts nothing references, in ledger order.
+            A fact marked ``contradicts`` against a referenced fact is not
+            listed: it names what the book must never tell.
+        decision_choices: Choices visible in a reachable configuration that
+            offers two or more choices.
+        intent_reusers: Decision choices whose intent (normalised) is also the
+            intent of a decision choice leading to a different passage.
+        cost_reusers: The same for costs, "none" excluded.
+        top_intent: The most reused intent and how many passages it leads to.
+        top_cost: The most reused cost and how many passages it leads to.
+    """
+
+    passages: int
+    empty_passages: tuple[str, ...]
+    referenced_facts: int
+    unreferenced_facts: tuple[str, ...]
+    decision_choices: int
+    intent_reusers: tuple[str, ...]
+    cost_reusers: tuple[str, ...]
+    top_intent: tuple[str, int] | None
+    top_cost: tuple[str, int] | None
+
+    @property
+    def empty_share(self) -> float:
+        """Return the share of non-ending passages that record no fact.
+
+        Returns:
+            float: 0.0 when there are no such passages.
+        """
+        return len(self.empty_passages) / self.passages if self.passages else 0.0
+
+    @property
+    def ledger_density(self) -> float:
+        """Return referenced facts per non-ending passage.
+
+        Returns:
+            float: 0.0 when there are no such passages.
+        """
+        return self.referenced_facts / self.passages if self.passages else 0.0
+
+    @property
+    def intent_reuse(self) -> float:
+        """Return the share of decision choices reusing another destination's intent.
+
+        Returns:
+            float: 0.0 when there are no decision choices.
+        """
+        if not self.decision_choices:
+            return 0.0
+        return len(self.intent_reusers) / self.decision_choices
+
+    @property
+    def cost_reuse(self) -> float:
+        """Return the share of decision choices reusing another destination's cost.
+
+        Returns:
+            float: 0.0 when there are no decision choices.
+        """
+        if not self.decision_choices:
+            return 0.0
+        return len(self.cost_reusers) / self.decision_choices
+
+    def to_dict(self) -> dict[str, object]:
+        """Return the metrics as a JSON-serialisable mapping.
+
+        Returns:
+            dict[str, object]: Counts and the four ratios, rounded to 3 places.
+        """
+        return {
+            "passages": self.passages,
+            "empty_passages": len(self.empty_passages),
+            "empty_share": round(self.empty_share, 3),
+            "referenced_facts": self.referenced_facts,
+            "unreferenced_facts": list(self.unreferenced_facts),
+            "ledger_density": round(self.ledger_density, 3),
+            "decision_choices": self.decision_choices,
+            "intent_reuse": round(self.intent_reuse, 3),
+            "cost_reuse": round(self.cost_reuse, 3),
+        }
+
+
+def _normal_intent(intent: str) -> str:
+    """Normalise an intent for SP-D's reuse comparison.
+
+    Args:
+        intent: The raw intent string.
+
+    Returns:
+        str: Case-folded, whitespace-collapsed, trailing punctuation stripped.
+    """
+    return _COST_SPACE.sub(" ", intent.casefold()).strip().rstrip(".!?;:,").strip()
+
+
+def _reusers(
+    decision: Sequence[str],
+    key: Callable[[str], str | None],
+    target: Mapping[str, str],
+) -> tuple[tuple[str, ...], tuple[str, int] | None]:
+    """Return the choices whose key is shared with a choice to another passage.
+
+    Args:
+        decision: Decision choice ids, in book order.
+        key: The normalised string compared, or None to leave a choice out.
+        target: Choice id to its book target.
+
+    Returns:
+        The reusing choice ids in book order, and the most reused key with the
+        number of distinct passages it leads to (None when nothing is reused).
+    """
+    destinations: dict[str, set[str]] = {}
+    for choice_id in decision:
+        value = key(choice_id)
+        if value is not None:
+            destinations.setdefault(value, set()).add(target[choice_id])
+    reused = {value for value, targets in destinations.items() if len(targets) > 1}
+    reusers = tuple(c for c in decision if key(c) in reused)
+    if not reused:
+        return reusers, None
+    top = max(sorted(reused), key=lambda value: len(destinations[value]))
+    return reusers, (top, len(destinations[top]))
+
+
+def _density(ctx: _Context) -> PlanDensity:
+    """Measure how much the plan records over the reachable book.
+
+    Args:
+        ctx: The analysis context.
+
+    Returns:
+        PlanDensity: The metrics.
+    """
+    plan = ctx.plan
+    reachable = set(ctx.at)
+    passages = [
+        node.id
+        for node in ctx.book.nodes
+        if node.id in reachable and not node.is_ending
+    ]
+    empty = tuple(
+        node_id
+        for node_id in passages
+        if not plan.nodes[node_id].requires and not plan.nodes[node_id].establishes
+    )
+    referenced: set[str] = set()
+    for node in plan.nodes.values():
+        referenced.update(node.requires, node.establishes)
+    for choice in plan.choices.values():
+        referenced.update(choice.requires, choice.establishes)
+    referenced.update(thread.plant for thread in plan.threads.values())
+    # A fact nothing establishes but that is marked against a referenced fact
+    # is the named alternative the book must never tell (convention 1's
+    # opposite, SP-3's other side: "a stranger dropped the map"), so it is
+    # purposeful, not dead ledger, and is not reported.
+    marked_opposites = {
+        fact
+        for pair in plan.contradiction_pairs()
+        if pair & referenced
+        for fact in pair
+    }
+    unreferenced = tuple(
+        fact
+        for fact in plan.facts
+        if fact not in referenced and fact not in marked_opposites
+    )
+    offered = {
+        choice_id
+        for edges in ctx.graph.succ
+        if len(edges) >= _DECISION_MIN
+        for choice_id, _ in edges
+    }
+    target: dict[str, str] = {}
+    decision: list[str] = []
+    for node in ctx.book.nodes:
+        for choice in node.choices:
+            target[choice.id] = choice.target
+            if choice.id in offered:
+                decision.append(choice.id)
+
+    def intent_key(choice_id: str) -> str | None:
+        return _normal_intent(plan.choices[choice_id].intent)
+
+    def cost_key(choice_id: str) -> str | None:
+        cost = _normal_cost(plan.choices[choice_id].cost)
+        return None if cost == "none" else cost
+
+    intent_reusers, top_intent = _reusers(decision, intent_key, target)
+    cost_reusers, top_cost = _reusers(decision, cost_key, target)
+    return PlanDensity(
+        passages=len(passages),
+        empty_passages=empty,
+        referenced_facts=len(referenced & set(plan.facts)),
+        unreferenced_facts=unreferenced,
+        decision_choices=len(decision),
+        intent_reusers=intent_reusers,
+        cost_reusers=cost_reusers,
+        top_intent=top_intent,
+        top_cost=top_cost,
+    )
+
+
+def _examples(ids: Sequence[str]) -> str:
+    """Render the first few ids of a list for a message.
+
+    Args:
+        ids: The ids.
+
+    Returns:
+        str: For example ``"n1, n2, n3 and 4 more"``.
+    """
+    shown = ", ".join(ids[:_DENSITY_EXAMPLES])
+    rest = len(ids) - _DENSITY_EXAMPLES
+    return f"{shown} and {rest} more" if rest > 0 else shown
+
+
+def _check_density(ctx: _Context) -> list[PlanFinding]:
+    """SP-D: advise when a plan records too little to be checked (AL-848).
+
+    WARNING only, never ERROR: a thin plan is not wrong, it is unverifiable,
+    and the WP-2.3 paid smoke showed thin plans passing SP-1 to SP-9 because
+    nothing in them can contradict anything. Five metrics, thresholds measured
+    on the hand-written plans (all pass) and the six smoke plans (all trip):
+
+    - passages with no fact: the share of reachable non-ending passages whose
+      ``requires`` and ``establishes`` are both empty, above
+      :data:`EMPTY_NODE_SHARE_MAX`;
+    - ledger density: referenced facts per such passage, below
+      :data:`LEDGER_DENSITY_MIN` (smoke run 1 required one fact at every
+      passage, so the share above was 0, yet recorded no clue it found);
+    - intent reuse and cost reuse: the share of decision choices (visible in a
+      configuration offering two or more) whose intent or cost is also used by
+      a decision choice leading to a different passage, above
+      :data:`INTENT_REUSE_MAX` and :data:`COST_REUSE_MAX`. Reuse is counted
+      across destinations rather than as a plain distinct ratio because a
+      shape whose hubs repeat one choice to one passage would otherwise read
+      thin when its plan is careful (blind plans on the smoke 6 shape score a
+      plain distinct-intent ratio of 0.40 against the smoke plan's 0.05);
+    - unreferenced facts: each ledger fact no node or choice requires or
+      establishes and no thread plants, one finding per fact. A fact marked
+      against a referenced fact is exempt: it is the named alternative SP-3
+      keeps the book from telling (the base example's "a stranger dropped the
+      map"). This exempts the four unreferenced facts in smoke plans 3, 5 and
+      6 (each a wrong answer marked against the truth); those plans trip
+      other metrics.
+
+    The first two advise only from :data:`DENSITY_MIN_NODES` passages and the
+    reuse metrics only from :data:`DENSITY_MIN_DECISION_CHOICES` decision
+    choices, so a tiny book is not judged on a handful of samples. Whether a
+    cost names something the ledger has no fact for is not checked: telling
+    "gives up the fur" (a clue that should be a fact) from "a long walk" (a
+    real cost naming nothing) needs reading prose, which no SP rule does, and
+    a word-overlap proxy separated hand-written plans (at most 0.54 of costs
+    sharing no word with any fact) from smoke plans (at least 0.57) by no
+    usable margin.
+
+    Args:
+        ctx: The analysis context.
+
+    Returns:
+        list[PlanFinding]: The WARNING findings.
+    """
+    story = ctx.book.id
+    metrics = _density(ctx)
+    findings: list[PlanFinding] = []
+
+    def warn(message: str, **attribution: str | None) -> None:
+        findings.append(
+            _finding(
+                DENSITY_RULE,
+                story,
+                message,
+                severity=Severity.WARNING,
+                node_id=attribution.get("node_id"),
+                choice_id=attribution.get("choice_id"),
+                fact_id=attribution.get("fact_id"),
+            )
+        )
+
+    if metrics.passages >= DENSITY_MIN_NODES:
+        if metrics.empty_share > EMPTY_NODE_SHARE_MAX:
+            warn(
+                f"{len(metrics.empty_passages)} of {metrics.passages} passages that "
+                f"are not endings neither require nor establish a fact "
+                f"({metrics.empty_share:.0%}, above {EMPTY_NODE_SHARE_MAX:.0%}), for "
+                f"example {_examples(metrics.empty_passages)}: record the clues, "
+                "objects, names, possessions and states each passage introduces "
+                "or relies on",
+                node_id=metrics.empty_passages[0],
+            )
+        if metrics.ledger_density < LEDGER_DENSITY_MIN:
+            warn(
+                f"the ledger records {metrics.referenced_facts} referenced facts for "
+                f"{metrics.passages} passages that are not endings "
+                f"({metrics.ledger_density:.2f} per passage, below "
+                f"{LEDGER_DENSITY_MIN:.2f}): every clue found, thing handed over, "
+                "name learned and change of state is its own fact"
+            )
+    if metrics.decision_choices >= DENSITY_MIN_DECISION_CHOICES:
+        if metrics.intent_reuse > INTENT_REUSE_MAX and metrics.top_intent is not None:
+            text, count = metrics.top_intent
+            warn(
+                f"{len(metrics.intent_reusers)} of {metrics.decision_choices} "
+                "choices at decisions share their intent with a choice that leads "
+                f"somewhere else ({metrics.intent_reuse:.0%}, above "
+                f"{INTENT_REUSE_MAX:.0%}); the intent {text!r} leads to {count} "
+                "different passages: write each intent for its own decision",
+                choice_id=metrics.intent_reusers[0],
+            )
+        if metrics.cost_reuse > COST_REUSE_MAX and metrics.top_cost is not None:
+            text, count = metrics.top_cost
+            warn(
+                f"{len(metrics.cost_reusers)} of {metrics.decision_choices} "
+                "choices at decisions share their cost with a choice that leads "
+                f"somewhere else ({metrics.cost_reuse:.0%}, above "
+                f"{COST_REUSE_MAX:.0%}); the cost {text!r} leads to {count} "
+                "different passages: name what this option gives up here",
+                choice_id=metrics.cost_reusers[0],
+            )
+    for fact in metrics.unreferenced_facts:
+        warn(
+            f"fact {fact!r} is in the ledger but no passage or choice requires or "
+            "establishes it and no thread plants it",
+            fact_id=fact,
+        )
+    return findings
+
+
+def plan_density(
+    plan: StoryPlan, book: Storybook, *, cap: int = DEFAULT_CONFIG_CAP
+) -> PlanDensity | None:
+    """Measure a plan's density against its book, outside :func:`check_plan`.
+
+    Args:
+        plan: The parsed plan.
+        book: The book it plans.
+        cap: The configuration walk's cap.
+
+    Returns:
+        PlanDensity | None: The metrics, or None when the plan's nodes or
+            choices do not cover the book's (SP-1 coverage), since the metrics
+            index the plan by every book node and choice.
+    """
+    coverage = _check_coverage(plan, book)
+    if coverage.blocking:
+        return None
+    return _density(
+        _Context.build(plan, book, cap=cap, excluded_threads=coverage.excluded_threads)
+    )
+
+
+# ---------------------------------------------------------------------------
 # SP-9: text floors (no walk needed)
 # ---------------------------------------------------------------------------
 
@@ -2036,7 +2465,7 @@ def check_plan(
     cap: int = DEFAULT_CONFIG_CAP,
     book_digest: str | None = None,
 ) -> ValidationReport:
-    """Run SP-0 to SP-9 on a plan and the book it plans.
+    """Run SP-0 to SP-9 and the advisory SP-D on a plan and the book it plans.
 
     Args:
         plan: The parsed plan.
@@ -2055,6 +2484,7 @@ def check_plan(
     binding = _check_binding(plan, book, book_digest)
     coverage = _check_coverage(plan, book)
     graph_findings: list[PlanFinding] = []
+    density_findings: list[PlanFinding] = []
     # G1 revision (2026-11-21, AL-821): only a node or choice coverage gap
     # stops the graph rules. A thread error excludes that thread from SP-4 to
     # SP-6 and everything else still runs, so one slip in a thread no longer
@@ -2081,11 +2511,13 @@ def check_plan(
             *_check_ending_gifts(plan, book),
             *_check_distinct_costs(ctx),
         ]
+        density_findings = _check_density(ctx)
     for finding in (
         *binding,
         *coverage.findings,
         *graph_findings,
         *_check_text_floors(plan, book),
+        *density_findings,
     ):
         report.add(finding)
     return report
@@ -2212,10 +2644,15 @@ class RuleWitness:
     Attributes:
         rule_id: The rule the witness exists for.
         build: Returns ``(book, plan)`` as plain JSON-shaped dicts.
+        severity: What the witness must raise. ERROR (the default): ERRORs
+            from its rule and from no other. WARNING, for an advisory rule
+            such as SP-D: no ERROR at all, and WARNINGs from its rule and from
+            no other.
     """
 
     rule_id: str
     build: Callable[[], tuple[dict[str, object], dict[str, object]]]
+    severity: Severity = Severity.ERROR
 
 
 def _yes(var: str) -> dict[str, object]:
@@ -2653,6 +3090,20 @@ def _witness_sp9_injury_wound() -> tuple[dict[str, object], dict[str, object]]:
     return book, plan
 
 
+def _witness_density() -> tuple[dict[str, object], dict[str, object]]:
+    """Add a ledger fact that no passage, choice or thread ever uses.
+
+    SP-D's other metrics need a book of at least ten passages; an unreferenced
+    fact needs none, so the small witness book can carry it.
+
+    Returns:
+        tuple[dict[str, object], dict[str, object]]: ``(book, plan)``.
+    """
+    book, plan = base_example()
+    _section(plan, "facts")["fox_seen"] = {"text": "A fox watches from the ferns."}
+    return book, plan
+
+
 WITNESSES: Final[tuple[RuleWitness, ...]] = (
     RuleWitness("SP-0", _witness_sp0),
     RuleWitness("SP-1", _witness_sp1),
@@ -2668,16 +3119,19 @@ WITNESSES: Final[tuple[RuleWitness, ...]] = (
     # first ten stay one per rule in RULE_IDS order.
     RuleWitness("SP-4", _witness_sp4_named_half),
     RuleWitness("SP-9", _witness_sp9_injury_wound),
+    # The advisory density rule (WP-2.3 follow-on, AL-848): WARNING only.
+    RuleWitness(DENSITY_RULE, _witness_density, Severity.WARNING),
 )
 
 
 def verify_witnesses(witnesses: Sequence[RuleWitness] | None = None) -> list[str]:
     """Run the clean base and every witness and report any that misbehave.
 
-    The base must raise no ERROR; each witness must raise ERRORs from its own
-    rule and from no other. A rule that stops firing, or starts firing on the
-    base, makes this list non-empty, so the rule table above cannot drift from
-    the code unnoticed.
+    The base must raise no ERROR and no SP-D warning; each ERROR witness must
+    raise ERRORs from its own rule and from no other, and each WARNING witness
+    no ERROR and WARNINGs from its own rule and from no other. A rule that
+    stops firing, or starts firing on the base, makes this list non-empty, so
+    the rule table above cannot drift from the code unnoticed.
 
     Args:
         witnesses: The witnesses to run, defaulting to :data:`WITNESSES`.
@@ -2693,12 +3147,23 @@ def verify_witnesses(witnesses: Sequence[RuleWitness] | None = None) -> list[str
     if not base_report.ok:
         fired = sorted({f.rule_id for f in base_report.errors})
         problems.append(f"base: expected no errors, got {fired}")
+    if any(f.rule_id == DENSITY_RULE for f in base_report.warnings):
+        problems.append(f"base: expected no {DENSITY_RULE} warning")
     for witness in witnesses if witnesses is not None else WITNESSES:
         book, plan = witness.build()
         report = check_plan(
             StoryPlan.model_validate(plan), Storybook.model_validate(book)
         )
-        fired = {f.rule_id for f in report.errors}
+        if witness.severity is Severity.WARNING:
+            errors = sorted({f.rule_id for f in report.errors})
+            if errors:
+                problems.append(
+                    f"{witness.rule_id}: advisory witness should raise no error, "
+                    f"raised {errors}"
+                )
+            fired = {f.rule_id for f in report.warnings}
+        else:
+            fired = {f.rule_id for f in report.errors}
         if fired != {witness.rule_id}:
             problems.append(
                 f"{witness.rule_id}: witness should trip exactly that rule, "

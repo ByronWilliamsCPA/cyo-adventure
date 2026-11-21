@@ -20,6 +20,7 @@ from cyo_adventure.storybook.models import Storybook
 from cyo_adventure.storyplan import StoryPlan
 from cyo_adventure.storyplan.checks import (
     ASSERT_RULE,
+    DENSITY_RULE,
     RULE_IDS,
     WITNESSES,
     PlanFinding,
@@ -118,7 +119,11 @@ def test_there_is_one_witness_per_rule() -> None:
     # The first ten are one per rule in order; any extra witness (added by the
     # G1 revision for a changed rule) names a known rule.
     assert tuple(w.rule_id for w in WITNESSES[: len(RULE_IDS)]) == RULE_IDS
-    assert {w.rule_id for w in WITNESSES} == set(RULE_IDS)
+    assert {w.rule_id for w in WITNESSES} == {*RULE_IDS, DENSITY_RULE}
+    # The advisory density rule is the only WARNING witness.
+    assert {w.rule_id for w in WITNESSES if w.severity is Severity.WARNING} == {
+        DENSITY_RULE
+    }
 
 
 @pytest.mark.unit
@@ -126,7 +131,31 @@ def test_there_is_one_witness_per_rule() -> None:
 def test_each_witness_trips_exactly_its_rule(witness: RuleWitness) -> None:
     book, plan = witness.build()
     report = check_plan(StoryPlan.model_validate(plan), Storybook.model_validate(book))
-    assert {f.rule_id for f in report.errors} == {witness.rule_id}
+    if witness.severity is Severity.WARNING:
+        assert report.ok
+        assert {f.rule_id for f in report.warnings} == {witness.rule_id}
+    else:
+        assert {f.rule_id for f in report.errors} == {witness.rule_id}
+
+
+@pytest.mark.unit
+def test_verify_witnesses_reports_an_advisory_witness_that_errs() -> None:
+    erring = RuleWitness(DENSITY_RULE, WITNESSES[2].build, Severity.WARNING)
+    assert verify_witnesses([erring]) == [
+        "SP-D: advisory witness should raise no error, raised ['SP-2']",
+        "SP-D: witness should trip exactly that rule, tripped nothing",
+    ]
+
+
+@pytest.mark.unit
+def test_verify_witnesses_reports_density_on_the_base(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    from cyo_adventure.storyplan import checks
+
+    thin = WITNESSES[-1].build()  # the SP-D witness standing in as the base
+    monkeypatch.setattr(checks, "base_example", lambda: thin)
+    assert verify_witnesses([]) == ["base: expected no SP-D warning"]
 
 
 @pytest.mark.unit
