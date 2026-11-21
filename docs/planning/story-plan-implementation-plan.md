@@ -318,6 +318,31 @@ docstring. Departures from ADR-033's table, all additive:
 - `--verify-witnesses` runs one witness per rule plus the clean example; each witness must trip its rule and no other.
   The Hollow Lighthouse (162 nodes, 1,214 configurations) checks in about 1.5 s.
 
+**G1 revision (2026-11-21).** The single revision D5 permits after the failed G1 run, before one re-run on the same
+frozen answer key with the criterion unchanged. Each change is justified by the rule's purpose in ADR-033, keeps
+catching its defect class, and names no book, node, fact or answer-key entry:
+
+- **SP-4, AL-817.** The facts checked are the declared `plant` plus every other fact the planting edge makes known (the
+  planting choice's `establishes`, and its target's `establishes` when only planted readers arrive there, less what the
+  reader already had guaranteed) that a payoff of the thread relies on (a payoff choice's `requires` or its passage's).
+  A public plant is therefore caught whichever half of a two-part plant the plan names as `plant`. New witness: the
+  plan names the private half and the shared path shows the public half.
+- **SP-4, AL-818.** A checked fact is reported only at a configuration from which a payoff site of the thread is still
+  reachable without a planting choice, so an ending that reveals the plant is never reported.
+- **SP-8, AL-819.** A decision whose options share one cost is an ERROR only when that cost is "none" (also spelled
+  "nothing" or "no cost", now one value): no option gives anything up, so no trade-off separates them. A shared real
+  cost, each option giving up the others, is a WARNING. The convention is written into the re-extraction prompt
+  (`evidence/story-plan-retro/plans/EXTRACTION-PROMPT-v2.md`).
+- **SP-9, AL-811.** SP-9 alone masks the bare word "wound" before the denylist when the string names a winding context
+  (clockwork, clock, spring, key, crank, wind and listed forms, or "wound up", "wound tight") and the word before it is
+  not a determiner, possessive, injury adjective, "to" or a modal. `validator/slots.py` is unchanged; "wounded", the
+  injury sense and every other term still fail. New witness: "a wound from the clock key".
+- **SP-1, AL-821.** Only a node or choice coverage gap stops SP-2 to SP-8. A thread with an SP-1 error is excluded from
+  SP-4 to SP-6 (its plants still feed the must-analysis as declared) and everything else runs and is reported.
+- **SP-3, AL-822.** No change: a test pins that a node asserting a negation, reached on a route whose choice planted
+  the opposite, is an SP-3 ERROR. The fix is in extraction: the v2 prompt asks for negations about the hero's
+  possessions, knowledge or state to be recorded at the passage that asserts them.
+
 First run on the family-test plans (no tuning to the known-defect list, which this package did not read): the
 Lighthouse plan yields SP-2 or SP-3 findings at the nodes of B1 (`e_win_keeper_word`, `ferris_warned_bog`), B2
 (`cm_light_relight`, `has_key` against `mira_lacks_lamp_key`), B3 (`e_win_harbor`, `grey_boat` and the Varley name),

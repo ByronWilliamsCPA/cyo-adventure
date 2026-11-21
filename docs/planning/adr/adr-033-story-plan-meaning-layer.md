@@ -177,15 +177,15 @@ These block. None reads prose.
 
 | Id | Check | Closes |
 | --- | --- | --- |
-| SP-1 | coverage: every node and choice of the shape has a plan entry and the reverse | drift |
+| SP-1 | coverage: every node and choice of the shape has a plan entry and the reverse (G1 revision, 2026-11-21: only a node or choice coverage gap stops SP-2 to SP-8; a thread error excludes that thread from SP-4 to SP-6 and the other rules still run, AL-821) | drift |
 | SP-2 | merge closure: every fact a node `requires` is guaranteed on every route into it (the NC-1 fixpoint in `scripts/check_narrative_contract.py:18-22`, moved into the package) | route-fact contradictions (AL-788, AL-790) |
-| SP-3 | single truth: no two nodes establish facts marked as contradicting, and every `truth` fact is established on at least one route | two backstories (AL-773) |
-| SP-4 | plant exclusivity: the fact a thread plants is established on no route that skips the planting choice | public plants (AL-800) |
+| SP-3 | single truth: no two nodes establish facts marked as contradicting, and every `truth` fact is established on at least one route (G1 revision, 2026-11-21: unchanged; a test pins that a negation asserted where its opposite was planted is an ERROR, and plans record such negations at the asserting node, AL-822) | two backstories (AL-773) |
+| SP-4 | plant exclusivity: the fact a thread plants is established on no route that skips the planting choice (G1 revision, 2026-11-21: "the fact a thread plants" is the declared `plant` plus any other fact the planting edge makes known, from the choice or a target only planted readers reach, that a payoff relies on, so the rule does not depend on which half of a two-part plant is named, AL-817; reported only where a payoff site is still reachable without the plant, so an ending is never reported, AL-818) | public plants (AL-800) |
 | SP-5 | payoff reach: each payoff site is reachable both with and without the plant, measured by the existing configuration walk | cosmetic payoffs (AL-783) |
 | SP-6 | payoff independence: a payoff site requires only facts guaranteed on entry plus its own thread's | cross-payoff references (AL-799) |
 | SP-7 | every negative ending has a `gift` | give-up endings |
-| SP-8 | every decision has at least two choices with different `cost` | forks with one right answer |
-| SP-9 | text floors: every plan string passes the slot charset, denylist and band floors already used for bindings (`validator/slots.py`); length is capped per field, 120 for slot-like strings, 240 for fact text and node events, 600 for `truth.statement` (amended 2026-11-21: record prose is longer than a slot value) | untrusted-derived text in prompts |
+| SP-8 | every decision has at least two choices with different `cost` (G1 revision, 2026-11-21: a shared cost of "none", where no option gives anything up, is an ERROR; a shared real cost, the symmetric opportunity cost of a hub, is a WARNING, AL-819) | forks with one right answer |
+| SP-9 | text floors: every plan string passes the slot charset, denylist and band floors already used for bindings (`validator/slots.py`); length is capped per field, 120 for slot-like strings, 240 for fact text and node events, 600 for `truth.statement` (amended 2026-11-21: record prose is longer than a slot value; G1 revision, 2026-11-21: SP-9 alone reads the bare word "wound" in a winding context, not introduced as the injury noun or verb, as the past of "wind", leaving `validator/slots.py` and every other term unchanged, AL-811) | untrusted-derived text in prompts |
 
 Prose is then compared with the plan by one narrow question per node, "does this passage assert any fact on this
 list", answered by the continuity reader of Decision 6.
