@@ -39,6 +39,12 @@ describe('makeIntakeApi', () => {
 })
 
 describe('buildBrief', () => {
+  it.each(['3-5', '5-8'] as const)('keeps tier 1 and the pattern for the %s band', (ageBand) => {
+    const brief = buildBrief({ premise: 'A picnic.', tone: 'gentle', ageBand, readingLevelCap: 2 })
+    expect(brief.tier).toBe(1)
+    expect(brief.structure_pattern).toBe('branch_and_bottleneck')
+  })
+
   it('fills every required field with band-derived defaults', () => {
     const brief = buildBrief({
       premise: 'Into the tide pools.',
@@ -46,9 +52,10 @@ describe('buildBrief', () => {
       ageBand: '8-11',
       readingLevelCap: 4,
     })
-    expect(brief.tier).toBe(1)
+    // WP-2.1: 8-11 and up leave tier and pattern to the shape or plan.
+    expect(brief.tier).toBeNull()
     expect(brief.point_of_view).toBe('second')
-    expect(brief.structure_pattern).toBe('branch_and_bottleneck')
+    expect(brief.structure_pattern).toBeNull()
     expect(brief.target_node_count).toBe(15)
     expect(brief.ending_count).toBe(3)
     expect(brief.protagonist.age).toBe(8)

@@ -11,6 +11,8 @@ import type { AxiosInstance } from 'axios'
 
 import type { AgeBandValue } from '../profiles/profilesApi'
 
+const PINNED_BANDS: ReadonlySet<AgeBandValue> = new Set<AgeBandValue>(['3-5', '5-8'])
+
 export type ToneValue = 'gentle' | 'adventurous' | 'silly'
 
 /** Tone chip choices from wireframe 4.5 (Gentle / Adventurous / Silly). */
@@ -36,13 +38,14 @@ export interface ConceptBriefBody {
   point_of_view: string
   age_band: AgeBandValue
   reading_level_target: number
-  tier: number
+  // WP-2.1 (ADR-033 Decision 7): null for 8-11 and up; the shape or plan supplies it.
+  tier: number | null
   tone: string
   themes_allowed: string[]
   content_nogo: string[]
   target_node_count: number
   ending_count: number
-  structure_pattern: string
+  structure_pattern: string | null
   desired_variables: string[]
   special_constraints: string[]
 }
@@ -139,6 +142,9 @@ export function buildBrief(params: BuildBriefParams): ConceptBriefBody {
         // Clamping matches band_profile.clamp_target_to_cap (`UW-C281`).
         Math.min(band.fkTarget, params.readingLevelCap)
       : band.fkTarget
+  // Mirrors the backend brief (story_requests/brief.py, _PINNED_BANDS): only the two
+  // youngest bands keep a fixed tier and pattern.
+  const pinned = PINNED_BANDS.has(params.ageBand)
   return {
     title: null,
     premise: params.premise,
@@ -150,14 +156,14 @@ export function buildBrief(params: BuildBriefParams): ConceptBriefBody {
     point_of_view: 'second',
     age_band: params.ageBand,
     reading_level_target: readingLevelTarget,
-    tier: 1,
+    tier: pinned ? 1 : null,
     tone: params.tone,
     themes_allowed: [],
     // G2: the selected child's banned_themes, or none when unset/omitted.
     content_nogo: params.bannedThemes ?? [],
     target_node_count: band.nodes,
     ending_count: band.endings,
-    structure_pattern: 'branch_and_bottleneck',
+    structure_pattern: pinned ? 'branch_and_bottleneck' : null,
     desired_variables: [],
     special_constraints: [],
   }
