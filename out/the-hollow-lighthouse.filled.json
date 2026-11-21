@@ -462,7 +462,7 @@
     },
     {
       "id": "b_gallery_fog",
-      "body": "Mira rubbed a clear patch in the fogged window with her sleeve and put her nose to it. There was nothing to see out at sea but grey. Straight down, though, at the very foot of the tower, a thin green glow leaked out of an iron grille, and it blinked in time with the light above her head. So the light was not up here at all. It began somewhere in the foundations and only climbed up to show itself, the way smoke climbs a chimney. \"Down, then,\" Mira said, and turned to look for the stair.",
+      "body": "Mira rubbed a clear patch in the fogged window with her sleeve and put her nose to it. There was nothing to see out at sea but grey. Straight down, though, low on the tower's side, a thin green glow leaked out of a small window, and it blinked in time with the light above her head. So the light was not up here at all. It began somewhere low in the tower and only climbed up to show itself, the way smoke climbs a chimney. \"Down, then,\" Mira said, and turned to look for the stair.",
       "is_ending": false,
       "choices": [
         {
@@ -711,12 +711,24 @@
         {
           "id": "c_c_arch_gap_1",
           "label": "Back out and try the other opening.",
-          "target": "c_gather"
+          "target": "c_arch_back"
         },
         {
           "id": "c_c_arch_gap_2",
           "label": "Breathe out and force her shoulders through.",
           "target": "e_set_c_stuck"
+        }
+      ]
+    },
+    {
+      "id": "c_arch_back",
+      "body": "Mira let all her breath go and began to back out of the gap a finger's width at a time, which took far longer than getting in had. Then she felt along the rock to the left of the slabs until her hand found the other opening again. It was a low crawl, dry underfoot, that climbed steeply away from the sea with the draught coming down it. She went up it on her hands and knees until the roof lifted and she could stand.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_c_arch_back_1",
+          "label": "Climb on up the crawl.",
+          "target": "c_gather"
         }
       ]
     },
@@ -931,7 +943,7 @@
     },
     {
       "id": "d_hatch",
-      "body": "The hatch had an iron ring, and it did not want to come up. Mira got both hands through the ring and heaved, and it lifted a finger's width and stuck, breathing cold air at her out of the dark underneath. \"Not now,\" she said through her teeth, because behind her the boathouse door had started to bang. The wind had got its fingers round it, and each slam shook the whole leaning shed and brought dust and bits of old nest down from the rafters. A shelf of heavy gear above the hatch jumped on its brackets every time.",
+      "body": "The hatch had an iron ring, and it did not want to come up. Mira got both hands through the ring and heaved, and it lifted a finger's width and stuck, breathing cold air at her out of the dark underneath. \"Not now,\" she said through her teeth, because behind her the boathouse door had started to bang. The wind had got its fingers round it, and each slam shook the whole leaning shed and brought dust and bits of old birds' nest down from the rafters. A shelf of heavy gear above the hatch jumped on its brackets every time.",
       "is_ending": false,
       "choices": [
         {
@@ -1020,7 +1032,7 @@
     },
     {
       "id": "jr_light_read",
-      "body": "\"I have watched the light thirty nights now,\" the page began, \"and it is no ghost but a lantern and mirrors, hidden in my own tower, and its shining means something to a boat.\" Below that, Ferris had made a list. \"Steady, he lands; blinking, he keeps off; and that is all his code. Mine is older: three short, three long, three short, and any keeper on this coast will come.\" Mira thought of the light she had followed here through the fog, on and off, on and off. \"It is blinking,\" she said, \"so somebody is being told to keep off, right now.\" The last line was underlined twice, and it said: \"Take the stair behind the panel.\"",
+      "body": "\"I have watched the light thirty nights now,\" the page began, \"and it is no ghost but a lantern and mirrors, hidden in my own tower, and its shining means something to a boat.\" Below that, Ferris had made a list. \"Steady, he lands; blinking, he keeps off; and that is all his code. Mine is older: three short, three long, three short, and any keeper on this coast will come.\" Mira looked up toward the light she had followed here through the fog, on and off, on and off. Here it was in the keeper's own hand, and it meant what it had meant all night: somebody out there was being told to keep off. The last line was underlined twice, and it said: \"Take the stair behind the panel.\"",
       "is_ending": false,
       "choices": [
         {
@@ -1193,7 +1205,7 @@
     },
     {
       "id": "jr_tun_stone",
-      "body": "The corner of the marked flagstone came up a hand's width, and Mira's fingers found a slate lying in the hollow underneath. She drew it out and found that the keeper had scratched a list on it. \"Steady, he lands; blinking, he keeps off,\" it said, \"and three short, three long, three short will bring any keeper.\" She read it three times, until it stuck. Below the slate the hollow went on down, dark and wet-smelling, and the big stone ground against its neighbours when she leaned on it. The sketch lay open on the stool behind her.",
+      "body": "The corner of the marked flagstone came up a hand's width, and Mira's fingers found a slate lying in the hollow underneath. She drew it out and found that the keeper had scratched a list on it. \"Steady, he lands; blinking, he keeps off,\" it said, \"and three short, three long, three short will bring any keeper.\" She read it through twice, slowly, under her breath. Below the slate the hollow went on down, dark and wet-smelling, and the big stone ground against its neighbours when she leaned on it. The sketch lay open on the stool behind her.",
       "is_ending": false,
       "choices": [
         {
@@ -1694,7 +1706,7 @@
       "choices": [
         {
           "id": "c_tn_store_box_1",
-          "label": "Take the ledger through the low doorway.",
+          "label": "Leave the ledger in its box and duck through the low doorway.",
           "target": "tn_store_join"
         }
       ]
@@ -1737,7 +1749,7 @@
     },
     {
       "id": "tn_gate",
-      "body": "The branch ran downhill to an iron gate that closed the tunnel from wall to wall. Beyond its bars a slipway slid down into the sea, and the sea was coming up it, each swell a little higher than the last. To the right, just past the gate, a stone ledge ran above the water toward a flight of steps. Out in the fog, low on the water, a small yellow light hung perfectly still. It was not a buoy, because buoys rock. \"And what are you waiting for?\" Mira asked it under her breath. Mira put her face to the cold bars and stared at it, and the tide wet the toes of her boots.",
+      "body": "The branch ran downhill to an iron gate that closed the tunnel from wall to wall. Beyond its bars a slipway slid down into the sea, and the sea was coming up it, each swell a little higher than the last. To the right, just past the gate, a stone ledge ran above the water toward a flight of steps. Out in the fog, low on the water, a small yellow light hung perfectly still. It could not be a buoy, because buoys rock with the swell, and this one did not move at all. \"And what are you waiting for?\" Mira asked it under her breath. She put her face to the cold bars and stared at it, and the tide wet the toes of her boots.",
       "is_ending": false,
       "choices": [
         {
@@ -1754,13 +1766,13 @@
     },
     {
       "id": "tn_gate_open",
-      "body": "The gate ground open a hand's width at a time, shrieking on its hinges, until there was room to slip through sideways onto the ledge. The stone was wet and green. A swell came up the slipway and sucked at the ledge's edge a foot below her boots, hissed, and fell back. The steps were ten paces away. Between swells the ledge drained and shone. Mira gripped an iron ring in the wall, counted the sea in and out, and tried to learn its timing like the turn of a skipping rope.",
+      "body": "The gate ground open a hand's width at a time, shrieking on its hinges, until there was room to slip through sideways onto the ledge. The stone was wet and green and sloped toward the water. A swell came up the slipway, slopped right over the ledge around her ankles and pulled at them, then hissed and fell back. Between swells the ledge drained and shone. The steps were ten paces away, and they were the worst ten paces Mira had ever looked at. A row of rusty iron rings ran along the wall at hand height. She gripped the first ring so hard that it hurt, and counted the swells in and out, and her knees would not keep still.",
       "is_ending": false,
       "choices": [
         {
           "id": "c_tn_gate_open_1",
           "label": "Go now, between two swells.",
-          "target": "n_chamber"
+          "target": "tn_gate_dash"
         },
         {
           "id": "c_tn_gate_open_2",
@@ -1777,8 +1789,20 @@
       ]
     },
     {
+      "id": "tn_gate_dash",
+      "body": "Mira let go of the ring and went. Three paces along, her boot shot sideways on the slime, and she grabbed the next ring with both hands just as a swell came over the ledge. It was up to her knees in a moment, cold enough to stop her breath, and it pulled at her legs as if it wanted them. She hung on with her eyes shut until it drained away. After that she went ring to ring, never letting go of one until she had hold of the next, and she was soaked and gasping by the time she crawled up the steps. \"Never again,\" she told the sea, and meant it. At the top of the steps was a door.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_tn_gate_dash_1",
+          "label": "Push open the door at the top.",
+          "target": "n_chamber"
+        }
+      ]
+    },
+    {
       "id": "tn_gate_wait",
-      "body": "Mira held the ring and let three big swells come and go. While she waited, the lantern showed her the wall beside it. The stone was covered in chalk, a long row of tallies under the words \"Landed, fog,\" each with a V beside it. A second row was headed \"Taken away,\" and it had no marks in it at all. \"All in and none out,\" Mira said. She looked at the still yellow light out in the fog, and it seemed to look back. Then the sea drew a long breath, the ledge drained, and she walked its ten paces as if it were a pavement, up the steps to a door.",
+      "body": "Mira held the ring and let three big swells come and go, each one slopping over the ledge and tugging at her boots. While she waited, the lantern showed her the wall beside it. The stone was covered in chalk, a long row of tallies under the words \"Landed, fog,\" each with a V beside it. A second row was headed \"Taken away,\" and it had no marks in it at all. \"All in and none out,\" Mira said, mostly to stop her teeth chattering. Then the sea drew a long breath and the ledge drained, and she went ring to ring with her face to the stone, never letting go of one until she had hold of the next. A swell caught her on the last pace and soaked her to the knees. She scrambled up the steps on her hands, shaking, to a door.",
       "is_ending": false,
       "choices": [
         {
@@ -1807,19 +1831,19 @@
     },
     {
       "id": "tn_cut_moor",
-      "body": "The stair came up through a trapdoor in the heather, behind the headland, and the bootprints went on from it along a sheep track, dark in the dew. The fog was thin up here and turning grey with morning. Far ahead a small yellow lantern bobbed, and then went out as the sky grew light. Mira did not run. She walked after it for the better part of an hour, with the sea falling away behind her, until the track came down into a fold of the hills. A low stone cottage stood there, with smoke just beginning to rise from its chimney.",
+      "body": "The stair came up through a trapdoor in the heather, behind the headland, and the bootprints went on from it along a sheep track, dark in the dew. The fog was thin up here and turning grey with morning. Far ahead, a figure with a lantern was walking inland, slow and stiff. Only one person had any reason to use the keeper's own way, and Mira did not try to catch him up. She only meant to see where he went, so that she could tell the harbour office exactly where to look. So she kept well back on the open track, through one gate and then a second, past a bog that sucked at the edges of the path. The lantern went out as the sky grew light. At last the track came down into a fold of the hills, where a low stone cottage stood with smoke just beginning to rise from its chimney.",
       "is_ending": false,
       "choices": [
         {
           "id": "c_tn_cut_moor_1",
-          "label": "Knock at the cottage door.",
+          "label": "Knock, then step back to the gate.",
           "target": "cm_cottage"
         }
       ]
     },
     {
       "id": "n_chamber",
-      "body": "Beyond the door, the keeper's room was small and snug and perfectly dry, with the sea muttering somewhere beyond its walls. A bunk stood along one side, its blanket folded square. There was a stove, a shelf of books, a pipe rack with one pipe missing, and an empty brass hook with a label under it that said \"Lamp key.\" A year of dust lay over all of it. On the desk, propped against a candlestick, stood an envelope sealed with red wax. \"To whoever followed the light,\" Mira read aloud. Her legs ached. It was long past midnight, and there was a store that smelled of tar behind her, two lamps over her head, and a bus shelter two miles off with a bench in it.",
+      "body": "Beyond the door, the keeper's room was small and snug and perfectly dry, with the sea muttering somewhere beyond its walls. A bunk stood along one side, its blanket folded square. There was a stove, a shelf of books, a pipe rack with one pipe missing, and an empty brass hook with a label under it that said \"Lamp key.\" A year of dust lay over all of it. On the desk, propped against a candlestick, stood an envelope sealed with red wax. \"To whoever followed the light,\" Mira read aloud. Her legs ached. It was long past midnight. Somewhere back along the tunnel was a room that smelled of tar, and over her head were two lamps, one small and busy and one great and dark. Two miles off there was a bus shelter with a bench in it.",
       "is_ending": false,
       "choices": [
         {
@@ -1829,12 +1853,12 @@
         },
         {
           "id": "c_n_chamber_2",
-          "label": "Go back to the store that smells of tar.",
+          "label": "Find the store that smells of tar.",
           "target": "cm_smug"
         },
         {
           "id": "c_n_chamber_3",
-          "label": "Climb back up to the two lamps.",
+          "label": "Climb back up toward the lamps.",
           "target": "cm_light"
         },
         {
@@ -1846,7 +1870,7 @@
     },
     {
       "id": "cm_letter",
-      "body": "The sealed letter was heavier than it looked, and the wax of the seal had a little tower pressed into it. Mira turned it over. There was nothing on the back at all. She slid a thumbnail under the flap and stopped. It was addressed to her, in a way, since she was the one who had followed the light. But a letter from a missing man was also exactly the kind of thing a harbour master would want to open himself, with witnesses, and with the wax still whole. Her coat had a deep inside pocket with a button. The wax was brittle and dark, like a boiled sweet, and it would only take a second to break.",
+      "body": "The sealed letter was heavier than it looked, and the wax of the seal had a little tower pressed into it. Mira turned it over. There was nothing on the back at all. She slid a thumbnail under the flap and stopped. It was addressed to her, in a way, since she was the one who had followed the light. But a letter from a missing man was also exactly the kind of thing a harbour master would want to open himself, with witnesses, and with the wax still whole. Her jacket had a deep inside pocket with a button. The wax was brittle and dark, like a boiled sweet, and it would only take a second to break.",
       "is_ending": false,
       "choices": [
         {
@@ -1856,7 +1880,7 @@
         },
         {
           "id": "c_cm_letter_2",
-          "label": "Button it into her coat unopened.",
+          "label": "Button it into her jacket unopened.",
           "target": "cm_letter_keep"
         }
       ]
@@ -1902,7 +1926,7 @@
     },
     {
       "id": "cm_cottage",
-      "body": "The cottage door was painted blue, a long time ago. Mira knocked, and inside a chair scraped and then everything went very still. \"If he sent you, the man with the grey boat,\" said a voice close behind the wood, \"you can tell him I have said nothing, not a word, to anyone, in a whole year.\" It was an old voice, and it was trying hard not to shake. \"Nobody sent me,\" Mira said, and after that there was a long pause, in which a sheep coughed somewhere up the hill and a bolt rattled but did not slide. \"Then how,\" said the voice, more quietly, \"did you ever come to find my light?\"",
+      "body": "The cottage door was painted blue, a long time ago. Mira knocked, and then stepped back down the path to the gate, with the whole open hillside behind her. Inside, a chair scraped, and then everything went very still. \"If he sent you, the man with the grey boat,\" said a voice from behind the door, \"you can tell him I have said nothing, not a word, to anyone, in a whole year.\" It was an old voice, and it was trying hard not to shake. \"Nobody sent me,\" Mira said, and after that there was a long pause, in which a sheep coughed somewhere up the hill and a bolt rattled but did not slide. \"Then how,\" said the voice, more quietly, \"did you ever come to find my light?\"",
       "is_ending": false,
       "choices": [
         {
@@ -1964,7 +1988,7 @@
     },
     {
       "id": "cm_cottage_wait",
-      "body": "\"Stay bolted in,\" Mira told him, \"because you do not have to open it to me, and I am going to fetch the harbour office here so that you can open it to them.\" The voice did not answer at once. \"That is the most sensible thing anyone has said to me in a year,\" it said at last. \"Ask for whoever is on the desk, and tell them Ferris, and tell them the light.\" Mira had already turned to go when it added, \"And girl, mind the bog by the second gate, for it has had better folk than you.\" Mira minded the bog.",
+      "body": "\"Stay bolted in,\" Mira told him, \"because you do not have to open it to me, and I am going to fetch the harbour master up here so that you can open it to them.\" The voice did not answer at once. \"That is the most sensible thing anyone has said to me in a year,\" it said at last. \"Ask for whoever is on the desk, and tell them Ferris, and tell them the light.\" Mira had already turned to go when it added, \"And girl, mind the bog by the second gate, for it has had better folk than you.\" Mira minded the bog.",
       "is_ending": false,
       "choices": [
         {
@@ -2000,7 +2024,7 @@
     },
     {
       "id": "cm_letter_keep",
-      "body": "Mira took her thumbnail away from the wax and left the letter unopened. \"Not mine,\" she said, though it nearly was. She found a clean page in the back of her homework diary and folded it round the envelope, so that the seal would not crack. Then she buttoned the whole thing into the inside pocket of her coat, where she could feel its corner against her ribs. For a moment she stood in the keeper's room, looking at the bunk and the pipe rack and the empty hook. Whatever the letter said, it had been written by somebody who made his bed.",
+      "body": "Mira took her thumbnail away from the wax and left the letter unopened. \"Not mine,\" she said, though it nearly was. She found a clean page in the back of her homework diary and folded it round the envelope, so that the seal would not crack. Then she buttoned the whole thing into the inside pocket of her jacket, where she could feel its corner against her ribs. For a moment she stood in the keeper's room, looking at the bunk and the pipe rack and the empty hook. Whatever the letter said, it had been written by somebody who made his bed.",
       "is_ending": false,
       "choices": [
         {
@@ -2012,7 +2036,7 @@
     },
     {
       "id": "cm_smug",
-      "body": "The store that smelled of tar was forty steps back along the tunnel, and it was bigger than Mira's school hall. Crates stood stacked to the brick roof in rows, with alleys between them, and every one was furred with a year of dust. A grey radio set hissed on a shelf by the door. \"Still blinking,\" said a man's soft voice out of the hiss, to nobody, and then, \"I can wait.\" Mira stood very still until the hiss came back. Her phone had forty per cent left. At the far end of the store the alleys ran on into darkness, where something heavy had left drag marks in the dust.",
+      "body": "The store that smelled of tar was forty steps back along the tunnel, and it was bigger than Mira's school hall. Crates stood stacked to the brick roof in rows, with alleys between them, and every one was furred with a year of dust. A grey radio set hissed on a shelf by the door. \"Still blinking,\" said a man's soft voice out of the hiss, to nobody, and then, \"I can wait.\" Mira stood very still until the hiss came back. Her phone had forty per cent left. At the far end of the store the alleys ran on into darkness, where something heavy had once been dragged, long enough ago that the marks were furred with dust.",
       "is_ending": false,
       "choices": [
         {
@@ -2029,7 +2053,7 @@
     },
     {
       "id": "cm_smug_photo",
-      "body": "Mira photographed the crates and the dust on them, the radio on its shelf, and the inside of one crate with its bottles and tobacco, and then all of it again with the flash, in case. Forty-one pictures. Nobody could say she had dreamed it now. But pictures on a phone with no signal were only pictures, and the man on the radio was still out there in the fog, a mile off, waiting for a light to change. Above her head the clockwork ticked, and the lamp that reached the whole coast went on saying the same two words.",
+      "body": "Mira photographed the crates and the dust on them, the radio on its shelf, and the inside of one crate with its bottles and tobacco, and then all of it again with the flash, in case. Forty-one pictures. Nobody could say she had dreamed it now. But pictures on a phone with no signal were only pictures, and the man on the radio was still out there in the fog, a mile off, waiting for a light to change. Above her head the clockwork ticked. The lamp that reached the whole coast went on saying the same thing, over and over.",
       "is_ending": false,
       "choices": [
         {
@@ -2054,7 +2078,7 @@
     },
     {
       "id": "cm_smug_follow",
-      "body": "The drag marks led deeper, round the last stack to a low arch, and through the arch into a second room that was on nobody's plan. This one was not for crates of cargo. It was for the best of it: small chests, rolled carpets, a row of clocks, a tray of rings. The man with the grey boat had been skimming his own shipments and squirrelling the cream away down here in a hoard. \"Oh, you greedy man,\" said Mira. On top of the nearest chest, on a square of black velvet, sat a jewelled compass no bigger than a plum, set all round with green stones that drank the lantern light and gave it back.",
+      "body": "The drag marks led deeper, round the last stack to a low arch, and through the arch into a second room that was on nobody's plan. This one was not for crates of cargo. It was for the best of it: small chests, rolled carpets, a row of clocks, a tray of rings. The man on the radio had been skimming his own shipments and squirrelling the cream away down here in a hoard. \"Oh, you greedy man,\" said Mira. On top of the nearest chest, on a square of black velvet, sat a jewelled compass no bigger than a plum, set all round with green stones that drank the lantern light and gave it back.",
       "is_ending": false,
       "choices": [
         {
@@ -2084,7 +2108,7 @@
     },
     {
       "id": "cm_smug_hoard",
-      "body": "Mira put her hands in her pockets, so as to be sure of touching nothing, and took them out only to work the phone. She photographed each chest of the hoard where it stood, and each lid as she found it, open or shut. She photographed the dust, because dust was a kind of calendar, and the single line of drag marks through it. When a carpet had slumped across a clock, she left it slumped. It took most of an hour and nearly all her battery. At the end she had sixty-three pictures and had not moved so much as a ring.",
+      "body": "Mira put her hands in her pockets, so as to be sure of touching nothing, and took them out only to work the phone. She photographed each chest of the hoard where it stood, and each lid as she found it, open or shut. She photographed the dust, because dust was a kind of calendar, and the single line of old drag marks lying under it. When a carpet had slumped across a clock, she left it slumped. It took most of an hour and nearly all her battery. At the end she had sixty-three pictures and had not moved so much as a ring.",
       "is_ending": false,
       "choices": [
         {
@@ -2130,7 +2154,7 @@
     },
     {
       "id": "cm_light_relight",
-      "body": "The great lamp filled the top of the tower like a glass beehive, and Mira walked round it twice. The oil tank was a third full, and the wick, when she pinched it, was soft and good, so that everything it needed was here except the turning. Its clockwork sat in a brass case beside it, with a square socket the size of a coin where a winding key should go, and the socket was empty. \"Where is your key, then?\" Mira asked the lamp. The gears behind the socket were stiff with a year of salt, but her fingers just went round the biggest one, and it gave a very little when she pushed.",
+      "body": "The great lamp filled the top of the tower like a glass beehive, and Mira walked round it twice. The oil tank was a third full, and the wick, when she pinched it, was soft and good, so that everything it needed was here except the turning. Its clockwork sat in a brass case beside it, with a square socket the size of a coin where a winding key should go. Nothing was in it. \"Square,\" Mira said to the lamp, and looked at the socket for a long moment. The gears behind the socket were stiff with a year of salt, but her fingers just went round the biggest one, and it gave a very little when she pushed.",
       "is_ending": false,
       "choices": [
         {
@@ -2149,7 +2173,15 @@
         {
           "id": "c_cm_light_relight_2",
           "label": "Force the big gear round by hand.",
-          "target": "e_set_gears"
+          "target": "e_set_gears",
+          "condition": {
+            "==": [
+              {
+                "var": "has_key"
+              },
+              false
+            ]
+          }
         },
         {
           "id": "c_cm_light_relight_3",
@@ -2168,7 +2200,7 @@
     },
     {
       "id": "cm_light_back",
-      "body": "Mira took her hand off the gear. Scratched into the brass beside the empty socket, small and square, were four words she had missed: \"Key hid. Be patient.\" She read them and laughed once, not very happily. Somewhere in the cottage or the boathouse, down in the caves or behind some mirror, there was a key with a tower on it, and she had walked straight past it. She went back down the stair to the little lamp, which needed no key at all and was still, patiently, saying its piece.",
+      "body": "Mira took her hand off the gear. Scratched into the brass beside the empty socket, small and square, were four words she had missed: \"Key hid. Be patient.\" She read them and laughed once, not very happily. Somewhere in the cottage or the boathouse, down in the caves or behind some mirror, there was a key that fitted this socket, and she had walked straight past it. She went back down the stair to the little lamp, which needed no key at all and was still, patiently, saying its piece.",
       "is_ending": false,
       "choices": [
         {
@@ -2180,7 +2212,7 @@
     },
     {
       "id": "cm_light_true",
-      "body": "Mira wound the clockwork slowly, as the tag said, and counted forty turns of the brass key. Inside the case, gears that had not moved in a year began to tick, heavy and even, like a big dog's heartbeat. She trimmed the wick with her fingernails, struck a match from the box on the sill, and held it to the lamp. The flame caught and climbed. Then the great lens took hold of it and threw it out of the tower in a single white bar, so bright that the fog seemed to step back. The little green light below went on blinking for a moment, like someone still talking after the door has opened.",
+      "body": "The brass key slid into the square socket as if it had been waiting there all year. Mira wound the clockwork slowly, the way a stiff old thing likes to be wound, until the key would turn no more. Inside the case, gears that had not moved in a year began to tick, heavy and even, like a big dog's heartbeat. She trimmed the wick with her fingernails, struck a match from the box on the sill, and held it to the lamp. The flame caught and climbed. Then the great lens took hold of it and threw it out of the tower in a single white bar, so bright that the fog seemed to step back. The little green light below went on blinking for a moment, like someone still talking after the door has opened.",
       "is_ending": false,
       "choices": [
         {
@@ -2192,7 +2224,7 @@
     },
     {
       "id": "cm_light_study",
-      "body": "The little lamp's shutter was a square of tin on a brass arm, and the clockwork lifted and dropped it once every four seconds. Mira watched the whole rig for a long time. Beside the motor was a lever with two positions, marked in scratched letters \"clock\" and \"hand.\" Pushed to \"hand,\" it would let the arm swing free, so that a person with a message to flash might work the shutter herself. The lantern behind it burned on, steady and bright. A light like this reached a long way in fog. It reached the harbour, and it reached the boat.",
+      "body": "The little lamp's shutter was a square of tin on a brass arm, and the clockwork lifted and dropped it once every four seconds. Mira watched the whole rig for a long time. Beside the motor was a lever with two positions, marked in scratched letters \"clock\" and \"hand.\" Pushed to \"hand,\" it would let the arm swing free, so that a person with a message to flash might work the shutter herself. The lantern behind it burned on, steady and bright. A light like this reached a long way in fog. It reached the harbour, and it reached anyone out on the water.",
       "is_ending": false,
       "choices": [
         {
@@ -2263,7 +2295,7 @@
     },
     {
       "id": "e_set_a_drawer",
-      "body": "Mira took the drawer by its handle and wrenched. The front came away in her hand with a crack like a snapped ruler, and the rest of the drawer jammed crooked in the desk, tighter than any lock. Through the split she could see a bundle of oilcloth, and poking out of it the bow of a brass key with a tiny tower stamped on it. Her fingers went in as far as the second knuckle and no further. \"Oh, come on,\" she said. She tried the letter-opener, then a ruler, then two forks from the kitchen. She was still trying when the window turned grey and the pale light, along with the last of the fog, blinked itself out.",
+      "body": "Mira took the drawer by its handle and wrenched. The front came away in her hand with a crack like a snapped ruler, and the rest of the drawer jammed crooked in the desk, tighter than any lock. Through the split she could see a bundle of oilcloth, and poking out of it the bow of a brass key with a tiny tower stamped on it. Her fingers went in as far as the second knuckle and no further. \"Oh, come on,\" she said. She tried the letter-opener, then a ruler, then a hairgrip from her own pocket. She was still trying when the window turned grey and the pale light, along with the last of the fog, blinked itself out.",
       "is_ending": true,
       "ending": {
         "id": "e_a_drawer",
@@ -2340,7 +2372,7 @@
     },
     {
       "id": "e_set_cellar",
-      "body": "Mira rattled the padlock, and a bell began to ring. It was somewhere above her, inside the tower, small and sharp and furious, jerking on a wire that ran from the low door up through the ceiling. She let go at once, but the bell went on. Overhead a chair fell over. Boots ran across a floor, a door slammed, and somebody went down a stair in a great hurry, away from her. Then the green flicker on the stair went out, and the whole tower was dark, and it stayed dark. Whoever had been keeping that light had taken her for someone else, someone worth running from, and Mira stood on the landing with nobody left to ask.",
+      "body": "Mira rattled the padlock, and a bell began to ring. It was somewhere above her, inside the tower, small and sharp and furious, jerking on a wire that ran from the low door up through the ceiling. She let go at once, but the bell went on. Overhead a chair fell over. Boots ran across a floor, a door slammed, and somebody went down a stair in a great hurry, away from her. Then, up the open panel stair, a faint green glow went out, and the whole tower was dark, and it stayed dark. Whoever had been keeping that light had taken her for someone else, someone worth running from, and Mira stood on the landing with nobody left to ask.",
       "is_ending": true,
       "ending": {
         "id": "e_cellar",
@@ -2351,7 +2383,7 @@
     },
     {
       "id": "e_set_stair",
-      "body": "Mira stamped on the step, and the step gave way like a pie crust. Her leg went through to the knee. When she had finished saying \"ow\" she found her boot resting on something soft, and she reached down past it and brought up a bundle of envelopes tied with fishing line. There were dozens. Each was marked with a V and a date, each was fat with banknotes, and not one of them had ever been opened. \"Somebody paid you,\" Mira said to the dark stair, \"and you never even looked.\" Her ankle was swelling fast inside her boot. She sat there on the eighteenth step with a fortune in her lap that was not hers, listening to the light tick.",
+      "body": "Mira stamped on the step, and the step gave way like a pie crust. Her leg went through to the knee. When she had finished saying \"ow\" she found her boot resting on something soft, and she reached down past it and brought up a bundle of envelopes tied with fishing line. There were dozens. Each was marked with a V and a date, each was fat with banknotes, and not one of them had ever been opened. \"Somebody paid you,\" Mira said to the dark stair, \"and you never even looked.\" Her ankle was swelling fast inside her boot. She sat there on the nineteenth step with a fortune in her lap that was not hers, listening to the light tick.",
       "is_ending": true,
       "ending": {
         "id": "e_stair",
@@ -2428,7 +2460,7 @@
     },
     {
       "id": "e_set_gears",
-      "body": "Mira forced the big gear, and it went round a quarter of a turn with a scream of dry brass. Then something inside the case let go. There was a bang and a rattle of loose teeth, and the cover plate jumped off its screws and rang on the floor, and after that the gear would not move at all. The great lamp would stay dark. With the cover off, though, she could see the square socket all the way in, and three words stamped in the brass around it: \"Wind her slow.\" It had never wanted strength. It had wanted a key with a square end, and somewhere in this lighthouse there was one.",
+      "body": "Mira forced the big gear, and it went round a quarter of a turn with a scream of dry brass. Then something inside the case let go. There was a bang and a rattle of loose teeth, and the cover plate jumped off its screws and rang on the floor, and after that the gear would not move at all. The great lamp would stay dark. With the cover off, though, she could see the square socket all the way in, and three words stamped in the brass around it: \"Wind her slow.\" It had never wanted strength. It had wanted a key with a square end, and somewhere on this headland there was one.",
       "is_ending": true,
       "ending": {
         "id": "e_gears",
@@ -2450,7 +2482,7 @@
     },
     {
       "id": "e_win_keeper_word",
-      "body": "The harbour office had only just unlocked its door when Mira came through it, out of breath and not very clean. The clerk on the desk was eating toast. \"Old Ferris is dead, love, a year since,\" he said with his mouth full, when she had said the keeper's name. Mira shook her head. \"He is on the moor,\" she said, \"in the shepherd's cottage past the second gate, and he has been lighting the lighthouse on every fog night.\" The toast went down on the blotter. Within the hour six men were climbing the sheep track with a stretcher they did not need, and by noon they came down again, walking slowly, with a thin old man in the middle of them. He stopped at the office door and looked at Mira for a long moment. \"Minded the bog, I see,\" he said.",
+      "body": "The harbour office had only just unlocked its door when Mira came through it, out of breath and not very clean. The clerk on the desk was eating toast. \"Old Ferris is dead, love, a year since,\" he said with his mouth full, when she had said the keeper's name. Mira shook her head. \"He is on the moor,\" she said, \"in the cottage past the second gate, and he has been lighting the lighthouse on every fog night.\" The toast went down on the blotter. Within the hour six men were climbing the sheep track with a stretcher they did not need, and by noon they came down again, walking slowly, with a thin old man in the middle of them. He stopped at the office door and looked at Mira for a long moment. \"So you are the one who followed my light,\" he said, \"and then had the sense to fetch help, which is more than most of us manage.\"",
       "is_ending": true,
       "ending": {
         "id": "e_keeper_word",
@@ -2472,7 +2504,7 @@
     },
     {
       "id": "e_win_promise",
-      "body": "Mira took up the keeper's task that same night, because there was nobody else to do it. She climbed to the chamber of mirrors and gave the clockwork forty turns, slowly, although it did not need them yet. Then she went down to the journal on its stool, and under the last line in the keeper's own hand she wrote one of hers: \"Seen, and I will tell them you are sorry, and that it was never a ghost. Mira.\" She told the harbour master in the morning, and he fetched the old man down from the moor by noon. Three weeks later the fog came in again, and the pale light blinked all night over the sea, and this time there were two sets of bootprints on the stair.",
+      "body": "Mira took up the keeper's task that same night, because there was nobody else to do it. She climbed to the chamber of mirrors and gave the clockwork forty turns, slowly, although it did not need them yet. Then, under the last line in the keeper's journal, she wrote one of her own: \"Seen, and I will tell them you are sorry, and that it was never a ghost. Mira.\" In the morning she gave the harbour master the letter, map and all, and he fetched the old man down from the moor by noon. Three weeks later the fog came in again, and word came up from the harbour that the pale light had blinked all night over the sea, right on time. The old keeper was well, and the promise could wait.",
       "is_ending": true,
       "ending": {
         "id": "e_promise",
@@ -2494,7 +2526,7 @@
     },
     {
       "id": "e_win_harbor",
-      "body": "Mira carried the phone to the harbour master the moment his office opened, and he looked through forty-one photographs without saying a word. At the thirty-ninth he put on his glasses. \"That is four hundred crates of somebody's bad conscience,\" he said, \"so whose is it?\" Mira did not know the name. \"He has a grey boat,\" she said, \"and he is out there now, waiting for the light to change.\" The harbour master was already reaching for his coat. By nine the revenue men were at the tower, and by ten a grey launch was being towed in past the sea wall. \"And what,\" he asked her, over the bacon sandwich he had bought her, \"were you doing out there at midnight?\" Mira swallowed. \"I missed my bus,\" she said.",
+      "body": "Mira carried the phone to the harbour master the moment his office opened, and he looked through forty-one photographs without saying a word. At the thirty-ninth he put on his glasses. \"That is four hundred crates of somebody's bad conscience,\" he said, \"so whose is it?\" Mira told him about the soft voice on the radio that said it could wait. \"He is out there now,\" she said, \"in the fog, waiting for the light to change.\" The harbour master was already reaching for his coat. By nine the revenue men were at the tower, and by ten a grey launch was being towed in past the sea wall. \"And what,\" he asked her, over the bacon sandwich he had bought her, \"were you doing out there at midnight?\" Mira swallowed. \"I missed my bus,\" she said.",
       "is_ending": true,
       "ending": {
         "id": "e_harbor",
@@ -2505,7 +2537,7 @@
     },
     {
       "id": "e_win_hoard",
-      "body": "Mira took the pictures to the harbour master, all sixty-three, and he went through them with a magnifying glass. \"You did not touch any of it?\" he said. Mira shook her head. \"Not a ring,\" she said, \"because I kept my hands in my pockets.\" When the revenue men opened the little room that afternoon, it matched her photographs down to the slumped carpet and the line of drag marks in the dust, and there was nothing a clever lawyer could say had been moved, or added, or dreamed. The jewelled compass was still on its velvet. Under it they found a wire as thin as a hair, running to a bell at the sea gate. \"Somebody,\" said the harbour master, \"was hoping you had sticky fingers.\"",
+      "body": "Mira took the pictures to the harbour master, all sixty-three, and he went through them with a magnifying glass. \"You did not touch any of it?\" he said. Mira shook her head. \"Not a ring,\" she said, \"because I kept my hands in my pockets.\" When the revenue men opened the little room that afternoon, it matched her photographs down to the slumped carpet and the old drag marks under the dust, and there was nothing a clever lawyer could say had been moved, or added, or dreamed. The jewelled compass was still on its velvet. Under it they found a wire as thin as a hair, running to a bell at the sea gate. \"Somebody,\" said the harbour master, \"was hoping you had sticky fingers.\"",
       "is_ending": true,
       "ending": {
         "id": "e_hoard",
@@ -2556,7 +2588,7 @@
         "id": "e_signal",
         "valence": "positive",
         "kind": "success",
-        "title": "The Signal Solved"
+        "title": "The Ghost on Paper"
       }
     },
     {
@@ -2572,7 +2604,7 @@
     },
     {
       "id": "e_neutral_honest",
-      "body": "Mira left the compass on its velvet and took her hand away, and she photographed it from four sides without touching so much as the cloth. The flash showed her what the lantern had not. A wire as thin as a hair ran from under the compass, down the side of the chest, and away along the wall toward the sea gate, and at the far end of it, she had no doubt at all, there was a bell. \"Oh, you sneak,\" she said to the man with the grey boat. It had been bait, the prettiest thing in the room, left on top for exactly her kind of fingers. She photographed the wire too. Then she walked out past all of it with her hands in her pockets, whistling, not very well.",
+      "body": "Mira left the compass on its velvet and took her hand away, and she photographed it from four sides without touching so much as the cloth. The flash showed her what the lantern had not. A wire as thin as a hair ran from under the compass, down the side of the chest, and away along the wall toward the sea gate, and at the far end of it, she had no doubt at all, there was a bell. \"Oh, you sneak,\" she said to the man on the radio, wherever he was. It had been bait, the prettiest thing in the room, left on top for exactly her kind of fingers. She photographed the wire too. Then she walked out past all of it with her hands in her pockets, whistling, not very well.",
       "is_ending": true,
       "ending": {
         "id": "e_honest",
