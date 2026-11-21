@@ -1,0 +1,299 @@
+{
+  "case": "orchard_postfix",
+  "run": 1,
+  "model": "anthropic/claude-sonnet-5.5",
+  "usage": {
+    "prompt_tokens": 48386,
+    "completion_tokens": 18803,
+    "total_tokens": 67189,
+    "cost": 0.284802,
+    "is_byok": false,
+    "prompt_tokens_details": {
+      "cached_tokens": 0,
+      "cache_write_tokens": 0,
+      "audio_tokens": 0,
+      "video_tokens": 0
+    },
+    "cost_details": {
+      "upstream_inference_cost": 0.284802,
+      "upstream_inference_prompt_cost": 0.096772,
+      "upstream_inference_completions_cost": 0.18803
+    },
+    "completion_tokens_details": {
+      "reasoning_tokens": 14324,
+      "image_tokens": 0,
+      "audio_tokens": 0
+    }
+  },
+  "raw": "{\"verdict\":\"reject\",\"confidence\":0.8,\"summary\":\"The graph is well-formed and every ending is reachable, but several `requires` or state facts are false at the node that uses them. The b3 branches and their stated costs are also cosmetic, and many forks are an obvious right option against a labelled-bad one.\",\"findings\":[{\"severity\":\"blocker\",\"entries\":[\"n_b5\",\"e_all_restore\",\"memorial_names_unplaced\",\"bakery_vanished\",\"town_restored\"],\"problem\":\"n_b5 and e_all_restore both require `memorial_names_unplaced`, and n_b5 requires `bakery_vanished`. Both are false once the town is restored: nobody can place the names, and the house is not a bakery. At n_b5 the restoration has just happened.\",\"route_or_state\":\"n_b4 -> fin_all_1/fin_all_2 or fin_share_1/fin_share_2 -> n_b5 -> e_all_restore\"},{\"severity\":\"blocker\",\"entries\":[\"b3u_p2\",\"b3u_m\",\"e_b3us\",\"town_gathered\",\"c_b3u_m_1\",\"c_b3u_m_2\"],\"problem\":\"`town_gathered` is established at b3u_p2, before the b3u_m decision. That decision then offers to \\\"wait until enough have come\\\" or \\\"begin before the town has arrived\\\", and e_b3us says the weight breaks \\\"the few who had come\\\". The passage and choice text contradict the known state, and waiting is the one obvious right answer.\",\"route_or_state\":\"n_b3 -> b3u_p1..p3 -> b3u_d1 -> b3u_m -> e_b3us\"},{\"severity\":\"blocker\",\"entries\":[\"fin_share_1\",\"crowd_at_stair\",\"town_gathered\",\"n_b4\",\"c_n_b4_2\"],\"problem\":\"fin_share_1 has empty `requires`. It presents townsfolk crowding down the stair and a vow, but the town is only gathered (`town_gathered`, `odile_teaches_shared_keeping`) on the b3u branch. On b3v and b3w routes a crowd and the old words appear from nowhere.\",\"route_or_state\":\"n_b3 -> b3v or b3w -> n_b4 -> c_n_b4_2 -> fin_share_1\"},{\"severity\":\"blocker\",\"entries\":[\"b2t_p1\",\"sunday_kitchen_given\",\"c_b2t_d1_2\",\"e_b2ta\",\"kept_everything\"],\"problem\":\"b2t_p1 establishes `sunday_kitchen_given`, and the root keeps what it takes forever. e_b2ta then says Rowan \\\"keeps every memory\\\" and `kept_everything`, which is false on a route where she has already given the Sunday kitchen memory.\",\"route_or_state\":\"n_b2 -> c_n_b2_1 -> b2t_p1..p3 -> b2t_d1 -> c_b2t_d1_2 -> e_b2ta\"},{\"severity\":\"should-fix\",\"entries\":[\"fin_trade_2\",\"c_fin_trade_2_3\",\"e_trade_photo\",\"year_restored\",\"photo_kept\"],\"problem\":\"fin_trade_2 requires `year_restored`, yet e_trade_photo says she \\\"buys nothing back\\\" and is a setback. The photograph of the orchard gate she \\\"brought from home\\\" appears nowhere earlier; the only photos she carries are the cellar photo and the class photo (`photos_in_coat`), and only on the records route. The card is unplanted and the outcome contradicts the state.\",\"route_or_state\":\"n_b4 -> fin_trade_1 -> fin_trade_2 -> e_trade_photo\"},{\"severity\":\"should-fix\",\"entries\":[\"n_b3\",\"c_n_b3_2\",\"c_n_b3_3\",\"n_b4\",\"b3ut_p3\",\"b3vt_p3\",\"b3wt_p3\"],\"problem\":\"All three b3 branches merge into n_b4 with the same four finale choices, so the b3 choice does nothing. Costs such as \\\"most of the town stays lost\\\" (c_n_b3_2) and \\\"gives up restoring the town\\\" (c_n_b3_3) are false, because n_b4 still offers fin_all and fin_share after either branch.\",\"route_or_state\":\"n_b3 -> b3w -> b3wt_p3 -> n_b4 -> c_n_b4_1\"},{\"severity\":\"should-fix\",\"entries\":[\"e_b1a\",\"c_b1a_dec_1\",\"c_b1a_dec_2\",\"b1a_dec\"],\"problem\":\"c_b1a_dec_2 is \\\"pull back from the water\\\" and leads to e_b1a, whose event is \\\"Rowan holds too long; the spring closes\\\". The ending contradicts the choice that triggers it. The gift (\\\"cost of holding on\\\") also fits the wrong option, while the \\\"hold on\\\" choice continues to the b1at passages that reveal the deeper truth.\",\"route_or_state\":\"n_b1 -> b1a_dec -> c_b1a_dec_2 -> e_b1a\"},{\"severity\":\"should-fix\",\"entries\":[\"n_b3\",\"odile_and_teo_arrive\",\"odile_cannot_descend\",\"teo_sent_for_odile\",\"teo_will_come\",\"b1ct_p3\"],\"problem\":\"n_b3 has Odile arrive on Teo's arm at the spring on every route. Only the kee route (`teo_will_come`) and the b1c route (`teo_sent_for_odile`) set this up. Odile is also a blind keeper who cannot manage the hill, so being down the cellar stair at the spring is unexplained. On other routes she is unintroduced, and `odile_fenn` is first established in n_b3 itself.\",\"route_or_state\":\"rec/pho/cel -> b1a or b1b -> n_b2 -> n_b3\"},{\"severity\":\"should-fix\",\"entries\":[\"rec_conv\",\"rec_a_p1\",\"rec_b_p2\",\"rec_b_p4\",\"clause_names_keeper\",\"lease_ledger_holds\"],\"problem\":\"rec_conv says the latest lease renewal names the grandmother, but it requires only `clerk_forgetting`. The ledger and clause facts are established only on the rec_b side, so the rec_a route never saw a lease.\",\"route_or_state\":\"rec_entry -> c_rec_entry_1 -> rec_a_p1..p4 -> rec_adec_1 -> rec_conv\"},{\"severity\":\"should-fix\",\"entries\":[\"pho_conv\",\"pho_a_p1\",\"pho_b_p1\",\"orchard_album\",\"orchard_photos_steady\"],\"problem\":\"pho_conv is built on \\\"steady orchard photos ordered by year\\\" and requires only `photos_change`. The album and `orchard_photos_steady` are first established on the pho_b side, so pho_a readers have never seen the album the passage assumes.\",\"route_or_state\":\"pho_entry -> c_pho_entry_1 -> pho_a -> pho_adec_1 -> pho_conv\"},{\"severity\":\"should-fix\",\"entries\":[\"n_b1\",\"rec_clue\",\"pho_clue\",\"kee_clue\",\"at_spring\",\"cellar_barklocked\"],\"problem\":\"n_b1 puts Rowan at the spring with the seed. Only the cel route ever descends. rec_clue, pho_clue and kee_clue end at the cider house or on the hill, with no node showing the barklocked door opened or the stair descended. `at_spring` is established inside n_b1 itself, so the jump is unbridged.\",\"route_or_state\":\"rec/kee/pho -> n_b1\"},{\"severity\":\"should-fix\",\"entries\":[\"n_b5\",\"gap-toothed girl\",\"neighbour_girl\",\"fin_all_2\",\"fin_share_2\"],\"problem\":\"n_b5 shows the gap-toothed girl among the restored, but it does not require `neighbour_girl`. That fact is established only on the b3v route and at fin_one_1, which is not on the fin_all or fin_share paths. Most readers meet her for the first time at the restoration.\",\"route_or_state\":\"n_b3 -> b3u -> n_b4 -> fin_share_1 -> fin_share_2 -> n_b5\"},{\"severity\":\"should-fix\",\"entries\":[\"c_fin_all_1_2\",\"c_fin_share_1_2\",\"c_cel_bdec_2\",\"c_b3u_m_2\",\"c_pho_adec_2\",\"c_rec_adec_2\",\"c_fin_one_1_2\",\"c_fin_trade_1_2\",\"e_all_flood\",\"e_share_lost\"],\"problem\":\"Many forks are an obvious right option against a labelled-bad one, and several setbacks are not real choices. \\\"Falter as the current grows too strong\\\" and \\\"lose the crowd's nerve\\\" are outcomes, not decisions. Retreating on the stair drains her purpose \\\"anyway\\\", while marking the steps has no stated protective effect. Most second options are one-line setback endings.\",\"route_or_state\":\"throughout, esp. n_b4 finales and cel_bdec\"},{\"severity\":\"should-fix\",\"entries\":[\"c_fin_one_2_1\",\"c_fin_one_2_2\",\"e_one_saved\",\"e_one_content\",\"fin_one_2\"],\"problem\":\"Both choices after the girl rises end in positive success endings that barely differ. c_fin_one_2_2 is \\\"ask whether she might save one more\\\", but e_one_content is \\\"accepts one life for one memory and walks home\\\"; the intent and outcome do not match.\",\"route_or_state\":\"n_b4 -> fin_one_1 -> fin_one_2\"},{\"severity\":\"should-fix\",\"entries\":[\"frost_deadline\",\"kee_t_p4\",\"n_b4\",\"first_frost_silvering\",\"e_one_hesitate\",\"cel_a_p3\"],\"problem\":\"The frost rules are inconsistent. kee_t_p4 says the first frost is \\\"days away\\\", and cel_a_p3 has frost on the stair in a mild September. Yet n_b4 has frost silvering the grass within the same day. The rule that frost closes the chance is invoked only at e_one_hesitate, so every other finale runs after the frost has begun with no consequence.\",\"route_or_state\":\"kee route; any route to n_b4\"},{\"severity\":\"should-fix\",\"entries\":[\"name_every_year\",\"keeper_line_broke_40y\",\"bargain_every_40_years\",\"truth.statement\",\"keeper_forgotten_by_all\",\"odile_fenn\"],\"problem\":\"The keeper mechanics contradict each other. One keeper's name is given every year, but the line broke 40 years ago and \\\"no keeper has paid since\\\", with renewals every fortieth year. A keeper is \\\"forgotten by everyone\\\", yet Odile, the clerk's lease, and Rowan's family photographs all know the grandmother. Odile is called \\\"the last living keeper\\\" while the grandmother is \\\"the last keeper\\\".\",\"route_or_state\":\"kee_a_p3, rec_conv, b2k_p1, b2k_d1\"},{\"severity\":\"should-fix\",\"entries\":[\"c_b2t_m_2\",\"e_b2tb\",\"family_memories_traded\",\"b2t_m\"],\"problem\":\"c_b2t_m_2 states the cost as \\\"her memory of her grandmother\\\". The ending e_b2tb gives away \\\"every memory of her family\\\", and its gift speaks of \\\"the person she meant to honour\\\". Rowan knows her grandmother only from photographs, so the cost is hollow, and the choice, ending and gift disagree.\",\"route_or_state\":\"n_b2 -> b2t -> b2t_m -> e_b2tb\"},{\"severity\":\"should-fix\",\"entries\":[\"never_planted_here\",\"root_feeds_on_rooted\",\"b3v_p2\",\"early_childhood_in_alderwick\",\"bakery_vanished\",\"first_summer_given\"],\"problem\":\"Rowan is immune because nearly all her childhood is outside Alderwick's soil, and she left \\\"very small\\\". She still vividly remembers a vanished bakery, a playmate's grin, and a first summer worth trading. The memories the root could not touch are also the ones it is offered as payment, which is not reconciled.\",\"route_or_state\":\"b3v, fin_one_1, n_b5\"},{\"severity\":\"minor\",\"entries\":[\"e_b3wn\",\"e_trade_even\",\"c_b3w_d1_2\",\"c_n_b4_4\",\"even_trade_year\",\"year_restored\"],\"problem\":\"Two near-identical even-trade endings, a year back for a year of her own, reached from different decision points. They overlap heavily and offer little difference for the reader.\",\"route_or_state\":\"n_b3 -> b3w -> e_b3wn; n_b4 -> fin_trade\"},{\"severity\":\"minor\",\"entries\":[\"c_b2k_d1_2\",\"e_b2ka\",\"c_b2k_m_2\",\"e_b2kb\",\"b2k_d1\"],\"problem\":\"The compassionate option \\\"no one should have to vanish\\\" is punished as a spreading setback in which Odile fades. The \\\"tie herself to the knot\\\" option is described in the plan as \\\"in fear\\\", though its stated intent is deliberate.\",\"route_or_state\":\"n_b2 -> c_n_b2_2 -> b2k\"},{\"severity\":\"minor\",\"entries\":[\"c_n_b5_2_1\",\"n_b5_2\",\"e_all_grandmother\"],\"problem\":\"The cost \\\"risking the gift her grandmother gave\\\" refers to an undefined gift (the seed? the message?), and no risk is ever shown in e_all_grandmother. The bakery/frost implicit plants have no declared `threads`, so there is no tracked planting choice anywhere.\",\"route_or_state\":\"n_b5_2\"}]}",
+  "parsed": {
+    "verdict": "reject",
+    "confidence": 0.8,
+    "summary": "The graph is well-formed and every ending is reachable, but several `requires` or state facts are false at the node that uses them. The b3 branches and their stated costs are also cosmetic, and many forks are an obvious right option against a labelled-bad one.",
+    "findings": [
+      {
+        "severity": "blocker",
+        "entries": [
+          "n_b5",
+          "e_all_restore",
+          "memorial_names_unplaced",
+          "bakery_vanished",
+          "town_restored"
+        ],
+        "problem": "n_b5 and e_all_restore both require `memorial_names_unplaced`, and n_b5 requires `bakery_vanished`. Both are false once the town is restored: nobody can place the names, and the house is not a bakery. At n_b5 the restoration has just happened.",
+        "route_or_state": "n_b4 -> fin_all_1/fin_all_2 or fin_share_1/fin_share_2 -> n_b5 -> e_all_restore"
+      },
+      {
+        "severity": "blocker",
+        "entries": [
+          "b3u_p2",
+          "b3u_m",
+          "e_b3us",
+          "town_gathered",
+          "c_b3u_m_1",
+          "c_b3u_m_2"
+        ],
+        "problem": "`town_gathered` is established at b3u_p2, before the b3u_m decision. That decision then offers to \"wait until enough have come\" or \"begin before the town has arrived\", and e_b3us says the weight breaks \"the few who had come\". The passage and choice text contradict the known state, and waiting is the one obvious right answer.",
+        "route_or_state": "n_b3 -> b3u_p1..p3 -> b3u_d1 -> b3u_m -> e_b3us"
+      },
+      {
+        "severity": "blocker",
+        "entries": [
+          "fin_share_1",
+          "crowd_at_stair",
+          "town_gathered",
+          "n_b4",
+          "c_n_b4_2"
+        ],
+        "problem": "fin_share_1 has empty `requires`. It presents townsfolk crowding down the stair and a vow, but the town is only gathered (`town_gathered`, `odile_teaches_shared_keeping`) on the b3u branch. On b3v and b3w routes a crowd and the old words appear from nowhere.",
+        "route_or_state": "n_b3 -> b3v or b3w -> n_b4 -> c_n_b4_2 -> fin_share_1"
+      },
+      {
+        "severity": "blocker",
+        "entries": [
+          "b2t_p1",
+          "sunday_kitchen_given",
+          "c_b2t_d1_2",
+          "e_b2ta",
+          "kept_everything"
+        ],
+        "problem": "b2t_p1 establishes `sunday_kitchen_given`, and the root keeps what it takes forever. e_b2ta then says Rowan \"keeps every memory\" and `kept_everything`, which is false on a route where she has already given the Sunday kitchen memory.",
+        "route_or_state": "n_b2 -> c_n_b2_1 -> b2t_p1..p3 -> b2t_d1 -> c_b2t_d1_2 -> e_b2ta"
+      },
+      {
+        "severity": "should-fix",
+        "entries": [
+          "fin_trade_2",
+          "c_fin_trade_2_3",
+          "e_trade_photo",
+          "year_restored",
+          "photo_kept"
+        ],
+        "problem": "fin_trade_2 requires `year_restored`, yet e_trade_photo says she \"buys nothing back\" and is a setback. The photograph of the orchard gate she \"brought from home\" appears nowhere earlier; the only photos she carries are the cellar photo and the class photo (`photos_in_coat`), and only on the records route. The card is unplanted and the outcome contradicts the state.",
+        "route_or_state": "n_b4 -> fin_trade_1 -> fin_trade_2 -> e_trade_photo"
+      },
+      {
+        "severity": "should-fix",
+        "entries": [
+          "n_b3",
+          "c_n_b3_2",
+          "c_n_b3_3",
+          "n_b4",
+          "b3ut_p3",
+          "b3vt_p3",
+          "b3wt_p3"
+        ],
+        "problem": "All three b3 branches merge into n_b4 with the same four finale choices, so the b3 choice does nothing. Costs such as \"most of the town stays lost\" (c_n_b3_2) and \"gives up restoring the town\" (c_n_b3_3) are false, because n_b4 still offers fin_all and fin_share after either branch.",
+        "route_or_state": "n_b3 -> b3w -> b3wt_p3 -> n_b4 -> c_n_b4_1"
+      },
+      {
+        "severity": "should-fix",
+        "entries": [
+          "e_b1a",
+          "c_b1a_dec_1",
+          "c_b1a_dec_2",
+          "b1a_dec"
+        ],
+        "problem": "c_b1a_dec_2 is \"pull back from the water\" and leads to e_b1a, whose event is \"Rowan holds too long; the spring closes\". The ending contradicts the choice that triggers it. The gift (\"cost of holding on\") also fits the wrong option, while the \"hold on\" choice continues to the b1at passages that reveal the deeper truth.",
+        "route_or_state": "n_b1 -> b1a_dec -> c_b1a_dec_2 -> e_b1a"
+      },
+      {
+        "severity": "should-fix",
+        "entries": [
+          "n_b3",
+          "odile_and_teo_arrive",
+          "odile_cannot_descend",
+          "teo_sent_for_odile",
+          "teo_will_come",
+          "b1ct_p3"
+        ],
+        "problem": "n_b3 has Odile arrive on Teo's arm at the spring on every route. Only the kee route (`teo_will_come`) and the b1c route (`teo_sent_for_odile`) set this up. Odile is also a blind keeper who cannot manage the hill, so being down the cellar stair at the spring is unexplained. On other routes she is unintroduced, and `odile_fenn` is first established in n_b3 itself.",
+        "route_or_state": "rec/pho/cel -> b1a or b1b -> n_b2 -> n_b3"
+      },
+      {
+        "severity": "should-fix",
+        "entries": [
+          "rec_conv",
+          "rec_a_p1",
+          "rec_b_p2",
+          "rec_b_p4",
+          "clause_names_keeper",
+          "lease_ledger_holds"
+        ],
+        "problem": "rec_conv says the latest lease renewal names the grandmother, but it requires only `clerk_forgetting`. The ledger and clause facts are established only on the rec_b side, so the rec_a route never saw a lease.",
+        "route_or_state": "rec_entry -> c_rec_entry_1 -> rec_a_p1..p4 -> rec_adec_1 -> rec_conv"
+      },
+      {
+        "severity": "should-fix",
+        "entries": [
+          "pho_conv",
+          "pho_a_p1",
+          "pho_b_p1",
+          "orchard_album",
+          "orchard_photos_steady"
+        ],
+        "problem": "pho_conv is built on \"steady orchard photos ordered by year\" and requires only `photos_change`. The album and `orchard_photos_steady` are first established on the pho_b side, so pho_a readers have never seen the album the passage assumes.",
+        "route_or_state": "pho_entry -> c_pho_entry_1 -> pho_a -> pho_adec_1 -> pho_conv"
+      },
+      {
+        "severity": "should-fix",
+        "entries": [
+          "n_b1",
+          "rec_clue",
+          "pho_clue",
+          "kee_clue",
+          "at_spring",
+          "cellar_barklocked"
+        ],
+        "problem": "n_b1 puts Rowan at the spring with the seed. Only the cel route ever descends. rec_clue, pho_clue and kee_clue end at the cider house or on the hill, with no node showing the barklocked door opened or the stair descended. `at_spring` is established inside n_b1 itself, so the jump is unbridged.",
+        "route_or_state": "rec/kee/pho -> n_b1"
+      },
+      {
+        "severity": "should-fix",
+        "entries": [
+          "n_b5",
+          "gap-toothed girl",
+          "neighbour_girl",
+          "fin_all_2",
+          "fin_share_2"
+        ],
+        "problem": "n_b5 shows the gap-toothed girl among the restored, but it does not require `neighbour_girl`. That fact is established only on the b3v route and at fin_one_1, which is not on the fin_all or fin_share paths. Most readers meet her for the first time at the restoration.",
+        "route_or_state": "n_b3 -> b3u -> n_b4 -> fin_share_1 -> fin_share_2 -> n_b5"
+      },
+      {
+        "severity": "should-fix",
+        "entries": [
+          "c_fin_all_1_2",
+          "c_fin_share_1_2",
+          "c_cel_bdec_2",
+          "c_b3u_m_2",
+          "c_pho_adec_2",
+          "c_rec_adec_2",
+          "c_fin_one_1_2",
+          "c_fin_trade_1_2",
+          "e_all_flood",
+          "e_share_lost"
+        ],
+        "problem": "Many forks are an obvious right option against a labelled-bad one, and several setbacks are not real choices. \"Falter as the current grows too strong\" and \"lose the crowd's nerve\" are outcomes, not decisions. Retreating on the stair drains her purpose \"anyway\", while marking the steps has no stated protective effect. Most second options are one-line setback endings.",
+        "route_or_state": "throughout, esp. n_b4 finales and cel_bdec"
+      },
+      {
+        "severity": "should-fix",
+        "entries": [
+          "c_fin_one_2_1",
+          "c_fin_one_2_2",
+          "e_one_saved",
+          "e_one_content",
+          "fin_one_2"
+        ],
+        "problem": "Both choices after the girl rises end in positive success endings that barely differ. c_fin_one_2_2 is \"ask whether she might save one more\", but e_one_content is \"accepts one life for one memory and walks home\"; the intent and outcome do not match.",
+        "route_or_state": "n_b4 -> fin_one_1 -> fin_one_2"
+      },
+      {
+        "severity": "should-fix",
+        "entries": [
+          "frost_deadline",
+          "kee_t_p4",
+          "n_b4",
+          "first_frost_silvering",
+          "e_one_hesitate",
+          "cel_a_p3"
+        ],
+        "problem": "The frost rules are inconsistent. kee_t_p4 says the first frost is \"days away\", and cel_a_p3 has frost on the stair in a mild September. Yet n_b4 has frost silvering the grass within the same day. The rule that frost closes the chance is invoked only at e_one_hesitate, so every other finale runs after the frost has begun with no consequence.",
+        "route_or_state": "kee route; any route to n_b4"
+      },
+      {
+        "severity": "should-fix",
+        "entries": [
+          "name_every_year",
+          "keeper_line_broke_40y",
+          "bargain_every_40_years",
+          "truth.statement",
+          "keeper_forgotten_by_all",
+          "odile_fenn"
+        ],
+        "problem": "The keeper mechanics contradict each other. One keeper's name is given every year, but the line broke 40 years ago and \"no keeper has paid since\", with renewals every fortieth year. A keeper is \"forgotten by everyone\", yet Odile, the clerk's lease, and Rowan's family photographs all know the grandmother. Odile is called \"the last living keeper\" while the grandmother is \"the last keeper\".",
+        "route_or_state": "kee_a_p3, rec_conv, b2k_p1, b2k_d1"
+      },
+      {
+        "severity": "should-fix",
+        "entries": [
+          "c_b2t_m_2",
+          "e_b2tb",
+          "family_memories_traded",
+          "b2t_m"
+        ],
+        "problem": "c_b2t_m_2 states the cost as \"her memory of her grandmother\". The ending e_b2tb gives away \"every memory of her family\", and its gift speaks of \"the person she meant to honour\". Rowan knows her grandmother only from photographs, so the cost is hollow, and the choice, ending and gift disagree.",
+        "route_or_state": "n_b2 -> b2t -> b2t_m -> e_b2tb"
+      },
+      {
+        "severity": "should-fix",
+        "entries": [
+          "never_planted_here",
+          "root_feeds_on_rooted",
+          "b3v_p2",
+          "early_childhood_in_alderwick",
+          "bakery_vanished",
+          "first_summer_given"
+        ],
+        "problem": "Rowan is immune because nearly all her childhood is outside Alderwick's soil, and she left \"very small\". She still vividly remembers a vanished bakery, a playmate's grin, and a first summer worth trading. The memories the root could not touch are also the ones it is offered as payment, which is not reconciled.",
+        "route_or_state": "b3v, fin_one_1, n_b5"
+      },
+      {
+        "severity": "minor",
+        "entries": [
+          "e_b3wn",
+          "e_trade_even",
+          "c_b3w_d1_2",
+          "c_n_b4_4",
+          "even_trade_year",
+          "year_restored"
+        ],
+        "problem": "Two near-identical even-trade endings, a year back for a year of her own, reached from different decision points. They overlap heavily and offer little difference for the reader.",
+        "route_or_state": "n_b3 -> b3w -> e_b3wn; n_b4 -> fin_trade"
+      },
+      {
+        "severity": "minor",
+        "entries": [
+          "c_b2k_d1_2",
+          "e_b2ka",
+          "c_b2k_m_2",
+          "e_b2kb",
+          "b2k_d1"
+        ],
+        "problem": "The compassionate option \"no one should have to vanish\" is punished as a spreading setback in which Odile fades. The \"tie herself to the knot\" option is described in the plan as \"in fear\", though its stated intent is deliberate.",
+        "route_or_state": "n_b2 -> c_n_b2_2 -> b2k"
+      },
+      {
+        "severity": "minor",
+        "entries": [
+          "c_n_b5_2_1",
+          "n_b5_2",
+          "e_all_grandmother"
+        ],
+        "problem": "The cost \"risking the gift her grandmother gave\" refers to an undefined gift (the seed? the message?), and no risk is ever shown in e_all_grandmother. The bakery/frost implicit plants have no declared `threads`, so there is no tracked planting choice anywhere.",
+        "route_or_state": "n_b5_2"
+      }
+    ]
+  }
+}

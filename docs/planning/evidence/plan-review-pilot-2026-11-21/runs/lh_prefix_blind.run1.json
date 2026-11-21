@@ -1,0 +1,183 @@
+{
+  "case": "lh_prefix_blind",
+  "run": 1,
+  "model": "anthropic/claude-sonnet-5.5",
+  "usage": {
+    "prompt_tokens": 50954,
+    "completion_tokens": 9527,
+    "total_tokens": 60481,
+    "cost": 0.197178,
+    "is_byok": false,
+    "prompt_tokens_details": {
+      "cached_tokens": 0,
+      "cache_write_tokens": 0,
+      "audio_tokens": 0,
+      "video_tokens": 0
+    },
+    "cost_details": {
+      "upstream_inference_cost": 0.197178,
+      "upstream_inference_prompt_cost": 0.101908,
+      "upstream_inference_completions_cost": 0.09527
+    },
+    "completion_tokens_details": {
+      "reasoning_tokens": 6867,
+      "image_tokens": 0,
+      "audio_tokens": 0
+    }
+  },
+  "raw": "{\"verdict\":\"reject\",\"confidence\":0.88,\"summary\":\"The plan has several blockers: n_chamber and other nodes have unmet `requires` on many routes, and the whole sea-cave pool branch is unreachable because of a gated choice. One thread payoff (the brass key) breaks on the cave route, and several other states contradict their facts.\",\"findings\":[{\"severity\":\"blocker\",\"entries\":[\"n_chamber\",\"great_lamp_dark\",\"a_hearth\",\"c_cave1\",\"d_boat1\",\"a_desk_drawer\",\"n_light\",\"c_n_chamber_3\"],\"problem\":\"n_chamber requires great_lamp_dark. Only a_desk_log, b_lamp1 and cm_light establish it, and neither n_journal, n_stairs, n_light nor n_tunnel does. Every route through the hearth, shelves, drawer, caves or boathouse reaches n_chamber without it.\",\"route_or_state\":\"n_start -> d_boat1 -> ... -> n_journal -> n_stairs -> n_light -> n_tunnel -> tn_store -> n_chamber: great_lamp_dark is never established.\"},{\"severity\":\"blocker\",\"entries\":[\"c_c_cave1_2\",\"c_pool\",\"c_c_pool_1\",\"glowing_weed\",\"c_pool_glow\",\"c_pool_metal\"],\"problem\":\"c_c_cave1_2 and c_c_pool_1 require glowing_weed, but c_cave1 establishes nothing and c_pool is the node that establishes it. The pool branch is therefore unreachable, which removes the cave key route (c_c_pool_2 / has_key) and the weed_lamp_trick discovery.\",\"route_or_state\":\"n_start -> c_cave1: the choice into c_pool is never available.\"},{\"severity\":\"blocker\",\"entries\":[\"cm_smug_follow\",\"cm_smug\",\"e_win_harbor\",\"e_neutral_honest\",\"grey_boat_man\"],\"problem\":\"cm_smug_follow requires grey_boat_man, and e_win_harbor and e_neutral_honest require it too. cm_smug establishes only store_of_crates and radio_voice. grey_boat_man comes only from b_gallery_edge (gallery route), e_set_gate (an ending) and cm_cottage (unreachable from the chamber). Most routes into the smuggler branch therefore lack it, which breaks the hoard, ledger and harbor endings.\",\"route_or_state\":\"n_chamber -> cm_smug -> cm_smug_follow on any route that skipped the gallery edge.\"},{\"severity\":\"blocker\",\"entries\":[\"cm_light_true\",\"c_pool_metal\",\"key_tag_wind_slow\",\"e_win_light_restored\",\"brass_key\"],\"problem\":\"cm_light_true requires key_tag_wind_slow, but c_pool_metal establishes the key (mira_has_key) without the tag. The brass_key payoff therefore fails after the cave-pool plant. This is also a payoff leaning on a fact the plant did not supply, because the cave key has a tide badge and no tag.\",\"route_or_state\":\"has_key = true via c_c_pool_2 -> cm_light_relight -> c_cm_light_relight_1 -> cm_light_true.\"},{\"severity\":\"blocker\",\"entries\":[\"cm_smug_photo\",\"code_blinking_keeps_off\",\"c_cm_smug_photo_2\",\"e_win_harbor\"],\"problem\":\"cm_smug_photo requires code_blinking_keeps_off, but that fact is established only on routes where knows_code is true. A reader with knows_code = false can still arrive and take c_cm_smug_photo_2 to e_win_harbor, so the requirement is unmet on that route.\",\"route_or_state\":\"knows_code = false, n_chamber -> cm_smug -> c_cm_smug_1 -> cm_smug_photo.\"},{\"severity\":\"should-fix\",\"entries\":[\"cm_letter_map\",\"c_cm_letter_read_1\",\"moor_cottage\",\"c_cm_letter_map_1\",\"c_cm_letter_map_2\"],\"problem\":\"c_cm_letter_read_1 requires moor_cottage, which cm_letter_read does not establish. moor_cottage is established only by tn_cut_moor, which skips n_chamber, and by cm_letter_map itself. cm_letter_map and its two choices (c_cm_letter_map_1 and c_cm_letter_map_2, the latter into e_win_keeper_word) are therefore unreachable.\",\"route_or_state\":\"n_chamber -> cm_letter -> cm_letter_read: the map choice is never available.\"},{\"severity\":\"should-fix\",\"entries\":[\"e_win_keeper_word\",\"cm_letter_map\",\"ferris_alive_on_moor\"],\"problem\":\"e_win_keeper_word requires ferris_alive_on_moor, but the cm_letter_map route establishes only ferris_alive and bog_by_second_gate. Only cm_cottage_wait supplies it. If cm_letter_map were made reachable, the requirement would be unmet via c_cm_letter_map_2.\",\"route_or_state\":\"cm_letter_read -> cm_letter_map -> c_cm_letter_map_2 -> e_win_keeper_word.\"},{\"severity\":\"should-fix\",\"entries\":[\"e_win_harbor\",\"mira_knows_no_name\",\"smuggler_is_varley\",\"jr_smug_names\"],\"problem\":\"e_win_harbor establishes mira_knows_no_name, which the ledger marks as contradicting smuggler_is_varley. Mira can reach this ending having already learned the name, through jr_smug_names or the cm_letter_conf route.\",\"route_or_state\":\"n_journal -> jr_smug -> jr_smug_names (smuggler_is_varley) -> ... -> cm_smug_photo -> c_cm_smug_photo_2 -> e_win_harbor.\"},{\"severity\":\"should-fix\",\"entries\":[\"c_cm_light_relight_2\",\"e_set_gears\",\"cm_light_relight\"],\"problem\":\"c_cm_light_relight_2 (force the gear) is available unconditionally, including when has_key = true. The e_set_gears text says the lamp 'needed a key', which is false for a Mira who holds it, and the choice has no fair signal against c_cm_light_relight_1.\",\"route_or_state\":\"has_key = true at cm_light_relight, taking c_cm_light_relight_2.\"},{\"severity\":\"should-fix\",\"entries\":[\"a_desk_drawer\",\"a_hearth_brick\",\"b_gallery_out\",\"c_pass\",\"c_arch_gap\",\"d_loft\",\"d_hatch\",\"tn_keep_stuck\",\"tn_keep_beam\",\"tn_gate\",\"li_shaft_rope\",\"li_ladder\",\"cm_smug_token\",\"st_wind\"],\"problem\":\"Many forks are patient versus reckless, where the reckless option carries a 'hidden' cost and ends the night. The choices do not really differ, so the careful option is always right and the setback feels arbitrary. Several give no in-world signal to separate the two.\",\"route_or_state\":\"c_a_desk_drawer_2, c_a_hearth_brick_2, c_c_pass_2, c_d_loft_2, c_li_ladder_2 and similar.\"},{\"severity\":\"minor\",\"entries\":[\"e_win_light_restored\",\"moor_cottage\",\"ferris_alive_on_moor\"],\"problem\":\"e_win_light_restored shows 'the old man sets out for the tower' and establishes moor_cottage. Mira may never have learned Ferris exists, because this route needs neither the letter nor the cottage. The requires list does not cover it.\",\"route_or_state\":\"Key route to cm_light_true without reading the letter or reaching the cottage.\"},{\"severity\":\"minor\",\"entries\":[\"key_in_drawer\",\"key_in_tin\",\"key_in_hearth\"],\"problem\":\"The ledger's `contradicts` lists for the key location facts are incomplete. key_in_tin has none, and key_in_hearth omits key_in_drawer, which leaves only one-way contradiction links.\",\"route_or_state\":\"n/a\"}]}",
+  "parsed": {
+    "verdict": "reject",
+    "confidence": 0.88,
+    "summary": "The plan has several blockers: n_chamber and other nodes have unmet `requires` on many routes, and the whole sea-cave pool branch is unreachable because of a gated choice. One thread payoff (the brass key) breaks on the cave route, and several other states contradict their facts.",
+    "findings": [
+      {
+        "severity": "blocker",
+        "entries": [
+          "n_chamber",
+          "great_lamp_dark",
+          "a_hearth",
+          "c_cave1",
+          "d_boat1",
+          "a_desk_drawer",
+          "n_light",
+          "c_n_chamber_3"
+        ],
+        "problem": "n_chamber requires great_lamp_dark. Only a_desk_log, b_lamp1 and cm_light establish it, and neither n_journal, n_stairs, n_light nor n_tunnel does. Every route through the hearth, shelves, drawer, caves or boathouse reaches n_chamber without it.",
+        "route_or_state": "n_start -> d_boat1 -> ... -> n_journal -> n_stairs -> n_light -> n_tunnel -> tn_store -> n_chamber: great_lamp_dark is never established."
+      },
+      {
+        "severity": "blocker",
+        "entries": [
+          "c_c_cave1_2",
+          "c_pool",
+          "c_c_pool_1",
+          "glowing_weed",
+          "c_pool_glow",
+          "c_pool_metal"
+        ],
+        "problem": "c_c_cave1_2 and c_c_pool_1 require glowing_weed, but c_cave1 establishes nothing and c_pool is the node that establishes it. The pool branch is therefore unreachable, which removes the cave key route (c_c_pool_2 / has_key) and the weed_lamp_trick discovery.",
+        "route_or_state": "n_start -> c_cave1: the choice into c_pool is never available."
+      },
+      {
+        "severity": "blocker",
+        "entries": [
+          "cm_smug_follow",
+          "cm_smug",
+          "e_win_harbor",
+          "e_neutral_honest",
+          "grey_boat_man"
+        ],
+        "problem": "cm_smug_follow requires grey_boat_man, and e_win_harbor and e_neutral_honest require it too. cm_smug establishes only store_of_crates and radio_voice. grey_boat_man comes only from b_gallery_edge (gallery route), e_set_gate (an ending) and cm_cottage (unreachable from the chamber). Most routes into the smuggler branch therefore lack it, which breaks the hoard, ledger and harbor endings.",
+        "route_or_state": "n_chamber -> cm_smug -> cm_smug_follow on any route that skipped the gallery edge."
+      },
+      {
+        "severity": "blocker",
+        "entries": [
+          "cm_light_true",
+          "c_pool_metal",
+          "key_tag_wind_slow",
+          "e_win_light_restored",
+          "brass_key"
+        ],
+        "problem": "cm_light_true requires key_tag_wind_slow, but c_pool_metal establishes the key (mira_has_key) without the tag. The brass_key payoff therefore fails after the cave-pool plant. This is also a payoff leaning on a fact the plant did not supply, because the cave key has a tide badge and no tag.",
+        "route_or_state": "has_key = true via c_c_pool_2 -> cm_light_relight -> c_cm_light_relight_1 -> cm_light_true."
+      },
+      {
+        "severity": "blocker",
+        "entries": [
+          "cm_smug_photo",
+          "code_blinking_keeps_off",
+          "c_cm_smug_photo_2",
+          "e_win_harbor"
+        ],
+        "problem": "cm_smug_photo requires code_blinking_keeps_off, but that fact is established only on routes where knows_code is true. A reader with knows_code = false can still arrive and take c_cm_smug_photo_2 to e_win_harbor, so the requirement is unmet on that route.",
+        "route_or_state": "knows_code = false, n_chamber -> cm_smug -> c_cm_smug_1 -> cm_smug_photo."
+      },
+      {
+        "severity": "should-fix",
+        "entries": [
+          "cm_letter_map",
+          "c_cm_letter_read_1",
+          "moor_cottage",
+          "c_cm_letter_map_1",
+          "c_cm_letter_map_2"
+        ],
+        "problem": "c_cm_letter_read_1 requires moor_cottage, which cm_letter_read does not establish. moor_cottage is established only by tn_cut_moor, which skips n_chamber, and by cm_letter_map itself. cm_letter_map and its two choices (c_cm_letter_map_1 and c_cm_letter_map_2, the latter into e_win_keeper_word) are therefore unreachable.",
+        "route_or_state": "n_chamber -> cm_letter -> cm_letter_read: the map choice is never available."
+      },
+      {
+        "severity": "should-fix",
+        "entries": [
+          "e_win_keeper_word",
+          "cm_letter_map",
+          "ferris_alive_on_moor"
+        ],
+        "problem": "e_win_keeper_word requires ferris_alive_on_moor, but the cm_letter_map route establishes only ferris_alive and bog_by_second_gate. Only cm_cottage_wait supplies it. If cm_letter_map were made reachable, the requirement would be unmet via c_cm_letter_map_2.",
+        "route_or_state": "cm_letter_read -> cm_letter_map -> c_cm_letter_map_2 -> e_win_keeper_word."
+      },
+      {
+        "severity": "should-fix",
+        "entries": [
+          "e_win_harbor",
+          "mira_knows_no_name",
+          "smuggler_is_varley",
+          "jr_smug_names"
+        ],
+        "problem": "e_win_harbor establishes mira_knows_no_name, which the ledger marks as contradicting smuggler_is_varley. Mira can reach this ending having already learned the name, through jr_smug_names or the cm_letter_conf route.",
+        "route_or_state": "n_journal -> jr_smug -> jr_smug_names (smuggler_is_varley) -> ... -> cm_smug_photo -> c_cm_smug_photo_2 -> e_win_harbor."
+      },
+      {
+        "severity": "should-fix",
+        "entries": [
+          "c_cm_light_relight_2",
+          "e_set_gears",
+          "cm_light_relight"
+        ],
+        "problem": "c_cm_light_relight_2 (force the gear) is available unconditionally, including when has_key = true. The e_set_gears text says the lamp 'needed a key', which is false for a Mira who holds it, and the choice has no fair signal against c_cm_light_relight_1.",
+        "route_or_state": "has_key = true at cm_light_relight, taking c_cm_light_relight_2."
+      },
+      {
+        "severity": "should-fix",
+        "entries": [
+          "a_desk_drawer",
+          "a_hearth_brick",
+          "b_gallery_out",
+          "c_pass",
+          "c_arch_gap",
+          "d_loft",
+          "d_hatch",
+          "tn_keep_stuck",
+          "tn_keep_beam",
+          "tn_gate",
+          "li_shaft_rope",
+          "li_ladder",
+          "cm_smug_token",
+          "st_wind"
+        ],
+        "problem": "Many forks are patient versus reckless, where the reckless option carries a 'hidden' cost and ends the night. The choices do not really differ, so the careful option is always right and the setback feels arbitrary. Several give no in-world signal to separate the two.",
+        "route_or_state": "c_a_desk_drawer_2, c_a_hearth_brick_2, c_c_pass_2, c_d_loft_2, c_li_ladder_2 and similar."
+      },
+      {
+        "severity": "minor",
+        "entries": [
+          "e_win_light_restored",
+          "moor_cottage",
+          "ferris_alive_on_moor"
+        ],
+        "problem": "e_win_light_restored shows 'the old man sets out for the tower' and establishes moor_cottage. Mira may never have learned Ferris exists, because this route needs neither the letter nor the cottage. The requires list does not cover it.",
+        "route_or_state": "Key route to cm_light_true without reading the letter or reaching the cottage."
+      },
+      {
+        "severity": "minor",
+        "entries": [
+          "key_in_drawer",
+          "key_in_tin",
+          "key_in_hearth"
+        ],
+        "problem": "The ledger's `contradicts` lists for the key location facts are incomplete. key_in_tin has none, and key_in_hearth omits key_in_drawer, which leaves only one-way contradiction links.",
+        "route_or_state": "n/a"
+      }
+    ]
+  }
+}

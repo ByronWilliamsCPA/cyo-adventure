@@ -1,0 +1,338 @@
+{
+  "case": "os1_blind",
+  "run": 1,
+  "model": "anthropic/claude-sonnet-5.5",
+  "usage": {
+    "prompt_tokens": 61170,
+    "completion_tokens": 12342,
+    "total_tokens": 73512,
+    "cost": 0.24576,
+    "is_byok": false,
+    "prompt_tokens_details": {
+      "cached_tokens": 0,
+      "cache_write_tokens": 0,
+      "audio_tokens": 0,
+      "video_tokens": 0
+    },
+    "cost_details": {
+      "upstream_inference_cost": 0.24576,
+      "upstream_inference_prompt_cost": 0.12234,
+      "upstream_inference_completions_cost": 0.12342
+    },
+    "completion_tokens_details": {
+      "reasoning_tokens": 6993,
+      "image_tokens": 0,
+      "audio_tokens": 0
+    }
+  },
+  "raw": "{\"verdict\":\"reject\",\"confidence\":0.93,\"summary\":\"The plan's graph does not hold together. Many `requires` are never established on the routes into their nodes, endings and nodes depend on facts only established by other endings, and node events do not match the choices leaving them. The `record_stopped` contradiction and the unsound thread payoffs would also make the prose unwritable without continuity errors.\",\"findings\":[{\"severity\":\"blocker\",\"entries\":[\"c_n01d0_2\",\"n02c2\",\"n03d2\"],\"problem\":\"c_n01d0_2 requires `notice_on_gate`, but n01d0 only requires `jonah_at_orchard` and `bramley_blooms_october`, and `notice_on_gate` is first established at n02c2, after the choice. The gate branch, the `gate_photo` plant and the `survey_exists` route are unavailable at the fork.\",\"route_or_state\":\"n00c0 -> n01d0, choice c_n01d0_2\"},{\"severity\":\"blocker\",\"entries\":[\"n03d2\",\"hundred_fourteen_years\",\"nine_hands\",\"six_shelves_1911\"],\"problem\":\"n03d2 requires `hundred_fourteen_years`, `nine_hands` and `six_shelves_1911`, which only n03d0 establishes. n03d2 is reachable only via n02c2, which is on the gate route and never passes n03d0.\",\"route_or_state\":\"n00c0 -> n01d0 -> n02c2 -> n03d2\"},{\"severity\":\"blocker\",\"entries\":[\"cq_plant_did_find_who_wrote\",\"c_n03d0_0\",\"c_n03d0_1\",\"n04d0\",\"n04d1\"],\"problem\":\"n03d0 is reached only from the notebooks route (n02c0), which never establishes `survey_exists`. The plant node cq_plant_did_find_who_wrote and the n04d0 it leads to require `survey_exists`. n04d1 also requires `eleven_words`, never established on that route.\",\"route_or_state\":\"n01d0 -> n02c0 -> n03d0 -> cq_plant_did_find_who_wrote -> n04d0 (or -> n04d1)\"},{\"severity\":\"blocker\",\"entries\":[\"n03d1\",\"c_n03d1_0\",\"n04c0\",\"n04c1\",\"n04c2\",\"c_n04c2_0\"],\"problem\":\"The bees route (n02c1 -> n03d1) never establishes `eleven_words`, `six_shelves_1911` or `developer_exists`. So n04c0 and n04c1 and the choices into them (c_n03d1_0, c_n04c2_0) require facts the route lacks. n05d3 additionally requires `six_shelves_1911`.\",\"route_or_state\":\"n01d0 -> n02c1 -> n03d1 -> n04c0 / n04c1 / n04c2\"},{\"severity\":\"blocker\",\"entries\":[\"e05_0\",\"n04d2\",\"n04c4\"],\"problem\":\"e05_0 requires `jonah_photo_notice`, `eleven_words_copied` and `objection_six_weeks`. Arriving from n04d2 (notebooks route) there is no photo and no copied words. Arriving from n04c4 (gate route) there is a photo but no copied words, and `eleven_words_copied` is only established at n04c0.\",\"route_or_state\":\"n03d0 -> n04d2 -> e05_0; n03d2 -> n04c4 -> e05_0\"},{\"severity\":\"blocker\",\"entries\":[\"cq_payoff_did_find_who_wrote\",\"faulks_pattern\",\"no_proof_against_faulks\",\"did_find_who_wrote\"],\"problem\":\"The payoff requires `faulks_pattern` (Faulks's reports match client wishes) and itself establishes it. No earlier node or plant makes Jonah learn it, so the payoff is unearned. It also contradicts the book's lesson that an unproven claim about Faulks costs Jonah, and it conflicts with `no_proof_against_faulks`.\",\"route_or_state\":\"did_find_who_wrote = true at n11d5 -> cq_payoff_did_find_who_wrote\"},{\"severity\":\"blocker\",\"entries\":[\"e12_1\",\"n04d0\",\"c_n03d2_2\",\"jonah_wrote_faulks_name\",\"did_find_who_wrote\"],\"problem\":\"The same choice, 'put a name to the survey', exists as c_n03d2_2 (to n04d0) without setting `did_find_who_wrote`. The reader learns Faulks's name but never writes it down. e12_1 requires `jonah_wrote_faulks_name` and its text is a regret about not using the name. With the variable false (n11d5 -> e12_1), that fact is absent on the route through c_n03d2_2.\",\"route_or_state\":\"gate route: n03d2 -> n04d0 -> ... -> n11d5 (variable false) -> e12_1\"},{\"severity\":\"blocker\",\"entries\":[\"n17d1\",\"e18_3\",\"record_stopped\",\"ada_still_writing\",\"jonah_writes_115\",\"n16d3\"],\"problem\":\"n17d1 establishes `ada_still_writing`, and `record_stopped` is declared to contradict it. n17d1's choice c_n17d1_0 leads straight to e18_3, which establishes `record_stopped` (nobody added after the October bloom). e18_3 also contradicts the whole book, in which Ada wrote every evening and the frost readings continued.\",\"route_or_state\":\"n17d1 -> c_n17d1_0 -> e18_3; n17d3 -> e18_3 after n16d3\"},{\"severity\":\"blocker\",\"entries\":[\"e18_0\",\"e18_1\",\"e18_2\",\"road_moved\",\"e15_1\",\"n17d2\",\"jonah_accused_faulks\"],\"problem\":\"`road_moved` is established only by the ending e15_1, so e18_0, e18_1 and e18_2 can never have it on entry. n17d2 requires `jonah_accused_faulks`, established only by the endings e09_1 and e11_1. n17d2 is therefore unreachable, and its premise ('except what he said about Faulks') is incoherent on any live route.\",\"route_or_state\":\"any route into n17*/e18_*\"},{\"severity\":\"blocker\",\"entries\":[\"n13d0\",\"nine_species_sure\",\"n12c2\",\"method_written\",\"custody_note\"],\"problem\":\"n13d0 requires `nine_species_sure` (only established at n12c2), `method_written` and `custody_note`. The main entries (n12d0, n12d3 and others) do not pass through those nodes. The objection text also includes 'nine sure species', which most routes never establish.\",\"route_or_state\":\"n11d5 -> n12d0 -> n13d0\"},{\"severity\":\"blocker\",\"entries\":[\"e10_1\",\"e08_0\",\"method_written\",\"double_typing\",\"custody_note\"],\"problem\":\"e10_1 (Raval returns numbers for want of a method) requires `method_written`, which contradicts its own event. e08_0 (chart sent alone without its method) requires `method_written`, `custody_note` and `double_typing`. Those are established nowhere on the one-step route from n07d4, and the first two contradict the event as well.\",\"route_or_state\":\"n09d5 -> c_n09d5_0 -> e10_1; n07d4 -> c_n07d4_2 -> e08_0\"},{\"severity\":\"blocker\",\"entries\":[\"n15d2\",\"n15d4\",\"officer_report\",\"road_may_move\",\"three_conditions\",\"class_typed\",\"public_hearing\"],\"problem\":\"n15d2 requires `officer_report` (established only at n15d0), but is entered from n14d1, n14d4 and n14d0 routes that skip n15d0. n15d4 requires `road_may_move` (n15d2 only), `three_conditions` (n15d1 only) and `class_typed` (only on typing routes), none guaranteed.\",\"route_or_state\":\"n14d1 -> n15d3/n15d4; n14d0 -> n15d2\"},{\"severity\":\"blocker\",\"entries\":[\"n10d3\",\"c_n10d3_0\",\"plaque_offer\",\"e11_0\",\"c_n10d6_2\"],\"problem\":\"The choices 'take the developer's compromise' (c_n10d3_0, c_n10d6_2) require `plaque_offer`, which only the ending e11_0 establishes, so the choice can never be available. The plaque ending is also reached before Halvor (n11d8) or any developer offer appears.\",\"route_or_state\":\"n09d* -> n10d3 / n10d6 -> e11_0\"},{\"severity\":\"should-fix\",\"entries\":[\"n10d3\",\"n08d3\",\"n10d1\",\"n11d1\",\"n06d3\"],\"problem\":\"Many nodes' events do not match their outgoing choices. n10d3 is 'drafts letters to families' but its choices are plaque, attack Faulks, and study raw data. n08d3 is Abara asking about the frost pocket, yet it offers 'lovely story', 'blame the surveyor' and 'council's test'. n10d1 is 'data request logged' but offers 'trace lost volumes' and 'meet objections'. A writer cannot make prose that both fits the event and leads naturally to each choice.\",\"route_or_state\":\"throughout the n05\u2013n12 layers\"},{\"severity\":\"should-fix\",\"entries\":[\"cq_payoff_did_ask_whether_notebooks\",\"c_n08d3_1_cq_did_ask_whether_notebooks\",\"c_cq_payoff_did_ask_whether_notebooks\",\"n08d3\"],\"problem\":\"The variant choice is still labelled 'blame the surveyor' (with its stain cost), but the payoff node says Jonah does not blame Faulks. It then continues with a 'learn the council's test' choice. Its requires also include `faulks_wrote_survey` and `abara`, not guaranteed on all routes, and `odd_events_pattern` is attributed to Abara before she has met the list.\",\"route_or_state\":\"did_ask_whether_notebooks = true at n08d3\"},{\"severity\":\"should-fix\",\"entries\":[\"cq_payoff_did_ask_whether_notebooks_site2\",\"oddities_bunch\",\"survey_in_drought\",\"n11d1\",\"n11d0\"],\"problem\":\"The payoff has the mother's list reveal a drought August. The list contents (`mothers_note_entries`, `oddities_bunch`) concern mild winters and late springs, so the inference does not follow. It also establishes `survey_in_drought` before the Met Office check (n11d1/n12c1) and before the raw data (n11d0), so those later nodes repeat a fact the reader already holds. Its requires (`survey_four_visits`, `data_request`) are not guaranteed.\",\"route_or_state\":\"did_ask_whether_notebooks = true at n10d3\"},{\"severity\":\"should-fix\",\"entries\":[\"cq_payoff_did_go_down_read\",\"c_n06d3_2_cq_did_go_down_read\",\"gate_photo\",\"notice_posted_october\"],\"problem\":\"The photo-date payoff sits on a choice about typing only the four key dates. It has no thematic link to the photo, and it requires `tobe`, which is not guaranteed at n06d3. Nothing later in the plan uses `notice_posted_october` to shorten or defend the objection window, so the payoff is never cashed in.\",\"route_or_state\":\"did_go_down_read = true at n06d3\"},{\"severity\":\"should-fix\",\"entries\":[\"n15d3\",\"c_n15d3_0\",\"e16_1\",\"n15d6\",\"winter_rota\"],\"problem\":\"The choice 'let the readings slide' requires `winter_rota`, and e16_1 requires `winter_rota`. That fact is only established at n16d0 and n16c1, after n15d3 and n15d6. Neither the choice nor the ending's requirement can hold at that point.\",\"route_or_state\":\"n14d3 -> n15d3 -> c_n15d3_0 -> e16_1\"},{\"severity\":\"should-fix\",\"entries\":[\"e08_0\",\"e12_0\",\"e15_0\",\"e15_1\",\"e13_1\",\"e17_0\",\"e17_1\"],\"problem\":\"Several endings require facts that no guaranteed route supplies. e15_0 requires `found_1917_volumes`, `archive_offer` and `okonkwo`. e15_1 requires `orchard_trust`. e13_1 requires `tobe`, `okonkwo` and `custody_note`. e12_0 requires `found_1917_volumes` while entered from n11d4 via 'restore the volumes quietly'. e17_0 requires `tobe` and `city_archive`. e17_1 requires `frost_readings`.\",\"route_or_state\":\"e.g. n14d2 -> e15_0 without archive_offer or found_1917_volumes\"},{\"severity\":\"should-fix\",\"entries\":[\"n12d6\",\"c_n11d2_0\",\"n12d6\",\"e13_0\",\"e13_1\"],\"problem\":\"n12d6 requires nothing yet is a decision about when to release the dossier, which presupposes a dossier and a release plan. e13_0 (objection accepted, May resurvey ordered) requires nothing and is reachable on 'trust the evidence' or 'wait', with no hearing, objection submission or method established. This skips the later hearing nodes and duplicates the e14_1 outcome.\",\"route_or_state\":\"n12d2/n12d6 -> e13_0\"},{\"severity\":\"should-fix\",\"entries\":[\"c_n03d1_0\",\"c_n06d3_1\",\"c_n07d4_2\",\"c_n08d3_0\",\"c_n08d3_1\",\"c_n09d4_2\",\"c_n09d5_0\",\"c_n13d4_0\"],\"problem\":\"Many forks have one obviously right answer, because the costs spell out the failure ('stains everything after', 'rejected for want of a method', 'loses trust'). The setback endings are labelled in advance, so the 'bad' option is not a genuine choice. In several nodes there is also only one choice that moves forward and the rest end the story.\",\"route_or_state\":\"n06d3, n07d4, n08d3, n09d4, n09d5, n13d4\"},{\"severity\":\"minor\",\"entries\":[\"n05d4\",\"c_n05d4_1\",\"e06_0\",\"n06d2\",\"n06d1\"],\"problem\":\"Node events at the same depth conflict. n05d4 (developer brochure with the plan) offers 'type the whole record' as a choice, which does not follow from the brochure. e06_0 requires only `objection_six_weeks`, and is reached from n05d4, which may have no typing context.\",\"route_or_state\":\"n05d4 -> e06_0\"},{\"severity\":\"minor\",\"entries\":[\"bee_counts_mismatch\",\"n03d1\",\"cassar_keeps_records\"],\"problem\":\"The unexplained gap between Mrs Cassar's bee count (240) and Jonah's count is never resolved or used. A later fact (n08c4) has her carrying a '1990s bag' of records up the hill, while `cassar_carrier_bags` says she brought two bags. The bee thread feels dropped.\",\"route_or_state\":\"bees branch (n02c1 -> n03d1)\"},{\"severity\":\"minor\",\"entries\":[\"eleven_words\",\"four_visits\",\"bloom_chart\",\"double_typing\",\"spare_thermometer\",\"eleven_days_gap\"],\"problem\":\"The number eleven recurs for unrelated things (eleven words, eleven days of bloom shift, eleven days of visits, eleven mismatches, eleven pounds, eleven days gap). For a 10\u201313 reader this risks confusion and makes the 'new eleven-word covering line' and the gap ending hard to tell apart.\",\"route_or_state\":\"whole plan\"},{\"severity\":\"minor\",\"entries\":[\"c_n06d3_2\",\"c_n06d3_2_cq_did_go_down_read\",\"c_cq_payoff_did_go_down_read\",\"c_n11d5_0\",\"c_n11d5_0_cq_did_find_who_wrote\"],\"problem\":\"The conditional variants are identical in intent and cost, as are the other unconditional versions. The branch variable changes only the unseen payoff node, not what the reader chooses. The mapping works only if the payoff nodes are short, because the choice labels give the reader no hint of a difference.\",\"route_or_state\":\"n06d3, n11d5, n11d1, n08d3, n10d3\"}]}",
+  "parsed": {
+    "verdict": "reject",
+    "confidence": 0.93,
+    "summary": "The plan's graph does not hold together. Many `requires` are never established on the routes into their nodes, endings and nodes depend on facts only established by other endings, and node events do not match the choices leaving them. The `record_stopped` contradiction and the unsound thread payoffs would also make the prose unwritable without continuity errors.",
+    "findings": [
+      {
+        "severity": "blocker",
+        "entries": [
+          "c_n01d0_2",
+          "n02c2",
+          "n03d2"
+        ],
+        "problem": "c_n01d0_2 requires `notice_on_gate`, but n01d0 only requires `jonah_at_orchard` and `bramley_blooms_october`, and `notice_on_gate` is first established at n02c2, after the choice. The gate branch, the `gate_photo` plant and the `survey_exists` route are unavailable at the fork.",
+        "route_or_state": "n00c0 -> n01d0, choice c_n01d0_2"
+      },
+      {
+        "severity": "blocker",
+        "entries": [
+          "n03d2",
+          "hundred_fourteen_years",
+          "nine_hands",
+          "six_shelves_1911"
+        ],
+        "problem": "n03d2 requires `hundred_fourteen_years`, `nine_hands` and `six_shelves_1911`, which only n03d0 establishes. n03d2 is reachable only via n02c2, which is on the gate route and never passes n03d0.",
+        "route_or_state": "n00c0 -> n01d0 -> n02c2 -> n03d2"
+      },
+      {
+        "severity": "blocker",
+        "entries": [
+          "cq_plant_did_find_who_wrote",
+          "c_n03d0_0",
+          "c_n03d0_1",
+          "n04d0",
+          "n04d1"
+        ],
+        "problem": "n03d0 is reached only from the notebooks route (n02c0), which never establishes `survey_exists`. The plant node cq_plant_did_find_who_wrote and the n04d0 it leads to require `survey_exists`. n04d1 also requires `eleven_words`, never established on that route.",
+        "route_or_state": "n01d0 -> n02c0 -> n03d0 -> cq_plant_did_find_who_wrote -> n04d0 (or -> n04d1)"
+      },
+      {
+        "severity": "blocker",
+        "entries": [
+          "n03d1",
+          "c_n03d1_0",
+          "n04c0",
+          "n04c1",
+          "n04c2",
+          "c_n04c2_0"
+        ],
+        "problem": "The bees route (n02c1 -> n03d1) never establishes `eleven_words`, `six_shelves_1911` or `developer_exists`. So n04c0 and n04c1 and the choices into them (c_n03d1_0, c_n04c2_0) require facts the route lacks. n05d3 additionally requires `six_shelves_1911`.",
+        "route_or_state": "n01d0 -> n02c1 -> n03d1 -> n04c0 / n04c1 / n04c2"
+      },
+      {
+        "severity": "blocker",
+        "entries": [
+          "e05_0",
+          "n04d2",
+          "n04c4"
+        ],
+        "problem": "e05_0 requires `jonah_photo_notice`, `eleven_words_copied` and `objection_six_weeks`. Arriving from n04d2 (notebooks route) there is no photo and no copied words. Arriving from n04c4 (gate route) there is a photo but no copied words, and `eleven_words_copied` is only established at n04c0.",
+        "route_or_state": "n03d0 -> n04d2 -> e05_0; n03d2 -> n04c4 -> e05_0"
+      },
+      {
+        "severity": "blocker",
+        "entries": [
+          "cq_payoff_did_find_who_wrote",
+          "faulks_pattern",
+          "no_proof_against_faulks",
+          "did_find_who_wrote"
+        ],
+        "problem": "The payoff requires `faulks_pattern` (Faulks's reports match client wishes) and itself establishes it. No earlier node or plant makes Jonah learn it, so the payoff is unearned. It also contradicts the book's lesson that an unproven claim about Faulks costs Jonah, and it conflicts with `no_proof_against_faulks`.",
+        "route_or_state": "did_find_who_wrote = true at n11d5 -> cq_payoff_did_find_who_wrote"
+      },
+      {
+        "severity": "blocker",
+        "entries": [
+          "e12_1",
+          "n04d0",
+          "c_n03d2_2",
+          "jonah_wrote_faulks_name",
+          "did_find_who_wrote"
+        ],
+        "problem": "The same choice, 'put a name to the survey', exists as c_n03d2_2 (to n04d0) without setting `did_find_who_wrote`. The reader learns Faulks's name but never writes it down. e12_1 requires `jonah_wrote_faulks_name` and its text is a regret about not using the name. With the variable false (n11d5 -> e12_1), that fact is absent on the route through c_n03d2_2.",
+        "route_or_state": "gate route: n03d2 -> n04d0 -> ... -> n11d5 (variable false) -> e12_1"
+      },
+      {
+        "severity": "blocker",
+        "entries": [
+          "n17d1",
+          "e18_3",
+          "record_stopped",
+          "ada_still_writing",
+          "jonah_writes_115",
+          "n16d3"
+        ],
+        "problem": "n17d1 establishes `ada_still_writing`, and `record_stopped` is declared to contradict it. n17d1's choice c_n17d1_0 leads straight to e18_3, which establishes `record_stopped` (nobody added after the October bloom). e18_3 also contradicts the whole book, in which Ada wrote every evening and the frost readings continued.",
+        "route_or_state": "n17d1 -> c_n17d1_0 -> e18_3; n17d3 -> e18_3 after n16d3"
+      },
+      {
+        "severity": "blocker",
+        "entries": [
+          "e18_0",
+          "e18_1",
+          "e18_2",
+          "road_moved",
+          "e15_1",
+          "n17d2",
+          "jonah_accused_faulks"
+        ],
+        "problem": "`road_moved` is established only by the ending e15_1, so e18_0, e18_1 and e18_2 can never have it on entry. n17d2 requires `jonah_accused_faulks`, established only by the endings e09_1 and e11_1. n17d2 is therefore unreachable, and its premise ('except what he said about Faulks') is incoherent on any live route.",
+        "route_or_state": "any route into n17*/e18_*"
+      },
+      {
+        "severity": "blocker",
+        "entries": [
+          "n13d0",
+          "nine_species_sure",
+          "n12c2",
+          "method_written",
+          "custody_note"
+        ],
+        "problem": "n13d0 requires `nine_species_sure` (only established at n12c2), `method_written` and `custody_note`. The main entries (n12d0, n12d3 and others) do not pass through those nodes. The objection text also includes 'nine sure species', which most routes never establish.",
+        "route_or_state": "n11d5 -> n12d0 -> n13d0"
+      },
+      {
+        "severity": "blocker",
+        "entries": [
+          "e10_1",
+          "e08_0",
+          "method_written",
+          "double_typing",
+          "custody_note"
+        ],
+        "problem": "e10_1 (Raval returns numbers for want of a method) requires `method_written`, which contradicts its own event. e08_0 (chart sent alone without its method) requires `method_written`, `custody_note` and `double_typing`. Those are established nowhere on the one-step route from n07d4, and the first two contradict the event as well.",
+        "route_or_state": "n09d5 -> c_n09d5_0 -> e10_1; n07d4 -> c_n07d4_2 -> e08_0"
+      },
+      {
+        "severity": "blocker",
+        "entries": [
+          "n15d2",
+          "n15d4",
+          "officer_report",
+          "road_may_move",
+          "three_conditions",
+          "class_typed",
+          "public_hearing"
+        ],
+        "problem": "n15d2 requires `officer_report` (established only at n15d0), but is entered from n14d1, n14d4 and n14d0 routes that skip n15d0. n15d4 requires `road_may_move` (n15d2 only), `three_conditions` (n15d1 only) and `class_typed` (only on typing routes), none guaranteed.",
+        "route_or_state": "n14d1 -> n15d3/n15d4; n14d0 -> n15d2"
+      },
+      {
+        "severity": "blocker",
+        "entries": [
+          "n10d3",
+          "c_n10d3_0",
+          "plaque_offer",
+          "e11_0",
+          "c_n10d6_2"
+        ],
+        "problem": "The choices 'take the developer's compromise' (c_n10d3_0, c_n10d6_2) require `plaque_offer`, which only the ending e11_0 establishes, so the choice can never be available. The plaque ending is also reached before Halvor (n11d8) or any developer offer appears.",
+        "route_or_state": "n09d* -> n10d3 / n10d6 -> e11_0"
+      },
+      {
+        "severity": "should-fix",
+        "entries": [
+          "n10d3",
+          "n08d3",
+          "n10d1",
+          "n11d1",
+          "n06d3"
+        ],
+        "problem": "Many nodes' events do not match their outgoing choices. n10d3 is 'drafts letters to families' but its choices are plaque, attack Faulks, and study raw data. n08d3 is Abara asking about the frost pocket, yet it offers 'lovely story', 'blame the surveyor' and 'council's test'. n10d1 is 'data request logged' but offers 'trace lost volumes' and 'meet objections'. A writer cannot make prose that both fits the event and leads naturally to each choice.",
+        "route_or_state": "throughout the n05\u2013n12 layers"
+      },
+      {
+        "severity": "should-fix",
+        "entries": [
+          "cq_payoff_did_ask_whether_notebooks",
+          "c_n08d3_1_cq_did_ask_whether_notebooks",
+          "c_cq_payoff_did_ask_whether_notebooks",
+          "n08d3"
+        ],
+        "problem": "The variant choice is still labelled 'blame the surveyor' (with its stain cost), but the payoff node says Jonah does not blame Faulks. It then continues with a 'learn the council's test' choice. Its requires also include `faulks_wrote_survey` and `abara`, not guaranteed on all routes, and `odd_events_pattern` is attributed to Abara before she has met the list.",
+        "route_or_state": "did_ask_whether_notebooks = true at n08d3"
+      },
+      {
+        "severity": "should-fix",
+        "entries": [
+          "cq_payoff_did_ask_whether_notebooks_site2",
+          "oddities_bunch",
+          "survey_in_drought",
+          "n11d1",
+          "n11d0"
+        ],
+        "problem": "The payoff has the mother's list reveal a drought August. The list contents (`mothers_note_entries`, `oddities_bunch`) concern mild winters and late springs, so the inference does not follow. It also establishes `survey_in_drought` before the Met Office check (n11d1/n12c1) and before the raw data (n11d0), so those later nodes repeat a fact the reader already holds. Its requires (`survey_four_visits`, `data_request`) are not guaranteed.",
+        "route_or_state": "did_ask_whether_notebooks = true at n10d3"
+      },
+      {
+        "severity": "should-fix",
+        "entries": [
+          "cq_payoff_did_go_down_read",
+          "c_n06d3_2_cq_did_go_down_read",
+          "gate_photo",
+          "notice_posted_october"
+        ],
+        "problem": "The photo-date payoff sits on a choice about typing only the four key dates. It has no thematic link to the photo, and it requires `tobe`, which is not guaranteed at n06d3. Nothing later in the plan uses `notice_posted_october` to shorten or defend the objection window, so the payoff is never cashed in.",
+        "route_or_state": "did_go_down_read = true at n06d3"
+      },
+      {
+        "severity": "should-fix",
+        "entries": [
+          "n15d3",
+          "c_n15d3_0",
+          "e16_1",
+          "n15d6",
+          "winter_rota"
+        ],
+        "problem": "The choice 'let the readings slide' requires `winter_rota`, and e16_1 requires `winter_rota`. That fact is only established at n16d0 and n16c1, after n15d3 and n15d6. Neither the choice nor the ending's requirement can hold at that point.",
+        "route_or_state": "n14d3 -> n15d3 -> c_n15d3_0 -> e16_1"
+      },
+      {
+        "severity": "should-fix",
+        "entries": [
+          "e08_0",
+          "e12_0",
+          "e15_0",
+          "e15_1",
+          "e13_1",
+          "e17_0",
+          "e17_1"
+        ],
+        "problem": "Several endings require facts that no guaranteed route supplies. e15_0 requires `found_1917_volumes`, `archive_offer` and `okonkwo`. e15_1 requires `orchard_trust`. e13_1 requires `tobe`, `okonkwo` and `custody_note`. e12_0 requires `found_1917_volumes` while entered from n11d4 via 'restore the volumes quietly'. e17_0 requires `tobe` and `city_archive`. e17_1 requires `frost_readings`.",
+        "route_or_state": "e.g. n14d2 -> e15_0 without archive_offer or found_1917_volumes"
+      },
+      {
+        "severity": "should-fix",
+        "entries": [
+          "n12d6",
+          "c_n11d2_0",
+          "n12d6",
+          "e13_0",
+          "e13_1"
+        ],
+        "problem": "n12d6 requires nothing yet is a decision about when to release the dossier, which presupposes a dossier and a release plan. e13_0 (objection accepted, May resurvey ordered) requires nothing and is reachable on 'trust the evidence' or 'wait', with no hearing, objection submission or method established. This skips the later hearing nodes and duplicates the e14_1 outcome.",
+        "route_or_state": "n12d2/n12d6 -> e13_0"
+      },
+      {
+        "severity": "should-fix",
+        "entries": [
+          "c_n03d1_0",
+          "c_n06d3_1",
+          "c_n07d4_2",
+          "c_n08d3_0",
+          "c_n08d3_1",
+          "c_n09d4_2",
+          "c_n09d5_0",
+          "c_n13d4_0"
+        ],
+        "problem": "Many forks have one obviously right answer, because the costs spell out the failure ('stains everything after', 'rejected for want of a method', 'loses trust'). The setback endings are labelled in advance, so the 'bad' option is not a genuine choice. In several nodes there is also only one choice that moves forward and the rest end the story.",
+        "route_or_state": "n06d3, n07d4, n08d3, n09d4, n09d5, n13d4"
+      },
+      {
+        "severity": "minor",
+        "entries": [
+          "n05d4",
+          "c_n05d4_1",
+          "e06_0",
+          "n06d2",
+          "n06d1"
+        ],
+        "problem": "Node events at the same depth conflict. n05d4 (developer brochure with the plan) offers 'type the whole record' as a choice, which does not follow from the brochure. e06_0 requires only `objection_six_weeks`, and is reached from n05d4, which may have no typing context.",
+        "route_or_state": "n05d4 -> e06_0"
+      },
+      {
+        "severity": "minor",
+        "entries": [
+          "bee_counts_mismatch",
+          "n03d1",
+          "cassar_keeps_records"
+        ],
+        "problem": "The unexplained gap between Mrs Cassar's bee count (240) and Jonah's count is never resolved or used. A later fact (n08c4) has her carrying a '1990s bag' of records up the hill, while `cassar_carrier_bags` says she brought two bags. The bee thread feels dropped.",
+        "route_or_state": "bees branch (n02c1 -> n03d1)"
+      },
+      {
+        "severity": "minor",
+        "entries": [
+          "eleven_words",
+          "four_visits",
+          "bloom_chart",
+          "double_typing",
+          "spare_thermometer",
+          "eleven_days_gap"
+        ],
+        "problem": "The number eleven recurs for unrelated things (eleven words, eleven days of bloom shift, eleven days of visits, eleven mismatches, eleven pounds, eleven days gap). For a 10\u201313 reader this risks confusion and makes the 'new eleven-word covering line' and the gap ending hard to tell apart.",
+        "route_or_state": "whole plan"
+      },
+      {
+        "severity": "minor",
+        "entries": [
+          "c_n06d3_2",
+          "c_n06d3_2_cq_did_go_down_read",
+          "c_cq_payoff_did_go_down_read",
+          "c_n11d5_0",
+          "c_n11d5_0_cq_did_find_who_wrote"
+        ],
+        "problem": "The conditional variants are identical in intent and cost, as are the other unconditional versions. The branch variable changes only the unseen payoff node, not what the reader chooses. The mapping works only if the payoff nodes are short, because the choice labels give the reader no hint of a difference.",
+        "route_or_state": "n06d3, n11d5, n11d1, n08d3, n10d3"
+      }
+    ]
+  }
+}

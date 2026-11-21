@@ -1,0 +1,327 @@
+{
+  "case": "lkl2_blind",
+  "run": 2,
+  "model": "anthropic/claude-sonnet-5.5",
+  "usage": {
+    "prompt_tokens": 53135,
+    "completion_tokens": 13616,
+    "total_tokens": 66751,
+    "cost": 0.24243,
+    "is_byok": false,
+    "prompt_tokens_details": {
+      "cached_tokens": 0,
+      "cache_write_tokens": 0,
+      "audio_tokens": 0,
+      "video_tokens": 0
+    },
+    "cost_details": {
+      "upstream_inference_cost": 0.24243,
+      "upstream_inference_prompt_cost": 0.10627,
+      "upstream_inference_completions_cost": 0.13616
+    },
+    "completion_tokens_details": {
+      "reasoning_tokens": 8841,
+      "image_tokens": 0,
+      "audio_tokens": 0
+    }
+  },
+  "raw": "{\"verdict\":\"reject\",\"confidence\":0.93,\"summary\":\"The plan's node `requires` are unsound on many routes: facts are established only on narrow branches but required by nodes that many routes reach. Several nodes and endings are unreachable or depend on facts that are never established anywhere, and two of the three threads fail in their payoff chains.\",\"findings\":[{\"severity\":\"blocker\",\"entries\":[\"og_twins\",\"c_og_hinge_2\",\"c_og_low_2\",\"c_og_fruit_2\",\"oil_line\",\"pp_twins\",\"c_pp_gate_0\",\"c_pp_shop_2\"],\"problem\":\"Every choice into og_twins requires twins_kit_row and twins_offered, which only og_twins establishes. The node is unreachable, so the twins never appear. oil_line and pp_twins, whose entry choices all need twins_kit_row, are therefore dead, and the twins' filling-line and runner jobs can never be reached.\",\"route_or_state\":\"og_hub -> og_hinge/og_low/og_fruit: the twins choice is always hidden.\"},{\"severity\":\"blocker\",\"entries\":[\"cq_payoff_did_start_beacon_steps\",\"fn_up\",\"arthur_at_gate\",\"cq_payoff_did_start_beacon_steps_site2\"],\"problem\":\"The payoff at fn_up requires arthur_tremlett and arthur_at_gate. Those are established only by the fn_count site2 node. fn_up is reached from oil_taper, pp_top, pp_count and pa_meet without passing fn_count.\",\"route_or_state\":\"did_start_beacon_steps=true, then ... -> oil_taper -> fn_up -> c_fn_up_2_cq_... : the passage presupposes Arthur's arrival that never happened.\"},{\"severity\":\"blocker\",\"entries\":[\"fn_up\",\"wren_head_torch\",\"fn_torch\",\"head_torches\"],\"problem\":\"fn_up requires wren_head_torch, which no node establishes. fn_torch only establishes head_torches (Wren pockets them), not that she is wearing one. Every route into fn_up lacks the fact, and fn_up is not even reached via fn_torch.\",\"route_or_state\":\"oil_taper_1 / pp_top_1 / pp_count_1 / pa_meet_1 -> fn_up\"},{\"severity\":\"blocker\",\"entries\":[\"fx_short_end\",\"c_fn_up_2\",\"steps_layout\"],\"problem\":\"fx_short_end requires steps_layout, which only bs_hub establishes. It is reached only when did_start_beacon_steps is false, and bs_hub can only be entered through the choice that sets that variable true. The 'top of the steps is dark' ending can never follow a visit to the steps.\",\"route_or_state\":\"did_start_beacon_steps=false at fn_up -> fx_short_end\"},{\"severity\":\"blocker\",\"entries\":[\"cq_payoff_did_start_sheepfold_turn\",\"oil_bench\",\"biscuits_given\",\"cq_payoff_did_start_sheepfold_turn_site2\"],\"problem\":\"The second sheepfold payoff requires biscuits_given, established only in the site2 payoff node on the oil_can branch. oil_bench is reached from gt_oil and gt_wind, never through site2. Nothing in the sf_* branch ever has Wren give the biscuits.\",\"route_or_state\":\"did_start_sheepfold_turn=true -> gt_oil -> oil_bench -> c_oil_bench_0_cq_...\"},{\"severity\":\"blocker\",\"entries\":[\"fn_ovens\",\"biscuits_given\",\"ovens_said_yes_before\",\"ovens_quad\",\"cq_payoff_did_knock_doors_that_site2\"],\"problem\":\"fn_ovens requires mr_ovens, ovens_quad, ovens_said_yes_before and biscuits_given. It is reached from oil_count, pa_ninety and pa_hold with none of these established. The knock-doors site2 node supplies ovens_said_yes_before but never biscuits_given, so the fn_ovens requirement is unmet even on that route.\",\"route_or_state\":\"pp_keep (knock doors true) -> site2 -> fn_ovens, or oil_count_0 -> fn_ovens\"},{\"severity\":\"blocker\",\"entries\":[\"cq_payoff_did_knock_doors_that_site2\",\"mr_ovens\",\"ovens_quad\",\"did_knock_doors_that\"],\"problem\":\"This payoff requires mr_ovens and ovens_quad, established only in the sf_* branch (sf_hub, sf_ovens). did_knock_doors_that is set at gt_hands, which is reachable from the bs_ and og_ starts without any sheepfold visit. The 'Ovens asked the right way' passage then presupposes unknown facts.\",\"route_or_state\":\"og_hub start -> ... -> gt_hands_0 -> pp_doors -> ... pp_keep -> site2\"},{\"severity\":\"blocker\",\"entries\":[\"pp_keep\",\"teams_plan\",\"pp_teams\",\"pp_teach\",\"pp_quad\",\"pp_kettle\",\"pp_trewin\"],\"problem\":\"pp_keep requires teams_plan, established only in pp_teams. pp_keep is reachable from pp_rota, pp_kettle and pp_trewin, and those can be entered from pp_teach and pp_quad without ever passing pp_teams.\",\"route_or_state\":\"gt_hands_2 -> pp_shop -> pp_teach -> pp_rota -> pp_keep\"},{\"severity\":\"blocker\",\"entries\":[\"gt_word\",\"path_rerouted\",\"bs_test\",\"og_check\"],\"problem\":\"gt_word requires path_rerouted, established only in sf_hub. bs_test_1 and og_check_1 lead straight to gt_word from the Beacon and Orchard starts, which never saw the reroute.\",\"route_or_state\":\"bs_hub start -> ... -> bs_test -> gt_word\"},{\"severity\":\"blocker\",\"entries\":[\"fn_taper\",\"fx_leeward\",\"six_out\",\"c_fn_wait_0\",\"c_fn_hall_0\",\"fx_tally\"],\"problem\":\"six_out is established only at fn_count. fn_count leads only to fx_gate, fx_tally and fx_round, so the six_out-gated routes cannot be taken. fn_taper (from oil_count, pp_keep, pa_ninety, pa_hold) and fx_leeward (from fn_wait, fn_hall) require six_out without it. Their choices into fx_leeward are always hidden, and fx_tally depends on it too.\",\"route_or_state\":\"oil_count_1 -> fn_taper; fn_wait_0 / fn_hall_0 -> fx_leeward\"},{\"severity\":\"blocker\",\"entries\":[\"fx_corner\",\"fx_ankle\",\"fx_gate\",\"walker_ankle\",\"fn_signal\"],\"problem\":\"walker_ankle is established only at fn_signal, yet fx_corner, fx_gate and z_warm require it. fx_corner is reached from fn_wait and fn_hall. fx_gate is reached from fn_count and fn_taper, and fn_signal leads to neither. Those passages describe a hurt walker the reader has not heard about.\",\"route_or_state\":\"fn_wait_2 -> fx_corner; fn_count_0 -> fx_gate\"},{\"severity\":\"blocker\",\"entries\":[\"fn_signal\",\"priya_party\",\"fx_early_end\",\"z_seen\",\"gt_word\"],\"problem\":\"priya_party is established only in gt_word. fn_signal (reached from oil_relight, oil_message, pp_pair, pa_blown), fx_early_end and z_seen require it. Routes avoiding gt_word reach them with no Priya group introduced.\",\"route_or_state\":\"gt_oil -> oil_can -> ... -> oil_relight -> fn_signal\"},{\"severity\":\"blocker\",\"entries\":[\"fn_hold\",\"rota_chalked\",\"pp_rota\"],\"problem\":\"fn_hold requires rota_chalked, established only at pp_rota. It is entered from oil_count_2, pa_ninety_2 and pa_hold_2, which never chalked a rota.\",\"route_or_state\":\"pa_ninety -> fn_hold\"},{\"severity\":\"blocker\",\"entries\":[\"z_shoulder\",\"shoulder_dark_twice\",\"fx_wind_end\",\"seed_catalogue_notebook\"],\"problem\":\"shoulder_dark_twice and seed_catalogue_notebook are never established by any node. z_shoulder and fx_wind_end are reachable through unconditional choices (c_fx_corner_2 gated only by shoulder; c_fn_up_1 gated only by shoulder) but presuppose these facts.\",\"route_or_state\":\"fn_up -> fx_wind_end; fx_round/fx_ankle -> z_shoulder\"},{\"severity\":\"blocker\",\"entries\":[\"pa_gap\",\"pa_post\",\"c_pa_post_0\",\"c_pa_dim_1\",\"two_blown\",\"shoulder\"],\"problem\":\"pa_gap (ending) is entered only by choices gated on shoulder, which is established only later, in pa_blown or pa_gap itself. pa_post is reached from pa_drop, pa_paint and pa_shelter, none of which pass pa_blown. The ending is unreachable and the 'give up on the shoulder' fork never appears.\",\"route_or_state\":\"pa_dim_1, pa_post_0 never available\"},{\"severity\":\"should-fix\",\"entries\":[\"oil_ration\",\"ration_fifty\",\"barn_heater_can\",\"cq_payoff_did_start_sheepfold_turn_site2\",\"spare_fuel_found\"],\"problem\":\"ration_fifty says only four litres are to hand and is declared to contradict barn_heater_can. In the thread-true state the site2 payoff establishes barn_heater_can and spare_fuel_found and flows into oil_ration, which then says Wren has just four litres. The payoff changes nothing about the fuel sums.\",\"route_or_state\":\"did_start_sheepfold_turn=true -> oil_can -> site2 -> oil_ration\"},{\"severity\":\"should-fix\",\"entries\":[\"oil_ration\",\"four_litres_shop\",\"gt_wind\",\"oil_wick\"],\"problem\":\"oil_ration requires four_litres_shop, established at gt_oil and oil_can. gt_wind -> oil_wick -> oil_ration reaches it without either.\",\"route_or_state\":\"gt_wind_2 -> oil_wick_0 -> oil_ration\"},{\"severity\":\"should-fix\",\"entries\":[\"oil_fifty\",\"tally_box\",\"school_can\",\"spare_fuel_found\"],\"problem\":\"oil_fifty requires tally_box, school_can and spare_fuel_found. oil_shades_1 and oil_reserve_0 reach it without oil_count, and spare_fuel_found comes only from oil_school or the biscuit payoff. The ending cites facts the reader may not have met.\",\"route_or_state\":\"oil_ration_2 -> oil_shades -> oil_fifty\"},{\"severity\":\"should-fix\",\"entries\":[\"fx_gate\",\"fx_list_end\",\"ovens_field_gate\",\"c_n_list_0\"],\"problem\":\"fx_gate and fx_list_end require ovens_field_gate, established only by sf_hub/sf_gate. The Beacon-start thread payoff at fn_count -> fx_gate, where Arthur comes 'to the gate', leaves a route that never saw the sheepfold gate.\",\"route_or_state\":\"did_start_beacon_steps=true, bs start, -> fn_count -> fx_gate\"},{\"severity\":\"should-fix\",\"entries\":[\"gt_hands\",\"gt_word\",\"pp_doors\",\"c_gt_word_0\",\"c_gt_hands_0\",\"old_keepers\"],\"problem\":\"gt_word_0 has the same intent ('ask the old volunteers again') as the planting choice but does not plant. The same player action leads to pp_doors with two_waiting but no keepers found or payoff. The fork's meaning depends on which hub the player happens to be at.\",\"route_or_state\":\"gt_word_0 -> pp_doors, did_start_knock_doors_that=false\"},{\"severity\":\"should-fix\",\"entries\":[\"bs_brackets\",\"bs_step\",\"bs_carry\",\"sf_gate\",\"sf_slip\",\"sf_ovens\",\"og_hinge\",\"og_low\",\"og_fruit\",\"og_hooks\",\"og_lane\",\"og_twins\"],\"problem\":\"Hub choices differ in intent from their destinations. Sibling nodes carry identical choice sets whose intents do not match the node event (for example bs_carry offers 'find proper fixings for the brackets'). The player's first-level choices are cosmetic and the next fork does not follow from what was just chosen.\",\"route_or_state\":\"bs_hub_2 'haul crates' -> bs_carry offers bracket fixings\"},{\"severity\":\"minor\",\"entries\":[\"c_oil_bench_1\",\"c_pp_gate_1\",\"pp_crowd\",\"oil_spill\",\"c_sf_posts_0\",\"c_sf_sign_1\"],\"problem\":\"Several forks have one obvious wrong answer: 'rush the filling', 'invite everyone and plan later', 'give up on the turn'. Their endings are labelled neutral setback with gifts that read as lectures, and the sf_dark/oil_spill gifts feel arbitrary rather than earned.\",\"route_or_state\":\"oil_bench_1 -> oil_spill\"},{\"severity\":\"minor\",\"entries\":[\"fn_up\",\"pa_meet\",\"pp_pair\",\"pairs_rule\",\"beyond_last_lantern\"],\"problem\":\"The plan states the rule NEVER ALONE AT THE SIGNAL, but Wren, a child, walks up alone past the last lantern into the dark with a head torch. This is mild for the band but conflicts with the plan's own safety rule and is tonally risky.\",\"route_or_state\":\"oil_taper_1 -> fn_up\"},{\"severity\":\"minor\",\"entries\":[\"boiler_can\",\"rafi_trailer\",\"fx_hold_end\",\"every_counted\",\"count_71\"],\"problem\":\"Dangling and inconsistent details: boiler_can is never resolved and Rafi's trailer never pays off. Endings give different lantern counts (78 in every_counted and shoulder_gap_78, 71 in count_71), and fx_hold_end's 'unbroken line' can follow routes that established blown-out shoulder lanterns.\",\"route_or_state\":\"fn_hold -> fx_count_end vs fn_count\"}]}",
+  "parsed": {
+    "verdict": "reject",
+    "confidence": 0.93,
+    "summary": "The plan's node `requires` are unsound on many routes: facts are established only on narrow branches but required by nodes that many routes reach. Several nodes and endings are unreachable or depend on facts that are never established anywhere, and two of the three threads fail in their payoff chains.",
+    "findings": [
+      {
+        "severity": "blocker",
+        "entries": [
+          "og_twins",
+          "c_og_hinge_2",
+          "c_og_low_2",
+          "c_og_fruit_2",
+          "oil_line",
+          "pp_twins",
+          "c_pp_gate_0",
+          "c_pp_shop_2"
+        ],
+        "problem": "Every choice into og_twins requires twins_kit_row and twins_offered, which only og_twins establishes. The node is unreachable, so the twins never appear. oil_line and pp_twins, whose entry choices all need twins_kit_row, are therefore dead, and the twins' filling-line and runner jobs can never be reached.",
+        "route_or_state": "og_hub -> og_hinge/og_low/og_fruit: the twins choice is always hidden."
+      },
+      {
+        "severity": "blocker",
+        "entries": [
+          "cq_payoff_did_start_beacon_steps",
+          "fn_up",
+          "arthur_at_gate",
+          "cq_payoff_did_start_beacon_steps_site2"
+        ],
+        "problem": "The payoff at fn_up requires arthur_tremlett and arthur_at_gate. Those are established only by the fn_count site2 node. fn_up is reached from oil_taper, pp_top, pp_count and pa_meet without passing fn_count.",
+        "route_or_state": "did_start_beacon_steps=true, then ... -> oil_taper -> fn_up -> c_fn_up_2_cq_... : the passage presupposes Arthur's arrival that never happened."
+      },
+      {
+        "severity": "blocker",
+        "entries": [
+          "fn_up",
+          "wren_head_torch",
+          "fn_torch",
+          "head_torches"
+        ],
+        "problem": "fn_up requires wren_head_torch, which no node establishes. fn_torch only establishes head_torches (Wren pockets them), not that she is wearing one. Every route into fn_up lacks the fact, and fn_up is not even reached via fn_torch.",
+        "route_or_state": "oil_taper_1 / pp_top_1 / pp_count_1 / pa_meet_1 -> fn_up"
+      },
+      {
+        "severity": "blocker",
+        "entries": [
+          "fx_short_end",
+          "c_fn_up_2",
+          "steps_layout"
+        ],
+        "problem": "fx_short_end requires steps_layout, which only bs_hub establishes. It is reached only when did_start_beacon_steps is false, and bs_hub can only be entered through the choice that sets that variable true. The 'top of the steps is dark' ending can never follow a visit to the steps.",
+        "route_or_state": "did_start_beacon_steps=false at fn_up -> fx_short_end"
+      },
+      {
+        "severity": "blocker",
+        "entries": [
+          "cq_payoff_did_start_sheepfold_turn",
+          "oil_bench",
+          "biscuits_given",
+          "cq_payoff_did_start_sheepfold_turn_site2"
+        ],
+        "problem": "The second sheepfold payoff requires biscuits_given, established only in the site2 payoff node on the oil_can branch. oil_bench is reached from gt_oil and gt_wind, never through site2. Nothing in the sf_* branch ever has Wren give the biscuits.",
+        "route_or_state": "did_start_sheepfold_turn=true -> gt_oil -> oil_bench -> c_oil_bench_0_cq_..."
+      },
+      {
+        "severity": "blocker",
+        "entries": [
+          "fn_ovens",
+          "biscuits_given",
+          "ovens_said_yes_before",
+          "ovens_quad",
+          "cq_payoff_did_knock_doors_that_site2"
+        ],
+        "problem": "fn_ovens requires mr_ovens, ovens_quad, ovens_said_yes_before and biscuits_given. It is reached from oil_count, pa_ninety and pa_hold with none of these established. The knock-doors site2 node supplies ovens_said_yes_before but never biscuits_given, so the fn_ovens requirement is unmet even on that route.",
+        "route_or_state": "pp_keep (knock doors true) -> site2 -> fn_ovens, or oil_count_0 -> fn_ovens"
+      },
+      {
+        "severity": "blocker",
+        "entries": [
+          "cq_payoff_did_knock_doors_that_site2",
+          "mr_ovens",
+          "ovens_quad",
+          "did_knock_doors_that"
+        ],
+        "problem": "This payoff requires mr_ovens and ovens_quad, established only in the sf_* branch (sf_hub, sf_ovens). did_knock_doors_that is set at gt_hands, which is reachable from the bs_ and og_ starts without any sheepfold visit. The 'Ovens asked the right way' passage then presupposes unknown facts.",
+        "route_or_state": "og_hub start -> ... -> gt_hands_0 -> pp_doors -> ... pp_keep -> site2"
+      },
+      {
+        "severity": "blocker",
+        "entries": [
+          "pp_keep",
+          "teams_plan",
+          "pp_teams",
+          "pp_teach",
+          "pp_quad",
+          "pp_kettle",
+          "pp_trewin"
+        ],
+        "problem": "pp_keep requires teams_plan, established only in pp_teams. pp_keep is reachable from pp_rota, pp_kettle and pp_trewin, and those can be entered from pp_teach and pp_quad without ever passing pp_teams.",
+        "route_or_state": "gt_hands_2 -> pp_shop -> pp_teach -> pp_rota -> pp_keep"
+      },
+      {
+        "severity": "blocker",
+        "entries": [
+          "gt_word",
+          "path_rerouted",
+          "bs_test",
+          "og_check"
+        ],
+        "problem": "gt_word requires path_rerouted, established only in sf_hub. bs_test_1 and og_check_1 lead straight to gt_word from the Beacon and Orchard starts, which never saw the reroute.",
+        "route_or_state": "bs_hub start -> ... -> bs_test -> gt_word"
+      },
+      {
+        "severity": "blocker",
+        "entries": [
+          "fn_taper",
+          "fx_leeward",
+          "six_out",
+          "c_fn_wait_0",
+          "c_fn_hall_0",
+          "fx_tally"
+        ],
+        "problem": "six_out is established only at fn_count. fn_count leads only to fx_gate, fx_tally and fx_round, so the six_out-gated routes cannot be taken. fn_taper (from oil_count, pp_keep, pa_ninety, pa_hold) and fx_leeward (from fn_wait, fn_hall) require six_out without it. Their choices into fx_leeward are always hidden, and fx_tally depends on it too.",
+        "route_or_state": "oil_count_1 -> fn_taper; fn_wait_0 / fn_hall_0 -> fx_leeward"
+      },
+      {
+        "severity": "blocker",
+        "entries": [
+          "fx_corner",
+          "fx_ankle",
+          "fx_gate",
+          "walker_ankle",
+          "fn_signal"
+        ],
+        "problem": "walker_ankle is established only at fn_signal, yet fx_corner, fx_gate and z_warm require it. fx_corner is reached from fn_wait and fn_hall. fx_gate is reached from fn_count and fn_taper, and fn_signal leads to neither. Those passages describe a hurt walker the reader has not heard about.",
+        "route_or_state": "fn_wait_2 -> fx_corner; fn_count_0 -> fx_gate"
+      },
+      {
+        "severity": "blocker",
+        "entries": [
+          "fn_signal",
+          "priya_party",
+          "fx_early_end",
+          "z_seen",
+          "gt_word"
+        ],
+        "problem": "priya_party is established only in gt_word. fn_signal (reached from oil_relight, oil_message, pp_pair, pa_blown), fx_early_end and z_seen require it. Routes avoiding gt_word reach them with no Priya group introduced.",
+        "route_or_state": "gt_oil -> oil_can -> ... -> oil_relight -> fn_signal"
+      },
+      {
+        "severity": "blocker",
+        "entries": [
+          "fn_hold",
+          "rota_chalked",
+          "pp_rota"
+        ],
+        "problem": "fn_hold requires rota_chalked, established only at pp_rota. It is entered from oil_count_2, pa_ninety_2 and pa_hold_2, which never chalked a rota.",
+        "route_or_state": "pa_ninety -> fn_hold"
+      },
+      {
+        "severity": "blocker",
+        "entries": [
+          "z_shoulder",
+          "shoulder_dark_twice",
+          "fx_wind_end",
+          "seed_catalogue_notebook"
+        ],
+        "problem": "shoulder_dark_twice and seed_catalogue_notebook are never established by any node. z_shoulder and fx_wind_end are reachable through unconditional choices (c_fx_corner_2 gated only by shoulder; c_fn_up_1 gated only by shoulder) but presuppose these facts.",
+        "route_or_state": "fn_up -> fx_wind_end; fx_round/fx_ankle -> z_shoulder"
+      },
+      {
+        "severity": "blocker",
+        "entries": [
+          "pa_gap",
+          "pa_post",
+          "c_pa_post_0",
+          "c_pa_dim_1",
+          "two_blown",
+          "shoulder"
+        ],
+        "problem": "pa_gap (ending) is entered only by choices gated on shoulder, which is established only later, in pa_blown or pa_gap itself. pa_post is reached from pa_drop, pa_paint and pa_shelter, none of which pass pa_blown. The ending is unreachable and the 'give up on the shoulder' fork never appears.",
+        "route_or_state": "pa_dim_1, pa_post_0 never available"
+      },
+      {
+        "severity": "should-fix",
+        "entries": [
+          "oil_ration",
+          "ration_fifty",
+          "barn_heater_can",
+          "cq_payoff_did_start_sheepfold_turn_site2",
+          "spare_fuel_found"
+        ],
+        "problem": "ration_fifty says only four litres are to hand and is declared to contradict barn_heater_can. In the thread-true state the site2 payoff establishes barn_heater_can and spare_fuel_found and flows into oil_ration, which then says Wren has just four litres. The payoff changes nothing about the fuel sums.",
+        "route_or_state": "did_start_sheepfold_turn=true -> oil_can -> site2 -> oil_ration"
+      },
+      {
+        "severity": "should-fix",
+        "entries": [
+          "oil_ration",
+          "four_litres_shop",
+          "gt_wind",
+          "oil_wick"
+        ],
+        "problem": "oil_ration requires four_litres_shop, established at gt_oil and oil_can. gt_wind -> oil_wick -> oil_ration reaches it without either.",
+        "route_or_state": "gt_wind_2 -> oil_wick_0 -> oil_ration"
+      },
+      {
+        "severity": "should-fix",
+        "entries": [
+          "oil_fifty",
+          "tally_box",
+          "school_can",
+          "spare_fuel_found"
+        ],
+        "problem": "oil_fifty requires tally_box, school_can and spare_fuel_found. oil_shades_1 and oil_reserve_0 reach it without oil_count, and spare_fuel_found comes only from oil_school or the biscuit payoff. The ending cites facts the reader may not have met.",
+        "route_or_state": "oil_ration_2 -> oil_shades -> oil_fifty"
+      },
+      {
+        "severity": "should-fix",
+        "entries": [
+          "fx_gate",
+          "fx_list_end",
+          "ovens_field_gate",
+          "c_n_list_0"
+        ],
+        "problem": "fx_gate and fx_list_end require ovens_field_gate, established only by sf_hub/sf_gate. The Beacon-start thread payoff at fn_count -> fx_gate, where Arthur comes 'to the gate', leaves a route that never saw the sheepfold gate.",
+        "route_or_state": "did_start_beacon_steps=true, bs start, -> fn_count -> fx_gate"
+      },
+      {
+        "severity": "should-fix",
+        "entries": [
+          "gt_hands",
+          "gt_word",
+          "pp_doors",
+          "c_gt_word_0",
+          "c_gt_hands_0",
+          "old_keepers"
+        ],
+        "problem": "gt_word_0 has the same intent ('ask the old volunteers again') as the planting choice but does not plant. The same player action leads to pp_doors with two_waiting but no keepers found or payoff. The fork's meaning depends on which hub the player happens to be at.",
+        "route_or_state": "gt_word_0 -> pp_doors, did_start_knock_doors_that=false"
+      },
+      {
+        "severity": "should-fix",
+        "entries": [
+          "bs_brackets",
+          "bs_step",
+          "bs_carry",
+          "sf_gate",
+          "sf_slip",
+          "sf_ovens",
+          "og_hinge",
+          "og_low",
+          "og_fruit",
+          "og_hooks",
+          "og_lane",
+          "og_twins"
+        ],
+        "problem": "Hub choices differ in intent from their destinations. Sibling nodes carry identical choice sets whose intents do not match the node event (for example bs_carry offers 'find proper fixings for the brackets'). The player's first-level choices are cosmetic and the next fork does not follow from what was just chosen.",
+        "route_or_state": "bs_hub_2 'haul crates' -> bs_carry offers bracket fixings"
+      },
+      {
+        "severity": "minor",
+        "entries": [
+          "c_oil_bench_1",
+          "c_pp_gate_1",
+          "pp_crowd",
+          "oil_spill",
+          "c_sf_posts_0",
+          "c_sf_sign_1"
+        ],
+        "problem": "Several forks have one obvious wrong answer: 'rush the filling', 'invite everyone and plan later', 'give up on the turn'. Their endings are labelled neutral setback with gifts that read as lectures, and the sf_dark/oil_spill gifts feel arbitrary rather than earned.",
+        "route_or_state": "oil_bench_1 -> oil_spill"
+      },
+      {
+        "severity": "minor",
+        "entries": [
+          "fn_up",
+          "pa_meet",
+          "pp_pair",
+          "pairs_rule",
+          "beyond_last_lantern"
+        ],
+        "problem": "The plan states the rule NEVER ALONE AT THE SIGNAL, but Wren, a child, walks up alone past the last lantern into the dark with a head torch. This is mild for the band but conflicts with the plan's own safety rule and is tonally risky.",
+        "route_or_state": "oil_taper_1 -> fn_up"
+      },
+      {
+        "severity": "minor",
+        "entries": [
+          "boiler_can",
+          "rafi_trailer",
+          "fx_hold_end",
+          "every_counted",
+          "count_71"
+        ],
+        "problem": "Dangling and inconsistent details: boiler_can is never resolved and Rafi's trailer never pays off. Endings give different lantern counts (78 in every_counted and shoulder_gap_78, 71 in count_71), and fx_hold_end's 'unbroken line' can follow routes that established blown-out shoulder lanterns.",
+        "route_or_state": "fn_hold -> fx_count_end vs fn_count"
+      }
+    ]
+  }
+}

@@ -1,0 +1,325 @@
+{
+  "case": "lkl1_blind",
+  "run": 2,
+  "model": "anthropic/claude-sonnet-5.5",
+  "usage": {
+    "prompt_tokens": 51773,
+    "completion_tokens": 17416,
+    "total_tokens": 69189,
+    "cost": 0.277706,
+    "is_byok": false,
+    "prompt_tokens_details": {
+      "cached_tokens": 0,
+      "cache_write_tokens": 0,
+      "audio_tokens": 0,
+      "video_tokens": 0
+    },
+    "cost_details": {
+      "upstream_inference_cost": 0.277706,
+      "upstream_inference_prompt_cost": 0.103546,
+      "upstream_inference_completions_cost": 0.17416
+    },
+    "completion_tokens_details": {
+      "reasoning_tokens": 12330,
+      "image_tokens": 0,
+      "audio_tokens": 0
+    }
+  },
+  "raw": "{\"verdict\":\"reject\",\"confidence\":0.9,\"summary\":\"The plan has many blockers: nodes whose `requires` facts some entering route never establishes, nodes and endings that no route can reach, a ledger contradiction on the thread payoff route, and a payoff that leans on the wrong thread's facts. The writer could not produce a continuity-safe book without reworking the requires, the gating facts and the thread payoffs.\",\"findings\":[\n{\"severity\":\"blocker\",\"entries\":[\"pa_blown\",\"pa_hang\",\"pa_bag\",\"pa_post\",\"two_blown\",\"shoulder\",\"pa_gap\",\"fx_list_end\",\"z_tally\",\"fx_tally\",\"fx_wind_end\",\"fx_bag\",\"fn_taper\"],\"problem\":\"`two_blown` and `shoulder` are established only at pa_blown. The only entries into pa_blown (c_pa_hang_1, c_pa_bag_0, c_pa_post_2) are gated on `two_blown`, so pa_blown can never be entered. Every node or choice that needs `shoulder` is then unreachable or hidden: pa_gap, fx_list_end, fx_tally, z_tally, fx_wind_end, fx_bag, and the shoulder-gated choices.\",\"route_or_state\":\"Any route. The `shoulder` and `two_blown` gate choices never appear.\"},\n{\"severity\":\"blocker\",\"entries\":[\"z_shoulder\",\"shoulder_dark_twice\",\"fx_wind_end\",\"wren_notebook\"],\"problem\":\"`shoulder_dark_twice` and `wren_notebook` are required but no node establishes them. z_shoulder and fx_wind_end are therefore unreachable even apart from `shoulder`. The only negative ending of the final tier is dead.\",\"route_or_state\":\"fx_corner/fx_ankle/fx_round c_2 -> z_shoulder; fn_up_1 -> fx_wind_end\"},\n{\"severity\":\"blocker\",\"entries\":[\"cq_payoff_did_start_sheepfold_turn_site2\",\"oil_ration\",\"ration_fifty\",\"church_gate_can\"],\"problem\":\"The payoff site2 establishes `church_gate_can` (a full five-litre can), then flows into oil_ration, which establishes `ration_fifty`. The ledger marks `ration_fifty` as contradicting `church_gate_can`: four litres is all there is, versus a bonus full can. One reading meets both.\",\"route_or_state\":\"did_start_sheepfold_turn=true; oil_can c_oil_can_1_cq... -> cq_payoff_..._site2 -> oil_ration\"},\n{\"severity\":\"blocker\",\"entries\":[\"cq_payoff_did_knock_doors_that\",\"cq_plant_did_knock_doors_that\",\"pp_doors\",\"about_to_knock_first\",\"kitto_joins\"],\"problem\":\"The plant node cq_plant_did_knock_doors_that establishes `kitto_joins` (Mrs Kitto already answered the first door), and its only exit is pp_doors. pp_doors then establishes `about_to_knock_first` (Wren only now standing on the first doorstep), which the ledger marks as contradicting `kitto_joins`.\",\"route_or_state\":\"gt_hands c_gt_hands_0 -> cq_plant -> pp_doors\"},\n{\"severity\":\"blocker\",\"entries\":[\"oil_can\",\"dot_mallow\",\"og_hang\",\"og_spare\",\"sf_permission\",\"gt_oil\",\"pp_crowd\",\"oil_fifty\"],\"problem\":\"oil_can requires `dot_mallow`, which only the bs_* nodes and pp_shop establish. Orchard-first and sheepfold-first routes reach gt_oil -> oil_can without it. pp_crowd also requires `dot_mallow` and is reachable via pp_gate from routes that never met her. oil_fifty requires `tally_box`, which only oil_count establishes, but oil_school/oil_shades -> oil_fifty bypasses oil_count.\",\"route_or_state\":\"n_list_2 -> og_hub -> og_hooks -> og_hang -> gt_oil -> oil_can; oil_school -> oil_shades -> oil_fifty\"},\n{\"severity\":\"blocker\",\"entries\":[\"pp_gate\",\"twins_kit_row\",\"pp_twins\",\"og_twins\",\"pp_crowd\"],\"problem\":\"pp_gate requires `twins_kit_row`, established only at og_twins. gt_hands and gt_word are reachable from steps-first or turn-first routes that never saw the twins. Its c_pp_gate_0 intent also depends on them.\",\"route_or_state\":\"bs_hub -> ... -> gt_hands c_gt_hands_1 -> pp_gate\"},\n{\"severity\":\"blocker\",\"entries\":[\"pp_keep\",\"teams_plan\",\"pp_count\",\"rota_chalked\",\"fn_hold\",\"pp_kettle\",\"pp_runner\",\"pp_twins\",\"oil_count\",\"pa_ninety\",\"pa_hold\"],\"problem\":\"pp_keep requires `teams_plan`, set only at pp_teams, but pp_teach, pp_quad and pp_kettle all lead on without it. pp_count and fn_hold require `rota_chalked`, set only at pp_rota. pp_kettle, pp_runner (via pp_twins or pp_teach) and the oil_count, pa_ninety and pa_hold routes reach them without it.\",\"route_or_state\":\"pp_shop -> pp_teach -> pp_rota -> pp_keep (no teams_plan); pp_teams -> pp_kettle -> pp_count (no rota_chalked); oil_count c_2 -> fn_hold\"},\n{\"severity\":\"blocker\",\"entries\":[\"cq_payoff_did_knock_doors_that_site2\",\"pp_keep\",\"mr_ovens\",\"ovens_quad\",\"c_pp_keep_0_cq_did_knock_doors_that\"],\"problem\":\"The Kitto thread's site2 payoff requires Mr Ovens facts (`mr_ovens`, `ovens_quad`) planted only by the sheepfold branch, which is a different thread. A player who knocked on doors without going to sf_hub/sf_ovens is gated out of the payoff. The Kitto plant is therefore not paid off at this site, and the 'quad starts up' payoff leans on another thread's setup.\",\"route_or_state\":\"did_knock_doors_that=true via bs_hub or og_hub -> ... -> pp_keep\"},\n{\"severity\":\"blocker\",\"entries\":[\"fx_gate\",\"fn_count\",\"fn_taper\",\"walker_ankle\",\"fx_relay\",\"fx_corner\",\"fn_ovens\",\"fn_wait\",\"fn_hall\"],\"problem\":\"`walker_ankle` is established only at fn_signal. fx_gate (via fn_count or fn_taper), fx_relay (via fn_ovens) and fx_corner (via fn_wait and fn_hall) all require it but are entered without it. fn_taper is itself unreachable: it requires `six_out`, which only fn_count sets, and it is entered only from nodes that precede fn_count.\",\"route_or_state\":\"fn_count -> fx_gate; fn_ovens -> fx_relay; fn_wait c_2 -> fx_corner\"},\n{\"severity\":\"blocker\",\"entries\":[\"fn_signal\",\"priya_party\",\"fx_early_end\",\"z_seen\",\"oil_shades\",\"gt_word\"],\"problem\":\"`priya_party` is established only at gt_word. fn_signal, fx_early_end and z_seen require it, but they are reached from oil_relight, oil_message, pp_pair and fn_torch on routes that skipped gt_word. The c_oil_shades_0/c_oil_top_2 choices are gated on it and silently vanish.\",\"route_or_state\":\"bs_hub -> ... -> gt_walk -> pa_* -> fn_*, or ... -> oil_relight -> fn_signal\"},\n{\"severity\":\"blocker\",\"entries\":[\"fn_ovens\",\"quad_asked\",\"pp_quad\",\"oil_count\",\"c_oil_count_0\",\"c_pa_ninety_0\",\"c_pa_hold_0\"],\"problem\":\"fn_ovens requires `quad_asked`, established only at pp_quad. The gates on c_oil_count_0, c_pa_ninety_0 and c_pa_hold_0 check only `mr_ovens` and `ovens_quad`, so fn_ovens ('a second time') can be entered with no first ask. Likewise pp_quad requires `ovens_quad`, but c_pp_doors_2 and c_pp_shop_1 gate only on `mr_ovens`, so a player who did sf_gate or sf_slip instead of sf_ovens reaches it without the quad fact.\",\"route_or_state\":\"sf_hub -> sf_gate -> ...; oil_count c_0 -> fn_ovens\"},\n{\"severity\":\"blocker\",\"entries\":[\"cq_payoff_did_start_beacon_steps\",\"wind_across\",\"wren_tested_wind\",\"fn_up\"],\"problem\":\"The payoff requires `wind_across`, but bs_hub sets `wren_tested_wind` without it. `wind_across` appears only at bs_test, gt_wind and pa_shelter. A player who set the variable and then used bs_report, gt_hands, pp_* and so on reaches fn_up with the variable true but without the fact.\",\"route_or_state\":\"did_start_beacon_steps=true; bs_hub -> bs_brackets -> bs_plugs -> bs_report -> gt_hands -> ... -> fn_up\"},\n{\"severity\":\"blocker\",\"entries\":[\"pa_post\",\"ovens_field_gate\",\"fx_list_end\",\"oil_fifty\",\"oil_bench\",\"c_oil_bench_2\"],\"problem\":\"pa_post requires `ovens_field_gate`, established only in the sheepfold nodes; the bs and og routes reach pa_survey, pa_ground and pa_shelter without it. c_oil_bench_2 requires `school_can`, which only oil_can establishes, but oil_bench is never entered after oil_can, so that choice can never appear.\",\"route_or_state\":\"bs_hub -> ... -> gt_walk -> pa_ground c_2 -> pa_shelter -> pa_post\"},\n{\"severity\":\"blocker\",\"entries\":[\"oil_ration\",\"oil_wick\",\"four_litres_shop\",\"gt_wind\"],\"problem\":\"oil_ration requires `four_litres_shop`, which only gt_oil and oil_can establish. The route gt_wind -> oil_wick -> oil_ration (c_oil_wick_0) skips both.\",\"route_or_state\":\"bs_test -> gt_wind -> oil_wick c_0 -> oil_ration\"},\n{\"severity\":\"should-fix\",\"entries\":[\"bs_step\",\"bs_carry\",\"sf_slip\",\"sf_ovens\",\"og_low\",\"og_fruit\",\"pa_hold\",\"pa_ninety\",\"gt_wind\",\"gt_word\",\"fn_hall\",\"fn_hold\"],\"problem\":\"Many nodes inherit another node's choice set unchanged, so the choices do not follow from the node's event. Examples: the seventh-step node and the crate-carrying node offer bracket-fixing choices; the old-path-end node offers 'plan lanterns for the new path'; pa_hold ('holds the orchard gate') offers 'borrow the quad bike'. Several forks also repeat identical choices.\",\"route_or_state\":\"c_bs_step_*, c_bs_carry_*, c_sf_slip_*, c_og_low_*, c_pa_hold_*\"},\n{\"severity\":\"should-fix\",\"entries\":[\"fn_up\",\"c_fn_up_2\",\"cq_payoff_did_start_beacon_steps\",\"fx_short_end\",\"fx_list_end\"],\"problem\":\"The fork 'spend the last two lanterns on the turn' sends the player to the only negative ending (fx_short_end) unless a choice made at n_list had set the variable, and nothing in-fork signals this. The favourable branch then leads to fx_list_end, which is unreachable because it requires `shoulder`. The variable-true path therefore dead-ends in an unsatisfiable ending.\",\"route_or_state\":\"did_start_beacon_steps=false -> fx_short_end; true -> fx_list_end (requires shoulder)\"},\n{\"severity\":\"should-fix\",\"entries\":[\"rain_after_four\",\"down_before_rain\",\"fx_early_end\",\"pa_ground\"],\"problem\":\"The ledger says rain is forecast after four. fx_early_end has the walkers arriving at the orchard gate at 6:25, 'ten minutes ahead of the rain'. Those two facts clash.\",\"route_or_state\":\"any route through pa_ground/bs_carry then fx_early_end\"},\n{\"severity\":\"should-fix\",\"entries\":[\"count_71\",\"tally_78_note\",\"every_counted\",\"shoulder_gap_78\",\"six_out\"],\"problem\":\"The counts do not reconcile: fn_count gives 71 lit, six out and three never hung (80 total, 77 once the three unhung are excluded). The tally, every_counted and shoulder_gap_78 all say seventy-eight.\",\"route_or_state\":\"fn_count -> fx_tally / fx_count_end\"},\n{\"severity\":\"should-fix\",\"entries\":[\"fx_hold_end\",\"fx_early_end\",\"fx_count_end\",\"fn_torch\",\"fn_hold\"],\"problem\":\"fx_hold_end claims an unbroken line from the steps to the orchard gate, 'nothing went wrong', but its entry nodes can follow states with unlit gaps (oil_shades_1 leaves thirty dark, the ninety-pace gap, the dropped lantern marker at the lip). The ending is false in those states.\",\"route_or_state\":\"oil_shades c_1 -> ... -> fn_torch -> fx_hold_end\"},\n{\"severity\":\"should-fix\",\"entries\":[\"z_late\",\"z_page\",\"fx_corner\",\"fx_round\",\"fx_ankle\",\"z_shoulder\"],\"problem\":\"After fn_signal establishes a hurt walker on a dark hill, c_fx_*_1 ('finish lighting after the walkers pass') and c_fx_*_0 end with the ridge half lit or lit late. The ending facts never say the walkers are safe, so the age-8-11 reader may be left on a worrying note.\",\"route_or_state\":\"fn_signal -> fx_ankle c_1 -> z_late\"},\n{\"severity\":\"minor\",\"entries\":[\"cq_payoff_did_start_sheepfold_turn\",\"chapel_lamp\",\"ovens_told_stores\"],\"problem\":\"The planted fact is Mr Ovens's tip about old fuel stores. The payoff at oil_bench has Wren fetch a chapel camping lamp and a vicar's candles, which that tip does not cover.\",\"route_or_state\":\"did_start_sheepfold_turn=true at oil_bench\"},\n{\"severity\":\"minor\",\"entries\":[\"og_hang\",\"c_n_list_2\",\"og_hub\",\"gt_bottom\"],\"problem\":\"The plan labels the orchard as 'the easy bottom', but nothing about it plants a thread, and the choice c_n_list_2 sets no variable. Players on that branch can pass all the bottleneck nodes without ever learning the real state of the hill, which weakens the plan's truth-driven premise.\",\"route_or_state\":\"n_list_2 -> og_hub -> ... -> gt_wind/gt_oil\"}\n]}",
+  "parsed": {
+    "verdict": "reject",
+    "confidence": 0.9,
+    "summary": "The plan has many blockers: nodes whose `requires` facts some entering route never establishes, nodes and endings that no route can reach, a ledger contradiction on the thread payoff route, and a payoff that leans on the wrong thread's facts. The writer could not produce a continuity-safe book without reworking the requires, the gating facts and the thread payoffs.",
+    "findings": [
+      {
+        "severity": "blocker",
+        "entries": [
+          "pa_blown",
+          "pa_hang",
+          "pa_bag",
+          "pa_post",
+          "two_blown",
+          "shoulder",
+          "pa_gap",
+          "fx_list_end",
+          "z_tally",
+          "fx_tally",
+          "fx_wind_end",
+          "fx_bag",
+          "fn_taper"
+        ],
+        "problem": "`two_blown` and `shoulder` are established only at pa_blown. The only entries into pa_blown (c_pa_hang_1, c_pa_bag_0, c_pa_post_2) are gated on `two_blown`, so pa_blown can never be entered. Every node or choice that needs `shoulder` is then unreachable or hidden: pa_gap, fx_list_end, fx_tally, z_tally, fx_wind_end, fx_bag, and the shoulder-gated choices.",
+        "route_or_state": "Any route. The `shoulder` and `two_blown` gate choices never appear."
+      },
+      {
+        "severity": "blocker",
+        "entries": [
+          "z_shoulder",
+          "shoulder_dark_twice",
+          "fx_wind_end",
+          "wren_notebook"
+        ],
+        "problem": "`shoulder_dark_twice` and `wren_notebook` are required but no node establishes them. z_shoulder and fx_wind_end are therefore unreachable even apart from `shoulder`. The only negative ending of the final tier is dead.",
+        "route_or_state": "fx_corner/fx_ankle/fx_round c_2 -> z_shoulder; fn_up_1 -> fx_wind_end"
+      },
+      {
+        "severity": "blocker",
+        "entries": [
+          "cq_payoff_did_start_sheepfold_turn_site2",
+          "oil_ration",
+          "ration_fifty",
+          "church_gate_can"
+        ],
+        "problem": "The payoff site2 establishes `church_gate_can` (a full five-litre can), then flows into oil_ration, which establishes `ration_fifty`. The ledger marks `ration_fifty` as contradicting `church_gate_can`: four litres is all there is, versus a bonus full can. One reading meets both.",
+        "route_or_state": "did_start_sheepfold_turn=true; oil_can c_oil_can_1_cq... -> cq_payoff_..._site2 -> oil_ration"
+      },
+      {
+        "severity": "blocker",
+        "entries": [
+          "cq_payoff_did_knock_doors_that",
+          "cq_plant_did_knock_doors_that",
+          "pp_doors",
+          "about_to_knock_first",
+          "kitto_joins"
+        ],
+        "problem": "The plant node cq_plant_did_knock_doors_that establishes `kitto_joins` (Mrs Kitto already answered the first door), and its only exit is pp_doors. pp_doors then establishes `about_to_knock_first` (Wren only now standing on the first doorstep), which the ledger marks as contradicting `kitto_joins`.",
+        "route_or_state": "gt_hands c_gt_hands_0 -> cq_plant -> pp_doors"
+      },
+      {
+        "severity": "blocker",
+        "entries": [
+          "oil_can",
+          "dot_mallow",
+          "og_hang",
+          "og_spare",
+          "sf_permission",
+          "gt_oil",
+          "pp_crowd",
+          "oil_fifty"
+        ],
+        "problem": "oil_can requires `dot_mallow`, which only the bs_* nodes and pp_shop establish. Orchard-first and sheepfold-first routes reach gt_oil -> oil_can without it. pp_crowd also requires `dot_mallow` and is reachable via pp_gate from routes that never met her. oil_fifty requires `tally_box`, which only oil_count establishes, but oil_school/oil_shades -> oil_fifty bypasses oil_count.",
+        "route_or_state": "n_list_2 -> og_hub -> og_hooks -> og_hang -> gt_oil -> oil_can; oil_school -> oil_shades -> oil_fifty"
+      },
+      {
+        "severity": "blocker",
+        "entries": [
+          "pp_gate",
+          "twins_kit_row",
+          "pp_twins",
+          "og_twins",
+          "pp_crowd"
+        ],
+        "problem": "pp_gate requires `twins_kit_row`, established only at og_twins. gt_hands and gt_word are reachable from steps-first or turn-first routes that never saw the twins. Its c_pp_gate_0 intent also depends on them.",
+        "route_or_state": "bs_hub -> ... -> gt_hands c_gt_hands_1 -> pp_gate"
+      },
+      {
+        "severity": "blocker",
+        "entries": [
+          "pp_keep",
+          "teams_plan",
+          "pp_count",
+          "rota_chalked",
+          "fn_hold",
+          "pp_kettle",
+          "pp_runner",
+          "pp_twins",
+          "oil_count",
+          "pa_ninety",
+          "pa_hold"
+        ],
+        "problem": "pp_keep requires `teams_plan`, set only at pp_teams, but pp_teach, pp_quad and pp_kettle all lead on without it. pp_count and fn_hold require `rota_chalked`, set only at pp_rota. pp_kettle, pp_runner (via pp_twins or pp_teach) and the oil_count, pa_ninety and pa_hold routes reach them without it.",
+        "route_or_state": "pp_shop -> pp_teach -> pp_rota -> pp_keep (no teams_plan); pp_teams -> pp_kettle -> pp_count (no rota_chalked); oil_count c_2 -> fn_hold"
+      },
+      {
+        "severity": "blocker",
+        "entries": [
+          "cq_payoff_did_knock_doors_that_site2",
+          "pp_keep",
+          "mr_ovens",
+          "ovens_quad",
+          "c_pp_keep_0_cq_did_knock_doors_that"
+        ],
+        "problem": "The Kitto thread's site2 payoff requires Mr Ovens facts (`mr_ovens`, `ovens_quad`) planted only by the sheepfold branch, which is a different thread. A player who knocked on doors without going to sf_hub/sf_ovens is gated out of the payoff. The Kitto plant is therefore not paid off at this site, and the 'quad starts up' payoff leans on another thread's setup.",
+        "route_or_state": "did_knock_doors_that=true via bs_hub or og_hub -> ... -> pp_keep"
+      },
+      {
+        "severity": "blocker",
+        "entries": [
+          "fx_gate",
+          "fn_count",
+          "fn_taper",
+          "walker_ankle",
+          "fx_relay",
+          "fx_corner",
+          "fn_ovens",
+          "fn_wait",
+          "fn_hall"
+        ],
+        "problem": "`walker_ankle` is established only at fn_signal. fx_gate (via fn_count or fn_taper), fx_relay (via fn_ovens) and fx_corner (via fn_wait and fn_hall) all require it but are entered without it. fn_taper is itself unreachable: it requires `six_out`, which only fn_count sets, and it is entered only from nodes that precede fn_count.",
+        "route_or_state": "fn_count -> fx_gate; fn_ovens -> fx_relay; fn_wait c_2 -> fx_corner"
+      },
+      {
+        "severity": "blocker",
+        "entries": [
+          "fn_signal",
+          "priya_party",
+          "fx_early_end",
+          "z_seen",
+          "oil_shades",
+          "gt_word"
+        ],
+        "problem": "`priya_party` is established only at gt_word. fn_signal, fx_early_end and z_seen require it, but they are reached from oil_relight, oil_message, pp_pair and fn_torch on routes that skipped gt_word. The c_oil_shades_0/c_oil_top_2 choices are gated on it and silently vanish.",
+        "route_or_state": "bs_hub -> ... -> gt_walk -> pa_* -> fn_*, or ... -> oil_relight -> fn_signal"
+      },
+      {
+        "severity": "blocker",
+        "entries": [
+          "fn_ovens",
+          "quad_asked",
+          "pp_quad",
+          "oil_count",
+          "c_oil_count_0",
+          "c_pa_ninety_0",
+          "c_pa_hold_0"
+        ],
+        "problem": "fn_ovens requires `quad_asked`, established only at pp_quad. The gates on c_oil_count_0, c_pa_ninety_0 and c_pa_hold_0 check only `mr_ovens` and `ovens_quad`, so fn_ovens ('a second time') can be entered with no first ask. Likewise pp_quad requires `ovens_quad`, but c_pp_doors_2 and c_pp_shop_1 gate only on `mr_ovens`, so a player who did sf_gate or sf_slip instead of sf_ovens reaches it without the quad fact.",
+        "route_or_state": "sf_hub -> sf_gate -> ...; oil_count c_0 -> fn_ovens"
+      },
+      {
+        "severity": "blocker",
+        "entries": [
+          "cq_payoff_did_start_beacon_steps",
+          "wind_across",
+          "wren_tested_wind",
+          "fn_up"
+        ],
+        "problem": "The payoff requires `wind_across`, but bs_hub sets `wren_tested_wind` without it. `wind_across` appears only at bs_test, gt_wind and pa_shelter. A player who set the variable and then used bs_report, gt_hands, pp_* and so on reaches fn_up with the variable true but without the fact.",
+        "route_or_state": "did_start_beacon_steps=true; bs_hub -> bs_brackets -> bs_plugs -> bs_report -> gt_hands -> ... -> fn_up"
+      },
+      {
+        "severity": "blocker",
+        "entries": [
+          "pa_post",
+          "ovens_field_gate",
+          "fx_list_end",
+          "oil_fifty",
+          "oil_bench",
+          "c_oil_bench_2"
+        ],
+        "problem": "pa_post requires `ovens_field_gate`, established only in the sheepfold nodes; the bs and og routes reach pa_survey, pa_ground and pa_shelter without it. c_oil_bench_2 requires `school_can`, which only oil_can establishes, but oil_bench is never entered after oil_can, so that choice can never appear.",
+        "route_or_state": "bs_hub -> ... -> gt_walk -> pa_ground c_2 -> pa_shelter -> pa_post"
+      },
+      {
+        "severity": "blocker",
+        "entries": [
+          "oil_ration",
+          "oil_wick",
+          "four_litres_shop",
+          "gt_wind"
+        ],
+        "problem": "oil_ration requires `four_litres_shop`, which only gt_oil and oil_can establish. The route gt_wind -> oil_wick -> oil_ration (c_oil_wick_0) skips both.",
+        "route_or_state": "bs_test -> gt_wind -> oil_wick c_0 -> oil_ration"
+      },
+      {
+        "severity": "should-fix",
+        "entries": [
+          "bs_step",
+          "bs_carry",
+          "sf_slip",
+          "sf_ovens",
+          "og_low",
+          "og_fruit",
+          "pa_hold",
+          "pa_ninety",
+          "gt_wind",
+          "gt_word",
+          "fn_hall",
+          "fn_hold"
+        ],
+        "problem": "Many nodes inherit another node's choice set unchanged, so the choices do not follow from the node's event. Examples: the seventh-step node and the crate-carrying node offer bracket-fixing choices; the old-path-end node offers 'plan lanterns for the new path'; pa_hold ('holds the orchard gate') offers 'borrow the quad bike'. Several forks also repeat identical choices.",
+        "route_or_state": "c_bs_step_*, c_bs_carry_*, c_sf_slip_*, c_og_low_*, c_pa_hold_*"
+      },
+      {
+        "severity": "should-fix",
+        "entries": [
+          "fn_up",
+          "c_fn_up_2",
+          "cq_payoff_did_start_beacon_steps",
+          "fx_short_end",
+          "fx_list_end"
+        ],
+        "problem": "The fork 'spend the last two lanterns on the turn' sends the player to the only negative ending (fx_short_end) unless a choice made at n_list had set the variable, and nothing in-fork signals this. The favourable branch then leads to fx_list_end, which is unreachable because it requires `shoulder`. The variable-true path therefore dead-ends in an unsatisfiable ending.",
+        "route_or_state": "did_start_beacon_steps=false -> fx_short_end; true -> fx_list_end (requires shoulder)"
+      },
+      {
+        "severity": "should-fix",
+        "entries": [
+          "rain_after_four",
+          "down_before_rain",
+          "fx_early_end",
+          "pa_ground"
+        ],
+        "problem": "The ledger says rain is forecast after four. fx_early_end has the walkers arriving at the orchard gate at 6:25, 'ten minutes ahead of the rain'. Those two facts clash.",
+        "route_or_state": "any route through pa_ground/bs_carry then fx_early_end"
+      },
+      {
+        "severity": "should-fix",
+        "entries": [
+          "count_71",
+          "tally_78_note",
+          "every_counted",
+          "shoulder_gap_78",
+          "six_out"
+        ],
+        "problem": "The counts do not reconcile: fn_count gives 71 lit, six out and three never hung (80 total, 77 once the three unhung are excluded). The tally, every_counted and shoulder_gap_78 all say seventy-eight.",
+        "route_or_state": "fn_count -> fx_tally / fx_count_end"
+      },
+      {
+        "severity": "should-fix",
+        "entries": [
+          "fx_hold_end",
+          "fx_early_end",
+          "fx_count_end",
+          "fn_torch",
+          "fn_hold"
+        ],
+        "problem": "fx_hold_end claims an unbroken line from the steps to the orchard gate, 'nothing went wrong', but its entry nodes can follow states with unlit gaps (oil_shades_1 leaves thirty dark, the ninety-pace gap, the dropped lantern marker at the lip). The ending is false in those states.",
+        "route_or_state": "oil_shades c_1 -> ... -> fn_torch -> fx_hold_end"
+      },
+      {
+        "severity": "should-fix",
+        "entries": [
+          "z_late",
+          "z_page",
+          "fx_corner",
+          "fx_round",
+          "fx_ankle",
+          "z_shoulder"
+        ],
+        "problem": "After fn_signal establishes a hurt walker on a dark hill, c_fx_*_1 ('finish lighting after the walkers pass') and c_fx_*_0 end with the ridge half lit or lit late. The ending facts never say the walkers are safe, so the age-8-11 reader may be left on a worrying note.",
+        "route_or_state": "fn_signal -> fx_ankle c_1 -> z_late"
+      },
+      {
+        "severity": "minor",
+        "entries": [
+          "cq_payoff_did_start_sheepfold_turn",
+          "chapel_lamp",
+          "ovens_told_stores"
+        ],
+        "problem": "The planted fact is Mr Ovens's tip about old fuel stores. The payoff at oil_bench has Wren fetch a chapel camping lamp and a vicar's candles, which that tip does not cover.",
+        "route_or_state": "did_start_sheepfold_turn=true at oil_bench"
+      },
+      {
+        "severity": "minor",
+        "entries": [
+          "og_hang",
+          "c_n_list_2",
+          "og_hub",
+          "gt_bottom"
+        ],
+        "problem": "The plan labels the orchard as 'the easy bottom', but nothing about it plants a thread, and the choice c_n_list_2 sets no variable. Players on that branch can pass all the bottleneck nodes without ever learning the real state of the hill, which weakens the plan's truth-driven premise.",
+        "route_or_state": "n_list_2 -> og_hub -> ... -> gt_wind/gt_oil"
+      }
+    ]
+  }
+}

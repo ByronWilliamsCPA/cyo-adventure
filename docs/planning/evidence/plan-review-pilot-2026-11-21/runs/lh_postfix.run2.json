@@ -1,0 +1,213 @@
+{
+  "case": "lh_postfix",
+  "run": 2,
+  "model": "anthropic/claude-sonnet-5.5",
+  "usage": {
+    "prompt_tokens": 41430,
+    "completion_tokens": 17663,
+    "total_tokens": 59093,
+    "cost": 0.25949,
+    "is_byok": false,
+    "prompt_tokens_details": {
+      "cached_tokens": 0,
+      "cache_write_tokens": 0,
+      "audio_tokens": 0,
+      "video_tokens": 0
+    },
+    "cost_details": {
+      "upstream_inference_cost": 0.25949,
+      "upstream_inference_prompt_cost": 0.08286,
+      "upstream_inference_completions_cost": 0.17663
+    },
+    "completion_tokens_details": {
+      "reasoning_tokens": 14583,
+      "image_tokens": 0,
+      "audio_tokens": 0
+    }
+  },
+  "raw": "{\"verdict\":\"pass\",\"confidence\":0.6,\"summary\":\"The graph is well formed: I found no unreachable endings, no dead-end states, and no `requires` that some route into a node fails to establish, and every variable-gated choice has an ungated alternative or a complementary gate. The weak points are plan-level: facts that don't match their node events, a misplaced 'flash the call' action, a contradiction over whether Ferris took the money, and many setback forks where the right choice is obvious.\",\"findings\":[{\"severity\":\"should-fix\",\"entries\":[\"cm_smug_photo\",\"c_cm_smug_photo_1\",\"e_win_smugglers\",\"hand_lever\",\"cm_light_study\"],\"problem\":\"c_cm_smug_photo_1 has Mira 'flash the call' from the smuggler's store, and e_win_smugglers describes her doing it 'by the hand lever'. hand_lever is only established at cm_light_study, in the lamp room, and e_win_smugglers does not require it; it establishes it itself. The action has no stated location or means on this route.\",\"route_or_state\":\"n_chamber -> cm_smug -> cm_smug_photo (knows_code=true) -> e_win_smugglers; the lamp room is never visited.\"},{\"severity\":\"should-fix\",\"entries\":[\"jr_light_date\",\"c_jr_light_2\",\"t_ledger\",\"c_cm_smug_follow_3\",\"e_win_ledger\"],\"problem\":\"jr_light_date's event is a column of 'Blinking' dates, but it establishes ledger_tally (cargo landed for six winters, none taken away) and c_jr_light_2 sets knows_ledger. The reader may never see cargo tallies on this route, yet c_cm_smug_follow_3 and e_win_ledger rely on them. The thread's plant does not match the prose content.\",\"route_or_state\":\"n_journal -> jr_light -> c_jr_light_2 (knows_ledger=true) -> ... -> cm_smug_follow -> c_cm_smug_follow_3.\"},{\"severity\":\"should-fix\",\"entries\":[\"e_set_stair\",\"money_under_step\",\"truth_ferris_took_money\",\"cm_letter_conf\"],\"problem\":\"e_set_stair's gift says the keeper 'never took a penny' of V's money. truth_ferris_took_money and cm_letter_conf say he took it for six winters and never spent it. Which of these a reader sees depends on the ending, and the two framings contradict each other.\",\"route_or_state\":\"n_stairs -> st_wind -> c_st_wind_2 -> e_set_stair, versus the letter route to cm_letter_conf and e_win_name_cleared.\"},{\"severity\":\"should-fix\",\"entries\":[\"c_a_desk_drawer_2\",\"c_a_hearth_brick_2\",\"c_b_gallery_out_2\",\"c_c_pass_2\",\"c_c_arch_gap_2\",\"c_d_loft_2\",\"c_st_wind_2\",\"c_li_shaft_rope_2\",\"c_li_ladder_2\",\"c_tn_keep_stuck_2\",\"c_tn_keep_beam_2\",\"c_tn_gate_2\",\"c_jr_smug_join_2\",\"c_cm_smug_token_1\"],\"problem\":\"Most forks pair a 'slow, careful' option with a 'fast, reckless' option whose cost text announces the setback ending. This makes the right answer obvious and the choices not really different. Sixteen setback endings out of 33 make the structure repetitive, and for many of them the gift is mainly a consolation clue.\",\"route_or_state\":\"The careful option is the safe one at every one of these forks.\"},{\"severity\":\"should-fix\",\"entries\":[\"c_d_hatch_2\",\"d_hatch\",\"e_set_d_storm\",\"c_c_pass_2\",\"c_tn_gate_2\"],\"problem\":\"Some setbacks look arbitrary. c_d_hatch_2 (go back and wedge the banging door) is a sensible action but is punished with a shelf burying the hatch. c_c_pass_2 (wade the 'easy' middle) and c_tn_gate_2 (wade the slipway) have no cue that they are worse than the alternative.\",\"route_or_state\":\"n_start -> d_boat1 -> ... -> d_hatch -> c_d_hatch_2.\"},{\"severity\":\"should-fix\",\"entries\":[\"mirror_trick\",\"light_from_foundations\",\"figure_in_shaft\",\"little_lamp_rig\",\"n_light\",\"cm_light\"],\"problem\":\"Facts from branch b say the light is thrown up from 'far below' and starts 'low in the tower'. n_light reaches the little lamp by climbing stairs to a door, and cm_light places it directly below the great lamp, with the undercroft and tunnel further below. The geography of where the little rig sits is inconsistent across branches.\",\"route_or_state\":\"Branch b (b_lens_reflect, b_gallery_fog) versus n_stairs -> st_wind_up/st_outer_up -> n_light.\"},{\"severity\":\"should-fix\",\"entries\":[\"endings\",\"e_win_keeper_found\",\"e_win_keeper_word\",\"e_win_name_cleared\",\"e_win_promise\",\"e_win_smugglers\",\"e_win_harbor\",\"e_win_hoard\",\"e_win_ledger\",\"e_win_light_restored\",\"e_win_rescue\",\"e_win_signal\",\"e_neutral_letter\",\"e_neutral_honest\",\"e_neutral_town\",\"e_neutral_evidence\",\"e_neutral_museum\"],\"problem\":\"The endings section lists gifts only for the 16 setback endings. None of the 17 positive and neutral endings has a recorded gift, so the writer has no stated payoff for them. Several neutral endings are also near-duplicates (e_neutral_evidence vs e_neutral_museum, both ending in a run to the harbour office).\",\"route_or_state\":\"cm_leave -> cm_leave_mark -> c_cm_leave_mark_1 / c_cm_leave_mark_2.\"},{\"severity\":\"minor\",\"entries\":[\"tn_keep_side\",\"tn_keep_open\",\"c_tn_keep_beam_1\"],\"problem\":\"tn_keep_open says patience opens the keeper's door. On the beam route (c_tn_keep_beam_1 -> tn_keep_side -> tn_keep_open) Mira never tries the key, so the passage does not fit.\",\"route_or_state\":\"n_tunnel -> tn_keeper -> tn_keep_beam -> tn_keep_side -> tn_keep_open.\"},{\"severity\":\"minor\",\"entries\":[\"cm_cottage_wait\",\"ferris_warned_bog\",\"cm_cottage\"],\"problem\":\"ferris_warned_bog says Ferris told Mira 'in person'. In cm_cottage he speaks through a bolted door and Mira keeps to the gate. e_win_keeper_found also has him opening the door and talking, which only happens on the other two choices.\",\"route_or_state\":\"cm_cottage -> c_cm_cottage_3 -> cm_cottage_wait.\"},{\"severity\":\"minor\",\"entries\":[\"cm_smug\",\"n_tunnel\",\"c_n_chamber_2\"],\"problem\":\"cm_smug is described as 'Back in the store', but Mira may never have entered the store. Routes through tn_keeper, tn_gate, or tn_cut -> c_tn_cut_2 do not visit it, and store_seen is not required.\",\"route_or_state\":\"n_tunnel -> tn_keeper -> ... -> n_chamber -> c_n_chamber_2.\"},{\"severity\":\"minor\",\"entries\":[\"n_tunnel\",\"c_n_tunnel_4\",\"tn_cut\",\"t_way\"],\"problem\":\"n_tunnel shows every reader 'wet bootprints ending at the bracket' and the lantern on its bracket. That nearly shows the thread's payoff (the hidden way behind the bracket) to readers who never took a t_way planting choice. The option stays gated, but the hint is unearned.\",\"route_or_state\":\"knows_tunnel=false at n_tunnel.\"},{\"severity\":\"minor\",\"entries\":[\"cm_cottage\",\"c_cm_cottage_1\",\"c_cm_cottage_2\",\"t_code\"],\"problem\":\"The two cottage options are gated on knows_code being false or true, so each reader has only one honest-words choice plus the 'fetch help' option. The t_code payoff here is a different line of dialogue rather than a real decision. The lamp code gives no mechanical advantage over the bus line.\",\"route_or_state\":\"cm_cottage with knows_code true or false.\"},{\"severity\":\"minor\",\"entries\":[\"b_lens\",\"b_lens_crack\",\"hidden_mirror\",\"t_key\"],\"problem\":\"b_lens shows every reader 'a bundle hung behind' the hidden mirror, which is where the key is. Readers who take c_b_lens_1 see the plant without choosing it. This is not a serious break but weakens the thread.\",\"route_or_state\":\"b_lamp1 -> b_lens -> c_b_lens_1.\"},{\"severity\":\"minor\",\"entries\":[\"lamp_key_hook_empty\",\"n_chamber\"],\"problem\":\"lamp_key_hook_empty is established at n_chamber but nothing requires or pays it off. It does not cross-reference the key sources (a drawer, a hearth, a tin, a mirror, a pool), which all deliver the same key by different routes.\",\"route_or_state\":\"n_chamber.\"}]}",
+  "parsed": {
+    "verdict": "pass",
+    "confidence": 0.6,
+    "summary": "The graph is well formed: I found no unreachable endings, no dead-end states, and no `requires` that some route into a node fails to establish, and every variable-gated choice has an ungated alternative or a complementary gate. The weak points are plan-level: facts that don't match their node events, a misplaced 'flash the call' action, a contradiction over whether Ferris took the money, and many setback forks where the right choice is obvious.",
+    "findings": [
+      {
+        "severity": "should-fix",
+        "entries": [
+          "cm_smug_photo",
+          "c_cm_smug_photo_1",
+          "e_win_smugglers",
+          "hand_lever",
+          "cm_light_study"
+        ],
+        "problem": "c_cm_smug_photo_1 has Mira 'flash the call' from the smuggler's store, and e_win_smugglers describes her doing it 'by the hand lever'. hand_lever is only established at cm_light_study, in the lamp room, and e_win_smugglers does not require it; it establishes it itself. The action has no stated location or means on this route.",
+        "route_or_state": "n_chamber -> cm_smug -> cm_smug_photo (knows_code=true) -> e_win_smugglers; the lamp room is never visited."
+      },
+      {
+        "severity": "should-fix",
+        "entries": [
+          "jr_light_date",
+          "c_jr_light_2",
+          "t_ledger",
+          "c_cm_smug_follow_3",
+          "e_win_ledger"
+        ],
+        "problem": "jr_light_date's event is a column of 'Blinking' dates, but it establishes ledger_tally (cargo landed for six winters, none taken away) and c_jr_light_2 sets knows_ledger. The reader may never see cargo tallies on this route, yet c_cm_smug_follow_3 and e_win_ledger rely on them. The thread's plant does not match the prose content.",
+        "route_or_state": "n_journal -> jr_light -> c_jr_light_2 (knows_ledger=true) -> ... -> cm_smug_follow -> c_cm_smug_follow_3."
+      },
+      {
+        "severity": "should-fix",
+        "entries": [
+          "e_set_stair",
+          "money_under_step",
+          "truth_ferris_took_money",
+          "cm_letter_conf"
+        ],
+        "problem": "e_set_stair's gift says the keeper 'never took a penny' of V's money. truth_ferris_took_money and cm_letter_conf say he took it for six winters and never spent it. Which of these a reader sees depends on the ending, and the two framings contradict each other.",
+        "route_or_state": "n_stairs -> st_wind -> c_st_wind_2 -> e_set_stair, versus the letter route to cm_letter_conf and e_win_name_cleared."
+      },
+      {
+        "severity": "should-fix",
+        "entries": [
+          "c_a_desk_drawer_2",
+          "c_a_hearth_brick_2",
+          "c_b_gallery_out_2",
+          "c_c_pass_2",
+          "c_c_arch_gap_2",
+          "c_d_loft_2",
+          "c_st_wind_2",
+          "c_li_shaft_rope_2",
+          "c_li_ladder_2",
+          "c_tn_keep_stuck_2",
+          "c_tn_keep_beam_2",
+          "c_tn_gate_2",
+          "c_jr_smug_join_2",
+          "c_cm_smug_token_1"
+        ],
+        "problem": "Most forks pair a 'slow, careful' option with a 'fast, reckless' option whose cost text announces the setback ending. This makes the right answer obvious and the choices not really different. Sixteen setback endings out of 33 make the structure repetitive, and for many of them the gift is mainly a consolation clue.",
+        "route_or_state": "The careful option is the safe one at every one of these forks."
+      },
+      {
+        "severity": "should-fix",
+        "entries": [
+          "c_d_hatch_2",
+          "d_hatch",
+          "e_set_d_storm",
+          "c_c_pass_2",
+          "c_tn_gate_2"
+        ],
+        "problem": "Some setbacks look arbitrary. c_d_hatch_2 (go back and wedge the banging door) is a sensible action but is punished with a shelf burying the hatch. c_c_pass_2 (wade the 'easy' middle) and c_tn_gate_2 (wade the slipway) have no cue that they are worse than the alternative.",
+        "route_or_state": "n_start -> d_boat1 -> ... -> d_hatch -> c_d_hatch_2."
+      },
+      {
+        "severity": "should-fix",
+        "entries": [
+          "mirror_trick",
+          "light_from_foundations",
+          "figure_in_shaft",
+          "little_lamp_rig",
+          "n_light",
+          "cm_light"
+        ],
+        "problem": "Facts from branch b say the light is thrown up from 'far below' and starts 'low in the tower'. n_light reaches the little lamp by climbing stairs to a door, and cm_light places it directly below the great lamp, with the undercroft and tunnel further below. The geography of where the little rig sits is inconsistent across branches.",
+        "route_or_state": "Branch b (b_lens_reflect, b_gallery_fog) versus n_stairs -> st_wind_up/st_outer_up -> n_light."
+      },
+      {
+        "severity": "should-fix",
+        "entries": [
+          "endings",
+          "e_win_keeper_found",
+          "e_win_keeper_word",
+          "e_win_name_cleared",
+          "e_win_promise",
+          "e_win_smugglers",
+          "e_win_harbor",
+          "e_win_hoard",
+          "e_win_ledger",
+          "e_win_light_restored",
+          "e_win_rescue",
+          "e_win_signal",
+          "e_neutral_letter",
+          "e_neutral_honest",
+          "e_neutral_town",
+          "e_neutral_evidence",
+          "e_neutral_museum"
+        ],
+        "problem": "The endings section lists gifts only for the 16 setback endings. None of the 17 positive and neutral endings has a recorded gift, so the writer has no stated payoff for them. Several neutral endings are also near-duplicates (e_neutral_evidence vs e_neutral_museum, both ending in a run to the harbour office).",
+        "route_or_state": "cm_leave -> cm_leave_mark -> c_cm_leave_mark_1 / c_cm_leave_mark_2."
+      },
+      {
+        "severity": "minor",
+        "entries": [
+          "tn_keep_side",
+          "tn_keep_open",
+          "c_tn_keep_beam_1"
+        ],
+        "problem": "tn_keep_open says patience opens the keeper's door. On the beam route (c_tn_keep_beam_1 -> tn_keep_side -> tn_keep_open) Mira never tries the key, so the passage does not fit.",
+        "route_or_state": "n_tunnel -> tn_keeper -> tn_keep_beam -> tn_keep_side -> tn_keep_open."
+      },
+      {
+        "severity": "minor",
+        "entries": [
+          "cm_cottage_wait",
+          "ferris_warned_bog",
+          "cm_cottage"
+        ],
+        "problem": "ferris_warned_bog says Ferris told Mira 'in person'. In cm_cottage he speaks through a bolted door and Mira keeps to the gate. e_win_keeper_found also has him opening the door and talking, which only happens on the other two choices.",
+        "route_or_state": "cm_cottage -> c_cm_cottage_3 -> cm_cottage_wait."
+      },
+      {
+        "severity": "minor",
+        "entries": [
+          "cm_smug",
+          "n_tunnel",
+          "c_n_chamber_2"
+        ],
+        "problem": "cm_smug is described as 'Back in the store', but Mira may never have entered the store. Routes through tn_keeper, tn_gate, or tn_cut -> c_tn_cut_2 do not visit it, and store_seen is not required.",
+        "route_or_state": "n_tunnel -> tn_keeper -> ... -> n_chamber -> c_n_chamber_2."
+      },
+      {
+        "severity": "minor",
+        "entries": [
+          "n_tunnel",
+          "c_n_tunnel_4",
+          "tn_cut",
+          "t_way"
+        ],
+        "problem": "n_tunnel shows every reader 'wet bootprints ending at the bracket' and the lantern on its bracket. That nearly shows the thread's payoff (the hidden way behind the bracket) to readers who never took a t_way planting choice. The option stays gated, but the hint is unearned.",
+        "route_or_state": "knows_tunnel=false at n_tunnel."
+      },
+      {
+        "severity": "minor",
+        "entries": [
+          "cm_cottage",
+          "c_cm_cottage_1",
+          "c_cm_cottage_2",
+          "t_code"
+        ],
+        "problem": "The two cottage options are gated on knows_code being false or true, so each reader has only one honest-words choice plus the 'fetch help' option. The t_code payoff here is a different line of dialogue rather than a real decision. The lamp code gives no mechanical advantage over the bus line.",
+        "route_or_state": "cm_cottage with knows_code true or false."
+      },
+      {
+        "severity": "minor",
+        "entries": [
+          "b_lens",
+          "b_lens_crack",
+          "hidden_mirror",
+          "t_key"
+        ],
+        "problem": "b_lens shows every reader 'a bundle hung behind' the hidden mirror, which is where the key is. Readers who take c_b_lens_1 see the plant without choosing it. This is not a serious break but weakens the thread.",
+        "route_or_state": "b_lamp1 -> b_lens -> c_b_lens_1."
+      },
+      {
+        "severity": "minor",
+        "entries": [
+          "lamp_key_hook_empty",
+          "n_chamber"
+        ],
+        "problem": "lamp_key_hook_empty is established at n_chamber but nothing requires or pays it off. It does not cross-reference the key sources (a drawer, a hearth, a tin, a mirror, a pool), which all deliver the same key by different routes.",
+        "route_or_state": "n_chamber."
+      }
+    ]
+  }
+}

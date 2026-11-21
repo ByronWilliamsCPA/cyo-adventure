@@ -1,0 +1,224 @@
+{
+  "case": "orchard_postfix",
+  "run": 2,
+  "model": "anthropic/claude-sonnet-5.5",
+  "usage": {
+    "prompt_tokens": 48386,
+    "completion_tokens": 15387,
+    "total_tokens": 63773,
+    "cost": 0.250642,
+    "is_byok": false,
+    "prompt_tokens_details": {
+      "cached_tokens": 0,
+      "cache_write_tokens": 0,
+      "audio_tokens": 0,
+      "video_tokens": 0
+    },
+    "cost_details": {
+      "upstream_inference_cost": 0.250642,
+      "upstream_inference_prompt_cost": 0.096772,
+      "upstream_inference_completions_cost": 0.15387
+    },
+    "completion_tokens_details": {
+      "reasoning_tokens": 12078,
+      "image_tokens": 0,
+      "audio_tokens": 0
+    }
+  },
+  "raw": "{\"verdict\":\"reject\",\"confidence\":0.8,\"summary\":\"The first-act routes are well formed. The plan has several outright contradictions between choices, states and endings (b1a, b2t, e_trade_photo, the n_b3 to n_b4 collapse). Some passages also presuppose characters or facts that the route into them never introduced.\",\"findings\":[{\"severity\":\"blocker\",\"entries\":[\"b1a_dec\",\"c_b1a_dec_1\",\"c_b1a_dec_2\",\"e_b1a\",\"deeper_truth_lost\"],\"problem\":\"The choice labels are inverted against the ending. c_b1a_dec_2 ('pull back') leads to e_b1a, whose event and fact deeper_truth_lost say Rowan 'held on too long' and the spring closed. c_b1a_dec_1 ('keep her hands in the water') is the one that continues to b1at_p1. A writer cannot make the prose match both the choice and the ending.\",\"route_or_state\":\"n_b1 -> b1a_p1..p3 -> b1a_dec -> c_b1a_dec_2 -> e_b1a\"},{\"severity\":\"blocker\",\"entries\":[\"b2t_p1\",\"sunday_kitchen_given\",\"b2t_d1\",\"c_b2t_d1_2\",\"e_b2ta\",\"kept_everything\"],\"problem\":\"b2t_p1 establishes sunday_kitchen_given: Rowan has already given the root her Sunday-kitchen memory. e_b2ta, reached from the same route, says she snatches her hand back and 'keeps every memory' (kept_everything). That is false on this route.\",\"route_or_state\":\"n_b2 -> b2t_p1 -> b2t_p2 -> b2t_p3 -> b2t_d1 -> c_b2t_d1_2 -> e_b2ta\"},{\"severity\":\"blocker\",\"entries\":[\"fin_trade_2\",\"year_restored\",\"e_trade_photo\",\"photo_kept\",\"c_fin_trade_2_3\"],\"problem\":\"fin_trade_2 has already established year_restored (the bakery returned). e_trade_photo then says Rowan 'buys nothing back' and its gift says 'keeping buys nothing'. The photograph she 'brought from home' (the orchard gate, the year she was born) is never planted anywhere earlier, and the choice is a withholding after the trade is complete.\",\"route_or_state\":\"n_b4 -> fin_trade_1 -> fin_trade_2 -> c_fin_trade_2_3 -> e_trade_photo\"},{\"severity\":\"should-fix\",\"entries\":[\"n_b3\",\"c_n_b3_2\",\"c_n_b3_3\",\"c_n_b3_1\",\"n_b4\",\"c_n_b4_1\",\"fin_one_1\",\"fin_all_2\"],\"problem\":\"The n_b3 fork has no lasting effect, because variables is empty and every b3 branch converges on n_b4 with the same four options. The stated costs are false: 'most of the town stays lost' and 'gives up restoring the town' both lead to a menu that includes full restoration. fin_all_2 also invokes 'the town's remembering behind them', which only the b3u route established (town_gathered). fin_one_1 re-introduces the neighbour girl as new even on the b3v route that already introduced her.\",\"route_or_state\":\"n_b3 -> b3v or b3w route -> n_b4 -> fin_all_1 / fin_all_2\"},{\"severity\":\"should-fix\",\"entries\":[\"n_b5\",\"neighbour_girl\",\"fin_all_2\",\"fin_share_2\",\"town_restored\"],\"problem\":\"n_b5 says the restoration returns 'a gap-toothed girl'. On routes through fin_all or fin_share that skip b3v, neighbour_girl is never established, so the reader has never met her. n_b5 does not require neighbour_girl.\",\"route_or_state\":\"n_b3 -> b3u_* or b3w_* -> n_b4 -> fin_all_* or fin_share_* -> n_b5\"},{\"severity\":\"should-fix\",\"entries\":[\"n_b3\",\"odile_and_teo_arrive\",\"odile_fenn\",\"teo_will_come\",\"odile_cannot_descend\",\"b3ut_p1\"],\"problem\":\"Odile and Teo arrive at the spring on every route, but only the kee route set up a summons (teo_will_come). On the rec, pho and cel routes Odile has never been introduced. On the kee route she is established as unable to descend the hill (odile_cannot_descend), yet she reaches the spring on Teo's arm.\",\"route_or_state\":\"rec, pho, cel routes -> n_b3; kee route -> n_b3\"},{\"severity\":\"should-fix\",\"entries\":[\"rowan_immune\",\"e_pho_b\",\"understanding_erased\",\"e_cel_b\",\"purpose_drained\"],\"problem\":\"rowan_immune and the truth say the forgetting cannot take Rowan. Yet e_pho_b says the Quiet erases her understanding by morning, and e_cel_b says her purpose drains on the stair. The 'immune' premise is broken by non-consensual draining.\",\"route_or_state\":\"pho_bdec -> c_pho_bdec_2 -> e_pho_b; cel_bdec -> c_cel_bdec_2 -> e_cel_b\"},{\"severity\":\"should-fix\",\"entries\":[\"truth\",\"name_every_year\",\"bargain_every_40_years\",\"keeper_line_broke_40y\",\"clause_names_keeper\",\"keepers_cord\"],\"problem\":\"The keeper mechanics contradict each other. The tree is given one willing name every year, the lease renews every fortieth year, one keeper is named per renewal, and the line 'broke' forty years ago with no keeper since. A writer cannot tell how many keepers exist or why the cord has a knot per keeper.\",\"route_or_state\":\"kee_a_p3, rec_b_p2/p4, truth.statement\"},{\"severity\":\"should-fix\",\"entries\":[\"cel_t_p3\",\"grandmother_seen_in_photos\",\"grandmother_was_keeper\"],\"problem\":\"On the cel route cel_t_p3 says the grandmother is 'younger than in any photograph she has seen', but this route has never shown Rowan a photograph of her. grandmother_seen_in_photos is only established by pho_conv and by cel_t_p3 itself. How Rowan recognises a grandmother she never met is also not established on this route.\",\"route_or_state\":\"n_start -> cel_entry -> ... -> cel_t_p3\"},{\"severity\":\"should-fix\",\"entries\":[\"c_b2t_m_2\",\"e_b2tb\",\"family_memories_traded\",\"sunday_kitchen_given\"],\"problem\":\"The choice cost says she gives 'her memory of her grandmother', but the ending says she gives every memory of her family. Rowan never met her grandmother (only photos), so the choice cost is incoherent and does not match the ending.\",\"route_or_state\":\"b2t_m -> c_b2t_m_2 -> e_b2tb\"},{\"severity\":\"should-fix\",\"entries\":[\"b3u_p2\",\"town_gathered\",\"b3u_m\",\"c_b3u_m_1\",\"c_b3u_m_2\",\"e_b3us\"],\"problem\":\"town_gathered is established before b3u_m asks whether to wait 'until enough have come' or begin 'before the town has arrived'. The crowd is already there, so the fork is contradictory. b3u_p2 also names the deed-hall clerk, whom readers on the kee, pho and cel routes never met.\",\"route_or_state\":\"n_b3 -> b3u_p1..p3 -> b3u_d1 -> b3u_m\"},{\"severity\":\"should-fix\",\"entries\":[\"e_b2ka\",\"refused_keeper\",\"b2k_d1\",\"c_b2k_d1_2\"],\"problem\":\"e_b2ka's event refers to 'the old keeper on Mabb Hill', who is only introduced on the kee route. b2k_p1, b2k_d1 and e_b2kb also use the empty knot and cord-knot language that was never introduced on the rec, pho and cel routes.\",\"route_or_state\":\"rec, pho or cel route -> n_b2 -> b2k_* -> e_b2ka / e_b2kb\"},{\"severity\":\"should-fix\",\"entries\":[\"rec_adec\",\"rec_bdec\",\"pho_adec\",\"pho_bdec\",\"kee_bdec\",\"kee_adec\",\"cel_adec\",\"cel_bdec\",\"c_fin_one_1_2\",\"c_fin_one_2_2\",\"e_one_saved\",\"e_one_content\"],\"problem\":\"Almost every fork has one obviously right option and one self-evidently destructive setback: press the clerk until he breaks, burn the prints, cut the cord, snatch her hand back, 'hesitate over which memory', or shout alone. Some of these 'choices' are pure traps. e_one_saved and e_one_content, reached from fin_one_2, are near-identical, and c_fin_one_2_2 ('ask whether she might save one more') leads to an ending where she 'accepts' one.\",\"route_or_state\":\"many decision nodes; fin_one_2\"},{\"severity\":\"minor\",\"entries\":[\"kee_t_p4\",\"frost_deadline\",\"n_b4\",\"first_frost_silvering\",\"e_one_hesitate\",\"afternoon_investigation\"],\"problem\":\"Odile says the first frost is 'days away', but the whole sequence runs from afternoon through dusk to frost-bright morning. n_b4 shows frost already silvering the grass, yet the bargain is still open to be restored afterwards. cel_a_p3 calls it September while also describing mild autumn. The frost deadline's logic is loose.\",\"route_or_state\":\"kee route -> n_b4; fin_all_*\"},{\"severity\":\"minor\",\"entries\":[\"fin_share_1\",\"n_b4\"],\"problem\":\"fin_share_1 has empty requires, yet its event presupposes the spring, the seed and the crowd. The crowd (crowd_at_stair) is established only by this node itself, never by the routes leading into it.\",\"route_or_state\":\"n_b4 -> fin_share_1\"}]}",
+  "parsed": {
+    "verdict": "reject",
+    "confidence": 0.8,
+    "summary": "The first-act routes are well formed. The plan has several outright contradictions between choices, states and endings (b1a, b2t, e_trade_photo, the n_b3 to n_b4 collapse). Some passages also presuppose characters or facts that the route into them never introduced.",
+    "findings": [
+      {
+        "severity": "blocker",
+        "entries": [
+          "b1a_dec",
+          "c_b1a_dec_1",
+          "c_b1a_dec_2",
+          "e_b1a",
+          "deeper_truth_lost"
+        ],
+        "problem": "The choice labels are inverted against the ending. c_b1a_dec_2 ('pull back') leads to e_b1a, whose event and fact deeper_truth_lost say Rowan 'held on too long' and the spring closed. c_b1a_dec_1 ('keep her hands in the water') is the one that continues to b1at_p1. A writer cannot make the prose match both the choice and the ending.",
+        "route_or_state": "n_b1 -> b1a_p1..p3 -> b1a_dec -> c_b1a_dec_2 -> e_b1a"
+      },
+      {
+        "severity": "blocker",
+        "entries": [
+          "b2t_p1",
+          "sunday_kitchen_given",
+          "b2t_d1",
+          "c_b2t_d1_2",
+          "e_b2ta",
+          "kept_everything"
+        ],
+        "problem": "b2t_p1 establishes sunday_kitchen_given: Rowan has already given the root her Sunday-kitchen memory. e_b2ta, reached from the same route, says she snatches her hand back and 'keeps every memory' (kept_everything). That is false on this route.",
+        "route_or_state": "n_b2 -> b2t_p1 -> b2t_p2 -> b2t_p3 -> b2t_d1 -> c_b2t_d1_2 -> e_b2ta"
+      },
+      {
+        "severity": "blocker",
+        "entries": [
+          "fin_trade_2",
+          "year_restored",
+          "e_trade_photo",
+          "photo_kept",
+          "c_fin_trade_2_3"
+        ],
+        "problem": "fin_trade_2 has already established year_restored (the bakery returned). e_trade_photo then says Rowan 'buys nothing back' and its gift says 'keeping buys nothing'. The photograph she 'brought from home' (the orchard gate, the year she was born) is never planted anywhere earlier, and the choice is a withholding after the trade is complete.",
+        "route_or_state": "n_b4 -> fin_trade_1 -> fin_trade_2 -> c_fin_trade_2_3 -> e_trade_photo"
+      },
+      {
+        "severity": "should-fix",
+        "entries": [
+          "n_b3",
+          "c_n_b3_2",
+          "c_n_b3_3",
+          "c_n_b3_1",
+          "n_b4",
+          "c_n_b4_1",
+          "fin_one_1",
+          "fin_all_2"
+        ],
+        "problem": "The n_b3 fork has no lasting effect, because variables is empty and every b3 branch converges on n_b4 with the same four options. The stated costs are false: 'most of the town stays lost' and 'gives up restoring the town' both lead to a menu that includes full restoration. fin_all_2 also invokes 'the town's remembering behind them', which only the b3u route established (town_gathered). fin_one_1 re-introduces the neighbour girl as new even on the b3v route that already introduced her.",
+        "route_or_state": "n_b3 -> b3v or b3w route -> n_b4 -> fin_all_1 / fin_all_2"
+      },
+      {
+        "severity": "should-fix",
+        "entries": [
+          "n_b5",
+          "neighbour_girl",
+          "fin_all_2",
+          "fin_share_2",
+          "town_restored"
+        ],
+        "problem": "n_b5 says the restoration returns 'a gap-toothed girl'. On routes through fin_all or fin_share that skip b3v, neighbour_girl is never established, so the reader has never met her. n_b5 does not require neighbour_girl.",
+        "route_or_state": "n_b3 -> b3u_* or b3w_* -> n_b4 -> fin_all_* or fin_share_* -> n_b5"
+      },
+      {
+        "severity": "should-fix",
+        "entries": [
+          "n_b3",
+          "odile_and_teo_arrive",
+          "odile_fenn",
+          "teo_will_come",
+          "odile_cannot_descend",
+          "b3ut_p1"
+        ],
+        "problem": "Odile and Teo arrive at the spring on every route, but only the kee route set up a summons (teo_will_come). On the rec, pho and cel routes Odile has never been introduced. On the kee route she is established as unable to descend the hill (odile_cannot_descend), yet she reaches the spring on Teo's arm.",
+        "route_or_state": "rec, pho, cel routes -> n_b3; kee route -> n_b3"
+      },
+      {
+        "severity": "should-fix",
+        "entries": [
+          "rowan_immune",
+          "e_pho_b",
+          "understanding_erased",
+          "e_cel_b",
+          "purpose_drained"
+        ],
+        "problem": "rowan_immune and the truth say the forgetting cannot take Rowan. Yet e_pho_b says the Quiet erases her understanding by morning, and e_cel_b says her purpose drains on the stair. The 'immune' premise is broken by non-consensual draining.",
+        "route_or_state": "pho_bdec -> c_pho_bdec_2 -> e_pho_b; cel_bdec -> c_cel_bdec_2 -> e_cel_b"
+      },
+      {
+        "severity": "should-fix",
+        "entries": [
+          "truth",
+          "name_every_year",
+          "bargain_every_40_years",
+          "keeper_line_broke_40y",
+          "clause_names_keeper",
+          "keepers_cord"
+        ],
+        "problem": "The keeper mechanics contradict each other. The tree is given one willing name every year, the lease renews every fortieth year, one keeper is named per renewal, and the line 'broke' forty years ago with no keeper since. A writer cannot tell how many keepers exist or why the cord has a knot per keeper.",
+        "route_or_state": "kee_a_p3, rec_b_p2/p4, truth.statement"
+      },
+      {
+        "severity": "should-fix",
+        "entries": [
+          "cel_t_p3",
+          "grandmother_seen_in_photos",
+          "grandmother_was_keeper"
+        ],
+        "problem": "On the cel route cel_t_p3 says the grandmother is 'younger than in any photograph she has seen', but this route has never shown Rowan a photograph of her. grandmother_seen_in_photos is only established by pho_conv and by cel_t_p3 itself. How Rowan recognises a grandmother she never met is also not established on this route.",
+        "route_or_state": "n_start -> cel_entry -> ... -> cel_t_p3"
+      },
+      {
+        "severity": "should-fix",
+        "entries": [
+          "c_b2t_m_2",
+          "e_b2tb",
+          "family_memories_traded",
+          "sunday_kitchen_given"
+        ],
+        "problem": "The choice cost says she gives 'her memory of her grandmother', but the ending says she gives every memory of her family. Rowan never met her grandmother (only photos), so the choice cost is incoherent and does not match the ending.",
+        "route_or_state": "b2t_m -> c_b2t_m_2 -> e_b2tb"
+      },
+      {
+        "severity": "should-fix",
+        "entries": [
+          "b3u_p2",
+          "town_gathered",
+          "b3u_m",
+          "c_b3u_m_1",
+          "c_b3u_m_2",
+          "e_b3us"
+        ],
+        "problem": "town_gathered is established before b3u_m asks whether to wait 'until enough have come' or begin 'before the town has arrived'. The crowd is already there, so the fork is contradictory. b3u_p2 also names the deed-hall clerk, whom readers on the kee, pho and cel routes never met.",
+        "route_or_state": "n_b3 -> b3u_p1..p3 -> b3u_d1 -> b3u_m"
+      },
+      {
+        "severity": "should-fix",
+        "entries": [
+          "e_b2ka",
+          "refused_keeper",
+          "b2k_d1",
+          "c_b2k_d1_2"
+        ],
+        "problem": "e_b2ka's event refers to 'the old keeper on Mabb Hill', who is only introduced on the kee route. b2k_p1, b2k_d1 and e_b2kb also use the empty knot and cord-knot language that was never introduced on the rec, pho and cel routes.",
+        "route_or_state": "rec, pho or cel route -> n_b2 -> b2k_* -> e_b2ka / e_b2kb"
+      },
+      {
+        "severity": "should-fix",
+        "entries": [
+          "rec_adec",
+          "rec_bdec",
+          "pho_adec",
+          "pho_bdec",
+          "kee_bdec",
+          "kee_adec",
+          "cel_adec",
+          "cel_bdec",
+          "c_fin_one_1_2",
+          "c_fin_one_2_2",
+          "e_one_saved",
+          "e_one_content"
+        ],
+        "problem": "Almost every fork has one obviously right option and one self-evidently destructive setback: press the clerk until he breaks, burn the prints, cut the cord, snatch her hand back, 'hesitate over which memory', or shout alone. Some of these 'choices' are pure traps. e_one_saved and e_one_content, reached from fin_one_2, are near-identical, and c_fin_one_2_2 ('ask whether she might save one more') leads to an ending where she 'accepts' one.",
+        "route_or_state": "many decision nodes; fin_one_2"
+      },
+      {
+        "severity": "minor",
+        "entries": [
+          "kee_t_p4",
+          "frost_deadline",
+          "n_b4",
+          "first_frost_silvering",
+          "e_one_hesitate",
+          "afternoon_investigation"
+        ],
+        "problem": "Odile says the first frost is 'days away', but the whole sequence runs from afternoon through dusk to frost-bright morning. n_b4 shows frost already silvering the grass, yet the bargain is still open to be restored afterwards. cel_a_p3 calls it September while also describing mild autumn. The frost deadline's logic is loose.",
+        "route_or_state": "kee route -> n_b4; fin_all_*"
+      },
+      {
+        "severity": "minor",
+        "entries": [
+          "fin_share_1",
+          "n_b4"
+        ],
+        "problem": "fin_share_1 has empty requires, yet its event presupposes the spring, the seed and the crowd. The crowd (crowd_at_stair) is established only by this node itself, never by the routes leading into it.",
+        "route_or_state": "n_b4 -> fin_share_1"
+      }
+    ]
+  }
+}

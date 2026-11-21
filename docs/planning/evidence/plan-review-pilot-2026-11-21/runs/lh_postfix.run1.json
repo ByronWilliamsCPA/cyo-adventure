@@ -1,0 +1,186 @@
+{
+  "case": "lh_postfix",
+  "run": 1,
+  "model": "anthropic/claude-sonnet-5.5",
+  "usage": {
+    "prompt_tokens": 41430,
+    "completion_tokens": 15713,
+    "total_tokens": 57143,
+    "cost": 0.23999,
+    "is_byok": false,
+    "prompt_tokens_details": {
+      "cached_tokens": 0,
+      "cache_write_tokens": 0,
+      "audio_tokens": 0,
+      "video_tokens": 0
+    },
+    "cost_details": {
+      "upstream_inference_cost": 0.23999,
+      "upstream_inference_prompt_cost": 0.08286,
+      "upstream_inference_completions_cost": 0.15713
+    },
+    "completion_tokens_details": {
+      "reasoning_tokens": 13336,
+      "image_tokens": 0,
+      "audio_tokens": 0
+    }
+  },
+  "raw": "{\"verdict\":\"reject\",\"confidence\":0.6,\"summary\":\"The graph is mostly sound: the variable-gated routes and the t_key, t_way, t_code and t_ledger threads line up with the facts each node establishes. One route leaves a promised ending unsupported by its own entry, and several continuity gaps and weak forks remain.\",\"findings\":[{\"severity\":\"blocker\",\"entries\":[\"cm_smug_photo\",\"c_cm_smug_photo_1\",\"e_win_smugglers\",\"hand_lever\",\"cm_light_study\"],\"problem\":\"The choice to flash the call is offered in the smugglers' store, but the ending depends on the hand lever, which only cm_light_study establishes in the lamp room. The ending itself 'establishes' hand_lever, and the store route never passes the lamp or the lever, so the writer has no way to make the flashing coherent.\",\"route_or_state\":\"n_chamber -> cm_smug -> cm_smug_photo (knows_code=true) -> e_win_smugglers; hand_lever is never established on this path\"},{\"severity\":\"should-fix\",\"entries\":[\"d_hatch\",\"d_dinghy_tarp\",\"d_dinghy_tin\",\"d_loft_up\",\"d_locker_rope\",\"c_d_hatch_1\"],\"problem\":\"d_hatch presupposes that Mira already knows about a floor hatch, but only d_locker_rope ('finds the floor hatch') establishes it. The dinghy and loft routes reach d_hatch with no hatch fact, and the hatch is not in the facts ledger at all.\",\"route_or_state\":\"n_start -> d_boat1 -> d_dinghy or d_loft -> d_hatch\"},{\"severity\":\"should-fix\",\"entries\":[\"e_set_stair\",\"money_under_step\",\"truth_ferris_took_money\",\"cm_letter_conf\"],\"problem\":\"The gift for e_set_stair says the keeper 'never took a penny', but the truth and ledger say Ferris took the money for six winters and only never spent it. Prose following the gift would contradict truth_ferris_took_money.\",\"route_or_state\":\"st_wind -> c_st_wind_2 -> e_set_stair\"},{\"severity\":\"should-fix\",\"entries\":[\"cm_smug\",\"store_seen\",\"tn_store\",\"n_chamber\"],\"problem\":\"cm_smug is written as 'Back in the store' but requires nothing. Readers who reached n_chamber via the keeper's door, the sea gate or the keeper's way have never been in the store, because store_seen comes only from tn_store.\",\"route_or_state\":\"n_tunnel -> tn_keeper, tn_gate or tn_cut -> n_chamber -> c_n_chamber_2 -> cm_smug\"},{\"severity\":\"should-fix\",\"entries\":[\"e_win_promise\",\"mira_carries_journal\",\"cm_letter_plea\"],\"problem\":\"e_win_promise has Mira writing a promise in the keeper's journal and winding the little lamp. Neither the journal in her hands nor a way to wind the lamp is established or required on this route. mira_carries_journal is established only in cm_leave.\",\"route_or_state\":\"n_chamber -> cm_letter -> cm_letter_read -> cm_letter_plea -> e_win_promise\"},{\"severity\":\"should-fix\",\"entries\":[\"c_cm_smug_follow_1\",\"c_cm_smug_follow_2\",\"cm_smug_token\",\"c_cm_smug_token_2\",\"e_win_hoard\",\"e_neutral_honest\",\"c_cm_smug_token_1\",\"e_set_token\"],\"problem\":\"Both safe options end in 'photograph the compass untouched' and show the same bait wire. Reaching first and then leaving it gives a weaker neutral ending than never reaching (e_neutral_honest versus e_win_hoard). The pocket choice is a signposted trap with an obvious right answer.\",\"route_or_state\":\"cm_smug -> cm_smug_follow\"},{\"severity\":\"should-fix\",\"entries\":[\"c_a_desk_drawer_2\",\"c_a_hearth_brick_2\",\"c_b_gallery_out_2\",\"c_c_pass_2\",\"c_c_arch_gap_2\",\"c_d_loft_2\",\"c_d_hatch_2\",\"c_st_wind_2\",\"c_li_shaft_rope_2\",\"c_li_ladder_2\",\"c_tn_keep_door_2\",\"c_tn_keep_stuck_2\",\"c_tn_keep_beam_2\",\"c_tn_gate_2\",\"c_cm_light_relight_2\"],\"problem\":\"Almost every risky fork is signposted in its cost as a setback, and the patient or careful option always wins. The choices do not really differ and the lesson is always 'be gentle', so the many setback endings feel arbitrary for a 10-13 reader.\",\"route_or_state\":\"throughout\"},{\"severity\":\"should-fix\",\"entries\":[\"e_win_signal\",\"c_cm_light_study_2\",\"e_set_shaft\"],\"problem\":\"e_win_signal is typed as a success, but it only reveals that the spring was wound hours ago. The same discovery is already the gift of e_set_shaft, a setback, so the payoff is weaker than the label implies and nothing is resolved.\",\"route_or_state\":\"cm_light -> cm_light_study -> c_cm_light_study_2 (and any knows_code=false reader, who has only this option)\"},{\"severity\":\"minor\",\"entries\":[\"tn_gate_open\",\"tn_gate_dash\",\"tn_gate_wait\",\"c_tn_gate_open_1\",\"c_tn_gate_open_2\"],\"problem\":\"Both options end with Mira soaked and frightened (tn_gate_dash and tn_gate_wait). The waiting option costs 'time' but does not avoid the soaking, so the only real difference is the ledger fact.\",\"route_or_state\":\"n_tunnel -> tn_gate -> tn_gate_open\"},{\"severity\":\"minor\",\"entries\":[\"cm_cottage\",\"c_cm_cottage_1\",\"c_cm_cottage_2\",\"cm_cottage_bus\",\"cm_cottage_light\",\"e_win_keeper_found\"],\"problem\":\"The two variable-gated conversation choices are mutually exclusive, so a reader sees only one. Both lead to the same ending, so there is no real fork, and e_win_keeper_found establishes lamp_code for readers who never learned it.\",\"route_or_state\":\"cm_cottage with knows_code=false or true\"},{\"severity\":\"minor\",\"entries\":[\"cm_light_relight\",\"c_cm_light_relight_1\"],\"problem\":\"When has_key is true, cm_light_relight offers a single choice, so key-holders have no real fork there. Meanwhile the lamp-room payoff for key-holders is one-way into e_win_light_restored, which resolves neither Ferris nor Varley.\",\"route_or_state\":\"has_key=true at cm_light_relight\"},{\"severity\":\"minor\",\"entries\":[\"e_neutral_town\",\"e_neutral_letter\",\"e_neutral_evidence\",\"e_neutral_museum\",\"e_win_ledger\"],\"problem\":\"The endings section records gifts only for the setback endings. The neutral and success endings have no recorded gift, and e_win_ledger does not require crates_412 even though its event counts crates.\",\"route_or_state\":\"all neutral endings\"}]}",
+  "parsed": {
+    "verdict": "reject",
+    "confidence": 0.6,
+    "summary": "The graph is mostly sound: the variable-gated routes and the t_key, t_way, t_code and t_ledger threads line up with the facts each node establishes. One route leaves a promised ending unsupported by its own entry, and several continuity gaps and weak forks remain.",
+    "findings": [
+      {
+        "severity": "blocker",
+        "entries": [
+          "cm_smug_photo",
+          "c_cm_smug_photo_1",
+          "e_win_smugglers",
+          "hand_lever",
+          "cm_light_study"
+        ],
+        "problem": "The choice to flash the call is offered in the smugglers' store, but the ending depends on the hand lever, which only cm_light_study establishes in the lamp room. The ending itself 'establishes' hand_lever, and the store route never passes the lamp or the lever, so the writer has no way to make the flashing coherent.",
+        "route_or_state": "n_chamber -> cm_smug -> cm_smug_photo (knows_code=true) -> e_win_smugglers; hand_lever is never established on this path"
+      },
+      {
+        "severity": "should-fix",
+        "entries": [
+          "d_hatch",
+          "d_dinghy_tarp",
+          "d_dinghy_tin",
+          "d_loft_up",
+          "d_locker_rope",
+          "c_d_hatch_1"
+        ],
+        "problem": "d_hatch presupposes that Mira already knows about a floor hatch, but only d_locker_rope ('finds the floor hatch') establishes it. The dinghy and loft routes reach d_hatch with no hatch fact, and the hatch is not in the facts ledger at all.",
+        "route_or_state": "n_start -> d_boat1 -> d_dinghy or d_loft -> d_hatch"
+      },
+      {
+        "severity": "should-fix",
+        "entries": [
+          "e_set_stair",
+          "money_under_step",
+          "truth_ferris_took_money",
+          "cm_letter_conf"
+        ],
+        "problem": "The gift for e_set_stair says the keeper 'never took a penny', but the truth and ledger say Ferris took the money for six winters and only never spent it. Prose following the gift would contradict truth_ferris_took_money.",
+        "route_or_state": "st_wind -> c_st_wind_2 -> e_set_stair"
+      },
+      {
+        "severity": "should-fix",
+        "entries": [
+          "cm_smug",
+          "store_seen",
+          "tn_store",
+          "n_chamber"
+        ],
+        "problem": "cm_smug is written as 'Back in the store' but requires nothing. Readers who reached n_chamber via the keeper's door, the sea gate or the keeper's way have never been in the store, because store_seen comes only from tn_store.",
+        "route_or_state": "n_tunnel -> tn_keeper, tn_gate or tn_cut -> n_chamber -> c_n_chamber_2 -> cm_smug"
+      },
+      {
+        "severity": "should-fix",
+        "entries": [
+          "e_win_promise",
+          "mira_carries_journal",
+          "cm_letter_plea"
+        ],
+        "problem": "e_win_promise has Mira writing a promise in the keeper's journal and winding the little lamp. Neither the journal in her hands nor a way to wind the lamp is established or required on this route. mira_carries_journal is established only in cm_leave.",
+        "route_or_state": "n_chamber -> cm_letter -> cm_letter_read -> cm_letter_plea -> e_win_promise"
+      },
+      {
+        "severity": "should-fix",
+        "entries": [
+          "c_cm_smug_follow_1",
+          "c_cm_smug_follow_2",
+          "cm_smug_token",
+          "c_cm_smug_token_2",
+          "e_win_hoard",
+          "e_neutral_honest",
+          "c_cm_smug_token_1",
+          "e_set_token"
+        ],
+        "problem": "Both safe options end in 'photograph the compass untouched' and show the same bait wire. Reaching first and then leaving it gives a weaker neutral ending than never reaching (e_neutral_honest versus e_win_hoard). The pocket choice is a signposted trap with an obvious right answer.",
+        "route_or_state": "cm_smug -> cm_smug_follow"
+      },
+      {
+        "severity": "should-fix",
+        "entries": [
+          "c_a_desk_drawer_2",
+          "c_a_hearth_brick_2",
+          "c_b_gallery_out_2",
+          "c_c_pass_2",
+          "c_c_arch_gap_2",
+          "c_d_loft_2",
+          "c_d_hatch_2",
+          "c_st_wind_2",
+          "c_li_shaft_rope_2",
+          "c_li_ladder_2",
+          "c_tn_keep_door_2",
+          "c_tn_keep_stuck_2",
+          "c_tn_keep_beam_2",
+          "c_tn_gate_2",
+          "c_cm_light_relight_2"
+        ],
+        "problem": "Almost every risky fork is signposted in its cost as a setback, and the patient or careful option always wins. The choices do not really differ and the lesson is always 'be gentle', so the many setback endings feel arbitrary for a 10-13 reader.",
+        "route_or_state": "throughout"
+      },
+      {
+        "severity": "should-fix",
+        "entries": [
+          "e_win_signal",
+          "c_cm_light_study_2",
+          "e_set_shaft"
+        ],
+        "problem": "e_win_signal is typed as a success, but it only reveals that the spring was wound hours ago. The same discovery is already the gift of e_set_shaft, a setback, so the payoff is weaker than the label implies and nothing is resolved.",
+        "route_or_state": "cm_light -> cm_light_study -> c_cm_light_study_2 (and any knows_code=false reader, who has only this option)"
+      },
+      {
+        "severity": "minor",
+        "entries": [
+          "tn_gate_open",
+          "tn_gate_dash",
+          "tn_gate_wait",
+          "c_tn_gate_open_1",
+          "c_tn_gate_open_2"
+        ],
+        "problem": "Both options end with Mira soaked and frightened (tn_gate_dash and tn_gate_wait). The waiting option costs 'time' but does not avoid the soaking, so the only real difference is the ledger fact.",
+        "route_or_state": "n_tunnel -> tn_gate -> tn_gate_open"
+      },
+      {
+        "severity": "minor",
+        "entries": [
+          "cm_cottage",
+          "c_cm_cottage_1",
+          "c_cm_cottage_2",
+          "cm_cottage_bus",
+          "cm_cottage_light",
+          "e_win_keeper_found"
+        ],
+        "problem": "The two variable-gated conversation choices are mutually exclusive, so a reader sees only one. Both lead to the same ending, so there is no real fork, and e_win_keeper_found establishes lamp_code for readers who never learned it.",
+        "route_or_state": "cm_cottage with knows_code=false or true"
+      },
+      {
+        "severity": "minor",
+        "entries": [
+          "cm_light_relight",
+          "c_cm_light_relight_1"
+        ],
+        "problem": "When has_key is true, cm_light_relight offers a single choice, so key-holders have no real fork there. Meanwhile the lamp-room payoff for key-holders is one-way into e_win_light_restored, which resolves neither Ferris nor Varley.",
+        "route_or_state": "has_key=true at cm_light_relight"
+      },
+      {
+        "severity": "minor",
+        "entries": [
+          "e_neutral_town",
+          "e_neutral_letter",
+          "e_neutral_evidence",
+          "e_neutral_museum",
+          "e_win_ledger"
+        ],
+        "problem": "The endings section records gifts only for the setback endings. The neutral and success endings have no recorded gift, and e_win_ledger does not require crates_412 even though its event counts crates.",
+        "route_or_state": "all neutral endings"
+      }
+    ]
+  }
+}

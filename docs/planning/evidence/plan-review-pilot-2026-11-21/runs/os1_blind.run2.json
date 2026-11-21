@@ -1,0 +1,266 @@
+{
+  "case": "os1_blind",
+  "run": 2,
+  "model": "anthropic/claude-sonnet-5.5",
+  "usage": {
+    "prompt_tokens": 61170,
+    "completion_tokens": 12444,
+    "total_tokens": 73614,
+    "cost": 0.24678,
+    "is_byok": false,
+    "prompt_tokens_details": {
+      "cached_tokens": 0,
+      "cache_write_tokens": 0,
+      "audio_tokens": 0,
+      "video_tokens": 0
+    },
+    "cost_details": {
+      "upstream_inference_cost": 0.24678,
+      "upstream_inference_prompt_cost": 0.12234,
+      "upstream_inference_completions_cost": 0.12444
+    },
+    "completion_tokens_details": {
+      "reasoning_tokens": 8383,
+      "image_tokens": 0,
+      "audio_tokens": 0
+    }
+  },
+  "raw": "{\"verdict\":\"reject\",\"confidence\":0.9,\"summary\":\"The plan has many blocker-level continuity failures. The tobe-introduction node and others are unreachable, the early branches skip facts that later nodes require, and several payoffs and endings lean on facts that are never established. The thread payoffs are also weak: one is unearned and one has a choice whose intent does not match what the payoff shows.\",\"findings\":[{\"severity\":\"blocker\",\"entries\":[\"n05d5\",\"c_n04d1_2\",\"c_n04c3_0\",\"tobe\",\"n06d0\",\"n06d1\",\"n06d5\",\"n07d5\"],\"problem\":\"Tobe is only established at n05d5. Its only incoming choices, c_n04d1_2 and c_n04c3_0, require `tobe` themselves, so n05d5 is unreachable and Tobe is never introduced. Nodes and endings that require `tobe` (n06d0, n06d1, n06d5, n07d0, n07d5, n11d1, n12c1, n13d3, e07_1 and others) cannot be entered validly.\",\"route_or_state\":\"Any route; n05d0 -> n06d0 enters a node that requires tobe with no way to have it.\"},{\"severity\":\"blocker\",\"entries\":[\"n05d4\",\"c_n04d1_1\",\"c_n04c2_0\",\"e06_0\",\"n06c6\"],\"problem\":\"n05d4 is the node that establishes `developer_exists`, but both choices into it (c_n04d1_1, c_n04c2_0) require `developer_exists`. n05d4, e06_0 and n06c6 are unreachable.\",\"route_or_state\":\"n04d1 and n04c2 never establish developer_exists beforehand.\"},{\"severity\":\"blocker\",\"entries\":[\"n03d2\",\"n02c2\",\"six_shelves_1911\",\"nine_hands\",\"hundred_fourteen_years\"],\"problem\":\"n03d2 requires `hundred_fourteen_years`, `nine_hands` and `six_shelves_1911`, but its only entry is n02c2, which establishes none of them. Those facts are first established at n03d0, on the other branch.\",\"route_or_state\":\"n00c0 -> n01d0 (c_n01d0_2, did_go_down_read=true) -> n02c2 -> n03d2\"},{\"severity\":\"blocker\",\"entries\":[\"n03d0\",\"c_n03d0_0\",\"c_cq_plant_did_find_who_wrote\",\"cq_plant_did_find_who_wrote\",\"c_n03d0_1\",\"n04d1\"],\"problem\":\"n03d0 is reachable only through the notebooks route (n02c0), which never establishes `survey_exists`. The choices c_n03d0_0, c_n03d0_1 and c_cq_plant_did_find_who_wrote all require it. The plant for did_find_who_wrote, and n04d1 (which also needs `eleven_words`), cannot be taken validly, so the thread is unreachable as authored.\",\"route_or_state\":\"did_ask_whether_notebooks=true route: n01d0 -> n02c0 -> n03d0\"},{\"severity\":\"blocker\",\"entries\":[\"cq_payoff_did_find_who_wrote\",\"faulks_pattern\",\"no_proof_against_faulks\"],\"problem\":\"The payoff requires `faulks_pattern`, but nothing before it establishes that fact; the payoff establishes it itself. The planted choice only establishes Faulks's name, so the payoff is not earned. It also leans on a fact that contradicts `no_proof_against_faulks`, which clashes with the book's lesson that unproven claims about Faulks lose.\",\"route_or_state\":\"did_find_who_wrote=true at n11d5 -> c_cq_payoff_did_find_who_wrote\"},{\"severity\":\"blocker\",\"entries\":[\"cq_payoff_did_find_who_wrote_site2\",\"n11d1\",\"n12d3\",\"halvor\"],\"problem\":\"The payoff requires `halvor` and `developer_exists`, but Halvor is first established at n11d8. n11d1 is also entered from n10d0 and n10d4 without him. Its choice c_n11d1_0 requires `halvor`, and the target n12d3 requires halvor and halvor_question.\",\"route_or_state\":\"n10d0 -> n11d1 with did_find_who_wrote=true\"},{\"severity\":\"blocker\",\"entries\":[\"n17d2\",\"jonah_accused_faulks\",\"e09_1\",\"e11_1\"],\"problem\":\"n17d2 requires `jonah_accused_faulks`, which is established only in the endings e09_1 and e11_1, so it is never true on a continuing route. The passage also says he would redo everything except what he said about Faulks, which is false for a hero who never accused him. It also requires four_letters and class_typed, which only some routes establish.\",\"route_or_state\":\"n16d0 / n16d2 / n16c2 -> n17d2\"},{\"severity\":\"blocker\",\"entries\":[\"e18_0\",\"e18_1\",\"e18_2\",\"road_moved\",\"e15_1\",\"n15d2\"],\"problem\":\"All three of these endings require `road_moved`, which is established only in the ending e15_1, so it cannot be true on any route to them. The plan never decides whether the road moves: n15d2 only says it could. Ending texts that assert the road runs east are unsupported.\",\"route_or_state\":\"n17d0/n17d1/n17d2/n17d3 -> e18_0, e18_1, e18_2\"},{\"severity\":\"blocker\",\"entries\":[\"e18_3\",\"record_stopped\",\"n17d1\",\"ada_still_writing\",\"jonah_writes_115\"],\"problem\":\"e18_3 establishes `record_stopped` (nobody wrote after the October entry), which contradicts the plan's own `ada_still_writing`, established in n17d1 on the route into e18_3. It also contradicts the hundred-and-fourteen-year record, Ada's daily writing, and jonah_writes_115. The ending's premise is false in the story world.\",\"route_or_state\":\"n17d1 -> c_n17d1_0 -> e18_3\"},{\"severity\":\"blocker\",\"entries\":[\"n15d4\",\"n15d2\",\"officer_report\",\"three_conditions\",\"road_may_move\",\"n14d4\",\"n14d0\"],\"problem\":\"n15d4 requires `three_conditions` and `road_may_move`, which are established in other n15 nodes (n15d1, n15d2) and not on the route into n15d4 from n14d4. n15d2 requires `officer_report`, which only n15d0 establishes, yet n14d0 and n14d4 enter n15d2 directly.\",\"route_or_state\":\"n14d4 -> n15d4; n14d0 -> n15d2\"},{\"severity\":\"blocker\",\"entries\":[\"e05_0\",\"c_n04d2_0\",\"c_n04c4_0\",\"eleven_words_copied\",\"objection_six_weeks\"],\"problem\":\"The choices into e05_0 require `objection_six_weeks`, which is not established until n05d0. The ending itself requires `eleven_words_copied` (only n04c0 establishes it) and `jonah_photo_notice` (only the photo route), and those are on exclusive branches. The ending is unreachable and its requires cannot all hold.\",\"route_or_state\":\"n03d0 -> n04d2 -> e05_0; n03d2 -> n04c4 -> e05_0\"},{\"severity\":\"blocker\",\"entries\":[\"c_n10d3_0\",\"c_n10d6_2\",\"e11_0\",\"plaque_offer\"],\"problem\":\"The choices into e11_0 require `plaque_offer`, which only e11_0 establishes. The ending is unreachable and its content (a compromise offer) is never presented before it.\",\"route_or_state\":\"n10d3 and n10d6 -> e11_0\"},{\"severity\":\"blocker\",\"entries\":[\"n08d3\",\"cq_payoff_did_ask_whether_notebooks\",\"n07d1\",\"n05d4\",\"abara\",\"faulks_wrote_survey\"],\"problem\":\"n08d3 requires `abara`, but it is entered from n07d1 and n07d6 on routes where Abara was never met (n05d3 is the only node that establishes her). The payoff for did_ask_whether_notebooks also needs `abara` and `faulks_wrote_survey`, and the notebooks route does not guarantee Faulks's name. The payoff can therefore fire on a route where the preconditions are false.\",\"route_or_state\":\"did_ask=true; n04d1 -> n05d4 -> n06d0 -> n07d1 -> n08d3\"},{\"severity\":\"should-fix\",\"entries\":[\"c_cq_payoff_did_ask_whether_notebooks\",\"c_n08d3_1_cq_did_ask_whether_notebooks\",\"cq_payoff_did_ask_whether_notebooks_site2\",\"n10d3\"],\"problem\":\"In the payoff variant, the choice keeps the intent and cost 'blame the surveyor / unprovable accusation stains everything' while the payoff shows the opposite (showing Abara the list). Site 2 also has Ada's mother's list of odd bloom and frost events reveal a drought August, which does not follow from 'oddities bunch in mild winters or late springs'. It also requires `data_request`, which n10d3 routes do not guarantee.\",\"route_or_state\":\"did_ask_whether_notebooks=true at n08d3 and n10d3\"},{\"severity\":\"should-fix\",\"entries\":[\"e08_0\",\"e10_1\",\"method_written\",\"custody_note\",\"double_typing\",\"n07d4\"],\"problem\":\"e08_0 requires `method_written`, `custody_note` and `double_typing`, yet its event is that the chart is sent alone without a method. It is entered at n07d4, long before those are established. e10_1 requires `method_written` yet says the numbers were returned because they had no stated method.\",\"route_or_state\":\"n07d4 -> c_n07d4_2 -> e08_0; n09d5 -> c_n09d5_0 -> e10_1\"},{\"severity\":\"should-fix\",\"entries\":[\"hundred_fourteen_years\",\"missing_1917_1918\",\"n03d0\",\"e13_2\",\"e15_2\",\"n16d3\"],\"problem\":\"n03d0 establishes a continuous record of 114 years, while the 1917 and 1918 volumes are missing (n06c5, n08d5) and may never be found. Abara's rule and Tobe's objection depend on continuity. Readers who do not find the volumes meet a truth that contradicts the ledger.\",\"route_or_state\":\"Routes that reach n11d5, n12d0 and e13_* without found_1917_volumes\"},{\"severity\":\"should-fix\",\"entries\":[\"n10d3\",\"n10d1\",\"n08d3\",\"n11d1\",\"n12d0\"],\"problem\":\"Many choice sets do not follow from the node's event. For example, n10d3 is about letters to the families but offers plaque, attack-in-print or study-data. n10d1 logs a data request but offers trace-volumes, search-volumes or meet-objections. n08d3 has Abara asking about the frost pocket but offers settle-for-a-story, blame or council-test. Several forks pair one clearly wrong option (blame, settle, release unchecked) with obviously right ones.\",\"route_or_state\":\"Systemic across n07\u2013n12 forks\"},{\"severity\":\"should-fix\",\"entries\":[\"n06d3\",\"cq_payoff_did_go_down_read\",\"c_n06d3_2_cq_did_go_down_read\",\"n05d1\",\"n05d5\"],\"problem\":\"n06d3 requires `city_archive`, `six_shelves_1911` and `shed_details`, but is entered from n05d1 and n05d5 without them. The gate_photo payoff adds the date-stamp proof under a choice whose intent is 'type only the four key dates', so the reader sees no link. The payoff also requires `tobe` and `eleven_words`, which are not guaranteed.\",\"route_or_state\":\"did_go_down_read=true; n04d0 -> n05d1 -> n06d3\"},{\"severity\":\"minor\",\"entries\":[\"e12_0\",\"gap_filled_quietly\",\"c_n11d4_2\"],\"problem\":\"The ending e12_0 gift celebrates returning the found volumes and keeping their origin secret. This conflicts with the book's custody-chain and honest-record message, and the gift is framed as a positive 'whole record' rather than a lesson.\",\"route_or_state\":\"n11d4 -> c_n11d4_2 -> e12_0\"}]}",
+  "parsed": {
+    "verdict": "reject",
+    "confidence": 0.9,
+    "summary": "The plan has many blocker-level continuity failures. The tobe-introduction node and others are unreachable, the early branches skip facts that later nodes require, and several payoffs and endings lean on facts that are never established. The thread payoffs are also weak: one is unearned and one has a choice whose intent does not match what the payoff shows.",
+    "findings": [
+      {
+        "severity": "blocker",
+        "entries": [
+          "n05d5",
+          "c_n04d1_2",
+          "c_n04c3_0",
+          "tobe",
+          "n06d0",
+          "n06d1",
+          "n06d5",
+          "n07d5"
+        ],
+        "problem": "Tobe is only established at n05d5. Its only incoming choices, c_n04d1_2 and c_n04c3_0, require `tobe` themselves, so n05d5 is unreachable and Tobe is never introduced. Nodes and endings that require `tobe` (n06d0, n06d1, n06d5, n07d0, n07d5, n11d1, n12c1, n13d3, e07_1 and others) cannot be entered validly.",
+        "route_or_state": "Any route; n05d0 -> n06d0 enters a node that requires tobe with no way to have it."
+      },
+      {
+        "severity": "blocker",
+        "entries": [
+          "n05d4",
+          "c_n04d1_1",
+          "c_n04c2_0",
+          "e06_0",
+          "n06c6"
+        ],
+        "problem": "n05d4 is the node that establishes `developer_exists`, but both choices into it (c_n04d1_1, c_n04c2_0) require `developer_exists`. n05d4, e06_0 and n06c6 are unreachable.",
+        "route_or_state": "n04d1 and n04c2 never establish developer_exists beforehand."
+      },
+      {
+        "severity": "blocker",
+        "entries": [
+          "n03d2",
+          "n02c2",
+          "six_shelves_1911",
+          "nine_hands",
+          "hundred_fourteen_years"
+        ],
+        "problem": "n03d2 requires `hundred_fourteen_years`, `nine_hands` and `six_shelves_1911`, but its only entry is n02c2, which establishes none of them. Those facts are first established at n03d0, on the other branch.",
+        "route_or_state": "n00c0 -> n01d0 (c_n01d0_2, did_go_down_read=true) -> n02c2 -> n03d2"
+      },
+      {
+        "severity": "blocker",
+        "entries": [
+          "n03d0",
+          "c_n03d0_0",
+          "c_cq_plant_did_find_who_wrote",
+          "cq_plant_did_find_who_wrote",
+          "c_n03d0_1",
+          "n04d1"
+        ],
+        "problem": "n03d0 is reachable only through the notebooks route (n02c0), which never establishes `survey_exists`. The choices c_n03d0_0, c_n03d0_1 and c_cq_plant_did_find_who_wrote all require it. The plant for did_find_who_wrote, and n04d1 (which also needs `eleven_words`), cannot be taken validly, so the thread is unreachable as authored.",
+        "route_or_state": "did_ask_whether_notebooks=true route: n01d0 -> n02c0 -> n03d0"
+      },
+      {
+        "severity": "blocker",
+        "entries": [
+          "cq_payoff_did_find_who_wrote",
+          "faulks_pattern",
+          "no_proof_against_faulks"
+        ],
+        "problem": "The payoff requires `faulks_pattern`, but nothing before it establishes that fact; the payoff establishes it itself. The planted choice only establishes Faulks's name, so the payoff is not earned. It also leans on a fact that contradicts `no_proof_against_faulks`, which clashes with the book's lesson that unproven claims about Faulks lose.",
+        "route_or_state": "did_find_who_wrote=true at n11d5 -> c_cq_payoff_did_find_who_wrote"
+      },
+      {
+        "severity": "blocker",
+        "entries": [
+          "cq_payoff_did_find_who_wrote_site2",
+          "n11d1",
+          "n12d3",
+          "halvor"
+        ],
+        "problem": "The payoff requires `halvor` and `developer_exists`, but Halvor is first established at n11d8. n11d1 is also entered from n10d0 and n10d4 without him. Its choice c_n11d1_0 requires `halvor`, and the target n12d3 requires halvor and halvor_question.",
+        "route_or_state": "n10d0 -> n11d1 with did_find_who_wrote=true"
+      },
+      {
+        "severity": "blocker",
+        "entries": [
+          "n17d2",
+          "jonah_accused_faulks",
+          "e09_1",
+          "e11_1"
+        ],
+        "problem": "n17d2 requires `jonah_accused_faulks`, which is established only in the endings e09_1 and e11_1, so it is never true on a continuing route. The passage also says he would redo everything except what he said about Faulks, which is false for a hero who never accused him. It also requires four_letters and class_typed, which only some routes establish.",
+        "route_or_state": "n16d0 / n16d2 / n16c2 -> n17d2"
+      },
+      {
+        "severity": "blocker",
+        "entries": [
+          "e18_0",
+          "e18_1",
+          "e18_2",
+          "road_moved",
+          "e15_1",
+          "n15d2"
+        ],
+        "problem": "All three of these endings require `road_moved`, which is established only in the ending e15_1, so it cannot be true on any route to them. The plan never decides whether the road moves: n15d2 only says it could. Ending texts that assert the road runs east are unsupported.",
+        "route_or_state": "n17d0/n17d1/n17d2/n17d3 -> e18_0, e18_1, e18_2"
+      },
+      {
+        "severity": "blocker",
+        "entries": [
+          "e18_3",
+          "record_stopped",
+          "n17d1",
+          "ada_still_writing",
+          "jonah_writes_115"
+        ],
+        "problem": "e18_3 establishes `record_stopped` (nobody wrote after the October entry), which contradicts the plan's own `ada_still_writing`, established in n17d1 on the route into e18_3. It also contradicts the hundred-and-fourteen-year record, Ada's daily writing, and jonah_writes_115. The ending's premise is false in the story world.",
+        "route_or_state": "n17d1 -> c_n17d1_0 -> e18_3"
+      },
+      {
+        "severity": "blocker",
+        "entries": [
+          "n15d4",
+          "n15d2",
+          "officer_report",
+          "three_conditions",
+          "road_may_move",
+          "n14d4",
+          "n14d0"
+        ],
+        "problem": "n15d4 requires `three_conditions` and `road_may_move`, which are established in other n15 nodes (n15d1, n15d2) and not on the route into n15d4 from n14d4. n15d2 requires `officer_report`, which only n15d0 establishes, yet n14d0 and n14d4 enter n15d2 directly.",
+        "route_or_state": "n14d4 -> n15d4; n14d0 -> n15d2"
+      },
+      {
+        "severity": "blocker",
+        "entries": [
+          "e05_0",
+          "c_n04d2_0",
+          "c_n04c4_0",
+          "eleven_words_copied",
+          "objection_six_weeks"
+        ],
+        "problem": "The choices into e05_0 require `objection_six_weeks`, which is not established until n05d0. The ending itself requires `eleven_words_copied` (only n04c0 establishes it) and `jonah_photo_notice` (only the photo route), and those are on exclusive branches. The ending is unreachable and its requires cannot all hold.",
+        "route_or_state": "n03d0 -> n04d2 -> e05_0; n03d2 -> n04c4 -> e05_0"
+      },
+      {
+        "severity": "blocker",
+        "entries": [
+          "c_n10d3_0",
+          "c_n10d6_2",
+          "e11_0",
+          "plaque_offer"
+        ],
+        "problem": "The choices into e11_0 require `plaque_offer`, which only e11_0 establishes. The ending is unreachable and its content (a compromise offer) is never presented before it.",
+        "route_or_state": "n10d3 and n10d6 -> e11_0"
+      },
+      {
+        "severity": "blocker",
+        "entries": [
+          "n08d3",
+          "cq_payoff_did_ask_whether_notebooks",
+          "n07d1",
+          "n05d4",
+          "abara",
+          "faulks_wrote_survey"
+        ],
+        "problem": "n08d3 requires `abara`, but it is entered from n07d1 and n07d6 on routes where Abara was never met (n05d3 is the only node that establishes her). The payoff for did_ask_whether_notebooks also needs `abara` and `faulks_wrote_survey`, and the notebooks route does not guarantee Faulks's name. The payoff can therefore fire on a route where the preconditions are false.",
+        "route_or_state": "did_ask=true; n04d1 -> n05d4 -> n06d0 -> n07d1 -> n08d3"
+      },
+      {
+        "severity": "should-fix",
+        "entries": [
+          "c_cq_payoff_did_ask_whether_notebooks",
+          "c_n08d3_1_cq_did_ask_whether_notebooks",
+          "cq_payoff_did_ask_whether_notebooks_site2",
+          "n10d3"
+        ],
+        "problem": "In the payoff variant, the choice keeps the intent and cost 'blame the surveyor / unprovable accusation stains everything' while the payoff shows the opposite (showing Abara the list). Site 2 also has Ada's mother's list of odd bloom and frost events reveal a drought August, which does not follow from 'oddities bunch in mild winters or late springs'. It also requires `data_request`, which n10d3 routes do not guarantee.",
+        "route_or_state": "did_ask_whether_notebooks=true at n08d3 and n10d3"
+      },
+      {
+        "severity": "should-fix",
+        "entries": [
+          "e08_0",
+          "e10_1",
+          "method_written",
+          "custody_note",
+          "double_typing",
+          "n07d4"
+        ],
+        "problem": "e08_0 requires `method_written`, `custody_note` and `double_typing`, yet its event is that the chart is sent alone without a method. It is entered at n07d4, long before those are established. e10_1 requires `method_written` yet says the numbers were returned because they had no stated method.",
+        "route_or_state": "n07d4 -> c_n07d4_2 -> e08_0; n09d5 -> c_n09d5_0 -> e10_1"
+      },
+      {
+        "severity": "should-fix",
+        "entries": [
+          "hundred_fourteen_years",
+          "missing_1917_1918",
+          "n03d0",
+          "e13_2",
+          "e15_2",
+          "n16d3"
+        ],
+        "problem": "n03d0 establishes a continuous record of 114 years, while the 1917 and 1918 volumes are missing (n06c5, n08d5) and may never be found. Abara's rule and Tobe's objection depend on continuity. Readers who do not find the volumes meet a truth that contradicts the ledger.",
+        "route_or_state": "Routes that reach n11d5, n12d0 and e13_* without found_1917_volumes"
+      },
+      {
+        "severity": "should-fix",
+        "entries": [
+          "n10d3",
+          "n10d1",
+          "n08d3",
+          "n11d1",
+          "n12d0"
+        ],
+        "problem": "Many choice sets do not follow from the node's event. For example, n10d3 is about letters to the families but offers plaque, attack-in-print or study-data. n10d1 logs a data request but offers trace-volumes, search-volumes or meet-objections. n08d3 has Abara asking about the frost pocket but offers settle-for-a-story, blame or council-test. Several forks pair one clearly wrong option (blame, settle, release unchecked) with obviously right ones.",
+        "route_or_state": "Systemic across n07\u2013n12 forks"
+      },
+      {
+        "severity": "should-fix",
+        "entries": [
+          "n06d3",
+          "cq_payoff_did_go_down_read",
+          "c_n06d3_2_cq_did_go_down_read",
+          "n05d1",
+          "n05d5"
+        ],
+        "problem": "n06d3 requires `city_archive`, `six_shelves_1911` and `shed_details`, but is entered from n05d1 and n05d5 without them. The gate_photo payoff adds the date-stamp proof under a choice whose intent is 'type only the four key dates', so the reader sees no link. The payoff also requires `tobe` and `eleven_words`, which are not guaranteed.",
+        "route_or_state": "did_go_down_read=true; n04d0 -> n05d1 -> n06d3"
+      },
+      {
+        "severity": "minor",
+        "entries": [
+          "e12_0",
+          "gap_filled_quietly",
+          "c_n11d4_2"
+        ],
+        "problem": "The ending e12_0 gift celebrates returning the found volumes and keeping their origin secret. This conflicts with the book's custody-chain and honest-record message, and the gift is framed as a positive 'whole record' rather than a lesson.",
+        "route_or_state": "n11d4 -> c_n11d4_2 -> e12_0"
+      }
+    ]
+  }
+}
