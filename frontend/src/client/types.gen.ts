@@ -507,7 +507,7 @@ export type AuthoringPlanRequest = {
     /**
      * Method
      */
-    method: 'skeleton_fill' | 'fresh_generation';
+    method: 'skeleton_fill' | 'fresh_generation' | 'plan_fill';
     /**
      * Mechanism
      */
@@ -559,7 +559,7 @@ export type AuthoringPlanResponse = {
     /**
      * Method
      */
-    method: 'skeleton_fill' | 'fresh_generation';
+    method: 'skeleton_fill' | 'fresh_generation' | 'plan_fill';
     /**
      * Mechanism
      */

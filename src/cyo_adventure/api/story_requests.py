@@ -1141,7 +1141,9 @@ async def create_authoring_plan(
         request_id=str(request.id),
         concept_id=str(concept.id),
         job_id=str(result.job.id),
-        method=body.method,
+        # WP-2.3: the method the job actually runs (a plan_fill request for a
+        # cell with no retained shape falls back to skeleton_fill).
+        method=result.method or body.method,
         mechanism=body.mechanism,
         status=cast("JobStatusLiteral", result.job.status),
         skeleton_slug=result.skeleton_slug,

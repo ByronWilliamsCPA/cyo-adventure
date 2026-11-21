@@ -1126,3 +1126,144 @@ async def test_a_cell_with_room_left_warns_about_nothing() -> None:
     # The docstring claims silence, so assert silence: probing for one
     # absent substring would pass with any other warning present.
     assert result.warnings == []
+
+
+# ---------------------------------------------------------------------------
+# WP-2.3: method="plan_fill" (retained shapes, fallback, override)
+# ---------------------------------------------------------------------------
+
+_RETAINED_8_11_SHORT = ["the-locked-carousel", "the-cave-of-echoes"]
+
+
+def _plan_fill(skeleton_slug: str | None = None) -> AuthoringPlanRequest:
+    return AuthoringPlanRequest(
+        method="plan_fill",
+        mechanism="automated_provider",
+        prep_model="openrouter/some-model",
+        provider=_LANE_OK_PROVIDER,
+        model=_LANE_OK_MODEL,
+        skeleton_slug=skeleton_slug,
+    )
+
+
+def _concept_cell(band: str, length: str) -> Concept:
+    return Concept(
+        id=uuid.uuid4(),
+        family_id=uuid.uuid4(),
+        brief={"age_band": band, "length": length, "premise": "a fox"},
+    )
+
+
+@pytest.mark.asyncio
+async def test_plan_fill_binds_a_retained_shape_of_the_cell() -> None:
+    """plan_fill queues a job bound to one of the cell's retained shapes."""
+    from cyo_adventure.storyplan.shapes import load_registry, shape_entry_for
+
+    session = _FakeSession()
+    concept = _concept_cell("8-11", "short")
+    result = await build_authoring_plan(
+        session, _request(), concept, _plan_fill(), actor=_admin_actor()
+    )
+    assert result.method == "plan_fill"
+    assert result.job.status == "queued"
+    assert result.skeleton_slug in _RETAINED_8_11_SHORT
+    assert sorted(result.skeleton_alternatives) == sorted(_RETAINED_8_11_SHORT)
+    entry = shape_entry_for(load_registry(), str(result.skeleton_slug))
+    assert entry is not None
+    assert result.job.authoring_metadata == {
+        "provider": _LANE_OK_PROVIDER,
+        "model": _LANE_OK_MODEL,
+        "plan_shape": {"id": entry.id, "hash": entry.hash},
+        "plan_shape_alternatives": result.skeleton_alternatives,
+        "theme_brief": concept.brief,
+    }
+    # The worker routes on plan_shape; a skeleton_slug would misroute the job.
+    assert "skeleton_slug" not in result.job.authoring_metadata
+    event = next(o for o in session.added if isinstance(o, PipelineEvent))
+    assert event.payload["plan_kind"] == "plan_fill"
+
+
+@pytest.mark.asyncio
+async def test_plan_fill_pick_is_reproducible_per_request() -> None:
+    """The same request draws the same shape on a re-run."""
+    request = _request()
+    request.id = uuid.uuid4()
+    picks = set()
+    for _ in range(3):
+        result = await build_authoring_plan(
+            _FakeSession(),
+            request,
+            _concept_cell("8-11", "short"),
+            _plan_fill(),
+            actor=_admin_actor(),
+        )
+        picks.add(result.skeleton_slug)
+    assert len(picks) == 1
+
+
+@pytest.mark.asyncio
+async def test_plan_fill_without_a_retained_shape_falls_back_to_skeleton_fill() -> None:
+    """A long cell has no retained shape (D4): the job takes skeleton fill."""
+    from cyo_adventure.generation.skeleton_match import candidates_for_cell
+
+    session = _FakeSession()
+    result = await build_authoring_plan(
+        session,
+        _request(),
+        _concept_cell("8-11", "long"),
+        _plan_fill(),
+        actor=_admin_actor(),
+    )
+    assert result.method == "skeleton_fill"
+    assert result.skeleton_slug in candidates_for_cell("8-11", "long", "prose")
+    metadata = result.job.authoring_metadata
+    assert metadata is not None
+    assert isinstance(metadata["skeleton_slug"], str)
+    assert "plan_shape" not in metadata
+    assert any("plan_fill is not offered" in w for w in result.warnings)
+    event = next(o for o in session.added if isinstance(o, PipelineEvent))
+    assert event.payload["plan_kind"] == "skeleton_fill"
+
+
+@pytest.mark.asyncio
+async def test_plan_fill_below_8_11_falls_back_to_skeleton_fill() -> None:
+    """No band below 8-11 has a retained shape."""
+    result = await build_authoring_plan(
+        _FakeSession(),
+        _request(),
+        _concept_cell("5-8", "short"),
+        _plan_fill(),
+        actor=_admin_actor(),
+    )
+    assert result.method == "skeleton_fill"
+
+
+@pytest.mark.asyncio
+async def test_plan_fill_override_must_name_a_retained_shape() -> None:
+    """An override that is not a retained shape is a 422, never a guess."""
+    session, request = _FakeSession(), _request()
+    concept, plan = _concept_cell("8-11", "short"), _plan_fill("the-half-hour-call")
+    actor = _admin_actor()
+    with pytest.raises(ValidationError, match="not a retained shape"):
+        await build_authoring_plan(session, request, concept, plan, actor=actor)
+
+
+@pytest.mark.asyncio
+async def test_plan_fill_out_of_cell_override_warns() -> None:
+    """A retained shape from another cell is honoured with a warning."""
+    result = await build_authoring_plan(
+        _FakeSession(),
+        _request(),
+        _concept_cell("8-11", "short"),
+        _plan_fill("the-storm-chasers-club"),
+        actor=_admin_actor(),
+    )
+    assert result.method == "plan_fill"
+    assert result.skeleton_slug == "the-storm-chasers-club"
+    assert any("outside the request's cell" in w for w in result.warnings)
+
+
+def test_plan_fill_with_skill_mechanism_is_rejected() -> None:
+    """plan_fill needs an automated provider; skill is a 422 at the schema."""
+    with pytest.raises(PydanticValidationError):
+        AuthoringPlanRequest(method="plan_fill", mechanism="skill", prep_model="opus")

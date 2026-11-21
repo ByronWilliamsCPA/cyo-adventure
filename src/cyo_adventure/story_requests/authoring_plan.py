@@ -1,3 +1,6 @@
+# pyright: reportImplicitStringConcatenation=false
+# Ruff ISC003 requires implicit concatenation for wrapped messages and this
+# BasedPyright rule forbids it; the two conflict, and Ruff is the project's gate.
 """Service layer for the authoring-plan decision.
 
 An admin picks a method (skeleton_fill/fresh_generation), a mechanism
@@ -11,6 +14,7 @@ mechanism (resumed later via generation/import_cli.py --job).
 from __future__ import annotations
 
 import asyncio
+import hashlib
 import random
 from dataclasses import dataclass, field
 from typing import TYPE_CHECKING
@@ -24,6 +28,8 @@ from cyo_adventure.events import Actor, EventType, record_event
 from cyo_adventure.generation.allowlist import is_enabled_allowlist_pair
 from cyo_adventure.generation.authoring_metadata import (
     DIFFERENTIATION_LEVEL_KEY,
+    PLAN_SHAPE_ALTERNATIVES_KEY,
+    PLAN_SHAPE_KEY,
     PRIOR_THEME_TAGS_KEY,
     PRIOR_TITLES_KEY,
     SKELETON_ALTERNATIVES_KEY,
@@ -41,6 +47,7 @@ from cyo_adventure.generation.skeleton_match import (
     theme_overlap_for_candidates,
 )
 from cyo_adventure.generation.variation import select_axis
+from cyo_adventure.storyplan.shapes import load_registry, shape_entry_for
 from cyo_adventure.utils.logging import get_logger
 
 if TYPE_CHECKING:
@@ -53,6 +60,7 @@ if TYPE_CHECKING:
     )
     from cyo_adventure.db.models import Concept, StoryRequest
     from cyo_adventure.generation.skeleton_match import Selection
+    from cyo_adventure.storyplan.shapes import RetainedShape
 
 logger = get_logger(__name__)
 
@@ -103,12 +111,18 @@ class AuthoringPlanResult:
             empty when the request's own cell has no skeleton). The UI should
             treat ``skeleton_slug`` as the authoritative selection, not assume
             it is a member of ``skeleton_alternatives``.
+        method: The method the job actually runs. Equal to the requested
+            method except when ``plan_fill`` was asked for a cell with no
+            retained shape (WP-2.3), which falls back to ``skeleton_fill``
+            with a warning. For ``plan_fill``, ``skeleton_slug`` is the chosen
+            shape id and ``skeleton_alternatives`` the cell's retained shapes.
     """
 
     job: GenerationJob
     skeleton_slug: str | None
     warnings: list[str]
     skeleton_alternatives: list[str] = field(default_factory=list)
+    method: AuthoringMethod | None = None
 
 
 def _band_of(concept: Concept) -> str:
@@ -567,6 +581,84 @@ async def _resolve_skeleton_fill(
     return selection.slug, band, skeleton_alternatives, warnings, differentiation
 
 
+def _pick_shape(retained: list[RetainedShape], request: StoryRequest) -> RetainedShape:
+    """Pick one of a cell's retained shapes, reproducibly per request.
+
+    Args:
+        retained: The cell's retained shapes, in registry order (non-empty).
+        request: The request whose id seeds the pick.
+
+    Returns:
+        RetainedShape: The chosen shape.
+    """
+    # Deterministic on purpose, like select_axis: a re-run of the same request
+    # draws the same shape, so before-and-after comparisons of the plan path
+    # are not confounded by the shape. SHA-256 is used for spread only.
+    digest = hashlib.sha256(f"plan-shape:{request.id}".encode()).digest()
+    return retained[int.from_bytes(digest[:8], "big") % len(retained)]
+
+
+async def _resolve_plan_shape(
+    plan: AuthoringPlanRequest,
+    concept: Concept,
+    request: StoryRequest,
+    *,
+    band: str,
+) -> tuple[RetainedShape | None, list[str], list[str]]:
+    """Resolve the retained shape for a plan_fill plan (WP-2.3).
+
+    The cell is matched exactly as skeleton fill matches it
+    (:func:`~cyo_adventure.generation.skeleton_match.candidates_for_cell`), and
+    the retained shapes are those registry entries whose source skeleton is an
+    in-cell candidate. An admin ``skeleton_slug`` override must name a retained
+    shape (any cell, with a warning when outside the request's).
+
+    Args:
+        plan: The admin's authoring-plan choice.
+        concept: The request's concept (length and style).
+        request: The approved request (seeds the pick).
+        band: The concept's age band.
+
+    Returns:
+        ``(shape, alternatives, warnings)``; ``shape`` is None when the cell
+        has no retained shape (the four long cells and the 3-5 and 5-8 bands
+        under D4), which the caller turns into the skeleton_fill fallback.
+
+    Raises:
+        ValidationError: If an override names a shape that is not retained.
+    """
+    length = _length_of(concept, band)
+    style = _style_of(concept)
+    # #ASSUME: external-resources: the registry and the skeleton library are
+    # committed files read from the working directory; both reads are
+    # synchronous disk scans, run off the event loop. A missing or malformed
+    # registry raises ValidationError (422) rather than silently dropping the
+    # plan path.
+    # #VERIFY: test_authoring_plan.py plan_fill tests read the real registry.
+    in_cell = await asyncio.to_thread(candidates_for_cell, band, length, style)
+    registry = await asyncio.to_thread(load_registry)
+    retained = [entry for entry in registry.shapes if entry.id in set(in_cell)]
+    alternatives = [entry.id for entry in retained]
+    warnings: list[str] = []
+    if plan.skeleton_slug is not None:
+        entry = shape_entry_for(registry, plan.skeleton_slug)
+        if entry is None:
+            msg = (
+                f"skeleton_slug '{plan.skeleton_slug}' is not a retained shape; "
+                "plan_fill needs one listed in shapes/registry.json"
+            )
+            raise ValidationError(msg, field="skeleton_slug", value=plan.skeleton_slug)
+        if entry.id not in alternatives:
+            warnings.append(
+                f"skeleton_slug override '{entry.id}' is outside the request's "
+                f"cell (band='{band}', length='{length}', style='{style}')."
+            )
+        return entry, alternatives, warnings
+    if not retained:
+        return None, [], warnings
+    return _pick_shape(retained, request), alternatives, warnings
+
+
 async def build_authoring_plan(
     session: AsyncSession,
     request: StoryRequest,
@@ -627,7 +719,26 @@ async def build_authoring_plan(
     skeleton_alternatives: list[str] = []
     skeleton_warnings: list[str] = []
     differentiation = _Differentiation()
+    plan_shape: RetainedShape | None = None
+    if method == "plan_fill":
+        (
+            plan_shape,
+            skeleton_alternatives,
+            skeleton_warnings,
+        ) = await _resolve_plan_shape(plan, concept, request, band=band)
+        if plan_shape is None:
+            # WP-2.3: no retained shape for this cell (D4 retained none for the
+            # long cells, nor below 8-11), so the plan path is not offered and
+            # the job takes the existing skeleton-fill path instead.
+            method = "skeleton_fill"
+            skeleton_warnings.append(
+                "plan_fill is not offered for this cell (no retained shape); "
+                "fell back to skeleton_fill."
+            )
+        else:
+            skeleton_slug = plan_shape.id
     if method == "skeleton_fill":
+        fallback_warnings = skeleton_warnings
         (
             skeleton_slug,
             skeleton_band,
@@ -635,6 +746,7 @@ async def build_authoring_plan(
             skeleton_warnings,
             differentiation,
         ) = await _resolve_skeleton_fill(session, plan, concept, request, band=band)
+        skeleton_warnings = [*fallback_warnings, *skeleton_warnings]
 
     warnings = eligibility_warnings(method, mechanism, band, prep_model)
     warnings.extend(skeleton_warnings)
@@ -679,6 +791,19 @@ async def build_authoring_plan(
             # checked here and widened at the boundary.
             authoring_metadata=dict(skeleton_metadata),
         )
+    elif method == "plan_fill" and plan_shape is not None:
+        plan_metadata: SkeletonAuthoringMetadata = {
+            **(authoring_metadata or SkeletonAuthoringMetadata()),
+            PLAN_SHAPE_KEY: {"id": plan_shape.id, "hash": plan_shape.hash},
+            PLAN_SHAPE_ALTERNATIVES_KEY: skeleton_alternatives,
+            "theme_brief": concept.brief,
+        }
+        job = GenerationJob(
+            concept_id=concept.id,
+            status="queued",
+            model=prep_model,
+            authoring_metadata=dict(plan_metadata),
+        )
     else:
         job = GenerationJob(
             concept_id=concept.id,
@@ -704,11 +829,12 @@ async def build_authoring_plan(
         entity_id=str(job.id),
         event_type=EventType.PLAN_ASSIGNED,
         to_state=job.status,
-        payload={"job_status": job.status, "plan_kind": plan.method},
+        payload={"job_status": job.status, "plan_kind": method},
     )
     return AuthoringPlanResult(
         job=job,
         skeleton_slug=skeleton_slug,
         warnings=warnings,
         skeleton_alternatives=skeleton_alternatives,
+        method=method,
     )

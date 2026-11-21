@@ -40,6 +40,16 @@ VARIATION_AXIS_KEY = "variation_axis"
 PRIOR_TITLES_KEY = "prior_titles"
 PRIOR_THEME_TAGS_KEY = "prior_theme_tags"
 
+# WP-2.3 (ADR-033): a plan_fill job's binding to a retained shape, written as
+# ``{"id": <shape id>, "hash": <registry hash>}`` by the authoring plan and read
+# by the worker, which refuses the job if the registry no longer carries that
+# id at that hash. Its presence is what routes a job to the plan branch, so a
+# plan_fill job never also carries SKELETON_SLUG_KEY.
+PLAN_SHAPE_KEY = "plan_shape"
+# The other retained shapes of the request's cell, for the record only: the
+# plan path does not re-route (a plan that fails goes to the owner).
+PLAN_SHAPE_ALTERNATIVES_KEY = "plan_shape_alternatives"
+
 
 class SkeletonAuthoringMetadata(TypedDict, total=False):
     """Typed shape of a GenerationJob.authoring_metadata dict.
@@ -98,6 +108,10 @@ class SkeletonAuthoringMetadata(TypedDict, total=False):
             can re-render the same bound skeleton for its Stage 1 check.
             ``None``/absent for a fresh_generation job, an unparameterized
             skeleton_fill job, or a pre-WS-2 job.
+        plan_shape: WP-2.3. A plan_fill job's retained shape, ``{"id",
+            "hash"}``. Absent for every other method.
+        plan_shape_alternatives: WP-2.3. The cell's other retained shape ids,
+            recorded for audit; absent for every other method.
     """
 
     skeleton_slug: str | None
@@ -113,3 +127,5 @@ class SkeletonAuthoringMetadata(TypedDict, total=False):
     review_stage2_model: str | None
     theme_brief: dict[str, object]
     slot_bindings: dict[str, str] | None
+    plan_shape: dict[str, str]
+    plan_shape_alternatives: list[str]

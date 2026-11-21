@@ -1301,7 +1301,12 @@ class FamilyUpdateBody(BaseModel):
     status: FamilyStatus | None = None
 
 
-AuthoringMethod = Literal["skeleton_fill", "fresh_generation"]
+# "plan_fill" (WP-2.3, ADR-033): generate a pitch and a Story Plan on a
+# retained shape of the request's cell. The job stops at a checked, persisted
+# plan routed to the owner (needs_review); a cell with no retained shape falls
+# back to skeleton_fill at plan time, and the response reports the method that
+# was actually used.
+AuthoringMethod = Literal["skeleton_fill", "fresh_generation", "plan_fill"]
 AuthoringMechanism = Literal["skill", "automated_provider"]
 # The generation backends an admin may name. Mirrors the
 # ck_provider_model_allowlist_provider CHECK constraint and
@@ -1367,11 +1372,12 @@ class AuthoringPlanRequest(BaseModel):
         The ``skill`` mechanism means a human runs the cyo-author skill to fill
         an existing skeleton, so it is only meaningful with
         ``method='skeleton_fill'``. Encoding this here makes the illegal
-        ``fresh_generation`` + ``skill`` state unrepresentable rather than
+        ``fresh_generation`` + ``skill`` and ``plan_fill`` + ``skill`` states
+        unrepresentable rather than
         relying on a downstream runtime guard, and FastAPI rejects it as a 422
         before it ever reaches ``build_authoring_plan``.
         """
-        if self.method == "fresh_generation" and self.mechanism == "skill":
+        if self.method != "skeleton_fill" and self.mechanism == "skill":
             msg = "mechanism='skill' requires method='skeleton_fill'"
             raise ValueError(msg)
         return self

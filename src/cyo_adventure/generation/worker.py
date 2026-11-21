@@ -47,6 +47,7 @@ from cyo_adventure.diversity.normalize import theme_signature
 from cyo_adventure.events import Actor, EventType, record_event
 from cyo_adventure.generation.authoring_metadata import (
     DIFFERENTIATION_LEVEL_KEY,
+    PLAN_SHAPE_KEY,
     PRIOR_THEME_TAGS_KEY,
     PRIOR_TITLES_KEY,
     SKELETON_ALTERNATIVES_KEY,
@@ -100,6 +101,12 @@ from cyo_adventure.storybook.reinsertion import (
     manifest_carries_tokens,
     reinsert_storybook,
     verify_manifest,
+)
+from cyo_adventure.storyplan.generate import (
+    classifier_screen,
+    generate_story_plan,
+    load_bound_shape,
+    plan_request_from_brief,
 )
 from cyo_adventure.utils.logging import get_logger
 from cyo_adventure.validator.gate import run_gate
@@ -1321,6 +1328,95 @@ async def _run_skeleton_fill(ctx: _SkeletonFillContext) -> GenerationOutcome:
     )
 
 
+# WP-2.3: repair calls a plan job may make after its first plan call, so at
+# most three plan calls plus one pitch call per job. A plan still failing its
+# checks after that goes to the owner, never to fill.
+_PLAN_MAX_REPAIRS = 2
+
+
+@dataclasses.dataclass(frozen=True, slots=True)
+class _PlanGenerationContext:
+    """What :func:`_run_plan_generation` needs for one plan_fill job.
+
+    Attributes:
+        authoring: The job's ``authoring_metadata`` (carries the shape binding).
+        brief: The concept brief (its premise is the request text).
+        effective_provider: The metered provider for this job.
+        pii: The family's PII context.
+    """
+
+    authoring: Mapping[str, object]
+    brief: ConceptBrief
+    effective_provider: GenerationProvider
+    pii: PiiContext
+
+
+async def _run_plan_generation(ctx: _PlanGenerationContext) -> GenerationOutcome:
+    """Run the WP-2.3 plan path: pitches, plan, SP checks, bounded repair.
+
+    The job stops at a checked, persisted plan. Every outcome is
+    ``needs_review`` with no storybook: until the WP-2.4 reviewer is validated
+    every plan goes to the owner (ADR-033 Decision 3 as amended), a plan that
+    fails its checks goes to the owner with its findings, and a request whose
+    pitches all fail screening goes to the owner with the reasons. The plan and
+    its check results ride ``GenerationJob.report`` (keys in
+    :data:`cyo_adventure.db.models.STORY_PLAN_REPORT_KEYS`).
+
+    Args:
+        ctx: The plan job's context.
+
+    Returns:
+        GenerationOutcome: ``needs_review``, no storybook, the plan report, and
+            the plan on ``story_plan``.
+
+    Raises:
+        ResourceNotFoundError: If the job carries no usable shape binding.
+        ValidationError: If the bound shape is no longer retained at that hash
+            (``field="story_plan_shape"``, before any provider call), or from
+            the PII guard (``field="prompt"``) when the request carries a
+            child name or PII-shaped content.
+    """
+    binding = ctx.authoring.get(PLAN_SHAPE_KEY)
+    # #ASSUME: data-integrity: a plan_fill job's authoring_metadata carries
+    # {"id": str, "hash": str} written by story_requests/authoring_plan.py; any
+    # other shape means the job was built outside that path.
+    # #VERIFY: test_worker_plan.py::test_plan_job_without_a_shape_binding_fails.
+    typed = cast("dict[str, object]", binding) if isinstance(binding, dict) else {}
+    shape_id, shape_hash = typed.get("id"), typed.get("hash")
+    if not isinstance(shape_id, str) or not isinstance(shape_hash, str):
+        msg = "authoring_metadata.plan_shape is missing or malformed"
+        raise ResourceNotFoundError(msg)
+    # #ASSUME: external-resources: the registry and shape files are committed
+    # beside the skeleton library and read from the working directory, as
+    # skeleton fill reads skeletons/; read off the event loop.
+    # #VERIFY: load_bound_shape raises ValidationError naming the path when a
+    # file is missing (test_retained_shapes.py, test_storyplan_generate.py).
+    view = await asyncio.to_thread(load_bound_shape, shape_id, shape_hash)
+    result = await generate_story_plan(
+        plan_request_from_brief(ctx.brief, view),
+        view,
+        ctx.effective_provider,
+        pii=ctx.pii,
+        screen=classifier_screen(_default_settings.openai_api_key),
+        max_repairs=_PLAN_MAX_REPAIRS,
+        model_label=_model_label(ctx.effective_provider),
+    )
+    logger.info(
+        "generation_job.story_plan",
+        shape_id=shape_id,
+        plan_status=result.status,
+        plan_calls=result.plan_calls,
+    )
+    return GenerationOutcome(
+        status="needs_review",
+        storybook=None,
+        report=result.report(),
+        attempts=result.repairs,
+        stage_log=list(result.stage_log),
+        story_plan=result.plan_json,
+    )
+
+
 # Ordered worst-last, so max() over this ranking picks the more severe of two
 # statuses. "passed" is the only status that lets a document reach a reader
 # without a human looking at it, so it must be the easiest to lose.
@@ -1668,6 +1764,7 @@ async def _persist_and_moderate(
             validation_report=dict(outcome.report),
             sentinel_manifest=outcome.sentinel_manifest,
             personalization_eligible=outcome.personalization_eligible,
+            story_plan=outcome.story_plan,
             personalization_subject_profile_id=await _resolve_requesting_profile_id(
                 session, ctx.job_row
             ),
@@ -2524,7 +2621,23 @@ async def run_generation_job(
                 # misroutes fresh_generation jobs into skeleton fill, which then
                 # raises ResourceNotFoundError on the absent skeleton_slug.
                 # #VERIFY: test_fresh_generation_with_provider_override_routes_to_generate_story.
+                # WP-2.3: a plan_fill job carries a plan_shape binding and never a
+                # skeleton_slug (authoring_plan writes one or the other), so it
+                # is routed first and cannot fall into skeleton fill.
+                # #VERIFY: test_worker_plan.py::
+                # test_plan_job_routes_to_plan_generation_and_ends_needs_review.
                 if authoring is not None and isinstance(
+                    authoring.get(PLAN_SHAPE_KEY), dict
+                ):
+                    outcome = await _run_plan_generation(
+                        _PlanGenerationContext(
+                            authoring=authoring,
+                            brief=brief,
+                            effective_provider=effective_provider,
+                            pii=pii,
+                        )
+                    )
+                elif authoring is not None and isinstance(
                     authoring.get("skeleton_slug"), str
                 ):
                     outcome = await _run_skeleton_fill(
