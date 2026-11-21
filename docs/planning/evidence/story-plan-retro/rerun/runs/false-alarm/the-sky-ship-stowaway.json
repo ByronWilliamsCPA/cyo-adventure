@@ -1,0 +1,27 @@
+{
+  "book": "sk_sky_ship_stowaway",
+  "shape_hash": "sha256:505dc8a647b7f9437b0fe1113aece4e9fa7c461eea0b0ff626a50fd042216e42",
+  "plan": {
+    "bound_to": "book file 73a5c0d5d197",
+    "producer": "hand-written",
+    "approver": null,
+    "book_file": "out/the-sky-ship-stowaway.filled.json",
+    "authored": "2026-11-21",
+    "authoring_minutes": 4,
+    "implicit_plants": {}
+  },
+  "ok": false,
+  "findings": [
+    {
+      "rule_id": "SP-8",
+      "severity": "error",
+      "story_id": "sk_sky_ship_stowaway",
+      "node_id": "b_tell1",
+      "choice_id": null,
+      "message": "decision 'b_tell1' offers c_tell_crew, c_tell_captain, c_tell_reveal and none of them costs anything ('none') in 6 state(s): no trade-off separates the options",
+      "state": "fed_pip=true, fin_free=false, knows_ropes=false, told_bosun=true",
+      "fact_id": null,
+      "route": null
+    }
+  ]
+}
