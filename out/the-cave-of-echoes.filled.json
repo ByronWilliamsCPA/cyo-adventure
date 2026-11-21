@@ -46,7 +46,7 @@
     },
     {
       "id": "n_start",
-      "body": "Biscuit's tail thumps on the sand as Maya checks the wet line on the rocks behind her. She has about an hour before the sea comes back and seals every cave mouth shut. She switches on her torch and picks the sound that calls to her first.",
+      "body": "Biscuit's tail thumps on the sand as Maya checks the wet line on the rocks behind her. She has about an hour before the sea comes back and seals every cave mouth shut. She switches on her torch, checks that her notebook is still in her pocket, and picks the sound that calls to her first.",
       "is_ending": false,
       "choices": [
         {
@@ -178,7 +178,7 @@
     },
     {
       "id": "la_crystal_take",
-      "body": "Maya reaches up and eases the loose crystal free. It slips into her palm, cool and heavy, glowing softly with its own blue light. The little crystal lights up a low passage Maya had not seen before. It curves back the way she came, toward the old lighthouse stairs. Biscuit trots eagerly into the glow, tail wagging fast, ready to follow the light home.",
+      "body": "Maya reaches up and eases the loose crystal free. It slips into her palm, cool and heavy, glowing softly with its own blue light. The little crystal lights up a low passage Maya had not seen before. It curves upward, toward the lighthouse above the cove. Biscuit trots eagerly into the glow, tail wagging fast, ready to follow the light home.",
       "is_ending": false,
       "choices": [
         {
@@ -225,7 +225,7 @@
     },
     {
       "id": "la_song",
-      "body": "Maya steps to the center of the round chamber and sings a single note, soft at first. The whole chamber sings it back to her, layered and shimmering, richer than one voice alone. Biscuit sits very still beside her, ears up, as the sound swells and settles around them like warm water. Maya has found the chamber that sings, a secret she thinks only the old lighthouse keeper ever knew. She climbs out humming that same note, all the way home.",
+      "body": "Maya steps to the center of the round chamber and sings a single note, soft at first. The whole chamber sings it back to her, layered and shimmering, richer than one voice alone. Biscuit sits very still beside her, ears up, as the sound swells and settles around them like warm water. Maya has found the chamber that sings, a secret she thinks only the lighthouse keepers of long ago ever knew. She climbs out humming that same note, all the way home.",
       "is_ending": true,
       "ending": {
         "id": "e_song",
@@ -312,7 +312,7 @@
     },
     {
       "id": "la_bell3",
-      "body": "Maya copies the ship's name carefully into her notebook. She presses hard so the marks stay clear. The rusted lantern still holds a stub of old candle. The coil of rope looks strong enough to help them climb back out. Biscuit noses the rope hopefully, tail wagging. Maya gathers both items into her arms. She pictures the climb ahead, then turns toward the passage that will carry them home again.",
+      "body": "Maya copies the ship's name carefully into her notebook. She presses hard so the marks stay clear. The rusted lantern still holds a stub of old candle. The coil of rope looks strong and too good to leave behind. Biscuit noses the rope hopefully, tail wagging. Maya gathers both items into her arms. She pictures the climb ahead, then turns toward the passage that will carry them home again.",
       "is_ending": false,
       "choices": [
         {
@@ -324,7 +324,7 @@
     },
     {
       "id": "la_bell4",
-      "body": "The ship's name is safe in her notebook now, and the old lantern is lit against the dark. Maya and Biscuit climb the good rope back up toward daylight, hand over hand. They spill out of the cave mouth just as gold evening light hits the water. Maya can already picture the whole town gathering close. They will be eager to hear about the lost ship that still rings, faithfully, somewhere under the sea near her home.",
+      "body": "The ship's name is safe in her notebook now, and the old lantern swings from her wrist, the coil of good rope over her shoulder. Maya and Biscuit climb the rope ladder back up toward daylight. They spill out of the cave mouth just as gold evening light hits the water. Maya can already picture the whole town gathering close. They will be eager to hear about the lost ship that still rings, faithfully, somewhere under the sea near her home.",
       "is_ending": true,
       "ending": {
         "id": "e_bell",
@@ -376,7 +376,7 @@
     },
     {
       "id": "ra_lake2",
-      "body": "The pebbles give way to a wide shelf of rock. Beyond it stretches black, still water. It vanishes clean out of sight into the dark. The lapping sound, it turns out, is only Biscuit's paw. He is testing the cold edge of the water. Small ripples spread out quietly. Maya crouches beside him. Her torch beam skates uselessly across the flat black surface. She stands again and looks along the rocky shelf, wondering how far it runs.",
+      "body": "The pebbles give way to a wide shelf of rock. Beyond it stretches black, still water. It vanishes clean out of sight into the dark. The lapping sound is the black water itself, nudging the edge of the shelf. Biscuit is testing the cold edge of the water. Small ripples spread out quietly. Maya crouches beside him. Her torch beam skates uselessly across the flat black surface. She stands again and looks along the rocky shelf, wondering how far it runs.",
       "is_ending": false,
       "choices": [
         {
@@ -480,7 +480,7 @@
     },
     {
       "id": "ra_islet",
-      "body": "The glowing shells lead Maya and Biscuit onward. They reach a tiny islet of white sand. A narrow shaft of open sky lights it from above. Glowing water rings the little island like a secret pool. It shines softly in the dim cave light. Maya kneels and fills a small jar with pale shells to take home. Then she wades back through the shallows toward daylight. She promises Biscuit, and herself, to keep this shining place a secret.",
+      "body": "The glowing shells lead Maya and Biscuit onward. They reach a tiny islet of white sand. A narrow shaft of open sky lights it from above. Glowing water rings the little island like a secret pool. It shines softly in the dim cave light. Maya kneels and tucks a few pale shells into her pocket to take home. Then she wades back through the shallows toward daylight. She promises Biscuit, and herself, to keep this shining place a secret.",
       "is_ending": true,
       "ending": {
         "id": "e_islet",
@@ -572,7 +572,7 @@
     },
     {
       "id": "ra_starfish",
-      "body": "Maya leans close to the cushion starfish. It is bigger than her own hand and the deep orange of a sunset. She pulls out her notebook and sketches it with care. She draws every ridge and curve, leaving the starfish right where it clings to the rock. Biscuit watches patiently beside her, tail still. Maya snaps a photo of the whole glowing pool. Then she closes her notebook gently and slips back out the way she came.",
+      "body": "Maya leans close to the cushion starfish. It is bigger than her own hand and the deep orange of a sunset. She pulls out her notebook and sketches it with care. She draws every ridge and curve, leaving the starfish right where it clings to the rock. Biscuit watches patiently beside her, tail still. Maya looks over the whole glowing pool one last time. Then she closes her notebook gently and slips back out the way she came.",
       "is_ending": false,
       "choices": [
         {
@@ -688,7 +688,7 @@
     },
     {
       "id": "da_bat_back",
-      "body": "Maya will not risk waking the whole sleeping roost tonight. She and Biscuit ease back, one quiet step at a time. They retrace the dark passage toward the distant cave mouth. They emerge into daylight dusty and awed, but completely safe. Behind them, the hundreds of bats sleep on, peaceful in the dark. Maya likes knowing she made the kind choice. She wonders what it looks like when the whole roost wakes and pours into the night sky to hunt. She decides to ask the lighthouse ranger about it tomorrow.",
+      "body": "Maya will not risk waking the whole sleeping roost tonight. She and Biscuit ease back, one quiet step at a time. They retrace the dark passage toward the distant cave mouth. They emerge into daylight dusty and awed, but completely safe. Behind them, the hundreds of bats sleep on, peaceful in the dark. Maya likes knowing she made the kind choice. She wonders what it looks like when the whole roost wakes and pours into the night sky to hunt. She decides to ask her aunt about it tomorrow.",
       "is_ending": true,
       "ending": {
         "id": "e_set_bat",
@@ -735,7 +735,7 @@
     },
     {
       "id": "da_skylight",
-      "body": "Maya climbs out through a hidden hole in the clifftop meadow, high above the lighthouse. She blinks hard in the sudden bright sun. Biscuit shakes himself off in the long grass, tail wagging fast with relief. Maya turns back to look at the small, hidden opening behind her. She already imagines how the museum will react. It is a whole secret way into the caves. And it comes with a colony of bats nobody else ever knew was living below the meadow.",
+      "body": "Maya climbs out through a hidden hole in the clifftop meadow, high above the lighthouse. She blinks hard in the sudden bright sun. Biscuit shakes himself off in the long grass, tail wagging fast with relief. Maya turns back to look at the small, hidden opening behind her. She already imagines how the museum will react. It is a whole forgotten way into the caves. And it comes with a colony of bats that nobody in years seems to have noticed living below the meadow.",
       "is_ending": true,
       "ending": {
         "id": "e_bats",
@@ -787,7 +787,7 @@
     },
     {
       "id": "da_cache_back",
-      "body": "The wet floor makes the choice for her in the end. Maya marks the spot carefully on her map. She hurries out with Biscuit trotting ahead of the rising tide. They reach the cave mouth breathless, muddy, and safe. The water starts lapping at the entrance just behind them. Maya folds her map away carefully. She is already planning to come back for the old cache on a drier day.",
+      "body": "The wet floor makes the choice for her in the end. Maya marks the spot carefully in her memory. She hurries out with Biscuit trotting ahead of the rising tide. They reach the cave mouth breathless, muddy, and safe. The water starts lapping at the entrance just behind them. Maya tucks that picture away carefully. She is already planning to come back for the old cache on a drier day.",
       "is_ending": true,
       "ending": {
         "id": "e_set_cache",
@@ -827,7 +827,7 @@
     },
     {
       "id": "da_compass",
-      "body": "Maya wipes the green crust from the compass with her sleeve, and the needle still swings true, pointing her the quickest way back to the cave mouth. Biscuit trots ahead, sure of the way, while Maya follows the needle through the dark passage. She moves fast now, because the tide is rising close behind them.",
+      "body": "Maya wipes the green crust from the compass with her sleeve, and the needle still swings true, steady as the day it was made. Biscuit trots ahead, sure of the way, while Maya follows him through the dark passage. She moves fast now, because the tide is rising close behind them.",
       "is_ending": false,
       "choices": [
         {
@@ -839,7 +839,7 @@
     },
     {
       "id": "da_compass2",
-      "body": "The century-old compass leads Maya and Biscuit straight out to the cave mouth. They arrive just as the sea comes rushing back in behind them. Maya steps onto dry sand, breathless and grinning. A real smuggler's compass sits clutched in her hand, its needle still finding true north after all these years. She already knows the whole town will beg to hear this story, the one about the compass she found deep beneath the old lighthouse.",
+      "body": "Biscuit leads Maya straight out to the cave mouth. They arrive just as the sea comes rushing back in behind them. Maya steps onto dry sand, breathless and grinning. A real smuggler's compass sits clutched in her hand, its needle still finding true north after all these years. She already knows the whole town will beg to hear this story, the one about the compass she found deep beneath the old lighthouse.",
       "is_ending": true,
       "ending": {
         "id": "e_compass",

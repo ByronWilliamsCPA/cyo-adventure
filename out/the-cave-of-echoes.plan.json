@@ -132,7 +132,7 @@
       "text": "Maya eased the loose glowing crystal free and carries it."
     },
     "passage_to_lighthouse_stairs": {
-      "text": "The crystal's light shows a low passage curving back toward the old lighthouse stairs."
+      "text": "The crystal's light shows a low passage curving upward toward the lighthouse above the cove."
     },
     "door_behind_lighthouse": {
       "text": "A narrow stone stair ends at a little wooden door tucked behind the old lighthouse."
@@ -162,7 +162,7 @@
       "text": "Maya sang one note and the chamber sang it back: she has found the chamber that sings."
     },
     "old_keeper_knew": {
-      "text": "Maya thinks only the old lighthouse keeper ever knew about the singing chamber."
+      "text": "Maya thinks only the lighthouse keepers of long ago ever knew about the singing chamber."
     },
     "hum_is_ringing": {
       "text": "The warm murmur is not wind but a low even ringing, like a bell struck far below."
@@ -171,7 +171,7 @@
       "text": "The ringing is a slow deep chime rising from a chamber below, where pale light shows something metal."
     },
     "rope_ladder": {
-      "text": "An old rope ladder, left long ago, hangs down into the chamber below and holds firm."
+      "text": "An old rope ladder, left long ago, hangs down into the chamber below and holds firm; it is also the way back up."
     },
     "ships_bell": {
       "text": "A huge old ship's bell hangs green with age from a stone arch, rung softly by dripping water."
@@ -180,10 +180,10 @@
       "text": "Letters cast in the bell's lip spell the name of a ship lost a hundred years ago."
     },
     "lantern_and_rope": {
-      "text": "A rusted lantern and a coil of good rope sit on a dry ledge behind the bell."
+      "text": "A rusted lantern and a coil of good rope sit on a dry ledge behind the bell; the rope is worth keeping."
     },
     "maya_has_notebook": {
-      "text": "Maya carries a notebook."
+      "text": "Maya carries a notebook in her pocket (checked at n_start)."
     },
     "name_copied": {
       "text": "Maya copied the ship's name into her notebook."
@@ -192,7 +192,7 @@
       "text": "Maya took the lantern, which holds a candle stub, and the coil of rope."
     },
     "climbed_out_by_rope": {
-      "text": "Maya and Biscuit climbed the rope back up and came out of the cave mouth with the lantern lit."
+      "text": "Maya and Biscuit climbed the rope ladder back up and came out of the cave mouth, the lantern on her wrist and the coil of rope over her shoulder."
     },
     "back_at_mouth_safe": {
       "text": "Maya and Biscuit got back out of the cave mouth safely as the sea returned."
@@ -207,10 +207,7 @@
       "text": "The trickle leads to a split: hollow lapping one way, a briny smell from a low narrow side-tunnel the other."
     },
     "lapping_from_ahead": {
-      "text": "The slow hollow lapping comes from down one branch and grows louder as Maya walks toward it.",
-      "contradicts": [
-        "lapping_is_biscuit"
-      ]
+      "text": "The slow hollow lapping comes from down one branch and grows louder as Maya walks toward it."
     },
     "pebbles_big_space": {
       "text": "The passage floor turns to wet pebbles and the ceiling lifts out of torch reach."
@@ -219,10 +216,7 @@
       "text": "Beyond a rock shelf stretches black still water that vanishes into the dark."
     },
     "lapping_is_biscuit": {
-      "text": "The lapping sound was only Biscuit's paw testing the edge of the water.",
-      "contradicts": [
-        "lapping_from_ahead"
-      ]
+      "text": "The lapping sound is the black lake itself nudging the shelf; Biscuit is only testing the cold edge of the water."
     },
     "weedy_shelf": {
       "text": "The rock shelf narrows above the lake, slick and green with weed."
@@ -306,7 +300,7 @@
       "text": "The bats are wild animals that Maya knows she must never touch."
     },
     "lighthouse_ranger": {
-      "text": "There is a lighthouse ranger Maya can ask about the bats."
+      "text": "Maya's aunt, who keeps the lighthouse, is someone Maya can ask about the bats."
     },
     "rock_staircase": {
       "text": "Beneath the shaft, fallen rock forms a rough staircase up toward daylight."
@@ -318,7 +312,7 @@
       "text": "The stair narrows into a mossy funnel smelling of grass; Maya boosts Biscuit up first."
     },
     "meadow_skylight": {
-      "text": "The climb comes out through a hidden hole in the clifftop meadow above the lighthouse: a secret way into the caves, over a bat colony nobody knew about."
+      "text": "The climb comes out through a hidden hole in the clifftop meadow above the lighthouse: a forgotten way into the caves, over a bat colony nobody has noticed in years."
     },
     "museum": {
       "text": "There is a museum Maya expects to tell about her find."
@@ -335,11 +329,8 @@
     "hollow_flooding": {
       "text": "Creeping water already glistens on the hollow's floor."
     },
-    "maya_has_map": {
-      "text": "Maya carries a map."
-    },
     "marked_on_map": {
-      "text": "Maya marked the cache on her map to come back for it."
+      "text": "Maya fixed the cache's location in her memory to come back for it."
     },
     "two_dry_boxes": {
       "text": "Most crates have rotted, but two smaller boxes sit whole on a dry stone shelf."
@@ -351,7 +342,7 @@
       "text": "With the water rising, Maya can carry only one box out cleanly."
     },
     "compass_points_way_out": {
-      "text": "The compass needle swings true, pointing the quickest way back to the cave mouth."
+      "text": "The compass needle swings true, steady as the day it was made; Biscuit knows the way out."
     },
     "compass_out": {
       "text": "The compass led Maya and Biscuit out to the cave mouth just as the sea rushed in."
@@ -384,7 +375,7 @@
     },
     "n_start": {
       "function": "decision",
-      "event": "Maya checks the tide line, gives herself about an hour, switches on her torch and picks a sound.",
+      "event": "Maya checks the tide line, gives herself about an hour, switches on her torch, checks her notebook is in her pocket and picks a sound.",
       "requires": [
         "maya_and_biscuit",
         "left_hums",
@@ -393,7 +384,8 @@
       ],
       "establishes": [
         "one_hour_deadline",
-        "maya_has_torch"
+        "maya_has_torch",
+        "maya_has_notebook"
       ]
     },
     "la_tunnel": {
@@ -496,7 +488,7 @@
     },
     "la_crystal_take": {
       "function": "continue",
-      "event": "Maya takes the loose crystal; its light shows a passage back toward the old lighthouse stairs.",
+      "event": "Maya takes the loose crystal; its light shows a passage curving upward toward the lighthouse.",
       "requires": [
         "loose_crystal",
         "aunt_keeps_lighthouse",
@@ -547,7 +539,7 @@
     },
     "la_song": {
       "function": "ending",
-      "event": "Maya sings and the chamber sings back; she believes only the old lighthouse keeper knew of it.",
+      "event": "Maya sings and the chamber sings back; she believes only the lighthouse keepers of long ago knew of it.",
       "requires": [
         "ringing_chamber",
         "aunt_keeps_lighthouse",
@@ -637,7 +629,8 @@
       "requires": [
         "lost_ship_name",
         "lantern_and_rope",
-        "maya_and_biscuit"
+        "maya_and_biscuit",
+        "maya_has_notebook"
       ],
       "establishes": [
         "maya_has_notebook",
@@ -647,7 +640,7 @@
     },
     "la_bell4": {
       "function": "ending",
-      "event": "Maya and Biscuit climb the rope out at gold evening light, the ship's name safe, imagining the town hearing about the lost ship near her home.",
+      "event": "Maya and Biscuit climb the rope ladder out at gold evening light, lantern on her wrist and rope on her shoulder, the ship's name safe, imagining the town hearing about the lost ship near her home.",
       "requires": [
         "name_copied",
         "took_lantern_rope",
@@ -698,7 +691,7 @@
     },
     "ra_lake2": {
       "function": "continue",
-      "event": "A rock shelf edges a black lake; the lapping turns out to be only Biscuit's paw.",
+      "event": "A rock shelf edges a black lake; the lapping is the lake itself, and Biscuit tests the cold edge.",
       "requires": [
         "pebbles_big_space",
         "lapping_from_ahead",
@@ -797,7 +790,7 @@
     },
     "ra_islet": {
       "function": "ending",
-      "event": "The shells lead to a sunlit islet; Maya takes a jar of shells and keeps it secret.",
+      "event": "The shells lead to a sunlit islet; Maya pockets a few shells and keeps the place secret.",
       "requires": [
         "glowing_shells",
         "maya_and_biscuit"
@@ -879,13 +872,13 @@
     },
     "ra_starfish": {
       "function": "continue",
-      "event": "Maya sketches the starfish, leaves it in place and photographs the pool.",
+      "event": "Maya sketches the starfish, leaves it in place and looks over the pool one last time.",
       "requires": [
         "orange_starfish",
-        "maya_and_biscuit"
+        "maya_and_biscuit",
+        "maya_has_notebook"
       ],
       "establishes": [
-        "maya_has_notebook",
         "starfish_sketched"
       ]
     },
@@ -987,10 +980,11 @@
     },
     "da_bat_back": {
       "function": "ending",
-      "event": "Maya backs away and leaves the bats sleeping, safe, and means to ask the lighthouse ranger about them.",
+      "event": "Maya backs away and leaves the bats sleeping, safe, and means to ask her aunt about them.",
       "requires": [
         "bat_roost",
-        "maya_and_biscuit"
+        "maya_and_biscuit",
+        "aunt_keeps_lighthouse"
       ],
       "establishes": [
         "back_at_mouth_safe",
@@ -1033,7 +1027,7 @@
     },
     "da_skylight": {
       "function": "ending",
-      "event": "Maya climbs out into the clifftop meadow through a secret way nobody knew, over a bat colony, and imagines the museum's reaction.",
+      "event": "Maya climbs out into the clifftop meadow through a forgotten way into the caves, over a bat colony, and imagines the museum's reaction.",
       "requires": [
         "mossy_funnel",
         "bat_roost",
@@ -1082,7 +1076,7 @@
     },
     "da_cache_back": {
       "function": "ending",
-      "event": "Maya marks the cache on her map and beats the tide out, planning to return.",
+      "event": "Maya marks the cache in her memory and beats the tide out, planning to return.",
       "requires": [
         "smugglers_cache",
         "hollow_flooding",
@@ -1090,7 +1084,6 @@
         "one_hour_deadline"
       ],
       "establishes": [
-        "maya_has_map",
         "marked_on_map",
         "back_at_mouth_safe",
         "plans_return"
@@ -1123,7 +1116,7 @@
     },
     "da_compass": {
       "function": "continue",
-      "event": "The compass needle points the quickest way back to the mouth; they hurry ahead of the tide.",
+      "event": "The compass needle swings true; Biscuit knows the way out and they hurry ahead of the tide.",
       "requires": [
         "compass_and_coins",
         "maya_and_biscuit",
@@ -1136,7 +1129,7 @@
     },
     "da_compass2": {
       "function": "ending",
-      "event": "The compass leads them out as the sea rushes in; its needle still finds true north.",
+      "event": "Biscuit leads them out as the sea rushes in; the compass needle still finds true north.",
       "requires": [
         "compass_points_way_out",
         "smugglers_cache",
@@ -1523,7 +1516,7 @@
       "id": "sk_cave_of_echoes",
       "version": 1,
       "path": "out/the-cave-of-echoes.filled.json",
-      "sha256": "178216418ccb8efaff396d405b7f2f40c8267167de7ee3118a7fbc16628e4d4f"
+      "sha256": "a1367d591787f71738c655b75de8a7cad1bb52d87b193d08881ec292ea9c9d09"
     },
     "shape": {
       "id": null,
@@ -1543,7 +1536,8 @@
       "SOFT, same route (c_bat ... c_da_push): da_roost shows carved initials proving someone climbed the chimney before; da_skylight calls it 'a whole secret way into the caves' with bats 'nobody else ever knew' about.",
       "SOFT, logic: la_bell4 has Maya climb 'the good rope' back up, though she came down a rope ladder that held firm and a loose coil cannot anchor itself at the top; the lantern is 'lit' with nothing established to light it.",
       "UNPAID SETUP: la_tunnel's rustle 'like wind through paper' is never explained on any route (left_glow_rustle).",
-      "Props introduced in passing by possessive, recorded as established where first named: notebook (la_bell3, ra_starfish), map (da_cache_back), a camera or phone for the photo (ra_starfish, not recorded as a fact), a jar (ra_islet)."
+      "Props introduced in passing by possessive, recorded as established where first named: notebook (la_bell3, ra_starfish), map (da_cache_back), a camera or phone for the photo (ra_starfish, not recorded as a fact), a jar (ra_islet).",
+      "WP-0.4 (2026-11-21): the plain contradictions above (lapping, compass, keeper/ranger, carved initials, rope/lantern, map, photo, jar, passage direction) were fixed in the book; the soft cross-route home_elsewhere vs home_near_cove item and the unexplained rustle were left as recorded, as they are taste items on no single route. See docs/planning/evidence/story-plan-retro/findings-the-cave-of-echoes.md."
     ]
   }
 }
