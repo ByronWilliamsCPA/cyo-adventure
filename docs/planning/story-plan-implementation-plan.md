@@ -523,6 +523,11 @@ that had read the continuity notes, so it is not the blind test WP-1.4 and WP-1.
   used), 1.28 USD plus a 0.28 USD configuration probe, 47 to 197 seconds per plan; the stateful medium request passed
   SP-4 to SP-6 on three threads. The plans are thin (`AL-848`): most nodes record no facts and choice intents and
   costs repeat, so they pass largely by recording little. Plan density needs addressing before WP-2.5 and WP-2.6.
+- **Density follow-ups, 2026-11-21 (`a9e14c2` to `07a8482`).** SP-D plan-density WARNINGs (passages with no fact,
+  facts per passage, intent and cost reuse across destinations, unreferenced facts), thresholds set so all seven
+  hand-written plans pass and all six smoke plans trip; one density repair within the budget; a convention-1 section in
+  `plan.md`; SP-3 treats a failure fact against the truth as a WARNING; per-attempt summaries on the job report;
+  explicit OpenRouter reasoning control. Not yet re-measured on paid calls.
 
 ### WP-2.4 Plan approval
 
@@ -870,7 +875,7 @@ Dates are proposals from 2026-11-21; each is also stated as the package it block
 | D9 | Per-band recap rule (AL-767) | WP-2.5 | before WP-2.5 starts |
 | D10 | Adopt for both paths, catalog only, or stop | everything in section 8 | on WP-4.4 |
 | D11 | Plans, for catalog and on-demand, are approved by a validated plan-review model (a different model from the writer, validated against the labelled ground truth before use); the owner reviews by exception, every reject and "unsure" plus a random sample. Amends ADR-033 Decision 3. **Made 2026-11-21** (owner, in session; see the note below) | WP-2.4, WP-3.7 | made |
-| D12 | Plan-reviewer thresholds, exception-sample rate and suspension rule (decided alongside D6). **Decided 2026-11-21** (owner, in session): every value as proposed in the note below, including the minimum validation size met with seeded-defect plans reported separately as synthetic | WP-3.7 | done |
+| D12 | Plan-reviewer thresholds, exception-sample rate and suspension rule (decided alongside D6). **Decided 2026-11-21** (owner, in session): every value as proposed in the note below, including the minimum validation size met with seeded-defect plans reported separately as synthetic. **Amended 2026-11-21** after WP-3.1 showed seeds cannot add clean plans (`AL-853`): the clean held-out minimum is met by a fresh blind extraction plus a second independent blind extraction of each of the five held-out post-fix books, results reported per book (the effective clean sample is five books); synthetic defective plans seed both checker-visible defects (the WP-1.2 witnesses) and checker-invisible ones (a choice outcome contradicting its label, a fact contradicting `truth`), each reported separately | WP-3.7 | done |
 
 **D3 as decided on 2026-11-21 (owner, in session).**
 
