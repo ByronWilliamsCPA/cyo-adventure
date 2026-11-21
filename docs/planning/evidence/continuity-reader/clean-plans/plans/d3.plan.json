@@ -1,0 +1,2712 @@
+{
+  "plan_version": "0.1",
+  "book": {
+    "slug": "the-midnight-museum",
+    "storybook_id": "sk_midnight_museum",
+    "storybook_version": 1,
+    "title": "The Midnight Museum"
+  },
+  "request": {
+    "text": null,
+    "band": "10-13",
+    "length": "short",
+    "style": "prose",
+    "tone": "warm, witty museum mystery with puzzles; violence none, scariness mild, peril moderate",
+    "note": "catalog book; plan written blind by reading the book, no request exists"
+  },
+  "pitch": {
+    "hero": "Nadia, a label-reading schoolgirl locked alone overnight in the old Ellery Museum",
+    "want": "to follow a torn map and the founder's recorded tour to his hidden collection",
+    "obstacle": "a night guard on rounds, a coded note, a sleeping brass globe and traps that punish haste",
+    "stake": "the town's lost treasures and the founder's name, falsely remembered as a thief",
+    "ending_kind": "the vault found and the truth told many ways, or setbacks of haste, force or greed"
+  },
+  "cast": {
+    "nadia": {
+      "name": "Nadia",
+      "role": "protagonist, pupil in class 6B",
+      "want": "to find the founder's hidden collection before morning",
+      "voice": "close third past; curious, dry, talks back to objects",
+      "knows": [
+        "nadia_locked_in",
+        "nobody_will_miss_her",
+        "tess_best_friend"
+      ]
+    },
+    "ellery": {
+      "name": "Ambrose Ellery",
+      "role": "the museum's founder, heard on his century-old recorded audio tour",
+      "want": "a finder to return the town's treasures and clear his name",
+      "voice": "crackling, dry, aphoristic, fond of riddles",
+      "knows": [
+        "treasures_belong_to_town",
+        "hid_from_sellers",
+        "museum_debts",
+        "ellery_took_blame",
+        "combo_492",
+        "quarter_to_four_rule"
+      ]
+    },
+    "pym": {
+      "name": "Mr. Pym",
+      "role": "the night guard of thirty-one years",
+      "want": "to learn where the founder's secret leads",
+      "voice": "kind, firm, talks to exhibits, does crosswords",
+      "knows": [
+        "guard_31_years",
+        "map_is_pyms",
+        "pym_planted_map"
+      ]
+    },
+    "tess": {
+      "name": "Tess",
+      "role": "Nadia's best friend",
+      "want": "to share the secret and keep watch",
+      "voice": "blunt, eager, practical",
+      "knows": [
+        "tess_best_friend"
+      ]
+    },
+    "curator": {
+      "name": "the curator",
+      "role": "head of the museum, arrives at eight",
+      "want": "proof before belief",
+      "voice": "brisk, skeptical, softens when convinced",
+      "knows": [
+        "curator_at_eight"
+      ]
+    }
+  },
+  "truth": {
+    "question": "What is the founder's hidden collection, and why did he hide it?",
+    "statement": "Ambrose Ellery did not sell the town's treasures. When the museum owed more than it owned and creditors meant to sell everything by the pound, he hid the collection in a vault under the rotunda globe, stop 38, took the blame, and left a trail for a finder: the torn map Pym planted, a key, a shift-three code, and the rings four, nine, two.",
+    "facts": [
+      "vault_stop_38",
+      "treasures_belong_to_town",
+      "hid_from_sellers",
+      "museum_debts",
+      "ellery_took_blame",
+      "town_believes_thief",
+      "ellery_not_thief",
+      "combo_492",
+      "heart_is_globe",
+      "map_is_pyms"
+    ]
+  },
+  "facts": {
+    "nadia_locked_in": {
+      "text": "Nadia, a girl who reads every museum label, is left behind and locked alone in the old Ellery Museum at night."
+    },
+    "doors_locked_no_signal": {
+      "text": "The museum's main doors are locked for the night and Nadia's phone has no signal inside."
+    },
+    "nobody_will_miss_her": {
+      "text": "Nadia's mum thinks she is sleeping over at Tess's and Tess thinks she went home sick, so nobody will miss her before morning."
+    },
+    "tess_best_friend": {
+      "text": "Tess is Nadia's best friend."
+    },
+    "handset_thirteen": {
+      "text": "Nadia wears audio guide handset thirteen around her neck."
+    },
+    "half_map_in_pouch": {
+      "text": "Someone tucked half of an old museum map, torn down the middle, into the handset's pouch."
+    },
+    "brass_mark": {
+      "text": "The map carries a small brass mark, a circle crossed by two lines."
+    },
+    "map_ringed_wing": {
+      "text": "A pencil ring on the map marks a wing Nadia has never seen, labelled in square letters: the founder's hidden collection, start at the mark."
+    },
+    "night_guard_on_rounds": {
+      "text": "A night guard walks rounds through the museum."
+    },
+    "lights_going_out": {
+      "text": "The night setting is switching the lobby lights off row by row, the green lamp over the visitors' book last."
+    },
+    "tour_board_chalk": {
+      "text": "A tour board with a fat stub of yellow chalk stands in the lobby on the guard's route."
+    },
+    "map_back_read": {
+      "text": "Nadia read the back of her half of the map under the lobby lamp."
+    },
+    "map_back_unread_before": {
+      "text": "Nadia had never turned her half of the map over before she was shut in the roped gallery.",
+      "contradicts": [
+        "map_back_read"
+      ]
+    },
+    "map_back_half_sentence": {
+      "text": "The back of the map holds a torn half sentence in brown ink: my east wing is not gone, for it has one door left, and that door opens only."
+    },
+    "wedge_warning": {
+      "text": "A square pencil warning on the back of the map says the rope gallery door shuts itself, so wedge it, signed by someone who sat in there till the cleaners came."
+    },
+    "board_message": {
+      "text": "Nadia chalked on the tour board that she is locked in, not a burglar, Nadia from class 6B, back soon."
+    },
+    "nadia_has_chalk": {
+      "text": "Nadia kept the stub of chalk in her coat pocket."
+    },
+    "no_chalk": {
+      "text": "Nadia has no chalk with her in the dark stacks.",
+      "contradicts": [
+        "nadia_has_chalk"
+      ]
+    },
+    "rotunda_globe": {
+      "text": "The rotunda holds a huge brass globe of rings inside rings on a stone pedestal, tour stop one."
+    },
+    "ellery_audio_tour": {
+      "text": "The audio guide plays the founder, old Ambrose Ellery, who recorded his own tour almost a hundred years ago."
+    },
+    "globe_is_heart": {
+      "text": "Ellery calls the brass globe the heart of his museum and says most people look at it for four seconds."
+    },
+    "three_archways": {
+      "text": "Three archways lead from the rotunda to the Gallery of Gems, the Egyptian Wing and the Archive stairs."
+    },
+    "gems_crooked_case": {
+      "text": "In the Gallery of Gems a big glass case of gems sits crooked on its stand."
+    },
+    "gems_beeping": {
+      "text": "A faint, steady beeping comes from somewhere past the crooked case."
+    },
+    "someone_else_searched": {
+      "text": "Someone else has recently been searching the exhibits, opening cases and lids in a hurry."
+    },
+    "tilted_vitrine_card": {
+      "text": "Inside the crooked case a small vitrine tilts over something and an old card lies face down behind it."
+    },
+    "nadia_has_token": {
+      "text": "Nadia carries a coin-sized brass token stamped with the mark from her map."
+    },
+    "no_token": {
+      "text": "Nadia has nothing coin-shaped to leave in the owl's place.",
+      "contradicts": [
+        "nadia_has_token"
+      ]
+    },
+    "token_motto": {
+      "text": "The brass token reads LEAVE ME WHERE YOU TAKE around its back."
+    },
+    "narrow_door_gems": {
+      "text": "A narrow door in the back wall of the Gallery of Gems, half hidden by a folded screen, opens on a corridor."
+    },
+    "glass_ring_label": {
+      "text": "An old label in the founder's thin hand says the ring is glass, the real one went somewhere safer with much else, and the curious should try the corridor."
+    },
+    "mark_on_skirting": {
+      "text": "At the blank end of the gems corridor the mark is scratched on a loose skirting board."
+    },
+    "sensor_battery": {
+      "text": "The beeping is only a wall sensor with a tired battery."
+    },
+    "guard_threat": {
+      "text": "If the night guard finds Nadia he will walk her to the lobby and the night will be over."
+    },
+    "guard_31_years": {
+      "text": "The night guard has spent thirty-one years in the museum wondering about its hidden secret."
+    },
+    "sarcophagus_crooked": {
+      "text": "In the Egyptian Wing the painted sarcophagus lid sits crooked, as if lifted and not set back."
+    },
+    "old_wall_map": {
+      "text": "A faded wall map in the Egyptian Wing shows the museum as it was a hundred years ago, with halls Nadia has never walked."
+    },
+    "amulet_empty_dent": {
+      "text": "One coin-sized dent in the amulet case's velvet sits empty."
+    },
+    "token_of_house_card": {
+      "text": "A card in the amulet case says the token of the house was removed by the founder and is not far away."
+    },
+    "hall_behind_egypt": {
+      "text": "A draught leads through a gap behind the sarcophagus to a bare hall."
+    },
+    "mark_on_floor_tile": {
+      "text": "At the far end of the hall behind the Egyptian Wing a loose floor tile carries the mark."
+    },
+    "ringed_wing_behind_egypt": {
+      "text": "The wing ringed on Nadia's map begins right behind the Egyptian room."
+    },
+    "power_cut_torch": {
+      "text": "A power-cut torch hangs on a bracket by the wall map."
+    },
+    "roped_gallery_closed": {
+      "text": "A red rope marked CLOSED FOR REPAIR bars a dark gallery, with cold air coming under its door."
+    },
+    "torch_died": {
+      "text": "The power-cut torch's battery dies partway along the lost wing's route."
+    },
+    "rope_gallery_arch_29": {
+      "text": "The roped gallery holds a huge bricked-up arch numbered 29, behind which Ellery says his east wing lies."
+    },
+    "locked_in_gallery": {
+      "text": "The roped gallery door shut behind Nadia with no inside handle, and she waited there until the cleaners came at six."
+    },
+    "archive_ledger_stacks": {
+      "text": "The Archive has an open visitor ledger under two lamps and deep, dark back stacks."
+    },
+    "founder_came_to_hide": {
+      "text": "The founder signed the ledger's first page and wrote that he came to hide something."
+    },
+    "sticking_drawer": {
+      "text": "A low cabinet's deep bottom drawer sticks fast, and something rolls inside it."
+    },
+    "row_q_target": {
+      "text": "The founder's hidden thing is in Row Q, the last row of the back stacks, behind the dictionaries."
+    },
+    "mark_on_shelf_q": {
+      "text": "The mark is cut into a shelf edge in Row Q, with a finger-wide gap behind the dictionaries."
+    },
+    "grating_to_lobby": {
+      "text": "A grating over the back stacks opens on the lobby, so a light down there would show to the guard."
+    },
+    "lantern_on_hook": {
+      "text": "A battery lantern hangs on a hook at the edge of the dark stacks."
+    },
+    "records_for_finder": {
+      "text": "Four boxes of the founder's tour records, numbered 37 to 40, are labelled For the finder."
+    },
+    "tour_has_36_stops": {
+      "text": "The museum's audio tour has only thirty-six stops."
+    },
+    "brass_key_found": {
+      "text": "Nadia found a small brass key wrapped in oilcloth, stamped with the mark."
+    },
+    "mark_not_found": {
+      "text": "Nadia never found what the mark on her map opens.",
+      "contradicts": [
+        "brass_key_found"
+      ]
+    },
+    "coded_note": {
+      "text": "A note in coded letters that spell nothing is tied to the brass key."
+    },
+    "key_three_locks": {
+      "text": "At stop 37 Ellery says the key fits three locks to his rooms, the study, the glass cabinet and the back stair, each hiding a way to read the note."
+    },
+    "founder_portrait": {
+      "text": "The founder's study holds a roll-top desk and a portrait of Ellery with a white beard and sharp nose, hung on a hinge."
+    },
+    "nadia_has_glasses": {
+      "text": "Nadia has a pair of round reading glasses pushed up in her hair."
+    },
+    "glasses_are_founders": {
+      "text": "The reading glasses Nadia keeps are the founder's own."
+    },
+    "notebook_worked_line": {
+      "text": "The founder's notebook shows one line of the code with its plain meaning written beneath."
+    },
+    "cipher_wheel": {
+      "text": "A safe behind the portrait holds a brass cipher wheel with two rings of letters."
+    },
+    "reading_table_landing": {
+      "text": "A small reading table with a green-shaded lamp stands by the window on the landing outside the study."
+    },
+    "cabinet_stuck_lid": {
+      "text": "The glass cabinet of travel journals unlocks with the key but its lid is glued nearly shut by old varnish."
+    },
+    "guard_on_stairs": {
+      "text": "The night guard is coming up the main stairs, humming, with jingling keys."
+    },
+    "ribbon_ledger": {
+      "text": "A slim ledger with a ribbon marking one page lies among the founder's travel journals."
+    },
+    "ledger_code_table": {
+      "text": "The ledger's ribboned page is a two-column letter-swapping table, the key to a code."
+    },
+    "shift_three": {
+      "text": "The code shifts every letter three places along the alphabet."
+    },
+    "cipher_dial": {
+      "text": "A saucer-sized brass dial with two rings of letters is set into the wall at the head of the back stair."
+    },
+    "stair_cupboard_chart": {
+      "text": "A cupboard at the foot of the back stair holds a brittle chart of two rings of letters."
+    },
+    "lamp_lit": {
+      "text": "The reading table's lamp still lights, so someone has been changing the bulb."
+    },
+    "cipher_decoded": {
+      "text": "The decoded note says: follow the stars to the heart of my house."
+    },
+    "heart_is_globe": {
+      "text": "The heart of the house is the brass globe in the rotunda."
+    },
+    "three_roads": {
+      "text": "The globe sleeps until one of three roads wakes it: the Astronomy Hall, the Map Room or the Clock Corridor."
+    },
+    "combo_492": {
+      "text": "The globe's rings must be set to four, nine and two."
+    },
+    "liar_star": {
+      "text": "Ellery says one of the painted stars in the Astronomy Hall is a liar."
+    },
+    "brass_star_door": {
+      "text": "One star in the dome is a brass stud that opens a hidden door to a passage down toward the rotunda."
+    },
+    "caged_walkway": {
+      "text": "The staff ladder leads to a caged walkway under the dome, with a door at its far end and a second ladder climbing higher."
+    },
+    "star_globe": {
+      "text": "The Map Room holds a great turning floor globe of the night sky and a giant atlas."
+    },
+    "gold_star_panel": {
+      "text": "Turning the globe's one gold star under the pointer opens a low panel to a passage."
+    },
+    "atlas_museum_chart": {
+      "text": "A hand-drawn chart in the atlas maps the museum as a constellation, with a red route to its middle and a warning to mind the crates."
+    },
+    "gold_star_door": {
+      "text": "The atlas route ends at a plain door with a tiny gold star over the handle."
+    },
+    "clock_corridor": {
+      "text": "The Clock Corridor has a gear room at one end and a doorway crossed by a great swinging pendulum at the other."
+    },
+    "master_clock_stars": {
+      "text": "The master clock has twelve painted stars for numbers, one gold, and setting its hands to the gold star opens a door."
+    },
+    "pendulum_beat": {
+      "text": "The pendulum hangs clear of the doorway for a long moment on each far swing, on a count of three."
+    },
+    "globe_awake": {
+      "text": "Entering the rotunda by a founder's road pulled a pin from the globe, and its rings are free and awake."
+    },
+    "pedestal_tiles": {
+      "text": "The globe's stone pedestal is carved with small sliding square tiles."
+    },
+    "guard_room_ajar": {
+      "text": "A door marked NIGHT GUARD stands ajar off the rotunda, with screens flickering inside."
+    },
+    "worn_numbers": {
+      "text": "The numbers on the globe's rings are worn nearly flat and the rings slide easily past the mark."
+    },
+    "vault_stair_opened": {
+      "text": "A marble slab beside the pedestal slid back to reveal a narrow stair down into the dark."
+    },
+    "third_ring_jammed": {
+      "text": "Guessing by ear left the third ring caught a finger's width short of the two."
+    },
+    "low_door_rotunda": {
+      "text": "A low door painted white hides in the curve of the rotunda wall, letting out a cold draught."
+    },
+    "hidden_workshop": {
+      "text": "Behind the low door, stop 39 is the founder's hidden workshop of half-built brass birds and clockwork beasts."
+    },
+    "brass_wren": {
+      "text": "A thumb-sized brass wren with a key in its back sits on the workshop bench."
+    },
+    "rounds_book": {
+      "text": "The guard's room has a rounds book of tidy times and the same two initials going back years, a crossword and a black phone."
+    },
+    "crossword_for_nadia": {
+      "text": "A crossword in the guard's room has NADIA printed on it."
+    },
+    "quarter_to_four_rule": {
+      "text": "At a quarter to four each morning the globe's clockwork turns the rings itself and opens the floor if the heart is awake."
+    },
+    "guard_is_pym": {
+      "text": "The night guard is Mr. Pym."
+    },
+    "map_is_pyms": {
+      "text": "The torn map is the night guard Pym's, and the square pencil letters on it are his."
+    },
+    "pym_planted_map": {
+      "text": "Pym put the map in handset thirteen himself a month ago, after thirty-one years of carrying it about."
+    },
+    "pym_saw_board": {
+      "text": "Pym saw Nadia's chalked board, searched every room twice, and left the front doors unlocked with the kettle on."
+    },
+    "phone_dial_tone": {
+      "text": "The guard's black phone has a working dial tone."
+    },
+    "vault_stop_38": {
+      "text": "Under the rotunda, stop 38 is a stone room full of dusty paintings, carvings and small treasures."
+    },
+    "treasures_belong_to_town": {
+      "text": "Ellery says every piece in the hidden room belongs to the town."
+    },
+    "hid_from_sellers": {
+      "text": "Ellery hid the treasures from men who meant to sell them by the pound."
+    },
+    "sealed_letter": {
+      "text": "A sealed letter marked To the finder waits on the vault's nearest shelf."
+    },
+    "other_map_half": {
+      "text": "The other torn half of the old map lies on the vault shelf."
+    },
+    "jewelled_owl": {
+      "text": "A small jewelled owl sits on the vault shelf."
+    },
+    "letter_opened": {
+      "text": "Nadia opened and read the founder's sealed letter."
+    },
+    "letter_left_unopened": {
+      "text": "Nadia did not open the founder's letter.",
+      "contradicts": [
+        "letter_opened"
+      ]
+    },
+    "town_believes_thief": {
+      "text": "The town believes Ellery sold its treasures and kept the money."
+    },
+    "museum_debts": {
+      "text": "The museum owed more than it owned, and its creditors wanted the collection sold."
+    },
+    "ellery_took_blame": {
+      "text": "Ellery hid the collection, took the blame, and waited for the debts to die, but they outlived him."
+    },
+    "key_in_forty": {
+      "text": "The letter tells the finder to key in stop forty for the whole truth."
+    },
+    "letter_ps_tiny": {
+      "text": "The letter ends with a line written too small to read."
+    },
+    "ps_bulb_changer": {
+      "text": "The tiny line says whoever kept the reading lamp's bulb changed has earned a look at the room."
+    },
+    "bulb_changer_is_guard": {
+      "text": "Nadia reasons that the bulb changer must be the night guard."
+    },
+    "inventory_book": {
+      "text": "Behind a panel at stop forty, a leather book lists every piece in the room and where in town it belongs."
+    },
+    "ellery_not_thief": {
+      "text": "Ellery was not a thief; he hid the town's treasures to save them."
+    },
+    "maps_joined": {
+      "text": "Nadia joined the two halves of the torn map."
+    },
+    "map_untouched": {
+      "text": "Nadia did not touch the map half in the vault.",
+      "contradicts": [
+        "maps_joined"
+      ]
+    },
+    "east_wing_intact": {
+      "text": "The whole map shows the lost east wing, bricked up inside the walls but never pulled down."
+    },
+    "dotted_line_wing": {
+      "text": "A dotted line on the whole map runs from the vault to the lost wing through the back of the last shelf."
+    },
+    "lost_wing_paintings": {
+      "text": "The lost wing is a long gallery under dust sheets, hung with the paintings the town thought sold and lost."
+    },
+    "wing_photographed": {
+      "text": "Nadia photographed every painting in the lost wing she could reach."
+    },
+    "map_photographed": {
+      "text": "Nadia photographed the whole map, the shelves and the letter and left everything in place."
+    },
+    "founders_door_garden": {
+      "text": "The back of the joined map says the east wing's last door opens only from within, onto the garden, and her key fits it."
+    },
+    "curator_at_eight": {
+      "text": "The curator unlocks the staff door at eight."
+    },
+    "tess_cant_keep_secret": {
+      "text": "Tess has never been told a secret second in her life."
+    },
+    "curator_shown": {
+      "text": "Nadia showed the curator the sealed letter and the open floor by the globe."
+    },
+    "tess_told": {
+      "text": "Nadia told Tess about the room under the floor before anyone else."
+    },
+    "clue_left_for_museum": {
+      "text": "Nadia left the joined map, the letter, the key and a note with the combination on the guard's desk, unsigned."
+    },
+    "owl_hollow_trap": {
+      "text": "Lifting the owl reveals a coin-sized hollow stamped with the mark and sets a spring winding under the shelf."
+    },
+    "bells_ring": {
+      "text": "Running off with the owl set a row of bells ringing that could not be stopped."
+    },
+    "inventory_list": {
+      "text": "Nadia wrote a pencil list of everything in the room on the back of the coded note."
+    },
+    "owl_speaks": {
+      "text": "With the token in the hollow, the owl's key makes it speak in Ellery's voice: believe whoever carries me."
+    },
+    "dome_mark_picture": {
+      "text": "From the top of the dome the gold stars form the circle-and-lines mark."
+    },
+    "key_lost": {
+      "text": "The brass key flew from Nadia's hand and fell through a grating under the pendulum."
+    },
+    "pendulum_count_three": {
+      "text": "Writing under the pendulum says count to three and walk."
+    },
+    "wing_nine_windows": {
+      "text": "The lost wing has nine windows on its garden side, which Nadia passes on her way to school."
+    },
+    "wren_sings": {
+      "text": "The wound brass wren hops, sings three notes and bows."
+    },
+    "vault_found_with_pym": {
+      "text": "Nadia and Pym opened the globe stair together and went down side by side."
+    },
+    "treasures_returned": {
+      "text": "Within a month the treasures went back to the town and a plate under Ellery's portrait read NOT A THIEF."
+    },
+    "curator_investigates": {
+      "text": "Nadia's anonymous hints led the curator to investigate the globe."
+    },
+    "wing_opened_public": {
+      "text": "The lost wing's arch was unbricked and the town walked into its rooms."
+    },
+    "out_by_founders_door": {
+      "text": "Nadia left through the founder's garden door and came back in by the front."
+    },
+    "curator_believes_owl": {
+      "text": "The speaking owl convinces the curator to follow Nadia."
+    },
+    "curator_reads_letter": {
+      "text": "The curator read the founder's letter aloud and the town learned Ellery had not sold its treasures."
+    },
+    "two_keepers": {
+      "text": "Nadia and Tess kept the room secret together until the end of term."
+    },
+    "museum_found_room": {
+      "text": "The museum found the room on its own and credited an unnamed curious visitor."
+    },
+    "called_mum": {
+      "text": "Nadia phoned her mum from the guard's room and told the guard everything."
+    },
+    "key_on_guard_desk": {
+      "text": "The brass key lies on the guard's desk."
+    },
+    "curator_sees_photos": {
+      "text": "Nadia showed the curator her photographs and told her the way down."
+    },
+    "curator_reads_list": {
+      "text": "The curator read Nadia's list and went to see the room."
+    },
+    "nadia_told_pym": {
+      "text": "Nadia met Pym at the front desk and told him everything."
+    }
+  },
+  "nodes": {
+    "n_open": {
+      "function": "open",
+      "event": "Nadia is locked alone in the Ellery Museum at night and finds half a torn map in her audio guide pouch pointing to the founder's hidden collection.",
+      "requires": [],
+      "establishes": [
+        "nadia_locked_in",
+        "doors_locked_no_signal",
+        "nobody_will_miss_her",
+        "tess_best_friend",
+        "handset_thirteen",
+        "half_map_in_pouch",
+        "brass_mark",
+        "map_ringed_wing",
+        "night_guard_on_rounds"
+      ]
+    },
+    "n_desk": {
+      "function": "decision",
+      "event": "The lobby lights die row by row; Nadia can read the map under the last lamp or chalk a message on the tour board.",
+      "requires": [
+        "half_map_in_pouch",
+        "night_guard_on_rounds"
+      ],
+      "establishes": [
+        "lights_going_out",
+        "tour_board_chalk"
+      ]
+    },
+    "n_desk_map": {
+      "function": "plant",
+      "event": "Under the lamp the back of the map shows a torn half sentence about the east wing and a warning to wedge the rope gallery door.",
+      "requires": [
+        "half_map_in_pouch"
+      ],
+      "establishes": [
+        "map_back_read",
+        "map_back_half_sentence",
+        "wedge_warning"
+      ]
+    },
+    "n_desk_chalk": {
+      "function": "plant",
+      "event": "Nadia chalks a not-a-burglar message on the tour board and pockets the chalk.",
+      "requires": [
+        "tour_board_chalk",
+        "night_guard_on_rounds"
+      ],
+      "establishes": [
+        "board_message",
+        "nadia_has_chalk"
+      ]
+    },
+    "n_start": {
+      "function": "decision",
+      "event": "In the rotunda the founder's recorded tour introduces the brass globe as the museum's heart; three archways lead on.",
+      "requires": [
+        "handset_thirteen"
+      ],
+      "establishes": [
+        "rotunda_globe",
+        "ellery_audio_tour",
+        "globe_is_heart",
+        "three_archways"
+      ]
+    },
+    "a_gems1": {
+      "function": "decision",
+      "event": "The Gallery of Gems has a crooked case and a faint beeping.",
+      "requires": [
+        "handset_thirteen",
+        "ellery_audio_tour"
+      ],
+      "establishes": [
+        "gems_crooked_case",
+        "gems_beeping"
+      ]
+    },
+    "a_gems_case": {
+      "function": "decision",
+      "event": "The case shows someone searched it in a hurry; a vitrine tilts and a card lies face down.",
+      "requires": [
+        "gems_crooked_case"
+      ],
+      "establishes": [
+        "someone_else_searched",
+        "tilted_vitrine_card"
+      ]
+    },
+    "a_gems_vitrine": {
+      "function": "continue",
+      "event": "Under the vitrine Nadia finds and pockets a brass token; an arrow points to a narrow door.",
+      "requires": [
+        "tilted_vitrine_card",
+        "brass_mark"
+      ],
+      "establishes": [
+        "nadia_has_token",
+        "token_motto",
+        "narrow_door_gems"
+      ]
+    },
+    "a_gems_note": {
+      "function": "continue",
+      "event": "The founder's old label sends the curious to the corridor behind the gallery.",
+      "requires": [
+        "tilted_vitrine_card",
+        "half_map_in_pouch"
+      ],
+      "establishes": [
+        "glass_ring_label",
+        "narrow_door_gems"
+      ]
+    },
+    "a_gems_corridor": {
+      "function": "bottleneck",
+      "event": "The silent corridor ends in a loose skirting board scratched with the mark.",
+      "requires": [
+        "brass_mark",
+        "handset_thirteen"
+      ],
+      "establishes": [
+        "mark_on_skirting"
+      ]
+    },
+    "a_gems_alarm": {
+      "function": "decision",
+      "event": "The beeping is a tired sensor; the night guard's torch approaches and Nadia must hide.",
+      "requires": [
+        "gems_beeping"
+      ],
+      "establishes": [
+        "sensor_battery",
+        "guard_threat"
+      ]
+    },
+    "a_gems_hide": {
+      "function": "continue",
+      "event": "Hidden behind the plinth, Nadia hears the guard mention thirty-one years of asking and sees a narrow door ajar.",
+      "requires": [
+        "gems_crooked_case"
+      ],
+      "establishes": [
+        "guard_31_years",
+        "narrow_door_gems"
+      ]
+    },
+    "b_egypt1": {
+      "function": "decision",
+      "event": "The Egyptian Wing has a crooked sarcophagus lid and an old wall map of the museum.",
+      "requires": [
+        "handset_thirteen",
+        "ellery_audio_tour"
+      ],
+      "establishes": [
+        "sarcophagus_crooked",
+        "old_wall_map"
+      ]
+    },
+    "b_egypt_sarco": {
+      "function": "decision",
+      "event": "The lid has been moved and the amulet case has one empty coin-sized dent.",
+      "requires": [
+        "sarcophagus_crooked"
+      ],
+      "establishes": [
+        "someone_else_searched",
+        "amulet_empty_dent"
+      ]
+    },
+    "b_egypt_lid": {
+      "function": "continue",
+      "event": "Under the lid Nadia finds and pockets a brass token; a draught leads to a hall.",
+      "requires": [
+        "sarcophagus_crooked",
+        "brass_mark"
+      ],
+      "establishes": [
+        "nadia_has_token",
+        "token_motto",
+        "hall_behind_egypt"
+      ]
+    },
+    "b_egypt_amulet": {
+      "function": "continue",
+      "event": "The card for the empty dent says the founder took the token of the house; an arrow points to a hall.",
+      "requires": [
+        "amulet_empty_dent"
+      ],
+      "establishes": [
+        "token_of_house_card",
+        "hall_behind_egypt"
+      ]
+    },
+    "b_egypt_hall": {
+      "function": "bottleneck",
+      "event": "The bare hall ends at a rocking floor tile cut with the mark.",
+      "requires": [
+        "brass_mark",
+        "handset_thirteen"
+      ],
+      "establishes": [
+        "mark_on_floor_tile"
+      ]
+    },
+    "b_egypt_map": {
+      "function": "gate",
+      "event": "The wall map shows the ringed wing begins behind this room; a torch hangs nearby and a roped gallery is closed for repair.",
+      "requires": [
+        "old_wall_map",
+        "map_ringed_wing"
+      ],
+      "establishes": [
+        "ringed_wing_behind_egypt",
+        "power_cut_torch",
+        "roped_gallery_closed"
+      ]
+    },
+    "b_egypt_torch": {
+      "function": "continue",
+      "event": "Nadia follows the lost wing's route by torch until its battery dies.",
+      "requires": [
+        "power_cut_torch",
+        "old_wall_map",
+        "roped_gallery_closed"
+      ],
+      "establishes": [
+        "torch_died"
+      ]
+    },
+    "b_egypt_wedge": {
+      "function": "payoff",
+      "event": "Heeding the warning, Nadia wedges the gallery door, finds the bricked arch 29 to the east wing, and leaves by a side door.",
+      "requires": [
+        "wedge_warning",
+        "roped_gallery_closed"
+      ],
+      "establishes": [
+        "rope_gallery_arch_29"
+      ]
+    },
+    "c_archive1": {
+      "function": "decision",
+      "event": "The Archive offers an open visitor ledger and dark back stacks.",
+      "requires": [
+        "handset_thirteen",
+        "ellery_audio_tour"
+      ],
+      "establishes": [
+        "archive_ledger_stacks"
+      ]
+    },
+    "c_archive_ledger": {
+      "function": "decision",
+      "event": "The ledger's first page shows the founder came to hide something; a card index and a sticking drawer wait.",
+      "requires": [
+        "archive_ledger_stacks"
+      ],
+      "establishes": [
+        "founder_came_to_hide",
+        "sticking_drawer"
+      ]
+    },
+    "c_archive_index": {
+      "function": "continue",
+      "event": "A card stamped with the mark sends Nadia to Row Q behind the dictionaries.",
+      "requires": [
+        "brass_mark"
+      ],
+      "establishes": [
+        "row_q_target",
+        "founder_came_to_hide"
+      ]
+    },
+    "c_archive_drawer": {
+      "function": "continue",
+      "event": "The drawer yields a brass token and a plan ringing a shelf in Row Q.",
+      "requires": [
+        "sticking_drawer",
+        "brass_mark"
+      ],
+      "establishes": [
+        "nadia_has_token",
+        "token_motto",
+        "row_q_target"
+      ]
+    },
+    "c_archive_stack": {
+      "function": "bottleneck",
+      "event": "In Row Q a shelf cut with the mark hides a gap behind the dictionaries.",
+      "requires": [],
+      "establishes": [
+        "mark_on_shelf_q",
+        "row_q_target",
+        "brass_mark"
+      ]
+    },
+    "c_archive_dark": {
+      "function": "gate",
+      "event": "In the dark stacks a lantern hangs on a hook but a grating would show its light to the guard.",
+      "requires": [
+        "archive_ledger_stacks",
+        "night_guard_on_rounds"
+      ],
+      "establishes": [
+        "grating_to_lobby",
+        "lantern_on_hook"
+      ]
+    },
+    "c_archive_lantern": {
+      "function": "continue",
+      "event": "The lantern goes unnoticed and lights the way to the last row.",
+      "requires": [
+        "lantern_on_hook",
+        "grating_to_lobby"
+      ],
+      "establishes": []
+    },
+    "c_archive_chalk": {
+      "function": "payoff",
+      "event": "Chalking arrows in the dark, Nadia finds the founder's records 37 to 40 for the finder and reaches Row Q.",
+      "requires": [
+        "nadia_has_chalk"
+      ],
+      "establishes": [
+        "records_for_finder",
+        "tour_has_36_stops",
+        "row_q_target"
+      ]
+    },
+    "n_key": {
+      "function": "bottleneck",
+      "event": "Nadia finds the brass key with a coded note; stop 37 tells her it opens three locks to the founder's rooms.",
+      "requires": [
+        "handset_thirteen",
+        "ellery_audio_tour",
+        "brass_mark"
+      ],
+      "establishes": [
+        "brass_key_found",
+        "coded_note",
+        "tour_has_36_stops",
+        "key_three_locks"
+      ]
+    },
+    "k_founder": {
+      "function": "decision",
+      "event": "The founder's study holds a roll-top desk and a hinged portrait of Ellery.",
+      "requires": [
+        "brass_key_found"
+      ],
+      "establishes": [
+        "founder_portrait"
+      ]
+    },
+    "k_founder_desk": {
+      "function": "continue",
+      "event": "In the desk Nadia finds the founder's notebook with a worked line of code and his reading glasses, which she keeps.",
+      "requires": [
+        "coded_note",
+        "founder_portrait"
+      ],
+      "establishes": [
+        "nadia_has_glasses",
+        "glasses_are_founders",
+        "notebook_worked_line",
+        "reading_table_landing"
+      ]
+    },
+    "k_founder_portrait": {
+      "function": "continue",
+      "event": "Behind the portrait an open safe holds a brass cipher wheel.",
+      "requires": [
+        "founder_portrait"
+      ],
+      "establishes": [
+        "cipher_wheel",
+        "reading_table_landing"
+      ]
+    },
+    "k_display": {
+      "function": "decision",
+      "event": "The key opens the glass cabinet but its lid is stuck, and the guard is coming up the stairs.",
+      "requires": [
+        "brass_key_found",
+        "night_guard_on_rounds"
+      ],
+      "establishes": [
+        "cabinet_stuck_lid",
+        "guard_on_stairs"
+      ]
+    },
+    "k_display_open": {
+      "function": "continue",
+      "event": "Rocking the lid patiently, Nadia frees it as the guard turns away and finds a ribboned ledger.",
+      "requires": [
+        "cabinet_stuck_lid",
+        "guard_on_stairs"
+      ],
+      "establishes": [
+        "ribbon_ledger"
+      ]
+    },
+    "k_cabinet": {
+      "function": "continue",
+      "event": "The ledger's marked page is a shift-three letter table that matches the note.",
+      "requires": [
+        "ribbon_ledger",
+        "coded_note"
+      ],
+      "establishes": [
+        "ledger_code_table",
+        "shift_three",
+        "reading_table_landing"
+      ]
+    },
+    "k_display_force": {
+      "function": "decision",
+      "event": "Shoving the lid makes the glass creak and the guard calls out; the ledger is almost in reach.",
+      "requires": [
+        "cabinet_stuck_lid",
+        "guard_on_stairs"
+      ],
+      "establishes": [
+        "ribbon_ledger"
+      ]
+    },
+    "k_display_careful": {
+      "function": "continue",
+      "event": "Nadia waits out the guard, frees the lid gently, takes the shift-three ledger to the lit reading table and unties the note.",
+      "requires": [
+        "ribbon_ledger",
+        "coded_note",
+        "brass_key_found"
+      ],
+      "establishes": [
+        "ledger_code_table",
+        "shift_three",
+        "reading_table_landing",
+        "lamp_lit"
+      ]
+    },
+    "k_stairs": {
+      "function": "decision",
+      "event": "The key opens the back stair; a cupboard at its foot hangs open.",
+      "requires": [
+        "brass_key_found"
+      ],
+      "establishes": []
+    },
+    "k_stairs_up": {
+      "function": "continue",
+      "event": "At the top of the back stair a brass dial shows each letter shifts three places.",
+      "requires": [],
+      "establishes": [
+        "cipher_dial",
+        "shift_three",
+        "reading_table_landing"
+      ]
+    },
+    "k_stairs_base": {
+      "function": "continue",
+      "event": "The cupboard holds a chart of letter rings and round glasses that reveal the shift-three instruction; Nadia keeps the glasses.",
+      "requires": [],
+      "establishes": [
+        "stair_cupboard_chart",
+        "nadia_has_glasses",
+        "shift_three"
+      ]
+    },
+    "k_study": {
+      "function": "bottleneck",
+      "event": "At the reading table the lamp still lights and Nadia flattens the coded note.",
+      "requires": [
+        "coded_note",
+        "brass_key_found"
+      ],
+      "establishes": [
+        "lamp_lit",
+        "reading_table_landing"
+      ]
+    },
+    "n_cipher": {
+      "function": "bottleneck",
+      "event": "Nadia decodes the note: follow the stars to the globe, wake it by one of three roads, and set its rings to four, nine, two.",
+      "requires": [
+        "coded_note",
+        "globe_is_heart",
+        "rotunda_globe"
+      ],
+      "establishes": [
+        "shift_three",
+        "cipher_decoded",
+        "heart_is_globe",
+        "three_roads",
+        "combo_492"
+      ]
+    },
+    "ci_stars": {
+      "function": "decision",
+      "event": "In the Astronomy Hall Ellery says one painted star is a liar; a spiral stair and a staff ladder lead up.",
+      "requires": [
+        "handset_thirteen",
+        "ellery_audio_tour"
+      ],
+      "establishes": [
+        "liar_star"
+      ]
+    },
+    "ci_stars_dome": {
+      "function": "continue",
+      "event": "From the spiral stair Nadia finds the brass liar star and it opens a passage toward the rotunda.",
+      "requires": [
+        "liar_star"
+      ],
+      "establishes": [
+        "brass_star_door"
+      ]
+    },
+    "ci_stars_ladder": {
+      "function": "decision",
+      "event": "The staff ladder reaches a caged walkway with a door, and a second ladder climbs into the dark dome.",
+      "requires": [],
+      "establishes": [
+        "caged_walkway"
+      ]
+    },
+    "ci_stars_cross": {
+      "function": "continue",
+      "event": "Crossing the walkway, Nadia spots the brass liar star and opens the door to a stair down.",
+      "requires": [
+        "liar_star",
+        "caged_walkway"
+      ],
+      "establishes": [
+        "brass_star_door"
+      ]
+    },
+    "ci_map": {
+      "function": "decision",
+      "event": "The Map Room holds a turning globe of the night sky and a giant atlas.",
+      "requires": [
+        "handset_thirteen",
+        "ellery_audio_tour"
+      ],
+      "establishes": [
+        "star_globe"
+      ]
+    },
+    "ci_map_globe": {
+      "function": "continue",
+      "event": "Turning the globe's gold star to the pointer opens a low panel to a passage.",
+      "requires": [
+        "star_globe"
+      ],
+      "establishes": [
+        "gold_star_panel"
+      ]
+    },
+    "ci_map_atlas": {
+      "function": "continue",
+      "event": "The atlas holds a hand-drawn star chart of the museum with a red route to its middle.",
+      "requires": [
+        "star_globe"
+      ],
+      "establishes": [
+        "atlas_museum_chart"
+      ]
+    },
+    "ci_atlas2": {
+      "function": "continue",
+      "event": "The red route leads through a crate store to a door with a gold star.",
+      "requires": [
+        "atlas_museum_chart"
+      ],
+      "establishes": [
+        "gold_star_door"
+      ]
+    },
+    "ci_clock": {
+      "function": "decision",
+      "event": "The Clock Corridor offers a gear room or a doorway crossed by a great pendulum.",
+      "requires": [
+        "handset_thirteen",
+        "ellery_audio_tour"
+      ],
+      "establishes": [
+        "clock_corridor"
+      ]
+    },
+    "ci_clock_gears": {
+      "function": "continue",
+      "event": "Setting the master clock's hands to its gold star opens a narrow door.",
+      "requires": [
+        "cipher_decoded",
+        "clock_corridor"
+      ],
+      "establishes": [
+        "master_clock_stars"
+      ]
+    },
+    "ci_clock_pendulum": {
+      "function": "decision",
+      "event": "The pendulum hangs clear on each far swing; Nadia counts the beat.",
+      "requires": [
+        "clock_corridor"
+      ],
+      "establishes": [
+        "pendulum_beat"
+      ]
+    },
+    "ci_clock_cross": {
+      "function": "continue",
+      "event": "Walking on the beat, Nadia passes the pendulum safely to a sloping passage.",
+      "requires": [
+        "pendulum_beat"
+      ],
+      "establishes": []
+    },
+    "n_rotunda": {
+      "function": "bottleneck",
+      "event": "Arriving by a founder's road wakes the globe; its pedestal is tiled and the night guard's room stands ajar.",
+      "requires": [
+        "rotunda_globe",
+        "heart_is_globe"
+      ],
+      "establishes": [
+        "globe_awake",
+        "pedestal_tiles",
+        "guard_room_ajar"
+      ]
+    },
+    "ro_align": {
+      "function": "decision",
+      "event": "The worn, eager rings make setting four, nine, two tricky.",
+      "requires": [
+        "globe_awake",
+        "combo_492"
+      ],
+      "establishes": [
+        "worn_numbers"
+      ]
+    },
+    "ro_align_set": {
+      "function": "continue",
+      "event": "Checking each number twice, Nadia sets the rings and a hidden stair opens.",
+      "requires": [
+        "worn_numbers",
+        "combo_492"
+      ],
+      "establishes": [
+        "vault_stair_opened"
+      ]
+    },
+    "ro_align_guess": {
+      "function": "decision",
+      "event": "Guessing by ear fails and the third ring jams just short of the two.",
+      "requires": [
+        "worn_numbers"
+      ],
+      "establishes": [
+        "third_ring_jammed"
+      ]
+    },
+    "ro_align_retry": {
+      "function": "continue",
+      "event": "Nadia frees the ring, reads four, nine, two off the note and opens the stair.",
+      "requires": [
+        "third_ring_jammed",
+        "combo_492",
+        "coded_note"
+      ],
+      "establishes": [
+        "vault_stair_opened"
+      ]
+    },
+    "ro_panel": {
+      "function": "decision",
+      "event": "The pedestal tiles slide, and a draught leads to a low hidden door in the rotunda wall.",
+      "requires": [
+        "pedestal_tiles"
+      ],
+      "establishes": [
+        "low_door_rotunda"
+      ]
+    },
+    "ro_panel_solve": {
+      "function": "continue",
+      "event": "Sliding the tiles into the circle-and-lines mark opens the hidden stair.",
+      "requires": [
+        "pedestal_tiles",
+        "brass_mark"
+      ],
+      "establishes": [
+        "vault_stair_opened"
+      ]
+    },
+    "ro_panel_secret": {
+      "function": "continue",
+      "event": "The low door opens on a dusty room of half-built brass things, numbered 39.",
+      "requires": [
+        "low_door_rotunda"
+      ],
+      "establishes": [
+        "hidden_workshop"
+      ]
+    },
+    "ro_workshop": {
+      "function": "continue",
+      "event": "Stop 39 is the founder's hidden workshop; a brass wren waits to be wound.",
+      "requires": [
+        "hidden_workshop",
+        "handset_thirteen",
+        "ellery_audio_tour"
+      ],
+      "establishes": [
+        "brass_wren"
+      ]
+    },
+    "ro_records": {
+      "function": "gate",
+      "event": "The guard's room holds a rounds book, a crossword and a black phone, but no guard.",
+      "requires": [
+        "guard_room_ajar"
+      ],
+      "establishes": [
+        "rounds_book"
+      ]
+    },
+    "ro_records_guard": {
+      "function": "continue",
+      "event": "The rounds book's first page gives the founder's quarter-to-four rule; it is sixteen minutes to four and the floor opens.",
+      "requires": [
+        "rounds_book",
+        "globe_awake",
+        "rotunda_globe"
+      ],
+      "establishes": [
+        "quarter_to_four_rule",
+        "vault_stair_opened"
+      ]
+    },
+    "ro_records_note": {
+      "function": "payoff",
+      "event": "Pym's crossword note shows he saw her board, left the doors open, and that the map is his.",
+      "requires": [
+        "board_message",
+        "half_map_in_pouch",
+        "rounds_book"
+      ],
+      "establishes": [
+        "crossword_for_nadia",
+        "guard_is_pym",
+        "pym_saw_board",
+        "map_is_pyms",
+        "nobody_will_miss_her"
+      ]
+    },
+    "ro_pym": {
+      "function": "continue",
+      "event": "At the front desk Pym sees the brass key he hunted for thirty-one years, and Nadia tells him everything.",
+      "requires": [
+        "guard_is_pym",
+        "brass_key_found",
+        "pym_saw_board"
+      ],
+      "establishes": [
+        "guard_31_years",
+        "nadia_told_pym"
+      ]
+    },
+    "ro_records_phone": {
+      "function": "continue",
+      "event": "The phone has a dial tone; home is one call away, and the globe waits.",
+      "requires": [
+        "globe_awake",
+        "combo_492",
+        "rotunda_globe"
+      ],
+      "establishes": [
+        "phone_dial_tone"
+      ]
+    },
+    "n_vault": {
+      "function": "bottleneck",
+      "event": "Stop 38 is the vault of town treasures Ellery hid from sellers, with a sealed letter, the other map half and a jewelled owl.",
+      "requires": [
+        "handset_thirteen",
+        "ellery_audio_tour"
+      ],
+      "establishes": [
+        "vault_stop_38",
+        "treasures_belong_to_town",
+        "hid_from_sellers",
+        "sealed_letter",
+        "other_map_half",
+        "jewelled_owl"
+      ]
+    },
+    "v_letter": {
+      "function": "reveal",
+      "event": "The letter explains Ellery hid the treasures from creditors and took the blame, and tells the finder to key in forty.",
+      "requires": [
+        "sealed_letter"
+      ],
+      "establishes": [
+        "letter_opened",
+        "town_believes_thief",
+        "museum_debts",
+        "ellery_took_blame",
+        "key_in_forty",
+        "letter_ps_tiny"
+      ]
+    },
+    "v_letter_ps": {
+      "function": "payoff",
+      "event": "Through the founder's glasses the tiny line says the bulb changer has earned a look; Nadia thinks of the guard.",
+      "requires": [
+        "nadia_has_glasses",
+        "glasses_are_founders",
+        "letter_ps_tiny",
+        "sealed_letter",
+        "lamp_lit"
+      ],
+      "establishes": [
+        "ps_bulb_changer",
+        "bulb_changer_is_guard"
+      ]
+    },
+    "v_letter_reveal": {
+      "function": "reveal",
+      "event": "Stop forty guides Nadia to a hidden leather book listing every piece and where in town it belongs.",
+      "requires": [
+        "key_in_forty",
+        "handset_thirteen"
+      ],
+      "establishes": [
+        "inventory_book"
+      ]
+    },
+    "v_reveal2": {
+      "function": "reveal",
+      "event": "Reading the book to the end, Nadia sees the thief the town remembered was a man keeping its treasures safe.",
+      "requires": [
+        "inventory_book",
+        "town_believes_thief"
+      ],
+      "establishes": [
+        "ellery_not_thief"
+      ]
+    },
+    "v_letter_keep": {
+      "function": "continue",
+      "event": "Nadia keeps the letter, leaves everything as it was and closes the floor to make a plan.",
+      "requires": [
+        "letter_opened",
+        "vault_stair_opened"
+      ],
+      "establishes": []
+    },
+    "v_map": {
+      "function": "decision",
+      "event": "The joined map shows the lost east wing still inside the walls, reachable by a dotted line from the vault.",
+      "requires": [
+        "half_map_in_pouch",
+        "other_map_half",
+        "map_ringed_wing"
+      ],
+      "establishes": [
+        "maps_joined",
+        "east_wing_intact",
+        "dotted_line_wing"
+      ]
+    },
+    "v_map_follow": {
+      "function": "continue",
+      "event": "Through the last shelf Nadia finds the lost wing full of the town's paintings and photographs them.",
+      "requires": [
+        "dotted_line_wing"
+      ],
+      "establishes": [
+        "lost_wing_paintings",
+        "wing_photographed"
+      ]
+    },
+    "v_map_photo": {
+      "function": "continue",
+      "event": "Nadia photographs the map, shelves and letter and leaves everything untouched.",
+      "requires": [
+        "maps_joined",
+        "sealed_letter",
+        "jewelled_owl"
+      ],
+      "establishes": [
+        "map_photographed"
+      ]
+    },
+    "v_map_back": {
+      "function": "payoff",
+      "event": "The joined back completes the founder's sentence: the wing's last door opens from within onto the garden, and her key fits it.",
+      "requires": [
+        "map_back_read",
+        "map_back_half_sentence",
+        "maps_joined",
+        "brass_key_found",
+        "dotted_line_wing"
+      ],
+      "establishes": [
+        "founders_door_garden"
+      ]
+    },
+    "v_share": {
+      "function": "decision",
+      "event": "Back in the rotunda Nadia weighs the curator at eight, Tess, or leaving it for the museum.",
+      "requires": [
+        "sealed_letter",
+        "tess_best_friend",
+        "guard_room_ajar"
+      ],
+      "establishes": [
+        "curator_at_eight",
+        "tess_cant_keep_secret"
+      ]
+    },
+    "v_share_curator": {
+      "function": "continue",
+      "event": "Nadia shows the curator the sealed letter and the open floor by the globe.",
+      "requires": [
+        "sealed_letter",
+        "curator_at_eight",
+        "vault_stair_opened"
+      ],
+      "establishes": [
+        "curator_shown"
+      ]
+    },
+    "v_share_secret": {
+      "function": "continue",
+      "event": "Nadia slips out to Tess's house and tells her first, asking her to keep watch.",
+      "requires": [
+        "tess_best_friend",
+        "nobody_will_miss_her",
+        "sealed_letter",
+        "combo_492"
+      ],
+      "establishes": [
+        "tess_told"
+      ]
+    },
+    "v_share_museum": {
+      "function": "continue",
+      "event": "Nadia leaves the joined map, the letter, the key and the combination on the guard's desk, unsigned.",
+      "requires": [
+        "other_map_half",
+        "half_map_in_pouch",
+        "combo_492",
+        "sealed_letter",
+        "brass_key_found",
+        "guard_room_ajar"
+      ],
+      "establishes": [
+        "clue_left_for_museum",
+        "maps_joined"
+      ]
+    },
+    "v_grab": {
+      "function": "gate",
+      "event": "Lifting the jewelled owl reveals a coin-sized hollow with the mark and sets a spring winding.",
+      "requires": [
+        "jewelled_owl"
+      ],
+      "establishes": [
+        "owl_hollow_trap",
+        "brass_mark"
+      ]
+    },
+    "v_grab_run": {
+      "function": "continue",
+      "event": "Nadia runs with the owl and, having nothing coin-shaped to leave, sets the bells ringing.",
+      "requires": [
+        "owl_hollow_trap",
+        "jewelled_owl",
+        "tess_best_friend"
+      ],
+      "establishes": [
+        "no_token",
+        "bells_ring"
+      ]
+    },
+    "v_grab_return": {
+      "function": "continue",
+      "event": "Nadia returns the owl, the spring stops, and she lists the room on the back of the coded note.",
+      "requires": [
+        "owl_hollow_trap",
+        "coded_note"
+      ],
+      "establishes": [
+        "inventory_list"
+      ]
+    },
+    "v_grab_swap": {
+      "function": "payoff",
+      "event": "Nadia leaves the token in the hollow; the owl speaks in Ellery's voice to vouch for its carrier.",
+      "requires": [
+        "nadia_has_token",
+        "token_motto",
+        "owl_hollow_trap"
+      ],
+      "establishes": [
+        "owl_speaks"
+      ]
+    },
+    "e_set_alarm": {
+      "function": "ending",
+      "event": "The guard Pym spots Nadia among the busts; he planted the map himself and asks where she would have looked.",
+      "requires": [
+        "half_map_in_pouch",
+        "handset_thirteen"
+      ],
+      "establishes": [
+        "guard_is_pym",
+        "pym_planted_map",
+        "guard_31_years",
+        "mark_not_found",
+        "map_is_pyms"
+      ]
+    },
+    "e_set_locked_gallery": {
+      "function": "ending",
+      "event": "Shut in the roped gallery, Nadia reads the map's back for the first time, finds the wedge warning, and waits for the cleaners.",
+      "requires": [
+        "roped_gallery_closed",
+        "half_map_in_pouch",
+        "handset_thirteen"
+      ],
+      "establishes": [
+        "locked_in_gallery",
+        "rope_gallery_arch_29",
+        "map_back_unread_before",
+        "map_back_half_sentence",
+        "wedge_warning"
+      ]
+    },
+    "e_set_stuck_dark": {
+      "function": "ending",
+      "event": "Lost in the dark stacks all night, Nadia sees at dawn she sat ten steps from the mark and the records for the finder.",
+      "requires": [
+        "brass_mark",
+        "tour_board_chalk"
+      ],
+      "establishes": [
+        "records_for_finder",
+        "no_chalk"
+      ]
+    },
+    "e_set_broken_case": {
+      "function": "ending",
+      "event": "The glass cracks, the guard catches Nadia with the code ledger, and he asks what it unlocks.",
+      "requires": [
+        "cabinet_stuck_lid",
+        "ribbon_ledger"
+      ],
+      "establishes": [
+        "ledger_code_table",
+        "guard_31_years"
+      ]
+    },
+    "e_set_stuck_dome": {
+      "function": "ending",
+      "event": "High in the dome Nadia sees the stars form the mark, and the guard talks her down the ladder.",
+      "requires": [
+        "caged_walkway",
+        "brass_mark"
+      ],
+      "establishes": [
+        "dome_mark_picture"
+      ]
+    },
+    "e_set_pendulum": {
+      "function": "ending",
+      "event": "The pendulum bumps Nadia down and her key falls through a grating; under the disc it says count to three and walk.",
+      "requires": [
+        "brass_key_found",
+        "pendulum_beat"
+      ],
+      "establishes": [
+        "key_lost",
+        "pendulum_count_three"
+      ]
+    },
+    "e_set_jammed_globe": {
+      "function": "ending",
+      "event": "The forced ring jams the globe; at a quarter to four the clockwork strains, opens a crack, and gives up.",
+      "requires": [
+        "third_ring_jammed",
+        "combo_492"
+      ],
+      "establishes": [
+        "quarter_to_four_rule"
+      ]
+    },
+    "e_set_caught": {
+      "function": "ending",
+      "event": "The bells bring the guard; he takes the owl down to where it belongs while Nadia waits for her mother.",
+      "requires": [
+        "bells_ring",
+        "jewelled_owl",
+        "vault_stair_opened"
+      ],
+      "establishes": [
+        "guard_31_years"
+      ]
+    },
+    "e_set_dawn": {
+      "function": "ending",
+      "event": "Tracing the map until dawn, Nadia must slip out, then counts the lost wing's nine windows from the street.",
+      "requires": [
+        "maps_joined",
+        "east_wing_intact",
+        "other_map_half"
+      ],
+      "establishes": [
+        "wing_nine_windows"
+      ]
+    },
+    "e_win_secret_workshop": {
+      "function": "ending",
+      "event": "The wound wren sings and bows, and Nadia waits for the curator with living proof of the workshop.",
+      "requires": [
+        "brass_wren",
+        "hidden_workshop",
+        "low_door_rotunda"
+      ],
+      "establishes": [
+        "wren_sings"
+      ]
+    },
+    "e_win_night_guard": {
+      "function": "ending",
+      "event": "Nadia and the old guard open the globe stair together and argue about who tells the curator.",
+      "requires": [
+        "guard_31_years",
+        "map_is_pyms",
+        "combo_492",
+        "coded_note",
+        "globe_awake"
+      ],
+      "establishes": [
+        "vault_found_with_pym",
+        "vault_stair_opened"
+      ]
+    },
+    "e_win_mystery_solved": {
+      "function": "ending",
+      "event": "Nadia carries the letter and book into the morning; the treasures return and Ellery's plate reads NOT A THIEF.",
+      "requires": [
+        "letter_opened",
+        "inventory_book",
+        "town_believes_thief",
+        "night_guard_on_rounds"
+      ],
+      "establishes": [
+        "treasures_returned",
+        "ellery_not_thief"
+      ]
+    },
+    "e_win_quiet_keeper": {
+      "function": "ending",
+      "event": "Over weeks Nadia nudges the curator with anonymous hints until she finds her kneeling by the globe.",
+      "requires": [
+        "letter_opened",
+        "combo_492",
+        "town_believes_thief"
+      ],
+      "establishes": [
+        "curator_investigates"
+      ]
+    },
+    "e_win_lost_wing": {
+      "function": "ending",
+      "event": "Nadia's photographs bring experts, the old arch is unbricked, and the town walks into the lost wing.",
+      "requires": [
+        "wing_photographed",
+        "lost_wing_paintings"
+      ],
+      "establishes": [
+        "wing_opened_public",
+        "rope_gallery_arch_29"
+      ]
+    },
+    "e_win_founders_door": {
+      "function": "ending",
+      "event": "Nadia walks the lost wing, leaves by the founder's garden door, and returns by the front to see the curator.",
+      "requires": [
+        "founders_door_garden",
+        "brass_key_found",
+        "brass_mark"
+      ],
+      "establishes": [
+        "lost_wing_paintings",
+        "out_by_founders_door"
+      ]
+    },
+    "e_win_owl_witness": {
+      "function": "ending",
+      "event": "The speaking owl convinces the doubting curator to follow Nadia below.",
+      "requires": [
+        "owl_speaks",
+        "jewelled_owl"
+      ],
+      "establishes": [
+        "curator_believes_owl"
+      ]
+    },
+    "e_win_hero_curator": {
+      "function": "ending",
+      "event": "The curator goes down, reads the letter aloud, and the town learns Ellery did not sell its treasures.",
+      "requires": [
+        "curator_shown",
+        "sealed_letter",
+        "handset_thirteen"
+      ],
+      "establishes": [
+        "curator_reads_letter",
+        "ellery_not_thief"
+      ]
+    },
+    "e_win_secret_kept": {
+      "function": "ending",
+      "event": "Nadia and Tess revisit the stair and keep the room secret until term's end.",
+      "requires": [
+        "tess_told",
+        "combo_492",
+        "sealed_letter"
+      ],
+      "establishes": [
+        "two_keepers"
+      ]
+    },
+    "e_win_donate": {
+      "function": "ending",
+      "event": "The museum finds the room on its own and credits an unnamed visitor; the night guard winks at Nadia.",
+      "requires": [
+        "clue_left_for_museum",
+        "night_guard_on_rounds"
+      ],
+      "establishes": [
+        "museum_found_room"
+      ]
+    },
+    "e_neutral_call_home": {
+      "function": "ending",
+      "event": "Nadia phones her mum and tells the curious guard everything while she waits.",
+      "requires": [
+        "phone_dial_tone",
+        "combo_492",
+        "globe_awake",
+        "brass_key_found",
+        "nobody_will_miss_her"
+      ],
+      "establishes": [
+        "called_mum",
+        "key_on_guard_desk"
+      ]
+    },
+    "e_neutral_evidence": {
+      "function": "ending",
+      "event": "Nadia slips out with the map on her phone and shows the curator the photographs and the way down.",
+      "requires": [
+        "map_photographed",
+        "combo_492"
+      ],
+      "establishes": [
+        "curator_sees_photos"
+      ]
+    },
+    "e_neutral_wiser": {
+      "function": "ending",
+      "event": "With the letter unopened and the map untouched, Nadia hands the curator her list, and the curator goes to look.",
+      "requires": [
+        "inventory_list",
+        "jewelled_owl",
+        "owl_hollow_trap"
+      ],
+      "establishes": [
+        "letter_left_unopened",
+        "map_untouched",
+        "curator_reads_list"
+      ]
+    }
+  },
+  "choices": {
+    "c_open": {
+      "intent": "look for a way out of the locked lobby",
+      "cost": "none"
+    },
+    "c_desk_map": {
+      "intent": "read the map front and back before the lights die",
+      "cost": "gives up leaving a message for the guard and keeping the chalk",
+      "plants": [
+        "t_read_back"
+      ]
+    },
+    "c_desk_chalk": {
+      "intent": "leave the guard a message so he will not call the police",
+      "cost": "gives up reading the map's back under the lamp",
+      "plants": [
+        "t_chalk"
+      ]
+    },
+    "c_desk_map_go": {
+      "intent": "head into the dark museum",
+      "cost": "none"
+    },
+    "c_desk_chalk_go": {
+      "intent": "head into the dark museum",
+      "cost": "none"
+    },
+    "c_start_gems": {
+      "intent": "search the Gallery of Gems",
+      "cost": "gives up the Egyptian Wing and the Archive routes"
+    },
+    "c_start_egypt": {
+      "intent": "search the Egyptian Wing",
+      "cost": "gives up the Gems and the Archive routes"
+    },
+    "c_start_archive": {
+      "intent": "search the Archive downstairs",
+      "cost": "gives up the Gems and the Egyptian Wing routes"
+    },
+    "c_gems_case": {
+      "intent": "study the bumped case for clues",
+      "cost": "gives up following the beeping"
+    },
+    "c_gems_alarm": {
+      "intent": "find the source of the beeping",
+      "cost": "walks into the night guard's path"
+    },
+    "c_gems_vitrine": {
+      "intent": "see what props up the tilted vitrine",
+      "cost": "gives up reading the founder's card",
+      "plants": [
+        "t_token"
+      ]
+    },
+    "c_gems_note": {
+      "intent": "read the fallen card",
+      "cost": "leaves the token under the vitrine"
+    },
+    "c_vitrine_go": {
+      "intent": "follow the arrow to the narrow door",
+      "cost": "none"
+    },
+    "c_note_go": {
+      "intent": "take the founder's hint to the corridor",
+      "cost": "none"
+    },
+    "c_corridor_key": {
+      "intent": "pry up the board with the mark",
+      "cost": "none"
+    },
+    "c_alarm_hide": {
+      "intent": "hide from the guard behind the plinth",
+      "cost": "gives up the bold statue bluff"
+    },
+    "c_alarm_freeze": {
+      "intent": "bluff the guard by posing as a statue",
+      "cost": "risks being caught and ending the night"
+    },
+    "c_hide_go": {
+      "intent": "slip through the door the guard left ajar",
+      "cost": "none"
+    },
+    "c_egypt_sarco": {
+      "intent": "examine the crooked sarcophagus",
+      "cost": "gives up tracing the old wall map"
+    },
+    "c_egypt_map": {
+      "intent": "trace the old wall map toward the lost wing",
+      "cost": "gives up examining the sarcophagus"
+    },
+    "c_sarco_lid": {
+      "intent": "look under the loose lid",
+      "cost": "gives up reading the amulet card",
+      "plants": [
+        "t_token"
+      ]
+    },
+    "c_sarco_amulet": {
+      "intent": "check the amulet case's empty dent",
+      "cost": "leaves the token under the lid"
+    },
+    "c_lid_hall": {
+      "intent": "follow the draught",
+      "cost": "none"
+    },
+    "c_amulet_hall": {
+      "intent": "follow the scratched arrow",
+      "cost": "none"
+    },
+    "c_hall_key": {
+      "intent": "lift the tile with the mark",
+      "cost": "none"
+    },
+    "c_map_torch": {
+      "intent": "follow the wall map by torchlight",
+      "cost": "gives up the roped gallery and its arch"
+    },
+    "c_map_rope": {
+      "intent": "explore the closed gallery",
+      "cost": "risks being shut in until morning"
+    },
+    "c_map_wedge": {
+      "intent": "heed the warning and wedge the door before entering",
+      "cost": "gives up the torch route",
+      "requires": [
+        "wedge_warning"
+      ]
+    },
+    "c_torch_hall": {
+      "intent": "walk on toward the glint",
+      "cost": "none"
+    },
+    "c_wedge_hall": {
+      "intent": "leave the gallery by the back way",
+      "cost": "none"
+    },
+    "c_arch_ledger": {
+      "intent": "read the visitor ledger",
+      "cost": "gives up the dark back stacks"
+    },
+    "c_arch_dark": {
+      "intent": "push into the unlit stacks",
+      "cost": "gives up the lit ledger and index"
+    },
+    "c_ledger_index": {
+      "intent": "search the card index",
+      "cost": "leaves the sticking drawer and its token"
+    },
+    "c_ledger_drawer": {
+      "intent": "force the sticking drawer",
+      "cost": "gives up the card index",
+      "plants": [
+        "t_token"
+      ]
+    },
+    "c_index_stack": {
+      "intent": "follow the card to Row Q",
+      "cost": "none"
+    },
+    "c_drawer_stack": {
+      "intent": "follow the plan to the ringed shelf",
+      "cost": "none"
+    },
+    "c_stack_key": {
+      "intent": "reach into the gap behind the books",
+      "cost": "a hand among the spiders"
+    },
+    "c_dark_lantern": {
+      "intent": "light the way with the lantern",
+      "cost": "risks the guard seeing light through the grating"
+    },
+    "c_dark_blind": {
+      "intent": "count shelves by hand in the dark",
+      "cost": "risks getting lost all night"
+    },
+    "c_dark_chalk": {
+      "intent": "mark the way with chalk arrows in the dark",
+      "cost": "uses up the chalk on shelf ends",
+      "requires": [
+        "nadia_has_chalk"
+      ]
+    },
+    "c_lantern_stack": {
+      "intent": "search the last row",
+      "cost": "none"
+    },
+    "c_chalk_stack": {
+      "intent": "turn into Row Q",
+      "cost": "none"
+    },
+    "c_key_founder": {
+      "intent": "open the founder's study",
+      "cost": "gives up the glass cabinet and back stair",
+      "requires": [
+        "key_three_locks"
+      ]
+    },
+    "c_key_display": {
+      "intent": "open the glass cabinet",
+      "cost": "gives up the study and back stair",
+      "requires": [
+        "key_three_locks"
+      ]
+    },
+    "c_key_stairs": {
+      "intent": "open the back stair door",
+      "cost": "gives up the study and glass cabinet",
+      "requires": [
+        "key_three_locks"
+      ]
+    },
+    "c_founder_desk": {
+      "intent": "search the roll-top desk",
+      "cost": "gives up the safe behind the portrait",
+      "plants": [
+        "t_glasses"
+      ]
+    },
+    "c_founder_portrait": {
+      "intent": "look behind the hinged portrait",
+      "cost": "leaves the desk and its glasses"
+    },
+    "c_desk_study": {
+      "intent": "take the notebook to the reading table",
+      "cost": "none"
+    },
+    "c_portrait_study": {
+      "intent": "take the cipher wheel to the table",
+      "cost": "none"
+    },
+    "c_display_open": {
+      "intent": "work the lid loose patiently",
+      "cost": "time while the guard climbs"
+    },
+    "c_display_force": {
+      "intent": "force the lid before the guard arrives",
+      "cost": "noise that draws the guard"
+    },
+    "c_open_cabinet": {
+      "intent": "take the bookmarked ledger",
+      "cost": "none"
+    },
+    "c_cabinet_study": {
+      "intent": "spread the ledger on the reading table",
+      "cost": "none"
+    },
+    "c_force_careful": {
+      "intent": "back off and work the lid gently",
+      "cost": "a tense wait while the guard checks"
+    },
+    "c_force_yank": {
+      "intent": "yank the lid and grab the ledger",
+      "cost": "risks breaking the glass and being caught"
+    },
+    "c_careful_cipher": {
+      "intent": "start decoding the note",
+      "cost": "none"
+    },
+    "c_stairs_up": {
+      "intent": "climb to the landing",
+      "cost": "leaves the cupboard and its glasses"
+    },
+    "c_stairs_base": {
+      "intent": "check the half-open cupboard",
+      "cost": "gives up the wall dial at the top",
+      "plants": [
+        "t_glasses"
+      ]
+    },
+    "c_up_study": {
+      "intent": "sit at the reading table",
+      "cost": "none"
+    },
+    "c_base_study": {
+      "intent": "carry the chart to the reading table",
+      "cost": "none"
+    },
+    "c_study_cipher": {
+      "intent": "start decoding the note",
+      "cost": "none"
+    },
+    "c_cipher_stars": {
+      "intent": "take the Astronomy Hall road",
+      "cost": "gives up the Map Room and Clock Corridor roads",
+      "requires": [
+        "three_roads"
+      ]
+    },
+    "c_cipher_map": {
+      "intent": "take the Map Room road",
+      "cost": "gives up the Astronomy Hall and Clock Corridor roads",
+      "requires": [
+        "three_roads"
+      ]
+    },
+    "c_cipher_clock": {
+      "intent": "take the Clock Corridor road",
+      "cost": "gives up the Astronomy Hall and Map Room roads",
+      "requires": [
+        "three_roads"
+      ]
+    },
+    "c_stars_dome": {
+      "intent": "climb the spiral stair to the stars",
+      "cost": "gives up the staff ladder"
+    },
+    "c_stars_ladder": {
+      "intent": "take the staff-only ladder",
+      "cost": "gives up the grand stair"
+    },
+    "c_dome_rotunda": {
+      "intent": "take the passage behind the star",
+      "cost": "none"
+    },
+    "c_ladder_cross": {
+      "intent": "cross the caged walkway to the door",
+      "cost": "gives up climbing higher"
+    },
+    "c_ladder_up": {
+      "intent": "climb higher into the dark dome",
+      "cost": "risks getting stuck high up"
+    },
+    "c_cross_rotunda": {
+      "intent": "go down the narrow stair",
+      "cost": "none"
+    },
+    "c_map_globe": {
+      "intent": "spin the star globe",
+      "cost": "gives up the atlas route"
+    },
+    "c_map_atlas": {
+      "intent": "read the giant atlas",
+      "cost": "gives up spinning the globe"
+    },
+    "c_globe_rotunda": {
+      "intent": "duck through the low panel",
+      "cost": "none"
+    },
+    "c_atlas_follow": {
+      "intent": "follow the inked red route",
+      "cost": "none"
+    },
+    "c_atlas_rotunda": {
+      "intent": "open the gold-star door",
+      "cost": "none"
+    },
+    "c_clock_gears": {
+      "intent": "follow the ticking to the gear room",
+      "cost": "gives up the pendulum doorway"
+    },
+    "c_clock_pendulum": {
+      "intent": "cross under the pendulum",
+      "cost": "gives up the gear room"
+    },
+    "c_gears_rotunda": {
+      "intent": "go through the narrow door",
+      "cost": "none"
+    },
+    "c_pendulum_time": {
+      "intent": "learn the beat and walk through",
+      "cost": "patience against the urge to run"
+    },
+    "c_pendulum_rush": {
+      "intent": "dash through the gap",
+      "cost": "risks the pendulum and the key"
+    },
+    "c_cross_rot": {
+      "intent": "follow the sloping passage",
+      "cost": "none"
+    },
+    "c_rot_align": {
+      "intent": "set the globe's rings to the decoded numbers",
+      "cost": "gives up the pedestal and the guard's room",
+      "requires": [
+        "combo_492"
+      ]
+    },
+    "c_rot_panel": {
+      "intent": "search the carved pedestal",
+      "cost": "gives up the rings and the guard's room"
+    },
+    "c_rot_records": {
+      "intent": "look into the empty guard's room",
+      "cost": "gives up the globe for now"
+    },
+    "c_align_set": {
+      "intent": "set each worn number carefully",
+      "cost": "slow, careful work"
+    },
+    "c_align_guess": {
+      "intent": "turn the rings by ear",
+      "cost": "risks a wrong setting"
+    },
+    "c_guess_retry": {
+      "intent": "free the jammed ring and start over",
+      "cost": "the slower way back"
+    },
+    "c_guess_force": {
+      "intent": "force the jammed ring over",
+      "cost": "risks jamming the globe for good"
+    },
+    "c_set_vault": {
+      "intent": "descend the hidden stair",
+      "cost": "none"
+    },
+    "c_retry_vault": {
+      "intent": "descend the hidden stair",
+      "cost": "none"
+    },
+    "c_panel_solve": {
+      "intent": "slide the tiles into a picture",
+      "cost": "gives up the low door"
+    },
+    "c_panel_secret": {
+      "intent": "follow the draught to the low door",
+      "cost": "gives up the tile puzzle and the vault stair"
+    },
+    "c_solve_vault": {
+      "intent": "descend the hidden stair",
+      "cost": "none"
+    },
+    "c_secret_workshop": {
+      "intent": "step into the hidden room",
+      "cost": "none"
+    },
+    "c_workshop_end": {
+      "intent": "wind the brass wren",
+      "cost": "none",
+      "requires": [
+        "brass_wren"
+      ]
+    },
+    "c_records_guard": {
+      "intent": "read the rounds book's first page",
+      "cost": "gives up the phone"
+    },
+    "c_records_phone": {
+      "intent": "try the guard's phone",
+      "cost": "gives up the rounds book"
+    },
+    "c_records_note": {
+      "intent": "read the crossword addressed to her",
+      "cost": "gives up the rounds book and the phone",
+      "establishes": [
+        "crossword_for_nadia"
+      ]
+    },
+    "c_note_desk": {
+      "intent": "go and meet the guard at the front desk",
+      "cost": "gives up searching alone",
+      "requires": [
+        "pym_saw_board"
+      ]
+    },
+    "c_note_log": {
+      "intent": "stay hidden and read the rounds book",
+      "cost": "leaves the guard waiting"
+    },
+    "c_pym_end": {
+      "intent": "ring home, then show Pym the way",
+      "cost": "none"
+    },
+    "c_guard_vault": {
+      "intent": "descend the opened stair",
+      "cost": "none"
+    },
+    "c_phone_call": {
+      "intent": "call home",
+      "cost": "gives up the globe and the vault tonight",
+      "requires": [
+        "nobody_will_miss_her"
+      ]
+    },
+    "c_vault_letter": {
+      "intent": "read the founder's letter",
+      "cost": "gives up the map, the owl and going for help",
+      "requires": [
+        "sealed_letter"
+      ]
+    },
+    "c_vault_map": {
+      "intent": "join the two map halves",
+      "cost": "gives up the letter, the owl and going for help",
+      "requires": [
+        "other_map_half"
+      ]
+    },
+    "c_vault_share": {
+      "intent": "go up and tell someone",
+      "cost": "gives up exploring the vault"
+    },
+    "c_vault_grab": {
+      "intent": "take the owl as proof",
+      "cost": "gives up the letter and the map",
+      "requires": [
+        "jewelled_owl"
+      ]
+    },
+    "c_letter_reveal": {
+      "intent": "key in stop forty",
+      "cost": "gives up keeping the letter quiet",
+      "requires": [
+        "key_in_forty"
+      ]
+    },
+    "c_letter_keep": {
+      "intent": "keep the letter and leave the rest",
+      "cost": "gives up stop forty for now"
+    },
+    "c_letter_ps": {
+      "intent": "read the tiny line with the founder's glasses",
+      "cost": "none",
+      "requires": [
+        "nadia_has_glasses",
+        "glasses_are_founders",
+        "letter_ps_tiny"
+      ]
+    },
+    "c_ps_reveal": {
+      "intent": "key in stop forty",
+      "cost": "none",
+      "requires": [
+        "key_in_forty"
+      ]
+    },
+    "c_reveal_more": {
+      "intent": "read the inventory book to the end",
+      "cost": "the rest of the night"
+    },
+    "c_reveal_end": {
+      "intent": "carry the truth up into the morning",
+      "cost": "none"
+    },
+    "c_keep_end": {
+      "intent": "slip out with the letter and a plan",
+      "cost": "none"
+    },
+    "c_map_follow": {
+      "intent": "follow the dotted line to the lost wing",
+      "cost": "gives up the other map options",
+      "requires": [
+        "dotted_line_wing"
+      ]
+    },
+    "c_map_photo": {
+      "intent": "photograph the map and leave",
+      "cost": "gives up exploring the wing"
+    },
+    "c_map_dawn": {
+      "intent": "trace every room of the map first",
+      "cost": "risks running out of night"
+    },
+    "c_map_back": {
+      "intent": "read the back of the joined map",
+      "cost": "gives up the other map options",
+      "requires": [
+        "map_back_read"
+      ]
+    },
+    "c_follow_end": {
+      "intent": "bring the lost wing to light",
+      "cost": "none"
+    },
+    "c_photo_end": {
+      "intent": "head out with the proof",
+      "cost": "none"
+    },
+    "c_back_end": {
+      "intent": "leave by the founder's garden door",
+      "cost": "none",
+      "requires": [
+        "founders_door_garden"
+      ]
+    },
+    "c_share_curator": {
+      "intent": "wait for the curator at the staff door",
+      "cost": "gives up Tess and the anonymous route",
+      "requires": [
+        "curator_at_eight"
+      ]
+    },
+    "c_share_secret": {
+      "intent": "tell Tess first and nobody else",
+      "cost": "gives up the curator and the anonymous route",
+      "requires": [
+        "tess_best_friend"
+      ]
+    },
+    "c_share_museum": {
+      "intent": "leave the clues for the museum to find",
+      "cost": "gives up the credit"
+    },
+    "c_curator_end": {
+      "intent": "lead the curator down the stair",
+      "cost": "none"
+    },
+    "c_secret_end": {
+      "intent": "seal the secret with a promise",
+      "cost": "none"
+    },
+    "c_museum_end": {
+      "intent": "leave the clue and slip away",
+      "cost": "none"
+    },
+    "c_grab_run": {
+      "intent": "run off with the owl",
+      "cost": "risks setting off the shelf's trap"
+    },
+    "c_grab_return": {
+      "intent": "put the owl back on its velvet",
+      "cost": "gives up the owl as proof"
+    },
+    "c_grab_swap": {
+      "intent": "leave the token in the owl's place",
+      "cost": "gives up the brass token",
+      "requires": [
+        "nadia_has_token"
+      ]
+    },
+    "c_run_end": {
+      "intent": "keep running with the bells behind",
+      "cost": "none"
+    },
+    "c_return_end": {
+      "intent": "climb up with the list",
+      "cost": "none"
+    },
+    "c_swap_end": {
+      "intent": "take the owl to the curator",
+      "cost": "none"
+    }
+  },
+  "threads": {
+    "t_read_back": {
+      "variable": "read_back",
+      "plant": "map_back_read",
+      "planting_choices": [
+        "c_desk_map"
+      ],
+      "payoff_sites": [
+        {
+          "node": "b_egypt_map",
+          "choice": "c_map_wedge",
+          "shows": "having read the warning, Nadia wedges the self-shutting gallery door and sees arch 29"
+        },
+        {
+          "node": "v_map",
+          "choice": "c_map_back",
+          "shows": "the joined back finishes the founder's sentence and opens the garden-door ending"
+        }
+      ]
+    },
+    "t_chalk": {
+      "variable": "has_chalk",
+      "plant": "nadia_has_chalk",
+      "planting_choices": [
+        "c_desk_chalk"
+      ],
+      "payoff_sites": [
+        {
+          "node": "c_archive_dark",
+          "choice": "c_dark_chalk",
+          "shows": "the kept chalk marks a trail through the dark stacks to Row Q"
+        },
+        {
+          "node": "ro_records",
+          "choice": "c_records_note",
+          "shows": "the chalked board led Pym to leave Nadia a note and the doors open"
+        }
+      ]
+    },
+    "t_token": {
+      "variable": "has_token",
+      "plant": "nadia_has_token",
+      "planting_choices": [
+        "c_gems_vitrine",
+        "c_sarco_lid",
+        "c_ledger_drawer"
+      ],
+      "payoff_sites": [
+        {
+          "node": "v_grab",
+          "choice": "c_grab_swap",
+          "shows": "leaving the token where she takes the owl stops the trap and makes the owl speak"
+        }
+      ]
+    },
+    "t_glasses": {
+      "variable": "has_glasses",
+      "plant": "nadia_has_glasses",
+      "planting_choices": [
+        "c_founder_desk",
+        "c_stairs_base"
+      ],
+      "payoff_sites": [
+        {
+          "node": "v_letter",
+          "choice": "c_letter_ps",
+          "shows": "the founder's glasses read the letter's tiny postscript about the bulb changer"
+        }
+      ]
+    }
+  },
+  "endings": {
+    "e_set_alarm": {
+      "gift": "Pym reveals he planted the map, and the reader learns hiding beats bluffing",
+      "valence": "negative",
+      "kind": "setback"
+    },
+    "e_set_locked_gallery": {
+      "gift": "the unread warning on the map's back, and the lesson to read everything first",
+      "valence": "negative",
+      "kind": "setback"
+    },
+    "e_set_stuck_dark": {
+      "gift": "the finder's records ten steps away, and a hint that chalk would have led the way",
+      "valence": "negative",
+      "kind": "setback"
+    },
+    "e_set_broken_case": {
+      "gift": "the guard learns of the code ledger, and patience would have kept the glass whole",
+      "valence": "negative",
+      "kind": "setback"
+    },
+    "e_set_stuck_dome": {
+      "gift": "a view of the mark drawn in stars and a guard who holds the ladder",
+      "valence": "negative",
+      "kind": "setback"
+    },
+    "e_set_pendulum": {
+      "gift": "the hidden instruction to count to three and walk",
+      "valence": "negative",
+      "kind": "setback"
+    },
+    "e_set_jammed_globe": {
+      "gift": "a glimpse of the stair and the quarter-to-four clockwork, lost to force",
+      "valence": "negative",
+      "kind": "setback"
+    },
+    "e_set_caught": {
+      "gift": "the owl's trap explained, and the guard finds where it belongs",
+      "valence": "negative",
+      "kind": "setback"
+    },
+    "e_set_dawn": {
+      "gift": "the lost wing's nine windows, seen from the street she walks to school",
+      "valence": "negative",
+      "kind": "setback"
+    },
+    "e_win_secret_workshop": {
+      "gift": "the founder's hidden workshop and a singing brass wren as proof",
+      "valence": "positive",
+      "kind": "success"
+    },
+    "e_win_night_guard": {
+      "gift": "Pym and Nadia open the stair he hunted for thirty-one years together",
+      "valence": "positive",
+      "kind": "success"
+    },
+    "e_win_mystery_solved": {
+      "gift": "the whole truth: Ellery was not a thief and the treasures go home",
+      "valence": "positive",
+      "kind": "completion"
+    },
+    "e_win_quiet_keeper": {
+      "gift": "Nadia keeps the secret and steers the curator to the globe herself",
+      "valence": "positive",
+      "kind": "success"
+    },
+    "e_win_lost_wing": {
+      "gift": "the lost wing reopened to the town through Nadia's photographs",
+      "valence": "positive",
+      "kind": "success"
+    },
+    "e_win_founders_door": {
+      "gift": "the founder's garden door, opened by the key and the joined map",
+      "valence": "positive",
+      "kind": "success"
+    },
+    "e_win_owl_witness": {
+      "gift": "the owl speaks for Ellery and wins the curator over",
+      "valence": "positive",
+      "kind": "success"
+    },
+    "e_win_hero_curator": {
+      "gift": "the curator reads the letter and Ellery's name is cleared",
+      "valence": "positive",
+      "kind": "completion"
+    },
+    "e_win_secret_kept": {
+      "gift": "a shared secret with Tess, a password and a rota",
+      "valence": "positive",
+      "kind": "success"
+    },
+    "e_win_donate": {
+      "gift": "the room found by the museum, credited to a nameless curious visitor",
+      "valence": "positive",
+      "kind": "success"
+    },
+    "e_neutral_call_home": {
+      "gift": "a safe call home and a guard eager to hear the whole story",
+      "valence": "neutral",
+      "kind": "discovery"
+    },
+    "e_neutral_evidence": {
+      "gift": "photographs that send the curator straight for her keys",
+      "valence": "neutral",
+      "kind": "discovery"
+    },
+    "e_neutral_wiser": {
+      "gift": "a careful list of the room and a curator who believes a shelf that counts",
+      "valence": "neutral",
+      "kind": "discovery"
+    }
+  },
+  "provenance": {
+    "producer": "wp-1.4 blind extraction",
+    "model": "claude-opus-5-5",
+    "method": "read-book",
+    "book_file": "tmp_cleanup/blind/d3.book.json",
+    "book_sha256": "e466cce64d9fafbc8a37adc68c9d15efc47e17bf5b5bcfed62128c51917b0234",
+    "authored": "2026-11-21",
+    "authoring_minutes": 55,
+    "notes": [
+      "read_back and has_chalk are mutually exclusive: the n_desk choice sets exactly one.",
+      "Who searched the cases before Nadia (a_gems_case, b_egypt_sarco) is never said; recorded as someone_else_searched only.",
+      "v_letter_ps calls the glasses the founder's; only the k_founder_desk route establishes that, the k_stairs_base cupboard glasses are not named as his.",
+      "e_neutral_call_home puts the brass key on the guard's desk without a passage showing it left there.",
+      "e_win_lost_wing mentions the bricked arch in a roped gallery with an indefinite article; recorded as established there, not required."
+    ]
+  }
+}

@@ -1,0 +1,721 @@
+{
+  "n_open": [
+    "wren_callahan",
+    "grandfather_dead",
+    "attic_shortwave",
+    "loop_heard_week",
+    "loop_woman_numbers",
+    "loop_falling_tone"
+  ],
+  "n_shelf": [
+    "attic_shortwave",
+    "grandfather_dead",
+    "loop_woman_numbers",
+    "spare_battery_on_shelf_exists",
+    "headset_on_hook",
+    "headset_hears_room",
+    "wren_only_visitor",
+    "one_thing_bargain",
+    "grandfather_dead_a_year"
+  ],
+  "n_shelf_battery": [
+    "spare_battery_on_shelf_exists",
+    "battery_in_pack"
+  ],
+  "n_shelf_headset": [
+    "headset_on_hook",
+    "headset_taken",
+    "headset_brings_voice_close"
+  ],
+  "n_start": [
+    "loop_woman_numbers",
+    "grandfather_dead",
+    "three_leads",
+    "relay_believed_dead",
+    "grandpa_logbook_40y",
+    "grandpa_taught_coords"
+  ],
+  "r_coord_1": [
+    "grandpa_taught_coords",
+    "coords_harbor_tower",
+    "handheld_battery_low"
+  ],
+  "r_coord_harbor": [
+    "coords_harbor_tower",
+    "tide_shed_said_dead"
+  ],
+  "r_coord_notice": [
+    "notice_card"
+  ],
+  "r_coord_notice2": [
+    "notice_card",
+    "card_matches_loop_fresh"
+  ],
+  "r_coord_notice3": [
+    "notice_card",
+    "wren_has_card",
+    "signal_strongest_north"
+  ],
+  "e_coord_notice": [
+    "notice_card",
+    "card_replaced_always",
+    "loop_went_silent_early"
+  ],
+  "r_coord_harbor_ask": [
+    "pell_harbormaster",
+    "pell_relay_source",
+    "keeper_is_man",
+    "pell_withholds_name"
+  ],
+  "r_coord_harbor_shed": [
+    "tide_shed_said_dead",
+    "shed_receiver_listens"
+  ],
+  "r_coord_shed_in": [
+    "shed_receiver_listens",
+    "shed_is_ear",
+    "relay_kx"
+  ],
+  "e_coord_shed_leave": [
+    "shed_receiver_listens",
+    "grandpa_marked_dial",
+    "grandpa_heard_loop",
+    "grandpa_never_told",
+    "grandfather_dead_a_year",
+    "loop_went_silent_early"
+  ],
+  "r_coord_tower": [
+    "coords_harbor_tower",
+    "tower_relays_signal"
+  ],
+  "r_coord_climb": [
+    "cable_to_relay",
+    "wren_froze_on_ladder"
+  ],
+  "r_coord_base": [
+    "stenciled_arrows"
+  ],
+  "r_coord_base_in": [
+    "relay_kx",
+    "tower_relays_signal"
+  ],
+  "r_coord_base_out": [
+    "stenciled_arrows"
+  ],
+  "r_coord_beat": [
+    "numbers_point_to_relay"
+  ],
+  "r_coord_close": [
+    "relay_lit"
+  ],
+  "r_relay_1": [
+    "wren_has_bicycle",
+    "relay_believed_dead"
+  ],
+  "r_re_path": [],
+  "r_re_gap": [
+    "relay_kx",
+    "relay_tended",
+    "relay_believed_dead"
+  ],
+  "e_re_photo": [
+    "man_with_mug_photo",
+    "keeper_is_man",
+    "loop_went_silent_early"
+  ],
+  "r_re_lane": [],
+  "r_re_cellar": [],
+  "r_re_cellar2": [
+    "cellar_note",
+    "relay_kx",
+    "keeper_is_man"
+  ],
+  "r_re_cellar3": [
+    "cellar_note",
+    "wren_has_cellar_note"
+  ],
+  "e_re_cellar": [
+    "cellar_note",
+    "keeper_is_man",
+    "wren_fever",
+    "loop_went_silent_early"
+  ],
+  "r_re_gatehouse": [],
+  "r_re_log": [
+    "log_board_loop_holding",
+    "person_tends_signal"
+  ],
+  "r_re_scrap": [
+    "for_m_still_holding",
+    "wren_took_log_page",
+    "person_tends_signal"
+  ],
+  "r_re_hut": [
+    "alder_surname",
+    "alder_services_monthly",
+    "keeper_is_man"
+  ],
+  "r_relay_beat": [
+    "relay_lit",
+    "red_lamp_keeps_time",
+    "wren_has_bicycle"
+  ],
+  "r_relay_close": [
+    "red_lamp_keeps_time",
+    "station_cabin_boots",
+    "person_tends_signal"
+  ],
+  "r_notes_1": [
+    "grandpa_logbook_40y",
+    "cedar_trunk",
+    "radio_shed_notes",
+    "grandfather_dead"
+  ],
+  "r_no_trunk": [
+    "cedar_trunk",
+    "trunk_contents"
+  ],
+  "r_no_letters": [
+    "trunk_contents",
+    "grandpa_letters_to_kell",
+    "letter_she_out_there",
+    "kell_first_name",
+    "relay_kx",
+    "grandpa_rooting_for_kell"
+  ],
+  "r_no_letters2": [
+    "grandpa_letters_to_kell",
+    "alder_surname",
+    "kell_first_name",
+    "kell_has_daughter"
+  ],
+  "r_no_letters3": [
+    "grandpa_letters_to_kell",
+    "kell_first_name",
+    "alder_surname",
+    "kell_has_daughter",
+    "wren_kept_letter"
+  ],
+  "e_no_letters": [
+    "grandpa_letters_to_kell",
+    "grandpa_deliver_instruction",
+    "relay_kx",
+    "loop_went_silent_early"
+  ],
+  "r_no_book": [
+    "trunk_contents",
+    "logbook_alder_transmitting",
+    "alder_surname",
+    "club_wont_talk",
+    "grandpa_last_question",
+    "grandpa_heard_loop",
+    "relay_kx"
+  ],
+  "r_no_cards": [
+    "qsl_cards_40y",
+    "qsl_kx_alder"
+  ],
+  "r_no_freq": [
+    "qsl_kx_alder",
+    "relay_kx",
+    "alder_surname",
+    "nobody_answered_alder",
+    "grandpa_heard_loop"
+  ],
+  "e_no_cards_end": [
+    "qsl_cards_40y",
+    "m_card_listener",
+    "relay_kx",
+    "loop_went_silent_early"
+  ],
+  "r_no_shed": [
+    "radio_shed_notes"
+  ],
+  "r_no_tuning": [
+    "tuning_note_kx",
+    "alder_surname",
+    "relay_kx",
+    "grandpa_tried_reach_alder"
+  ],
+  "e_no_locked": [
+    "wren_in_trouble_cabinet",
+    "grandpa_two_dots",
+    "relay_kx"
+  ],
+  "r_notes_beat": [
+    "alder_surname",
+    "grandpa_knew_keeper",
+    "grandpa_never_told",
+    "grandpa_heard_loop",
+    "wren_has_found_items"
+  ],
+  "r_notes_close": [
+    "wren_has_bicycle",
+    "relay_lit"
+  ],
+  "n_b1": [
+    "control_room_seen",
+    "kell_license",
+    "kell_first_name",
+    "alder_surname",
+    "relay_kx",
+    "thirty_logbooks",
+    "kell_thirty_years",
+    "person_tends_signal"
+  ],
+  "n_b1_note": [
+    "wren_left_note"
+  ],
+  "n_b1_slip": [
+    "kell_never_knew",
+    "kell_tall_stooped"
+  ],
+  "n_b1_echo": [
+    "control_room_seen",
+    "kell_first_name",
+    "alder_surname",
+    "relay_kx",
+    "county_decommissioned"
+  ],
+  "n_b1_choice": [
+    "kell_first_name",
+    "alder_surname",
+    "control_room_seen",
+    "kell_thirty_years"
+  ],
+  "m_numbers_1": [
+    "cedar_trunk",
+    "grandpa_logbook_40y",
+    "wren_fetched_logbook",
+    "station_register",
+    "beat_unsteady"
+  ],
+  "m_num_cipher": [
+    "station_register",
+    "cipher_fragments",
+    "letter_m_in_loop"
+  ],
+  "m_num_cracked": [
+    "station_register",
+    "message_for_m",
+    "letter_m_in_loop",
+    "count_going_down"
+  ],
+  "m_num_book2": [
+    "tide_table_key"
+  ],
+  "m_num_cracked2": [
+    "tide_table_key",
+    "countdown_ends_2340"
+  ],
+  "e_num_gibberish": [
+    "tide_table_key",
+    "countdown_ends_2340",
+    "loop_went_silent_early"
+  ],
+  "m_num_time": [
+    "gaps_shrinking"
+  ],
+  "m_num_intervals": [
+    "gaps_shrinking",
+    "count_going_down",
+    "countdown_ends_tonight"
+  ],
+  "m_num_pattern": [
+    "gaps_shrinking",
+    "countdown_ends_tonight"
+  ],
+  "m_num_countdown": [
+    "letter_m_in_loop",
+    "count_going_down",
+    "countdown_ends_tonight"
+  ],
+  "e_num_giveup": [
+    "static_test_false_date",
+    "final_name_said",
+    "countdown_ends_tonight"
+  ],
+  "m_who_1": [
+    "library_microfilm",
+    "okafor_marina"
+  ],
+  "m_who_film": [
+    "library_microfilm",
+    "relay_closure_news"
+  ],
+  "m_who_article": [
+    "kell_refused_transfer",
+    "alder_stayed_on",
+    "kell_channel_quote",
+    "kell_first_name",
+    "alder_surname"
+  ],
+  "m_who_photo": [
+    "alder_surname",
+    "alder_stayed_on",
+    "neighbor_letter"
+  ],
+  "m_who_okafor": [
+    "okafor_marina",
+    "alder_surname",
+    "kell_first_name"
+  ],
+  "m_who_story": [
+    "okafor_pins_cards",
+    "kell_first_name",
+    "alder_surname",
+    "kell_has_daughter",
+    "quarrel_daughter_left",
+    "kell_vowed_channel",
+    "okafor_ring_marina"
+  ],
+  "e_who_warn": [
+    "okafor_refused",
+    "loop_woman_numbers",
+    "girls_voice_kept_30y"
+  ],
+  "n_b2": [
+    "loop_woman_numbers",
+    "loop_falling_tone",
+    "two_tones_m",
+    "morse_chart",
+    "letter_m_in_loop",
+    "four_second_gap",
+    "headset_taken"
+  ],
+  "n_b2_under": [
+    "headset_taken",
+    "girl_voice_dad"
+  ],
+  "n_b2_echo": [
+    "loop_falling_tone",
+    "tone_lower_nightly"
+  ],
+  "n_b2_choice": [
+    "letter_m_in_loop",
+    "count_going_down"
+  ],
+  "mm_listener_1": [
+    "letter_m_in_loop",
+    "alder_surname"
+  ],
+  "mm_list_family": [
+    "kell_first_name",
+    "alder_surname",
+    "two_tones_m",
+    "kell_has_daughter",
+    "daughter_named_marin",
+    "m_named_marin",
+    "marin_left_registers",
+    "kell_sister"
+  ],
+  "mm_list_daughter": [
+    "daughter_named_marin",
+    "marin_read_numbers",
+    "quarrel_daughter_left",
+    "loop_calls_her_home",
+    "m_is_daughter",
+    "m_named_marin"
+  ],
+  "mm_list_sister": [
+    "kell_sister",
+    "m_is_daughter",
+    "daughter_named_marin",
+    "m_named_marin",
+    "quarrel_daughter_left",
+    "marin_two_ridges_west"
+  ],
+  "mm_list_place": [
+    "chart_m_ringed"
+  ],
+  "mm_list_map": [
+    "chart_m_ringed",
+    "marin_mooring",
+    "m_named_marin"
+  ],
+  "e_list_deadend": [
+    "chart_m_ringed",
+    "final_name_said",
+    "loop_went_silent_early"
+  ],
+  "mm_count_1": [],
+  "mm_count_time": [
+    "countdown_ends_2340"
+  ],
+  "mm_count_extrap": [
+    "kell_first_name",
+    "alder_surname",
+    "cell_past_life",
+    "cell_failing",
+    "countdown_ends_2340"
+  ],
+  "mm_count_clock": [
+    "final_tape_erase",
+    "countdown_ends_2340"
+  ],
+  "mm_count_tide": [
+    "spring_tide_gale",
+    "sea_floods_station"
+  ],
+  "mm_count_warn": [
+    "countdown_ends_2340",
+    "spring_tide_gale",
+    "sea_floods_station"
+  ],
+  "e_count_wait": [
+    "spring_tide_gale",
+    "loop_went_silent_early"
+  ],
+  "n_b3": [
+    "kell_last_schedule_tape",
+    "cell_failing",
+    "countdown_ends_2340",
+    "kell_says_piece_at_end",
+    "m_is_daughter",
+    "daughter_named_marin",
+    "m_named_marin"
+  ],
+  "n_b3_note": [
+    "wren_left_note",
+    "kell_found_note",
+    "kell_note_thanks"
+  ],
+  "n_b3_echo": [
+    "control_room_seen",
+    "cell_failing",
+    "gale_tonight"
+  ],
+  "n_b3_choice": [
+    "cell_failing",
+    "grandpa_transmitter",
+    "nobody_else_knows",
+    "countdown_ends_2340",
+    "wren_has_bicycle"
+  ],
+  "f_station_1": [
+    "yard_flooded",
+    "red_lamp_keeps_time"
+  ],
+  "f_st_fence": [],
+  "f_st_control": [
+    "console_countdown",
+    "hold_switch",
+    "circled_number",
+    "kell_at_mast",
+    "cell_failing",
+    "final_tape_erase"
+  ],
+  "f_st_answer": [
+    "console_countdown",
+    "circled_number",
+    "hold_switch",
+    "phone_patch",
+    "final_tape_erase"
+  ],
+  "e_st_reunite": [
+    "circled_number",
+    "final_message_text",
+    "marin_reached",
+    "tapes_erased"
+  ],
+  "e_st_archive": [
+    "hold_switch",
+    "tapes_saved"
+  ],
+  "f_st_power": [
+    "empty_terminals",
+    "cell_failing",
+    "battery_in_pack"
+  ],
+  "f_st_spliced": [
+    "battery_in_pack",
+    "hold_switch",
+    "circled_number",
+    "club_night_number"
+  ],
+  "e_st_stabilize": [
+    "battery_in_pack",
+    "help_arrives_station",
+    "kell_first_name",
+    "alder_surname",
+    "relay_kx",
+    "marin_two_ridges_west",
+    "hold_switch"
+  ],
+  "e_st_both": [
+    "circled_number",
+    "hold_switch",
+    "tapes_saved",
+    "daughter_named_marin",
+    "alder_surname",
+    "marin_reached"
+  ],
+  "e_st_record": [
+    "daughter_named_marin",
+    "battery_left_on_shelf",
+    "wren_recorded_marin_word",
+    "empty_terminals"
+  ],
+  "e_st_hesitate": [
+    "tapes_erased",
+    "circled_number"
+  ],
+  "f_st_road": [
+    "kell_at_console_headset"
+  ],
+  "f_st_alder": [
+    "kell_first_name",
+    "alder_surname",
+    "kell_believes_unheard",
+    "daughter_named_marin",
+    "wren_left_note"
+  ],
+  "e_st_alder_send": [
+    "kell_speaks_live",
+    "marin_listened",
+    "marin_two_ridges_west",
+    "marin_reached"
+  ],
+  "e_st_alder_refuse": [
+    "tapes_erased"
+  ],
+  "e_st_note": [
+    "wren_left_note",
+    "kell_found_note",
+    "wren_callahan",
+    "grandpa_two_dots",
+    "grandpa_answered_kell",
+    "kell_speaks_live",
+    "marin_listened",
+    "marin_reached"
+  ],
+  "e_st_wait": [
+    "kell_at_console_headset",
+    "final_message_text"
+  ],
+  "f_relay_1": [
+    "grandpa_transmitter",
+    "grandpa_no_key",
+    "net_emergency_line"
+  ],
+  "f_re_rig": [
+    "alder_surname",
+    "daughter_named_marin",
+    "transmitter_pencil_mark"
+  ],
+  "f_re_boost": [
+    "daughter_named_marin",
+    "silent_carrier"
+  ],
+  "e_re_answer": [
+    "marin_read_numbers",
+    "marin_reached",
+    "cell_failing"
+  ],
+  "e_re_neighbor": [
+    "daughter_named_marin",
+    "wren_callahan",
+    "net_relays_message"
+  ],
+  "e_re_fuse": [
+    "transmitter_burned",
+    "transmitter_pencil_mark"
+  ],
+  "f_re_club": [
+    "net_emergency_line"
+  ],
+  "f_re_net": [
+    "kell_first_name",
+    "daughter_named_marin",
+    "net_relays_message",
+    "woman_two_ridges_asking"
+  ],
+  "e_re_found": [
+    "marin_read_numbers",
+    "marin_listened",
+    "marin_reached",
+    "kell_speaks_live",
+    "alder_surname",
+    "daughter_named_marin"
+  ],
+  "e_re_log": [
+    "daughter_named_marin",
+    "net_relays_message",
+    "wren_never_learns_outcome"
+  ],
+  "e_re_message": [
+    "daughter_named_marin",
+    "listener_two_ridges_11y"
+  ],
+  "f_help_1": [
+    "coast_guard_number",
+    "address_book_relay_men",
+    "okafor_ring_marina"
+  ],
+  "f_he_okafor": [
+    "okafor_marina",
+    "okafor_key",
+    "kell_first_name"
+  ],
+  "e_he_okafor": [
+    "circled_number",
+    "wren_callahan",
+    "number_six_years",
+    "kell_first_name",
+    "alder_surname",
+    "daughter_named_marin",
+    "marin_reached"
+  ],
+  "f_he_cg": [
+    "coast_guard_number"
+  ],
+  "f_he_act": [
+    "spring_tide_gale",
+    "sea_floods_station",
+    "cg_crew_in_station",
+    "console_countdown",
+    "daughter_named_marin"
+  ],
+  "e_he_escort": [
+    "daughter_named_marin",
+    "alder_surname",
+    "marin_two_ridges_west",
+    "marin_reached",
+    "tapes_saved"
+  ],
+  "e_he_safe": [
+    "hold_switch",
+    "tapes_saved",
+    "daughter_named_marin",
+    "alder_surname",
+    "marin_two_ridges_west"
+  ],
+  "e_he_dismiss": [
+    "sea_floods_station",
+    "kell_flooded_unhurt"
+  ],
+  "f_he_colleague": [
+    "relay_men_transferred",
+    "relay_kx"
+  ],
+  "f_he_join": [
+    "kell_first_name",
+    "ruiz_keys"
+  ],
+  "e_he_complete": [
+    "wren_callahan",
+    "kell_first_name",
+    "help_arrives_station",
+    "circled_number",
+    "marin_reached"
+  ],
+  "e_he_takeover": [
+    "ruiz_keys",
+    "wren_never_learns_outcome"
+  ],
+  "e_he_dead": [
+    "relay_men_transferred",
+    "ruiz_watches_lamp",
+    "ruiz_keys"
+  ]
+}

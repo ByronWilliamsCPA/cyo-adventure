@@ -40,6 +40,41 @@
       "book_sha256": "73a5c0d5d1976891b1f4e1f773344ac3698ac230e517d3c6b3144cb6da1f1441",
       "authoring_minutes": 55,
       "deviation": "Ran ls on tmp_cleanup/blind/, which showed other agents' work-folder names (not opened)."
+    },
+    "d1": {
+      "pass": "second",
+      "source_file": "out/the-sky-ship-stowaway.filled.json",
+      "book_sha256": "73a5c0d5d1976891b1f4e1f773344ac3698ac230e517d3c6b3144cb6da1f1441",
+      "authoring_minutes": 70,
+      "deviation": "none"
+    },
+    "d2": {
+      "pass": "second",
+      "source_file": "out/the-mapmakers-island.filled.json",
+      "book_sha256": "2bb129096f67e9f45e1f9b19c2b2b63623c1fa492e1a5ca4c2d373ae65b1d4d1",
+      "authoring_minutes": 85,
+      "deviation": "none"
+    },
+    "d3": {
+      "pass": "second",
+      "source_file": "out/the-midnight-museum.filled.json",
+      "book_sha256": "e466cce64d9fafbc8a37adc68c9d15efc47e17bf5b5bcfed62128c51917b0234",
+      "authoring_minutes": 55,
+      "deviation": "none"
+    },
+    "d4": {
+      "pass": "second",
+      "source_file": "out/the-signal-in-the-static.filled.json",
+      "book_sha256": "d701b7891ff2141196634800c84e0f2565c8df2d389dbd994f6ba495ebcc7cd8",
+      "authoring_minutes": 85,
+      "deviation": "none"
+    },
+    "d5": {
+      "pass": "second",
+      "source_file": "out/the-cave-of-echoes.filled.json",
+      "book_sha256": "3a3606f4a0bee7fa42c399b18847d62260b3efd074cf69328087c53f13928273",
+      "authoring_minutes": 50,
+      "deviation": "none"
     }
   }
 }
