@@ -1,3 +1,6 @@
+# pyright: reportImplicitStringConcatenation=false
+# Ruff ISC003 requires implicit concatenation for wrapped messages and this
+# BasedPyright rule forbids it; the two conflict, and Ruff is the project's gate.
 """Story Plan schema v0 (ADR-033 Decision 1, work package WP-1.1).
 
 A Story Plan is one JSON document per book. It is written before prose (or,
@@ -12,108 +15,117 @@ Shape choices
 
 ADR-033 Decision 1 names the sections and their contents. Where it is specific
 this schema follows it; where it is not, the simplest shape that makes the
-checks exact set operations was chosen. Every such choice is listed here and in
-the WP-1.1 notes of ``docs/planning/story-plan-implementation-plan.md``.
+checks exact set operations was chosen, reconciled with the four WP-0.3 plans
+written in parallel (``out/<slug>.plan.json`` on the batch branch), which this
+schema accepts unchanged. Every choice is listed here and in the WP-1.1 notes of
+``docs/planning/story-plan-implementation-plan.md``.
 
 1. **Sections keyed by id are JSON objects, not arrays.** ``cast``, ``facts``,
    ``nodes``, ``choices``, ``threads`` and ``endings`` are objects whose keys
-   are ids. Uniqueness is then free, and SP-1 coverage is a set comparison of
-   keys. This matches the August narrative contracts
-   (``skeletons/*/*.narrative.json``), which key ``facts`` and ``nodes`` the
-   same way.
+   are ids, so uniqueness is free and SP-1 coverage is a set comparison.
 2. **Node and choice ids are the book's ids**, verbatim (ADR-033: "Node ids and
-   choice ids are shared"). They are only required to be non-empty, matching
-   the Storybook, so any valid book can be planned. Fact, thread and cast ids
-   use the Storybook variable pattern ``^[a-z][a-z0-9_]*$``.
-3. **A fact is an object** ``{"text": ..., "contradicts": [...]}``. ``text`` is
-   the one sentence the ADR asks for. ``contradicts`` is how a fact is "marked
-   as contradicting" for SP-3; it is read symmetrically, so marking one side of
-   a pair is enough. Facts are monotone: once established on a route a fact
-   stays established (a reader cannot un-learn it). Nothing retracts a fact.
-4. **``truth`` is** ``{"question", "answer", "facts"}``: the book's question,
-   its one canonical answer in a sentence, and the non-empty list of ledger
-   fact ids that make up that answer. SP-3 requires each to be established on
-   some reachable route and forbids any fact contradicting it from being
-   established anywhere. Truth facts may not contradict each other.
-5. **Nodes carry** ``function``, ``event``, ``requires``, ``establishes``
-   exactly as the ADR names them. ``requires`` is what the node's prose
-   presupposes the reader already knows **on entry**; ``establishes`` is what
-   the prose adds. A fact stated in a choice label counts as established by the
-   node that offers the choice, because every reader at that node sees the
-   label. ``must_not_assert`` is never authored; it is computed by
-   :func:`cyo_adventure.storyplan.checks.must_not_assert`.
-6. **Choices carry** ``intent`` and ``cost`` (both required, per the ADR) and an
-   optional ``plants``: the ids of the threads this choice plants. A choice
-   that plants nothing omits it. ``cost`` is short free text; ``"none"`` is a
-   legitimate cost for the safe or continue option. SP-8 compares costs after
-   case-folding, whitespace collapsing and trailing-punctuation stripping, so
-   two costs differ only if their words differ.
-7. **Threads carry** ``variable`` (the Storybook variable the thread drives),
-   ``planted_fact`` (the ledger fact that is the concrete thing planted),
-   ``planted_by`` (the planting choices: a list, because a hand-revised book
-   may set one variable from several choices) and ``payoffs``. The ADR names
-   both a thread's planting choice and a choice's ``plants``; both are kept and
-   must agree exactly: choice ``c`` lists thread ``t`` in ``plants`` if and only
-   if ``t.planted_by`` contains ``c``. This is deliberate double entry, so a
-   hand-written plan that edits one side and forgets the other is rejected at
-   load rather than silently mis-checked. Traversing a planting choice
-   establishes the thread's ``planted_fact`` on entry to the choice's target.
-8. **A payoff is** ``{"site", "node", "shows"}``. ``site`` is the node where
-   readers with and without the plant both arrive (SP-5 measures reach there);
-   ``node`` is the passage that shows the payoff, usually the target of a
-   choice at ``site`` that only planted readers see (SP-6 checks its
-   requirements). ``node`` may equal ``site``. ``shows`` is one sentence.
-   Without conditional passage text (deferred by ADR-033), a payoff needs an
-   arrival node distinct from the shared site, which is why both are named.
-9. **``endings`` is keyed by ending node id** (not by the Storybook's ``Ending.id``),
-   because node ids are the shared key. Each entry holds a required ``gift``.
-   SP-7 requires an entry for every negative-valence ending; entries for other
-   endings are allowed.
-10. **``request.band`` is required; every other request field is optional.**
-    A hand-revised catalog book has no request text. When present, the text is
-    untrusted and is exempt from SP-9's floors (it is screened upstream and
-    fenced wherever it is reused); every other plan string is floored.
-11. **``provenance`` carries the shape binding**: ``shape_id`` (the skeleton
-    slug, or the book id for a hand-revised book, which has no separate shape)
-    and ``shape_hash`` (:func:`shape_hash` of the book's graph, ``null`` until
-    first bound). SP-0 fails an unbound or stale plan. ``checks`` records the
-    summary of the last check run; ``approver`` who approved the plan.
-12. **``plan_version`` is** ``MAJOR.MINOR``, additive within a major (ADR-025's
-    rule). This build writes ``0.1`` and reads any ``0.x`` with ``x <= 1``.
-    ``0.0`` was skipped so an unset or defaulted version is never mistaken for
-    a real one.
+   choice ids are shared"), only required to be non-empty, as in the Storybook.
+   Fact, thread and cast ids use the pattern ``^[a-z][a-z0-9_]*$``.
+3. **A fact is** ``{"text", "contradicts"?}``. ``contradicts`` is how a fact is
+   "marked as contradicting" for SP-3; it may be written on one side only and is
+   read both ways. A negative statement ("she has no key") is a positive fact
+   that contradicts its opposite; there is no negative ``requires``. A partial
+   reveal is its own fact. Facts are monotone: once established on a route a
+   fact stays established; nothing retracts one, so a state change is a new
+   fact. A node may both require and establish a fact, so one merge defect is
+   reported once rather than cascading downstream. ``implicit_plant`` is an
+   optional note on a setup that has no variable; no rule reads it.
+4. **``truth`` is** ``{"statement", "facts", "question"?}``: the one canonical
+   answer in prose, the non-empty list of ledger facts that make it up, and
+   optionally the question it answers. Truth facts may not contradict each
+   other.
+5. **Nodes carry** ``function``, ``event``, ``requires``, ``establishes``.
+   ``requires`` is what the prose presupposes the reader knows **on entry**;
+   ``establishes`` is what it adds. A fact stated in a choice label counts as
+   established by the node offering it. ``must_not_assert`` is never authored;
+   :func:`cyo_adventure.storyplan.checks.must_not_assert` computes it.
+6. **Choices carry** ``intent`` and ``cost`` (required), and optionally
+   ``requires`` (facts the label presupposes, checked against what is known on
+   entry to the offering node plus that node's ``establishes``, only in states
+   where the choice is visible; a plan may instead fold label presuppositions
+   into the node's ``requires``), ``establishes`` (facts taking the choice
+   establishes on entry to its target, for a setup with no variable) and
+   ``plants``: the thread id, or list of thread ids, the choice plants. ``"none"`` is a valid cost. SP-8 compares
+   costs case-folded with trailing punctuation stripped.
+7. **Threads carry** ``variable`` (the Storybook variable), ``plant`` (the
+   ledger fact that is the concrete thing planted), ``planting_choices`` (a
+   list: a book may set one variable from several choices) and
+   ``payoff_sites``. A choice's ``plants`` and the threads'
+   ``planting_choices`` must agree exactly in both directions; the double entry
+   is deliberate, so a plan that edits one side is rejected at load rather than
+   silently mis-checked. Traversing a planting choice establishes the thread's
+   ``plant`` on entry to its target.
+8. **A payoff site is** ``{"node", "choice", "shows"}``: ``node`` is where
+   readers with and without the plant both arrive (SP-5 measures reach there),
+   ``choice`` is the choice at that node through which the payoff shows (it may
+   be gated on the variable being true or false), ``shows`` one sentence. The
+   passage that shows the payoff is the choice's target in the book, which is
+   what SP-6 checks.
+9. **``endings`` is keyed by ending node id** with a required ``gift`` and an
+   optional ``valence`` and ``kind``, which SP-1 checks against the book when
+   given. SP-7 requires an entry for every negative-valence ending.
+10. **``request``**: ``band`` required; ``text``, ``length``, ``style``,
+    ``tone``, ``note`` optional. ``text`` is untrusted when present.
+11. **``book``** (optional): ``slug``, ``storybook_id``, ``storybook_version``,
+    ``title``; SP-0 checks the id and version against the book.
+12. **``provenance`` carries the binding**, one or both of: ``shape``
+    (``{"id", "hash"}``, the hash being :func:`shape_hash` of the graph: ids,
+    targets, conditions, effects, variables, ending valence and kind, so a
+    prose edit keeps it) for a plan built from a shape; ``book_sha256`` (hex
+    SHA-256 of the book file's bytes, so any edit makes the plan stale) for a
+    hand-revised book, which has no shape. SP-0 fails a plan with neither, or
+    with one that does not match. Also ``producer`` (required), ``model``,
+    ``method``, ``book_file``, ``authored``, ``authoring_minutes``, ``checks``,
+    ``approver``, and ``notes`` (free-form strings, such as continuity notes).
+13. **``plan_version`` is** ``MAJOR.MINOR``, additive within a major (ADR-025's
+    rule). This build writes ``0.1`` and reads ``0.0`` and ``0.1``.
 
 What this schema enforces at load (:class:`StoryPlan` validation)
 ----------------------------------------------------------------
 
-Unknown keys anywhere (``extra="forbid"``); every fact id referenced by a node,
-cast member, truth, contradiction or thread is declared in ``facts``; every
-node id referenced by a payoff or ``endings`` is a key of ``nodes``; every
-planting choice is a key of ``choices``; every thread a choice plants exists;
-the ``plants``/``planted_by`` agreement; one thread per variable and per
-planted fact; no duplicate entries in any id list; no self-contradiction; no
-contradiction among truth facts; a supported ``plan_version``.
+Unknown keys anywhere (``extra="forbid"``); every referenced fact id is
+declared; every node id referenced by a payoff site or ``endings`` is a key of
+``nodes``; every planting and payoff choice is a key of ``choices``; every
+thread a choice plants exists; the ``plants``/``planting_choices`` agreement;
+one thread per variable and per plant; no duplicate entries in any id list; no
+self-contradiction; no contradiction among truth facts; a supported
+``plan_version``.
 
-What is checked against the book, not here: that the plan's node and choice ids
-are exactly the book's, and that each thread's variable is declared in the book
-and set by exactly its planting choices. The plan does not own variable
-declarations (the Storybook does, and ADR-033 leaves it unchanged), so "a
-thread naming an undeclared variable" is an SP-1 error from
-:func:`cyo_adventure.storyplan.checks.check_plan` rather than a load error.
+What is checked against the book, not here (SP-0 and SP-1): that the plan's
+node and choice ids are exactly the book's, that a payoff choice belongs to its
+site node, and that each thread's variable is declared in the book and set by
+exactly its planting choices. The plan does not own variable declarations (the
+Storybook does), so "a thread naming an undeclared variable" is an SP-1 error
+rather than a load error.
 """
 
 from __future__ import annotations
 
 import hashlib
 import json
+from datetime import date
 from typing import TYPE_CHECKING, Annotated, Self
 
-from pydantic import BaseModel, ConfigDict, Field, StringConstraints, model_validator
+from pydantic import (
+    BaseModel,
+    BeforeValidator,
+    ConfigDict,
+    Field,
+    StringConstraints,
+    model_validator,
+)
 
 from cyo_adventure.storybook.models import (
     AgeBand,
+    EndingKind,
     Length,
     NarrativeStyle,
+    Valence,
     is_supported_schema_version,
 )
 
@@ -129,13 +141,32 @@ PLAN_VERSION = f"{PLAN_MAJOR}.{PLAN_MINOR}"
 SHAPE_HASH_PREFIX = "sha256:"
 
 Ident = Annotated[str, StringConstraints(pattern=r"^[a-z][a-z0-9_]*$", max_length=64)]
-"""A fact, thread or cast id: the Storybook variable-name pattern."""
+"""A fact, thread or cast id."""
 
 BookId = Annotated[str, StringConstraints(min_length=1)]
 """A node or choice id, verbatim from the book (the Storybook only requires non-empty)."""
 
 Text = Annotated[str, StringConstraints(min_length=1)]
 """A plan string. Length, charset and denylist floors are SP-9's job, not the schema's."""
+
+
+def _one_or_many(value: object) -> object:
+    """Accept a bare id where a list of ids is expected.
+
+    Args:
+        value: The raw ``plants`` value.
+
+    Returns:
+        object: ``[value]`` for a string, ``value`` unchanged otherwise.
+    """
+    return [value] if isinstance(value, str) else value
+
+
+ThreadRefs = Annotated[
+    list[Ident],
+    BeforeValidator(_one_or_many, json_schema_input_type=Ident | list[Ident]),
+]
+"""``plants``: one thread id or a list of them, held as a list."""
 
 
 def is_supported_plan_version(value: object) -> bool:
@@ -157,6 +188,15 @@ class _Strict(BaseModel):
     model_config = ConfigDict(extra="forbid")
 
 
+class BookRef(_Strict):
+    """Which book the plan was written for."""
+
+    slug: Text
+    storybook_id: Text
+    storybook_version: int = Field(ge=1)
+    title: Text
+
+
 class PlanRequest(_Strict):
     """The request the book answers. ``text`` is untrusted when present."""
 
@@ -165,6 +205,7 @@ class PlanRequest(_Strict):
     length: Length | None = None
     style: NarrativeStyle | None = None
     tone: Text | None = None
+    note: str | None = None
 
 
 class Pitch(_Strict):
@@ -188,11 +229,11 @@ class CastMember(_Strict):
 
 
 class Truth(_Strict):
-    """The book's question and its one canonical answer."""
+    """The book's one canonical answer and the facts that make it up."""
 
-    question: Text
-    answer: Text
+    statement: Text
     facts: list[Ident] = Field(min_length=1)
+    question: Text | None = None
 
 
 class Fact(_Strict):
@@ -200,6 +241,7 @@ class Fact(_Strict):
 
     text: Text
     contradicts: list[Ident] = Field(default_factory=list)
+    implicit_plant: str | None = None
 
 
 class NodePlan(_Strict):
@@ -212,18 +254,20 @@ class NodePlan(_Strict):
 
 
 class ChoicePlan(_Strict):
-    """A choice's meaning: why a reader takes it, what it costs, what it plants."""
+    """A choice's meaning: why, at what cost, what it presupposes and plants."""
 
     intent: Text
     cost: Text
-    plants: list[Ident] = Field(default_factory=list)
+    requires: list[Ident] = Field(default_factory=list)
+    establishes: list[Ident] = Field(default_factory=list)
+    plants: ThreadRefs = Field(default_factory=list)
 
 
-class Payoff(_Strict):
-    """Where a thread returns: the shared site, the showing passage, and what it shows."""
+class PayoffSite(_Strict):
+    """Where a thread returns: the shared node, the choice that shows it, what it shows."""
 
-    site: BookId
     node: BookId
+    choice: BookId
     shows: Text
 
 
@@ -231,15 +275,17 @@ class Thread(_Strict):
     """A plant and its payoffs, bound to one Storybook variable."""
 
     variable: Ident
-    planted_fact: Ident
-    planted_by: list[BookId] = Field(min_length=1)
-    payoffs: list[Payoff] = Field(min_length=1)
+    plant: Ident
+    planting_choices: list[BookId] = Field(min_length=1)
+    payoff_sites: list[PayoffSite] = Field(min_length=1)
 
 
 class EndingPlan(_Strict):
     """What an ending gives the reader: the reveal, the laugh, or the reason to retry."""
 
     gift: Text
+    valence: Valence | None = None
+    kind: EndingKind | None = None
 
 
 class CheckRecord(_Strict):
@@ -250,17 +296,29 @@ class CheckRecord(_Strict):
     warnings: int = Field(ge=0)
 
 
+class ShapeRef(_Strict):
+    """The shape a plan was built for, by id and graph hash."""
+
+    id: Text
+    hash: Annotated[str, StringConstraints(pattern=r"^sha256:[0-9a-f]{64}$")]
+
+
 class Provenance(_Strict):
-    """Who produced the plan, from what shape, and who approved it."""
+    """Who produced the plan, what it is bound to, and who approved it."""
 
     producer: Text
     model: str | None = None
-    shape_id: Text
-    shape_hash: (
-        Annotated[str, StringConstraints(pattern=r"^sha256:[0-9a-f]{64}$")] | None
-    ) = None
+    method: str | None = None
+    shape: ShapeRef | None = None
+    book_file: str | None = None
+    book_sha256: Annotated[str, StringConstraints(pattern=r"^[0-9a-f]{64}$")] | None = (
+        None
+    )
+    authored: date | None = None
+    authoring_minutes: int | None = Field(default=None, ge=0)
     checks: CheckRecord | None = None
     approver: str | None = None
+    notes: list[str] = Field(default_factory=list)
 
 
 def _duplicates(values: Iterable[str]) -> list[str]:
@@ -285,6 +343,7 @@ class StoryPlan(_Strict):
     """A complete Story Plan (ADR-033 Decision 1). See the module docstring."""
 
     plan_version: str = PLAN_VERSION
+    book: BookRef | None = None
     request: PlanRequest
     pitch: Pitch
     cast: dict[Ident, CastMember] = Field(min_length=1)
@@ -341,13 +400,18 @@ class StoryPlan(_Strict):
         for node_id, node in self.nodes.items():
             refs.extend((f"nodes.{node_id}.requires", f) for f in node.requires)
             refs.extend((f"nodes.{node_id}.establishes", f) for f in node.establishes)
+        for choice_id, choice in self.choices.items():
+            refs.extend((f"choices.{choice_id}.requires", f) for f in choice.requires)
+            refs.extend(
+                (f"choices.{choice_id}.establishes", f) for f in choice.establishes
+            )
         for cast_id, member in self.cast.items():
             refs.extend((f"cast.{cast_id}.knows", f) for f in member.knows)
         refs.extend(("truth.facts", f) for f in self.truth.facts)
         for fact_id, fact in self.facts.items():
             refs.extend((f"facts.{fact_id}.contradicts", f) for f in fact.contradicts)
         for thread_id, thread in self.threads.items():
-            refs.append((f"threads.{thread_id}.planted_fact", thread.planted_fact))
+            refs.append((f"threads.{thread_id}.plant", thread.plant))
         return [
             f"{where} names undeclared fact {fact!r}"
             for where, fact in refs
@@ -388,21 +452,22 @@ class StoryPlan(_Strict):
         ]
         for thread_id, thread in self.threads.items():
             problems.extend(
-                f"threads.{thread_id}.planted_by names unknown choice {choice_id!r}"
-                for choice_id in thread.planted_by
-                if choice_id not in self.choices
+                f"threads.{thread_id}.planting_choices names unknown choice {c!r}"
+                for c in thread.planting_choices
+                if c not in self.choices
             )
-            for index, payoff in enumerate(thread.payoffs):
-                where = f"threads.{thread_id}.payoffs[{index}]"
-                problems.extend(
-                    f"{where}.{field} names unknown node {node_id!r}"
-                    for field, node_id in (("site", payoff.site), ("node", payoff.node))
-                    if node_id not in self.nodes
-                )
+            for index, site in enumerate(thread.payoff_sites):
+                where = f"threads.{thread_id}.payoff_sites[{index}]"
+                if site.node not in self.nodes:
+                    problems.append(f"{where}.node names unknown node {site.node!r}")
+                if site.choice not in self.choices:
+                    problems.append(
+                        f"{where}.choice names unknown choice {site.choice!r}"
+                    )
         return problems
 
     def _thread_problems(self) -> list[str]:
-        """Return thread uniqueness and plants/planted_by agreement problems.
+        """Return thread uniqueness and plants/planting_choices agreement problems.
 
         Returns:
             list[str]: The problems found.
@@ -410,7 +475,7 @@ class StoryPlan(_Strict):
         problems: list[str] = []
         for label, values in (
             ("variable", [t.variable for t in self.threads.values()]),
-            ("planted_fact", [t.planted_fact for t in self.threads.values()]),
+            ("plant", [t.plant for t in self.threads.values()]),
         ):
             problems.extend(
                 f"more than one thread has {label} {value!r}"
@@ -423,16 +488,17 @@ class StoryPlan(_Strict):
                     problems.append(
                         f"choices.{choice_id}.plants names unknown thread {thread_id!r}"
                     )
-                elif choice_id not in thread.planted_by:
+                elif choice_id not in thread.planting_choices:
                     problems.append(
-                        f"choices.{choice_id}.plants: {thread_id!r}.planted_by omits it"
+                        f"choices.{choice_id}.plants names {thread_id!r}, "
+                        "whose planting_choices omit it"
                     )
         for thread_id, thread in self.threads.items():
             problems.extend(
-                f"threads.{thread_id}.planted_by: {choice_id!r}.plants omits it"
-                for choice_id in thread.planted_by
-                if choice_id in self.choices
-                and thread_id not in self.choices[choice_id].plants
+                f"threads.{thread_id}.planting_choices lists {c!r}, "
+                "whose plants omit the thread"
+                for c in thread.planting_choices
+                if c in self.choices and thread_id not in self.choices[c].plants
             )
         return problems
 
@@ -450,6 +516,14 @@ class StoryPlan(_Strict):
                     (f"nodes.{node_id}.establishes", node.establishes),
                 )
             )
+        for choice_id, choice in self.choices.items():
+            lists.extend(
+                (
+                    (f"choices.{choice_id}.requires", choice.requires),
+                    (f"choices.{choice_id}.establishes", choice.establishes),
+                    (f"choices.{choice_id}.plants", choice.plants),
+                )
+            )
         lists.extend(
             (f"cast.{cast_id}.knows", member.knows)
             for cast_id, member in self.cast.items()
@@ -459,11 +533,7 @@ class StoryPlan(_Strict):
             for fact_id, fact in self.facts.items()
         )
         lists.extend(
-            (f"choices.{choice_id}.plants", choice.plants)
-            for choice_id, choice in self.choices.items()
-        )
-        lists.extend(
-            (f"threads.{thread_id}.planted_by", thread.planted_by)
+            (f"threads.{thread_id}.planting_choices", thread.planting_choices)
             for thread_id, thread in self.threads.items()
         )
         return [
@@ -486,18 +556,35 @@ class StoryPlan(_Strict):
             if other != fact_id
         )
 
-    def thread_facts_by_choice(self) -> dict[str, frozenset[str]]:
-        """Return, per planting choice, the facts traversing it establishes.
+    def plants_by_choice(self) -> dict[str, frozenset[str]]:
+        """Return, per choice, the facts traversing it establishes.
 
         Returns:
-            dict[str, frozenset[str]]: Choice id to the ``planted_fact`` of every
-                thread the choice plants. Choices that plant nothing are absent.
+            dict[str, frozenset[str]]: Choice id to its own ``establishes`` plus
+                the ``plant`` of every thread it plants. Choices that establish
+                nothing are absent.
         """
-        planted: dict[str, set[str]] = {}
+        planted: dict[str, set[str]] = {
+            choice_id: set(choice.establishes)
+            for choice_id, choice in self.choices.items()
+            if choice.establishes
+        }
         for thread in self.threads.values():
-            for choice_id in thread.planted_by:
-                planted.setdefault(choice_id, set()).add(thread.planted_fact)
+            for choice_id in thread.planting_choices:
+                planted.setdefault(choice_id, set()).add(thread.plant)
         return {choice_id: frozenset(facts) for choice_id, facts in planted.items()}
+
+
+def book_sha256(raw: bytes) -> str:
+    """Return the hex SHA-256 of a book file's bytes, for ``provenance.book_sha256``.
+
+    Args:
+        raw: The file's bytes exactly as stored.
+
+    Returns:
+        str: The lowercase hex digest.
+    """
+    return hashlib.sha256(raw).hexdigest()
 
 
 def shape_projection(book: Storybook) -> dict[str, object]:

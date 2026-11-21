@@ -33,7 +33,7 @@ from cyo_adventure.storyplan.checks import (
     must_not_assert,
     verify_witnesses,
 )
-from cyo_adventure.storyplan.models import shape_hash
+from cyo_adventure.storyplan.models import book_sha256, shape_hash
 from cyo_adventure.validator.report import Severity, ValidationReport
 from scripts.check_story_plan import default_plan_path, main
 
@@ -58,7 +58,8 @@ def _rebind(book: dict[str, Any], plan: dict[str, Any]) -> None:
         book: The edited book.
         plan: The plan, updated in place.
     """
-    plan["provenance"]["shape_hash"] = shape_hash(Storybook.model_validate(book))
+    parsed = Storybook.model_validate(book)
+    plan["provenance"]["shape"] = {"id": parsed.id, "hash": shape_hash(parsed)}
 
 
 def _check(book: dict[str, Any], plan: dict[str, Any]) -> ValidationReport:
@@ -239,9 +240,42 @@ def test_a_walk_and_engine_disagreement_raises(monkeypatch: pytest.MonkeyPatch) 
 @pytest.mark.unit
 def test_sp0_unbound_plan_names_the_hash_to_set() -> None:
     book, plan = _pair()
-    plan["provenance"]["shape_hash"] = None
+    plan["provenance"]["shape"] = None
     [finding] = _findings(_check(book, plan), "SP-0")
     assert shape_hash(Storybook.model_validate(book)) in finding.message
+
+
+@pytest.mark.unit
+def test_sp0_book_sha256_binding_is_verified_when_bytes_are_given() -> None:
+    book, plan = _pair()
+    plan["provenance"]["shape"] = None
+    plan["provenance"]["book_sha256"] = "a" * 64
+    parsed_plan = StoryPlan.model_validate(plan)
+    parsed_book = Storybook.model_validate(book)
+    assert check_plan(parsed_plan, parsed_book, book_digest="a" * 64).findings == []
+    stale = check_plan(parsed_plan, parsed_book, book_digest="b" * 64)
+    [finding] = _findings(stale, "SP-0")
+    assert "the book changed after the plan was written" in finding.message
+    unverified = check_plan(parsed_plan, parsed_book)
+    assert unverified.ok
+    [warning] = unverified.warnings
+    assert "not verified" in warning.message
+
+
+@pytest.mark.unit
+def test_sp0_book_block_must_name_this_book() -> None:
+    book, plan = _pair()
+    plan["book"] = {
+        "slug": "x",
+        "storybook_id": "s_other",
+        "storybook_version": 2,
+        "title": "X",
+    }
+    messages = {f.message for f in _findings(_check(book, plan), "SP-0")}
+    assert (
+        "book.storybook_id 's_other' is not the book's id 's_plan_witness'" in messages
+    )
+    assert "book.storybook_version 2 is not the book's version 1" in messages
 
 
 @pytest.mark.unit
@@ -306,7 +340,7 @@ def test_sp1_thread_variable_must_be_declared_and_every_variable_threaded() -> N
 
 
 @pytest.mark.unit
-def test_sp1_planted_by_must_equal_the_choices_that_set_the_variable() -> None:
+def test_sp1_planting_choices_must_equal_the_choices_that_set_the_variable() -> None:
     book, plan = _pair()
     _node(book, "n_start")["choices"][1]["effects"] = [
         {"op": "set", "var": "has_map", "value": True}
@@ -314,7 +348,7 @@ def test_sp1_planted_by_must_equal_the_choices_that_set_the_variable() -> None:
     _rebind(book, plan)
     [finding] = _findings(_check(book, plan), "SP-1")
     assert finding.choice_id == "c_skip_map"
-    assert "planted_by omits it" in finding.message
+    assert "planting_choices omit it" in finding.message
 
     book, plan = _pair()
     _node(book, "n_start")["choices"][0]["effects"] = []
@@ -331,6 +365,21 @@ def test_sp1_resetting_to_initial_is_not_a_plant() -> None:
     ]
     _rebind(book, plan)
     assert _check(book, plan).ok
+
+
+@pytest.mark.unit
+def test_sp1_declared_ending_valence_and_kind_must_match_the_book() -> None:
+    book, plan = _pair()
+    plan["endings"]["n_fall"].update(valence="negative", kind="setback")
+    plan["endings"]["n_home"] = {"gift": "g", "valence": "positive", "kind": "success"}
+    assert _check(book, plan).ok
+    plan["endings"]["n_fall"].update(valence="neutral", kind="capture")
+    messages = {f.message for f in _findings(_check(book, plan), "SP-1")}
+    assert (
+        "endings.n_fall.valence 'neutral' differs from the book's 'negative'"
+        in messages
+    )
+    assert "endings.n_fall.kind 'capture' differs from the book's 'setback'" in messages
 
 
 @pytest.mark.unit
@@ -388,6 +437,44 @@ def test_sp2_a_fact_from_one_branch_only_fails_at_the_merge() -> None:
 
 
 @pytest.mark.unit
+def test_sp2_choice_requires_is_checked_only_where_the_choice_is_visible() -> None:
+    book, plan = _pair()
+    plan["choices"]["c_cave"]["requires"] = ["map_marks_cave"]  # gated: fine
+    plan["choices"]["c_skip_lamp"]["requires"] = ["well_seen"]  # known on entry
+    plan["choices"]["c_take_map"]["requires"] = ["well_seen"]  # its node adds it
+    assert not _findings(_check(book, plan), "SP-2")
+    plan["choices"]["c_road"]["requires"] = ["map_marks_cave"]
+    [finding] = _findings(_check(book, plan), "SP-2")
+    assert finding.choice_id == "c_road"
+    assert finding.node_id == "n_fork"
+    assert finding.state is not None
+    assert "has_map=false" in finding.state
+    assert "2 of 4 states offering it" in finding.message
+
+
+@pytest.mark.unit
+def test_sp2_a_choice_establishes_on_entry_to_its_target() -> None:
+    book, plan = _pair()
+    plan["facts"]["cliff_edge"] = {"text": "The cliff path crumbles at the edge."}
+    plan["choices"]["c_cliff"]["establishes"] = ["cliff_edge"]
+    plan["nodes"]["n_fall"]["requires"] = ["cliff_edge"]
+    assert not _findings(_check(book, plan), "SP-2")
+    plan["nodes"]["n_home"]["requires"] = ["well_seen", "cliff_edge"]
+    [finding] = _findings(_check(book, plan), "SP-2")
+    assert finding.node_id == "n_home"
+
+
+@pytest.mark.unit
+def test_sp2_a_node_may_require_and_establish_so_defects_do_not_cascade() -> None:
+    book, plan = _pair()
+    plan["nodes"]["n_fork"]["requires"] = ["cave_drawing"]
+    plan["nodes"]["n_fork"]["establishes"] = ["cave_drawing"]
+    plan["nodes"]["n_home"]["requires"] = ["well_seen", "cave_drawing"]
+    findings = _findings(_check(book, plan), "SP-2")
+    assert [f.node_id for f in findings] == ["n_fork"]
+
+
+@pytest.mark.unit
 def test_sp2_the_start_node_enters_with_nothing() -> None:
     book, plan = _pair()
     plan["nodes"]["n_start"]["requires"] = ["well_seen"]
@@ -411,13 +498,44 @@ def test_sp3_blames_the_non_truth_side_of_a_contradiction() -> None:
 
 
 @pytest.mark.unit
-def test_sp3_contradicting_non_truth_facts_on_separate_routes() -> None:
+def test_sp3_one_reading_meeting_both_sides_via_a_plant_is_an_error() -> None:
+    # The Lighthouse B2 shape: a passage says "no lamp" to a reader whose
+    # choice planted the lamp.
     book, plan = _pair()
     plan["facts"]["cave_drawing"]["contradicts"] = ["lamp_lit"]
-    plan["nodes"]["n_cave"]["establishes"] = ["cave_drawing"]
-    findings = _findings(_check(book, plan), "SP-3")
-    assert len(findings) == 1
-    assert "c_take_lamp" in findings[0].message  # the plant is a choice site
+    [finding] = _findings(_check(book, plan), "SP-3")
+    assert finding.severity is Severity.ERROR
+    assert "one reading meets both" in finding.message
+    assert "c_take_lamp" in finding.message  # the plant is a choice site
+    assert finding.node_id == "n_cave"
+    assert finding.state == "has_lamp=true, has_map=true"
+    assert finding.route is not None
+    assert "c_take_lamp" in finding.route.split(" > ")
+
+
+@pytest.mark.unit
+def test_sp3_exclusive_routes_without_truth_is_a_warning() -> None:
+    # The Museum cipher shape: two versions of one detail on routes no single
+    # reading crosses.
+    book, plan = _pair()
+    plan["facts"]["tunnel_drawing"] = {
+        "text": "The tunnel wall shows a drawing of an owl.",
+        "contradicts": ["cave_drawing"],
+    }
+    plan["nodes"]["n_tunnel"]["establishes"] = ["tunnel_drawing"]
+    report = _check(book, plan)
+    assert report.ok
+    [finding] = _findings(report, "SP-3")
+    assert finding.severity is Severity.WARNING
+    assert "replay inconsistency" in finding.message
+
+
+@pytest.mark.unit
+def test_sp3_exclusive_routes_splitting_the_truth_is_an_error() -> None:
+    book, plan = WITNESSES[3].build()
+    [finding] = _findings(_check(cast("Any", book), cast("Any", plan)), "SP-3")
+    assert finding.severity is Severity.ERROR
+    assert "answers its question two ways" in finding.message
 
 
 @pytest.mark.unit
@@ -458,6 +576,15 @@ def test_sp4_public_plant_has_route_skipping_the_planting_choice() -> None:
 
 
 @pytest.mark.unit
+def test_sp4_a_non_planting_choice_establishing_the_plant_leaks_it() -> None:
+    book, plan = _pair()
+    plan["choices"]["c_skip_map"]["establishes"] = ["map_marks_cave"]
+    [finding] = _findings(_check(book, plan), "SP-4")
+    assert finding.node_id == "n_path"
+    assert finding.route == "n_start > c_skip_map > n_path"
+
+
+@pytest.mark.unit
 def test_sp4_a_node_only_reached_through_the_plant_may_restate_it() -> None:
     book, plan = _pair()
     plan["nodes"]["n_cave"]["establishes"] = ["cave_drawing", "map_marks_cave"]
@@ -478,14 +605,41 @@ def test_sp5_site_never_reached_without_the_plant() -> None:
 
 
 @pytest.mark.unit
-def test_sp5_site_never_reached_with_the_plant_and_node_never_planted() -> None:
+def test_sp5_site_never_reached_with_the_plant() -> None:
     book, plan = _pair()
-    plan["threads"]["t_map"]["payoffs"] = [
-        {"site": "n_start", "node": "n_start", "shows": "nothing yet"}
+    plan["threads"]["t_map"]["payoff_sites"] = [
+        {"node": "n_start", "choice": "c_take_map", "shows": "nothing yet"}
     ]
-    messages = [f.message for f in _findings(_check(book, plan), "SP-5")]
-    assert any("site 'n_start'" in m and "with the plant" in m for m in messages)
-    assert any("node 'n_start'" in m for m in messages)
+    [finding] = _findings(_check(book, plan), "SP-5")
+    assert "site 'n_start'" in finding.message
+    assert "reached with the plant" in finding.message
+
+
+@pytest.mark.unit
+def test_sp5_payoff_choice_never_offered() -> None:
+    book, plan = _pair()
+    _node(book, "n_fork")["choices"][0]["condition"] = {
+        "and": [
+            {"==": [{"var": "has_map"}, True]},
+            {"==": [{"var": "has_map"}, False]},
+        ]
+    }
+    _rebind(book, plan)
+    [finding] = _findings(_check(book, plan), "SP-5")
+    assert finding.choice_id == "c_cave"
+    assert "never offered" in finding.message
+
+
+@pytest.mark.unit
+def test_sp1_payoff_choice_must_belong_to_its_site() -> None:
+    book, plan = _pair()
+    plan["threads"]["t_map"]["payoff_sites"][0]["choice"] = "c_road_x"
+    plan["choices"]["c_road_x"] = {"intent": "i", "cost": "c"}
+    rules = {f.message for f in _findings(_check(book, plan), "SP-1")}
+    assert (
+        "threads.t_map.payoff_sites[0].choice 'c_road_x' is not a choice of 'n_fork'"
+        in rules
+    )
 
 
 # ---------------------------------------------------------------------------
@@ -504,19 +658,47 @@ def test_sp6_leaning_on_another_plant_fails_even_when_gated() -> None:
 
 
 @pytest.mark.unit
+def test_sp6_checks_the_payoff_choice_requires_too() -> None:
+    book, plan = WITNESSES[6].build()
+    plan = cast("dict[str, Any]", plan)
+    plan["nodes"]["n_tunnel"]["requires"] = ["lamp_lit"]
+    plan["choices"]["c_tunnel"]["requires"] = ["map_marks_cave"]
+    report = _check(cast("Any", book), plan)
+    assert not _findings(report, "SP-2")
+    [finding] = _findings(report, "SP-6")
+    assert finding.choice_id == "c_tunnel"
+    assert finding.node_id == "n_fork"
+
+
+@pytest.mark.unit
 def test_sp6_leaning_on_another_payoff_scene_fails() -> None:
     book, plan = _pair()
-    # Gate the tunnel behind the cave so cave_drawing is guaranteed state-wise.
-    _node(book, "n_cave")["choices"] = [
-        {"id": "c_cave_on", "label": "On.", "target": "n_tunnel"}
-    ]
-    _node(book, "n_fork")["choices"][1]["condition"] = {"==": [{"var": "has_map"}, 2]}
+    # Move the lamp's payoff into the map's payoff passage, so every reader
+    # who reaches the tunnel has seen the cave drawing: SP-2 is satisfied,
+    # but the lamp payoff now leans on what the map payoff showed.
+    fork = _node(book, "n_fork")
+    fork["choices"] = [c for c in fork["choices"] if c["id"] != "c_tunnel"]
+    _node(book, "n_cave")["choices"].append(
+        {
+            "id": "c_tunnel2",
+            "label": "Light the tunnel.",
+            "target": "n_tunnel",
+            "condition": {"==": [{"var": "has_lamp"}, True]},
+        }
+    )
     _rebind(book, plan)
-    plan["nodes"]["n_tunnel"]["requires"] = ["cave_drawing"]
+    plan["choices"]["c_tunnel2"] = plan["choices"].pop("c_tunnel")
+    plan["choices"]["c_cave_on"]["cost"] = "an early night"
+    plan["threads"]["t_lamp"]["payoff_sites"] = [
+        {"node": "n_cave", "choice": "c_tunnel2", "shows": "The lamp opens a tunnel."}
+    ]
+    plan["nodes"]["n_cave"]["establishes"] = ["cave_drawing"]
+    plan["nodes"]["n_tunnel"]["requires"] = ["lamp_lit", "cave_drawing"]
     report = _check(book, plan)
-    assert not _findings(report, "SP-2")
-    sp6 = _findings(report, "SP-6")
-    assert [f.fact_id for f in sp6] == ["cave_drawing"]
+    assert not report.findings or {f.rule_id for f in report.errors} == {"SP-6"}
+    [finding] = _findings(report, "SP-6")
+    assert finding.fact_id == "cave_drawing"
+    assert finding.node_id == "n_tunnel"
 
 
 @pytest.mark.unit
@@ -586,7 +768,7 @@ def test_sp8_single_choice_nodes_are_not_decisions() -> None:
         (("choices", "c_road", "cost"), "x" * 121, "120-character"),
         (("cast", "wren", "voice"), "two\nlines", "newlines"),
         (("endings", "n_fall", "gift"), "the cliff could kill you", "'lethal'"),
-        (("truth", "answer"), "a deep wound dripping with blood", "'graphic'"),
+        (("truth", "statement"), "a deep wound dripping with blood", "'graphic'"),
     ],
 )
 def test_sp9_floors(path: tuple[str, ...], value: str, expected: str) -> None:
@@ -605,11 +787,14 @@ def test_sp9_floors(path: tuple[str, ...], value: str, expected: str) -> None:
 def test_sp9_floors_tone_and_payoff_text_with_locations() -> None:
     book, plan = _pair()
     plan["request"]["tone"] = "{tone}"
-    plan["threads"]["t_map"]["payoffs"][0]["shows"] = "{shows}"
+    plan["threads"]["t_map"]["payoff_sites"][0]["shows"] = "{shows}"
+    plan["truth"]["question"] = "{question}"
     findings = _findings(_check(book, plan), "SP-9")
     by_path = {f.message.split(":")[0]: f for f in findings}
-    assert set(by_path) == {"request.tone", "threads.t_map.payoffs[0].shows"}
-    assert by_path["threads.t_map.payoffs[0].shows"].node_id == "n_cave"
+    shows = "threads.t_map.payoff_sites[0].shows"
+    assert set(by_path) == {"request.tone", shows, "truth.question"}
+    assert by_path[shows].node_id == "n_fork"
+    assert by_path[shows].choice_id == "c_cave"
 
 
 @pytest.mark.unit
@@ -627,6 +812,7 @@ def test_sp9_request_text_and_provenance_are_exempt() -> None:
     book, plan = _pair()
     plan["request"]["text"] = "a dragon {who} kills the dark " + "x" * 200
     plan["provenance"]["approver"] = "{owner}"
+    plan["request"]["note"] = "{note}"
     assert _check(book, plan).ok
 
 
@@ -709,12 +895,12 @@ def test_plan_finding_wire_format_adds_plan_keys() -> None:
 
 
 # Payoff sites in the committed Hollow Lighthouse, per variable: a node reached
-# with and without the plant, and the passage only planted readers reach.
+# with and without the plant, and the choice only planted readers see.
 _LIGHTHOUSE_PAYOFFS = {
-    "knows_tunnel": ("n_tunnel", "tn_cut"),
-    "knows_code": ("cm_cottage", "cm_cottage_light"),
-    "has_key": ("cm_light_relight", "cm_light_true"),
-    "knows_ledger": ("cm_smug_follow", "e_win_ledger"),
+    "knows_tunnel": ("n_tunnel", "c_n_tunnel_4"),
+    "knows_code": ("cm_cottage", "c_cm_cottage_2"),
+    "has_key": ("cm_light_relight", "c_cm_light_relight_1"),
+    "knows_ledger": ("cm_smug_follow", "c_cm_smug_follow_3"),
 }
 
 
@@ -761,7 +947,7 @@ def _covering_plan(book: Storybook) -> StoryPlan:
             ("hero", "want", "obstacle", "stake", "ending_kind"), "x"
         ),
         "cast": {"hero": {"name": "Hero", "role": "r", "want": "w", "voice": "v"}},
-        "truth": {"question": "q", "answer": "a", "facts": ["truth"]},
+        "truth": {"statement": "a", "facts": ["truth"]},
         "facts": facts,
         "nodes": {n.id: {"function": "f", "event": "e"} for n in book.nodes},
         "choices": {
@@ -772,12 +958,12 @@ def _covering_plan(book: Storybook) -> StoryPlan:
         "threads": {
             f"t_{v.name}": {
                 "variable": v.name,
-                "planted_fact": f"f_{v.name}",
-                "planted_by": setters[v.name],
-                "payoffs": [
+                "plant": f"f_{v.name}",
+                "planting_choices": setters[v.name],
+                "payoff_sites": [
                     {
-                        "site": _LIGHTHOUSE_PAYOFFS[v.name][0],
-                        "node": _LIGHTHOUSE_PAYOFFS[v.name][1],
+                        "node": _LIGHTHOUSE_PAYOFFS[v.name][0],
+                        "choice": _LIGHTHOUSE_PAYOFFS[v.name][1],
                         "shows": "s",
                     }
                 ],
@@ -787,8 +973,7 @@ def _covering_plan(book: Storybook) -> StoryPlan:
         "endings": {n.id: {"gift": "g"} for n in book.nodes if n.ending is not None},
         "provenance": {
             "producer": "test",
-            "shape_id": book.id,
-            "shape_hash": shape_hash(book),
+            "shape": {"id": book.id, "hash": shape_hash(book)},
         },
     }
     doc["nodes"][first]["establishes"] = ["truth"]
@@ -834,7 +1019,7 @@ def test_cli_clean_pair_exits_zero(
     book_path, _ = _write_pair(tmp_path, *_pair())
     assert main([str(book_path)]) == 0
     out = capsys.readouterr().out
-    assert "plan for s_plan_witness by witness (not approved)" in out
+    assert "plan bound to shape s_plan_witness by witness (not approved)" in out
     assert "ok: 0 error(s), 0 warning(s)" in out
 
 
@@ -873,11 +1058,32 @@ def test_cli_json_with_must_not_assert_and_assertions(
     assert payload["findings"][0]["rule_id"] == ASSERT_RULE
     assert payload["shape_hash"].startswith("sha256:")
     assert payload["plan"] == {
-        "shape_id": "s_plan_witness",
+        "bound_to": "shape s_plan_witness",
         "producer": "witness",
         "approver": None,
+        "book_file": None,
+        "authored": None,
+        "authoring_minutes": None,
+        "implicit_plants": {},
     }
     assert "lamp_lit" in payload["must_not_assert"]["n_home"]
+
+
+@pytest.mark.unit
+def test_cli_json_reports_authoring_provenance(
+    tmp_path: Path, capsys: pytest.CaptureFixture[str]
+) -> None:
+    book, plan = _pair()
+    plan["provenance"].update(
+        book_file="out/x.filled.json", authored="2026-11-21", authoring_minutes=11
+    )
+    plan["facts"]["well_seen"]["implicit_plant"] = "paid off at the fork"
+    book_path, _ = _write_pair(tmp_path, book, plan)
+    assert main([str(book_path), "--json"]) == 0
+    block = json.loads(capsys.readouterr().out)["plan"]
+    assert block["authored"] == "2026-11-21"
+    assert block["authoring_minutes"] == 11
+    assert block["implicit_plants"] == {"well_seen": "paid off at the fork"}
 
 
 @pytest.mark.unit
@@ -895,7 +1101,27 @@ def test_cli_shape_hash(tmp_path: Path, capsys: pytest.CaptureFixture[str]) -> N
     book_path, _ = _write_pair(tmp_path, *_pair())
     assert main([str(book_path), "--shape-hash"]) == 0
     expected = shape_hash(Storybook.model_validate(book))
-    assert capsys.readouterr().out.strip() == f"s_plan_witness {expected}"
+    out = capsys.readouterr().out.splitlines()
+    assert out[0] == f"shape s_plan_witness {expected}"
+    assert out[1] == f"book_sha256 {book_sha256(book_path.read_bytes())}"
+
+
+@pytest.mark.unit
+def test_cli_verifies_book_sha256_from_the_file(
+    tmp_path: Path, capsys: pytest.CaptureFixture[str]
+) -> None:
+    book, plan = _pair()
+    book_path, plan_path = _write_pair(tmp_path, book, plan)
+    plan["provenance"]["shape"] = None
+    plan["provenance"]["book_sha256"] = book_sha256(book_path.read_bytes())
+    plan_path.write_text(json.dumps(plan), encoding="utf-8")
+    assert main([str(book_path)]) == 0
+    assert "bound to book file" in capsys.readouterr().out
+    book_path.write_text(
+        json.dumps(book, indent=1), encoding="utf-8"
+    )  # same graph, new bytes
+    assert main([str(book_path)]) == 1
+    assert "the book changed after the plan was written" in capsys.readouterr().out
 
 
 @pytest.mark.unit

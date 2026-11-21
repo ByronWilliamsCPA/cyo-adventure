@@ -12,52 +12,78 @@ Rules
 =====
 
 ``SP-0`` binding (not in ADR-033's table; it implements the ADR's sentence "a
-plan whose shape hash no longer matches is stale and fails its checks"): the
-plan's ``provenance.shape_hash`` equals :func:`~cyo_adventure.storyplan.models.shape_hash`
-of the book; ``request.band`` equals the book's age band; the configuration
-walk was not capped (a capped walk makes every state-aware rule incomplete).
+plan whose shape hash no longer matches is stale and fails its checks"). The
+plan must carry ``provenance.shape`` (whose hash must equal
+:func:`~cyo_adventure.storyplan.models.shape_hash` of the book's graph),
+``provenance.book_sha256`` (which must equal the SHA-256 of the book file's
+bytes, verified when the caller passes them; a warning otherwise), or both.
+``book.storybook_id`` and ``book.storybook_version``, when given, must match the
+book; ``request.band`` must equal its age band; and the configuration walk must
+not be capped, since a capped walk makes every state-aware rule incomplete.
 
 ``SP-1`` coverage: the plan's ``nodes`` keys equal the book's node ids and its
 ``choices`` keys equal the book's choice ids; every ``endings`` key is an ending
-node; every thread's variable is declared in the book and every book variable
-has exactly one thread; a thread's ``planted_by`` equals the set of book
-choices whose effects change that variable from its initial value. A variable
-changed by an ``on_enter`` effect is a warning (ADR-033 plants on choices).
-When SP-1 reports an error the graph rules SP-2 to SP-8 are skipped, because a
-plan that does not cover its book would make them report noise.
+node; every payoff site's ``choice`` is a choice of its ``node``; every thread's
+variable is declared in the book and every book variable has exactly one
+thread; a thread's ``planting_choices`` equal the set of book choices whose
+effects move that variable off its initial value. A variable moved by an
+``on_enter`` effect is a warning (ADR-033 plants on choices). When SP-1
+reports an error the graph rules SP-2 to SP-8 are skipped, because a plan that
+does not cover its book would make them report noise.
 
 ``SP-2`` merge closure: in every reachable configuration ``(node, state)``,
-each fact the node ``requires`` is guaranteed on entry. "Guaranteed on entry"
-is the NC-1 must-analysis of ``scripts/check_narrative_contract.py``, moved here
-as :func:`guaranteed_on_entry` and run over the configuration graph instead of
+each fact the node ``requires`` is guaranteed on entry, and each fact a visible
+choice ``requires`` is guaranteed on entry or established by the node offering
+it. "Guaranteed on entry" is the NC-1 must-analysis of
+``scripts/check_narrative_contract.py``, moved here as
+:func:`guaranteed_on_entry` and run over the configuration graph instead of
 the node graph: a configuration's entry set is the intersection, over every
 incoming ``(configuration, choice)`` edge, of what held after the predecessor
-plus the facts that choice plants. The initial configuration enters with
-nothing. Running it over configurations rather than nodes is what makes the
-rule state-aware: a node reached only by readers holding a plant has that
-plant's fact guaranteed, and a node reached with and without it does not.
+plus the plant facts that choice carries. The initial configuration enters with
+nothing. This equals "the union of ``establishes`` of the nodes visited plus
+the plant of every planting choice taken", intersected over every route that
+reaches the configuration. Running it over configurations rather than nodes is
+what makes the rule state-aware: a node reached only by readers holding a plant
+has that plant guaranteed, and a node reached with and without it does not.
 
-``SP-3`` single truth: no two establishment sites (node ``establishes`` or a
-traversed choice's planted facts, on the reachable configuration graph)
-establish a pair of facts marked as contradicting, and every ``truth`` fact is
-established at some reachable site.
+``SP-3`` single truth, for every pair of facts marked as contradicting whose
+two sides are both established at some reachable site (a node's
+``establishes`` or a traversed choice's plant):
+
+- ERROR when one reading can meet both: a breadth-first search over
+  ``(configuration, holds first, holds second)`` finds a route that
+  establishes both, plants included. This is the Lighthouse B2 shape: a node
+  saying "she has no key" reached by a reader whose choice planted the key.
+- ERROR when the pair sits only on routes no single reading crosses but one
+  side is a ``truth`` fact: the book gives two answers to its own question
+  (the two-backstory class, AL-773), which a reader who replays meets.
+- WARNING when the pair sits only on mutually exclusive routes and neither side
+  is a truth fact (for example a cipher that is a three-place shift on one
+  route and a shuffled table on another). It is a replay inconsistency, not a
+  contradiction any one reading contains, so it advises without blocking. The
+  plan writer decides by marking: a pair that must never differ should have
+  one side in ``truth``.
+
+Separately, every ``truth`` fact must be established at some reachable site.
 
 ``SP-4`` plant exclusivity: walking every configuration reachable from the
 start without traversing any of a thread's planting choices, no node
-establishes that thread's ``planted_fact``.
+establishes that thread's ``plant``.
 
-``SP-5`` payoff reach: each payoff ``site`` has a reachable configuration where
-the thread's variable differs from its declared initial value (planted) and one
-where it equals it (unplanted); each payoff ``node`` has a reachable planted
-configuration.
+``SP-5`` payoff reach: each payoff site ``node`` has a reachable
+configuration where the thread's variable differs from its declared initial
+value (planted) and one where it equals it (unplanted), and the site's
+``choice`` is visible in at least one reachable configuration of the node.
 
-``SP-6`` payoff independence: in every reachable configuration of a payoff
-``node``, each required fact is either the thread's own ``planted_fact`` or is
-guaranteed on entry by the plant-blind analysis: :func:`guaranteed_on_entry`
-re-run with no choice planting anything and with the payoff nodes of every
-other thread establishing nothing. A payoff that leans on another thread's
-plant, or on what another payoff showed, fails here even when its gating makes
-that fact guaranteed state-wise.
+``SP-6`` payoff independence: the payoff passage is the book target of the
+site's ``choice``. In every configuration where that choice is visible, each
+fact the choice requires, and in every configuration entered through that
+choice, each fact the passage requires, is either the thread's own ``plant`` or
+is guaranteed by the plant-blind analysis: :func:`guaranteed_on_entry` re-run
+with no choice planting anything and with the payoff passages of every other
+thread establishing nothing. A payoff that leans on another thread's plant, or
+on what another payoff showed, fails here even when its gating makes that fact
+guaranteed state-wise, which SP-2 alone would accept.
 
 ``SP-7`` every negative-valence ending node has an ``endings`` entry (whose
 ``gift`` the schema already requires to be non-empty).
@@ -66,7 +92,8 @@ that fact guaranteed state-wise.
 at least two distinct ``cost`` values (case-folded, whitespace-collapsed,
 trailing punctuation stripped).
 
-``SP-9`` every plan string except ``request.text`` and ``provenance`` passes the
+``SP-9`` every plan string except ``request.text``, ``request.note``, ``book``
+and ``provenance`` (verbatim untrusted input and metadata) passes the
 slot structural floor (non-empty, single line, no braces, no ``<<``/``>>``, no
 em dash, printable, at most 120 characters, no untrusted-input fence markers)
 and the band-mandatory denylist for the book's age band, both reused from
@@ -413,7 +440,7 @@ class _Context:
         node_gen = {
             node_id: frozenset(node.establishes) for node_id, node in plan.nodes.items()
         }
-        choice_gen = plan.thread_facts_by_choice()
+        choice_gen = plan.plants_by_choice()
         context = cls(
             plan=plan,
             book=book,
@@ -499,6 +526,34 @@ class _Context:
             ),
         )
 
+    def entered_via(self, choice_id: str, config: int) -> bool:
+        """Report whether a configuration has an incoming edge through a choice.
+
+        Args:
+            choice_id: The choice id.
+            config: The configuration index.
+
+        Returns:
+            bool: True when some predecessor reaches ``config`` by ``choice_id``.
+        """
+        return any(c == choice_id for _, c in self.preds.get(config, ()))
+
+    def visible_at(self, choice_id: str, configs: Iterable[int]) -> list[int]:
+        """Return the configurations among ``configs`` where a choice is visible.
+
+        Args:
+            choice_id: The choice id.
+            configs: Configuration indices.
+
+        Returns:
+            list[int]: Those offering ``choice_id``, in the given order.
+        """
+        return [
+            config
+            for config in configs
+            if any(c == choice_id for c, _ in self.graph.succ[config])
+        ]
+
     def route(
         self, parents: Mapping[int, tuple[int, str] | None], config: int
     ) -> str | None:
@@ -580,42 +635,88 @@ def _finding(  # noqa: PLR0913 - mirrors the finding's optional attribution fiel
 # ---------------------------------------------------------------------------
 
 
-def _check_binding(plan: StoryPlan, book: Storybook) -> list[PlanFinding]:
-    """SP-0: the plan is bound to this book's graph and band.
+def _check_binding(
+    plan: StoryPlan, book: Storybook, book_digest: str | None
+) -> list[PlanFinding]:
+    """SP-0: the plan is bound to this book and its band.
 
     Args:
         plan: The plan.
         book: The book.
+        book_digest: SHA-256 hex of the book file's bytes, or None when the
+            caller holds only the parsed book.
 
     Returns:
         list[PlanFinding]: The findings.
     """
+    story = book.id
     findings: list[PlanFinding] = []
+    provenance = plan.provenance
     actual = shape_hash(book)
-    declared = plan.provenance.shape_hash
-    if declared is None:
+    if provenance.shape is None and provenance.book_sha256 is None:
         findings.append(
             _finding(
                 "SP-0",
-                book.id,
-                f"plan is not bound to a shape; set provenance.shape_hash to {actual}",
+                story,
+                "plan is not bound: set provenance.shape to "
+                f'{{"id": "{book.id}", "hash": "{actual}"}} or set '
+                "provenance.book_sha256 to the book file's SHA-256",
             )
         )
-    elif declared != actual:
+    if provenance.shape is not None and provenance.shape.hash != actual:
         findings.append(
             _finding(
                 "SP-0",
-                book.id,
-                f"plan for shape {plan.provenance.shape_id!r} is stale: "
-                f"provenance.shape_hash {declared} but the book's graph hashes "
-                f"to {actual}",
+                story,
+                f"plan for shape {provenance.shape.id!r} is stale: its hash is "
+                f"{provenance.shape.hash} but the book's graph hashes to {actual}",
             )
         )
+    if provenance.book_sha256 is not None:
+        if book_digest is None:
+            findings.append(
+                _finding(
+                    "SP-0",
+                    story,
+                    "provenance.book_sha256 was not verified: no book file bytes "
+                    "were given to the checker",
+                    severity=Severity.WARNING,
+                )
+            )
+        elif provenance.book_sha256 != book_digest:
+            findings.append(
+                _finding(
+                    "SP-0",
+                    story,
+                    "plan is stale: provenance.book_sha256 "
+                    f"{provenance.book_sha256} but the book file hashes to "
+                    f"{book_digest}; the book changed after the plan was written",
+                )
+            )
+    if plan.book is not None:
+        if plan.book.storybook_id != book.id:
+            findings.append(
+                _finding(
+                    "SP-0",
+                    story,
+                    f"book.storybook_id {plan.book.storybook_id!r} is not the "
+                    f"book's id {book.id!r}",
+                )
+            )
+        if plan.book.storybook_version != book.version:
+            findings.append(
+                _finding(
+                    "SP-0",
+                    story,
+                    f"book.storybook_version {plan.book.storybook_version} is not "
+                    f"the book's version {book.version}",
+                )
+            )
     if plan.request.band is not book.metadata.age_band:
         findings.append(
             _finding(
                 "SP-0",
-                book.id,
+                story,
                 f"request.band {plan.request.band.value!r} differs from the book's "
                 f"age band {book.metadata.age_band.value!r}",
             )
@@ -683,7 +784,64 @@ def _check_coverage(plan: StoryPlan, book: Storybook) -> list[PlanFinding]:
         for n in plan.endings
         if n in set(node_ids) and n not in ending_nodes
     )
+    findings.extend(_check_ending_entries(plan, book))
+    choices_of = {
+        node.id: {choice.id for choice in node.choices} for node in book.nodes
+    }
+    for thread_id, thread in plan.threads.items():
+        for index, site in enumerate(thread.payoff_sites):
+            if site.node in choices_of and site.choice not in choices_of[site.node]:
+                findings.append(
+                    _finding(
+                        "SP-1",
+                        story,
+                        f"threads.{thread_id}.payoff_sites[{index}].choice "
+                        f"{site.choice!r} is not a choice of {site.node!r}",
+                        node_id=site.node,
+                        choice_id=site.choice,
+                        fact_id=thread.plant,
+                    )
+                )
     findings.extend(_check_thread_variables(plan, book))
+    return findings
+
+
+def _check_ending_entries(plan: StoryPlan, book: Storybook) -> list[PlanFinding]:
+    """SP-1, endings: a declared valence or kind matches the book.
+
+    Args:
+        plan: The plan.
+        book: The book.
+
+    Returns:
+        list[PlanFinding]: The findings.
+    """
+    findings: list[PlanFinding] = []
+    ending_of = {node.id: node.ending for node in book.nodes if node.ending}
+    for node_id, entry in plan.endings.items():
+        ending = ending_of.get(node_id)
+        if ending is None:
+            continue
+        if entry.valence is not None and entry.valence is not ending.valence:
+            findings.append(
+                _finding(
+                    "SP-1",
+                    book.id,
+                    f"endings.{node_id}.valence {entry.valence.value!r} differs "
+                    f"from the book's {ending.valence.value!r}",
+                    node_id=node_id,
+                )
+            )
+        if entry.kind is not None and entry.kind is not ending.kind:
+            findings.append(
+                _finding(
+                    "SP-1",
+                    book.id,
+                    f"endings.{node_id}.kind {entry.kind.value!r} differs from the "
+                    f"book's {ending.kind.value!r}",
+                    node_id=node_id,
+                )
+            )
     return findings
 
 
@@ -715,7 +873,7 @@ def _check_thread_variables(plan: StoryPlan, book: Storybook) -> list[PlanFindin
                     story,
                     f"threads.{thread_id} names variable {thread.variable!r}, "
                     "which the book does not declare",
-                    fact_id=thread.planted_fact,
+                    fact_id=thread.plant,
                 )
             )
             continue
@@ -730,23 +888,23 @@ def _check_thread_variables(plan: StoryPlan, book: Storybook) -> list[PlanFindin
                 "SP-1",
                 story,
                 f"choice {c!r} sets {variable.name!r} but threads.{thread_id}"
-                ".planted_by omits it",
+                ".planting_choices omit it",
                 choice_id=c,
-                fact_id=thread.planted_fact,
+                fact_id=thread.plant,
             )
             for c in setters
-            if c not in thread.planted_by
+            if c not in thread.planting_choices
         )
         findings.extend(
             _finding(
                 "SP-1",
                 story,
-                f"threads.{thread_id}.planted_by lists {c!r}, which does not set "
+                f"threads.{thread_id}.planting_choices lists {c!r}, which does not set "
                 f"{variable.name!r} in the book",
                 choice_id=c,
-                fact_id=thread.planted_fact,
+                fact_id=thread.plant,
             )
-            for c in thread.planted_by
+            for c in thread.planting_choices
             if c not in setters
         )
         findings.extend(
@@ -757,7 +915,7 @@ def _check_thread_variables(plan: StoryPlan, book: Storybook) -> list[PlanFindin
                 "on choices, so the plant is invisible to SP-4 and SP-6",
                 severity=Severity.WARNING,
                 node_id=node.id,
-                fact_id=thread.planted_fact,
+                fact_id=thread.plant,
             )
             for node in book.nodes
             if any(_plants_variable(effect, variable) for effect in node.on_enter)
@@ -802,6 +960,48 @@ def _check_merge_closure(ctx: _Context) -> list[PlanFinding]:
                     route=ctx.route(parents, witness),
                 )
             )
+    findings.extend(_check_choice_requires(ctx, reached_cache))
+    return findings
+
+
+def _check_choice_requires(
+    ctx: _Context, reached_cache: dict[str, dict[int, tuple[int, str] | None]]
+) -> list[PlanFinding]:
+    """SP-2 for choices: a visible choice's ``requires`` hold where it is offered.
+
+    Args:
+        ctx: The analysis context.
+        reached_cache: Per fact, :meth:`_Context.entered_without` results, shared
+            with the node half of SP-2.
+
+    Returns:
+        list[PlanFinding]: One finding per (choice, fact), with a witness.
+    """
+    findings: list[PlanFinding] = []
+    for node in ctx.book.nodes:
+        configs = ctx.at.get(node.id, [])
+        offered_gen = ctx.node_gen.get(node.id, _EMPTY)
+        for choice in node.choices:
+            visible = ctx.visible_at(choice.id, configs)
+            for fact in ctx.plan.choices[choice.id].requires:
+                failing = [c for c in visible if fact not in ctx.entry[c] | offered_gen]
+                if not failing:
+                    continue
+                parents = reached_cache.setdefault(fact, ctx.entered_without(fact))
+                findings.append(
+                    _finding(
+                        "SP-2",
+                        ctx.book.id,
+                        f"choice {choice.id!r} at {node.id!r} requires {fact!r} "
+                        f"({ctx.plan.facts[fact].text}) but {len(failing)} of "
+                        f"{len(visible)} states offering it can lack it",
+                        node_id=node.id,
+                        choice_id=choice.id,
+                        state=ctx.state(failing[0]),
+                        fact_id=fact,
+                        route=ctx.route(parents, failing[0]),
+                    )
+                )
     return findings
 
 
@@ -830,8 +1030,76 @@ def _establishment_sites(ctx: _Context) -> dict[str, list[str]]:
     return sites
 
 
+_PairState = tuple[int, bool, bool]
+
+
+def _co_route(
+    ctx: _Context, first: str, second: str
+) -> tuple[_PairState, dict[_PairState, tuple[_PairState, str] | None]] | None:
+    """Search for one reading that establishes both facts of a pair.
+
+    Args:
+        ctx: The analysis context.
+        first: One fact.
+        second: The other fact.
+
+    Returns:
+        The first ``(config, True, True)`` state reached in breadth-first order
+        and the parents map, or None when no single route establishes both.
+    """
+    node_of = ctx.graph.node_of
+
+    def gains(fact: str, config: int, choice_id: str | None) -> bool:
+        if choice_id is not None and fact in ctx.choice_gen.get(choice_id, _EMPTY):
+            return True
+        return fact in ctx.node_gen.get(node_of[config], _EMPTY)
+
+    start: _PairState = (0, gains(first, 0, None), gains(second, 0, None))
+    parents: dict[_PairState, tuple[_PairState, str] | None] = {start: None}
+    queue: deque[_PairState] = deque([start])
+    while queue:
+        current = queue.popleft()
+        config, has_first, has_second = current
+        if has_first and has_second:
+            return current, parents
+        for choice_id, target in ctx.graph.succ[config]:
+            nxt: _PairState = (
+                target,
+                has_first or gains(first, target, choice_id),
+                has_second or gains(second, target, choice_id),
+            )
+            if nxt not in parents:
+                parents[nxt] = (current, choice_id)
+                queue.append(nxt)
+    return None
+
+
+def _pair_route(
+    ctx: _Context,
+    parents: Mapping[_PairState, tuple[_PairState, str] | None],
+    state: _PairState,
+) -> str:
+    """Render the route to a pair-search state.
+
+    Args:
+        ctx: The analysis context.
+        parents: The pair search's parents map.
+        state: The state to reach.
+
+    Returns:
+        str: ``"start > choice > node > ..."``.
+    """
+    steps = [ctx.graph.node_of[state[0]]]
+    link = parents[state]
+    while link is not None:
+        previous, choice_id = link
+        steps.extend((choice_id, ctx.graph.node_of[previous[0]]))
+        link = parents[previous]
+    return " > ".join(reversed(steps))
+
+
 def _check_single_truth(ctx: _Context) -> list[PlanFinding]:
-    """SP-3: no contradicting pair is established; every truth fact is.
+    """SP-3: contradictions a reading meets, or that split the truth, block.
 
     Args:
         ctx: The analysis context.
@@ -851,13 +1119,42 @@ def _check_single_truth(ctx: _Context) -> list[PlanFinding]:
         # a fix removes.
         blamed = second if first in truth and second not in truth else first
         other = second if blamed == first else first
+        where = (
+            f"{blamed!r} (at {', '.join(sites[blamed])}) and "
+            f"{other!r} (at {', '.join(sites[other])})"
+        )
+        met = _co_route(ctx, blamed, other)
+        if met is not None:
+            state, parents = met
+            config = state[0]
+            link = parents[state]
+            findings.append(
+                _finding(
+                    "SP-3",
+                    story,
+                    f"one reading meets both contradicting facts {where}",
+                    node_id=ctx.graph.node_of[config],
+                    choice_id=None if link is None else link[1],
+                    state=ctx.state(config),
+                    fact_id=blamed,
+                    route=_pair_route(ctx, parents, state),
+                )
+            )
+            continue
         first_site = sites[blamed][0]
+        splits_truth = bool(pair & truth)
         findings.append(
             _finding(
                 "SP-3",
                 story,
-                f"contradicting facts {blamed!r} (at {', '.join(sites[blamed])}) and "
-                f"{other!r} (at {', '.join(sites[other])}) are both established",
+                (
+                    f"the book answers its question two ways: {where} sit on "
+                    "routes no single reading crosses"
+                    if splits_truth
+                    else f"contradicting facts {where} sit only on routes no "
+                    "single reading crosses (a replay inconsistency)"
+                ),
+                severity=Severity.ERROR if splits_truth else Severity.WARNING,
                 node_id=first_site if first_site in ctx.plan.nodes else None,
                 choice_id=first_site if first_site in ctx.plan.choices else None,
                 fact_id=blamed,
@@ -887,7 +1184,7 @@ def _check_plant_exclusivity(ctx: _Context) -> list[PlanFinding]:
     """
     findings: list[PlanFinding] = []
     for thread_id, thread in ctx.plan.threads.items():
-        planting = set(thread.planted_by)
+        planting = set(thread.planting_choices)
         parents = ctx.reach(
             blocked=lambda choice_id, planting=planting: choice_id in planting,
             stop=lambda _config: False,
@@ -895,17 +1192,25 @@ def _check_plant_exclusivity(ctx: _Context) -> list[PlanFinding]:
         leaked: dict[str, int] = {}
         for config in sorted(parents):
             node_id = ctx.graph.node_of[config]
-            if thread.planted_fact in ctx.node_gen.get(node_id, _EMPTY):
+            if thread.plant in ctx.node_gen.get(node_id, _EMPTY):
                 leaked.setdefault(node_id, config)
+            # A non-planting choice whose own ``establishes`` names the plant
+            # leaks it just as a node does; attribute it to the arrival node.
+            for choice_id, target in ctx.graph.succ[config]:
+                if choice_id not in planting and thread.plant in ctx.choice_gen.get(
+                    choice_id, _EMPTY
+                ):
+                    leaked.setdefault(ctx.graph.node_of[target], target)
+        leaked = dict(sorted(leaked.items(), key=lambda item: item[1]))
         findings.extend(
             _finding(
                 "SP-4",
                 ctx.book.id,
-                f"{node_id!r} establishes {thread.planted_fact!r}, the plant of "
+                f"{node_id!r} establishes {thread.plant!r}, the plant of "
                 f"thread {thread_id!r}, on a route that skips every planting choice",
                 node_id=node_id,
                 state=ctx.state(config),
-                fact_id=thread.planted_fact,
+                fact_id=thread.plant,
                 route=ctx.route(parents, config),
             )
             for node_id, config in leaked.items()
@@ -932,7 +1237,7 @@ def _is_planted(state: StateItems, variable: Variable) -> bool:
 
 
 def _check_payoff_reach(ctx: _Context) -> list[PlanFinding]:
-    """SP-5: payoff sites are reached with and without the plant.
+    """SP-5: payoff sites are reached with and without the plant, and offered.
 
     Args:
         ctx: The analysis context.
@@ -945,38 +1250,34 @@ def _check_payoff_reach(ctx: _Context) -> list[PlanFinding]:
     findings: list[PlanFinding] = []
     for thread_id, thread in ctx.plan.threads.items():
         variable = variables[thread.variable]
-        for payoff in thread.payoffs:
-            site_configs = ctx.at.get(payoff.site, [])
+        for site in thread.payoff_sites:
+            configs = ctx.at.get(site.node, [])
             planted = [
-                c for c in site_configs if _is_planted(ctx.graph.state_of[c], variable)
+                c for c in configs if _is_planted(ctx.graph.state_of[c], variable)
             ]
-            unplanted = [c for c in site_configs if c not in set(planted)]
-            for label, present in (("with", planted), ("without", unplanted)):
-                if not present:
-                    findings.append(
-                        _finding(
-                            "SP-5",
-                            story,
-                            f"payoff site {payoff.site!r} of thread {thread_id!r} is "
-                            f"never reached {label} the plant ({variable.name})",
-                            node_id=payoff.site,
-                            fact_id=thread.planted_fact,
-                        )
-                    )
-            node_planted = [
-                c
-                for c in ctx.at.get(payoff.node, [])
-                if _is_planted(ctx.graph.state_of[c], variable)
-            ]
-            if not node_planted:
+            unplanted = [c for c in configs if c not in set(planted)]
+            findings.extend(
+                _finding(
+                    "SP-5",
+                    story,
+                    f"payoff site {site.node!r} of thread {thread_id!r} is never "
+                    f"reached {label} the plant ({variable.name})",
+                    node_id=site.node,
+                    fact_id=thread.plant,
+                )
+                for label, present in (("with", planted), ("without", unplanted))
+                if not present
+            )
+            if configs and not ctx.visible_at(site.choice, configs):
                 findings.append(
                     _finding(
                         "SP-5",
                         story,
-                        f"payoff node {payoff.node!r} of thread {thread_id!r} is never "
-                        f"reached with the plant ({variable.name})",
-                        node_id=payoff.node,
-                        fact_id=thread.planted_fact,
+                        f"payoff choice {site.choice!r} of thread {thread_id!r} is "
+                        f"never offered at {site.node!r}",
+                        node_id=site.node,
+                        choice_id=site.choice,
+                        fact_id=thread.plant,
                     )
                 )
     return findings
@@ -989,50 +1290,86 @@ def _check_payoff_independence(ctx: _Context) -> list[PlanFinding]:
         ctx: The analysis context.
 
     Returns:
-        list[PlanFinding]: One finding per (payoff node, fact), with a witness.
+        list[PlanFinding]: One finding per (payoff choice or passage, fact).
     """
     findings: list[PlanFinding] = []
-    payoff_nodes = {
-        thread_id: {payoff.node for payoff in thread.payoffs}
+    target_of = {c.id: c.target for node in ctx.book.nodes for c in node.choices}
+    passages = {
+        thread_id: {target_of[site.choice] for site in thread.payoff_sites}
         for thread_id, thread in ctx.plan.threads.items()
     }
     for thread_id, thread in ctx.plan.threads.items():
-        own = payoff_nodes[thread_id]
+        own = passages[thread_id]
         others = set[str]().union(
-            *(nodes for t, nodes in payoff_nodes.items() if t != thread_id)
+            *(nodes for t, nodes in passages.items() if t != thread_id)
         )
         blind_gen = {
             node_id: (_EMPTY if node_id in others - own else gen)
             for node_id, gen in ctx.node_gen.items()
         }
         blind = ctx.entry_sets(blind_gen, {})
-        for node_id in sorted(own, key=list(ctx.plan.nodes).index):
-            configs = ctx.at.get(node_id, [])
-            for fact in ctx.plan.nodes[node_id].requires:
-                if fact == thread.planted_fact:
-                    continue
-                failing = [c for c in configs if fact not in blind[c]]
-                if not failing:
-                    continue
-                parents = ctx.reach(
-                    blocked=lambda _choice: False,
-                    stop=lambda config, fact=fact, gen=blind_gen: (
-                        fact in gen.get(ctx.graph.node_of[config], _EMPTY)
-                    ),
-                )
-                findings.append(
-                    _finding(
-                        "SP-6",
-                        ctx.book.id,
-                        f"payoff node {node_id!r} of thread {thread_id!r} requires "
-                        f"{fact!r}, which is neither its own plant nor shared by "
-                        f"every reader ({len(failing)} of {len(configs)} states)",
-                        node_id=node_id,
-                        state=ctx.state(failing[0]),
-                        fact_id=fact,
-                        route=ctx.route(parents, failing[0]),
+
+        def report(  # noqa: PLR0913 - one finding's attribution, kept together
+            *,
+            node_id: str,
+            choice_id: str | None,
+            fact: str,
+            failing: list[int],
+            total: int,
+            thread_id: str = thread_id,
+            blind_gen: dict[str, frozenset[str]] = blind_gen,
+        ) -> PlanFinding:
+            parents = ctx.reach(
+                blocked=lambda _choice: False,
+                stop=lambda config: (
+                    fact in blind_gen.get(ctx.graph.node_of[config], _EMPTY)
+                ),
+            )
+            subject = f"choice {choice_id!r}" if choice_id else f"passage {node_id!r}"
+            return _finding(
+                "SP-6",
+                ctx.book.id,
+                f"payoff {subject} of thread {thread_id!r} requires {fact!r}, "
+                "which is neither its own plant nor shared by every reader "
+                f"({len(failing)} of {total} states)",
+                node_id=node_id,
+                choice_id=choice_id,
+                state=ctx.state(failing[0]),
+                fact_id=fact,
+                route=ctx.route(parents, failing[0]),
+            )
+
+        for site in thread.payoff_sites:
+            offering = ctx.visible_at(site.choice, ctx.at.get(site.node, []))
+            site_gen = ctx.node_gen.get(site.node, _EMPTY)
+            for fact in ctx.plan.choices[site.choice].requires:
+                failing = [c for c in offering if fact not in blind[c] | site_gen]
+                if fact != thread.plant and failing:
+                    findings.append(
+                        report(
+                            node_id=site.node,
+                            choice_id=site.choice,
+                            fact=fact,
+                            failing=failing,
+                            total=len(offering),
+                        )
                     )
-                )
+            passage = target_of[site.choice]
+            entered = [
+                c for c in ctx.at.get(passage, []) if ctx.entered_via(site.choice, c)
+            ]
+            for fact in ctx.plan.nodes[passage].requires:
+                failing = [c for c in entered if fact not in blind[c]]
+                if fact != thread.plant and failing:
+                    findings.append(
+                        report(
+                            node_id=passage,
+                            choice_id=None,
+                            fact=fact,
+                            failing=failing,
+                            total=len(entered),
+                        )
+                    )
     return findings
 
 
@@ -1135,7 +1472,8 @@ def _plan_strings(plan: StoryPlan) -> Iterator[_PlanString]:
     """Yield every plan string SP-9 floors, with its location.
 
     ``request.text`` (verbatim untrusted input, screened upstream and fenced at
-    reuse) and ``provenance`` (audit metadata) are deliberately not yielded.
+    reuse), ``request.note``, ``book`` and ``provenance`` (metadata about the
+    plan, never placed in a prompt) are deliberately not yielded.
 
     Args:
         plan: The plan.
@@ -1162,8 +1500,9 @@ def _plan_strings(plan: StoryPlan) -> Iterator[_PlanString]:
             ("voice", member.voice),
         ):
             yield _PlanString(f"cast.{cast_id}.{field}", value)
-    yield _PlanString("truth.question", plan.truth.question)
-    yield _PlanString("truth.answer", plan.truth.answer)
+    yield _PlanString("truth.statement", plan.truth.statement)
+    if plan.truth.question is not None:
+        yield _PlanString("truth.question", plan.truth.question)
     for fact_id, fact in plan.facts.items():
         yield _PlanString(f"facts.{fact_id}.text", fact.text, fact_id=fact_id)
     yield from _graph_strings(plan)
@@ -1187,12 +1526,13 @@ def _graph_strings(plan: StoryPlan) -> Iterator[_PlanString]:
         )
         yield _PlanString(f"choices.{choice_id}.cost", choice.cost, choice_id=choice_id)
     for thread_id, thread in plan.threads.items():
-        for index, payoff in enumerate(thread.payoffs):
+        for index, site in enumerate(thread.payoff_sites):
             yield _PlanString(
-                f"threads.{thread_id}.payoffs[{index}].shows",
-                payoff.shows,
-                node_id=payoff.node,
-                fact_id=thread.planted_fact,
+                f"threads.{thread_id}.payoff_sites[{index}].shows",
+                site.shows,
+                node_id=site.node,
+                choice_id=site.choice,
+                fact_id=thread.plant,
             )
     for node_id, ending in plan.endings.items():
         yield _PlanString(f"endings.{node_id}.gift", ending.gift, node_id=node_id)
@@ -1246,7 +1586,11 @@ def _check_text_floors(plan: StoryPlan, book: Storybook) -> list[PlanFinding]:
 
 
 def check_plan(
-    plan: StoryPlan, book: Storybook, *, cap: int = DEFAULT_CONFIG_CAP
+    plan: StoryPlan,
+    book: Storybook,
+    *,
+    cap: int = DEFAULT_CONFIG_CAP,
+    book_digest: str | None = None,
 ) -> ValidationReport:
     """Run SP-0 to SP-9 on a plan and the book it plans.
 
@@ -1254,13 +1598,17 @@ def check_plan(
         plan: The parsed plan.
         book: The parsed book (filled or skeleton).
         cap: The configuration walk's cap.
+        book_digest: SHA-256 hex of the book file's bytes
+            (:func:`~cyo_adventure.storyplan.models.book_sha256`), so SP-0 can
+            verify ``provenance.book_sha256``; None when only the parsed book
+            is at hand.
 
     Returns:
         ValidationReport: Every finding, in rule order then book order. ``ok``
             is True only when no ERROR finding was recorded.
     """
     report = ValidationReport()
-    binding = _check_binding(plan, book)
+    binding = _check_binding(plan, book, book_digest)
     coverage = _check_coverage(plan, book)
     graph_findings: list[PlanFinding] = []
     if not any(f.severity is Severity.ERROR for f in coverage):
@@ -1557,8 +1905,8 @@ def _base_plan(book: dict[str, object]) -> dict[str, object]:
             }
         },
         "truth": {
+            "statement": "Grandpa left the map for Wren to find.",
             "question": "Who left the map by the well?",
-            "answer": "Grandpa left it for Wren to find.",
             "facts": ["grandpa_left_map"],
         },
         "facts": {
@@ -1612,31 +1960,31 @@ def _base_plan(book: dict[str, object]) -> dict[str, object]:
         "threads": {
             "t_map": {
                 "variable": "has_map",
-                "planted_fact": "map_marks_cave",
-                "planted_by": ["c_take_map"],
-                "payoffs": [
+                "plant": "map_marks_cave",
+                "planting_choices": ["c_take_map"],
+                "payoff_sites": [
                     {
-                        "site": "n_fork",
-                        "node": "n_cave",
+                        "node": "n_fork",
+                        "choice": "c_cave",
                         "shows": "The map opens the cave.",
                     }
                 ],
             },
             "t_lamp": {
                 "variable": "has_lamp",
-                "planted_fact": "lamp_lit",
-                "planted_by": ["c_take_lamp"],
-                "payoffs": [
+                "plant": "lamp_lit",
+                "planting_choices": ["c_take_lamp"],
+                "payoff_sites": [
                     {
-                        "site": "n_fork",
-                        "node": "n_tunnel",
+                        "node": "n_fork",
+                        "choice": "c_tunnel",
                         "shows": "The lamp opens a tunnel.",
                     }
                 ],
             },
         },
         "endings": {"n_fall": {"gift": "Wren spots the cave from below."}},
-        "provenance": {"producer": "witness", "shape_id": "s_plan_witness"},
+        "provenance": {"producer": "witness"},
     }
     return _bind(book, plan)
 
@@ -1653,7 +2001,8 @@ def _bind(book: dict[str, object], plan: dict[str, object]) -> dict[str, object]
     """
     provenance = plan["provenance"]
     if isinstance(provenance, dict):
-        provenance["shape_hash"] = shape_hash(Storybook.model_validate(book))
+        parsed = Storybook.model_validate(book)
+        provenance["shape"] = {"id": parsed.id, "hash": shape_hash(parsed)}
     return plan
 
 
@@ -1702,7 +2051,7 @@ def _witness_sp0() -> tuple[dict[str, object], dict[str, object]]:
         tuple[dict[str, object], dict[str, object]]: ``(book, plan)``.
     """
     book, plan = base_example()
-    _section(plan, "provenance")["shape_hash"] = "sha256:" + "0" * 64
+    _section(plan, "provenance", "shape")["hash"] = "sha256:" + "0" * 64
     return book, plan
 
 
@@ -1758,8 +2107,8 @@ def _witness_sp5() -> tuple[dict[str, object], dict[str, object]]:
     """
     book, plan = base_example()
     threads = _section(plan, "threads", "t_map")
-    threads["payoffs"] = [
-        {"site": "n_cave", "node": "n_cave", "shows": "The map opens it."}
+    threads["payoff_sites"] = [
+        {"node": "n_cave", "choice": "c_cave_on", "shows": "The map opens it."}
     ]
     return book, plan
 

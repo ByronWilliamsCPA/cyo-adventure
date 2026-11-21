@@ -21,7 +21,7 @@ from pydantic import ValidationError
 from cyo_adventure.storybook.models import Storybook
 from cyo_adventure.storyplan import PLAN_VERSION, StoryPlan, is_supported_plan_version
 from cyo_adventure.storyplan.checks import base_example
-from cyo_adventure.storyplan.models import shape_hash, shape_projection
+from cyo_adventure.storyplan.models import book_sha256, shape_hash, shape_projection
 from cyo_adventure.storyplan.schema_export import build_schema, export_schema
 
 
@@ -87,7 +87,11 @@ def test_unknown_keys_are_rejected_at_every_level() -> None:
             "contradicts",
             lambda p: p["facts"]["well_seen"].update(contradicts=["ghost"]),
         ),
-        ("planted_fact", lambda p: p["threads"]["t_map"].update(planted_fact="ghost")),
+        ("plant", lambda p: p["threads"]["t_map"].update(plant="ghost")),
+        (
+            "choice requires",
+            lambda p: p["choices"]["c_road"].update(requires=["ghost"]),
+        ),
     ],
 )
 def test_an_undeclared_fact_id_is_rejected(
@@ -101,10 +105,13 @@ def test_an_undeclared_fact_id_is_rejected(
 
 
 @pytest.mark.unit
-def test_a_payoff_naming_an_unknown_node_is_rejected() -> None:
+def test_a_payoff_site_naming_an_unknown_node_or_choice_is_rejected() -> None:
     plan = _plan()
-    plan["threads"]["t_map"]["payoffs"][0]["site"] = "n_nowhere"
-    assert "site names unknown node 'n_nowhere'" in _rejection(plan)
+    plan["threads"]["t_map"]["payoff_sites"][0]["node"] = "n_nowhere"
+    plan["threads"]["t_map"]["payoff_sites"][0]["choice"] = "c_nowhere"
+    message = _rejection(plan)
+    assert "node names unknown node 'n_nowhere'" in message
+    assert "choice names unknown choice 'c_nowhere'" in message
 
 
 @pytest.mark.unit
@@ -117,7 +124,7 @@ def test_an_ending_entry_for_an_unknown_node_is_rejected() -> None:
 @pytest.mark.unit
 def test_a_planting_choice_the_plan_lacks_is_rejected() -> None:
     plan = _plan()
-    plan["threads"]["t_map"]["planted_by"].append("c_nowhere")
+    plan["threads"]["t_map"]["planting_choices"].append("c_nowhere")
     assert "unknown choice 'c_nowhere'" in _rejection(plan)
 
 
@@ -129,23 +136,25 @@ def test_a_choice_planting_an_unknown_thread_is_rejected() -> None:
 
 
 @pytest.mark.unit
-def test_plants_and_planted_by_must_agree_in_both_directions() -> None:
+def test_plants_and_planting_choices_must_agree_in_both_directions() -> None:
     plan = _plan()
     del plan["choices"]["c_take_map"]["plants"]
-    assert "threads.t_map.planted_by: 'c_take_map'.plants omits it" in _rejection(plan)
+    assert "planting_choices lists 'c_take_map', whose plants omit" in _rejection(plan)
     plan = _plan()
     plan["choices"]["c_road"]["plants"] = ["t_map"]
-    assert "choices.c_road.plants: 't_map'.planted_by omits it" in _rejection(plan)
+    assert "choices.c_road.plants names 't_map', whose planting_choices" in _rejection(
+        plan
+    )
 
 
 @pytest.mark.unit
-def test_two_threads_may_not_share_a_variable_or_a_planted_fact() -> None:
+def test_two_threads_may_not_share_a_variable_or_a_plant() -> None:
     plan = _plan()
     plan["threads"]["t_lamp"]["variable"] = "has_map"
-    plan["threads"]["t_lamp"]["planted_fact"] = "map_marks_cave"
+    plan["threads"]["t_lamp"]["plant"] = "map_marks_cave"
     message = _rejection(plan)
     assert "more than one thread has variable 'has_map'" in message
-    assert "more than one thread has planted_fact 'map_marks_cave'" in message
+    assert "more than one thread has plant 'map_marks_cave'" in message
 
 
 @pytest.mark.unit
@@ -221,16 +230,53 @@ def test_request_band_is_required_and_text_optional() -> None:
 
 
 @pytest.mark.unit
-def test_shape_hash_is_malformed_unless_sha256_hex() -> None:
+def test_binding_hashes_must_be_well_formed() -> None:
     plan = _plan()
-    plan["provenance"]["shape_hash"] = "md5:abc"
-    assert "shape_hash" in _rejection(plan)
+    plan["provenance"]["shape"]["hash"] = "md5:abc"
+    plan["provenance"]["book_sha256"] = "sha256:abc"
+    message = _rejection(plan)
+    assert "shape.hash" in message
+    assert "book_sha256" in message
 
 
 @pytest.mark.unit
-def test_thread_facts_by_choice_maps_planting_choices_to_their_facts() -> None:
+def test_plants_accepts_a_bare_thread_id() -> None:
+    plan = _plan()
+    plan["choices"]["c_take_map"]["plants"] = "t_map"
+    parsed = StoryPlan.model_validate(plan)
+    assert parsed.choices["c_take_map"].plants == ["t_map"]
+
+
+@pytest.mark.unit
+def test_the_wp03_plan_shape_is_accepted() -> None:
+    """The fields the WP-0.3 plan writer chose where ADR-033 was silent."""
+    plan = _plan()
+    plan["book"] = {
+        "slug": "plan-witness",
+        "storybook_id": "s_plan_witness",
+        "storybook_version": 1,
+        "title": "Plan Witness",
+    }
+    plan["request"].update(text=None, note="hand-written catalog book")
+    plan["provenance"].update(
+        method="written by reading the book",
+        book_file="out/plan-witness.filled.json",
+        book_sha256="0" * 64,
+        authored="2026-11-21",
+        authoring_minutes=11,
+        checks=None,
+        approver=None,
+    )
+    plan["choices"]["c_road"]["requires"] = ["well_seen"]
+    parsed = StoryPlan.model_validate(plan)
+    assert parsed.book is not None
+    assert parsed.provenance.authoring_minutes == 11
+
+
+@pytest.mark.unit
+def test_plants_by_choice_maps_planting_choices_to_their_facts() -> None:
     parsed = StoryPlan.model_validate(_plan())
-    assert parsed.thread_facts_by_choice() == {
+    assert parsed.plants_by_choice() == {
         "c_take_map": frozenset({"map_marks_cave"}),
         "c_take_lamp": frozenset({"lamp_lit"}),
     }
@@ -281,3 +327,37 @@ def test_schema_export_writes_and_main_reports(
     with patch.object(schema_export, "export_schema", return_value=target):
         schema_export.main()
     assert "wrote" in capsys.readouterr().out
+
+
+@pytest.mark.unit
+def test_book_sha256_is_the_hex_digest_of_the_bytes() -> None:
+    assert book_sha256(b"") == (
+        "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    )
+
+
+@pytest.mark.unit
+def test_the_control_book_plan_extras_are_accepted() -> None:
+    """Additive fields the second WP-0.3 plan writer chose, kept in the canonical shape."""
+    plan = _plan()
+    plan["facts"]["well_seen"]["implicit_plant"] = "paid off at the fork"
+    plan["choices"]["c_road"]["establishes"] = ["well_seen"]
+    plan["endings"]["n_fall"].update(valence="negative", kind="setback")
+    plan["provenance"]["notes"] = ["no threads: the book declares no variables"]
+    parsed = StoryPlan.model_validate(plan)
+    assert parsed.plants_by_choice()["c_road"] == frozenset({"well_seen"})
+    plan["choices"]["c_road"]["establishes"] = ["ghost"]
+    assert "choices.c_road.establishes names undeclared fact 'ghost'" in _rejection(
+        plan
+    )
+
+
+@pytest.mark.unit
+def test_the_second_dialect_is_rejected_where_it_differs() -> None:
+    plan = _plan()
+    plan["truth"]["answer"] = plan["truth"].pop("statement")
+    plan["request"]["source"] = "catalog book"
+    message = _rejection(plan)
+    assert "truth.statement" in message
+    assert "truth.answer" in message
+    assert "request.source" in message

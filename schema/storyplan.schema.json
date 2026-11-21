@@ -13,6 +13,40 @@
       "title": "AgeBand",
       "type": "string"
     },
+    "BookRef": {
+      "additionalProperties": false,
+      "description": "Which book the plan was written for.",
+      "properties": {
+        "slug": {
+          "minLength": 1,
+          "title": "Slug",
+          "type": "string"
+        },
+        "storybook_id": {
+          "minLength": 1,
+          "title": "Storybook Id",
+          "type": "string"
+        },
+        "storybook_version": {
+          "minimum": 1,
+          "title": "Storybook Version",
+          "type": "integer"
+        },
+        "title": {
+          "minLength": 1,
+          "title": "Title",
+          "type": "string"
+        }
+      },
+      "required": [
+        "slug",
+        "storybook_id",
+        "storybook_version",
+        "title"
+      ],
+      "title": "BookRef",
+      "type": "object"
+    },
     "CastMember": {
       "additionalProperties": false,
       "description": "One character: role, want, voice notes and what they know (fact ids).",
@@ -85,12 +119,21 @@
     },
     "ChoicePlan": {
       "additionalProperties": false,
-      "description": "A choice's meaning: why a reader takes it, what it costs, what it plants.",
+      "description": "A choice's meaning: why, at what cost, what it presupposes and plants.",
       "properties": {
         "cost": {
           "minLength": 1,
           "title": "Cost",
           "type": "string"
+        },
+        "establishes": {
+          "items": {
+            "maxLength": 64,
+            "pattern": "^[a-z][a-z0-9_]*$",
+            "type": "string"
+          },
+          "title": "Establishes",
+          "type": "array"
         },
         "intent": {
           "minLength": 1,
@@ -98,12 +141,30 @@
           "type": "string"
         },
         "plants": {
+          "anyOf": [
+            {
+              "maxLength": 64,
+              "pattern": "^[a-z][a-z0-9_]*$",
+              "type": "string"
+            },
+            {
+              "items": {
+                "maxLength": 64,
+                "pattern": "^[a-z][a-z0-9_]*$",
+                "type": "string"
+              },
+              "type": "array"
+            }
+          ],
+          "title": "Plants"
+        },
+        "requires": {
           "items": {
             "maxLength": 64,
             "pattern": "^[a-z][a-z0-9_]*$",
             "type": "string"
           },
-          "title": "Plants",
+          "title": "Requires",
           "type": "array"
         }
       },
@@ -114,6 +175,19 @@
       "title": "ChoicePlan",
       "type": "object"
     },
+    "EndingKind": {
+      "description": "What mechanically happened at an ending (closed set).",
+      "enum": [
+        "success",
+        "setback",
+        "death",
+        "capture",
+        "completion",
+        "discovery"
+      ],
+      "title": "EndingKind",
+      "type": "string"
+    },
     "EndingPlan": {
       "additionalProperties": false,
       "description": "What an ending gives the reader: the reveal, the laugh, or the reason to retry.",
@@ -122,6 +196,28 @@
           "minLength": 1,
           "title": "Gift",
           "type": "string"
+        },
+        "kind": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/EndingKind"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "valence": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Valence"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
         }
       },
       "required": [
@@ -142,6 +238,18 @@
           },
           "title": "Contradicts",
           "type": "array"
+        },
+        "implicit_plant": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Implicit Plant"
         },
         "text": {
           "minLength": 1,
@@ -214,10 +322,15 @@
       "title": "NodePlan",
       "type": "object"
     },
-    "Payoff": {
+    "PayoffSite": {
       "additionalProperties": false,
-      "description": "Where a thread returns: the shared site, the showing passage, and what it shows.",
+      "description": "Where a thread returns: the shared node, the choice that shows it, what it shows.",
       "properties": {
+        "choice": {
+          "minLength": 1,
+          "title": "Choice",
+          "type": "string"
+        },
         "node": {
           "minLength": 1,
           "title": "Node",
@@ -227,19 +340,14 @@
           "minLength": 1,
           "title": "Shows",
           "type": "string"
-        },
-        "site": {
-          "minLength": 1,
-          "title": "Site",
-          "type": "string"
         }
       },
       "required": [
-        "site",
         "node",
+        "choice",
         "shows"
       ],
-      "title": "Payoff",
+      "title": "PayoffSite",
       "type": "object"
     },
     "Pitch": {
@@ -300,6 +408,18 @@
           ],
           "default": null
         },
+        "note": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Note"
+        },
         "style": {
           "anyOf": [
             {
@@ -345,7 +465,7 @@
     },
     "Provenance": {
       "additionalProperties": false,
-      "description": "Who produced the plan, from what shape, and who approved it.",
+      "description": "Who produced the plan, what it is bound to, and who approved it.",
       "properties": {
         "approver": {
           "anyOf": [
@@ -359,6 +479,57 @@
           "default": null,
           "title": "Approver"
         },
+        "authored": {
+          "anyOf": [
+            {
+              "format": "date",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Authored"
+        },
+        "authoring_minutes": {
+          "anyOf": [
+            {
+              "minimum": 0,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Authoring Minutes"
+        },
+        "book_file": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Book File"
+        },
+        "book_sha256": {
+          "anyOf": [
+            {
+              "pattern": "^[0-9a-f]{64}$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Book Sha256"
+        },
         "checks": {
           "anyOf": [
             {
@@ -369,6 +540,18 @@
             }
           ],
           "default": null
+        },
+        "method": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Method"
         },
         "model": {
           "anyOf": [
@@ -382,63 +565,84 @@
           "default": null,
           "title": "Model"
         },
+        "notes": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Notes",
+          "type": "array"
+        },
         "producer": {
           "minLength": 1,
           "title": "Producer",
           "type": "string"
         },
-        "shape_hash": {
+        "shape": {
           "anyOf": [
             {
-              "pattern": "^sha256:[0-9a-f]{64}$",
-              "type": "string"
+              "$ref": "#/$defs/ShapeRef"
             },
             {
               "type": "null"
             }
           ],
-          "default": null,
-          "title": "Shape Hash"
+          "default": null
+        }
+      },
+      "required": [
+        "producer"
+      ],
+      "title": "Provenance",
+      "type": "object"
+    },
+    "ShapeRef": {
+      "additionalProperties": false,
+      "description": "The shape a plan was built for, by id and graph hash.",
+      "properties": {
+        "hash": {
+          "pattern": "^sha256:[0-9a-f]{64}$",
+          "title": "Hash",
+          "type": "string"
         },
-        "shape_id": {
+        "id": {
           "minLength": 1,
-          "title": "Shape Id",
+          "title": "Id",
           "type": "string"
         }
       },
       "required": [
-        "producer",
-        "shape_id"
+        "id",
+        "hash"
       ],
-      "title": "Provenance",
+      "title": "ShapeRef",
       "type": "object"
     },
     "Thread": {
       "additionalProperties": false,
       "description": "A plant and its payoffs, bound to one Storybook variable.",
       "properties": {
-        "payoffs": {
+        "payoff_sites": {
           "items": {
-            "$ref": "#/$defs/Payoff"
+            "$ref": "#/$defs/PayoffSite"
           },
           "minItems": 1,
-          "title": "Payoffs",
+          "title": "Payoff Sites",
           "type": "array"
         },
-        "planted_by": {
+        "plant": {
+          "maxLength": 64,
+          "pattern": "^[a-z][a-z0-9_]*$",
+          "title": "Plant",
+          "type": "string"
+        },
+        "planting_choices": {
           "items": {
             "minLength": 1,
             "type": "string"
           },
           "minItems": 1,
-          "title": "Planted By",
+          "title": "Planting Choices",
           "type": "array"
-        },
-        "planted_fact": {
-          "maxLength": 64,
-          "pattern": "^[a-z][a-z0-9_]*$",
-          "title": "Planted Fact",
-          "type": "string"
         },
         "variable": {
           "maxLength": 64,
@@ -449,22 +653,17 @@
       },
       "required": [
         "variable",
-        "planted_fact",
-        "planted_by",
-        "payoffs"
+        "plant",
+        "planting_choices",
+        "payoff_sites"
       ],
       "title": "Thread",
       "type": "object"
     },
     "Truth": {
       "additionalProperties": false,
-      "description": "The book's question and its one canonical answer.",
+      "description": "The book's one canonical answer and the facts that make it up.",
       "properties": {
-        "answer": {
-          "minLength": 1,
-          "title": "Answer",
-          "type": "string"
-        },
         "facts": {
           "items": {
             "maxLength": 64,
@@ -476,23 +675,56 @@
           "type": "array"
         },
         "question": {
+          "anyOf": [
+            {
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Question"
+        },
+        "statement": {
           "minLength": 1,
-          "title": "Question",
+          "title": "Statement",
           "type": "string"
         }
       },
       "required": [
-        "question",
-        "answer",
+        "statement",
         "facts"
       ],
       "title": "Truth",
       "type": "object"
+    },
+    "Valence": {
+      "description": "How an ending feels, independent of what mechanically happened.",
+      "enum": [
+        "positive",
+        "neutral",
+        "negative"
+      ],
+      "title": "Valence",
+      "type": "string"
     }
   },
   "additionalProperties": false,
   "description": "A complete Story Plan (ADR-033 Decision 1). See the module docstring.",
   "properties": {
+    "book": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/BookRef"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null
+    },
     "cast": {
       "minProperties": 1,
       "patternProperties": {

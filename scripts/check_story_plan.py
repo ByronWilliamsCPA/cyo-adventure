@@ -12,8 +12,9 @@ replaced by ``.plan.json``. Every finding names its rule, node, choice, a
 witness state, the fact concerned and, for path rules, a witness route. The
 checks are deterministic and read no prose and call no model.
 
-``--shape-hash`` prints the book id and the hash a plan's
-``provenance.shape_hash`` must carry, then exits; use it to bind a new plan.
+``--shape-hash`` prints the two binding values, then exits: the graph hash for
+``provenance.shape`` (``{"id": <book id>, "hash": ...}``) and the file hash for
+``provenance.book_sha256``. Use it to bind a new plan.
 
 ``--must-not-assert`` adds, per reachable node, the ledger facts its prose must
 not assert (ADR-033's computed ``must_not_assert``).
@@ -47,7 +48,7 @@ from cyo_adventure.storyplan.checks import (
     must_not_assert,
     verify_witnesses,
 )
-from cyo_adventure.storyplan.models import StoryPlan, shape_hash
+from cyo_adventure.storyplan.models import StoryPlan, book_sha256, shape_hash
 
 if TYPE_CHECKING:
     from cyo_adventure.validator.report import ValidationFinding, ValidationReport
@@ -89,20 +90,25 @@ def _load_json(path: Path) -> object | None:
         return None
 
 
-def _load_book(path: Path) -> Storybook | None:
-    """Load and validate a Storybook.
+def _load_book(path: Path) -> tuple[Storybook, str] | None:
+    """Load and validate a Storybook, and hash the file's bytes.
 
     Args:
         path: The book file.
 
     Returns:
-        Storybook | None: The book, or None on any failure (already reported).
+        tuple[Storybook, str] | None: The book and the SHA-256 hex of the file
+            as stored (for ``provenance.book_sha256``), or None on any failure
+            (already reported).
     """
-    raw = _load_json(path)
-    if raw is None:
+    try:
+        raw_bytes = path.read_bytes()
+        raw = cast("object", json.loads(raw_bytes))
+    except (OSError, json.JSONDecodeError) as exc:
+        sys.stderr.write(f"FAIL: cannot load {path}: {exc}\n")
         return None
     try:
-        return Storybook.model_validate(raw)
+        return Storybook.model_validate(raw), book_sha256(raw_bytes)
     except ValidationError as exc:
         sys.stderr.write(f"FAIL: {path} is not a valid Storybook:\n{exc}\n")
         return None
@@ -194,6 +200,24 @@ def _run_witnesses() -> int:
     return EXIT_FINDINGS if problems else EXIT_OK
 
 
+def _bound_to(plan: StoryPlan) -> str:
+    """Name what a plan says it is bound to, for the report header.
+
+    Args:
+        plan: The plan.
+
+    Returns:
+        str: ``shape <id>``, ``book file <sha256 prefix>``, both, or ``nothing``.
+    """
+    provenance = plan.provenance
+    parts: list[str] = []
+    if provenance.shape is not None:
+        parts.append(f"shape {provenance.shape.id}")
+    if provenance.book_sha256 is not None:
+        parts.append(f"book file {provenance.book_sha256[:12]}")
+    return " and ".join(parts) or "nothing"
+
+
 def _emit(
     args: argparse.Namespace,
     book: Storybook,
@@ -215,9 +239,21 @@ def _emit(
             "book": book.id,
             "shape_hash": shape_hash(book),
             "plan": {
-                "shape_id": plan.provenance.shape_id,
+                "bound_to": _bound_to(plan),
                 "producer": plan.provenance.producer,
                 "approver": plan.provenance.approver,
+                "book_file": plan.provenance.book_file,
+                "authored": (
+                    None
+                    if plan.provenance.authored is None
+                    else plan.provenance.authored.isoformat()
+                ),
+                "authoring_minutes": plan.provenance.authoring_minutes,
+                "implicit_plants": {
+                    fact_id: fact.implicit_plant
+                    for fact_id, fact in plan.facts.items()
+                    if fact.implicit_plant is not None
+                },
             },
             **report.to_dict(),
         }
@@ -228,7 +264,7 @@ def _emit(
     provenance = plan.provenance
     approver = provenance.approver or "not approved"
     sys.stdout.write(
-        f"plan for {provenance.shape_id} by {provenance.producer} ({approver})\n"
+        f"plan bound to {_bound_to(plan)} by {provenance.producer} ({approver})\n"
     )
     for finding in report.findings:
         sys.stdout.write(_format_finding(finding) + "\n")
@@ -256,11 +292,12 @@ def main(argv: list[str] | None = None) -> int:
     if cast("str | None", args.book) is None:
         parser.error("a book path is required")
     book_path = Path(cast("str", args.book))
-    book = _load_book(book_path)
-    if book is None:
+    loaded = _load_book(book_path)
+    if loaded is None:
         return EXIT_UNREADABLE
+    book, digest = loaded
     if cast("bool", args.shape_hash):
-        sys.stdout.write(f"{book.id} {shape_hash(book)}\n")
+        sys.stdout.write(f"shape {book.id} {shape_hash(book)}\nbook_sha256 {digest}\n")
         return EXIT_OK
     plan_path = (
         Path(cast("str", args.plan))
@@ -277,7 +314,7 @@ def main(argv: list[str] | None = None) -> int:
             location = ".".join(str(part) for part in error["loc"]) or "$"
             sys.stderr.write(f"SCHEMA {location}: {error['msg']}\n")
         return EXIT_FINDINGS
-    report = check_plan(plan, book)
+    report = check_plan(plan, book, book_digest=digest)
     if cast("str | None", args.assertions):
         assertions = _parse_assertions(Path(cast("str", args.assertions)))
         if assertions is None:
