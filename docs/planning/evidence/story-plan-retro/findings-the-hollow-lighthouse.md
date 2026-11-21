@@ -30,8 +30,8 @@ findings this read added. `known-defects.json` was not edited.
 
 ### B1 `e_win_keeper_word`: Ferris greets a girl he never met as one he warned
 
-- Route: `P_CODE > c_n_tunnel_3 > c_tn_gate_1 > c_tn_gate_open_1 > c_n_chamber_1 > c_cm_letter_1 > c_cm_letter_read_1
-  > c_cm_letter_map_2`; state `knows_code` (any state reproduces).
+- Route: `P_CODE > c_n_tunnel_3 > c_tn_gate_1 > c_tn_gate_open_1 > c_n_chamber_1 > c_cm_letter_1 >`
+  `c_cm_letter_read_1 > c_cm_letter_map_2`; state `knows_code` (any state reproduces).
 - Quote: "\"Minded the bog, I see,\" he said."
 - Why: the bog warning is spoken only in `cm_cottage_wait`; on the map route Mira never meets Ferris and never walks
   the moor. Reproduced. Also on the `tn_cut_moor > cm_cottage_wait` route she says "the shepherd's cottage", a name

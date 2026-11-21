@@ -12,7 +12,7 @@ choice comes back; 5 of 14 decisions restate or announce their options; 0 of 0 s
 ## Fixed (pre-fix finding, fix applied)
 
 | # | Sev | Node | Route | Quoted sentence | Why wrong | Fix |
-|---|-----|------|-------|-----------------|-----------|-----|
+| --- | ----- | ------ | ------- | ----------------- | ----------- | ----- |
 | 1 | high | `ra_lake2` | c_right > c_right fork > c_lake > c_ra_pebbles | "The lapping sound, it turns out, is only Biscuit's paw." | `ra_fork` / `ra_lake_way` have the sound growing louder from ahead before Biscuit is near the water | The lapping is the black lake nudging the shelf; Biscuit just tests the cold edge |
 | 2 | high | `da_compass` / `da_compass2` | c_down > c_cache > c_compass > c_da_out | "pointing her the quickest way back to the cave mouth" vs "still finding true north" | A needle cannot do both; the way out is not established to lie north | Biscuit knows the way out; the needle just swings true; `da_compass2` has Biscuit lead them out |
 | 3 | high | `da_cache_back` | c_down > c_cache > c_cacheback | "marks the spot carefully on her map ... folds her map away" | No map exists on any route | Maya marks the spot in her memory (ending title left, it now reads as a mental map) |
