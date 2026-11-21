@@ -216,6 +216,51 @@ Nothing in Phase 2 is built until WP-1.5 passes.
   percent.
 - **Depends on.** WP-0.3, D1. **Size.** M.
 
+#### WP-1.1 notes: schema v0 as built (2026-11-21)
+
+Built in `src/cyo_adventure/storyplan/models.py`, exported to `schema/storyplan.schema.json`
+(`uv run python -m cyo_adventure.storyplan.schema_export`). It was built in parallel with WP-0.3, before any
+hand-written plan existed, so "all WP-0.3 plans validate" is still open: run the checker on each plan as it lands and
+record any loss here. The module docstring is the full contract; what a plan writer must follow is:
+
+- **Top level**: `plan_version` (`"0.1"`), `request`, `pitch`, `cast`, `truth`, `facts`, `nodes`, `choices`,
+  `threads`, `endings`, `provenance`. Unknown keys are rejected everywhere.
+- **Sections keyed by id are JSON objects**, not arrays: `cast`, `facts`, `nodes`, `choices`, `threads`, `endings`.
+  Node and choice keys are the book's ids verbatim. Fact, thread and cast ids match `^[a-z][a-z0-9_]*$`.
+- **`request`**: `band` required (must equal the book's `metadata.age_band`); `text`, `length`, `style`, `tone`
+  optional. A hand-revised book may omit `text`.
+- **`pitch`**: `hero`, `want`, `obstacle`, `stake`, `ending_kind`, all required.
+- **`cast`**: per character `name`, `role`, `want`, `voice` (the voice notes), `knows` (fact ids, may be empty).
+- **`truth`**: `question`, `answer` (one sentence), `facts` (one or more fact ids that make up the answer). Truth
+  facts may not contradict each other.
+- **`facts`**: per id `{"text": "<one sentence>", "contradicts": [<fact ids>]}`. Marking one side of a
+  contradiction is enough. Record contradictions the book actually contains (WP-0.3 "do not tidy the book"); SP-3
+  will then report them, which is the point.
+- **`nodes`**: per node `function`, `event`, `requires`, `establishes`. `requires` is what the prose presupposes on
+  entry; `establishes` is what it adds. A fact stated in a choice label is established by the node offering it. Do
+  not write `must_not_assert`: it is computed.
+- **`choices`**: per choice `intent`, `cost` (both required; `"none"` is a valid cost for a continue or safe option),
+  and `plants` (thread ids) only on planting choices. Two costs differ only if their words differ after
+  case-folding and stripping trailing punctuation.
+- **`threads`**: per thread `variable` (a book variable), `planted_fact` (the ledger fact that is the concrete thing
+  planted), `planted_by` (every choice whose effects set that variable off its initial value), `payoffs`. Every book
+  variable needs exactly one thread. `choices.<c>.plants` must list `t` exactly when `threads.<t>.planted_by` lists
+  `c`: write both sides.
+- **`payoffs`**: `{"site", "node", "shows"}`. `site` is the shared node reached with and without the plant (often the
+  bottleneck offering a gated choice); `node` is the passage only planted readers reach, which shows the payoff;
+  `shows` is one sentence. `node` may equal `site`.
+- **`endings`**: keyed by ending **node** id (not `Ending.id`), `{"gift": "..."}`. Required for every negative ending.
+- **`provenance`**: `producer`, `shape_id` (the book id for a hand-revised book), `shape_hash` (print it with
+  `uv run python scripts/check_story_plan.py out/<slug>.filled.json --shape-hash`; `null` until bound, which SP-0
+  reports), optional `model`, `checks`, `approver`. The hash covers the graph only (ids, targets, conditions,
+  effects, variables, ending valence and kind), so prose edits keep a plan bound.
+- **Every plan string** except `request.text` and `provenance` must pass SP-9: one line, at most 120 characters, no
+  `{`, `}`, `<<`, `>>`, em dash or untrusted-input fence marker, and no term from the band-mandatory denylist.
+
+Load-time rejection covers undeclared fact ids, unknown node or choice references inside the plan, one-sided plants
+and duplicate ids. Whether the plan's node, choice and variable sets match the book is SP-1, because the plan does not
+own variable declarations; that is where "a thread naming an undeclared variable" is rejected.
+
 ### WP-1.2 Structural checks and CLI
 
 - **Touches.** New `src/cyo_adventure/storyplan/checks.py`; new `scripts/check_story_plan.py`; new
@@ -227,6 +272,25 @@ Nothing in Phase 2 is built until WP-1.5 passes.
 - **Acceptance.** One failing witness and one passing fixture per rule; the checker is deterministic (two runs,
   identical output); runs in under ten seconds on the largest WP-0.3 plan.
 - **Depends on.** WP-1.1. **Size.** M.
+
+#### WP-1.2 notes: checks as built (2026-11-21)
+
+`src/cyo_adventure/storyplan/checks.py`; CLI `scripts/check_story_plan.py`. Rule definitions are in the module
+docstring. Departures from ADR-033's table, all additive:
+
+- **SP-0** (binding) implements the ADR's "a stale plan fails its checks": unbound or mismatched `shape_hash`, a band
+  mismatch, or a capped configuration walk.
+- **SP-2 is state-aware.** The NC-1 fixpoint moved into the package (`guaranteed_on_entry`, with
+  `scripts/check_narrative_contract.py` importing it; its output is byte-identical on both committed contracts) and runs
+  over the configuration graph, with choice plants as edge facts. A node reached only by planted readers therefore has
+  the plant guaranteed.
+- **SP-5** also requires each payoff `node` to be reached with the plant at least once.
+- **SP-6** is a plant-blind re-run of the fixpoint (no choice plants anything, other threads' payoff nodes establish
+  nothing), so leaning on another thread is caught even when gating makes it hold state-wise.
+- **SP-A** (`--assertions`) compares a per-node assertion map (WP-1.4's `assertions/*.json`: a JSON object of node id
+  to asserted fact ids) with the computed `must_not_assert` (`--must-not-assert`). This is the comparison WP-1.5 runs.
+- `--verify-witnesses` runs one witness per rule plus the clean example; each witness must trip its rule and no other.
+  Measured on `the-hollow-lighthouse` (162 nodes, 1,214 configurations) with a covering plan: about 1.5 s.
 
 ### WP-1.3 Known-defect corpus
 
