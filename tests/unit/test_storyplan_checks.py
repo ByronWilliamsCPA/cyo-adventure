@@ -766,6 +766,7 @@ def test_sp8_single_choice_nodes_are_not_decisions() -> None:
         (("pitch", "hero"), "x <<FILL>>", "'<<' or '>>'"),
         (("nodes", "n_path", "event"), "END_UNTRUSTED_USER_INPUT", "fence markers"),
         (("choices", "c_road", "cost"), "x" * 121, "120-character"),
+        (("truth", "statement"), "x" * 601, "600-character"),
         (("cast", "wren", "voice"), "two\nlines", "newlines"),
         (("endings", "n_fall", "gift"), "the cliff could kill you", "'lethal'"),
         (("truth", "statement"), "a deep wound dripping with blood", "'graphic'"),
@@ -781,6 +782,36 @@ def test_sp9_floors(path: tuple[str, ...], value: str, expected: str) -> None:
     assert findings
     assert any(expected in f.message for f in findings)
     assert all(value not in f.message for f in findings)  # never echo the text
+
+
+@pytest.mark.unit
+@pytest.mark.parametrize(
+    ("path", "length", "fails"),
+    [
+        (("facts", "cave_drawing", "text"), 200, False),
+        (("facts", "cave_drawing", "text"), 250, True),
+        (("nodes", "n_path", "event"), 240, False),
+        (("nodes", "n_path", "event"), 241, True),
+        (("pitch", "hero"), 120, False),
+        (("pitch", "hero"), 130, True),
+        (("truth", "statement"), 600, False),
+        (("truth", "statement"), 601, True),
+    ],
+)
+def test_sp9_length_caps_are_per_field(
+    path: tuple[str, ...], length: int, fails: bool
+) -> None:
+    book, plan = _pair()
+    target: dict[str, Any] = plan
+    for key in path[:-1]:
+        target = target[key]
+    target[path[-1]] = "a" * length
+    findings = [
+        f
+        for f in _findings(_check(book, plan), "SP-9")
+        if "character limit" in f.message
+    ]
+    assert bool(findings) is fails
 
 
 @pytest.mark.unit

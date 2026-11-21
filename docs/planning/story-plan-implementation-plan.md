@@ -263,8 +263,10 @@ What a plan writer must follow:
   `book_file`, `authored`, `authoring_minutes`, `checks` (`{ok, errors, warnings}` or null), `approver`, `notes`
   (list of strings).
 - **SP-9 applies to every plan string** except `request.text`, `request.note`, `book`, `provenance` and
-  `implicit_plant`: one line, at most 120 characters, no `{`, `}`, `<<`, `>>`, em dash or fence marker, and no
-  band-mandatory denylist term. On the seven hand-written plans this is the largest source of findings: 69 strings
+  `implicit_plant`: one line, no `{`, `}`, `<<`, `>>`, em dash or fence marker, and no
+  band-mandatory denylist term. Length is capped per field (amended 2026-11-21, slot versus record prose): 120
+  characters for slot-like strings (pitch, cast, choice intent and cost, endings, payoff `shows`, tone), 240 for
+  `facts.*.text` and node `event`, 600 for `truth.statement`. As first measured, on the seven hand-written plans this is the largest source of findings: 69 strings
   over 120 characters (39 in the family set, 30 in the control set) and five uses of "wound" for clockwork, which the
   `graphic` bundle matches at 10-13.
 

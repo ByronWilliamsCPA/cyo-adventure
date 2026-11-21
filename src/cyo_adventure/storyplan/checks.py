@@ -95,9 +95,12 @@ trailing punctuation stripped).
 ``SP-9`` every plan string except ``request.text``, ``request.note``, ``book``
 and ``provenance`` (verbatim untrusted input and metadata) passes the
 slot structural floor (non-empty, single line, no braces, no ``<<``/``>>``, no
-em dash, printable, at most 120 characters, no untrusted-input fence markers)
-and the band-mandatory denylist for the book's age band, both reused from
-:mod:`cyo_adventure.validator.slots`.
+em dash, printable, no untrusted-input fence markers) and the band-mandatory
+denylist for the book's age band, both reused from
+:mod:`cyo_adventure.validator.slots`. The length cap is per field (amended
+2026-11-21): 120 characters for slot-like strings (pitch, cast, choice-level
+strings, endings, payoff ``shows``, tone), 240 for ``facts.*.text`` and node
+``event`` (record prose), 600 for ``truth.statement``.
 
 ``SP-A`` (optional, only when an assertion map is supplied): a fact the
 prose of a node is recorded as asserting must not be in that node's computed
@@ -1457,6 +1460,18 @@ def _check_distinct_costs(ctx: _Context) -> list[PlanFinding]:
 # ---------------------------------------------------------------------------
 
 
+# SP-9 length caps (2026-11-21). validator.slots hard-codes 120 characters, which
+# fits slot-like strings that are bound into prompts as a short value. A Story
+# Plan also holds narrative-record fields (what a node does, what a fact states,
+# the canonical answer), which are sentences or short paragraphs by nature and
+# are measured across the seven hand-written plans at up to 201, 253 and 1058
+# characters respectively. Every other SP-9 floor still applies to all strings.
+SLOT_LENGTH_CAP = 120
+RECORD_LENGTH_CAP = 240
+TRUTH_LENGTH_CAP = 600
+_SLOT_LENGTH_MESSAGE_PREFIX = "value exceeds the 120-character limit"
+
+
 @dataclass(frozen=True, slots=True)
 class _PlanString:
     """One floored plan string and where it sits."""
@@ -1466,6 +1481,7 @@ class _PlanString:
     node_id: str | None = None
     choice_id: str | None = None
     fact_id: str | None = None
+    cap: int = SLOT_LENGTH_CAP
 
 
 def _plan_strings(plan: StoryPlan) -> Iterator[_PlanString]:
@@ -1500,11 +1516,16 @@ def _plan_strings(plan: StoryPlan) -> Iterator[_PlanString]:
             ("voice", member.voice),
         ):
             yield _PlanString(f"cast.{cast_id}.{field}", value)
-    yield _PlanString("truth.statement", plan.truth.statement)
+    yield _PlanString("truth.statement", plan.truth.statement, cap=TRUTH_LENGTH_CAP)
     if plan.truth.question is not None:
         yield _PlanString("truth.question", plan.truth.question)
     for fact_id, fact in plan.facts.items():
-        yield _PlanString(f"facts.{fact_id}.text", fact.text, fact_id=fact_id)
+        yield _PlanString(
+            f"facts.{fact_id}.text",
+            fact.text,
+            fact_id=fact_id,
+            cap=RECORD_LENGTH_CAP,
+        )
     yield from _graph_strings(plan)
 
 
@@ -1519,7 +1540,12 @@ def _graph_strings(plan: StoryPlan) -> Iterator[_PlanString]:
     """
     for node_id, node in plan.nodes.items():
         yield _PlanString(f"nodes.{node_id}.function", node.function, node_id=node_id)
-        yield _PlanString(f"nodes.{node_id}.event", node.event, node_id=node_id)
+        yield _PlanString(
+            f"nodes.{node_id}.event",
+            node.event,
+            node_id=node_id,
+            cap=RECORD_LENGTH_CAP,
+        )
     for choice_id, choice in plan.choices.items():
         yield _PlanString(
             f"choices.{choice_id}.intent", choice.intent, choice_id=choice_id
@@ -1559,9 +1585,18 @@ def _check_text_floors(plan: StoryPlan, book: Storybook) -> list[PlanFinding]:
     bundles = band_mandatory_bundles(book.metadata.age_band)
     findings: list[PlanFinding] = []
     for item in _plan_strings(plan):
+        # validator.slots always applies its fixed 120-character cap; drop that
+        # one message and apply this field's own cap instead.
         messages = [
-            violation.message for violation in structural_value_violations(item.value)
+            violation.message
+            for violation in structural_value_violations(item.value)
+            if not violation.message.startswith(_SLOT_LENGTH_MESSAGE_PREFIX)
         ]
+        if len(item.value) > item.cap:
+            messages.append(
+                f"value exceeds the {item.cap}-character limit "
+                f"(length {len(item.value)})"
+            )
         messages.extend(
             f"matches a band-mandatory denylist term in bundle {bundle!r}"
             for bundle in sorted(denylisted_bundles(item.value, bundles))

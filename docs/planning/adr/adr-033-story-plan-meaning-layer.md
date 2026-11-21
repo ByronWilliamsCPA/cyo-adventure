@@ -185,7 +185,7 @@ These block. None reads prose.
 | SP-6 | payoff independence: a payoff site requires only facts guaranteed on entry plus its own thread's | cross-payoff references (AL-799) |
 | SP-7 | every negative ending has a `gift` | give-up endings |
 | SP-8 | every decision has at least two choices with different `cost` | forks with one right answer |
-| SP-9 | text floors: every plan string passes the slot charset, length, denylist and band floors already used for bindings (`validator/slots.py`) | untrusted-derived text in prompts |
+| SP-9 | text floors: every plan string passes the slot charset, denylist and band floors already used for bindings (`validator/slots.py`); length is capped per field, 120 for slot-like strings, 240 for fact text and node events, 600 for `truth.statement` (amended 2026-11-21: record prose is longer than a slot value) | untrusted-derived text in prompts |
 
 Prose is then compared with the plan by one narrow question per node, "does this passage assert any fact on this
 list", answered by the continuity reader of Decision 6.
