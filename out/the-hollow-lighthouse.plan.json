@@ -2507,8 +2507,7 @@
   },
   "c_cm_light_relight_2": {
    "intent": "force the gear by hand",
-   "cost": "risks a setback ending: the clockwork breaks",
-   "note": "gated has_key == false since WP-0.4: a key-holder sees only the winding choice"
+   "cost": "risks a setback ending: the clockwork breaks"
   },
   "c_cm_light_relight_3": {
    "intent": "let the gear be and go back down",
@@ -2722,13 +2721,9 @@
   "authoring_minutes": 11,
   "checks": null,
   "approver": null,
-  "revisions": [
-   {
-    "date": "2026-11-21",
-    "work_package": "WP-0.4",
-    "by": "claude-opus-5-5 (second-reader continuity agent)",
-    "note": "Plan updated to match the fixed book; findings in docs/planning/evidence/story-plan-retro/findings-the-hollow-lighthouse.md."
-   }
+  "notes": [
+   "revisions: {\"date\": \"2026-11-21\", \"work_package\": \"WP-0.4\", \"by\": \"claude-opus-5-5 (second-reader continuity agent)\", \"note\": \"Plan updated to match the fixed book; findings in docs/planning/evidence/story-plan-retro/findings-the-hollow-lighthouse.md.\"}",
+   "choices.c_cm_light_relight_2.note: gated has_key == false since WP-0.4: a key-holder sees only the winding choice"
   ]
  }
 }

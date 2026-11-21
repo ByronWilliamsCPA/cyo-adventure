@@ -1859,13 +1859,8 @@
   "authoring_minutes": 4,
   "checks": null,
   "approver": null,
-  "revisions": [
-   {
-    "date": "2026-11-21",
-    "work_package": "WP-0.4",
-    "method": "second-reader continuity pass: every reachable (node, state) configuration played with StoryEngine; book prose fixed and plan updated to match",
-    "findings": "docs/planning/evidence/story-plan-retro/findings-the-sky-ship-stowaway.md"
-   }
+  "notes": [
+   "revisions: {\"date\": \"2026-11-21\", \"work_package\": \"WP-0.4\", \"method\": \"second-reader continuity pass: every reachable (node, state) configuration played with StoryEngine; book prose fixed and plan updated to match\", \"findings\": \"docs/planning/evidence/story-plan-retro/findings-the-sky-ship-stowaway.md\"}"
   ]
  }
 }

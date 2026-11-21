@@ -2129,12 +2129,8 @@
   "authoring_minutes": 5,
   "checks": null,
   "approver": null,
-  "continuity_pass": {
-   "work_package": "WP-0.4",
-   "date": "2026-11-21",
-   "findings": "docs/planning/evidence/story-plan-retro/findings-the-signal-in-the-static.md",
-   "pre_fix_book_sha256": "f0c851f90618cb43b7a7891e3e13cd6e8c3c9ac5c59ff337f6643be7cb1da5db",
-   "note": "Book and plan updated together; every node's requires is guaranteed on entry on every reachable route and state."
-  }
+  "notes": [
+   "continuity_pass: {\"work_package\": \"WP-0.4\", \"date\": \"2026-11-21\", \"findings\": \"docs/planning/evidence/story-plan-retro/findings-the-signal-in-the-static.md\", \"pre_fix_book_sha256\": \"f0c851f90618cb43b7a7891e3e13cd6e8c3c9ac5c59ff337f6643be7cb1da5db\", \"note\": \"Book and plan updated together; every node's requires is guaranteed on entry on every reachable route and state.\"}"
+  ]
  }
 }

@@ -1828,13 +1828,8 @@
   "authoring_minutes": 4,
   "checks": null,
   "approver": null,
-  "revisions": [
-   {
-    "date": "2026-11-21",
-    "work_package": "WP-0.4",
-    "by": "claude-opus-5-5 (second reader, did not write this plan)",
-    "note": "Updated to match the book after the continuity fixes in docs/planning/evidence/story-plan-retro/findings-the-midnight-museum.md. Removed the contradicting facts cipher_substitution_table and floor_left_open; renamed floor_opens_one_minute to floor_opens_by_clockwork; added staff_door_morning, slab_closed_by_hand and east_wing_paintings."
-   }
+  "notes": [
+   "revisions: {\"date\": \"2026-11-21\", \"work_package\": \"WP-0.4\", \"by\": \"claude-opus-5-5 (second reader, did not write this plan)\", \"note\": \"Updated to match the book after the continuity fixes in docs/planning/evidence/story-plan-retro/findings-the-midnight-museum.md. Removed the contradicting facts cipher_substitution_table and floor_left_open; renamed floor_opens_one_minute to floor_opens_by_clockwork; added staff_door_morning, slab_closed_by_hand and east_wing_paintings.\"}"
   ]
  }
 }
