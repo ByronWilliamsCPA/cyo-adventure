@@ -545,7 +545,7 @@ async def main_async(args: argparse.Namespace) -> int:
     )
     leg = build_openrouter_cost_reporting_leg(settings, MODEL)
     spend = Spend(budget=Decimal(args.budget) - Decimal(args.already_spent))
-    runs_dir = OUT / "runs"
+    runs_dir = Path(args.out) / "runs"
     runs_dir.mkdir(parents=True, exist_ok=True)
     for spec in specs:
         print(f"run {spec.n} ({spec.request_id}) starting", flush=True)
@@ -573,6 +573,9 @@ async def main_async(args: argparse.Namespace) -> int:
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     parser.add_argument("--dry-run", action="store_true")
+    parser.add_argument(
+        "--out", default=str(OUT), help="evidence directory (runs/ is written under it)"
+    )
     parser.add_argument("--only", type=int, nargs="*")
     parser.add_argument("--budget", default=str(DEFAULT_BUDGET_USD))
     parser.add_argument(
