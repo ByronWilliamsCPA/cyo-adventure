@@ -503,6 +503,25 @@ that had read the continuity notes, so it is not the blind test WP-1.4 and WP-1.
   plan-generation yield, tokens and latency.**
 - **Depends on.** WP-1.5, WP-2.2. **Size.** L. **Spend.** 5 to 15 USD.
 
+#### WP-2.3 notes: as built (2026-11-21, `1487b5a` to `d4b5190`)
+
+- **Flow.** `method="plan_fill"` (automated providers only) matches the cell with `candidates_for_cell` and picks a
+  retained shape reproducibly; cells with no retained shape (the four long cells, 3-5, 5-8) fall back to
+  `skeleton_fill` with a warning. The worker loads the bound shape, refuses a shape whose hash changed, makes one pitch
+  call (three pitches, each screened by the SP-9 floors, the PII guard and the Stage 0 classifiers), one plan call and at
+  most two repairs fed by the SP findings, and ends `needs_review` with no book: `story_plan_status` is `checked`,
+  `failed_checks` or `no_passing_pitch`, and `story_plan_approval` is `pending_owner` until WP-2.4.
+- **What the model is not asked for.** Node `function`, thread `planting_choices` and choice `plants` come from the
+  shape (`AL-845`). The model sees the shape through `ShapeView`: opaque aliases (`N1`, `C1`, `state_1`), no labels,
+  titles or variable descriptions; answers are mapped back before checking (`AL-842`).
+- **Persistence.** Nullable JSONB `storybook_version.story_plan` (migration
+  `20261121120000_add_storybook_version_story_plan.sql`, which must be applied before an image with this ORM is
+  deployed); WP-2.3 jobs create no book, so the plan lives on the admin-only job report (`STORY_PLAN_REPORT_KEYS`). No
+  kid-surface response schema carries a plan (tested). OpenAPI: `AuthoringMethod` gains `plan_fill`.
+- **Paid smoke: not yet run.** Estimate for five 8-11 short requests: 0.9 to 2.8 USD at the Sonnet price row; it
+  exercises no thread rules unless a stateful medium request is added (`AL-843`), and the largest 8-11 shape's plan is
+  about 21k output tokens (`AL-844`).
+
 ### WP-2.4 Plan approval
 
 - **Goal.** Approve plans, on both paths, by one rule: SP-0 to SP-9 pass, screening is clean, and a **validated** plan
